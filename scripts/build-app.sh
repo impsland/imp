@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Builds build/Imp.app (release), renders the icon, and code-signs it.
 # Optional: $ARCHS (e.g. "arm64 x86_64" for a universal binary), $VERSION (stamped into Info.plist).
-# Signing identity: $IMP_SIGN_IDENTITY, else the first "Apple Development" identity, else ad-hoc.
-# A stable identity matters: macOS ties Accessibility/Microphone grants to the signature,
-# so ad-hoc builds need permissions re-granted after every rebuild.
+# Signing identity: $IMP_SIGN_IDENTITY (releases: "Imp Release Signing"), else the first
+# "Apple Development" identity, else ad-hoc. A stable identity matters: macOS ties Keychain access
+# and the Microphone grant to the signature, so ad-hoc builds ask for them again after every rebuild.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

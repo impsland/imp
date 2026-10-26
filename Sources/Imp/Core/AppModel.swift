@@ -183,6 +183,12 @@ final class AppModel {
         return profile.id
     }
 
+    /// Removes a service everywhere, its key in the Keychain included.
+    func removeService(_ id: UUID) {
+        prefs.removeService(id)
+        assistant.setKey("", for: id)
+    }
+
     /// Removes an Imp for good (never the last one), with its shortcuts.
     func removeImp(_ id: UUID) {
         guard prefs.imps.count > 1 else { return }

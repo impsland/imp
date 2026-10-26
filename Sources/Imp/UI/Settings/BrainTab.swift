@@ -100,7 +100,7 @@ struct BrainTab: View {
     /// Removes a service from the app (it's shared by every Imp): any Imp using it, this one
     /// included, moves to the first service left, like removing it in the app's settings.
     private func remove(_ p: Service) {
-        withAnimation(.snappy(duration: 0.2)) { model.prefs.removeService(p.id) }
+        withAnimation(.snappy(duration: 0.2)) { model.removeService(p.id) }
         keyCheck = nil
         hello = nil
     }

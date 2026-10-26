@@ -60,7 +60,7 @@ private struct KeysPane: View {
                 VStack(spacing: 12) {
                     ForEach($model.prefs.ai.services) { $service in
                         ServiceRow(model: model, service: $service) {
-                            withAnimation { model.prefs.removeService(service.id) }
+                            withAnimation { model.removeService(service.id) }
                         }
                         if service.id != model.prefs.ai.services.last?.id { CardDivider() }
                     }

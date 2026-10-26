@@ -24,7 +24,7 @@ cask "imp" do
 
   app "Imp.app"
 
-  # Imp is ad-hoc signed, not notarized: clear the download quarantine so Gatekeeper lets it open.
+  # Imp is signed with its own certificate, not notarized by Apple: clear the download quarantine so Gatekeeper lets it open.
   postflight_steps do
     run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/Imp.app"]
   end

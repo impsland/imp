@@ -1,10 +1,24 @@
 import Foundation
 import Security
 
-/// Stores the API key in the login keychain (never in UserDefaults).
+/// Stores the API keys in the login keychain (never in UserDefaults).
+///
+/// macOS asks for the user's password when an app reads a secret it isn't trusted with yet (an
+/// item saved by another build, say). Only `read` touches the secret; `contains` checks that an
+/// item is there without it, and so never asks.
 public enum Keychain {
     public static let service = "app.imp.Imp"
 
+    /// Whether a key is saved for `account`, without reading it.
+    public static func contains(_ account: String) -> Bool {
+        let q: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword, kSecAttrService: service,
+            kSecAttrAccount: account, kSecMatchLimit: kSecMatchLimitOne,
+        ]
+        return SecItemCopyMatching(q as CFDictionary, nil) == errSecSuccess
+    }
+
+    /// The saved key. May ask for the user's password, so call it only for something they asked for.
     public static func read(_ account: String) -> String? {
         let q: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword, kSecAttrService: service,

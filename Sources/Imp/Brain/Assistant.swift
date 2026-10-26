@@ -8,8 +8,11 @@ import Observation
 /// `nil` means the default brain. The UI never builds requests itself.
 @MainActor @Observable
 final class Assistant {
-    /// API keys by service ID (mirrors the Keychain, which is the only place they're stored).
-    private var keys: [UUID: String] = [:]
+    /// Services with a key in the Keychain (the only place keys are stored). Known without
+    /// reading the keys, so launching and browsing settings never ask for the user's password.
+    private var keyed: Set<UUID> = []
+    /// Keys read so far, by service ID: each is read the first time a request needs it.
+    @ObservationIgnored private var keys: [UUID: String] = [:]
     private(set) var ai = AIConfig()
     /// Live state of each configured MCP server.
     private(set) var toolStatus: [UUID: MCPStatus] = [:]
@@ -30,26 +33,42 @@ final class Assistant {
 
     private static func account(_ id: UUID) -> String { "service.\(id.uuidString)" }
 
-    func key(for service: UUID) -> String { keys[service] ?? "" }
+    func hasKey(_ service: UUID) -> Bool { keyed.contains(service) }
 
+    /// A service's key, read from the Keychain on first use. Only for a request the user made:
+    /// the read may ask for their password. A refused read isn't remembered, so it's asked again next time.
+    private func key(for service: UUID) -> String {
+        guard keyed.contains(service) else { return "" }
+        if let key = keys[service] { return key }
+        guard usesKeychain, let key = Keychain.read(Self.account(service)) else { return "" }
+        keys[service] = key
+        return key
+    }
+
+    /// Saves (or, when empty, removes) a service's key.
     func setKey(_ key: String, for service: UUID) {
         let trimmed = key.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard trimmed != keys[service] else { return }
-        keys[service] = trimmed
         if usesKeychain { Keychain.write(trimmed, account: Self.account(service)) }
+        if trimmed.isEmpty {
+            keyed.remove(service)
+            keys[service] = nil
+        } else {
+            keyed.insert(service)
+            keys[service] = trimmed
+        }
     }
 
     /// The brain has a service (with a key, unless it runs locally) and a model.
     func isReady(_ brain: Brain? = nil) -> Bool {
         guard let p = ai.service(in: brain), !ai.model(in: brain).isEmpty else { return false }
-        return p.isLocal || !key(for: p.id).isEmpty
+        return p.isLocal || hasKey(p.id)
     }
 
     var hasTools: Bool { servers.contains(where: \.isEnabled) }
 
     func configure(ai: AIConfig, servers: [MCPServerConfig]) {
         self.ai = ai
-        for p in ai.services where keys[p.id] == nil { keys[p.id] = usesKeychain ? Keychain.read(Self.account(p.id)) ?? "" : "" }
+        if usesKeychain { keyed = Set(ai.services.map(\.id).filter { Keychain.contains(Self.account($0)) }) }
         guard servers != self.servers else { return }
         self.servers = servers
         Task { [hub] in await hub.update(servers) }

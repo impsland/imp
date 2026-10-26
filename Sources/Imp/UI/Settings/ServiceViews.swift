@@ -39,16 +39,26 @@ struct ServiceRow: View {
     }
 }
 
-/// A service's key: hidden by default, with show and paste. Shared by every Imp using the service.
+/// A service's key: hidden by default, with show, paste and remove. Shared by every Imp using the
+/// service. A saved key is never read back to show it here (reading may ask for the user's
+/// password): the field says it's saved, and whatever is typed or pasted replaces it.
 struct KeyField: View {
     let model: AppModel
     let service: Service
     @State private var show = false
+    @State private var draft = ""
 
+    private var saved: Bool { model.assistant.hasKey(service.id) }
     private var key: Binding<String> {
-        Binding(get: { model.assistant.key(for: service.id) }, set: { model.assistant.setKey($0, for: service.id) })
+        Binding(get: { draft }, set: {
+            draft = $0
+            if !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { model.assistant.setKey($0, for: service.id) }
+        })
     }
-    private var placeholder: String { service.isLocal ? "Not needed on this Mac" : "Paste the key here" }
+    private var placeholder: String {
+        if saved { return "Saved in your Keychain" }
+        return service.isLocal ? "Not needed on this Mac" : "Paste the key here"
+    }
 
     var body: some View {
         HStack(spacing: 4) {
@@ -59,11 +69,19 @@ struct KeyField: View {
             .help("Kept in your login Keychain, never in plain files")
             HoverIconButton(systemName: show ? "eye.slash" : "eye", help: show ? "Hide key" : "Show key") { show.toggle() }
             HoverIconButton(systemName: "doc.on.clipboard", help: "Paste the key from the clipboard", action: paste)
+            if saved {
+                HoverIconButton(systemName: "trash", help: "Remove the key", action: remove)
+            }
         }
     }
 
     private func paste() {
         if let s = NSPasteboard.general.string(forType: .string) { key.wrappedValue = s.trimmingCharacters(in: .whitespacesAndNewlines) }
+    }
+
+    private func remove() {
+        draft = ""
+        model.assistant.setKey("", for: service.id)
     }
 }
 
