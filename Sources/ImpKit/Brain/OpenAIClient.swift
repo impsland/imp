@@ -2,6 +2,7 @@ import Foundation
 
 public enum APIError: LocalizedError, Equatable, Sendable {
     case missingKey
+    case keyDenied(service: String)
     case noService(String)
     case noModel
     case badURL(String)
@@ -11,6 +12,8 @@ public enum APIError: LocalizedError, Equatable, Sendable {
     public var errorDescription: String? {
         switch self {
         case .missingKey: "No API key yet. Add one in Settings › Brains."
+        case .keyDenied(let service):
+            "I wasn't allowed to read the \(service) key from your Keychain. Ask again and choose Allow, or paste the key in Settings › Brains."
         case .noService(let what): "No AI service picked for \(what). Add one on its Brain tab."
         case .noModel: "No model picked yet. Choose one on the Brain tab."
         case .badURL(let s): "That base URL looks cursed: \(s)"

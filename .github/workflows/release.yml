@@ -1,8 +1,7 @@
 name: Release
 
-# Push a version tag (git tag v1.2.3 && git push origin v1.2.3) to publish Imp.zip on
-# GitHub Releases, with its Homebrew cask (imp.rb). impsland/homebrew-tap picks the cask up from
-# the latest release by itself, so this repository holds no credentials for the tap.
+# Push a version tag (git tag v1.2.3 && git push origin v1.2.3) to publish Imp.zip on GitHub
+# Releases and update the Homebrew cask in impsland/homebrew-tap (HOMEBREW_TAP_TOKEN may push there).
 on:
   push:
     tags: ["v*.*.*"]
@@ -51,9 +50,6 @@ jobs:
       - name: Build
         run: make dist VERSION="$VERSION"
 
-      - name: Cask
-        run: scripts/cask.sh "$VERSION" "$(shasum -a 256 build/Imp.zip | cut -d' ' -f1)" > build/imp.rb
-
       - name: Remove signing identity
         if: always()
         run: security delete-keychain "$RUNNER_TEMP/signing.keychain-db" 2>/dev/null || true
@@ -62,5 +58,24 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" build/Imp.zip build/imp.rb \
+          gh release create "$GITHUB_REF_NAME" build/Imp.zip \
             --title "Imp $VERSION" --generate-notes --verify-tag
+
+      - name: Check out tap
+        uses: actions/checkout@v4
+        with:
+          repository: impsland/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: tap
+
+      - name: Update cask
+        run: |
+          scripts/cask.sh "$VERSION" "$(shasum -a 256 build/Imp.zip | cut -d' ' -f1)" > tap/Casks/imp.rb
+          cd tap
+          git add Casks/imp.rb
+          git diff --cached --quiet && exit 0
+          # Credited to the maintainer (GitHub's no-reply address for arthuqa).
+          git config user.name "Art"
+          git config user.email "157759405+arthuqa@users.noreply.github.com"
+          git commit -m "imp $VERSION"
+          git push

@@ -36,13 +36,21 @@ final class Assistant {
     func hasKey(_ service: UUID) -> Bool { keyed.contains(service) }
 
     /// A service's key, read from the Keychain on first use. Only for a request the user made:
-    /// the read may ask for their password. A refused read isn't remembered, so it's asked again next time.
-    private func key(for service: UUID) -> String {
-        guard keyed.contains(service) else { return "" }
-        if let key = keys[service] { return key }
-        guard usesKeychain, let key = Keychain.read(Self.account(service)) else { return "" }
-        keys[service] = key
-        return key
+    /// the read may ask for their password. A refusal isn't remembered: the next request asks again.
+    private func key(for service: Service) throws -> String {
+        guard keyed.contains(service.id) else { return "" }
+        if let key = keys[service.id] { return key }
+        guard usesKeychain else { return "" }
+        do {
+            guard let key = try Keychain.read(Self.account(service.id)) else {
+                keyed.remove(service.id)                     // removed outside Imp
+                return ""
+            }
+            keys[service.id] = key
+            return key
+        } catch {
+            throw APIError.keyDenied(service: service.label)
+        }
     }
 
     /// Saves (or, when empty, removes) a service's key.
@@ -75,7 +83,7 @@ final class Assistant {
     }
 
     func client(for service: Service) throws -> OpenAIClient {
-        let key = key(for: service.id)
+        let key = try key(for: service)
         if key.isEmpty && !service.isLocal { throw APIError.missingKey }
         return try OpenAIClient(baseURL: service.baseURL, apiKey: key)
     }
@@ -88,13 +96,13 @@ final class Assistant {
 
     /// Everything an Imp may use: the shell in its own folder (unless switched off) and its MCP
     /// servers. The shell gets the Imp's service, key and model as environment variables.
-    func tools(for imp: ImpProfile) -> ToolProvider? {
+    func tools(for imp: ImpProfile) throws -> ToolProvider? {
         var members: [ToolProvider] = []
         if imp.usesShell {
             let directory = Workspace.directory(for: imp.id)
             let service = ai.service(in: imp.brain)
             let environment = ShellTool.environment(name: imp.name, directory: directory, baseURL: service?.baseURL,
-                                                    apiKey: service.map { key(for: $0.id) }, model: ai.model(in: imp.brain))
+                                                    apiKey: try service.map { try key(for: $0) }, model: ai.model(in: imp.brain))
             members.append(ShellTool(directory: directory, environment: environment))
         }
         if !imp.servers.isEmpty { members.append(MCPScope(hub: hub, servers: Set(imp.servers))) }

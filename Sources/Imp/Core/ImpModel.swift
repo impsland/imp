@@ -534,7 +534,7 @@ final class ImpModel {
             work = ask.map { Work(ask: $0, heading: heading, title: title) }
             log.info("\(self.profile.name, privacy: .public) works on “\(title.isEmpty ? "a message" : title, privacy: .public)”")
             thinking(heading, captions: Captions.thinking)
-            let tools = app.assistant.tools(for: profile)
+            let tools = try app.assistant.tools(for: profile)
             if app.assistant.toolsConnecting { addStep(.wakingUp) }
             let (reply, exchange) = try await app.assistant.chat(messages(with: turn), brain: profile.brain, tools: tools,
                                                                  stream: true) { [weak self] event in
@@ -602,7 +602,7 @@ final class ImpModel {
         app.stage.broadcast(.failed, from: self)
         // Setup problems point at the Brain tab and stay until dealt with.
         let needsSetup = switch error as? APIError {
-        case .missingKey?, .noService?, .noModel?: true
+        case .missingKey?, .keyDenied?, .noService?, .noModel?: true
         default: false
         }
         work = nil

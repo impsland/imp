@@ -9,6 +9,11 @@ import Security
 public enum Keychain {
     public static let service = "app.imp.Imp"
 
+    /// macOS didn't hand the key over: the user chose Deny or cancelled the password prompt.
+    public struct AccessDenied: Error, Equatable {
+        public let status: OSStatus
+    }
+
     /// Whether a key is saved for `account`, without reading it.
     public static func contains(_ account: String) -> Bool {
         let q: [CFString: Any] = [
@@ -18,15 +23,20 @@ public enum Keychain {
         return SecItemCopyMatching(q as CFDictionary, nil) == errSecSuccess
     }
 
-    /// The saved key. May ask for the user's password, so call it only for something they asked for.
-    public static func read(_ account: String) -> String? {
+    /// The saved key (nil when there is none). May ask for the user's password, so call it only
+    /// for something they asked for. Throws `AccessDenied` when they refuse.
+    public static func read(_ account: String) throws -> String? {
         let q: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword, kSecAttrService: service,
             kSecAttrAccount: account, kSecReturnData: true, kSecMatchLimit: kSecMatchLimitOne,
         ]
         var out: CFTypeRef?
-        guard SecItemCopyMatching(q as CFDictionary, &out) == errSecSuccess, let data = out as? Data else { return nil }
-        return String(data: data, encoding: .utf8)
+        let status = SecItemCopyMatching(q as CFDictionary, &out)
+        switch status {
+        case errSecSuccess: return (out as? Data).flatMap { String(data: $0, encoding: .utf8) }
+        case errSecItemNotFound: return nil
+        default: throw AccessDenied(status: status)
+        }
     }
 
     @discardableResult

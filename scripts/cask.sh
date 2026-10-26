@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Prints the Homebrew cask for a release: scripts/cask.sh <version> <sha256 of Imp.zip>
-# Attached to each GitHub release as imp.rb; impsland/homebrew-tap copies it to Casks/imp.rb.
+# The release workflow writes it to impsland/homebrew-tap as Casks/imp.rb.
 set -euo pipefail
 VERSION="$1"
 SHA256="$2"
