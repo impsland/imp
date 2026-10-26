@@ -9,6 +9,35 @@
 
 ---
 
+## Install
+
+```sh
+brew install --cask impsland/tap/imp
+```
+
+<p align="center">
+  <a href="https://github.com/impsland/imp/releases/latest/download/Imp.zip"><img src="https://img.shields.io/github/v/release/impsland/imp?label=Download%20Imp&style=for-the-badge&logo=apple&color=c0392b" alt="Download Imp for macOS"></a>
+</p>
+
+Or download **[Imp.zip](https://github.com/impsland/imp/releases/latest/download/Imp.zip)**, unzip it and drag **Imp.app**
+to Applications. macOS 14 Sonoma or later, Apple silicon or Intel. Update with `brew upgrade --cask imp`.
+
+<details>
+  <summary>macOS says Imp can't be opened?</summary>
+
+Imp isn't notarized by Apple yet. Homebrew takes care of this for you. For a manual download, run:
+
+```sh
+xattr -r -d com.apple.quarantine /Applications/Imp.app
+```
+
+or allow it in System Settings:
+
+<p align="center"><img src="docs/how-to-open-an-unsigned-app-on-macos.svg" width="760" alt="Open an unsigned app on macOS"></p>
+</details>
+
+## Meet Imp
+
 Imp is a soft red mochi head with two curled horns and two white eyes. It floats above your windows,
 watches your cursor, and shows how it feels with the shape of its head and eyes. Click it, type or
 talk to it, and it answers.
@@ -72,39 +101,6 @@ a bigger cloud model.
   | `imp://settings`                       | Opens Imp's window           |
 
 <p align="center"><img src="docs/moods.png" width="760" alt="Imp's moods"></p>
-
-## Install
-
-**Homebrew**
-
-```sh
-brew tap impsland/tap
-brew trust impsland/tap     # Homebrew 7+ asks you to trust taps outside Homebrew's own
-brew install --cask imp
-```
-
-Updates come with `brew upgrade --cask imp`.
-
-**Download**
-
-Get `Imp-<version>.zip` from the [latest release](https://github.com/impsland/imp/releases/latest),
-unzip it and move **Imp.app** to Applications.
-
-<details>
-  <summary>macOS says Imp can't be opened?</summary>
-
-Imp isn't notarized by Apple yet. Homebrew takes care of this for you. For a manual download, run:
-
-```sh
-xattr -r -d com.apple.quarantine /Applications/Imp.app
-```
-
-or allow it in System Settings:
-
-<p align="center"><img src="docs/how-to-open-an-unsigned-app-on-macos.svg" width="760" alt="Open an unsigned app on macOS"></p>
-</details>
-
-Requires macOS 14 Sonoma or later, on Apple silicon or Intel.
 
 ## Get started with a local model
 

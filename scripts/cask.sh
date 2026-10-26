@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Prints the Homebrew cask for a release: scripts/cask.sh <version> <sha256 of Imp-<version>.zip>
+# Prints the Homebrew cask for a release: scripts/cask.sh <version> <sha256 of Imp.zip>
 # Attached to each GitHub release as imp.rb; impsland/homebrew-tap copies it to Casks/imp.rb.
 set -euo pipefail
 VERSION="$1"
@@ -10,7 +10,7 @@ cask "imp" do
   version "$VERSION"
   sha256 "$SHA256"
 
-  url "https://github.com/impsland/imp/releases/download/v#{version}/Imp-#{version}.zip"
+  url "https://github.com/impsland/imp/releases/download/v#{version}/Imp.zip"
   name "Imp"
   desc "Tiny desk imp that answers, talks and runs shell commands for you"
   homepage "https://github.com/impsland/imp"
