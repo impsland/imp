@@ -78,8 +78,12 @@ a bigger cloud model.
 **Homebrew**
 
 ```sh
-brew install --cask impsland/tap/imp
+brew tap impsland/tap
+brew trust impsland/tap     # Homebrew 7+ asks you to trust taps outside Homebrew's own
+brew install --cask imp
 ```
+
+Updates come with `brew upgrade --cask imp`.
 
 **Download**
 

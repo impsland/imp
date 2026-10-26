@@ -12,7 +12,7 @@ cask "imp" do
 
   url "https://github.com/impsland/imp/releases/download/v#{version}/Imp-#{version}.zip"
   name "Imp"
-  desc "Tiny desk companion that runs an AI assistant with a shell on your Mac"
+  desc "Tiny desk imp that answers, talks and runs shell commands for you"
   homepage "https://github.com/impsland/imp"
 
   livecheck do
@@ -20,13 +20,13 @@ cask "imp" do
     strategy :github_latest
   end
 
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   app "Imp.app"
 
   # Imp is ad-hoc signed, not notarized: clear the download quarantine so Gatekeeper lets it open.
-  postflight do
-    system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{appdir}/Imp.app"]
+  postflight_steps do
+    run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/Imp.app"]
   end
 
   uninstall quit: "app.imp.Imp"
