@@ -35,7 +35,7 @@ final class HomeWindow {
     }
 
     private func open(_ model: AppModel) {
-        if router.selection == nil || model.profile(router.selection!) == nil {
+        if router.selection.flatMap(model.profile) == nil {
             router.selection = (model.focused?.profile ?? model.prefs.imps[0]).id
         }
         if window == nil {

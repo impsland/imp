@@ -108,8 +108,12 @@ struct ImpEgg: View {
         let capRegion = polygon(seam + [CGPoint(x: r.maxX + 4, y: r.minY - 40), CGPoint(x: r.minX - 4, y: r.minY - 40)])
         let lowRegion = polygon(seam + [CGPoint(x: r.maxX + 4, y: r.maxY + 40), CGPoint(x: r.minX - 4, y: r.maxY + 40)])
         let mid = seam[seam.count / 2].y
+        // A zigzag down the middle: it starts on the centre line, then steps left and right.
         let jag: [CGPoint] = (0...5).map { i in
-            CGPoint(x: r.midX + (i % 2 == 0 ? -1 : 1) * w * 0.035 * (i == 0 ? 0 : 1), y: mid + (r.maxY + 20 - mid) * Double(i) / 5)
+            let side: Double = i % 2 == 0 ? -1 : 1
+            let x: Double = i == 0 ? r.midX : r.midX + side * w * 0.035
+            let y: Double = mid + (r.maxY + 20 - mid) * Double(i) / 5
+            return CGPoint(x: x, y: y)
         }
         let leftRegion = polygon([CGPoint(x: r.minX - 40, y: mid - 30)] + jag + [CGPoint(x: r.minX - 40, y: r.maxY + 40)])
         let rightRegion = polygon([CGPoint(x: r.maxX + 40, y: mid - 30)] + jag + [CGPoint(x: r.maxX + 40, y: r.maxY + 40)])
