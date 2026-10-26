@@ -17,6 +17,15 @@ enum IconRenderer {
         }
     }
 
+    /// `Imp --render-dmg-background <dir>`: background.png and background@2x.png for the
+    /// installer disk image (scripts/dmg-settings.py places the icons on it).
+    static func renderDMGBackground(to dir: URL) {
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        for (suffix, scale) in [("", 1.0), ("@2x", 2.0)] {
+            write(render(DMGBackground(), scale: scale), to: dir.appendingPathComponent("background\(suffix).png"))
+        }
+    }
+
     /// `Imp --render-moods <file.png> [cell]`: every mood plus head turns.
     static func renderMoods(to url: URL, cell: CGFloat) {
         var items: [(String, Face)] = Mood.allCases.map { ("\($0)", .settled($0)) }
@@ -282,6 +291,60 @@ enum IconRenderer {
         .padding(8)
         .background(Dungeon.wall)
         write(render(strip, scale: 2), to: url)
+    }
+
+    /// The installer window: the dungeon wall, a glow where Imp's icon sits, an ember arrow to
+    /// Applications, and a shelf for the names. Sizes and centres match scripts/dmg-settings.py.
+    private struct DMGBackground: View {
+        static let size = CGSize(width: 660, height: 400)
+        static let app = CGPoint(x: 170, y: 180)
+        static let applications = CGPoint(x: 490, y: 180)
+
+        var body: some View {
+            ZStack {
+                DungeonBackdrop(quiet: true)
+                Canvas { ctx, _ in
+                    let glow = Gradient(colors: [Dungeon.ember.opacity(0.35), .clear])
+                    ctx.fill(Path(ellipseIn: CGRect(x: Self.app.x - 120, y: Self.app.y - 120, width: 240, height: 240)),
+                             with: .radialGradient(glow, center: Self.app, startRadius: 0, endRadius: 120))
+                    Self.arrow(&ctx)
+                    // A stone shelf the icons stand on, with their names on its face. Finder draws
+                    // names white in Dark Mode and black in Light Mode, and both read on this middle tone.
+                    let shelf = CGRect(x: 40, y: Self.app.y + 58, width: Self.size.width - 80, height: 40)
+                    ctx.fill(Path(roundedRect: shelf, cornerRadius: 12), with: .color(Dungeon.stoneLight.opacity(0.85)))
+                    ctx.fill(Path(roundedRect: CGRect(x: shelf.minX + 12, y: shelf.minY, width: shelf.width - 24, height: 3), cornerRadius: 1.5),
+                             with: .color(Dungeon.cream.opacity(0.25)))
+                }
+                Text("Drag Imp to Applications")
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .foregroundStyle(Dungeon.muted)
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+                    .padding(.bottom, 34)
+            }
+            .frame(width: Self.size.width, height: Self.size.height)
+            .environment(\.colorScheme, .dark)
+        }
+
+        /// A dashed arc between the two icons, with a rounded head.
+        private static func arrow(_ ctx: inout GraphicsContext) {
+            let start = CGPoint(x: app.x + 92, y: app.y - 6)
+            let end = CGPoint(x: applications.x - 92, y: applications.y - 6)
+            let control = CGPoint(x: (start.x + end.x) / 2, y: start.y - 46)
+            var arc = Path()
+            arc.move(to: start)
+            arc.addQuadCurve(to: end, control: control)
+            ctx.stroke(arc, with: .color(Dungeon.ember), style: StrokeStyle(lineWidth: 5, lineCap: .round, dash: [2, 12]))
+
+            // The head points along the curve's last stretch (from the control point to the end).
+            let angle = atan2(end.y - control.y, end.x - control.x)
+            var head = Path()
+            for side in [-1.0, 1.0] {
+                let a = angle + .pi - side * .pi / 5
+                head.move(to: end)
+                head.addLine(to: CGPoint(x: end.x + 16 * cos(a), y: end.y + 16 * sin(a)))
+            }
+            ctx.stroke(head, with: .color(Dungeon.ember), style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round))
+        }
     }
 
     private static func render(_ view: some View, scale: CGFloat) -> CGImage? {

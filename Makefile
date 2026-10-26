@@ -9,11 +9,11 @@ build:
 app:
 	SWIFT="$(SWIFT)" ./scripts/build-app.sh
 
-# Universal, version-stamped build zipped for a GitHub release: build/Imp.zip
+# Universal, version-stamped installer disk image for a GitHub release: build/Imp.dmg
 dist:
 	SWIFT="$(SWIFT)" ARCHS="arm64 x86_64" VERSION="$(VERSION)" ./scripts/build-app.sh
-	ditto -c -k --keepParent build/Imp.app build/Imp.zip
-	shasum -a 256 build/Imp.zip
+	./scripts/build-dmg.sh
+	shasum -a 256 build/Imp.dmg
 
 run: app
 	-pkill -x Imp; open build/Imp.app

@@ -16,11 +16,11 @@ brew install --cask impsland/tap/imp
 ```
 
 <p align="center">
-  <a href="https://github.com/impsland/imp/releases/latest/download/Imp.zip"><img src="https://img.shields.io/github/v/release/impsland/imp?label=Download%20Imp&style=for-the-badge&logo=apple&color=c0392b" alt="Download Imp for macOS"></a>
+  <a href="https://github.com/impsland/imp/releases/latest/download/Imp.dmg"><img src="https://img.shields.io/github/v/release/impsland/imp?label=Download%20Imp&style=for-the-badge&logo=apple&color=c0392b" alt="Download Imp for macOS"></a>
 </p>
 
-Or download **[Imp.zip](https://github.com/impsland/imp/releases/latest/download/Imp.zip)**, unzip it and drag **Imp.app**
-to Applications. macOS 14 Sonoma or later, Apple silicon or Intel. Update with `brew upgrade --cask imp`.
+Or download **[Imp.dmg](https://github.com/impsland/imp/releases/latest/download/Imp.dmg)**, open it and drag Imp into
+Applications. macOS 14 Sonoma or later, Apple silicon or Intel. Update with `brew upgrade --cask imp`.
 
 <details>
   <summary>macOS says Imp can't be opened?</summary>

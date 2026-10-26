@@ -1,6 +1,6 @@
 name: Release
 
-# Push a version tag (git tag v1.2.3 && git push origin v1.2.3) to publish Imp.zip on GitHub
+# Push a version tag (git tag v1.2.3 && git push origin v1.2.3) to publish Imp.dmg on GitHub
 # Releases and update the Homebrew cask in impsland/homebrew-tap (HOMEBREW_TAP_TOKEN may push there).
 on:
   push:
@@ -47,6 +47,9 @@ jobs:
           rm "$RUNNER_TEMP/imp.p12"
           echo "IMP_SIGN_IDENTITY=Imp Release Signing" >> "$GITHUB_ENV"
 
+      - name: Disk image tool
+        run: pipx install dmgbuild==1.6.7
+
       - name: Build
         run: make dist VERSION="$VERSION"
 
@@ -58,7 +61,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" build/Imp.zip \
+          gh release create "$GITHUB_REF_NAME" build/Imp.dmg \
             --title "Imp $VERSION" --generate-notes --verify-tag
 
       - name: Check out tap
@@ -70,7 +73,7 @@ jobs:
 
       - name: Update cask
         run: |
-          scripts/cask.sh "$VERSION" "$(shasum -a 256 build/Imp.zip | cut -d' ' -f1)" > tap/Casks/imp.rb
+          scripts/cask.sh "$VERSION" "$(shasum -a 256 build/Imp.dmg | cut -d' ' -f1)" > tap/Casks/imp.rb
           cd tap
           git add Casks/imp.rb
           git diff --cached --quiet && exit 0

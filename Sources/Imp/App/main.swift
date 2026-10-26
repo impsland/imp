@@ -9,6 +9,10 @@ if let url = argument(after: "--render-icon") {
     MainActor.assumeIsolated { IconRenderer.renderIcon(to: url) }
     exit(0)
 }
+if let url = argument(after: "--render-dmg-background") {
+    MainActor.assumeIsolated { IconRenderer.renderDMGBackground(to: url) }
+    exit(0)
+}
 if let url = argument(after: "--render-moods") {
     let cell = args.last.flatMap(Double.init) ?? 160
     MainActor.assumeIsolated { IconRenderer.renderMoods(to: url, cell: cell) }
