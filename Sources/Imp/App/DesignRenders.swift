@@ -294,7 +294,7 @@ enum IconRenderer {
     }
 
     /// The installer window: the dungeon wall, a glow where Imp's icon sits, an ember arrow to
-    /// Applications, and a shelf for the names. Sizes and centres match scripts/dmg-settings.py.
+    /// Applications, and name tags. Sizes and centres match scripts/dmg-settings.py.
     private struct DMGBackground: View {
         static let size = CGSize(width: 660, height: 400)
         static let app = CGPoint(x: 170, y: 180)
@@ -308,12 +308,12 @@ enum IconRenderer {
                     ctx.fill(Path(ellipseIn: CGRect(x: Self.app.x - 120, y: Self.app.y - 120, width: 240, height: 240)),
                              with: .radialGradient(glow, center: Self.app, startRadius: 0, endRadius: 120))
                     Self.arrow(&ctx)
-                    // A stone shelf the icons stand on, with their names on its face. Finder draws
-                    // names white in Dark Mode and black in Light Mode, and both read on this middle tone.
-                    let shelf = CGRect(x: 40, y: Self.app.y + 58, width: Self.size.width - 80, height: 40)
-                    ctx.fill(Path(roundedRect: shelf, cornerRadius: 12), with: .color(Dungeon.stoneLight.opacity(0.85)))
-                    ctx.fill(Path(roundedRect: CGRect(x: shelf.minX + 12, y: shelf.minY, width: shelf.width - 24, height: 3), cornerRadius: 1.5),
-                             with: .color(Dungeon.cream.opacity(0.25)))
+                    // Cream name tags under the icons. Finder draws the names itself (dark, on a
+                    // picture background) and can't recolour or hide them, so they get a light tag.
+                    for (centre, width) in [(Self.app, 84.0), (Self.applications, 132.0)] {
+                        let tag = CGRect(x: centre.x - width / 2, y: centre.y + 60, width: width, height: 34)
+                        ctx.fill(Path(roundedRect: tag, cornerRadius: 17), with: .color(Dungeon.cream.opacity(0.92)))
+                    }
                 }
                 Text("Drag Imp to Applications")
                     .font(.system(size: 15, weight: .semibold, design: .rounded))
