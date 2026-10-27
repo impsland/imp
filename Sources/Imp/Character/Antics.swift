@@ -189,11 +189,10 @@ enum Antics {
             AnticStep(duration: 0.14, look: CGPoint(x: -0.5, y: 0)), AnticStep(duration: 0.14, look: CGPoint(x: 0.5, y: 0)),
             AnticStep(duration: 0.14, look: CGPoint(x: -0.5, y: 0)), AnticStep(duration: 0.8, look: user, mood: .bored),
         ]
-        case .plop: [    // lands with a squish, then checks out the new spot
-            AnticStep(duration: 0.25, look: CGPoint(x: 0, y: 0.25), stretch: -0.14),
-            AnticStep(duration: 0.7, look: CGPoint(x: -0.7, y: -0.05), mood: .curious),
-            AnticStep(duration: 0.7, look: CGPoint(x: 0.7, y: -0.05), mood: .curious),
-            AnticStep(duration: 0.6, look: user, mood: .happy),
+        case .plop: [    // set down: a look left, a look right, then back to you
+            AnticStep(duration: 0.6, look: CGPoint(x: -0.7, y: -0.05)),
+            AnticStep(duration: 0.6, look: CGPoint(x: 0.7, y: -0.05)),
+            AnticStep(duration: 0.4, look: user),
         ]
         case .flinch: [
             AnticStep(duration: 0.25, look: user, mood: .surprised, glyph: .exclaim, stretch: -0.1),
@@ -290,6 +289,41 @@ enum Antics {
             AnticStep(duration: 0.8, look: CGPoint(x: -0.3, y: -0.2), mood: .curious, glyph: .question, tilt: -12),
             AnticStep(duration: 0.8, look: CGPoint(x: 0.3, y: -0.2), mood: .curious, glyph: .question, tilt: 2),
             AnticStep(duration: 0.4, look: user),
+        ]
+
+        // Only while it wears its favourite colour.
+        case .twirl: [   // spins its gaze all the way round, sparkling
+            AnticStep(duration: 0.3, look: CGPoint(x: 0, y: 0.4), mood: .excited, stretch: -0.05),
+            AnticStep(duration: 0.28, look: CGPoint(x: 0.9, y: 0.1), mood: .excited, glyph: .sparkles, tilt: 8),
+            AnticStep(duration: 0.28, look: CGPoint(x: 0, y: -0.85), mood: .excited, glyph: .sparkles),
+            AnticStep(duration: 0.28, look: CGPoint(x: -0.9, y: 0.1), mood: .excited, glyph: .sparkles, tilt: -8),
+            AnticStep(duration: 0.28, look: CGPoint(x: 0, y: 0.7), mood: .excited, glyph: .sparkles),
+            AnticStep(duration: 0.28, look: CGPoint(x: 0.9, y: 0.1), mood: .excited, glyph: .sparkles, tilt: 8),
+            AnticStep(duration: 0.28, look: CGPoint(x: 0, y: -0.85), mood: .excited, glyph: .sparkles),
+            AnticStep(duration: 1.0, look: user, mood: .happy, glyph: .sparkles, stretch: 0.06),
+        ]
+        case .serenade: [ // hums a love song, swaying, hearts drifting up
+            AnticStep(duration: 0.5, look: CGPoint(x: 0, y: -0.3), mood: .content),
+            AnticStep(duration: 1.2, look: CGPoint(x: -0.3, y: -0.35), mood: .love, glyph: .notes, tilt: -7),
+            AnticStep(duration: 1.2, look: CGPoint(x: 0.3, y: -0.35), mood: .love, glyph: .notes, tilt: 7),
+            AnticStep(duration: 1.0, look: user, mood: .love, glyph: .heart, tilt: -3),
+        ]
+        case .cheer: [   // three happy hops
+            AnticStep(duration: Motion.hopLength, look: CGPoint(x: 0, y: -0.3), mood: .happy, tilt: -6, hop: true),
+            AnticStep(duration: Motion.hopLength, look: CGPoint(x: 0, y: -0.3), mood: .excited, glyph: .sparkles, tilt: 6, hop: true),
+            AnticStep(duration: Motion.hopLength, look: CGPoint(x: 0, y: -0.35), mood: .happy, glyph: .sparkles, tilt: -6, hop: true),
+            AnticStep(duration: 0.7, look: user, mood: .content),
+        ]
+        case .swoon: [   // melts, hearts, a dreamy tilt
+            AnticStep(duration: 0.5, look: CGPoint(x: 0.2, y: -0.3), mood: .surprised),
+            AnticStep(duration: 1.6, look: CGPoint(x: 0.35, y: -0.2), mood: .love, glyph: .heart, tilt: 9, stretch: -0.08),
+            AnticStep(duration: 1.4, look: CGPoint(x: 0.3, y: -0.1), mood: .content, glyph: .heart, tilt: 6, stretch: -0.1),
+            AnticStep(duration: 0.6, look: user, mood: .happy),
+        ]
+        case .glow: [    // stands tall and proud, sparkling
+            AnticStep(duration: 0.5, look: CGPoint(x: 0, y: -0.2), mood: .content, stretch: 0.04),
+            AnticStep(duration: 1.8, look: CGPoint(x: 0.1, y: -0.55), mood: .happy, glyph: .sparkles, stretch: 0.14),
+            AnticStep(duration: 0.7, look: user, mood: .content, stretch: 0.04),
         ]
         }
     }

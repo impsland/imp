@@ -72,7 +72,7 @@ private struct ActiveBadge: View {
         .padding(.horizontal, 8).frame(height: 22)
         .background(Capsule().fill(Dungeon.card))
         .overlay(Capsule().strokeBorder(Dungeon.cardEdge))
-        .help(active ? "Out on your desktop: its shortcuts and tools work" : "At home in this window: its shortcuts wait until you let it out")
+        .help(active ? "Out on your desktop: its triggers and tools work" : "At home in this window: its triggers wait until you let it out")
     }
 }
 

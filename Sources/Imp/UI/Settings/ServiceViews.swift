@@ -2,9 +2,9 @@ import AppKit
 import ImpKit
 import SwiftUI
 
-/// One service: name, URL, key and a connection test, in two lines.
+/// One service: name, URL, key, the model its Imps think with, and whether new Imps use it.
 struct ServiceRow: View {
-    let model: AppModel
+    @Bindable var model: AppModel
     @Binding var service: Service
     let remove: () -> Void
     @State private var result: (ok: Bool, text: String)?
@@ -18,15 +18,24 @@ struct ServiceRow: View {
                     .help(service.isLocal ? "On this Mac" : "In the cloud")
                 TextField("Name", text: $service.name).impField().frame(width: 150)
                 TextField("https://…/v1", text: $service.baseURL).impField(mono: true).autocorrectionDisabled()
+                DefaultServiceButton(name: service.label, isDefault: model.prefs.ai.defaultService == service.id) {
+                    withAnimation(.snappy(duration: 0.2)) { model.prefs.ai.defaultService = service.id }
+                }
                 HoverIconButton(systemName: "trash", help: "Remove this service", tint: .red, action: remove)
             }
             HStack(spacing: 8) {
-                Color.clear.frame(width: 20, height: 1)
+                rowIcon("key.fill", help: "Its key")
                 KeyField(model: model, service: service)
                 TestButton(title: "Test", action: {
                     let count = try await model.assistant.client(for: service).models().count
                     return "Connected: \(count) models"
                 }) { ok, text in withAnimation { result = (ok, text) } }.fixedSize()
+            }
+            HStack(spacing: 8) {
+                rowIcon("cpu", help: "The model every Imp on \(service.label) thinks with, unless it picks its own")
+                ModelField(model: $service.model, placeholder: "Model every Imp on \(service.label) uses") {
+                    try await model.assistant.client(for: service).models()
+                }
             }
             if let result {
                 StatusText(text: result.text, symbol: result.ok ? "checkmark.circle.fill" : "xmark.octagon.fill",
@@ -35,6 +44,49 @@ struct ServiceRow: View {
                     .padding(.leading, 28)
                     .transition(.opacity)
             }
+        }
+    }
+}
+
+private func rowIcon(_ symbol: String, help: String) -> some View {
+    Image(systemName: symbol).font(.system(size: 11, weight: .semibold)).foregroundStyle(.tertiary)
+        .frame(width: 20).help(help)
+}
+
+/// A star: filled on the service new Imps think with; click another to make it the one.
+struct DefaultServiceButton: View {
+    let name: String
+    let isDefault: Bool
+    let pick: () -> Void
+    @Environment(\.impTint) private var tint
+
+    var body: some View {
+        HoverIconButton(systemName: isDefault ? "star.fill" : "star",
+                        help: isDefault ? "New Imps think with \(name)" : "Make new Imps think with \(name)",
+                        tint: isDefault ? tint : .secondary) {
+            if !isDefault { pick() }
+        }
+        .accessibilityAddTraits(isDefault ? .isSelected : [])
+    }
+}
+
+/// A model name: type it, or choose it from the service's list (`load`).
+struct ModelField: View {
+    @Binding var model: String
+    var placeholder = "Model name"
+    let load: @MainActor () async throws -> [String]
+    @State private var browsing = false
+
+    var body: some View {
+        HStack(spacing: 8) {
+            TextField(placeholder, text: $model).impField(mono: true).autocorrectionDisabled()
+            Button { browsing = true } label: { Label("Choose", systemImage: "list.bullet") }
+                .buttonStyle(.imp(.secondary, small: true))
+                .fixedSize()
+                .help("Pick from the models the service offers")
+                .popover(isPresented: $browsing, arrowEdge: .bottom) {
+                    ModelBrowser(load: load) { model = $0; browsing = false }
+                }
         }
     }
 }
@@ -55,8 +107,9 @@ struct KeyField: View {
             if !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { model.assistant.setKey($0, for: service.id) }
         })
     }
+    private var inKeychain: Bool { model.prefs.keysInKeychain }
     private var placeholder: String {
-        if saved { return "Saved in your Keychain" }
+        if saved { return inKeychain ? "Saved in your Keychain" : "Saved on this Mac" }
         return service.isLocal ? "Not needed on this Mac" : "Paste the key here"
     }
 
@@ -66,7 +119,11 @@ struct KeyField: View {
                 if show { TextField(placeholder, text: key) } else { SecureField(placeholder, text: key) }
             }
             .impField(mono: show)
-            .help("Kept in your login Keychain, never in plain files")
+            .help(inKeychain ? "Kept in your login Keychain" : "Kept in a private file on this Mac that only your account can read")
+            if !saved && model.assistant.hasKeychainKeyOnly(service.id) {
+                IssueTip(text: "An earlier version of Imp kept this key in your Keychain. Paste it here again, or switch on “Keep keys in the Keychain” in Settings › Brain keys.",
+                         symbol: "key.slash.fill")
+            }
             HoverIconButton(systemName: show ? "eye.slash" : "eye", help: show ? "Hide key" : "Show key") { show.toggle() }
             HoverIconButton(systemName: "doc.on.clipboard", help: "Paste the key from the clipboard", action: paste)
             if saved {
@@ -106,10 +163,14 @@ struct AddServiceSheet: View {
     @State private var name = ""
     @State private var baseURL = ""
     @State private var key = ""
+    @State private var modelName = ""
     @State private var check: (ok: Bool, text: String)?
     @State private var checking = false
 
-    private var draft: Service { Service(name: name.trimmingCharacters(in: .whitespaces), baseURL: baseURL.trimmingCharacters(in: .whitespaces)) }
+    private var draft: Service {
+        Service(name: name.trimmingCharacters(in: .whitespaces), baseURL: baseURL.trimmingCharacters(in: .whitespaces),
+                model: modelName.trimmingCharacters(in: .whitespaces))
+    }
     private var isValid: Bool {
         guard let url = URL(string: draft.baseURL), url.host != nil, let scheme = url.scheme?.lowercased() else { return false }
         return scheme == "http" || scheme == "https"
@@ -117,7 +178,7 @@ struct AddServiceSheet: View {
 
     var body: some View {
         SheetScaffold(icon: "server.rack", title: "Add a service",
-                      info: "Any OpenAI-compatible API: in the cloud, or a server on this Mac. The key is kept in your Mac's Keychain.") {
+                      info: "Any OpenAI-compatible API: in the cloud, or a server on this Mac. The key stays on this Mac. Its model is the one every Imp on it thinks with, unless an Imp picks its own on its Brain tab.") {
             VStack(alignment: .leading, spacing: 10) {
                 EvenGrid(minWidth: 96, spacing: 6) {
                     ForEach(ServiceHints.all, id: \.name) { hint in
@@ -138,6 +199,12 @@ struct AddServiceSheet: View {
                 }
                 FieldRow("Key") {
                     SecureField(draft.isLocal ? "Not needed on this Mac" : "Paste the key here", text: $key).impField()
+                }
+                FieldRow("Model") {
+                    ModelField(model: $modelName, placeholder: "Every Imp on it uses this") { [draft, key] in
+                        try await OpenAIClient(baseURL: draft.baseURL, apiKey: key).models()
+                    }
+                    .disabled(!isValid)
                 }
             }
             .padding(14)
@@ -178,10 +245,9 @@ struct AddServiceSheet: View {
     }
 }
 
-/// Searchable list of the service's models (`GET /models`).
+/// Searchable list of a service's models (`GET /models`, through `load`).
 struct ModelBrowser: View {
-    let model: AppModel
-    let service: Service
+    let load: @MainActor () async throws -> [String]
     let pick: (String) -> Void
     @State private var all: [String] = []
     @State private var query = ""
@@ -215,7 +281,7 @@ struct ModelBrowser: View {
         .padding(12)
         .frame(width: 380, height: 360)
         .task {
-            do { all = try await model.assistant.client(for: service).models() }
+            do { all = try await load() }
             catch { self.error = error.localizedDescription }
             loading = false
         }

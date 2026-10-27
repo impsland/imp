@@ -108,7 +108,7 @@ struct ChatView: View {
                 }
             }
             if !model.history.isEmpty {
-                ConfirmButton(icon: "square.and.pencil", confirm: "New chat?", help: "New chat (this one stays in the list)") {
+                ConfirmButton(icon: "plus.bubble", confirm: "New chat?", help: "New chat (this one stays in the list)") {
                     model.startNewChat()
                 }
                 deleteButton

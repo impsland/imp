@@ -39,7 +39,7 @@ final class Panels {
         impPanel.contentView = impHost
         bubblePanel.contentView = bubbleHost
 
-        impHost.onClick = { [weak self] alternate, time in self?.clicked(alternate: alternate, at: time) }
+        impHost.onClick = { [weak self] _, time in self?.clicked(at: time) }
         impHost.onHandling = { [weak self] handling in self?.handled(handling) }
         impHost.menuProvider = { [weak self] in
             guard let self else { return NSMenu() }
@@ -60,6 +60,8 @@ final class Panels {
         layout.onDrag = { [weak self] ended in self?.dragBubble(ended: ended) }
         layout.onResize = { [weak self] edges, ended in self?.resizeBubble(edges, ended: ended) }
         model.onScaleChange = { [weak self] in self?.applyScale() }
+        model.onTravel = { [weak self] origin, travel in await self?.travel(to: origin, travel) }
+        model.homeOrigin = { [weak self] in self?.home ?? .zero }
         model.onRestingChange = { [weak self] resting in self?.impHost.setBreathing(resting) }
         NotificationCenter.default.addObserver(forName: NSWindow.didMoveNotification, object: bubblePanel, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.bubbleMoved() }
@@ -77,28 +79,97 @@ final class Panels {
 
     // MARK: Clicks
     //
-    // A click talks, a double-click opens settings, four quick clicks are a poke: one thing per
-    // burst. See `ClickBurst` for why clicks wait for the burst to end.
+    // Clicks in a row are one burst, and each burst does one thing: whatever that many clicks are
+    // set to (Settings › Triggers). Four quick clicks are a poke. See `ClickBurst` for why a click
+    // waits for the burst to end (only when something answers to more than one click).
 
     private var clicks = ClickBurst(interval: ClickBurst.gap(system: NSEvent.doubleClickInterval))
     private var settling: Task<Void, Never>?
-    /// ⌥ was held on the burst's first click (⌥-click swaps talking and typing).
-    private var alternateBurst = false
 
-    private func clicked(alternate: Bool, at time: TimeInterval) {
+    private func clicked(at time: TimeInterval) {
         let interval = ClickBurst.gap(system: NSEvent.doubleClickInterval)   // the user may change it in System Settings
         if clicks.interval != interval { clicks = ClickBurst(interval: interval) }
         if clicks.click(at: time) == .flurry { model.flurry() }
-        if clicks.count == 1 { alternateBurst = alternate }
         settling?.cancel()
+        // Nothing answers to a double-click: no reason to wait for one.
+        if clicks.count == 1 && !model.waitsForMoreClicks {
+            model.clicked(1)
+            return
+        }
         settling = Task { [weak self] in
             try? await Task.sleep(for: .seconds(interval))
             guard let self, !Task.isCancelled else { return }
-            switch self.clicks.settle(at: ProcessInfo.processInfo.systemUptime) {
-            case .single: self.model.click(alternate: self.alternateBurst)
-            case .double: self.model.doubleClicked()
-            case .flurry, nil: break
+            if let n = self.clicks.finish(at: ProcessInfo.processInfo.systemUptime), n > 1 || self.model.waitsForMoreClicks {
+                self.model.clicked(n)
             }
+        }
+    }
+
+    // MARK: Travelling
+
+    /// Where the Imp lives: where you put it, else its seat along the bottom of the screen.
+    var home: CGPoint {
+        let side = impPanel.frame.width
+        let screen = NSScreen.main ?? NSScreen.screens.first
+        let visible = screen?.visibleFrame ?? CGRect(x: 0, y: 0, width: 1440, height: 900)
+        // Newcomers line up to the left of the troupe, along the bottom of the screen.
+        let seat = CGFloat(model.app.prefs.imps.firstIndex { $0.id == model.id } ?? 0)
+        let seatHome = CGPoint(x: max(visible.minX + 8, visible.maxX - side - 28 - seat * (Self.baseSize + 16)), y: visible.minY + 20)
+        guard let saved = model.profile.origin else { return seatHome }
+        // If the saved spot is off-screen now (monitor unplugged), the seat it is.
+        let rect = CGRect(origin: saved, size: CGSize(width: side, height: side))
+        return NSScreen.screens.contains(where: { $0.visibleFrame.intersects(rect.insetBy(dx: side / 3, dy: side / 3)) }) ? saved : seatHome
+    }
+
+    private var travelTimer: Timer?
+    /// Whoever waits for the Imp to arrive (stopping half-way still lets them go on).
+    private var arriving: CheckedContinuation<Void, Never>?
+
+    /// Stops a journey where it is (a new one starts, or you grab the Imp).
+    private func stopTravel() {
+        travelTimer?.invalidate()
+        travelTimer = nil
+        if impTarget != nil, arriving != nil { impTarget = nil }
+        model.carryLean = 0
+        arriving?.resume()
+        arriving = nil
+    }
+
+    /// Goes to `origin` (kept on screen) the way `travel` says, the bubble following along. Doesn't
+    /// move its home: a drag does that. Returns when it has arrived.
+    func travel(to origin: CGPoint, _ travel: Travel) async {
+        let side = impPanel.frame.width
+        let screen = (NSScreen.screens.first { $0.frame.contains(CGPoint(x: origin.x + side / 2, y: origin.y + side / 2)) }
+                      ?? impPanel.screen ?? NSScreen.main)?.frame ?? .infinite
+        let end = CGPoint(x: min(max(origin.x, screen.minX), screen.maxX - side), y: min(max(origin.y, screen.minY), screen.maxY - side))
+        let start = impPanel.frame.origin
+        let distance = hypot(end.x - start.x, end.y - start.y)
+        guard distance > 1 else { return }
+        stopTravel()
+        restOrigin = nil
+        impTarget = end
+        let path = TravelPath(from: start, to: end, travel, size: side)
+        model.react(travel == .slide ? .excited : .surprised, for: 0.25)
+        let began = CACurrentMediaTime()
+        await withCheckedContinuation { (done: CheckedContinuation<Void, Never>) in
+            arriving = done
+            let timer = Timer(timeInterval: 1 / 60, repeats: true) { [weak self] t in
+                nonisolated(unsafe) let t = t                   // fires on the main run loop
+                MainActor.assumeIsolated {
+                    guard let self, self.travelTimer === t else { return t.invalidate() }
+                    let k = min(1, (CACurrentMediaTime() - began) / path.duration)
+                    let point = path.at(k)
+                    self.impPanel.setFrameOrigin(point.origin)
+                    self.model.carryLean = point.lean
+                    guard k >= 1 else { return }
+                    self.impTarget = nil
+                    self.stopTravel()
+                    self.impMoved()
+                    self.model.react(.happy, for: 0.6)              // landed
+                }
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            travelTimer = timer
         }
     }
 
@@ -111,6 +182,7 @@ final class Panels {
         let reactions = model.app.reactions
         switch handling {
         case .pressed:
+            stopTravel()                    // caught mid-air
             reactions.pressed(model)
         case .held:
             reactions.handle(.hold, by: model, held: true)
@@ -152,6 +224,7 @@ final class Panels {
 
     /// For good: this Imp left the troupe.
     func close() {
+        stopTravel()
         hide()
         NotificationCenter.default.removeObserver(self)
         model.onBubbleChange = nil
@@ -187,19 +260,7 @@ final class Panels {
     }
 
     private func placeImp() {
-        let side = impPanel.frame.width
-        let screen = NSScreen.main ?? NSScreen.screens.first
-        let visible = screen?.visibleFrame ?? CGRect(x: 0, y: 0, width: 1440, height: 900)
-        // Newcomers line up to the left of the troupe, along the bottom of the screen.
-        let seat = CGFloat(model.app.prefs.imps.firstIndex { $0.id == model.id } ?? 0)
-        let home = CGPoint(x: max(visible.minX + 8, visible.maxX - side - 28 - seat * (Self.baseSize + 16)), y: visible.minY + 20)
-        var origin = model.profile.origin ?? home
-        // If the saved spot is off-screen now (monitor unplugged), come back home.
-        let rect = CGRect(origin: origin, size: CGSize(width: side, height: side))
-        if !NSScreen.screens.contains(where: { $0.visibleFrame.intersects(rect.insetBy(dx: side / 3, dy: side / 3)) }) {
-            origin = home
-        }
-        impPanel.setFrameOrigin(origin)
+        impPanel.setFrameOrigin(home)
         impMoved()
     }
 
@@ -286,8 +347,10 @@ final class Panels {
                 size = measure(limit: limit)
             } else if text > min(layout.expanded ? Self.maxReading : Self.collapsedText, most) {
                 let cap = min(layout.expanded ? Self.maxReading : Self.collapsedText, most)
-                limit = max(40, cap)
-                size = measure(limit: limit)
+                // Collapsed, the cut keeps clear of pictures (or shows everything if little is left).
+                limit = layout.expanded ? max(40, cap)
+                    : ReadAllCut.limit(textHeight: text, spans: layout.mediaSpans, cap: max(40, cap), most: most).map { max(40, $0) }
+                size = limit == nil ? natural : measure(limit: limit)
             } else if layout.expanded {
                 layout.expanded = false              // it all fits now: no need for reading mode
                 size = measure(limit: nil)
@@ -416,7 +479,14 @@ final class Panels {
         let probe = layout.copy()
         probe.textLimit = limit
         measurer.rootView = BubbleView(model: model, layout: probe, measuring: true)
-        return measurer.fittingSize
+        let size = measurer.fittingSize
+        if limit == nil {
+            // Preferences only arrive once it is laid out: that's where the pictures sit, for the cut.
+            measurer.frame.size = size
+            measurer.layoutSubtreeIfNeeded()
+            layout.mediaSpans = probe.mediaSpans
+        }
+        return size
     }
 
     /// Typing (in the bubble, or in the chat) needs keyboard focus. Give it back to the app you

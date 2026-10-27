@@ -110,6 +110,8 @@ final class HomeRouter {
     }
     /// Set to start renaming the selected Imp on the stage.
     var renaming = false
+    /// A borrowed tool whose form should open (an Imp asked the user to fill in its keys).
+    var serverToEdit: UUID?
 
     func select(_ imp: UUID) { selection = imp }
 
@@ -133,7 +135,7 @@ enum ImpTab: String, CaseIterable, Identifiable {
         case .me: "Looks"
         case .brain: "Brain"
         case .tools: "Tools"
-        case .shortcuts: "Shortcuts"
+        case .shortcuts: "Triggers"
         }
     }
 
@@ -142,7 +144,7 @@ enum ImpTab: String, CaseIterable, Identifiable {
         case .me: "paintpalette.fill"
         case .brain: "brain.head.profile"
         case .tools: "wrench.and.screwdriver.fill"
-        case .shortcuts: "keyboard.fill"
+        case .shortcuts: "bolt.fill"
         }
     }
 }

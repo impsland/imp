@@ -68,7 +68,7 @@ private struct CurrentChat: View {
                     .buttonStyle(.imp(.secondary, small: true))
                     .disabled(!imp.canRecap)
                 Button { confirm("new") { imp.newChat() } } label: {
-                    Label(asking == "new" ? "Start new?" : "New Chat", systemImage: "square.and.pencil")
+                    Label(asking == "new" ? "Start new?" : "New Chat", systemImage: "plus.bubble")
                 }
                     .buttonStyle(.imp(.secondary, small: true))
                     .disabled(imp.history.isEmpty)

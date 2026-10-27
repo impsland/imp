@@ -95,12 +95,20 @@ struct Motion {
         return m
     }
 
-    /// A mix of two motions: `k` 0 is all `a`, 1 is all `b`.
-    static func mix(_ a: Motion, _ b: Motion, _ k: Double) -> Motion {
-        func l(_ x: Double, _ y: Double) -> Double { x + (y - x) * k }
-        return Motion(t: b.t, blink: l(a.blink, b.blink), bob: l(a.bob, b.bob), squash: l(a.squash, b.squash),
-                      shakeX: l(a.shakeX, b.shakeX), tilt: l(a.tilt, b.tilt), hornL: l(a.hornL, b.hornL),
-                      hornR: l(a.hornR, b.hornR), ripple: l(a.ripple, b.ripple))
+    /// A weighted mix of motions (weights sum to 1), at time `t`.
+    static func blend(_ parts: [(motion: Motion, weight: Double)], at t: TimeInterval) -> Motion {
+        var m = Motion(t: t)
+        for (p, w) in parts {
+            m.blink += p.blink * w
+            m.bob += p.bob * w
+            m.squash += p.squash * w
+            m.shakeX += p.shakeX * w
+            m.tilt += p.tilt * w
+            m.hornL += p.hornL * w
+            m.hornR += p.hornR * w
+            m.ripple += p.ripple * w
+        }
+        return m
     }
 
     /// The slow resting breath: (bob, squash). Shared with the Core Animation version of it.
@@ -139,6 +147,10 @@ struct Motion {
     }
 
     static let hopLength = 0.75
+
+    /// Whether a hop may start now, `since` seconds after the last one began. One still in the
+    /// air isn't restarted: that would teleport the body from mid-jump back to the ground.
+    static func canHop(since: Double) -> Bool { since >= hopLength }
 
     /// Smoothstep: 0 → 1 with zero slope at both ends.
     static func smooth(_ x: Double) -> Double {

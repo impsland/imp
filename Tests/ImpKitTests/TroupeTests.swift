@@ -8,8 +8,10 @@ import Testing
         #expect(p.imps.count == 1)
         #expect(p.imps[0].id == ImpProfile.defaultID && p.imps[0].hue == 0 && p.imps[0].brain == nil)
         #expect(!p.imps[0].isActive)
-        // It chats and has a shell, and nothing else: no shortcuts, no borrowed tools.
-        #expect(p.shortcuts.isEmpty && p.imps[0].servers.isEmpty)
+        // It chats and has a shell, and nothing else: no borrowed tools, and no triggers but the
+        // two clicks every Imp shares (one types, two open settings).
+        #expect(p.shortcuts.map(\.trigger) == [.clicks(1), .clicks(2)] && p.shortcuts.allSatisfy { $0.performer == nil })
+        #expect(p.imps[0].servers.isEmpty)
         #expect(p.imps[0].usesShell)
     }
 

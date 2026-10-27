@@ -34,6 +34,11 @@ struct BubbleCard: View {
     var body: some View {
         VStack(spacing: 5) {
             card
+                // A double-click on a finished answer replies (like the reply button). Not while
+                // reading in full: there a double-click selects a word.
+                .simultaneousGesture(TapGesture(count: 2).onEnded {
+                    if bubble.phase == .result && !bubble.isStreaming && !layout.expanded && !measuring { model.startTyping() }
+                })
                 .overlay {
                     if layout.expanded && bubble.phase == .result && !measuring {
                         ResizeHandles { edge, ended in layout.onResize?(edge, ended) }

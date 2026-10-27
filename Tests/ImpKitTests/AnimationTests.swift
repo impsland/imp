@@ -76,6 +76,106 @@ import Testing
     }
 }
 
+@Suite struct FavoriteAnimationTests {
+    @Test func theyUnlockWithTheFavouriteColourAndPlayWhenQuiet() {
+        let p = ImpPreferences()
+        let special = Reaction.allCases.filter(\.unlocksWithFavoriteColor)
+        #expect(special.count == 5 && special.allSatisfy { $0.family == .favorite })
+        #expect(Reaction.allCases.filter { $0.family == .favorite } == special)
+        #expect(!Reaction.hum.unlocksWithFavoriteColor && !Reaction.delight.unlocksWithFavoriteColor)
+        for r in special {
+            #expect(p.rule(for: r).triggers == [.idle], "\(r)")
+            #expect(!r.title.isEmpty && !r.summary.isEmpty && !r.symbol.isEmpty)
+        }
+        #expect(p.animation(for: .favoriteColor) == .delight)
+    }
+}
+
+@Suite struct CursorWatchTests {
+    @Test func theCursorIsWatchedOnlyWhenSomeAnimationNeedsIt() {
+        var p = ImpPreferences()
+        #expect(p.watchesCursor, "stroking, tickling and the rest are on out of the box")
+        p.mouseGames = false
+        #expect(!p.watchesCursor)
+        p.mouseGames = true
+        for r in Reaction.allCases where p.rule(for: r).triggers.contains(where: \.watchesCursor) {
+            p.setEnabled(false, for: r)
+        }
+        #expect(!p.watchesCursor, "everything that watches the cursor is off")
+        p.setEnabled(true, for: .pet)
+        #expect(p.watchesCursor)
+        p.setTrigger(.stroke, false, for: .pet)
+        #expect(!p.watchesCursor, "pet no longer has a trigger that needs the cursor")
+        p.setTrigger(.swish, true, for: .jump)
+        #expect(p.watchesCursor)
+    }
+
+    @Test func clicksAndCarryingDontNeedIt() {
+        var p = ImpPreferences()
+        p.animations = [:]
+        for r in Reaction.allCases { p.setTrigger(.poke, false, for: r); p.setEnabled(false, for: r) }
+        p.setEnabled(true, for: .angry)
+        p.setTrigger(.poke, true, for: .angry)
+        p.setTrigger(.pickUp, true, for: .angry)
+        #expect(!p.watchesCursor)
+    }
+}
+
+@Suite struct BlendWeightsTests {
+    @Test func aSteadyStateIsSettled() {
+        var w = BlendWeights<String>(duration: 0.4)
+        w.advance(to: "a", at: 0)
+        #expect(w.isSettled && w.mix.count == 1 && w.mix[0].key == "a" && w.mix[0].weight == 1)
+    }
+
+    @Test func aChangeFadesOverTheDuration() {
+        var w = BlendWeights<String>(duration: 0.4)
+        w.advance(to: "a", at: 0)
+        for frame in 1...12 { w.advance(to: "b", at: Double(frame) / 60) }      // 0.2 s: half way
+        #expect(!w.isSettled)
+        let mid = Dictionary(uniqueKeysWithValues: w.mix.map { ($0.key, $0.weight) })
+        #expect(abs((mid["a"] ?? 0) - 0.5) < 0.05 && abs((mid["b"] ?? 0) - 0.5) < 0.05)
+        for frame in 13...30 { w.advance(to: "b", at: Double(frame) / 60) }
+        #expect(w.isSettled && w.mix.map(\.key) == ["b"])
+    }
+
+    /// Changing again half way through a fade must not make any state's share jump.
+    @Test func changingMidFadeStaysContinuous() {
+        var w = BlendWeights<Int>(duration: 0.35)
+        var t = 0.0
+        var worst = 0.0
+        w.advance(to: 0, at: t)
+        var previous = Dictionary(uniqueKeysWithValues: w.mix.map { ($0.key, $0.weight) })
+        // Moods flip every 0.2 s (shorter than the fade), through four of them.
+        while t < 3 {
+            t += 1.0 / 60
+            w.advance(to: Int(t / 0.2) % 4, at: t)
+            let now = Dictionary(uniqueKeysWithValues: w.mix.map { ($0.key, $0.weight) })
+            let sum = now.values.reduce(0, +)
+            #expect(abs(sum - 1) < 1e-9)
+            for k in Set(now.keys).union(previous.keys) { worst = max(worst, abs((now[k] ?? 0) - (previous[k] ?? 0))) }
+            previous = now
+        }
+        #expect(worst < 0.2, "largest single-frame change in any share: \(worst)")
+    }
+
+    @Test func aPausedClockResumesGently() {
+        var w = BlendWeights<String>(duration: 0.35)
+        w.advance(to: "a", at: 0)
+        w.advance(to: "b", at: 1)                       // drawing paused for a second
+        #expect(!w.isSettled, "the fade starts now, it doesn't finish in one go")
+        let share = w.mix.first { $0.key == "b" }?.weight ?? 0
+        #expect(share < 0.1)
+    }
+
+    @Test func timeRunningBackwardsRestarts() {
+        var w = BlendWeights<String>(duration: 0.35)
+        w.advance(to: "a", at: 5)
+        w.advance(to: "b", at: 1)
+        #expect(w.isSettled && w.mix.map(\.key) == ["b"])
+    }
+}
+
 @Suite struct FavoriteColourTests {
     @Test func closeShadesCountAndTheWheelWraps() {
         var p = ImpProfile.imp

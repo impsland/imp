@@ -31,7 +31,9 @@ struct GeneralSettingsView: View {
                 switch router.generalTab {
                 case .brains: KeysPane(model: model)
                 case .manners: MannersPane(model: model)
-                case .animations: AnimationsPane(model: model, hue: router.selection.flatMap(model.profile)?.hue ?? 0)
+                case .animations:
+                    let imp = router.selection.flatMap(model.profile)
+                    AnimationsPane(model: model, hue: imp?.hue ?? 0, favorite: imp.map { $0.isFavorite($0.hue) } ?? false)
                 case .hearing: HearingPane(model: model)
                 case .permissions: PermissionsPage(model: model)
                 }
@@ -49,7 +51,7 @@ private struct KeysPane: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Metrics.gap) {
             Card("Brain services", icon: "key.fill",
-                 info: "Any OpenAI-compatible API. Each Imp picks one on its own Brain tab. Keys live here once, in your Keychain, shared by every Imp using that service.") {
+                 info: "Any OpenAI-compatible API, with its key and the model its Imps think with: set once here, shared by every Imp on it. The star marks the service new Imps use. On its Brain tab an Imp can pick another service or a model of its own. Keys never leave this Mac except to the service itself.") {
                 Button { adding = true } label: { Label("Add", systemImage: "plus") }
                     .buttonStyle(.imp(.secondary, small: true))
                     .help("Add a service")
@@ -65,6 +67,13 @@ private struct KeysPane: View {
                         if service.id != model.prefs.ai.services.last?.id { CardDivider() }
                     }
                 }
+            }
+            Card("Keep keys in the Keychain", icon: "lock.fill",
+                 info: "Off (the usual): in a private file on this Mac that only your account can read, so Imp never needs your password. On: in the macOS Keychain, encrypted, but macOS may ask for your password when Imp reads a key (for example after an update). Switching moves the saved keys over.") {
+                Toggle("", isOn: $model.prefs.keysInKeychain).labelsHidden().toggleStyle(.switch).controlSize(.small)
+                    .help(model.prefs.keysInKeychain ? "Keys are in the Keychain" : "Keep keys in the Keychain")
+            } content: {
+                EmptyView()
             }
         }
         .sheet(isPresented: $adding) { AddServiceSheet(model: model) { _ in } }

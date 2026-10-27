@@ -34,14 +34,15 @@ final class ImpMenu: NSObject, NSMenuDelegate {
             .toolTip = "Everything you and \(name) said, with the tools it used."
         menu.addItem(.separator())
 
-        // Its shortcuts, to run right now.
-        let own = app.prefs.shortcuts(of: imp.id).filter(\.isEnabled)
+        // Its triggers that ask it something, to run right now (clicks are right here already).
+        let own = app.prefs.shortcuts(of: imp.id).filter { $0.isEnabled && $0.command == .ask && $0.trigger.kind != .clicks }
         if !own.isEmpty {
-            menu.addItem(.sectionHeader(title: "Shortcuts"))
+            menu.addItem(.sectionHeader(title: "Triggers"))
             for action in own {
-                let mi = add(menu, action.name, symbol: action.symbol, action: #selector(run(_:)))
+                let mi = add(menu, action.name, symbol: action.trigger.kind == .keys ? action.symbol : action.trigger.kind.symbol,
+                             action: #selector(run(_:)))
                 mi.representedObject = action.id
-                if let key = action.hotkey, let equivalent = key.keyEquivalent {
+                if let key = action.keys, let equivalent = key.keyEquivalent {
                     mi.keyEquivalent = equivalent
                     mi.keyEquivalentModifierMask = key.modifierFlags
                 }
@@ -140,6 +141,6 @@ final class ImpMenu: NSObject, NSMenuDelegate {
     private func edit() { HomeWindow.shared.show(app, settingsFor: imp.id) }
     @objc private func run(_ sender: NSMenuItem) {
         guard let id = sender.representedObject as? UUID, let action = app.prefs.shortcuts.first(where: { $0.id == id }) else { return }
-        app.trigger(action)
+        app.trigger(action, trying: true)
     }
 }

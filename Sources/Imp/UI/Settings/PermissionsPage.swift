@@ -8,7 +8,7 @@ struct PermissionsPage: View {
 
     var body: some View {
         Card("Permissions", icon: "lock.shield.fill",
-             info: "A few switches in System Settings. The Imps ask for as little as they can; shortcuts and the clipboard need no permission.") {
+             info: "A few switches in System Settings. The Imps ask for as little as they can; triggers and the clipboard need no permission.") {
             VStack(spacing: 10) {
                 ForEach(Permission.allCases) { p in
                     let granted = status.isGranted(p)

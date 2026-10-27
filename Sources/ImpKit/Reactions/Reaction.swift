@@ -20,8 +20,13 @@ public enum Reaction: String, Codable, CaseIterable, Sendable, Identifiable {
     // Gestures (body language). None has a trigger out of the box. Give them one in Settings.
     case yes, no, maybe, dontKnow, areYouSure, notSure, exactly, nope, hmm, aha
     case tada, sorry, oops, impressed, haha, loveIt, sadNews, careful, welcome, confused
+    // Only while it wears its favourite colour.
+    case twirl, serenade, cheer, swoon, glow
 
     public var id: String { rawValue }
+
+    /// Only plays while the Imp wears its favourite colour (see `ImpProfile.isFavorite`).
+    public var unlocksWithFavoriteColor: Bool { family == .favorite }
 
     public var title: String {
         switch self {
@@ -89,6 +94,11 @@ public enum Reaction: String, Codable, CaseIterable, Sendable, Identifiable {
         case .careful: "Careful!"
         case .welcome: "You're welcome"
         case .confused: "Confused"
+        case .twirl: "Twirl"
+        case .serenade: "Serenade"
+        case .cheer: "Cheer"
+        case .swoon: "Swoon"
+        case .glow: "Glow"
         }
     }
 
@@ -114,7 +124,7 @@ public enum Reaction: String, Codable, CaseIterable, Sendable, Identifiable {
         case .cuddle: "Squishes into your hold, blushing, while you keep pressing."
         case .wheee: "Wide-eyed and sparkly while you carry it, swinging as it goes."
         case .woozy: "Spiral eyes, then shakes itself off."
-        case .plop: "Lands with a squish, then looks around its new spot."
+        case .plop: "Looks left and right around its new spot."
         case .flinch: "Ducks and shivers, horns flat, a bead of sweat."
         case .curious: "Leans toward the cursor, one eye wider, wondering."
         case .shy: "Blushes and looks away from your stare."
@@ -159,6 +169,11 @@ public enum Reaction: String, Codable, CaseIterable, Sendable, Identifiable {
         case .careful: "Startles and warns you."
         case .welcome: "A little bow and a smile."
         case .confused: "Tilts its head one way, then the other, puzzled."
+        case .twirl: "Spins its gaze all the way round, sparkling."
+        case .serenade: "Hums a love song, hearts drifting up."
+        case .cheer: "Three happy hops in a row."
+        case .swoon: "Melts into a puddle of hearts and a dreamy tilt."
+        case .glow: "Stretches tall and proud, sparkling from head to horn."
         }
     }
 
@@ -218,6 +233,11 @@ public enum Reaction: String, Codable, CaseIterable, Sendable, Identifiable {
         case .loveIt: "heart.circle.fill"
         case .careful: "exclamationmark.octagon.fill"
         case .welcome: "hands.sparkles.fill"
+        case .twirl: "arrow.triangle.2.circlepath.circle.fill"
+        case .serenade: "music.quarternote.3"
+        case .cheer: "party.popper"
+        case .swoon: "heart.circle"
+        case .glow: "sparkle"
         }
     }
 }

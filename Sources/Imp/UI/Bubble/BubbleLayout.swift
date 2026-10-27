@@ -1,4 +1,5 @@
 import AppKit
+import ImpKit
 import SwiftUI
 
 /// How the bubble is laid out right now (decided by the panel controller, which measures it).
@@ -21,6 +22,8 @@ final class BubbleLayout {
     var openSteps: Set<UUID> = []
     /// History pages shown (see `ChatView.page`): more as you ask for earlier turns.
     var chatPages = 1
+    /// Where pictures and videos sit in the reply text (reported by a measuring probe).
+    @ObservationIgnored var mediaSpans: [ReadAllCut.Span] = []
     /// The user is dragging the card's edges or a corner (`true` when they let go).
     @ObservationIgnored var onResize: ((_ edges: Edge.Set, _ ended: Bool) -> Void)?
     /// Where the ✕ goes, so it's always on screen (decided after the bubble is placed).
@@ -39,6 +42,7 @@ final class BubbleLayout {
         c.tailX = tailX; c.textLimit = textLimit; c.expanded = expanded; c.detached = detached; c.closeCorner = closeCorner
         c.customWidth = customWidth; c.customTextHeight = customTextHeight
         c.showSteps = showSteps; c.openSteps = openSteps; c.chatPages = chatPages
+        c.mediaSpans = mediaSpans
         return c
     }
 }

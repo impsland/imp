@@ -22,6 +22,12 @@ final class AppModel {
     private(set) var isHidden = false
 
     @ObservationIgnored let dictation = Dictation()
+    /// What Imp notices about the Mac: sets off triggers, and tells the model how the Mac is.
+    @ObservationIgnored let senses = Senses()
+    /// When each trigger last went off on its own (they rest a minute between goes).
+    @ObservationIgnored private var lastFired: [UUID: Date] = [:]
+    /// The last sustained processor load (busy triggers go off when it crosses their line).
+    @ObservationIgnored private var lastLoad = 0
     /// Who has the microphone (one Imp at a time).
     @ObservationIgnored private weak var listener: ImpModel?
     @ObservationIgnored private(set) lazy var reactions = Reactions(app: self)
@@ -38,7 +44,10 @@ final class AppModel {
     init(persist: Bool = true) {
         store = persist ? PreferencesStore() : nil
         assistant = Assistant(usesKeychain: persist)
-        prefs = store?.load() ?? ImpPreferences()
+        var loaded = store?.load() ?? ImpPreferences()
+        loaded.upgrade()
+        prefs = loaded
+        store?.save(loaded)
         syncTroupe()
         dictation.onPartial = { [weak self] text in self?.listener?.updateListening(text) }
         dictation.onLevel = { [weak self] level in self?.listener?.micLevel = level }
@@ -60,20 +69,48 @@ final class AppModel {
     func start() {
         started = true
         Self.applyAppearance(prefs.appearance)
-        assistant.configure(ai: prefs.ai, servers: prefs.liveServers)
+        assistant.configure(ai: prefs.ai, servers: prefs.liveServers, keychain: prefs.keysInKeychain)
         reactions.apply(prefs)
         HotkeyCenter.shared.install()
         registerHotkeys()
         imps.forEach { $0.start() }
         if let focused, !isReady { focused.greetNewcomer() }
+        senses.onEvent = { [weak self] event in self?.fire(event) }
+        senses.start()
+        BrowserBridge.shared.onPage = { [weak self] page in self?.fire(.page(url: page.url, title: page.title)) }
+        BrowserBridge.shared.start()
+        // "Imp starts" once everyone's on screen.
+        Task { [weak self] in
+            try? await Task.sleep(for: .seconds(2))
+            self?.fire(.start)
+        }
     }
+
+    /// Something happened on the Mac: every trigger it sets off goes to its Imp, if that Imp is free
+    /// (never in the middle of work, or while you're typing or talking to it). Each one rests a
+    /// minute before it may go off again, and nothing goes off while the Imps are hidden.
+    func fire(_ event: MacEvent) {
+        defer { if case .busy(let load) = event { lastLoad = load } }
+        guard !isHidden else { return }
+        let state = senses.state
+        for s in prefs.liveShortcuts where s.fires(on: event, in: state) {
+            if case .busy = event, lastLoad >= s.trigger.percent { continue }     // still over the line: not news
+            guard Date().timeIntervalSince(lastFired[s.id] ?? .distantPast) >= Self.rest,
+                  let imp = performer(for: s), imp.isAvailable else { continue }
+            lastFired[s.id] = Date()
+            imp.perform(s, happened: event.description)
+        }
+    }
+
+    /// Seconds a trigger rests after going off on its own.
+    static let rest: TimeInterval = 60
 
     private func apply(_ p: ImpPreferences, previous old: ImpPreferences) {
         store?.save(p)
-        if p.liveShortcuts.map(\.hotkey) != old.liveShortcuts.map(\.hotkey) { registerHotkeys() }
+        if p.liveShortcuts.map(\.keys) != old.liveShortcuts.map(\.keys) { registerHotkeys() }
         if p.appearance != old.appearance { Self.applyAppearance(p.appearance) }
-        if p.mouseGames != old.mouseGames { reactions.apply(p) }
-        assistant.configure(ai: p.ai, servers: p.liveServers)
+        if p.watchesCursor != old.watchesCursor { reactions.apply(p) }
+        assistant.configure(ai: p.ai, servers: p.liveServers, keychain: p.keysInKeychain)
         if p.imps != old.imps {
             noticeFavoriteColors(p.imps, before: old.imps)
             syncTroupe()
@@ -94,7 +131,7 @@ final class AppModel {
     }
 
     func registerHotkeys() {
-        failedHotkeys = HotkeyCenter.shared.register(prefs.liveShortcuts.compactMap(\.hotkey))
+        failedHotkeys = HotkeyCenter.shared.register(prefs.liveShortcuts.compactMap(\.keys))
     }
 
     /// Hides every Imp on the desktop, or brings them back.
@@ -183,7 +220,7 @@ final class AppModel {
         return profile.id
     }
 
-    /// Removes a service everywhere, its key in the Keychain included.
+    /// Removes a service everywhere, its saved key included.
     func removeService(_ id: UUID) {
         prefs.removeService(id)
         assistant.setKey("", for: id)
@@ -215,15 +252,18 @@ final class AppModel {
     func handle(_ hotkey: Hotkey) {
         // Pressing a shortcut while listening means "I'm done talking".
         if dictation.isRunning { dictation.finish(); return }
-        guard let action = prefs.liveShortcuts.first(where: { $0.hotkey == hotkey }) else { return }
+        guard let action = prefs.liveShortcuts.first(where: { $0.keys == hotkey }) else { return }
         trigger(action)
     }
 
-    /// Runs a shortcut now (keys, menu, URL command), on the clipboard or on `text`.
-    func trigger(_ action: Shortcut, text: String? = nil) {
+    /// Runs a shortcut now (keys, menu, URL command, trying it in Settings), on the clipboard or on
+    /// `text`. Trying a trigger that the Mac sets off says so to the model, so it plays along.
+    func trigger(_ action: Shortcut, text: String? = nil, trying: Bool = false) {
         guard let imp = performer(for: action) else { return HomeWindow.shared.show(self) }
         setHidden(false)                                   // called on: out from under the sheet
-        imp.run(action, clip: text.map(Clip.text))
+        let happened = trying && action.trigger.kind.isAmbient
+            ? "(A test run from Settings: imagine it just happened: \(action.triggerSummary).)" : nil
+        imp.perform(action, clip: text.map(Clip.text), happened: happened)
     }
 
     func run(named name: String, text: String? = nil) {

@@ -40,6 +40,14 @@ public struct ClickBurst: Sendable {
         return count == Self.flurry ? .flurry : nil
     }
 
+    /// Call `interval` after the last click: how many clicks the finished burst had (nil while it
+    /// may still go on, or for a flurry, which already played).
+    public mutating func finish(at t: TimeInterval) -> Int? {
+        guard count > 0, t - last >= interval - 0.001 else { return nil }
+        defer { count = 0 }
+        return count >= Self.flurry ? nil : count
+    }
+
     /// Call `interval` after the last click: what the finished burst was (one click, two, or
     /// nothing: three clicks, or a flurry that already played). Nil while it may still go on.
     public mutating func settle(at t: TimeInterval) -> Outcome? {

@@ -22,6 +22,29 @@ public struct Hotkey: Codable, Hashable, Sendable {
         modifiers & (Self.command | Self.option | Self.control) != 0 || KeyNames.isFunctionKey(keyCode)
     }
 
+    /// Keys written out: "ctrl+cmd+T", "⌃⌘T", "Control-Option-Space", "F18". Nil when a key or a
+    /// modifier isn't recognised (or there's no key).
+    public init?(parsing text: String) {
+        var rest = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        var mods: UInt32 = 0
+        let glyphs: [(Character, UInt32)] = [("⌃", Self.control), ("⌥", Self.option), ("⇧", Self.shift), ("⌘", Self.command)]
+        while let first = rest.first, let m = glyphs.first(where: { $0.0 == first }) {
+            mods |= m.1
+            rest.removeFirst()
+        }
+        let words = rest.split(whereSeparator: { $0 == "+" || $0 == "-" || $0 == " " }).map(String.init)
+        guard let keyName = words.last ?? (rest.isEmpty ? nil : rest) else { return nil }
+        let names: [String: UInt32] = ["ctrl": Self.control, "control": Self.control, "ctl": Self.control,
+                                       "opt": Self.option, "option": Self.option, "alt": Self.option,
+                                       "shift": Self.shift, "cmd": Self.command, "command": Self.command, "meta": Self.command]
+        for w in words.dropLast() {
+            guard let m = names[w.lowercased()] else { return nil }
+            mods |= m
+        }
+        guard let code = KeyNames.code(for: keyName) else { return nil }
+        self.init(keyCode: code, modifiers: mods)
+    }
+
     public var displayString: String {
         var s = ""
         if modifiers & Self.control != 0 { s += "⌃" }
@@ -61,6 +84,17 @@ public enum KeyNames {
     ]
 
     public static func isFunctionKey(_ code: UInt32) -> Bool { functionKeys[Int(code)] != nil }
+
+    /// The key code for a key's name ("T", "f18", "space", "return", "←"), ignoring case.
+    public static func code(for name: String) -> UInt32? {
+        let words: [String: Int] = ["space": kVK_Space, "return": kVK_Return, "enter": kVK_Return, "tab": kVK_Tab,
+                                    "escape": kVK_Escape, "esc": kVK_Escape, "delete": kVK_Delete, "backspace": kVK_Delete,
+                                    "left": kVK_LeftArrow, "right": kVK_RightArrow, "up": kVK_UpArrow, "down": kVK_DownArrow,
+                                    "home": kVK_Home, "end": kVK_End, "pageup": kVK_PageUp, "pagedown": kVK_PageDown]
+        if let c = words[name.lowercased()] { return UInt32(c) }
+        let all = functionKeys.merging(special) { a, _ in a }.merging(ansi) { a, _ in a }
+        return all.first { $0.value.caseInsensitiveCompare(name) == .orderedSame }.map { UInt32($0.key) }
+    }
 
     public static func name(for code: UInt32) -> String {
         let c = Int(code)

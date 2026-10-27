@@ -34,6 +34,20 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     public var servers: [UUID] = []
     /// May run commands on this Mac (the `shell` tool): on by default, it's how an Imp does things.
     public var usesShell = true
+    /// Its own tools it may not use (all are on until switched off). Optional, so older profiles load.
+    private var ownToolsOff: [ImpToolGroup]?
+
+    /// Whether it may use one group of its own tools (animations, its senses, setting itself up…).
+    public func uses(_ group: ImpToolGroup) -> Bool { !(ownToolsOff ?? []).contains(group) }
+
+    public mutating func setUses(_ group: ImpToolGroup, _ on: Bool) {
+        var off = Set(ownToolsOff ?? [])
+        if on { off.remove(group) } else { off.insert(group) }
+        ownToolsOff = off.isEmpty ? nil : ImpToolGroup.allCases.filter(off.contains)
+    }
+
+    /// The groups of its own tools it may use.
+    public var ownTools: Set<ImpToolGroup> { Set(ImpToolGroup.allCases.filter(uses)) }
 
     public init(id: UUID = UUID(), name: String, hue: Double, favoriteHue: Double, scale: Double = 1,
                 personality: String, brain: Brain? = nil) {

@@ -25,8 +25,10 @@ final class Reactions {
 
     init(app: AppModel) { self.app = app }
 
+    /// The cursor is only watched while some switched-on animation is started by it (and Mouse
+    /// games is on): see `ImpPreferences.watchesCursor`.
     func apply(_ prefs: ImpPreferences) {
-        if prefs.mouseGames, mouseMonitor == nil {
+        if prefs.watchesCursor, mouseMonitor == nil {
             mouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved]) { [weak self] _ in
                 MainActor.assumeIsolated { self?.mouseMoved() }
             }
@@ -34,7 +36,7 @@ final class Reactions {
                 MainActor.assumeIsolated { self?.checkRest() }
             }
             lastMove = ProcessInfo.processInfo.systemUptime
-        } else if !prefs.mouseGames, let monitor = mouseMonitor {
+        } else if !prefs.watchesCursor, let monitor = mouseMonitor {
             NSEvent.removeMonitor(monitor)
             mouseMonitor = nil
             restTimer?.invalidate()
@@ -46,7 +48,7 @@ final class Reactions {
     // MARK: The cursor
 
     func mouseMoved() {
-        guard app.prefs.mouseGames else { return }
+        guard app.prefs.watchesCursor else { return }
         let p = NSEvent.mouseLocation, t = ProcessInfo.processInfo.systemUptime
         if t - lastMove > Self.away, let nearest = nearest(to: p) { handle(.comeback, by: nearest) }
         lastMove = t
@@ -85,7 +87,7 @@ final class Reactions {
     /// already playing (you keep stroking it), it carries on instead of starting over. `held`
     /// keeps it going until `release(_:by:)` (a press, a carry).
     func handle(_ trigger: AnimationTrigger, by imp: ImpModel, held: Bool = false) {
-        guard trigger.watchesCursor ? app.prefs.mouseGames : true,
+        guard trigger.watchesCursor ? app.prefs.watchesCursor : true,
               let reaction = app.prefs.animation(for: trigger) else { return }
         let until = held ? Date.distantFuture : Date().addingTimeInterval(Self.afterglow)
         if imp.life.sustain(reaction, until: until) { return }
@@ -104,7 +106,7 @@ final class Reactions {
 
     /// Plays an animation now (gestures, clicks, Settings previews). The troupe may join in.
     func play(_ reaction: Reaction, by imp: ImpModel? = nil) {
-        guard let imp = imp ?? app.focused, !imp.isBusy else { return }
+        guard let imp = imp ?? app.focused, !imp.isBusy, imp.life.isUnlocked(reaction) else { return }
         lastPlayed["\(imp.id)/\(reaction.rawValue)"] = Date()
         imp.touch()
         imp.life.perform(reaction)

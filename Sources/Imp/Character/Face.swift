@@ -144,10 +144,15 @@ final class FaceAnimator {
     /// Whether every spring had come to rest after the last step (nothing left to draw).
     private(set) var isSettled = true
 
+    private static let substep = 1.0 / 120
     private static let bend = Face.fields.firstIndex(of: \.bend)!
 
     func step(to target: Face, at t: TimeInterval, stiffness: Double = 210, damping: Double = 17) -> Face {
-        let dt = min(1 / 20, max(0, t - (last ?? t)))
+        // A gap this long is a pause in drawing (the resting pace), not time passing: resume with
+        // one ordinary frame. Taking the clamped 1/20 s instead moved the face about half way to
+        // its target in the first frame, which showed as a jump at the start of an animation.
+        let gap = max(0, t - (last ?? t))
+        let dt = gap > BlendWeights<Mood>.resumeAfter ? 1.0 / 60 : min(1.0 / 20, gap)
         last = t
         guard dt > 0 else { return face }
         // Stroke eyes (^ ^ or ‿ ‿) only change shape while they show. Otherwise the bend swung
@@ -158,11 +163,16 @@ final class FaceAnimator {
             face.bend = target.bend
             velocity[Self.bend] = 0
         }
-        for (i, k) in Face.fields.enumerated() {
-            let x = face[keyPath: k]
-            let v = velocity[i] + ((target[keyPath: k] - x) * stiffness - velocity[i] * damping) * dt
-            velocity[i] = v
-            face[keyPath: k] = x + v * dt
+        // Substeps keep the integration stable and the same whatever the frame rate.
+        let n = Int((dt / Self.substep).rounded(.up))
+        let h = dt / Double(n)
+        for _ in 0..<n {
+            for (i, k) in Face.fields.enumerated() {
+                let x = face[keyPath: k]
+                let v = velocity[i] + ((target[keyPath: k] - x) * stiffness - velocity[i] * damping) * h
+                velocity[i] = v
+                face[keyPath: k] = x + v * h
+            }
         }
         isSettled = SpringSettle.isSettled(values: Face.fields.map { face[keyPath: $0] },
                                            targets: Face.fields.map { target[keyPath: $0] }, velocities: velocity)

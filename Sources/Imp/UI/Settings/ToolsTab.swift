@@ -14,6 +14,18 @@ struct ToolsTab: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Metrics.gap) {
+            Card("Its own tools", icon: "sparkles",
+                 info: "Tools that make \(name) itself: its body, its senses, setting itself up and talking to the other Imps. Its model decides when to use them, so a trigger only has to say what you want.") {
+                VStack(spacing: 8) {
+                    ForEach(ImpToolGroup.allCases) { group in
+                        ownToolRow(group)
+                        if group != ImpToolGroup.allCases.last { CardDivider() }
+                    }
+                }
+            }
+
+            browserCard
+
             Card("Shell", icon: "terminal.fill",
                  info: "\(name) does things by running commands on your Mac: opening apps, reading files, copying, speaking, calling web APIs for pictures or voices. Ask, and it works out how. Commands run with your permissions, without asking first.") {
                 HStack(spacing: 6) {
@@ -73,9 +85,55 @@ struct ToolsTab: View {
                 }
             }
         }
+        .onChange(of: HomeWindow.shared.router.serverToEdit, initial: true) { _, id in openRequestedServer(id) }
         .confirmationDialog("Remove “\(forgetting?.name ?? "")” for every Imp?", isPresented: Binding(
             get: { forgetting != nil }, set: { if !$0 { forgetting = nil } }), titleVisibility: .visible) {
             Button("Remove", role: .destructive) { if let s = forgetting { model.prefs.removeServer(s.id) } }
+        }
+    }
+
+    /// An Imp asked the user to fill something in: open that tool's form.
+    private func openRequestedServer(_ id: UUID?) {
+        guard let id, let server = model.prefs.mcpServers.first(where: { $0.id == id }) else { return }
+        HomeWindow.shared.router.serverToEdit = nil
+        editing = Draft(server: server, isNew: false)
+    }
+
+    private func ownToolRow(_ group: ImpToolGroup) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: group.symbol)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(imp.uses(group) ? tint : .secondary)
+                .frame(width: 28, height: 28)
+                .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(tint.opacity(imp.uses(group) ? 0.16 : 0.05)))
+            HStack(spacing: 4) {
+                Text(group.title).font(.system(size: 13, weight: .semibold)).lineLimit(1)
+                InfoTip(group.summary)
+            }
+            Spacer(minLength: 8)
+            Toggle("", isOn: Binding(get: { imp.uses(group) }, set: { imp.setUses(group, $0) }))
+                .labelsHidden().toggleStyle(.switch).controlSize(.small)
+                .help(imp.uses(group) ? "On: \(name) may use these" : "Off")
+        }
+    }
+
+    /// The browser extension: lets Imps know the page you're on, and sit on things in it.
+    private var browserCard: some View {
+        let bridge = BrowserBridge.shared
+        return Card("Browser", icon: "globe",
+                    info: "Add the Imp extension to Chrome, Arc, Brave or Edge, and Imps know which website you're on (for triggers like “on amazon.com”) and can hop onto a button on the page. It talks only to Imp on this Mac, and sends only the active tab's address and title, plus what an Imp asks for. To add it: open chrome://extensions, switch on Developer mode, choose Load unpacked, and pick the folder Show opens.") {
+            HStack(spacing: 8) {
+                if bridge.isConnected {
+                    StatusText(text: bridge.page.map { "Connected: \($0.browser)" } ?? "Connected", symbol: "checkmark.circle.fill", color: .green)
+                } else {
+                    StatusText(text: "Not connected", symbol: "circle.dashed")
+                }
+                HoverIconButton(systemName: "folder", help: "Show the extension's folder in Finder, to load it in your browser") {
+                    ExtensionFolder.reveal()
+                }
+            }
+        } content: {
+            EmptyView()
         }
     }
 
@@ -156,5 +214,30 @@ struct AddToolTile: View {
         .onHover { hover = $0 }
         .animation(.easeOut(duration: 0.12), value: hover)
         .help(detail)
+    }
+}
+
+/// The browser extension: shipped inside the app (or next to the sources, in a build from them)
+/// and copied to Imp's folder in Application Support, where a browser's “Load unpacked” can pick
+/// it (it can't look inside an app).
+enum ExtensionFolder {
+    static func reveal() {
+        guard let source else { return }
+        let fm = FileManager.default
+        let target = URL.applicationSupportDirectory.appendingPathComponent("Imp/Browser Extension")
+        try? fm.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try? fm.removeItem(at: target)
+        let ready = (try? fm.copyItem(at: source, to: target)) != nil
+        NSWorkspace.shared.activateFileViewerSelecting([ready ? target : source])
+    }
+
+    private static var source: URL? {
+        let bundled = Bundle.main.resourceURL?.appendingPathComponent("Browser Extension")
+        if let bundled, FileManager.default.fileExists(atPath: bundled.path) { return bundled }
+        // Built from source: Sources/Imp/UI/Settings/ToolsTab.swift → Extensions/Chrome.
+        let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Extensions/Chrome")
+        return FileManager.default.fileExists(atPath: source.path) ? source : nil
     }
 }

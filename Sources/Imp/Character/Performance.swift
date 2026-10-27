@@ -32,7 +32,8 @@ struct Performance: Equatable {
         guard t >= 0 else { return nil }
         var hopSince: Double?
         for (i, step) in steps.enumerated() {
-            if step.hop { hopSince = 0 }
+            // A hop already in the air isn't restarted (see `Motion.canHop`).
+            if step.hop, hopSince.map(Motion.canHop(since:)) ?? true { hopSince = 0 }
             if t < step.duration {
                 return Beat(step: step, elapsed: t, glyph: steps.glyph(at: i, elapsed: t), hopSince: hopSince.map { $0 + t })
             }

@@ -83,7 +83,7 @@ public enum AnimationTrigger: String, Codable, CaseIterable, Sendable, Identifia
     /// predictable. Quiet moments can start many (one is picked).
     public var isExclusive: Bool { self != .idle }
 
-    /// Whether it comes from watching the cursor go by (the "Mouse games" switch), rather than
+    /// Whether it comes from watching the cursor go by (the cursor monitor, see `ImpPreferences.watchesCursor`), rather than
     /// from clicking, pressing or carrying the Imp, which it always notices.
     public var watchesCursor: Bool {
         switch self {
@@ -131,6 +131,7 @@ extension Reaction {
              .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored: [.idle]
         case .yes, .no, .maybe, .dontKnow, .areYouSure, .notSure, .exactly, .nope, .hmm, .aha,
              .tada, .sorry, .oops, .impressed, .haha, .loveIt, .sadNews, .careful, .welcome, .confused: []
+        case .twirl, .serenade, .cheer, .swoon, .glow: [.idle]
         }
     }
 
@@ -144,7 +145,7 @@ extension Reaction {
 
     /// Groups for the settings list.
     public enum Family: String, CaseIterable, Sendable {
-        case expressions, gestures, play, handling, routines
+        case expressions, gestures, play, handling, routines, favorite
     }
 
     public var family: Family {
@@ -157,6 +158,7 @@ extension Reaction {
              .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored: .routines
         case .yes, .no, .maybe, .dontKnow, .areYouSure, .notSure, .exactly, .nope, .hmm, .aha,
              .tada, .sorry, .oops, .impressed, .haha, .loveIt, .sadNews, .careful, .welcome, .confused: .gestures
+        case .twirl, .serenade, .cheer, .swoon, .glow: .favorite
         }
     }
 }
@@ -165,6 +167,15 @@ extension ImpPreferences {
     /// An animation's rule: the user's, or the default.
     public func rule(for reaction: Reaction) -> AnimationRule {
         animations[reaction] ?? AnimationRule(triggers: reaction.defaultTriggers)
+    }
+
+    /// Whether the cursor needs watching at all: Mouse games is on and some switched-on animation
+    /// is started by a cursor game. Nothing else needs the global mouse monitor.
+    public var watchesCursor: Bool {
+        mouseGames && Reaction.allCases.contains { r in
+            let rule = rule(for: r)
+            return rule.isEnabled && rule.triggers.contains { $0.watchesCursor }
+        }
     }
 
     /// Switched-on animations a trigger may start, in catalogue order.

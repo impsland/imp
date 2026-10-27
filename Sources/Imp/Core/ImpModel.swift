@@ -38,6 +38,15 @@ final class ImpModel {
 
     @ObservationIgnored var onBubbleChange: (() -> Void)?
     @ObservationIgnored var onScaleChange: (() -> Void)?
+    /// Moves its window to a screen point (the bottom-left of its panel), the way `Travel` says.
+    @ObservationIgnored var onTravel: ((CGPoint, Travel) async -> Void)?
+    /// Where it lives when it isn't off somewhere (`imp_move` to "home").
+    @ObservationIgnored var homeOrigin: (() -> CGPoint)?
+    /// Animations the model asked for (`imp_play_animations`), played once its reply shows.
+    @ObservationIgnored private var pendingActs: [Reaction] = []
+    @ObservationIgnored private var actTask: Task<Void, Never>?
+    /// Another Imp waiting for this one's answer (`imp_message`).
+    @ObservationIgnored private var replyTo: CheckedContinuation<String, Error>?
     /// The view switched between resting (breath done by Core Animation) and drawing every frame.
     @ObservationIgnored var onRestingChange: ((Bool) -> Void)?
     @ObservationIgnored private var job: Task<Void, Never>?
@@ -110,6 +119,7 @@ final class ImpModel {
     /// put its bubble away.
     func retire() {
         cancel()
+        actTask?.cancel()
         hideTask?.cancel()
         life.stop()
         started = false
@@ -340,6 +350,8 @@ final class ImpModel {
         // Stopped half-way (✕, a click, a new request): the history still shows what it did.
         if let w = work { record(w.ask, reply: "Stopped before answering.", failed: true) }
         work = nil
+        pendingActs = []
+        finishReply(.failure(ToolArgumentError("\(profile.name) stopped before answering.")))
         captionTask?.cancel()
         app.stopListening(for: self)
         setActivity(nil)
@@ -354,18 +366,19 @@ final class ImpModel {
         setActivity(nil)
     }
 
-    /// A click on this Imp: stops whatever it's doing, else types or talks (Settings › Look & Feel).
-    func click(alternate: Bool = false) {
+    /// Clicks on this Imp (`count` in a row): stops whatever it's doing, else does what that many
+    /// clicks are set to (Settings › Triggers: out of the box, one types and two open settings).
+    func clicked(_ count: Int) {
         touch()
         app.focus(self)
         if app.finishListening(for: self) { return }
         if [.thinking, .tools].contains(activity) { cancel(); react(.surprised, for: 0.6); return }
-        let action = alternate ? (prefs.click == .type ? ClickAction.talk : .type) : prefs.click
-        switch action {
-        case .type: bubble?.phase == .typing ? dismissBubble() : startTyping()
-        case .talk: talk()
-        }
+        guard let shortcut = prefs.clickShortcut(count, on: id, in: app.senses.state) else { return }
+        perform(shortcut)
     }
+
+    /// Whether clicks wait to see if more follow (only when something answers to more than one).
+    var waitsForMoreClicks: Bool { prefs.mostClicks(on: id) > 1 }
 
     /// Talk to this Imp (voice), or stop talking.
     func talk() {
@@ -432,15 +445,65 @@ final class ImpModel {
         bubble = b
     }
 
-    /// A shortcut: its instruction, with what's on the clipboard (or `clip`, from a URL command)
-    /// unless it sends the instruction alone.
-    func run(_ shortcut: Shortcut, clip given: Clip? = nil) {
+    /// A trigger went off: opens what it opens, or hands its instruction to the model, with what's
+    /// on the clipboard (or `clip`, from a URL command) unless it sends the instruction alone.
+    /// `happened`: what set it off on the Mac (nil: the user did, with keys, clicks or a menu).
+    func perform(_ shortcut: Shortcut, clip given: Clip? = nil, happened: String? = nil) {
         touch()
         app.focus(self)
-        if let given { return start(.shortcut(shortcut, given)) }
-        guard shortcut.usesClipboard else { return start(.shortcut(shortcut, nil)) }
-        guard let clip = Pasteboard.clip() else { return nothingCopied(shortcut) }
-        start(.shortcut(shortcut, clip))
+        switch shortcut.command {
+        case .type: return bubble?.phase == .typing ? dismissBubble() : startTyping()
+        case .talk: return talk()
+        case .chat: return isChatting ? closeChat() : openChat()
+        case .settings:
+            stopWaitingForUser()
+            return HomeWindow.shared.show(app, settingsFor: id, tab: isReady ? nil : .brain)
+        case .ask: break
+        }
+        if let given { return start(.shortcut(shortcut, given, happened: happened)) }
+        guard shortcut.usesClipboard else { return start(.shortcut(shortcut, nil, happened: happened)) }
+        guard let clip = Pasteboard.clip() else {
+            // Something on the Mac set it off: go ahead without a clip rather than complain.
+            return happened == nil ? nothingCopied(shortcut) : start(.shortcut(shortcut, nil, happened: happened))
+        }
+        start(.shortcut(shortcut, clip, happened: happened))
+    }
+
+    /// Free to take on something the Mac set off: not working, and you're not typing, talking or chatting to it.
+    var isAvailable: Bool {
+        !isBusy && ![.typing, .listening, .chat].contains(bubble?.phase)
+    }
+
+    /// Another Imp's message (`imp_message`): this Imp answers in its own bubble, and the answer
+    /// goes back. Never interrupts work in progress.
+    func answer(_ text: String, from sender: String) async throws -> String {
+        guard !isBusy else { throw ToolArgumentError("\(profile.name) is busy right now. Try again later.") }
+        return try await withCheckedThrowingContinuation { c in
+            start(.message(from: sender, text: text))
+            replyTo = c
+        }
+    }
+
+    private func finishReply(_ result: Result<String, Error>) {
+        guard let waiting = replyTo else { return }
+        replyTo = nil
+        waiting.resume(with: result)
+    }
+
+    /// Plays animations the model asked for: now if it's free, else once its reply shows.
+    func act(_ reactions: [Reaction]) {
+        if isBusy { pendingActs = reactions } else { play(reactions) }
+    }
+
+    private func play(_ reactions: [Reaction]) {
+        actTask?.cancel()
+        actTask = Task { [weak self] in
+            for r in reactions {
+                guard let self, !Task.isCancelled else { return }
+                self.app.reactions.play(r, by: self)
+                try? await Task.sleep(for: .seconds(Performance(r).duration + 0.15))
+            }
+        }
     }
 
     /// A question from another app (URL command).
@@ -468,13 +531,6 @@ final class ImpModel {
         show(Bubble(title: "Ow", text: lines.randomElement()!, phase: .hint))
     }
 
-    /// A double-click opens this Imp's settings (and closes a text box or listening bubble left open).
-    func doubleClicked() {
-        guard prefs.doubleClickOpensSettings else { return }
-        stopWaitingForUser()
-        HomeWindow.shared.show(app, settingsFor: id, tab: isReady ? nil : .brain)
-    }
-
     // MARK: Pipeline
 
     /// Where a request comes from. Every one goes the same way: the Imp's model gets the words
@@ -484,8 +540,11 @@ final class ImpModel {
         case typed(String, EncodedImage?)
         /// Said out loud: listen first.
         case spoken
-        /// A shortcut's instruction, with what was copied (nil: the instruction alone).
-        case shortcut(Shortcut, Clip?)
+        /// A trigger's instruction, with what was copied (nil: the instruction alone) and what set
+        /// it off on the Mac (nil: the user did).
+        case shortcut(Shortcut, Clip?, happened: String?)
+        /// Another Imp's message (`imp_message`).
+        case message(from: String, text: String)
     }
 
     private func start(_ source: Source) {
@@ -519,22 +578,30 @@ final class ImpModel {
                 turn = Briefing.message(words)
                 heading = "“\(words)”"
                 ask = ChatTurn(request: words, via: .spoken)
-            case .shortcut(let shortcut, let clip):
+            case .shortcut(let shortcut, let clip, let happened):
                 title = shortcut.name
                 var path: String?
                 if case .image(let picture)? = clip { path = save(picture) }
-                turn = Briefing.shortcut(shortcut.prompt, clip: clip, imagePath: path)
+                turn = happened.map { Briefing.trigger(shortcut.prompt, name: shortcut.name, happened: $0, clip: clip, imagePath: path) }
+                    ?? Briefing.shortcut(shortcut.prompt, clip: clip, imagePath: path)
                 heading = shortcut.name
                 let instruction = shortcut.prompt.trimmingCharacters(in: .whitespacesAndNewlines)
                 var copied: String?
                 if case .text(let text)? = clip { copied = text }
                 ask = ChatTurn(request: shortcut.name, via: .shortcut, instruction: instruction.isEmpty ? nil : instruction,
                                copiedText: copied, picture: path)
+            case .message(let sender, let text):
+                title = "From \(sender)"
+                turn = Briefing.message(from: sender, text)
+                heading = "\(sender): “\(text)”"
+                ask = ChatTurn(request: "\(sender): \(text)", via: .typed)
             }
             work = ask.map { Work(ask: $0, heading: heading, title: title) }
             log.info("\(self.profile.name, privacy: .public) works on “\(title.isEmpty ? "a message" : title, privacy: .public)”")
             thinking(heading, captions: Captions.thinking)
-            let tools = try app.assistant.tools(for: profile)
+            var messaging = true
+            if case .message = source { messaging = false }       // answering an Imp: no messaging back and forth
+            let tools = try app.assistant.tools(for: profile, own: ImpTools(host: OwnToolHost(app: app, imp: id, messaging: messaging)))
             if app.assistant.toolsConnecting { addStep(.wakingUp) }
             let (reply, exchange) = try await app.assistant.chat(messages(with: turn), brain: profile.brain, tools: tools,
                                                                  stream: true) { [weak self] event in
@@ -543,8 +610,10 @@ final class ImpModel {
             try Task.checkCancellation()
             record(ask, reply: reply, exchange: exchange)
             showAnswer(reply, title: title)
+            finishReply(.success(reply))
         } catch is CancellationError {
             dropWork()
+            finishReply(.failure(ToolArgumentError("\(profile.name) stopped before answering.")))
         } catch let error as Dictation.Failure where error == .heardNothing {
             // Offer the keyboard instead of a dead end.
             react(.sad, for: 1.2)
@@ -553,6 +622,7 @@ final class ImpModel {
             guard !Task.isCancelled else { return }
             record(ask, reply: error.localizedDescription, failed: true)
             fail(title.isEmpty ? "thinking" : title, error)
+            finishReply(.failure(ToolArgumentError("\(profile.name) couldn't answer: \(error.localizedDescription)")))
         }
     }
 
@@ -598,6 +668,7 @@ final class ImpModel {
         setActivity(nil)
         captionTask?.cancel()
         log.error("\(what, privacy: .public) failed: \(String(describing: error), privacy: .public)")
+        pendingActs = []
         react(.error, for: 2.2)
         app.stage.broadcast(.failed, from: self)
         // Setup problems point at the Brain tab and stay until dealt with.
@@ -617,7 +688,8 @@ final class ImpModel {
     private func showAnswer(_ text: String, title: String) {
         setActivity(nil)
         captionTask?.cancel()
-        react(.happy, for: 1.0)
+        // Body language the model chose takes the place of the usual happy bounce.
+        if pendingActs.isEmpty { react(.happy, for: 1.0) } else { play(pendingActs); pendingActs = [] }
         app.stage.broadcast(.answered, from: self)
         let streaming = bubble?.isStreaming == true ? bubble : nil
         // The turn's id when it has none yet: media the chat already autoplayed won't play again here.

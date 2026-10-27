@@ -109,9 +109,8 @@ enum IconRenderer {
             let files = MCPExamples.all[0]
             model.prefs.mcpServers = [files]
             model.prefs.imps[i].servers = [files.id]
-            model.prefs.ai.add(Service(name: "OpenRouter", baseURL: "https://openrouter.ai/api/v1"))
-            model.prefs.ai.add(Service(name: "Ollama", baseURL: "http://localhost:11434/v1"))
-            model.prefs.ai.brain.model = "some/model"
+            model.prefs.ai.add(Service(name: "OpenRouter", baseURL: "https://openrouter.ai/api/v1", model: "some/model"))
+            model.prefs.ai.add(Service(name: "Ollama", baseURL: "http://localhost:11434/v1", model: "llama3.2"))
         }
         if let out, model.prefs.imps.indices.contains(out) { model.prefs.imps[out].isActive = true }
         if hidden { model.setHidden(true) }
@@ -133,7 +132,7 @@ enum IconRenderer {
                                                   isNew: true, hub: model.assistant.hub) { _ in }
             .background(Color(nsColor: .windowBackgroundColor)))
         case "add-shortcut", "edit-shortcut":
-            AnyView(ShortcutSheet(model: model, shortcut: model.prefs.shortcuts.first ?? Shortcut(name: "", prompt: "", performer: chosen),
+            AnyView(ShortcutSheet(model: model, imp: chosen, shortcut: model.prefs.shortcuts.first ?? Shortcut(name: "", prompt: "", performer: chosen),
                                   isNew: screen == "add-shortcut", save: { _ in }, duplicate: { _ in }, delete: {}, close: {})
                 .background(Color(nsColor: .windowBackgroundColor)))
         default: AnyView(HomeView(model: model, router: router))

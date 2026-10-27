@@ -10,6 +10,8 @@ struct MarkdownView: View {
     var fontSize: CGFloat = 14
     /// A picture finished loading, so the bubble must be measured again. Nil: don't load (measuring).
     var onImageLoad: (() -> Void)?
+    /// Where pictures and videos sit, from this view's top (reported while measuring).
+    var onMedia: (([ReadAllCut.Span]) -> Void)?
     /// The answer this belongs to (its audio and video keep playing while it's redrawn). Nil in the history.
     var mediaOwner: String?
     /// Audio and video the Imp marked `#autoplay` may start on their own.
@@ -23,11 +25,23 @@ struct MarkdownView: View {
         VStack(alignment: .leading, spacing: 8) {
             ForEach(blocks.indices, id: \.self) { i in block(blocks[i]) }
         }
+        .coordinateSpace(name: Self.space)
+        .onPreferenceChange(MediaSpans.self) { spans in MainActor.assumeIsolated { onMedia?(spans) } }
         .font(.system(size: fontSize))
         .lineSpacing(2)
         // Links to files (a path, often relative to the Imp's folder) open like web links do.
         .environment(\.openURL, OpenURLAction { url in
             NSWorkspace.shared.open(Markdown.resolve(url, base: base)) ? .handled : .discarded
+        })
+    }
+
+    private static let space = "markdown"
+
+    /// Reports where a picture or video sits, for cutting the reply short between blocks.
+    private func reporting<V: View>(_ view: V) -> some View {
+        view.background(GeometryReader { geo in
+            let frame = geo.frame(in: .named(Self.space))
+            Color.clear.preference(key: MediaSpans.self, value: [.init(top: frame.minY, bottom: frame.maxY)])
         })
     }
 
@@ -55,16 +69,23 @@ struct MarkdownView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(RoundedRectangle(cornerRadius: 8).fill(Color.primary.opacity(0.06)))
         case .image(let url, let alt, let link):
-            MarkdownImage(url: Markdown.resolve(url, base: base), alt: alt, link: link, maxHeight: imageHeight, onLoad: onImageLoad)
+            reporting(MarkdownImage(url: Markdown.resolve(url, base: base), alt: alt, link: link, maxHeight: imageHeight, onLoad: onImageLoad))
+                .frame(maxWidth: .infinity, alignment: .center)     // pictures sit in the middle; text stays left
         case .table(let table):
             MarkdownTable(table: table, fontSize: fontSize - 1)
         case .media(let url, let title, let kind, let autoplay):
-            MediaView(url: Markdown.resolve(url, base: base), title: title, kind: kind, owner: mediaOwner,
-                      autoplay: autoplay && self.autoplay, measuring: measuring)
+            reporting(MediaView(url: Markdown.resolve(url, base: base), title: title, kind: kind, owner: mediaOwner,
+                                autoplay: autoplay && self.autoplay, measuring: measuring))
         case .rule:
             Divider()
         }
     }
+}
+
+/// The pictures' and videos' extents, collected up the tree.
+private struct MediaSpans: PreferenceKey {
+    static let defaultValue: [ReadAllCut.Span] = []
+    static func reduce(value: inout [ReadAllCut.Span], nextValue: () -> [ReadAllCut.Span]) { value += nextValue() }
 }
 
 private struct MarkdownTable: View {

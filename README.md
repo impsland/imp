@@ -63,7 +63,7 @@ If that's a model running on your own Mac, nothing leaves your Mac at all.
 
 | What                | Where it stays                                                         |
 | ------------------- | ---------------------------------------------------------------------- |
-| API keys            | macOS Keychain                                                         |
+| API keys            | A private file only you can read, or the Keychain if you ask           |
 | Chats and settings  | Your Mac (`~/Library/Application Support/Imp`)                         |
 | Voice               | Apple speech recognition, on device whenever your Mac supports it      |
 | Your requests       | Only the model service you added (local or remote, your choice)        |
@@ -80,14 +80,27 @@ Imp works with any **OpenAI-compatible** service. Nothing is built in: you add t
 | OpenAI       | In the cloud   | `https://api.openai.com/v1`     |
 | Anything else that speaks the OpenAI API | Anywhere | Its `/v1` address |
 
-Each Imp can think with its own model, so a local one can handle private work while another uses
-a bigger cloud model.
+Pick a service's model once, when you add it: every Imp on that service uses it, and the starred
+service is the one new Imps start with. An Imp can still pick its own service or model, so a local
+one can handle private work while another uses a bigger cloud model.
 
 ## What it can do
 
 - **Talk, type or click.** Ask out loud or type. Answers show up in a speech bubble.
 - **Use your Mac.** Imp runs shell commands and AppleScript to get things done for you.
-- **Shortcuts.** Copy text anywhere, press your keys, and Imp translates, fixes or explains it on the spot.
+- **Triggers.** When something happens, Imp gets your instruction along with what happened, and its
+  model decides what to do. Keys (on what you copied, text or a picture), clicks on Imp, or your Mac:
+  the battery runs low, the charger, an app comes to the front, a website, a time of day, every few
+  minutes, you come back to your desk, the Mac wakes, gets busy or hot, the network drops. Add
+  conditions ("only if on battery", "only between 22:00 and 07:00"). Clicks are triggers too: out of
+  the box one click opens a text box and two open settings, and you can change both.
+- **It sets itself up.** Ask Imp for something new and it can add the MCP server it needs, open its
+  settings for you to fill in a key, and create the trigger, then show you how it works.
+- **Body and senses.** Imp plays its animations as body language, hops, slides or bounces around the
+  screen, speaks out loud, reads how the Mac is doing, and messages the other Imps. Each group of
+  these tools can be switched off per Imp (Settings › Tools).
+- **Browser extension.** Add `Extensions/Chrome` to Chrome, Arc, Brave or Edge and Imp knows the
+  website you're on, and can hop right onto a button on the page. Local only (see its README).
 - **More tools with MCP.** Connect Model Context Protocol servers, local or on the web.
 - **A whole troupe.** Several Imps, each with its own name, colour, personality and model.
 - **Automation.** `imp://` links for Shortcuts, Raycast and scripts:
@@ -111,8 +124,8 @@ ollama serve
 ```
 
 1. Open Imp from the menu bar and go to its window.
-2. Add a service: pick **Ollama**.
-3. Choose `qwen3:8b` as the model.
+2. Add a service: pick **Ollama**, and choose `qwen3:8b` as its model.
+3. That's it: every Imp you hatch thinks with it.
 4. Click your Imp and say hello.
 
 > [!NOTE]

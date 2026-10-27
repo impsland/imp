@@ -79,18 +79,19 @@ struct ImpStage: View {
 
     // MARK: Top
 
-    /// The title bar row: just the gear, level with the traffic lights.
+    /// The title bar row, level with the traffic lights (empty: the gear sits by Let Imp Out).
     private var topBar: some View {
-        TopBar {
-            EmptyView()
-        } trailing: {
-            Button { withAnimation(.snappy(duration: 0.28)) { router.screen = .general } } label: {
-                RoundGlyph(systemName: "gearshape.fill", size: 26)
-            }
-            .buttonStyle(.plain)
-            .help("Settings for all Imps: brain keys, manners, animations, hearing, permissions (⌘,)")
-            .accessibilityLabel("Settings for all Imps")
+        TopBar { EmptyView() }
+    }
+
+    /// Settings every Imp shares, to the right of the big button (this Imp's own are on its left).
+    private var generalSettingsButton: some View {
+        Button { withAnimation(.snappy(duration: 0.28)) { router.screen = .general } } label: {
+            RoundGlyph(systemName: "gearshape.fill", size: 40)
         }
+        .buttonStyle(.plain)
+        .help("Settings for all Imps: brain keys, manners, animations, hearing, permissions (⌘,)")
+        .accessibilityLabel("Settings for all Imps")
     }
 
     /// Just the name (click to rename), at a fixed height: nothing above the stage ever grows or
@@ -286,23 +287,22 @@ struct ImpStage: View {
                     }
                         .buttonStyle(.plain)
                         .help(needsBrain ? "\(imp.name) needs a brain before it can chat: set it up"
-                                         : "\(imp.name)'s settings: looks, brain, tools, shortcuts")
+                                         : "\(imp.name)'s settings: looks, brain, tools, triggers")
                         .accessibilityLabel("Settings")
                     activateButton(for: imp)
-                    Menu { contextMenu(for: imp) } label: { RoundGlyph(systemName: "ellipsis", size: 40, bold: true) }
-                        .menuStyle(.button)
-                        .buttonStyle(.plain)
-                        .menuIndicator(.hidden)
-                        .fixedSize()
-                        .help("More: rename, say goodbye")
-                        .accessibilityLabel("More")
+                    generalSettingsButton
                 }
             } else {
                 Color.clear.frame(height: 38)
-                Button { hatch() } label: { Label("Hatch a New Imp", systemImage: "sparkles").frame(width: Self.actionWidth) }
-                    .buttonStyle(BigButtonStyle(hue: 0.08))
-                    .disabled(hatchStart != nil)
-                    .help("Crack the egg open (Return)")
+                HStack(spacing: 14) {
+                    // Balances the gear, so the big button stays centred.
+                    Color.clear.frame(width: 40, height: 40)
+                    Button { hatch() } label: { Label("Hatch a New Imp", systemImage: "sparkles").frame(width: Self.actionWidth) }
+                        .buttonStyle(BigButtonStyle(hue: 0.08))
+                        .disabled(hatchStart != nil)
+                        .help("Crack the egg open (Return)")
+                    generalSettingsButton
+                }
             }
         }
         .frame(height: 104)

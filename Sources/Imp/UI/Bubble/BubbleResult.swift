@@ -16,6 +16,7 @@ struct ResultView: View {
         if !bubble.text.isEmpty {
             let reply = MarkdownView(blocks: Markdown.blocks(bubble.text), base: Workspace.directory(for: model.id),
                                      onImageLoad: measuring ? nil : { layout.onToggle?() },
+                                     onMedia: measuring ? { layout.mediaSpans = $0 } : nil,
                                      mediaOwner: bubble.id.uuidString, autoplay: model.prefs.autoplaysMedia, measuring: measuring)
             let text = reply
                 .textSelection(.enabled)
@@ -24,6 +25,16 @@ struct ResultView: View {
             if let limit = layout.textLimit {
                 if layout.expanded {
                     ReadingScroll(height: limit) { text.padding(.trailing, 10).padding(.bottom, 14) }
+                } else if layout.mediaSpans.contains(where: { abs($0.bottom - limit) < 1 }) {
+                    // Cut right below a picture: the picture shows whole, "Read all" waits under it.
+                    VStack(spacing: 6) {
+                        reply
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .frame(height: limit, alignment: .top)
+                            .clipped()
+                        readAll
+                    }
                 } else {
                     // A long reply, cut short: it fades out, with a way to read the rest.
                     // (Not selectable here, so the text doesn't fight "Read all" for the cursor.)
@@ -34,38 +45,41 @@ struct ResultView: View {
                         .clipped()
                         .mask(LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.7),
                                                      .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom))
-                        .overlay(alignment: .bottom) {
-                            Button { toggle() } label: {
-                                Label("Read all", systemImage: "chevron.down")
-                                    .font(.system(size: 11, weight: .semibold))
-                                    .padding(.horizontal, 10).padding(.vertical, 4)
-                                    .background(Capsule().fill(Color(nsColor: .controlBackgroundColor)))
-                                    .overlay(Capsule().strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5))
-                                    .shadow(color: .black.opacity(0.12), radius: 4, y: 1)
-                            }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(tint)
-                            .help("Show the whole reply")
-                        }
+                        .overlay(alignment: .bottom) { readAll }
                 }
             } else {
                 text
             }
         }
-        if layout.showSteps { StepList(steps: bubble.steps, layout: layout, animated: false) }
+        if layout.expanded && layout.showSteps { StepList(steps: bubble.steps, layout: layout, animated: false) }
         if Self.hasFooter(bubble, layout) { footer }
+    }
+
+    private var readAll: some View {
+        Button { toggle() } label: {
+            Label("Read all", systemImage: "chevron.down")
+                .font(.system(size: 11, weight: .semibold))
+                .padding(.horizontal, 10).padding(.vertical, 4)
+                .background(Capsule().fill(Color(nsColor: .controlBackgroundColor)))
+                .overlay(Capsule().strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5))
+                .shadow(color: .black.opacity(0.12), radius: 4, y: 1)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(tint)
+        .help("Show the whole reply")
     }
 
     private func toggle() {
         withAnimation(.snappy(duration: 0.2)) { layout.expanded.toggle() }
-        if !layout.expanded { layout.customWidth = nil; layout.customTextHeight = nil }
+        if !layout.expanded { layout.customWidth = nil; layout.customTextHeight = nil; layout.showSteps = false }
         layout.onToggle?()
     }
 
-    /// Only for what belongs to the answer itself: its steps, "Show less", a setup link. Reply,
-    /// copy and close sit on the card's corners.
+    /// Only for what belongs to the answer itself: "Show less", a setup link, and (read in full)
+    /// its steps. A finished answer stays as small as it can, so pictures get the room: the tools
+    /// it used show in the full view and in the chat. Reply, copy and close sit on the card's corners.
     static func hasFooter(_ bubble: Bubble, _ layout: BubbleLayout) -> Bool {
-        !bubble.isStreaming && (layout.expanded || !bubble.steps.isEmpty || bubble.link != nil)
+        !bubble.isStreaming && (layout.expanded || bubble.link != nil)
     }
 
     private var footer: some View {
@@ -73,7 +87,7 @@ struct ResultView: View {
             if layout.expanded {
                 IconButton(icon: "chevron.up", help: "Show less", size: Self.button) { toggle() }
             }
-            if !bubble.steps.isEmpty {
+            if layout.expanded && !bubble.steps.isEmpty {
                 // Re-measured, so the panel grows with the list (instead of cutting the card off).
                 // A count, not a step's title: a command line would never fit in a pill.
                 Button { layout.showSteps.toggle(); layout.onToggle?() } label: {

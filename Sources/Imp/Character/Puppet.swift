@@ -1,12 +1,13 @@
 import CoreGraphics
 import Foundation
+import ImpKit
 
 /// Turns what an Imp is up to into the face and body to draw for one frame. Shared by the
 /// desktop Imp (`ImpView`) and the figures in the window (`StageImp`), so they move alike.
 ///
 /// Everything changes smoothly: the face springs toward its target (`FaceAnimator`), and when the
 /// mood changes, its body motion (a happy bounce, a scared shiver, a dizzy sway) cross-fades into
-/// the next one instead of stopping dead.
+/// the next one instead of stopping dead, however often the mood changes.
 final class Puppet {
     /// What to act out this frame.
     struct Cue {
@@ -33,25 +34,18 @@ final class Puppet {
     static let blend = 0.35
 
     private let animator = FaceAnimator()
-    private var mood: Mood?
-    private var previous = Mood.idle
-    private var changedAt = -Double.infinity
-    private var last = 0.0
+    private var moods = BlendWeights<Mood>(duration: Puppet.blend)
 
     /// Nothing is moving toward a new pose (no spring under way, no motion fading).
-    var isSettled: Bool { animator.isSettled && last - changedAt >= Self.blend }
+    var isSettled: Bool { animator.isSettled && moods.isSettled }
 
     func frame(_ cue: Cue, at t: TimeInterval) -> (face: Face, motion: Motion) {
-        last = t
-        if cue.mood != mood {
-            previous = mood ?? cue.mood
-            mood = cue.mood
-            changedAt = t
-        }
+        moods.advance(to: cue.mood, at: t)
         let face = animator.step(to: Self.target(cue), at: t)
-        let now = Motion.at(t, mood: cue.mood, level: cue.level, breathing: cue.breathing)
-        let k = Motion.smooth((t - changedAt) / Self.blend)
-        var motion = k < 1 ? Motion.mix(Motion.at(t, mood: previous, level: cue.level, breathing: cue.breathing), now, k) : now
+        // Every mood still fading in or out contributes by its weight, so a mood that changes
+        // again mid-blend never makes the body jump.
+        let parts = moods.mix.map { (Motion.at(t, mood: $0.key, level: cue.level, breathing: cue.breathing), $0.weight) }
+        var motion = parts.count == 1 ? parts[0].0 : Motion.blend(parts, at: t)
         if let since = cue.hopSince { motion.hop(since: since) }
         return (face, motion)
     }

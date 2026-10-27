@@ -89,7 +89,13 @@ final class ImpLife {
         stepStarted = Date()
         sustainedUntil = .distantPast
         lastName = a.name
-        if a.steps.first?.hop == true { hopAt = stepStarted }
+        if a.steps.first?.hop == true { hop(at: stepStarted) }
+    }
+
+    /// Starts a hop, unless the last is still in the air: restarting it would drop the body
+    /// from mid-jump straight to the ground.
+    private func hop(at date: Date) {
+        if Motion.canHop(since: date.timeIntervalSince(hopAt)) { hopAt = date }
     }
 
     private func tick() {
@@ -123,7 +129,7 @@ final class ImpLife {
                 if stepIndex + 1 < a.steps.count {
                     stepIndex += 1
                     stepStarted = now
-                    if a.steps[stepIndex].hop { hopAt = now }
+                    if a.steps[stepIndex].hop { hop(at: now) }
                 } else if now < sustainedUntil {
                     // Still being petted, held or carried: stay in the last beat.
                 } else {
@@ -159,6 +165,7 @@ final class ImpLife {
     /// preview. With `facing`, the whole routine is aimed that way (a nod toward a friend
     /// instead of toward you). Requested animations aren't interrupted by the mouse.
     func perform(_ reaction: Reaction, facing: CGPoint? = nil) {
+        guard isUnlocked(reaction) else { return }
         let user = CGPoint(x: 0, y: 0.1)
         let steps = steps(for: reaction)
         let aimed = facing.map { aim in
@@ -173,6 +180,13 @@ final class ImpLife {
         play(Antic(name: reaction.rawValue, steps: aimed, sticky: true))
     }
 
+    /// Whether this Imp may play `reaction` now: the ones that unlock with a favourite colour
+    /// only while it wears it.
+    func isUnlocked(_ reaction: Reaction) -> Bool {
+        guard reaction.unlocksWithFavoriteColor else { return true }
+        return model.map { $0.profile.isFavorite($0.profile.hue) } ?? false
+    }
+
     private func steps(for reaction: Reaction) -> [AnticStep] {
         Antics.steps(for: reaction, work: model.map(lookToward(screenCenterOf:)) ?? .zero)
     }
@@ -182,7 +196,7 @@ final class ImpLife {
     /// A routine for a quiet moment, from the animations the user lets play then (weighted,
     /// and never the same one twice in a row).
     private func pick(model: ImpModel) -> Antic? {
-        var pool = model.prefs.animations(for: .idle)
+        var pool = model.prefs.animations(for: .idle).filter(isUnlocked)
         if pool.count > 1 { pool.removeAll { $0.rawValue == lastName } }
         let total = pool.reduce(0) { $0 + $1.idleWeight }
         guard total > 0 else { return nil }

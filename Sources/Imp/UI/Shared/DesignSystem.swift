@@ -469,3 +469,81 @@ extension SheetScaffold where Accessory == EmptyView {
         self.init(icon: icon, title: title, info: info, width: width, accessory: { EmptyView() }, content: content, footer: footer)
     }
 }
+
+// MARK: - Compact controls
+
+/// A problem, in as little room as possible: a coloured icon whose explanation pops up by itself
+/// the moment it appears (so it's seen right away), and again on a click.
+struct IssueTip: View {
+    let text: String
+    var symbol = "exclamationmark.triangle.fill"
+    var color: Color = .orange
+    /// Pops the explanation open on its own when it appears (or its text changes).
+    var opensItself = true
+    @State private var showing = false
+
+    var body: some View {
+        Button { showing.toggle() } label: {
+            Image(systemName: symbol)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(color)
+                .frame(width: 22, height: 22)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: $showing, arrowEdge: .bottom) {
+            Text(text)
+                .font(.system(size: 12))
+                .frame(width: 240, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(12)
+        }
+        .task(id: text) {
+            guard opensItself else { return }
+            try? await Task.sleep(for: .milliseconds(300))     // let the sheet or row settle first
+            showing = true
+        }
+        .help(text)
+        .accessibilityLabel(text)
+    }
+}
+
+/// A pop-up menu that keeps to its size: an icon and a title that's cut short with "…" rather
+/// than pushing the form (or the whole sheet) wider.
+struct CompactMenu<Content: View>: View {
+    let title: String
+    var symbol: String?
+    var maxWidth: CGFloat = 200
+    @ViewBuilder var content: Content
+    @Environment(\.impTint) private var tint
+    @State private var hover = false
+
+    var body: some View {
+        Menu { content } label: {
+            HStack(spacing: 6) {
+                if let symbol {
+                    Image(systemName: symbol).font(.system(size: 11, weight: .semibold)).foregroundStyle(tint)
+                }
+                Text(title)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .lineLimit(1).truncationMode(.tail)
+                    .frame(maxWidth: maxWidth - 50, alignment: .leading)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 8, weight: .bold)).foregroundStyle(Dungeon.muted)
+            }
+            .foregroundStyle(Dungeon.cream)
+            .padding(.horizontal, 10)
+            .frame(height: 26)
+            .background(Capsule().fill(Color.white.opacity(hover ? 0.1 : 0.06)))
+            .overlay(Capsule().strokeBorder(Dungeon.cardEdge))
+            .contentShape(Capsule())
+        }
+        .menuStyle(.button)
+        .buttonStyle(.plain)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .onHover { hover = $0 }
+        .animation(.easeOut(duration: 0.12), value: hover)
+        .help(title)
+    }
+}
