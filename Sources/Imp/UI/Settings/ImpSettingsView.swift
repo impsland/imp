@@ -36,7 +36,9 @@ struct ImpSettingsView: View {
                 .padding(.bottom, 12)
             SettingsPage {
                 switch router.impTab {
-                case .me: LooksTab(imp: imp)
+                case .me:
+                    LooksTab(imp: imp)
+                    GoodbyeCard(model: model, router: router, id: id)
                 case .brain: BrainTab(model: model, imp: imp)
                 case .tools: ToolsTab(model: model, imp: imp)
                 case .shortcuts: ShortcutsTab(model: model, id: id)
@@ -55,6 +57,39 @@ struct ImpSettingsView: View {
             StageImp(hue: profile.hue, mood: .happy, performance: performance, clock: BodyClock(profile.id))
         } else {
             ImpPortrait(face: impFace(hue: profile.hue, mood: .happy), shadow: false)
+        }
+    }
+}
+
+/// Removing this Imp for good, at the foot of its Looks page (the stage's menu has it too).
+private struct GoodbyeCard: View {
+    @Bindable var model: AppModel
+    @Bindable var router: HomeRouter
+    let id: UUID
+    @State private var confirming = false
+
+    private var name: String { model.profile(id).map { $0.name.isEmpty ? "this Imp" : $0.name } ?? "this Imp" }
+    private var isLast: Bool { model.prefs.imps.count <= 1 }
+
+    var body: some View {
+        Card("Goodbye", icon: "hand.wave.fill") {
+            Row("Say goodbye to \(name)", info: isLast
+                ? "The last Imp can't leave. Hatch another first, or start over from All Imps › Manners."
+                : "Its looks, brain settings, tools, folder, chats and triggers go with it.") {
+                Button(role: .destructive) { confirming = true } label: { Label("Say Goodbye…", systemImage: "trash") }
+                    .buttonStyle(.imp(.destructive, small: true))
+                    .disabled(isLast)
+                    .help(isLast ? "The last Imp stays" : "Remove \(name) for good")
+            }
+        }
+        .confirmationDialog("Say goodbye to \(name)?", isPresented: $confirming, titleVisibility: .visible) {
+            Button("Say Goodbye", role: .destructive) {
+                guard let next = model.sayGoodbye(id) else { return }
+                router.select(next)
+                router.goHome()
+            }
+        } message: {
+            Text("Its looks, brain settings, tools, folder and shortcuts go with it. This can't be undone.")
         }
     }
 }

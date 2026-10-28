@@ -33,18 +33,19 @@ final class Dictation {
     private let log = Logger(subsystem: "app.imp.Imp", category: "dictation")
 
     /// Asks only when macOS hasn't asked yet. Otherwise answers immediately from the cached status.
+    /// The handlers are `@Sendable`: macOS calls them off the main thread (see `Permission.request`).
     static func requestPermissions() async throws {
         switch AVCaptureDevice.authorizationStatus(for: .audio) {
         case .authorized: break
         case .notDetermined:
-            let granted = await withCheckedContinuation { c in AVCaptureDevice.requestAccess(for: .audio) { c.resume(returning: $0) } }
+            let granted = await withCheckedContinuation { c in AVCaptureDevice.requestAccess(for: .audio) { @Sendable in c.resume(returning: $0) } }
             guard granted else { throw Failure.microphoneDenied }
         default: throw Failure.microphoneDenied
         }
         switch SFSpeechRecognizer.authorizationStatus() {
         case .authorized: break
         case .notDetermined:
-            let status = await withCheckedContinuation { c in SFSpeechRecognizer.requestAuthorization { c.resume(returning: $0) } }
+            let status = await withCheckedContinuation { c in SFSpeechRecognizer.requestAuthorization { @Sendable in c.resume(returning: $0) } }
             guard status == .authorized else { throw Failure.speechDenied }
         default: throw Failure.speechDenied
         }
@@ -82,7 +83,7 @@ final class Dictation {
         try engine.start()
         isRunning = true
 
-        task = recognizer.recognitionTask(with: request) { [weak self] result, error in
+        task = recognizer.recognitionTask(with: request) { @Sendable [weak self] result, error in
             let text = result?.bestTranscription.formattedString
             let isFinal = result?.isFinal ?? false
             let failed = error != nil

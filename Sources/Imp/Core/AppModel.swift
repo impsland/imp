@@ -37,6 +37,9 @@ final class AppModel {
     /// Flies an activated Imp's window to a screen point (back into the app's window), then calls back.
     @ObservationIgnored var flyHome: ((UUID, CGPoint, @escaping @MainActor () -> Void) -> Void)?
     @ObservationIgnored private var started = false
+    /// Everything was just wiped (see `resetToFirstLaunch`): never save again in this run.
+    @ObservationIgnored private var erased = false
+    @ObservationIgnored private let log = Logger(subsystem: "app.imp.Imp", category: "app")
 
     /// Nil for offscreen design renders, which must never touch the user's saved preferences.
     @ObservationIgnored private let store: PreferencesStore?
@@ -68,6 +71,8 @@ final class AppModel {
 
     func start() {
         started = true
+        // Ask the user's shell for its PATH now, so the first tool server or command doesn't wait.
+        Task.detached(priority: .utility) { _ = await LoginEnvironment.resolved() }
         Self.applyAppearance(prefs.appearance)
         assistant.configure(ai: prefs.ai, servers: prefs.liveServers, keychain: prefs.keysInKeychain)
         reactions.apply(prefs)
@@ -106,7 +111,7 @@ final class AppModel {
     static let rest: TimeInterval = 60
 
     private func apply(_ p: ImpPreferences, previous old: ImpPreferences) {
-        store?.save(p)
+        if !erased { store?.save(p) }
         if p.liveShortcuts.map(\.keys) != old.liveShortcuts.map(\.keys) { registerHotkeys() }
         if p.appearance != old.appearance { Self.applyAppearance(p.appearance) }
         if p.watchesCursor != old.watchesCursor { reactions.apply(p) }
@@ -235,6 +240,47 @@ final class AppModel {
         prefs = p
         try? FileManager.default.removeItem(at: Workspace.directory(for: id))
         try? FileManager.default.removeItem(at: ChatHistory.folder(for: id))
+    }
+
+    /// Calls an Imp in and removes it for good (never the last one). Returns the Imp that took
+    /// its place in the line, to show next.
+    @discardableResult
+    func sayGoodbye(_ id: UUID) -> UUID? {
+        guard prefs.imps.count > 1, let i = prefs.imps.firstIndex(where: { $0.id == id }) else { return nil }
+        setActive(id, false)
+        removeImp(id)
+        let ids = prefs.imps.map(\.id)
+        return ids[min(i, ids.count - 1)]
+    }
+
+    /// Back to the very first launch: every Imp, service, key, borrowed tool, trigger, chat and
+    /// setting goes, Imp stops opening at login and forgets its macOS permissions, then quits and
+    /// opens again fresh. Nothing is saved after this (the wipe must not be undone on the way out).
+    func resetToFirstLaunch() {
+        guard persists else { return }
+        erased = true
+        if dictation.isRunning { dictation.cancel() }
+        if LoginItem.isEnabled { try? LoginItem.set(false) }
+        let left = FactoryReset.app().erase()
+        if !left.isEmpty { log.error("Reset left behind: \(left.joined(separator: ", "), privacy: .public)") }
+        Self.relaunchAfterExit(resettingPermissions: Bundle.main.bundleIdentifier)
+        exit(0)                              // not terminate: nothing may write settings back on the way out
+    }
+
+    /// Opens this app again once this process has gone. macOS permissions (microphone, speech,
+    /// automation) can only be forgotten from outside, so the same helper resets them first.
+    private static func relaunchAfterExit(resettingPermissions bundleID: String?) {
+        let reset = bundleID.map { id in
+            ["Microphone", "SpeechRecognition", "AppleEvents"].map { "/usr/bin/tccutil reset \($0) '\(id)' >/dev/null 2>&1;" }.joined(separator: " ")
+        } ?? ""
+        let script = "while /bin/kill -0 \"$1\" 2>/dev/null; do /bin/sleep 0.2; done; \(reset) /usr/bin/open \"$2\""
+        let helper = Process()
+        helper.executableURL = URL(fileURLWithPath: "/bin/sh")
+        helper.arguments = ["-c", script, "imp-relaunch", String(getpid()), Bundle.main.bundlePath]
+        helper.standardInput = FileHandle.nullDevice
+        helper.standardOutput = FileHandle.nullDevice
+        helper.standardError = FileHandle.nullDevice
+        try? helper.run()
     }
 
     /// Settings and history are read and written (false for offscreen design renders).

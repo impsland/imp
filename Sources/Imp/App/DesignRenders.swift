@@ -137,7 +137,8 @@ enum IconRenderer {
                 .background(Color(nsColor: .windowBackgroundColor)))
         default: AnyView(HomeView(model: model, router: router))
         }
-        let host = NSHostingView(rootView: root)
+        // Sheets get the render's height as their window (there's no app window to hang from).
+        let host = NSHostingView(rootView: root.environment(\.sheetRoom, height))
         let window = NSWindow(contentRect: CGRect(x: -3000, y: -3000, width: width, height: height),
                               styleMask: [.titled, .fullSizeContentView], backing: .buffered, defer: false)
         window.titlebarAppearsTransparent = true

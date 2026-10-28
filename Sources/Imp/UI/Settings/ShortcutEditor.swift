@@ -129,84 +129,80 @@ struct ShortcutSheet: View {
             IconButton(icon: "play.fill", help: "Try it now", size: 28) { model.trigger(shortcut, trying: true) }
                 .disabled(!shortcut.isRunnable)
         } content: {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
-                    if isNew {
-                        EvenGrid(minWidth: 100, spacing: 6) {
-                            ForEach(ShortcutIdea.all) { idea in
-                                ChoiceChip(title: idea.name, icon: idea.icon, picked: shortcut.prompt == idea.prompt) {
-                                    withAnimation(.snappy(duration: 0.2)) {
-                                        shortcut.name = idea.name
-                                        shortcut.prompt = idea.prompt
-                                        shortcut.usesClipboard = idea.usesClipboard
-                                        shortcut.trigger = idea.trigger
-                                        shortcut.command = .ask
-                                    }
-                                }
-                                .help(idea.prompt)
-                            }
-                        }
-                        CardDivider()
-                    }
-                    FieldRow("Name") {
-                        TextField(shortcut.suggestedName == "Untitled" ? "Name" : shortcut.suggestedName, text: $shortcut.name).impField()
-                    }
-                    FieldRow("When") {
-                        HStack(spacing: 8) {
-                            kindMenu(selection: shortcut.trigger.kind, kinds: Trigger.Kind.allCases.filter(\.isEvent)) { kind in
-                                shortcut.trigger = .starter(kind)
-                                if kind.isAmbient { shortcut.usesClipboard = false }
-                            }
-                            TriggerFields(trigger: $shortcut.trigger, hotkey: $shortcut.hotkey)
-                            if let warning = keyWarning { IssueTip(text: warning) }
-                            Spacer(minLength: 0)
-                        }
-                    }
-                    conditions
-                    FieldRow("Do") {
-                        CompactMenu(title: shortcut.command.title, symbol: shortcut.command.symbol) {
-                            ForEach(Shortcut.Command.allCases) { c in
-                                Button { withAnimation(.snappy(duration: 0.2)) { shortcut.command = c } } label: {
-                                    Label(c.title, systemImage: c.symbol)
+            VStack(alignment: .leading, spacing: 12) {
+                if isNew {
+                    EvenGrid(minWidth: 100, spacing: 6) {
+                        ForEach(ShortcutIdea.all) { idea in
+                            ChoiceChip(title: idea.name, icon: idea.icon, picked: shortcut.prompt == idea.prompt) {
+                                withAnimation(.snappy(duration: 0.2)) {
+                                    shortcut.name = idea.name
+                                    shortcut.prompt = idea.prompt
+                                    shortcut.usesClipboard = idea.usesClipboard
+                                    shortcut.trigger = idea.trigger
+                                    shortcut.command = .ask
                                 }
                             }
+                            .help(idea.prompt)
                         }
                     }
-                    if shortcut.command == .ask {
-                        FieldRow("Input") {
-                            EvenGrid(minWidth: 140, spacing: 6) {
-                                ChoiceChip(title: "Clipboard + prompt", icon: "doc.on.clipboard", picked: shortcut.usesClipboard) {
-                                    shortcut.usesClipboard = true
-                                }
-                                .help("Sends what you copied, with your prompt")
-                                ChoiceChip(title: "Prompt only", icon: "text.bubble", picked: !shortcut.usesClipboard) {
-                                    shortcut.usesClipboard = false
-                                }
-                                .help("Sends only your prompt (and what happened)")
-                            }
+                    CardDivider()
+                }
+                FieldRow("Name") {
+                    TextField(shortcut.suggestedName == "Untitled" ? "Name" : shortcut.suggestedName, text: $shortcut.name).impField()
+                }
+                FieldRow("When") {
+                    HStack(spacing: 8) {
+                        kindMenu(selection: shortcut.trigger.kind, kinds: Trigger.Kind.allCases.filter(\.isEvent)) { kind in
+                            shortcut.trigger = .starter(kind)
+                            if kind.isAmbient { shortcut.usesClipboard = false }
                         }
-                        EditorWell(text: $shortcut.prompt,
-                                   placeholder: shortcut.usesClipboard ? "What should \(performerName) do with it?" : "What should \(performerName) do?",
-                                   height: 96)
+                        TriggerFields(trigger: $shortcut.trigger, hotkey: $shortcut.hotkey)
+                        if let warning = keyWarning { IssueTip(text: warning) }
+                        Spacer(minLength: 0)
                     }
-                    FieldRow("For") {
-                        EvenGrid(minWidth: 140, spacing: 6) {
-                            ChoiceChip(title: "Just \(impName)", icon: "person.fill", picked: shortcut.performer != nil) {
-                                shortcut.performer = imp
+                }
+                conditions
+                FieldRow("Do") {
+                    CompactMenu(title: shortcut.command.title, symbol: shortcut.command.symbol) {
+                        ForEach(Shortcut.Command.allCases) { c in
+                            Button { withAnimation(.snappy(duration: 0.2)) { shortcut.command = c } } label: {
+                                Label(c.title, systemImage: c.symbol)
                             }
-                            ChoiceChip(title: "Every Imp", icon: "person.3.fill", picked: shortcut.performer == nil) {
-                                shortcut.performer = nil
-                            }
-                            .help("Clicks go to the Imp you click, everything else to the one you talked to last")
                         }
                     }
                 }
-                .padding(14)
-                .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Dungeon.card))
-                .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Dungeon.cardEdge))
+                if shortcut.command == .ask {
+                    FieldRow("Input") {
+                        EvenGrid(minWidth: 140, spacing: 6) {
+                            ChoiceChip(title: "Clipboard + prompt", icon: "doc.on.clipboard", picked: shortcut.usesClipboard) {
+                                shortcut.usesClipboard = true
+                            }
+                            .help("Sends what you copied, with your prompt")
+                            ChoiceChip(title: "Prompt only", icon: "text.bubble", picked: !shortcut.usesClipboard) {
+                                shortcut.usesClipboard = false
+                            }
+                            .help("Sends only your prompt (and what happened)")
+                        }
+                    }
+                    EditorWell(text: $shortcut.prompt,
+                               placeholder: shortcut.usesClipboard ? "What should \(performerName) do with it?" : "What should \(performerName) do?",
+                               height: 96)
+                }
+                FieldRow("For") {
+                    EvenGrid(minWidth: 140, spacing: 6) {
+                        ChoiceChip(title: "Just \(impName)", icon: "person.fill", picked: shortcut.performer != nil) {
+                            shortcut.performer = imp
+                        }
+                        ChoiceChip(title: "Every Imp", icon: "person.3.fill", picked: shortcut.performer == nil) {
+                            shortcut.performer = nil
+                        }
+                        .help("Clicks go to the Imp you click, everything else to the one you talked to last")
+                    }
+                }
             }
-            .frame(maxHeight: 520)
-            .fixedSize(horizontal: false, vertical: true)
+            .padding(14)
+            .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Dungeon.card))
+            .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Dungeon.cardEdge))
         } footer: {
             if !isNew {
                 HoverIconButton(systemName: "trash", help: "Delete", tint: .red) { confirmingDelete = true }

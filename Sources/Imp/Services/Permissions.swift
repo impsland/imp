@@ -29,15 +29,18 @@ enum Permission: String, CaseIterable, Identifiable, Hashable {
         }
     }
 
+    /// The completion handlers are `@Sendable` on purpose: macOS calls them on a background queue,
+    /// and a closure written here would otherwise be main-actor isolated, which Swift 6 checks at
+    /// run time and turns into a crash (that's how granting Speech Recognition used to quit Imp).
     @MainActor func request() {
         switch self {
         case .microphone:
             if AVCaptureDevice.authorizationStatus(for: .audio) == .notDetermined {
-                AVCaptureDevice.requestAccess(for: .audio) { _ in }
+                AVCaptureDevice.requestAccess(for: .audio) { @Sendable _ in }
             } else { open("Privacy_Microphone") }
         case .speech:
             if SFSpeechRecognizer.authorizationStatus() == .notDetermined {
-                SFSpeechRecognizer.requestAuthorization { _ in }
+                SFSpeechRecognizer.requestAuthorization { @Sendable _ in }
             } else { open("Privacy_SpeechRecognition") }
         }
     }

@@ -52,6 +52,7 @@ private func scratch() -> URL {
     @Test func doesNotWaitForInputOrBackgroundChildren() async throws {
         let dir = scratch()
         defer { try? FileManager.default.removeItem(at: dir) }
+        _ = await LoginEnvironment.resolved()          // the one-off shell lookup isn't what's timed here
         let start = Date()
         // `cat` gets end-of-file at once. A background sleep holding the pipe doesn't keep us waiting.
         let r = try await ShellRunner.run("cat; (sleep 3 &); echo done", in: dir, timeout: 10)

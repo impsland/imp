@@ -446,12 +446,9 @@ struct ImpStage: View {
     }
 
     private func remove(_ id: UUID) {
-        let i = model.prefs.imps.firstIndex { $0.id == id } ?? 0
         deleting = nil
-        model.setActive(id, false)
-        model.removeImp(id)
-        let ids = model.prefs.imps.map(\.id)
-        withAnimation(.snappy) { router.selection = ids[min(i, ids.count - 1)] }
+        guard let next = model.sayGoodbye(id) else { return }
+        withAnimation(.snappy) { router.selection = next }
     }
 }
 

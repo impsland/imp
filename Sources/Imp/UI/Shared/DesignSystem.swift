@@ -429,6 +429,11 @@ struct StatusText: View {
 
 /// Every sheet in the window: the dungeon wall behind, a header (icon, title, ⓘ, an optional
 /// control), the form, and a footer of buttons.
+///
+/// A sheet can't be taller than the window it hangs from, and macOS cuts off whatever doesn't fit
+/// (the buttons, first). So the form sits in a scroll view sized to fit it, and no taller than the
+/// window leaves room for: as it grows (a prompt box appearing, conditions added) the sheet grows
+/// with it, then scrolls, and the header and the buttons always stay in view.
 struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
     let icon: String
     let title: String
@@ -438,9 +443,17 @@ struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
     @ViewBuilder var content: Content
     @ViewBuilder var footer: Footer
     @Environment(\.impTint) private var tint
+    @Environment(\.sheetRoom) private var fixedRoom
+    @State private var windowRoom = SheetRoom.available()
+    @State private var contentHeight: CGFloat = 0
+    @State private var headerHeight: CGFloat = 0
+    @State private var footerHeight: CGFloat = 0
+
+    private static var padding: CGFloat { 18 }
+    private static var spacing: CGFloat { 14 }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: Self.spacing) {
             HStack(spacing: 10) {
                 Image(systemName: icon)
                     .font(.system(size: 14, weight: .semibold)).foregroundStyle(.white)
@@ -452,15 +465,54 @@ struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
                 Spacer(minLength: 8)
                 accessory
             }
-            content
+            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { headerHeight = $0 }
+            ScrollView(.vertical) {
+                VStack(alignment: .leading, spacing: Self.spacing) { content }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
+            }
+            .scrollBounceBehavior(.basedOnSize)
+            .scrollIndicators(.automatic)
+            .frame(height: formHeight)
             HStack(spacing: 8) { footer }
                 .padding(.top, 2)
+                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { footerHeight = $0 }
         }
-        .padding(18)
+        .padding(Self.padding)
         .frame(width: width)
         .background(Dungeon.wall)
         .environment(\.colorScheme, .dark)
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didResizeNotification)) { note in
+            guard let window = note.object as? NSWindow, window === HomeWindow.shared.window else { return }
+            windowRoom = SheetRoom.available()
+        }
     }
+
+    /// The form's own height, or what's left of the window once the header and buttons are in.
+    private var formHeight: CGFloat? {
+        guard contentHeight > 0 else { return nil }
+        let chrome = headerHeight + footerHeight + 2 + Self.padding * 2 + Self.spacing * 2
+        let room = max((fixedRoom ?? windowRoom) - chrome, SheetRoom.minimumForm)
+        return min(contentHeight.rounded(.up), room)
+    }
+}
+
+/// How tall a sheet may be: the app's window, less a margin so the sheet clearly hangs inside it.
+@MainActor
+enum SheetRoom {
+    static let margin: CGFloat = 24
+    /// Never squeeze a form below this (a tiny window scrolls a little more instead).
+    static let minimumForm: CGFloat = 140
+
+    static func available() -> CGFloat {
+        if let window = HomeWindow.shared.window { return window.contentLayoutRect.height - margin }
+        return (NSScreen.main?.visibleFrame.height ?? 800) * 0.8
+    }
+}
+
+extension EnvironmentValues {
+    /// A fixed height for sheets (offscreen design renders, which have no app window to measure).
+    @Entry var sheetRoom: CGFloat? = nil
 }
 
 extension SheetScaffold where Accessory == EmptyView {

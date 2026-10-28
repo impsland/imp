@@ -54,7 +54,7 @@ public actor MCPClient {
     public func close() async {
         reader?.cancel()
         await transport.close()
-        failAll(MCPError.closed)
+        failAll(MCPError.closed(nil))
     }
 
     static func toolResultText(from result: JSONValue) -> String {
@@ -104,7 +104,7 @@ public actor MCPClient {
         for id in Array(pending.keys) { finish(id, .failure(error)) }
     }
 
-    private func transportEnded() { failAll(MCPError.closed) }
+    private func transportEnded() { failAll(MCPError.closed(transport.lastWords)) }
 
     private func handle(_ message: JSONValue) async {
         let id = message["id"]

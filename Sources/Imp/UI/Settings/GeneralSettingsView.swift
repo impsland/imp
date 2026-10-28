@@ -84,6 +84,7 @@ private struct KeysPane: View {
 private struct MannersPane: View {
     @Bindable var model: AppModel
     @State private var loginError: String?
+    @State private var confirmingReset = false
     private var status: SystemStatus { .shared }
 
     var body: some View {
@@ -130,6 +131,18 @@ private struct MannersPane: View {
                         .buttonStyle(.imp(.destructive, small: true))
                 }
             }
+
+            Card("Start over", icon: "arrow.counterclockwise") {
+                Row("Reset to defaults", info: "Back to the very first launch: every Imp, brain service and key, tool (borrowed or made by an Imp), trigger, chat, memory and setting is erased, Imp stops opening at login and macOS forgets its Microphone and Speech permissions. Then Imp opens again, brand new.") {
+                    Button(role: .destructive) { confirmingReset = true } label: { Label("Reset Everything…", systemImage: "arrow.counterclockwise") }
+                        .buttonStyle(.imp(.destructive, small: true))
+                }
+            }
+        }
+        .confirmationDialog("Erase everything and start over?", isPresented: $confirmingReset, titleVisibility: .visible) {
+            Button("Erase and Restart", role: .destructive) { model.resetToFirstLaunch() }
+        } message: {
+            Text("Every Imp, service, API key, tool, trigger, chat and setting is deleted, as if Imp had never run on this Mac. This can't be undone.")
         }
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-/// Runs a command with zsh (a login shell, so the user's PATH applies) in a working folder, with
+/// Runs a command with zsh (a login shell with the user's interactive environment, so their PATH applies) in a working folder, with
 /// a time limit and a cap on how much output comes back. A failing command isn't an error here:
 /// its exit status and output are the result, so the model can read them and try again.
 public enum ShellRunner {
@@ -17,7 +17,8 @@ public enum ShellRunner {
     public static func run(_ command: String, in directory: URL, environment extra: [String: String] = [:],
                            timeout: TimeInterval = defaultTimeout) async throws -> Result {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        var env = ProcessInfo.processInfo.environment
+        // The user's shell environment (nvm, pyenv… from .zshrc), however Imp was opened.
+        var env = await LoginEnvironment.resolved()
         env.merge(extra) { _, new in new }
 
         let process = Process()

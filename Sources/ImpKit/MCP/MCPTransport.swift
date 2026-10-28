@@ -3,7 +3,8 @@ import Foundation
 public enum MCPError: LocalizedError, Sendable {
     case rpc(code: Int, message: String)
     case timeout(String)
-    case closed
+    /// With the server's last words (the end of its stderr), when it left any.
+    case closed(String?)
     case badConfig(String)
     case http(Int, String)
 
@@ -11,7 +12,8 @@ public enum MCPError: LocalizedError, Sendable {
         switch self {
         case .rpc(_, let m): m
         case .timeout(let what): "MCP request timed out (\(what))."
-        case .closed: "The MCP server closed the connection."
+        case .closed(let why?): "The MCP server closed the connection: \(why)"
+        case .closed(nil): "The MCP server closed the connection."
         case .badConfig(let m): m
         case .http(let status, let m): "MCP server answered HTTP \(status). \(m)"
         }
@@ -27,10 +29,13 @@ public protocol MCPTransport: Sendable {
     /// Called once `initialize` succeeded with the negotiated protocol version.
     func initialized(protocolVersion: String)
     func close() async
+    /// Why the link ended, if the server said (a stdio server's stderr). Nil while it's fine.
+    var lastWords: String? { get }
 }
 
 extension MCPTransport {
     public func initialized(protocolVersion: String) {}
+    public var lastWords: String? { nil }
 }
 
 /// Builds the transport a config asks for.
