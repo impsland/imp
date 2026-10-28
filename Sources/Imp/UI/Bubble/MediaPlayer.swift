@@ -52,11 +52,11 @@ private struct LoadedMedia: View {
             }
         }
         .onAppear {
-            guard let key else {
+            guard let key, let owner else {
                 media = media ?? Media(url: url)
                 return
             }
-            let m = Playback.shared.acquire(key, url: url)
+            let m = Playback.shared.acquire(key, url: url, owner: owner)
             media = m
             if autoplay, Playback.shared.mayAutoplay(key) { m.play() }
         }
@@ -200,16 +200,32 @@ private struct VideoFrame<Content: View>: View {
 @MainActor @Observable
 final class Media {
     let player: AVPlayer
-    private(set) var isPlaying = false
+    /// The answer it belongs to (nil: the history), told when it starts or stops playing.
+    let owner: String?
+    private(set) var isPlaying = false {
+        didSet { if isPlaying != oldValue { Playback.shared.changed(self) } }
+    }
     /// "0:12 / 0:45" (just the elapsed time until the length is known).
     private(set) var time: String?
     /// 0…1 of the way through (0 until the length is known).
     private(set) var progress: Double = 0
     @ObservationIgnored private var timeObserver: Any?
     @ObservationIgnored private var endObserver: NSObjectProtocol?
+    @ObservationIgnored private var statusObserver: NSKeyValueObservation?
 
-    init(url: URL) {
+    init(url: URL, owner: String? = nil) {
         player = AVPlayer(url: url)
+        self.owner = owner
+        // What the player really does, however it got there (a video's own controls, the end of
+        // the file): buffering on the way to playing counts as playing.
+        statusObserver = player.observe(\.timeControlStatus) { @Sendable [weak self] _, _ in
+            Task { @MainActor in
+                guard let self, self.statusObserver != nil else { return }
+                let playing = self.player.timeControlStatus != .paused
+                if playing { Playback.shared.playing(self) }
+                self.isPlaying = playing
+            }
+        }
         timeObserver = player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.25, preferredTimescale: 600), queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.tick() }
         }
@@ -241,6 +257,8 @@ final class Media {
         pause()
         if let timeObserver { player.removeTimeObserver(timeObserver) }
         if let endObserver { NotificationCenter.default.removeObserver(endObserver) }
+        statusObserver?.invalidate()
+        statusObserver = nil
         timeObserver = nil
         endObserver = nil
     }
@@ -278,8 +296,11 @@ final class Playback {
     /// Players of answers on screen, with how many views show each.
     private var owned: [String: (media: Media, views: Int)] = [:]
 
-    func acquire(_ key: String, url: URL) -> Media {
-        let entry = owned[key] ?? (Media(url: url), 0)
+    /// Posted (object: the owner) when an answer's player starts or stops playing.
+    static let didChange = Notification.Name("ImpPlaybackDidChange")
+
+    func acquire(_ key: String, url: URL, owner: String) -> Media {
+        let entry = owned[key] ?? (Media(url: url, owner: owner), 0)
         owned[key] = (entry.media, entry.views + 1)
         return entry.media
     }
@@ -295,6 +316,16 @@ final class Playback {
             now.media.stop()
             self.owned[key] = nil
         }
+    }
+
+    /// Something of `owner`'s is playing (or on its way to): its bubble waits.
+    func isPlaying(owner: String) -> Bool {
+        owned.values.contains { $0.media.owner == owner && $0.media.isPlaying }
+    }
+
+    func changed(_ media: Media) {
+        guard let owner = media.owner else { return }
+        NotificationCenter.default.post(name: Self.didChange, object: owner)
     }
 
     /// `media` starts: whatever else was playing pauses.

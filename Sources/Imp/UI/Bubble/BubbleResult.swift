@@ -72,6 +72,7 @@ struct ResultView: View {
     private func toggle() {
         withAnimation(.snappy(duration: 0.2)) { layout.expanded.toggle() }
         if !layout.expanded { layout.customWidth = nil; layout.customTextHeight = nil; layout.showSteps = false }
+        if layout.expanded { model.keepBubble() }           // reading it in full: it waits for you
         layout.onToggle?()
     }
 

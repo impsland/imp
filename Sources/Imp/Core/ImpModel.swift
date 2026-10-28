@@ -20,6 +20,8 @@ final class ImpModel {
     private(set) var bubble: Bubble? {
         didSet {
             if let waiting = activity?.waitingPhase, bubble?.phase != waiting { endWaiting() }
+            // A bubble that went away can't report the pointer leaving it: the next starts fresh.
+            if bubble?.id != oldValue?.id { bubbleHovered = false }
             onBubbleChange?()
         }
     }
@@ -54,6 +56,11 @@ final class ImpModel {
     @ObservationIgnored private var hideTask: Task<Void, Never>?
     /// The current bubble may time out (finished answers, hints and errors, unless shown to stay).
     @ObservationIgnored private var bubbleMayHide = false
+    /// The pointer is on the bubble: it waits for you (the clock starts again when you leave).
+    @ObservationIgnored private var bubbleHovered = false
+    /// The bubble the user made theirs (read in full, moved or resized): it stays until closed.
+    @ObservationIgnored private var keptBubble: UUID?
+    @ObservationIgnored private var playbackObserver: NSObjectProtocol?
     /// Its chats, kept across launches: the one you're in (what the chat shows, and what the
     /// model remembers of it) and the saved ones to go back to.
     private(set) var history: ChatHistory
@@ -94,6 +101,15 @@ final class ImpModel {
         clock = BodyClock(id)
         history = app.persists ? ChatHistory(folder: ChatHistory.folder(for: id))
                                : ChatHistory(folder: nil)
+        // Audio or video in the bubble holds it up while it plays; the clock starts when it stops.
+        playbackObserver = NotificationCenter.default.addObserver(forName: Playback.didChange, object: nil,
+                                                                  queue: .main) { [weak self] note in
+            let owner = note.object as? String
+            MainActor.assumeIsolated {
+                guard let self, let owner, owner == self.bubble?.id.uuidString else { return }
+                self.scheduleHide()
+            }
+        }
     }
 
     var profile: ImpProfile { app.prefs.imps.first { $0.id == id } ?? .imp }
@@ -178,10 +194,13 @@ final class ImpModel {
     }
 
     /// Only a finished bubble times out: never a text box, a listening or thinking bubble, or an
-    /// answer still streaming in (hovering over and off those must not start the clock).
+    /// answer still streaming in (hovering over and off those must not start the clock). Nor
+    /// while you're with it: the pointer is on it, its audio or video plays, or you made it yours.
     private var bubbleCanTimeOut: Bool {
         guard bubbleMayHide, let b = bubble, !b.isStreaming, activity == nil else { return false }
-        return [.result, .error, .hint].contains(b.phase)
+        return BubbleTimeout.mayHide(finished: [.result, .error, .hint].contains(b.phase),
+                                     hovered: bubbleHovered, kept: keptBubble == b.id,
+                                     playing: Playback.shared.isPlaying(owner: b.id.uuidString))
     }
 
     /// (Re)starts the auto-hide clock, if this bubble has one.
@@ -196,7 +215,18 @@ final class ImpModel {
         }
     }
 
-    func pauseAutoHide() { hideTask?.cancel() }
+    /// The pointer came onto the bubble (the clock stops) or left it (it starts over, in full).
+    func bubbleHover(_ inside: Bool) {
+        bubbleHovered = inside
+        scheduleHide()
+    }
+
+    /// The user opened the bubble in full, moved or resized it: it's theirs, it stays till closed.
+    func keepBubble() {
+        guard let id = bubble?.id, keptBubble != id else { return }
+        keptBubble = id
+        scheduleHide()
+    }
 
     /// Closes a text box or listening bubble, if it's showing (work in progress carries on).
     func stopWaitingForUser() {

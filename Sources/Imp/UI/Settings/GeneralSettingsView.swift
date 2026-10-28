@@ -90,7 +90,7 @@ private struct MannersPane: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Metrics.gap) {
             Card("Speech bubbles", icon: "bubble.left.fill") {
-                Row("Hide after", info: "How long an answer stays up. Never while you hover it.") {
+                Row("Hide after", info: "How long an answer stays up, counted from when you're done with it: never while you hover it or its audio or video plays, and not at all once you read it in full or move it.") {
                     Picker("", selection: $model.prefs.bubbleAutoHideSeconds) {
                         Text("15 s").tag(15.0)
                         Text("30 s").tag(30.0)

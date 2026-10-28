@@ -424,6 +424,7 @@ final class Panels {
         if edges.contains(.bottom) { text -= dy }
         // A resized bubble is the user's: it stays where it is, and Imp can go home.
         layout.detached = true
+        model.keepBubble()
         if let r = restOrigin { restOrigin = nil; moveImp(to: r) }
         layout.customWidth = min(max(width, Self.minWidth), screen.width - 2 * BubbleView.margin)
         let chrome = measure(limit: 0).height
@@ -444,6 +445,7 @@ final class Panels {
             return
         }
         layout.detached = true
+        model.keepBubble()
         if let r = restOrigin { restOrigin = nil; moveImp(to: r) }
         updateCloseCorner()
     }

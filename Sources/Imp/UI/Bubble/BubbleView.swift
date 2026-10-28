@@ -93,7 +93,7 @@ struct BubbleCard: View {
         .environment(\.impTint, Color.imp(model.profile.hue))
         .onHover { inside in
             hover = inside
-            inside ? model.pauseAutoHide() : model.scheduleHide()
+            if !measuring { model.bubbleHover(inside) }
         }
     }
 
