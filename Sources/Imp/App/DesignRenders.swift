@@ -229,6 +229,9 @@ enum IconRenderer {
                 BubbleCard(bubble: Bubble(phase: .chat), model: imp, layout: layout, measuring: true)
                 BubbleCard(bubble: Bubble(title: "Talk to Imp", text: "Said it out loud:\n\n![Voice reply](reply.mp3#autoplay)\n\n![The clip](clip.mov)",
                                           phase: .result), model: imp, layout: layout, measuring: true)
+                // Several players: a list of voice notes (they play in turn), two clips side by side in the text.
+                BubbleCard(bubble: Bubble(title: "Voice notes", text: "Three parts:\n\n- Intro ![Part 1](1.mp3#autoplay)\n- ![Part 2](2.mp3#autoplay)\n- Outro ![Part 3](3.m4a#autoplay)\n\n![Before](a.mp4) ![After](b.mov)\n\n> Note ![Waveform](w.png)",
+                                          phase: .result), model: imp, layout: layout, measuring: true)
             }
         }
         let host = NSHostingView(rootView: sheet)

@@ -23,7 +23,8 @@ struct MarkdownView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            ForEach(blocks.indices, id: \.self) { i in block(blocks[i]) }
+            let orders = Self.mediaOrders(blocks)
+            ForEach(blocks.indices, id: \.self) { i in block(blocks[i], order: orders[i]) }
         }
         .coordinateSpace(name: Self.space)
         .onPreferenceChange(MediaSpans.self) { spans in MainActor.assumeIsolated { onMedia?(spans) } }
@@ -45,7 +46,17 @@ struct MarkdownView: View {
         })
     }
 
-    @ViewBuilder private func block(_ block: MarkdownBlock) -> some View {
+    /// Each block's place among the reply's audio and video (0 for the first one, and for other blocks).
+    private static func mediaOrders(_ blocks: [MarkdownBlock]) -> [Int] {
+        var next = 0
+        return blocks.map { block in
+            guard case .media = block else { return 0 }
+            defer { next += 1 }
+            return next
+        }
+    }
+
+    @ViewBuilder private func block(_ block: MarkdownBlock, order: Int) -> some View {
         switch block {
         case .paragraph(let text):
             Text(text)
@@ -75,7 +86,7 @@ struct MarkdownView: View {
             MarkdownTable(table: table, fontSize: fontSize - 1)
         case .media(let url, let title, let kind, let autoplay):
             reporting(MediaView(url: Markdown.resolve(url, base: base), title: title, kind: kind, owner: mediaOwner,
-                                autoplay: autoplay && self.autoplay, measuring: measuring))
+                                order: order, autoplay: autoplay && self.autoplay, measuring: measuring))
         case .rule:
             Divider()
         }
@@ -175,15 +186,22 @@ final class RemoteImages {
     static let shared = RemoteImages()
     private(set) var images: [URL: NSImage] = [:]
     @ObservationIgnored private var tried = Set<URL>()
-    private static let limit = 20
+    /// Kept, oldest first: the oldest goes when there are too many (never all at once, so a reply
+    /// with many pictures doesn't keep losing and reloading them).
+    @ObservationIgnored private var order: [URL] = []
+    private static let limit = 60
 
     /// Loads a picture the first time it's asked for. True if it just arrived.
     func load(_ url: URL) async -> Bool {
-        guard tried.insert(url).inserted,
-              let (data, _) = try? await URLSession.shared.data(from: url),
-              let image = NSImage(data: data) else { return false }
-        if images.count >= Self.limit { images.removeAll(); tried.removeAll() }
+        guard tried.insert(url).inserted else { return false }
+        guard let (data, _) = try? await URLSession.shared.data(from: url), let image = NSImage(data: data) else { return false }
+        while order.count >= Self.limit {
+            let oldest = order.removeFirst()
+            images[oldest] = nil
+            tried.remove(oldest)
+        }
         images[url] = image
+        order.append(url)
         return true
     }
 }

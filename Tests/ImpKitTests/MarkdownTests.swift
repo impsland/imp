@@ -58,6 +58,26 @@ import Testing
         #expect(outline("![v](/tmp/say%20it.m4a#t=3)") == ["audio /tmp/say%20it.m4a v"])   // other fragments: no autoplay
     }
 
+    @Test func severalPlayersInARowStayApartAndInOrder() {
+        #expect(outline("![one](1.mp3#autoplay)![two](2.mp3#autoplay)\n![a](a.mp4)\n![b](b.mp4) ![p](p.png)![q](q.png)")
+                == ["audio 1.mp3 one autoplay", "audio 2.mp3 two autoplay", "video a.mp4 a", "video b.mp4 b", "img p.png p", "img q.png q"])
+    }
+
+    @Test func picturesAndPlayersInListsQuotesHeadingsAndTablesStillShow() {
+        #expect(outline("- first ![a](a.mp3#autoplay)\n- ![b](b.mp3#autoplay) second")
+                == ["0 • first", "audio a.mp3 a autoplay", "0 • second", "audio b.mp3 b autoplay"])
+        #expect(outline("- ![a](a.mp3)\n- ![b](b.mp3)") == ["audio a.mp3 a", "audio b.mp3 b"])
+        #expect(outline("> wise ![q](q.png)") == ["> wise", "img q.png q"])
+        #expect(outline("> ![q](q.mp4)") == ["video q.mp4 q"])
+        #expect(outline("# Song ![s](s.m4a)") == ["h1 Song", "audio s.m4a s"])
+        #expect(outline("| a | b |\n|--|--|\n| ![c](c.png) | ![d](d.mov) |\n\nafter")
+                == ["table 2 [\"a\", \"b\"] [[\"c\", \"d\"]]", "img c.png c", "video d.mov d", "p after"])
+    }
+
+    @Test func aLinkedVideoStillPlays() {
+        #expect(outline("[![v](v.mp4#autoplay)](https://x.com)") == ["video v.mp4 v autoplay"])
+    }
+
     @Test func pathsBecomeFilesInTheImpsFolder() {
         let base = URL(fileURLWithPath: "/Users/me/Imp Folder", isDirectory: true)
         let resolve = { Markdown.resolve(URL(string: $0)!, base: base).absoluteString }

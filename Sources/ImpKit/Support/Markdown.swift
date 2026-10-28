@@ -49,6 +49,8 @@ public enum Markdown {
         }
         var blocks: [MarkdownBlock] = []
         var table: (id: Int, value: MarkdownBlock.Table)?
+        /// Pictures and players found in the table's cells: they follow the table (a cell is too small for them).
+        var tableEmbeds: [MarkdownBlock] = []
         var startedItems = Set<Int>()
 
         func flushTable() {
@@ -57,7 +59,9 @@ public enum Markdown {
             t.header = padded(t.header, to: columns)
             t.rows = t.rows.map { padded($0, to: columns) }
             blocks.append(.table(t))
+            blocks.append(contentsOf: tableEmbeds)
             table = nil
+            tableEmbeds = []
         }
 
         for (intent, range) in doc.runs[\.presentationIntent] {
@@ -71,6 +75,7 @@ public enum Markdown {
                     flushTable()
                     table = (tablePart.identity, .init(alignments: columns.map(alignment), header: [], rows: []))
                 }
+                tableEmbeds += liftingEmbeds(content).embeds
                 var column = 0, row: Int?
                 for part in parts {
                     switch part.kind {
@@ -96,7 +101,9 @@ public enum Markdown {
                 if code.hasSuffix("\n") { code.removeLast() }
                 blocks.append(.code(code))
             case .header(let level)?:
-                blocks.append(.heading(level: level, content))
+                let (text, embeds) = liftingEmbeds(content)
+                blocks.append(.heading(level: level, text))
+                blocks.append(contentsOf: embeds)
             case .thematicBreak?:
                 blocks.append(.rule)
             default:
@@ -108,9 +115,17 @@ public enum Markdown {
                         if case .orderedList? = lists.first?.kind { marker = "\(ordinal)." }
                         else { marker = depth == 0 ? "•" : "◦" }
                     }
-                    blocks.append(.listItem(marker: marker, depth: depth, content))
+                    // A picture or player in an item sits right under it (a list of voice notes).
+                    let (text, embeds) = liftingEmbeds(content)
+                    // An item that's only a player is the player (no lone bullet above it).
+                    if embeds.isEmpty || !text.characters.allSatisfy(\.isWhitespace) {
+                        blocks.append(.listItem(marker: marker, depth: depth, text))
+                    }
+                    blocks.append(contentsOf: embeds)
                 } else if parts.contains(where: { $0.kind == .blockQuote }) {
-                    blocks.append(.quote(content))
+                    let (text, embeds) = liftingEmbeds(content)
+                    if !text.characters.allSatisfy(\.isWhitespace) { blocks.append(.quote(text)) }
+                    blocks.append(contentsOf: embeds)
                 } else {
                     blocks.append(contentsOf: splittingImages(content))
                 }
@@ -185,24 +200,45 @@ public enum Markdown {
         for (url, range) in content.runs[\.imageURL] {
             if let url {
                 flushText()
-                let alt = String(content[range].characters)
-                if url.scheme == linkedImage, let parts = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems,
-                   let picture = parts.first(where: { $0.name == "src" })?.value.flatMap(URL.init(string:)) {
-                    blocks.append(.image(url: picture, alt: alt, link: parts.first(where: { $0.name == "href" })?.value.flatMap(URL.init(string:))))
-                } else if let kind = MarkdownBlock.MediaKind(url) {
-                    let autoplay = url.fragment?.lowercased() == "autoplay"
-                    var c = URLComponents(url: url, resolvingAgainstBaseURL: false)
-                    c?.fragment = nil
-                    blocks.append(.media(url: c?.url ?? url, title: alt, kind: kind, autoplay: autoplay))
-                } else {
-                    blocks.append(.image(url: url, alt: alt, link: nil))
-                }
+                blocks.append(embed(url, alt: String(content[range].characters)))
             } else {
                 text.append(content[range])
             }
         }
         flushText()
         return blocks
+    }
+
+    /// Text that can't hold a picture (a list item, quote, heading or table cell) keeps its words;
+    /// its pictures and players come out as blocks of their own, in order.
+    static func liftingEmbeds(_ content: AttributedString) -> (text: AttributedString, embeds: [MarkdownBlock]) {
+        guard content.runs[\.imageURL].contains(where: { $0.0 != nil }) else { return (content, []) }
+        var text = AttributedString()
+        var embeds: [MarkdownBlock] = []
+        for (url, range) in content.runs[\.imageURL] {
+            if let url { embeds.append(embed(url, alt: String(content[range].characters))) } else { text.append(content[range]) }
+        }
+        let chars = text.characters
+        if let first = chars.firstIndex(where: { !$0.isWhitespace }), let last = chars.lastIndex(where: { !$0.isWhitespace }) {
+            text = AttributedString(text[first...last])
+        } else {
+            text = AttributedString()
+        }
+        return (text, embeds)
+    }
+
+    /// A picture, or audio or video by its file's extension (a linked one plays; its link is dropped).
+    private static func embed(_ url: URL, alt: String) -> MarkdownBlock {
+        if url.scheme == linkedImage, let parts = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems,
+           let picture = parts.first(where: { $0.name == "src" })?.value.flatMap(URL.init(string:)) {
+            if MarkdownBlock.MediaKind(picture) != nil { return embed(picture, alt: alt) }
+            return .image(url: picture, alt: alt, link: parts.first(where: { $0.name == "href" })?.value.flatMap(URL.init(string:)))
+        }
+        guard let kind = MarkdownBlock.MediaKind(url) else { return .image(url: url, alt: alt, link: nil) }
+        let autoplay = url.fragment?.lowercased() == "autoplay"
+        var c = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        c?.fragment = nil
+        return .media(url: c?.url ?? url, title: alt, kind: kind, autoplay: autoplay)
     }
 
     private static func alignment(_ column: PresentationIntent.TableColumn) -> MarkdownBlock.Table.Alignment {
