@@ -105,6 +105,16 @@ private struct MannersPane: View {
                     Toggle("", isOn: $model.prefs.autoplaysMedia).labelsHidden().toggleStyle(.switch).controlSize(.small)
                 }
                 CardDivider()
+                Row("Voice answers", info: "How audio shows in a speech bubble: its edge glows with the Imp's voice, a puff of smoke breathes with it (click it to pause), both, or a player for each file. The chat always has players.") {
+                    Picker("", selection: $model.prefs.voiceStyle) {
+                        Text("Both").tag(VoiceStyle.both)
+                        Text("Glow").tag(VoiceStyle.glow)
+                        Text("Smoke").tag(VoiceStyle.orb)
+                        Text("Players").tag(VoiceStyle.players)
+                    }
+                    .pickerStyle(.segmented).labelsHidden().fixedSize()
+                }
+                CardDivider()
                 Row("Bubbles and menus", info: "Light, dark, or like the rest of your Mac.") {
                     Picker("", selection: $model.prefs.appearance) {
                         Text("Auto").tag(Appearance.system)

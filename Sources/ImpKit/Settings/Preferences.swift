@@ -42,6 +42,12 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     }
     /// Optional, so settings saved before it existed still load (a missing key is nil).
     private var mediaAutoplay: Bool?
+    /// How an answer's audio shows in the speech bubble (the chat always has players).
+    public var voiceStyle: VoiceStyle {
+        get { voice ?? .both }
+        set { voice = newValue }
+    }
+    private var voice: VoiceStyle?
     /// Keeps API keys in the login Keychain instead of a private file. Off unless the user turns it
     /// on: macOS may ask for their password when Imp reads a key from there (after an update, say).
     public var keysInKeychain: Bool {

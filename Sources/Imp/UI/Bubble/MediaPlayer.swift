@@ -17,12 +17,14 @@ struct MediaView: View {
     /// The Imp asked for it to start on its own (`#autoplay`), and that's allowed here.
     let autoplay: Bool
     var measuring = false
+    /// Heard, not seen: the bubble shows the Imp speaking instead (`VoiceAura`, `VoiceOrb`).
+    var hidden = false
 
     var body: some View {
         if measuring {
-            placeholder         // the same size, without loading anything
+            if !hidden { placeholder }      // the same size, without loading anything
         } else {
-            LoadedMedia(url: url, title: title, kind: kind, owner: owner, order: order, autoplay: autoplay)
+            LoadedMedia(url: url, title: title, kind: kind, owner: owner, order: order, autoplay: autoplay, hidden: hidden)
         }
     }
 
@@ -41,9 +43,34 @@ private struct LoadedMedia: View {
     let owner: String?
     let order: Int
     let autoplay: Bool
+    let hidden: Bool
     @State private var media: Media?
 
     var body: some View {
+        Group {
+            if hidden {
+                Color.clear.frame(width: 1, height: 1).accessibilityHidden(true)
+            } else {
+                visible
+            }
+        }
+        .onAppear {
+            guard let owner else {
+                media = media ?? Media(url: url, kind: kind, slot: nil)
+                return
+            }
+            let m = Playback.shared.acquire(owner: owner, order: order, url: url, kind: kind)
+            media = m
+            if autoplay { Playback.shared.autoplay(m) }
+        }
+        .onDisappear {
+            // The answer's player stops once no view shows it any more (the bubble closed or
+            // moved on); a history player stops with its view.
+            if let media, let slot = media.slot { Playback.shared.release(slot.id) } else { media?.stop(); media = nil }
+        }
+    }
+
+    @ViewBuilder private var visible: some View {
         Group {
             switch kind {
             case .audio:
@@ -56,20 +83,6 @@ private struct LoadedMedia: View {
                     else { Color.black.opacity(0.15).overlay { if media?.failed == true { Unplayable(title: title) } } }
                 }
             }
-        }
-        .onAppear {
-            guard let owner else {
-                media = media ?? Media(url: url, slot: nil)
-                return
-            }
-            let m = Playback.shared.acquire(owner: owner, order: order, url: url)
-            media = m
-            if autoplay { Playback.shared.autoplay(m) }
-        }
-        .onDisappear {
-            // The answer's player stops once no view shows it any more (the bubble closed or
-            // moved on); a history player stops with its view.
-            if let media, let slot = media.slot { Playback.shared.release(slot.id) } else { media?.stop(); media = nil }
         }
     }
 }
@@ -225,6 +238,7 @@ final class Media {
     typealias Slot = MediaQueue<String>.Item
 
     let player: AVPlayer
+    let kind: MarkdownBlock.MediaKind
     /// Where it sits in an answer (nil: a player of the history's own).
     let slot: Slot?
     /// Playing, or buffering on the way to it. Its answer is told when this changes.
@@ -239,6 +253,8 @@ final class Media {
     private(set) var time: String?
     /// 0…1 of the way through (0 until the length is known).
     private(set) var progress: Double = 0
+    /// How loud it is over time (audio files on this Mac, measured once it's made).
+    @ObservationIgnored private var envelope: VoiceEnvelope?
     /// Stopped partway (paused, not at the start): its answer's next one waits for it.
     var isMidway: Bool { !failed && (isPlaying || player.currentTime().seconds > 0.05) }
     @ObservationIgnored private var timeObserver: Any?
@@ -246,8 +262,9 @@ final class Media {
     @ObservationIgnored private var watches: [NSKeyValueObservation] = []
     @ObservationIgnored private var stopped = false
 
-    init(url: URL, slot: Slot?) {
+    init(url: URL, kind: MarkdownBlock.MediaKind, slot: Slot?) {
         self.slot = slot
+        self.kind = kind
         let item = AVPlayerItem(url: url)
         player = AVPlayer(playerItem: item)
         player.actionAtItemEnd = .pause
@@ -268,6 +285,37 @@ final class Media {
         watches.append(item.observe(\.status) { @Sendable [weak self] _, _ in
             Task { @MainActor in self?.syncStatus() }
         })
+        if kind == .audio, url.isFileURL {
+            Task { [weak self] in
+                let envelope = await Task.detached(priority: .utility) { Self.measure(url) }.value
+                self?.envelope = envelope
+            }
+        }
+    }
+
+    /// How loud it is right now, 0…1 (0 while it doesn't play). `t` drives a made-up voice for a
+    /// file that couldn't be measured (streamed from the web).
+    func level(at t: Double) -> Double {
+        guard isPlaying, !failed else { return 0 }
+        guard let envelope else { return VoiceEnvelope.speechLike(at: t) }
+        return envelope.level(at: player.currentTime().seconds)
+    }
+
+    /// Reads the whole file once, ~30 loudness frames a second (at most an hour of it).
+    nonisolated private static func measure(_ url: URL) -> VoiceEnvelope? {
+        guard let file = try? AVAudioFile(forReading: url) else { return nil }
+        let format = file.processingFormat
+        let window = AVAudioFrameCount(max(format.sampleRate / 30, 64))
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: window) else { return nil }
+        let rate = format.sampleRate / Double(window)
+        var rms: [Double] = []
+        while file.framePosition < file.length, rms.count < Int(rate * 3600) {
+            guard (try? file.read(into: buffer, frameCount: window)) != nil, buffer.frameLength > 0,
+                  let channels = buffer.floatChannelData else { break }
+            let count = Int(buffer.frameLength), n = max(Int(format.channelCount), 1)
+            rms.append((0..<n).map { VoiceEnvelope.rms(UnsafeBufferPointer(start: channels[$0], count: count)) }.reduce(0, +) / Double(n))
+        }
+        return rms.isEmpty ? nil : VoiceEnvelope(rms: rms, rate: rate)
     }
 
     func toggle() { isPlaying ? pause() : play() }
@@ -368,9 +416,9 @@ final class Playback {
     private var owned: [String: (media: Media, views: Int)] = [:]
 
     /// The answer's player at `order`, made the first time a view asks.
-    func acquire(owner: String, order: Int, url: URL) -> Media {
+    func acquire(owner: String, order: Int, url: URL, kind: MarkdownBlock.MediaKind) -> Media {
         let key = "\(owner) \(order) \(url.absoluteString)"
-        let entry = owned[key] ?? (Media(url: url, slot: .init(id: key, owner: owner, order: order)), 0)
+        let entry = owned[key] ?? (Media(url: url, kind: kind, slot: .init(id: key, owner: owner, order: order)), 0)
         owned[key] = (entry.media, entry.views + 1)
         return entry.media
     }
@@ -387,6 +435,15 @@ final class Playback {
             self.owned[key] = nil
             self.queue.remove(key)
         }
+    }
+
+    /// The voice `owner` speaks with right now: the audio that plays, else the last one that did,
+    /// else its first one that can play (nil: it has none, or none has loaded yet).
+    func voice(owner: String) -> Media? {
+        let voices = owned.values.map(\.media).filter { $0.owner == owner && $0.kind == .audio }
+        if let playing = voices.first(where: \.isPlaying) { return playing }
+        if let current, current.owner == owner, current.kind == .audio { return current }
+        return voices.filter { !$0.failed }.min { ($0.slot?.order ?? 0) < ($1.slot?.order ?? 0) } ?? voices.first
     }
 
     /// Posted (object: the owner) when an answer's player starts or stops playing.

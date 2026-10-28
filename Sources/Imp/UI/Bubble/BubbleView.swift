@@ -84,6 +84,13 @@ struct BubbleCard: View {
                             .animation(.easeOut(duration: 0.15), value: closeVisible)
                     }
                 }
+                // A voice answer with more than its voice: the puff of smoke sits on the top edge.
+                .overlay(alignment: .top) {
+                    if let voice, voice.hasOrb, !Markdown.isOnlyVoice(Markdown.blocks(bubble.text)) {
+                        VoiceOrb(look: look, owner: bubble.id.uuidString, measuring: measuring)
+                            .offset(y: -13)
+                    }
+                }
             // The chat is a panel, not a speech bubble: no tail (its room stays, so it doesn't jump).
             Trail(offset: layout.tailX, width: width)
                 .opacity(layout.detached || bubble.phase == .chat ? 0 : 1)
@@ -122,6 +129,10 @@ struct BubbleCard: View {
         }
     }
 
+    /// How this answer shows its audio, if it speaks (see `VoiceReply`).
+    private var voice: VoiceStyle? { VoiceReply.style(bubble, prefs: model.prefs) }
+    private var look: VoiceLook { VoiceLook(hue: model.profile.hue) }
+
     private var card: some View {
         let result = bubble.phase == .result
         return VStack(alignment: .leading, spacing: result ? 4 : 10) {
@@ -150,6 +161,10 @@ struct BubbleCard: View {
                 .gesture(DragGesture(minimumDistance: 3, coordinateSpace: .global)
                     .onChanged { _ in layout.onDrag?(false) }
                     .onEnded { _ in layout.onDrag?(true) })
+            // Speaking: the edge glows with the voice (behind the text, and it never takes a click).
+            if let voice, voice.glows {
+                VoiceAura(look: look, owner: bubble.id.uuidString, measuring: measuring)
+            }
         }
     }
 }

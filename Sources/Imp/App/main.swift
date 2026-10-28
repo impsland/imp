@@ -48,6 +48,10 @@ if let url = argument(after: "--render-bubble") {
     }
     exit(0)
 }
+if let url = argument(after: "--render-voice") {
+    MainActor.assumeIsolated { IconRenderer.renderVoice(to: url, dark: args.contains("dark")) }
+    exit(0)
+}
 if let url = argument(after: "--render-egg") {
     MainActor.assumeIsolated { IconRenderer.renderEgg(to: url) }
     exit(0)

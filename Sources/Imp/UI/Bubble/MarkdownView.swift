@@ -16,6 +16,9 @@ struct MarkdownView: View {
     var mediaOwner: String?
     /// Audio and video the Imp marked `#autoplay` may start on their own.
     var autoplay = false
+    /// Audio is heard, not shown: its players run out of sight while the bubble shows the Imp
+    /// speaking (the speech bubble's voice styles). Videos and pictures still show.
+    var voice = false
     /// Measuring the bubble: nothing loads.
     var measuring = false
     /// The tallest a picture gets.
@@ -24,7 +27,17 @@ struct MarkdownView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             let orders = Self.mediaOrders(blocks)
-            ForEach(blocks.indices, id: \.self) { i in block(blocks[i], order: orders[i]) }
+            ForEach(blocks.indices.filter { !heardOnly(blocks[$0]) }, id: \.self) { i in block(blocks[i], order: orders[i]) }
+        }
+        // Heard-only audio keeps its place in the order (so turns and players stay the same), but no room.
+        .background(alignment: .topLeading) {
+            let orders = Self.mediaOrders(blocks)
+            ForEach(blocks.indices.filter { heardOnly(blocks[$0]) }, id: \.self) { i in
+                if case .media(let url, let title, let kind, let autoplay) = blocks[i] {
+                    MediaView(url: Markdown.resolve(url, base: base), title: title, kind: kind, owner: mediaOwner,
+                              order: orders[i], autoplay: autoplay && self.autoplay, measuring: measuring, hidden: true)
+                }
+            }
         }
         .coordinateSpace(name: Self.space)
         .onPreferenceChange(MediaSpans.self) { spans in MainActor.assumeIsolated { onMedia?(spans) } }
@@ -37,6 +50,11 @@ struct MarkdownView: View {
     }
 
     private static let space = "markdown"
+
+    private func heardOnly(_ block: MarkdownBlock) -> Bool {
+        guard voice, case .media(_, _, .audio, _) = block else { return false }
+        return true
+    }
 
     /// Reports where a picture or video sits, for cutting the reply short between blocks.
     private func reporting<V: View>(_ view: V) -> some View {

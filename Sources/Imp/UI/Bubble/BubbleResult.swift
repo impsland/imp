@@ -14,45 +14,60 @@ struct ResultView: View {
 
     var body: some View {
         if !bubble.text.isEmpty {
-            let reply = MarkdownView(blocks: Markdown.blocks(bubble.text), base: Workspace.directory(for: model.id),
+            let blocks = Markdown.blocks(bubble.text)
+            let voice = VoiceReply.style(bubble, prefs: model.prefs) != nil
+            let reply = MarkdownView(blocks: blocks, base: Workspace.directory(for: model.id),
                                      onImageLoad: measuring ? nil : { layout.onToggle?() },
                                      onMedia: measuring ? { layout.mediaSpans = $0 } : nil,
-                                     mediaOwner: bubble.id.uuidString, autoplay: model.prefs.autoplaysMedia, measuring: measuring)
-            let text = reply
-                .textSelection(.enabled)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            if let limit = layout.textLimit {
-                if layout.expanded {
-                    ReadingScroll(height: limit) { text.padding(.trailing, 10).padding(.bottom, 14) }
-                } else if layout.mediaSpans.contains(where: { abs($0.bottom - limit) < 1 }) {
-                    // Cut right below a picture: the picture shows whole, "Read all" waits under it.
-                    VStack(spacing: 6) {
-                        reply
-                            .fixedSize(horizontal: false, vertical: true)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .frame(height: limit, alignment: .top)
-                            .clipped()
-                        readAll
-                    }
-                } else {
-                    // A long reply, cut short: it fades out, with a way to read the rest.
-                    // (Not selectable here, so the text doesn't fight "Read all" for the cursor.)
+                                     mediaOwner: bubble.id.uuidString, autoplay: model.prefs.autoplaysMedia,
+                                     voice: voice, measuring: measuring)
+            if voice && Markdown.isOnlyVoice(blocks) {
+                // Nothing but a voice: the puff of smoke is the answer, in the middle of the card.
+                VoiceOrb(look: VoiceLook(hue: model.profile.hue), owner: bubble.id.uuidString, size: 56, measuring: measuring)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background { reply }
+            } else {
+                answer(reply)
+            }
+        }
+        if layout.expanded && layout.showSteps { StepList(steps: bubble.steps, layout: layout, animated: false) }
+        if Self.hasFooter(bubble, layout) { footer }
+    }
+
+    @ViewBuilder private func answer(_ reply: MarkdownView) -> some View {
+        let text = reply
+            .textSelection(.enabled)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        if let limit = layout.textLimit {
+            if layout.expanded {
+                ReadingScroll(height: limit) { text.padding(.trailing, 10).padding(.bottom, 14) }
+            } else if layout.mediaSpans.contains(where: { abs($0.bottom - limit) < 1 }) {
+                // Cut right below a picture: the picture shows whole, "Read all" waits under it.
+                VStack(spacing: 6) {
                     reply
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .frame(height: limit, alignment: .top)
                         .clipped()
-                        .mask(LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.7),
-                                                     .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom))
-                        .overlay(alignment: .bottom) { readAll }
+                    readAll
                 }
             } else {
-                text
+                // A long reply, cut short: it fades out, with a way to read the rest.
+                // (Not selectable here, so the text doesn't fight "Read all" for the cursor.)
+                reply
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(height: limit, alignment: .top)
+                    .clipped()
+                    .mask(LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.7),
+                                                 .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom))
+                    .overlay(alignment: .bottom) { readAll }
             }
+        } else {
+            text
         }
-        if layout.expanded && layout.showSteps { StepList(steps: bubble.steps, layout: layout, animated: false) }
-        if Self.hasFooter(bubble, layout) { footer }
     }
 
     private var readAll: some View {

@@ -229,7 +229,10 @@ enum IconRenderer {
                 BubbleCard(bubble: Bubble(phase: .chat), model: imp, layout: layout, measuring: true)
                 BubbleCard(bubble: Bubble(title: "Talk to Imp", text: "Said it out loud:\n\n![Voice reply](reply.mp3#autoplay)\n\n![The clip](clip.mov)",
                                           phase: .result), model: imp, layout: layout, measuring: true)
-                // Several players: a list of voice notes (they play in turn), two clips side by side in the text.
+                // Nothing but a voice: the puff of smoke is the answer.
+                BubbleCard(bubble: Bubble(title: "Talk to Imp", text: "![Voice reply](reply.mp3#autoplay)", phase: .result),
+                           model: imp, layout: layout, measuring: true)
+                // Several voice notes (they play in turn) (they play in turn), two clips side by side in the text.
                 BubbleCard(bubble: Bubble(title: "Voice notes", text: "Three parts:\n\n- Intro ![Part 1](1.mp3#autoplay)\n- ![Part 2](2.mp3#autoplay)\n- Outro ![Part 3](3.m4a#autoplay)\n\n![Before](a.mp4) ![After](b.mov)\n\n> Note ![Waveform](w.png)",
                                           phase: .result), model: imp, layout: layout, measuring: true)
             }
@@ -237,6 +240,42 @@ enum IconRenderer {
         let host = NSHostingView(rootView: sheet)
         host.frame.size = host.fittingSize
         snapshot(host, to: url, dark: dark)
+    }
+
+    /// `Imp --render-voice <file.png> [dark]`: a speaking bubble's glow and smoke for a few Imp
+    /// colours, resting and at rising loudness (a plain card stands in for the glass).
+    static func renderVoice(to url: URL, dark: Bool) {
+        let moments: [(String, VoiceNow)] = [("resting", VoiceNow(media: nil, playing: false, level: 0)),
+                                             ("soft", VoiceNow(media: nil, playing: true, level: 0.25)),
+                                             ("loud", VoiceNow(media: nil, playing: true, level: 0.95))]
+        let card = dark ? Color(white: 0.2) : Color(white: 0.97)
+        let sheet = Grid(horizontalSpacing: 36, verticalSpacing: 40) {
+            ForEach([0.0, 0.58, 0.78, 0.33], id: \.self) { hue in
+                GridRow {
+                    ForEach(moments.indices, id: \.self) { i in
+                        let look = VoiceLook(hue: hue), moment = (t: Double(i) * 1.7 + hue * 10, now: moments[i].1)
+                        VStack(spacing: 14) {
+                            Text("Said it out loud: the weekend in Lisbon, in a minute.")
+                                .font(.system(size: 14)).frame(maxWidth: .infinity, alignment: .leading)
+                            VoiceOrb(look: look, owner: "", size: 56, preview: moment)
+                        }
+                        .padding(14)
+                        .frame(width: 260)
+                        .background {
+                            RoundedRectangle(cornerRadius: 20, style: .continuous).fill(card)
+                            VoiceAura(look: look, owner: "", preview: moment)
+                        }
+                        .overlay(alignment: .top) { VoiceOrb(look: look, owner: "", preview: moment).offset(y: -13) }
+                        .overlay(alignment: .bottom) { Text(moments[i].0).font(.caption).foregroundStyle(.secondary).offset(y: 22) }
+                    }
+                }
+            }
+        }
+        .padding(40)
+        .background(dark ? Color(white: 0.12) : Color(white: 0.88))
+        .environment(\.colorScheme, dark ? .dark : .light)
+        .foregroundStyle(dark ? .white : .black)
+        write(render(sheet, scale: 2), to: url)
     }
 
     private static func snapshot(_ view: NSView, to url: URL, dark: Bool) {
