@@ -151,6 +151,20 @@ private struct MannersPane: View {
                 }
             }
 
+            Card("Back up or move Imps", icon: "shippingbox.fill") {
+                Row("Export all Imps…", info: "Saves every Imp as one .json file: looks, personality, model and service address, tools, triggers (the shared ones too) and the tools they borrow. You can include chats. API keys are never saved: add your services again on the other Mac.") {
+                    Button {
+                        ImpExport.save(Set(model.prefs.imps.map(\.id)), model: model, name: "All Imps", fileName: "Imps", shared: true)
+                    } label: { Label("Export…", systemImage: "square.and.arrow.down") }
+                        .buttonStyle(.imp(.secondary, small: true))
+                }
+                CardDivider()
+                Row("Import…", info: "Add Imps, triggers or tools from a kit file, a link or pasted JSON. You see what's in it, and choose, before anything is added. Imps arrive at home, not out on your desktop.") {
+                    Button { HomeWindow.shared.router.kitFlow = KitFlow(imp: nil) } label: { Label("Import…", systemImage: "square.and.arrow.down.on.square") }
+                        .buttonStyle(.imp(.secondary, small: true))
+                }
+            }
+
             Card("Start over", icon: "arrow.counterclockwise") {
                 Row("Reset to defaults", info: "Back to the very first launch: every Imp, brain service and key, tool (borrowed or made by an Imp), trigger, chat, memory and setting is erased, Imp stops opening at login and macOS forgets its Microphone and Speech permissions. Then Imp opens again, brand new.") {
                     Button(role: .destructive) { confirmingReset = true } label: { Label("Reset Everything…", systemImage: "arrow.counterclockwise") }

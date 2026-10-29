@@ -159,7 +159,18 @@ enum IconRenderer {
         model.addImp()
         let first = model.prefs.imps[0]
         let json = #"""
-        { "imp": 1, "name": "Morning helper", "about": "Starts the day: a plan when the Mac wakes up, a summary on a key, and a notes tool.",
+        { "imp": 2, "app": "1.7.0", "name": "Morning helper", "about": "Starts the day: a plan when the Mac wakes up, a summary on a key, and a notes tool.",
+          "imps": [
+            { "name": "Pip", "hue": 0.57, "favoriteHue": 0.9, "scale": 1,
+              "personality": "A dry-witted morning companion. Short answers, one gentle joke, never before coffee.",
+              "brain": { "model": "gpt-4o", "service": { "name": "OpenAI", "baseURL": "https://api.openai.com/v1" } },
+              "shell": true, "tools": { "body": true, "senses": true, "setup": false, "troupe": true, "computer": true },
+              "mcpServers": ["Notes"],
+              "triggers": [ { "name": "Good morning", "when": {"kind": "start"}, "prompt": "Greet me and say what's on today." } ],
+              "chats": [ { "title": "Plan the week", "turns": [ { "request": "Plan my week", "reply": "Mon: focus. Tue: calls." } ] },
+                         { "title": "Lunch", "turns": [ { "request": "Lunch?", "reply": "Soup." } ] } ] },
+            { "name": "Nib", "hue": 0.25, "personality": "Terse and practical." }
+          ],
           "triggers": [
             { "name": "Plan my day", "when": {"kind": "wake"}, "only_if": [{"kind": "hours", "text": "06:00-11:00"}], "prompt": "Look at my calendar and reminders for today and give me a short plan." },
             { "name": "Summarize", "when": {"kind": "keys", "keys": "ctrl+cmd+S"}, "prompt": "Summarize this in two or three short sentences.", "with_clipboard": true },
@@ -173,9 +184,9 @@ enum IconRenderer {
         model.prefs.shortcuts.append(Shortcut(name: "Mine", hotkey: Hotkey(keyCode: UInt32(kVK_ANSI_S), modifiers: Hotkey.control | Hotkey.command), prompt: "x"))
         let flow = KitFlow(imp: first.id, text: entry ? "" : json)
         if !entry, let kit = try? Kit.parse(json) {
-            flow.review = KitReview(kit: kit, origin: "example.com", existing: model.prefs.shortcuts, target: first.id)
+            flow.review = KitReview(kit: kit, origin: "example.com", existing: model.prefs.shortcuts, services: model.prefs.ai.services, target: nil)
         } else if entry {
-            flow.error = KitError.newerVersion(2).localizedDescription
+            flow.error = KitError.newerVersion(3).localizedDescription
         }
         let tint = Color.imp(first.hue)
         let root = KitFlowSheet(model: model, flow: flow, router: HomeRouter())

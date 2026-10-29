@@ -138,6 +138,15 @@ public struct ChatHistory: Sendable {
         save(chat)
     }
 
+    /// Puts a whole chat that came from elsewhere (a kit) in the list, first, without changing the chat
+    /// you're in. Add them oldest first and the newest ends up on top.
+    public mutating func adopt(_ chat: Chat) { save(chat, first: true) }
+
+    /// Every saved chat, read from its file (the one you're in as it is now), newest first.
+    public func savedChats() -> [Chat] {
+        chats.compactMap { $0.id == current.id ? current : load($0.id) }
+    }
+
     /// The model's recap replaces what it remembered before the last exchange, and shows in the
     /// chat as a turn of its own.
     public mutating func recap(_ summary: String, at date: Date = Date()) {

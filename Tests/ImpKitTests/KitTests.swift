@@ -66,7 +66,7 @@ import Testing
     }
 
     @Test func refusesNewerVersionsAndNonKits() {
-        #expect(throws: KitError.newerVersion(2)) { try Kit.parse(#"{"imp": 2, "triggers": []}"#) }
+        #expect(throws: KitError.newerVersion(3)) { try Kit.parse(#"{"imp": 3, "triggers": []}"#) }
         #expect(throws: KitError.notAKit) { try Kit.parse(#"{"imp": "one"}"#) }
         #expect(throws: KitError.notAKit) { try Kit.parse(#"{"colour": "red"}"#) }
         #expect(throws: KitError.empty) { try Kit.parse("  \n ") }
@@ -217,6 +217,231 @@ import Testing
         #expect(prefs.shortcuts.last?.performer == nil)
         #expect(prefs.imps.allSatisfy { Set($0.servers) == Set(prefs.mcpServers.map(\.id)) })
         #expect(prefs.imps.allSatisfy { $0.servers.count == Set($0.servers).count })
+    }
+}
+
+// MARK: - Imps in kits
+
+extension KitTests {
+    static func troupe() -> (prefs: ImpPreferences, pip: ImpProfile) {
+        var prefs = ImpPreferences()
+        let service = Service(name: "Local", baseURL: "http://localhost:1234/v1", model: "llama-3")
+        prefs.ai.add(service)
+        var notes = MCPServerConfig(name: "Notes", transport: .stdio, command: "npx", arguments: ["-y", "notes"], environment: ["TOKEN": "sekrit"])
+        notes.id = UUID()
+        prefs.mcpServers = [notes]
+        var pip = ImpProfile(name: "Pip", hue: 0.57, favoriteHue: 0.9, scale: 1.35, personality: "Dry wit, short answers.",
+                             brain: Brain(service: service.id, model: "qwen-2"))
+        pip.instructions = "Reply in haiku."
+        pip.usesShell = false
+        pip.setUses(.senses, false)
+        pip.setUses(.computer, true)
+        pip.exchangesSent = 7
+        pip.sendsToolCalls = false
+        pip.servers = [notes.id]
+        prefs.imps = [.waiting, pip]
+        prefs.shortcuts.append(Shortcut(name: "Pip's key", hotkey: Hotkey(parsing: "ctrl+cmd+P"), prompt: "Hello", performer: pip.id))
+        prefs.shortcuts.append(Shortcut(name: "Everyone", prompt: "Shared", usesClipboard: false, trigger: .starter(.wake)))
+        return (prefs, pip)
+    }
+
+    static func chat(_ title: String) -> Chat {
+        let date = Date(timeIntervalSince1970: 1_700_000_000)
+        var memory = ChatMemory()
+        memory.remember([.user("Hi"), .assistant(nil, toolCalls: [ToolCall(id: "c1", name: "x", arguments: "{}")]), .tool(id: "c1", content: "ok"), .assistant("Hello")])
+        let step = ChatTurn.Step(icon: "terminal", title: "ls", request: "ls", response: "a b", failed: false)
+        return Chat(title: title, created: date, turns: [ChatTurn(date: date, request: "Hi", reply: "Hello", steps: [step], via: .typed)], memory: memory)
+    }
+
+    @Test func anImpRoundTrips() throws {
+        let (prefs, pip) = Self.troupe()
+        let kit = Kit.exporting(imps: [pip.id], from: prefs, name: "Pip")
+        let text = kit.json()
+        #expect(!text.contains("sekrit") && !text.contains(pip.id.uuidString))
+        let back = try Kit.parse(text)
+        #expect(back.problems.isEmpty && back.imps.count == 1 && back.servers.map(\.name) == ["Notes"] && back.triggers.isEmpty)
+
+        var target = prefs                                         // the same Mac: the name is taken, the service matches
+        let added = target.add(back, imps: Set(back.imps.map(\.id)), triggers: [], servers: [], for: nil)
+        #expect(added.imps.count == 1 && added.servers == 1 && added.needingSecrets.count == 0)   // Notes already there: reused
+        let new = try #require(target.imps.last)
+        #expect(new.id != pip.id && new.name == "Pip 2" && new.isActive == false && target.imps.count == 3)
+        #expect(new.hue == pip.hue && new.favoriteHue == pip.favoriteHue && new.scale == pip.scale && new.personality == pip.personality)
+        #expect(new.instructions == pip.instructions && new.usesShell == false && new.exchangesSent == 7 && new.remembersToolCalls == false)
+        #expect(ImpToolGroup.allCases.allSatisfy { new.uses($0) == pip.uses($0) } && new.uses(.computer) && !new.uses(.senses))
+        #expect(new.brain == pip.brain)
+        #expect(new.servers == pip.servers && target.mcpServers.count == 1)
+        let mine = target.shortcuts(of: new.id)
+        #expect(mine.count == 1 && mine[0].name == "Pip's key" && mine[0].keys == Hotkey(parsing: "ctrl+cmd+P") && mine[0].id != prefs.shortcuts[0].id)
+        #expect(target.sharedShortcuts.count == prefs.sharedShortcuts.count)      // the shared trigger wasn't in this kit
+        #expect(target.shortcuts(of: pip.id).count == 1)
+    }
+
+    @Test func importsToAnotherMacWithFreshServersAndSecretsBlank() throws {
+        let (prefs, pip) = Self.troupe()
+        let kit = try Kit.parse(Kit.exporting(imps: [pip.id], from: prefs).json())
+        var other = ImpPreferences()
+        let added = other.add(kit, imps: Set(kit.imps.map(\.id)), triggers: [], servers: [], for: nil)
+        let new = try #require(other.imps.last)
+        #expect(new.name == "Pip" && other.imps.count == 2)
+        #expect(added.needingSecrets.count == 1 && other.mcpServers.map(\.environment) == [["TOKEN": ""]])
+        #expect(new.servers == other.mcpServers.map(\.id))
+        #expect(other.ai.services.isEmpty)                                         // never auto-adds a service
+        #expect(new.brain == nil)                                                  // so it follows the default
+    }
+
+    @Test func matchesTheServiceByAddressElseWarns() throws {
+        let (prefs, pip) = Self.troupe()
+        let kit = try Kit.parse(Kit.exporting(imps: [pip.id], from: prefs).json())
+        #expect(kit.imps[0].brain == KitBrain(model: "qwen-2", serviceName: "Local", baseURL: "http://localhost:1234/v1"))
+        // A different Mac with the same service under another name, a slash and other case.
+        var other = ImpPreferences()
+        other.ai.add(Service(name: "My LM Studio", baseURL: "HTTP://localhost:1234/v1/", model: "qwen-2"))
+        #expect(kit.warnings(services: other.ai.services).allSatisfy { $0.kind != .brainMissing })
+        other.add(kit, imps: Set(kit.imps.map(\.id)), triggers: [], servers: [], for: nil)
+        #expect(other.imps.last?.brain == Brain(service: other.ai.services[0].id, model: ""))    // its model is the service's own
+        // Nothing matches: a warning, and the default service.
+        let none = kit.warnings(services: [])
+        let warning = try #require(none.first { $0.kind == .brainMissing })
+        #expect(warning.item == kit.imps[0].id)
+        #expect(warning.text == "Uses qwen-2 on Local, which you haven't added: it will use your default until you set one")
+        #expect(kit.warnings().allSatisfy { $0.kind != .brainMissing })           // services unknown: no claim
+    }
+
+    @Test func warnsWhenComputerControlIsOn() throws {
+        let (prefs, pip) = Self.troupe()
+        let kit = try Kit.parse(Kit.exporting(imps: [pip.id], from: prefs).json())
+        #expect(kit.warnings().contains { $0.kind == .computerControl && $0.item == kit.imps[0].id })
+        let calm = try Kit.parse(#"{"imp": 2, "imps": [{"name": "Calm"}]}"#)
+        #expect(calm.warnings().isEmpty)
+    }
+
+    @Test func namesStayUnique() {
+        #expect(ImpProfile.uniqueName("Pip", avoiding: ["Imp"]) == "Pip")
+        #expect(ImpProfile.uniqueName("Pip", avoiding: ["pip", "Pip 2"]) == "Pip 3")
+        #expect(!ImpProfile.uniqueName("  ", avoiding: []).isEmpty)
+    }
+
+    @Test func chatsRoundTripIntoTheNewImp() throws {
+        let (base, pip) = Self.troupe()
+        var prefs = base
+        let chat = Self.chat("Greeting")
+        var withSender = Self.chat("Other")
+        withSender.turns[0].sender = ChatTurn.Sender(id: UUID(), name: "Nib", hue: 0.3)
+        let peerChat = Chat(title: "With Nib", turns: [ChatTurn(request: "x")], peer: UUID())
+        let kit = Kit.exporting(imps: [pip.id], from: prefs, chats: [pip.id: [chat, withSender, peerChat]])
+        let back = try Kit.parse(kit.json())
+        #expect(back.imps[0].chats.count == 2)                                    // the chat between Imps stays home
+        let got = try #require(back.imps[0].chats.first { $0.title == "Greeting" })
+        #expect(got.id != chat.id && got.turns[0].id != chat.turns[0].id)
+        #expect(got.turns.map(\.request) == ["Hi"] && got.turns[0].reply == "Hello" && got.turns[0].via == .typed)
+        #expect(got.turns[0].steps.map(\.title) == ["ls"] && got.turns[0].steps[0].response == "a b")
+        #expect(got.created == chat.created && got.updated == chat.updated)
+        #expect(got.memory.messages == chat.memory.messages && got.memory.messages.count == 4)
+
+        let added = prefs.add(back, imps: Set(back.imps.map(\.id)), triggers: [], servers: [], for: nil)
+        let imported = try #require(added.imps.first)
+        #expect(imported.chats.count == 2)
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("kit-chats-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: folder) }
+        var history = ChatHistory(folder: folder)
+        for c in imported.chats { history.adopt(c) }
+        let reopened = ChatHistory(folder: folder)
+        #expect(reopened.chats.count == 2 && reopened.savedChats().contains { $0.title == "Greeting" && $0.memory.messages.count == 4 })
+
+        // Left out when the review says so.
+        var again = prefs
+        #expect(again.add(back, imps: Set(back.imps.map(\.id)), triggers: [], servers: [], for: nil, withChats: false).imps[0].chats.isEmpty)
+        // Chats are bigger than a link or address may carry.
+        #expect(back.link == nil)
+    }
+
+    @Test func exportAllCarriesSharedTriggersButNotTheStockClicks() throws {
+        let (prefs, _) = Self.troupe()
+        #expect(prefs.sharedShortcuts.contains { $0.trigger.kind == .clicks })     // the stock ones exist…
+        let kit = Kit.exporting(imps: Set(prefs.imps.map(\.id)), from: prefs, shared: true)
+        #expect(kit.imps.count == 2 && kit.triggers.map(\.name) == ["Everyone"])  // …and aren't exported
+        let back = try Kit.parse(kit.json())
+        #expect(back.imps.map(\.name) == ["Imp", "Pip"] && back.triggers.map(\.name) == ["Everyone"])
+        // Servers only the Imps use are the kit's tools, once.
+        #expect(back.servers.map(\.name) == ["Notes"] && back.imps[1].servers == [back.servers[0].id])
+    }
+
+    @Test func serversSharedByNameStayDistinct() throws {
+        var a = MCPServerConfig(name: "Tool", transport: .stdio, command: "a"), b = MCPServerConfig(name: "Tool", transport: .stdio, command: "b")
+        a.id = UUID(); b.id = UUID()
+        let kit = Kit(servers: [a, b], imps: [KitImp(name: "X", servers: [b.id])])
+        let back = try Kit.parse(kit.json())
+        #expect(back.servers.count == 2)
+        let used = try #require(back.servers.first { $0.id == back.imps[0].servers.first })
+        #expect(used.commandLine == "b")
+    }
+
+    @Test func readsDefaultsAndIgnoresUnknownFields() throws {
+        let kit = try Kit.parse(#"""
+        { "imp": 2, "future": {"x": 1}, "imps": [
+          { "name": "Bare", "mood": "grumpy", "tools": {"body": false, "telepathy": true}, "brain": {"model": "m", "extra": 1} },
+          { "personality": "no name" },
+          { "name": "Wired", "mcpServers": ["Gone"], "triggers": [{"when": {"kind": "teleport"}}] } ] }
+        """#)
+        let bare = kit.imps[0]
+        #expect(bare.hue == 0 && bare.scale == 1 && bare.personality == "" && bare.instructions == nil && bare.usesShell && bare.sendsToolCalls)
+        #expect(bare.uses(.senses) && !bare.uses(.body) && !bare.uses(.computer))
+        #expect(bare.brain == KitBrain(model: "m"))
+        #expect(kit.imps.count == 2 && kit.imps[1].name == "Wired")
+        #expect(kit.problems.count == 3 && kit.problems.contains { $0.hasPrefix("Imp 2:") } && kit.problems.contains { $0.contains("“Gone”") })
+        var prefs = ImpPreferences()
+        prefs.add(kit, imps: Set(kit.imps.map(\.id)), triggers: [], servers: [], for: nil)
+        #expect(prefs.imps.suffix(2).map(\.name) == ["Bare", "Wired"] && prefs.imps[1].brain == Brain(service: nil, model: "m"))
+    }
+
+    @Test func clampsWhatFilesSay() throws {
+        let kit = try Kit.parse(#"{"imp": 2, "imps": [{"name": "Big", "hue": 7, "scale": 100, "exchangesSent": 100000}]}"#)
+        #expect(kit.imps[0].hue == 1 && kit.imps[0].scale == 2 && kit.imps[0].exchangesSent == ChatMemory.storedExchanges)
+        let many = (0...Kit.maxImps).map { #"{"name": "I\#($0)"}"# }.joined(separator: ",")
+        #expect(throws: KitError.tooMany("Imps", Kit.maxImps)) { try Kit.parse(#"{"imp": 2, "imps": [\#(many)]}"#) }
+    }
+
+    // MARK: Versions
+
+    @Test func writersEmitTheLowestVersionThatFits() throws {
+        let plain = Kit(triggers: [Shortcut(name: "T", prompt: "Hi", trigger: .clicks(2))])
+        #expect(plain.formatVersion == 1 && plain.json().hasPrefix("{\n  \"imp\": 1,"))
+        let (prefs, pip) = Self.troupe()
+        let withImp = Kit.exporting(imps: [pip.id], from: prefs)
+        #expect(withImp.formatVersion == 2 && withImp.json().hasPrefix("{\n  \"imp\": 2,"))
+        #expect(Kit(servers: plain.servers).formatVersion == 1)
+    }
+
+    @Test func recordsTheWritingApp() throws {
+        var kit = Kit(imps: [KitImp(name: "A")])
+        #expect(!kit.json().contains("\"app\""))
+        kit.app = "1.7.0"
+        #expect(kit.json().hasPrefix("{\n  \"imp\": 2,\n  \"app\": \"1.7.0\","))
+        #expect(try Kit.parse(kit.json()).app == "1.7.0")
+    }
+
+    @Test func versionOneStillReads() throws {
+        let kit = try Kit.parse(Self.full)
+        #expect(kit.imps.isEmpty && kit.triggers.count == 3 && kit.formatVersion == 1)
+    }
+
+    @Test func versionTwoReads() throws {
+        let kit = try Kit.parse(#"{"imp": 2, "app": "9.9", "imps": [{"name": "A"}]}"#)
+        #expect(kit.imps.map(\.name) == ["A"] && kit.app == "9.9")
+    }
+
+    @Test func aNewerVersionIsRefusedWithAnUpdateMessage() {
+        let error = #expect(throws: KitError.newerVersion(3)) { try Kit.parse(#"{"imp": 3, "imps": [{"name": "A"}]}"#) }
+        #expect(error?.errorDescription == "This kit needs a newer Imp (format 3). Update Imp: brew upgrade --cask imp.")
+        #expect(throws: KitError.newerVersion(99)) { try Kit.parse(#"{"imp": 99}"#) }
+    }
+
+    @Test func fileLimitIsBiggerThanTheDefault() throws {
+        let padding = String(repeating: "a", count: Kit.maxBytes)
+        let text = #"{"imp": 2, "imps": [{"name": "A", "personality": ""# + padding + #""}]}"#
+        #expect(throws: KitError.tooLarge) { try Kit.parse(text) }
+        #expect(try Kit.parse(text, limit: Kit.maxFileBytes).imps.count == 1)
     }
 }
 

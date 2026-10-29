@@ -124,14 +124,24 @@ one can handle private work while another uses a bigger cloud model.
 
 ### Share setups as kits
 
-A kit is triggers and borrowed tools in one piece of JSON, so a setup can be sent to a friend
-instead of described. In Settings, **Add a kit…** (on the Triggers and Tools tabs) takes pasted
-JSON, a web address, an `imp://add` link or a dropped `.json` file. **Share as kit** on a trigger
-or tool, and **Share all** on each tab, copy the JSON (or an `imp://add?kit=…` link when it's short
-enough) to the clipboard.
+A kit is Imps, triggers and borrowed tools in one piece of JSON, so a setup can be sent to a friend
+instead of described. In Settings, **Add a kit…** (on the Triggers and Tools tabs) and **Import…**
+(All Imps › Manners) take pasted JSON, a web address, an `imp://add` link or a dropped `.json` file.
+**Share as kit** on a trigger or tool, and **Share all** on each tab, copy the JSON (or an
+`imp://add?kit=…` link when it's short enough) to the clipboard.
 
 ```json
-{ "imp": 1, "name": "Morning helper", "about": "optional text",
+{ "imp": 2, "app": "1.7.0", "name": "Morning helper", "about": "optional text",
+  "imps": [
+    { "name": "Pip", "hue": 0.57, "favoriteHue": 0.9, "scale": 1.0,
+      "personality": "A dry-witted morning companion.",
+      "brain": { "model": "gpt-4o", "service": { "name": "OpenAI", "baseURL": "https://api.openai.com/v1" } },
+      "shell": true,
+      "tools": { "body": true, "senses": true, "setup": false, "troupe": true, "computer": false },
+      "exchangesSent": 20, "sendsToolCalls": true,
+      "mcpServers": ["Notes"],
+      "triggers": [ { "name": "Good morning", "when": { "kind": "start" }, "prompt": "Greet me." } ] }
+  ],
   "triggers": [
     { "name": "Plan my day", "when": { "kind": "wake" }, "only_if": [{ "kind": "hours", "text": "06:00-11:00" }],
       "prompt": "Look at my calendar and give me a short plan." }
@@ -146,17 +156,44 @@ A trigger has the same shape as the arguments of the Imp's own `imp_add_trigger`
 `mcpServers` is the usual shape Claude Desktop and Cursor use. A plain MCP snippet, or a single
 trigger (or a list of them), works as a kit too.
 
+**Imps.** An Imp in a kit is written field by field (not as Imp stores it), so the file format
+doesn't change when Imp's insides do. Only `name` is required: a missing field takes the default a
+new Imp has, and unknown fields are ignored. An Imp's model is named by its model and its service's
+address, never by a local id or key; its `mcpServers` are names from the kit's own `mcpServers`;
+`chats` (optional: title, dates, turns, and what the Imp remembers) are only written when you tick
+**Include chats**. Chats between Imps and pictures aren't exported.
+
+- **Share an Imp** from its page (Me › Share): copy the kit or a link (when it's short enough; never
+  with chats). **Export…** saves a `.json` file, with an *Include chats* tick in the save panel.
+  **Export all Imps…** (All Imps › Manners) saves every Imp with its triggers and tools, the
+  triggers every Imp shares included. **Import…** is the way back, on this Mac or another.
+- **Importing an Imp** shows it as a card (look, personality, model, tools, triggers, tools it
+  borrows, chats) with a tick. It always arrives as a new Imp, at home and not out on your desktop,
+  with a new name if the name is taken ("Pip 2"). Its triggers are its own and its tools are switched
+  on for it (a tool you already have is reused). Its model is matched to a service you've added by
+  address; if you haven't added it, Imp says so and the Imp uses your default model until you
+  choose one: a service is never added for you. A warning appears when computer control is on.
+  Chats are put in its chat list.
 - **Nothing is added without your say.** Whatever the kit came from (a file, a web address, a
-  link), Imp shows it first: each trigger with what it says, each tool with the command or address,
-  a tick on each, who it's for (one Imp or every Imp), and warnings. A tool that runs a command
-  says so plainly, since that code runs on your Mac with your permissions. Only add kits from people
-  you trust.
+  link), Imp shows it first: each Imp, trigger and tool with what it says, a tick on each, who the
+  loose triggers and tools are for (one Imp or every Imp), and warnings. A tool that runs a command
+  says so plainly, since that code runs on your Mac with your permissions. An Imp's personality and
+  triggers steer what it does with its tools, so read them. Only add kits from people you trust.
 - **Secrets are never exported.** Environment variables and header values (and anything after a `?`
-  in a tool's address) are blanked, so a shared kit has the names to fill in but no keys. After
-  adding a tool that needs keys, Imp opens its form. Command arguments are exported as they are,
-  so don't put a key in one.
+  in a tool's address or a service's) are blanked, so a shared kit has the names to fill in but no
+  keys. API keys of services are not in a kit at all. After adding a tool that needs keys, Imp opens
+  its form. Command arguments are exported as they are, so don't put a key in one.
 - Web addresses must be `https` (`http` only for `localhost`), answer within 10 seconds and be
-  under 512 KB. Kits with a newer `imp` version than the app reads are refused.
+  under 512 KB, the same as pasted text and links. A kit file on your Mac may be up to 20 MB, for
+  chats. At most 20 Imps, 100 chats per Imp, 50 triggers and 20 tools.
+
+**Versions.** `"imp"` is the kit's format version, meaning the *oldest Imp that can read it*.
+Imp writes the lowest version that fits what's in the kit: only triggers and tools is `1` (older
+Imps still open it), a kit with Imps is `2`. Imp reads every version up to the one it knows, and
+refuses a newer one with "This kit needs a newer Imp (format N). Update Imp: brew upgrade --cask imp."
+Adding a field is not a new version (readers ignore keys they don't know, and give a missing one its
+default); only a change an older Imp would misread bumps it, and then Imp upgrades what older
+versions wrote as it reads. `"app"` is the version of Imp that wrote the file, for information only.
 
 <p align="center"><img src="docs/moods.png" width="760" alt="Imp's moods"></p>
 

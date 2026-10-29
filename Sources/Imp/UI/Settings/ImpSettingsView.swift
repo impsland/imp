@@ -38,6 +38,7 @@ struct ImpSettingsView: View {
                 switch router.impTab {
                 case .me:
                     LooksTab(imp: imp)
+                    ShareCard(model: model, id: id)
                     GoodbyeCard(model: model, router: router, id: id)
                 case .brain: BrainTab(model: model, imp: imp)
                 case .tools: ToolsTab(model: model, imp: imp)
@@ -57,6 +58,27 @@ struct ImpSettingsView: View {
             StageImp(hue: profile.hue, mood: .happy, performance: performance, clock: BodyClock(profile.id))
         } else {
             ImpPortrait(face: impFace(hue: profile.hue, mood: .happy), shadow: false)
+        }
+    }
+}
+
+/// Sending this Imp to a friend, or saving it to move to another Mac.
+private struct ShareCard: View {
+    @Bindable var model: AppModel
+    let id: UUID
+
+    private var name: String { model.profile(id).map { $0.name.isEmpty ? "this Imp" : $0.name } ?? "this Imp" }
+
+    var body: some View {
+        Card("Share", icon: "square.and.arrow.up") {
+            Row("Share \(name)", info: "Copies \(name) as a kit: looks, personality, instructions, model and service address, tools, triggers and the tools it borrows. Whoever opens it sees what's in it first. Chats and API keys are never included.") {
+                ShareKitButton(kit: ImpExport.kit([id], model: model, name: name), help: "Share \(name) as a kit")
+            }
+            CardDivider()
+            Row("Export \(name)…", info: "Saves \(name) as a .json file you can keep as a backup or open with Import on another Mac. You can include its chats. API keys are never saved.") {
+                Button { ImpExport.save([id], model: model, name: name, fileName: name) } label: { Label("Export…", systemImage: "square.and.arrow.down") }
+                    .buttonStyle(.imp(.secondary, small: true))
+            }
         }
     }
 }

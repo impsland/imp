@@ -10,7 +10,7 @@ final class KitFlow: Identifiable {
     let id = UUID()
     /// The Imp whose settings it was opened from: who the kit is for to begin with.
     let imp: UUID?
-    var text: String { didSet { if !settingText { fileName = nil } } }
+    var text: String { didSet { if !settingText { fileName = nil; limit = Kit.maxBytes } } }
     var error: String?
     var isLoading = false
     var review: KitReview?
@@ -19,6 +19,8 @@ final class KitFlow: Identifiable {
     private var origin: String?
     private var fileName: String?
     private var settingText = false
+    /// What may be read: files on this Mac can carry chats, so they get more room than a link or pasted text.
+    private var limit = Kit.maxBytes
 
     init(imp: UUID?, text: String = "") {
         self.imp = imp
@@ -55,13 +57,14 @@ final class KitFlow: Identifiable {
         do {
             let handle = try FileHandle(forReadingFrom: url)
             defer { try? handle.close() }
-            let data = try handle.read(upToCount: Kit.maxBytes + 1) ?? Data()
-            guard data.count <= Kit.maxBytes else { throw KitError.tooLarge }
+            let data = try handle.read(upToCount: Kit.maxFileBytes + 1) ?? Data()
+            guard data.count <= Kit.maxFileBytes else { throw KitError.tooLarge }
             guard let string = String(data: data, encoding: .utf8) else { throw KitError.download("That isn't a text file.") }
             settingText = true
-            text = string
+            text = data.count <= Kit.maxBytes ? string : url.lastPathComponent      // a big file isn't poured into the box
             settingText = false
             fileName = url.lastPathComponent
+            limit = Kit.maxFileBytes
             await read(.text(string), model: model)
         } catch {
             self.error = error.localizedDescription
@@ -78,10 +81,11 @@ final class KitFlow: Identifiable {
             case .text(let t): json = t; from = origin ?? fileName.map { "File “\($0)”" } ?? "Pasted text"
             case .remote(let url): json = try await KitLoader.fetch(url); from = url.host ?? url.absoluteString
             }
-            let kit = try Kit.parse(json)
+            let kit = try Kit.parse(json, limit: limit)
             let imps = model.prefs.imps
-            let target = imp.flatMap { id in imps.contains { $0.id == id } ? id : nil } ?? imps.first?.id
-            review = KitReview(kit: kit, origin: from, existing: model.prefs.shortcuts, target: target)
+            // A kit of Imps is for the whole troupe (its shared triggers stay shared); other kits go to one Imp.
+            let target = kit.imps.isEmpty ? imp.flatMap { id in imps.contains { $0.id == id } ? id : nil } ?? imps.first?.id : nil
+            review = KitReview(kit: kit, origin: from, existing: model.prefs.shortcuts, services: model.prefs.ai.services, target: target)
         } catch {
             self.error = error.localizedDescription
         }
@@ -95,28 +99,42 @@ final class KitReview {
     let origin: String
     let warnings: [KitWarning]
     var triggers: Set<UUID>
+    /// The tools no Imp of the kit uses (those an Imp uses come with it).
     var servers: Set<UUID>
-    /// Who gets them: one Imp, or nil for every Imp.
+    var imps: Set<UUID>
+    /// Bring the Imps' chats along (when there are any).
+    var includeChats = true
+    /// Who gets the triggers and tools that aren't an Imp's own: one Imp, or nil for every Imp.
     var target: UUID?
 
-    init(kit: Kit, origin: String, existing: [Shortcut], target: UUID?) {
+    init(kit: Kit, origin: String, existing: [Shortcut], services: [Service]? = nil, target: UUID?) {
         self.kit = kit
         self.origin = origin
-        self.warnings = kit.warnings(existing: existing)
+        self.warnings = kit.warnings(existing: existing, services: services)
         self.triggers = Set(kit.triggers.map(\.id))
-        self.servers = Set(kit.servers.map(\.id))
+        self.servers = Set(kit.looseServers.map(\.id))
+        self.imps = Set(kit.imps.map(\.id))
         self.target = target
     }
 
-    var count: Int { triggers.count + servers.count }
+    /// Imps, triggers and tools that will be added.
+    var count: Int { triggers.count + effectiveServers.count + imps.count }
+    /// Every tool that will be added: the ticked ones and what the ticked Imps use.
+    var effectiveServers: Set<UUID> { servers.union(kit.imps.filter { imps.contains($0.id) }.flatMap(\.servers)) }
+    /// Whether anything is for `target` to receive (so there's a choice to make).
+    var needsTarget: Bool { !triggers.isEmpty || !servers.isEmpty }
+    var hasChats: Bool { kit.imps.contains { !$0.chats.isEmpty } }
     func warnings(for item: UUID) -> [KitWarning] { warnings.filter { $0.item == item } }
-    var cautions: [KitWarning] { warnings.filter { $0.isCaution && servers.contains($0.item) } }
+    var cautions: [KitWarning] { warnings.filter { $0.isCaution && effectiveServers.contains($0.item) } }
 
     func binding(trigger id: UUID) -> Binding<Bool> {
         Binding(get: { self.triggers.contains(id) }, set: { if $0 { self.triggers.insert(id) } else { self.triggers.remove(id) } })
     }
     func binding(server id: UUID) -> Binding<Bool> {
         Binding(get: { self.servers.contains(id) }, set: { if $0 { self.servers.insert(id) } else { self.servers.remove(id) } })
+    }
+    func binding(imp id: UUID) -> Binding<Bool> {
+        Binding(get: { self.imps.contains(id) }, set: { if $0 { self.imps.insert(id) } else { self.imps.remove(id) } })
     }
 }
 
@@ -147,14 +165,14 @@ struct KitEntrySheet: View {
     @State private var dropping = false
 
     var body: some View {
-        SheetScaffold(icon: "shippingbox.fill", title: "Add a kit", width: 540) {
+        SheetScaffold(icon: "shippingbox.fill", title: "Add a kit or an Imp", width: 540) {
             Button { paste() } label: { Label("Paste", systemImage: "doc.on.clipboard") }
                 .buttonStyle(.imp(.secondary, small: true))
                 .help("Paste what's on the clipboard")
         } content: {
-            Text("A kit is triggers and tools somebody shared as JSON. Paste it, give a web address or an imp:// link, or drop a file. You'll see what's in it before anything is added.")
+            Text("A kit is Imps, triggers and tools somebody shared (or you exported) as JSON. Paste it, give a web address or an imp:// link, or drop a file. You'll see what's in it before anything is added.")
                 .font(.system(size: 12)).foregroundStyle(Dungeon.muted).fixedSize(horizontal: false, vertical: true)
-            EditorWell(text: $flow.text, placeholder: "{ \"imp\": 1, \"triggers\": […] }   or   https://example.com/kit.json",
+            EditorWell(text: $flow.text, placeholder: "{ \"imp\": 2, \"imps\": […] }   or   https://example.com/kit.json",
                        mono: true, height: 140)
             dropZone
             if let error = flow.error {
@@ -224,28 +242,37 @@ struct KitReviewSheet: View {
                       info: "Nothing is added until you press Add. Untick what you don't want.", width: 540) {
             about
             if !review.cautions.isEmpty { caution }
+            if !kit.imps.isEmpty { impsCard }
             if !kit.triggers.isEmpty { triggersCard }
-            if !kit.servers.isEmpty { serversCard }
+            if !kit.looseServers.isEmpty { serversCard }
             if !kit.problems.isEmpty { problemsCard }
         } footer: {
-            Text("For").font(.system(size: 12)).foregroundStyle(Dungeon.muted)
-            CompactMenu(title: targetName, symbol: review.target == nil ? "person.3.fill" : "person.fill", maxWidth: 190) {
-                ForEach(model.prefs.imps) { imp in
-                    Button { review.target = imp.id } label: {
-                        if review.target == imp.id { Label(name(of: imp), systemImage: "checkmark") } else { Text(name(of: imp)) }
+            if review.needsTarget {
+                Text("For").font(.system(size: 12)).foregroundStyle(Dungeon.muted)
+                CompactMenu(title: targetName, symbol: review.target == nil ? "person.3.fill" : "person.fill", maxWidth: 190) {
+                    ForEach(model.prefs.imps) { imp in
+                        Button { review.target = imp.id } label: {
+                            if review.target == imp.id { Label(name(of: imp), systemImage: "checkmark") } else { Text(name(of: imp)) }
+                        }
                     }
-                }
-                Divider()
-                Button { review.target = nil } label: {
-                    if review.target == nil { Label("Every Imp", systemImage: "checkmark") } else { Text("Every Imp") }
+                    Divider()
+                    Button { review.target = nil } label: {
+                        if review.target == nil { Label("Every Imp", systemImage: "checkmark") } else { Text("Every Imp") }
+                    }
                 }
             }
             Spacer()
             Button("Cancel", role: .cancel) { router.kitFlow = nil }.buttonStyle(.quiet).keyboardShortcut(.cancelAction)
-            Button(review.count == 1 ? "Add 1 item" : "Add \(review.count) items") { add() }
+            Button(addTitle) { add() }
                 .buttonStyle(.primary).keyboardShortcut(.defaultAction)
                 .disabled(review.count == 0)
         }
+    }
+
+    private var addTitle: String {
+        let onlyImps = review.triggers.isEmpty && review.servers.isEmpty
+        if onlyImps && !review.imps.isEmpty { return review.imps.count == 1 ? "Add 1 Imp" : "Add \(review.imps.count) Imps" }
+        return review.count == 1 ? "Add 1 item" : "Add \(review.count) items"
     }
 
     private func name(of imp: ImpProfile) -> String { imp.name.isEmpty ? "Unnamed Imp" : imp.name }
@@ -277,6 +304,63 @@ struct KitReviewSheet: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Color.orange.opacity(0.14)))
         .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Color.orange.opacity(0.5)))
+    }
+
+    private var impsCard: some View {
+        Card(kit.imps.count == 1 ? "Imp" : "Imps", icon: "person.fill") {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(kit.imps) { imp in
+                    impRow(imp)
+                    if imp.id != kit.imps.last?.id { CardDivider() }
+                }
+                if review.hasChats {
+                    CardDivider()
+                    Toggle("Bring their chats along", isOn: $review.includeChats).toggleStyle(.checkbox)
+                        .font(.system(size: 12.5)).foregroundStyle(Dungeon.cream)
+                }
+                Text("An Imp arrives at home, not out on your desktop. Its personality and triggers steer what it does with its tools, commands on your Mac included. Read them.")
+                    .font(.system(size: 11)).foregroundStyle(Dungeon.muted).fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private func impRow(_ imp: KitImp) -> some View {
+        let warnings = review.warnings(for: imp.id) + imp.triggers.flatMap { review.warnings(for: $0.id) }
+        let tools = imp.toolsOn.map(\.title) + (imp.usesShell ? ["Commands"] : [])
+        let servers = imp.servers.compactMap { id in kit.servers.first { $0.id == id }?.name }
+        var counts: [String] = []
+        if !imp.triggers.isEmpty { counts.append(imp.triggers.count == 1 ? "1 trigger" : "\(imp.triggers.count) triggers") }
+        if !imp.chats.isEmpty { counts.append(imp.chats.count == 1 ? "1 chat" : "\(imp.chats.count) chats") }
+        return HStack(alignment: .top, spacing: 10) {
+            Toggle("", isOn: review.binding(imp: imp.id)).labelsHidden().toggleStyle(.checkbox)
+            ImpPortrait(face: impFace(hue: imp.hue), shadow: false)
+                .frame(width: 34, height: 34)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(imp.name).font(.system(size: 13, weight: .semibold)).lineLimit(1)
+                if !imp.personality.isEmpty {
+                    Text(imp.personality).font(.system(size: 11.5)).foregroundStyle(Dungeon.cream.opacity(0.85))
+                        .lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                }
+                fact(imp.brain.map(\.summary).flatMap { $0.isEmpty ? nil : $0 } ?? "Your default model", symbol: "brain")
+                fact(tools.isEmpty ? "No tools" : tools.joined(separator: ", "), symbol: "wrench.and.screwdriver.fill")
+                if !servers.isEmpty { fact("Uses " + servers.joined(separator: ", "), symbol: "puzzlepiece.extension.fill") }
+                if !counts.isEmpty { fact(counts.joined(separator: " · "), symbol: "bolt.fill") }
+                ForEach(warnings) { warning in
+                    Label(warning.text, systemImage: "exclamationmark.triangle.fill")
+                        .font(.system(size: 11)).foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    /// One fact about an Imp, its symbol in a column of its own so the words line up.
+    private func fact(_ text: String, symbol: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Image(systemName: symbol).font(.system(size: 10.5, weight: .semibold)).frame(width: 14)
+            Text(text).lineLimit(2).fixedSize(horizontal: false, vertical: true)
+        }
+        .font(.system(size: 11.5)).foregroundStyle(Dungeon.muted)
     }
 
     private var triggersCard: some View {
@@ -363,7 +447,15 @@ struct KitReviewSheet: View {
 
     private func add() {
         var prefs = model.prefs
-        let added = prefs.add(kit, triggers: review.triggers, servers: review.servers, for: review.target)
+        let added = prefs.add(kit, imps: review.imps, triggers: review.triggers, servers: review.servers, for: review.target,
+                              withChats: review.includeChats)
+        // Chats go to the Imp's folder before it appears, so it opens them as its own.
+        if model.persists {
+            for imported in added.imps where !imported.chats.isEmpty {
+                var history = ChatHistory(folder: ChatHistory.folder(for: imported.id))
+                for chat in imported.chats { history.adopt(chat) }
+            }
+        }
         withAnimation(.snappy(duration: 0.2)) { model.prefs = prefs }
         router.kitFlow = nil
         // Keys to fill in: open that tool's form once this sheet has gone.
@@ -379,11 +471,25 @@ struct KitReviewSheet: View {
 
 // MARK: - Sharing
 
+/// The version of the app that writes a kit (informational: the format version is the kit's own).
+enum AppInfo {
+    static var version: String? { Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String }
+}
+
+extension Kit {
+    /// With the app's version noted in it, as written to the clipboard or a file.
+    var stamped: Kit {
+        var kit = self
+        if kit.app == nil { kit.app = AppInfo.version }
+        return kit
+    }
+}
+
 /// Copies a kit to the clipboard, as JSON or as an imp:// link when it's short enough for one.
 @MainActor
 enum KitSharing {
-    static func copy(_ kit: Kit) { Pasteboard.write(text: kit.json()) }
-    static func copyLink(_ kit: Kit) { if let link = kit.link { Pasteboard.write(text: link) } }
+    static func copy(_ kit: Kit) { Pasteboard.write(text: kit.stamped.json()) }
+    static func copyLink(_ kit: Kit) { if let link = kit.stamped.link { Pasteboard.write(text: link) } }
 }
 
 /// A small share button: Copy the kit, or Copy a link to it. A tick says it worked.
@@ -393,15 +499,16 @@ struct ShareKitButton: View {
     @State private var copied = false
 
     var body: some View {
+        let linkable = kit.stamped.link != nil
         Menu {
             Button("Copy kit") { done(KitSharing.copy(kit)) }
             Button("Copy link") { done(KitSharing.copyLink(kit)) }
-                .disabled(kit.link == nil)
+                .disabled(!linkable)
         } label: {
             HoverGlyph(systemName: copied ? "checkmark" : "square.and.arrow.up", tint: copied ? .green : .secondary)
         }
         .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
-        .help(kit.link == nil ? help + " (too long for a link)" : help)
+        .help(linkable ? help : help + " (too long for a link)")
         .accessibilityLabel(help)
     }
 
@@ -409,5 +516,53 @@ struct ShareKitButton: View {
         action()
         copied = true
         Task { try? await Task.sleep(for: .seconds(1.4)); copied = false }
+    }
+}
+
+// MARK: - Exporting Imps
+
+/// Imps as kits: shared from the clipboard, or saved as a file (a backup, a move to another Mac).
+@MainActor
+enum ImpExport {
+    /// The Imps `ids` with their triggers and tools (and `shared` triggers). Chats are read from
+    /// each Imp's history when `chats` is set.
+    static func kit(_ ids: Set<UUID>, model: AppModel, name: String, shared: Bool = false, chats: Bool = false) -> Kit {
+        var history: [UUID: [Chat]] = [:]
+        if chats { for id in ids { history[id] = model.imp(id)?.history.savedChats() ?? [] } }
+        return Kit.exporting(imps: ids, from: model.prefs, name: name, shared: shared, chats: history).stamped
+    }
+
+    static func hasChats(_ ids: Set<UUID>, model: AppModel) -> Bool {
+        ids.contains { id in model.imp(id)?.history.chats.contains { $0.peer == nil } == true }
+    }
+
+    /// Asks where to save, with an "Include chats" tick when there are chats to include.
+    static func save(_ ids: Set<UUID>, model: AppModel, name: String, fileName: String, shared: Bool = false) {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.json]
+        panel.nameFieldStringValue = fileName + ".json"
+        panel.message = "Save \(name) as a kit file: Imp reads it back with Import, on this Mac or another. API keys are never saved."
+        panel.canCreateDirectories = true
+        let box = NSButton(checkboxWithTitle: "Include chats", target: nil, action: nil)
+        if hasChats(ids, model: model) {
+            let holder = NSView(frame: NSRect(x: 0, y: 0, width: 300, height: 36))
+            box.frame = NSRect(x: 20, y: 6, width: 260, height: 24)
+            holder.addSubview(box)
+            panel.accessoryView = holder
+        }
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        let kit = kit(ids, model: model, name: name, shared: shared, chats: box.state == .on && panel.accessoryView != nil)
+        let text = kit.json()
+        do {
+            guard text.utf8.count <= Kit.maxFileBytes else {
+                throw KitError.download("That's too big to read back (the limit is \(Kit.maxFileBytes / 1_048_576) MB). Export without chats, or a few Imps at a time.")
+            }
+            try Data(text.utf8).write(to: url, options: .atomic)
+        } catch {
+            let alert = NSAlert()
+            alert.messageText = "Couldn't save the file"
+            alert.informativeText = error.localizedDescription
+            alert.runModal()
+        }
     }
 }
