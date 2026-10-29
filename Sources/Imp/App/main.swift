@@ -41,6 +41,13 @@ if let i = args.firstIndex(of: "--render-home"), args.indices.contains(i + 2) {
     }
     exit(0)
 }
+if let url = argument(after: "--render-kit") {
+    MainActor.assumeIsolated {
+        _ = NSApplication.shared
+        IconRenderer.renderKit(to: url, entry: args.contains("entry"))
+    }
+    exit(0)
+}
 if let url = argument(after: "--render-bubble") {
     MainActor.assumeIsolated {
         _ = NSApplication.shared

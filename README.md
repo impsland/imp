@@ -119,6 +119,44 @@ one can handle private work while another uses a bigger cloud model.
   | `imp://talk`                           | Starts listening             |
   | `imp://type?text=…`                    | Opens the text field         |
   | `imp://settings`                       | Opens Imp's window           |
+  | `imp://add?url=https://…`              | Opens a kit to review        |
+  | `imp://add?kit=<base64url JSON>`       | Opens a short kit to review  |
+
+### Share setups as kits
+
+A kit is triggers and borrowed tools in one piece of JSON, so a setup can be sent to a friend
+instead of described. In Settings, **Add a kit…** (on the Triggers and Tools tabs) takes pasted
+JSON, a web address, an `imp://add` link or a dropped `.json` file. **Share as kit** on a trigger
+or tool, and **Share all** on each tab, copy the JSON (or an `imp://add?kit=…` link when it's short
+enough) to the clipboard.
+
+```json
+{ "imp": 1, "name": "Morning helper", "about": "optional text",
+  "triggers": [
+    { "name": "Plan my day", "when": { "kind": "wake" }, "only_if": [{ "kind": "hours", "text": "06:00-11:00" }],
+      "prompt": "Look at my calendar and give me a short plan." }
+  ],
+  "mcpServers": {
+    "Memory": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-memory"] },
+    "Notes":  { "url": "https://mcp.example.com/mcp", "headers": { "Authorization": "" } }
+  } }
+```
+
+A trigger has the same shape as the arguments of the Imp's own `imp_add_trigger` tool, and
+`mcpServers` is the usual shape Claude Desktop and Cursor use. A plain MCP snippet, or a single
+trigger (or a list of them), works as a kit too.
+
+- **Nothing is added without your say.** Whatever the kit came from (a file, a web address, a
+  link), Imp shows it first: each trigger with what it says, each tool with the command or address,
+  a tick on each, who it's for (one Imp or every Imp), and warnings. A tool that runs a command
+  says so plainly, since that code runs on your Mac with your permissions. Only add kits from people
+  you trust.
+- **Secrets are never exported.** Environment variables and header values (and anything after a `?`
+  in a tool's address) are blanked, so a shared kit has the names to fill in but no keys. After
+  adding a tool that needs keys, Imp opens its form. Command arguments are exported as they are,
+  so don't put a key in one.
+- Web addresses must be `https` (`http` only for `localhost`), answer within 10 seconds and be
+  under 512 KB. Kits with a newer `imp` version than the app reads are refused.
 
 <p align="center"><img src="docs/moods.png" width="760" alt="Imp's moods"></p>
 

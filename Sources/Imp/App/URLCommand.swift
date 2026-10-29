@@ -1,4 +1,5 @@
 import Foundation
+import ImpKit
 
 /// `imp://` commands for Shortcuts, Raycast and scripts.
 enum URLCommand: CustomStringConvertible {
@@ -7,6 +8,8 @@ enum URLCommand: CustomStringConvertible {
     case talk                                 // imp://talk
     case type(String, send: Bool)             // imp://type?text=…[&send=1]
     case settings                             // imp://settings
+    case addURL(String)                        // imp://add?url=https://…  (a kit, reviewed before anything is added)
+    case addInline(String)                  // imp://add?kit=<base64url JSON>
 
     init?(_ string: String) {
         guard let url = URLComponents(string: string), url.scheme == "imp" else { return nil }
@@ -18,6 +21,10 @@ enum URLCommand: CustomStringConvertible {
         case "talk": self = .talk
         case "type": self = .type(text ?? "", send: q["send"] == "1")
         case "settings": self = .settings
+        case "add":
+            if let address = q["url"] { self = .addURL(address) }
+            else if let kit = q["kit"], let json = try? KitSource.decode(inline: kit) { self = .addInline(json) }
+            else { return nil }
         default: return nil
         }
     }
@@ -29,6 +36,7 @@ enum URLCommand: CustomStringConvertible {
         case .talk: "talk"
         case .type: "type"
         case .settings: "settings"
+        case .addURL, .addInline: "add"
         }
     }
 
@@ -39,6 +47,8 @@ enum URLCommand: CustomStringConvertible {
         case .talk: model.talk()
         case .type(let text, let send): send ? model.submitTyped(text) : model.startTyping(prefill: text)
         case .settings: HomeWindow.shared.show(model)
+        case .addURL(let url): HomeWindow.shared.showKit(model, .link(url: url, imp: HomeWindow.shared.router.selection))
+        case .addInline(let json): HomeWindow.shared.showKit(model, .link(inline: json, imp: HomeWindow.shared.router.selection))
         }
     }
 }

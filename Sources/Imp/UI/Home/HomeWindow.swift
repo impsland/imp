@@ -41,6 +41,12 @@ final class HomeWindow {
         open(model)
     }
 
+    /// Opens the window on a kit to add, wherever it was: the review sheet comes up over what's showing.
+    func showKit(_ model: AppModel, _ flow: KitFlow) {
+        reveal(model)
+        router.kitFlow = flow
+    }
+
     private func open(_ model: AppModel) {
         if router.selection.flatMap(model.profile) == nil {
             router.selection = (model.focused?.profile ?? model.prefs.imps[0]).id
@@ -119,6 +125,8 @@ final class HomeRouter {
     var renaming = false
     /// A borrowed tool whose form should open (an Imp asked the user to fill in its keys).
     var serverToEdit: UUID?
+    /// A kit being added (the text box, then the review). Nothing is applied until its Add.
+    var kitFlow: KitFlow?
 
     func select(_ imp: UUID) { selection = imp }
 

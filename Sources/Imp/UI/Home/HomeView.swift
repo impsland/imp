@@ -28,6 +28,12 @@ struct HomeView: View {
                 }
             }
         }
+        .sheet(item: $router.kitFlow) { flow in
+            let tint = (flow.imp ?? router.selection).flatMap(model.profile).map { Color.imp($0.hue) } ?? Color.imp
+            KitFlowSheet(model: model, flow: flow, router: router)
+                .environment(\.impTint, tint)
+                .tint(tint)
+        }
         .environment(\.colorScheme, .dark)
         .tint(Color.imp)
         .frame(minWidth: 660, maxWidth: .infinity, minHeight: 540, maxHeight: .infinity)

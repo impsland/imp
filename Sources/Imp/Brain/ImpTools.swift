@@ -226,7 +226,7 @@ final class OwnToolHost {
         var server = try MCPServerConfig(tool: args)
         var p = app.prefs
         // The same server again is the one already there (with what was filled in since).
-        if let same = p.mcpServers.first(where: { $0.transport == server.transport && (server.transport == .stdio ? $0.commandLine == server.commandLine : $0.url == server.url) }) {
+        if let same = p.existingServer(like: server) {
             server = same
         } else {
             p.mcpServers.append(server)

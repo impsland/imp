@@ -152,6 +152,52 @@ enum IconRenderer {
         window.orderOut(nil)
     }
 
+    /// `Imp --render-kit <file.png> [entry]`: the sheet for adding a kit (its review, or the text box).
+    static func renderKit(to url: URL, entry: Bool) {
+        let model = AppModel(persist: false)
+        model.prefs = ImpPreferences()
+        model.addImp()
+        let first = model.prefs.imps[0]
+        let json = #"""
+        { "imp": 1, "name": "Morning helper", "about": "Starts the day: a plan when the Mac wakes up, a summary on a key, and a notes tool.",
+          "triggers": [
+            { "name": "Plan my day", "when": {"kind": "wake"}, "only_if": [{"kind": "hours", "text": "06:00-11:00"}], "prompt": "Look at my calendar and reminders for today and give me a short plan." },
+            { "name": "Summarize", "when": {"kind": "keys", "keys": "ctrl+cmd+S"}, "prompt": "Summarize this in two or three short sentences.", "with_clipboard": true },
+            { "name": "Bad one", "when": {"kind": "teleport"} }
+          ],
+          "mcpServers": {
+            "Notes": { "command": "npx", "args": ["-y", "@example/notes-mcp"], "env": {"NOTES_TOKEN": ""} },
+            "Weather": { "url": "https://mcp.example.com/weather" }
+          } }
+        """#
+        model.prefs.shortcuts.append(Shortcut(name: "Mine", hotkey: Hotkey(keyCode: UInt32(kVK_ANSI_S), modifiers: Hotkey.control | Hotkey.command), prompt: "x"))
+        let flow = KitFlow(imp: first.id, text: entry ? "" : json)
+        if !entry, let kit = try? Kit.parse(json) {
+            flow.review = KitReview(kit: kit, origin: "example.com", existing: model.prefs.shortcuts, target: first.id)
+        } else if entry {
+            flow.error = KitError.newerVersion(2).localizedDescription
+        }
+        let tint = Color.imp(first.hue)
+        let root = KitFlowSheet(model: model, flow: flow, router: HomeRouter())
+            .environment(\.impTint, tint).tint(tint)
+            .environment(\.sheetRoom, 760)
+        let host = NSHostingView(rootView: root)
+        let size = host.fittingSize
+        let window = NSWindow(contentRect: CGRect(x: -3000, y: -3000, width: 540, height: max(size.height, 200)),
+                              styleMask: [.titled, .fullSizeContentView], backing: .buffered, defer: false)
+        window.titlebarAppearsTransparent = true
+        window.appearance = NSAppearance(named: .darkAqua)
+        window.contentView = host
+        window.orderFrontRegardless()
+        RunLoop.main.run(until: Date().addingTimeInterval(1.2))
+        window.setContentSize(host.fittingSize)
+        RunLoop.main.run(until: Date().addingTimeInterval(0.5))
+        guard let rep = host.bitmapImageRepForCachingDisplay(in: host.bounds) else { return }
+        host.cacheDisplay(in: host.bounds, to: rep)
+        try? rep.representation(using: .png, properties: [:])?.write(to: url)
+        window.orderOut(nil)
+    }
+
     /// `Imp --render-bubble <file.png> [dark]`: every bubble state, with real controls, for design review.
     static func renderBubble(to url: URL, dark: Bool) {
         let model = AppModel(persist: false)

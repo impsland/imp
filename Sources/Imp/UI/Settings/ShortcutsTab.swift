@@ -11,6 +11,7 @@ struct ShortcutsTab: View {
     let id: UUID
     @State private var draft: Draft?
     @State private var deleting: Shortcut?
+    @State private var copied = false
     @Environment(\.impTint) private var tint
 
     /// A trigger being added (`isNew`) or edited: a copy, saved only with Add or Save.
@@ -33,6 +34,13 @@ struct ShortcutsTab: View {
                         StatusText(text: "Works once \(name) is out", symbol: "moon.zzz.fill", color: Dungeon.ember)
                             .help("Triggers work while \(name) is out on your desktop")
                     }
+                    if copied { StatusText(text: "Kit copied", symbol: "checkmark.circle.fill", color: .green) }
+                    if !(mine + shared).isEmpty {
+                        ShareKitButton(kit: Kit(name: "\(name)'s triggers", triggers: mine + shared), help: "Share all triggers as a kit")
+                    }
+                    Button { addKit() } label: { Label("Add a kit…", systemImage: "shippingbox") }
+                        .buttonStyle(.imp(.quiet, small: true))
+                        .help("Add triggers from a kit: pasted, a file, or a link")
                     if !mine.isEmpty {
                         Button { start(from: nil) } label: { Label("Add", systemImage: "plus") }
                             .buttonStyle(.imp(.secondary, small: true))
@@ -103,6 +111,9 @@ struct ShortcutsTab: View {
                 Button("Try It Now") { model.trigger(shortcut, trying: true) }.disabled(!shortcut.isRunnable)
                 Button("Duplicate") { duplicate(shortcut) }
                 Divider()
+                Button("Share as Kit") { share(shortcut) }
+                Button("Copy Kit Link") { share(shortcut, link: true) }.disabled(kit(of: shortcut).link == nil)
+                Divider()
                 Button("Delete…", role: .destructive) { deleting = shortcut }
             }
         }
@@ -142,6 +153,16 @@ struct ShortcutsTab: View {
             model.prefs.shortcuts.append(s)
         }
         draft = nil
+    }
+
+    private func addKit() { HomeWindow.shared.router.kitFlow = KitFlow(imp: id) }
+
+    private func kit(of shortcut: Shortcut) -> Kit { Kit(name: shortcut.displayName, triggers: [shortcut]) }
+
+    private func share(_ shortcut: Shortcut, link: Bool = false) {
+        if link { KitSharing.copyLink(kit(of: shortcut)) } else { KitSharing.copy(kit(of: shortcut)) }
+        copied = true
+        Task { try? await Task.sleep(for: .seconds(1.6)); copied = false }
     }
 
     private func duplicate(_ shortcut: Shortcut) {

@@ -58,6 +58,8 @@ struct QuickBar: View {
     }
 
     let buttons: [Item]
+    /// Each button's width in a menu of just this row: room for its title, however many there are.
+    static let buttonWidth: CGFloat = 64
     /// Its own margins (a menu of just this row) or none (inside a header that has them).
     var padded = true
 
@@ -65,13 +67,13 @@ struct QuickBar: View {
         HStack(spacing: 6) {
             ForEach(Array(buttons.enumerated()), id: \.offset) { _, b in
                 QuickButton(icon: b.icon, title: b.title, action: b.action)
+                    .frame(minWidth: padded ? Self.buttonWidth : nil)
                     .disabled(!b.enabled)
                     .help(b.help)
             }
         }
         .padding(.horizontal, padded ? 8 : 0)
         .padding(.vertical, padded ? 3 : 0)
-        .frame(minWidth: padded ? 216 : nil)
     }
 }
 

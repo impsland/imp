@@ -43,7 +43,16 @@ struct ToolsTab: View {
             }
 
             Card("Borrowed tools", icon: "puzzlepiece.extension.fill",
-                 info: "Ready-made tools (MCP servers) for files, notes, the web and more. Every Imp can borrow them; switch on the ones \(name) may use. They start when an Imp that's out needs them.") {
+                 info: "Ready-made tools (MCP servers) for files, notes, the web and more. Every Imp can borrow them; switch on the ones \(name) may use. They start when an Imp that's out needs them. Share as kit copies the setup without any keys, to send to someone.") {
+                HStack(spacing: 8) {
+                    if !model.prefs.mcpServers.isEmpty {
+                        ShareKitButton(kit: Kit(name: "Tools", servers: model.prefs.mcpServers), help: "Share all tools as a kit (keys are left out)")
+                    }
+                    Button { HomeWindow.shared.router.kitFlow = KitFlow(imp: imp.id) } label: { Label("Add a kit…", systemImage: "shippingbox") }
+                        .buttonStyle(.imp(.quiet, small: true))
+                        .help("Add tools (and triggers) from a kit: pasted, a file, or a link")
+                }
+            } content: {
                 if model.prefs.mcpServers.isEmpty {
                     StatusText(text: "None yet. Add one below.")
                 }
@@ -186,6 +195,7 @@ struct ToolsTab: View {
                 }
             }
             Spacer(minLength: 8)
+            ShareKitButton(kit: Kit(name: server.name, servers: [server]), help: "Share “\(server.name)” as a kit (keys are left out)")
             HoverIconButton(systemName: "pencil", help: "Edit “\(server.name)”") { editing = Draft(server: server, isNew: false) }
             HoverIconButton(systemName: "trash", help: "Remove “\(server.name)” for every Imp", tint: .red) { forgetting = server }
             Toggle("", isOn: Binding(get: { on }, set: { use in
