@@ -56,8 +56,52 @@ private func toolExchange(_ ask: String = "Make it sound nicer", file: String = 
         #expect(m.recap == "- The user is Ann.\n- Made affirmation.mp3" && m.exchangeCount == 1)
         #expect(m.messages.first?.content == "Make it sound nicer")
         let context = m.context(system: "You are Imp.", turn: .user("Play it"))
-        #expect(context[0].content == "You are Imp.\n\n" + Recap.preface + "- The user is Ann.\n- Made affirmation.mp3")
+        // The system prompt is left as it is; the recap opens the chat as a user/assistant exchange.
+        #expect(context[0] == .system("You are Imp."))
+        #expect(context[1] == .user(Recap.preface + "- The user is Ann.\n- Made affirmation.mp3"))
+        #expect(context[2] == .assistant(Recap.acknowledgement))
+        #expect(context[3].content == "Make it sound nicer" && context.last == .user("Play it"))
+        #expect(context.filter { $0.role == "system" }.count == 1)
         #expect(m.estimatedTokens() > 0)
+    }
+
+    @Test func recappingAgainReplacesTheRecapAndKeepsTheRolesAlternating() {
+        var m = ChatMemory()
+        m.remember([.user("I'm Ann"), .assistant("Hi Ann")])
+        m.remember([.user("I like jazz"), .assistant("Noted")])
+        m.recapped("- Ann")
+        m.remember([.user("Play something"), .assistant("Playing Miles")])
+        // The second request hands over the first recap, to be folded in.
+        let request = Recap.request(m, name: "Fizz")
+        #expect(request[1].content!.hasPrefix("The chat to recap:\n\n[Earlier recap]\n- Ann"))
+        m.recapped("- Ann, likes jazz\n- Played Miles")
+        #expect(m.recap == "- Ann, likes jazz\n- Played Miles" && m.messages.map(\.content) == ["Play something", "Playing Miles"])
+        let context = m.context(system: "S", turn: .user("Next"), tools: false)
+        #expect(context.map(\.role) == ["system", "user", "assistant", "user", "assistant", "user"])
+        #expect(context.filter { $0.content?.contains(Recap.preface) == true }.count == 1)
+        #expect(context[0].content == "S")
+    }
+
+    @Test func aBlankRecapForgetsNothing() {
+        var m = ChatMemory()
+        m.remember([.user("a"), .assistant("1")])
+        m.remember([.user("b"), .assistant("2")])
+        m.recapped("  \n ")
+        #expect(m.recap == nil && m.exchangeCount == 2)
+    }
+
+    @Test func aHugeChatIsCutToFitTheRecapRequest() {
+        var m = ChatMemory(recap: "- old")
+        for i in 0..<300 { m.remember([.user("q\(i) " + String(repeating: "x", count: 100)), .assistant("a\(i)")]) }
+        let text = Recap.transcript(m, limit: 5_000)
+        #expect(text.count <= 5_000 && text.hasPrefix("[Earlier recap]\n- old"))
+        #expect(text.contains("earlier messages left out to fit") && text.hasSuffix("Assistant: a299"))
+        #expect(!Recap.transcript(m).contains("left out"))
+    }
+
+    @Test func remembersAsManyExchangesAsTheLongestChoice() {
+        #expect(ChatMemory.choices.contains(1_000) && ChatMemory.choices.max() == ChatMemory.storedExchanges)
+        #expect(ChatMemory.choices.contains(ChatMemory.defaultExchanges))
     }
 
     @Test func theRecapRequestCarriesTheWholeChat() {
@@ -169,7 +213,7 @@ private func toolExchange(_ ask: String = "Make it sound nicer", file: String = 
         for i in 0..<(ChatHistory.limit + 5) { h.append(ChatTurn(request: "q\(i)", reply: "a\(i)")) }
         #expect(h.turns.count == ChatHistory.limit && h.turns.first?.request == "q5")
         #expect(h.latest(2).map(\.request) == ["q\(ChatHistory.limit + 3)", "q\(ChatHistory.limit + 4)"])
-        #expect(h.latest(1000).count == ChatHistory.limit)
+        #expect(h.latest(ChatHistory.limit * 2).count == ChatHistory.limit)
     }
 }
 

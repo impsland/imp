@@ -173,6 +173,22 @@
         }
       }
     },
+    "%@ hides until you show it again from the menu bar (Show) or click it in the Imps' window. Its triggers rest meanwhile." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ se esconde hasta que lo muestres de nuevo desde la barra de menús (Mostrar) o lo pulses en la ventana de los Imps. Mientras tanto, sus disparadores descansan."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 会藏起来，直到你在菜单栏中点“显示”或在 Imp 窗口中点它。在此期间，它的触发器暂停。"
+          }
+        }
+      }
+    },
     "%@ is %@'s favourite." : {
       "localizations" : {
         "en" : {
@@ -217,7 +233,24 @@
         }
       }
     },
+    "%@ is hiding. Click to bring it back to your desktop." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ se está escondiendo. Haz clic para traerlo de vuelta a tu escritorio."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 藏起来了。点按让它回到桌面。"
+          }
+        }
+      }
+    },
     "%@ is hiding. Click to show the Imps on your desktop again." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -438,6 +471,7 @@
       }
     },
     "%@ sums up this chat and remembers only the recap and the last exchange. The whole chat stays to read. Use it when a chat grows too long." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -449,6 +483,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 会总结这个对话，只记住摘要和最后一轮交流。完整对话仍可阅读。对话太长时使用。"
+          }
+        }
+      }
+    },
+    "%@ sums up this chat and remembers only the recap and the last exchange. The whole chat stays to read. Use it when a chat grows too long; recap again as often as you like." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ resume este chat y solo recuerda el resumen y el último intercambio. El chat completo sigue ahí para leerlo. Úsalo cuando un chat crezca demasiado; puedes resumir de nuevo tantas veces como quieras."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 会总结这段聊天，只记住总结和最后一轮对话。完整聊天仍可阅读。聊天过长时使用；可以随时再次总结。"
           }
         }
       }
@@ -487,6 +537,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 的动画"
+          }
+        }
+      }
+    },
+    "%@'s own triggers work while it's out on your desktop" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los disparadores propios de %@ funcionan mientras está en tu escritorio"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 自己的触发器在它出现在桌面上时生效"
           }
         }
       }
@@ -1584,6 +1650,7 @@
       }
     },
     "Add a trigger" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1611,6 +1678,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "为所有 Imp 添加触发器"
+          }
+        }
+      }
+    },
+    "Add a trigger just for %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir un disparador solo para %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加仅用于 %@ 的触发器"
           }
         }
       }
@@ -1648,6 +1731,7 @@
       }
     },
     "Add triggers from a kit" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3064,6 +3148,22 @@
         }
       }
     },
+    "Bring in a chat saved from Imp, to carry on with %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trae un chat guardado desde Imp para continuarlo con %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入从 Imp 保存的聊天，与 %@ 继续"
+          }
+        }
+      }
+    },
     "Bring their chats along" : {
       "localizations" : {
         "es" : {
@@ -3656,6 +3756,22 @@
         }
       }
     },
+    "Choose chats saved from Imp (.json)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige chats guardados desde Imp (.json)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择从 Imp 保存的聊天 (.json)"
+          }
+        }
+      }
+    },
     "Choose file…" : {
       "localizations" : {
         "es" : {
@@ -4216,6 +4332,22 @@
         }
       }
     },
+    "Continue" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "继续"
+          }
+        }
+      }
+    },
     "Controls your Mac" : {
       "localizations" : {
         "es" : {
@@ -4408,6 +4540,22 @@
         }
       }
     },
+    "Couldn't save: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo guardar: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法保存：%@"
+          }
+        }
+      }
+    },
     "Counted from when you're done with an answer. It stays while you hover it or its audio or video plays." : {
       "localizations" : {
         "es" : {
@@ -4516,6 +4664,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "好奇"
+          }
+        }
+      }
+    },
+    "Current" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actual"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前"
           }
         }
       }
@@ -4644,6 +4808,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除对话？"
+          }
+        }
+      }
+    },
+    "Delete this chat" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar este chat"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除此聊天"
           }
         }
       }
@@ -5274,6 +5454,22 @@
         }
       }
     },
+    "Every Imp answers these. Clicks go to the Imp you click, everything else to the one you talked to last." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos los Imps responden a estos. Los clics van al Imp que pulses; todo lo demás, al último con el que hablaste."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每个 Imp 都会响应这些。点按交给你点的 Imp，其他的交给你最后交谈的 Imp。"
+          }
+        }
+      }
+    },
     "Every Imp has a favourite colour. Land on it and you'll know." : {
       "localizations" : {
         "es" : {
@@ -5334,6 +5530,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "所有 Imp、服务、密钥、工具、触发器、对话和设置都将被删除。此操作无法撤销。"
+          }
+        }
+      }
+    },
+    "Every chat with %@, newest first. Continue one to pick up where you left off: %@ remembers it as it was. Save one as a file to keep it or to carry it on with another Imp or on another Mac." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Every chat with %1$@, newest first. Continue one to pick up where you left off: %2$@ remembers it as it was. Save one as a file to keep it or to carry it on with another Imp or on another Mac."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos los chats con %1$@, los más recientes primero. Continúa uno para seguir donde lo dejaste: %2$@ lo recuerda tal como estaba. Guarda uno como archivo para conservarlo o continuarlo con otro Imp o en otro Mac."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与 %1$@ 的所有聊天，最新的在前。继续某个聊天即可接着聊：%2$@ 记得它原来的样子。把聊天存为文件，可以保留它，或与另一个 Imp、在另一台 Mac 上继续。"
           }
         }
       }
@@ -6604,6 +6822,22 @@
         }
       }
     },
+    "Hide %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esconder a %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐藏 %@"
+          }
+        }
+      }
+    },
     "Hide Imp" : {
       "localizations" : {
         "es" : {
@@ -6928,6 +7162,7 @@
       }
     },
     "How many recent exchanges are sent with each message. Fewer is faster and cheaper. Older ones stay in the chat to read." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -6939,6 +7174,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每条消息附带发送的最近对话轮数。越少越快、越便宜。更早的内容仍保留在对话中可供阅读。"
+          }
+        }
+      }
+    },
+    "How many recent exchanges are sent with each message. More remembers more, but each message is bigger, slower and costs more: recap a long chat to keep it small. Older ones stay in the chat to read." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuántos intercambios recientes se envían con cada mensaje. Más recuerda más, pero cada mensaje es más grande, más lento y cuesta más: resume un chat largo para mantenerlo pequeño. Los anteriores siguen en el chat para leerlos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每条消息附带发送多少轮最近的对话。越多记得越多，但每条消息更大、更慢、更贵：长聊天可以总结来保持精简。更早的内容仍留在聊天中可供阅读。"
           }
         }
       }
@@ -7281,6 +7532,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导入套件…"
+          }
+        }
+      }
+    },
+    "Import triggers from a kit, for %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar disparadores de un kit, para %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从工具包导入触发器，给 %@"
+          }
+        }
+      }
+    },
+    "Import triggers from a kit, for every Imp" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar disparadores de un kit, para todos los Imps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从工具包导入触发器，给每个 Imp"
           }
         }
       }
@@ -8085,6 +8368,22 @@
         }
       }
     },
+    "Let %@ out to continue this chat" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deja salir a %@ para continuar este chat"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让 %@ 出来才能继续此聊天"
+          }
+        }
+      }
+    },
     "Let %@ use it" : {
       "localizations" : {
         "es" : {
@@ -8769,6 +9068,22 @@
         }
       }
     },
+    "Make this the chat you're in and open it" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convierte este en tu chat actual y ábrelo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换到此聊天并打开"
+          }
+        }
+      }
+    },
     "Make your own version of %@" : {
       "localizations" : {
         "es" : {
@@ -9136,6 +9451,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "将节拍后移"
+          }
+        }
+      }
+    },
+    "Move to Every Imp" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mover a Todos los Imps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移到“每个 Imp”"
+          }
+        }
+      }
+    },
+    "Move to Just %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mover a Solo %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移到“仅 %@”"
           }
         }
       }
@@ -9716,6 +10063,22 @@
         }
       }
     },
+    "No chats yet." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay chats."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有聊天。"
+          }
+        }
+      }
+    },
     "No command set for %@." : {
       "localizations" : {
         "es" : {
@@ -9989,6 +10352,7 @@
       }
     },
     "None yet. Add one or ask %@." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10004,7 +10368,24 @@
         }
       }
     },
+    "None yet. Add one, import a kit, or ask %@." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguno todavía. Añade uno, importa un kit o pídeselo a %@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有。添加一个、导入工具包，或让 %@ 来设置。"
+          }
+        }
+      }
+    },
     "None. Add a click trigger so clicking an Imp does something." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10016,6 +10397,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无。添加点按触发器，点按 Imp 时才会有反应。"
+          }
+        }
+      }
+    },
+    "None. Add a click trigger so clicking any Imp does something." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguno. Añade un disparador de clic para que pulsar cualquier Imp haga algo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有。添加一个点按触发器，让点按任何 Imp 都有反应。"
           }
         }
       }
@@ -10368,6 +10765,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "仅 %@"
+          }
+        }
+      }
+    },
+    "Only %@ answers these, while it's out on your desktop." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo %@ responde a estos, mientras está en tu escritorio."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只有 %@ 会响应这些，在它出现在桌面上时。"
           }
         }
       }
@@ -13021,6 +13434,70 @@
         }
       }
     },
+    "Save as File…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardar como archivo…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "存储为文件…"
+          }
+        }
+      }
+    },
+    "Save as a file" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardar como archivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "存储为文件"
+          }
+        }
+      }
+    },
+    "Save this chat as a file. Import it later to carry on, with %@ or another Imp, on this Mac or another." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guarda este chat como archivo. Impórtalo después para continuar, con %@ u otro Imp, en este Mac o en otro."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把此聊天存为文件。之后导入即可继续，与 %@ 或其他 Imp，在这台或另一台 Mac 上。"
+          }
+        }
+      }
+    },
+    "Saved" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已存储"
+          }
+        }
+      }
+    },
     "Saved in your Keychain" : {
       "localizations" : {
         "es" : {
@@ -13789,6 +14266,22 @@
         }
       }
     },
+    "Share %@'s triggers as a kit" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir los disparadores de %@ como kit"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将 %@ 的触发器作为工具包分享"
+          }
+        }
+      }
+    },
     "Share all extra tools as a kit. Keys are left out." : {
       "localizations" : {
         "es" : {
@@ -13806,6 +14299,7 @@
       }
     },
     "Share all triggers as a kit" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13849,6 +14343,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "共享为套件"
+          }
+        }
+      }
+    },
+    "Share the triggers every Imp answers as a kit" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir como kit los disparadores a los que responden todos los Imps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将每个 Imp 都响应的触发器作为工具包分享"
           }
         }
       }
@@ -13902,6 +14412,7 @@
       }
     },
     "Shared" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14013,6 +14524,22 @@
         }
       }
     },
+    "Show %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar a %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示 %@"
+          }
+        }
+      }
+    },
     "Show %@'s folder. Commands start there." : {
       "localizations" : {
         "es" : {
@@ -14061,7 +14588,24 @@
         }
       }
     },
+    "Show all %lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar los %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示全部 %lld 个"
+          }
+        }
+      }
+    },
     "Show earlier" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14073,6 +14617,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "显示更早内容"
+          }
+        }
+      }
+    },
+    "Show earlier messages" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar mensajes anteriores"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示更早的消息"
+          }
+        }
+      }
+    },
+    "Show fewer" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar menos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示更少"
           }
         }
       }
@@ -14734,6 +15310,22 @@
         }
       }
     },
+    "Start a fresh chat. This one stays in the list below." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empieza un chat nuevo. Este sigue en la lista de abajo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始新聊天。这个聊天会留在下面的列表中。"
+          }
+        }
+      }
+    },
     "Start listening" : {
       "localizations" : {
         "es" : {
@@ -15391,6 +15983,38 @@
         }
       }
     },
+    "That chat has nothing in it." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese chat está vacío."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那个聊天里什么也没有。"
+          }
+        }
+      }
+    },
+    "That file is too big to be a chat (the limit is %lld MB)." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese archivo es demasiado grande para ser un chat (el límite es %lld MB)."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "该文件太大，不像是聊天（上限为 %lld MB）。"
+          }
+        }
+      }
+    },
     "That has too many Imps (the limit is %lld)." : {
       "localizations" : {
         "es" : {
@@ -15483,6 +16107,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "触发器过多（上限为 %lld）。"
+          }
+        }
+      }
+    },
+    "That isn't a chat exported from Imp." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eso no es un chat exportado desde Imp."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这不是从 Imp 导出的聊天。"
           }
         }
       }
@@ -15693,6 +16333,7 @@
       }
     },
     "The Imp extension for Chrome, Arc, Brave or Edge tells Imps which website you're on. It talks only to Imp on this Mac. Load the folder from the button in chrome://extensions with Developer mode on." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -15704,6 +16345,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "适用于 Chrome、Arc、Brave 或 Edge 的 Imp 扩展会告诉 Imp 你正在浏览哪个网站。它只与这台 Mac 上的 Imp 通信。在 chrome://extensions 中打开开发者模式，然后通过按钮载入该文件夹。"
+          }
+        }
+      }
+    },
+    "The Imp extension for Chrome, Brave or Edge tells Imps which website you're on. It talks only to Imp on this Mac. Load the folder from the button in chrome://extensions with Developer mode on, then pin it: its popup shows whether it's connected." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La extensión de Imp para Chrome, Brave o Edge les dice a los Imps en qué sitio web estás. Solo se comunica con Imp en este Mac. Carga la carpeta desde el botón en chrome://extensions con el modo de desarrollador activado y fíjala: su ventana emergente muestra si está conectada."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "适用于 Chrome、Brave 或 Edge 的 Imp 扩展会告诉 Imp 你正在浏览哪个网站。它只与这台 Mac 上的 Imp 通信。在 chrome://extensions 中打开开发者模式，通过按钮载入该文件夹，然后将其固定：它的弹出窗口会显示是否已连接。"
           }
         }
       }
@@ -16491,6 +17148,7 @@
       }
     },
     "Triggers every Imp answers. Clicks go to the Imp you click and everything else to the one you talked to last." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16506,7 +17164,24 @@
         }
       }
     },
+    "Triggers for every Imp" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disparadores para todos los Imps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "适用于每个 Imp 的触发器"
+          }
+        }
+      }
+    },
     "Triggers work while %@ is out on your desktop" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17362,6 +18037,7 @@
       }
     },
     "What %@ is sent from the chat you're in. Chats are saved. Switch between them at the top of the chat." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17373,6 +18049,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 从当前对话中收到的内容。对话会被保存，可在对话顶部切换。"
+          }
+        }
+      }
+    },
+    "What %@ is sent from the chat you're in. Every chat is saved: carry on in an older one, save it as a file, or bring one in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que se le envía a %@ del chat en el que estás. Todos los chats se guardan: continúa uno anterior, guárdalo como archivo o trae uno."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从当前聊天发送给 %@ 的内容。每个聊天都会保存：可以继续旧聊天、存为文件，或导入一个。"
           }
         }
       }
@@ -17521,6 +18213,22 @@
         }
       }
     },
+    "What was said and %@'s memory of it are gone for good. Save it as a file first to keep it." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que se dijo y lo que %@ recuerda de ello desaparecen para siempre. Guárdalo antes como archivo para conservarlo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聊天内容和 %@ 对它的记忆将被永久删除。要保留请先存为文件。"
+          }
+        }
+      }
+    },
     "Wheee!" : {
       "localizations" : {
         "es" : {
@@ -17586,6 +18294,7 @@
       }
     },
     "When something happens, %@ gets your instruction and what happened, then decides what to do. Keys work anywhere on your Mac. You can also ask %@ to set one up." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -17603,6 +18312,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "发生某事时，%@ 会收到你的指令和发生的情况，然后决定怎么做。按键在 Mac 上的任何地方都有效。你也可以让 %@ 来设置一个。"
+          }
+        }
+      }
+    },
+    "When something happens, the Imp gets your instruction and what happened, then decides what to do. Keys work anywhere on your Mac. You can also ask %@ to set one up." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando pasa algo, el Imp recibe tu instrucción y lo que pasó, y decide qué hacer. Las teclas funcionan en cualquier parte del Mac. También puedes pedirle a %@ que configure uno."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发生某件事时，Imp 会收到你的指令和发生的事，然后决定怎么做。按键在 Mac 上任何地方都有效。你也可以让 %@ 来设置。"
           }
         }
       }
@@ -18217,6 +18942,22 @@
         }
       }
     },
+    "^[%lld chat](inflect: true) added" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[%lld chat](inflect: true) añadido"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已添加 %lld 个聊天"
+          }
+        }
+      }
+    },
     "^[%lld click](inflect: true)" : {
       "localizations" : {
         "es" : {
@@ -18229,6 +18970,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 次点按"
+          }
+        }
+      }
+    },
+    "^[%lld earlier message](inflect: true)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[%lld mensaje anterior](inflect: true)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 条更早的消息"
           }
         }
       }
@@ -18273,6 +19030,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 轮交流 · 约发送了 %@ 个 token"
+          }
+        }
+      }
+    },
+    "^[%lld message](inflect: true)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[%lld mensaje](inflect: true)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 条消息"
           }
         }
       }

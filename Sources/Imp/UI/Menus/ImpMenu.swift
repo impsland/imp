@@ -57,6 +57,8 @@ final class ImpMenu: NSObject, NSMenuDelegate {
             (title, abs(imp.profile.scale - scale) < 0.01, NSNumber(value: scale), nil)
         }, action: #selector(setSize(_:))))
         menu.addItem(.separator())
+        add(menu, String(localized: "Hide \(name)"), symbol: "eye.slash", action: #selector(hide))
+            .toolTip = String(localized: "\(name) hides until you show it again from the menu bar (Show) or click it in the Imps' window. Its triggers rest meanwhile.")
         add(menu, String(localized: "Send \(name) Home"), symbol: "house", action: #selector(sendHome))
             .toolTip = String(localized: "\(name) goes back into the Imps' window, and its triggers rest.")
         return menu
@@ -118,6 +120,7 @@ final class ImpMenu: NSObject, NSMenuDelegate {
     @objc private func stop() { imp.dismissBubble() }
     @objc private func copyLast() { imp.copyBubble() }
     @objc private func openChat() { imp.openChat() }
+    @objc private func hide() { app.setHidden(imp.id, true) }
     @objc private func setSize(_ sender: NSMenuItem) {
         guard let i = index, let scale = (sender.representedObject as? NSNumber)?.doubleValue else { return }
         app.prefs.imps[i].scale = scale

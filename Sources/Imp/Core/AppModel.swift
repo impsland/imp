@@ -20,6 +20,8 @@ final class AppModel {
     /// Every Imp out on the desktop is hidden (the menu bar's Hide). They're still out: the window
     /// shows them hiding under a sheet, and anything that calls on one brings them back.
     private(set) var isHidden = false
+    /// Imps hidden one at a time (from an Imp's own menu), while the rest stay out. For this run of the app only, like `isHidden`.
+    private(set) var hiddenImps: Set<UUID> = []
 
     @ObservationIgnored let dictation = Dictation()
     /// What Imp notices about the Mac: sets off triggers, and tells the model how the Mac is.
@@ -101,7 +103,7 @@ final class AppModel {
         for s in prefs.liveShortcuts where s.fires(on: event, in: state) {
             if case .busy = event, lastLoad >= s.trigger.percent { continue }     // still over the line: not news
             guard Date().timeIntervalSince(lastFired[s.id] ?? .distantPast) >= Self.rest,
-                  let imp = performer(for: s), imp.isAvailable else { continue }
+                  let imp = performer(for: s), imp.isAvailable, !hiddenImps.contains(imp.id) else { continue }
             lastFired[s.id] = Date()
             imp.perform(s, happened: event.description)
         }
@@ -139,14 +141,40 @@ final class AppModel {
         failedHotkeys = HotkeyCenter.shared.register(prefs.liveShortcuts.compactMap(\.keys))
     }
 
-    /// Hides every Imp on the desktop, or brings them back.
+    /// Hides every Imp on the desktop, or brings them back (bringing them back shows the ones
+    /// hidden one at a time too).
     func setHidden(_ hidden: Bool) {
-        guard hidden != isHidden else { return }
+        guard hidden != isHidden || (!hidden && !hiddenImps.isEmpty) else { return }
         isHidden = hidden
+        if !hidden { hiddenImps = [] }
         // Nobody can type into or talk to a hidden Imp: close its text box, stop listening.
         if hidden { imps.forEach { $0.stopWaitingForUser() } }
         onTroupeChange?()
     }
+
+    /// Hides one Imp (the others stay out), or brings it back.
+    func setHidden(_ id: UUID, _ hidden: Bool) {
+        if hidden {
+            guard !hiddenImps.contains(id) else { return }
+            hiddenImps.insert(id)
+            imp(id)?.stopWaitingForUser()
+        } else {
+            guard isHidden || hiddenImps.contains(id) else { return }
+            hiddenImps.remove(id)
+            if isHidden {
+                // Everyone was hidden: just this one comes back.
+                isHidden = false
+                hiddenImps.formUnion(imps.map(\.id).filter { $0 != id })
+            }
+        }
+        onTroupeChange?()
+    }
+
+    /// Whether this Imp is out of sight (all hidden, or it alone).
+    func isHiding(_ id: UUID) -> Bool { isHidden || hiddenImps.contains(id) }
+
+    /// Some Imp that's out is hidden (the menu bar then offers Show).
+    var anyHiding: Bool { !imps.isEmpty && (isHidden || imps.contains { hiddenImps.contains($0.id) }) }
 
     // MARK: Animations
 
@@ -204,6 +232,7 @@ final class AppModel {
     func setActive(_ id: UUID, _ on: Bool, at origin: CGPoint? = nil) {
         guard let i = prefs.imps.firstIndex(where: { $0.id == id }), prefs.imps[i].isActive != on else { return }
         if on { setHidden(false) }                         // letting one out means you want to see them
+        hiddenImps.remove(id)
         var p = prefs
         if let origin { p.imps[i].origin = origin }
         p.imps[i].isActive = on
@@ -308,7 +337,7 @@ final class AppModel {
     /// `text`. Trying a trigger that the Mac sets off says so to the model, so it plays along.
     func trigger(_ action: Shortcut, text: String? = nil, trying: Bool = false) {
         guard let imp = performer(for: action) else { return HomeWindow.shared.show(self) }
-        setHidden(false)                                   // called on: out from under the sheet
+        setHidden(imp.id, false)                           // called on: out from under the sheet
         let happened = trying && action.trigger.kind.isAmbient
             ? "(A test run from Settings: imagine it just happened: \(action.triggerSummary).)" : nil
         imp.perform(action, clip: text.map(Clip.text), happened: happened)
@@ -326,7 +355,7 @@ final class AppModel {
     // at home there's nobody to talk to, so the app's window opens instead.
     private func withFocused(_ work: (ImpModel) -> Void) {
         guard let focused else { return HomeWindow.shared.show(self) }
-        setHidden(false)
+        setHidden(focused.id, false)
         work(focused)
     }
     func talk() { withFocused { $0.talk() } }
@@ -334,7 +363,7 @@ final class AppModel {
     func submitTyped(_ text: String) { withFocused { $0.submitTyped(text) } }
     func ask(_ text: String, imp name: String? = nil) {
         let named = name.flatMap { n in imps.first { $0.profile.name.caseInsensitiveCompare(n) == .orderedSame } }
-        if let named { setHidden(false); named.ask(text) } else { withFocused { $0.ask(text) } }
+        if let named { setHidden(named.id, false); named.ask(text) } else { withFocused { $0.ask(text) } }
     }
 
     // MARK: Microphone (one listener at a time)

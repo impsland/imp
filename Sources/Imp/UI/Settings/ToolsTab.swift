@@ -155,7 +155,7 @@ struct ToolsTab: View {
     private var browserCard: some View {
         let bridge = BrowserBridge.shared
         return Card("Browser", icon: "globe",
-                    info: "The Imp extension for Chrome, Arc, Brave or Edge tells Imps which website you're on. It talks only to Imp on this Mac. Load the folder from the button in chrome://extensions with Developer mode on.") {
+                    info: "The Imp extension for Chrome, Brave or Edge tells Imps which website you're on. It talks only to Imp on this Mac. Load the folder from the button in chrome://extensions with Developer mode on, then pin it: its popup shows whether it's connected.") {
             HStack(spacing: 8) {
                 if let page = bridge.page, bridge.isConnected {
                     StatusText(text: "Connected to \(page.browser)", symbol: "checkmark.circle.fill", color: .green)

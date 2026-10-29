@@ -4,7 +4,7 @@
 const URL_ = "ws://127.0.0.1:47823";
 const BROWSER = (() => {
   const brands = (navigator.userAgentData && navigator.userAgentData.brands || []).map(b => b.brand);
-  for (const name of ["Arc", "Brave", "Microsoft Edge", "Vivaldi", "Opera"]) if (brands.includes(name)) return name;
+  for (const name of ["Brave", "Microsoft Edge", "Vivaldi", "Opera"]) if (brands.includes(name)) return name;
   return "Chrome";
 })();
 
@@ -12,6 +12,9 @@ let socket = null;
 let backoff = 1000;
 let pingTimer = null;
 let lastSent = "";
+let connectedSince = null;   // when the socket to Imp opened (null: not connected)
+let lastPage = null;         // what Imp was last told: { url, title }
+let retryTimer = null;
 
 function send(obj) {
   if (socket && socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(obj));
@@ -22,6 +25,8 @@ function connect() {
   try { socket = new WebSocket(URL_); } catch (e) { return retry(); }
   socket.onopen = () => {
     backoff = 1000;
+    connectedSince = Date.now();
+    showState();
     send({ type: "hello", browser: BROWSER, version: 1 });
     // Socket traffic keeps the service worker alive (Chrome 116+).
     clearInterval(pingTimer);
@@ -30,14 +35,44 @@ function connect() {
     reportActive();
   };
   socket.onmessage = (e) => { handle(e.data).catch(() => {}); };
-  socket.onclose = () => { clearInterval(pingTimer); socket = null; retry(); };
+  socket.onclose = () => { clearInterval(pingTimer); socket = null; connectedSince = null; showState(); retry(); };
   socket.onerror = () => { try { socket.close(); } catch (_) {} };
 }
 
 function retry() {
-  setTimeout(connect, backoff);
+  clearTimeout(retryTimer);
+  retryTimer = setTimeout(connect, backoff);
   backoff = Math.min(backoff * 2, 30000);
 }
+
+// The toolbar button says whether Imp is listening (hover it, or open the popup).
+function showState() {
+  const on = connectedSince !== null;
+  chrome.action.setTitle({ title: on ? "Imp: connected" : "Imp: not connected (is Imp running?)" });
+  chrome.action.setBadgeText({ text: on ? "" : "off" });
+  chrome.action.setBadgeBackgroundColor({ color: "#6b5a5a" });
+}
+
+// The popup asks how things are, or to try connecting again right away.
+chrome.runtime.onMessage.addListener((msg, sender, reply) => {
+  if (sender.id !== chrome.runtime.id) return;
+  if (msg && msg.type === "reconnect") {
+    backoff = 1000;
+    clearTimeout(retryTimer);
+    if (socket) { try { socket.close(); } catch (_) {} socket = null; }
+    connect();
+  }
+  if (msg && (msg.type === "status" || msg.type === "reconnect")) {
+    reply({
+      connected: connectedSince !== null,
+      connecting: !!socket && socket.readyState === WebSocket.CONNECTING,
+      since: connectedSince,
+      browser: BROWSER,
+      page: lastPage,
+      address: URL_,
+    });
+  }
+});
 
 async function activeTab() {
   const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
@@ -50,6 +85,7 @@ async function reportActive() {
   const key = `${tab.id}|${tab.url}|${tab.title}`;
   if (key === lastSent) return;
   lastSent = key;
+  lastPage = { url: tab.url, title: tab.title || "" };
   send({ type: "page", url: tab.url, title: tab.title || "" });
 }
 
@@ -142,4 +178,5 @@ function locateInPage(query) {
   };
 }
 
+showState();
 connect();

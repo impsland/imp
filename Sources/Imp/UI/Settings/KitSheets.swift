@@ -22,9 +22,13 @@ final class KitFlow: Identifiable {
     /// What may be read: files on this Mac can carry chats, so they get more room than a link or pasted text.
     private var limit = Kit.maxBytes
 
-    init(imp: UUID?, text: String = "") {
+    /// Opened from the triggers every Imp shares: what it adds is for every Imp to begin with.
+    let forEveryImp: Bool
+
+    init(imp: UUID?, text: String = "", forEveryImp: Bool = false) {
         self.imp = imp
         self.text = text
+        self.forEveryImp = forEveryImp
     }
 
     /// From `imp://add?url=`: the address is checked when it's read, and a bad one is shown as such.
@@ -84,7 +88,7 @@ final class KitFlow: Identifiable {
             let kit = try Kit.parse(json, limit: limit)
             let imps = model.prefs.imps
             // A kit of Imps is for the whole troupe (its shared triggers stay shared); other kits go to one Imp.
-            let target = kit.imps.isEmpty ? imp.flatMap { id in imps.contains { $0.id == id } ? id : nil } ?? imps.first?.id : nil
+            let target = kit.imps.isEmpty && !forEveryImp ? imp.flatMap { id in imps.contains { $0.id == id } ? id : nil } ?? imps.first?.id : nil
             review = KitReview(kit: kit, origin: from, existing: model.prefs.shortcuts, services: model.prefs.ai.services, target: target)
         } catch {
             self.error = error.localizedDescription
@@ -682,12 +686,17 @@ enum ImpExport {
     /// each Imp's history when `chats` is set.
     static func kit(_ ids: Set<UUID>, model: AppModel, name: String, shared: Bool = false, chats: Bool = false) -> Kit {
         var history: [UUID: [Chat]] = [:]
-        if chats { for id in ids { history[id] = model.imp(id)?.history.savedChats() ?? [] } }
+        if chats { for id in ids { history[id] = chatHistory(id, model: model).savedChats() } }
         return Kit.exporting(imps: ids, from: model.prefs, name: name, shared: shared, chats: history).stamped
     }
 
     static func hasChats(_ ids: Set<UUID>, model: AppModel) -> Bool {
-        ids.contains { id in model.imp(id)?.history.chats.contains { $0.peer == nil } == true }
+        ids.contains { id in chatHistory(id, model: model).chats.contains { $0.peer == nil } }
+    }
+
+    /// An Imp's chats: live while it's out, else read from its folder (an Imp at home has chats too).
+    private static func chatHistory(_ id: UUID, model: AppModel) -> ChatHistory {
+        model.imp(id)?.history ?? ChatHistory(folder: ChatHistory.folder(for: id))
     }
 
     /// Asks where to save, with an "Include chats" tick when there are chats to include.

@@ -2,8 +2,9 @@ import Foundation
 
 /// What an Imp remembers of one chat, as the model is sent it: every message after the system
 /// prompt (your turns, its replies and, in between, the tools it called and what they returned),
-/// plus a recap of whatever came before, once the chat has been recapped. Picture bytes aren't
-/// kept here (they're saved in its workspace, by path).
+/// plus a recap of whatever came before, once the chat has been recapped. The system prompt is
+/// never touched: the recap goes in as the chat's opening exchange (see `Recap.opening`). Picture
+/// bytes aren't kept here (they're saved in its workspace, by path).
 public struct ChatMemory: Codable, Equatable, Sendable {
     /// Oldest first. Each exchange starts with a user message.
     public private(set) var messages: [ChatMessage] = []
@@ -12,8 +13,11 @@ public struct ChatMemory: Codable, Equatable, Sendable {
 
     /// Exchanges sent by default (an exchange: your turn, with every tool call and reply it led to).
     public static let defaultExchanges = 20
-    /// Exchanges kept at most (older ones go: nothing sends them any more).
-    public static let storedExchanges = 200
+    /// Exchanges kept at most (older ones go: nothing sends them any more). As many as the longest
+    /// "Remembers" choice, so whatever is picked there is really sent, and a recap sees all of it.
+    public static let storedExchanges = 1_000
+    /// The "Remembers" choices (exchanges sent with each message).
+    public static let choices = [5, 10, 20, 50, 100, 200, 500, 1_000]
     /// A tool result longer than this is clipped when it's remembered (the model saw it whole
     /// when it called the tool; later turns rarely need every byte of a file it read).
     public static let toolResultLimit = 8_000
@@ -25,13 +29,11 @@ public struct ChatMemory: Codable, Equatable, Sendable {
 
     public var isEmpty: Bool { messages.isEmpty && recap == nil }
 
-    /// The model's input: the system prompt (with the recap, if any), the last `exchanges`
-    /// exchanges (without tool calls and results unless `tools`), then the new turn.
+    /// The model's input: the system prompt as it is, the recap (if any) as the opening exchange,
+    /// the last `exchanges` exchanges (without tool calls and results unless `tools`), then the new turn.
     public func context(system: String, turn: ChatMessage, exchanges: Int = defaultExchanges, tools: Bool = true) -> [ChatMessage] {
-        var prompt = system
-        if let recap { prompt += (prompt.isEmpty ? "" : "\n\n") + Recap.preface + recap }
         let recent = Self.exchanges(in: messages).suffix(max(exchanges, 0)).flatMap { $0 }
-        return [.system(prompt)] + (tools ? recent : Self.withoutTools(recent)) + [turn]
+        return [.system(system)] + (recap.map(Recap.opening) ?? []) + (tools ? recent : Self.withoutTools(recent)) + [turn]
     }
 
     /// Remembers one finished exchange: the user's turn and everything that followed it (the
@@ -49,10 +51,13 @@ public struct ChatMemory: Codable, Equatable, Sendable {
         if all.count > Self.storedExchanges { messages = all.suffix(Self.storedExchanges).flatMap { $0 } }
     }
 
-    /// The chat recapped: `summary` stands for everything but the last exchange.
+    /// The chat recapped: `summary` stands for everything but the last exchange, an earlier recap
+    /// included (the request hands it over to be folded in). An empty summary changes nothing: a
+    /// recap that came back blank must not cost the chat what it remembered.
     public mutating func recapped(_ summary: String) {
         let text = summary.trimmingCharacters(in: .whitespacesAndNewlines)
-        recap = text.isEmpty ? nil : text
+        guard !text.isEmpty else { return }
+        recap = text
         messages = Self.exchanges(in: messages).last ?? []
     }
 
@@ -131,9 +136,28 @@ public struct ChatSummary: Codable, Equatable, Identifiable, Sendable {
 
 /// Recaps a chat that's grown long: the model sums it up, the summary replaces the messages
 /// before the last exchange (`ChatMemory.recapped`), and the chat carries on with room to spare.
+///
+/// Where the recap goes: not in the system prompt (that stays the Imp's own, and stays cacheable),
+/// but as the chat's opening exchange, right after it: a `user` message carrying the recap and a
+/// short `assistant` acknowledgement. A user message, because it's context handed in from outside
+/// (as a second `system` message it's dropped or merged by some providers, and an `assistant`
+/// one would put words in the model's mouth and open the chat on its turn). The acknowledgement
+/// keeps the roles alternating (user, assistant, user…), which strict chat templates require.
+/// Recapping again works the same: the earlier recap goes into the request and is folded into
+/// the new one, which replaces it; there is only ever one.
 public enum Recap {
-    /// Introduces the recap in the system prompt.
-    public static let preface = "Recap of this chat so far (the earlier messages were replaced by it):\n"
+    /// Introduces the recap in the opening message.
+    public static let preface = "Recap of our chat so far (it replaces the earlier messages, which aren't included):\n\n"
+    /// The model's side of the opening exchange.
+    public static let acknowledgement = "Understood. I'll carry on from this recap."
+    /// The most transcript sent to be recapped (characters). Longer chats keep their newest part
+    /// (and any earlier recap): a recap must fit the model, or it can never be made.
+    public static let transcriptLimit = 240_000
+
+    /// The opening exchange that stands for everything before the recap.
+    public static func opening(_ recap: String) -> [ChatMessage] {
+        [.user(preface + recap), .assistant(acknowledgement)]
+    }
 
     /// The request that asks for a recap: the whole remembered chat (and any earlier recap) as a
     /// transcript, so it works with any model, tools or not.
@@ -143,16 +167,17 @@ public enum Recap {
         carry on without its full history. Keep what matters for continuing: the user's goals, \
         requests and preferences; decisions and facts established; files, paths, URLs and names of \
         anything made or used (exactly as written); what is still open; and what happened last. \
-        Leave out small talk. Write in the language the user writes in, as short bullet points, \
-        under 250 words. Reply with the recap only.
+        If the chat starts with an earlier recap, fold everything in it that still matters into \
+        yours: yours replaces it. Leave out small talk. Write in the language the user writes in, \
+        as short bullet points, under 300 words. Reply with the recap only.
         """
         return [.system(system), .user("The chat to recap:\n\n" + transcript(memory))]
     }
 
-    /// The remembered chat as plain text.
-    public static func transcript(_ memory: ChatMemory, toolLimit: Int = 1_500) -> String {
+    /// The remembered chat as plain text, at most `limit` characters: the earlier recap always,
+    /// then as many of the newest messages as fit.
+    public static func transcript(_ memory: ChatMemory, toolLimit: Int = 1_500, limit: Int = transcriptLimit) -> String {
         var lines: [String] = []
-        if let recap = memory.recap { lines.append("[Earlier recap]\n\(recap)") }
         for m in memory.messages {
             let text = (m.content ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
             if m.attachment == true { continue }
@@ -165,7 +190,18 @@ public enum Recap {
             default: continue
             }
         }
-        return lines.joined(separator: "\n\n")
+        let head = memory.recap.map { "[Earlier recap]\n\($0)" }
+        // Room for the earlier recap and the "left out" note, each with its separator.
+        var budget = limit - (head.map { $0.count + 2 } ?? 0) - 64
+        var kept: [String] = []
+        for line in lines.reversed() {
+            budget -= line.count + 2
+            if budget < 0 { break }
+            kept.append(line)
+        }
+        let left = lines.count - kept.count
+        let note = left > 0 ? ["[\(left) earlier messages left out to fit]"] : []
+        return ((head.map { [$0] } ?? []) + note + kept.reversed()).joined(separator: "\n\n")
     }
 
     private static func clip(_ s: String, _ limit: Int) -> String {

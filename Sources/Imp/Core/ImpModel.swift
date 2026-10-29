@@ -318,6 +318,9 @@ final class ImpModel {
 
     func renameChat(_ chat: UUID, to title: String) { history.rename(chat, to: title) }
 
+    /// A chat from a file: listed first, ready to carry on in (the chat you're in stays as it is).
+    func importChat(_ chat: Chat) { history.adopt(chat) }
+
     /// Deletes a chat for good: what was said, and the model's memory of it.
     func deleteChat(_ chat: UUID) {
         if chat == history.current.id { stopForChatChange() }

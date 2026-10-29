@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/48.png" width="32" height="32" alt="">
+    <div>
+      <h1>Imp</h1>
+      <p id="status" class="status"><span class="dot"></span><span id="status-text">Checking…</span></p>
+    </div>
+  </header>
+
+  <section id="connected" hidden>
+    <h2>Imp sees</h2>
+    <div class="page">
+      <div id="page-title" class="title"></div>
+      <div id="page-url" class="url"></div>
+    </div>
+    <p class="note">Only this tab's address and title. Imp reads a page, or finds something on it, only when it needs to.</p>
+  </section>
+
+  <section id="disconnected" hidden>
+    <p>Imp isn't answering. Start Imp on this Mac and it connects by itself.</p>
+    <ol>
+      <li>Open Imp (it lives in the menu bar).</li>
+      <li>Leave this browser open. That's all.</li>
+    </ol>
+    <a class="link" href="https://github.com/impsland/imp" target="_blank" rel="noopener">Don't have Imp? Get it</a>
+  </section>
+
+  <footer>
+    <button id="reconnect" type="button">Reconnect</button>
+    <span class="private" title="The extension talks only to 127.0.0.1:47823. Nothing leaves your Mac.">Stays on this Mac</span>
+  </footer>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -111,7 +111,7 @@ final class StatusMenu: NSObject {
 
     private var bar: QuickBar {
         let anyoneOut = !model.imps.isEmpty
-        let shown = !model.isHidden
+        let shown = !model.anyHiding
         return QuickBar(buttons: [
             QuickBar.Item(icon: "house.fill", title: "Imps", help: "Open the Imps' home (⌘,)") { [weak self] in
                 guard let self else { return }
@@ -147,5 +147,5 @@ final class StatusMenu: NSObject {
         return effect
     }
 
-    private func toggleImps() { model.setHidden(!model.isHidden) }
+    private func toggleImps() { model.setHidden(!model.anyHiding) }
 }

@@ -14,8 +14,8 @@ struct ChatView: View {
     var measuring = false
     @State private var confirmingDelete = false
 
-    /// Turns shown at first, and added by each "Show earlier".
-    static let page = 20
+    /// Turns shown at first, and added by each page of earlier ones.
+    static let page = 25
     /// The transcript's height (fixed, so the bubble is measured right whatever it holds).
     static let height: CGFloat = 380
 
@@ -34,27 +34,28 @@ struct ChatView: View {
                     .font(.system(size: 13)).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             } else {
-                let shown = history.latest(layout.chatPages * Self.page)
+                let shown = Array(history.latest(layout.chatPages * Self.page))
+                let earlier = history.turns.count - shown.count
                 // Turns above the latest recap are still here to read, but the model only has the recap.
                 let recapped = shown.lastIndex { $0.via == .recap }
                 ScrollViewReader { reader in
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 16) {
-                            if shown.count < history.turns.count {
-                                Button { layout.chatPages += 1 } label: {
-                                    Label("Show earlier", systemImage: "chevron.up").font(.system(size: 11, weight: .medium))
+                            // Thousands of turns are never laid out at once: a page at a time, the
+                            // next one loading as you scroll up to the top (or with a click).
+                            if earlier > 0 {
+                                EarlierTurns(count: earlier, measuring: measuring) {
+                                    showEarlier(from: shown.first?.id, reader)
                                 }
-                                .buttonStyle(.plain)
-                                .foregroundStyle(tint)
-                                .frame(maxWidth: .infinity)
+                                .id(layout.chatPages)        // a fresh trigger for each page
                             }
-                            ForEach(shown) { turn in
+                            ForEach(Array(shown.enumerated()), id: \.element.id) { index, turn in
                                 if turn.via == .recap {
                                     RecapCard(turn: turn, model: model, layout: layout, measuring: measuring)
                                 } else {
                                     TurnView(turn: turn, steps: turn.steps.map(Bubble.Step.init), live: false,
                                              model: model, layout: layout, measuring: measuring)
-                                        .opacity(recapped.map { shown.firstIndex(of: turn)! < $0 } == true ? 0.55 : 1)
+                                        .opacity(recapped.map { index < $0 } == true ? 0.55 : 1)
                                 }
                             }
                             // The request being worked on, live: its tools as they run, the answer as it streams.
@@ -81,6 +82,17 @@ struct ChatView: View {
     }
 
     private static let end = "end"
+
+    /// The next page of older turns, keeping the turn you were looking at where it was.
+    private func showEarlier(from oldest: UUID?, _ reader: ScrollViewProxy) {
+        guard !measuring else { return }
+        layout.chatPages += 1
+        guard let oldest else { return }
+        Task { @MainActor in
+            await Task.yield()
+            reader.scrollTo(oldest, anchor: .top)
+        }
+    }
 
     private func follow(_ reader: ScrollViewProxy, animated: Bool = true) {
         guard !measuring else { return }
@@ -189,6 +201,49 @@ private struct ChatPicker: View {
     private var title: String {
         let t = model.history.current.title
         return t.isEmpty ? String(localized: "New chat with \(model.profile.name)") : t
+    }
+}
+
+/// The top of the loaded turns, when there are older ones: they load as it scrolls into view
+/// (or on a click), a page at a time.
+private struct EarlierTurns: View {
+    @Environment(\.impTint) private var tint
+    let count: Int
+    let measuring: Bool
+    let load: () -> Void
+    @State private var loaded = false
+    @State private var inView = false
+
+    var body: some View {
+        Button { once() } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "chevron.up").font(.system(size: 9, weight: .bold))
+                Text("^[\(count) earlier message](inflect: true)").font(.system(size: 11, weight: .medium))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 4)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(tint)
+        .help("Show earlier messages")
+        .onAppear {
+            // Scrolled up to the top: the next page comes in by itself. Only if it stays in view
+            // a moment (a lazy stack may lay it out in passing while the chat opens at the bottom).
+            guard !measuring else { return }
+            inView = true
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(250))
+                if inView { once() }
+            }
+        }
+        .onDisappear { inView = false }
+    }
+
+    private func once() {
+        guard !loaded else { return }
+        loaded = true
+        load()
     }
 }
 

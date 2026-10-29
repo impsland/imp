@@ -1,13 +1,17 @@
-# Imp browser extension (Chrome, Arc, Brave, Edge)
+# Imp browser extension (Chrome, Brave, Edge)
 
 Lets the Imp desktop app know which page you're on, and where things are on it, so it can hop onto an "Add to Cart" button.
+It works in Chrome and in browsers built on it (Brave, Edge, Vivaldi, Opera).
 
 ## Install
 
-1. Open `chrome://extensions` (or `arc://extensions`, `brave://extensions`, `edge://extensions`).
+1. Open `chrome://extensions` (or `brave://extensions`, `edge://extensions`).
 2. Turn on **Developer mode**.
-3. Click **Load unpacked** and pick this folder (`Extensions/Chrome`).
+3. Click **Load unpacked** and pick this folder (`Extensions/Chrome`; in the app: Settings › Tools › Browser › folder button).
 4. Start Imp. The extension connects by itself and reconnects if Imp restarts.
+
+Pin it to the toolbar to see how it's doing: the popup says whether Imp is connected and what Imp has been told
+about the tab you're on, with a **Reconnect** button. While Imp isn't running the icon shows a small "off" badge.
 
 ## What it sends
 

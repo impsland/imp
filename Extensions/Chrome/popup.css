@@ -1,0 +1,56 @@
+:root {
+  color-scheme: light dark;
+  --bg: #fbf6ef;
+  --card: #ffffff;
+  --text: #2a1d1d;
+  --muted: #7a6a66;
+  --edge: rgba(60, 30, 30, 0.12);
+  --accent: #c0392b;
+  --ok: #2e9d57;
+  --off: #9a8a86;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #241a1d;
+    --card: #2f2327;
+    --text: #f4ebe4;
+    --muted: #b3a29d;
+    --edge: rgba(255, 235, 225, 0.1);
+    --accent: #ff6b5a;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  width: 320px;
+  margin: 0;
+  padding: 14px;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+header img { border-radius: 8px; }
+h1 { margin: 0; font-size: 15px; font-weight: 700; }
+h2 { margin: 0 0 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+.status { margin: 1px 0 0; display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--off); }
+.status.on .dot { background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent); }
+.status.on { color: var(--ok); }
+section { background: var(--card); border: 1px solid var(--edge); border-radius: 10px; padding: 10px 12px; }
+section p { margin: 0 0 6px; }
+ol { margin: 4px 0 8px; padding-left: 18px; color: var(--muted); }
+.page .title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.page .url { color: var(--muted); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.note { margin-top: 8px !important; color: var(--muted); font-size: 11.5px; }
+.link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 12px; }
+.link:hover { text-decoration: underline; }
+footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+button {
+  font: inherit; font-weight: 600; font-size: 12px;
+  padding: 5px 12px; border-radius: 999px; border: 0; cursor: pointer;
+  background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent);
+}
+button:hover { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+button:disabled { opacity: 0.5; cursor: default; }
+.private { color: var(--muted); font-size: 11px; }
+.private::before { content: "🔒 "; }

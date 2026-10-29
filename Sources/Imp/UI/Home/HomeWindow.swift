@@ -91,13 +91,33 @@ final class HomeWindow {
     }
 
     /// Opens the window in front of everything. While the window is open, Imp is a regular app
-    /// (in the Dock and the ⌘-Tab switcher). Since macOS 14 activation is cooperative: the system
-    /// grants it for a request made while handling the user's click or key press, so callers run
-    /// this synchronously from that event, never deferred to a later turn of the run loop.
+    /// (in the Dock and the ⌘-Tab switcher).
+    ///
+    /// Why it used to open behind other windows: since macOS 14 activation is cooperative, and the
+    /// system only lets an app come forward when the request comes from the user's own click or key
+    /// press *in that app*. Imp's menu bar panel, its Imps and their bubbles are non-activating
+    /// panels (so typing elsewhere is never interrupted), several callers act a moment after the
+    /// click (a double-click is only known once the click burst is over, ~0.3 s later; the Imp's menu
+    /// runs its header buttons once the menu has closed), and switching from accessory to regular
+    /// takes effect a run-loop turn later. Any of these made `activate()` a no-op, and
+    /// `makeKeyAndOrderFront` then only ordered the window to the front of *Imp's* windows, behind
+    /// the app you were in. So: order it front regardless of activation, pull it onto the Space
+    /// you're on, and ask again once the policy change has landed.
     private func bringToFront(_ window: NSWindow) {
         NSApp.setActivationPolicy(.regular)
+        window.collectionBehavior.insert(.moveToActiveSpace)
         NSApp.activate()
-        (window.attachedSheet ?? window).makeKeyAndOrderFront(nil)
+        let front = window.attachedSheet ?? window
+        front.makeKeyAndOrderFront(nil)
+        window.orderFrontRegardless()                     // above other apps' windows even if activation was declined
+        guard !NSApp.isActive else { return }
+        Task { @MainActor in
+            await Task.yield()                            // the switch to a regular app has taken effect
+            guard window.isVisible, !NSApp.isActive else { return }
+            NSApp.activate()
+            window.orderFrontRegardless()
+            (window.attachedSheet ?? window).makeKeyAndOrderFront(nil)
+        }
     }
 }
 

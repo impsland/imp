@@ -66,8 +66,9 @@ public struct ChatTurn: Codable, Equatable, Identifiable, Sendable {
 /// in `~/Library/Application Support/Imp/Chats/<imp id>/`. Not in the Imp's workspace: its
 /// commands run there and have no business editing what it said.
 public struct ChatHistory: Sendable {
-    /// Turns a chat keeps: older ones are dropped, so the file and the view stay small.
-    public static let limit = 200
+    /// Turns a chat keeps: older ones are dropped, so the file stays a sensible size. The chat
+    /// view shows them a page at a time, newest first.
+    public static let limit = 2_000
 
     /// The chat you're in. Empty until something is said (and only saved from then on).
     public private(set) var current = Chat()
@@ -102,6 +103,9 @@ public struct ChatHistory: Sendable {
 
     /// The newest `count` turns of the current chat, oldest first.
     public func latest(_ count: Int) -> ArraySlice<ChatTurn> { current.turns.suffix(max(count, 0)) }
+
+    /// A saved chat, read whole (the one you're in as it is now). Nil if it's gone.
+    public func chat(_ id: UUID) -> Chat? { id == current.id ? current : load(id) }
 
     /// Adds a turn to the current chat, with what the model should remember of it (the user's
     /// turn and the agent's new messages; nil for a failure, which the model never saw answered).

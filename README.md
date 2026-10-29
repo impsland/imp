@@ -94,6 +94,12 @@ one can handle private work while another uses a bigger cloud model.
   minutes, you come back to your desk, the Mac wakes, gets busy or hot, the network drops. Add
   conditions ("only if on battery", "only between 22:00 and 07:00"). Clicks are triggers too: out of
   the box one click opens a text box and two open settings, and you can change both.
+- **Long memory, and chats you never lose.** An Imp can be sent up to the last 1,000 exchanges of
+  a chat (Brain › Memory › Remembers). When a chat grows long, **Recap** has the model sum it up:
+  the recap then opens the chat as a message of its own right after the system prompt (which is
+  never changed), and recapping again folds the old recap into the new one. Every chat stays in
+  Brain › Memory › Chats: continue an older one, save it as a file, or import one to carry on with
+  any Imp, on any Mac. The chat bubble loads long chats a page at a time as you scroll up.
 - **It sets itself up.** Ask Imp for something new and it can add the MCP server it needs, open its
   settings for you to fill in a key, and create the trigger, then show you how it works.
 - **Body and senses.** Imp plays its animations as body language, hops, slides or bounces around the
@@ -123,8 +129,9 @@ one can handle private work while another uses a bigger cloud model.
   & Data Access); the Tools tab shows what's missing, with buttons. If it still doesn't work after
   granting, remove Imp from the list and add it again (+), then restart Imp. Try it without a model:
   `Imp --observe Finder [--screenshot out.png]` prints the element tree.
-- **Browser extension.** Add `Extensions/Chrome` to Chrome, Arc, Brave or Edge and Imp knows the
-  website you're on, and can hop right onto a button on the page. Local only (see its README).
+- **Browser extension.** Add `Extensions/Chrome` to Chrome, Brave or Edge and Imp knows the
+  website you're on, and can hop right onto a button on the page. Its toolbar popup shows whether
+  it's connected and what Imp sees. Local only (see its README).
 - **More tools with MCP.** Connect Model Context Protocol servers, local or on the web.
 - **A whole troupe.** Several Imps, each with its own name, colour, personality and model. They
   share one clock and stop drawing whenever they can't be seen, so a big troupe stays light on the
@@ -205,7 +212,8 @@ doesn't change when Imp's insides do. Only `name` is required: a missing field t
 new Imp has, and unknown fields are ignored. An Imp's model is named by its model and its service's
 address, never by a local id or key; its `mcpServers` are names from the kit's own `mcpServers`;
 `chats` (optional: title, dates, turns, and what the Imp remembers) are only written when you tick
-**Include chats**. Chats between Imps and pictures aren't exported.
+**Include chats**. Chats between Imps and pictures aren't exported. A single chat saved from Brain ›
+Memory › Chats is the same chat object inside `{"impChat": 1, "imp": "Pip", "chat": {…}}`.
 
 - **Share an Imp** from its page (Looks › Share): copy the kit or a link (when it's short enough; never
   with chats). **Export…** saves a `.json` file, with an *Include chats* tick in the save panel.
