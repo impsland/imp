@@ -54,6 +54,9 @@ final class ImpModel {
     static let maxActs = 8
     /// Another Imp waiting for this one's answer (`imp_message`).
     @ObservationIgnored private var replyTo: CheckedContinuation<String, Error>?
+    /// Its window can be seen (not covered, on another Space, or on a sleeping display). When it
+    /// can't, nothing is drawn.
+    var isOnScreen = true
     /// The view switched between resting (breath done by Core Animation) and drawing every frame.
     @ObservationIgnored var onRestingChange: ((Bool) -> Void)?
     @ObservationIgnored private var job: Task<Void, Never>?
@@ -161,7 +164,8 @@ final class ImpModel {
     }
 
     func greetNewcomer() {
-        show(Bubble(title: "Hi, I'm \(profile.name)", text: "Give me a brain (any OpenAI-compatible AI service) and we can chat. I can work your Mac too: ask me to open an app or fetch something.",
+        show(Bubble(title: String(localized: "Hi, I'm \(profile.name)"),
+                    text: String(localized: "Give me a brain (any OpenAI-compatible AI service) and we can chat. I can work your Mac too: ask me to open an app or fetch something."),
                     phase: .hint, link: .settings), autoHide: false)
         react(.happy, for: 2)
     }
@@ -401,7 +405,7 @@ final class ImpModel {
         job?.cancel()
         job = nil
         // Stopped half-way (✕, a click, a new request): the history still shows what it did.
-        if let w = work { record(w.ask, reply: "Stopped before answering.", failed: true, peerChat: w.peerChat) }
+        if let w = work { record(w.ask, reply: String(localized: "Stopped before answering."), failed: true, peerChat: w.peerChat) }
         work = nil
         pendingActs = []
         finishReply(.failure(ToolArgumentError("\(profile.name) stopped before answering.")))
@@ -420,7 +424,7 @@ final class ImpModel {
     }
 
     /// Clicks on this Imp (`count` in a row): stops whatever it's doing, else does what that many
-    /// clicks are set to (Settings › Triggers: out of the box, one types and two open settings).
+    /// clicks are set to (Triggers tab: out of the box, one types and two open settings).
     func clicked(_ count: Int) {
         touch()
         app.focus(self)
@@ -448,7 +452,7 @@ final class ImpModel {
         app.focus(self)
         cancel()
         setActivity(.typing)
-        show(Bubble(text: prefill, phase: .typing, prompt: prompt ?? "Ask \(profile.name) anything…"), autoHide: false)
+        show(Bubble(text: prefill, phase: .typing, prompt: prompt ?? String(localized: "Ask \(profile.name) anything…")), autoHide: false)
     }
 
     /// Sends the text box (the bubble's, or the chat's): the words, and the picture pasted into
@@ -592,7 +596,7 @@ final class ImpModel {
     /// Something went wrong outside a request (an unknown shortcut name from a URL command).
     func complain(_ text: String) {
         react(.error, for: 1.5)
-        show(Bubble(title: "Hmm", text: text, phase: .error))
+        show(Bubble(title: String(localized: "Hmm"), text: text, phase: .error))
     }
 
     /// Four quick clicks: whatever animation answers to pokes (a tantrum, out of the box).
@@ -604,9 +608,11 @@ final class ImpModel {
         cancel()
         app.reactions.play(reaction, by: self)
         guard reaction == .angry else { return }
-        let lines = ["Poke me again and I'll translate your diary into Klingon.", "I bite. Metaphorically. Mostly.",
-                     "I'm a demon, not a stress ball.", "Careful. My horns are still growing."]
-        show(Bubble(title: "Ow", text: lines.randomElement()!, phase: .hint))
+        let lines = [String(localized: "Poke me again and I'll translate your diary into Klingon."),
+                     String(localized: "I bite. Metaphorically. Mostly."),
+                     String(localized: "I'm a demon, not a stress ball."),
+                     String(localized: "Careful. My horns are still growing.")]
+        show(Bubble(title: String(localized: "Ow"), text: lines.randomElement()!, phase: .hint))
     }
 
     // MARK: Pipeline
@@ -636,8 +642,9 @@ final class ImpModel {
 
     private func nothingCopied(_ shortcut: Shortcut) {
         react(.sad, for: 1.8)
-        let keys = shortcut.hotkey.map { " then press \($0.displayString) again" } ?? ""
-        show(Bubble(title: shortcut.name, text: "Your clipboard is empty. Copy some text or a picture first,\(keys).", phase: .hint))
+        let text = shortcut.hotkey.map { String(localized: "Your clipboard is empty. Copy some text or a picture first, then press \($0.displayString) again.") }
+            ?? String(localized: "Your clipboard is empty. Copy some text or a picture first.")
+        show(Bubble(title: shortcut.name, text: text, phase: .hint))
     }
 
     private func run(_ source: Source) async {
@@ -651,7 +658,7 @@ final class ImpModel {
             case .typed(let words, let picture):
                 let path = picture.flatMap(save)
                 turn = Briefing.message(words, image: picture, imagePath: path)
-                heading = words.isEmpty ? "A picture" : "“\(words)”"
+                heading = words.isEmpty ? String(localized: "A picture") : "“\(words)”"
                 ask = ChatTurn(request: words, via: .typed, picture: path)
             case .spoken:
                 let words = try await listen()
@@ -698,11 +705,11 @@ final class ImpModel {
         } catch let error as Dictation.Failure where error == .heardNothing {
             // Offer the keyboard instead of a dead end.
             react(.sad, for: 1.2)
-            startTyping(prompt: "I didn't catch that. Type it?")
+            startTyping(prompt: String(localized: "I didn't catch that. Type it?"))
         } catch {
             guard !Task.isCancelled else { return }
             record(ask, reply: error.localizedDescription, failed: true, peerChat: peerChat)
-            fail(title.isEmpty ? "thinking" : title, error)
+            fail(title.isEmpty ? String(localized: "thinking") : title, error)
             finishReply(.failure(ToolArgumentError("\(profile.name) couldn't answer: \(error.localizedDescription)")))
         }
     }
@@ -759,7 +766,7 @@ final class ImpModel {
         default: false
         }
         work = nil
-        let failure = Bubble(title: "Oops: \(what)", text: error.localizedDescription, phase: .error,
+        let failure = Bubble(title: String(localized: "Oops: \(what)"), text: error.localizedDescription, phase: .error,
                              link: needsSetup ? .settings : nil)
         // In the chat: it shows there, and comes up when you go back.
         if bubble?.phase == .chat { beforeChat = failure } else { show(failure, autoHide: !needsSetup) }

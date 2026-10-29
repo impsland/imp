@@ -2,7 +2,7 @@ import ImpKit
 import SwiftUI
 
 /// One Imp's settings: the title bar (back beside the traffic lights, the Imp in the middle),
-/// a full-width tab bar, and a short page of cards.
+/// a full-width tab bar (Looks, Brain, Tools, Triggers), and a short page of cards.
 struct ImpSettingsView: View {
     @Bindable var model: AppModel
     @Bindable var router: HomeRouter
@@ -36,13 +36,13 @@ struct ImpSettingsView: View {
                 .padding(.bottom, 12)
             SettingsPage {
                 switch router.impTab {
-                case .me:
+                case .looks:
                     LooksTab(imp: imp)
                     ShareCard(model: model, id: id)
                     GoodbyeCard(model: model, router: router, id: id)
                 case .brain: BrainTab(model: model, imp: imp)
                 case .tools: ToolsTab(model: model, imp: imp)
-                case .shortcuts: ShortcutsTab(model: model, id: id)
+                case .triggers: TriggersTab(model: model, id: id)
                 }
             }
             .id(router.impTab)
@@ -67,15 +67,15 @@ private struct ShareCard: View {
     @Bindable var model: AppModel
     let id: UUID
 
-    private var name: String { model.profile(id).map { $0.name.isEmpty ? "this Imp" : $0.name } ?? "this Imp" }
+    private var name: String { model.profile(id)?.callName ?? ImpProfile.stranger }
 
     var body: some View {
         Card("Share", icon: "square.and.arrow.up") {
-            Row("Share \(name)", info: "Copies \(name) as a kit: looks, personality, instructions, model and service address, tools, triggers and the tools it borrows. Whoever opens it sees what's in it first. Chats and API keys are never included.") {
+            Row("Share as kit", info: "Copies \(name) as a kit. You see what's in it first. Chats and API keys are never included.") {
                 ShareKitButton(kit: ImpExport.kit([id], model: model, name: name), help: "Share \(name) as a kit")
             }
             CardDivider()
-            Row("Export \(name)…", info: "Saves \(name) as a .json file you can keep as a backup or open with Import on another Mac. You can include its chats. API keys are never saved.") {
+            Row("Export to file", info: "Saves \(name) as a .json backup. Chats are optional. API keys are never saved.") {
                 Button { ImpExport.save([id], model: model, name: name, fileName: name) } label: { Label("Export…", systemImage: "square.and.arrow.down") }
                     .buttonStyle(.imp(.secondary, small: true))
             }
@@ -90,14 +90,14 @@ private struct GoodbyeCard: View {
     let id: UUID
     @State private var confirming = false
 
-    private var name: String { model.profile(id).map { $0.name.isEmpty ? "this Imp" : $0.name } ?? "this Imp" }
+    private var name: String { model.profile(id)?.callName ?? ImpProfile.stranger }
     private var isLast: Bool { model.prefs.imps.count <= 1 }
 
     var body: some View {
         Card("Goodbye", icon: "hand.wave.fill") {
-            Row("Say goodbye to \(name)", info: isLast
-                ? "The last Imp can't leave. Hatch another first, or start over from All Imps › Manners."
-                : "Its looks, brain settings, tools, folder, chats and triggers go with it.") {
+            Row("Say goodbye", info: isLast
+                ? "The last Imp can't leave. Hatch another first, or reset in All Imps › App."
+                : "Its looks, chats, tools and triggers go with it.") {
                 Button(role: .destructive) { confirming = true } label: { Label("Say Goodbye…", systemImage: "trash") }
                     .buttonStyle(.imp(.destructive, small: true))
                     .disabled(isLast)
@@ -111,7 +111,7 @@ private struct GoodbyeCard: View {
                 router.goHome()
             }
         } message: {
-            Text("Its looks, brain settings, tools, folder and shortcuts go with it. This can't be undone.")
+            Text("Its looks, brain settings, tools, folder, chats and triggers go with it. This can't be undone.")
         }
     }
 }
@@ -129,7 +129,7 @@ private struct ActiveBadge: View {
         .padding(.horizontal, 8).frame(height: 22)
         .background(Capsule().fill(Dungeon.card))
         .overlay(Capsule().strokeBorder(Dungeon.cardEdge))
-        .help(active ? "Out on your desktop: its triggers and tools work" : "At home in this window: its triggers wait until you let it out")
+        .help(active ? "Out on your desktop. Its triggers and tools work." : "At home in this window. Its triggers wait until you let it out.")
     }
 }
 

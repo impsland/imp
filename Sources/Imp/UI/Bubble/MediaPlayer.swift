@@ -115,7 +115,7 @@ private struct AudioRow: View {
                 .opacity(failed ? 0.4 : 1)
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 8) {
-                    Text(title.isEmpty ? "Audio" : title).font(.system(size: 12, weight: .medium)).lineLimit(1)
+                    Text(title.isEmpty ? String(localized: "Audio") : title).font(.system(size: 12, weight: .medium)).lineLimit(1)
                     Spacer(minLength: 4)
                     if failed {
                         Label("Can't play", systemImage: "exclamationmark.triangle")

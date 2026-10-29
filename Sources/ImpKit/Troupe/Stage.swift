@@ -30,6 +30,7 @@ public enum Contagion {
             // Someone yelled "Boo!": the others jump out of their skin.
             case .boo: .flinch
             case .proud, .wheee: .wow
+            case .heartbeat: .smile
             case .blowKiss: .shy
             case .giggle, .woozy, .pounce: .laugh
             case .missedYou: .greet
@@ -38,12 +39,12 @@ public enum Contagion {
             case .cuddle, .plop, .curious, .shy: nil
             // Routines it plays for itself aren't a moment for the others.
             case .glance, .lookAround, .turn, .hum, .showOff, .wonder, .idea, .nap, .watch,
-                 .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored: nil
+                 .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored, .wiggle, .sneak: nil
             // Its favourite-colour moments are its own.
             case .twirl, .serenade, .cheer, .swoon, .glow: nil
             // Body language belongs to its own answer.
             case .yes, .no, .maybe, .dontKnow, .areYouSure, .notSure, .exactly, .nope, .hmm, .aha,
-                 .tada, .sorry, .oops, .impressed, .haha, .loveIt, .sadNews, .careful, .welcome, .confused: nil
+                 .tada, .sorry, .oops, .impressed, .haha, .loveIt, .sadNews, .careful, .welcome, .confused, .phew, .smug: nil
             }
         }
     }

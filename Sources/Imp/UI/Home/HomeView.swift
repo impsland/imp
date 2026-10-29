@@ -35,14 +35,15 @@ struct HomeView: View {
                 .tint(tint)
         }
         .environment(\.colorScheme, .dark)
+        .environment(\.stageAwake, router.isAwake)
         .tint(Color.imp)
         .frame(minWidth: 660, maxWidth: .infinity, minHeight: 540, maxHeight: .infinity)
         .ignoresSafeArea()
         .background {
             // ⌘, opens the shared settings. ⌘[ goes back.
-            Button("") { withAnimation(.snappy(duration: 0.28)) { router.screen = .general } }
+            Button(String("")) { withAnimation(.snappy(duration: 0.28)) { router.screen = .general } }
                 .keyboardShortcut(",", modifiers: .command).opacity(0)
-            Button("") { router.goHome() }
+            Button(String("")) { router.goHome() }
                 .keyboardShortcut("[", modifiers: .command).opacity(0)
         }
     }

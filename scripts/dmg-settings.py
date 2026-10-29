@@ -1,7 +1,7 @@
 # dmgbuild settings for the installer disk image: Imp.app next to an Applications link, on a
 # background rendered by the app (Imp --render-dmg-background). Used by `make dist`:
 #   dmgbuild -s scripts/dmg-settings.py -D app=build/Imp.app -D background=<dir>/background.png Imp build/Imp.dmg
-# Window size and icon centres match IconRenderer.DMGBackground.
+# Window size, icon size and icon centres match IconRenderer.DMGBackground.
 import os
 
 app = defines["app"]  # noqa: F821 (dmgbuild provides `defines`)
@@ -23,6 +23,6 @@ icon_size = 128
 text_size = 13
 label_pos = "bottom"
 icon_locations = {
-    os.path.basename(app): (170, 180),
-    "Applications": (490, 180),
+    os.path.basename(app): (170, 176),
+    "Applications": (490, 176),
 }

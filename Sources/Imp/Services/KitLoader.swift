@@ -19,10 +19,10 @@ enum KitLoader {
         defer { session.finishTasksAndInvalidate() }
         do {
             let (bytes, response) = try await session.bytes(for: request, delegate: Redirects())
-            guard let http = response as? HTTPURLResponse else { throw KitError.download("That address didn't answer like a web page.") }
-            guard http.statusCode == 200 else { throw KitError.download("The server answered \(http.statusCode).") }
+            guard let http = response as? HTTPURLResponse else { throw KitError.download(String(localized: "That address didn't answer like a web page.")) }
+            guard http.statusCode == 200 else { throw KitError.download(String(localized: "The server answered \(http.statusCode).")) }
             if http.value(forHTTPHeaderField: "Content-Type")?.lowercased().contains("html") == true {
-                throw KitError.download("That address is a web page, not a kit. Use a link to the JSON itself (a “raw” link).")
+                throw KitError.download(String(localized: "That address is a web page, not a kit. Use a link to the JSON itself (a “raw” link)."))
             }
             guard response.expectedContentLength <= Int64(Kit.maxBytes) else { throw KitError.tooLarge }
             var data = Data()
@@ -30,16 +30,16 @@ enum KitLoader {
                 data.append(byte)
                 if data.count > Kit.maxBytes { throw KitError.tooLarge }
             }
-            guard let text = String(data: data, encoding: .utf8) else { throw KitError.download("That isn't text.") }
+            guard let text = String(data: data, encoding: .utf8) else { throw KitError.download(String(localized: "That isn't text.")) }
             return text
         } catch let error as KitError {
             throw error
         } catch let error as URLError where error.code == .timedOut {
-            throw KitError.download("That took more than \(Int(timeout)) seconds.")
+            throw KitError.download(String(localized: "That took more than \(Int(timeout)) seconds."))
         } catch let error as URLError where error.code == .cancelled {
-            throw KitError.download("That address sent Imp somewhere a kit can't come from.")
+            throw KitError.download(String(localized: "That address sent Imp somewhere a kit can't come from."))
         } catch {
-            throw KitError.download("Couldn't load it: \(error.localizedDescription)")
+            throw KitError.download(String(localized: "Couldn't load it: \(error.localizedDescription)"))
         }
     }
 

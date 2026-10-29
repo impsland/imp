@@ -13,9 +13,10 @@ struct StageImp: View {
     /// Its centre on screen (the cursor is in screen coordinates). Nil = just look ahead.
     var center: () -> CGPoint? = { nil }
     @State private var puppet = Puppet()
+    @Environment(\.stageAwake) private var awake
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1 / 30)) { timeline in
+        TimelineView(.animation(minimumInterval: 1 / 30, paused: !awake)) { timeline in
             let date = timeline.date
             let beat = performance?.beat(at: date)
             let cue = Puppet.Cue(mood: beat?.step.mood ?? mood, step: beat?.step, hue: hue,

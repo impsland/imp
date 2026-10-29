@@ -49,7 +49,8 @@ final class HomeWindow {
 
     private func open(_ model: AppModel) {
         if router.selection.flatMap(model.profile) == nil {
-            router.selection = (model.focused?.profile ?? model.prefs.imps[0]).id
+            let shown = model.prefs.imps.filter { !router.unhatched.contains($0.id) }
+            router.selection = (model.focused?.profile ?? shown.first ?? model.prefs.imps[0]).id
         }
         if window == nil {
             let host = NSHostingController(rootView: HomeView(model: model, router: router))
@@ -76,6 +77,12 @@ final class HomeWindow {
                     NSApp.setActivationPolicy(.accessory)
                 }
                 Task { @MainActor in HomeWindow.shared.window = nil }
+            }
+            // Hidden behind other windows or minimised: the stage stops animating.
+            NotificationCenter.default.addObserver(forName: NSWindow.didChangeOcclusionStateNotification, object: w, queue: .main) { [weak w] _ in
+                MainActor.assumeIsolated {
+                    HomeWindow.shared.router.isAwake = w?.occlusionState.contains(.visible) ?? false
+                }
             }
             window = w
         }
@@ -106,8 +113,8 @@ final class HomeRouter {
     var screen: Screen = .home
     /// The Imp in the middle of the stage (`nil` = the egg for a new one).
     var selection: UUID?
-    var impTab: ImpTab = .me
-    var generalTab: GeneralTab = .brains
+    var impTab: ImpTab = .looks
+    var generalTab: GeneralTab = .services
     /// The stage's view, to find where things on it are on screen. (Not observed: the window moves
     /// without SwiftUI knowing, so positions are worked out when they're needed, never stored.)
     @ObservationIgnored weak var stageAnchor: NSView?
@@ -128,7 +135,44 @@ final class HomeRouter {
     /// A kit being added (the text box, then the review). Nothing is applied until its Add.
     var kitFlow: KitFlow?
 
+    /// Whether the window can be seen at all. Nothing animates while it can't.
+    var isAwake = true
+    /// Imps that exist but are still in their eggs, in the order they hatch. The stage keeps them
+    /// out of the line until their egg has cracked (see `hatch`).
+    private(set) var unhatched: [UUID] = []
+    /// Bumped on every `hatch`, so the stage knows there is something to play.
+    private(set) var hatchRequests = 0
+    /// What to do once the last egg has hatched (an imported tool's form, waiting for its keys).
+    @ObservationIgnored private(set) var afterHatching: (@MainActor () -> Void)?
+
     func select(_ imp: UUID) { selection = imp }
+
+    /// Shows the egg and hatches these Imps one after another (a new one, an imported one, one from
+    /// a link). They must already be in the model: they stay out of the line until each one has
+    /// stepped out of its egg. `then` runs once they all have (at once if there's nothing to hatch).
+    func hatch(_ ids: [UUID], then next: (@MainActor () -> Void)? = nil) {
+        let fresh = ids.filter { !unhatched.contains($0) }
+        guard !fresh.isEmpty else { next?(); return }
+        afterHatching = next
+        unhatched += fresh
+        hatchRequests += 1
+        renaming = false
+        selection = nil
+        goHome()
+    }
+
+    /// An Imp has stepped out of its egg.
+    func hatched(_ id: UUID) { unhatched.removeAll { $0 == id } }
+
+    /// Stops waiting for the eggs: whoever is left joins the line as it is.
+    func hatchedAll() { unhatched = [] }
+
+    /// The last egg has hatched: runs what was waiting for it.
+    func finishHatching() {
+        let next = afterHatching
+        afterHatching = nil
+        next?()
+    }
 
     func openSettings(_ imp: UUID, tab: ImpTab? = nil) {
         if let tab { impTab = tab }
@@ -142,50 +186,50 @@ final class HomeRouter {
 
 /// The parts of an Imp's settings.
 enum ImpTab: String, CaseIterable, Identifiable {
-    case me, brain, tools, shortcuts
+    case looks, brain, tools, triggers
     var id: String { rawValue }
 
     var title: String {
         switch self {
-        case .me: "Looks"
-        case .brain: "Brain"
-        case .tools: "Tools"
-        case .shortcuts: "Triggers"
+        case .looks: String(localized: "Looks")
+        case .brain: String(localized: "Brain")
+        case .tools: String(localized: "Tools")
+        case .triggers: String(localized: "Triggers")
         }
     }
 
     var icon: String {
         switch self {
-        case .me: "paintpalette.fill"
+        case .looks: "paintpalette.fill"
         case .brain: "brain.head.profile"
         case .tools: "wrench.and.screwdriver.fill"
-        case .shortcuts: "bolt.fill"
+        case .triggers: "bolt.fill"
         }
     }
 }
 
 /// Settings every Imp shares.
 enum GeneralTab: String, CaseIterable, Identifiable {
-    case brains, manners, animations, hearing, permissions
+    case services, talking, animations, permissions, app
     var id: String { rawValue }
 
     var title: String {
         switch self {
-        case .brains: "Brain keys"
-        case .manners: "Manners"
-        case .animations: "Animations"
-        case .hearing: "Hearing"
-        case .permissions: "Permissions"
+        case .services: String(localized: "Services")
+        case .talking: String(localized: "Talking")
+        case .animations: String(localized: "Animations")
+        case .permissions: String(localized: "Permissions")
+        case .app: String(localized: "App")
         }
     }
 
     var icon: String {
         switch self {
-        case .brains: "key.fill"
-        case .manners: "hand.wave.fill"
+        case .services: "server.rack"
+        case .talking: "bubble.left.and.bubble.right.fill"
         case .animations: "sparkles"
-        case .hearing: "ear.fill"
         case .permissions: "lock.shield.fill"
+        case .app: "gearshape.fill"
         }
     }
 }

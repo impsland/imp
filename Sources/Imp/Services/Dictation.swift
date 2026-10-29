@@ -10,10 +10,10 @@ final class Dictation {
         case microphoneDenied, speechDenied, unavailable(String), heardNothing
         var errorDescription: String? {
             switch self {
-            case .microphoneDenied: "I can't hear you — microphone access is off. Enable it in System Settings › Privacy › Microphone."
-            case .speechDenied: "Speech Recognition is disabled for Imp. Enable it in System Settings › Privacy › Speech Recognition."
-            case .unavailable(let l): "Dictation isn't available for \(l) right now."
-            case .heardNothing: "I heard nothing. Not even a whisper."
+            case .microphoneDenied: String(localized: "I can't hear you. Turn on the microphone for Imp in System Settings › Privacy & Security › Microphone.")
+            case .speechDenied: String(localized: "Speech recognition is off for Imp. Turn it on in System Settings › Privacy & Security › Speech Recognition.")
+            case .unavailable(let l): String(localized: "Dictation isn't available for \(l) right now.")
+            case .heardNothing: String(localized: "I heard nothing. Not even a whisper.")
             }
         }
     }

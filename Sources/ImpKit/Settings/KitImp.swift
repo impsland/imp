@@ -84,9 +84,9 @@ public struct KitImp: Equatable, Sendable, Identifiable {
     /// One entry of `imps`. `names` maps the kit's server names to their ids. What can't be read goes to
     /// `problems` (for the "Skipped" list); nil when the entry can't be used at all.
     static func read(_ json: JSONValue, servers names: [String: UUID], problems: inout [String]) -> KitImp? {
-        guard case .object = json else { problems.append("Should be an object."); return nil }
+        guard case .object = json else { problems.append(String(localized: "Should be an object.")); return nil }
         guard let name = json["name"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else {
-            problems.append("Needs a name."); return nil
+            problems.append(String(localized: "Needs a name.")); return nil
         }
         let hue = json["hue"]?.double.map { min(max($0, 0), 1) } ?? ImpProfile.defaultHue
         var imp = KitImp(name: name, hue: hue, favoriteHue: json["favoriteHue"]?.double.map { min(max($0, 0), 1) },
@@ -110,7 +110,7 @@ public struct KitImp: Equatable, Sendable, Identifiable {
         if let list = json["mcpServers"]?.array {
             for case .string(let key) in list {
                 if let id = names[key] { if !imp.servers.contains(id) { imp.servers.append(id) } }
-                else { problems.append("Uses the tool “\(key)”, which isn't in the kit.") }
+                else { problems.append(String(localized: "Uses the tool “\(key)”, which isn't in the kit.")) }
             }
         }
         if let list = json["triggers"]?.array {
@@ -120,7 +120,7 @@ public struct KitImp: Equatable, Sendable, Identifiable {
                     shortcut.performer = nil
                     imp.triggers.append(shortcut)
                 } catch {
-                    problems.append("Trigger \(i + 1): \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)")
+                    problems.append(String(localized: "Trigger \(i + 1): \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)"))
                 }
             }
         }

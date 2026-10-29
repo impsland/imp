@@ -16,6 +16,8 @@ final class Reactions {
     /// The last time the cursor moved (seconds since boot).
     private var lastMove = ProcessInfo.processInfo.systemUptime
 
+    /// Seconds between looks for a resting cursor.
+    static let restCheck: TimeInterval = 0.25
     /// The same mouse game won't repeat sooner than this.
     static let cooldown: TimeInterval = 6
     /// The cursor's been away this long: moving it again is coming back.
@@ -32,9 +34,10 @@ final class Reactions {
             mouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved]) { [weak self] _ in
                 MainActor.assumeIsolated { self?.mouseMoved() }
             }
-            restTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
+            restTimer = Timer.scheduledTimer(withTimeInterval: Self.restCheck, repeats: true) { [weak self] _ in
                 MainActor.assumeIsolated { self?.checkRest() }
             }
+            restTimer?.tolerance = Self.restCheck / 2
             lastMove = ProcessInfo.processInfo.systemUptime
         } else if !prefs.watchesCursor, let monitor = mouseMonitor {
             NSEvent.removeMonitor(monitor)

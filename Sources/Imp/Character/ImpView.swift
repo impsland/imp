@@ -11,9 +11,10 @@ struct ImpView: View {
     var body: some View {
         let life = model.life
         let pace = FrameSchedule.pace(mood: model.mood(at: Date()),
-                                      quiet: model.level < 0.01 && life.antic == nil && model.activity == nil && !life.lively)
+                                      quiet: model.level < 0.01 && life.antic == nil && model.activity == nil && !life.lively,
+                                      onScreen: model.isOnScreen)
         let clock = model.clock
-        TimelineView(FrameSchedule(pace: pace, clock: clock, settling: settling)) { timeline in
+        TimelineView(FrameSchedule(pace: pace, frame: Energy.shared.frame, clock: clock, settling: settling)) { timeline in
             let date = timeline.date
             let (face, motion) = puppet.frame(cue(at: date, breathing: pace != .resting), at: clock.time(date))
             let _ = settling.moving = !puppet.isSettled
@@ -57,14 +58,20 @@ struct ImpView: View {
 /// (`settling`): the moment an animation ends Imp is already "quiet", but its head is still
 /// turning back to the cursor, and drawing that turn only at blinks made it jerk.
 struct FrameSchedule: TimelineSchedule {
-    enum Pace { case lively, drowsy, resting }
+    enum Pace { case lively, drowsy, resting, hidden }
     var pace: Pace
+    /// Seconds between frames while moving (longer in Low Power Mode).
+    var frame = Energy.fullFrame
     /// Whose blinks to wake up for.
     var clock = BodyClock.shared
     /// Set by the view after each frame; read as the next frame is scheduled.
     var settling = SettleWatch()
 
-    static func pace(mood: Mood, quiet: Bool) -> Pace {
+    /// How often a view in an unseen window looks again; it is woken sooner when it comes into view.
+    static let hiddenCheck: TimeInterval = 10
+
+    static func pace(mood: Mood, quiet: Bool, onScreen: Bool) -> Pace {
+        guard onScreen else { return .hidden }
         guard quiet else { return .lively }
         return switch mood {
         case .idle: .resting
@@ -74,27 +81,30 @@ struct FrameSchedule: TimelineSchedule {
     }
 
     func entries(from start: Date, mode: TimelineScheduleMode) -> Entries {
-        Entries(date: start, pace: mode == .lowFrequency ? .drowsy : pace, offset: clock.offset, settling: settling)
+        Entries(date: start, pace: mode == .lowFrequency && pace != .hidden ? .drowsy : pace, frame: frame,
+                offset: clock.offset, settling: settling)
     }
 
     struct Entries: Sequence, IteratorProtocol {
         var date: Date
         let pace: Pace
+        let frame: Double
         let offset: TimeInterval
         let settling: SettleWatch
 
         mutating func next() -> Date? {
             let t = date.timeIntervalSinceReferenceDate + offset
             let paced: Double = switch pace {
-            case .lively: 1 / 60
+            case .lively: frame
+            case .hidden: FrameSchedule.hiddenCheck
             case .drowsy: 1 / 12
             case .resting:
                 // Mid-blink: keep going. Otherwise sleep until just before the next one
                 // (at most a second, so slow state changes are still noticed).
                 Motion.blink(at: t) > 0 || Motion.blink(at: t + 1 / 60) > 0
-                    ? 1 / 60 : Swift.min(1, Swift.max(1 / 60, Motion.nextBlink(after: t) - t - 1 / 60))
+                    ? frame : Swift.min(1, Swift.max(frame, Motion.nextBlink(after: t) - t - frame))
             }
-            let step = settling.moving ? 1 / 60 : paced
+            let step = settling.moving && pace != .hidden ? frame : paced
             date = date.addingTimeInterval(step)
             return date
         }

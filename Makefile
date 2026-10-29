@@ -1,7 +1,7 @@
 SWIFT ?= xcrun swift
 VERSION ?= $(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Resources/Info.plist)
 
-.PHONY: build app dist run test test-live install clean
+.PHONY: build app dist run test test-live install clean strings
 
 build:
 	$(SWIFT) build
@@ -28,6 +28,10 @@ test-live:
 install: app
 	-pkill -x Imp
 	rm -rf /Applications/Imp.app && cp -R build/Imp.app /Applications/ && open /Applications/Imp.app
+
+# Adds new user-facing text to the String Catalogs (Resources/Localization) for translation.
+strings:
+	SWIFT="$(SWIFT)" ./scripts/strings.sh
 
 clean:
 	rm -rf .build build

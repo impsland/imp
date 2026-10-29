@@ -314,7 +314,7 @@ final class AppModel {
 
     func run(named name: String, text: String? = nil) {
         guard let action = prefs.shortcuts.first(where: { $0.name.caseInsensitiveCompare(name) == .orderedSame }) else {
-            focused?.complain("I don't know a shortcut called “\(name)”.")
+            focused?.complain(String(localized: "I don't know a trigger called “\(name)”."))
             return
         }
         trigger(action, text: text)

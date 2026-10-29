@@ -156,6 +156,19 @@ enum Antics {
             AnticStep(duration: 0.7, look: CGPoint(x: 0.3, y: 0.2), mood: .bored, stretch: -0.06),
             AnticStep(duration: 0.5, look: user),
         ]
+        case .wiggle: [  // a quick happy shimmy
+            AnticStep(duration: 0.14, look: CGPoint(x: -0.2, y: -0.1), mood: .excited, tilt: -12, hop: true),
+            AnticStep(duration: 0.14, look: CGPoint(x: 0.2, y: -0.1), mood: .excited, tilt: 12),
+            AnticStep(duration: 0.14, look: CGPoint(x: -0.2, y: -0.1), mood: .excited, tilt: -12),
+            AnticStep(duration: 0.14, look: CGPoint(x: 0.2, y: -0.1), mood: .excited, tilt: 12),
+            AnticStep(duration: 0.14, look: CGPoint(x: -0.2, y: -0.1), mood: .excited, tilt: -12),
+            AnticStep(duration: 0.8, look: user, mood: .happy),
+        ]
+        case .sneak: [   // low and wary: a look left, a look right, then a grin
+            AnticStep(duration: 0.5, look: CGPoint(x: -0.8, y: 0.1), mood: .mean, stretch: -0.12),
+            AnticStep(duration: 0.7, look: CGPoint(x: 0.8, y: 0.1), mood: .mean, tilt: 5, stretch: -0.12),
+            AnticStep(duration: 0.8, look: user, mood: .giggly, stretch: -0.04),
+        ]
 
         // Expressions
         case .boo: [     // ducks out of sight, springs up, giggles
@@ -167,6 +180,13 @@ enum Antics {
         case .blowKiss: [
             AnticStep(duration: 0.6, mood: .shy),
             AnticStep(duration: 1.1, look: user, mood: .love, glyph: .heart, tilt: -6),
+        ]
+        case .heartbeat: [ // swells and shrinks twice, like a pulse
+            AnticStep(duration: 0.3, look: user, mood: .love, glyph: .heart, stretch: 0.1),
+            AnticStep(duration: 0.3, look: user, mood: .love, glyph: .heart, stretch: -0.08),
+            AnticStep(duration: 0.3, look: user, mood: .love, glyph: .heart, stretch: 0.1),
+            AnticStep(duration: 0.9, look: user, mood: .love, glyph: .heart, stretch: -0.08),
+            AnticStep(duration: 0.5, look: user, mood: .content),
         ]
         case .proud: [AnticStep(duration: 1.8, look: CGPoint(x: 0.1, y: -0.5), mood: .happy, glyph: .sparkles, stretch: 0.1)]
 
@@ -284,6 +304,15 @@ enum Antics {
         case .welcome: [
             AnticStep(duration: 0.5, look: CGPoint(x: 0, y: 0.7)),
             AnticStep(duration: 1.1, look: user, mood: .happy),
+        ]
+        case .phew: [    // braced, then a big sigh of relief
+            AnticStep(duration: 0.8, look: CGPoint(x: 0.2, y: 0.3), mood: .scared, glyph: .sweat, stretch: 0.05),
+            AnticStep(duration: 1.0, look: CGPoint(x: 0, y: 0.4), mood: .content, stretch: -0.1),
+            AnticStep(duration: 0.5, look: user, mood: .happy),
+        ]
+        case .smug: [    // chin up, pleased with itself
+            AnticStep(duration: 0.4, look: user),
+            AnticStep(duration: 1.6, look: CGPoint(x: 0.15, y: -0.5), mood: .content, tilt: 7, stretch: 0.04),
         ]
         case .confused: [ // a puzzled tilt one way, then the other
             AnticStep(duration: 0.8, look: CGPoint(x: -0.3, y: -0.2), mood: .curious, glyph: .question, tilt: -12),

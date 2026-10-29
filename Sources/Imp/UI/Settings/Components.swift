@@ -3,9 +3,15 @@ import Carbon.HIToolbox
 import ImpKit
 import SwiftUI
 
+extension ImpProfile {
+    /// What settings call this Imp in a sentence.
+    static var stranger: String { String(localized: "this Imp") }
+    var callName: String { name.isEmpty ? Self.stranger : name }
+}
+
 // `impTint` (declared with the bubble) colours buttons, icons and highlights after the Imp being set up.
 
-/// Shortcut rendered as physical-looking keycaps.
+/// Keys rendered as physical-looking keycaps.
 struct Keycaps: View {
     let hotkey: Hotkey?
     var small = false
@@ -26,7 +32,7 @@ struct Keycaps: View {
                         .overlay(RoundedRectangle(cornerRadius: 5, style: .continuous).strokeBorder(Color.primary.opacity(0.15)))
                 }
             } else {
-                Text("no shortcut").font(.caption).foregroundStyle(.tertiary)
+                Text("No keys").font(.caption).foregroundStyle(.tertiary)
             }
         }
     }
@@ -44,7 +50,7 @@ struct Keycaps: View {
 
 /// Inline async check with a tiny status readout.
 struct TestButton: View {
-    let title: String
+    let title: LocalizedStringKey
     let action: () async throws -> String
     var onResult: ((Bool, String) -> Void)?
     @State private var state: (ok: Bool, text: String)?
@@ -74,7 +80,7 @@ struct TestButton: View {
 }
 
 
-/// Click, then press a shortcut. ⎋ cancels, ⌫ clears.
+/// Click, then press the keys. ⎋ cancels, ⌫ clears.
 struct HotkeyField: View {
     @Environment(\.impTint) private var tint
     @Binding var hotkey: Hotkey?
@@ -111,11 +117,11 @@ struct HotkeyField: View {
             .buttonStyle(.plain)
             .modifier(Shake(amount: invalid ? 1 : 0))
             if hotkey != nil && !recording {
-                HoverIconButton(systemName: "xmark", help: "Remove shortcut") { hotkey = nil }
+                HoverIconButton(systemName: "xmark", help: "Clear keys") { hotkey = nil }
             }
         }
         .onDisappear { stop() }
-        .help("Click, then press a function key or a combination with ⌃, ⌥ or ⌘. ⎋ cancels, ⌫ clears.")
+        .help("Click, then press the keys. Use ⌃, ⌥ or ⌘ with a key, or a function key. ⎋ cancels and ⌫ clears.")
     }
 
     private func start() {
@@ -283,7 +289,7 @@ struct HoverGlyph: View {
 /// Icon-only button with a hover circle. Always give it a `help`.
 struct HoverIconButton: View {
     let systemName: String
-    let help: String
+    let help: LocalizedStringKey
     var tint: Color = .secondary
     let action: () -> Void
 
@@ -298,7 +304,7 @@ struct HoverIconButton: View {
 /// Icon-only menu with the same hover circle.
 struct HoverIconMenu<Content: View>: View {
     let systemName: String
-    let help: String
+    let help: LocalizedStringKey
     @ViewBuilder var content: Content
 
     var body: some View {

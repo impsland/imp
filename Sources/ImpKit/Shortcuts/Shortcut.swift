@@ -34,11 +34,11 @@ public struct Shortcut: Codable, Identifiable, Hashable, Sendable {
 
         public var title: String {
             switch self {
-            case .ask: "Ask the Imp"
-            case .type: "Open a text box"
-            case .talk: "Start listening"
-            case .chat: "Open the chat"
-            case .settings: "Open its settings"
+            case .ask: String(localized: "Ask the Imp")
+            case .type: String(localized: "Open a text box")
+            case .talk: String(localized: "Start listening")
+            case .chat: String(localized: "Open the chat")
+            case .settings: String(localized: "Open its settings")
             }
         }
 
@@ -104,7 +104,7 @@ public struct Shortcut: Codable, Identifiable, Hashable, Sendable {
 
     /// When and what, in a few words: "⌃⌘T", "2 clicks on the Imp · only if Safari is in front".
     public var triggerSummary: String {
-        let when = trigger.kind == .keys ? (hotkey?.displayString ?? "No keys yet") : trigger.summary
+        let when = trigger.kind == .keys ? (hotkey?.displayString ?? String(localized: "No keys yet")) : trigger.summary
         let ifs = conditions.map(\.conditionSummary)
         return ([when] + ifs).joined(separator: " · ")
     }

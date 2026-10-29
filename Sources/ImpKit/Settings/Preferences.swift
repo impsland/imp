@@ -19,9 +19,9 @@ public enum ImpTalk: String, Codable, CaseIterable, Sendable, Identifiable {
 
     public var title: String {
         switch self {
-        case .own: "In a chat of their own"
-        case .shared: "In the chat with you"
-        case .decides: "The Imp decides"
+        case .own: String(localized: "A chat of their own")
+        case .shared: String(localized: "Your chat")
+        case .decides: String(localized: "The Imp decides")
         }
     }
 
@@ -114,7 +114,7 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
             mouseGames = true
         }
         guard !shortcuts.contains(where: { $0.trigger.kind == .clicks }) else { return }
-        var one = Shortcut(name: click == .talk ? "Talk" : "Type", prompt: "", usesClipboard: false,
+        var one = Shortcut(name: click == .talk ? String(localized: "Talk") : String(localized: "Type"), prompt: "", usesClipboard: false,
                            trigger: .clicks(1), command: click == .talk ? .talk : .type)
         one.id = Self.clickID
         shortcuts.insert(one, at: 0)

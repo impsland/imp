@@ -245,7 +245,7 @@ import Testing
     @Test func gesturesWaitForATriggerYouGiveThem() {
         var p = ImpPreferences()
         let gestures = Reaction.allCases.filter { $0.family == .gestures }
-        #expect(gestures.count == 20)
+        #expect(gestures.count == 22)
         #expect(gestures.allSatisfy { p.rule(for: $0).triggers.isEmpty && p.isEnabled($0) })
         p.setTrigger(.idle, true, for: .aha)
         #expect(p.animations(for: .idle).contains(.aha))

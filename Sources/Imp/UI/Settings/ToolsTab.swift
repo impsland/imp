@@ -2,7 +2,8 @@ import AppKit
 import ImpKit
 import SwiftUI
 
-/// What an Imp can do beyond chatting: run commands on this Mac, and tools it borrows (MCP).
+/// What an Imp can do beyond chatting: its own abilities, commands on this Mac, the browser, and
+/// extra tools it borrows (MCP servers).
 struct ToolsTab: View {
     @Bindable var model: AppModel
     @Binding var imp: ImpProfile
@@ -10,12 +11,12 @@ struct ToolsTab: View {
     @State private var forgetting: MCPServerConfig?
     @Environment(\.impTint) private var tint
 
-    private var name: String { imp.name.isEmpty ? "this Imp" : imp.name }
+    private var name: String { imp.callName }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Metrics.gap) {
-            Card("Its own tools", icon: "sparkles",
-                 info: "Tools that make \(name) itself: its body, its senses, setting itself up and talking to the other Imps. Its model decides when to use them, so a trigger only has to say what you want.") {
+            Card("Abilities", icon: "sparkles",
+                 info: "What \(name) can do by itself. Its model decides when to use each one.") {
                 VStack(spacing: 8) {
                     ForEach(ImpToolGroup.allCases) { group in
                         ownToolRow(group)
@@ -25,36 +26,37 @@ struct ToolsTab: View {
                 }
             }
 
-            browserCard
-
-            Card("Shell", icon: "terminal.fill",
-                 info: "\(name) does things by running commands on your Mac: opening apps, reading files, copying, speaking, calling web APIs for pictures or voices. Ask, and it works out how. Commands run with your permissions, without asking first.") {
+            Card("Commands", icon: "terminal.fill",
+                 info: "Lets \(name) run commands on your Mac, like opening apps or reading files. They run with your permissions, without asking first.") {
                 HStack(spacing: 6) {
-                    HoverIconButton(systemName: "folder", help: "Show \(name)'s folder in Finder: where its commands start, and where pictures you hand it are saved") {
+                    HoverIconButton(systemName: "folder", help: "Show \(name)'s folder. Commands start there.") {
                         let folder = Workspace.directory(for: imp.id)
                         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
                         NSWorkspace.shared.open(folder)
                     }
-                    Toggle("", isOn: $imp.usesShell).labelsHidden().toggleStyle(.switch).controlSize(.small)
-                        .help(imp.usesShell ? "On: \(name) can run commands" : "Off: \(name) only talks")
+                    Toggle(String(""), isOn: $imp.usesShell).labelsHidden().toggleStyle(.switch).controlSize(.small)
+                        .help(imp.usesShell ? "\(name) can run commands" : "\(name) only talks")
                 }
             } content: {
                 EmptyView()
             }
 
-            Card("Borrowed tools", icon: "puzzlepiece.extension.fill",
-                 info: "Ready-made tools (MCP servers) for files, notes, the web and more. Every Imp can borrow them; switch on the ones \(name) may use. They start when an Imp that's out needs them. Share as kit copies the setup without any keys, to send to someone.") {
+            browserCard
+
+            Card("Extra tools", icon: "puzzlepiece.extension.fill",
+                 info: "Tools that follow the MCP standard, for files, notes, the web and more. Switch on the ones \(name) may use.") {
                 HStack(spacing: 8) {
                     if !model.prefs.mcpServers.isEmpty {
-                        ShareKitButton(kit: Kit(name: "Tools", servers: model.prefs.mcpServers), help: "Share all tools as a kit (keys are left out)")
+                        ShareKitButton(kit: Kit(name: String(localized: "Extra tools"), servers: model.prefs.mcpServers),
+                                       help: "Share all extra tools as a kit. Keys are left out.")
                     }
-                    Button { HomeWindow.shared.router.kitFlow = KitFlow(imp: imp.id) } label: { Label("Add a kit…", systemImage: "shippingbox") }
+                    Button { HomeWindow.shared.router.kitFlow = KitFlow(imp: imp.id) } label: { Label("Import kit…", systemImage: "shippingbox") }
                         .buttonStyle(.imp(.quiet, small: true))
-                        .help("Add tools (and triggers) from a kit: pasted, a file, or a link")
+                        .help("Add extra tools and triggers from a kit")
                 }
             } content: {
                 if model.prefs.mcpServers.isEmpty {
-                    StatusText(text: "None yet. Add one below.")
+                    StatusText(text: "None yet.")
                 }
                 VStack(spacing: 8) {
                     ForEach(model.prefs.mcpServers) { server in
@@ -64,23 +66,23 @@ struct ToolsTab: View {
                 }
             }
 
-            Card("Add a tool", icon: "plus",
-                 info: "Pick a ready-made one, or set up your own. In the form, Paste setup fills it in from what an MCP server's page tells you to copy.") {
+            Card("Add an extra tool", icon: "plus",
+                 info: "Pick a ready-made one or set up your own.") {
                 EvenGrid(minWidth: 170, spacing: 8) {
                     ForEach(MCPExamples.examples, id: \.server.name) { example in
                         let added = model.prefs.mcpServers.contains { $0.commandLine == example.server.commandLine }
-                        AddToolTile(icon: example.icon, title: example.server.name, detail: added ? "Added" : example.blurb,
-                                    done: added) {
+                        AddToolTile(icon: example.icon, title: Text(verbatim: example.server.name),
+                                    detail: added ? Text("Added") : Text(example.blurb), done: added) {
                             if example.isComplete { add([example.server]) } else { editing = Draft(server: example.server, isNew: true) }
                         }
                     }
                 }
                 CardDivider()
                 EvenGrid(minWidth: 170, spacing: 8) {
-                    AddToolTile(icon: "terminal.fill", title: "Local program", detail: "Runs a command on this Mac") {
+                    AddToolTile(icon: "terminal.fill", title: Text("Local program"), detail: Text("Runs a command on this Mac")) {
                         editing = Draft(server: MCPServerConfig(name: "", transport: .stdio), isNew: true)
                     }
-                    AddToolTile(icon: "globe", title: "Web server", detail: "Its https:// address") {
+                    AddToolTile(icon: "globe", title: Text("Web server"), detail: Text("Its https:// address")) {
                         editing = Draft(server: MCPServerConfig(name: "", transport: .http), isNew: true)
                     }
                 }
@@ -118,12 +120,12 @@ struct ToolsTab: View {
                 .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(tint.opacity(imp.uses(group) ? 0.16 : 0.05)))
             HStack(spacing: 4) {
                 Text(group.title).font(.system(size: 13, weight: .semibold)).lineLimit(1)
-                InfoTip(group.summary)
+                InfoTip(verbatim: group.summary)
             }
             Spacer(minLength: 8)
-            Toggle("", isOn: Binding(get: { imp.uses(group) }, set: { imp.setUses(group, $0) }))
+            Toggle(String(""), isOn: Binding(get: { imp.uses(group) }, set: { imp.setUses(group, $0) }))
                 .labelsHidden().toggleStyle(.switch).controlSize(.small)
-                .help(imp.uses(group) ? "On: \(name) may use these" : "Off")
+                .help(imp.uses(group) ? "\(name) can do this" : "Off")
         }
     }
 
@@ -139,12 +141,11 @@ struct ToolsTab: View {
                     HStack(spacing: 8) {
                         Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange).font(.system(size: 11))
                         Text("\(p.title) is off").font(.system(size: 12))
+                        InfoTip("Still not working after you allow it? Remove Imp from the list, add it again with +, then restart Imp.")
                         Spacer(minLength: 8)
                         Button("Allow…") { p.request() }.buttonStyle(.imp(.primary, small: true))
                     }
                 }
-                Text("If it still doesn't work after granting, remove Imp from the list and add it again (+), then restart Imp.")
-                    .font(.system(size: 11)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(.leading, 38)
@@ -154,14 +155,16 @@ struct ToolsTab: View {
     private var browserCard: some View {
         let bridge = BrowserBridge.shared
         return Card("Browser", icon: "globe",
-                    info: "Add the Imp extension to Chrome, Arc, Brave or Edge, and Imps know which website you're on (for triggers like “on amazon.com”) and can hop onto a button on the page. It talks only to Imp on this Mac, and sends only the active tab's address and title, plus what an Imp asks for. To add it: open chrome://extensions, switch on Developer mode, choose Load unpacked, and pick the folder Show opens.") {
+                    info: "The Imp extension for Chrome, Arc, Brave or Edge tells Imps which website you're on. It talks only to Imp on this Mac. Load the folder from the button in chrome://extensions with Developer mode on.") {
             HStack(spacing: 8) {
-                if bridge.isConnected {
-                    StatusText(text: bridge.page.map { "Connected: \($0.browser)" } ?? "Connected", symbol: "checkmark.circle.fill", color: .green)
+                if let page = bridge.page, bridge.isConnected {
+                    StatusText(text: "Connected to \(page.browser)", symbol: "checkmark.circle.fill", color: .green)
+                } else if bridge.isConnected {
+                    StatusText(text: "Connected", symbol: "checkmark.circle.fill", color: .green)
                 } else {
                     StatusText(text: "Not connected", symbol: "circle.dashed")
                 }
-                HoverIconButton(systemName: "folder", help: "Show the extension's folder in Finder, to load it in your browser") {
+                HoverIconButton(systemName: "folder", help: "Show the extension's folder") {
                     ExtensionFolder.reveal()
                 }
             }
@@ -191,17 +194,17 @@ struct ToolsTab: View {
                 if on {
                     ServerStatus(enabled: imp.isActive, status: model.assistant.toolStatus[server.id])
                 } else {
-                    StatusText(text: "Not used by \(name)")
+                    StatusText(text: "Off for \(name)")
                 }
             }
             Spacer(minLength: 8)
-            ShareKitButton(kit: Kit(name: server.name, servers: [server]), help: "Share “\(server.name)” as a kit (keys are left out)")
+            ShareKitButton(kit: Kit(name: server.name, servers: [server]), help: "Share “\(server.name)” as a kit. Keys are left out.")
             HoverIconButton(systemName: "pencil", help: "Edit “\(server.name)”") { editing = Draft(server: server, isNew: false) }
             HoverIconButton(systemName: "trash", help: "Remove “\(server.name)” for every Imp", tint: .red) { forgetting = server }
-            Toggle("", isOn: Binding(get: { on }, set: { use in
+            Toggle(String(""), isOn: Binding(get: { on }, set: { use in
                 if use { imp.servers.append(server.id) } else { imp.servers.removeAll { $0 == server.id } }
             })).labelsHidden().toggleStyle(.switch).controlSize(.small)
-                .help(on ? "\(name) may use it" : "Let \(name) use it")
+                .help(on ? "\(name) can use it" : "Let \(name) use it")
         }
     }
 
@@ -212,11 +215,11 @@ struct ToolsTab: View {
     }
 }
 
-/// A big, plain button for adding something (a tool, a shortcut).
+/// A big, plain button for adding something (an extra tool).
 struct AddToolTile: View {
     let icon: String
-    let title: String
-    let detail: String
+    let title: Text
+    let detail: Text
     var done = false
     let action: () -> Void
     @Environment(\.impTint) private var tint
@@ -231,8 +234,8 @@ struct AddToolTile: View {
                     .frame(width: 28, height: 28)
                     .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(tint.opacity(done ? 0.05 : 0.16)))
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(title).font(.system(size: 13, weight: .semibold, design: .rounded)).lineLimit(1)
-                    Text(detail).font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(1)
+                    title.font(.system(size: 13, weight: .semibold, design: .rounded)).lineLimit(1)
+                    detail.font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(1)
                 }
                 Spacer(minLength: 0)
             }

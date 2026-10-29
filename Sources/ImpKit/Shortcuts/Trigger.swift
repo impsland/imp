@@ -43,21 +43,21 @@ public struct Trigger: Codable, Hashable, Sendable {
 
         public var title: String {
             switch self {
-            case .keys: "Keys"
-            case .clicks: "Clicks on the Imp"
-            case .battery: "Battery low"
-            case .charger: "Charger"
-            case .app: "App in front"
-            case .website: "Website"
-            case .time: "Every day at"
-            case .every: "Repeat"
-            case .back: "You come back"
-            case .wake: "Mac wakes up"
-            case .start: "Imp starts"
-            case .busy: "Mac is busy"
-            case .hot: "Mac runs hot"
-            case .offline: "Network"
-            case .hours: "Time of day"
+            case .keys: String(localized: "Keys")
+            case .clicks: String(localized: "Clicks on the Imp")
+            case .battery: String(localized: "Battery low")
+            case .charger: String(localized: "Charger")
+            case .app: String(localized: "App in front")
+            case .website: String(localized: "Website")
+            case .time: String(localized: "Every day at")
+            case .every: String(localized: "Every few minutes")
+            case .back: String(localized: "You come back")
+            case .wake: String(localized: "Mac wakes up")
+            case .start: String(localized: "Imp starts")
+            case .busy: String(localized: "Mac is busy")
+            case .hot: String(localized: "Mac runs hot")
+            case .offline: String(localized: "Network")
+            case .hours: String(localized: "Time of day")
             }
         }
 
@@ -145,39 +145,53 @@ public struct Trigger: Codable, Hashable, Sendable {
     /// In a few words, for lists: "Battery below 20 %", "Safari comes to the front".
     public var summary: String {
         switch kind {
-        case .keys: "Keys"
-        case .clicks: clicks == 1 ? "1 click on the Imp" : "\(clicks) clicks on the Imp"
-        case .battery: "Battery below \(percent) %"
-        case .charger: isOn ? "Charger plugged in" : "Charger unplugged"
-        case .app: word.isEmpty ? "Any app comes to the front" : "\(word) comes to the front"
-        case .website: word.isEmpty ? "Any website" : "On \(word)"
-        case .time: "Every day at \(Self.clock(minuteOfDay))"
-        case .every: minutes % 60 == 0 ? "Every \(minutes / 60 == 1 ? "hour" : "\(minutes / 60) hours")" : "Every \(minutes) min"
-        case .back: "Back after \(minutes) min away"
-        case .wake: "The Mac wakes up"
-        case .start: "Imp starts"
-        case .busy: "Processor above \(percent) %"
-        case .hot: "The Mac runs hot"
-        case .offline: isOn ? "Network goes away" : "Network comes back"
-        case .hours: "Between \(Self.clock(minuteOfDay)) and \(Self.clock(endMinute))"
+        case .keys: String(localized: "Keys")
+        case .clicks: clicks == 1 ? String(localized: "1 click on the Imp") : String(localized: "\(clicks) clicks on the Imp")
+        case .battery: String(localized: "Battery below \(percent) %")
+        case .charger: isOn ? String(localized: "Charger plugged in") : String(localized: "Charger unplugged")
+        case .app: word.isEmpty ? String(localized: "Any app comes to the front") : String(localized: "\(word) comes to the front")
+        case .website: word.isEmpty ? String(localized: "Any website") : String(localized: "On \(word)")
+        case .time: String(localized: "Every day at \(Self.shownClock(minuteOfDay))")
+        case .every:
+            if minutes % 60 != 0 { String(localized: "Every \(Self.span(minutes))") }
+            else if minutes == 60 { String(localized: "Every hour") }
+            else { String(localized: "Every \(minutes / 60) hours") }
+        case .back: String(localized: "Back after \(Self.span(minutes)) away")
+        case .wake: String(localized: "The Mac wakes up")
+        case .start: String(localized: "Imp starts")
+        case .busy: String(localized: "Processor above \(percent) %")
+        case .hot: String(localized: "The Mac runs hot")
+        case .offline: isOn ? String(localized: "Network goes away") : String(localized: "Network comes back")
+        case .hours: String(localized: "Between \(Self.shownClock(minuteOfDay)) and \(Self.shownClock(endMinute))")
         }
     }
 
     /// The same, as a condition: "the battery is below 20 %".
     public var conditionSummary: String {
         switch kind {
-        case .battery: "Battery below \(percent) %"
-        case .charger: isOn ? "On the charger" : "On battery"
-        case .app: word.isEmpty ? "Any app in front" : "\(word) is in front"
-        case .website: word.isEmpty ? "Any website open" : "\(word) is open"
-        case .busy: "Processor above \(percent) %"
-        case .hot: "The Mac is hot"
-        case .offline: isOn ? "Offline" : "Online"
+        case .battery: String(localized: "Battery below \(percent) %")
+        case .charger: isOn ? String(localized: "On the charger") : String(localized: "On battery")
+        case .app: word.isEmpty ? String(localized: "Any app in front") : String(localized: "\(word) is in front")
+        case .website: word.isEmpty ? String(localized: "Any website open") : String(localized: "\(word) is open")
+        case .busy: String(localized: "Processor above \(percent) %")
+        case .hot: String(localized: "The Mac is hot")
+        case .offline: isOn ? String(localized: "Offline") : String(localized: "Online")
         default: summary
         }
     }
 
     /// "09:05".
+    /// A number of minutes as the user's language writes a duration: "15 min", "1 hr 30 min".
+    static func span(_ minutes: Int) -> String {
+        Duration.seconds(minutes * 60).formatted(.units(allowed: [.hours, .minutes], width: .abbreviated))
+    }
+
+    /// A time of day the way the user's region writes it ("9:05 PM" or "21:05"), for showing.
+    static func shownClock(_ minuteOfDay: Int) -> String {
+        let day = Calendar.current.startOfDay(for: Date())
+        return (Calendar.current.date(byAdding: .minute, value: minuteOfDay, to: day) ?? day).formatted(date: .omitted, time: .shortened)
+    }
+
     public static func clock(_ minuteOfDay: Int) -> String {
         String(format: "%02d:%02d", minuteOfDay / 60, minuteOfDay % 60)
     }

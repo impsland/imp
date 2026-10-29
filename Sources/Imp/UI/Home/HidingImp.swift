@@ -14,9 +14,10 @@ struct HidingImp: View {
     var center: () -> CGPoint? = { nil }
     /// Neighbours at the side don't need every frame.
     var still = false
+    @Environment(\.stageAwake) private var awake
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1 / 30, paused: still)) { timeline in
+        TimelineView(.animation(minimumInterval: 1 / 30, paused: still || !awake)) { timeline in
             let t = clock.time(timeline.date)
             Canvas { ctx, size in
                 let look = center().map { Gaze.toward(NSEvent.mouseLocation, from: $0) } ?? CGPoint(x: 0, y: 0.1)

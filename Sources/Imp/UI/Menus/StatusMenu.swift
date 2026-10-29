@@ -124,7 +124,7 @@ final class StatusMenu: NSObject {
                 guard let self else { return }
                 self.run { self.toggleImps() }
             },
-            QuickBar.Item(icon: "gearshape.fill", title: "Settings", help: "Settings for all Imps: brain keys, manners, animations, hearing, permissions") { [weak self] in
+            QuickBar.Item(icon: "gearshape.fill", title: "Settings", help: "Settings for all Imps: services, talking, animations, permissions, app") { [weak self] in
                 guard let self else { return }
                 self.run { HomeWindow.shared.showGeneral(self.model) }
             },

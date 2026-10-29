@@ -38,7 +38,7 @@ final class KitFlow: Identifiable {
     static func link(inline json: String, imp: UUID?) -> KitFlow {
         let flow = KitFlow(imp: imp, text: json)
         flow.pending = .text(json)
-        flow.origin = "A link"
+        flow.origin = String(localized: "A link")
         return flow
     }
 
@@ -59,7 +59,7 @@ final class KitFlow: Identifiable {
             defer { try? handle.close() }
             let data = try handle.read(upToCount: Kit.maxFileBytes + 1) ?? Data()
             guard data.count <= Kit.maxFileBytes else { throw KitError.tooLarge }
-            guard let string = String(data: data, encoding: .utf8) else { throw KitError.download("That isn't a text file.") }
+            guard let string = String(data: data, encoding: .utf8) else { throw KitError.download(String(localized: "That isn't a text file.")) }
             settingText = true
             text = data.count <= Kit.maxBytes ? string : url.lastPathComponent      // a big file isn't poured into the box
             settingText = false
@@ -78,7 +78,7 @@ final class KitFlow: Identifiable {
         do {
             let json: String, from: String
             switch source {
-            case .text(let t): json = t; from = origin ?? fileName.map { "File “\($0)”" } ?? "Pasted text"
+            case .text(let t): json = t; from = origin ?? fileName.map { String(localized: "File “\($0)”") } ?? String(localized: "Pasted text")
             case .remote(let url): json = try await KitLoader.fetch(url); from = url.host ?? url.absoluteString
             }
             let kit = try Kit.parse(json, limit: limit)
@@ -158,51 +158,66 @@ struct KitFlowSheet: View {
 
 /// Paste JSON or a web address, or hand over a .json file.
 struct KitEntrySheet: View {
+    private static let dropHeight: CGFloat = 112
+    private static let editorHeight: CGFloat = 96
+
     let model: AppModel
     @Bindable var flow: KitFlow
     @Bindable var router: HomeRouter
     @Environment(\.impTint) private var tint
     @State private var dropping = false
 
+    private var isEmpty: Bool { flow.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+
     var body: some View {
-        SheetScaffold(icon: "shippingbox.fill", title: "Add a kit or an Imp", width: 540) {
+        SheetScaffold(icon: "shippingbox.fill", title: "Add a kit or an Imp",
+                      info: "A kit is Imps, triggers and tools somebody shared as JSON. Paste it, give a web address or an imp:// link, or drop a file. You'll see what's in it before anything is added.",
+                      width: 520) {
             Button { paste() } label: { Label("Paste", systemImage: "doc.on.clipboard") }
                 .buttonStyle(.imp(.secondary, small: true))
-                .help("Paste what's on the clipboard")
+                .help("Fill in from the clipboard.")
         } content: {
-            Text("A kit is Imps, triggers and tools somebody shared (or you exported) as JSON. Paste it, give a web address or an imp:// link, or drop a file. You'll see what's in it before anything is added.")
-                .font(.system(size: 12)).foregroundStyle(Dungeon.muted).fixedSize(horizontal: false, vertical: true)
-            EditorWell(text: $flow.text, placeholder: "{ \"imp\": 2, \"imps\": […] }   or   https://example.com/kit.json",
-                       mono: true, height: 140)
-            dropZone
-            if let error = flow.error {
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-                    Text(error).fixedSize(horizontal: false, vertical: true)
-                }
-                .font(.system(size: 12)).foregroundStyle(Dungeon.cream)
+            if flow.isLoading {
+                loading
+            } else {
+                dropZone
+                Text("Or paste a kit or a web address").font(.system(size: 12, weight: .medium)).foregroundStyle(Dungeon.muted)
+                    .padding(.bottom, -6)
+                EditorWell(text: $flow.text, codePlaceholder: "{ \"imp\": 2, \"imps\": […] }   or   https://example.com/kit.json",
+                           mono: true, height: Self.editorHeight)
             }
+            if let error = flow.error { ErrorBanner(text: error) }
         } footer: {
-            if flow.isLoading { ProgressView().controlSize(.small) }
             Spacer()
-            Button("Cancel", role: .cancel) { router.kitFlow = nil }.buttonStyle(.quiet).keyboardShortcut(.cancelAction)
+            SheetCancelButton { router.kitFlow = nil }
             Button("Review") { Task { await flow.read(model: model) } }
                 .buttonStyle(.primary).keyboardShortcut(.defaultAction)
-                .disabled(flow.isLoading || flow.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .disabled(flow.isLoading || isEmpty)
         }
     }
 
-    private var dropZone: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "doc.badge.plus").font(.system(size: 15)).foregroundStyle(dropping ? tint : Dungeon.muted)
-            Text("Drop a .json file here").font(.system(size: 12.5)).foregroundStyle(Dungeon.cream.opacity(0.85))
-            Spacer(minLength: 8)
-            Button("Choose file…") { choose() }.buttonStyle(.imp(.quiet, small: true))
+    private var loading: some View {
+        VStack(spacing: 10) {
+            ProgressView().controlSize(.regular)
+            Text("Opening the kit…").font(.system(size: 13, weight: .medium)).foregroundStyle(Dungeon.cream)
         }
-        .padding(.horizontal, 12).padding(.vertical, 9)
-        .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.white.opacity(dropping ? 0.09 : 0.04)))
-        .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous)
-            .strokeBorder(dropping ? tint : Dungeon.cardEdge, style: StrokeStyle(lineWidth: dropping ? 1.5 : 1, dash: [5, 4])))
+        .frame(maxWidth: .infinity, minHeight: Self.dropHeight + Self.editorHeight)
+        .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Dungeon.card))
+        .accessibilityElement(children: .combine)
+    }
+
+    private var dropZone: some View {
+        VStack(spacing: 8) {
+            Image(systemName: dropping ? "arrow.down.doc.fill" : "doc.badge.plus")
+                .font(.system(size: 26, weight: .medium)).foregroundStyle(dropping ? tint : Dungeon.muted)
+                .symbolEffect(.bounce, value: dropping)
+            Text("Drop a .json file here").font(.system(size: 13, weight: .semibold)).foregroundStyle(Dungeon.cream)
+            Button("Choose file…") { choose() }.buttonStyle(.imp(.secondary, small: true))
+        }
+        .frame(maxWidth: .infinity, minHeight: Self.dropHeight)
+        .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(dropping ? tint.opacity(0.14) : Dungeon.card))
+        .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous)
+            .strokeBorder(dropping ? tint : Dungeon.cardEdge, style: StrokeStyle(lineWidth: dropping ? 1.5 : 1, dash: [6, 4])))
         .dropDestination(for: URL.self) { urls, _ in
             guard let file = urls.first(where: \.isFileURL) else { return false }
             Task { await flow.read(file: file, model: model) }
@@ -221,35 +236,144 @@ struct KitEntrySheet: View {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.json]
         panel.allowsMultipleSelection = false
-        panel.message = "Choose a kit (.json)"
+        panel.message = String(localized: "Choose a kit (.json)")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         Task { await flow.read(file: url, model: model) }
     }
 }
 
-/// What's in the kit, with a tick on each item, the warnings up top, who it's for, and Add.
+/// Something went wrong, said in one orange box.
+private struct ErrorBanner: View {
+    let text: String
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
+            Text(text).fixedSize(horizontal: false, vertical: true).textSelection(.enabled)
+        }
+        .font(.system(size: 12.5)).foregroundStyle(Dungeon.cream)
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Color.orange.opacity(0.14)))
+        .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Color.orange.opacity(0.5)))
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// What's arriving: the Imps' faces in their own colours, the kit's name, what it says about itself, and what's in it.
+private struct KitHero: View {
+    private static let faceSize: CGFloat = 68
+    private static let overlap: CGFloat = 20
+    private static let maxFaces = 4
+    private static let glowWidth: CGFloat = 340
+
+    let kit: Kit
+    let origin: String
+    @Environment(\.impTint) private var tint
+
+    var body: some View {
+        VStack(spacing: 10) {
+            faces
+            Text(kit.name.isEmpty ? String(localized: "Add a kit") : kit.name)
+                .font(.system(size: 22, weight: .heavy, design: .rounded)).foregroundStyle(Dungeon.cream)
+                .lineLimit(2).multilineTextAlignment(.center)
+                .accessibilityAddTraits(.isHeader)
+            if !kit.about.isEmpty {
+                Text(kit.about).font(.system(size: 12.5)).foregroundStyle(Dungeon.muted)
+                    .lineLimit(3).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+            }
+            HStack(spacing: 6) {
+                if !kit.imps.isEmpty { Badge("^[\(kit.imps.count) Imp](inflect: true)", symbol: "person.fill", color: Dungeon.cream) }
+                if !kit.triggers.isEmpty { Badge("^[\(kit.triggers.count) trigger](inflect: true)", symbol: "bolt.fill", color: Dungeon.cream) }
+                if !kit.servers.isEmpty { Badge("^[\(kit.servers.count) tool](inflect: true)", symbol: "puzzlepiece.extension.fill", color: Dungeon.cream) }
+            }
+            StatusText(text: "From \(origin)", symbol: "tray.and.arrow.down")
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 4)
+    }
+
+    @ViewBuilder private var faces: some View {
+        let shown = Array(kit.imps.prefix(Self.maxFaces))
+        let more = kit.imps.count - shown.count
+        HStack(spacing: -Self.overlap) {
+            if shown.isEmpty {
+                Image(systemName: "shippingbox.fill").font(.system(size: 30)).foregroundStyle(.white)
+                    .frame(width: Self.faceSize, height: Self.faceSize)
+                    .background(Circle().fill(tint.gradient))
+            }
+            ForEach(shown) { imp in
+                ImpPortrait(face: impFace(hue: imp.hue, mood: .happy), shadow: false)
+                    .frame(width: Self.faceSize, height: Self.faceSize)
+            }
+            if more > 0 {
+                Text(verbatim: "+\(more)").font(.system(size: 15, weight: .heavy, design: .rounded)).foregroundStyle(Dungeon.cream)
+                    .frame(width: Self.faceSize * 0.6, height: Self.faceSize * 0.6)
+                    .background(Circle().fill(Dungeon.card))
+                    .padding(.leading, Self.overlap + 4)
+            }
+        }
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity)
+        .background {
+            EllipticalGradient(colors: [(shown.first.map { Color.imp($0.hue) } ?? tint).opacity(0.4), .clear],
+                               center: .center, startRadiusFraction: 0, endRadiusFraction: 0.5)
+                .frame(width: Self.glowWidth)
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+/// A group's title above its cards: an icon, a name, a count, and an ⓘ for what to watch out for.
+private struct KitSection<Content: View>: View {
+    let icon: String
+    let title: LocalizedStringKey
+    var info: LocalizedStringKey?
+    @ViewBuilder var content: Content
+    @Environment(\.impTint) private var tint
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Image(systemName: icon).font(.system(size: 11, weight: .semibold)).foregroundStyle(tint)
+                Text(title).font(.system(size: 13, weight: .bold, design: .rounded)).foregroundStyle(Dungeon.cream)
+                if let info { InfoTip(info) }
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
+            content
+        }
+    }
+}
+
+/// What's in the kit, with a tick on each item, the warnings as badges, who it's for, and Add.
 struct KitReviewSheet: View {
+    private static let faceSize: CGFloat = 44
+
     let model: AppModel
     let flow: KitFlow
     @Bindable var review: KitReview
     @Bindable var router: HomeRouter
-    @Environment(\.impTint) private var tint
+    @Environment(\.impTint) private var inherited
 
     private var kit: Kit { review.kit }
+    /// The first Imp's colour: the sheet takes it on while the Imp arrives.
+    private var tint: Color { kit.imps.first.map { Color.imp($0.hue) } ?? inherited }
 
     var body: some View {
-        SheetScaffold(icon: "shippingbox.fill", title: kit.name.isEmpty ? "Add a kit" : kit.name,
-                      info: "Nothing is added until you press Add. Untick what you don't want.", width: 540) {
-            about
+        SheetFrame {
+            EmptyView()
+        } content: {
+            KitHero(kit: kit, origin: review.origin)
             if !review.cautions.isEmpty { caution }
-            if !kit.imps.isEmpty { impsCard }
-            if !kit.triggers.isEmpty { triggersCard }
-            if !kit.looseServers.isEmpty { serversCard }
+            if !kit.imps.isEmpty { impsSection }
+            if !kit.triggers.isEmpty { triggersSection }
+            if !kit.looseServers.isEmpty { serversSection }
             if !kit.problems.isEmpty { problemsCard }
         } footer: {
             if review.needsTarget {
                 Text("For").font(.system(size: 12)).foregroundStyle(Dungeon.muted)
-                CompactMenu(title: targetName, symbol: review.target == nil ? "person.3.fill" : "person.fill", maxWidth: 190) {
+                CompactMenu(verbatim: targetName, symbol: review.target == nil ? "person.3.fill" : "person.fill", maxWidth: 190) {
                     ForEach(model.prefs.imps) { imp in
                         Button { review.target = imp.id } label: {
                             if review.target == imp.id { Label(name(of: imp), systemImage: "checkmark") } else { Text(name(of: imp)) }
@@ -260,45 +384,38 @@ struct KitReviewSheet: View {
                         if review.target == nil { Label("Every Imp", systemImage: "checkmark") } else { Text("Every Imp") }
                     }
                 }
+                .help("Who gets the triggers and tools that aren't an Imp's own.")
             }
             Spacer()
-            Button("Cancel", role: .cancel) { router.kitFlow = nil }.buttonStyle(.quiet).keyboardShortcut(.cancelAction)
-            Button(addTitle) { add() }
+            SheetCancelButton { router.kitFlow = nil }
+            Button { add() } label: { Label(addTitle, systemImage: "plus") }
                 .buttonStyle(.primary).keyboardShortcut(.defaultAction)
                 .disabled(review.count == 0)
+                .help("Nothing is added until you press this.")
         }
+        .environment(\.impTint, tint)
     }
 
-    private var addTitle: String {
+    private var addTitle: LocalizedStringKey {
         let onlyImps = review.triggers.isEmpty && review.servers.isEmpty
-        if onlyImps && !review.imps.isEmpty { return review.imps.count == 1 ? "Add 1 Imp" : "Add \(review.imps.count) Imps" }
-        return review.count == 1 ? "Add 1 item" : "Add \(review.count) items"
+        return onlyImps && !review.imps.isEmpty ? "Add ^[\(review.imps.count) Imp](inflect: true)" : "Add ^[\(review.count) item](inflect: true)"
     }
 
-    private func name(of imp: ImpProfile) -> String { imp.name.isEmpty ? "Unnamed Imp" : imp.name }
-    private var targetName: String { review.target.flatMap(model.profile).map(name(of:)) ?? "Every Imp" }
-
-    private var about: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            if !kit.about.isEmpty {
-                Text(kit.about).font(.system(size: 13)).foregroundStyle(Dungeon.cream).fixedSize(horizontal: false, vertical: true)
-            }
-            StatusText(text: "From \(review.origin)", symbol: "tray.and.arrow.down")
-        }
-    }
+    private func name(of imp: ImpProfile) -> String { imp.name.isEmpty ? String(localized: "Unnamed Imp") : imp.name }
+    private var targetName: String { review.target.flatMap(model.profile).map(name(of:)) ?? String(localized: "Every Imp") }
 
     /// Code that would run on this Mac, said plainly.
     private var caution: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
                 Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-                Text("Runs code on this Mac").font(.system(size: 13, weight: .bold, design: .rounded)).foregroundStyle(Dungeon.cream)
+                Text("Runs commands on this Mac").font(.system(size: 13, weight: .bold, design: .rounded)).foregroundStyle(Dungeon.cream)
+                InfoTip("Only add it if you trust whoever sent it.")
             }
             ForEach(review.cautions) { warning in
                 Text(warning.text).font(.system(size: 11.5, design: .monospaced)).foregroundStyle(Dungeon.cream.opacity(0.9))
                     .textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
             }
-            Text("Only add it if you trust whoever sent it.").font(.system(size: 11.5)).foregroundStyle(Dungeon.muted)
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -306,130 +423,121 @@ struct KitReviewSheet: View {
         .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Color.orange.opacity(0.5)))
     }
 
-    private var impsCard: some View {
-        Card(kit.imps.count == 1 ? "Imp" : "Imps", icon: "person.fill") {
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(kit.imps) { imp in
-                    impRow(imp)
-                    if imp.id != kit.imps.last?.id { CardDivider() }
-                }
-                if review.hasChats {
-                    CardDivider()
-                    Toggle("Bring their chats along", isOn: $review.includeChats).toggleStyle(.checkbox)
-                        .font(.system(size: 12.5)).foregroundStyle(Dungeon.cream)
-                }
-                Text("An Imp arrives at home, not out on your desktop. Its personality and triggers steer what it does with its tools, commands on your Mac included. Read them.")
-                    .font(.system(size: 11)).foregroundStyle(Dungeon.muted).fixedSize(horizontal: false, vertical: true)
+    /// A warning as a badge: what it is in a few words, the details in its tooltip.
+    @ViewBuilder private func badge(_ warning: KitWarning) -> some View {
+        switch warning.kind {
+        case .runsCommand: Badge("Runs commands", symbol: "terminal.fill", color: .orange).help(warning.text)
+        case .computerControl: Badge("Controls your Mac", symbol: "cursorarrow.click.2", color: .orange).help(warning.text)
+        case .needsSecrets: Badge("Needs keys", symbol: "key.fill", color: Dungeon.ember).help(warning.text)
+        case .keysInUse: Badge("Keys in use", symbol: "keyboard", color: .orange).help(warning.text)
+        case .brainMissing: Badge("Model not set up", symbol: "brain", color: .orange).help(warning.text)
+        }
+    }
+
+    // MARK: Imps
+
+    private var impsSection: some View {
+        KitSection(icon: "person.fill", title: "Imps",
+                   info: "An Imp arrives at home, not out on your desktop. Its personality and triggers steer what it does with its tools, commands on your Mac included. Read them.") {
+            ForEach(kit.imps) { imp in
+                SelectableCard(isOn: review.binding(imp: imp.id), tint: Color.imp(imp.hue)) { impCard(imp) }
+            }
+            if review.hasChats {
+                Toggle("Bring their chats along", isOn: $review.includeChats).toggleStyle(.checkbox)
+                    .font(.system(size: 12.5)).foregroundStyle(Dungeon.cream)
+                    .padding(.leading, 4)
             }
         }
     }
 
-    private func impRow(_ imp: KitImp) -> some View {
+    private func impCard(_ imp: KitImp) -> some View {
         let warnings = review.warnings(for: imp.id) + imp.triggers.flatMap { review.warnings(for: $0.id) }
-        let tools = imp.toolsOn.map(\.title) + (imp.usesShell ? ["Commands"] : [])
+        let tools = imp.toolsOn.map(\.title) + (imp.usesShell ? [String(localized: "Commands")] : [])
         let servers = imp.servers.compactMap { id in kit.servers.first { $0.id == id }?.name }
-        var counts: [String] = []
-        if !imp.triggers.isEmpty { counts.append(imp.triggers.count == 1 ? "1 trigger" : "\(imp.triggers.count) triggers") }
-        if !imp.chats.isEmpty { counts.append(imp.chats.count == 1 ? "1 chat" : "\(imp.chats.count) chats") }
-        return HStack(alignment: .top, spacing: 10) {
-            Toggle("", isOn: review.binding(imp: imp.id)).labelsHidden().toggleStyle(.checkbox)
+        let model = imp.brain.map(\.summary).flatMap { $0.isEmpty ? nil : $0 }
+        return HStack(alignment: .top, spacing: 12) {
             ImpPortrait(face: impFace(hue: imp.hue), shadow: false)
-                .frame(width: 34, height: 34)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(imp.name).font(.system(size: 13, weight: .semibold)).lineLimit(1)
+                .frame(width: Self.faceSize, height: Self.faceSize)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(imp.name).font(.system(size: 14, weight: .bold, design: .rounded)).lineLimit(1)
                 if !imp.personality.isEmpty {
-                    Text(imp.personality).font(.system(size: 11.5)).foregroundStyle(Dungeon.cream.opacity(0.85))
+                    Text(imp.personality).font(.system(size: 12)).foregroundStyle(Dungeon.cream.opacity(0.85))
                         .lineLimit(2).fixedSize(horizontal: false, vertical: true)
                 }
-                fact(imp.brain.map(\.summary).flatMap { $0.isEmpty ? nil : $0 } ?? "Your default model", symbol: "brain")
-                fact(tools.isEmpty ? "No tools" : tools.joined(separator: ", "), symbol: "wrench.and.screwdriver.fill")
-                if !servers.isEmpty { fact("Uses " + servers.joined(separator: ", "), symbol: "puzzlepiece.extension.fill") }
-                if !counts.isEmpty { fact(counts.joined(separator: " · "), symbol: "bolt.fill") }
-                ForEach(warnings) { warning in
-                    Label(warning.text, systemImage: "exclamationmark.triangle.fill")
-                        .font(.system(size: 11)).foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            Spacer(minLength: 0)
-        }
-    }
-
-    /// One fact about an Imp, its symbol in a column of its own so the words line up.
-    private func fact(_ text: String, symbol: String) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 6) {
-            Image(systemName: symbol).font(.system(size: 10.5, weight: .semibold)).frame(width: 14)
-            Text(text).lineLimit(2).fixedSize(horizontal: false, vertical: true)
-        }
-        .font(.system(size: 11.5)).foregroundStyle(Dungeon.muted)
-    }
-
-    private var triggersCard: some View {
-        Card(kit.triggers.count == 1 ? "Trigger" : "Triggers", icon: "bolt.fill") {
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(kit.triggers) { trigger in
-                    triggerRow(trigger)
-                    if trigger.id != kit.triggers.last?.id { CardDivider() }
-                }
-                Text("A trigger gives the Imp an instruction it carries out with its tools, commands on your Mac included. Read what it says.")
-                    .font(.system(size: 11)).foregroundStyle(Dungeon.muted).fixedSize(horizontal: false, vertical: true)
-            }
-        }
-    }
-
-    private func triggerRow(_ trigger: Shortcut) -> some View {
-        HStack(alignment: .top, spacing: 10) {
-            Toggle("", isOn: review.binding(trigger: trigger.id)).labelsHidden().toggleStyle(.checkbox)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(trigger.displayName).font(.system(size: 13, weight: .semibold)).lineLimit(1)
-                Label(trigger.triggerSummary, systemImage: trigger.trigger.kind.symbol)
-                    .font(.system(size: 11.5, weight: .medium)).foregroundStyle(Dungeon.cream.opacity(0.85)).lineLimit(2)
-                if trigger.command != .ask {
-                    Text(trigger.command.title).font(.system(size: 11.5)).foregroundStyle(Dungeon.muted)
-                } else if !trigger.prompt.isEmpty {
-                    Text(trigger.prompt).font(.system(size: 11.5)).foregroundStyle(Dungeon.muted)
-                        .lineLimit(4).fixedSize(horizontal: false, vertical: true).textSelection(.enabled)
-                }
-                if trigger.command == .ask && trigger.usesClipboard {
-                    Text("Sends what you copied").font(.system(size: 11)).foregroundStyle(Dungeon.muted)
-                }
-                ForEach(review.warnings(for: trigger.id)) { warning in
-                    Label(warning.text, systemImage: "exclamationmark.triangle.fill")
-                        .font(.system(size: 11)).foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            Spacer(minLength: 0)
-        }
-    }
-
-    private var serversCard: some View {
-        Card(kit.servers.count == 1 ? "Tool" : "Tools", icon: "puzzlepiece.extension.fill") {
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(kit.servers) { server in
-                    serverRow(server)
-                    if server.id != kit.servers.last?.id { CardDivider() }
+                FlowLayout(spacing: 6, lineSpacing: 6) {
+                    ForEach(warnings) { badge($0) }
+                    Badge(verbatim: model ?? String(localized: "Your default model"), symbol: "brain")
+                        .help("The model it thinks with.")
+                    if tools.isEmpty {
+                        Badge("No tools", symbol: "wrench.and.screwdriver.fill")
+                    } else {
+                        Badge("^[\(tools.count) tool](inflect: true)", symbol: "wrench.and.screwdriver.fill").help(tools.joined(separator: ", "))
+                    }
+                    if !servers.isEmpty {
+                        Badge(verbatim: servers.joined(separator: ", "), symbol: "puzzlepiece.extension.fill").help("The tools it uses.")
+                    }
+                    if !imp.triggers.isEmpty { Badge("^[\(imp.triggers.count) trigger](inflect: true)", symbol: "bolt.fill") }
+                    if !imp.chats.isEmpty { Badge("^[\(imp.chats.count) chat](inflect: true)", symbol: "bubble.left.and.bubble.right.fill") }
                 }
             }
         }
     }
 
-    private func serverRow(_ server: MCPServerConfig) -> some View {
-        HStack(alignment: .top, spacing: 10) {
-            Toggle("", isOn: review.binding(server: server.id)).labelsHidden().toggleStyle(.checkbox)
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 6) {
-                    Image(systemName: server.transport == .stdio ? "terminal.fill" : "globe")
-                        .font(.system(size: 11, weight: .semibold)).foregroundStyle(server.transport == .stdio ? .orange : tint)
-                    Text(server.name).font(.system(size: 13, weight: .semibold)).lineLimit(1)
-                }
-                Text(server.transport == .stdio ? server.commandLine : server.url)
-                    .font(.system(size: 11.5, design: .monospaced)).foregroundStyle(Dungeon.muted)
-                    .lineLimit(3).fixedSize(horizontal: false, vertical: true).textSelection(.enabled)
-                ForEach(review.warnings(for: server.id).filter { !$0.isCaution }) { warning in
-                    Label(warning.text + ". Its form opens after adding.", systemImage: "key.fill")
-                        .font(.system(size: 11)).foregroundStyle(Dungeon.ember).fixedSize(horizontal: false, vertical: true)
+    // MARK: Triggers and tools
+
+    private var triggersSection: some View {
+        KitSection(icon: "bolt.fill", title: "Triggers",
+                   info: "A trigger gives the Imp an instruction it carries out with its tools, commands on your Mac included. Read what it says.") {
+            ForEach(kit.triggers) { trigger in
+                SelectableCard(isOn: review.binding(trigger: trigger.id)) { triggerCard(trigger) }
+            }
+        }
+    }
+
+    private func triggerCard(_ trigger: Shortcut) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(trigger.displayName).font(.system(size: 14, weight: .bold, design: .rounded)).lineLimit(1)
+            Label(trigger.triggerSummary, systemImage: trigger.trigger.kind.symbol)
+                .font(.system(size: 12, weight: .medium)).foregroundStyle(Dungeon.cream.opacity(0.85)).lineLimit(2)
+            if trigger.command != .ask {
+                Text(trigger.command.title).font(.system(size: 12)).foregroundStyle(Dungeon.muted)
+            } else if !trigger.prompt.isEmpty {
+                Text(trigger.prompt).font(.system(size: 12)).foregroundStyle(Dungeon.muted)
+                    .lineLimit(4).fixedSize(horizontal: false, vertical: true)
+            }
+            let warnings = review.warnings(for: trigger.id)
+            if (trigger.command == .ask && trigger.usesClipboard) || !warnings.isEmpty {
+                FlowLayout(spacing: 6, lineSpacing: 6) {
+                    ForEach(warnings) { badge($0) }
+                    if trigger.command == .ask && trigger.usesClipboard {
+                        Badge("Sends your clipboard", symbol: "doc.on.clipboard").help("It sends what you copied along with the instruction.")
+                    }
                 }
             }
-            Spacer(minLength: 0)
+        }
+    }
+
+    private var serversSection: some View {
+        KitSection(icon: "puzzlepiece.extension.fill", title: "Tools") {
+            ForEach(kit.looseServers) { server in
+                SelectableCard(isOn: review.binding(server: server.id)) { serverCard(server) }
+            }
+        }
+    }
+
+    private func serverCard(_ server: MCPServerConfig) -> some View {
+        let local = server.transport == .stdio
+        let warnings = review.warnings(for: server.id)
+        return VStack(alignment: .leading, spacing: 5) {
+            Label { Text(server.name).lineLimit(1) } icon: { Image(systemName: local ? "terminal.fill" : "globe") }
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+            Text(local ? server.commandLine : server.url)
+                .font(.system(size: 11.5, design: .monospaced)).foregroundStyle(Dungeon.muted)
+                .lineLimit(2).fixedSize(horizontal: false, vertical: true)
+            if !warnings.isEmpty {
+                FlowLayout(spacing: 6, lineSpacing: 6) { ForEach(warnings) { badge($0) } }
+            }
         }
     }
 
@@ -458,13 +566,17 @@ struct KitReviewSheet: View {
         }
         withAnimation(.snappy(duration: 0.2)) { model.prefs = prefs }
         router.kitFlow = nil
-        // Keys to fill in: open that tool's form once this sheet has gone.
-        guard let needing = added.needingSecrets.first else { return }
-        let imp = review.target ?? flow.imp ?? router.selection ?? model.prefs.imps[0].id
-        HomeWindow.shared.show(model, settingsFor: imp, tab: .tools)
-        Task {
-            try? await Task.sleep(for: .milliseconds(450))
-            router.serverToEdit = needing
+        // New Imps hatch on the stage first. Then, if a tool needs keys, its form opens.
+        let needing = added.needingSecrets.first
+        let target = review.target ?? flow.imp ?? added.imps.first?.id
+        router.hatch(added.imps.map(\.id)) { [model, router] in
+            guard let needing else { return }
+            let imp = target ?? router.selection ?? model.prefs.imps[0].id
+            HomeWindow.shared.show(model, settingsFor: imp, tab: .tools)
+            Task {
+                try? await Task.sleep(for: .milliseconds(450))
+                router.serverToEdit = needing
+            }
         }
     }
 }
@@ -495,7 +607,7 @@ enum KitSharing {
 /// A small share button: Copy the kit, or Copy a link to it. A tick says it worked.
 struct ShareKitButton: View {
     let kit: Kit
-    let help: String
+    let help: LocalizedStringResource
     @State private var copied = false
 
     var body: some View {
@@ -508,8 +620,8 @@ struct ShareKitButton: View {
             HoverGlyph(systemName: copied ? "checkmark" : "square.and.arrow.up", tint: copied ? .green : .secondary)
         }
         .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
-        .help(linkable ? help : help + " (too long for a link)")
-        .accessibilityLabel(help)
+        .help(linkable ? String(localized: help) : String(localized: "\(String(localized: help)) It's too long for a link."))
+        .accessibilityLabel(Text(help))
     }
 
     private func done(_ action: @autoclosure () -> Void) {
@@ -541,9 +653,9 @@ enum ImpExport {
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.json]
         panel.nameFieldStringValue = fileName + ".json"
-        panel.message = "Save \(name) as a kit file: Imp reads it back with Import, on this Mac or another. API keys are never saved."
+        panel.message = String(localized: "Save \(name) as a kit file. Imp reads it back with Import, on this Mac or another. API keys are never saved.")
         panel.canCreateDirectories = true
-        let box = NSButton(checkboxWithTitle: "Include chats", target: nil, action: nil)
+        let box = NSButton(checkboxWithTitle: String(localized: "Include chats"), target: nil, action: nil)
         if hasChats(ids, model: model) {
             let holder = NSView(frame: NSRect(x: 0, y: 0, width: 300, height: 36))
             box.frame = NSRect(x: 20, y: 6, width: 260, height: 24)
@@ -555,12 +667,12 @@ enum ImpExport {
         let text = kit.json()
         do {
             guard text.utf8.count <= Kit.maxFileBytes else {
-                throw KitError.download("That's too big to read back (the limit is \(Kit.maxFileBytes / 1_048_576) MB). Export without chats, or a few Imps at a time.")
+                throw KitError.download(String(localized: "That's too big to read back (the limit is \(Kit.maxFileBytes / 1_048_576) MB). Export without chats, or a few Imps at a time."))
             }
             try Data(text.utf8).write(to: url, options: .atomic)
         } catch {
             let alert = NSAlert()
-            alert.messageText = "Couldn't save the file"
+            alert.messageText = String(localized: "Couldn't save the file")
             alert.informativeText = error.localizedDescription
             alert.runModal()
         }

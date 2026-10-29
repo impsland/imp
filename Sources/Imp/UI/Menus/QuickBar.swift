@@ -51,8 +51,8 @@ struct MenuHeader: View {
 struct QuickBar: View {
     struct Item {
         var icon: String
-        var title: String
-        var help: String
+        var title: LocalizedStringKey
+        var help: LocalizedStringKey
         var enabled = true
         var action: () -> Void
     }
@@ -80,7 +80,7 @@ struct QuickBar: View {
 /// Black and white, like the menu around it: a soft grey tile that turns solid on hover.
 struct QuickButton: View {
     let icon: String
-    let title: String
+    let title: LocalizedStringKey
     let action: () -> Void
     @State private var hover = false
     @Environment(\.isEnabled) private var enabled
@@ -90,7 +90,7 @@ struct QuickButton: View {
         Button(action: action) {
             VStack(spacing: 3) {
                 Image(systemName: icon).font(.system(size: 13, weight: .semibold))
-                Text(title).font(.system(size: 10, weight: .medium))
+                Text(title).font(.system(size: 10, weight: .medium)).lineLimit(1).minimumScaleFactor(0.7)
             }
             .frame(maxWidth: .infinity, minHeight: 40)
             .foregroundStyle(on ? Color(nsColor: .textBackgroundColor) : Color.primary)

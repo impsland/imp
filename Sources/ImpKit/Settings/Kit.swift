@@ -115,13 +115,13 @@ public struct Kit: Equatable, Sendable {
                       about: json["about"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
                       app: json["app"]?.string)
         if let list = json["triggers"] {
-            if let array = list.array { kit.read(triggers: array) } else { kit.problems.append("“triggers” should be a list.") }
+            if let array = list.array { kit.read(triggers: array) } else { kit.problems.append(String(localized: "“triggers” should be a list.")) }
         }
         if let map = json["mcpServers"] {
-            if case .object(let entries) = map { kit.read(servers: entries) } else { kit.problems.append("“mcpServers” should be an object.") }
+            if case .object(let entries) = map { kit.read(servers: entries) } else { kit.problems.append(String(localized: "“mcpServers” should be an object.")) }
         }
         if let list = json["imps"] {
-            if let array = list.array { kit.read(imps: array) } else { kit.problems.append("“imps” should be a list.") }
+            if let array = list.array { kit.read(imps: array) } else { kit.problems.append(String(localized: "“imps” should be a list.")) }
         }
         return kit
     }
@@ -140,7 +140,7 @@ public struct Kit: Equatable, Sendable {
                 shortcut.performer = nil          // whose it is gets decided when it's added
                 triggers.append(shortcut)
             } catch {
-                let label = item["name"]?.string.map { "Trigger \(i + 1) (“\($0)”)" } ?? "Trigger \(i + 1)"
+                let label = item["name"]?.string.map { String(localized: "Trigger \(i + 1) (“\($0)”)") } ?? String(localized: "Trigger \(i + 1)")
                 problems.append("\(label): \(Self.message(error))")
             }
         }
@@ -150,7 +150,7 @@ public struct Kit: Equatable, Sendable {
         let names = Dictionary(servers.map { ($0.name, $0.id) }, uniquingKeysWith: { a, _ in a })
         for (i, item) in list.enumerated() {
             var problems: [String] = []
-            let label = item["name"]?.string.map { "Imp \(i + 1) (“\($0)”)" } ?? "Imp \(i + 1)"
+            let label = item["name"]?.string.map { String(localized: "Imp \(i + 1) (“\($0)”)") } ?? String(localized: "Imp \(i + 1)")
             if let imp = KitImp.read(item, servers: names, problems: &problems) { imps.append(imp) }
             self.problems += problems.map { "\(label): \($0)" }
         }
@@ -161,7 +161,7 @@ public struct Kit: Equatable, Sendable {
             // One entry at a time, through the same parser the Tools tab's Paste uses; a server
             // named like a wrapper key ("mcp") is no trouble that way.
             guard case .object = entries[key]!, var server = MCPServerConfig.parse(setup: entries[key]!.jsonString).first else {
-                problems.append("Tool “\(key)”: needs a `command` (a program) or a `url` (a web address).")
+                problems.append(String(localized: "Tool “\(key)”: needs a `command` (a program) or a `url` (a web address)."))
                 continue
             }
             server.name = key
@@ -182,22 +182,22 @@ public struct Kit: Equatable, Sendable {
         for imp in imps {
             if let b = imp.brain, let address = b.baseURL, let services,
                !services.contains(where: { AIConfig.normalized($0.baseURL) == AIConfig.normalized(address) }) {
-                let what = b.summary.isEmpty ? "another service" : b.summary
+                let what = b.summary.isEmpty ? String(localized: "another service") : b.summary
                 out.append(KitWarning(kind: .brainMissing, item: imp.id,
-                                      text: "Uses \(what), which you haven't added: it will use your default until you set one"))
+                                      text: String(localized: "Uses \(what), which you haven't added: it will use your default until you set one")))
             }
             if imp.uses(.computer) {
                 out.append(KitWarning(kind: .computerControl, item: imp.id,
-                                      text: "Can control your Mac: it takes screenshots and clicks and types in other apps"))
+                                      text: String(localized: "Can control your Mac: it takes screenshots and clicks and types in other apps")))
             }
         }
         for server in servers {
             if server.transport == .stdio {
-                out.append(KitWarning(kind: .runsCommand, item: server.id, text: "“\(server.name)” runs a command on your Mac: \(server.commandLine)"))
+                out.append(KitWarning(kind: .runsCommand, item: server.id, text: String(localized: "“\(server.name)” runs a command on your Mac: \(server.commandLine)")))
             }
             if !server.missingSecrets.isEmpty {
                 out.append(KitWarning(kind: .needsSecrets, item: server.id,
-                                      text: "“\(server.name)” needs you to fill in: \(server.missingSecrets.joined(separator: ", "))"))
+                                      text: String(localized: "“\(server.name)” needs you to fill in: \(server.missingSecrets.joined(separator: ", "))")))
             }
         }
         var taken: [Hotkey: String] = [:]
@@ -205,9 +205,9 @@ public struct Kit: Equatable, Sendable {
         for s in triggers + imps.flatMap(\.triggers) {
             guard let keys = s.keys else { continue }
             if let other = taken[keys] {
-                out.append(KitWarning(kind: .keysInUse, item: s.id, text: "\(keys.displayString) is already used by \(other)"))
+                out.append(KitWarning(kind: .keysInUse, item: s.id, text: String(localized: "\(keys.displayString) is already used by \(other)")))
             }
-            taken[keys] = "another trigger in this kit"
+            taken[keys] = String(localized: "another trigger in this kit")
         }
         return out
     }
@@ -299,12 +299,19 @@ public enum KitError: LocalizedError, Equatable {
 
     public var errorDescription: String? {
         switch self {
-        case .empty: "There's nothing in it."
-        case .notAKit: "That isn't a kit: expected JSON with imps, triggers or mcpServers, a trigger, or an MCP setup."
-        case .tooLarge: "That's too big for a kit (the limit is \(Kit.maxBytes / 1024) KB)."
-        case .newerVersion(let v): "This kit needs a newer Imp (format \(v)). Update Imp: brew upgrade --cask imp."
-        case .tooMany(let what, let limit): "That has too many \(what) (the limit is \(limit))."
-        case .nothingUsable(let problems): "Nothing in it could be read. " + problems.prefix(3).joined(separator: " ")
+        case .empty: String(localized: "There's nothing in it.")
+        case .notAKit: String(localized: "That isn't a kit: expected JSON with imps, triggers or mcpServers, a trigger, or an MCP setup.")
+        case .tooLarge: String(localized: "That's too big for a kit (the limit is \(Kit.maxBytes / 1024) KB).")
+        case .newerVersion(let v): String(localized: "This kit needs a newer Imp (format \(v)). Update Imp: brew upgrade --cask imp.")
+        case .tooMany(let what, let limit):
+            switch what {
+            case "triggers": String(localized: "That has too many triggers (the limit is \(limit)).")
+            case "tools": String(localized: "That has too many tools (the limit is \(limit)).")
+            case "Imps": String(localized: "That has too many Imps (the limit is \(limit)).")
+            case "chats": String(localized: "That has too many chats (the limit is \(limit)).")
+            default: String(localized: "That has too many items (the limit is \(limit)).")
+            }
+        case .nothingUsable(let problems): String(localized: "Nothing in it could be read. \(problems.prefix(3).joined(separator: " "))")
         case .badAddress(let why), .download(let why): why
         }
     }
@@ -321,18 +328,18 @@ public enum KitSource: Equatable, Sendable {
     public static func validate(_ url: URL) throws {
         let scheme = url.scheme?.lowercased() ?? ""
         guard let host = url.host?.lowercased(), !host.isEmpty, ["https", "http"].contains(scheme) else {
-            throw KitError.badAddress("A kit's address must start with https://.")
+            throw KitError.badAddress(String(localized: "A kit's address must start with https://."))
         }
         guard scheme == "https" || ["localhost", "127.0.0.1", "::1"].contains(host) else {
-            throw KitError.badAddress("Only https:// addresses can be loaded (http works for localhost).")
+            throw KitError.badAddress(String(localized: "Only https:// addresses can be loaded (http works for localhost)."))
         }
-        guard url.user == nil, url.password == nil else { throw KitError.badAddress("An address with a password in it can't be loaded.") }
+        guard url.user == nil, url.password == nil else { throw KitError.badAddress(String(localized: "An address with a password in it can't be loaded.")) }
     }
 
     /// A web address to download a kit from.
     public static func web(_ address: String) throws -> KitSource {
         let trimmed = address.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let url = URL(string: trimmed) else { throw KitError.badAddress("That isn't a web address.") }
+        guard let url = URL(string: trimmed) else { throw KitError.badAddress(String(localized: "That isn't a web address.")) }
         try validate(url)
         return .remote(url)
     }
@@ -353,19 +360,19 @@ public enum KitSource: Equatable, Sendable {
     /// `imp://add?url=<https address>` or `imp://add?kit=<base64url JSON>`.
     public static func link(_ string: String) throws -> KitSource {
         guard let parts = URLComponents(string: string), parts.scheme == "imp", parts.host == "add" else {
-            throw KitError.badAddress("That isn't an imp://add link.")
+            throw KitError.badAddress(String(localized: "That isn't an imp://add link."))
         }
         let query = Dictionary((parts.queryItems ?? []).map { ($0.name, $0.value ?? "") }, uniquingKeysWith: { a, _ in a })
         if let address = query["url"] { return try web(address) }
         if let inline = query["kit"] { return .text(try decode(inline: inline)) }
-        throw KitError.badAddress("The link has no kit in it (url= or kit=).")
+        throw KitError.badAddress(String(localized: "The link has no kit in it (url= or kit=)."))
     }
 
     /// The JSON text inside an `imp://add?kit=` link.
     public static func decode(inline: String) throws -> String {
         guard inline.utf8.count <= Kit.maxBytes * 4 / 3 + 4 else { throw KitError.tooLarge }
         guard let data = Kit.data(base64URL: inline), let text = String(data: data, encoding: .utf8) else {
-            throw KitError.badAddress("The kit in that link is damaged.")
+            throw KitError.badAddress(String(localized: "The kit in that link is damaged."))
         }
         return text
     }

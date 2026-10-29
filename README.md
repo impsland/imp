@@ -98,24 +98,28 @@ one can handle private work while another uses a bigger cloud model.
   settings for you to fill in a key, and create the trigger, then show you how it works.
 - **Body and senses.** Imp plays its animations as body language, hops, slides or bounces around the
   screen, speaks out loud, reads how the Mac is doing, and messages the other Imps. Each group of
-  these tools can be switched off per Imp (Settings › Tools).
-- **Computer control (optional, off by default).** Switch it on per Imp in Settings › Tools and the
+  these tools can be switched off per Imp (the Imp's Tools tab).
+- **Computer control (optional, off by default).** Switch it on per Imp in its Tools tab and the
   Imp can operate any app (a browser, Photoshop…): it looks at the window (screenshot plus the
   accessibility tree), clicks, types, uses shortcuts and menus, scrolls and draws, then checks the
   result. It needs two permissions: Screen & System Audio Recording and Accessibility (Device Control
-  & Data Access); Settings › Tools shows what's missing, with buttons. If it still doesn't work after
+  & Data Access); the Tools tab shows what's missing, with buttons. If it still doesn't work after
   granting, remove Imp from the list and add it again (+), then restart Imp. Try it without a model:
   `Imp --observe Finder [--screenshot out.png]` prints the element tree.
 - **Browser extension.** Add `Extensions/Chrome` to Chrome, Arc, Brave or Edge and Imp knows the
   website you're on, and can hop right onto a button on the page. Local only (see its README).
 - **More tools with MCP.** Connect Model Context Protocol servers, local or on the web.
-- **A whole troupe.** Several Imps, each with its own name, colour, personality and model.
+- **A whole troupe.** Several Imps, each with its own name, colour, personality and model. They
+  share one clock and stop drawing whenever they can't be seen, so a big troupe stays light on the
+  battery.
+- **Your language.** English, Spanish and Simplified Chinese, following your Mac (or the per-app
+  language in System Settings › General › Language & Region).
 - **Automation.** `imp://` links for Shortcuts, Raycast and scripts:
 
   | Link                                   | Does                         |
   | -------------------------------------- | ---------------------------- |
   | `imp://ask?text=…&imp=Pip`             | Asks an Imp something        |
-  | `imp://run?action=Translate%20clipboard` | Runs one of your shortcuts |
+  | `imp://run?action=Translate%20clipboard` | Runs one of your triggers |
   | `imp://talk`                           | Starts listening             |
   | `imp://type?text=…`                    | Opens the text field         |
   | `imp://settings`                       | Opens Imp's window           |
@@ -125,9 +129,9 @@ one can handle private work while another uses a bigger cloud model.
 ### Share setups as kits
 
 A kit is Imps, triggers and borrowed tools in one piece of JSON, so a setup can be sent to a friend
-instead of described. In Settings, **Add a kit…** (on the Triggers and Tools tabs) and **Import…**
-(All Imps › Manners) take pasted JSON, a web address, an `imp://add` link or a dropped `.json` file.
-**Share as kit** on a trigger or tool, and **Share all** on each tab, copy the JSON (or an
+instead of described. In Settings, **Import kit…** (on the Triggers and Tools tabs) and **Import…**
+(All Imps › App) take pasted JSON, a web address, an `imp://add` link or a dropped `.json` file.
+**Share as kit** on a trigger or tool, and the share button on each tab, copy the JSON (or an
 `imp://add?kit=…` link when it's short enough) to the clipboard.
 
 ```json
@@ -163,9 +167,9 @@ address, never by a local id or key; its `mcpServers` are names from the kit's o
 `chats` (optional: title, dates, turns, and what the Imp remembers) are only written when you tick
 **Include chats**. Chats between Imps and pictures aren't exported.
 
-- **Share an Imp** from its page (Me › Share): copy the kit or a link (when it's short enough; never
+- **Share an Imp** from its page (Looks › Share): copy the kit or a link (when it's short enough; never
   with chats). **Export…** saves a `.json` file, with an *Include chats* tick in the save panel.
-  **Export all Imps…** (All Imps › Manners) saves every Imp with its triggers and tools, the
+  **Export all Imps…** (All Imps › App) saves every Imp with its triggers and tools, the
   triggers every Imp shares included. **Import…** is the way back, on this Mac or another.
 - **Importing an Imp** shows it as a card (look, personality, model, tools, triggers, tools it
   borrows, chats) with a tick. It always arrives as a new Imp, at home and not out on your desktop,
@@ -222,3 +226,7 @@ ollama serve
 ```sh
 make install   # builds Imp.app and copies it to /Applications
 ```
+
+After changing any text in the app, run `make strings` to add it to the String Catalog
+(`Resources/Localization/Localizable.xcstrings`), then translate the new entries (in Xcode or any
+`.xcstrings` editor). `make app` compiles the catalogs into the app.

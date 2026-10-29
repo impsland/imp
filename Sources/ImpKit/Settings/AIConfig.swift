@@ -31,7 +31,7 @@ public struct Service: Codable, Hashable, Sendable, Identifiable {
     public var label: String {
         let n = name.trimmingCharacters(in: .whitespaces)
         if !n.isEmpty { return n }
-        return URL(string: baseURL.trimmingCharacters(in: .whitespaces))?.host ?? "Unnamed service"
+        return URL(string: baseURL.trimmingCharacters(in: .whitespaces))?.host ?? String(localized: "Unnamed service")
     }
 }
 

@@ -19,19 +19,19 @@ enum Permission: String, CaseIterable, Identifiable, Hashable {
 
     var title: String {
         switch self {
-        case .microphone: "Microphone"
-        case .speech: "Speech Recognition"
-        case .screenRecording: "Screen & System Audio Recording"
-        case .accessibility: "Accessibility (Device Control & Data Access)"
+        case .microphone: String(localized: "Microphone")
+        case .speech: String(localized: "Speech Recognition")
+        case .screenRecording: String(localized: "Screen & System Audio Recording")
+        case .accessibility: String(localized: "Accessibility (Device Control & Data Access)")
         }
     }
 
     var why: String {
         switch self {
-        case .microphone: "Hear you when you talk to Imp."
-        case .speech: "Turn your voice into text (Apple dictation)."
-        case .screenRecording: "Only for computer control: lets an Imp see the window of the app it operates (a screenshot)."
-        case .accessibility: "Only for computer control: lets an Imp read other apps' buttons and fields, and click and type in them."
+        case .microphone: String(localized: "Lets Imps hear you.")
+        case .speech: String(localized: "Turns your voice into text with Apple dictation.")
+        case .screenRecording: String(localized: "Lets an Imp see the app it operates. Only for computer control.")
+        case .accessibility: String(localized: "Lets an Imp click and type in other apps. Only for computer control.")
         }
     }
 

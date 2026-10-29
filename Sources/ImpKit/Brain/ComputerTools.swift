@@ -69,7 +69,7 @@ public enum ComputerTools {
         if screen { missing.append("Screen & System Audio Recording") }
         guard !missing.isEmpty else { return nil }
         return "Error: Imp doesn't have the permission \(missing.joined(separator: " and ")) yet, so it can't control the computer. "
-            + "Ask the user to switch it on for Imp in System Settings › Privacy & Security (Settings › Permissions in Imp has buttons for it), then try again."
+            + "Ask the user to switch it on for Imp in System Settings › Privacy & Security (All Imps › Permissions in Imp has buttons for it), then try again."
     }
 }
 

@@ -2,12 +2,12 @@ import AppKit
 import ImpKit
 import SwiftUI
 
-/// Ready-made servers offered as starting points on the Tools tab.
+/// Ready-made extra tools (MCP servers) offered as starting points on the Tools tab.
 enum MCPExamples {
     struct Example {
         let server: MCPServerConfig
         let icon: String
-        let blurb: String
+        let blurb: LocalizedStringResource
 
         /// Added in one click, unless it has variables to fill in: then its form opens first.
         var isComplete: Bool { !server.environment.values.contains(where: \.isEmpty) }
@@ -47,18 +47,20 @@ struct ServerStatus: View {
 
     var body: some View {
         let (icon, color, text): (String, Color, String) = switch (enabled, status) {
-        case (false, _): ("moon.zzz", .secondary, "Sleeping until an activated Imp needs it")
+        case (false, _): ("moon.zzz", .secondary, String(localized: "Starts when an Imp that's out needs it"))
         case (true, .ready(let count, let names)?):
-            ("checkmark.circle.fill", .green, "\(count) tools" + (names.isEmpty ? "" : ": " + names.prefix(6).joined(separator: ", ")))
+            ("checkmark.circle.fill", .green, names.isEmpty
+                ? String(localized: "^[\(count) tool](inflect: true)")
+                : String(localized: "^[\(count) tool](inflect: true): \(names.prefix(6).joined(separator: ", "))"))
         case (true, .failed(let message)?): ("exclamationmark.triangle.fill", .orange, message)
-        case (true, _): ("ellipsis.circle", .secondary, "Starting…")
+        case (true, _): ("ellipsis.circle", .secondary, String(localized: "Starting…"))
         }
-        StatusText(text: text, symbol: icon, color: color)
+        StatusText(verbatim: text, symbol: icon, color: color)
             .help(text)
     }
 }
 
-/// Edits a copy of a server. Nothing reconnects until Save. Paste fills it from a setup
+/// Edits a copy of an extra tool. Nothing reconnects until Save. Paste fills it from a setup
 /// snippet (JSON config, command or URL) on the clipboard.
 struct ServerEditor: View {
     @State var draft: MCPServerConfig
@@ -83,15 +85,15 @@ struct ServerEditor: View {
 
     var body: some View {
         SheetScaffold(icon: draft.transport == .stdio ? "terminal.fill" : "globe",
-                      title: isNew ? "Add a tool" : "Edit “\(draft.name)”",
-                      info: "An MCP server: a program on this Mac, or one on the web. Paste setup fills the form from a JSON config, a command or a web address you copied from the server's page.",
+                      title: isNew ? "Add an extra tool" : "Edit “\(draft.name)”",
+                      info: "An MCP server, on this Mac or on the web. Paste setup fills the form from a JSON config, command or address you copied from its page.",
                       width: 560) {
             Button { paste() } label: { Label("Paste setup", systemImage: "doc.on.clipboard") }
                 .buttonStyle(.imp(.secondary, small: true))
-                .help("Fill in from a JSON config, a command or a web address you copied")
+                .help("Fill in from a JSON config, command or address you copied")
         } content: {
             if pasteFailed {
-                StatusText(text: "No MCP setup on the clipboard. Copy the JSON, command or address from the server's page.",
+                StatusText(text: "No setup on the clipboard. Copy the JSON, command or address from the tool's page.",
                            symbol: "exclamationmark.triangle.fill", color: .orange)
             }
             VStack(alignment: .leading, spacing: 10) {
@@ -110,15 +112,15 @@ struct ServerEditor: View {
                     FieldRow("Command", width: 92) {
                         TextField("npx -y @modelcontextprotocol/server-memory", text: $commandLine).impField(mono: true)
                     }
-                    FieldRow("Variables", info: "KEY=value, one per line: API keys and such.", width: 92) {
-                        EditorWell(text: $pairs, placeholder: "API_KEY=…", mono: true, height: 76)
+                    FieldRow("Variables", info: "KEY=value, one per line. API keys go here.", width: 92) {
+                        EditorWell(text: $pairs, codePlaceholder: "API_KEY=…", mono: true, height: 76)
                     }
                 } else {
                     FieldRow("Address", width: 92) {
-                        TextField("https://example.com/mcp", text: $draft.url).impField(mono: true)
+                        TextField(String("https://example.com/mcp"), text: $draft.url).impField(mono: true)
                     }
-                    FieldRow("Headers", info: "Name: value, one per line, like Authorization: Bearer …", width: 92) {
-                        EditorWell(text: $pairs, placeholder: "Authorization: Bearer …", mono: true, height: 76)
+                    FieldRow("Headers", info: "Name: value, one per line.", width: 92) {
+                        EditorWell(text: $pairs, codePlaceholder: "Authorization: Bearer …", mono: true, height: 76)
                     }
                 }
             }

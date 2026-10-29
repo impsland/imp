@@ -39,7 +39,7 @@ struct TypingField: View {
     private func field(empty: Bool) -> some View {
         HStack(alignment: .bottom, spacing: 2) {
             // Measured with what's typed (`bubble.text`), so the bubble is as tall as the lines in it.
-            TextField(chat ? "Message \(model.profile.name)…" : bubble.prompt ?? "Ask Imp anything…",
+            TextField(chat ? String(localized: "Message \(model.profile.name)…") : bubble.prompt ?? String(localized: "Ask Imp anything…"),
                       text: measuring ? .constant(bubble.text) : $text, axis: .vertical)
                 .textFieldStyle(.plain)
                 .font(.system(size: 14))
@@ -154,7 +154,7 @@ struct ListeningRow: View {
     var body: some View {
         HStack(alignment: .center, spacing: 10) {
             LevelMeter(level: measuring ? 0.4 : model.micLevel)
-            Text(transcript.isEmpty ? "Listening…" : transcript)
+            Text(transcript.isEmpty ? String(localized: "Listening…") : transcript)
                 .font(.system(size: 14))
                 .foregroundStyle(transcript.isEmpty ? .secondary : .primary)
                 .fixedSize(horizontal: false, vertical: true)

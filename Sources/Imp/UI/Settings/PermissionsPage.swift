@@ -8,7 +8,7 @@ struct PermissionsPage: View {
 
     var body: some View {
         Card("Permissions", icon: "lock.shield.fill",
-             info: "A few switches in System Settings. The Imps ask for as little as they can; triggers and the clipboard need no permission. The last two are only for computer control (Settings › Tools). If one still doesn't work after granting it, remove Imp from the list and add it again (+), then restart Imp.") {
+             info: "Imps ask for as little as they can. The last two are only for computer control.") {
             VStack(spacing: 10) {
                 ForEach(Permission.allCases) { p in
                     let granted = status.isGranted(p)
@@ -21,8 +21,8 @@ struct PermissionsPage: View {
                             .frame(width: 28, height: 28)
                             .background(Circle().fill((granted ? Color.green : pending).opacity(0.14)))
                         Text(p.title).font(.system(size: 13, weight: .semibold))
-                        if p.isOptional { Text("optional").font(.system(size: 11)).foregroundStyle(.secondary) }
-                        InfoTip(p.why)
+                        if p.isOptional { Text("Optional").font(.system(size: 11)).foregroundStyle(.secondary) }
+                        InfoTip(verbatim: p.why)
                         Spacer(minLength: 8)
                         if granted {
                             StatusText(text: "Granted", symbol: "checkmark.circle.fill", color: .green)

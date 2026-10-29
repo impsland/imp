@@ -6,7 +6,7 @@ import os
 
 /// Imp's "inner life": wakes up smoothly, notices when the cursor's been still, and fills quiet
 /// moments with small routines (glances, humming, ideas, head turns, dozing off…).
-/// Runs at ~10 Hz off the render loop, so drawing never mutates state.
+/// Ticks at ~10 Hz with all the others (see `LifeTicker`), off the render loop, so drawing never mutates state.
 @MainActor @Observable
 final class ImpLife {
     private(set) var antic: Antic?
@@ -19,9 +19,6 @@ final class ImpLife {
     private(set) var lively = true
 
     @ObservationIgnored private weak var model: ImpModel?
-    @ObservationIgnored private var timer: Timer?
-    @ObservationIgnored private var lastMouse = NSEvent.mouseLocation
-    @ObservationIgnored private var lastMouseMove = Date()
     /// Each Imp's first routine comes at its own moment, so a troupe doesn't start in unison.
     @ObservationIgnored private var nextAnticAt = Date().addingTimeInterval(.random(in: 5...12))
     @ObservationIgnored private var lastName = ""
@@ -55,10 +52,7 @@ final class ImpLife {
 
     func start(_ model: ImpModel) {
         self.model = model
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated { self?.tick() }
-        }
+        LifeTicker.shared.add(self)
     }
 
     /// Smooth wake-up: eyes pop open, a happy little stretch, then back to normal.
@@ -73,10 +67,9 @@ final class ImpLife {
         antic = nil
     }
 
-    /// For good: the Imp went home (its timer would otherwise tick on with nobody to drive).
+    /// For good: the Imp went home (the shared ticker would otherwise keep driving it).
     func stop() {
-        timer?.invalidate()
-        timer = nil
+        LifeTicker.shared.remove(self)
         antic = nil
     }
 
@@ -98,17 +91,9 @@ final class ImpLife {
         if Motion.canHop(since: date.timeIntervalSince(hopAt)) { hopAt = date }
     }
 
-    private func tick() {
+    func tick(now: Date, mouse: CGPoint, mouseIdle: TimeInterval) {
         guard let model else { return }
-        let now = Date()
 
-        // Mouse movement.
-        let mouse = NSEvent.mouseLocation
-        if hypot(mouse.x - lastMouse.x, mouse.y - lastMouse.y) > 2 {
-            lastMouse = mouse
-            lastMouseMove = now
-        }
-        let mouseIdle = now.timeIntervalSince(lastMouseMove)
         let nowLively = mouseIdle < 1 || now.timeIntervalSince(hopAt) < 1
             || (model.flash.map { $0.until > now } ?? false) || model.app.stage.focus(for: model) != nil
         if nowLively != lively { lively = nowLively }

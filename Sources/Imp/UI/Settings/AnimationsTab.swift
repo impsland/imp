@@ -1,7 +1,7 @@
 import ImpKit
 import SwiftUI
 
-/// Every animation an Imp can play: try it, switch it off, or choose what starts it.
+/// Every animation an Imp can play: try it, turn it off, or choose what starts it.
 ///
 /// The list is long (dozens of rows), so it's built to be cheap: the whole pane reads the
 /// preferences once per render and hands each row plain values, rows only re-render when their own
@@ -28,7 +28,7 @@ struct AnimationsPane: View {
                 Button("Restore Defaults") { withAnimation(.snappy) { model.prefs.resetAnimations() } }
                     .buttonStyle(.imp(.quiet, small: true))
                     .disabled(prefs.animations.isEmpty)
-                    .help("Every animation switched on, with its original triggers")
+                    .help("Turns every animation on, with its original starts")
             }
         }
     }
@@ -41,8 +41,8 @@ struct AnimationsPane: View {
         Card(Self.title(family), icon: Self.icon(family), info: Self.subtitle(family)) {
             switch family {
             case .routines:
-                Toggle("", isOn: $model.prefs.antics).labelsHidden().toggleStyle(.switch).controlSize(.small)
-                    .help(prefs.antics ? "Stop it doing things on its own" : "Let it do things on its own when it's quiet")
+                Toggle(String(""), isOn: $model.prefs.antics).labelsHidden().toggleStyle(.switch).controlSize(.small)
+                    .help(prefs.antics ? "Turn off all routines" : "Turn on routines")
             case .favorite where !favorite:
                 Image(systemName: "lock.fill").font(.system(size: 11, weight: .semibold)).foregroundStyle(Dungeon.muted)
                     .help("This Imp isn't wearing the colour it loves")
@@ -79,12 +79,12 @@ struct AnimationsPane: View {
         return owners
     }
 
-    private static func title(_ f: Reaction.Family) -> String {
+    private static func title(_ f: Reaction.Family) -> LocalizedStringKey {
         switch f {
         case .expressions: "Expressions"
         case .gestures: "Gestures"
-        case .play: "Games and feelings"
-        case .handling: "Handle with care"
+        case .play: "Play"
+        case .handling: "Touch"
         case .routines: "On its own"
         case .favorite: "Favourite colour"
         }
@@ -101,14 +101,14 @@ struct AnimationsPane: View {
         }
     }
 
-    private static func subtitle(_ f: Reaction.Family) -> String {
+    private static func subtitle(_ f: Reaction.Family) -> LocalizedStringKey {
         switch f {
-        case .expressions: "Feelings it shows. Some are how the Imps respond to each other. Give any of them a trigger."
-        case .gestures: "A nod for yes, a shake for no and more. None plays on its own: give one a trigger, or just try it."
-        case .play: "Mouse games, pokes, and finding its favourite colour."
-        case .handling: "How it feels about what you do to it: tickles, cuddles, being carried, shaken, startled or stared at. Stroking needs slow strokes to and fro, so heading for it to drag it never counts."
-        case .routines: "Little things it does when nothing else is going on. The switch turns all of them off at once."
-        case .favorite: "Things it only does while it wears the colour it loves. Find it, and they unlock. You can still watch a preview."
+        case .expressions: "Feelings it shows. Some are how Imps respond to each other."
+        case .gestures: "A nod, a shake and more. None plays on its own, so give one a start or try it."
+        case .play: "Mouse games, pokes and finding its favourite colour."
+        case .handling: "How it reacts to tickles, cuddles, being carried, shaken, startled or stared at. Stroking needs slow strokes to and fro."
+        case .routines: "Little things it does when it's quiet. The switch turns them all off."
+        case .favorite: "Only while it wears the colour it loves. Find it to unlock them. Previews always work."
         }
     }
 }
@@ -155,29 +155,29 @@ private struct AnimationRow: View, Equatable {
             VStack(alignment: .leading, spacing: 5) {
                 HStack(spacing: 4) {
                     Text(reaction.title).font(.system(size: 13, weight: .semibold))
-                    InfoTip(reaction.summary)
+                    InfoTip(verbatim: reaction.summary)
                     if locked {
                         Image(systemName: "lock.fill").font(.system(size: 10, weight: .semibold)).foregroundStyle(Dungeon.muted)
-                            .help("Locked: it only does this in the colour it loves. You can still watch a preview.")
+                            .help("Locked. It only does this in the colour it loves. You can still watch a preview.")
                     }
                 }
                 FlowLayout(spacing: 5, lineSpacing: 5) {
                     if rule.triggers.isEmpty {
-                        Chip(title: "Only when you try it", symbol: "hand.tap", live: false)
+                        Chip(title: "Only when tried", symbol: "hand.tap", live: false)
                     }
                     ForEach(AnimationTrigger.allCases.filter(rule.triggers.contains)) { t in
                         let on = live.isLive(t)
-                        Chip(title: t.title, symbol: t.symbol, live: rule.isEnabled && on)
-                            .help(on ? t.title : "\(t.title) is switched off")
+                        Chip(title: LocalizedStringKey(t.title), symbol: t.symbol, live: rule.isEnabled && on)
+                            .help(on ? Text(verbatim: t.title) : Text("\(t.title) is off"))
                     }
                 }
                 .opacity(rule.isEnabled ? 1 : 0.5)
             }
             Spacer(minLength: 8)
             triggerMenu
-            Toggle("", isOn: Binding(get: { rule.isEnabled }, set: { setEnabled($0) }))
+            Toggle(String(""), isOn: Binding(get: { rule.isEnabled }, set: { setEnabled($0) }))
                 .labelsHidden().toggleStyle(.switch).controlSize(.small)
-                .help(rule.isEnabled ? "Switch \(reaction.title) off" : "Switch \(reaction.title) on")
+                .help(rule.isEnabled ? "Turn off \(reaction.title)" : "Turn on \(reaction.title)")
         }
         .padding(.vertical, 6)
         .opacity(locked ? 0.55 : 1)
@@ -226,15 +226,15 @@ private struct AnimationRow: View, Equatable {
     }
 
     /// A gesture starts one animation: say which one has it now, since choosing it here moves it.
-    private func menuTitle(_ t: AnimationTrigger) -> String {
-        guard t.isExclusive, !rule.triggers.contains(t), let owner = owners[t], owner != reaction else { return t.title }
-        return "\(t.title) (now: \(owner.title))"
+    private func menuTitle(_ t: AnimationTrigger) -> LocalizedStringKey {
+        guard t.isExclusive, !rule.triggers.contains(t), let owner = owners[t], owner != reaction else { return LocalizedStringKey(t.title) }
+        return "\(t.title) (now \(owner.title))"
     }
 }
 
-/// A trigger, as a small tag.
+/// What starts an animation, as a small tag.
 private struct Chip: View {
-    let title: String
+    let title: LocalizedStringKey
     let symbol: String
     var live = true
     @Environment(\.impTint) private var tint
@@ -248,18 +248,5 @@ private struct Chip: View {
             .background(Capsule().fill(live ? tint.opacity(0.22) : Color.white.opacity(0.05)))
             .overlay(Capsule().strokeBorder(live ? tint.opacity(0.35) : Dungeon.cardEdge, lineWidth: 0.75))
             .strikethrough(!live, color: Dungeon.muted)
-    }
-}
-
-/// Which animation a gesture plays, or that it plays none.
-private struct TriggerOwner: View {
-    let name: String?
-
-    var body: some View {
-        Text(name ?? "Nothing")
-            .font(.system(size: 12, weight: .semibold, design: .rounded))
-            .foregroundStyle(name == nil ? Dungeon.muted : Dungeon.cream)
-            .padding(.horizontal, 9).padding(.vertical, 3)
-            .background(Capsule().fill(Color.white.opacity(0.07)))
     }
 }

@@ -11,20 +11,20 @@ public enum APIError: LocalizedError, Equatable, Sendable {
 
     public var errorDescription: String? {
         switch self {
-        case .missingKey: "No API key yet. Add one in Settings › Brains."
+        case .missingKey: String(localized: "No API key yet. Add one in All Imps › Services.")
         case .keyDenied(let service):
-            "I wasn't allowed to read the \(service) key from your Keychain. Ask again and choose Allow, or paste the key in Settings › Brains."
-        case .noService(let what): "No AI service picked for \(what). Add one on its Brain tab."
-        case .noModel: "No model picked yet. Choose one on the Brain tab."
-        case .badURL(let s): "That base URL looks cursed: \(s)"
+            String(localized: "I wasn't allowed to read the \(service) key from your Keychain. Ask again and choose Allow, or paste the key in All Imps › Services.")
+        case .noService(let what): String(localized: "No AI service picked for \(what). Pick one on its Brain tab.")
+        case .noModel: String(localized: "No model picked yet. Pick one on the Brain tab.")
+        case .badURL(let s): String(localized: "That base URL looks cursed: \(s)")
         case .http(let status, let message):
             switch status {
-            case 401, 403: "The API key bounced off my horns (\(status)). \(message)"
-            case 402: "Out of credits (402). Imps work for gold. \(message)"
-            case 429: "Too many requests (429). Even imps need a breather."
-            default: "The API said \(status): \(message)"
+            case 401, 403: String(localized: "The API key bounced off my horns (\(status)). \(message)")
+            case 402: String(localized: "Out of credits (402). Imps work for gold. \(message)")
+            case 429: String(localized: "Too many requests (429). Even imps need a breather.")
+            default: String(localized: "The API said \(status): \(message)")
             }
-        case .emptyResponse(let what): "The model returned no \(what)."
+        case .emptyResponse(let what): String(localized: "The model returned no \(what).")
         }
     }
 }
@@ -74,7 +74,7 @@ public struct OpenAIClient: Sendable {
             try Self.check(response, data: data)
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else { throw APIError.emptyResponse("JSON") }
             if let err = json["error"] as? [String: Any] {
-                throw APIError.http(status: (err["code"] as? Int) ?? 500, message: (err["message"] as? String) ?? "Unknown error")
+                throw APIError.http(status: (err["code"] as? Int) ?? 500, message: (err["message"] as? String) ?? String(localized: "Unknown error"))
             }
             guard let reply = Self.chatReply(from: json) else { throw APIError.emptyResponse("text") }
             if !reply.text.isEmpty { await onText(reply.text) }
@@ -150,7 +150,7 @@ public struct OpenAIClient: Sendable {
         }
         // Some gateways return 200 with an error object.
         if let err = json["error"] as? [String: Any] {
-            throw APIError.http(status: (err["code"] as? Int) ?? 500, message: (err["message"] as? String) ?? "Unknown error")
+            throw APIError.http(status: (err["code"] as? Int) ?? 500, message: (err["message"] as? String) ?? String(localized: "Unknown error"))
         }
         return json
     }

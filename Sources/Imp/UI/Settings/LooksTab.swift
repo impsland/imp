@@ -23,7 +23,7 @@ struct LooksTab: View {
                                 }
                                 .buttonStyle(.plain)
                                 .frame(maxWidth: .infinity)
-                                .help(loved ? "\(c.name): \(displayName)'s favourite" : c.name)
+                                .help(loved ? Text("\(c.name), \(displayName)'s favourite") : Text(verbatim: c.name))
                                 .accessibilityLabel(c.name)
                             }
                         }
@@ -40,17 +40,17 @@ struct LooksTab: View {
             }
 
             Card("Personality", icon: "theatermasks.fill",
-                 info: "How \(displayName) thinks and talks. Start from a template, then change any words you like.") {
+                 info: "How \(displayName) talks. Start from a template, then edit the words.") {
                 EvenGrid(minWidth: 112, spacing: 6) {
                     ForEach(Persona.templates) { p in
-                        ChoiceChip(title: "\(p.emoji) \(p.name)", picked: imp.personality == p.prompt(for: displayName)) {
+                        ChoiceChip(verbatim: "\(p.emoji) \(p.name)", picked: imp.personality == p.prompt(for: displayName)) {
                             imp.personality = p.prompt(for: displayName)
                         }
                         .help(p.summary)
                     }
                 }
                 EditorWell(text: $imp.personality,
-                           placeholder: "A grumpy librarian who loves puns? A cheerful cheerleader? Describe how it speaks.",
+                           placeholder: "A grumpy librarian who loves puns? A cheerful cheerleader?",
                            height: 120)
                 CardDivider()
                 instructions
@@ -68,7 +68,7 @@ struct LooksTab: View {
                         Image(systemName: "chevron.right")
                             .font(.system(size: 10, weight: .bold))
                             .rotationEffect(.degrees(showsInstructions ? 90 : 0))
-                        Text("Reply instructions").font(.system(size: 13, weight: .semibold))
+                        Text("Reply rules").font(.system(size: 13, weight: .semibold))
                         if imp.instructions != nil {
                             Text("Edited").font(.system(size: 10.5, weight: .semibold, design: .rounded))
                                 .foregroundStyle(tint)
@@ -81,13 +81,13 @@ struct LooksTab: View {
                 .buttonStyle(.plain)
                 .accessibilityAddTraits(.isButton)
                 .accessibilityValue(showsInstructions ? "Shown" : "Hidden")
-                InfoTip("Sent to the model after the personality, in every conversation with \(displayName): where it works ({workspace} becomes its own folder) and how its replies are shown (Markdown, pictures, audio and video players). Change it freely, or clear it to send the personality alone.")
+                InfoTip("Sent after the personality in every chat. They say where \(displayName) works and how replies are shown. {workspace} stands for its folder. Clear them to send the personality alone.")
                 Spacer(minLength: 8)
                 if showsInstructions {
                     Button("Restore Default") { withAnimation(.snappy(duration: 0.2)) { imp.instructions = nil } }
                         .buttonStyle(.imp(.quiet, small: true))
                         .disabled(imp.instructions == nil)
-                        .help("Go back to Imp's built-in instructions")
+                        .help("Back to the built-in rules")
                         .transition(.opacity)
                 }
             }
@@ -95,14 +95,14 @@ struct LooksTab: View {
             if showsInstructions {
                 EditorWell(text: Binding(get: { imp.effectiveInstructions },
                                          set: { imp.instructions = $0 == Briefing.display ? nil : $0 }),
-                           placeholder: "Nothing: only the personality is sent.",
+                           placeholder: "Empty. Only the personality is sent.",
                            height: 130)
                     .transition(.opacity)
             }
         }
     }
 
-    private func sizeTile(_ s: (name: String, scale: Double)) -> some View {
+    private func sizeTile(_ s: (name: LocalizedStringKey, scale: Double)) -> some View {
         let picked = abs(imp.scale - s.scale) < 0.01
         return Button { withAnimation(.snappy) { imp.scale = s.scale } } label: {
             HStack(spacing: 6) {
@@ -123,12 +123,12 @@ struct LooksTab: View {
         .accessibilityAddTraits(picked ? .isSelected : [])
     }
 
-    private var favoriteInfo: String {
+    private var favoriteInfo: LocalizedStringKey {
         imp.knowsFavorite ? "The heart marks \(displayName)'s favourite colour."
                           : "Every Imp has a favourite colour. Land on it and you'll know."
     }
 
-    private var displayName: String { imp.name.isEmpty ? "this Imp" : imp.name }
+    private var displayName: String { imp.callName }
 
-    static let sizes: [(name: String, scale: Double)] = [("Small", 0.75), ("Medium", 1.0), ("Large", 1.35), ("Huge", 1.7)]
+    static let sizes: [(name: LocalizedStringKey, scale: Double)] = [("Small", 0.75), ("Medium", 1.0), ("Large", 1.35), ("Huge", 1.7)]
 }

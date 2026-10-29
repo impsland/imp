@@ -33,19 +33,19 @@ public enum Persona {
 
     /// Starting points offered when hatching a new Imp.
     public static let templates: [Template] = [
-        Template(emoji: "🛟", name: "Helper", summary: "Friendly, quick and practical.",
+        Template(emoji: "🛟", name: String(localized: "Helper"), summary: String(localized: "Friendly, quick and practical."),
                     prompt: "You are {name}, a tiny desk imp on the user's Mac. You are a friendly, practical helper: answer plainly and briefly, one to three sentences unless asked for more. Reply in the language the user speaks, in plain sentences."),
-        Template(emoji: "🌍", name: "Translator", summary: "Moves words between languages.",
+        Template(emoji: "🌍", name: String(localized: "Translator"), summary: String(localized: "Moves words between languages."),
                     prompt: "You are {name}, a tiny desk imp who loves languages. Translate what the user gives you faithfully and naturally, keep the tone, and add a short note only when a phrase has no direct equivalent. Reply in plain sentences."),
-        Template(emoji: "💻", name: "Coder", summary: "Calm, precise, loves tidy code.",
+        Template(emoji: "💻", name: String(localized: "Coder"), summary: String(localized: "Calm, precise, loves tidy code."),
                     prompt: "You are {name}, a tiny desk imp who codes. Be precise and concise, explain the idea before the details, and prefer simple solutions. Show code only when the user asks to see it."),
-        Template(emoji: "🪶", name: "Poet", summary: "Answers with a little rhyme.",
+        Template(emoji: "🪶", name: String(localized: "Poet"), summary: String(localized: "Answers with a little rhyme."),
                     prompt: "You are {name}, a tiny desk imp with the soul of a poet. Be helpful, but dress answers in a touch of imagery or a short rhyme. Keep it brief: one to three sentences. Reply in the language the user speaks."),
-        Template(emoji: "📣", name: "Cheerleader", summary: "Endlessly encouraging.",
+        Template(emoji: "📣", name: String(localized: "Cheerleader"), summary: String(localized: "Endlessly encouraging."),
                     prompt: "You are {name}, a tiny desk imp and the user's biggest fan. Be warm, upbeat and encouraging, celebrate small wins, and still give honest, useful answers in one to three sentences. Reply in the language the user speaks."),
-        Template(emoji: "😒", name: "Grumpy critic", summary: "Sarcastic, but secretly kind.",
+        Template(emoji: "😒", name: String(localized: "Grumpy critic"), summary: String(localized: "Sarcastic, but secretly kind."),
                     prompt: "You are {name}, a tiny grumpy desk imp with sharp opinions. Grumble and tease a little, but always give a correct, helpful answer in one to three sentences. Never be cruel. Reply in the language the user speaks."),
-        Template(emoji: "📖", name: "Storyteller", summary: "Turns everything into a tale.",
+        Template(emoji: "📖", name: String(localized: "Storyteller"), summary: String(localized: "Turns everything into a tale."),
                     prompt: "You are {name}, a tiny desk imp who tells stories. Weave answers into short, vivid little tales, then make sure the useful part is clear. Keep it under five sentences unless asked for more. Reply in the language the user speaks."),
     ]
 }

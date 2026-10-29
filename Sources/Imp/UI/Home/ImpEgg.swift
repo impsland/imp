@@ -10,18 +10,32 @@ struct ImpEgg: View {
     static let hatchDuration: TimeInterval = 1.5
     /// When (seconds after the start) the shell has opened and the new Imp should appear.
     static let revealAt: TimeInterval = 0.76
+    /// With Reduce Motion the egg just fades, this quickly, and the Imp is there.
+    static let reducedFade: TimeInterval = 0.25
     /// The moment the cap pops off.
     private static let pop = 0.68
     /// Room the canvas reaches past the egg's frame on every side, so flying pieces aren't cut off.
     static let room: CGFloat = 48
 
+    /// How much faster than normal later eggs in a row crack open.
+    static let quickPace: Double = 1.8
+
     var hatchStart: Date?
+    /// 1 = the full effect. Higher plays it faster (for the 2nd, 3rd… egg in a row).
+    var pace: Double = 1
+    /// An egg waiting at the side holds still.
+    var still = false
     /// Review renders: draw the hatch at this fixed time instead of following the clock.
     private var fixed: Double?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.stageAwake) private var awake
 
-    init(hatchStart: Date? = nil) { self.hatchStart = hatchStart }
+    init(hatchStart: Date? = nil, pace: Double = 1, still: Bool = false) {
+        self.hatchStart = hatchStart
+        self.pace = pace
+        self.still = still
+    }
 
     /// A still frame, `elapsed` seconds into the hatch (nil = idle at rest).
     init(elapsed: Double?) { self.fixed = elapsed }
@@ -31,9 +45,10 @@ struct ImpEgg: View {
             Canvas { ctx, size in Self.draw(&ctx, size: size, hatch: fixed, idle: 0, reduceMotion: reduceMotion) }
                 .padding(-Self.room)
         } else {
-            let hatching = hatchStart.map { Date.now.timeIntervalSince($0) < Self.hatchDuration + 0.1 } ?? false
-            TimelineView(.animation(minimumInterval: 1 / 30, paused: reduceMotion && !hatching)) { timeline in
-                let hatch = hatchStart.map { timeline.date.timeIntervalSince($0) }
+            let hatching = hatchStart != nil
+            let paused = !awake || (!hatching && (still || reduceMotion))
+            TimelineView(.animation(minimumInterval: 1 / 30, paused: paused)) { timeline in
+                let hatch = hatchStart.map { timeline.date.timeIntervalSince($0) * pace }
                 Canvas { ctx, size in
                     Self.draw(&ctx, size: size, hatch: hatch, idle: timeline.date.timeIntervalSinceReferenceDate, reduceMotion: reduceMotion)
                 }
@@ -75,7 +90,7 @@ struct ImpEgg: View {
         if reduceMotion {
             // Just a quick fade, no flying pieces.
             var c = ctx
-            c.opacity = 1 - ease(e / (revealAt + 0.2))
+            c.opacity = 1 - ease(e / reducedFade)
             shell(&c, r)
             return
         }

@@ -133,7 +133,7 @@ public struct ChatHistory: Sendable {
     public mutating func append(_ turn: ChatTurn, remembering exchange: [ChatMessage]? = nil, withPeer peer: ChatTurn.Sender) {
         if current.peer == peer.id { return append(turn, remembering: exchange) }
         var chat = chat(with: peer.id).flatMap { load($0.id) }
-            ?? Chat(title: "With \(peer.name)", peer: peer.id)
+            ?? Chat(title: String(localized: "With \(peer.name)"), peer: peer.id)
         Self.add(turn, remembering: exchange, to: &chat)
         save(chat)
     }

@@ -101,9 +101,9 @@ enum IconRenderer {
         let ids = model.prefs.imps.map(\.id)
         let chosen = ids[min(max(select, 0), ids.count - 1)]
         if sampleImps > 1, let i = model.prefs.imps.indices.dropFirst().first {
-            // Something to look at: a shortcut and a borrowed tool.
+            // Something to look at: a trigger and an extra tool.
             var a = Shortcut(name: "Translate", hotkey: Hotkey(keyCode: UInt32(kVK_ANSI_T), modifiers: Hotkey.control | Hotkey.option),
-                              prompt: ShortcutIdea.all[0].prompt)
+                              prompt: "Translate this into English.")
             a.performer = model.prefs.imps[i].id
             model.prefs.shortcuts = [a]
             let files = MCPExamples.all[0]
@@ -121,10 +121,10 @@ enum IconRenderer {
         case "egg": router.screen = .home; router.selection = nil
         case let s where s.hasPrefix("general-"):
             router.screen = .general
-            router.generalTab = GeneralTab(rawValue: String(s.dropFirst(8))) ?? .brains
+            router.generalTab = GeneralTab(rawValue: String(s.dropFirst(8))) ?? .services
         default:
             router.screen = .imp(chosen)
-            router.impTab = ImpTab.allCases.first { $0.rawValue == screen || $0.title.lowercased() == screen } ?? .me
+            router.impTab = ImpTab.allCases.first { $0.rawValue == screen || $0.title.lowercased() == screen } ?? .looks
         }
         let root: AnyView = switch screen {
         case "add-service": AnyView(AddServiceSheet(model: model) { _ in }.background(Color(nsColor: .windowBackgroundColor)))
@@ -433,36 +433,55 @@ enum IconRenderer {
         write(render(strip, scale: 2), to: url)
     }
 
-    /// The installer window: the dungeon wall, a glow where Imp's icon sits, an ember arrow to
-    /// Applications, and name tags. Sizes and centres match scripts/dmg-settings.py.
+    /// The installer window: the dungeon wall, Imp and Applications each standing on a stone plinth,
+    /// and an ember arrow between them. Finder draws the names itself, in the system's text colour
+    /// (black in Light Mode, white in Dark Mode), and its exact offset under the icon varies. So the
+    /// names land on the plinth's face: big enough for any offset, in a stone of middle lightness
+    /// that both black and white text read on (about 4.5:1 either way).
+    /// Sizes and centres match scripts/dmg-settings.py.
     private struct DMGBackground: View {
         static let size = CGSize(width: 660, height: 400)
-        static let app = CGPoint(x: 170, y: 180)
-        static let applications = CGPoint(x: 490, y: 180)
+        static let app = CGPoint(x: 170, y: 176)
+        static let applications = CGPoint(x: 490, y: 176)
+        static let iconSize: CGFloat = 128
+        /// The plinth's face, under each icon: room for the name a little higher or lower.
+        static let plinth = CGSize(width: 196, height: 52)
+        /// Relative luminance ≈ 0.18: the middle, where black and white text contrast equally.
+        static let plinthFace = Color(red: 0.60, green: 0.41, blue: 0.46)
+        static let plinthTop = Color(red: 0.72, green: 0.52, blue: 0.56)
 
         var body: some View {
             ZStack {
                 DungeonBackdrop(quiet: true)
                 Canvas { ctx, _ in
-                    let glow = Gradient(colors: [Dungeon.ember.opacity(0.35), .clear])
-                    ctx.fill(Path(ellipseIn: CGRect(x: Self.app.x - 120, y: Self.app.y - 120, width: 240, height: 240)),
-                             with: .radialGradient(glow, center: Self.app, startRadius: 0, endRadius: 120))
+                    let glow = Gradient(colors: [Dungeon.ember.opacity(0.32), .clear])
+                    ctx.fill(Path(ellipseIn: CGRect(x: Self.app.x - 130, y: Self.app.y - 130, width: 260, height: 260)),
+                             with: .radialGradient(glow, center: Self.app, startRadius: 0, endRadius: 130))
+                    for centre in [Self.app, Self.applications] { Self.plinth(&ctx, under: centre) }
                     Self.arrow(&ctx)
-                    // Cream name tags under the icons. Finder draws the names itself (dark, on a
-                    // picture background) and can't recolour or hide them, so they get a light tag.
-                    for (centre, width) in [(Self.app, 84.0), (Self.applications, 132.0)] {
-                        let tag = CGRect(x: centre.x - width / 2, y: centre.y + 60, width: width, height: 34)
-                        ctx.fill(Path(roundedRect: tag, cornerRadius: 17), with: .color(Dungeon.cream.opacity(0.92)))
-                    }
                 }
                 Text("Drag Imp to Applications")
                     .font(.system(size: 15, weight: .semibold, design: .rounded))
                     .foregroundStyle(Dungeon.muted)
                     .frame(maxHeight: .infinity, alignment: .bottom)
-                    .padding(.bottom, 34)
+                    .padding(.bottom, 40)
             }
             .frame(width: Self.size.width, height: Self.size.height)
             .environment(\.colorScheme, .dark)
+        }
+
+        /// A stone block the icon stands on: a lit top edge, then the face the name is written on.
+        private static func plinth(_ ctx: inout GraphicsContext, under centre: CGPoint) {
+            let top = centre.y + iconSize / 2 - 10
+            let face = CGRect(x: centre.x - plinth.width / 2, y: top, width: plinth.width, height: plinth.height)
+            var shadow = ctx
+            shadow.addFilter(.blur(radius: 10))
+            shadow.fill(Path(roundedRect: face.offsetBy(dx: 0, dy: 8), cornerRadius: 14), with: .color(.black.opacity(0.45)))
+            ctx.fill(Path(roundedRect: face, cornerRadius: 14), with: .color(plinthFace))
+            ctx.fill(Path(roundedRect: CGRect(x: face.minX, y: face.minY, width: face.width, height: 6), cornerRadius: 3),
+                     with: .color(plinthTop))
+            ctx.stroke(Path(roundedRect: face.insetBy(dx: 0.5, dy: 0.5), cornerRadius: 14),
+                       with: .color(.white.opacity(0.14)), lineWidth: 1)
         }
 
         /// A dashed arc between the two icons, with a rounded head.

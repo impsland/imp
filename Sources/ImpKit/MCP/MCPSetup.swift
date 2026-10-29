@@ -66,12 +66,12 @@ extension MCPServerConfig {
         for affix in ["mcp-server-", "server-", "mcp-"] where base.hasPrefix(affix) { base.removeFirst(affix.count); break }
         for affix in ["-mcp-server", "-mcp", "-server"] where base.hasSuffix(affix) { base.removeLast(affix.count); break }
         let pretty = base.split(whereSeparator: { $0 == "-" || $0 == "_" }).map { $0.prefix(1).uppercased() + $0.dropFirst() }.joined(separator: " ")
-        return pretty.isEmpty ? "New tool" : pretty
+        return pretty.isEmpty ? String(localized: "New tool") : pretty
     }
 
     /// "Example" for `https://mcp.example.com/mcp`.
     static func suggestedName(url: String) -> String {
-        guard let host = URL(string: url)?.host?.lowercased() else { return "New tool" }
+        guard let host = URL(string: url)?.host?.lowercased() else { return String(localized: "New tool") }
         let parts = host.split(separator: ".").filter { !["mcp", "api", "www"].contains($0) }
         let core = parts.count >= 2 ? parts[parts.count - 2] : parts.first ?? Substring(host)
         return core.prefix(1).uppercased() + core.dropFirst()

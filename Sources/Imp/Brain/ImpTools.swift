@@ -195,7 +195,7 @@ final class OwnToolHost {
             }
         }
         if s.trigger.kind == .website || s.conditions.contains(where: { $0.kind == .website }), !BrowserBridge.shared.isConnected {
-            reply += "\nIt needs the Imp browser extension, which isn't connected: tell the user to add it (Settings › Tools › Browser)."
+            reply += "\nIt needs the Imp browser extension, which isn't connected: tell the user to add it (Tools › Browser in its settings)."
         }
         return reply
     }
@@ -206,11 +206,11 @@ final class OwnToolHost {
         return "Removed “\(s.name)”."
     }
 
-    // MARK: Borrowed tools
+    // MARK: Extra tools
 
     private func listTools() -> String {
         guard let app, let p = profile else { return "" }
-        guard !app.prefs.mcpServers.isEmpty else { return "No borrowed tools yet." }
+        guard !app.prefs.mcpServers.isEmpty else { return "No extra tools yet." }
         return app.prefs.mcpServers.map { s in
             let using = p.servers.contains(s.id)
             let status = app.assistant.toolStatus[s.id].map { "\($0)" } ?? "not running"
@@ -243,7 +243,7 @@ final class OwnToolHost {
     private func removeTool(_ args: JSONValue) throws -> String {
         guard let app, let key = args["id"]?.string,
               let server = app.prefs.mcpServers.first(where: { $0.id.uuidString.caseInsensitiveCompare(key) == .orderedSame || $0.name.caseInsensitiveCompare(key) == .orderedSame })
-        else { throw ToolArgumentError("No borrowed tool with that id (see imp_list_tools).") }
+        else { throw ToolArgumentError("No extra tool with that id (see imp_list_tools).") }
         if args["everywhere"]?.bool == true {
             app.prefs.removeServer(server.id)
             return "Removed “\(server.name)” for every Imp."
@@ -255,19 +255,19 @@ final class OwnToolHost {
     private func openSettings(_ args: JSONValue) throws -> String {
         guard let app else { return "" }
         let tab: ImpTab = switch args["page"]?.string?.lowercased() {
-        case "looks": .me
+        case "looks": .looks
         case "brain": .brain
-        case "triggers": .shortcuts
+        case "triggers": .triggers
         default: .tools
         }
         if tab == .tools, let key = args["tool"]?.string {
             guard let server = app.prefs.mcpServers.first(where: { $0.id.uuidString.caseInsensitiveCompare(key) == .orderedSame }) else {
-                throw ToolArgumentError("No borrowed tool with id \(key).")
+                throw ToolArgumentError("No extra tool with id \(key).")
             }
             HomeWindow.shared.router.serverToEdit = server.id
         }
         HomeWindow.shared.show(app, settingsFor: id, tab: tab)
-        return "Opened \(profile?.name ?? "your")'s \(tab.title) settings for the user."
+        return "Opened \(profile?.name ?? "your")'s \(tab.rawValue) settings for the user."
     }
 
     // MARK: Troupe

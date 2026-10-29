@@ -2,9 +2,9 @@ import AppKit
 import ImpKit
 import SwiftUI
 
-/// Three questions, one card each: where does the brain live, what's the key, which model.
-/// An Imp that never picked a service uses the one new Imps use (the star in Brain services), and
-/// one that names no model uses its service's: set once per service, not once per Imp.
+/// Where the brain lives (service), what the key is, which model, and what it remembers.
+/// An Imp that never picked a service uses the one new Imps use (the star in All Imps › Services),
+/// and one that names no model uses its service's: set once per service, not once per Imp.
 struct BrainTab: View {
     @Bindable var model: AppModel
     @Binding var imp: ImpProfile
@@ -18,7 +18,7 @@ struct BrainTab: View {
 
     private var brain: Brain { imp.brain ?? Brain() }
     private var service: Service? { model.prefs.ai.service(in: brain) }
-    private var name: String { imp.name.isEmpty ? "this Imp" : imp.name }
+    private var name: String { imp.callName }
     private var ownModel: String { brain.model.trimmingCharacters(in: .whitespaces) }
 
     /// What the model field shows and sets: the service's model or this Imp's own (see `editsService`).
@@ -37,7 +37,7 @@ struct BrainTab: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Metrics.gap) {
             Card("Service", icon: "server.rack",
-                 info: "Where \(name)'s brain lives: any OpenAI-compatible AI service, in the cloud (needs a key) or running on this Mac. The star marks the one new Imps use. Right-click a service you added to remove it.") {
+                 info: "Where \(name) thinks. Any OpenAI-compatible service, in the cloud or on this Mac. The star marks the one new Imps use.") {
                 EvenGrid(minWidth: 150, spacing: 8) {
                     ForEach(model.prefs.ai.services) { choice in
                         ServiceTile(name: choice.label, local: choice.isLocal, picked: service?.id == choice.id,
@@ -46,7 +46,7 @@ struct BrainTab: View {
                             pick(choice)
                         }
                     }
-                    ServiceTile(name: "Add a service", local: false, picked: false, icon: "plus") { adding = true }
+                    ServiceTile(name: String(localized: "Add a service"), local: false, picked: false, icon: "plus") { adding = true }
                 }
             }
             .sheet(isPresented: $adding) { AddServiceSheet(model: model) { pick($0) } }
@@ -54,14 +54,14 @@ struct BrainTab: View {
             if let p = service {
                 if p.isLocal {
                     Card("No key needed", icon: "checkmark.shield.fill",
-                         info: "\(p.label) runs on this Mac (\(p.baseURL)). Make sure it's open, then pick a model below.") {
+                         info: "\(p.label) runs on this Mac at \(p.baseURL). Keep it open.") {
                         checkButton(p)
                     } content: {
                         EmptyView()
                     }
                 } else {
                     Card("\(p.label) key", icon: "key.fill",
-                         info: "Like a password that lets \(name) think. It stays on this Mac and is shared with every Imp that uses \(p.label) (\(p.baseURL)).") {
+                         info: "Lets \(name) use \(p.label). It stays on this Mac and is shared by every Imp on \(p.label).") {
                         checkButton(p)
                     } content: {
                         KeyField(model: model, service: p)
@@ -72,7 +72,7 @@ struct BrainTab: View {
                     modelAccessory(p)
                 } content: {
                     HStack(spacing: 8) {
-                        ModelField(model: modelBinding(p), placeholder: p.model.isEmpty ? "Model name" : p.model) {
+                        ModelField(model: modelBinding(p), placeholder: p.model.isEmpty ? "Model name" : LocalizedStringKey(p.model)) {
                             try await model.assistant.client(for: p).models()
                         }
                         TestButton(title: "Say hi", action: {
@@ -107,10 +107,10 @@ struct BrainTab: View {
         editsService = ownModel.isEmpty && p.model.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
-    private func modelInfo(_ p: Service) -> String {
-        let pick = "Different models are smarter, faster or cheaper. Pick one from the list, or type its name. Say hi checks that it answers."
-        if editsService { return "\(pick) It's saved for \(p.label): every Imp on it thinks with it, unless one picks its own." }
-        return "\(pick) Empty: \(name) uses \(p.label)'s model, set in All Imps › Brain services."
+    private func modelInfo(_ p: Service) -> LocalizedStringKey {
+        editsService
+            ? "Pick a model or type its name. It's saved for every Imp on \(p.label)."
+            : "Pick a model or type its name. Empty uses \(p.label)'s model."
     }
 
     /// Whose model this is: \(p.label)'s (shared), or this Imp's own, with a way back.
@@ -119,23 +119,23 @@ struct BrainTab: View {
         if !editsService && !ownModel.isEmpty && ownModel != p.model {
             HStack(spacing: 2) {
                 StatusText(text: "Only \(name)", symbol: "person.fill")
-                    .help("\(name) thinks with its own model. The other Imps on \(p.label) use \(p.model.isEmpty ? "theirs" : p.model).")
+                    .help("\(name) has its own model. Other Imps on \(p.label) use \(p.model.isEmpty ? String(localized: "theirs") : p.model).")
                 HoverIconButton(systemName: "arrow.up.circle", help: "Use \(ownModel) for every Imp on \(p.label)") {
                     model.prefs.ai.setModel(ownModel, for: p.id)
                     clearOwnModel()
                 }
                 if !p.model.isEmpty {
-                    HoverIconButton(systemName: "arrow.uturn.backward", help: "Go back to \(p.label)'s model, \(p.model)") {
+                    HoverIconButton(systemName: "arrow.uturn.backward", help: "Back to \(p.label)'s model, \(p.model)") {
                         clearOwnModel()
                     }
                 }
             }
         } else if editsService {
             StatusText(text: "For every Imp on \(p.label)", symbol: "person.3.fill")
-                .help("Saved for \(p.label): every Imp on it thinks with it, unless one picks its own.")
+                .help("Every Imp on \(p.label) uses it, unless one picks its own.")
         } else if !p.model.isEmpty {
             StatusText(text: "Same as \(p.label)", symbol: "person.3.fill")
-                .help("\(name) uses \(p.label)'s model. Type another to give only \(name) its own.")
+                .help("\(name) uses \(p.label)'s model. Type another to give it its own.")
         }
     }
 
@@ -149,18 +149,18 @@ struct BrainTab: View {
     private func checkButton(_ p: Service) -> some View {
         HStack(spacing: 8) {
             if let keyCheck {
-                StatusText(text: keyCheck.text, color: keyCheck.ok ? .green : .red).help(keyCheck.text)
+                StatusText(verbatim: keyCheck.text, color: keyCheck.ok ? .green : .red).help(keyCheck.text)
             }
-            TestButton(title: "Check", action: {
+            TestButton(title: "Test", action: {
                 let count = try await model.assistant.client(for: p).models().count
-                return "Works: \(count) models"
+                return String(localized: "Works. \(count) models")
             }) { ok, text in withAnimation { keyCheck = (ok, text) } }
             .fixedSize()
         }
     }
 
     /// Removes a service from the app (it's shared by every Imp): any Imp using it, this one
-    /// included, moves to the first service left, like removing it in the app's settings.
+    /// included, moves to the first service left.
     private func remove(_ p: Service) {
         withAnimation(.snappy(duration: 0.2)) { model.removeService(p.id) }
         keyCheck = nil
@@ -198,7 +198,7 @@ private struct ServiceTile: View {
                     .foregroundStyle(picked ? .white : tint)
                     .frame(width: 22)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(name.isEmpty ? "Unnamed" : name).font(.system(size: 13, weight: .semibold, design: .rounded))
+                    (name.isEmpty ? Text("Unnamed") : Text(verbatim: name)).font(.system(size: 13, weight: .semibold, design: .rounded))
                         .lineLimit(1).minimumScaleFactor(0.8)
                     if icon == nil {
                         Text(local ? "On this Mac" : "In the cloud").font(.system(size: 10.5)).opacity(0.7).lineLimit(1)
@@ -208,7 +208,7 @@ private struct ServiceTile: View {
                 if isDefault {
                     Image(systemName: "star.fill").font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(picked ? Color.white.opacity(0.85) : tint)
-                        .help("New Imps think with \(name). Change it with the star in All Imps › Brain services.")
+                        .help("New Imps think with \(name). Change it in All Imps › Services.")
                 }
             }
             .frame(maxHeight: .infinity)
@@ -230,7 +230,7 @@ private struct ServiceTile: View {
                         .foregroundStyle(.white, Color.black.opacity(0.55))
                 }
                 .buttonStyle(.plain)
-                .help("Remove \(name.isEmpty ? "this service" : name) from every Imp")
+                .help("Remove \(name.isEmpty ? String(localized: "this service") : name) for every Imp")
                 .accessibilityLabel("Remove \(name)")
                 .offset(x: 5, y: -5)
                 .transition(.opacity)
@@ -244,6 +244,6 @@ private struct ServiceTile: View {
             }
         }
         .accessibilityAddTraits(picked ? .isSelected : [])
-        .accessibilityAction(named: "Remove") { remove?() }
+        .accessibilityAction(named: Text("Remove")) { remove?() }
     }
 }

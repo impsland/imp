@@ -1,0 +1,78 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "NSMicrophoneUsageDescription": {
+      "comment": "Why Imp asks for the microphone.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imp listens when you talk to it (click Imp or press its voice shortcut)."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imp te escucha cuando le hablas (haz clic en Imp o pulsa su atajo de voz)."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当你对 Imp 说话时，它会聆听（点按 Imp 或按下它的语音快捷键）。"
+          }
+        }
+      }
+    },
+    "NSAppleEventsUsageDescription": {
+      "comment": "Why Imp asks to control other apps.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imps control other apps when you ask them to (they run AppleScript through their shell)."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los Imps controlan otras apps cuando se lo pides (ejecutan AppleScript desde su terminal)."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当你要求时，Imp 会控制其他应用（通过它们的 shell 运行 AppleScript）。"
+          }
+        }
+      }
+    },
+    "NSSpeechRecognitionUsageDescription": {
+      "comment": "Why Imp asks for speech recognition.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imp turns your voice into text with Apple's speech recognition."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imp convierte tu voz en texto con el reconocimiento de voz de Apple."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imp 使用 Apple 的语音识别将你的语音转换为文字。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -5,14 +5,20 @@ import SwiftUI
 /// The home screen: one Imp in the doorway, its name above, its colour and a row of actions
 /// below (settings, let it out or call it home, more). Arrows (or ← →, or a swipe)
 /// visit the others, who wait at either side watching. The egg at the end hatches a new one.
-/// Click a resting Imp to open its settings.
+/// Click a resting Imp to open its settings. New Imps (hatched here, imported, or from a link)
+/// come out of the egg one after another (see `HomeRouter.hatch`).
 struct ImpStage: View {
     @Bindable var model: AppModel
     @Bindable var router: HomeRouter
     @State private var drag: CGFloat = 0
+    /// The Imp that just stepped out of its egg (it's happy about it for a moment).
     @State private var hatched: UUID?
-    /// When the egg started cracking open (nil = resting).
+    /// When the egg started cracking open (nil = resting), and how fast.
     @State private var hatchStart: Date?
+    @State private var hatchPace: Double = 1
+    /// The egg waiting at the end of the line. Gone while an Imp steps out of it, then it grows back.
+    @State private var eggShown = true
+    @State private var eggArriving = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var deleting: UUID?
     @State private var pickingShade = false
@@ -29,9 +35,39 @@ struct ImpStage: View {
     static let actionWidth: CGFloat = 200
     /// The Imps either side are smaller and dimmer, waiting their turn.
     static let neighbourScale: CGFloat = 0.62
+    /// How far a drag has to be (or look like it's heading) to count as a flick to the next Imp.
+    static let flickDistance: CGFloat = 90
+    /// The page follows the finger by this much, and by much less past either end.
+    static let followRatio: CGFloat = 0.8
+    static let edgeResistance: CGFloat = 0.3
+    /// Most dots shown at once. With more Imps the row scrolls along, the ends shrinking.
+    static let maxDots = 9
+    /// Most eggs cracked one by one for a batch. The rest just join the line.
+    static let maxEggs = 6
+    /// Pauses in the hatch sequence, in seconds: after the stage slides to an egg, after a new egg
+    /// has grown in, and how long the new Imp stays pleased.
+    private static let settle = 0.35
+    private static let beat = 0.3
+    private static let linger = 1.2
+    private static let badge: CGFloat = 9
 
-    private var pages: [UUID?] { model.prefs.imps.map(\.id) + [nil] }
-    private var index: Int { pages.firstIndex(of: router.selection) ?? 0 }
+    /// The line of pages (Imps already out of their eggs, then the egg) and where the stage is in it.
+    /// Worked out once per body and handed down.
+    private struct Line {
+        let pages: [UUID?]
+        let index: Int
+    }
+
+    private var line: Line {
+        let waiting = router.unhatched
+        let imps = model.prefs.imps.map(\.id)
+        let pages: [UUID?] = (waiting.isEmpty ? imps : imps.filter { !waiting.contains($0) }) + (eggShown ? [nil] : [])
+        return Line(pages: pages, index: pages.firstIndex(of: router.selection) ?? 0)
+    }
+
+    /// An egg is cracking or about to: the line stays put until it's done.
+    private var busy: Bool { hatchStart != nil || !router.unhatched.isEmpty }
+    private var glide: Animation? { reduceMotion ? nil : .snappy(duration: 0.32) }
     private var current: ImpProfile? { router.selection.flatMap(model.profile) }
 
     /// Where the selected Imp is drawn, in the stage's coordinates (top-left origin). The stage
@@ -44,15 +80,16 @@ struct ImpStage: View {
     }
 
     var body: some View {
+        let line = line
         VStack(spacing: 0) {
             topBar
             header
             Spacer(minLength: 6)
-            stage
+            stage(line)
             Spacer(minLength: 10)
             controls
                 .padding(.bottom, 12)
-            dots
+            dots(line)
                 .padding(.bottom, 14)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -60,20 +97,25 @@ struct ImpStage: View {
         .focusable()
         .focusEffectDisabled()
         .focused($stageFocused)
-        .onKeyPress(.leftArrow) { step(-1); return .handled }
-        .onKeyPress(.rightArrow) { step(1); return .handled }
+        .onKeyPress(.leftArrow, phases: [.down, .repeat]) { _ in step(-1); return .handled }
+        .onKeyPress(.rightArrow, phases: [.down, .repeat]) { _ in step(1); return .handled }
+        .onKeyPress(.home) { step(-line.pages.count); return .handled }
+        .onKeyPress(.end) { step(line.pages.count); return .handled }
         .onKeyPress(.return) {
             if let imp = current { toggleActive(imp.id) } else { hatch() }
             return .handled
         }
         .onAppear { stageFocused = true }
+        // Plays the eggs that are waiting, and again whenever another is added. Leaving the stage
+        // stops it; what hasn't hatched yet waits in the router for the way back.
+        .task(id: router.hatchRequests) { await playHatches() }
         .confirmationDialog(deleteTitle, isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }),
                             titleVisibility: .visible) {
             Button("Say Goodbye", role: .destructive) {
                 if let id = deleting { remove(id) }
             }
         } message: {
-            Text("Its looks, brain settings, tools, folder and shortcuts go with it. This can't be undone.")
+            Text("Its looks, brain, tools, triggers and chats go with it. This can't be undone.")
         }
     }
 
@@ -90,7 +132,7 @@ struct ImpStage: View {
             RoundGlyph(systemName: "gearshape.fill", size: 40)
         }
         .buttonStyle(.plain)
-        .help("Settings for all Imps: brain keys, manners, animations, hearing, permissions (⌘,)")
+        .help("Open the settings every Imp shares (⌘,)")
         .accessibilityLabel("Settings for all Imps")
     }
 
@@ -110,48 +152,52 @@ struct ImpStage: View {
         }
         .frame(height: 44)
         .padding(.top, 4)
+        .accessibilityAddTraits(.isHeader)
     }
 
     // MARK: Stage
 
-    private var stage: some View {
+    private func stage(_ line: Line) -> some View {
         GeometryReader { geo in
             let floor = geo.size.height - Self.floorInset
             let doorHeight = min(geo.size.height - 10, 330)
             let figureMid = Self.figureRect(stage: geo.size, side: Panels.baseSize).midY
+            let spacing = Self.spacing(width: geo.size.width)
             ZStack {
                 Doorway()
                     .frame(width: 300 + 2 * Doorway.torchRoom, height: doorHeight)
                     .position(x: geo.size.width / 2, y: floor - doorHeight / 2 + 12)
-                ForEach(Array(pages.enumerated()), id: \.element) { i, id in
-                    let d = CGFloat(i - index)
-                    if abs(d) <= 1.5 {
-                        page(id, offset: i - index)
-                            .position(x: geo.size.width / 2 + d * Self.spacing(width: geo.size.width) + drag * (i == index ? 1 : 0.85),
+                ForEach(Array(line.pages.enumerated()), id: \.element) { i, id in
+                    let d = i - line.index
+                    if abs(d) <= 1 {
+                        // How far from the middle it is right now, fractions while a finger drags.
+                        page(id, offset: d, focus: abs(CGFloat(d) + drag / spacing))
+                            .position(x: geo.size.width / 2 + CGFloat(d) * spacing + drag,
                                       y: floor - Self.pageSize.height / 2)
-                            .zIndex(i == index ? 1 : 0)
+                            .zIndex(d == 0 ? 1 : 0)
+                            .transition(.identity)
                     }
                 }
-                arrow(left: true).position(x: 36, y: figureMid)
-                arrow(left: false).position(x: geo.size.width - 36, y: figureMid)
+                arrow(left: true, line).position(x: 36, y: figureMid)
+                arrow(left: false, line).position(x: geo.size.width - 36, y: figureMid)
             }
             .contentShape(Rectangle())
             .gesture(DragGesture(minimumDistance: 12)
-                .onChanged { drag = $0.translation.width * 0.8 }
+                .onChanged { follow($0.translation.width, spacing: spacing, line) }
                 .onEnded { v in
-                    let goTo = v.predictedEndTranslation.width < -90 ? 1 : v.predictedEndTranslation.width > 90 ? -1 : 0
-                    withAnimation(.snappy(duration: 0.3)) { drag = 0 }
-                    if goTo != 0 { step(goTo) }
+                    let ahead = v.predictedEndTranslation.width
+                    withAnimation(glide) { drag = 0 }
+                    if ahead < -Self.flickDistance { step(1) } else if ahead > Self.flickDistance { step(-1) }
                 })
-        }
-        // Two fingers on the trackpad flick between Imps, the page following them.
-        .onTrackpadSwipe { swipe in
-            switch swipe {
-            case .follow(let x): drag = x * 0.8
-            case .commit(let pages):
-                withAnimation(.snappy(duration: 0.3)) { drag = 0 }
-                step(pages)
-            case .cancel: withAnimation(.snappy(duration: 0.3)) { drag = 0 }
+            // Two fingers on the trackpad flick between Imps, the page following them.
+            .onTrackpadSwipe { swipe in
+                switch swipe {
+                case .follow(let x): follow(x, spacing: spacing, line)
+                case .commit(let pages):
+                    withAnimation(glide) { drag = 0 }
+                    step(pages)
+                case .cancel: withAnimation(glide) { drag = 0 }
+                }
             }
         }
         // The stage's place on screen, for the selected Imp's slot (see `HomeRouter.slot`).
@@ -159,9 +205,16 @@ struct ImpStage: View {
         .frame(minHeight: 250, maxHeight: 330)
     }
 
+    /// The page follows a drag, but never further than the next Imp, and it resists at either end.
+    private func follow(_ x: CGFloat, spacing: CGFloat, _ line: Line) {
+        guard !busy else { return }
+        let atEnd = (x > 0 && line.index == 0) || (x < 0 && line.index == line.pages.count - 1)
+        drag = min(max(x * Self.followRatio * (atEnd ? Self.edgeResistance : 1), -spacing), spacing)
+    }
+
     /// One position on the stage: an Imp standing on its pedestal, or the egg. `offset` is how
-    /// many places from the middle it is (0 = the selected one).
-    @ViewBuilder private func page(_ id: UUID?, offset: Int) -> some View {
+    /// many places from the middle it is (0 = the selected one), `focus` how far in between.
+    @ViewBuilder private func page(_ id: UUID?, offset: Int, focus: CGFloat) -> some View {
         let imp = id.flatMap(model.profile)
         let isCurrent = offset == 0
         ZStack(alignment: .bottom) {
@@ -171,28 +224,32 @@ struct ImpStage: View {
                 impFigure(imp, offset: offset)
                     .offset(y: -(Pedestal.surface - Panels.baseSize * imp.scale * 0.16))
             } else {
-                ImpEgg(hatchStart: isCurrent ? hatchStart : nil)
+                ImpEgg(hatchStart: isCurrent ? hatchStart : nil, pace: hatchPace, still: !isCurrent)
                     .frame(width: 112, height: 120)
                     .offset(y: -(Pedestal.surface - 4))
                     .contentShape(Rectangle())
                     .onTapGesture { hatch() }
-                    .help("Hatch a new Imp")
+                    .help("Crack the egg open (Return)")
+                    .accessibilityLabel("Hatch a New Imp")
+                    .accessibilityAddTraits(.isButton)
                     // At the side, a click belongs to the page (bring it to the middle), not the egg.
                     .allowsHitTesting(isCurrent)
             }
         }
         .overlay(alignment: .bottom) {
             // Just hatched: the rest of the shell flies off around it.
-            if let imp, isCurrent, hatched == imp.id, let hatchStart {
-                ImpEgg(hatchStart: hatchStart)
+            if let imp, isCurrent, hatched == imp.id, hatchStart != nil {
+                ImpEgg(hatchStart: hatchStart, pace: hatchPace)
                     .frame(width: 112, height: 120)
                     .offset(y: -(Pedestal.surface - 4))
                     .allowsHitTesting(false)
             }
         }
         .frame(width: Self.pageSize.width, height: Self.pageSize.height, alignment: .bottom)
-        .modifier(Waiting(active: !isCurrent, onTap: { go(to: index + offset) },
-                          help: imp.map { "Visit \($0.name)" } ?? "A new Imp"))
+        // A new egg grows in beside the Imp that just hatched.
+        .modifier(Arrival(active: id == nil && eggArriving))
+        .modifier(Waiting(focus: focus, interactive: !isCurrent, onTap: { step(offset) },
+                          help: imp.map { String(localized: "Click to visit \($0.name).") } ?? String(localized: "Click to see the egg.")))
     }
 
     @ViewBuilder private func impFigure(_ imp: ImpProfile, offset: Int) -> some View {
@@ -208,6 +265,7 @@ struct ImpStage: View {
                     .onTapGesture { if offset == 0 { withAnimation(.snappy(duration: 0.25)) { model.setHidden(false) } } }
                     .allowsHitTesting(offset == 0)
                     .help("\(imp.name) is hiding. Click to show the Imps on your desktop again.")
+                    .accessibilityAddTraits(.isButton)
                     .contextMenu { contextMenu(for: imp) }
             } else if imp.isActive {
                 // It's out on the desktop: an empty pedestal, wherever it is in the line. (In the
@@ -219,8 +277,10 @@ struct ImpStage: View {
                          center: { router.slot(side: side).map { CGPoint(x: $0.midX, y: $0.midY) } })
                     .transition(.scale(scale: 0.2, anchor: .bottom).combined(with: .opacity))
                     .contentShape(Rectangle())
+                    .modifier(Arrival(active: hatched == imp.id))
                     .onTapGesture { router.openSettings(imp.id) }
-                    .help("Open \(imp.name)'s settings")
+                    .help("Click to open \(imp.name)'s settings.")
+                    .accessibilityAddTraits(.isButton)
                     .contextMenu { contextMenu(for: imp) }
             } else {
                 ImpPortrait(face: watching(imp, from: offset), shadow: true)
@@ -229,7 +289,7 @@ struct ImpStage: View {
         }
         .frame(width: side, height: side)
         .animation(.snappy(duration: 0.3), value: model.isHidden)
-        .accessibilityLabel(imp.isActive && model.isHidden ? "\(imp.name), hiding" : imp.name)
+        .accessibilityLabel(imp.isActive && model.isHidden ? String(localized: "\(imp.name), hiding") : imp.name)
     }
 
     /// The others watch whoever's in the doorway.
@@ -254,8 +314,8 @@ struct ImpStage: View {
             .disabled(model.prefs.imps.count <= 1)
     }
 
-    private func arrow(left: Bool) -> some View {
-        let enabled = left ? index > 0 : index < pages.count - 1
+    private func arrow(left: Bool, _ line: Line) -> some View {
+        let enabled = !busy && (left ? line.index > 0 : line.index < line.pages.count - 1)
         return Button { step(left ? -1 : 1) } label: {
             RoundGlyph(systemName: left ? "chevron.left" : "chevron.right", size: 40, bold: true)
         }
@@ -264,8 +324,9 @@ struct ImpStage: View {
         .scaleEffect(enabled ? 1 : 0.8)
         .animation(.snappy(duration: 0.2), value: enabled)
         .allowsHitTesting(enabled)
-        .help(left ? "Previous Imp (←)" : "Next Imp (→)")
+        .help(left ? "Go to the previous Imp (←)" : "Go to the next Imp (→)")
         .accessibilityLabel(left ? "Previous Imp" : "Next Imp")
+        .accessibilityHidden(!enabled)
     }
 
     // MARK: Bottom
@@ -280,15 +341,15 @@ struct ImpStage: View {
                         RoundGlyph(systemName: "slider.horizontal.3", size: 40)
                             // Needs a brain before it can chat: a dot, not words (nothing shifts).
                             .overlay(alignment: .topTrailing) {
-                                Circle().fill(Color.orange).frame(width: 9, height: 9)
+                                Circle().fill(Color.orange).frame(width: Self.badge, height: Self.badge)
                                     .overlay(Circle().strokeBorder(Dungeon.deep, lineWidth: 1.5))
                                     .opacity(needsBrain ? 1 : 0)
                             }
                     }
                         .buttonStyle(.plain)
-                        .help(needsBrain ? "\(imp.name) needs a brain before it can chat: set it up"
-                                         : "\(imp.name)'s settings: looks, brain, tools, triggers")
-                        .accessibilityLabel("Settings")
+                        .help(needsBrain ? String(localized: "\(imp.name) needs a brain before it can chat. Click to set one up.")
+                                         : String(localized: "Change \(imp.name)'s looks, brain, tools and triggers."))
+                        .accessibilityLabel(needsBrain ? "Settings, needs a brain" : "Settings")
                     activateButton(for: imp)
                     generalSettingsButton
                 }
@@ -299,7 +360,7 @@ struct ImpStage: View {
                     Color.clear.frame(width: 40, height: 40)
                     Button { hatch() } label: { Label("Hatch a New Imp", systemImage: "sparkles").frame(width: Self.actionWidth) }
                         .buttonStyle(BigButtonStyle(hue: 0.08))
-                        .disabled(hatchStart != nil)
+                        .disabled(busy)
                         .help("Crack the egg open (Return)")
                     generalSettingsButton
                 }
@@ -317,8 +378,8 @@ struct ImpStage: View {
                     Swatch(fill: AnyShapeStyle(Color.imp(c.hue)), picked: picked, loved: loved)
                 }
                 .buttonStyle(.plain)
-                .help(loved ? "\(c.name): \(imp.name)'s favourite" : c.name)
-                .accessibilityLabel(loved ? "\(c.name), favourite" : c.name)
+                .help(loved ? LocalizedStringKey("\(c.name) is \(imp.name)'s favourite.") : LocalizedStringKey(c.name))
+                .accessibilityLabel(loved ? LocalizedStringKey("\(c.name), favourite") : LocalizedStringKey(c.name))
                 .accessibilityAddTraits(picked ? .isSelected : [])
             }
             let custom = !ImpProfile.colors.contains { abs(imp.hue - $0.hue) < 0.005 }
@@ -327,7 +388,7 @@ struct ImpStage: View {
                        picked: custom, loved: false)
             }
             .buttonStyle(.plain)
-            .help("Any colour")
+            .help("Pick any colour.")
             .accessibilityLabel("Any colour")
             .popover(isPresented: $pickingShade, arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: 8) {
@@ -352,15 +413,20 @@ struct ImpStage: View {
                 .frame(width: Self.actionWidth)
         }
         .buttonStyle(BigButtonStyle(hue: imp.hue, filled: !imp.isActive))
-        .help(imp.isActive ? "Call \(imp.name) back home into this window (Return)"
-                           : "Let \(imp.name) out right where it stands: drag it anywhere. It stays when you close this window. (Return)")
+        .help(imp.isActive ? String(localized: "Call \(imp.name) back home into this window (Return).")
+                           : String(localized: "Let \(imp.name) out onto your desktop right where it stands. It stays there when you close this window (Return)."))
     }
 
-    /// Where you are among the Imps: each dot in its Imp's colour, the selected one a pill.
-    private var dots: some View {
-        HStack(spacing: 6) {
-            ForEach(Array(pages.enumerated()), id: \.element) { i, id in
-                let on = i == index
+    /// Where you are among the Imps: each dot in its Imp's colour, the selected one a pill. With
+    /// many Imps only a stretch around the selected one shows, and its ends shrink away.
+    private func dots(_ line: Line) -> some View {
+        let count = line.pages.count
+        let first = min(max(line.index - Self.maxDots / 2, 0), max(count - Self.maxDots, 0))
+        let range = first..<min(first + Self.maxDots, count)
+        return HStack(spacing: 6) {
+            ForEach(Array(line.pages.enumerated())[range], id: \.element) { i, id in
+                let on = i == line.index
+                let edge = (i == range.lowerBound && first > 0) || (i == range.upperBound - 1 && range.upperBound < count)
                 Group {
                     if let id, let imp = model.profile(id) {
                         Capsule().fill(Color.imp(imp.hue).opacity(on ? 1 : 0.45))
@@ -371,33 +437,46 @@ struct ImpStage: View {
                             .frame(width: 9, height: 9)
                     }
                 }
+                .scaleEffect(edge ? 0.6 : 1)
                 .contentShape(Rectangle().inset(by: -5))
-                .onTapGesture { go(to: i) }
-                .help(id.flatMap(model.profile)?.name ?? "A new Imp")
+                .onTapGesture { step(i - line.index) }
+                .help(id.flatMap(model.profile).map { String(localized: "Go to \($0.name).") } ?? String(localized: "Go to the egg."))
             }
         }
         .frame(height: 10)
-        .animation(.snappy(duration: 0.25), value: index)
+        .animation(glide, value: line.index)
+        // One element for assistive technology: swipe up or down to move along the line.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Imps")
+        .accessibilityValue(String(localized: "\(line.index + 1) of \(count)"))
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment: step(1)
+            case .decrement: step(-1)
+            @unknown default: break
+            }
+        }
     }
 
     /// The big button's words: out onto the desktop, or back into the doorway.
     static func release(_ imp: ImpProfile) -> String {
-        let name = imp.name.isEmpty ? "It" : imp.name
-        return imp.isActive ? "Call \(name) Home" : "Let \(name) Out"
+        let name = imp.name.isEmpty ? String(localized: "It") : imp.name
+        return imp.isActive ? String(localized: "Call \(name) Home") : String(localized: "Let \(name) Out")
     }
 
     // MARK: Doing things
 
     private var deleteTitle: String {
-        "Say goodbye to \(deleting.flatMap(model.profile)?.name ?? "this Imp")?"
+        String(localized: "Say goodbye to \(deleting.flatMap(model.profile)?.name ?? String(localized: "this Imp"))?")
     }
 
-    private func step(_ d: Int) { go(to: index + d) }
-
-    private func go(to i: Int) {
-        guard pages.indices.contains(i), i != index else { return }
+    /// Moves `d` places along the line, stopping at either end.
+    private func step(_ d: Int) {
+        let line = line
+        let to = min(max(line.index + d, 0), line.pages.count - 1)
+        guard !busy, to != line.index else { return }
         router.renaming = false
-        withAnimation(.snappy(duration: 0.32)) { router.selection = pages[i] }
+        withAnimation(glide) { router.selection = line.pages[to] }
     }
 
     private func toggleActive(_ id: UUID) {
@@ -428,21 +507,50 @@ struct ImpStage: View {
         model.prefs.imps[i].name = name
     }
 
-    /// The egg cracks open, and halfway through the new Imp steps out of it.
+    /// A new Imp comes out of the egg, the same way as an imported one.
     private func hatch() {
-        guard hatchStart == nil else { return }
-        let start = Date()
-        hatchStart = start
-        Task {
-            try? await Task.sleep(for: .seconds(reduceMotion ? 0.2 : ImpEgg.revealAt))
-            let id = model.addImp(after: model.prefs.imps.last?.id)
-            hatched = id
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.72)) { router.selection = id }
-            try? await Task.sleep(for: .seconds(max(ImpEgg.hatchDuration - ImpEgg.revealAt, 0.2)))
-            if hatchStart == start { hatchStart = nil }
-            try? await Task.sleep(for: .seconds(1.2))
-            if hatched == id { hatched = nil }
-        }
+        guard !busy else { return }
+        router.hatch([model.addImp(after: model.prefs.imps.last?.id)])
+    }
+
+    /// Cracks the waiting eggs one after another: the egg slides to the middle and cracks, the Imp
+    /// steps out and the shell flies, and only then does the next egg grow in beside it. The ones
+    /// after the first go quicker. When the stage is left this ends where it is: what hasn't
+    /// hatched stays in the router and goes on when the stage comes back.
+    private func playHatches() async {
+        var played = 0
+        do {
+            while let id = router.unhatched.first {
+                guard model.profile(id) != nil else { router.hatched(id); continue }
+                guard played < Self.maxEggs else { router.hatchedAll(); break }
+                let pace = played == 0 ? 1 : ImpEgg.quickPace
+                hatched = nil
+                eggShown = true
+                if router.selection != nil {
+                    withAnimation(glide) { router.selection = nil }
+                    try await Task.sleep(for: .seconds(Self.settle))
+                }
+                hatchPace = pace
+                hatchStart = Date()
+                try await Task.sleep(for: .seconds(reduceMotion ? ImpEgg.reducedFade : ImpEgg.revealAt / pace))
+                // The shell has opened: the Imp is in the egg's place, the shell's pieces fly on.
+                eggShown = false
+                router.hatched(id)
+                hatched = id
+                router.selection = id
+                if !reduceMotion { try await Task.sleep(for: .seconds((ImpEgg.hatchDuration - ImpEgg.revealAt) / pace)) }
+                hatchStart = nil
+                played += 1
+                eggArriving = true
+                eggShown = true
+                try await Task.sleep(for: .seconds(router.unhatched.isEmpty ? Self.linger : Self.beat))
+            }
+            router.finishHatching()
+        } catch {}
+        hatchStart = nil
+        eggShown = true
+        eggArriving = false
+        hatched = nil
     }
 
     private func remove(_ id: UUID) {
@@ -453,9 +561,11 @@ struct ImpStage: View {
 }
 
 /// The Imps either side of the doorway: smaller and dimmer, brightening when you point at them.
-/// Click one to bring it to the middle.
+/// Click one to bring it to the middle. `focus` runs from 0 (in the doorway) to 1 (at the side), so
+/// the pages grow and fade smoothly as a drag moves them.
 private struct Waiting: ViewModifier {
-    let active: Bool
+    let focus: CGFloat
+    let interactive: Bool
     let onTap: () -> Void
     let help: String
     @State private var hover = false
@@ -463,15 +573,36 @@ private struct Waiting: ViewModifier {
     func body(content: Content) -> some View {
         // Always the same modifiers (only their values change), so moving to or from the middle
         // animates smoothly instead of swapping views.
+        let t = min(focus, 1)
+        let lit = hover && interactive
         content
-            .saturation(active ? (hover ? 0.95 : 0.7) : 1)
-            .opacity(active ? (hover ? 0.85 : 0.5) : 1)
-            .scaleEffect(active ? ImpStage.neighbourScale * (hover ? 1.05 : 1) : 1, anchor: .bottom)
+            .saturation(1 - t * (lit ? 0.05 : 0.3))
+            .opacity(1 - t * (lit ? 0.15 : 0.5))
+            .scaleEffect(1 - t * (1 - ImpStage.neighbourScale * (lit ? 1.05 : 1)), anchor: .bottom)
             .animation(.easeOut(duration: 0.15), value: hover)
             .contentShape(Rectangle())
-            .onHover { hover = active && $0 }
-            .onTapGesture { if active { onTap() } }
-            .help(active ? help : "")
+            .onHover { hover = interactive && $0 }
+            .onTapGesture { if interactive { onTap() } }
+            .help(interactive ? help : "")
+    }
+}
+
+/// Grows from its pedestal when it first appears, if told to: a new egg arriving, an Imp stepping
+/// out of its shell. Only the first appearance counts, so scrolling back later is plain.
+private struct Arrival: ViewModifier {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var arrived: Bool
+
+    init(active: Bool) { _arrived = State(initialValue: !active) }
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(arrived || reduceMotion ? 1 : 0.2, anchor: .bottom)
+            .opacity(arrived ? 1 : 0)
+            .onAppear {
+                guard !arrived else { return }
+                withAnimation(reduceMotion ? .easeOut(duration: 0.2) : .spring(response: 0.5, dampingFraction: 0.7)) { arrived = true }
+            }
     }
 }
 

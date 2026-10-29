@@ -122,11 +122,12 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     }
 
     static let names = ["Pip", "Nib", "Tock", "Mote", "Fizz", "Bram", "Quill", "Dot", "Sprocket", "Wick", "Juniper",
-                        "Biscuit", "Ziggy", "Pebble", "Clove", "Moxie", "Tinder", "Noodle", "Zest", "Gizmo", "Ember", "Truffle"]
+                        "Biscuit", "Ziggy", "Pebble", "Clove", "Moxie", "Tinder", "Noodle", "Zest", "Gizmo", "Ember", "Truffle",
+                        "Cinder", "Bumble", "Smudge", "Pickle", "Fennel", "Kettle", "Mochi", "Sorrel", "Widget", "Puck"]
 
     /// Skin colours to choose from.
     public static let colors: [(name: String, hue: Double)] = [
-        ("Red", 0), ("Tangerine", 0.07), ("Gold", 0.12), ("Lime", 0.25), ("Mint", 0.42),
-        ("Teal", 0.5), ("Sky", 0.57), ("Indigo", 0.67), ("Violet", 0.76), ("Pink", 0.9),
+        (String(localized: "Red"), 0), (String(localized: "Tangerine"), 0.07), (String(localized: "Gold"), 0.12), (String(localized: "Lime"), 0.25), (String(localized: "Mint"), 0.42),
+        (String(localized: "Teal"), 0.5), (String(localized: "Sky"), 0.57), (String(localized: "Indigo"), 0.67), (String(localized: "Violet"), 0.76), (String(localized: "Pink"), 0.9),
     ]
 }

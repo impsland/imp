@@ -44,8 +44,8 @@ public final class StdioTransport: MCPTransport, @unchecked Sendable {
             return text.count > 400 ? "…" + text.suffix(399) : text
         }
         switch status {
-        case 127?: return "Command not found."
-        case let s? where s != 0: return "It exited with status \(s)."
+        case 127?: return String(localized: "Command not found.")
+        case let s? where s != 0: return String(localized: "It exited with status \(s).")
         default: return nil
         }
     }

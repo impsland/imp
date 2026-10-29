@@ -137,7 +137,7 @@ struct StepDetail: View {
         .padding(.leading, 25)
     }
 
-    private func section(_ label: String, _ text: String) -> some View {
+    private func section(_ label: LocalizedStringKey, _ text: String) -> some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack {
                 Text(label).font(.system(size: 10, weight: .semibold)).foregroundStyle(.secondary)

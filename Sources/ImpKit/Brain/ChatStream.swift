@@ -19,7 +19,7 @@ public struct ChatStreamAccumulator: Sendable {
         guard let data = payload.data(using: .utf8),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return false }
         if let err = json["error"] as? [String: Any] {
-            throw APIError.http(status: (err["code"] as? Int) ?? 500, message: (err["message"] as? String) ?? "Unknown error")
+            throw APIError.http(status: (err["code"] as? Int) ?? 500, message: (err["message"] as? String) ?? String(localized: "Unknown error"))
         }
         guard let choice = (json["choices"] as? [[String: Any]])?.first,
               let delta = choice["delta"] as? [String: Any] else { return false }

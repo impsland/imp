@@ -17,28 +17,28 @@ struct ServiceRow: View {
                     .frame(width: 20)
                     .help(service.isLocal ? "On this Mac" : "In the cloud")
                 TextField("Name", text: $service.name).impField().frame(width: 150)
-                TextField("https://…/v1", text: $service.baseURL).impField(mono: true).autocorrectionDisabled()
+                TextField(String("https://…/v1"), text: $service.baseURL).impField(mono: true).autocorrectionDisabled()
                 DefaultServiceButton(name: service.label, isDefault: model.prefs.ai.defaultService == service.id) {
                     withAnimation(.snappy(duration: 0.2)) { model.prefs.ai.defaultService = service.id }
                 }
                 HoverIconButton(systemName: "trash", help: "Remove this service", tint: .red, action: remove)
             }
             HStack(spacing: 8) {
-                rowIcon("key.fill", help: "Its key")
+                rowIcon("key.fill", help: "Key")
                 KeyField(model: model, service: service)
                 TestButton(title: "Test", action: {
                     let count = try await model.assistant.client(for: service).models().count
-                    return "Connected: \(count) models"
+                    return String(localized: "Works. \(count) models")
                 }) { ok, text in withAnimation { result = (ok, text) } }.fixedSize()
             }
             HStack(spacing: 8) {
-                rowIcon("cpu", help: "The model every Imp on \(service.label) thinks with, unless it picks its own")
-                ModelField(model: $service.model, placeholder: "Model every Imp on \(service.label) uses") {
+                rowIcon("cpu", help: "Model for every Imp on \(service.label), unless one picks its own")
+                ModelField(model: $service.model, placeholder: "Model for every Imp on \(service.label)") {
                     try await model.assistant.client(for: service).models()
                 }
             }
             if let result {
-                StatusText(text: result.text, symbol: result.ok ? "checkmark.circle.fill" : "xmark.octagon.fill",
+                StatusText(verbatim: result.text, symbol: result.ok ? "checkmark.circle.fill" : "xmark.octagon.fill",
                            color: result.ok ? .green : .red)
                     .help(result.text)
                     .padding(.leading, 28)
@@ -48,7 +48,7 @@ struct ServiceRow: View {
     }
 }
 
-private func rowIcon(_ symbol: String, help: String) -> some View {
+private func rowIcon(_ symbol: String, help: LocalizedStringKey) -> some View {
     Image(systemName: symbol).font(.system(size: 11, weight: .semibold)).foregroundStyle(.tertiary)
         .frame(width: 20).help(help)
 }
@@ -73,7 +73,7 @@ struct DefaultServiceButton: View {
 /// A model name: type it, or choose it from the service's list (`load`).
 struct ModelField: View {
     @Binding var model: String
-    var placeholder = "Model name"
+    var placeholder: LocalizedStringKey = "Model name"
     let load: @MainActor () async throws -> [String]
     @State private var browsing = false
 
@@ -83,7 +83,7 @@ struct ModelField: View {
             Button { browsing = true } label: { Label("Choose", systemImage: "list.bullet") }
                 .buttonStyle(.imp(.secondary, small: true))
                 .fixedSize()
-                .help("Pick from the models the service offers")
+                .help("Pick from the service's models")
                 .popover(isPresented: $browsing, arrowEdge: .bottom) {
                     ModelBrowser(load: load) { model = $0; browsing = false }
                 }
@@ -108,7 +108,7 @@ struct KeyField: View {
         })
     }
     private var inKeychain: Bool { model.prefs.keysInKeychain }
-    private var placeholder: String {
+    private var placeholder: LocalizedStringKey {
         if saved { return inKeychain ? "Saved in your Keychain" : "Saved on this Mac" }
         return service.isLocal ? "Not needed on this Mac" : "Paste the key here"
     }
@@ -119,15 +119,15 @@ struct KeyField: View {
                 if show { TextField(placeholder, text: key) } else { SecureField(placeholder, text: key) }
             }
             .impField(mono: show)
-            .help(inKeychain ? "Kept in your login Keychain" : "Kept in a private file on this Mac that only your account can read")
+            .help(inKeychain ? "Kept in your login Keychain" : "Kept in a private file only your account can read")
             if !saved && model.assistant.hasKeychainKeyOnly(service.id) {
-                IssueTip(text: "An earlier version of Imp kept this key in your Keychain. Paste it here again, or switch on “Keep keys in the Keychain” in Settings › Brain keys.",
+                IssueTip(text: "This key is in your Keychain. Paste it here again, or turn on “Use the Keychain” in All Imps › Services.",
                          symbol: "key.slash.fill")
             }
             HoverIconButton(systemName: show ? "eye.slash" : "eye", help: show ? "Hide key" : "Show key") { show.toggle() }
-            HoverIconButton(systemName: "doc.on.clipboard", help: "Paste the key from the clipboard", action: paste)
+            HoverIconButton(systemName: "doc.on.clipboard", help: "Paste key", action: paste)
             if saved {
-                HoverIconButton(systemName: "trash", help: "Remove the key", action: remove)
+                HoverIconButton(systemName: "trash", help: "Remove key", action: remove)
             }
         }
     }
@@ -154,7 +154,7 @@ enum ServiceHints {
 }
 
 /// "Add a service": any OpenAI-compatible endpoint. One-click addresses on top, then address,
-/// name and key, with a connection check.
+/// name and key, with a connection test.
 struct AddServiceSheet: View {
     let model: AppModel
     let added: (Service) -> Void
@@ -178,11 +178,11 @@ struct AddServiceSheet: View {
 
     var body: some View {
         SheetScaffold(icon: "server.rack", title: "Add a service",
-                      info: "Any OpenAI-compatible API: in the cloud, or a server on this Mac. The key stays on this Mac. Its model is the one every Imp on it thinks with, unless an Imp picks its own on its Brain tab.") {
+                      info: "Any OpenAI-compatible API, in the cloud or on this Mac. The key stays on this Mac. Every Imp on it uses its model, unless one picks its own.") {
             VStack(alignment: .leading, spacing: 10) {
                 EvenGrid(minWidth: 96, spacing: 6) {
                     ForEach(ServiceHints.all, id: \.name) { hint in
-                        ChoiceChip(title: hint.name, picked: draft.baseURL == hint.baseURL) {
+                        ChoiceChip(verbatim: hint.name, picked: draft.baseURL == hint.baseURL) {
                             let wasHint = name.isEmpty || ServiceHints.all.contains { $0.name == name }
                             baseURL = hint.baseURL
                             if wasHint { name = hint.name }
@@ -192,16 +192,16 @@ struct AddServiceSheet: View {
                     }
                 }
                 FieldRow("Address") {
-                    TextField("https://…/v1", text: $baseURL).impField(mono: true).autocorrectionDisabled()
+                    TextField(String("https://…/v1"), text: $baseURL).impField(mono: true).autocorrectionDisabled()
                 }
                 FieldRow("Name") {
-                    TextField(draft.label == "Unnamed service" ? "My service" : draft.label, text: $name).impField()
+                    TextField(draft.label == String(localized: "Unnamed service") ? String(localized: "My service") : draft.label, text: $name).impField()
                 }
                 FieldRow("Key") {
                     SecureField(draft.isLocal ? "Not needed on this Mac" : "Paste the key here", text: $key).impField()
                 }
                 FieldRow("Model") {
-                    ModelField(model: $modelName, placeholder: "Every Imp on it uses this") { [draft, key] in
+                    ModelField(model: $modelName, placeholder: "For every Imp on it") { [draft, key] in
                         try await OpenAIClient(baseURL: draft.baseURL, apiKey: key).models()
                     }
                     .disabled(!isValid)
@@ -211,11 +211,11 @@ struct AddServiceSheet: View {
             .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Dungeon.card))
             .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Dungeon.cardEdge))
         } footer: {
-            Button("Check") { Task { await test() } }
+            Button("Test") { Task { await test() } }
                 .buttonStyle(.imp(.secondary)).disabled(!isValid || checking)
             if checking { ProgressView().controlSize(.small) }
             if let check {
-                StatusText(text: check.text, symbol: check.ok ? "checkmark.circle.fill" : "xmark.octagon.fill",
+                StatusText(verbatim: check.text, symbol: check.ok ? "checkmark.circle.fill" : "xmark.octagon.fill",
                            color: check.ok ? .green : .red)
                     .help(check.text)
             }
@@ -238,7 +238,7 @@ struct AddServiceSheet: View {
         defer { checking = false }
         do {
             let count = try await OpenAIClient(baseURL: draft.baseURL, apiKey: key).models().count
-            check = (true, "Works! \(count) models to choose from.")
+            check = (true, String(localized: "Works. \(count) models"))
         } catch {
             check = (false, error.localizedDescription)
         }
@@ -276,7 +276,7 @@ struct ModelBrowser: View {
                     .listStyle(.plain)
                 }
             }
-            Text("\(filtered.count) models").font(.caption).foregroundStyle(.secondary)
+            Text("^[\(filtered.count) model](inflect: true)").font(.caption).foregroundStyle(.secondary)
         }
         .padding(12)
         .frame(width: 380, height: 360)

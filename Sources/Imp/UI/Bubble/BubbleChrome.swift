@@ -167,7 +167,7 @@ struct CopyCornerButton: View {
 struct CornerButton: View {
     let icon: String
     var weight = Font.Weight.heavy
-    let help: String
+    let help: LocalizedStringKey
     let action: () -> Void
     @State private var hover = false
 
@@ -191,7 +191,7 @@ struct CornerButton: View {
 struct IconButton: View {
     @Environment(\.impTint) private var tint
     let icon: String
-    let help: String
+    let help: LocalizedStringKey
     var active = false
     var size: CGFloat = 26
     let action: () -> Void

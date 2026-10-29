@@ -96,7 +96,7 @@ struct Extras {
     private func zs(_ ctx: inout GraphicsContext, head: Head, amount: Double, t: Double) {
         for k in 0..<3 {
             let phase = (t * 0.35 + Double(k) / 3).truncatingRemainder(dividingBy: 1)
-            let text = Text("z").font(.system(size: 6 + phase * 6, weight: .heavy, design: .rounded))
+            let text = Text(verbatim: "z").font(.system(size: 6 + phase * 6, weight: .heavy, design: .rounded))
                 .foregroundStyle(accent.opacity(0.75))
             var c = ctx
             c.opacity = sin(phase * .pi) * (amount - 0.3) / 0.7

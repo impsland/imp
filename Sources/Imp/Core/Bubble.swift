@@ -44,7 +44,7 @@ struct Bubble: Equatable, Identifiable {
         }
 
         /// MCP servers still starting up (done once real work starts).
-        static var wakingUp: Step { Step(icon: "powerplug", title: "Waking up tools") }
+        static var wakingUp: Step { Step(icon: "powerplug", title: String(localized: "Waking up tools")) }
     }
 
     /// One Imp talking to another (`imp_message`): who, in whose colour, and the question. The
@@ -90,7 +90,7 @@ struct Bubble: Equatable, Identifiable {
 extension Bubble.Link {
     var title: String {
         switch self {
-        case .settings: "Open Settings"
+        case .settings: String(localized: "Open Settings")
         }
     }
 }
@@ -127,7 +127,7 @@ enum Activity: Equatable {
 
 /// A little mischief while an Imp works: short, so it never fights the title for room.
 enum Captions {
-    static let thinking = ["Bribing the server…", "Poking the cloud…", "Summoning answers…", "Sharpening horns…",
-                           "Cutting in line…", "Stirring the cauldron…", "Shaking the oracle…", "Pulling some strings…",
-                           "Tickling the GPUs…", "Haggling for tokens…", "Plotting quietly…", "Borrowing a brain…"]
+    static let thinking = [String(localized: "Bribing the server…"), String(localized: "Poking the cloud…"), String(localized: "Summoning answers…"), String(localized: "Sharpening horns…"),
+                           String(localized: "Cutting in line…"), String(localized: "Stirring the cauldron…"), String(localized: "Shaking the oracle…"), String(localized: "Pulling some strings…"),
+                           String(localized: "Tickling the GPUs…"), String(localized: "Haggling for tokens…"), String(localized: "Plotting quietly…"), String(localized: "Borrowing a brain…")]
 }

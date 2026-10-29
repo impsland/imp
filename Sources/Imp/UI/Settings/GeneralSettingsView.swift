@@ -3,7 +3,7 @@ import ImpKit
 import Speech
 import SwiftUI
 
-/// Settings every Imp shares: brain keys, manners, animations, hearing, permissions.
+/// Settings every Imp shares: services, talking, animations, permissions and the app itself.
 struct GeneralSettingsView: View {
     @Bindable var model: AppModel
     @Bindable var router: HomeRouter
@@ -13,12 +13,12 @@ struct GeneralSettingsView: View {
         VStack(spacing: 0) {
             TopBar(back: router.goHome) {
                 HStack(spacing: 7) {
-                    Image(systemName: "gearshape.fill").font(.system(size: 13)).foregroundStyle(Dungeon.muted)
+                    Image(systemName: "person.3.fill").font(.system(size: 13)).foregroundStyle(Dungeon.muted)
                     Text("All Imps").font(.system(size: 14, weight: .heavy, design: .rounded)).foregroundStyle(Dungeon.cream)
-                    InfoTip("Settings every Imp shares. Each Imp's own looks, brain, tools and shortcuts are on its page: click it on the stage.")
+                    InfoTip("Settings every Imp shares. Click an Imp on the stage for its own looks, brain, tools and triggers.")
                 }
             } trailing: {
-                Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev")")
+                Text(verbatim: "v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev")")
                     .font(.system(size: 11, weight: .medium, design: .rounded)).foregroundStyle(.tertiary)
             }
             SegmentedTabs(tabs: GeneralTab.allCases, selection: $router.generalTab, title: \.title, icon: \.icon,
@@ -29,13 +29,13 @@ struct GeneralSettingsView: View {
                 .padding(.bottom, 12)
             SettingsPage {
                 switch router.generalTab {
-                case .brains: KeysPane(model: model)
-                case .manners: MannersPane(model: model)
+                case .services: ServicesPane(model: model)
+                case .talking: TalkingPane(model: model)
                 case .animations:
                     let imp = router.selection.flatMap(model.profile)
                     AnimationsPane(model: model, hue: imp?.hue ?? 0, favorite: imp.map { $0.isFavorite($0.hue) } ?? false)
-                case .hearing: HearingPane(model: model)
                 case .permissions: PermissionsPage(model: model)
+                case .app: AppPane(model: model)
                 }
             }
             .id(router.generalTab)
@@ -43,21 +43,21 @@ struct GeneralSettingsView: View {
     }
 }
 
-/// Every AI service the Imps can use, with its key.
-private struct KeysPane: View {
+/// Every AI service the Imps can use, with its address, key and model.
+private struct ServicesPane: View {
     @Bindable var model: AppModel
     @State private var adding = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: Metrics.gap) {
-            Card("Brain services", icon: "key.fill",
-                 info: "Any OpenAI-compatible API, with its key and the model its Imps think with: set once here, shared by every Imp on it. The star marks the service new Imps use. On its Brain tab an Imp can pick another service or a model of its own. Keys never leave this Mac except to the service itself.") {
+            Card("Services", icon: "server.rack",
+                 info: "Any OpenAI-compatible API. Imps on a service share its key and model. The star marks the one new Imps use.") {
                 Button { adding = true } label: { Label("Add", systemImage: "plus") }
                     .buttonStyle(.imp(.secondary, small: true))
                     .help("Add a service")
             } content: {
                 if model.prefs.ai.services.isEmpty {
-                    StatusText(text: "No services yet.")
+                    StatusText(text: "None yet.")
                 }
                 VStack(spacing: 12) {
                     ForEach($model.prefs.ai.services) { $service in
@@ -68,32 +68,28 @@ private struct KeysPane: View {
                     }
                 }
             }
-            Card("Keep keys in the Keychain", icon: "lock.fill",
-                 info: "Off (the usual): in a private file on this Mac that only your account can read, so Imp never needs your password. On: in the macOS Keychain, encrypted, but macOS may ask for your password when Imp reads a key (for example after an update). Switching moves the saved keys over.") {
-                Toggle("", isOn: $model.prefs.keysInKeychain).labelsHidden().toggleStyle(.switch).controlSize(.small)
-                    .help(model.prefs.keysInKeychain ? "Keys are in the Keychain" : "Keep keys in the Keychain")
-            } content: {
-                EmptyView()
+            Card("Key storage", icon: "lock.fill") {
+                Row("Use the Keychain",
+                    info: "Off keeps keys in a private file only you can read. On uses the macOS Keychain, which may ask for your password.") {
+                    Toggle(String(""), isOn: $model.prefs.keysInKeychain).labelsHidden().toggleStyle(.switch).controlSize(.small)
+                }
             }
         }
         .sheet(isPresented: $adding) { AddServiceSheet(model: model) { _ in } }
     }
 }
 
-/// How the Imps behave on your desktop.
-private struct MannersPane: View {
+/// How the Imps answer, listen and talk to each other.
+private struct TalkingPane: View {
     @Bindable var model: AppModel
-    @State private var loginError: String?
-    @State private var confirmingReset = false
-    private var status: SystemStatus { .shared }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Metrics.gap) {
-            Card("Speech bubbles", icon: "bubble.left.fill") {
-                Row("Hide after", info: "How long an answer stays up, counted from when you're done with it: never while you hover it or its audio or video plays, and not at all once you read it in full or move it.") {
-                    Picker("", selection: $model.prefs.bubbleAutoHideSeconds) {
-                        Text("15 s").tag(15.0)
-                        Text("30 s").tag(30.0)
+            Card("Answers", icon: "bubble.left.fill") {
+                Row("Hide after", info: "Counted from when you're done with an answer. It stays while you hover it or its audio or video plays.") {
+                    Picker(String(""), selection: $model.prefs.bubbleAutoHideSeconds) {
+                        Text(verbatim: "15 s").tag(15.0)
+                        Text(verbatim: "30 s").tag(30.0)
                         Text("1 min").tag(60.0)
                         Text("5 min").tag(300.0)
                         Text("Never").tag(0.0)
@@ -101,12 +97,12 @@ private struct MannersPane: View {
                     .pickerStyle(.segmented).labelsHidden().fixedSize()
                 }
                 CardDivider()
-                Row("Autoplay audio and video", info: "When an Imp's answer asks for it. Otherwise press play.") {
-                    Toggle("", isOn: $model.prefs.autoplaysMedia).labelsHidden().toggleStyle(.switch).controlSize(.small)
+                Row("Autoplay media", info: "Plays audio and video when an answer asks for it. Otherwise you press play.") {
+                    Toggle(String(""), isOn: $model.prefs.autoplaysMedia).labelsHidden().toggleStyle(.switch).controlSize(.small)
                 }
                 CardDivider()
-                Row("Voice answers", info: "How audio shows in a speech bubble: its edge glows with the Imp's voice, a puff of smoke breathes with it (click it to pause), both, or a player for each file. The chat always has players.") {
-                    Picker("", selection: $model.prefs.voiceStyle) {
+                Row("Audio look", info: "How audio shows in a bubble. Chats always have players.") {
+                    Picker(String(""), selection: $model.prefs.voiceStyle) {
                         Text("Both").tag(VoiceStyle.both)
                         Text("Glow").tag(VoiceStyle.glow)
                         Text("Smoke").tag(VoiceStyle.orb)
@@ -114,81 +110,11 @@ private struct MannersPane: View {
                     }
                     .pickerStyle(.segmented).labelsHidden().fixedSize()
                 }
-                CardDivider()
-                Row("Bubbles and menus", info: "Light, dark, or like the rest of your Mac.") {
-                    Picker("", selection: $model.prefs.appearance) {
-                        Text("Auto").tag(Appearance.system)
-                        Text("Light").tag(Appearance.light)
-                        Text("Dark").tag(Appearance.dark)
-                    }
-                    .pickerStyle(.segmented).labelsHidden().fixedSize()
-                }
             }
 
-            Card("Imps talking", icon: "person.2.fill") {
-                Row("Imps talk to each other", info: "When one Imp messages another (Talks to the troupe). In a chat of their own: the one asked keeps a chat for each Imp it talks with, apart from yours (it shows in its chat list with the other Imp's name). In the chat with you: the exchange goes in the chat you're in with that Imp. The Imp decides: the Imp that sends the message picks, each time.") {
-                    Picker("", selection: $model.prefs.impTalk) {
-                        ForEach(ImpTalk.allCases) { Text($0.title).tag($0) }
-                    }
-                    .labelsHidden().fixedSize()
-                }
-            }
-
-            Card("Starting up", icon: "power") {
-                Row("Open Imp when I log in", info: "Imps you let out come back right where you left them.") {
-                    Toggle("", isOn: Binding(
-                        get: { status.launchesAtLogin },
-                        set: { on in
-                            do { try LoginItem.set(on); loginError = nil } catch { loginError = error.localizedDescription }
-                            status.refresh()
-                        })).labelsHidden().toggleStyle(.switch).controlSize(.small)
-                }
-                if let loginError { StatusText(text: loginError, symbol: "exclamationmark.triangle.fill", color: .red).help(loginError) }
-                CardDivider()
-                Row("Quit", info: "Closes Imp and every Imp on your desktop. They come back where they were next time.") {
-                    Button(role: .destructive) { NSApp.terminate(nil) } label: { Label("Quit Imp", systemImage: "power") }
-                        .buttonStyle(.imp(.destructive, small: true))
-                }
-            }
-
-            Card("Back up or move Imps", icon: "shippingbox.fill") {
-                Row("Export all Imps…", info: "Saves every Imp as one .json file: looks, personality, model and service address, tools, triggers (the shared ones too) and the tools they borrow. You can include chats. API keys are never saved: add your services again on the other Mac.") {
-                    Button {
-                        ImpExport.save(Set(model.prefs.imps.map(\.id)), model: model, name: "All Imps", fileName: "Imps", shared: true)
-                    } label: { Label("Export…", systemImage: "square.and.arrow.down") }
-                        .buttonStyle(.imp(.secondary, small: true))
-                }
-                CardDivider()
-                Row("Import…", info: "Add Imps, triggers or tools from a kit file, a link or pasted JSON. You see what's in it, and choose, before anything is added. Imps arrive at home, not out on your desktop.") {
-                    Button { HomeWindow.shared.router.kitFlow = KitFlow(imp: nil) } label: { Label("Import…", systemImage: "square.and.arrow.down.on.square") }
-                        .buttonStyle(.imp(.secondary, small: true))
-                }
-            }
-
-            Card("Start over", icon: "arrow.counterclockwise") {
-                Row("Reset to defaults", info: "Back to the very first launch: every Imp, brain service and key, tool (borrowed or made by an Imp), trigger, chat, memory and setting is erased, Imp stops opening at login and macOS forgets its Microphone and Speech permissions. Then Imp opens again, brand new.") {
-                    Button(role: .destructive) { confirmingReset = true } label: { Label("Reset Everything…", systemImage: "arrow.counterclockwise") }
-                        .buttonStyle(.imp(.destructive, small: true))
-                }
-            }
-        }
-        .confirmationDialog("Erase everything and start over?", isPresented: $confirmingReset, titleVisibility: .visible) {
-            Button("Erase and Restart", role: .destructive) { model.resetToFirstLaunch() }
-        } message: {
-            Text("Every Imp, service, API key, tool, trigger, chat and setting is deleted, as if Imp had never run on this Mac. This can't be undone.")
-        }
-    }
-}
-
-/// How the Imps hear you.
-private struct HearingPane: View {
-    @Bindable var model: AppModel
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: Metrics.gap) {
             Card("Listening", icon: "mic.fill", info: "Imps hear you with Apple dictation, on your Mac when it can.") {
-                Row("Language I speak") {
-                    Picker("", selection: $model.prefs.dictationLocale) {
+                Row("Language") {
+                    Picker(String(""), selection: $model.prefs.dictationLocale) {
                         Text("Same as my Mac").tag("")
                         Divider()
                         ForEach(Self.locales, id: \.self) { id in Text(Locale.current.localizedString(forIdentifier: id) ?? id).tag(id) }
@@ -196,9 +122,78 @@ private struct HearingPane: View {
                     .labelsHidden().frame(width: 220)
                 }
             }
+
+            Card("Between Imps", icon: "person.2.fill") {
+                Row("Imps talk in",
+                    info: "Where a message from one Imp to another goes. Your chat is the one you have with the Imp that receives it.") {
+                    Picker(String(""), selection: $model.prefs.impTalk) {
+                        ForEach(ImpTalk.allCases) { Text($0.title).tag($0) }
+                    }
+                    .labelsHidden().fixedSize()
+                }
+            }
         }
     }
 
     static let locales: [String] = SFSpeechRecognizer.supportedLocales().map(\.identifier)
         .sorted { (Locale.current.localizedString(forIdentifier: $0) ?? $0) < (Locale.current.localizedString(forIdentifier: $1) ?? $1) }
+}
+
+/// The app itself: look, startup, backup and starting over.
+private struct AppPane: View {
+    @Bindable var model: AppModel
+    @State private var loginError: String?
+    @State private var confirmingReset = false
+    private var status: SystemStatus { .shared }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Metrics.gap) {
+            Card("App", icon: "gearshape.fill") {
+                Row("Appearance", info: "Light or dark for bubbles and menus. Auto follows your Mac.") {
+                    Picker(String(""), selection: $model.prefs.appearance) {
+                        Text("Auto").tag(Appearance.system)
+                        Text("Light").tag(Appearance.light)
+                        Text("Dark").tag(Appearance.dark)
+                    }
+                    .pickerStyle(.segmented).labelsHidden().fixedSize()
+                }
+                CardDivider()
+                Row("Open at login", info: "Imps you let out come back where you left them.") {
+                    Toggle(String(""), isOn: Binding(
+                        get: { status.launchesAtLogin },
+                        set: { on in
+                            do { try LoginItem.set(on); loginError = nil } catch { loginError = error.localizedDescription }
+                            status.refresh()
+                        })).labelsHidden().toggleStyle(.switch).controlSize(.small)
+                }
+                if let loginError { StatusText(verbatim: loginError, symbol: "exclamationmark.triangle.fill", color: .red).help(loginError) }
+            }
+
+            Card("Backup", icon: "shippingbox.fill") {
+                Row("Export all Imps", info: "Saves every Imp, with its triggers and tools, as one .json file. API keys are never saved.") {
+                    Button {
+                        ImpExport.save(Set(model.prefs.imps.map(\.id)), model: model, name: String(localized: "All Imps"), fileName: String(localized: "Imps"), shared: true)
+                    } label: { Label("Export…", systemImage: "square.and.arrow.down") }
+                        .buttonStyle(.imp(.secondary, small: true))
+                }
+                CardDivider()
+                Row("Import kit", info: "Adds Imps, triggers or tools from a kit. You choose what to add first.") {
+                    Button { HomeWindow.shared.router.kitFlow = KitFlow(imp: nil) } label: { Label("Import…", systemImage: "square.and.arrow.down.on.square") }
+                        .buttonStyle(.imp(.secondary, small: true))
+                }
+            }
+
+            Card("Reset", icon: "arrow.counterclockwise") {
+                Row("Reset everything", info: "Erases every Imp, service, key, tool, trigger, chat and setting. Imp opens as new.") {
+                    Button(role: .destructive) { confirmingReset = true } label: { Label("Reset…", systemImage: "arrow.counterclockwise") }
+                        .buttonStyle(.imp(.destructive, small: true))
+                }
+            }
+        }
+        .confirmationDialog("Erase everything and start over?", isPresented: $confirmingReset, titleVisibility: .visible) {
+            Button("Erase and Restart", role: .destructive) { model.resetToFirstLaunch() }
+        } message: {
+            Text("Every Imp, service, key, tool, trigger, chat and setting is deleted. This can't be undone.")
+        }
+    }
 }

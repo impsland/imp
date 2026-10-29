@@ -48,7 +48,7 @@ public struct FactoryReset {
         for folder in folders where fm.fileExists(atPath: folder.path) {
             do { try fm.removeItem(at: folder) } catch { left.append(folder.path) }
         }
-        if let keychainService, !Self.eraseKeychain(service: keychainService) { left.append("Keychain items for \(keychainService)") }
+        if let keychainService, !Self.eraseKeychain(service: keychainService) { left.append(String(localized: "Keychain items for \(keychainService)")) }
         return left
     }
 

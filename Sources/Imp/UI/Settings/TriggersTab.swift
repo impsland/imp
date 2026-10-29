@@ -6,7 +6,7 @@ import SwiftUI
 /// or something to open. Its own triggers first, then the ones every Imp shares. An Imp can add
 /// and remove triggers itself when you ask it to. New ones start as a draft: nothing is added
 /// until you say so.
-struct ShortcutsTab: View {
+struct TriggersTab: View {
     @Bindable var model: AppModel
     let id: UUID
     @State private var draft: Draft?
@@ -21,14 +21,14 @@ struct ShortcutsTab: View {
         var id: UUID { shortcut.id }
     }
 
-    private var name: String { model.profile(id).map { $0.name.isEmpty ? "this Imp" : $0.name } ?? "this Imp" }
+    private var name: String { model.profile(id)?.callName ?? ImpProfile.stranger }
     private var mine: [Shortcut] { model.prefs.shortcuts(of: id) }
     private var shared: [Shortcut] { model.prefs.sharedShortcuts }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Metrics.gap) {
-            Card("\(name)'s triggers", icon: "bolt.fill",
-                 info: "When something happens, \(name) gets your instruction along with what happened, and decides what to do: answer, act it out, hop somewhere, speak, run commands. Keys work anywhere on your Mac, on what you copied or on the instruction alone. Things on your Mac (battery, apps, websites, the time…) can also need conditions. Ask \(name) to set one up for you: it can add and remove its own.") {
+            Card("Triggers", icon: "bolt.fill",
+                 info: "When something happens, \(name) gets your instruction and what happened, then decides what to do. Keys work anywhere on your Mac. You can also ask \(name) to set one up.") {
                 HStack(spacing: 8) {
                     if model.profile(id)?.isActive == false && !mine.isEmpty {
                         StatusText(text: "Works once \(name) is out", symbol: "moon.zzz.fill", color: Dungeon.ember)
@@ -36,32 +36,30 @@ struct ShortcutsTab: View {
                     }
                     if copied { StatusText(text: "Kit copied", symbol: "checkmark.circle.fill", color: .green) }
                     if !(mine + shared).isEmpty {
-                        ShareKitButton(kit: Kit(name: "\(name)'s triggers", triggers: mine + shared), help: "Share all triggers as a kit")
+                        ShareKitButton(kit: Kit(name: String(localized: "\(name)'s triggers"), triggers: mine + shared), help: "Share all triggers as a kit")
                     }
-                    Button { addKit() } label: { Label("Add a kit…", systemImage: "shippingbox") }
+                    Button { importKit() } label: { Label("Import kit…", systemImage: "shippingbox") }
                         .buttonStyle(.imp(.quiet, small: true))
-                        .help("Add triggers from a kit: pasted, a file, or a link")
-                    if !mine.isEmpty {
-                        Button { start(from: nil) } label: { Label("Add", systemImage: "plus") }
-                            .buttonStyle(.imp(.secondary, small: true))
-                            .help("Add a trigger")
-                    }
+                        .help("Add triggers from a kit")
+                    Button { start() } label: { Label("Add", systemImage: "plus") }
+                        .buttonStyle(.imp(.secondary, small: true))
+                        .help("Add a trigger")
                 }
             } content: {
                 if mine.isEmpty {
-                    emptyState
+                    StatusText(text: "None yet. Add one or ask \(name).")
                 } else {
                     list(mine)
                 }
             }
-            Card("Every Imp", icon: "person.3.fill",
-                 info: "Triggers every Imp answers to: clicks go to the Imp you click, everything else to the one you talked to last.") {
-                Button { start(from: nil, shared: true) } label: { Label("Add", systemImage: "plus") }
+            Card("Shared", icon: "person.3.fill",
+                 info: "Triggers every Imp answers. Clicks go to the Imp you click and everything else to the one you talked to last.") {
+                Button { start(shared: true) } label: { Label("Add", systemImage: "plus") }
                     .buttonStyle(.imp(.secondary, small: true))
                     .help("Add a trigger for every Imp")
             } content: {
                 if shared.isEmpty {
-                    StatusText(text: "None. Clicking an Imp does nothing until you add a click here or above.")
+                    StatusText(text: "None. Add a click trigger so clicking an Imp does something.")
                 } else {
                     list(shared)
                 }
@@ -80,7 +78,7 @@ struct ShortcutsTab: View {
                             presenting: deleting) { shortcut in
             Button("Delete", role: .destructive) { remove(shortcut.id) }
         } message: { _ in
-            Text("It stops going off. This can't be undone.")
+            Text("This can't be undone.")
         }
     }
 
@@ -108,7 +106,7 @@ struct ShortcutsTab: View {
             .buttonStyle(.plain)
             .contextMenu {
                 Button("Edit…") { draft = Draft(shortcut: shortcut, isNew: false) }
-                Button("Try It Now") { model.trigger(shortcut, trying: true) }.disabled(!shortcut.isRunnable)
+                Button("Try Now") { model.trigger(shortcut, trying: true) }.disabled(!shortcut.isRunnable)
                 Button("Duplicate") { duplicate(shortcut) }
                 Divider()
                 Button("Share as Kit") { share(shortcut) }
@@ -119,24 +117,10 @@ struct ShortcutsTab: View {
         }
     }
 
-    /// Nothing yet: ideas to start from, one click each, or a blank one.
-    private var emptyState: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            StatusText(text: "None yet. Start from an idea, or from scratch, or just ask \(name).")
-            EvenGrid(minWidth: 150, spacing: 8) {
-                ForEach(ShortcutIdea.all) { idea in
-                    AddToolTile(icon: idea.icon, title: idea.name, detail: idea.detail) { start(from: idea) }
-                        .help(idea.prompt)
-                }
-                AddToolTile(icon: "plus", title: "From scratch", detail: "Your own trigger") { start(from: nil) }
-            }
-        }
-    }
-
     // MARK: Changes
 
-    private func start(from idea: ShortcutIdea?, shared: Bool = false) {
-        var s = idea?.shortcut ?? Shortcut(name: "", prompt: "", usesClipboard: true)
+    private func start(shared: Bool = false) {
+        var s = Shortcut(name: "", prompt: "", usesClipboard: true)
         s.performer = shared ? nil : id
         s.id = UUID()
         draft = Draft(shortcut: s, isNew: true)
@@ -144,7 +128,7 @@ struct ShortcutsTab: View {
 
     private func save(_ shortcut: Shortcut) {
         var s = shortcut
-        if s.name.trimmingCharacters(in: .whitespaces).isEmpty { s.name = s.suggestedName }
+        if s.name.trimmingCharacters(in: .whitespaces).isEmpty { s.name = s.suggestedName ?? String(localized: "Untitled") }
         if s.trigger.kind != .keys { s.hotkey = nil }
         if s.command != .ask { s.usesClipboard = false }
         if let i = model.prefs.shortcuts.firstIndex(where: { $0.id == s.id }) {
@@ -155,7 +139,7 @@ struct ShortcutsTab: View {
         draft = nil
     }
 
-    private func addKit() { HomeWindow.shared.router.kitFlow = KitFlow(imp: id) }
+    private func importKit() { HomeWindow.shared.router.kitFlow = KitFlow(imp: id) }
 
     private func kit(of shortcut: Shortcut) -> Kit { Kit(name: shortcut.displayName, triggers: [shortcut]) }
 
@@ -168,8 +152,8 @@ struct ShortcutsTab: View {
     private func duplicate(_ shortcut: Shortcut) {
         var copy = shortcut
         copy.id = UUID()
-        copy.name = shortcut.displayName + " copy"
-        copy.hotkey = nil                       // two shortcuts on the same keys would just fight
+        copy.name = String(localized: "\(shortcut.displayName) copy")
+        copy.hotkey = nil                       // two triggers on the same keys would just fight
         draft = Draft(shortcut: copy, isNew: true)
     }
 
@@ -181,14 +165,15 @@ struct ShortcutsTab: View {
 }
 
 extension Shortcut {
-    var displayName: String { name.trimmingCharacters(in: .whitespaces).isEmpty ? "Untitled" : name }
+    var displayName: String { name.trimmingCharacters(in: .whitespaces).isEmpty ? String(localized: "Untitled") : name }
 
-    /// A name from the instruction's first words (or what it opens, or when), for one saved without a name.
-    var suggestedName: String {
+    /// A name from the instruction's first words (or what it opens, or when), for one saved without a
+    /// name. Nil when there is nothing to go on yet.
+    var suggestedName: String? {
         if command != .ask { return command.title }
         let words = prompt.split(whereSeparator: \.isWhitespace).prefix(4).joined(separator: " ")
         let trimmed = words.trimmingCharacters(in: .punctuationCharacters)
         if !trimmed.isEmpty { return trimmed }
-        return trigger.kind == .keys ? "Untitled" : trigger.summary
+        return trigger.kind == .keys ? nil : trigger.summary
     }
 }

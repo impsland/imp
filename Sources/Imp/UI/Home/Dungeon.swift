@@ -22,17 +22,23 @@ enum Dungeon {
     }
 }
 
+extension EnvironmentValues {
+    /// False while the home window can't be seen: its animations pause.
+    @Entry var stageAwake = true
+}
+
 /// The wall with a few embers floating up (one in a while is a heart). `quiet` draws just the
 /// wall, for settings screens.
 struct DungeonBackdrop: View {
     var quiet = false
+    @Environment(\.stageAwake) private var awake
 
     var body: some View {
         ZStack {
             Dungeon.wall
             Canvas { ctx, size in Self.bricks(&ctx, size: size, opacity: quiet ? 0.03 : 0.045) }
             if !quiet {
-                TimelineView(.animation(minimumInterval: 1 / 20)) { timeline in
+                TimelineView(.animation(minimumInterval: 1 / 20, paused: !awake)) { timeline in
                     Canvas { ctx, size in Self.embers(&ctx, size: size, t: timeline.date.timeIntervalSinceReferenceDate) }
                 }
             }
@@ -171,9 +177,10 @@ struct Doorway: View {
     /// How far a torch's light reaches. The canvas extends this far past the view's frame, so the
     /// light fades out on its own instead of being cut off at the frame's edge.
     static let glowRoom: CGFloat = 92
+    @Environment(\.stageAwake) private var awake
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1 / 20)) { timeline in
+        TimelineView(.animation(minimumInterval: 1 / 20, paused: !awake)) { timeline in
             let t = timeline.date.timeIntervalSinceReferenceDate
             Canvas { ctx, canvas in
                 let room = Self.glowRoom

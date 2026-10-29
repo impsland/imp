@@ -33,6 +33,10 @@ if [[ -n "${VERSION:-}" ]]; then
   /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" -c "Set :CFBundleVersion $VERSION" "$STAGE/Contents/Info.plist"
 fi
 iconutil -c icns "$ICONSET" -o "$STAGE/Contents/Resources/AppIcon.icns"
+# Translations: each String Catalog becomes <language>.lproj/*.strings(dict) for Bundle.main.
+for catalog in Resources/Localization/*.xcstrings; do
+  xcrun xcstringstool compile "$catalog" --output-directory "$STAGE/Contents/Resources"
+done
 # The browser extension rides along: Settings › Tools › Browser shows it, to load in Chrome.
 cp -R Extensions/Chrome "$STAGE/Contents/Resources/Browser Extension"
 

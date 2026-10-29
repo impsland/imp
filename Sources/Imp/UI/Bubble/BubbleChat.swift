@@ -142,7 +142,7 @@ struct ChatView: View {
             }
         }
         .buttonStyle(.plain)
-        .help("Delete this chat: what was said, and \(model.profile.name)'s memory of it")
+        .help("Delete this chat and \(model.profile.name)'s memory of it.")
     }
 }
 
@@ -161,9 +161,9 @@ private struct ChatPicker: View {
                                              set: { _ in model.switchChat(to: chat.id); changed() })) {
                             // A chat between two Imps (not with you) has two people on it.
                             if chat.peer != nil {
-                                Label(chat.title.isEmpty ? "Chat" : chat.title, systemImage: "person.2.fill")
+                                Label(chat.title.isEmpty ? String(localized: "Chat") : chat.title, systemImage: "person.2.fill")
                             } else {
-                                Text(chat.title.isEmpty ? "Chat" : chat.title)
+                                Text(chat.title.isEmpty ? String(localized: "Chat") : chat.title)
                             }
                             Text(chat.updated, format: .dateTime.day().month().hour().minute())
                         }
@@ -183,12 +183,12 @@ private struct ChatPicker: View {
         .buttonStyle(.plain)
         .menuIndicator(.hidden)
         .fixedSize()
-        .help("Your chats with \(model.profile.name): pick one to carry on where you left off")
+        .help("Your chats with \(model.profile.name). Pick one to carry on where you left off.")
     }
 
     private var title: String {
         let t = model.history.current.title
-        return t.isEmpty ? "New chat with \(model.profile.name)" : t
+        return t.isEmpty ? String(localized: "New chat with \(model.profile.name)") : t
     }
 }
 
@@ -196,8 +196,8 @@ private struct ChatPicker: View {
 /// few seconds (a second click does it).
 private struct ConfirmButton: View {
     let icon: String
-    let confirm: String
-    let help: String
+    let confirm: LocalizedStringKey
+    let help: LocalizedStringKey
     let action: () -> Void
     @State private var asking = false
 
@@ -324,7 +324,7 @@ private struct RequestCard: View {
             }
             if let copied = turn.copiedText, !copied.isEmpty { quote(copied) }
             if let picture = turn.picture {
-                MarkdownView(blocks: [.image(url: URL(fileURLWithPath: picture), alt: "Picture", link: nil)],
+                MarkdownView(blocks: [.image(url: URL(fileURLWithPath: picture), alt: String(localized: "Picture"), link: nil)],
                              base: Workspace.directory(for: model.id),
                              onImageLoad: measuring ? nil : { layout.onToggle?() }, measuring: measuring, imageHeight: 150)
             }
@@ -337,8 +337,8 @@ private struct RequestCard: View {
     /// Where it came from, when it wasn't simply typed.
     private var header: (title: String, icon: String)? {
         switch turn.via {
-        case .shortcut?: ("Shortcut · \(turn.request)", "command")
-        case .spoken?: ("Said", "mic.fill")
+        case .shortcut?: (String(localized: "Trigger · \(turn.request)"), "bolt.fill")
+        case .spoken?: (String(localized: "Said"), "mic.fill")
         case .typed?, .recap?, .imp?, nil: nil
         }
     }

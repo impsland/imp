@@ -1,6 +1,6 @@
 import Foundation
 
-/// An Imp's own tools, in groups that can be switched off one by one (Settings › Tools). They're
+/// An Imp's own tools, in groups that can be switched off one by one (Tools tab). They're
 /// how the model acts out its answers, notices the Mac, sets itself up and talks to the troupe.
 /// Nothing is hard-wired: a trigger hands the model what happened, and the model picks the tools.
 public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable {
@@ -8,7 +8,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
     case body
     /// The Mac's state (battery, processor, apps…) and the page open in the browser.
     case senses
-    /// Its own triggers and borrowed tools (MCP servers): adding, listing, removing them.
+    /// Its own triggers and extra tools (MCP servers): adding, listing, removing them.
     case setup
     /// Messages to the other Imps.
     case troupe
@@ -22,11 +22,11 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
 
     public var title: String {
         switch self {
-        case .body: "Body language"
-        case .senses: "Senses"
-        case .setup: "Sets itself up"
-        case .troupe: "Talks to the troupe"
-        case .computer: "Computer control"
+        case .body: String(localized: "Body language")
+        case .senses: String(localized: "Senses")
+        case .setup: String(localized: "Setup")
+        case .troupe: String(localized: "Other Imps")
+        case .computer: String(localized: "Computer control")
         }
     }
 
@@ -42,11 +42,11 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
 
     public var summary: String {
         switch self {
-        case .body: "Plays its animations, hops or slides around the screen, and speaks out loud."
-        case .senses: "Reads the battery, processor, heat, network, open apps and, with the browser extension, the page you're on."
-        case .setup: "Adds and removes its own triggers and borrowed tools (MCP servers) when you ask, and opens settings for you to fill in keys."
-        case .troupe: "Sends messages to the other Imps out on your desktop and hears their answers."
-        case .computer: "Looks at any app's window and operates it: clicks, types, shortcuts, menus, scrolling, drawing. Needs the Screen & System Audio Recording and Accessibility permissions. Off until you switch it on."
+        case .body: String(localized: "Plays animations, moves around the screen and speaks aloud.")
+        case .senses: String(localized: "Reads the battery, processor, network and open apps. With the browser extension, it also knows the page you're on.")
+        case .setup: String(localized: "Adds and removes its own triggers and extra tools when you ask.")
+        case .troupe: String(localized: "Messages the other Imps on your desktop and hears their answers.")
+        case .computer: String(localized: "Sees and operates other apps. Needs the Screen & System Audio Recording and Accessibility permissions.")
         }
     }
 }
@@ -169,11 +169,11 @@ public enum OwnTools {
                 inputSchema: ["type": "object", "properties": ["id": ["type": "string"]], "required": ["id"]]))
             specs.append(ToolSpec(
                 name: listTools,
-                description: "The borrowed tools (MCP servers) in the library, whether you use each, and whether it's running.",
+                description: "The extra tools (MCP servers) in the library, whether you use each, and whether it's running.",
                 inputSchema: ["type": "object", "properties": [:]]))
             specs.append(ToolSpec(
                 name: addTool,
-                description: "Add a borrowed tool (an MCP server) and start using it, when the user asks for something you "
+                description: "Add an extra tool (an MCP server) and start using it, when the user asks for something you "
                     + "can't do yet and a server can. Local: `command` is the whole command line (e.g. \"npx -y @scope/server\"), "
                     + "with `env`. Remote: `url`, with `headers`. Leave secrets empty (\"\"): then open its settings "
                     + "(imp_open_settings with page tools and the tool's id) and ask the user to fill them in. Its tools are "
@@ -184,12 +184,12 @@ public enum OwnTools {
                                              "headers": ["type": "object", "additionalProperties": ["type": "string"]]]]))
             specs.append(ToolSpec(
                 name: removeTool,
-                description: "Stop using a borrowed tool (by id). With `everywhere`, remove it from the library for every Imp.",
+                description: "Stop using an extra tool (by id). With `everywhere`, remove it from the library for every Imp.",
                 inputSchema: ["type": "object", "properties": ["id": ["type": "string"], "everywhere": ["type": "boolean"]],
                               "required": ["id"]]))
             specs.append(ToolSpec(
                 name: openSettings,
-                description: "Open your settings on a page for the user: looks, brain, tools (with `tool`: a borrowed tool's id, "
+                description: "Open your settings on a page for the user: looks, brain, tools (with `tool`: an extra tool's id, "
                     + "to edit it, e.g. to fill in an API key) or triggers.",
                 inputSchema: ["type": "object",
                               "properties": ["page": ["type": "string", "enum": ["looks", "brain", "tools", "triggers"]],

@@ -170,7 +170,7 @@ private struct MarkdownImage: View {
             }
             .accessibilityLabel(alt)
         } else {
-            Label(alt.isEmpty ? "Image" : alt, systemImage: "photo")
+            Label(alt.isEmpty ? String(localized: "Image") : alt, systemImage: "photo")
                 .foregroundStyle(.secondary)
                 .task(id: url) {
                     guard let onLoad, ["http", "https", "file"].contains(url.scheme?.lowercased() ?? "") else { return }

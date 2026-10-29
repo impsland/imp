@@ -18,7 +18,7 @@ final class Panels {
     var menuProvider: ((ImpModel) -> NSMenu)?
 
     static let baseSize: CGFloat = 112
-    static let sizes: [(String, Double)] = [("Small", 0.75), ("Medium", 1.0), ("Large", 1.35)]
+    static let sizes: [(String, Double)] = [(String(localized: "Small"), 0.75), (String(localized: "Medium"), 1.0), (String(localized: "Large"), 1.35)]
 
     init(model: ImpModel) {
         self.model = model
@@ -63,6 +63,9 @@ final class Panels {
         model.onTravel = { [weak self] origin, travel in await self?.travel(to: origin, travel) }
         model.homeOrigin = { [weak self] in self?.home ?? .zero }
         model.onRestingChange = { [weak self] resting in self?.impHost.setBreathing(resting) }
+        NotificationCenter.default.addObserver(forName: NSWindow.didChangeOcclusionStateNotification, object: impPanel, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.model.isOnScreen = self?.impPanel.occlusionState.contains(.visible) ?? true }
+        }
         NotificationCenter.default.addObserver(forName: NSWindow.didMoveNotification, object: bubblePanel, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.bubbleMoved() }
         }
@@ -80,7 +83,7 @@ final class Panels {
     // MARK: Clicks
     //
     // Clicks in a row are one burst, and each burst does one thing: whatever that many clicks are
-    // set to (Settings › Triggers). Four quick clicks are a poke. See `ClickBurst` for why a click
+    // set to (its Triggers tab). Four quick clicks are a poke. See `ClickBurst` for why a click
     // waits for the burst to end (only when something answers to more than one click).
 
     private var clicks = ClickBurst(interval: ClickBurst.gap(system: NSEvent.doubleClickInterval))

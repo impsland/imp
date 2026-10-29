@@ -39,22 +39,22 @@ public enum AnimationTrigger: String, Codable, CaseIterable, Sendable, Identifia
 
     public var title: String {
         switch self {
-        case .idle: "When it's quiet"
-        case .poke: "4 quick clicks"
-        case .circle: "Circle it with the cursor"
-        case .swish: "Swish past its face"
-        case .stroke: "Stroke its head"
-        case .favoriteColor: "Its favourite colour"
-        case .tickle: "Tickle it"
-        case .hold: "Press and hold it"
-        case .pickUp: "Carry it"
-        case .shake: "Shake it while carrying"
-        case .drop: "Put it down"
-        case .rush: "Rush at it"
-        case .linger: "Rest the cursor beside it"
-        case .stare: "Rest the cursor on its face"
-        case .dangle: "Bob the cursor above it"
-        case .comeback: "Come back after a break"
+        case .idle: String(localized: "When it's quiet")
+        case .poke: String(localized: "4 quick clicks")
+        case .circle: String(localized: "Circle it with the cursor")
+        case .swish: String(localized: "Swish past its face")
+        case .stroke: String(localized: "Stroke its head")
+        case .favoriteColor: String(localized: "Its favourite colour")
+        case .tickle: String(localized: "Tickle it")
+        case .hold: String(localized: "Press and hold it")
+        case .pickUp: String(localized: "Carry it")
+        case .shake: String(localized: "Shake it while carrying")
+        case .drop: String(localized: "Put it down")
+        case .rush: String(localized: "Rush at it")
+        case .linger: String(localized: "Rest the cursor beside it")
+        case .stare: String(localized: "Rest the cursor on its face")
+        case .dangle: String(localized: "Bob the cursor above it")
+        case .comeback: String(localized: "Come back after a break")
         }
     }
 
@@ -126,11 +126,11 @@ extension Reaction {
         case .shy: [.stare]
         case .pounce: [.dangle]
         case .missedYou: [.comeback]
-        case .boo, .shiver, .blowKiss, .proud: []
+        case .boo, .shiver, .blowKiss, .proud, .heartbeat: []
         case .glance, .hum, .idea, .lookAround, .turn, .showOff, .wonder, .nap, .watch,
-             .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored: [.idle]
+             .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored, .wiggle, .sneak: [.idle]
         case .yes, .no, .maybe, .dontKnow, .areYouSure, .notSure, .exactly, .nope, .hmm, .aha,
-             .tada, .sorry, .oops, .impressed, .haha, .loveIt, .sadNews, .careful, .welcome, .confused: []
+             .tada, .sorry, .oops, .impressed, .haha, .loveIt, .sadNews, .careful, .welcome, .confused, .phew, .smug: []
         case .twirl, .serenade, .cheer, .swoon, .glow: [.idle]
         }
     }
@@ -151,13 +151,13 @@ extension Reaction {
     public var family: Family {
         switch self {
         case .greet, .jump, .smile, .love, .laugh, .sad, .wow, .sleep, .thanks, .bye,
-             .boo, .shiver, .blowKiss, .proud: .expressions
+             .boo, .shiver, .blowKiss, .proud, .heartbeat: .expressions
         case .dizzy, .mean, .pet, .angry, .delight: .play
         case .giggle, .cuddle, .wheee, .woozy, .plop, .flinch, .curious, .shy, .pounce, .missedYou: .handling
         case .glance, .lookAround, .turn, .hum, .showOff, .wonder, .idea, .nap, .watch,
-             .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored: .routines
+             .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored, .wiggle, .sneak: .routines
         case .yes, .no, .maybe, .dontKnow, .areYouSure, .notSure, .exactly, .nope, .hmm, .aha,
-             .tada, .sorry, .oops, .impressed, .haha, .loveIt, .sadNews, .careful, .welcome, .confused: .gestures
+             .tada, .sorry, .oops, .impressed, .haha, .loveIt, .sadNews, .careful, .welcome, .confused, .phew, .smug: .gestures
         case .twirl, .serenade, .cheer, .swoon, .glow: .favorite
         }
     }

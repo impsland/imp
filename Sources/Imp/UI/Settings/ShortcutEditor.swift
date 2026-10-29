@@ -27,7 +27,7 @@ struct ShortcutRow: View {
                     if !action.conditions.isEmpty {
                         Image(systemName: "line.3.horizontal.decrease.circle").font(.caption)
                             .foregroundStyle(.secondary)
-                            .help("Only if " + action.conditions.map(\.conditionSummary).joined(separator: ", "))
+                            .help("Only if \(action.conditions.map(\.conditionSummary).joined(separator: ", "))")
                     }
                     if failed { Image(systemName: "exclamationmark.triangle.fill").font(.caption2).foregroundStyle(.orange) }
                     Text(action.summary)
@@ -38,9 +38,9 @@ struct ShortcutRow: View {
                 .clipped()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            Toggle("", isOn: $action.isEnabled).labelsHidden().toggleStyle(.switch).controlSize(.mini)
+            Toggle(String(""), isOn: $action.isEnabled).labelsHidden().toggleStyle(.switch).controlSize(.mini)
                 .fixedSize()
-                .help(action.isEnabled ? "On" : "Off: kept, but it doesn't go off")
+                .help(action.isEnabled ? "On" : "Off. Kept, but it never goes off.")
         }
         .padding(.vertical, 3)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -58,58 +58,13 @@ extension Shortcut {
     var summary: String {
         if command != .ask { return command.title }
         let p = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
-        if p.isEmpty { return usesClipboard ? "Responds to what you copied" : "Responds in its own way" }
+        if p.isEmpty { return usesClipboard ? String(localized: "Responds to what you copied") : String(localized: "Responds in its own way") }
         return p
     }
 }
 
-/// A ready-made trigger to start from.
-struct ShortcutIdea: Identifiable {
-    let name: String
-    let icon: String
-    let prompt: String
-    var usesClipboard = true
-    var trigger: Trigger = .keys
-    var id: String { name }
-
-    var detail: String {
-        trigger.kind == .keys ? (usesClipboard ? "Keys + clipboard" : "Keys") : trigger.summary
-    }
-
-    var shortcut: Shortcut {
-        Shortcut(name: name, prompt: prompt, usesClipboard: usesClipboard, trigger: trigger)
-    }
-
-    static let all: [ShortcutIdea] = [
-        ShortcutIdea(name: "Translate", icon: "character.bubble",
-                     prompt: "Translate this into English. If it's already English, translate it into Spanish. Reply with the translation only."),
-        ShortcutIdea(name: "Fix grammar", icon: "checkmark.seal",
-                     prompt: "Fix the spelling and grammar, keeping the meaning and tone. Copy the corrected text to the clipboard and show it."),
-        ShortcutIdea(name: "Summarize", icon: "text.alignleft", prompt: "Summarize this in two or three short sentences."),
-        ShortcutIdea(name: "Read aloud", icon: "speaker.wave.2", prompt: "Read this aloud, word for word."),
-        ShortcutIdea(name: "Plan my day", icon: "sun.max", prompt: "Look at my calendar and reminders for today, if you can, and give me a short plan.",
-                     usesClipboard: false, trigger: Trigger(.time, number: 9 * 60)),
-        ShortcutIdea(name: "Low battery", icon: "battery.25percent",
-                     prompt: "The battery is getting low. Tell me in one line, with a worried little animation, and suggest one thing that saves power right now.",
-                     usesClipboard: false, trigger: Trigger(.battery, number: 20)),
-        ShortcutIdea(name: "Welcome back", icon: "figure.walk.arrival",
-                     prompt: "I just came back to my Mac. Greet me warmly in a few words, and act it out.",
-                     usesClipboard: false, trigger: Trigger(.back, number: 20)),
-        ShortcutIdea(name: "Stretch break", icon: "figure.cooldown",
-                     prompt: "Remind me to stand up and stretch, playfully, with a little dance.",
-                     usesClipboard: false, trigger: Trigger(.every, number: 60)),
-        ShortcutIdea(name: "Busy Mac", icon: "cpu",
-                     prompt: "The Mac has been working hard for a while. Check what's open and tell me what's probably to blame.",
-                     usesClipboard: false, trigger: Trigger(.busy, number: 85)),
-        ShortcutIdea(name: "Shopping guard", icon: "cart",
-                     prompt: "I'm trying not to spend money. Hop onto the “Add to Cart” button on the page so I can't click it, and tell me off, playfully.",
-                     usesClipboard: false, trigger: Trigger(.website, text: "amazon.com")),
-    ]
-}
-
-/// Adding or editing a trigger, on a copy: an idea to start from, its name, when it goes off (and
-/// only if…), what it does, and for whom. Short on words, quick to fill in. Nothing changes until
-/// Add or Save.
+/// Adding or editing a trigger, on a copy: its name, when it goes off (and only if…), what it does,
+/// and for whom. Short on words, quick to fill in. Nothing changes until Add or Save.
 struct ShortcutSheet: View {
     @Environment(\.impTint) private var tint
     let model: AppModel
@@ -125,30 +80,13 @@ struct ShortcutSheet: View {
 
     var body: some View {
         SheetScaffold(icon: shortcut.trigger.kind.symbol, title: isNew ? "New trigger" : "Edit trigger",
-                      info: "When it goes off, \(performerName) gets the instruction along with what happened, and decides what to do with its tools. Or it just opens something, like a click opening the text box.") {
-            IconButton(icon: "play.fill", help: "Try it now", size: 28) { model.trigger(shortcut, trying: true) }
+                      info: "When it goes off, \(performerName) gets the instruction and what happened, then decides what to do with its tools. Or it just opens something, like the text box.") {
+            IconButton(icon: "play.fill", help: "Try now", size: 28) { model.trigger(shortcut, trying: true) }
                 .disabled(!shortcut.isRunnable)
         } content: {
             VStack(alignment: .leading, spacing: 12) {
-                if isNew {
-                    EvenGrid(minWidth: 100, spacing: 6) {
-                        ForEach(ShortcutIdea.all) { idea in
-                            ChoiceChip(title: idea.name, icon: idea.icon, picked: shortcut.prompt == idea.prompt) {
-                                withAnimation(.snappy(duration: 0.2)) {
-                                    shortcut.name = idea.name
-                                    shortcut.prompt = idea.prompt
-                                    shortcut.usesClipboard = idea.usesClipboard
-                                    shortcut.trigger = idea.trigger
-                                    shortcut.command = .ask
-                                }
-                            }
-                            .help(idea.prompt)
-                        }
-                    }
-                    CardDivider()
-                }
                 FieldRow("Name") {
-                    TextField(shortcut.suggestedName == "Untitled" ? "Name" : shortcut.suggestedName, text: $shortcut.name).impField()
+                    TextField("Name", text: $shortcut.name, prompt: shortcut.suggestedName.map { Text(verbatim: $0) } ?? Text("Name")).impField()
                 }
                 FieldRow("When") {
                     HStack(spacing: 8) {
@@ -157,13 +95,13 @@ struct ShortcutSheet: View {
                             if kind.isAmbient { shortcut.usesClipboard = false }
                         }
                         TriggerFields(trigger: $shortcut.trigger, hotkey: $shortcut.hotkey)
-                        if let warning = keyWarning { IssueTip(text: warning) }
+                        if let warning = keyWarning { IssueTip(verbatim: warning) }
                         Spacer(minLength: 0)
                     }
                 }
                 conditions
                 FieldRow("Do") {
-                    CompactMenu(title: shortcut.command.title, symbol: shortcut.command.symbol) {
+                    CompactMenu(verbatim: shortcut.command.title, symbol: shortcut.command.symbol) {
                         ForEach(Shortcut.Command.allCases) { c in
                             Button { withAnimation(.snappy(duration: 0.2)) { shortcut.command = c } } label: {
                                 Label(c.title, systemImage: c.symbol)
@@ -174,14 +112,14 @@ struct ShortcutSheet: View {
                 if shortcut.command == .ask {
                     FieldRow("Input") {
                         EvenGrid(minWidth: 140, spacing: 6) {
-                            ChoiceChip(title: "Clipboard + prompt", icon: "doc.on.clipboard", picked: shortcut.usesClipboard) {
+                            ChoiceChip(title: "With clipboard", icon: "doc.on.clipboard", picked: shortcut.usesClipboard) {
                                 shortcut.usesClipboard = true
                             }
-                            .help("Sends what you copied, with your prompt")
-                            ChoiceChip(title: "Prompt only", icon: "text.bubble", picked: !shortcut.usesClipboard) {
+                            .help("Sends what you copied along with your instruction")
+                            ChoiceChip(title: "Instruction only", icon: "text.bubble", picked: !shortcut.usesClipboard) {
                                 shortcut.usesClipboard = false
                             }
-                            .help("Sends only your prompt (and what happened)")
+                            .help("Sends your instruction and what happened")
                         }
                     }
                     EditorWell(text: $shortcut.prompt,
@@ -196,7 +134,7 @@ struct ShortcutSheet: View {
                         ChoiceChip(title: "Every Imp", icon: "person.3.fill", picked: shortcut.performer == nil) {
                             shortcut.performer = nil
                         }
-                        .help("Clicks go to the Imp you click, everything else to the one you talked to last")
+                        .help("Clicks go to the Imp you click and everything else to the one you talked to last")
                     }
                 }
             }
@@ -225,7 +163,7 @@ struct ShortcutSheet: View {
     /// "Only if…": conditions that must hold when it goes off.
     @ViewBuilder private var conditions: some View {
         let kinds = Trigger.Kind.allCases.filter(\.isCondition)
-        FieldRow("Only if", info: "Conditions that must all be true at that moment, like “only if the battery is low” or “only between 22:00 and 07:00”.") {
+        FieldRow("Only if", info: "Every condition must be true when it goes off, like the battery being low or the time being late.") {
             VStack(alignment: .leading, spacing: 6) {
                 ForEach(shortcut.conditions.indices, id: \.self) { i in
                     HStack(spacing: 8) {
@@ -252,7 +190,7 @@ struct ShortcutSheet: View {
 
     private func kindMenu(selection: Trigger.Kind, kinds: [Trigger.Kind], condition: Bool = false,
                           pick: @escaping (Trigger.Kind) -> Void) -> some View {
-        CompactMenu(title: condition ? selection.conditionTitle : selection.title, symbol: selection.symbol, maxWidth: 180) {
+        CompactMenu(verbatim: condition ? selection.conditionTitle : selection.title, symbol: selection.symbol, maxWidth: 180) {
             ForEach(kinds) { k in
                 Button { withAnimation(.snappy(duration: 0.2)) { pick(k) } } label: {
                     Label(condition ? k.conditionTitle : k.title, systemImage: k.symbol)
@@ -262,21 +200,20 @@ struct ShortcutSheet: View {
     }
 
     private var impName: String {
-        let name = model.profile(imp)?.name ?? ""
-        return name.isEmpty ? "this Imp" : name
+        model.profile(imp)?.callName ?? ImpProfile.stranger
     }
 
     private var performerName: String {
-        guard let p = shortcut.performer, let name = model.profile(p)?.name, !name.isEmpty else { return "Imp" }
+        guard let p = shortcut.performer, let name = model.profile(p)?.name, !name.isEmpty else { return String(localized: "Imp") }
         return name
     }
 
-    /// Keys macOS or another of your shortcuts already uses (only the first in the list runs).
+    /// Keys macOS or another of your triggers already uses (only the first in the list runs).
     private var keyWarning: String? {
         guard shortcut.trigger.kind == .keys, let hk = shortcut.hotkey else { return nil }
-        if model.failedHotkeys.contains(hk) { return "\(hk.displayString) is taken by macOS or another app. Pick other keys." }
+        if model.failedHotkeys.contains(hk) { return String(localized: "\(hk.displayString) is taken by macOS or another app. Pick other keys.") }
         let other = model.prefs.shortcuts.first { $0.id != shortcut.id && $0.keys == hk && $0.isEnabled }
-        return other.map { "“\($0.displayName)” uses the same keys, and it comes first: this one won't go off." }
+        return other.map { String(localized: "“\($0.displayName)” uses the same keys and comes first, so this one won't go off.") }
     }
 }
 
@@ -292,18 +229,20 @@ struct TriggerFields: View {
         case .keys:
             HotkeyField(hotkey: $hotkey)
         case .clicks:
-            CompactMenu(title: trigger.clicks == 1 ? "1 click" : "\(trigger.clicks) clicks") {
-                ForEach(1...Trigger.maxClicks, id: \.self) { n in Button(n == 1 ? "1 click" : "\(n) clicks") { trigger.number = n } }
+            CompactMenu(title: "^[\(trigger.clicks) click](inflect: true)") {
+                ForEach(1...Trigger.maxClicks, id: \.self) { n in Button("^[\(n) click](inflect: true)") { trigger.number = n } }
             }
         case .battery, .busy:
             Stepper(value: number(trigger.kind == .battery ? 20 : 85), in: 5...95, step: 5) {
-                Text("\(trigger.kind == .battery ? "below" : "above") \(trigger.percent) %").monospacedDigit()
+                (trigger.kind == .battery ? Text("below \(trigger.percent) %") : Text("above \(trigger.percent) %")).monospacedDigit()
             }
             .fixedSize()
         case .charger:
-            choice(on: asCondition ? "On the charger" : "Plugged in", off: asCondition ? "On battery" : "Unplugged")
+            choice(on: asCondition ? "On the charger" : "Plugged in",
+                   off: asCondition ? "On battery" : "Unplugged")
         case .offline:
-            choice(on: asCondition ? "Offline" : "Goes away", off: asCondition ? "Online" : "Comes back")
+            choice(on: asCondition ? "Offline" : "Goes away",
+                   off: asCondition ? "Online" : "Comes back")
         case .app:
             HStack(spacing: 4) {
                 TextField("Any app", text: text).impField().frame(width: 140)
@@ -315,23 +254,23 @@ struct TriggerFields: View {
             }
         case .website:
             HStack(spacing: 6) {
-                TextField("amazon.com", text: text).impField().frame(width: 150)
+                TextField(String("amazon.com"), text: text).impField().frame(width: 150)
                 if !BrowserBridge.shared.isConnected {
-                    IssueTip(text: "Imps only know which website you're on with the Imp browser extension, and it isn't connected. Add it in Settings › Tools › Browser (Chrome, Arc, Brave or Edge), and keep the browser open.",
+                    IssueTip(text: "The browser extension isn't connected. Add it in Tools › Browser.",
                              symbol: "puzzlepiece.extension.fill")
                 }
             }
         case .time:
-            DatePicker("", selection: time(\.number), displayedComponents: .hourAndMinute).labelsHidden().fixedSize()
+            DatePicker(String(""), selection: time(\.number), displayedComponents: .hourAndMinute).labelsHidden().fixedSize()
         case .hours:
             HStack(spacing: 4) {
-                DatePicker("", selection: time(\.number), displayedComponents: .hourAndMinute).labelsHidden().fixedSize()
-                Text("–").foregroundStyle(.secondary)
-                DatePicker("", selection: time(\.until), displayedComponents: .hourAndMinute).labelsHidden().fixedSize()
+                DatePicker(String(""), selection: time(\.number), displayedComponents: .hourAndMinute).labelsHidden().fixedSize()
+                Text(verbatim: "–").foregroundStyle(.secondary)
+                DatePicker(String(""), selection: time(\.until), displayedComponents: .hourAndMinute).labelsHidden().fixedSize()
             }
         case .every, .back:
             Stepper(value: number(trigger.kind == .every ? 60 : 15), in: 1...1440, step: trigger.minutes >= 60 ? 15 : 5) {
-                Text(trigger.kind == .every ? "\(trigger.minutes) min" : "after \(trigger.minutes) min away").monospacedDigit()
+                (trigger.kind == .every ? Text(verbatim: Self.span(trigger.minutes)) : Text("after \(Self.span(trigger.minutes)) away")).monospacedDigit()
             }
             .fixedSize()
         case .wake, .start, .hot:
@@ -340,7 +279,7 @@ struct TriggerFields: View {
     }
 
     /// One of two values (plugged in or not, offline or not).
-    private func choice(on: String, off: String) -> some View {
+    private func choice(on: LocalizedStringKey, off: LocalizedStringKey) -> some View {
         CompactMenu(title: trigger.isOn ? on : off) {
             Button(on) { trigger.flag = true }
             Button(off) { trigger.flag = false }
@@ -364,6 +303,11 @@ struct TriggerFields: View {
         })
     }
 
+    /// "15 min", "1 hr 30 min": a number of minutes, the way the user's language writes it.
+    private static func span(_ minutes: Int) -> String {
+        Duration.seconds(minutes * 60).formatted(.units(allowed: [.hours, .minutes], width: .abbreviated))
+    }
+
     private static var runningApps: [String] {
         Array(Set(NSWorkspace.shared.runningApplications.filter { $0.activationPolicy == .regular }.compactMap(\.localizedName)))
             .filter { $0 != "Imp" }.sorted()
@@ -374,14 +318,14 @@ extension Trigger.Kind {
     /// What a condition of this kind checks, as a menu title.
     var conditionTitle: String {
         switch self {
-        case .battery: "Battery"
-        case .charger: "Power"
-        case .app: "App in front"
-        case .website: "Website open"
-        case .busy: "Processor"
-        case .hot: "The Mac is hot"
-        case .offline: "Network"
-        case .hours: "Time of day"
+        case .battery: String(localized: "Battery")
+        case .charger: String(localized: "Power")
+        case .app: String(localized: "App in front")
+        case .website: String(localized: "Website open")
+        case .busy: String(localized: "Processor")
+        case .hot: String(localized: "The Mac is hot")
+        case .offline: String(localized: "Network")
+        case .hours: String(localized: "Time of day")
         default: title
         }
     }

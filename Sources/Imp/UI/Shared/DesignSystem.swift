@@ -24,14 +24,20 @@ enum Metrics {
 /// A small ⓘ that shows its text while you hover it (or click it). Every explanation goes here
 /// instead of under the control it explains.
 struct InfoTip: View {
-    let text: String
+    let text: Text
     var symbol = "info.circle"
     @State private var hover = false
     @State private var shown = false
     @State private var pending: Task<Void, Never>?
 
-    init(_ text: String, symbol: String = "info.circle") {
-        self.text = text
+    /// A literal is looked up in the String Catalog; use `verbatim:` for a string that is shown as it is.
+    init(_ text: LocalizedStringKey, symbol: String = "info.circle") {
+        self.text = Text(text)
+        self.symbol = symbol
+    }
+
+    init(verbatim text: String, symbol: String = "info.circle") {
+        self.text = Text(verbatim: text)
         self.symbol = symbol
     }
 
@@ -55,7 +61,7 @@ struct InfoTip: View {
             }
             .onTapGesture { shown.toggle() }
             .popover(isPresented: $shown, arrowEdge: .bottom) {
-                Text(text)
+                text
                     .font(.system(size: 12.5))
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(width: 260, alignment: .leading)
@@ -73,14 +79,14 @@ struct InfoTip: View {
 /// A stone tablet on the dungeon wall holding one group of settings: a one-line header (icon,
 /// title, ⓘ, and an optional control on the right), then its content.
 struct Card<Content: View, Accessory: View>: View {
-    var title: String?
+    var title: LocalizedStringKey?
     var icon: String?
-    var info: String?
+    var info: LocalizedStringKey?
     var accessory: Accessory
     var content: Content
     @Environment(\.impTint) private var tint
 
-    init(_ title: String? = nil, icon: String? = nil, info: String? = nil,
+    init(_ title: LocalizedStringKey? = nil, icon: String? = nil, info: LocalizedStringKey? = nil,
          @ViewBuilder accessory: () -> Accessory, @ViewBuilder content: () -> Content) {
         self.title = title
         self.icon = icon
@@ -115,18 +121,18 @@ struct Card<Content: View, Accessory: View>: View {
 }
 
 extension Card where Accessory == EmptyView {
-    init(_ title: String? = nil, icon: String? = nil, info: String? = nil, @ViewBuilder content: () -> Content) {
+    init(_ title: LocalizedStringKey? = nil, icon: String? = nil, info: LocalizedStringKey? = nil, @ViewBuilder content: () -> Content) {
         self.init(title, icon: icon, info: info, accessory: { EmptyView() }, content: content)
     }
 }
 
 /// A labelled row: title (and ⓘ) on the left, its control on the right.
 struct Row<Control: View>: View {
-    let title: String
-    var info: String?
+    let title: LocalizedStringKey
+    var info: LocalizedStringKey?
     @ViewBuilder var control: Control
 
-    init(_ title: String, info: String? = nil, @ViewBuilder control: () -> Control) {
+    init(_ title: LocalizedStringKey, info: LocalizedStringKey? = nil, @ViewBuilder control: () -> Control) {
         self.title = title
         self.info = info
         self.control = control()
@@ -145,12 +151,12 @@ struct Row<Control: View>: View {
 
 /// A form row whose label sits in a fixed column, so a card's controls line up.
 struct FieldRow<Control: View>: View {
-    let label: String
-    var info: String?
+    let label: LocalizedStringKey
+    var info: LocalizedStringKey?
     var width: CGFloat = 76
     @ViewBuilder var control: Control
 
-    init(_ label: String, info: String? = nil, width: CGFloat = 76, @ViewBuilder control: () -> Control) {
+    init(_ label: LocalizedStringKey, info: LocalizedStringKey? = nil, width: CGFloat = 76, @ViewBuilder control: () -> Control) {
         self.label = label
         self.info = info
         self.width = width
@@ -244,7 +250,7 @@ struct EvenGrid: Layout {
 /// and an optional control on the right.
 struct TopBar<Center: View, Trailing: View>: View {
     var back: (() -> Void)?
-    var backHelp = "Back to the Imps (Esc)"
+    var backHelp: LocalizedStringKey = "Back to the Imps (Esc)"
     @ViewBuilder var center: Center
     @ViewBuilder var trailing: Trailing
 
@@ -270,7 +276,7 @@ struct TopBar<Center: View, Trailing: View>: View {
 }
 
 extension TopBar where Trailing == EmptyView {
-    init(back: (() -> Void)? = nil, backHelp: String = "Back to the Imps (Esc)", @ViewBuilder center: () -> Center) {
+    init(back: (() -> Void)? = nil, backHelp: LocalizedStringKey = "Back to the Imps (Esc)", @ViewBuilder center: () -> Center) {
         self.init(back: back, backHelp: backHelp, center: center, trailing: { EmptyView() })
     }
 }
@@ -344,7 +350,9 @@ private struct FieldChrome: ViewModifier {
 /// A multi-line well, with a placeholder.
 struct EditorWell: View {
     @Binding var text: String
-    var placeholder = ""
+    var placeholder: LocalizedStringKey?
+    /// A placeholder that is code or a format, shown as it is.
+    var codePlaceholder = ""
     var mono = false
     var height: CGFloat = 90
     @FocusState private var focused: Bool
@@ -362,7 +370,7 @@ struct EditorWell: View {
                 .strokeBorder(focused ? tint.opacity(0.85) : Dungeon.cardEdge, lineWidth: focused ? 1.5 : 1))
             .overlay(alignment: .topLeading) {
                 if text.isEmpty {
-                    Text(placeholder)
+                    (placeholder.map { Text($0) } ?? Text(verbatim: codePlaceholder))
                         .font(mono ? .system(size: 12, design: .monospaced) : .system(size: 13))
                         .foregroundStyle(.tertiary)
                         .padding(.horizontal, 10).padding(.vertical, 7)
@@ -382,10 +390,19 @@ extension View {
 
 /// Chips you pick one of (ideas, templates, hints), in the window's style.
 struct ChoiceChip: View {
-    let title: String
+    let title: Text
     var icon: String?
     let picked: Bool
     let action: () -> Void
+
+    init(title: LocalizedStringKey, icon: String? = nil, picked: Bool, action: @escaping () -> Void) {
+        self.title = Text(title); self.icon = icon; self.picked = picked; self.action = action
+    }
+
+    /// For names and other text that's data, not interface.
+    init(verbatim title: String, icon: String? = nil, picked: Bool, action: @escaping () -> Void) {
+        self.title = Text(verbatim: title); self.icon = icon; self.picked = picked; self.action = action
+    }
     @Environment(\.impTint) private var tint
     @State private var hover = false
 
@@ -393,7 +410,7 @@ struct ChoiceChip: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 if let icon { Image(systemName: icon).font(.system(size: 11, weight: .semibold)) }
-                Text(title).font(.system(size: 12, weight: .semibold, design: .rounded)).lineLimit(1).minimumScaleFactor(0.85)
+                title.font(.system(size: 12, weight: .semibold, design: .rounded)).lineLimit(1).minimumScaleFactor(0.7)
             }
             .foregroundStyle(picked ? Color.white : Dungeon.cream.opacity(0.9))
             .padding(.horizontal, 10)
@@ -411,14 +428,23 @@ struct ChoiceChip: View {
 
 /// A status line in the window's voice: a coloured dot or symbol and a few words.
 struct StatusText: View {
-    let text: String
+    let text: Text
     var symbol: String?
     var color: Color = Dungeon.muted
+
+    init(text: LocalizedStringKey, symbol: String? = nil, color: Color = Dungeon.muted) {
+        self.text = Text(text); self.symbol = symbol; self.color = color
+    }
+
+    /// For text that's already been localized or is data (an error from a server, say).
+    init(verbatim text: String, symbol: String? = nil, color: Color = Dungeon.muted) {
+        self.text = Text(verbatim: text); self.symbol = symbol; self.color = color
+    }
 
     var body: some View {
         HStack(spacing: 5) {
             if let symbol { Image(systemName: symbol).font(.system(size: 10.5, weight: .semibold)) }
-            Text(text).lineLimit(1).truncationMode(.tail)
+            text.lineLimit(1).truncationMode(.tail)
         }
         .font(.system(size: 11.5))
         .foregroundStyle(color)
@@ -427,73 +453,123 @@ struct StatusText: View {
 
 // MARK: - Sheets
 
-/// Every sheet in the window: the dungeon wall behind, a header (icon, title, ⓘ, an optional
-/// control), the form, and a footer of buttons.
+/// Sizes every sheet agrees on.
+enum SheetMetrics {
+    static let padding: CGFloat = 20
+    static let gap: CGFloat = 14
+    static let width: CGFloat = 520
+    static let footerPadding: CGFloat = 12
+    static let iconTile: CGFloat = 32
+}
+
+/// The shell of every sheet: the dungeon wall behind, a header on top, a body that scrolls, and a
+/// footer of buttons that stays put.
 ///
 /// A sheet can't be taller than the window it hangs from, and macOS cuts off whatever doesn't fit
-/// (the buttons, first). So the form sits in a scroll view sized to fit it, and no taller than the
+/// (the buttons, first). So the body sits in a scroll view sized to fit it, and no taller than the
 /// window leaves room for: as it grows (a prompt box appearing, conditions added) the sheet grows
 /// with it, then scrolls, and the header and the buttons always stay in view.
-struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
-    let icon: String
-    let title: String
-    var info: String?
-    var width: CGFloat = 520
-    @ViewBuilder var accessory: Accessory
+struct SheetFrame<Header: View, Content: View, Footer: View>: View {
+    var width: CGFloat = SheetMetrics.width
+    @ViewBuilder var header: Header
     @ViewBuilder var content: Content
     @ViewBuilder var footer: Footer
-    @Environment(\.impTint) private var tint
     @Environment(\.sheetRoom) private var fixedRoom
     @State private var windowRoom = SheetRoom.available()
     @State private var contentHeight: CGFloat = 0
     @State private var headerHeight: CGFloat = 0
     @State private var footerHeight: CGFloat = 0
 
-    private static var padding: CGFloat { 18 }
-    private static var spacing: CGFloat { 14 }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: Self.spacing) {
-            HStack(spacing: 10) {
-                Image(systemName: icon)
-                    .font(.system(size: 14, weight: .semibold)).foregroundStyle(.white)
-                    .frame(width: 30, height: 30)
-                    .background(RoundedRectangle(cornerRadius: 9, style: .continuous).fill(tint.gradient))
-                    .contentTransition(.symbolEffect(.replace))
-                Text(title).font(.system(size: 17, weight: .heavy, design: .rounded)).foregroundStyle(Dungeon.cream).lineLimit(1)
-                if let info { InfoTip(info) }
-                Spacer(minLength: 8)
-                accessory
-            }
-            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { headerHeight = $0 }
+        VStack(alignment: .leading, spacing: 0) {
+            header
+                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { headerHeight = $0 }
             ScrollView(.vertical) {
-                VStack(alignment: .leading, spacing: Self.spacing) { content }
+                VStack(alignment: .leading, spacing: SheetMetrics.gap) { content }
+                    .padding(.horizontal, SheetMetrics.padding)
+                    .padding(.vertical, SheetMetrics.gap)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
             }
             .scrollBounceBehavior(.basedOnSize)
             .scrollIndicators(.automatic)
-            .frame(height: formHeight)
+            .frame(height: bodyHeight)
             HStack(spacing: 8) { footer }
-                .padding(.top, 2)
+                .padding(.horizontal, SheetMetrics.padding)
+                .padding(.vertical, SheetMetrics.footerPadding)
+                .frame(maxWidth: .infinity)
+                .background(Color.black.opacity(0.18))
+                .overlay(alignment: .top) { CardDivider() }
                 .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { footerHeight = $0 }
         }
-        .padding(Self.padding)
         .frame(width: width)
         .background(Dungeon.wall)
         .environment(\.colorScheme, .dark)
+        .focusSection()
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didResizeNotification)) { note in
             guard let window = note.object as? NSWindow, window === HomeWindow.shared.window else { return }
             windowRoom = SheetRoom.available()
         }
     }
 
-    /// The form's own height, or what's left of the window once the header and buttons are in.
-    private var formHeight: CGFloat? {
+    /// The body's own height, or what's left of the window once the header and buttons are in.
+    private var bodyHeight: CGFloat? {
         guard contentHeight > 0 else { return nil }
-        let chrome = headerHeight + footerHeight + 2 + Self.padding * 2 + Self.spacing * 2
-        let room = max((fixedRoom ?? windowRoom) - chrome, SheetRoom.minimumForm)
+        let room = max((fixedRoom ?? windowRoom) - headerHeight - footerHeight, SheetRoom.minimumForm)
         return min(contentHeight.rounded(.up), room)
+    }
+}
+
+/// The usual sheet: a header (icon, title, ⓘ, an optional control), the form, and a footer of buttons.
+struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
+    let icon: String
+    let title: LocalizedStringKey
+    var info: LocalizedStringKey?
+    var width: CGFloat = SheetMetrics.width
+    @ViewBuilder var accessory: Accessory
+    @ViewBuilder var content: Content
+    @ViewBuilder var footer: Footer
+    @Environment(\.impTint) private var tint
+
+    var body: some View {
+        SheetFrame(width: width) {
+            HStack(spacing: 10) {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .semibold)).foregroundStyle(.white)
+                    .frame(width: SheetMetrics.iconTile, height: SheetMetrics.iconTile)
+                    .background(RoundedRectangle(cornerRadius: 9, style: .continuous).fill(tint.gradient))
+                    .contentTransition(.symbolEffect(.replace))
+                    .accessibilityHidden(true)
+                Text(title).font(.system(size: 17, weight: .heavy, design: .rounded)).foregroundStyle(Dungeon.cream).lineLimit(1)
+                    .accessibilityAddTraits(.isHeader)
+                if let info { InfoTip(info) }
+                Spacer(minLength: 8)
+                accessory
+            }
+            .padding(.horizontal, SheetMetrics.padding)
+            .padding(.top, SheetMetrics.padding)
+            .padding(.bottom, 2)
+        } content: {
+            content
+        } footer: {
+            footer
+        }
+    }
+}
+
+extension SheetScaffold where Accessory == EmptyView {
+    init(icon: String, title: LocalizedStringKey, info: LocalizedStringKey? = nil, width: CGFloat = SheetMetrics.width,
+         @ViewBuilder content: () -> Content, @ViewBuilder footer: () -> Footer) {
+        self.init(icon: icon, title: title, info: info, width: width, accessory: { EmptyView() }, content: content, footer: footer)
+    }
+}
+
+/// Cancel, the way every sheet has it: Esc works too.
+struct SheetCancelButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button("Cancel", role: .cancel, action: action).buttonStyle(.quiet).keyboardShortcut(.cancelAction)
     }
 }
 
@@ -515,10 +591,80 @@ extension EnvironmentValues {
     @Entry var sheetRoom: CGFloat? = nil
 }
 
-extension SheetScaffold where Accessory == EmptyView {
-    init(icon: String, title: String, info: String? = nil, width: CGFloat = 520,
-         @ViewBuilder content: () -> Content, @ViewBuilder footer: () -> Footer) {
-        self.init(icon: icon, title: title, info: info, width: width, accessory: { EmptyView() }, content: content, footer: footer)
+/// A round tick: filled in the colour when on.
+struct SelectMark: View {
+    let isOn: Bool
+    var tint: Color
+
+    var body: some View {
+        Image(systemName: "checkmark")
+            .font(.system(size: 10, weight: .heavy))
+            .foregroundStyle(isOn ? Color.white : Color.clear)
+            .frame(width: 20, height: 20)
+            .background(Circle().fill(isOn ? AnyShapeStyle(tint.gradient) : AnyShapeStyle(Color.black.opacity(0.24))))
+            .overlay(Circle().strokeBorder(isOn ? Color.white.opacity(0.25) : Dungeon.muted.opacity(0.7), lineWidth: 1.2))
+    }
+}
+
+/// A card you tick as a whole: the mark on the left, the content dimmed while it's left out.
+struct SelectableCard<Content: View>: View {
+    @Binding var isOn: Bool
+    var tint: Color?
+    @ViewBuilder var content: Content
+    @Environment(\.impTint) private var inherited
+    @State private var hover = false
+
+    private var color: Color { tint ?? inherited }
+
+    var body: some View {
+        Button { withAnimation(.easeOut(duration: 0.12)) { isOn.toggle() } } label: {
+            HStack(alignment: .top, spacing: 12) {
+                SelectMark(isOn: isOn, tint: color)
+                content
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .opacity(isOn ? 1 : 0.55)
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous)
+                .fill(isOn ? AnyShapeStyle(color.opacity(0.12)) : AnyShapeStyle(Dungeon.card)))
+            .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous)
+                .strokeBorder(isOn ? color.opacity(0.65) : (hover ? Dungeon.muted.opacity(0.5) : Dungeon.cardEdge), lineWidth: isOn ? 1.5 : 1))
+            .contentShape(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .onHover { hover = $0 }
+        .accessibilityAddTraits(isOn ? .isSelected : [])
+    }
+}
+
+/// A small pill: a symbol and a few words, in a colour.
+struct Badge: View {
+    let text: Text
+    let symbol: String
+    var color: Color = Dungeon.muted
+
+    init(_ text: LocalizedStringKey, symbol: String, color: Color = Dungeon.muted) {
+        self.text = Text(text)
+        self.symbol = symbol
+        self.color = color
+    }
+
+    init(verbatim text: String, symbol: String, color: Color = Dungeon.muted) {
+        self.text = Text(verbatim: text)
+        self.symbol = symbol
+        self.color = color
+    }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: symbol).font(.system(size: 10, weight: .semibold))
+            text.lineLimit(1).truncationMode(.tail)
+        }
+        .font(.system(size: 11.5, weight: .medium))
+        .foregroundStyle(color)
+        .padding(.horizontal, 8).padding(.vertical, 3)
+        .background(Capsule().fill(color.opacity(0.14)))
     }
 }
 
@@ -527,11 +673,23 @@ extension SheetScaffold where Accessory == EmptyView {
 /// A problem, in as little room as possible: a coloured icon whose explanation pops up by itself
 /// the moment it appears (so it's seen right away), and again on a click.
 struct IssueTip: View {
-    let text: String
+    let text: Text
     var symbol = "exclamationmark.triangle.fill"
     var color: Color = .orange
     /// Pops the explanation open on its own when it appears (or its text changes).
     var opensItself = true
+    private let textID: String
+
+    init(text: LocalizedStringKey, symbol: String = "exclamationmark.triangle.fill", color: Color = .orange, opensItself: Bool = true) {
+        self.text = Text(text); self.textID = String(describing: text)
+        self.symbol = symbol; self.color = color; self.opensItself = opensItself
+    }
+
+    /// For text that's already been localized or is data.
+    init(verbatim text: String, symbol: String = "exclamationmark.triangle.fill", color: Color = .orange, opensItself: Bool = true) {
+        self.text = Text(verbatim: text); self.textID = text
+        self.symbol = symbol; self.color = color; self.opensItself = opensItself
+    }
     @State private var showing = false
 
     var body: some View {
@@ -544,13 +702,13 @@ struct IssueTip: View {
         }
         .buttonStyle(.plain)
         .popover(isPresented: $showing, arrowEdge: .bottom) {
-            Text(text)
+            text
                 .font(.system(size: 12))
                 .frame(width: 240, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(12)
         }
-        .task(id: text) {
+        .task(id: textID) {
             guard opensItself else { return }
             try? await Task.sleep(for: .milliseconds(300))     // let the sheet or row settle first
             showing = true
@@ -563,10 +721,19 @@ struct IssueTip: View {
 /// A pop-up menu that keeps to its size: an icon and a title that's cut short with "…" rather
 /// than pushing the form (or the whole sheet) wider.
 struct CompactMenu<Content: View>: View {
-    let title: String
+    let title: Text
     var symbol: String?
     var maxWidth: CGFloat = 200
     @ViewBuilder var content: Content
+
+    init(title: LocalizedStringKey, symbol: String? = nil, maxWidth: CGFloat = 200, @ViewBuilder content: () -> Content) {
+        self.title = Text(title); self.symbol = symbol; self.maxWidth = maxWidth; self.content = content()
+    }
+
+    /// For names and text that's already been localized.
+    init(verbatim title: String, symbol: String? = nil, maxWidth: CGFloat = 200, @ViewBuilder content: () -> Content) {
+        self.title = Text(verbatim: title); self.symbol = symbol; self.maxWidth = maxWidth; self.content = content()
+    }
     @Environment(\.impTint) private var tint
     @State private var hover = false
 
@@ -576,7 +743,7 @@ struct CompactMenu<Content: View>: View {
                 if let symbol {
                     Image(systemName: symbol).font(.system(size: 11, weight: .semibold)).foregroundStyle(tint)
                 }
-                Text(title)
+                title
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .lineLimit(1).truncationMode(.tail)
                     .frame(maxWidth: maxWidth - 50, alignment: .leading)

@@ -63,7 +63,7 @@ public enum KeyNames {
         kVK_F18: "F18", kVK_F19: "F19", kVK_F20: "F20",
     ]
     static let special: [Int: String] = [
-        kVK_Return: "↩", kVK_Tab: "⇥", kVK_Space: "Space", kVK_Delete: "⌫", kVK_Escape: "⎋",
+        kVK_Return: "↩", kVK_Tab: "⇥", kVK_Space: String(localized: "Space"), kVK_Delete: "⌫", kVK_Escape: "⎋",
         kVK_ForwardDelete: "⌦", kVK_LeftArrow: "←", kVK_RightArrow: "→", kVK_UpArrow: "↑",
         kVK_DownArrow: "↓", kVK_Home: "↖", kVK_End: "↘", kVK_PageUp: "⇞", kVK_PageDown: "⇟",
         kVK_ANSI_KeypadEnter: "⌤",

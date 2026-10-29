@@ -28,16 +28,16 @@ final class ImpMenu: NSObject, NSMenuDelegate {
 
         // Right now: only when this Imp has something to stop or grab.
         let result = imp.bubble?.phase == .result ? imp.bubble : nil
-        if imp.isBusy { add(menu, "Stop", symbol: "stop.circle", action: #selector(stop)) }
-        if result != nil { add(menu, "Copy Last Reply", symbol: "doc.on.doc", action: #selector(copyLast)) }
-        add(menu, "Chat", symbol: "bubble.left.and.bubble.right", action: #selector(openChat))
-            .toolTip = "Everything you and \(name) said, with the tools it used."
+        if imp.isBusy { add(menu, String(localized: "Stop"), symbol: "stop.circle", action: #selector(stop)) }
+        if result != nil { add(menu, String(localized: "Copy Last Reply"), symbol: "doc.on.doc", action: #selector(copyLast)) }
+        add(menu, String(localized: "Chat"), symbol: "bubble.left.and.bubble.right", action: #selector(openChat))
+            .toolTip = String(localized: "Everything you and \(name) said, with the tools it used.")
         menu.addItem(.separator())
 
         // Its triggers that ask it something, to run right now (clicks are right here already).
         let own = app.prefs.shortcuts(of: imp.id).filter { $0.isEnabled && $0.command == .ask && $0.trigger.kind != .clicks }
         if !own.isEmpty {
-            menu.addItem(.sectionHeader(title: "Triggers"))
+            menu.addItem(.sectionHeader(title: String(localized: "Triggers")))
             for action in own {
                 let mi = add(menu, action.name, symbol: action.trigger.kind == .keys ? action.symbol : action.trigger.kind.symbol,
                              action: #selector(run(_:)))
@@ -50,15 +50,15 @@ final class ImpMenu: NSObject, NSMenuDelegate {
             menu.addItem(.separator())
         }
 
-        menu.addItem(submenu("Colour", symbol: "paintpalette", items: ImpProfile.colors.map { c in
+        menu.addItem(submenu(String(localized: "Colour"), symbol: "paintpalette", items: ImpProfile.colors.map { c in
             (c.name, abs(imp.profile.hue - c.hue) < 0.005, NSNumber(value: c.hue), StatusIcon.swatch(hue: c.hue))
         }, action: #selector(setColour(_:))))
-        menu.addItem(submenu("Size", symbol: "arrow.up.left.and.arrow.down.right", items: Panels.sizes.map { title, scale in
+        menu.addItem(submenu(String(localized: "Size"), symbol: "arrow.up.left.and.arrow.down.right", items: Panels.sizes.map { title, scale in
             (title, abs(imp.profile.scale - scale) < 0.01, NSNumber(value: scale), nil)
         }, action: #selector(setSize(_:))))
         menu.addItem(.separator())
-        add(menu, "Send \(name) Home", symbol: "house", action: #selector(sendHome))
-            .toolTip = "\(name) goes back into the Imps' window, and its shortcuts rest."
+        add(menu, String(localized: "Send \(name) Home"), symbol: "house", action: #selector(sendHome))
+            .toolTip = String(localized: "\(name) goes back into the Imps' window, and its triggers rest.")
         return menu
     }
 
@@ -93,7 +93,7 @@ final class ImpMenu: NSObject, NSMenuDelegate {
             self?.pending = action
             menu?.cancelTracking()
         }
-        let status = imp.isReady ? "Awake" : "Needs a brain"
+        let status = imp.isReady ? String(localized: "Awake") : String(localized: "Needs a brain")
         let header = MenuHeader(
             ready: imp.isReady, name: imp.profile.name, hue: imp.profile.hue, status: status,
             talk: { [weak self] in run { self?.imp.talk() } },

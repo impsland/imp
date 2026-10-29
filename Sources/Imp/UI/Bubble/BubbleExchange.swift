@@ -27,9 +27,9 @@ struct ExchangeChip: View {
     static func words(_ role: Bubble.Exchange.Role, _ name: String) -> Text {
         let name = Text(name).fontWeight(.semibold)
         switch role {
-        case .asked: return name + Text(" asks")
-        case .reply: return Text("Reply to ") + name
-        case .asking: return Text("Asking ") + name + Text("…")
+        case .asked: return Text("\(name) asks")
+        case .reply: return Text("Reply to \(name)")
+        case .asking: return Text("Asking \(name)…")
         }
     }
 }
