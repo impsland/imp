@@ -32,8 +32,7 @@ struct GeneralSettingsView: View {
                 case .services: ServicesPane(model: model)
                 case .talking: TalkingPane(model: model)
                 case .animations:
-                    let imp = router.selection.flatMap(model.profile)
-                    AnimationsPane(model: model, hue: imp?.hue ?? 0, favorite: imp.map { $0.isFavorite($0.hue) } ?? false)
+                    AnimationsPane(model: model, imp: router.selection)
                 case .permissions: PermissionsPage(model: model)
                 case .app: AppPane(model: model)
                 }

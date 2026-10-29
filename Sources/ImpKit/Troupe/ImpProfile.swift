@@ -39,6 +39,9 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     private var ownToolsOff: [ImpToolGroup]?
     /// Its own tools that are off by default (`ImpToolGroup.isOnByDefault`) and it may use.
     private var ownToolsOn: [ImpToolGroup]?
+    /// Storage for `animations` and `traits` (optional, so older profiles load).
+    var ownAnimations: [MadeAnimation]?
+    var character: ImpTraits?
 
     /// Whether it may use one group of its own tools (animations, its senses, setting itself up…).
     public func uses(_ group: ImpToolGroup) -> Bool {

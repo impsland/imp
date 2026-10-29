@@ -5,8 +5,8 @@ import Testing
 @Suite struct AnimationRuleTests {
     @Test func everyInteractionHasItsOwnFeeling() {
         let p = ImpPreferences()
-        let handling = Reaction.allCases.filter { $0.family == .handling }
-        #expect(handling.count == 10)
+        let handling = Reaction.allCases.filter { $0.family == .handling || $0.family == .play }
+        #expect(handling.count == 14)
         for r in handling { #expect(p.rule(for: r).triggers.count == 1, "\(r)") }
         // Pressing and carrying are always noticed; cursor games follow the Mouse games switch.
         #expect(!AnimationTrigger.hold.watchesCursor && !AnimationTrigger.pickUp.watchesCursor)
@@ -81,7 +81,7 @@ import Testing
         let p = ImpPreferences()
         let special = Reaction.allCases.filter(\.unlocksWithFavoriteColor)
         #expect(special.count == 5 && special.allSatisfy { $0.family == .favorite })
-        #expect(Reaction.allCases.filter { $0.family == .favorite } == special)
+        #expect(Reaction.allCases.filter { $0.family == .favorite } == [.delight] + special, "finding the colour sits with what it unlocks")
         #expect(!Reaction.hum.unlocksWithFavoriteColor && !Reaction.delight.unlocksWithFavoriteColor)
         for r in special {
             #expect(p.rule(for: r).triggers == [.idle], "\(r)")
@@ -245,7 +245,7 @@ import Testing
     @Test func gesturesWaitForATriggerYouGiveThem() {
         var p = ImpPreferences()
         let gestures = Reaction.allCases.filter { $0.family == .gestures }
-        #expect(gestures.count == 22)
+        #expect(gestures.count == 25, "answers, greetings and goodbyes")
         #expect(gestures.allSatisfy { p.rule(for: $0).triggers.isEmpty && p.isEnabled($0) })
         p.setTrigger(.idle, true, for: .aha)
         #expect(p.animations(for: .idle).contains(.aha))

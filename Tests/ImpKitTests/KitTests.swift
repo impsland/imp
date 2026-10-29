@@ -80,7 +80,7 @@ import Testing
     }
 
     @Test func refusesNewerVersionsAndNonKits() {
-        #expect(throws: KitError.newerVersion(3)) { try Kit.parse(#"{"imp": 3, "triggers": []}"#) }
+        #expect(throws: KitError.newerVersion(4)) { try Kit.parse(#"{"imp": 4, "triggers": []}"#) }
         #expect(throws: KitError.notAKit) { try Kit.parse(#"{"imp": "one"}"#) }
         #expect(throws: KitError.notAKit) { try Kit.parse(#"{"colour": "red"}"#) }
         #expect(throws: KitError.empty) { try Kit.parse("  \n ") }
@@ -446,8 +446,8 @@ extension KitTests {
     }
 
     @Test func aNewerVersionIsRefusedWithAnUpdateMessage() {
-        let error = #expect(throws: KitError.newerVersion(3)) { try Kit.parse(#"{"imp": 3, "imps": [{"name": "A"}]}"#) }
-        #expect(error?.errorDescription == "This kit needs a newer Imp (format 3). Update Imp: brew upgrade --cask imp.")
+        let error = #expect(throws: KitError.newerVersion(4)) { try Kit.parse(#"{"imp": 4, "imps": [{"name": "A"}]}"#) }
+        #expect(error?.errorDescription == "This kit needs a newer Imp (format 4). Update Imp: brew upgrade --cask imp.")
         #expect(throws: KitError.newerVersion(99)) { try Kit.parse(#"{"imp": 99}"#) }
     }
 

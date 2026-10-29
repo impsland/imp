@@ -273,7 +273,7 @@ struct ImpStage: View {
                 Color.clear
             } else if offset == 0 {
                 StageImp(hue: imp.hue, mood: hatched == imp.id ? .happy : .idle,
-                         performance: model.performances[imp.id], clock: BodyClock(imp.id),
+                         performance: model.performances[imp.id], traits: imp.traits, clock: BodyClock(imp.id),
                          center: { router.slot(side: side).map { CGPoint(x: $0.midX, y: $0.midY) } })
                     .transition(.scale(scale: 0.2, anchor: .bottom).combined(with: .opacity))
                     .contentShape(Rectangle())

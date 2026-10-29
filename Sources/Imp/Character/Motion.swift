@@ -11,6 +11,9 @@ struct Motion {
     var hornL = 0.0         // extra degrees
     var hornR = 0.0
     var ripple = 0.0        // extra outline wobble (voice)
+    /// How high a hop has lifted it (design units, up +). Apart from `bob`, so the drawing can
+    /// lower a hop that would carry a tall pose out of the top of its frame.
+    var lift = 0.0
 
     /// The resting breath (see `breath(at:)`). Off when Core Animation breathes for Imp.
     static func at(_ t: TimeInterval, mood: Mood, level: Double, breathing: Bool = true) -> Motion {
@@ -107,6 +110,7 @@ struct Motion {
             m.hornL += p.hornL * w
             m.hornR += p.hornR * w
             m.ripple += p.ripple * w
+            m.lift += p.lift * w
         }
         return m
     }
@@ -139,7 +143,7 @@ struct Motion {
         case ..<0.56:                                   // airborne: the crouch springs into a stretch, then rounds out
             let k = (since - 0.12) / 0.44
             let release = 1 - Self.smooth(k / 0.2)
-            bob -= 15 * sin(k * .pi)
+            lift += Self.hopHeight * sin(k * .pi)
             squash += 0.09 * release - 0.07 * sin(min(1, k / 0.5) * .pi) * (1 - release)
         default:                                        // land
             squash += 0.1 * sin((since - 0.56) / 0.19 * .pi)
@@ -147,6 +151,7 @@ struct Motion {
     }
 
     static let hopLength = 0.75
+    static let hopHeight = 15.0
 
     /// Whether a hop may start now, `since` seconds after the last one began. One still in the
     /// air isn't restarted: that would teleport the body from mid-jump back to the ground.

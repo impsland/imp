@@ -186,12 +186,13 @@ final class HomeRouter {
 
 /// The parts of an Imp's settings.
 enum ImpTab: String, CaseIterable, Identifiable {
-    case looks, brain, tools, triggers
+    case looks, moves, brain, tools, triggers
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .looks: String(localized: "Looks")
+        case .moves: String(localized: "Moves")
         case .brain: String(localized: "Brain")
         case .tools: String(localized: "Tools")
         case .triggers: String(localized: "Triggers")
@@ -201,6 +202,7 @@ enum ImpTab: String, CaseIterable, Identifiable {
     var icon: String {
         switch self {
         case .looks: "paintpalette.fill"
+        case .moves: "figure.dance"
         case .brain: "brain.head.profile"
         case .tools: "wrench.and.screwdriver.fill"
         case .triggers: "bolt.fill"

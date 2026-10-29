@@ -63,6 +63,8 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     public var mouseGames = true
     /// Animations the user switched off or gave other triggers (the rest use their defaults).
     public var animations: [Reaction: AnimationRule] = [:]
+    /// Storage for `animationLibrary` (optional, so older settings load).
+    var customAnimations: [MadeAnimation]?
     public var doubleClickOpensSettings = true
     /// The click triggers were set up (see `upgrade()`). Optional, so older settings load.
     private var clicksSetUp: Bool?

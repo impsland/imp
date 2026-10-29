@@ -151,11 +151,13 @@ final class AppModel {
     // MARK: Animations
 
     /// Plays an animation on an Imp wherever it is: out on the desktop, or resting in the window.
-    func perform(_ reaction: Reaction, on id: UUID) {
+    func perform(_ reaction: Reaction, on id: UUID) { perform(.preset(reaction), on: id) }
+
+    func perform(_ ref: AnimationRef, on id: UUID) {
         if let imp = imp(id) {
-            reactions.play(reaction, by: imp)
+            reactions.play(ref, by: imp)
         } else {
-            let performance = Performance(reaction)
+            let performance = Performance(ref, prefs: prefs, imp: id)
             performances[id] = performance
             Task { [weak self] in
                 try? await Task.sleep(for: .seconds(performance.duration + 0.2))
@@ -175,7 +177,7 @@ final class AppModel {
             guard Date().timeIntervalSince(favoriteAt[imp.id] ?? .distantPast) > 2.5 else { continue }
             favoriteAt[imp.id] = Date()
             if !imp.knowsFavorite, let i = prefs.imps.firstIndex(where: { $0.id == imp.id }) { prefs.imps[i].knowsFavorite = true }
-            if let reaction = prefs.animation(for: .favoriteColor) { perform(reaction, on: imp.id) }
+            if let ref = prefs.ref(for: .favoriteColor, imp: imp.id) { perform(ref, on: imp.id) }
         }
     }
 

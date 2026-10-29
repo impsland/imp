@@ -102,6 +102,7 @@ final class KitReview {
     /// The tools no Imp of the kit uses (those an Imp uses come with it).
     var servers: Set<UUID>
     var imps: Set<UUID>
+    var animations: Set<UUID>
     /// Bring the Imps' chats along (when there are any).
     var includeChats = true
     /// Who gets the triggers and tools that aren't an Imp's own: one Imp, or nil for every Imp.
@@ -114,15 +115,16 @@ final class KitReview {
         self.triggers = Set(kit.triggers.map(\.id))
         self.servers = Set(kit.looseServers.map(\.id))
         self.imps = Set(kit.imps.map(\.id))
+        self.animations = Set(kit.animations.map(\.id))
         self.target = target
     }
 
     /// Imps, triggers and tools that will be added.
-    var count: Int { triggers.count + effectiveServers.count + imps.count }
+    var count: Int { triggers.count + effectiveServers.count + imps.count + animations.count }
     /// Every tool that will be added: the ticked ones and what the ticked Imps use.
     var effectiveServers: Set<UUID> { servers.union(kit.imps.filter { imps.contains($0.id) }.flatMap(\.servers)) }
     /// Whether anything is for `target` to receive (so there's a choice to make).
-    var needsTarget: Bool { !triggers.isEmpty || !servers.isEmpty }
+    var needsTarget: Bool { !triggers.isEmpty || !servers.isEmpty || !animations.isEmpty }
     var hasChats: Bool { kit.imps.contains { !$0.chats.isEmpty } }
     func warnings(for item: UUID) -> [KitWarning] { warnings.filter { $0.item == item } }
     var cautions: [KitWarning] { warnings.filter { $0.isCaution && effectiveServers.contains($0.item) } }
@@ -132,6 +134,9 @@ final class KitReview {
     }
     func binding(server id: UUID) -> Binding<Bool> {
         Binding(get: { self.servers.contains(id) }, set: { if $0 { self.servers.insert(id) } else { self.servers.remove(id) } })
+    }
+    func binding(animation id: UUID) -> Binding<Bool> {
+        Binding(get: { self.animations.contains(id) }, set: { if $0 { self.animations.insert(id) } else { self.animations.remove(id) } })
     }
     func binding(imp id: UUID) -> Binding<Bool> {
         Binding(get: { self.imps.contains(id) }, set: { if $0 { self.imps.insert(id) } else { self.imps.remove(id) } })
@@ -171,7 +176,7 @@ struct KitEntrySheet: View {
 
     var body: some View {
         SheetScaffold(icon: "shippingbox.fill", title: "Add a kit or an Imp",
-                      info: "A kit is Imps, triggers and tools somebody shared as JSON. Paste it, give a web address or an imp:// link, or drop a file. You'll see what's in it before anything is added.",
+                      info: "A kit is Imps, triggers, tools and animations somebody shared as JSON. Paste it, give a web address or an imp:// link, or drop a file. You'll see what's in it before anything is added.",
                       width: 520) {
             Button { paste() } label: { Label("Paste", systemImage: "doc.on.clipboard") }
                 .buttonStyle(.imp(.secondary, small: true))
@@ -286,6 +291,7 @@ private struct KitHero: View {
                 if !kit.imps.isEmpty { Badge("^[\(kit.imps.count) Imp](inflect: true)", symbol: "person.fill", color: Dungeon.cream) }
                 if !kit.triggers.isEmpty { Badge("^[\(kit.triggers.count) trigger](inflect: true)", symbol: "bolt.fill", color: Dungeon.cream) }
                 if !kit.servers.isEmpty { Badge("^[\(kit.servers.count) tool](inflect: true)", symbol: "puzzlepiece.extension.fill", color: Dungeon.cream) }
+                if !kit.animations.isEmpty { Badge("^[\(kit.animations.count) animation](inflect: true)", symbol: "wand.and.stars", color: Dungeon.cream) }
             }
             StatusText(text: "From \(origin)", symbol: "tray.and.arrow.down")
         }
@@ -369,6 +375,7 @@ struct KitReviewSheet: View {
             if !kit.imps.isEmpty { impsSection }
             if !kit.triggers.isEmpty { triggersSection }
             if !kit.looseServers.isEmpty { serversSection }
+            if !kit.animations.isEmpty { animationsSection }
             if !kit.problems.isEmpty { problemsCard }
         } footer: {
             if review.needsTarget {
@@ -384,7 +391,7 @@ struct KitReviewSheet: View {
                         if review.target == nil { Label("Every Imp", systemImage: "checkmark") } else { Text("Every Imp") }
                     }
                 }
-                .help("Who gets the triggers and tools that aren't an Imp's own.")
+                .help("Who gets the triggers, tools and animations that aren't an Imp's own.")
             }
             Spacer()
             SheetCancelButton { router.kitFlow = nil }
@@ -397,7 +404,7 @@ struct KitReviewSheet: View {
     }
 
     private var addTitle: LocalizedStringKey {
-        let onlyImps = review.triggers.isEmpty && review.servers.isEmpty
+        let onlyImps = review.triggers.isEmpty && review.servers.isEmpty && review.animations.isEmpty
         return onlyImps && !review.imps.isEmpty ? "Add ^[\(review.imps.count) Imp](inflect: true)" : "Add ^[\(review.count) item](inflect: true)"
     }
 
@@ -479,6 +486,11 @@ struct KitReviewSheet: View {
                     }
                     if !imp.triggers.isEmpty { Badge("^[\(imp.triggers.count) trigger](inflect: true)", symbol: "bolt.fill") }
                     if !imp.chats.isEmpty { Badge("^[\(imp.chats.count) chat](inflect: true)", symbol: "bubble.left.and.bubble.right.fill") }
+                    if !imp.animations.isEmpty {
+                        Badge("^[\(imp.animations.count) animation](inflect: true)", symbol: "wand.and.stars")
+                            .help(imp.animations.map(\.title).joined(separator: ", "))
+                    }
+                    if !imp.traits.isPlain { Badge(verbatim: imp.traits.summary, symbol: "theatermasks.fill").help("Its character, in everything it does.") }
                 }
             }
         }
@@ -541,6 +553,35 @@ struct KitReviewSheet: View {
         }
     }
 
+    private var animationsSection: some View {
+        KitSection(icon: "wand.and.stars", title: "Animations",
+                   info: "Moves for your Imps. One that replaces a built-in animation plays instead of it. Nothing here runs anything on your Mac.") {
+            ForEach(kit.animations) { animation in
+                SelectableCard(isOn: review.binding(animation: animation.id)) { animationCard(animation) }
+            }
+        }
+    }
+
+    private func animationCard(_ a: MadeAnimation) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: a.symbol).font(.system(size: 15, weight: .semibold)).foregroundStyle(Dungeon.cream)
+                .frame(width: 32, height: 32)
+                .background(Circle().fill(Color.white.opacity(0.07)))
+            VStack(alignment: .leading, spacing: 5) {
+                Text(a.title).font(.system(size: 14, weight: .bold, design: .rounded)).lineLimit(1)
+                if !a.about.isEmpty {
+                    Text(a.about).font(.system(size: 12)).foregroundStyle(Dungeon.cream.opacity(0.85)).lineLimit(2)
+                }
+                FlowLayout(spacing: 6, lineSpacing: 6) {
+                    Badge(verbatim: String(format: "%.1f s", a.duration), symbol: "timer")
+                    Badge("^[\(a.beats.count) beat](inflect: true)", symbol: "metronome.fill")
+                    if let r = a.replaces { Badge("Instead of \(r.title)", symbol: "arrow.triangle.swap") }
+                    ForEach(AnimationTrigger.allCases.filter(a.triggers.contains)) { t in Badge(verbatim: t.title, symbol: t.symbol) }
+                }
+            }
+        }
+    }
+
     private var problemsCard: some View {
         Card("Skipped", icon: "exclamationmark.circle") {
             VStack(alignment: .leading, spacing: 4) {
@@ -555,7 +596,8 @@ struct KitReviewSheet: View {
 
     private func add() {
         var prefs = model.prefs
-        let added = prefs.add(kit, imps: review.imps, triggers: review.triggers, servers: review.servers, for: review.target,
+        let added = prefs.add(kit, imps: review.imps, triggers: review.triggers, servers: review.servers,
+                              animations: review.animations, for: review.target,
                               withChats: review.includeChats)
         // Chats go to the Imp's folder before it appears, so it opens them as its own.
         if model.persists {

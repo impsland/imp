@@ -99,6 +99,18 @@ one can handle private work while another uses a bigger cloud model.
 - **Body and senses.** Imp plays its animations as body language, hops, slides or bounces around the
   screen, speaks out loud, reads how the Mac is doing, and messages the other Imps. Each group of
   these tools can be switched off per Imp (the Imp's Tools tab).
+- **Make your own animations.** All Imps › Animations lists every animation in folding groups
+  (Feelings, Answers, Cursor games, Clicks and carrying, On its own, Favourite colour), with a search
+  box. **New Animation** opens an editor: a stage that acts it out, a timeline of beats, and for each
+  beat its mood (picked by face), where it looks (drag a dot), tilt, shape, a hop and a symbol. ✎ on
+  any built-in animation opens it, beat for beat, as your own version that plays instead of it. An
+  animation is for every Imp or for one Imp alone, which wins over a shared one. Imps make them too:
+  ask one and it uses `imp_make_animation` (and `imp_show_animation`, `imp_remove_animation`).
+- **A character of its own.** Each Imp's **Moves** tab sets how it always looks and moves: heavy
+  lids, worried or cross brows, eye size, a squint, droopy or perky horns, rosy cheeks, a cocked head
+  and its pace, from presets (Tired, Grumpy, Worried, Sly, Lazy, Jittery…) or sliders. It shows in
+  every mood and animation and while it follows the cursor. The Imp can set it itself (`imp_set_traits`).
+  The tab also lists the animations only that Imp plays.
 - **Computer control (optional, off by default).** Switch it on per Imp in its Tools tab and the
   Imp can operate any app (a browser, Photoshop…): it looks at the window (screenshot plus the
   accessibility tree), clicks, types, uses shortcuts and menus, scrolls and draws, then checks the
@@ -128,10 +140,11 @@ one can handle private work while another uses a bigger cloud model.
 
 ### Share setups as kits
 
-A kit is Imps, triggers and borrowed tools in one piece of JSON, so a setup can be sent to a friend
+A kit is Imps, triggers, borrowed tools and animations in one piece of JSON, so a setup can be sent to a friend
 instead of described. In Settings, **Import kit…** (on the Triggers and Tools tabs) and **Import…**
 (All Imps › App) take pasted JSON, a web address, an `imp://add` link or a dropped `.json` file.
-**Share as kit** on a trigger or tool, and the share button on each tab, copy the JSON (or an
+**Share as kit** on a trigger or tool, the share button on each tab, and the share button on an
+animation (or in its editor) copy the JSON (or an
 `imp://add?kit=…` link when it's short enough) to the clipboard.
 
 ```json
@@ -156,11 +169,31 @@ instead of described. In Settings, **Import kit…** (on the Triggers and Tools 
   } }
 ```
 
+Animations (format `3`) are a list of beats, each a pose held for a while. An Imp may carry its own
+`animations` and its `traits` (its character):
+
+```json
+{ "imp": 3, "name": "Moody moves",
+  "animations": [
+    { "name": "Shrug", "about": "Up go the shoulders.", "starts": ["idle"],
+      "beats": [
+        {"duration":0.4,"look":[-0.3,-0.1],"mood":"curious","tilt":-8,"stretch":0.06},
+        {"duration":0.8,"look":[0,0.1],"mood":"content","glyph":"question","hop":true} ] },
+    { "replaces": "yawn", "beats": [ {"duration":1.2,"mood":"sleepy","stretch":0.15} ] } ],
+  "imps": [ { "name": "Pip", "traits": { "lids": 0.38, "slant": -0.15, "horns": -10, "tempo": 0.85 } } ] }
+```
+
+A beat has a `duration` (0.05–6 s) and optionally `look` ([x, y], −1…1, x right and y down), a
+`mood`, a `glyph` (notes, question, exclaim, idea, sweat, heart, sparkles), `tilt` (degrees), `hop`
+and `stretch` (−0.3…0.3). At most 24 beats and 20 seconds per animation, and 50 animations per kit.
+`replaces` names a built-in animation it plays instead of; `starts` are what start it (`idle`,
+`poke`, `circle`, `stroke`…). Loose animations go to the Imp (or every Imp) you choose in the review.
+
 A trigger has the same shape as the arguments of the Imp's own `imp_add_trigger` tool, and
 `mcpServers` is the usual shape Claude Desktop and Cursor use. A plain MCP snippet, or a single
 trigger (or a list of them), works as a kit too.
 
-**Imps.** An Imp in a kit is written field by field (not as Imp stores it), so the file format
+**Imps.** An Imp in a kit (with its character and its own animations) is written field by field (not as Imp stores it), so the file format
 doesn't change when Imp's insides do. Only `name` is required: a missing field takes the default a
 new Imp has, and unknown fields are ignored. An Imp's model is named by its model and its service's
 address, never by a local id or key; its `mcpServers` are names from the kit's own `mcpServers`;
@@ -189,11 +222,11 @@ address, never by a local id or key; its `mcpServers` are names from the kit's o
   its form. Command arguments are exported as they are, so don't put a key in one.
 - Web addresses must be `https` (`http` only for `localhost`), answer within 10 seconds and be
   under 512 KB, the same as pasted text and links. A kit file on your Mac may be up to 20 MB, for
-  chats. At most 20 Imps, 100 chats per Imp, 50 triggers and 20 tools.
+  chats. At most 20 Imps, 100 chats per Imp, 50 triggers, 20 tools and 50 animations.
 
 **Versions.** `"imp"` is the kit's format version, meaning the *oldest Imp that can read it*.
 Imp writes the lowest version that fits what's in the kit: only triggers and tools is `1` (older
-Imps still open it), a kit with Imps is `2`. Imp reads every version up to the one it knows, and
+Imps still open it), a kit with Imps is `2`, and a kit with animations or an Imp's character is `3` (Imp 1.9+). Imp reads every version up to the one it knows, and
 refuses a newer one with "This kit needs a newer Imp (format N). Update Imp: brew upgrade --cask imp."
 Adding a field is not a new version (readers ignore keys they don't know, and give a missing one its
 default); only a change an older Imp would misread bumps it, and then Imp upgrades what older

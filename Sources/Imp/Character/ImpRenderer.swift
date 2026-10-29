@@ -15,20 +15,23 @@ enum ImpRenderer {
 
         let rx = size.rx * f.headW
         let top = size.top * f.headH, base = size.base * f.headH
-        if shadow { drawShadow(&ctx, width: rx * (0.85 + f.sag * 0.08), lift: max(0, -m.bob)) }
-
-        // Squash, tilt and shake around the base, so Imp stays planted.
-        ctx.translateBy(x: size.cx + m.shakeX, y: size.bottom + m.bob)
-        ctx.rotate(by: .degrees(f.tilt + m.tilt))
-        ctx.scaleBy(x: 1 + m.squash, y: 1 - m.squash)
-        ctx.translateBy(x: -size.cx, y: -size.bottom)
-
         let palette = Palette(hue: f.hue)
         let head = Head(cx: size.cx, cy: size.bottom - base, rx: rx, top: top, bottom: base,
                         square: f.square, sag: f.sag, peak: f.peak, wobble: f.wobble + m.ripple, lean: f.lookX, t: m.t)
         let pose = Pose(f)
         let horns = [Horn(side: -1, head: head, pose: pose, face: f, wiggle: m.hornL),
                      Horn(side: 1, head: head, pose: pose, face: f, wiggle: m.hornR)]
+        // Squash, tilt and shake around the base, so Imp stays planted.
+        func body(lift: Double) -> CGAffineTransform {
+            CGAffineTransform(translationX: size.cx + m.shakeX, y: size.bottom + m.bob - lift)
+                .rotated(by: (f.tilt + m.tilt) * .pi / 180)
+                .scaledBy(x: 1 + m.squash, y: 1 - m.squash)
+                .translatedBy(x: -size.cx, y: -size.bottom)
+        }
+        let lift = m.lift > 0 ? headroom(for: m.lift, head: head, horns: horns, at: body(lift: 0)) : 0
+        if shadow { drawShadow(&ctx, width: rx * (0.85 + f.sag * 0.08), lift: max(0, lift - m.bob)) }
+        ctx.concatenate(body(lift: lift))
+
         for h in horns { h.draw(in: &ctx, head: head, front: false, palette: palette) }
         drawSkin(&ctx, head: head, f: f, pose: pose, palette: palette)
         drawEyes(&ctx, head: head, f: f, m: m, pose: pose)
@@ -37,6 +40,21 @@ enum ImpRenderer {
         extras.draw(&ctx, head: head, face: f, t: m.t)
         if let glyph { extras.draw(&ctx, glyph: glyph, head: head, age: glyphAge, t: m.t, fade: glyphFade) }
     }
+
+    /// How high a hop may lift the body: all of `lift`, unless that would carry the top of the head
+    /// or a horn out of the frame (tall, startled poses). Then the whole hop is lower, in
+    /// proportion, so it still rises and falls smoothly instead of flattening against the edge.
+    private static func headroom(for lift: Double, head: Head, horns: [Horn], at transform: CGAffineTransform) -> Double {
+        var top = head.path.applying(transform).boundingRect.minY
+        for h in horns {
+            for p in [h.front, h.back] where !p.isEmpty { top = min(top, p.applying(transform).boundingRect.minY) }
+        }
+        let room = max(0, top - headMargin)
+        return lift * min(1, room / Motion.hopHeight)
+    }
+
+    /// Space kept free above the highest point of a hop (design units).
+    static let headMargin = 1.5
 
     /// A soft contact shadow on the floor: a wide, faint pool and a tighter, darker core, both
     /// fading out completely (lifting off the ground fades it a little).

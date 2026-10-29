@@ -49,6 +49,44 @@ enum IconRenderer {
         renderSheet(frames, columns: 7, cell: 140, to: url)
     }
 
+    /// `Imp --render-animation <reaction> <file.png> [trait preset]`: a filmstrip of an animation as the
+    /// desktop Imp plays it (springs, hops, glyphs), every 80 ms, each frame outlined so clipping shows.
+    static func renderAnimation(_ reaction: Reaction, traits: ImpTraits, to url: URL) {
+        let puppet = Puppet()
+        let performance = Performance(key: reaction.rawValue, steps: Antics.paced(Antics.steps(for: reaction, work: .zero), tempo: traits.tempo),
+                                      at: Date(timeIntervalSinceReferenceDate: 0))
+        var frames: [(Face, Motion, Performance.Beat?)] = []
+        let fps = 60.0, every = 5
+        var i = 0
+        while Double(i) / fps < performance.duration + 0.5 {
+            let date = Date(timeIntervalSinceReferenceDate: Double(i) / fps)
+            let beat = performance.beat(at: date)
+            let cue = Puppet.Cue(mood: beat?.step.mood ?? .idle, step: beat?.step, hue: 0.57, hopSince: beat?.hopSince, traits: traits)
+            let (face, motion) = puppet.frame(cue, at: Double(i) / fps)
+            if i % every == 0 { frames.append((face, motion, beat)) }
+            i += 1
+        }
+        let columns = 10, cell: CGFloat = 112
+        let sheet = Grid(horizontalSpacing: 4, verticalSpacing: 4) {
+            ForEach(Array(stride(from: 0, to: frames.count, by: columns)), id: \.self) { start in
+                GridRow {
+                    ForEach(start..<min(start + columns, frames.count), id: \.self) { k in
+                        let (face, motion, beat) = frames[k]
+                        Canvas { ctx, size in
+                            ImpRenderer.draw(&ctx, size: size, face: face, motion: motion, glyph: beat?.glyph?.glyph,
+                                             glyphAge: beat?.glyph?.age ?? 0, glyphFade: (beat?.glyph?.remaining ?? 0) / 0.5)
+                        }
+                        .frame(width: cell, height: cell)
+                        .border(Color.black.opacity(0.25), width: 1)
+                    }
+                }
+            }
+        }
+        .padding(10)
+        .background(Color(red: 0.99, green: 0.98, blue: 0.96))
+        write(render(sheet, scale: 2), to: url)
+    }
+
     /// `Imp --render-turns <file.png> [cell]`: every head turn, yaw × pitch, to check the horns.
     static func renderTurns(to url: URL, cell: CGFloat) {
         let steps = [-1.0, -0.5, 0, 0.5, 1]
@@ -131,6 +169,9 @@ enum IconRenderer {
         case "add-tool": AnyView(ServerEditor(draft: MCPExamples.examples.first { !$0.isComplete }!.server,
                                                   isNew: true, hub: model.assistant.hub) { _ in }
             .background(Color(nsColor: .windowBackgroundColor)))
+        case "animation-editor":
+            AnyView(AnimationEditor(model: model, draft: .replacing(.cheer, owner: nil, model: model, previewImp: chosen))
+                .background(Color(nsColor: .windowBackgroundColor)))
         case "add-shortcut", "edit-shortcut":
             AnyView(ShortcutSheet(model: model, imp: chosen, shortcut: model.prefs.shortcuts.first ?? Shortcut(name: "", prompt: "", performer: chosen),
                                   isNew: screen == "add-shortcut", save: { _ in }, duplicate: { _ in }, delete: {}, close: {})

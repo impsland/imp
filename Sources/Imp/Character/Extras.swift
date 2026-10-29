@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// Little symbols Imp can pop above its head during antics.
-enum Glyph: Equatable {
+/// Raw values are the names animations are written with (`AnimationBeat.glyphs`).
+enum Glyph: String, Equatable {
     case notes, question, exclaim, idea
     /// A bead of sweat: nervous, scared, embarrassed.
     case sweat

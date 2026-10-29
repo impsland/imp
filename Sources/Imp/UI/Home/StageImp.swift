@@ -8,6 +8,8 @@ struct StageImp: View {
     let hue: Double
     var mood: Mood = .idle
     var performance: Performance?
+    /// Its character (see `ImpTraits`).
+    var traits = ImpTraits.plain
     /// Its own rhythm (the same as its desktop self's).
     var clock = BodyClock.shared
     /// Its centre on screen (the cursor is in screen coordinates). Nil = just look ahead.
@@ -21,7 +23,7 @@ struct StageImp: View {
             let beat = performance?.beat(at: date)
             let cue = Puppet.Cue(mood: beat?.step.mood ?? mood, step: beat?.step, hue: hue,
                                  gaze: center().map { Gaze.toward(NSEvent.mouseLocation, from: $0) },
-                                 hopSince: beat?.hopSince)
+                                 hopSince: beat?.hopSince, traits: traits)
             let (face, motion) = puppet.frame(cue, at: clock.time(date))
             Canvas { ctx, size in
                 ImpRenderer.draw(&ctx, size: size, face: face, motion: motion, glyph: beat?.glyph?.glyph,

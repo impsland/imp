@@ -2,7 +2,8 @@ import CoreGraphics
 import Foundation
 import ImpKit
 
-enum Mood: Equatable, CaseIterable {
+/// Raw values are the names animations are written with (`AnimationBeat.moods`).
+enum Mood: String, Equatable, CaseIterable {
     case idle, listening, thinking, happy, love, sad, error, sleepy, annoyed, surprised, dizzy, mean, working
     case content, giggly, scared, curious, shy, excited, bored
 
@@ -151,6 +152,9 @@ final class FaceAnimator {
         // A gap this long is a pause in drawing (the resting pace), not time passing: resume with
         // one ordinary frame. Taking the clamped 1/20 s instead moved the face about half way to
         // its target in the first frame, which showed as a jump at the start of an animation.
+        // The very first frame takes the target's colour: springing there from red ran a
+        // brand-new figure (a preview, a figure in the window) through every colour on the way.
+        if last == nil { face.hue = target.hue }
         let gap = max(0, t - (last ?? t))
         let dt = gap > BlendWeights<Mood>.resumeAfter ? 1.0 / 60 : min(1.0 / 20, gap)
         last = t

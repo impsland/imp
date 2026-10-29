@@ -66,17 +66,83 @@ public enum OwnTools {
     public static let removeTool = "imp_remove_tool"
     public static let openSettings = "imp_open_settings"
     public static let message = "imp_message"
+    public static let makeAnimation = "imp_make_animation"
+    public static let showAnimation = "imp_show_animation"
+    public static let removeAnimation = "imp_remove_animation"
+    public static let setTraits = "imp_set_traits"
 
     /// Which group a tool belongs to.
     public static func group(of tool: String) -> ImpToolGroup? {
         switch tool {
-        case play, move, speak: .body
+        case play, move, speak, makeAnimation, showAnimation, removeAnimation, setTraits: .body
         case status, page: .senses
         case listTriggers, addTrigger, removeTrigger, listTools, addTool, removeTool, openSettings: .setup
         case message: .troupe
         case ComputerTools.observe, ComputerTools.act, ComputerTools.verify: .computer
         default: nil
         }
+    }
+
+    /// Making and changing animations, and its own character.
+    static func animatorSpecs(_ animations: [String]) -> [ToolSpec] {
+        let beat: JSONValue = [
+            "type": "object",
+            "properties": [
+                "duration": ["type": "number", "description": "Seconds to hold this beat (0.05–6)."],
+                "look": ["type": "array", "items": ["type": "number"],
+                         "description": "Where your face turns: [x, y], each −1…1 (x right +, y down +; [0, 0.1] is at the user). Leave out to follow the cursor or the mood."],
+                "mood": ["type": "string", "enum": .array(AnimationBeat.moods.map { .string($0) })],
+                "glyph": ["type": "string", "enum": .array(AnimationBeat.glyphs.map { .string($0) }), "description": "A little symbol above your head."],
+                "tilt": ["type": "number", "description": "Head tilt in degrees (−30…30, + leans right)."],
+                "hop": ["type": "boolean", "description": "Hop as this beat starts (a hop takes 0.75 s)."],
+                "stretch": ["type": "number", "description": "Body shape: + tall and thin, − squished flat (−0.3…0.3)."],
+            ],
+            "required": ["duration"],
+        ]
+        let starts = JSONValue.array(AnimationTrigger.allCases.map { .string($0.rawValue) })
+        return [
+            ToolSpec(
+                name: makeAnimation,
+                description: "Make a new animation, or change one: a sequence of beats (poses held for a while), like the ones you play. "
+                    + "Give a new `name` for a new one, the name of one you made to change it, or `replaces` with a built-in animation's id "
+                    + "to make your own version of it (it then plays instead of the built-in one). Look at an existing one first with "
+                    + "\(showAnimation) to get the feel. It's yours alone unless `for` is `everyone`. It plays once when saved.",
+                inputSchema: ["type": "object",
+                              "properties": [
+                                "name": ["type": "string", "description": "Short, like the built-in ones (≤ 40 characters)."],
+                                "about": ["type": "string", "description": "What it looks like, in a few words."],
+                                "replaces": ["type": "string", "enum": .array(Reaction.allCases.map { .string($0.rawValue) })],
+                                "beats": ["type": "array", "items": beat, "description": "1–24 beats, at most 20 s in all."],
+                                "starts": ["type": "array", "items": ["type": "string", "enum": starts],
+                                           "description": "What starts it on its own (idle: in quiet moments; the rest are things the user does with the cursor or to you). Not for replacements."],
+                                "for": ["type": "string", "enum": ["me", "everyone"], "description": "Just you (default), or every Imp."],
+                              ],
+                              "required": ["beats"]]),
+            ToolSpec(
+                name: showAnimation,
+                description: "The beats of an animation (built-in or made), as \(makeAnimation) takes them. Without `name`, lists the animations that were made, and your character traits.",
+                inputSchema: ["type": "object", "properties": ["name": ["type": "string"]]]),
+            ToolSpec(
+                name: removeAnimation,
+                description: "Remove an animation that was made (a replaced built-in one plays again).",
+                inputSchema: ["type": "object", "properties": ["name": ["type": "string"]], "required": ["name"]]),
+            ToolSpec(
+                name: setTraits,
+                description: "Set your character: how your eyes, brows and horns always look, in every mood and animation and while you "
+                    + "follow the cursor, and how fast you act. Start from a `preset` and/or set values; anything left out stays as it is.",
+                inputSchema: ["type": "object",
+                              "properties": [
+                                "preset": ["type": "string", "enum": .array(ImpTraits.presets.map { .string($0.id) })],
+                                "lids": ["type": "number", "description": "Heavy, tired lids: 0…0.6."],
+                                "slant": ["type": "number", "description": "Brows: −1 worried … +1 cross."],
+                                "eyes": ["type": "number", "description": "Eye size: −0.4…0.4."],
+                                "squint": ["type": "number", "description": "One eye narrower: −1…1."],
+                                "horns": ["type": "number", "description": "Degrees: −30 droopy … +30 perky."],
+                                "blush": ["type": "number", "description": "Rosy cheeks: 0…1."],
+                                "tilt": ["type": "number", "description": "Head cocked, degrees: −12…12."],
+                                "tempo": ["type": "number", "description": "How fast you act: 0.6 slow … 1.6 quick."],
+                              ]]),
+        ]
     }
 
     /// Ways to get somewhere on screen.
@@ -113,6 +179,7 @@ public enum OwnTools {
                                              "element": ["type": "string", "description": "Visible text (or a CSS selector) of an element in the browser page."],
                                              "style": ["type": "string", "enum": .array(moveStyles.map { .string($0) }),
                                                        "description": "hop: one leap; slide: glide; bounce: a few bounces like a ball; jump: a big, quick leap."]]]))
+            specs.append(contentsOf: animatorSpecs(animations))
             specs.append(ToolSpec(
                 name: speak,
                 description: "Say something out loud with the Mac's voice (your reply still shows in the bubble). Keep it short.",

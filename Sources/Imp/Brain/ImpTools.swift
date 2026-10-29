@@ -29,17 +29,22 @@ final class OwnToolHost {
         return g
     }
 
-    /// Animations it may play now: switched on, and unlocked (some need its favourite colour).
-    var playable: [Reaction] {
+    /// Animations it may play now, by the name it calls them: its own and the shared made ones,
+    /// then the built-in ones that are switched on and unlocked (some need its favourite colour).
+    var playable: [(name: String, ref: AnimationRef)] {
         guard let app, let p = profile else { return [] }
-        return Reaction.allCases.filter { app.prefs.isEnabled($0) && (!$0.unlocksWithFavoriteColor || p.isFavorite(p.hue)) }
+        let made = app.prefs.originals(for: id).filter(\.isEnabled).map { ($0.title, AnimationRef.custom($0.id)) }
+        let builtIn = Reaction.allCases.filter { app.prefs.isEnabled($0) && (!$0.unlocksWithFavoriteColor || p.isFavorite(p.hue)) }
+            .map { ($0.rawValue, AnimationRef.preset($0)) }
+        var seen = Set<String>()
+        return (made + builtIn).filter { seen.insert($0.0.lowercased()).inserted }
     }
 
     /// The others it can talk to: out on the desktop, not itself.
     private var others: [ImpModel] { app?.imps.filter { $0.id != id } ?? [] }
 
     func specs() -> [ToolSpec] {
-        OwnTools.specs(groups, animations: playable.map(\.rawValue), imps: others.map(\.profile.name),
+        OwnTools.specs(groups, animations: playable.map(\.name), imps: others.map(\.profile.name),
                        browser: BrowserBridge.shared.isConnected, talk: app?.prefs.impTalk ?? .own)
     }
 
@@ -61,6 +66,10 @@ final class OwnToolHost {
             case OwnTools.removeTool: return try removeTool(args)
             case OwnTools.openSettings: return try openSettings(args)
             case OwnTools.message: return try await message(args)
+            case OwnTools.makeAnimation: return try makeAnimation(args)
+            case OwnTools.showAnimation: return try showAnimation(args)
+            case OwnTools.removeAnimation: return try removeAnimation(args)
+            case OwnTools.setTraits: return setTraits(args)
             default: throw ToolArgumentError("Unknown tool \(name).")
             }
         } catch let error as ToolArgumentError {
@@ -78,19 +87,109 @@ final class OwnToolHost {
         let names = args["names"]?.array?.compactMap(\.string) ?? args["name"]?.string.map { [$0] } ?? []
         guard !names.isEmpty else { throw ToolArgumentError("Name the animations in `names`.") }
         let allowed = playable
-        var picked: [Reaction] = [], unknown: [String] = []
+        var picked: [AnimationRef] = [], unknown: [String] = []
+        func label(_ ref: AnimationRef) -> String { allowed.first { $0.ref == ref }?.name ?? ref.key }
         for n in names.prefix(4) {
-            let r = Reaction.allCases.first { $0.rawValue.caseInsensitiveCompare(n) == .orderedSame || $0.title.caseInsensitiveCompare(n) == .orderedSame }
-            if let r, allowed.contains(r) { picked.append(r) } else { unknown.append(n) }
+            let wanted = n.trimmingCharacters(in: .whitespacesAndNewlines)
+            let ref = allowed.first { $0.name.caseInsensitiveCompare(wanted) == .orderedSame }?.ref
+                ?? app?.prefs.ref(named: wanted, imp: id)
+            if let ref, allowed.contains(where: { $0.ref == ref }) { picked.append(ref) } else { unknown.append(n) }
         }
         guard !picked.isEmpty, let imp else { throw ToolArgumentError("None of those can play now: \(unknown.joined(separator: ", ")).") }
         let taken = imp.act(picked)
         guard taken > 0 else { throw ToolArgumentError("You've lined up \(ImpModel.maxActs) animations already: that's plenty for one answer.") }
-        let queued = picked.prefix(taken).map(\.rawValue).joined(separator: ", ")
+        let queued = picked.prefix(taken).map(label).joined(separator: ", ")
         var reply = "\(imp.isBusy ? "Will play once your reply shows, after any you asked for before" : "Playing, after any already playing"): \(queued)."
-        if taken < picked.count { reply += " Left out (too many for one answer): \(picked.dropFirst(taken).map(\.rawValue).joined(separator: ", "))." }
+        if taken < picked.count { reply += " Left out (too many for one answer): \(picked.dropFirst(taken).map(label).joined(separator: ", "))." }
         if !unknown.isEmpty { reply += " Skipped (unknown, switched off or locked): \(unknown.joined(separator: ", "))." }
         return reply
+    }
+
+    // MARK: Making animations
+
+    private func makeAnimation(_ args: JSONValue) throws -> String {
+        guard let app else { throw ToolArgumentError("You're not here.") }
+        var problems: [String] = []
+        var json = args
+        if case .object(var o) = json {
+            // A name that's already one of its made animations (or the shared ones) changes that one.
+            if o["name"] == nil, let r = o["replaces"]?.string { o["name"] = .string(Reaction(rawValue: r)?.title ?? r) }
+            json = .object(o)
+        }
+        guard var made = MadeAnimation(kit: json, problems: &problems) else {
+            throw ToolArgumentError(problems.isEmpty ? "Give it `beats`." : problems.joined(separator: " "))
+        }
+        let everyone = args["for"]?.string?.lowercased() == "everyone"
+        let owner: UUID? = everyone ? nil : id
+        let existing = made.replaces.flatMap { r in (everyone ? app.prefs.animationLibrary : app.prefs.ownAnimations(of: id)).first { $0.replaces == r } }
+            ?? (everyone ? app.prefs.animationLibrary : app.prefs.ownAnimations(of: id))
+                .first { $0.replaces == nil && made.replaces == nil && $0.title.caseInsensitiveCompare(made.title) == .orderedSame }
+        if let existing {
+            made.id = existing.id
+            if args["starts"] == nil { made.triggers = existing.triggers }
+            if args["symbol"] == nil { made.symbol = existing.symbol }
+        } else if made.replaces == nil {
+            made.name = app.prefs.uniqueAnimationName(made.name, imp: owner)
+        }
+        app.prefs.save(made, for: owner)
+        let ref: AnimationRef = made.replaces.map { .preset($0) } ?? .custom(made.id)
+        if let imp, !imp.isBusy { app.reactions.play(ref, by: imp) } else { _ = imp?.act([ref]) }
+        var reply = "\(existing == nil ? "Made" : "Changed") “\(made.title)”"
+            + (made.replaces.map { " (plays instead of the built-in \($0.rawValue))" } ?? "")
+            + (everyone ? " for every Imp" : " for you") + ": \(made.beats.count) beats, \(String(format: "%.1f", made.duration)) s."
+        if !made.triggers.isEmpty { reply += " Starts on: \(made.triggers.map(\.rawValue).sorted().joined(separator: ", "))." }
+        if !problems.isEmpty { reply += " Note: \(problems.joined(separator: " "))" }
+        return reply
+    }
+
+    private func showAnimation(_ args: JSONValue) throws -> String {
+        guard let app else { throw ToolArgumentError("You're not here.") }
+        guard let name = args["name"]?.string, !name.trimmingCharacters(in: .whitespaces).isEmpty else {
+            let mine = app.prefs.ownAnimations(of: id), shared = app.prefs.animationLibrary
+            func list(_ items: [MadeAnimation]) -> String {
+                items.isEmpty ? "none" : items.map { a in a.title + (a.replaces.map { " (replaces \($0.rawValue))" } ?? "") }.joined(separator: ", ")
+            }
+            return "Your own animations: \(list(mine)). Shared with every Imp: \(list(shared)). "
+                + "Your character: \((profile?.traits ?? .plain).summary) \(JSONValue.object(["traits": (profile?.traits ?? .plain).kitJSONValue]).jsonString)."
+        }
+        guard let ref = app.prefs.ref(named: name, imp: id), let beats = Antics.beats(for: ref, prefs: app.prefs, imp: id) else {
+            throw ToolArgumentError("No animation called \(name).")
+        }
+        var o: [String: JSONValue] = ["beats": .array(beats.map(\.kitJSONValue))]
+        switch ref {
+        case .preset(let r):
+            o["name"] = .string(r.rawValue)
+            if let made = app.prefs.replacement(for: r, imp: id) { o["changed"] = .string(made.about.isEmpty ? "yes" : made.about) }
+        case .custom(let cid):
+            if let a = app.prefs.customAnimation(cid, imp: id) {
+                o["name"] = .string(a.title)
+                if !a.about.isEmpty { o["about"] = .string(a.about) }
+                if !a.triggers.isEmpty { o["starts"] = .array(a.triggers.map { .string($0.rawValue) }) }
+            }
+        }
+        return JSONValue.object(o).jsonString
+    }
+
+    private func removeAnimation(_ args: JSONValue) throws -> String {
+        guard let app else { throw ToolArgumentError("You're not here.") }
+        let name = args["name"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let candidates = app.prefs.ownAnimations(of: id) + app.prefs.animationLibrary
+        guard let found = candidates.first(where: { $0.title.caseInsensitiveCompare(name) == .orderedSame || $0.replaces?.rawValue == name }) else {
+            throw ToolArgumentError("No made animation called \(name) (built-in ones can be switched off in Settings, not removed).")
+        }
+        app.prefs.removeAnimation(found.id)
+        return "Removed “\(found.title)”." + (found.replaces.map { " The built-in \($0.rawValue) plays again." } ?? "")
+    }
+
+    private func setTraits(_ args: JSONValue) -> String {
+        guard let app, let i = app.prefs.imps.firstIndex(where: { $0.id == id }) else { return "Error: You're not here." }
+        var t = app.prefs.imps[i].traits
+        if let p = args["preset"]?.string, let preset = ImpTraits.presets.first(where: { $0.id == p.lowercased() }) { t = preset.traits }
+        let keys: [(String, WritableKeyPath<ImpTraits, Double>)] = [("lids", \.lids), ("slant", \.slant), ("eyes", \.eyes), ("squint", \.squint),
+                                                                   ("horns", \.horns), ("blush", \.blush), ("tilt", \.tilt), ("tempo", \.tempo)]
+        for (k, path) in keys { if let v = args[k].flatMap(Self.number) { t[keyPath: path] = v } }
+        app.prefs.imps[i].traits = t
+        return "Your character now: \(t.normalized.summary)."
     }
 
     private func move(_ args: JSONValue) async throws -> String {

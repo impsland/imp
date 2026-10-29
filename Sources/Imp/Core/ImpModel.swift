@@ -46,9 +46,9 @@ final class ImpModel {
     @ObservationIgnored var homeOrigin: (() -> CGPoint)?
     /// Animations the model asked for (`imp_play_animations`, maybe over several calls), in order:
     /// they wait for its reply to show, then join `acting`.
-    @ObservationIgnored private var pendingActs: [Reaction] = []
+    @ObservationIgnored private var pendingActs: [AnimationRef] = []
     /// Animations playing one after another (the first is on now). New ones join the end.
-    @ObservationIgnored private var acting: [Reaction] = []
+    @ObservationIgnored private var acting: [AnimationRef] = []
     @ObservationIgnored private var actTask: Task<Void, Never>?
     /// Animations one answer may line up, all calls together (a long show is no longer body language).
     static let maxActs = 8
@@ -559,7 +559,7 @@ final class ImpModel {
     /// none replaces another): now if it's free, else once its reply shows. Returns how many
     /// fitted (see `maxActs`).
     @discardableResult
-    func act(_ reactions: [Reaction]) -> Int {
+    func act(_ reactions: [AnimationRef]) -> Int {
         let room = max(Self.maxActs - pendingActs.count - acting.count, 0)
         let taken = Array(reactions.prefix(room))
         if isBusy { pendingActs += taken } else { play(taken) }
@@ -567,13 +567,13 @@ final class ImpModel {
     }
 
     /// Lines `reactions` up behind whatever is playing; each starts when the one before is done.
-    private func play(_ reactions: [Reaction]) {
+    private func play(_ reactions: [AnimationRef]) {
         acting += reactions
         guard actTask == nil, !acting.isEmpty else { return }
         actTask = Task { [weak self] in
             while !Task.isCancelled, let self, let r = self.acting.first {
                 self.app.reactions.play(r, by: self)
-                try? await Task.sleep(for: .seconds(Performance(r).duration + 0.15))
+                try? await Task.sleep(for: .seconds(self.life.steps(for: r).reduce(0) { $0 + $1.duration } + 0.15))
                 if !self.acting.isEmpty { self.acting.removeFirst() }
             }
             self?.actTask = nil
@@ -604,10 +604,10 @@ final class ImpModel {
         touch()
         // The first click opened a text box. A poking spree isn't a conversation.
         stopWaitingForUser()
-        guard let reaction = prefs.animation(for: .poke) else { return }
+        guard let ref = prefs.ref(for: .poke, imp: id) else { return }
         cancel()
-        app.reactions.play(reaction, by: self)
-        guard reaction == .angry else { return }
+        app.reactions.play(ref, by: self)
+        guard ref == .preset(.angry) else { return }
         let lines = [String(localized: "Poke me again and I'll translate your diary into Klingon."),
                      String(localized: "I bite. Metaphorically. Mostly."),
                      String(localized: "I'm a demon, not a stress ball."),

@@ -44,8 +44,8 @@ final class ImpLife {
     /// Keeps `reaction` going, holding its last beat, until `until`, if it's what's playing
     /// (petting, a cuddle, being carried last as long as you keep at it). Returns whether it was.
     @discardableResult
-    func sustain(_ reaction: Reaction, until: Date) -> Bool {
-        guard antic?.name == reaction.rawValue else { return false }
+    func sustain(_ ref: AnimationRef, until: Date) -> Bool {
+        guard antic?.name == ref.key else { return false }
         sustainedUntil = until
         return true
     }
@@ -149,10 +149,13 @@ final class ImpLife {
     /// Plays an animation on request: a word you typed, a mouse game, a click, another Imp, a
     /// preview. With `facing`, the whole routine is aimed that way (a nod toward a friend
     /// instead of toward you). Requested animations aren't interrupted by the mouse.
-    func perform(_ reaction: Reaction, facing: CGPoint? = nil) {
-        guard isUnlocked(reaction) else { return }
+    func perform(_ reaction: Reaction, facing: CGPoint? = nil) { perform(.preset(reaction), facing: facing) }
+
+    func perform(_ ref: AnimationRef, facing: CGPoint? = nil) {
+        guard isUnlocked(ref) else { return }
         let user = CGPoint(x: 0, y: 0.1)
-        let steps = steps(for: reaction)
+        let steps = steps(for: ref)
+        guard !steps.isEmpty else { return }
         let aimed = facing.map { aim in
             steps.map { step in
                 var s = step
@@ -162,18 +165,20 @@ final class ImpLife {
                 return s
             }
         } ?? steps
-        play(Antic(name: reaction.rawValue, steps: aimed, sticky: true))
+        play(Antic(name: ref.key, steps: aimed, sticky: true))
     }
 
     /// Whether this Imp may play `reaction` now: the ones that unlock with a favourite colour
     /// only while it wears it.
-    func isUnlocked(_ reaction: Reaction) -> Bool {
-        guard reaction.unlocksWithFavoriteColor else { return true }
+    func isUnlocked(_ ref: AnimationRef) -> Bool {
+        guard let reaction = ref.preset, reaction.unlocksWithFavoriteColor else { return true }
         return model.map { $0.profile.isFavorite($0.profile.hue) } ?? false
     }
 
-    private func steps(for reaction: Reaction) -> [AnticStep] {
-        Antics.steps(for: reaction, work: model.map(lookToward(screenCenterOf:)) ?? .zero)
+    /// The beats it plays for `ref`: its own version of it, a shared one, or the built-in one, at its own tempo.
+    func steps(for ref: AnimationRef) -> [AnticStep] {
+        guard let model else { return [] }
+        return Antics.steps(for: ref, prefs: model.prefs, imp: model.id, work: lookToward(screenCenterOf: model))
     }
 
     // MARK: Routines
@@ -181,14 +186,15 @@ final class ImpLife {
     /// A routine for a quiet moment, from the animations the user lets play then (weighted,
     /// and never the same one twice in a row).
     private func pick(model: ImpModel) -> Antic? {
-        var pool = model.prefs.animations(for: .idle).filter(isUnlocked)
-        if pool.count > 1 { pool.removeAll { $0.rawValue == lastName } }
-        let total = pool.reduce(0) { $0 + $1.idleWeight }
+        var pool = model.prefs.refs(for: .idle, imp: model.id).filter(isUnlocked)
+        if pool.count > 1 { pool.removeAll { $0.key == lastName } }
+        func weight(_ ref: AnimationRef) -> Int { ref.preset?.idleWeight ?? 1 }
+        let total = pool.reduce(0) { $0 + weight($1) }
         guard total > 0 else { return nil }
         var r = Int.random(in: 0..<total)
-        for reaction in pool {
-            if r < reaction.idleWeight { return Antic(name: reaction.rawValue, steps: steps(for: reaction)) }
-            r -= reaction.idleWeight
+        for ref in pool {
+            if r < weight(ref) { return Antic(name: ref.key, steps: steps(for: ref)) }
+            r -= weight(ref)
         }
         return nil
     }

@@ -28,16 +28,39 @@ a static site built from those files, with an **Add to Imp** button on every kit
   shown on the kit's page. Make `about` and the personality honest about them.
 - **Prompts are well written:** specific, short, no instructions to hide things from the user.
 - **`about`, `registry.author`, `registry.tags` (at least one) and `registry.summary`** are required.
-- **Under 512 KB**, at most 20 Imps, 50 triggers and 20 tools.
+- **Under 512 KB**, at most 20 Imps, 50 triggers, 20 tools and 50 animations (top-level and Imps' own together).
 - A reviewer reads the personalities and triggers, since they steer what an Imp does with its tools.
 
 ### Versioning
 
 `"imp"` is the kit format version, meaning the oldest Imp that can read it: `1` for triggers and
-tools only (Imp 1.6+), `2` when the kit has Imps (Imp 1.7+). Use the lowest that fits, as Imp does
+tools only (Imp 1.6+), `2` when the kit has Imps (Imp 1.7+), `3` when it has animations or an Imp
+has `traits` or its own `animations` (Imp 1.9+). Use the lowest that fits, as Imp does
 when it exports. The gallery shows "Needs Imp 1.x+" from it; the mapping is `MIN_IMP_FOR_FORMAT` in
 `build.py`, the only place to change when a format is added. Unknown keys are ignored by Imp, so
 adding fields is safe.
+
+### Animations and traits
+
+A kit can carry custom animations, at the top level (shared by the whole kit) and inside any Imp
+(`"animations"`, that Imp's own). Each animation has a `name` (required, at most 40 characters), and
+optional `about`, `symbol` (an SF Symbol, ignored by the site), `replaces` (the id of a built-in
+animation, such as `yawn` or `jump`) and `starts` (what starts it: `idle`, `poke`, `circle`, `swish`,
+`stroke`, `favoriteColor`, `tickle`, `hold`, `pickUp`, `shake`, `drop`, `rush`, `linger`, `stare`,
+`dangle`, `comeback`). It plays a list of `beats`, each with a `duration` in seconds (0.05 to 6,
+required) and optionally `look` (`[x, y]`, each -1 to 1), `mood`, `glyph` (`notes`, `question`,
+`exclaim`, `idea`, `sweat`, `heart`, `sparkles`), `tilt` (-30 to 30 degrees), `hop` and `stretch`
+(-0.3 to 0.3). `mood` is one of idle, listening, thinking, happy, love, sad, error, sleepy, annoyed,
+surprised, dizzy, mean, working, content, giggly, scared, curious, shy, excited, bored.
+
+An Imp may also have `traits`: `lids` 0 to 0.6, `slant` -1 to 1 (negative worried, positive angry),
+`eyes` -0.4 to 0.4, `squint` -1 to 1, `horns` -30 to 30 degrees, `blush` 0 to 1, `tilt` -12 to 12 and
+`tempo` 0.6 to 1.6 (animation speed).
+
+`build.py` checks the limits: 1 to 24 beats per animation, at most 20 s in total, known moods and
+glyphs, at most 50 animations per kit. The kit page shows an **Animations** section with each
+animation's start, what it replaces, its length and a timeline of its beats, and an Imp's traits
+in a line on its card. See `kits/moody-moves.json`.
 
 ## Checking a kit
 

@@ -91,36 +91,39 @@ final class Reactions {
     /// keeps it going until `release(_:by:)` (a press, a carry).
     func handle(_ trigger: AnimationTrigger, by imp: ImpModel, held: Bool = false) {
         guard trigger.watchesCursor ? app.prefs.watchesCursor : true,
-              let reaction = app.prefs.animation(for: trigger) else { return }
+              let ref = app.prefs.ref(for: trigger, imp: imp.id) else { return }
         let until = held ? Date.distantFuture : Date().addingTimeInterval(Self.afterglow)
-        if imp.life.sustain(reaction, until: until) { return }
+        if imp.life.sustain(ref, until: until) { return }
         // Cursor games have a cooldown: a game played again and again stops being a reaction.
         if trigger.watchesCursor,
-           Date().timeIntervalSince(lastPlayed["\(imp.id)/\(reaction.rawValue)"] ?? .distantPast) < Self.cooldown { return }
-        play(reaction, by: imp)
-        if held { imp.life.sustain(reaction, until: until) }
+           Date().timeIntervalSince(lastPlayed["\(imp.id)/\(ref.key)"] ?? .distantPast) < Self.cooldown { return }
+        play(ref, by: imp)
+        if held { imp.life.sustain(ref, until: until) }
     }
 
     /// You let go: the animation `trigger` kept going finishes its last beat.
     func release(_ trigger: AnimationTrigger, by imp: ImpModel) {
-        guard let reaction = app.prefs.animation(for: trigger) else { return }
-        imp.life.sustain(reaction, until: Date())
+        guard let ref = app.prefs.ref(for: trigger, imp: imp.id) else { return }
+        imp.life.sustain(ref, until: Date())
     }
 
     /// Plays an animation now (gestures, clicks, Settings previews). The troupe may join in.
-    func play(_ reaction: Reaction, by imp: ImpModel? = nil) {
-        guard let imp = imp ?? app.focused, !imp.isBusy, imp.life.isUnlocked(reaction) else { return }
-        lastPlayed["\(imp.id)/\(reaction.rawValue)"] = Date()
+    func play(_ reaction: Reaction, by imp: ImpModel? = nil) { play(.preset(reaction), by: imp) }
+
+    /// Plays a built-in or made animation. Only built-in ones set the troupe off (they know what those mean).
+    func play(_ ref: AnimationRef, by imp: ImpModel? = nil) {
+        guard let imp = imp ?? app.focused, !imp.isBusy, imp.life.isUnlocked(ref) else { return }
+        lastPlayed["\(imp.id)/\(ref.key)"] = Date()
         imp.touch()
-        imp.life.perform(reaction)
-        app.stage.broadcast(.reacted(reaction), from: imp)
+        imp.life.perform(ref)
+        if let reaction = ref.preset { app.stage.broadcast(.reacted(reaction), from: imp) }
     }
 
     /// Plays whatever animation a trigger starts (nil when none is assigned or it's switched off).
     @discardableResult
-    func play(_ trigger: AnimationTrigger, by imp: ImpModel) -> Reaction? {
-        guard let reaction = app.prefs.animation(for: trigger) else { return nil }
-        play(reaction, by: imp)
-        return reaction
+    func play(_ trigger: AnimationTrigger, by imp: ImpModel) -> AnimationRef? {
+        guard let ref = app.prefs.ref(for: trigger, imp: imp.id) else { return nil }
+        play(ref, by: imp)
+        return ref
     }
 }

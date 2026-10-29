@@ -4,14 +4,25 @@ import ImpKit
 /// An animation acted out by a figure that isn't a live desktop Imp (the Imp in the doorway, the
 /// settings preview): the same beats `ImpLife` plays, driven by the clock instead of a timer.
 struct Performance: Equatable {
-    let reaction: Reaction
+    /// What's playing (`AnimationRef.key`).
+    let key: String
     let started: Date
     let steps: [AnticStep]
 
+    /// A built-in animation as it came.
     init(_ reaction: Reaction, at date: Date = Date()) {
-        self.reaction = reaction
+        self.init(key: reaction.rawValue, steps: Antics.steps(for: reaction, work: .zero), at: date)
+    }
+
+    /// What `imp` plays for `ref`: its own version, a shared one, or the built-in one, at its tempo.
+    init(_ ref: AnimationRef, prefs: ImpPreferences, imp: UUID?, at date: Date = Date()) {
+        self.init(key: ref.key, steps: Antics.steps(for: ref, prefs: prefs, imp: imp), at: date)
+    }
+
+    init(key: String, steps: [AnticStep], at date: Date = Date()) {
+        self.key = key
+        self.steps = steps
         started = date
-        steps = Antics.steps(for: reaction, work: .zero)
     }
 
     var duration: Double { steps.reduce(0) { $0 + $1.duration } }

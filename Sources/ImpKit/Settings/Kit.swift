@@ -7,7 +7,8 @@ import Foundation
 ///     { "imp": 2, "app": "1.7.0", "name": "Morning helper", "about": "optional text",
 ///       "imps": [ { …an Imp, see `KitImp`… } ],
 ///       "triggers": [ { …the arguments of imp_add_trigger… } ],
-///       "mcpServers": { "name": { "command": …, "args": […], "env": {…} } or { "url": …, "headers": {…} } } }
+///       "mcpServers": { "name": { "command": …, "args": […], "env": {…} } or { "url": …, "headers": {…} } },
+///       "animations": [ { …an animation, see `MadeAnimation(kit:)`… } ] }
 ///
 /// Parsing reuses the parsers behind the Imp's own tools (`Shortcut(tool:imp:)`, `MCPServerConfig.parse(setup:)`),
 /// and also takes what people paste without the wrapper: a plain MCP snippet, or a trigger (or a list of them).
@@ -16,7 +17,8 @@ import Foundation
 /// ## Versions
 /// `"imp"` is the format version, and it means the *minimum reader version* that understands the kit.
 /// - Writers emit the lowest version that can express what's in the kit (`formatVersion`): triggers and
-///   tools only is 1, so an Imp that only reads version 1 still opens it; a kit with Imps is 2.
+///   tools only is 1, so an Imp that only reads version 1 still opens it; a kit with Imps is 2; a kit with
+///   animations (or Imps with their own animations or traits) is 3, since an older Imp would leave them out.
 /// - A reader takes every version up to `currentVersion` and refuses a higher one with
 ///   `KitError.newerVersion` ("update Imp"), rather than half-reading it.
 /// - Adding a field, or an optional section, is not a new version: readers ignore keys they don't know,
@@ -25,7 +27,7 @@ import Foundation
 ///   versions wrote, as JSON, before it's read, so the reader only ever deals with the newest shape.
 /// - `"app"` is the version of Imp that wrote the file. Informational: nothing reads it.
 public struct Kit: Equatable, Sendable {
-    public static let currentVersion = 2
+    public static let currentVersion = 3
     /// The biggest kit from a web address, a link or pasted text.
     public static let maxBytes = 512 * 1024
     /// The biggest kit file on this Mac: chats can make an exported Imp big.
@@ -34,27 +36,35 @@ public struct Kit: Equatable, Sendable {
     public static let maxChatsPerImp = 100
     public static let maxTriggers = 50
     public static let maxServers = 20
+    /// Animations in a kit, its own and its Imps' together.
+    public static let maxAnimations = 50
 
     public var name: String
     public var about: String
     public var triggers: [Shortcut]
     public var servers: [MCPServerConfig]
     public var imps: [KitImp]
+    /// Animations for whoever adds the kit (an Imp's own come with it, in `KitImp.animations`).
+    public var animations: [MadeAnimation]
     /// The version of Imp that wrote the kit: read from a file, written when it's set (the app passes it in).
     public var app: String?
     /// Items that couldn't be read ("Trigger 2: Unknown trigger kind …"). The rest of the kit still stands.
     public var problems: [String]
 
     public init(name: String = "", about: String = "", triggers: [Shortcut] = [], servers: [MCPServerConfig] = [],
-                imps: [KitImp] = [], app: String? = nil, problems: [String] = []) {
+                imps: [KitImp] = [], animations: [MadeAnimation] = [], app: String? = nil, problems: [String] = []) {
         self.name = name; self.about = about; self.triggers = triggers; self.servers = servers; self.imps = imps
+        self.animations = animations
         self.app = app; self.problems = problems
     }
 
-    public var itemCount: Int { triggers.count + servers.count + imps.count }
+    public var itemCount: Int { triggers.count + servers.count + imps.count + animations.count }
 
     /// The version this kit is written as: the lowest that can express it (see Versions above).
-    public var formatVersion: Int { imps.isEmpty ? 1 : 2 }
+    public var formatVersion: Int {
+        if !animations.isEmpty || imps.contains(where: { !$0.animations.isEmpty || !$0.traits.isPlain }) { return 3 }
+        return imps.isEmpty ? 1 : 2
+    }
 
     /// Servers no Imp of the kit uses (the ones the review lists on their own).
     public var looseServers: [MCPServerConfig] {
@@ -63,7 +73,7 @@ public struct Kit: Equatable, Sendable {
     }
 
     /// Upgrades a kit written in an older format to the current one, before it's read. Version 2 only
-    /// added `imps`, so there's nothing to rewrite yet. A future breaking change adds its step here,
+    /// added `imps` and 3 `animations` and `traits`, so there's nothing to rewrite yet. A future breaking change adds its step here,
     /// one version at a time (`if version < 3 { … }`).
     static func migrate(_ json: JSONValue, from version: Int) -> JSONValue {
         json
@@ -83,7 +93,7 @@ public struct Kit: Equatable, Sendable {
             kit = Kit()
             kit.read(triggers: list)
         } else if trimmed.first == "{", let json = try? JSONValue(jsonString: trimmed) {
-            if json["imp"] != nil || json["triggers"] != nil || json["imps"] != nil {
+            if json["imp"] != nil || json["triggers"] != nil || json["imps"] != nil || json["animations"] != nil {
                 kit = try envelope(json)
             } else if json["when"] != nil {
                 kit = Kit()
@@ -98,6 +108,9 @@ public struct Kit: Equatable, Sendable {
         guard kit.servers.count <= maxServers else { throw KitError.tooMany("tools", maxServers) }
         guard kit.imps.count <= maxImps else { throw KitError.tooMany("Imps", maxImps) }
         guard kit.imps.allSatisfy({ $0.chats.count <= maxChatsPerImp }) else { throw KitError.tooMany("chats", maxChatsPerImp) }
+        guard kit.animations.count + kit.imps.reduce(0, { $0 + $1.animations.count }) <= maxAnimations else {
+            throw KitError.tooMany("animations", maxAnimations)
+        }
         guard kit.itemCount > 0 else {
             throw kit.problems.isEmpty ? KitError.empty : KitError.nothingUsable(kit.problems)
         }
@@ -122,6 +135,13 @@ public struct Kit: Equatable, Sendable {
         }
         if let list = json["imps"] {
             if let array = list.array { kit.read(imps: array) } else { kit.problems.append(String(localized: "“imps” should be a list.")) }
+        }
+        if let list = json["animations"] {
+            if let array = list.array {
+                kit.animations = MadeAnimation.read(array, problems: &kit.problems)
+            } else {
+                kit.problems.append(String(localized: "“animations” should be a list."))
+            }
         }
         return kit
     }
@@ -228,6 +248,7 @@ public struct Kit: Equatable, Sendable {
             for s in servers { map[keys[s.id]!] = s.kitJSON }
             top["mcpServers"] = .object(map)
         }
+        if !animations.isEmpty { top["animations"] = .array(animations.map(\.kitJSON)) }
         return JSONValue.object(top).kitText(pretty: pretty)
     }
 
@@ -300,7 +321,7 @@ public enum KitError: LocalizedError, Equatable {
     public var errorDescription: String? {
         switch self {
         case .empty: String(localized: "There's nothing in it.")
-        case .notAKit: String(localized: "That isn't a kit: expected JSON with imps, triggers or mcpServers, a trigger, or an MCP setup.")
+        case .notAKit: String(localized: "That isn't a kit: expected JSON with imps, triggers, animations or mcpServers, a trigger, or an MCP setup.")
         case .tooLarge: String(localized: "That's too big for a kit (the limit is \(Kit.maxBytes / 1024) KB).")
         case .newerVersion(let v): String(localized: "This kit needs a newer Imp (format \(v)). Update Imp: brew upgrade --cask imp.")
         case .tooMany(let what, let limit):
@@ -309,6 +330,7 @@ public enum KitError: LocalizedError, Equatable {
             case "tools": String(localized: "That has too many tools (the limit is \(limit)).")
             case "Imps": String(localized: "That has too many Imps (the limit is \(limit)).")
             case "chats": String(localized: "That has too many chats (the limit is \(limit)).")
+            case "animations": String(localized: "That has too many animations (the limit is \(limit)).")
             default: String(localized: "That has too many items (the limit is \(limit)).")
             }
         case .nothingUsable(let problems): String(localized: "Nothing in it could be read. \(problems.prefix(3).joined(separator: " "))")
@@ -449,7 +471,9 @@ extension MCPServerConfig {
 
 extension JSONValue {
     /// Keys in the order people read them; anything else after, A to Z.
-    private static let keyOrder = ["imp", "app", "name", "about", "imps", "triggers", "mcpServers",
+    private static let keyOrder = ["imp", "app", "name", "about", "imps", "triggers", "mcpServers", "animations",
+                                   "symbol", "replaces", "starts", "enabled", "beats", "duration", "look", "mood", "glyph", "tilt", "hop", "stretch",
+                                   "traits", "lids", "slant", "eyes", "squint", "horns", "blush", "tempo",
                                    "hue", "favoriteHue", "scale", "personality", "instructions", "brain", "model", "service", "baseURL",
                                    "shell", "tools", "exchangesSent", "sendsToolCalls", "chats",
                                    "title", "created", "updated", "turns", "memory", "recap", "messages",
@@ -466,8 +490,11 @@ extension JSONValue {
         switch self {
         case .array(let items):
             if items.isEmpty { return "[]" }
-            if !pretty {
-                return "[" + items.map { $0.kitText(pretty: pretty) }.joined(separator: ",") + "]"
+            // Beats are short and many: one line each, so an animation reads like a score.
+            if !pretty || items.allSatisfy({ $0["duration"] != nil }) {
+                let inner = items.map { $0.kitText(pretty: false) }
+                if !pretty { return "[" + inner.joined(separator: ",") + "]" }
+                return "[\n" + inner.map { pad + $0 }.joined(separator: sep) + end + "]"
             }
             return "[\n" + items.map { pad + $0.kitText(pretty: pretty, indent: indent + 1) }.joined(separator: sep) + end + "]"
         case .object(let o):
@@ -502,6 +529,7 @@ extension ImpPreferences {
     public struct KitAdded: Equatable, Sendable {
         public var triggers = 0
         public var servers = 0
+        public var animations = 0
         /// The Imps that were hatched (waiting at home, not activated).
         public var imps: [ImportedImp] = []
         /// Servers now in the library that still need keys filled in.
@@ -515,8 +543,12 @@ extension ImpPreferences {
     /// Chats come back in `KitAdded.imps` to be saved before the Imps appear.
     @discardableResult
     public mutating func add(_ kit: Kit, imps chosenImps: Set<UUID> = [], triggers chosenTriggers: Set<UUID>, servers chosenServers: Set<UUID>,
-                             for imp: UUID?, withChats: Bool = true) -> KitAdded {
+                             animations chosenAnimations: Set<UUID> = [], for imp: UUID?, withChats: Bool = true) -> KitAdded {
         var added = KitAdded()
+        for animation in kit.animations where chosenAnimations.contains(animation.id) {
+            adopt(animation, for: imp)
+            added.animations += 1
+        }
         for var trigger in kit.triggers where chosenTriggers.contains(trigger.id) {
             trigger.performer = imp
             shortcuts.append(trigger)
@@ -540,5 +572,16 @@ extension ImpPreferences {
         }
         for source in hatching { added.imps.append(hatch(source, servers: library, withChats: withChats)) }
         return added
+    }
+}
+
+extension ImpPreferences {
+    /// An animation from a kit, as a new one for `imp` (nil: every Imp): a fresh id, and a name
+    /// nobody there has. A replacement takes the place of the one already there.
+    mutating func adopt(_ animation: MadeAnimation, for imp: UUID?) {
+        var a = animation
+        a.id = UUID()
+        if a.replaces == nil { a.name = uniqueAnimationName(a.name, imp: imp) }
+        save(a, for: imp)
     }
 }

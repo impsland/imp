@@ -1,4 +1,5 @@
 import CoreGraphics
+import Foundation
 import ImpKit
 
 /// One beat of an antic: hold a pose for a while.
@@ -355,5 +356,52 @@ enum Antics {
             AnticStep(duration: 0.7, look: user, mood: .content, stretch: 0.04),
         ]
         }
+    }
+}
+
+// MARK: - Animations as data
+
+extension AnticStep {
+    /// A beat as it's stored and shared (made animations, kits, the Imp's own tools).
+    init(_ b: AnimationBeat) {
+        self.init(duration: b.duration, look: b.hasLook ? CGPoint(x: b.lookX ?? 0, y: b.lookY ?? 0) : nil,
+                  mood: b.mood.flatMap(Mood.init(rawValue:)), glyph: b.glyph.flatMap(Glyph.init(rawValue:)),
+                  tilt: b.tilt, hop: b.hop, stretch: b.stretch)
+    }
+}
+
+extension AnimationBeat {
+    init(_ s: AnticStep) {
+        self.init(duration: AnimationBeat.round(s.duration), lookX: s.look.map { AnimationBeat.round($0.x) },
+                  lookY: s.look.map { AnimationBeat.round($0.y) }, mood: s.mood?.rawValue, glyph: s.glyph?.rawValue,
+                  tilt: AnimationBeat.round(s.tilt), hop: s.hop, stretch: AnimationBeat.round(s.stretch))
+    }
+
+    static func round(_ x: Double) -> Double { (x * 100).rounded() / 100 }
+}
+
+extension Antics {
+    /// The beats `ref` is written with for `imp` (its own version, else the shared one, else the
+    /// built-in one), at its own pace: for the editor and the Imp's tools. Nil: no such animation.
+    static func beats(for ref: AnimationRef, prefs: ImpPreferences, imp: UUID?) -> [AnimationBeat]? {
+        switch ref {
+        case .preset(let r): prefs.replacement(for: r, imp: imp)?.beats ?? steps(for: r, work: .zero).map(AnimationBeat.init)
+        case .custom(let id): prefs.customAnimation(id, imp: imp)?.beats
+        }
+    }
+
+    /// What `imp` acts out for `ref`: its own version or the shared one if there is, at its tempo.
+    static func steps(for ref: AnimationRef, prefs: ImpPreferences, imp: UUID?, work: CGPoint = .zero) -> [AnticStep] {
+        let raw: [AnticStep] = switch ref {
+        case .preset(let r): prefs.replacement(for: r, imp: imp).map { $0.beats.map(AnticStep.init) } ?? steps(for: r, work: work)
+        case .custom(let id): prefs.customAnimation(id, imp: imp)?.beats.map(AnticStep.init) ?? []
+        }
+        return paced(raw, tempo: prefs.imps.first { $0.id == imp }?.traits.tempo ?? 1)
+    }
+
+    /// Every beat shorter (a quick Imp) or longer (a lazy one).
+    static func paced(_ steps: [AnticStep], tempo: Double) -> [AnticStep] {
+        guard tempo > 0, abs(tempo - 1) > 0.001 else { return steps }
+        return steps.map { var s = $0; s.duration /= tempo; return s }
     }
 }

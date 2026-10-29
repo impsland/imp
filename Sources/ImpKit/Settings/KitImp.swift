@@ -14,7 +14,9 @@ import Foundation
 ///       "exchangesSent": 20, "sendsToolCalls": true,
 ///       "mcpServers": ["Notes"],                                        // names in the kit's top-level mcpServers
 ///       "triggers": [ { …as in a kit… } ],
-///       "chats": [ { "title", "created", "updated", "turns": […], "memory": { "recap", "messages": […] } } ] }
+///       "chats": [ { "title", "created", "updated", "turns": […], "memory": { "recap", "messages": […] } } ],
+///       "traits": { "lids": 0.3, "slant": -0.2, "tempo": 0.8 },                // its character, see `ImpTraits`
+///       "animations": [ { …as in a kit… } ] }                                // its own
 ///
 /// Only `name` is required. A missing field takes the default a new Imp has, an unknown one is ignored.
 /// Chats with other Imps aren't exported (they refer to Imps by local id); pictures aren't either
@@ -39,6 +41,9 @@ public struct KitImp: Equatable, Sendable, Identifiable {
     /// Its own triggers (their performer is whoever it becomes).
     public var triggers: [Shortcut]
     public var chats: [Chat]
+    /// Its character (see `ImpTraits`) and its own animations.
+    public var traits: ImpTraits = .plain
+    public var animations: [MadeAnimation] = []
 
     public init(name: String, hue: Double = ImpProfile.defaultHue, favoriteHue: Double? = nil, scale: Double = 1, personality: String = "",
                 instructions: String? = nil, brain: KitBrain? = nil, usesShell: Bool = true, tools: [ImpToolGroup: Bool] = [:],
@@ -69,6 +74,8 @@ public struct KitImp: Equatable, Sendable, Identifiable {
                   servers: profile.servers.filter(known.contains),
                   triggers: prefs.shortcuts(of: profile.id).map { var s = $0; s.performer = nil; return s },
                   chats: chats.filter { $0.peer == nil && !$0.isEmpty })
+        traits = profile.traits
+        animations = profile.animations
     }
 
     /// Whether it may use a group of its own tools: what the kit says, else what a new Imp has.
@@ -127,6 +134,8 @@ public struct KitImp: Equatable, Sendable, Identifiable {
         if let list = json["chats"]?.array {
             imp.chats = list.compactMap { Chat(kit: $0) }
         }
+        if let traits = json["traits"], case .object = traits { imp.traits = ImpTraits(kit: traits) }
+        if let list = json["animations"]?.array { imp.animations = MadeAnimation.read(list, problems: &problems) }
         return imp
     }
 
@@ -147,6 +156,8 @@ public struct KitImp: Equatable, Sendable, Identifiable {
         if !used.isEmpty { o["mcpServers"] = .array(used.map { .string($0) }) }
         if !triggers.isEmpty { o["triggers"] = .array(triggers.map(\.kitJSON)) }
         if !chats.isEmpty { o["chats"] = .array(chats.map(\.kitJSON)) }
+        if !traits.isPlain { o["traits"] = traits.kitJSON }
+        if !animations.isEmpty { o["animations"] = .array(animations.map(\.kitJSON)) }
         return .object(o)
     }
 }
@@ -323,6 +334,8 @@ extension ImpPreferences {
         var p = ImpProfile(name: ImpProfile.uniqueName(source.name, avoiding: imps.map(\.name)), hue: source.hue,
                            favoriteHue: source.favoriteHue, scale: source.scale, personality: source.personality)
         p.isActive = false
+        p.traits = source.traits
+        p.animations = source.animations.map { var a = $0; a.id = UUID(); return a }
         p.instructions = source.instructions
         p.usesShell = source.usesShell
         for group in ImpToolGroup.allCases { p.setUses(group, source.uses(group)) }

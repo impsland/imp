@@ -1,0 +1,78 @@
+{
+  "imp": 3,
+  "app": "1.9.0",
+  "name": "Moody moves",
+  "about": "Four hand-made animations and one sleepy Imp. A long Stretch replaces the yawn, a Shrug and a Nervous laugh add some attitude, and a Victory dance breaks out now and then when the Imp is idle. Pip is a slow, heavy-lidded Imp with its own Slow blink. Animations only move the Imp; they add no tools and run nothing.",
+  "registry": {
+    "author": "Imp community",
+    "tags": ["animations", "personality", "fun"],
+    "summary": "A lazy stretch, a shrug, a nervous laugh, a victory dance and a sleepy Imp."
+  },
+  "animations": [
+    {
+      "name": "Stretch",
+      "about": "A long, lazy stretch instead of the usual yawn.",
+      "replaces": "yawn",
+      "beats": [
+        { "duration": 0.5, "mood": "sleepy", "look": [0, -0.4], "stretch": 0.15 },
+        { "duration": 0.9, "mood": "sleepy", "look": [0, -0.6], "stretch": 0.3, "tilt": -6 },
+        { "duration": 0.5, "mood": "content", "look": [0, 0.1], "stretch": -0.1 },
+        { "duration": 0.4, "mood": "content", "glyph": "sparkles" }
+      ]
+    },
+    {
+      "name": "Shrug",
+      "about": "Who knows? Not the Imp.",
+      "beats": [
+        { "duration": 0.3, "mood": "curious", "glyph": "question", "tilt": 8 },
+        { "duration": 0.35, "mood": "bored", "tilt": -8, "look": [-0.4, 0.2], "stretch": -0.1 },
+        { "duration": 0.35, "mood": "bored", "tilt": 8, "look": [0.4, 0.2] },
+        { "duration": 0.4, "mood": "idle", "tilt": 0 }
+      ]
+    },
+    {
+      "name": "Victory dance",
+      "about": "A little hop-hop-spin when nothing is going on.",
+      "starts": ["idle"],
+      "beats": [
+        { "duration": 0.25, "mood": "excited", "hop": true, "tilt": -10, "glyph": "notes" },
+        { "duration": 0.25, "mood": "excited", "hop": true, "tilt": 10 },
+        { "duration": 0.25, "mood": "happy", "hop": true, "tilt": -10 },
+        { "duration": 0.25, "mood": "happy", "hop": true, "tilt": 10 },
+        { "duration": 0.6, "mood": "happy", "glyph": "sparkles", "stretch": 0.2, "tilt": 0 }
+      ]
+    },
+    {
+      "name": "Nervous laugh",
+      "about": "Heh. Heh heh. Sorry.",
+      "starts": ["poke"],
+      "beats": [
+        { "duration": 0.3, "mood": "scared", "glyph": "sweat", "look": [-0.5, 0] },
+        { "duration": 0.15, "mood": "giggly", "hop": true, "tilt": -4 },
+        { "duration": 0.15, "mood": "giggly", "hop": true, "tilt": 4 },
+        { "duration": 0.15, "mood": "giggly", "hop": true, "tilt": -4 },
+        { "duration": 0.5, "mood": "shy", "look": [0.3, 0.4], "tilt": 0 }
+      ]
+    }
+  ],
+  "imps": [
+    {
+      "name": "Pip",
+      "hue": 0.57,
+      "personality": "You are Pip, a calm, slightly sleepy Imp. You answer briefly and kindly, and you never rush.",
+      "traits": { "lids": 0.3, "slant": -0.2, "eyes": 0.1, "blush": 0.2, "tempo": 0.8 },
+      "animations": [
+        {
+          "name": "Slow blink",
+          "about": "A long, trusting blink.",
+          "starts": ["idle"],
+          "beats": [
+            { "duration": 0.8, "mood": "content", "look": [0, 0.2] },
+            { "duration": 0.6, "mood": "sleepy" },
+            { "duration": 0.6, "mood": "content" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -25,12 +25,19 @@ FORMAT_DOCS = REPO + "#share-setups-as-kits"
 REGISTRY_DOCS = REPO + "/tree/main/registry"
 
 # The oldest Imp that reads each kit format version. The one place this is written down.
-MIN_IMP_FOR_FORMAT = {1: "1.6", 2: "1.7"}
+MIN_IMP_FOR_FORMAT = {1: "1.6", 2: "1.7", 3: "1.9"}
 
 TOOL_GROUPS = [("body", "Body language"), ("senses", "Senses"), ("setup", "Sets itself up"),
                ("troupe", "Talks to the troupe"), ("computer", "Computer control")]
 GROUP_DEFAULT_ON = {"body": True, "senses": True, "setup": True, "troupe": True, "computer": False}
-TYPES = [("imps", "Imps"), ("triggers", "Triggers"), ("tools", "Tools")]
+TYPES = [("imps", "Imps"), ("animations", "Animations"), ("triggers", "Triggers"), ("tools", "Tools")]
+MOODS = {"idle", "listening", "thinking", "happy", "love", "sad", "error", "sleepy", "annoyed", "surprised", "dizzy",
+         "mean", "working", "content", "giggly", "scared", "curious", "shy", "excited", "bored"}
+GLYPHS = {"notes", "question", "exclaim", "idea", "sweat", "heart", "sparkles"}
+MAX_ANIMATIONS = 50
+MAX_BEATS, MIN_BEAT, MAX_BEAT, MAX_TOTAL = 24, 0.05, 6.0, 20.0
+TRAIT_RANGES = {"lids": (0, 0.6), "slant": (-1, 1), "eyes": (-0.4, 0.4), "squint": (-1, 1), "horns": (-30, 30),
+                "blush": (0, 1), "tilt": (-12, 12), "tempo": (0.6, 1.6)}
 SLUG = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 MAX_BYTES = 512 * 1024
 E = html.escape
@@ -56,9 +63,15 @@ class Kit:
         self.servers = d.get("mcpServers") or {}
         used = {n for i in self.imps for n in (i.get("mcpServers") or [])}
         self.loose_servers = {k: v for k, v in self.servers.items() if k not in used}
+        self.animations = [a for a in d.get("animations") or [] if isinstance(a, dict)] if isinstance(d.get("animations"), list) else []
+        self.imp_animations = [a for i in self.imps if isinstance(i, dict) and isinstance(i.get("animations"), list)
+                               for a in i["animations"] if isinstance(a, dict)]
+        self.all_animations = self.animations + self.imp_animations
         self.types = []
         if self.imps:
             self.types.append("imps")
+        if self.animations:
+            self.types.append("animations")
         if self.triggers:
             self.types.append("triggers")
         if self.loose_servers:
@@ -90,10 +103,42 @@ class Kit:
                     out.append(f"tool {s_name}: value of {key} must be empty (no secrets in a kit)")
             if "?" in (s.get("url") or ""):
                 out.append(f"tool {s_name}: no query string in a url (keys hide there)")
+        out += self.animation_problems()
         if "chats" in self.raw:
             for i in self.imps:
                 if i.get("chats"):
                     out.append(f"Imp {i.get('name')}: chats don't belong in a registry kit")
+        return out
+
+    def animation_problems(self):
+        out = []
+        groups = [("", self.data.get("animations"))] + [
+            (f"Imp {i.get('name')}: ", i.get("animations")) for i in self.imps if isinstance(i, dict)]
+        total = 0
+        for where, anims in groups:
+            if anims is None:
+                continue
+            if not isinstance(anims, list):
+                out.append(f"{where}animations must be a list")
+                continue
+            total += len(anims)
+            for n, a in enumerate(anims):
+                out += [f"{where}animation {a.get('name') or n + 1}: {p}" if isinstance(a, dict) else f"{where}animation {n + 1}: not an object"
+                        for p in (animation_problems(a) if isinstance(a, dict) else [""])]
+        if total > MAX_ANIMATIONS:
+            out.append(f"{total} animations; at most {MAX_ANIMATIONS} per kit")
+        for i in self.imps:
+            tr = i.get("traits") if isinstance(i, dict) else None
+            if tr is None:
+                continue
+            if not isinstance(tr, dict):
+                out.append(f"Imp {i.get('name')}: traits must be an object")
+                continue
+            for key, v in tr.items():
+                if key in TRAIT_RANGES:
+                    lo, hi = TRAIT_RANGES[key]
+                    if not is_num(v) or not lo <= v <= hi:
+                        out.append(f"Imp {i.get('name')}: trait {key} must be a number from {lo} to {hi}")
         return out
 
     # URLs
@@ -105,6 +150,48 @@ class Kit:
 
     def add_url(self, base):
         return f"imp://add?url={self.json_url(base)}"
+
+
+def is_num(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+
+
+def animation_problems(a):
+    out = []
+    name = a.get("name")
+    if not isinstance(name, str) or not name.strip():
+        out.append("missing name")
+    elif len(name.strip()) > 40:
+        out.append("name longer than 40 characters")
+    beats = a.get("beats")
+    if not isinstance(beats, list) or not 1 <= len(beats) <= MAX_BEATS:
+        out.append(f"needs 1 to {MAX_BEATS} beats")
+        return out
+    total = 0.0
+    for n, b in enumerate(beats, 1):
+        if not isinstance(b, dict):
+            out.append(f"beat {n}: not an object")
+            continue
+        d = b.get("duration")
+        if not is_num(d) or not MIN_BEAT <= d <= MAX_BEAT:
+            out.append(f"beat {n}: duration must be a number from {MIN_BEAT} to {MAX_BEAT} seconds")
+        else:
+            total += d
+        if "mood" in b and b["mood"] not in MOODS:
+            out.append(f"beat {n}: unknown mood {b['mood']!r}")
+        if "glyph" in b and b["glyph"] not in GLYPHS:
+            out.append(f"beat {n}: unknown glyph {b['glyph']!r}")
+        look = b.get("look")
+        if look is not None and not (isinstance(look, list) and len(look) == 2 and all(is_num(x) and -1 <= x <= 1 for x in look)):
+            out.append(f"beat {n}: look must be [x, y] with each from -1 to 1")
+        for key, lo, hi in (("tilt", -30, 30), ("stretch", -0.3, 0.3)):
+            if key in b and (not is_num(b[key]) or not lo <= b[key] <= hi):
+                out.append(f"beat {n}: {key} must be a number from {lo} to {hi}")
+        if "hop" in b and not isinstance(b["hop"], bool):
+            out.append(f"beat {n}: hop must be true or false")
+    if total > MAX_TOTAL:
+        out.append(f"{total:.1f} s long; at most {MAX_TOTAL:g} s")
+    return out
 
 
 def tool_on(imp, group):
@@ -121,7 +208,7 @@ def load_kits():
             continue
         errors += [f"{path.name}: {p}" for p in kit.problems()]
         kits.append(kit)
-    order = {"imps": 0, "triggers": 1, "tools": 2}
+    order = {"imps": 0, "animations": 1, "triggers": 2, "tools": 3}
     kits.sort(key=lambda k: (order[k.primary], k.name.lower()))
     return kits, errors
 
@@ -302,8 +389,12 @@ def hue_name(h):
 
 
 def glyph_svg(kind, label):
-    """A neutral kit glyph (no Imp in it): a bolt for triggers, a gear for tools."""
-    if kind == "triggers":
+    """A neutral kit glyph (no Imp in it): a bolt for triggers, a sparkle with motion arcs for animations, a gear for tools."""
+    if kind == "animations":
+        art = ('<path d="M50 10C53 34 58 42 82 46 58 50 53 58 50 82 47 58 42 50 18 46 42 42 47 34 50 10z" fill="currentColor"/>'
+               '<path d="M78 66a22 22 0 0 1-14 16M22 66a22 22 0 0 0 14 16" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>'
+               '<circle cx="80" cy="18" r="5" fill="currentColor"/><circle cx="20" cy="22" r="4" fill="currentColor"/>')
+    elif kind == "triggers":
         art = '<path d="M56 14 28 54h20l-5 32 29-42H52z" fill="currentColor"/>'
     else:
         teeth = "".join(f'<rect x="45" y="12" width="10" height="16" rx="3" transform="rotate({a} 50 50)" fill="currentColor"/>'
@@ -318,7 +409,7 @@ def avatar(kit, uid, size_class="", look=False):
         imp = kit.imps[0]
         hue = float(imp.get("hue", 0.0))
         return imp_svg(hue, uid, f"{imp.get('name', 'Imp')}, a {hue_name(hue)} Imp", size_class, look)
-    label = {"triggers": "A pack of triggers", "tools": "A pack of tools"}[kit.primary]
+    label = {"triggers": "A pack of triggers", "tools": "A pack of tools", "animations": "A pack of animations"}[kit.primary]
     return glyph_svg(kit.primary, label)
 
 
@@ -469,8 +560,9 @@ def badges(kit, full=False):
 
 def counts(kit):
     parts = []
-    n_imps, n_trig, n_tools = len(kit.imps), len(kit.all_triggers), len(kit.servers)
-    for n, one, many in ((n_imps, "Imp", "Imps"), (n_trig, "trigger", "triggers"), (n_tools, "tool", "tools")):
+    n_imps, n_trig, n_tools, n_anim = len(kit.imps), len(kit.all_triggers), len(kit.servers), len(kit.all_animations)
+    for n, one, many in ((n_imps, "Imp", "Imps"), (n_anim, "animation", "animations"),
+                         (n_trig, "trigger", "triggers"), (n_tools, "tool", "tools")):
         if n:
             parts.append(f"{n} {one if n == 1 else many}")
     return " · ".join(parts)
@@ -479,7 +571,8 @@ def counts(kit):
 def card(kit, i):
     types = " ".join(kit.types)
     search = " ".join([kit.name, kit.summary, kit.about, kit.author, " ".join(kit.tags),
-                       " ".join(str(x.get("name", "")) for x in kit.imps), " ".join(kit.servers)]).lower()
+                       " ".join(str(x.get("name", "")) for x in kit.imps), " ".join(kit.servers),
+                       " ".join(str(x.get("name", "")) for x in kit.all_animations)]).lower()
     tags = "".join(f'<li>#{E(t)}</li>' for t in kit.tags[:4])
     type_labels = " · ".join(dict(TYPES)[t] for t in kit.types)
     return f"""<li class="card" data-types="{E(types)}" data-tags="{E(' '.join(kit.tags))}" data-search="{E(search)}" style="--delay:{(i * 0.9) % 4.7:.1f}s">
@@ -512,7 +605,7 @@ def gallery_page(kits, base):
         tag_btns += '<button type="button" class="chip more-tags" id="more-tags" aria-expanded="false">More tags</button>'
     cards = "\n".join(card(k, i) for i, k in enumerate(kits))
     hero_imp = imp_svg(0.0, "hero", "Imp, a soft red mochi head with two little horns and two white eyes", "hero-imp", eyes_look=True)
-    desc = "Setups to share with your Imp: whole Imps, triggers and tools, added in one click and always reviewed first."
+    desc = "Setups to share with your Imp: whole Imps, animations, triggers and tools, added in one click and always reviewed first."
     return head("Imp Kits: setups for tiny desktop imps", desc, base, "", base + "/") + f"""<body>
 <a class="skip" href="#kits">Skip to the kits</a>
 {topbar("", "gallery")}
@@ -577,6 +670,86 @@ def section_triggers(triggers, heading="Triggers"):
     return f'<section class="block"><h3>{E(heading)}</h3><ul class="items">{"".join(items)}</ul></section>'
 
 
+def starts_text(a):
+    starts = [str(x) for x in a.get("starts") or []] if isinstance(a.get("starts"), list) else []
+    return ", ".join(STARTS.get(x, x) for x in starts)
+
+
+STARTS = {"idle": "when idle", "poke": "a poke", "circle": "circling the cursor", "swish": "a swish", "stroke": "a stroke",
+          "favoriteColor": "its favorite color", "tickle": "a tickle", "hold": "being held", "pickUp": "being picked up",
+          "shake": "a shake", "drop": "a drop", "rush": "a rush", "linger": "the cursor lingering", "stare": "a stare",
+          "dangle": "dangling", "comeback": "you coming back"}
+
+
+def beat_label(b):
+    bits = [str(b.get(k)) for k in ("mood", "glyph") if b.get(k)]
+    if b.get("hop"):
+        bits.append("hop")
+    if not bits and b.get("look"):
+        bits.append("look")
+    return " + ".join(bits) or "pause"
+
+
+def timeline(beats):
+    segs = []
+    for b in beats:
+        d = float(b.get("duration", 0.05))
+        label = beat_label(b)
+        segs.append(f'<li style="flex:{d:.3f} 1 0" class="beat{" hop" if b.get("hop") else ""}" title="{E(label)}, {d:g} s">'
+                    f'<span>{E(label)}</span></li>')
+    return f'<ol class="timeline" aria-label="Beats">{"".join(segs)}</ol>'
+
+
+def animation_item(a):
+    beats = [b for b in a.get("beats") or [] if isinstance(b, dict) and is_num(b.get("duration"))]
+    total = sum(b["duration"] for b in beats)
+    rows = []
+    if a.get("replaces"):
+        rows.append(f'<dt>Replaces</dt><dd>the built-in <code>{E(str(a["replaces"]))}</code></dd>')
+    starts = starts_text(a)
+    if starts:
+        rows.append(f'<dt>Starts with</dt><dd>{E(starts)}</dd>')
+    rows.append(f'<dt>Length</dt><dd>{len(beats)} beat{"" if len(beats) == 1 else "s"}, {total:.1f} s</dd>')
+    about = a.get("about")
+    return (f'<li class="item"><div class="item-head"><h4>{E(str(a.get("name", "Animation")))}</h4>'
+            + (f'<span class="badge">Replaces {E(str(a["replaces"]))}</span>' if a.get("replaces") else "") + '</div>'
+            + (f'<p class="muted anim-about">{E(about)}</p>' if isinstance(about, str) and about else "")
+            + f'<dl class="kv">{"".join(rows)}</dl>{timeline(beats)}</li>')
+
+
+def section_animations(anims, heading="Animations", nested=False):
+    if not anims:
+        return ""
+    body = f'<ul class="items">{"".join(animation_item(a) for a in anims)}</ul>'
+    if nested:
+        return f'<h5>{E(heading)}</h5>{body}'
+    return f'<section class="block"><h3>{E(heading)}</h3>{body}</section>'
+
+
+def traits_text(t):
+    if not isinstance(t, dict):
+        return ""
+    def v(k):
+        return t.get(k) if is_num(t.get(k)) else 0
+    out = []
+    if v("lids") >= 0.15: out.append("heavy lids")
+    if v("slant") <= -0.1: out.append("worried brows")
+    if v("slant") >= 0.1: out.append("angry brows")
+    if v("eyes") >= 0.05: out.append("big eyes")
+    if v("eyes") <= -0.05: out.append("small eyes")
+    if v("squint") >= 0.2: out.append("squinting")
+    if v("squint") <= -0.2: out.append("wide-eyed")
+    if v("horns") >= 5: out.append("horns up")
+    if v("horns") <= -5: out.append("horns down")
+    if v("blush") >= 0.15: out.append("blushing")
+    if abs(v("tilt")) >= 2: out.append("head tilted")
+    tempo = t.get("tempo") if is_num(t.get("tempo")) else 1
+    if tempo <= 0.9: out.append("slow")
+    if tempo >= 1.1: out.append("quick")
+    text = ", ".join(out)
+    return text[:1].upper() + text[1:]
+
+
 def server_item(name, s):
     if "url" in s:
         what = f'<dt>Address</dt><dd><code>{E(s["url"])}</code></dd><dd class="note">A remote tool: what you ask goes to that address.</dd>'
@@ -609,13 +782,14 @@ def section_imp(kit, imp, i):
     personality = imp.get("personality", "")
     return f"""<li class="item imp-item">
 <div class="imp-id">{imp_svg(hue, f'i{i}', f"{imp.get('name', 'Imp')}, a {hue_name(hue)} Imp", 'small')}
-<div><h4>{E(imp.get('name', 'Imp'))}</h4><p class="muted">{E(model_text)}</p></div></div>
+<div><h4>{E(imp.get('name', 'Imp'))}</h4><p class="muted">{E(model_text)}</p>{f'<p class="muted small traits">{E(traits_text(imp.get("traits")))}</p>' if traits_text(imp.get("traits")) else ''}</div></div>
 <h5>Personality</h5>
 <blockquote class="prompt clamp" id="p{i}">{E(personality)}</blockquote>
 <button type="button" class="more" data-more="p{i}" aria-expanded="false" aria-controls="p{i}">Read it all</button>
 <h5>What it can do</h5>
 <ul class="pills" aria-label="Tool groups">{groups}<li class="{'on' if shell else 'off'}"><span class="vh">{'On' if shell else 'Off'}: </span>Terminal commands</li></ul>
 {f'<h5>Borrowed tools</h5><ul class="items nested">{own_tools}</ul>' if own_tools else ''}
+{section_animations(imp.get('animations') if isinstance(imp.get('animations'), list) else [], 'Its animations', True)}
 {section_triggers(imp.get('triggers') or [], 'Its triggers').replace('<section class="block">', '<div class="block nested-block">').replace('</section>', '</div>') if imp.get('triggers') else ''}
 </li>"""
 
@@ -647,6 +821,7 @@ def kit_page(kit, base):
     inside = ""
     if kit.imps:
         inside += f'<section class="block"><h3>{"The Imp" if len(kit.imps) == 1 else "The Imps"}</h3><ul class="items">{"".join(section_imp(kit, imp, i) for i, imp in enumerate(kit.imps))}</ul></section>'
+    inside += section_animations(kit.animations)
     inside += section_triggers(kit.triggers)
     inside += section_tools(kit.loose_servers)
     pretty = json.dumps(kit.data, indent=2, ensure_ascii=False)
@@ -777,7 +952,7 @@ def build(out, base):
             "slug": k.slug, "name": k.name, "about": k.about, "summary": k.summary, "author": k.author, "tags": k.tags,
             "types": k.types, "formatVersion": k.version, "minImpVersion": k.min_imp,
             "imps": [{"name": i.get("name"), "hue": i.get("hue", 0.0)} for i in k.imps],
-            "counts": {"imps": len(k.imps), "triggers": len(k.all_triggers), "tools": len(k.servers)},
+            "counts": {"imps": len(k.imps), "animations": len(k.all_animations), "triggers": len(k.all_triggers), "tools": len(k.servers)},
             "runsCommands": k.runs_commands, "needsKeys": k.needs_keys, "controlsMac": k.controls_mac,
             "page": k.page_url(base), "json": k.json_url(base), "add": k.add_url(base),
         })

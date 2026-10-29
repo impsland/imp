@@ -31,7 +31,7 @@ enum KitCheck {
                 }
                 let warnings = kit.warnings().map(\.text)
                 print("\(errors.isEmpty ? "ok  " : "FAIL") \(name): \"\(kit.name)\" format \(kit.formatVersion), "
-                      + "\(kit.imps.count) Imps, \(kit.triggers.count + kit.imps.reduce(0) { $0 + $1.triggers.count }) triggers, \(kit.servers.count) tools")
+                      + "\(kit.imps.count) Imps, \(kit.triggers.count + kit.imps.reduce(0) { $0 + $1.triggers.count }) triggers, \(kit.servers.count) tools, \(kit.animations.count + kit.imps.reduce(0) { $0 + $1.animations.count }) animations")
                 for e in errors { print("     problem: \(e)") }
                 for w in warnings { print("     warning: \(w)") }
                 if !errors.isEmpty { failed = true }

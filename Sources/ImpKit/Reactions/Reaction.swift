@@ -27,7 +27,12 @@ public enum Reaction: String, Codable, CaseIterable, Sendable, Identifiable {
     public var id: String { rawValue }
 
     /// Only plays while the Imp wears its favourite colour (see `ImpProfile.isFavorite`).
-    public var unlocksWithFavoriteColor: Bool { family == .favorite }
+    public var unlocksWithFavoriteColor: Bool {
+        switch self {
+        case .twirl, .serenade, .cheer, .swoon, .glow: true
+        default: false
+        }
+    }
 
     public var title: String {
         switch self {

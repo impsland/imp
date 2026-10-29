@@ -40,6 +40,7 @@ struct ImpSettingsView: View {
                     LooksTab(imp: imp)
                     ShareCard(model: model, id: id)
                     GoodbyeCard(model: model, router: router, id: id)
+                case .moves: MovesTab(model: model, id: id)
                 case .brain: BrainTab(model: model, imp: imp)
                 case .tools: ToolsTab(model: model, imp: imp)
                 case .triggers: TriggersTab(model: model, id: id)
@@ -55,7 +56,7 @@ struct ImpSettingsView: View {
     /// Still, unless it's acting something out (like finding its favourite colour).
     @ViewBuilder private func portrait(_ profile: ImpProfile) -> some View {
         if let performance = model.performances[id] {
-            StageImp(hue: profile.hue, mood: .happy, performance: performance, clock: BodyClock(profile.id))
+            StageImp(hue: profile.hue, mood: .happy, performance: performance, traits: profile.traits, clock: BodyClock(profile.id))
         } else {
             ImpPortrait(face: impFace(hue: profile.hue, mood: .happy), shadow: false)
         }

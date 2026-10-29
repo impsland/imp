@@ -28,6 +28,8 @@ final class Puppet {
         var breathing = true
         /// Seconds since a hop started.
         var hopSince: Double?
+        /// Its character, laid over every face (see `ImpTraits`).
+        var traits = ImpTraits.plain
     }
 
     /// How long one mood's motion takes to fade into the next.
@@ -71,6 +73,20 @@ final class Puppet {
             f.headW *= 1 - step.stretch * 0.6
         }
         f.tilt += cue.lean
+        apply(cue.traits, to: &f)
         return f
+    }
+
+    /// Lays an Imp's character over a face: lids, brows, eye size and horns, in every mood.
+    static func apply(_ t: ImpTraits, to f: inout Face) {
+        guard t != .plain else { return }
+        f.lid = min(0.9, f.lid + t.lids * (1 - f.lid))
+        f.slant += t.slant * 0.6
+        f.eyeW *= 1 + t.eyes
+        f.eyeH *= 1 + t.eyes
+        f.squint = max(-1, min(1, f.squint + t.squint * 0.6))
+        f.horn += t.horns
+        f.blush = max(f.blush, t.blush)
+        f.tilt += t.tilt
     }
 }

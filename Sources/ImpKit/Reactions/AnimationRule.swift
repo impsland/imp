@@ -143,22 +143,32 @@ extension Reaction {
         }
     }
 
-    /// Groups for the settings list.
+    /// Groups for the settings list, by what an animation is for (and what starts it out of the box).
     public enum Family: String, CaseIterable, Sendable {
-        case expressions, gestures, play, handling, routines, favorite
+        /// Feelings it shows (and how Imps respond to each other).
+        case expressions
+        /// Body language for its answers: a nod, a shrug, a bow.
+        case gestures
+        /// Games with the cursor: circling, stroking, tickling, staring.
+        case play
+        /// Clicks, presses and carrying it around.
+        case handling
+        /// What it does on its own when it's quiet.
+        case routines
+        /// Its favourite colour: finding it, and what it unlocks.
+        case favorite
     }
 
     public var family: Family {
         switch self {
-        case .greet, .jump, .smile, .love, .laugh, .sad, .wow, .sleep, .thanks, .bye,
-             .boo, .shiver, .blowKiss, .proud, .heartbeat: .expressions
-        case .dizzy, .mean, .pet, .angry, .delight: .play
-        case .giggle, .cuddle, .wheee, .woozy, .plop, .flinch, .curious, .shy, .pounce, .missedYou: .handling
+        case .jump, .smile, .love, .laugh, .sad, .wow, .sleep, .boo, .shiver, .blowKiss, .proud, .heartbeat: .expressions
+        case .greet, .thanks, .bye, .yes, .no, .maybe, .dontKnow, .areYouSure, .notSure, .exactly, .nope, .hmm, .aha,
+             .tada, .sorry, .oops, .impressed, .haha, .loveIt, .sadNews, .careful, .welcome, .confused, .phew, .smug: .gestures
+        case .dizzy, .mean, .pet, .giggle, .flinch, .curious, .shy, .pounce, .missedYou: .play
+        case .angry, .cuddle, .wheee, .woozy, .plop: .handling
         case .glance, .lookAround, .turn, .hum, .showOff, .wonder, .idea, .nap, .watch,
              .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored, .wiggle, .sneak: .routines
-        case .yes, .no, .maybe, .dontKnow, .areYouSure, .notSure, .exactly, .nope, .hmm, .aha,
-             .tada, .sorry, .oops, .impressed, .haha, .loveIt, .sadNews, .careful, .welcome, .confused, .phew, .smug: .gestures
-        case .twirl, .serenade, .cheer, .swoon, .glow: .favorite
+        case .delight, .twirl, .serenade, .cheer, .swoon, .glow: .favorite
         }
     }
 }
@@ -172,10 +182,10 @@ extension ImpPreferences {
     /// Whether the cursor needs watching at all: Mouse games is on and some switched-on animation
     /// is started by a cursor game. Nothing else needs the global mouse monitor.
     public var watchesCursor: Bool {
-        mouseGames && Reaction.allCases.contains { r in
+        mouseGames && (madeAnimationsWatchCursor || Reaction.allCases.contains { r in
             let rule = rule(for: r)
             return rule.isEnabled && rule.triggers.contains { $0.watchesCursor }
-        }
+        })
     }
 
     /// Switched-on animations a trigger may start, in catalogue order.
@@ -200,6 +210,7 @@ extension ImpPreferences {
     /// Adds or removes a trigger. An exclusive trigger (a gesture) moves here from wherever it was.
     public mutating func setTrigger(_ trigger: AnimationTrigger, _ on: Bool, for reaction: Reaction) {
         if on && trigger.isExclusive {
+            releaseGesture(trigger)
             for other in Reaction.allCases where other != reaction && rule(for: other).triggers.contains(trigger) {
                 var r = rule(for: other)
                 r.triggers.remove(trigger)
@@ -211,11 +222,11 @@ extension ImpPreferences {
         store(r, for: reaction)
     }
 
-    /// Every animation back to how it came.
+    /// Every built-in animation switched on again, with its original starts (made animations stay).
     public mutating func resetAnimations() { animations = [:] }
 
     /// Keeps only real changes, so defaults can evolve for animations the user never touched.
-    private mutating func store(_ rule: AnimationRule, for reaction: Reaction) {
+    mutating func store(_ rule: AnimationRule, for reaction: Reaction) {
         animations[reaction] = rule == AnimationRule(triggers: reaction.defaultTriggers) ? nil : rule
     }
 }
