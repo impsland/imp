@@ -112,7 +112,16 @@ public final class StdioTransport: MCPTransport, @unchecked Sendable {
     public func send(_ message: JSONValue) async throws {
         var data = try encodeLine(message)
         data.append(0x0A)
-        try stdin.fileHandleForWriting.write(contentsOf: data)
+        do {
+            try stdin.fileHandleForWriting.write(contentsOf: data)
+        } catch {
+            // The server is gone (EPIPE): say why it stopped, as when its output ends, rather than
+            // "Broken pipe". Give it a moment to finish exiting and its last stderr to arrive.
+            for _ in 0..<40 where process.isRunning { try? await Task.sleep(for: .milliseconds(50)) }
+            guard !process.isRunning else { throw error }
+            try? await Task.sleep(for: .milliseconds(200))
+            throw MCPError.closed(lastWords)
+        }
     }
 
     public func close() async {

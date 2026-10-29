@@ -75,15 +75,19 @@ struct MCPTests {
         await client.close()
     }
 
-    /// Writing to a server that's gone throws; it must not kill the process with SIGPIPE (the
-    /// test runner doesn't ignore SIGPIPE the way the app does).
-    @Test func writingToAServerThatExitedThrowsInsteadOfKilling() async throws {
-        let transport = StdioTransport(command: "/usr/bin/true", arguments: [], environment: [:])
+    /// Writing to a server that's gone throws, saying why it stopped. It must not kill the process
+    /// with SIGPIPE (the test runner doesn't ignore SIGPIPE the way the app does), nor just say
+    /// "Broken pipe".
+    @Test func writingToAServerThatExitedSaysWhy() async throws {
+        let transport = StdioTransport(command: "imp-no-such-command-\(UUID().uuidString.prefix(8))", arguments: [], environment: [:])
         try await transport.start()
         for await _ in transport.incoming {}                  // ends once the server has exited
         let big = JSONValue.string(String(repeating: "x", count: 200_000))   // more than a pipe holds
-        await #expect(throws: (any Error).self) {
+        do {
             for _ in 0..<5 { try await transport.send(["jsonrpc": "2.0", "method": "ping", "params": ["pad": big]]) }
+            Issue.record("wrote to a server that had exited")
+        } catch let error as MCPError {
+            #expect(error.localizedDescription.contains("not found"))
         }
         await transport.close()
     }
