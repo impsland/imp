@@ -27,6 +27,10 @@ public final class StdioTransport: MCPTransport, @unchecked Sendable {
         process.standardInput = stdin
         process.standardOutput = stdout
         process.standardError = stderr
+        // A server that exits (or closes its stdin) mid-write must not kill whoever hosts it with
+        // SIGPIPE: the write fails with EPIPE instead, and `send` throws. Set on the pipe itself, so
+        // it holds without the app's process-wide `signal(SIGPIPE, SIG_IGN)` (in tests, say).
+        _ = fcntl(stdin.fileHandleForWriting.fileDescriptor, F_SETNOSIGPIPE, 1)
     }
 
     public var lastWords: String? {

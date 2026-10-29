@@ -75,6 +75,19 @@ struct MCPTests {
         await client.close()
     }
 
+    /// Writing to a server that's gone throws; it must not kill the process with SIGPIPE (the
+    /// test runner doesn't ignore SIGPIPE the way the app does).
+    @Test func writingToAServerThatExitedThrowsInsteadOfKilling() async throws {
+        let transport = StdioTransport(command: "/usr/bin/true", arguments: [], environment: [:])
+        try await transport.start()
+        for await _ in transport.incoming {}                  // ends once the server has exited
+        let big = JSONValue.string(String(repeating: "x", count: 200_000))   // more than a pipe holds
+        await #expect(throws: (any Error).self) {
+            for _ in 0..<5 { try await transport.send(["jsonrpc": "2.0", "method": "ping", "params": ["pad": big]]) }
+        }
+        await transport.close()
+    }
+
     @Test func hubConnectsAndRoutesCalls() async throws {
         let script = try writeFakeServer()
         let config = MCPServerConfig(name: "my srv", transport: .stdio, command: "/usr/bin/python3", arguments: [script])
