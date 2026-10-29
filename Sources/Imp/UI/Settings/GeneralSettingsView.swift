@@ -166,6 +166,8 @@ private struct AppPane: View {
                         })).labelsHidden().toggleStyle(.switch).controlSize(.small)
                 }
                 if let loginError { StatusText(verbatim: loginError, symbol: "exclamationmark.triangle.fill", color: .red).help(loginError) }
+                CardDivider()
+                LanguageRow(model: model)
             }
 
             Card("Backup", icon: "shippingbox.fill") {
@@ -194,5 +196,57 @@ private struct AppPane: View {
         } message: {
             Text("Every Imp, service, key, tool, trigger, chat and setting is deleted. This can't be undone.")
         }
+    }
+}
+
+/// The language Imp's text is in: the Mac's, or one just for Imp (the same setting as System
+/// Settings › General › Language & Region › Applications). It applies once Imp restarts, so a
+/// Restart Now button shows while what's picked isn't what's showing.
+private struct LanguageRow: View {
+    let model: AppModel
+    /// What's picked (nil: the Mac's), read from Imp's own defaults.
+    @State private var chosen: String? = LanguageRow.read()
+    /// The language this run of Imp shows.
+    private static let running = Bundle.main.preferredLocalizations.first ?? "en"
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Row("Language", info: "The language of Imp's menus, settings and bubbles. You can also set it in System Settings › General › Language & Region › Applications. Imps answer in whatever language you write to them.") {
+                Picker(String(""), selection: Binding(get: { chosen ?? "" }, set: { pick($0.isEmpty ? nil : $0) })) {
+                    Text("Same as my Mac").tag("")
+                    Divider()
+                    ForEach(AppLanguage.supported, id: \.self) { code in Text(verbatim: AppLanguage.name(code)).tag(code) }
+                }
+                .labelsHidden().fixedSize()
+            }
+            if needsRestart {
+                HStack(spacing: 8) {
+                    StatusText(text: "Imp switches language when it restarts.", symbol: "arrow.clockwise.circle.fill", color: Dungeon.ember)
+                    Spacer(minLength: 8)
+                    Button { model.relaunch() } label: { Label("Restart Now", systemImage: "arrow.clockwise") }
+                        .buttonStyle(.imp(.primary, small: true))
+                        .help("Quit Imp and open it again. Imps out on your desktop come back where they were.")
+                }
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            chosen = Self.read()          // changed in System Settings meanwhile
+        }
+    }
+
+    /// What Imp would show after a restart differs from what it shows now.
+    private var needsRestart: Bool {
+        let system = UserDefaults.standard.persistentDomain(forName: UserDefaults.globalDomain)?["AppleLanguages"] as? [String]
+            ?? Locale.preferredLanguages
+        return AppLanguage.resolved(chosen: chosen, system: system) != Self.running
+    }
+
+    private func pick(_ code: String?) {
+        AppLanguage.choose(code, in: .standard)
+        chosen = Self.read()
+    }
+
+    private static func read() -> String? {
+        AppLanguage.chosen(in: Bundle.main.bundleIdentifier.flatMap { UserDefaults.standard.persistentDomain(forName: $0) })
     }
 }

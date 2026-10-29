@@ -298,6 +298,12 @@ final class AppModel {
         exit(0)                              // not terminate: nothing may write settings back on the way out
     }
 
+    /// Quits and opens again (a new language applies from launch). Settings are saved on the way out.
+    func relaunch() {
+        Self.relaunchAfterExit(resettingPermissions: nil)
+        NSApp.terminate(nil)
+    }
+
     /// Opens this app again once this process has gone. macOS permissions (microphone, speech,
     /// automation) can only be forgotten from outside, so the same helper resets them first.
     private static func relaunchAfterExit(resettingPermissions bundleID: String?) {

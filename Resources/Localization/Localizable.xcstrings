@@ -7504,6 +7504,22 @@
         }
       }
     },
+    "Imp switches language when it restarts." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp cambia de idioma al reiniciarse."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 重新启动后切换语言。"
+          }
+        }
+      }
+    },
     "Import kit" : {
       "localizations" : {
         "es" : {
@@ -12393,6 +12409,22 @@
         }
       }
     },
+    "Quit Imp and open it again. Imps out on your desktop come back where they were." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sal de Imp y vuelve a abrirlo. Los Imps de tu escritorio vuelven a donde estaban."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出 Imp 并重新打开。桌面上的 Imp 会回到原来的位置。"
+          }
+        }
+      }
+    },
     "Read all" : {
       "localizations" : {
         "es" : {
@@ -13062,6 +13094,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "将指针停在它脸上"
+          }
+        }
+      }
+    },
+    "Restart Now" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reiniciar ahora"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立即重新启动"
           }
         }
       }
@@ -16538,6 +16586,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "该链接中的套件已损坏。"
+          }
+        }
+      }
+    },
+    "The language of Imp's menus, settings and bubbles. You can also set it in System Settings › General › Language & Region › Applications. Imps answer in whatever language you write to them." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El idioma de los menús, ajustes y burbujas de Imp. También puedes cambiarlo en Ajustes del Sistema › General › Idioma y región › Aplicaciones. Los Imps responden en el idioma en que les escribas."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 的菜单、设置和气泡所用的语言。也可以在“系统设置 › 通用 › 语言与地区 › 应用程序”中设置。Imp 会用你写给它们的语言回答。"
           }
         }
       }

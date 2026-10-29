@@ -136,8 +136,9 @@ one can handle private work while another uses a bigger cloud model.
 - **A whole troupe.** Several Imps, each with its own name, colour, personality and model. They
   share one clock and stop drawing whenever they can't be seen, so a big troupe stays light on the
   battery.
-- **Your language.** English, Spanish and Simplified Chinese, following your Mac (or the per-app
-  language in System Settings › General › Language & Region).
+- **Your language.** English, Spanish and Simplified Chinese, following your Mac, or pick one for Imp
+  alone in All Imps › App › Language (the same setting as System Settings › General › Language &
+  Region › Applications). It applies after a restart; **Restart Now** is right there.
 - **Automation.** `imp://` links for Shortcuts, Raycast and scripts:
 
   | Link                                   | Does                         |
