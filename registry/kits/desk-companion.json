@@ -1,0 +1,39 @@
+{
+  "imp": 1,
+  "app": "1.7.0",
+  "name": "Desk companion",
+  "about": "Four small reactions that make the Imp feel alive at your desk: it warns you when the battery is low and you are unplugged, welcomes you back after a break, nudges you to stand up, and cools off when the Mac runs hot.",
+  "registry": {
+    "author": "Imp community",
+    "tags": ["triggers", "battery", "wellbeing", "reactions"],
+    "summary": "Battery warning, a welcome back after breaks, stretch nudges and a heat alert."
+  },
+  "triggers": [
+    {
+      "name": "Battery is low",
+      "when": { "kind": "battery", "number": 15 },
+      "only_if": [{ "kind": "charger", "flag": false }],
+      "do": "ask",
+      "prompt": "My battery is low and the charger is not plugged in. React with a worried animation and tell me in one short sentence to plug in, with the exact battery percentage if you know it."
+    },
+    {
+      "name": "Back at my desk",
+      "when": { "kind": "back", "number": 30 },
+      "do": "ask",
+      "prompt": "I am back at the keyboard after being away for a while. Greet me with a happy animation and one short, warm sentence. If it is morning say good morning, if it is late say it is getting late. Do not ask me anything."
+    },
+    {
+      "name": "Stretch break",
+      "when": { "kind": "every", "number": 60 },
+      "only_if": [{ "kind": "hours", "text": "09:00-19:00" }],
+      "do": "ask",
+      "prompt": "An hour has passed. Stretch yourself with a little animation and, in one friendly sentence, suggest I stand up, roll my shoulders or drink some water. Vary what you suggest."
+    },
+    {
+      "name": "The Mac is hot",
+      "when": { "kind": "hot" },
+      "do": "ask",
+      "prompt": "The Mac is running hot. Fan yourself with an animation and tell me in one sentence to give it some air, close heavy apps or lift it off the soft surface it is on."
+    }
+  ]
+}

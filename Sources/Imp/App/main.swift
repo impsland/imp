@@ -75,6 +75,13 @@ if let url = argument(after: "--render-status-icon") {
     exit(0)
 }
 
+// Hidden registry check: `Imp --check-kit <file.json>...` reads each file with the real kit parser and prints
+// ok / problems / warnings / format version. Exits 1 if any file can't be read or has a problem.
+if let i = args.firstIndex(of: "--check-kit") {
+    let files = Array(args[(i + 1)...].filter { !$0.hasPrefix("--") })
+    exit(KitCheck.run(files: files))
+}
+
 // Hidden probe for computer control: `Imp --observe [app] [--screenshot out.png]` prints the element tree.
 if let i = args.firstIndex(of: "--observe") {
     let name = args.indices.contains(i + 1) && !args[i + 1].hasPrefix("--") ? args[i + 1] : nil

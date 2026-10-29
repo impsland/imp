@@ -1,0 +1,52 @@
+name: Registry
+
+# Validates every kit in registry/kits with the app's own parser (Imp --check-kit), builds the
+# gallery (registry/build.py) and, on a push to main, publishes it to GitHub Pages.
+# The deploy job only works once Pages is enabled for the repository (Settings > Pages > Source:
+# GitHub Actions); until then it fails harmlessly after the check and build jobs have passed.
+on:
+  push:
+    branches: [main]
+    paths: ["registry/**", ".github/workflows/registry.yml", "Sources/ImpKit/Settings/Kit*.swift"]
+  pull_request:
+    paths: ["registry/**", ".github/workflows/registry.yml", "Sources/ImpKit/Settings/Kit*.swift"]
+
+permissions:
+  contents: read
+
+jobs:
+  check-and-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build Imp
+        run: xcrun swift build
+
+      - name: Check the kits with the real parser
+        run: .build/debug/Imp --check-kit registry/kits/*.json
+
+      - name: Build the site
+        run: python3 registry/build.py --out registry/site --base-url "https://impsland.github.io/imp"
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: registry/site
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: check-and-build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

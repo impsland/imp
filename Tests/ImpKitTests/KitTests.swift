@@ -18,6 +18,20 @@ import Testing
       } }
     """#
 
+    @Test func registryMetadataIsIgnored() throws {
+        let kit = try Kit.parse(#"""
+        { "imp": 1, "name": "Pack", "about": "Hi",
+          "registry": { "author": "someone", "tags": ["a", "b"], "summary": "One line." },
+          "triggers": [ { "name": "Hi", "when": { "kind": "wake" }, "prompt": "Hello" } ] }
+        """#)
+        #expect(kit.name == "Pack" && kit.triggers.count == 1 && kit.problems.isEmpty)
+        let withImp = try Kit.parse(#"""
+        { "imp": 2, "name": "Pet", "registry": { "author": "x", "tags": [], "summary": "y" },
+          "imps": [ { "name": "Pip", "registry": { "anything": true } } ] }
+        """#)
+        #expect(withImp.imps.map(\.name) == ["Pip"] && withImp.problems.isEmpty)
+    }
+
     @Test func parsesAFullKit() throws {
         let kit = try Kit.parse(Self.full)
         #expect(kit.name == "Morning helper" && kit.about == "Starts the day.")

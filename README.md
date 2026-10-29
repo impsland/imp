@@ -195,6 +195,8 @@ Adding a field is not a new version (readers ignore keys they don't know, and gi
 default); only a change an older Imp would misread bumps it, and then Imp upgrades what older
 versions wrote as it reads. `"app"` is the version of Imp that wrote the file, for information only.
 
+Ready-made kits to borrow, and how to add yours, are in the community registry: [`registry/`](registry/README.md).
+
 <p align="center"><img src="docs/moods.png" width="760" alt="Imp's moods"></p>
 
 ## Get started with a local model

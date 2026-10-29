@@ -1,0 +1,15 @@
+{
+  "imp": 1,
+  "app": "1.7.0",
+  "name": "Notes and memory pack",
+  "about": "Give an Imp a long memory and a notes folder. Memory keeps a small knowledge graph of people, projects and facts across chats. Files lets it read and write inside one folder only. Make a folder called ImpNotes in your Documents first, or edit the folder in the tool's settings after adding.",
+  "registry": {
+    "author": "Imp community",
+    "tags": ["tools", "memory", "files", "notes"],
+    "summary": "A knowledge-graph memory plus read/write access to a single notes folder."
+  },
+  "mcpServers": {
+    "Memory": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-memory"] },
+    "Notes folder": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "~/Documents/ImpNotes"] }
+  }
+}

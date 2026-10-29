@@ -1,0 +1,27 @@
+{
+  "imp": 1,
+  "app": "1.7.0",
+  "name": "Translate what I copied",
+  "about": "Copy any text, press a key, and the Imp translates it. One key for your own language, one for English. Works with any Imp and uses no extra tools.",
+  "registry": {
+    "author": "Imp community",
+    "tags": ["translation", "language", "clipboard", "keyboard"],
+    "summary": "Two keys that translate the text you copied, into English or into your language."
+  },
+  "triggers": [
+    {
+      "name": "Translate to English",
+      "when": { "kind": "keys", "keys": "ctrl+opt+T" },
+      "with_clipboard": true,
+      "do": "ask",
+      "prompt": "Translate the copied text into English. Say only the translation, keeping the tone, names and formatting, without any comment. If it is already English, make it clearer and more natural instead and say so in three words."
+    },
+    {
+      "name": "Translate to my language",
+      "when": { "kind": "keys", "keys": "ctrl+opt+shift+T" },
+      "with_clipboard": true,
+      "do": "ask",
+      "prompt": "Translate the copied text into the language I normally talk to you in (if the text is already in that language, translate it into English). Say only the translation, keeping the tone, names and formatting, without any comment."
+    }
+  ]
+}

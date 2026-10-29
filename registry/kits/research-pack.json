@@ -1,0 +1,15 @@
+{
+  "imp": 1,
+  "app": "1.7.0",
+  "name": "Research pack: web pages and careful thinking",
+  "about": "Two tools for any Imp. Fetch reads a web page and turns it into text so the Imp can summarise or quote it. Sequential Thinking lets it work through a hard question step by step before it answers.",
+  "registry": {
+    "author": "Imp community",
+    "tags": ["tools", "web", "research", "reasoning"],
+    "summary": "Let your Imp read web pages and think through hard questions step by step."
+  },
+  "mcpServers": {
+    "Fetch": { "command": "uvx", "args": ["mcp-server-fetch"] },
+    "Sequential Thinking": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"] }
+  }
+}
