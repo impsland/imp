@@ -4,6 +4,21 @@ import Foundation
 public protocol ToolProvider: Sendable {
     func tools() async -> [ToolSpec]
     func call(_ name: String, arguments: String) async throws -> String
+    /// Like `call`, but a tool may hand back pictures too (a screenshot). The default wraps `call`.
+    func run(_ name: String, arguments: String) async throws -> ToolOutput
+}
+
+extension ToolProvider {
+    public func run(_ name: String, arguments: String) async throws -> ToolOutput {
+        ToolOutput(try await call(name, arguments: arguments))
+    }
+}
+
+/// What a tool returns: the text the model reads, and pictures it should look at.
+public struct ToolOutput: Equatable, Sendable {
+    public var text: String
+    public var images: [EncodedImage]
+    public init(_ text: String, images: [EncodedImage] = []) { self.text = text; self.images = images }
 }
 
 /// Progress of a run, for showing what the model is doing.
@@ -42,16 +57,22 @@ public struct Agent: Sendable {
                 return (reply.text, transcript)
             }
             transcript.append(.assistant(reply.text.isEmpty ? nil : reply.text, toolCalls: reply.toolCalls))
+            var pictured: [String] = []
+            var pictures: [EncodedImage] = []
             for call in reply.toolCalls {
                 try Task.checkCancellation()
                 await onEvent(.toolStarted(call.name, arguments: call.arguments))
-                let result: String
-                do { result = try await tools.call(call.name, arguments: call.arguments) }
+                let output: ToolOutput
+                do { output = try await tools.run(call.name, arguments: call.arguments) }
                 catch is CancellationError { throw CancellationError() }
-                catch { result = "Error: \(error.localizedDescription)" }
+                catch { output = ToolOutput("Error: \(error.localizedDescription)") }
+                let result = output.text
                 await onEvent(.toolFinished(call.name, ok: !result.hasPrefix("Error:"), result: result))
                 transcript.append(.tool(id: call.id, content: result))
+                if !output.images.isEmpty { pictured.append(call.name); pictures += output.images }
             }
+            // Tool messages can't carry pictures across providers: they follow as one user message.
+            if !pictures.isEmpty { transcript.append(.attachment(pictures, from: pictured)) }
         }
         // Out of steps: force a plain answer.
         try Task.checkCancellation()

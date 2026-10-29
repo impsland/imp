@@ -37,7 +37,7 @@ public struct ChatMemory: Codable, Equatable, Sendable {
     /// Remembers one finished exchange: the user's turn and everything that followed it (the
     /// agent's new messages). Pictures are dropped, long tool results clipped.
     public mutating func remember(_ exchange: [ChatMessage]) {
-        let kept = exchange.map { m -> ChatMessage in
+        let kept = exchange.filter { $0.attachment != true }.map { m -> ChatMessage in
             var m = Briefing.remembered(m)
             if m.role == "tool", let c = m.content, c.count > Self.toolResultLimit {
                 m.content = String(c.prefix(Self.toolResultLimit)) + "\n…(clipped: \(c.count - Self.toolResultLimit) more characters)"
@@ -73,7 +73,7 @@ public struct ChatMemory: Codable, Equatable, Sendable {
     static func exchanges(in messages: [ChatMessage]) -> [[ChatMessage]] {
         var out: [[ChatMessage]] = []
         for m in messages {
-            if m.role == "user" || out.isEmpty { out.append([m]) } else { out[out.count - 1].append(m) }
+            if (m.role == "user" && m.attachment != true) || out.isEmpty { out.append([m]) } else { out[out.count - 1].append(m) }
         }
         return out
     }
@@ -81,7 +81,7 @@ public struct ChatMemory: Codable, Equatable, Sendable {
     /// Only what was said: your turns and its replies, no tool calls or results.
     static func withoutTools(_ messages: [ChatMessage]) -> [ChatMessage] {
         messages.filter { m in
-            m.role != "tool" && !(m.role == "assistant" && !(m.toolCalls ?? []).isEmpty)
+            m.role != "tool" && m.attachment != true && !(m.role == "assistant" && !(m.toolCalls ?? []).isEmpty)
         }
     }
 }
@@ -95,20 +95,24 @@ public struct Chat: Codable, Equatable, Identifiable, Sendable {
     public var updated: Date
     public var turns: [ChatTurn]
     public var memory: ChatMemory
+    /// The Imp this chat is with, when it's where two Imps talk (nil: a chat with you).
+    public var peer: UUID?
 
-    public init(id: UUID = UUID(), title: String = "", created: Date = Date(), turns: [ChatTurn] = [], memory: ChatMemory = ChatMemory()) {
+    public init(id: UUID = UUID(), title: String = "", created: Date = Date(), turns: [ChatTurn] = [], memory: ChatMemory = ChatMemory(),
+                peer: UUID? = nil) {
         self.id = id; self.title = title; self.created = created; self.updated = turns.last?.date ?? created
-        self.turns = turns; self.memory = memory
+        self.turns = turns; self.memory = memory; self.peer = peer
     }
 
     public var isEmpty: Bool { turns.isEmpty && memory.isEmpty }
 
     /// The list entry for this chat.
-    public var summary: ChatSummary { ChatSummary(id: id, title: title, updated: updated, turns: turns.count) }
+    public var summary: ChatSummary { ChatSummary(id: id, title: title, updated: updated, turns: turns.count, peer: peer) }
 
     /// A name from the first thing you asked: its first line, cut short.
     static func title(for turn: ChatTurn) -> String {
-        let words = turn.request.isEmpty ? (turn.picture == nil ? "Chat" : "A picture") : turn.request
+        var words = turn.request.isEmpty ? (turn.picture == nil ? "Chat" : "A picture") : turn.request
+        if turn.via == .imp, let sender = turn.sender { words = "\(sender.name): \(words)" }
         let line = words.split(whereSeparator: \.isNewline).first.map(String.init) ?? words
         let trimmed = line.trimmingCharacters(in: .whitespaces)
         return trimmed.count > 48 ? String(trimmed.prefix(47)) + "…" : trimmed
@@ -121,6 +125,8 @@ public struct ChatSummary: Codable, Equatable, Identifiable, Sendable {
     public var title: String
     public var updated: Date
     public var turns: Int
+    /// The Imp it's with, for a chat between two Imps.
+    public var peer: UUID?
 }
 
 /// Recaps a chat that's grown long: the model sums it up, the summary replaces the messages
@@ -149,6 +155,7 @@ public enum Recap {
         if let recap = memory.recap { lines.append("[Earlier recap]\n\(recap)") }
         for m in memory.messages {
             let text = (m.content ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if m.attachment == true { continue }
             switch m.role {
             case "user": lines.append("User: \(text)")
             case "assistant":

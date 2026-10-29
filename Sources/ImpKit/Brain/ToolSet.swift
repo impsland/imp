@@ -13,8 +13,12 @@ public struct ToolSet: ToolProvider {
     }
 
     public func call(_ name: String, arguments: String) async throws -> String {
+        try await run(name, arguments: arguments).text
+    }
+
+    public func run(_ name: String, arguments: String) async throws -> ToolOutput {
         for m in members where await m.tools().contains(where: { $0.name == name }) {
-            return try await m.call(name, arguments: arguments)
+            return try await m.run(name, arguments: arguments)
         }
         throw MCPError.badConfig("Unknown tool \(name).")
     }

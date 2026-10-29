@@ -2,7 +2,7 @@ import AppKit
 import ImpKit
 import SwiftUI
 
-/// The menu bar item: a small panel of three buttons. Everything else lives in the app's window
+/// The menu bar item: a small panel of buttons (Imps, Hide, Settings, Quit). Everything else lives in the app's window
 /// and in each Imp's own right-click menu.
 ///
 /// It's our own non-activating panel (like the speech bubble), not an `NSMenu` with a SwiftUI
@@ -12,7 +12,7 @@ import SwiftUI
 final class StatusMenu: NSObject {
     private let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
     private let model: AppModel
-    private let panel = FloatingPanel(size: CGSize(width: 232, height: 52))
+    private let panel = FloatingPanel(size: CGSize(width: 300, height: 52))
     /// Clicks elsewhere (in other apps, and in Imp's other windows) and Esc close the panel.
     private var monitors: [Any] = []
 
@@ -123,6 +123,10 @@ final class StatusMenu: NSObject {
                           enabled: anyoneOut) { [weak self] in
                 guard let self else { return }
                 self.run { self.toggleImps() }
+            },
+            QuickBar.Item(icon: "gearshape.fill", title: "Settings", help: "Settings for all Imps: brain keys, manners, animations, hearing, permissions") { [weak self] in
+                guard let self else { return }
+                self.run { HomeWindow.shared.showGeneral(self.model) }
             },
             QuickBar.Item(icon: "power", title: "Quit", help: "Quit Imp (⌘Q)") { [weak self] in
                 self?.run { NSApp.terminate(nil) }

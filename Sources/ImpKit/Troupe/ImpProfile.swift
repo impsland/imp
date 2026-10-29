@@ -34,16 +34,24 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     public var servers: [UUID] = []
     /// May run commands on this Mac (the `shell` tool): on by default, it's how an Imp does things.
     public var usesShell = true
-    /// Its own tools it may not use (all are on until switched off). Optional, so older profiles load.
+    /// Its own tools it may not use. Groups that are on by default stay on until listed here.
+    /// Optional, so older profiles load.
     private var ownToolsOff: [ImpToolGroup]?
+    /// Its own tools that are off by default (`ImpToolGroup.isOnByDefault`) and it may use.
+    private var ownToolsOn: [ImpToolGroup]?
 
     /// Whether it may use one group of its own tools (animations, its senses, setting itself up…).
-    public func uses(_ group: ImpToolGroup) -> Bool { !(ownToolsOff ?? []).contains(group) }
+    public func uses(_ group: ImpToolGroup) -> Bool {
+        group.isOnByDefault ? !(ownToolsOff ?? []).contains(group) : (ownToolsOn ?? []).contains(group)
+    }
 
     public mutating func setUses(_ group: ImpToolGroup, _ on: Bool) {
-        var off = Set(ownToolsOff ?? [])
-        if on { off.remove(group) } else { off.insert(group) }
-        ownToolsOff = off.isEmpty ? nil : ImpToolGroup.allCases.filter(off.contains)
+        func update(_ list: [ImpToolGroup]?, _ member: Bool) -> [ImpToolGroup]? {
+            var set = Set(list ?? [])
+            if member { set.insert(group) } else { set.remove(group) }
+            return set.isEmpty ? nil : ImpToolGroup.allCases.filter(set.contains)
+        }
+        if group.isOnByDefault { ownToolsOff = update(ownToolsOff, !on) } else { ownToolsOn = update(ownToolsOn, on) }
     }
 
     /// The groups of its own tools it may use.

@@ -21,6 +21,17 @@ public struct ChatTurn: Codable, Equatable, Identifiable, Sendable {
         case typed, spoken, shortcut
         /// Not a request: the chat was recapped (`reply` is the recap).
         case recap
+        /// Another Imp asked (`imp_message`): `sender` says which, `request` is its question.
+        case imp
+    }
+
+    /// The Imp that sent a message: kept with the turn, so the chat shows who said it and in
+    /// whose colour, even after that Imp is renamed or gone.
+    public struct Sender: Codable, Equatable, Hashable, Sendable {
+        public var id: UUID
+        public var name: String
+        public var hue: Double
+        public init(id: UUID, name: String, hue: Double) { self.id = id; self.name = name; self.hue = hue }
     }
 
     public var id: UUID
@@ -39,11 +50,14 @@ public struct ChatTurn: Codable, Equatable, Identifiable, Sendable {
     public var copiedText: String?
     /// The picture handed over (pasted into the text box, or copied for a shortcut): its file.
     public var picture: String?
+    /// Who asked, when it was another Imp (`via` is `.imp`).
+    public var sender: Sender?
 
     public init(id: UUID = UUID(), date: Date = Date(), request: String, reply: String = "", failed: Bool = false,
-                steps: [Step] = [], via: Via? = nil, instruction: String? = nil, copiedText: String? = nil, picture: String? = nil) {
+                steps: [Step] = [], via: Via? = nil, instruction: String? = nil, copiedText: String? = nil, picture: String? = nil,
+                sender: Sender? = nil) {
         self.id = id; self.date = date; self.request = request; self.reply = reply; self.failed = failed; self.steps = steps
-        self.via = via; self.instruction = instruction; self.copiedText = copiedText; self.picture = picture
+        self.via = via; self.instruction = instruction; self.copiedText = copiedText; self.picture = picture; self.sender = sender
     }
 }
 
@@ -92,12 +106,36 @@ public struct ChatHistory: Sendable {
     /// Adds a turn to the current chat, with what the model should remember of it (the user's
     /// turn and the agent's new messages; nil for a failure, which the model never saw answered).
     public mutating func append(_ turn: ChatTurn, remembering exchange: [ChatMessage]? = nil) {
-        if current.title.isEmpty, turn.via != .recap { current.title = Chat.title(for: turn) }
-        current.turns.append(turn)
-        if current.turns.count > Self.limit { current.turns.removeFirst(current.turns.count - Self.limit) }
-        if let exchange, !exchange.isEmpty { current.memory.remember(exchange) }
-        current.updated = turn.date
+        Self.add(turn, remembering: exchange, to: &current)
         save(current)
+    }
+
+    private static func add(_ turn: ChatTurn, remembering exchange: [ChatMessage]?, to chat: inout Chat) {
+        if chat.title.isEmpty, turn.via != .recap { chat.title = Chat.title(for: turn) }
+        chat.turns.append(turn)
+        if chat.turns.count > limit { chat.turns.removeFirst(chat.turns.count - limit) }
+        if let exchange, !exchange.isEmpty { chat.memory.remember(exchange) }
+        chat.updated = turn.date
+    }
+
+    /// The saved chat with another Imp (one per peer, found by the peer's id, never by title).
+    public func chat(with peer: UUID) -> ChatSummary? { chats.first { $0.peer == peer } }
+
+    /// What the model remembers of its chat with `peer` (nothing before the first message).
+    /// Reads the file if it isn't the chat you're in.
+    public func memory(withPeer peer: UUID) -> ChatMemory {
+        if current.peer == peer { return current.memory }
+        return chat(with: peer).flatMap { load($0.id) }?.memory ?? ChatMemory()
+    }
+
+    /// Adds a turn to the chat with `peer`, made on the first one ("With Pip"), without changing
+    /// the chat you're in. It is listed first like any chat that was just talked in.
+    public mutating func append(_ turn: ChatTurn, remembering exchange: [ChatMessage]? = nil, withPeer peer: ChatTurn.Sender) {
+        if current.peer == peer.id { return append(turn, remembering: exchange) }
+        var chat = chat(with: peer.id).flatMap { load($0.id) }
+            ?? Chat(title: "With \(peer.name)", peer: peer.id)
+        Self.add(turn, remembering: exchange, to: &chat)
+        save(chat)
     }
 
     /// The model's recap replaces what it remembered before the last exchange, and shows in the

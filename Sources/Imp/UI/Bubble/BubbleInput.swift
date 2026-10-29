@@ -38,17 +38,24 @@ struct TypingField: View {
 
     private func field(empty: Bool) -> some View {
         HStack(alignment: .bottom, spacing: 2) {
-            TextField(chat ? "Message \(model.profile.name)…" : bubble.prompt ?? "Ask Imp anything…", text: $text, axis: .vertical)
+            // Measured with what's typed (`bubble.text`), so the bubble is as tall as the lines in it.
+            TextField(chat ? "Message \(model.profile.name)…" : bubble.prompt ?? "Ask Imp anything…",
+                      text: measuring ? .constant(bubble.text) : $text, axis: .vertical)
                 .textFieldStyle(.plain)
                 .font(.system(size: 14))
                 .lineLimit(1...6)
+                // Room above the first line's capitals and below the last line's descenders.
+                .padding(.vertical, 2)
                 .frame(minHeight: 26)
                 .padding(.leading, 6)
                 .focused($focused)
                 .onKeyPress(.return, phases: .down) { press in
-                    if press.modifiers.contains(.shift) { text += "\n"; return .handled }
-                    send(); return .handled
+                    guard press.modifiers.contains(.shift) else { send(); return .handled }
+                    // A new line at the caret (not at the end), which the field keeps in view.
+                    NSApp.sendAction(#selector(NSResponder.insertNewlineIgnoringFieldEditor(_:)), to: nil, from: nil)
+                    return .handled
                 }
+                .onChange(of: text) { _, now in if !chat && !measuring { model.typingChanged(now) } }
                 .onExitCommand { model.dismissBubble() }
             if !chat { IconButton(icon: "mic", help: "Talk instead") { model.talk() } }
             Button(action: send) {

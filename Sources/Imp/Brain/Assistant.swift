@@ -163,7 +163,18 @@ final class Assistant {
             members.append(ShellTool(directory: directory, environment: environment))
         }
         if !imp.servers.isEmpty { members.append(MCPScope(hub: hub, servers: Set(imp.servers))) }
+        if imp.uses(.computer) { members.append(ComputerToolHost(control: computerControl(for: imp.id))) }
         return members.isEmpty ? nil : ToolSet(members)
+    }
+
+    /// Each Imp's computer control, kept so it remembers its last look between calls and requests.
+    private var computerControls: [UUID: ComputerControl] = [:]
+
+    private func computerControl(for imp: UUID) -> ComputerControl {
+        if let existing = computerControls[imp] { return existing }
+        let control = ComputerControl()
+        computerControls[imp] = control
+        return control
     }
 
     /// Some enabled MCP server is still starting up.

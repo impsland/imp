@@ -19,6 +19,7 @@ struct ToolsTab: View {
                 VStack(spacing: 8) {
                     ForEach(ImpToolGroup.allCases) { group in
                         ownToolRow(group)
+                        if group == .computer, imp.uses(.computer) { computerPermissions }
                         if group != ImpToolGroup.allCases.last { CardDivider() }
                     }
                 }
@@ -115,6 +116,29 @@ struct ToolsTab: View {
                 .labelsHidden().toggleStyle(.switch).controlSize(.small)
                 .help(imp.uses(group) ? "On: \(name) may use these" : "Off")
         }
+    }
+
+    /// What computer control still needs from macOS, with the buttons to grant it.
+    @ViewBuilder private var computerPermissions: some View {
+        let status = SystemStatus.shared
+        let missing = Permission.computerControl.filter { !status.isGranted($0) }
+        VStack(alignment: .leading, spacing: 6) {
+            if missing.isEmpty {
+                StatusText(text: "Permissions granted", symbol: "checkmark.circle.fill", color: .green)
+            } else {
+                ForEach(missing) { p in
+                    HStack(spacing: 8) {
+                        Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange).font(.system(size: 11))
+                        Text("\(p.title) is off").font(.system(size: 12))
+                        Spacer(minLength: 8)
+                        Button("Allow…") { p.request() }.buttonStyle(.imp(.primary, small: true))
+                    }
+                }
+                Text("If it still doesn't work after granting, remove Imp from the list and add it again (+), then restart Imp.")
+                    .font(.system(size: 11)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.leading, 38)
     }
 
     /// The browser extension: lets Imps know the page you're on, and sit on things in it.

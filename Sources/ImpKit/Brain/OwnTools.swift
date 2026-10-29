@@ -12,6 +12,11 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
     case setup
     /// Messages to the other Imps.
     case troupe
+    /// Operating other apps through screenshots and accessibility (`ComputerTools`). Off until switched on.
+    case computer
+
+    /// Whether an Imp has the group before anyone chooses. Computer control is opt-in.
+    public var isOnByDefault: Bool { self != .computer }
 
     public var id: String { rawValue }
 
@@ -21,6 +26,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
         case .senses: "Senses"
         case .setup: "Sets itself up"
         case .troupe: "Talks to the troupe"
+        case .computer: "Computer control"
         }
     }
 
@@ -30,6 +36,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
         case .senses: "sensor.fill"
         case .setup: "wand.and.stars"
         case .troupe: "person.3.fill"
+        case .computer: "cursorarrow.click.2"
         }
     }
 
@@ -39,6 +46,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
         case .senses: "Reads the battery, processor, heat, network, open apps and, with the browser extension, the page you're on."
         case .setup: "Adds and removes its own triggers and borrowed tools (MCP servers) when you ask, and opens settings for you to fill in keys."
         case .troupe: "Sends messages to the other Imps out on your desktop and hears their answers."
+        case .computer: "Looks at any app's window and operates it: clicks, types, shortcuts, menus, scrolling, drawing. Needs the Screen & System Audio Recording and Accessibility permissions. Off until you switch it on."
         }
     }
 }
@@ -66,6 +74,7 @@ public enum OwnTools {
         case status, page: .senses
         case listTriggers, addTrigger, removeTrigger, listTools, addTool, removeTool, openSettings: .setup
         case message: .troupe
+        case ComputerTools.observe, ComputerTools.act, ComputerTools.verify: .computer
         default: nil
         }
     }
@@ -77,13 +86,15 @@ public enum OwnTools {
                                 "top-left", "top-right", "bottom-left", "bottom-right"]
 
     /// The tools for `groups`. `animations`: names it may play right now; `imps`: the others it can message.
-    public static func specs(_ groups: Set<ImpToolGroup>, animations: [String], imps: [String], browser: Bool) -> [ToolSpec] {
+    public static func specs(_ groups: Set<ImpToolGroup>, animations: [String], imps: [String], browser: Bool,
+                             talk: ImpTalk = .own) -> [ToolSpec] {
         var specs: [ToolSpec] = []
         if groups.contains(.body) {
             specs.append(ToolSpec(
                 name: play,
                 description: "Act something out with your body: play one or more of your animations, one after another "
-                    + "(body language for what you say, or a reaction). They play once your reply shows. Use them often "
+                    + "(body language for what you say, or a reaction). They play once your reply shows; animations from several calls "
+                    + "all play, in the order you asked for them. Use them often "
                     + "and naturally, like a lively little creature, but not for every message.",
                 inputSchema: ["type": "object",
                               "properties": ["names": ["type": "array", "items": ["type": "string", "enum": .array(animations.map { .string($0) })],
@@ -186,14 +197,19 @@ public enum OwnTools {
                               "required": ["page"]]))
         }
         if groups.contains(.troupe), !imps.isEmpty {
+            var properties: [String: JSONValue] = ["to": ["type": "string", "enum": .array(imps.map { .string($0) })],
+                                                   "text": ["type": "string"]]
+            if talk == .decides {
+                let where_ = "Where the two of you talk: `own` (default) is a private chat between you and that Imp, "
+                    + "kept apart from the user's; `shared` is the chat that Imp has with the user (use it when the user "
+                    + "should see or take part in what's said)."
+                properties["chat"] = ["type": "string", "enum": ["own", "shared"], "description": .string(where_)]
+            }
             specs.append(ToolSpec(
                 name: message,
                 description: "Send a message to another Imp out on the desktop and get its answer (it shows its own bubble). "
                     + "Keep it short and friendly.",
-                inputSchema: ["type": "object",
-                              "properties": ["to": ["type": "string", "enum": .array(imps.map { .string($0) })],
-                                             "text": ["type": "string"]],
-                              "required": ["to", "text"]]))
+                inputSchema: ["type": "object", "properties": .object(properties), "required": ["to", "text"]]))
         }
         return specs
     }

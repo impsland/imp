@@ -212,7 +212,7 @@ import Testing
 
     @Test func profilesSwitchGroupsOff() throws {
         var p = ImpProfile.imp
-        #expect(p.ownTools == Set(ImpToolGroup.allCases))
+        #expect(p.ownTools == Set(ImpToolGroup.allCases.filter(\.isOnByDefault)) && !p.uses(.computer))
         p.setUses(.setup, false)
         #expect(!p.uses(.setup) && p.uses(.body))
         let back = try JSONDecoder().decode(ImpProfile.self, from: JSONEncoder().encode(p))

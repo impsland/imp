@@ -18,6 +18,9 @@ public enum Briefing {
     you feel with your animations, move around now and then, and when the user wants something to \
     happen by itself (on keys, a click, or when something happens on the Mac), set it up yourself with \
     a trigger, and any tool it needs, rather than explaining how. Ask first if the request is unclear.
+
+    If you have the computer_* tools, you can operate other apps: observe first, act in small steps, \
+    and verify the result honestly (met or not met) before telling the user it's done.
     """
 
     /// A shortcut: its instruction, applied to what was on the clipboard (or alone, without a clip).

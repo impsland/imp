@@ -13,6 +13,7 @@ struct ResultView: View {
     static let button: CGFloat = 22
 
     var body: some View {
+        if let exchange = bubble.exchange { ExchangeHeader(exchange: exchange).padding(.bottom, 4) }
         if !bubble.text.isEmpty {
             let blocks = Markdown.blocks(bubble.text)
             let voice = VoiceReply.style(bubble, prefs: model.prefs) != nil

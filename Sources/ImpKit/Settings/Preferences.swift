@@ -6,6 +6,39 @@ public enum ClickAction: String, Codable, CaseIterable, Sendable, Identifiable {
     public var id: String { rawValue }
 }
 
+/// Where Imps talk when one messages another (`imp_message`).
+public enum ImpTalk: String, Codable, CaseIterable, Sendable, Identifiable {
+    /// In a chat of their own: the receiver keeps one per Imp it talks with.
+    case own
+    /// In the receiver's chat with you.
+    case shared
+    /// The Imp that sends the message says which, message by message.
+    case decides
+
+    public var id: String { rawValue }
+
+    public var title: String {
+        switch self {
+        case .own: "In a chat of their own"
+        case .shared: "In the chat with you"
+        case .decides: "The Imp decides"
+        }
+    }
+
+    /// Where one message goes: `asked` is the sender's pick (`own` or `shared`), only heard when it decides.
+    public func place(asked: String?) -> Place {
+        switch self {
+        case .own: .own
+        case .shared: .shared
+        case .decides: asked?.lowercased() == Place.shared.rawValue ? .shared : .own
+        }
+    }
+
+    public enum Place: String, Sendable {
+        case own, shared
+    }
+}
+
 public enum Appearance: String, Codable, CaseIterable, Sendable, Identifiable {
     case system, light, dark
     public var id: String { rawValue }
@@ -48,6 +81,12 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { voice = newValue }
     }
     private var voice: VoiceStyle?
+    /// Where Imps talk to each other. Optional storage, so older settings load.
+    public var impTalk: ImpTalk {
+        get { talk ?? .own }
+        set { talk = newValue }
+    }
+    private var talk: ImpTalk?
     /// Keeps API keys in the login Keychain instead of a private file. Off unless the user turns it
     /// on: macOS may ask for their password when Imp reads a key from there (after an update, say).
     public var keysInKeychain: Bool {

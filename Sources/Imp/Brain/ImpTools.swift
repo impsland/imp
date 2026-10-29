@@ -40,7 +40,7 @@ final class OwnToolHost {
 
     func specs() -> [ToolSpec] {
         OwnTools.specs(groups, animations: playable.map(\.rawValue), imps: others.map(\.profile.name),
-                       browser: BrowserBridge.shared.isConnected)
+                       browser: BrowserBridge.shared.isConnected, talk: app?.prefs.impTalk ?? .own)
     }
 
     func call(_ name: String, arguments: String) async throws -> String {
@@ -84,8 +84,11 @@ final class OwnToolHost {
             if let r, allowed.contains(r) { picked.append(r) } else { unknown.append(n) }
         }
         guard !picked.isEmpty, let imp else { throw ToolArgumentError("None of those can play now: \(unknown.joined(separator: ", ")).") }
-        imp.act(picked)
-        var reply = "\(imp.isBusy ? "Will play once your reply shows" : "Playing"): \(picked.map(\.rawValue).joined(separator: ", "))."
+        let taken = imp.act(picked)
+        guard taken > 0 else { throw ToolArgumentError("You've lined up \(ImpModel.maxActs) animations already: that's plenty for one answer.") }
+        let queued = picked.prefix(taken).map(\.rawValue).joined(separator: ", ")
+        var reply = "\(imp.isBusy ? "Will play once your reply shows, after any you asked for before" : "Playing, after any already playing"): \(queued)."
+        if taken < picked.count { reply += " Left out (too many for one answer): \(picked.dropFirst(taken).map(\.rawValue).joined(separator: ", "))." }
         if !unknown.isEmpty { reply += " Skipped (unknown, switched off or locked): \(unknown.joined(separator: ", "))." }
         return reply
     }
@@ -276,7 +279,9 @@ final class OwnToolHost {
         guard let other = others.first(where: { $0.profile.name.caseInsensitiveCompare(to) == .orderedSame }) else {
             throw ToolArgumentError("\(to) isn't out on the desktop.")
         }
-        let reply = try await other.answer(text, from: profile?.name ?? "An Imp")
+        let me = profile ?? .imp
+        let place = (app?.prefs.impTalk ?? .own).place(asked: args["chat"]?.string)
+        let reply = try await other.answer(text, from: ChatTurn.Sender(id: me.id, name: me.name, hue: me.hue), in: place)
         return "\(other.profile.name) says: \(reply)"
     }
 }

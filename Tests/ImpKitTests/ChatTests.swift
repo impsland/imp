@@ -172,3 +172,71 @@ private func toolExchange(_ ask: String = "Make it sound nicer", file: String = 
         #expect(h.latest(1000).count == ChatHistory.limit)
     }
 }
+
+@Suite struct ImpTalkTests {
+    private let pip = ChatTurn.Sender(id: UUID(), name: "Pip", hue: 0.58)
+    private let mo = ChatTurn.Sender(id: UUID(), name: "Mo", hue: 0.33)
+
+    private func tempFolder() -> URL {
+        FileManager.default.temporaryDirectory.appendingPathComponent("imp-talk-\(UUID().uuidString)", isDirectory: true)
+    }
+
+    private func asked(_ text: String, by sender: ChatTurn.Sender) -> ChatTurn {
+        ChatTurn(request: text, reply: "ok", via: .imp, sender: sender)
+    }
+
+    @Test func eachPeerGetsAChatOfItsOwnAndYourChatIsLeftAlone() {
+        let folder = tempFolder()
+        var h = ChatHistory(folder: folder)
+        h.append(ChatTurn(request: "Hello", reply: "Hi"), remembering: [.user("Hello"), .assistant("Hi")])
+        let yours = h.current.id
+        h.append(asked("Lunch?", by: pip), remembering: [.user("Pip asks: lunch?"), .assistant("Sure")], withPeer: pip)
+        h.append(asked("Dinner?", by: mo), remembering: [.user("Mo asks: dinner?"), .assistant("No")], withPeer: mo)
+        h.append(asked("And tea?", by: pip), remembering: [.user("Pip asks: tea?"), .assistant("Yes")], withPeer: pip)
+        // The chat you're in is untouched, and so is its memory.
+        #expect(h.current.id == yours && h.turns.map(\.request) == ["Hello"] && h.current.memory.exchangeCount == 1)
+        #expect(h.chats.count == 3)
+        let pips = h.chat(with: pip.id)
+        #expect(pips?.title == "With Pip" && pips?.turns == 2 && h.chat(with: mo.id)?.turns == 1)
+        #expect(h.memory(withPeer: pip.id).messages.map(\.content) == ["Pip asks: lunch?", "Sure", "Pip asks: tea?", "Yes"])
+        #expect(h.memory(withPeer: UUID()).isEmpty)
+        // Found by the Imp's id, not the title, so renaming it changes nothing.
+        h.rename(pips!.id, to: "Gossip")
+        h.append(asked("More?", by: pip), withPeer: pip)
+        #expect(h.chats.filter { $0.peer == pip.id }.map(\.turns) == [3] && h.chats.first { $0.peer == pip.id }?.title == "Gossip")
+        // Kept across launches, with who said what.
+        ChatHistory.flush()
+        var reopened = ChatHistory(folder: folder)
+        #expect(reopened.current.id == yours && reopened.chats.count == 3)
+        #expect(reopened.memory(withPeer: mo.id).messages.count == 2)
+        reopened.open(pips!.id)
+        #expect(reopened.turns.first?.sender == pip && reopened.turns.first?.via == .imp && reopened.current.peer == pip.id)
+    }
+
+    @Test func talkingInTheChatYoureInAddsToIt() {
+        var h = ChatHistory(folder: nil)
+        h.append(asked("Hi", by: pip), remembering: [.user("a"), .assistant("b")])
+        #expect(h.current.title == "Pip: Hi" && h.current.peer == nil && h.chats.count == 1)
+    }
+
+    @Test func aPeerChatIsTheCurrentOneWhenYouOpenedIt() {
+        let folder = tempFolder()
+        var h = ChatHistory(folder: folder)
+        h.append(asked("Lunch?", by: pip), remembering: [.user("q"), .assistant("a")], withPeer: pip)
+        ChatHistory.flush()
+        h.open(h.chat(with: pip.id)!.id)
+        h.append(asked("Dinner?", by: pip), remembering: [.user("q2"), .assistant("a2")], withPeer: pip)
+        #expect(h.chats.count == 1 && h.turns.count == 2 && h.memory(withPeer: pip.id).exchangeCount == 2)
+    }
+
+    @Test func theModelPicksTheChatOnlyWhenItDecides() {
+        #expect(ImpTalk.own.place(asked: "shared") == .own && ImpTalk.shared.place(asked: "own") == .shared)
+        #expect(ImpTalk.decides.place(asked: "shared") == .shared && ImpTalk.decides.place(asked: nil) == .own)
+        #expect(ImpPreferences().impTalk == .own)
+        func chatArgument(_ talk: ImpTalk) -> Bool {
+            let spec = OwnTools.specs([.troupe], animations: [], imps: ["Pip"], browser: false, talk: talk).first
+            return spec?.inputSchema["properties"]?["chat"] != nil
+        }
+        #expect(chatArgument(.decides) && !chatArgument(.own) && !chatArgument(.shared))
+    }
+}

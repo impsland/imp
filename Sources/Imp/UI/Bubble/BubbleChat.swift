@@ -21,7 +21,7 @@ struct ChatView: View {
 
     var body: some View {
         let history = model.history
-        let live = model.work
+        let live = model.chatWork
         VStack(alignment: .leading, spacing: 10) {
             header
             if let error = model.recapError {
@@ -159,7 +159,12 @@ private struct ChatPicker: View {
                     ForEach(history.chats.prefix(30)) { chat in
                         Toggle(isOn: Binding(get: { chat.id == history.current.id },
                                              set: { _ in model.switchChat(to: chat.id); changed() })) {
-                            Text(chat.title.isEmpty ? "Chat" : chat.title)
+                            // A chat between two Imps (not with you) has two people on it.
+                            if chat.peer != nil {
+                                Label(chat.title.isEmpty ? "Chat" : chat.title, systemImage: "person.2.fill")
+                            } else {
+                                Text(chat.title.isEmpty ? "Chat" : chat.title)
+                            }
                             Text(chat.updated, format: .dateTime.day().month().hour().minute())
                         }
                     }
@@ -167,6 +172,7 @@ private struct ChatPicker: View {
             }
         } label: {
             HStack(spacing: 4) {
+                if model.history.current.peer != nil { Image(systemName: "person.2.fill").font(.system(size: 9)) }
                 Text(title).font(.system(size: 12, weight: .semibold)).lineLimit(1)
                 Image(systemName: "chevron.down").font(.system(size: 8, weight: .bold))
             }
@@ -259,9 +265,11 @@ private struct TurnView: View {
             }
             .font(.system(size: 10)).foregroundStyle(.tertiary)
             .frame(maxWidth: .infinity)
+            // Yours on the right; another Imp's on the left, in its colour.
             HStack {
-                Spacer(minLength: 48)
+                if turn.via != .imp { Spacer(minLength: 48) }
                 RequestCard(turn: turn, model: model, layout: layout, measuring: measuring)
+                if turn.via == .imp { Spacer(minLength: 48) }
             }
             if !steps.isEmpty {
                 StepList(steps: steps, layout: layout, animated: live && !measuring)
@@ -275,6 +283,7 @@ private struct TurnView: View {
                 // Only an answer that arrived while you had the chat open may start its media
                 // (`#autoplay`), once: scrolling back through older ones never plays them.
                 let fresh = !live && model.freshTurns.contains(turn.id)
+                if turn.via == .imp, let sender = turn.sender { ExchangeChip(role: .reply, peer: sender) }
                 MarkdownView(blocks: Markdown.blocks(turn.reply), base: Workspace.directory(for: model.id), fontSize: 13,
                              onImageLoad: measuring ? nil : { layout.onToggle?() },
                              mediaOwner: turn.id.uuidString, autoplay: fresh && model.prefs.autoplaysMedia && !measuring,
@@ -301,7 +310,9 @@ private struct RequestCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if let header {
+            if turn.via == .imp, let sender = turn.sender {
+                ExchangeChip(role: .asked, peer: sender)
+            } else if let header {
                 Label(header.title, systemImage: header.icon)
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(.secondary)
@@ -319,7 +330,8 @@ private struct RequestCard: View {
             }
         }
         .padding(.horizontal, 10).padding(.vertical, 7)
-        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(tint.opacity(0.16)))
+        .background(RoundedRectangle(cornerRadius: 12, style: .continuous)
+            .fill((turn.via == .imp ? turn.sender.map { Color.imp($0.hue) } ?? tint : tint).opacity(0.16)))
     }
 
     /// Where it came from, when it wasn't simply typed.
@@ -327,7 +339,7 @@ private struct RequestCard: View {
         switch turn.via {
         case .shortcut?: ("Shortcut · \(turn.request)", "command")
         case .spoken?: ("Said", "mic.fill")
-        case .typed?, .recap?, nil: nil
+        case .typed?, .recap?, .imp?, nil: nil
         }
     }
 

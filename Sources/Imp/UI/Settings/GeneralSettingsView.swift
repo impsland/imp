@@ -22,7 +22,7 @@ struct GeneralSettingsView: View {
                     .font(.system(size: 11, weight: .medium, design: .rounded)).foregroundStyle(.tertiary)
             }
             SegmentedTabs(tabs: GeneralTab.allCases, selection: $router.generalTab, title: \.title, icon: \.icon,
-                          badge: { $0 == .permissions && !status.allGranted(Permission.allCases) })
+                          badge: { $0 == .permissions && !status.allGranted(Permission.core) })
                 .padding(.horizontal, Metrics.pagePadding)
                 .frame(maxWidth: Metrics.column)
                 .padding(.top, 6)
@@ -122,6 +122,15 @@ private struct MannersPane: View {
                         Text("Dark").tag(Appearance.dark)
                     }
                     .pickerStyle(.segmented).labelsHidden().fixedSize()
+                }
+            }
+
+            Card("Imps talking", icon: "person.2.fill") {
+                Row("Imps talk to each other", info: "When one Imp messages another (Talks to the troupe). In a chat of their own: the one asked keeps a chat for each Imp it talks with, apart from yours (it shows in its chat list with the other Imp's name). In the chat with you: the exchange goes in the chat you're in with that Imp. The Imp decides: the Imp that sends the message picks, each time.") {
+                    Picker("", selection: $model.prefs.impTalk) {
+                        ForEach(ImpTalk.allCases) { Text($0.title).tag($0) }
+                    }
+                    .labelsHidden().fixedSize()
                 }
             }
 

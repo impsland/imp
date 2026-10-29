@@ -34,6 +34,13 @@ final class HomeWindow {
         open(model)
     }
 
+    /// Opens the app-wide settings (optionally on a tab).
+    func showGeneral(_ model: AppModel, tab: GeneralTab? = nil) {
+        if let tab { router.generalTab = tab }
+        router.screen = .general
+        open(model)
+    }
+
     private func open(_ model: AppModel) {
         if router.selection.flatMap(model.profile) == nil {
             router.selection = (model.focused?.profile ?? model.prefs.imps[0]).id

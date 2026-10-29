@@ -9,7 +9,9 @@ struct WorkingView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if !bubble.title.isEmpty {
+            if let exchange = bubble.exchange {
+                ExchangeHeader(exchange: exchange)
+            } else if !bubble.title.isEmpty {
                 Text(bubble.title)
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(.secondary)

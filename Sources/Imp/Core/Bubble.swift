@@ -47,6 +47,26 @@ struct Bubble: Equatable, Identifiable {
         static var wakingUp: Step { Step(icon: "powerplug", title: "Waking up tools") }
     }
 
+    /// One Imp talking to another (`imp_message`): who, in whose colour, and the question. The
+    /// bubble shows it as a header chip in the other Imp's colour and the question quoted.
+    struct Exchange: Equatable {
+        enum Role: Equatable {
+            /// This Imp is thinking about a question another Imp asked ("Pip asks").
+            case asked
+            /// This Imp's answer to that question ("Reply to Pip").
+            case reply
+            /// This Imp waits for another Imp's answer to its question ("Asking Mo…").
+            case asking
+        }
+        var role: Role
+        /// The other Imp (the asker, or the one asked), with its colour.
+        var peer: ChatTurn.Sender
+        var question: String
+
+        /// The same exchange, as the answer to it.
+        var asReply: Exchange { Exchange(role: .reply, peer: peer, question: question) }
+    }
+
     var id = UUID()
     /// What this is about (an action's name). Shown small and quiet, never as a header.
     var title = ""
@@ -60,6 +80,8 @@ struct Bubble: Equatable, Identifiable {
     var link: Link?
     /// The answer is still arriving (streamed): no buttons yet.
     var isStreaming = false
+    /// Set while this bubble is about a talk with another Imp.
+    var exchange: Exchange?
 
     /// A finished answer with words: it can be copied.
     var isCopyable: Bool { phase == .result && !isStreaming && !text.isEmpty }

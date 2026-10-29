@@ -41,9 +41,22 @@ public struct ChatMessage: Codable, Hashable, Sendable {
     public var toolCallID: String?
     /// Pictures that go with a user turn (data URLs), for models that can see.
     public var images: [String]?
+    /// A user-role message that isn't a turn of the user's: pictures a tool returned, sent right
+    /// after the tool results. Never starts an exchange, never remembered. Not sent to the model as such.
+    public var attachment: Bool?
 
-    public init(role: String, content: String?, toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, images: [String]? = nil) {
-        self.role = role; self.content = content; self.toolCalls = toolCalls; self.toolCallID = toolCallID; self.images = images
+    public init(role: String, content: String?, toolCalls: [ToolCall]? = nil, toolCallID: String? = nil,
+                images: [String]? = nil, attachment: Bool? = nil) {
+        self.role = role; self.content = content; self.toolCalls = toolCalls; self.toolCallID = toolCallID
+        self.images = images; self.attachment = attachment
+    }
+
+    /// Pictures that tools (`tools`, by name) returned, as the one message that carries them.
+    public static func attachment(_ images: [EncodedImage], from tools: [String]) -> Self {
+        let names = tools.reduce(into: [String]()) { if !$0.contains($1) { $0.append($1) } }.joined(separator: ", ")
+        let what = images.count == 1 ? "Screenshot" : "Screenshots"
+        return .init(role: "user", content: "\(what) from \(names). (Attached automatically for you to look at; the user didn't send this.)",
+                     images: images.map(\.dataURL), attachment: true)
     }
 
     public static func system(_ s: String) -> Self { .init(role: "system", content: s) }

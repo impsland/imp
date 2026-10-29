@@ -48,6 +48,13 @@ if let url = argument(after: "--render-bubble") {
     }
     exit(0)
 }
+if let url = argument(after: "--render-exchange") {
+    MainActor.assumeIsolated {
+        _ = NSApplication.shared
+        IconRenderer.renderExchange(to: url, dark: args.contains("dark"))
+    }
+    exit(0)
+}
 if let url = argument(after: "--render-voice") {
     MainActor.assumeIsolated { IconRenderer.renderVoice(to: url, dark: args.contains("dark")) }
     exit(0)
@@ -59,6 +66,12 @@ if let url = argument(after: "--render-egg") {
 if let url = argument(after: "--render-status-icon") {
     MainActor.assumeIsolated { IconRenderer.renderStatusIcon(to: url) }
     exit(0)
+}
+
+// Hidden probe for computer control: `Imp --observe [app] [--screenshot out.png]` prints the element tree.
+if let i = args.firstIndex(of: "--observe") {
+    let name = args.indices.contains(i + 1) && !args[i + 1].hasPrefix("--") ? args[i + 1] : nil
+    MainActor.assumeIsolated { ComputerProbe.run(app: name, screenshot: argument(after: "--screenshot")) }
 }
 
 // MCP servers are child processes: a server that exits must not take Imp down with SIGPIPE.

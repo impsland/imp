@@ -99,6 +99,13 @@ one can handle private work while another uses a bigger cloud model.
 - **Body and senses.** Imp plays its animations as body language, hops, slides or bounces around the
   screen, speaks out loud, reads how the Mac is doing, and messages the other Imps. Each group of
   these tools can be switched off per Imp (Settings › Tools).
+- **Computer control (optional, off by default).** Switch it on per Imp in Settings › Tools and the
+  Imp can operate any app (a browser, Photoshop…): it looks at the window (screenshot plus the
+  accessibility tree), clicks, types, uses shortcuts and menus, scrolls and draws, then checks the
+  result. It needs two permissions: Screen & System Audio Recording and Accessibility (Device Control
+  & Data Access); Settings › Tools shows what's missing, with buttons. If it still doesn't work after
+  granting, remove Imp from the list and add it again (+), then restart Imp. Try it without a model:
+  `Imp --observe Finder [--screenshot out.png]` prints the element tree.
 - **Browser extension.** Add `Extensions/Chrome` to Chrome, Arc, Brave or Edge and Imp knows the
   website you're on, and can hop right onto a button on the page. Local only (see its README).
 - **More tools with MCP.** Connect Model Context Protocol servers, local or on the web.

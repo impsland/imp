@@ -242,6 +242,47 @@ enum IconRenderer {
         snapshot(host, to: url, dark: dark)
     }
 
+    /// `Imp --render-exchange <file.png> [dark]`: bubbles and chat for Imps talking to each other.
+    static func renderExchange(to url: URL, dark: Bool) {
+        let model = AppModel(persist: false)
+        let imp = ImpModel(id: model.prefs.imps[0].id, app: model)
+        let layout = BubbleLayout()
+        let pip = ChatTurn.Sender(id: UUID(), name: "Pip", hue: 0.58), mo = ChatTurn.Sender(id: UUID(), name: "Mo", hue: 0.33)
+        let question = "Can you check whether the user has anything on tomorrow afternoon? They asked me to plan a picnic."
+        var chat = ChatHistory(folder: nil)
+        let date = Date(timeIntervalSinceReferenceDate: 812_000_000)
+        chat.append(ChatTurn(date: date, request: "Plan a picnic", reply: "Let me ask Pip about the calendar."))
+        chat.append(ChatTurn(date: date + 60, request: question, reply: "Tomorrow after 3 pm is free. Sunny, too.", via: .imp, sender: pip))
+        chat.append(ChatTurn(date: date + 120, request: "Do you have a basket?", reply: "Two. One has a squeaky lid.", via: .imp, sender: mo))
+        imp.showSample(chat)
+        let steps = [Bubble.Step(icon: "person.2.fill", title: "Message Mo", state: .running, tool: OwnTools.message)]
+        func exchange(_ role: Bubble.Exchange.Role, _ peer: ChatTurn.Sender, _ q: String = question) -> Bubble.Exchange {
+            Bubble.Exchange(role: role, peer: peer, question: q)
+        }
+        var asked = Bubble(text: "Plotting quietly…", phase: .thinking)
+        asked.exchange = exchange(.asked, pip)
+        var askedShort = Bubble(text: "Borrowing a brain…", phase: .thinking)
+        askedShort.exchange = exchange(.asked, mo, "Do you have a basket?")
+        var asking = Bubble(text: "Stirring the cauldron…", phase: .thinking, steps: steps)
+        asking.exchange = exchange(.asking, mo, "Do you have a basket for a picnic?")
+        var reply = Bubble(text: "Tomorrow after 3 pm is free. Sunny, too. Shall I tell the user?", phase: .result)
+        reply.exchange = exchange(.reply, pip)
+        var asked2 = Bubble(text: "Borrowing a brain…", phase: .thinking)
+        asked2.exchange = exchange(.asked, pip, "Hi!")
+        let sheet = HStack(alignment: .top, spacing: 0) {
+            VStack(spacing: 0) {
+                BubbleCard(bubble: asked, model: imp, layout: layout, measuring: true)
+                BubbleCard(bubble: askedShort, model: imp, layout: layout, measuring: true)
+                BubbleCard(bubble: asking, model: imp, layout: layout, measuring: true)
+                BubbleCard(bubble: reply, model: imp, layout: layout, measuring: true)
+            }
+            BubbleCard(bubble: Bubble(phase: .chat), model: imp, layout: layout, measuring: true)
+        }
+        let host = NSHostingView(rootView: sheet)
+        host.frame.size = host.fittingSize
+        snapshot(host, to: url, dark: dark)
+    }
+
     /// `Imp --render-voice <file.png> [dark]`: a speaking bubble's glow and smoke for a few Imp
     /// colours, resting and at rising loudness (a plain card stands in for the glass).
     static func renderVoice(to url: URL, dark: Bool) {
