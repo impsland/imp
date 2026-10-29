@@ -128,7 +128,8 @@ extension Reaction {
         case .missedYou: [.comeback]
         case .boo, .shiver, .blowKiss, .proud, .heartbeat: []
         case .glance, .hum, .idea, .lookAround, .turn, .showOff, .wonder, .nap, .watch,
-             .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored, .wiggle, .sneak: [.idle]
+             .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored, .wiggle, .sneak,
+             .pirouette, .backflip, .cartwheel, .boing, .levitate: [.idle]
         case .yes, .no, .maybe, .dontKnow, .areYouSure, .notSure, .exactly, .nope, .hmm, .aha,
              .tada, .sorry, .oops, .impressed, .haha, .loveIt, .sadNews, .careful, .welcome, .confused, .phew, .smug: []
         case .twirl, .serenade, .cheer, .swoon, .glow: [.idle]
@@ -167,7 +168,8 @@ extension Reaction {
         case .dizzy, .mean, .pet, .giggle, .flinch, .curious, .shy, .pounce, .missedYou: .play
         case .angry, .cuddle, .wheee, .woozy, .plop: .handling
         case .glance, .lookAround, .turn, .hum, .showOff, .wonder, .idea, .nap, .watch,
-             .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored, .wiggle, .sneak: .routines
+             .dance, .yawn, .sneeze, .peekaboo, .stargaze, .bored, .wiggle, .sneak,
+             .pirouette, .backflip, .cartwheel, .boing, .levitate: .routines
         case .delight, .twirl, .serenade, .cheer, .swoon, .glow: .favorite
         }
     }

@@ -35,7 +35,8 @@ struct ImpView: View {
         let step = model.life.step
         var cue = Puppet.Cue(mood: mood, step: step, hue: model.profile.hue, lean: model.carryLean,
                              level: model.level, breathing: breathing,
-                             hopSince: date.timeIntervalSince(model.life.hopAt), traits: model.profile.traits)
+                             hopSince: date.timeIntervalSince(model.life.hopAt),
+                             stepElapsed: step == nil ? nil : date.timeIntervalSince(model.life.stepStarted), traits: model.profile.traits)
         if step == nil, mood == .idle, let friend = model.app.stage.focus(for: model) {
             // Another Imp is on stage: watch it.
             cue.gaze = Gaze.toward(friend, from: model.impCenter)

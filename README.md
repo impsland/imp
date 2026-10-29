@@ -101,8 +101,13 @@ one can handle private work while another uses a bigger cloud model.
   these tools can be switched off per Imp (the Imp's Tools tab).
 - **Make your own animations.** All Imps › Animations lists every animation in folding groups
   (Feelings, Answers, Cursor games, Clicks and carrying, On its own, Favourite colour), with a search
-  box. **New Animation** opens an editor: a stage that acts it out, a timeline of beats, and for each
-  beat its mood (picked by face), where it looks (drag a dot), tilt, shape, a hop and a symbol. ✎ on
+  box. **New Animation** opens an editor laid out in one window: the stage on the left (drag on it to
+  turn the face), the picked beat's pose on the right (mood picked by face, tilt, shape, a move, a hop
+  and a symbol), and the timeline along the bottom: drag a beat to move it, drag its right edge to
+  change its length, split, duplicate, copy a pose onto another beat, zoom, click the ruler to play
+  from there, undo with ⌘Z. A beat's **move** plays across it: a spin round its own axis, a
+  somersault, a cartwheel, bounces, a shake, a sway, a jelly wobble, floating up, nods or a head
+  shake, as many times as you like, either way round. The name and icon come last, on Save. ✎ on
   any built-in animation opens it, beat for beat, as your own version that plays instead of it. An
   animation is for every Imp or for one Imp alone, which wins over a shared one. Imps make them too:
   ask one and it uses `imp_make_animation` (and `imp_show_animation`, `imp_remove_animation`).
@@ -184,8 +189,10 @@ Animations (format `3`) are a list of beats, each a pose held for a while. An Im
 ```
 
 A beat has a `duration` (0.05–6 s) and optionally `look` ([x, y], −1…1, x right and y down), a
-`mood`, a `glyph` (notes, question, exclaim, idea, sweat, heart, sparkles), `tilt` (degrees), `hop`
-and `stretch` (−0.3…0.3). At most 24 beats and 20 seconds per animation, and 50 animations per kit.
+`mood`, a `glyph` (notes, question, exclaim, idea, sweat, heart, sparkles), `tilt` (degrees), `hop`,
+`stretch` (−0.3…0.3) and a `move` played across the beat (spin, flip, roll, bounce, shake, sway,
+wobble, float, nod, headshake) with `times` (1–8) and `reverse` (Imp 1.10+; older Imps hold still
+instead). At most 24 beats and 20 seconds per animation, and 50 animations per kit.
 `replaces` names a built-in animation it plays instead of; `starts` are what start it (`idle`,
 `poke`, `circle`, `stroke`…). Loose animations go to the Imp (or every Imp) you choose in the review.
 

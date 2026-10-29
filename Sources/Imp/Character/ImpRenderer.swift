@@ -18,15 +18,21 @@ enum ImpRenderer {
         let palette = Palette(hue: f.hue)
         let head = Head(cx: size.cx, cy: size.bottom - base, rx: rx, top: top, bottom: base,
                         square: f.square, sag: f.sag, peak: f.peak, wobble: f.wobble + m.ripple, lean: f.lookX, t: m.t)
-        let pose = Pose(f)
+        let pose = Pose(f, spin: m.spin, tumble: m.pitch)
         let horns = [Horn(side: -1, head: head, pose: pose, face: f, wiggle: m.hornL),
                      Horn(side: 1, head: head, pose: pose, face: f, wiggle: m.hornR)]
         // Squash, tilt and shake around the base, so Imp stays planted.
+        // A cartwheel (`roll`) turns round the middle of the body instead.
+        let middle = head.cy + (base - top) / 2
         func body(lift: Double) -> CGAffineTransform {
-            CGAffineTransform(translationX: size.cx + m.shakeX, y: size.bottom + m.bob - lift)
+            var t = CGAffineTransform(translationX: size.cx + m.shakeX, y: size.bottom + m.bob - lift)
                 .rotated(by: (f.tilt + m.tilt) * .pi / 180)
                 .scaledBy(x: 1 + m.squash, y: 1 - m.squash)
                 .translatedBy(x: -size.cx, y: -size.bottom)
+            if m.roll != 0 {
+                t = t.translatedBy(x: size.cx, y: middle).rotated(by: m.roll * .pi / 180).translatedBy(x: -size.cx, y: -middle)
+            }
+            return t
         }
         let lift = m.lift > 0 ? headroom(for: m.lift, head: head, horns: horns, at: body(lift: 0)) : 0
         if shadow { drawShadow(&ctx, width: rx * (0.85 + f.sag * 0.08), lift: max(0, lift - m.bob)) }

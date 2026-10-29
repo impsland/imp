@@ -49,8 +49,9 @@ animation, such as `yawn` or `jump`) and `starts` (what starts it: `idle`, `poke
 `stroke`, `favoriteColor`, `tickle`, `hold`, `pickUp`, `shake`, `drop`, `rush`, `linger`, `stare`,
 `dangle`, `comeback`). It plays a list of `beats`, each with a `duration` in seconds (0.05 to 6,
 required) and optionally `look` (`[x, y]`, each -1 to 1), `mood`, `glyph` (`notes`, `question`,
-`exclaim`, `idea`, `sweat`, `heart`, `sparkles`), `tilt` (-30 to 30 degrees), `hop` and `stretch`
-(-0.3 to 0.3). `mood` is one of idle, listening, thinking, happy, love, sad, error, sleepy, annoyed,
+`exclaim`, `idea`, `sweat`, `heart`, `sparkles`), `tilt` (-30 to 30 degrees), `hop`, `stretch`
+(-0.3 to 0.3) and `move` (`spin`, `flip`, `roll`, `bounce`, `shake`, `sway`, `wobble`, `float`, `nod`,
+`headshake`, played across the beat; Imp 1.10+) with `times` (1 to 8) and `reverse` (true or false). `mood` is one of idle, listening, thinking, happy, love, sad, error, sleepy, annoyed,
 surprised, dizzy, mean, working, content, giggly, scared, curious, shy, excited, bored.
 
 An Imp may also have `traits`: `lids` 0 to 0.6, `slant` -1 to 1 (negative worried, positive angry),

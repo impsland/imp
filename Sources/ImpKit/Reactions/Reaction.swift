@@ -17,6 +17,8 @@ public enum Reaction: String, Codable, CaseIterable, Sendable, Identifiable {
     // Routines it plays on its own.
     case glance, lookAround, turn, hum, showOff, wonder, idea, nap, watch
     case dance, yawn, sneeze, peekaboo, stargaze, bored, wiggle, sneak
+    // Acrobatics (body moves: spins, somersaults, cartwheels, bounces, floating).
+    case pirouette, backflip, cartwheel, boing, levitate
     // Gestures (body language). None has a trigger out of the box. Give them one in Settings.
     case yes, no, maybe, dontKnow, areYouSure, notSure, exactly, nope, hmm, aha
     case tada, sorry, oops, impressed, haha, loveIt, sadNews, careful, welcome, confused
@@ -74,6 +76,11 @@ public enum Reaction: String, Codable, CaseIterable, Sendable, Identifiable {
         case .bored: String(localized: "Bored")
         case .wiggle: String(localized: "Wiggle")
         case .sneak: String(localized: "Sneak")
+        case .pirouette: String(localized: "Pirouette")
+        case .backflip: String(localized: "Backflip")
+        case .cartwheel: String(localized: "Cartwheel")
+        case .boing: String(localized: "Boing")
+        case .levitate: String(localized: "Levitate")
         case .glance: String(localized: "Glance")
         case .lookAround: String(localized: "Look around")
         case .turn: String(localized: "Turn its head")
@@ -154,6 +161,11 @@ public enum Reaction: String, Codable, CaseIterable, Sendable, Identifiable {
         case .bored: String(localized: "Heavy, flat eyelids and a sigh.")
         case .wiggle: String(localized: "A quick, happy shimmy.")
         case .sneak: String(localized: "Crouches low and creeps a suspicious look around.")
+        case .pirouette: String(localized: "Spins all the way round on the spot, like a dancer.")
+        case .backflip: String(localized: "Crouches, springs up and somersaults backwards.")
+        case .cartwheel: String(localized: "Turns a whole cartwheel and lands with a grin.")
+        case .boing: String(localized: "Bounces up and down like a rubber ball.")
+        case .levitate: String(localized: "Closes its eyes and floats up off the desk.")
         case .glance: String(localized: "Looks somewhere at random.")
         case .lookAround: String(localized: "Looks left, right, then down.")
         case .turn: String(localized: "Turns its whole head both ways.")
@@ -231,6 +243,11 @@ public enum Reaction: String, Codable, CaseIterable, Sendable, Identifiable {
         case .bored: "minus.circle.fill"
         case .wiggle: "waveform"
         case .sneak: "pawprint.fill"
+        case .pirouette: "rotate.3d"
+        case .backflip: "figure.gymnastics"
+        case .cartwheel: "arrow.clockwise.circle.fill"
+        case .boing: "arrow.up.and.down.circle.fill"
+        case .levitate: "cloud.fill"
         case .glance, .lookAround: "eye.fill"
         case .turn: "arrow.left.and.right"
         case .hum: "music.note"

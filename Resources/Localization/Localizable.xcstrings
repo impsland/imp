@@ -577,6 +577,98 @@
         }
       }
     },
+    "%lld beats · %@" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld beat · %2$@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld beats · %2$@"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld paso · %2$@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld pasos · %2$@"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld 个节拍 · %2$@"
+          }
+        }
+      }
+    },
+    "%lld bounces" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld bounce"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld bounces"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld rebote"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld rebotes"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 下"
+          }
+        }
+      }
+    },
     "%lld clicks on the Imp" : {
       "localizations" : {
         "es" : {
@@ -605,6 +697,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 度"
+          }
+        }
+      }
+    },
+    "%lld nods" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld nod"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld nods"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld vez"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld veces"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 下"
           }
         }
       }
@@ -675,6 +813,98 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 步"
+          }
+        }
+      }
+    },
+    "%lld times" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "once"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld times"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld vez"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld veces"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 次"
+          }
+        }
+      }
+    },
+    "%lld turns" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld turn"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld turns"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld vuelta"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld vueltas"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 圈"
           }
         }
       }
@@ -948,6 +1178,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "深深一鞠躬，然后一脸难过。"
+          }
+        }
+      }
+    },
+    "A move played across the whole beat. Give it time: a spin or a flip looks best at 0.8 s or more." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un movimiento que dura todo el paso. Dale tiempo: un giro o una voltereta se ven mejor con 0,8 s o más."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "贯穿整个节拍的动作。给它点时间：旋转或翻跟头至少 0.8 秒才好看。"
           }
         }
       }
@@ -1257,6 +1503,22 @@
         }
       }
     },
+    "Add a Beat After" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir un paso después"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在后面添加节拍"
+          }
+        }
+      }
+    },
     "Add a beat after this one" : {
       "localizations" : {
         "es" : {
@@ -1509,6 +1771,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "允许…"
+          }
+        }
+      }
+    },
+    "Almost done" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casi listo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快完成了"
           }
         }
       }
@@ -1983,6 +2261,22 @@
         }
       }
     },
+    "At You" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A ti"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "看着你"
+          }
+        }
+      }
+    },
     "At home" : {
       "localizations" : {
         "es" : {
@@ -2165,6 +2459,22 @@
         }
       }
     },
+    "Back to Editing" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volver a editar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "返回编辑"
+          }
+        }
+      }
+    },
     "Back to a plain face" : {
       "localizations" : {
         "es" : {
@@ -2225,6 +2535,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "恢复为内置规则"
+          }
+        }
+      }
+    },
+    "Backflip" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voltereta hacia atrás"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后空翻"
           }
         }
       }
@@ -2357,6 +2683,28 @@
         }
       }
     },
+    "Beat %lld of %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Beat %1$lld of %2$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paso %1$lld de %2$lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第 %1$lld 个节拍，共 %2$lld 个"
+          }
+        }
+      }
+    },
     "Beats" : {
       "localizations" : {
         "es" : {
@@ -2373,7 +2721,24 @@
         }
       }
     },
+    "Beats play one after another. Each holds a pose: a mood, where the face turns, a tilt, a shape, a move, a symbol, a hop. Space plays, ⌘Z undoes, ←→ pick a beat, ⌫ removes it." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los pasos se reproducen uno tras otro. Cada uno mantiene una pose: un ánimo, hacia dónde gira la cara, una inclinación, una forma, un movimiento, un símbolo, un saltito. Espacio reproduce, ⌘Z deshace, ←→ eligen un paso, ⌫ lo quita."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "节拍一个接一个播放。每个节拍保持一个姿势：心情、脸朝向、倾斜、形状、动作、符号、跳跃。空格键播放，⌘Z 撤销，←→ 选择节拍，⌫ 删除节拍。"
+          }
+        }
+      }
+    },
     "Beats play one after another. Each holds a pose: a mood, where the face turns, a tilt, a shape, a symbol, a hop." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2523,6 +2888,22 @@
         }
       }
     },
+    "Boing" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boing"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弹弹弹"
+          }
+        }
+      }
+    },
     "Boo!" : {
       "localizations" : {
         "es" : {
@@ -2599,6 +2980,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "两者"
+          }
+        }
+      }
+    },
+    "Bounce" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rebotar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弹跳"
+          }
+        }
+      }
+    },
+    "Bounces up and down like a rubber ball." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rebota arriba y abajo como una pelota de goma."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "像橡皮球一样上下弹跳。"
           }
         }
       }
@@ -2903,6 +3316,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "抱起来"
+          }
+        }
+      }
+    },
+    "Cartwheel" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rueda"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "侧手翻"
           }
         }
       }
@@ -3371,6 +3800,38 @@
         }
       }
     },
+    "Click to play from there" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haz clic para reproducir desde ahí"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击从这里开始播放"
+          }
+        }
+      }
+    },
+    "Click to play it again" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haz clic para volver a reproducirla"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击再播放一次"
+          }
+        }
+      }
+    },
     "Click to rename" : {
       "localizations" : {
         "es" : {
@@ -3543,6 +4004,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关闭（并停止我正在做的事）"
+          }
+        }
+      }
+    },
+    "Closes its eyes and floats up off the desk." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cierra los ojos y flota por encima del escritorio."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "闭上眼睛，从桌面上飘起来。"
           }
         }
       }
@@ -3819,6 +4296,22 @@
         }
       }
     },
+    "Copy Pose" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar pose"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拷贝姿势"
+          }
+        }
+      }
+    },
     "Copy kit" : {
       "localizations" : {
         "es" : {
@@ -3975,6 +4468,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "压低身子，鬼鬼祟祟地四处张望。"
+          }
+        }
+      }
+    },
+    "Crouches, springs up and somersaults backwards." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se agacha, salta y da una voltereta hacia atrás."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "蹲下，跃起，向后翻一个跟头。"
           }
         }
       }
@@ -4187,6 +4696,22 @@
         }
       }
     },
+    "Details" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detalles"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "详细信息"
+          }
+        }
+      }
+    },
     "Dictation isn't available for %@ right now." : {
       "localizations" : {
         "es" : {
@@ -4315,6 +4840,54 @@
         }
       }
     },
+    "Drag on the stage" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrastra en el escenario"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在舞台上拖动"
+          }
+        }
+      }
+    },
+    "Drag on the stage to turn its face; double-click it to look at you. Off: it follows the cursor (or its mood decides)." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrastra en el escenario para girarle la cara; doble clic para que te mire. Desactivado: sigue el cursor (o decide su ánimo)."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在舞台上拖动来转动它的脸；双击让它看着你。关闭：它跟随光标（或由心情决定）。"
+          }
+        }
+      }
+    },
+    "Drag to make the beat longer or shorter (⌥ for finer steps)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrastra para alargar o acortar el paso (⌥ para pasos más finos)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拖动来加长或缩短节拍（按住 ⌥ 微调）"
+          }
+        }
+      }
+    },
     "Drag to turn its face" : {
       "localizations" : {
         "es" : {
@@ -4332,6 +4905,7 @@
       }
     },
     "Drag to turn its face. The dot in the middle is you. Off: it follows the cursor (or its mood decides)." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4460,6 +5034,7 @@
       }
     },
     "Duplicate the beat" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4471,6 +5046,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "复制此节拍"
+          }
+        }
+      }
+    },
+    "Duplicate the beat (⌘D)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicar el paso (⌘D)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制节拍（⌘D）"
           }
         }
       }
@@ -5192,6 +5783,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "退缩"
+          }
+        }
+      }
+    },
+    "Float up" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flotar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "飘起来"
           }
         }
       }
@@ -6158,6 +6765,7 @@
       }
     },
     "Hops" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -6286,7 +6894,24 @@
         }
       }
     },
+    "How long it plays (%@ plays it at its own pace)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuánto dura (%@ la reproduce a su propio ritmo)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放时长（%@ 按自己的节奏播放）"
+          }
+        }
+      }
+    },
     "How long it plays (at %@'s own pace)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -6314,6 +6939,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每条消息附带发送的最近对话轮数。越少越快、越便宜。更早的内容仍保留在对话中可供阅读。"
+          }
+        }
+      }
+    },
+    "How many times it goes" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuántas veces lo hace"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "做几次"
           }
         }
       }
@@ -7546,6 +8187,22 @@
         }
       }
     },
+    "Levitate" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Levitar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "悬浮"
+          }
+        }
+      }
+    },
     "Lids" : {
       "localizations" : {
         "es" : {
@@ -7686,6 +8343,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已锁定。它只在最爱的颜色下才会这样做。你仍可观看预览。"
+          }
+        }
+      }
+    },
+    "Longer than %lld s: every beat is shortened alike when it's saved." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dura más de %lld s: al guardarla, todos los pasos se acortan por igual."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "超过 %lld 秒：保存时每个节拍会按比例缩短。"
           }
         }
       }
@@ -8417,7 +9090,24 @@
         }
       }
     },
+    "Move" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Movimiento"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作"
+          }
+        }
+      }
+    },
     "Move the beat earlier" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8434,6 +9124,7 @@
       }
     },
     "Move the beat later" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8557,6 +9248,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "名称"
+          }
+        }
+      }
+    },
+    "Name it, then save it" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ponle nombre y guárdala"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "起个名字，然后保存"
+          }
+        }
+      }
+    },
+    "Name, icon and who it's for" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre, icono y para quién es"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名称、图标和适用对象"
           }
         }
       }
@@ -9073,6 +9796,38 @@
         }
       }
     },
+    "No move" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin movimiento"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无动作"
+          }
+        }
+      }
+    },
+    "No move: it holds still" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin movimiento: se queda quieto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无动作：保持不动"
+          }
+        }
+      }
+    },
     "No setup on the clipboard. Copy the JSON, command or address from the tool's page." : {
       "localizations" : {
         "es" : {
@@ -9133,6 +9888,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "才不要"
+          }
+        }
+      }
+    },
+    "Nod" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asentir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点头"
           }
         }
       }
@@ -10024,6 +10795,22 @@
         }
       }
     },
+    "Or drag the right edge of the beat on the timeline (hold ⌥ for finer steps)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O arrastra el borde derecho del paso en la línea de tiempo (mantén ⌥ para pasos más finos)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "也可以在时间线上拖动节拍的右边缘（按住 ⌥ 微调）"
+          }
+        }
+      }
+    },
     "Or paste a kit or a web address" : {
       "localizations" : {
         "es" : {
@@ -10164,6 +10951,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "粘贴"
+          }
+        }
+      }
+    },
+    "Paste Pose" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pegar pose"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴姿势"
           }
         }
       }
@@ -10488,6 +11291,22 @@
         }
       }
     },
+    "Pirouette" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pirueta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单脚旋转"
+          }
+        }
+      }
+    },
     "Plain" : {
       "localizations" : {
         "es" : {
@@ -10548,6 +11367,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "从头播放（空格）"
+          }
+        }
+      }
+    },
+    "Play this beat again" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reproducir este paso otra vez"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再播放一次这个节拍"
           }
         }
       }
@@ -10937,6 +11772,7 @@
       }
     },
     "Preview" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10948,6 +11784,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "预览"
+          }
+        }
+      }
+    },
+    "Preview. Where it looks" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vista previa. Hacia dónde mira"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预览。它看向哪里"
           }
         }
       }
@@ -11304,6 +12156,22 @@
         }
       }
     },
+    "Redo (⇧⌘Z)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rehacer (⇧⌘Z)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重做（⇧⌘Z）"
+          }
+        }
+      }
+    },
     "Remembers" : {
       "localizations" : {
         "es" : {
@@ -11417,6 +12285,7 @@
       }
     },
     "Remove the beat" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11428,6 +12297,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "移除此节拍"
+          }
+        }
+      }
+    },
+    "Remove the beat (⌫)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar el paso (⌫)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除节拍（⌫）"
           }
         }
       }
@@ -11912,6 +12797,22 @@
         }
       }
     },
+    "Ruler" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Regla"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标尺"
+          }
+        }
+      }
+    },
     "Running a command" : {
       "localizations" : {
         "es" : {
@@ -12180,6 +13081,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "将所有 Imp 连同其触发器和工具存储为一个 .json 文件。绝不存储 API 密钥。"
+          }
+        }
+      }
+    },
+    "Save…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardar…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存…"
           }
         }
       }
@@ -12728,6 +13645,22 @@
         }
       }
     },
+    "Shake" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sacudirse"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "抖动"
+          }
+        }
+      }
+    },
     "Shake it while carrying" : {
       "localizations" : {
         "es" : {
@@ -12740,6 +13673,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "拎着时摇晃它"
+          }
+        }
+      }
+    },
+    "Shake its head" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Negar con la cabeza"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摇头"
           }
         }
       }
@@ -13480,6 +14429,22 @@
         }
       }
     },
+    "Somersault" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voltereta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻跟头"
+          }
+        }
+      }
+    },
     "Sorry" : {
       "localizations" : {
         "es" : {
@@ -13560,6 +14525,38 @@
         }
       }
     },
+    "Spin round its own axis" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Girar sobre su propio eje"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "绕自身旋转"
+          }
+        }
+      }
+    },
+    "Spins all the way round on the spot, like a dancer." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Da una vuelta entera en el sitio, como una bailarina."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "像舞者一样原地转一整圈。"
+          }
+        }
+      }
+    },
     "Spins its gaze all the way round, sparkling." : {
       "localizations" : {
         "es" : {
@@ -13608,6 +14605,38 @@
         }
       }
     },
+    "Split in Two" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dividir en dos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一分为二"
+          }
+        }
+      }
+    },
+    "Split the beat in two" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dividir el paso en dos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把节拍一分为二"
+          }
+        }
+      }
+    },
     "Squeezes its eyes shut and wriggles with giggles." : {
       "localizations" : {
         "es" : {
@@ -13641,6 +14670,7 @@
       }
     },
     "Squish" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13864,6 +14894,22 @@
         }
       }
     },
+    "Stop (Space)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detener (Espacio)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止（空格键）"
+          }
+        }
+      }
+    },
     "Stopped before answering." : {
       "localizations" : {
         "es" : {
@@ -14020,6 +15066,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "惊讶"
+          }
+        }
+      }
+    },
+    "Sway" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balancearse"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摇摆"
           }
         }
       }
@@ -14185,6 +15247,7 @@
       }
     },
     "Tall" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14725,6 +15788,38 @@
         }
       }
     },
+    "The beat after (→)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El paso siguiente (→)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一个节拍（→）"
+          }
+        }
+      }
+    },
+    "The beat before (←)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El paso anterior (←)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一个节拍（←）"
+          }
+        }
+      }
+    },
     "The browser extension isn't connected. Add it in Tools › Browser." : {
       "localizations" : {
         "es" : {
@@ -14758,6 +15853,7 @@
       }
     },
     "The icon in the list" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14865,6 +15961,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "模型没有返回%@。"
+          }
+        }
+      }
+    },
+    "The other way round" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al revés"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反方向"
           }
         }
       }
@@ -15474,6 +16586,22 @@
         }
       }
     },
+    "Turn its face to you" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Que te mire"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让它的脸转向你"
+          }
+        }
+      }
+    },
     "Turn its head" : {
       "localizations" : {
         "es" : {
@@ -15550,6 +16678,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开启例行程序"
+          }
+        }
+      }
+    },
+    "Turns a whole cartwheel and lands with a grin." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Da una rueda completa y aterriza con una sonrisa."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻一个完整的侧手翻，笑着落地。"
           }
         }
       }
@@ -15763,6 +16907,22 @@
         }
       }
     },
+    "Undo (⌘Z)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deshacer (⌘Z)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "撤销（⌘Z）"
+          }
+        }
+      }
+    },
     "Unimpressed" : {
       "localizations" : {
         "es" : {
@@ -15823,6 +16983,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未知的心情“%@”。"
+          }
+        }
+      }
+    },
+    "Unknown move “%@”." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Movimiento desconocido «%@»."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知动作“%@”。"
           }
         }
       }
@@ -16281,6 +17457,22 @@
         }
       }
     },
+    "What it's called, its icon in the list, and which Imps play it." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cómo se llama, su icono en la lista y qué Imps la reproducen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它叫什么、在列表中的图标，以及哪些 Imp 播放它。"
+          }
+        }
+      }
+    },
     "What should %@ do with it?" : {
       "localizations" : {
         "es" : {
@@ -16448,6 +17640,7 @@
       }
     },
     "Where it looks" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16652,6 +17845,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "附带剪贴板"
+          }
+        }
+      }
+    },
+    "Wobble like jelly" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temblar como gelatina"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "像果冻一样晃动"
           }
         }
       }
@@ -16908,6 +18117,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你自己的 %@"
+          }
+        }
+      }
+    },
+    "Zoom in" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acercar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放大"
+          }
+        }
+      }
+    },
+    "Zoom out" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alejar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缩小"
           }
         }
       }
@@ -17578,6 +18819,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "“triggers”应为列表。"
+          }
+        }
+      }
+    },
+    "− leans left, + leans right. Double-click to straighten." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "− se inclina a la izquierda, + a la derecha. Doble clic para enderezarlo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "− 向左倾，+ 向右倾。双击回正。"
+          }
+        }
+      }
+    },
+    "− squishes flat, + stands tall and thin. Double-click to reset." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "− se aplasta, + se estira alto y delgado. Doble clic para restablecer."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "− 压扁，+ 拉高变瘦。双击重置。"
           }
         }
       }

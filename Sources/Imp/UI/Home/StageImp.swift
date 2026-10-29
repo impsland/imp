@@ -23,7 +23,7 @@ struct StageImp: View {
             let beat = performance?.beat(at: date)
             let cue = Puppet.Cue(mood: beat?.step.mood ?? mood, step: beat?.step, hue: hue,
                                  gaze: center().map { Gaze.toward(NSEvent.mouseLocation, from: $0) },
-                                 hopSince: beat?.hopSince, traits: traits)
+                                 hopSince: beat?.hopSince, stepElapsed: beat?.elapsed, traits: traits)
             let (face, motion) = puppet.frame(cue, at: clock.time(date))
             Canvas { ctx, size in
                 ImpRenderer.draw(&ctx, size: size, face: face, motion: motion, glyph: beat?.glyph?.glyph,

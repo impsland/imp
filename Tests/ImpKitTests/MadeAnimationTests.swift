@@ -119,4 +119,34 @@ import Testing
         p.add(kit, triggers: [], servers: [], animations: [kit.animations[0].id], for: nil)
         #expect(p.animationLibrary.map(\.name) == ["Nod", "Nod 2"])
     }
+
+    @Test func movesAreKeptInBoundsAndOnlyStoredWhenTheyMeanSomething() {
+        let spin = AnimationBeat(duration: 1, move: "spin", times: 40, reverse: true).normalized
+        #expect(spin.move == "spin" && spin.times == AnimationBeat.timesRange.upperBound && spin.reverse == true)
+        let usual = AnimationBeat(duration: 1, move: "bounce", times: 3, reverse: false).normalized
+        #expect(usual.times == nil && usual.reverse == nil && usual.repeats == 3, "the move's usual count isn't stored")
+        let unknown = AnimationBeat(duration: 1, move: "moonwalk", times: 2, reverse: true).normalized
+        #expect(unknown.move == nil && unknown.times == nil && unknown.reverse == nil)
+        #expect(AnimationBeat(duration: 1, move: "flip", times: 0).normalized.times == nil, "at least once: the usual count for a flip")
+    }
+
+    @Test func aKitCarriesMovesAndReportsUnknownOnes() throws {
+        let beat = AnimationBeat(duration: 1.2, mood: "happy", move: "roll", times: 2, reverse: true).normalized
+        #expect(beat.kitJSON["move"]?.string == "roll" && beat.kitJSON["times"]?.double == 2 && beat.kitJSON["reverse"]?.bool == true)
+        var problems: [String] = []
+        let back = try #require(AnimationBeat(kit: beat.kitJSON, problems: &problems))
+        #expect(back == beat && problems.isEmpty)
+        let still = AnimationBeat(duration: 0.5).normalized.kitJSON
+        #expect(still["move"] == nil && still["times"] == nil, "no move: nothing written")
+        let odd = try #require(AnimationBeat(kit: ["duration": 1, "move": "moonwalk", "times": 1e300], problems: &problems))
+        #expect(odd.move == nil && problems.count == 1, "a huge count doesn't trap, an unknown move is reported")
+    }
+
+    @Test func beatsSavedBeforeMovesStillLoad() throws {
+        let old = #"{"duration":0.5,"tilt":0,"hop":true,"stretch":0.1,"mood":"happy"}"#
+        let beat = try JSONDecoder().decode(AnimationBeat.self, from: Data(old.utf8))
+        #expect(beat.move == nil && beat.repeats == 1 && beat.hop && beat.mood == "happy")
+        let moving = AnimationBeat(duration: 1, move: "spin", times: 2)
+        #expect(try JSONDecoder().decode(AnimationBeat.self, from: JSONEncoder().encode(moving)) == moving)
+    }
 }

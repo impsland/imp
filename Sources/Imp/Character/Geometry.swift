@@ -20,9 +20,10 @@ struct Vec3 {
 struct Pose {
     let yaw: Double, pitch: Double
 
-    init(_ f: Face) {
-        yaw = f.lookX * 0.72
-        pitch = f.lookY * 0.62
+    /// `spin` and `tumble` turn it further, all the way round if need be (see `Motion.spin`, `Motion.pitch`).
+    init(_ f: Face, spin: Double = 0, tumble: Double = 0) {
+        yaw = f.lookX * 0.72 + spin
+        pitch = f.lookY * 0.62 + tumble
     }
 
     func rotate(_ v: Vec3) -> Vec3 {

@@ -14,6 +14,14 @@ struct Motion {
     /// How high a hop has lifted it (design units, up +). Apart from `bob`, so the drawing can
     /// lower a hop that would carry a tall pose out of the top of its frame.
     var lift = 0.0
+    /// A turn round its own (upright) axis, radians on top of where it looks: the face goes round
+    /// the back of the ball and comes back from the other side (see `Pose`).
+    var spin = 0.0
+    /// A turn over the top (radians, + forward), like a somersault.
+    var pitch = 0.0
+    /// A whole-body turn in the picture's plane (degrees, + clockwise) round the middle of the
+    /// body, like a cartwheel (apart from `tilt`, which pivots at the base).
+    var roll = 0.0
 
     /// The resting breath (see `breath(at:)`). Off when Core Animation breathes for Imp.
     static func at(_ t: TimeInterval, mood: Mood, level: Double, breathing: Bool = true) -> Motion {
@@ -111,6 +119,9 @@ struct Motion {
             m.hornR += p.hornR * w
             m.ripple += p.ripple * w
             m.lift += p.lift * w
+            m.spin += p.spin * w
+            m.pitch += p.pitch * w
+            m.roll += p.roll * w
         }
         return m
     }
@@ -150,6 +161,61 @@ struct Motion {
         }
     }
 
+    /// A beat's move, `elapsed` seconds into a beat `duration` long (see `BodyMove`). Every move
+    /// starts and ends at rest, so beats before and after it join without a jump.
+    mutating func perform(_ move: BodyMove, elapsed: Double, duration: Double) {
+        guard duration > 0 else { return }
+        let p = max(0, min(1, elapsed / duration))
+        let n = Double(move.times), dir = move.reverse ? -1.0 : 1.0
+        let arc = sin(p * .pi)                       // 0 → 1 → 0 over the beat
+        let wave = sin(p * n * 2 * .pi)              // n full swings, 0 at both ends
+        switch move.kind {
+        case .spin:
+            spin += dir * n * 2 * .pi * Self.ease(p)
+            squash -= 0.05 * arc                     // stands a little taller while it turns
+        case .flip:
+            pitch += dir * n * 2 * .pi * Self.ease(p)
+            lift += Self.hopHeight * 1.2 * arc
+            squash += 0.06 * Self.edge(p) - 0.05 * arc
+        case .roll:
+            roll += dir * n * 360 * Self.ease(p)
+            lift += Self.hopHeight * 1.1 * pow(arc, 0.6)
+        case .bounce:
+            let k = (p * n).truncatingRemainder(dividingBy: 1)
+            let up = sin(k * .pi)
+            lift += Self.hopHeight * 0.75 * up
+            // Stretched in the air, squished as it lands (not at the very start or end).
+            squash += (0.08 * pow(1 - up, 6) - 0.05 * up) * pow(arc, 0.35)
+        case .shake:
+            shakeX += dir * 3.2 * wave
+            tilt += dir * 2.5 * wave
+        case .sway:
+            tilt += dir * 13 * wave
+            shakeX += dir * 1.2 * wave
+        case .wobble:
+            squash += 0.13 * wave * (1 - p)
+            ripple += 0.7 * arc
+        case .float:
+            let rise = Self.smooth(p / 0.25) * Self.smooth((1 - p) / 0.25)
+            lift += (Self.hopHeight * 0.9 + 2.5 * wave) * rise
+            squash -= 0.03 * rise
+        case .nod:
+            let k = sin(p * n * .pi)
+            pitch += 0.55 * k * k
+        case .headshake:
+            spin += dir * 0.6 * wave * pow(arc, 0.5)
+        }
+    }
+
+    /// Slow in, slow out: a turn that winds up and settles instead of starting and stopping dead.
+    static func ease(_ x: Double) -> Double {
+        let k = max(0, min(1, x))
+        return k < 0.5 ? 4 * k * k * k : 1 - pow(-2 * k + 2, 3) / 2
+    }
+
+    /// A crouch at the very start and end of a beat, for take-offs and landings.
+    private static func edge(_ p: Double) -> Double { max(0, 1 - min(p, 1 - p) / 0.12) * min(1, min(p, 1 - p) / 0.04) }
+
     static let hopLength = 0.75
     static let hopHeight = 15.0
 
@@ -173,4 +239,17 @@ struct Motion {
         if r > 0.8, p >= 0.24, p < 0.24 + duration { return sin((p - 0.24) / duration * .pi) }
         return 0
     }
+}
+
+/// A move a beat plays across its whole length (`AnimationBeat.moves`).
+struct BodyMove: Equatable {
+    enum Kind: String, CaseIterable {
+        case spin, flip, roll, bounce, shake, sway, wobble, float, nod, headshake
+    }
+
+    var kind: Kind
+    /// Turns, bounces, shakes…
+    var times = 1
+    /// The other way round.
+    var reverse = false
 }

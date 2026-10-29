@@ -34,6 +34,7 @@ TYPES = [("imps", "Imps"), ("animations", "Animations"), ("triggers", "Triggers"
 MOODS = {"idle", "listening", "thinking", "happy", "love", "sad", "error", "sleepy", "annoyed", "surprised", "dizzy",
          "mean", "working", "content", "giggly", "scared", "curious", "shy", "excited", "bored"}
 GLYPHS = {"notes", "question", "exclaim", "idea", "sweat", "heart", "sparkles"}
+MOVES = {"spin", "flip", "roll", "bounce", "shake", "sway", "wobble", "float", "nod", "headshake"}
 MAX_ANIMATIONS = 50
 MAX_BEATS, MIN_BEAT, MAX_BEAT, MAX_TOTAL = 24, 0.05, 6.0, 20.0
 TRAIT_RANGES = {"lids": (0, 0.6), "slant": (-1, 1), "eyes": (-0.4, 0.4), "squint": (-1, 1), "horns": (-30, 30),
@@ -189,6 +190,12 @@ def animation_problems(a):
                 out.append(f"beat {n}: {key} must be a number from {lo} to {hi}")
         if "hop" in b and not isinstance(b["hop"], bool):
             out.append(f"beat {n}: hop must be true or false")
+        if "move" in b and b["move"] not in MOVES:
+            out.append(f"beat {n}: unknown move {b['move']!r}")
+        if "times" in b and (not isinstance(b["times"], int) or isinstance(b["times"], bool) or not 1 <= b["times"] <= 8):
+            out.append(f"beat {n}: times must be a whole number from 1 to 8")
+        if "reverse" in b and not isinstance(b["reverse"], bool):
+            out.append(f"beat {n}: reverse must be true or false")
     if total > MAX_TOTAL:
         out.append(f"{total:.1f} s long; at most {MAX_TOTAL:g} s")
     return out
@@ -682,7 +689,7 @@ STARTS = {"idle": "when idle", "poke": "a poke", "circle": "circling the cursor"
 
 
 def beat_label(b):
-    bits = [str(b.get(k)) for k in ("mood", "glyph") if b.get(k)]
+    bits = [str(b.get(k)) for k in ("mood", "move", "glyph") if b.get(k)]
     if b.get("hop"):
         bits.append("hop")
     if not bits and b.get("look"):

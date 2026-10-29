@@ -19,20 +19,44 @@ public struct AnimationBeat: Codable, Hashable, Sendable {
     public var hop: Bool
     /// Body shape: + stands tall and thin, − squishes flat.
     public var stretch: Double
+    /// A move played across the whole beat (`AnimationBeat.moves`): a spin round its own axis, a
+    /// somersault, a cartwheel, bounces, a shake… Nil: it holds still.
+    public var move: String?
+    /// How many times the move goes (turns, bounces, shakes), 1…8. Nil: the move's usual count.
+    public var times: Int?
+    /// The move goes the other way (spins left, flips backwards, sways left first).
+    public var reverse: Bool?
 
     public init(duration: Double, lookX: Double? = nil, lookY: Double? = nil, mood: String? = nil, glyph: String? = nil,
-                tilt: Double = 0, hop: Bool = false, stretch: Double = 0) {
+                tilt: Double = 0, hop: Bool = false, stretch: Double = 0, move: String? = nil, times: Int? = nil, reverse: Bool? = nil) {
         self.duration = duration; self.lookX = lookX; self.lookY = lookY; self.mood = mood; self.glyph = glyph
-        self.tilt = tilt; self.hop = hop; self.stretch = stretch
+        self.tilt = tilt; self.hop = hop; self.stretch = stretch; self.move = move; self.times = times; self.reverse = reverse
     }
 
     public var hasLook: Bool { lookX != nil || lookY != nil }
+
+    /// How many times its move goes (the move's usual count when not set).
+    public var repeats: Int { times ?? move.map(Self.defaultTimes) ?? 1 }
 
     /// Moods a beat can show (the app's `Mood` cases).
     public static let moods = ["idle", "happy", "love", "content", "giggly", "excited", "surprised", "curious", "thinking",
                                "shy", "sad", "scared", "bored", "sleepy", "annoyed", "mean", "dizzy", "error", "listening", "working"]
     /// Symbols a beat can pop above the head.
     public static let glyphs = ["notes", "question", "exclaim", "idea", "sweat", "heart", "sparkles"]
+    /// Moves a beat can play across its length: spin round its own axis, a somersault, a cartwheel,
+    /// bounces, a shake, a sway, a jelly wobble, floating up, nods and a head shake.
+    public static let moves = ["spin", "flip", "roll", "bounce", "shake", "sway", "wobble", "float", "nod", "headshake"]
+    public static let timesRange = 1...8
+
+    /// How many times a move goes when it's first picked.
+    public static func defaultTimes(_ move: String) -> Int {
+        switch move {
+        case "bounce", "wobble": 3
+        case "shake": 4
+        case "sway", "float", "nod", "headshake": 2
+        default: 1
+        }
+    }
 
     public static let durationRange = 0.05...6.0
     public static let tiltRange = -30.0...30.0
@@ -49,6 +73,15 @@ public struct AnimationBeat: Codable, Hashable, Sendable {
         b.glyph = glyph.flatMap { Self.glyphs.contains($0) ? $0 : nil }
         b.tilt = Self.clamp(tilt.isFinite ? tilt : 0, Self.tiltRange)
         b.stretch = Self.clamp(stretch.isFinite ? stretch : 0, Self.stretchRange)
+        b.move = move.flatMap { Self.moves.contains($0) ? $0 : nil }
+        if let m = b.move {
+            let n = min(max(times ?? Self.defaultTimes(m), Self.timesRange.lowerBound), Self.timesRange.upperBound)
+            b.times = n == Self.defaultTimes(m) ? nil : n
+            b.reverse = reverse == true ? true : nil
+        } else {
+            b.times = nil
+            b.reverse = nil
+        }
         return b
     }
 
@@ -398,6 +431,11 @@ extension AnimationBeat {
         if tilt != 0 { o["tilt"] = .number(Self.round(tilt)) }
         if hop { o["hop"] = .bool(true) }
         if stretch != 0 { o["stretch"] = .number(Self.round(stretch)) }
+        if let move {
+            o["move"] = .string(move)
+            if let times { o["times"] = .number(Double(times)) }
+            if reverse == true { o["reverse"] = .bool(true) }
+        }
         return .object(o)
     }
 
@@ -416,9 +454,14 @@ extension AnimationBeat {
         if let mood, !Self.moods.contains(mood) { problems.append(String(localized: "Unknown mood “\(mood)”.")) }
         let glyph = json["glyph"]?.string?.lowercased()
         if let glyph, !Self.glyphs.contains(glyph) { problems.append(String(localized: "Unknown glyph “\(glyph)”.")) }
+        let move = json["move"]?.string?.lowercased()
+        if let move, !Self.moves.contains(move) { problems.append(String(localized: "Unknown move “\(move)”.")) }
+        // Clamped before it becomes an Int: a huge number in a file must not trap.
+        let times = json["times"]?.double.flatMap { $0.isFinite ? Int(min(max($0, -100), 100).rounded()) : nil }
         self = AnimationBeat(duration: duration, lookX: look?.0, lookY: look?.1, mood: mood, glyph: glyph,
                              tilt: json["tilt"]?.double ?? 0, hop: json["hop"]?.bool ?? false,
-                             stretch: json["stretch"]?.double ?? 0).normalized
+                             stretch: json["stretch"]?.double ?? 0, move: move, times: times,
+                             reverse: json["reverse"]?.bool).normalized
     }
 }
 

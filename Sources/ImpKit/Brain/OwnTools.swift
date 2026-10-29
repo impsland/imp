@@ -96,6 +96,11 @@ public enum OwnTools {
                 "tilt": ["type": "number", "description": "Head tilt in degrees (−30…30, + leans right)."],
                 "hop": ["type": "boolean", "description": "Hop as this beat starts (a hop takes 0.75 s)."],
                 "stretch": ["type": "number", "description": "Body shape: + tall and thin, − squished flat (−0.3…0.3)."],
+                "move": ["type": "string", "enum": .array(AnimationBeat.moves.map { .string($0) }),
+                         "description": .string("A move played across the whole beat: spin (a full turn round your own axis), flip (a somersault), "
+                            + "roll (a cartwheel), bounce, shake, sway, wobble (like jelly), float (rise and hover), nod, headshake. Give it time: 0.8 s or more.")],
+                "times": ["type": "integer", "description": "How many times the move goes: turns, bounces, shakes (1–8)."],
+                "reverse": ["type": "boolean", "description": "The move goes the other way (spin left, flip backwards)."],
             ],
             "required": ["duration"],
         ]

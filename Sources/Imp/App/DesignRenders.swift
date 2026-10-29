@@ -61,7 +61,8 @@ enum IconRenderer {
         while Double(i) / fps < performance.duration + 0.5 {
             let date = Date(timeIntervalSinceReferenceDate: Double(i) / fps)
             let beat = performance.beat(at: date)
-            let cue = Puppet.Cue(mood: beat?.step.mood ?? .idle, step: beat?.step, hue: 0.57, hopSince: beat?.hopSince, traits: traits)
+            let cue = Puppet.Cue(mood: beat?.step.mood ?? .idle, step: beat?.step, hue: 0.57, hopSince: beat?.hopSince,
+                                 stepElapsed: beat?.elapsed, traits: traits)
             let (face, motion) = puppet.frame(cue, at: Double(i) / fps)
             if i % every == 0 { frames.append((face, motion, beat)) }
             i += 1
@@ -131,7 +132,7 @@ enum IconRenderer {
 
     /// `Imp --render-home <screen> <file.png> [imps=N] [select=N] [out=N] [hidden=1] [width=W] [height=H]`: the real
     /// app window (live controls) rendered offscreen for design review. Screens: `home`, `egg`, an Imp tab
-    /// (`looks`, `brain`, `tools`, `shortcuts`), `general-<tab>`, or the `add-service` / `add-tool` / `add-shortcut` / `edit-shortcut` sheets. `hidden=1`: the desktop Imps are hidden.
+    /// (`looks`, `brain`, `tools`, `shortcuts`), `general-<tab>`, or the `add-service` / `add-tool` / `add-shortcut` / `edit-shortcut` / `animation-editor` / `animation-details` sheets. `hidden=1`: the desktop Imps are hidden.
     static func renderHome(screen: String, to url: URL, width: CGFloat = 780, height: CGFloat = 600, sampleImps: Int = 1, select: Int = 0, out: Int? = nil, hidden: Bool = false) {
         let model = AppModel(persist: false)          // review renders never write the user's preferences
         model.prefs = ImpPreferences()
@@ -169,8 +170,9 @@ enum IconRenderer {
         case "add-tool": AnyView(ServerEditor(draft: MCPExamples.examples.first { !$0.isComplete }!.server,
                                                   isNew: true, hub: model.assistant.hub) { _ in }
             .background(Color(nsColor: .windowBackgroundColor)))
-        case "animation-editor":
-            AnyView(AnimationEditor(model: model, draft: .replacing(.cheer, owner: nil, model: model, previewImp: chosen))
+        case "animation-editor", "animation-details":
+            AnyView(AnimationEditor(model: model, draft: .replacing(.cheer, owner: nil, model: model, previewImp: chosen),
+                                    page: screen == "animation-details" ? .details : .edit)
                 .background(Color(nsColor: .windowBackgroundColor)))
         case "add-shortcut", "edit-shortcut":
             AnyView(ShortcutSheet(model: model, imp: chosen, shortcut: model.prefs.shortcuts.first ?? Shortcut(name: "", prompt: "", performer: chosen),

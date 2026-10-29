@@ -14,6 +14,8 @@ struct AnticStep: Equatable {
     var hop = false
     /// Body shape, sprung like the face: + stands tall and thin, − squishes flat.
     var stretch: Double = 0
+    /// A move played across the whole step: a spin, a somersault, bounces… (see `Motion.perform`).
+    var move: BodyMove? = nil
 }
 
 extension [AnticStep] {
@@ -169,6 +171,37 @@ enum Antics {
             AnticStep(duration: 0.5, look: CGPoint(x: -0.8, y: 0.1), mood: .mean, stretch: -0.12),
             AnticStep(duration: 0.7, look: CGPoint(x: 0.8, y: 0.1), mood: .mean, tilt: 5, stretch: -0.12),
             AnticStep(duration: 0.8, look: user, mood: .giggly, stretch: -0.04),
+        ]
+
+        // Acrobatics: the body moves (see `BodyMove`).
+        case .pirouette: [ // rises on its toes, turns all the way round, takes a bow
+            AnticStep(duration: 0.35, look: CGPoint(x: 0, y: -0.2), mood: .content, stretch: 0.08),
+            AnticStep(duration: 1.1, look: CGPoint(x: 0, y: -0.1), mood: .happy, glyph: .sparkles, stretch: 0.1,
+                      move: BodyMove(kind: .spin)),
+            AnticStep(duration: 0.45, look: CGPoint(x: 0, y: 0.6)),
+            AnticStep(duration: 0.7, look: user, mood: .happy),
+        ]
+        case .backflip: [ // a deep crouch, a somersault backwards, a proud landing
+            AnticStep(duration: 0.4, look: CGPoint(x: 0, y: 0.3), mood: .excited, stretch: -0.14),
+            AnticStep(duration: 0.9, look: CGPoint(x: 0, y: -0.2), mood: .excited, stretch: 0.06,
+                      move: BodyMove(kind: .flip, reverse: true)),
+            AnticStep(duration: 0.3, look: user, mood: .surprised, glyph: .exclaim, stretch: -0.1),
+            AnticStep(duration: 0.8, look: user, mood: .happy, glyph: .sparkles, tilt: 5, stretch: 0.04),
+        ]
+        case .cartwheel: [
+            AnticStep(duration: 0.35, look: CGPoint(x: 0.5, y: 0), mood: .excited, tilt: -6, stretch: -0.06),
+            AnticStep(duration: 1.0, look: CGPoint(x: 0.3, y: -0.1), mood: .excited, move: BodyMove(kind: .roll)),
+            AnticStep(duration: 0.8, look: user, mood: .giggly, tilt: 4),
+        ]
+        case .boing: [   // like a rubber ball, then a little dizzy
+            AnticStep(duration: 1.6, look: CGPoint(x: 0, y: -0.15), mood: .giggly, move: BodyMove(kind: .bounce, times: 4)),
+            AnticStep(duration: 0.6, look: CGPoint(x: 0.1, y: 0), mood: .dizzy, move: BodyMove(kind: .wobble, times: 2)),
+            AnticStep(duration: 0.5, look: user, mood: .happy),
+        ]
+        case .levitate: [ // eyes closed, it drifts up, hovers, and settles back down
+            AnticStep(duration: 0.5, look: CGPoint(x: 0, y: 0.1), mood: .content),
+            AnticStep(duration: 2.6, look: CGPoint(x: 0, y: -0.25), mood: .content, glyph: .sparkles, move: BodyMove(kind: .float, times: 2)),
+            AnticStep(duration: 0.6, look: user, mood: .surprised),
         ]
 
         // Expressions
@@ -366,7 +399,8 @@ extension AnticStep {
     init(_ b: AnimationBeat) {
         self.init(duration: b.duration, look: b.hasLook ? CGPoint(x: b.lookX ?? 0, y: b.lookY ?? 0) : nil,
                   mood: b.mood.flatMap(Mood.init(rawValue:)), glyph: b.glyph.flatMap(Glyph.init(rawValue:)),
-                  tilt: b.tilt, hop: b.hop, stretch: b.stretch)
+                  tilt: b.tilt, hop: b.hop, stretch: b.stretch,
+                  move: b.move.flatMap(BodyMove.Kind.init(rawValue:)).map { BodyMove(kind: $0, times: b.repeats, reverse: b.reverse == true) })
     }
 }
 
@@ -374,7 +408,8 @@ extension AnimationBeat {
     init(_ s: AnticStep) {
         self.init(duration: AnimationBeat.round(s.duration), lookX: s.look.map { AnimationBeat.round($0.x) },
                   lookY: s.look.map { AnimationBeat.round($0.y) }, mood: s.mood?.rawValue, glyph: s.glyph?.rawValue,
-                  tilt: AnimationBeat.round(s.tilt), hop: s.hop, stretch: AnimationBeat.round(s.stretch))
+                  tilt: AnimationBeat.round(s.tilt), hop: s.hop, stretch: AnimationBeat.round(s.stretch),
+                  move: s.move?.kind.rawValue, times: s.move?.times, reverse: s.move?.reverse == true ? true : nil)
     }
 
     static func round(_ x: Double) -> Double { (x * 100).rounded() / 100 }

@@ -28,6 +28,8 @@ final class Puppet {
         var breathing = true
         /// Seconds since a hop started.
         var hopSince: Double?
+        /// Seconds since `step` began (for its move).
+        var stepElapsed: Double?
         /// Its character, laid over every face (see `ImpTraits`).
         var traits = ImpTraits.plain
     }
@@ -49,6 +51,9 @@ final class Puppet {
         let parts = moods.mix.map { (Motion.at(t, mood: $0.key, level: cue.level, breathing: cue.breathing), $0.weight) }
         var motion = parts.count == 1 ? parts[0].0 : Motion.blend(parts, at: t)
         if let since = cue.hopSince { motion.hop(since: since) }
+        if let step = cue.step, let move = step.move, let elapsed = cue.stepElapsed {
+            motion.perform(move, elapsed: elapsed, duration: step.duration)
+        }
         return (face, motion)
     }
 
