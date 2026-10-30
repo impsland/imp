@@ -283,9 +283,15 @@ other both ways (`imp_message`), just like Imps on the desktop do.
 
 **Embers.** When the Imps on the phone can't think (the Mac is away, or an Imp has no brain yet),
 a little flame shows in the corner. Tap it for a 45-second round: embers drift up through the
-dungeon and you fling the Imps through them. Catching several in one flight builds a combo, two
-Imps that bonk mid-air score a bonus, and a rare blue wisp is worth five. The edges always bounce
-during a round, so nobody gets thrown to the Mac by accident. Your best score is kept.
+dungeon and you fling the Imps through them. Catching several in one flight builds a combo (reach
+×5 for an "Ablaze!"), two Imps that bonk mid-air score a bonus, and a rare blue wisp is worth five.
+The heat rises over the round, and the last 10 seconds are a Blaze where every point counts double.
+A green kindling spark adds 5 seconds when caught (a round never runs past 75), a few embers rise
+together in swarms, and dark smoke costs 2 points and your combo if an Imp flies through it. The
+first round starts with a short lesson: fling an Imp through three embers, a card with the rules,
+and a 3-2-1 countdown. It can be skipped, and "How to play" on the end card brings it back. The
+edges always bounce during a round, so nobody gets thrown to the Mac by accident. Your best score
+is kept.
 
 **Pairing.** All Imps › App › iPhone › **Pair…** shows a QR code. Scan it with the iPhone's Camera
 (or **Scan Code** in the app). The code carries a 256-bit secret that never travels over the

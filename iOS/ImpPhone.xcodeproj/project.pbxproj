@@ -14,6 +14,7 @@
 		33D971EE0258680DE6F44E9F /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E6EB59723598749562B958 /* Keychain.swift */; };
 		3C05A501D4D7A0017C6BBA17 /* ReplyBlocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D36860F51AAB868812CA05 /* ReplyBlocks.swift */; };
 		3DEB2BEE904FC2E55AD6181E /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7D2F37C84A4B750CDB3F71 /* Palette.swift */; };
+		3F9E73CF6E992866F6169F11 /* EmbersCoach.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425EA0CF393C2A5B4C8C8E79 /* EmbersCoach.swift */; };
 		4ABD8A5451824A83F23B28E9 /* PocketStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE7028C65676801485C56B3 /* PocketStore.swift */; };
 		5160526D57D45232F430B758 /* ImpRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E56E2B80612481500C8FE /* ImpRenderer.swift */; };
 		5291E2FE7332DD9EBAE3A954 /* PocketEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535920C67E324CBF24FF6E52 /* PocketEditor.swift */; };
@@ -58,6 +59,7 @@
 		2A5E56E2B80612481500C8FE /* ImpRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpRenderer.swift; sourceTree = "<group>"; };
 		36040976E160D83A9ED7131E /* PhoneStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneStage.swift; sourceTree = "<group>"; };
 		37A695264BBAD32A874A57EB /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		425EA0CF393C2A5B4C8C8E79 /* EmbersCoach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbersCoach.swift; sourceTree = "<group>"; };
 		496385172A5237326FD3A24B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		535920C67E324CBF24FF6E52 /* PocketEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketEditor.swift; sourceTree = "<group>"; };
 		540B98CA530667A006631F93 /* LinkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkClient.swift; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 				496385172A5237326FD3A24B /* Assets.xcassets */,
 				19446029336D379F770CD86B /* ChatSheet.swift */,
 				C694EC257AF0DCC56DCBE571 /* ChatSource.swift */,
+				425EA0CF393C2A5B4C8C8E79 /* EmbersCoach.swift */,
 				BBA159EED58442BB21A2A0AE /* GameLayer.swift */,
 				8151B96260694FD93D8F45E8 /* GameRound.swift */,
 				06FA16062C38989EC0152F05 /* ImpFigure.swift */,
@@ -263,6 +266,7 @@
 				0E79EEB23068CD9964B66A3F /* Antics.swift in Sources */,
 				B3DDDC12FE1679378FCB5BDD /* ChatSheet.swift in Sources */,
 				619257764618CB4FC702F0B1 /* ChatSource.swift in Sources */,
+				3F9E73CF6E992866F6169F11 /* EmbersCoach.swift in Sources */,
 				54258AB0FC3D143CFDA758BA /* Extras.swift in Sources */,
 				5D04D4EA1EB2CA2824106315 /* Face.swift in Sources */,
 				15117A49B4DBDDD10DE49934 /* GameLayer.swift in Sources */,

@@ -168,6 +168,38 @@
         }
       }
     },
+    "+5s" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+5 s"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+5 秒"
+          }
+        }
+      }
+    },
+    "Ablaze!" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡En llamas!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "火力全开！"
+          }
+        }
+      }
+    },
     "Add a tool server" : {
       "localizations" : {
         "es" : {
@@ -351,6 +383,54 @@
         }
       }
     },
+    "Blaze ×2" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llamarada ×2"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "烈焰 ×2"
+          }
+        }
+      }
+    },
+    "Blaze. Points count double" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llamarada. Los puntos valen el doble."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "烈焰时刻。得分翻倍。"
+          }
+        }
+      }
+    },
+    "Bonk Imps together for a bonus." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haz chocar a los Imps para ganar un extra."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让 Imp 互相碰撞可得奖励分。"
+          }
+        }
+      }
+    },
     "Brain" : {
       "localizations" : {
         "es" : {
@@ -379,6 +459,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "取消"
+          }
+        }
+      }
+    },
+    "Catch embers. More in one flight, more points." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atrapa brasas. Cuantas más en un vuelo, más puntos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接住火花。一次飞行接得越多，得分越高。"
           }
         }
       }
@@ -658,6 +754,22 @@
         }
       }
     },
+    "Fling an Imp through the embers" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lanza un Imp a través de las brasas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把 Imp 甩过火花"
+          }
+        }
+      }
+    },
     "Getting it from your Mac…" : {
       "localizations" : {
         "es" : {
@@ -734,6 +846,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请求头"
+          }
+        }
+      }
+    },
+    "How to play" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cómo jugar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玩法"
           }
         }
       }
@@ -860,6 +988,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "密钥"
+          }
+        }
+      }
+    },
+    "Kindling gives you more time." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La yesca te da más tiempo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "火种能给你更多时间。"
           }
         }
       }
@@ -1009,6 +1153,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新聊天"
+          }
+        }
+      }
+    },
+    "New best!" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Nuevo récord!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新纪录！"
           }
         }
       }
@@ -1501,6 +1661,22 @@
         }
       }
     },
+    "Skip" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Omitir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跳过"
+          }
+        }
+      }
+    },
     "Sound" : {
       "localizations" : {
         "es" : {
@@ -1545,6 +1721,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开始一条请 %@ 做事的消息。"
+          }
+        }
+      }
+    },
+    "Steer clear of smoke." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Evita el humo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "避开烟雾。"
           }
         }
       }
@@ -1941,6 +2133,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "时间到。%lld 分"
+          }
+        }
+      }
+    },
+    "Time. %lld points. New best!" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiempo. %lld puntos. ¡Nuevo récord!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时间到。%lld 分。新纪录！"
           }
         }
       }

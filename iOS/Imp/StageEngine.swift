@@ -227,23 +227,39 @@ final class StageEngine {
 
     // MARK: Embers
 
-    /// Starts a round, if there is anyone to play with.
-    func startGame() {
+    nonisolated static let tutorialKey = "embersTutorialSeen"
+
+    /// Starts a round, if there is anyone to play with. The first one (or one asked for) begins with the lesson.
+    func startGame(tutorial: Bool = false) {
         guard !order.isEmpty else { return }
-        round = GameRound()
+        let coaching = tutorial || !UserDefaults.standard.bool(forKey: Self.tutorialKey)
+        round = GameRound(coaching: coaching)
         haptics.prepare()
+        if coaching { AccessibilityNotification.Announcement(GameRound.caption).post() }
     }
 
     /// Dismisses the finished round's card.
     func endGame() { round = nil }
 
+    /// Moves the lesson on: from the line or the rules to the countdown.
+    func skipLesson(now: Date = Date()) {
+        guard var round else { return }
+        let events = round.nextStep()
+        handle(events, in: &round, at: now)
+        self.round = round
+    }
+
     var best: Int { UserDefaults.standard.integer(forKey: "emberBest") }
 
-    private func finishGame(_ round: GameRound) {
+    /// Keeps the best, and says whether this round beat it.
+    private func finishGame(_ round: GameRound) -> Bool {
         let isBest = round.score > best
         if isBest { UserDefaults.standard.set(round.score, forKey: "emberBest") }
-        haptics.finished()
-        AccessibilityNotification.Announcement(String(localized: "Time. \(round.score) points")).post()
+        haptics.finished(best: isBest)
+        let points = round.score
+        AccessibilityNotification.Announcement(isBest ? String(localized: "Time. \(points) points. New best!")
+                                                       : String(localized: "Time. \(points) points")).post()
+        return isBest
     }
 
     /// How an Imp looks while playing: nil outside a round.
@@ -255,7 +271,13 @@ final class StageEngine {
     }
 
     private func play(_ dt: Double, date: Date) {
-        guard var round, !round.isOver else { return }
+        guard var round else { return }
+        if round.isOver {
+            round.settle(dt, in: field, calm: reduceMotion)
+            self.round = round
+            return
+        }
+        if let guide = round.guide, bodies[guide.id] == nil { round.dropGuide() }
         let ids = order.filter { bodies[$0]?.phase == .free && bodies[$0]?.enteringFrom == nil }
         var movers = ids.compactMap { id in
             bodies[id].map { GameRound.Mover(id: id, pos: $0.pos, vel: $0.vel, radius: $0.size * 0.36) }
@@ -265,23 +287,45 @@ final class StageEngine {
             bodies[m.id]?.pos = m.pos
             bodies[m.id]?.vel = m.vel
         }
+        handle(events, in: &round, at: date)
+        self.round = round
+    }
+
+    private func handle(_ events: [GameRound.Event], in round: inout GameRound, at date: Date) {
         for event in events {
             switch event {
             case .caught(let id, _, let multiplier):
                 bodies[id]?.performance = Performance(key: "catch", steps: [
                     AnticStep(duration: 0.6, mood: .excited, glyph: multiplier > 2 ? .heart : nil, hop: true)])
                 haptics.caught(multiplier)
+            case .kindled(let id):
+                bodies[id]?.performance = Performance(key: "catch", steps: [AnticStep(duration: 0.7, mood: .happy, glyph: .heart, hop: true)])
+                haptics.kindled()
+            case .smoked(let id):
+                bodies[id]?.dizzyUntil = date.addingTimeInterval(1.1)
+                bodies[id]?.performance = Performance(key: "smoke", steps: [
+                    AnticStep(duration: 0.9, mood: .dizzy, glyph: .sweat),
+                    AnticStep(duration: 0.7, mood: .annoyed)])
+                haptics.smoked()
+            case .cheered(let id):
+                bodies[id]?.performance = Performance(key: "catch", steps: [AnticStep(duration: 0.9, mood: .excited, glyph: .heart, hop: true)])
             case .bonk(let a, let b):
                 for id in [a, b] {
                     bodies[id]?.dizzyUntil = date.addingTimeInterval(1.6)
                     bodies[id]?.performance = nil
                 }
                 haptics.bonk()
+            case .blaze:
+                haptics.blaze()
+                AccessibilityNotification.Announcement(String(localized: "Blaze. Points count double")).post()
+            case .countdown:
+                UserDefaults.standard.set(true, forKey: Self.tutorialKey)
+            case .tick(let n):
+                haptics.tick(n)
             case .finished:
-                finishGame(round)
+                round.isRecord = finishGame(round)
             }
         }
-        self.round = round
     }
 
     // MARK: Fingers
