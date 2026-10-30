@@ -80,8 +80,11 @@ public struct ChatMemory: Codable, Equatable, Sendable {
     /// first one rides with it), so tool calls never lose their results.
     static func exchanges(in messages: [ChatMessage]) -> [[ChatMessage]] {
         var out: [[ChatMessage]] = []
+        var sawUser = false
         for m in messages {
-            if (m.role == "user" && m.attachment != true) || out.isEmpty { out.append([m]) } else { out[out.count - 1].append(m) }
+            let opens = m.role == "user" && m.attachment != true
+            if out.isEmpty || (opens && sawUser) { out.append([m]) } else { out[out.count - 1].append(m) }
+            sawUser = sawUser || opens
         }
         return out
     }

@@ -82,6 +82,14 @@ private func toolExchange(_ ask: String = "Make it sound nicer", file: String = 
         #expect(context[0].content == "S")
     }
 
+    @Test func messagesBeforeTheFirstUserMessageRideWithIt() {
+        let messages: [ChatMessage] = [.tool(id: "c", content: "ok"), .assistant("done"),
+                                       .user("a"), .assistant("1"), .user("b"), .assistant("2")]
+        let exchanges = ChatMemory.exchanges(in: messages)
+        #expect(exchanges.map { $0.map(\.content) } == [["ok", "done", "a", "1"], ["b", "2"]])
+        #expect(ChatMemory.exchanges(in: [.assistant("hi")]).count == 1)
+    }
+
     @Test func whatIsSaidDuringARecapIsKept() {
         var m = ChatMemory()
         m.remember([.user("a"), .assistant("1")])
