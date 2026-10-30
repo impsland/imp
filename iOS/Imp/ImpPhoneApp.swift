@@ -3,26 +3,28 @@ import SwiftUI
 
 @main
 struct ImpPhoneApp: App {
-    @State private var client = LinkClient()
+    @State private var client: LinkClient
+    @State private var pocket: PocketRuntime
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        let client = LinkClient()
         #if DEBUG
         // Screenshots and demos without a Mac: `-demo` fills the stage with a few Imps.
-        if CommandLine.arguments.contains("-demo") { _client = State(initialValue: Self.demoClient()) }
+        if CommandLine.arguments.contains("-demo") { client.loadDemo() }
         // End-to-end checks against a real Mac in the Simulator: `-pair <implink://…>` pairs at launch.
         if let i = CommandLine.arguments.firstIndex(of: "-pair"), CommandLine.arguments.indices.contains(i + 1),
            let pairing = LinkPairing(string: CommandLine.arguments[i + 1]) {
-            let c = LinkClient()
-            c.pair(pairing)
-            _client = State(initialValue: c)
+            client.pair(pairing)
         }
         #endif
+        _client = State(initialValue: client)
+        _pocket = State(initialValue: PocketRuntime(client: client))
     }
 
     var body: some Scene {
         WindowGroup {
-            RootView(client: client)
+            RootView(client: client, pocket: pocket)
                 .preferredColorScheme(.dark)
                 .tint(Dungeon.ember)
                 .onOpenURL { url in
@@ -33,40 +35,46 @@ struct ImpPhoneApp: App {
                 .onChange(of: scenePhase, initial: true) { _, phase in client.setActive(phase == .active) }
         }
     }
-
-    #if DEBUG
-    @MainActor private static func demoClient() -> LinkClient {
-        let c = LinkClient()
-        c.loadDemo()
-        return c
-    }
-    #endif
 }
 
-/// Pairing when there's no Mac yet; the stage once there is.
+/// Pairing when there's nothing yet; the stage once there's a Mac or an Imp hatched on this iPhone.
 struct RootView: View {
+    /// What's in the sheet.
+    private enum Sheet: Hashable, Identifiable {
+        case chat(UUID)
+        case hatch
+        case edit(UUID)
+        case pair
+
+        var id: Self { self }
+        var isChat: Bool { if case .chat = self { true } else { false } }
+    }
+
     let client: LinkClient
-    @State private var chat: ChatRoute?
+    let pocket: PocketRuntime
+    @State private var sheet: Sheet?
     @State private var confirmUnpair = false
     @State private var toast: String?
+
+    private var onStage: Bool { client.pairing != nil || !pocket.imps.isEmpty }
 
     var body: some View {
         ZStack {
             DungeonBackdrop()
-            if client.pairing == nil {
-                PairingView(client: client)
+            if !onStage {
+                PairingView(client: client) { sheet = .hatch }
                     .transition(.opacity)
             } else {
-                PhoneStage(client: client) { chat = ChatRoute(id: $0) }
+                PhoneStage(client: client, pocket: pocket) { sheet = .chat($0) }
                     .transition(.opacity)
                 VStack {
-                    StatusPill(client: client, confirmUnpair: $confirmUnpair)
+                    StatusPill(client: client, confirmUnpair: $confirmUnpair, hatch: { sheet = .hatch }, pair: { sheet = .pair })
                     Spacer()
                 }
                 .padding(.top, 6)
             }
         }
-        .animation(.easeInOut(duration: 0.35), value: client.pairing == nil)
+        .animation(.easeInOut(duration: 0.35), value: onStage)
         .overlay(alignment: .bottom) { ToastView(text: toast).padding(.bottom, 28) }
         .onChange(of: client.toast) { _, text in
             guard let text else { return }
@@ -77,9 +85,12 @@ struct RootView: View {
                 if toast == text { toast = nil }
             }
         }
-        .sheet(item: $chat) { route in
-            ChatSheet(client: client, impID: route.id)
-                .presentationDetents([.medium, .large])
+        .onChange(of: client.pairing != nil) { _, paired in
+            if paired, sheet == .pair { sheet = nil }
+        }
+        .sheet(item: $sheet) { route in
+            content(route)
+                .presentationDetents(route.isChat ? [.medium, .large] : [.large])
                 .presentationDragIndicator(.visible)
                 .presentationBackground(Dungeon.deep)
         }
@@ -94,21 +105,39 @@ struct RootView: View {
                 // Waits for the Imps (from the demo, or from a Mac it's connecting to).
                 for _ in 0..<120 where client.imps.isEmpty { try? await Task.sleep(for: .milliseconds(250)) }
                 try? await Task.sleep(for: .seconds(1.5))
-                if let first = client.imps.first { chat = ChatRoute(id: first.id) }
+                if let first = client.imps.first { sheet = .chat(first.id) }
             }
             // `-ask <text>`: once connected, asks the first Imp and opens its chat (end-to-end checks).
             if let i = CommandLine.arguments.firstIndex(of: "-ask"), CommandLine.arguments.indices.contains(i + 1) {
                 for _ in 0..<120 where !(client.isConnected && !client.imps.isEmpty) { try? await Task.sleep(for: .milliseconds(250)) }
                 guard let first = client.imps.first else { return }
                 client.ask(first.id, CommandLine.arguments[i + 1])
-                chat = ChatRoute(id: first.id)
+                sheet = .chat(first.id)
             }
         }
         #endif
     }
-}
 
-struct ChatRoute: Identifiable { var id: UUID }
+    @ViewBuilder private func content(_ route: Sheet) -> some View {
+        switch route {
+        case .chat(let id):
+            if pocket.contains(id) {
+                ChatSheet(client: client, source: pocket, impID: id) { sheet = .edit(id) }
+            } else {
+                ChatSheet(client: client, source: client, impID: id)
+            }
+        case .hatch:
+            PocketEditor(pocket: pocket, editing: nil) { sheet = nil }
+        case .edit(let id):
+            PocketEditor(pocket: pocket, editing: id) { sheet = pocket.contains(id) ? .chat(id) : nil }
+        case .pair:
+            ZStack {
+                DungeonBackdrop()
+                PairingView(client: client)
+            }
+        }
+    }
+}
 
 /// A small message that floats up and goes.
 struct ToastView: View {

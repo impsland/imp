@@ -38,6 +38,15 @@ and `-pair <implink://…>` with `-ask <text>` for end-to-end checks against a r
    menu › Send to Mac) and it flies onto the Mac, continuing the way it went. If the Mac can't take it,
    it bounces back with the reason.
 
+## Imps hatched on the phone
+
+The status pill's menu (or **Or hatch an Imp on this iPhone** on the first screen) hatches a pocket Imp:
+a name, a colour, a personality, an OpenAI-compatible service and optional HTTP tool servers. It thinks on
+the phone (`PocketRuntime`, built on ImpKit's `PocketBrain`), with or without a Mac. Its chats and settings
+are one JSON file in Application Support (`PocketStore`). Keys and header values are only in the Keychain
+(`PocketKeychain`) and the form only says "Saved" afterwards. Throw one off a side while the Mac is
+connected and it moves home for good.
+
 ## Security
 
 The QR code carries a random 256-bit secret. It is stored in the Keychain and **never sent over the

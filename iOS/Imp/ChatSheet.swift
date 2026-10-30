@@ -2,12 +2,17 @@ import ImpKit
 import QuickLook
 import SwiftUI
 
-/// An Imp's chat. The Mac does the thinking; this shows the turns it sends and sends what you type.
+/// An Imp's chat. It shows the turns its source has and sends what you type: the Mac does the
+/// thinking for its Imps, this iPhone for the pocket ones.
 /// Replies are drawn from their Markdown like the Mac's bubble: text, lists, code and tables, and
 /// the pictures, voices, videos and files they show, fetched from the Mac (`LinkFileStore`).
 struct ChatSheet: View {
+    /// Where files in replies come from (the Mac).
     let client: LinkClient
+    let source: any ChatSource
     let impID: UUID
+    /// Opens the Imp's settings. Only the Imps hatched on this iPhone have any.
+    var edit: (() -> Void)?
     @State private var text = ""
     @FocusState private var focused: Bool
     @State private var confirmingNewChat = false
@@ -17,10 +22,12 @@ struct ChatSheet: View {
     /// Voices in replies that arrive after this play on their own (older ones wait for a tap).
     @State private var openedAt = Date()
 
-    private var imp: LinkImp? { client.imps.first { $0.id == impID } }
-    private var turns: [LinkTurn] { client.chats[impID] ?? [] }
+    private var imp: LinkImp? { source.imp(impID) }
+    private var turns: [LinkTurn] { source.turns(impID) }
+    private var availability: ChatAvailability { source.availability(impID) }
     /// Work you asked for. A question from another Imp shows as its speech bubble on the stage.
-    private var work: LinkWork? { client.work[impID].flatMap { $0.from == nil ? $0 : nil } }
+    private var work: LinkWork? { source.working(impID).flatMap { $0.from == nil ? $0 : nil } }
+    private var canStartOver: Bool { availability != .offline && !(turns.isEmpty && work == nil) }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -55,12 +62,12 @@ struct ChatSheet: View {
         .animation(.spring(duration: 0.35), value: problem)
         .confirmationDialog("Start a new chat?", isPresented: $confirmingNewChat, titleVisibility: .visible) {
             Button("New Chat") {
-                client.newChat(impID)
+                source.newChat(impID)
                 openedAt = Date()
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
             }
         } message: {
-            Text("This chat leaves your phone, but your Mac keeps it: it's in \(imp?.name ?? "the Imp")'s Brain › Memory › Chats. \(imp?.name ?? "The Imp") starts fresh.")
+            if let imp { Text(source.newChatNote(imp)) }
         }
     }
 
@@ -81,39 +88,56 @@ struct ChatSheet: View {
                 }
             }
             Spacer()
-            Button { confirmingNewChat = true } label: {
-                Image(systemName: "square.and.pencil")
-                    .font(.system(size: 17, weight: .medium))
-                    .foregroundStyle(Dungeon.cream)
-                    .frame(width: 38, height: 38)
-                    .background(Dungeon.card, in: Circle())
-                    .overlay(Circle().strokeBorder(Dungeon.cardEdge))
+            if let edit {
+                Menu {
+                    Button(action: edit) { Label("Edit", systemImage: "slider.horizontal.3") }
+                    Button { confirmingNewChat = true } label: { Label("New Chat", systemImage: "square.and.pencil") }
+                        .disabled(!canStartOver)
+                } label: {
+                    roundGlyph("ellipsis")
+                }
+                .accessibilityLabel("More")
+            } else {
+                Button { confirmingNewChat = true } label: { roundGlyph("square.and.pencil") }
+                    .disabled(!canStartOver)
+                    .opacity(canStartOver ? 1 : 0.4)
+                    .accessibilityLabel("New Chat")
             }
-            .disabled(!client.isConnected || (turns.isEmpty && work == nil))
-            .opacity(client.isConnected && !(turns.isEmpty && work == nil) ? 1 : 0.4)
-            .accessibilityLabel("New Chat")
         }
         .padding(.horizontal, 18).padding(.top, 20).padding(.bottom, 12)
         .background(alignment: .bottom) { Rectangle().fill(Dungeon.cardEdge).frame(height: 1) }
         .animation(.easeInOut(duration: 0.2), value: status)
     }
 
+    private func roundGlyph(_ name: String) -> some View {
+        Image(systemName: name)
+            .font(.system(size: 17, weight: .medium))
+            .foregroundStyle(Dungeon.cream)
+            .frame(width: 38, height: 38)
+            .background(Dungeon.card, in: Circle())
+            .overlay(Circle().strokeBorder(Dungeon.cardEdge))
+    }
+
     private var mood: Mood {
-        if !client.isConnected { return .sleepy }
-        if let m = client.moods[impID] { return m }
+        if availability != .ready { return .sleepy }
+        if let m = source.mood(impID) { return m }
         return work != nil ? .working : .idle
     }
 
     private var status: String {
-        if !client.isConnected { return String(localized: "Your Mac isn't around") }
+        switch availability {
+        case .offline: return String(localized: "Your Mac isn't around")
+        case .noBrain: return String(localized: "No brain yet")
+        case .ready: break
+        }
         if let work { return work.status ?? (work.partial.isEmpty ? String(localized: "Thinking…") : String(localized: "Answering…")) }
-        if let w = client.work[impID], let from = w.from { return String(localized: "Answering \(from)…") }
-        return String(localized: "Ready")
+        if let w = source.working(impID), let from = w.from { return String(localized: "Answering \(from)…") }
+        return source.restingStatus
     }
 
     private var statusColor: Color {
-        if !client.isConnected { return Dungeon.muted }
-        return client.work[impID] != nil ? Dungeon.flame : Dungeon.good
+        if availability != .ready { return Dungeon.muted }
+        return source.working(impID) != nil ? Dungeon.flame : Dungeon.good
     }
 
     // MARK: Transcript
@@ -128,7 +152,7 @@ struct ChatSheet: View {
                             DaySeparator(text: label)
                         }
                         TurnView(turn: turn, imp: imp, client: client, fresh: turn.date > openedAt,
-                                 retry: client.isConnected ? { client.ask(impID, turn.request) } : nil)
+                                 retry: availability == .ready ? { source.ask(impID, turn.request) } : nil)
                     }
                     if let work { LiveTurn(work: work, imp: imp, client: client) }
                     Color.clear.frame(height: 1).id("end")
@@ -160,11 +184,13 @@ struct ChatSheet: View {
     }
 
     private func emptyState(_ imp: LinkImp) -> some View {
-        VStack(spacing: 10) {
-            Image(systemName: "bubble.left.and.text.bubble.right").font(.system(size: 30, weight: .light)).foregroundStyle(Dungeon.ember)
-            Text("Ask \(imp.name) anything")
+        let intro = source.intro(imp, availability)
+        return VStack(spacing: 10) {
+            Image(systemName: availability == .noBrain ? "moon.zzz" : "bubble.left.and.text.bubble.right")
+                .font(.system(size: 30, weight: .light)).foregroundStyle(Dungeon.ember)
+            Text(intro.title)
                 .font(.system(.headline, design: .rounded)).foregroundStyle(Dungeon.cream)
-            Text("It works on your Mac, with its tools, and can message the Imps there too. Pictures, voices and files it makes show up right here.")
+            Text(intro.text)
                 .font(.system(.callout, design: .rounded))
                 .foregroundStyle(Dungeon.muted)
                 .multilineTextAlignment(.center)
@@ -176,10 +202,11 @@ struct ChatSheet: View {
 
     private func composer(_ imp: LinkImp) -> some View {
         VStack(spacing: 8) {
-            if !client.others.isEmpty && text.isEmpty && client.isConnected {
+            let peers = availability == .ready ? source.peers(impID) : []
+            if !peers.isEmpty && text.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
-                        ForEach(client.others) { other in
+                        ForEach(peers) { other in
                             Button {
                                 text = String(localized: "Ask \(other.name) to ")
                                 focused = true
@@ -200,9 +227,16 @@ struct ChatSheet: View {
                     .padding(.horizontal, 16)
                 }
             }
-            if !client.isConnected {
+            switch availability {
+            case .offline:
                 Label("Your Mac isn't around. Chats resume when it is.", systemImage: "wifi.slash")
                     .font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
+            case .noBrain:
+                Button { edit?() } label: { Label("Give it a brain", systemImage: "sparkles") }
+                    .font(.system(.footnote, design: .rounded, weight: .semibold))
+                    .foregroundStyle(Dungeon.flame)
+            case .ready:
+                EmptyView()
             }
             HStack(alignment: .bottom, spacing: 10) {
                 TextField("Message \(imp.name)", text: $text, axis: .vertical)
@@ -213,7 +247,7 @@ struct ChatSheet: View {
                     .background(Dungeon.card, in: RoundedRectangle(cornerRadius: 21, style: .continuous))
                     .overlay(RoundedRectangle(cornerRadius: 21, style: .continuous).strokeBorder(focused ? Dungeon.ember.opacity(0.6) : Dungeon.cardEdge))
                 if work != nil && trimmed.isEmpty {
-                    Button { client.stop(impID); UIImpactFeedbackGenerator(style: .medium).impactOccurred() } label: { glyph("stop.fill") }
+                    Button { source.stop(impID); UIImpactFeedbackGenerator(style: .medium).impactOccurred() } label: { glyph("stop.fill") }
                         .accessibilityLabel("Stop")
                         .transition(.scale.combined(with: .opacity))
                 } else {
@@ -226,8 +260,8 @@ struct ChatSheet: View {
             }
             .animation(.spring(duration: 0.3), value: work == nil)
             .padding(.horizontal, 14)
-            .disabled(!client.isConnected)
-            .opacity(client.isConnected ? 1 : 0.5)
+            .disabled(availability != .ready)
+            .opacity(availability == .ready ? 1 : 0.5)
         }
         .padding(.top, 10).padding(.bottom, 10)
         .background(alignment: .top) { Rectangle().fill(Dungeon.cardEdge).frame(height: 1) }
@@ -246,7 +280,7 @@ struct ChatSheet: View {
 
     private func send() {
         guard !trimmed.isEmpty else { return }
-        client.ask(impID, trimmed)
+        source.ask(impID, trimmed)
         text = ""
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }

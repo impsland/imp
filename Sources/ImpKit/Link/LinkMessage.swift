@@ -5,6 +5,9 @@ import Foundation
 // its body and its chat. Messages are JSON, one per frame (`LinkFrame`), over any reliable,
 // authenticated byte stream: today TLS with a pre-shared key on the local network (`LinkChannel`),
 // tomorrow the same frames through a relay over the internet.
+//
+// The phone has Imps of its own too (`PocketImp`): they think on the phone. They reach the Mac only
+// to talk to its Imps, and to move home (`adopt`).
 
 /// The protocol's version. Each side says its own in `hello`/`welcome`; a side ignores message
 /// types it doesn't know, so newer peers can add some without breaking older ones.
@@ -16,6 +19,10 @@ public enum LinkProtocol {
     public static let port: UInt16 = 47_824
     /// Frames bigger than this are refused (chats are sent a page at a time).
     public static let maxFrame = 4 << 20
+    /// The phone pings this often (seconds) while it's connected.
+    public static let pingInterval: TimeInterval = 20
+    /// A link that hasn't heard a thing for this long (seconds) is dead: both sides close it.
+    public static let silenceLimit: TimeInterval = 45
 }
 
 /// A side of a screen an Imp is tossed off, or flies in from.
@@ -150,6 +157,19 @@ public struct LinkFilePart: Codable, Sendable, Equatable {
     public static let maxSize = 512 * 1024 * 1024
 }
 
+/// The secrets of a pocket Imp that moves to the Mac: they travel apart from its kit, which never
+/// holds any. Never log it.
+public struct LinkSecrets: Codable, Sendable, Equatable {
+    /// The key of its service, if it has one.
+    public var apiKey: String?
+    /// Header values by the name its servers have in the kit, then by header name.
+    public var headers: [String: [String: String]]
+
+    public init(apiKey: String? = nil, headers: [String: [String: String]] = [:]) {
+        self.apiKey = apiKey; self.headers = headers
+    }
+}
+
 /// iPhone → Mac.
 public enum LinkRequest: Codable, Sendable, Equatable {
     /// First message on a connection: who's calling.
@@ -170,6 +190,17 @@ public enum LinkRequest: Codable, Sendable, Equatable {
     case file(id: UUID, imp: UUID, ref: String)
     /// Still there (sent while idle, so a dead connection is noticed).
     case ping
+    /// The Imps hatched on the phone, sent after `welcome` and whenever they change. Mac Imps can
+    /// message these, and only these may send messages (`message`).
+    case troupe([LinkImp])
+    /// A pocket Imp moves home: thrown off a side of the phone, it flies onto the Mac as an ordinary
+    /// Mac Imp. `kit` is its kit (`PocketImp.adoption`). The Mac answers `adopted`, or `refused` and
+    /// the phone keeps it. The phone deletes its copy only after `adopted`.
+    case adopt(imp: UUID, kit: String, secrets: LinkSecrets, exit: LinkSide, height: Double, speed: Double)
+    /// A pocket Imp asks a Mac Imp something (`imp_message`). The Mac answers with `answer`.
+    case message(id: UUID, from: UUID, to: UUID, text: String)
+    /// The reply to a Mac Imp's `ask`: what the pocket Imp said, or why it couldn't (`failed`).
+    case answered(id: UUID, text: String, failed: Bool)
 }
 
 /// Mac → iPhone.
@@ -201,6 +232,15 @@ public enum LinkUpdate: Codable, Sendable, Equatable {
     /// The file can't be sent: why.
     case fileFailed(id: UUID, reason: String)
     case pong
+    /// Where else this Mac can be reached from the internet (a Hop, `host:port`), nil if nowhere.
+    /// Sent after `welcome`, so a phone paired earlier learns it without pairing again.
+    case route(hop: String?)
+    /// The Mac took the pocket Imp in: it lives there now.
+    case adopted(imp: UUID)
+    /// The reply to a pocket Imp's `message`: what the Mac Imp said, or why it couldn't (`failed`).
+    case answer(id: UUID, text: String, failed: Bool)
+    /// A Mac Imp asks a pocket Imp something (`imp_message`). The phone answers with `answered`.
+    case ask(id: UUID, from: LinkImp, to: UUID, text: String)
 }
 
 /// What you did to an Imp on the phone's screen.

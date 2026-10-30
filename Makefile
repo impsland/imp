@@ -1,7 +1,7 @@
 SWIFT ?= xcrun swift
 VERSION ?= $(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Resources/Info.plist)
 
-.PHONY: build app dist run test test-live install clean strings ios
+.PHONY: build app dist run test test-live test-server install clean strings ios
 
 build:
 	$(SWIFT) build
@@ -41,3 +41,7 @@ strings:
 
 clean:
 	rm -rf .build build
+
+# Plays a Mac, an iPhone and an Imp against a running Den and Hop (see server/README.md).
+test-server:
+	IMP_SERVER=$${IMP_SERVER:-http://localhost:8080} $(SWIFT) test --filter ServerLiveTests

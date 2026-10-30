@@ -226,7 +226,7 @@ import Network
         client.start()
         for _ in 0..<500 { if case .closed? = state.value { break }; try await Task.sleep(for: .milliseconds(10)) }
         #expect(state.value != .ready)
-        if case .closed? = state.value {} else { Issue.record("expected the handshake to fail, got \(String(describing: state.value))") }
+        if case .closed(let why, _)? = state.value { #expect(why == .rejected) } else { Issue.record("expected the handshake to fail, got \(String(describing: state.value))") }
         #expect(!got.value)
         client.close()
     }

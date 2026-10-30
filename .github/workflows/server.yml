@@ -1,0 +1,27 @@
+name: Server
+
+on:
+  push:
+    branches: [main]
+    paths: [server/**, .github/workflows/server.yml]
+  pull_request:
+    paths: [server/**, .github/workflows/server.yml]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v7
+      - name: Toolchain
+        run: rustup toolchain install 1.99.1 --profile minimal -c clippy,rustfmt && rustup default 1.99.1
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Lint
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Test
+        run: cargo test --workspace --locked
+      - name: Image
+        run: docker build -t imp-server .

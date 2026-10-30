@@ -43,8 +43,16 @@ final class OwnToolHost {
     /// The others it can talk to: out on the desktop, not itself.
     private var others: [ImpModel] { app?.imps.filter { $0.id != id } ?? [] }
 
+    /// Imps on the user's iPhones it can message too, by name (a name an Imp here has is theirs alone).
+    private var pocketImps: [(imp: LinkImp, phone: UUID)] {
+        guard let app else { return [] }
+        let taken = Set(app.prefs.imps.map { $0.name.lowercased() })
+        var seen = taken
+        return app.phone.pocketImps.filter { seen.insert($0.imp.name.lowercased()).inserted }
+    }
+
     func specs() -> [ToolSpec] {
-        OwnTools.specs(groups, animations: playable.map(\.name), imps: others.map(\.profile.name),
+        OwnTools.specs(groups, animations: playable.map(\.name), imps: others.map(\.profile.name), pocket: pocketImps.map(\.imp.name),
                        browser: BrowserBridge.shared.isConnected, talk: app?.prefs.impTalk ?? .own)
     }
 
@@ -70,6 +78,9 @@ final class OwnToolHost {
             case OwnTools.showAnimation: return try showAnimation(args)
             case OwnTools.removeAnimation: return try removeAnimation(args)
             case OwnTools.setTraits: return setTraits(args)
+            case OwnTools.denSearch, OwnTools.denGet, OwnTools.denAdd, OwnTools.denShare, OwnTools.denUnshare, OwnTools.denAccount:
+                guard let app else { throw ToolArgumentError("You're not here.") }
+                return try await DenTools(app: app, imp: id).call(name, args)
             default: throw ToolArgumentError("Unknown tool \(name).")
             }
         } catch let error as ToolArgumentError {
@@ -375,12 +386,16 @@ final class OwnToolHost {
         guard let to = args["to"]?.string, let text = args["text"]?.string, !text.isEmpty else {
             throw ToolArgumentError("Say who `to` and the `text`.")
         }
-        guard let other = others.first(where: { $0.profile.name.caseInsensitiveCompare(to) == .orderedSame }) else {
-            throw ToolArgumentError("\(to) isn't out on the desktop.")
-        }
         let me = profile ?? .imp
+        let sender = ChatTurn.Sender(id: me.id, name: me.name, hue: me.hue)
+        guard let other = others.first(where: { $0.profile.name.caseInsensitiveCompare(to) == .orderedSame }) else {
+            guard let app, let pocket = pocketImps.first(where: { $0.imp.name.caseInsensitiveCompare(to) == .orderedSame }) else {
+                throw ToolArgumentError("\(to) isn't out on the desktop.")
+            }
+            return "\(pocket.imp.name) says: \(try await app.phone.ask(pocket.imp, on: pocket.phone, from: me, text: text))"
+        }
         let place = (app?.prefs.impTalk ?? .own).place(asked: args["chat"]?.string)
-        let reply = try await other.answer(text, from: ChatTurn.Sender(id: me.id, name: me.name, hue: me.hue), in: place)
+        let reply = try await other.answer(text, from: sender, in: place)
         return "\(other.profile.name) says: \(reply)"
     }
 }

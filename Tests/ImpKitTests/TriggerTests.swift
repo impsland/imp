@@ -247,6 +247,27 @@ import Testing
         #expect(bounce.at(0.225).origin.y > bounce.at(0.615).origin.y, "each bounce lower")
     }
 
+    @Test func anImpFromThePhoneGlidesInAtItsHeight() {
+        let a = CGPoint(x: -116, y: 400), b = CGPoint(x: 380, y: 400)
+        let glide = GlidePath(from: a, to: b, speed: 1_800)
+        #expect(glide.at(0).origin == a)
+        #expect(abs(glide.at(1).origin.x - b.x) < 0.001 && abs(glide.at(1).origin.y - b.y) < 0.001)
+        #expect(abs(glide.at(1).lean) < 0.001, "lands upright")
+        #expect(glide.duration >= 0.65 && glide.duration <= 1.5)
+        // No hop: it stays near the height it was thrown at all the way.
+        let ys = stride(from: 0.0, through: 1, by: 0.05).map { glide.at($0).origin.y }
+        #expect(ys.allSatisfy { abs($0 - 400) <= 14 })
+        // Fast at first, braking to a stop.
+        let early = glide.at(0.1).origin.x - glide.at(0).origin.x
+        let late = glide.at(1).origin.x - glide.at(0.9).origin.x
+        #expect(early > late * 5)
+        #expect(glide.at(0.2).lean > 0, "leans into a glide to the right")
+        #expect(GlidePath(from: b, to: a, speed: 1_800).at(0.2).lean < 0)
+        // A harder throw arrives quicker; a gentle push (speed 0) still gets there.
+        #expect(GlidePath(from: a, to: b, speed: 2_500).duration < GlidePath(from: a, to: b, speed: 1_000).duration)
+        #expect(GlidePath(from: a, to: b, speed: 0).duration <= 1.5)
+    }
+
     @Test func aBurstCountsItsClicks() {
         var b = ClickBurst(interval: 0.3)
         _ = b.click(at: 1); _ = b.click(at: 1.1); _ = b.click(at: 1.2)

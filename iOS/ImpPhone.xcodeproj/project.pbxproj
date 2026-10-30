@@ -10,15 +10,19 @@
 		003ED416A016798061351095 /* SpeechBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 138E937C2DEA200C16A64509 /* SpeechBubble.swift */; };
 		0B3DE9AB90535E8776AC383B /* LinkFileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BCDE56EC7E08CB95A42B3A /* LinkFileStore.swift */; };
 		0E79EEB23068CD9964B66A3F /* Antics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154403A8E907ABF7EDDA394A /* Antics.swift */; };
+		15117A49B4DBDDD10DE49934 /* GameLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA159EED58442BB21A2A0AE /* GameLayer.swift */; };
 		33D971EE0258680DE6F44E9F /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E6EB59723598749562B958 /* Keychain.swift */; };
 		3C05A501D4D7A0017C6BBA17 /* ReplyBlocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D36860F51AAB868812CA05 /* ReplyBlocks.swift */; };
 		3DEB2BEE904FC2E55AD6181E /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7D2F37C84A4B750CDB3F71 /* Palette.swift */; };
+		4ABD8A5451824A83F23B28E9 /* PocketStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE7028C65676801485C56B3 /* PocketStore.swift */; };
 		5160526D57D45232F430B758 /* ImpRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E56E2B80612481500C8FE /* ImpRenderer.swift */; };
+		5291E2FE7332DD9EBAE3A954 /* PocketEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535920C67E324CBF24FF6E52 /* PocketEditor.swift */; };
 		53DBF1A59E634BADA2F58997 /* ImpFigure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FA16062C38989EC0152F05 /* ImpFigure.swift */; };
 		54258AB0FC3D143CFDA758BA /* Extras.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB667F35A19A58EFCAAF5CB6 /* Extras.swift */; };
 		59722A40EC5C738A245710B5 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AA17C8D6E7748402B3655100 /* InfoPlist.xcstrings */; };
 		5B87BCF69D14A451A0011983 /* Puppet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47753BE03D2BFEAC228BC5D /* Puppet.swift */; };
 		5D04D4EA1EB2CA2824106315 /* Face.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6297667BC85BA102DF6A825 /* Face.swift */; };
+		619257764618CB4FC702F0B1 /* ChatSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C694EC257AF0DCC56DCBE571 /* ChatSource.swift */; };
 		63904DE69AEB8444314796F6 /* ImpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 40F15208B694E2CE6ED040FB /* ImpKit */; };
 		81C420D8F13B53FB34B2B8E2 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AC024C76203D641C929D0A5 /* Theme.swift */; };
 		89CC8ED69C7348C7877DE96F /* PairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6406F33EC0C8528E9FA96CAA /* PairingView.swift */; };
@@ -27,6 +31,8 @@
 		AC858C246A969D5EFA7444F0 /* StageEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A5CF20C2B71E285BCA988D /* StageEngine.swift */; };
 		AE1DFD9644628E88D62348A5 /* Performance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6F4A4BEABAB147C1273508 /* Performance.swift */; };
 		B3DDDC12FE1679378FCB5BDD /* ChatSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19446029336D379F770CD86B /* ChatSheet.swift */; };
+		B7CA0B90DB6761F8C22BA91E /* PocketRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = F364A4DE6BAD316298E3E073 /* PocketRuntime.swift */; };
+		D641B96BDC01E6071DE86AAD /* GameRound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8151B96260694FD93D8F45E8 /* GameRound.swift */; };
 		E173ECE55498D9DC68051497 /* PhoneStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36040976E160D83A9ED7131E /* PhoneStage.swift */; };
 		E53ED1E407B5D3666EDB99F4 /* TiltImp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C4C921D3632C8A4B97CB80 /* TiltImp.swift */; };
 		E8BA8DE233B42D3C55E93B74 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86EC44471EB3D16C062A1ABF /* Geometry.swift */; };
@@ -47,16 +53,19 @@
 		1440D33050877E677E46BC2E /* Motion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Motion.swift; sourceTree = "<group>"; };
 		154403A8E907ABF7EDDA394A /* Antics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Antics.swift; sourceTree = "<group>"; };
 		19446029336D379F770CD86B /* ChatSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSheet.swift; sourceTree = "<group>"; };
+		1CE7028C65676801485C56B3 /* PocketStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketStore.swift; sourceTree = "<group>"; };
 		1D6F4A4BEABAB147C1273508 /* Performance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Performance.swift; sourceTree = "<group>"; };
 		2A5E56E2B80612481500C8FE /* ImpRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpRenderer.swift; sourceTree = "<group>"; };
 		36040976E160D83A9ED7131E /* PhoneStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneStage.swift; sourceTree = "<group>"; };
 		37A695264BBAD32A874A57EB /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		496385172A5237326FD3A24B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		535920C67E324CBF24FF6E52 /* PocketEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketEditor.swift; sourceTree = "<group>"; };
 		540B98CA530667A006631F93 /* LinkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkClient.swift; sourceTree = "<group>"; };
 		5A7D2F37C84A4B750CDB3F71 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		6406F33EC0C8528E9FA96CAA /* PairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingView.swift; sourceTree = "<group>"; };
 		69D3BA1E1D62779FCC642D13 /* imp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = imp; path = ..; sourceTree = SOURCE_ROOT; };
 		6AC024C76203D641C929D0A5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		8151B96260694FD93D8F45E8 /* GameRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRound.swift; sourceTree = "<group>"; };
 		86EC44471EB3D16C062A1ABF /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		90BCDE56EC7E08CB95A42B3A /* LinkFileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkFileStore.swift; sourceTree = "<group>"; };
 		92E940BF293260A542D370CE /* ImpPhoneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpPhoneApp.swift; sourceTree = "<group>"; };
@@ -64,12 +73,15 @@
 		AA17C8D6E7748402B3655100 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		B31C2D953C56557D2B30BCF3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		B6297667BC85BA102DF6A825 /* Face.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Face.swift; sourceTree = "<group>"; };
+		BBA159EED58442BB21A2A0AE /* GameLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLayer.swift; sourceTree = "<group>"; };
 		C3A5CF20C2B71E285BCA988D /* StageEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageEngine.swift; sourceTree = "<group>"; };
 		C5C4C921D3632C8A4B97CB80 /* TiltImp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TiltImp.swift; sourceTree = "<group>"; };
+		C694EC257AF0DCC56DCBE571 /* ChatSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSource.swift; sourceTree = "<group>"; };
 		CB667F35A19A58EFCAAF5CB6 /* Extras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extras.swift; sourceTree = "<group>"; };
 		D47753BE03D2BFEAC228BC5D /* Puppet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Puppet.swift; sourceTree = "<group>"; };
 		E850DCFCD50F8C2C190C14FC /* Horn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Horn.swift; sourceTree = "<group>"; };
 		F1D36860F51AAB868812CA05 /* ReplyBlocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyBlocks.swift; sourceTree = "<group>"; };
+		F364A4DE6BAD316298E3E073 /* PocketRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketRuntime.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +109,9 @@
 			children = (
 				496385172A5237326FD3A24B /* Assets.xcassets */,
 				19446029336D379F770CD86B /* ChatSheet.swift */,
+				C694EC257AF0DCC56DCBE571 /* ChatSource.swift */,
+				BBA159EED58442BB21A2A0AE /* GameLayer.swift */,
+				8151B96260694FD93D8F45E8 /* GameRound.swift */,
 				06FA16062C38989EC0152F05 /* ImpFigure.swift */,
 				92E940BF293260A542D370CE /* ImpPhoneApp.swift */,
 				B31C2D953C56557D2B30BCF3 /* Info.plist */,
@@ -107,6 +122,9 @@
 				37A695264BBAD32A874A57EB /* Localizable.xcstrings */,
 				6406F33EC0C8528E9FA96CAA /* PairingView.swift */,
 				36040976E160D83A9ED7131E /* PhoneStage.swift */,
+				535920C67E324CBF24FF6E52 /* PocketEditor.swift */,
+				F364A4DE6BAD316298E3E073 /* PocketRuntime.swift */,
+				1CE7028C65676801485C56B3 /* PocketStore.swift */,
 				F1D36860F51AAB868812CA05 /* ReplyBlocks.swift */,
 				138E937C2DEA200C16A64509 /* SpeechBubble.swift */,
 				C3A5CF20C2B71E285BCA988D /* StageEngine.swift */,
@@ -244,8 +262,11 @@
 			files = (
 				0E79EEB23068CD9964B66A3F /* Antics.swift in Sources */,
 				B3DDDC12FE1679378FCB5BDD /* ChatSheet.swift in Sources */,
+				619257764618CB4FC702F0B1 /* ChatSource.swift in Sources */,
 				54258AB0FC3D143CFDA758BA /* Extras.swift in Sources */,
 				5D04D4EA1EB2CA2824106315 /* Face.swift in Sources */,
+				15117A49B4DBDDD10DE49934 /* GameLayer.swift in Sources */,
+				D641B96BDC01E6071DE86AAD /* GameRound.swift in Sources */,
 				E8BA8DE233B42D3C55E93B74 /* Geometry.swift in Sources */,
 				E8F42E3DB6AFD272B99A32B1 /* Horn.swift in Sources */,
 				53DBF1A59E634BADA2F58997 /* ImpFigure.swift in Sources */,
@@ -259,6 +280,9 @@
 				3DEB2BEE904FC2E55AD6181E /* Palette.swift in Sources */,
 				AE1DFD9644628E88D62348A5 /* Performance.swift in Sources */,
 				E173ECE55498D9DC68051497 /* PhoneStage.swift in Sources */,
+				5291E2FE7332DD9EBAE3A954 /* PocketEditor.swift in Sources */,
+				B7CA0B90DB6761F8C22BA91E /* PocketRuntime.swift in Sources */,
+				4ABD8A5451824A83F23B28E9 /* PocketStore.swift in Sources */,
 				5B87BCF69D14A451A0011983 /* Puppet.swift in Sources */,
 				3C05A501D4D7A0017C6BBA17 /* ReplyBlocks.swift in Sources */,
 				A7E4796D1F6325E22606E988 /* SoftLight.swift in Sources */,
@@ -322,7 +346,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.14.1;
+				MARKETING_VERSION = 1.15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -409,7 +433,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.14.1;
+				MARKETING_VERSION = 1.15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

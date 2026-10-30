@@ -10,7 +10,7 @@ packages:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "1.14.1"
+    MARKETING_VERSION: "1.15.0"
     CURRENT_PROJECT_VERSION: "1"
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
@@ -60,6 +60,9 @@ targets:
         NSLocalNetworkUsageDescription: Imp finds your Mac on your network, so the Imps you toss can land here.
         NSCameraUsageDescription: Imp scans the pairing code your Mac shows.
         NSBonjourServices: ["_imp-link._tcp"]
+        # Pocket Imps may think with a model server on your own network, over http.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
         CFBundleURLTypes:
           - CFBundleURLName: app.imp.link
             CFBundleURLSchemes: [implink]

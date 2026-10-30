@@ -1,0 +1,81 @@
+name: imp-server
+
+services:
+  den:
+    build: .
+    image: imp-server
+    command: ["serve"]
+    restart: unless-stopped
+    environment:
+      DEN_ADDR: 0.0.0.0:8080
+      DEN_DATABASE: /data/den.db
+      DEN_SECRET: ${DEN_SECRET:?set DEN_SECRET in .env}
+      DEN_PUBLIC_URL: ${DEN_PUBLIC_URL:?set DEN_PUBLIC_URL in .env}
+      DEN_TRUSTED_PROXIES: 172.31.0.0/24
+      DEN_LOG_FORMAT: json
+    volumes:
+      - den-data:/data
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/den", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      web:
+        ipv4_address: 172.31.0.10
+
+  hop:
+    image: imp-server
+    entrypoint: ["/usr/local/bin/hop"]
+    restart: unless-stopped
+    depends_on: [den]
+    environment:
+      HOP_ADDR: 0.0.0.0:4677
+    ports:
+      - "4677:4677/tcp"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/hop", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  caddy:
+    image: caddy:2.11.7-alpine
+    restart: unless-stopped
+    depends_on:
+      den:
+        condition: service_healthy
+    environment:
+      DEN_HOST: ${DEN_HOST:?set DEN_HOST in .env}
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: ["no-new-privileges:true"]
+    networks:
+      - web
+
+networks:
+  web:
+    ipam:
+      config:
+        - subnet: 172.31.0.0/24
+
+volumes:
+  den-data:
+  caddy-data:
+  caddy-config:

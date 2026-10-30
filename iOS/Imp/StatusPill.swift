@@ -1,13 +1,19 @@
 import ImpKit
 import SwiftUI
 
-/// The connection at a glance, and a menu: the Imps on the Mac, unpairing.
+/// The connection at a glance, and a menu: hatching an Imp, the Imps on the Mac, pairing and unpairing.
 struct StatusPill: View {
     let client: LinkClient
     @Binding var confirmUnpair: Bool
+    var hatch: () -> Void
+    var pair: () -> Void
 
     var body: some View {
         Menu {
+            Button(action: hatch) { Label("Hatch an Imp", systemImage: "plus.circle") }
+            if client.pairing == nil {
+                Button(action: pair) { Label("Pair with a Mac", systemImage: "macbook.and.iphone") }
+            }
             if !client.others.isEmpty {
                 Section("On your Mac") {
                     ForEach(client.others) { imp in
@@ -15,13 +21,19 @@ struct StatusPill: View {
                     }
                 }
             }
-            Button(role: .destructive) { confirmUnpair = true } label: {
-                Label("Unpair from Mac", systemImage: "link.badge.minus")
+            if client.pairing != nil {
+                Button(role: .destructive) { confirmUnpair = true } label: {
+                    Label("Unpair from Mac", systemImage: "link.badge.minus")
+                }
             }
         } label: {
             HStack(spacing: 8) {
                 Circle().fill(dot).frame(width: 8, height: 8)
                     .shadow(color: dot.opacity(0.8), radius: 4)
+                if client.viaHop && client.isConnected {
+                    Image(systemName: "globe").font(.system(size: 11, weight: .semibold)).foregroundStyle(Dungeon.muted)
+                        .accessibilityLabel("Through the internet")
+                }
                 Text(text)
                     .font(.system(.footnote, design: .rounded, weight: .semibold))
                     .foregroundStyle(Dungeon.cream)
@@ -38,12 +50,14 @@ struct StatusPill: View {
     private var mac: String { client.macName ?? String(localized: "your Mac") }
 
     private var text: String {
+        if client.pairing == nil { return String(localized: "On this iPhone") }
         switch client.status {
-        case .connected(let name): String(localized: "Connected to \(name)")
-        case .connecting: String(localized: "Connecting to \(mac)…")
-        case .searching, .unpaired: String(localized: "Looking for \(mac)…")
+        case .connected(let name): return String(localized: "Connected to \(name)")
+        case .connecting: return String(localized: "Connecting to \(mac)…")
+        case .searching, .unpaired: return String(localized: "Looking for \(mac)…")
+        case .unknown: return String(localized: "\(mac) needs pairing again")
         }
     }
 
-    private var dot: Color { client.isConnected ? Dungeon.good : Dungeon.flame }
+    private var dot: Color { client.isConnected || client.pairing == nil ? Dungeon.good : Dungeon.flame }
 }

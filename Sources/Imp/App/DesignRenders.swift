@@ -27,6 +27,16 @@ enum IconRenderer {
         write(ctx.makeImage(), to: url)
     }
 
+    /// `Imp --render-mascot-icon <file.png>`: Imp alone, no tile and no shadow, on a transparent square
+    /// (the browser extension's icons, scaled down from this).
+    static func renderMascotIcon(to url: URL) {
+        let view = ImpPortrait(face: .settled(.idle, lookX: 0.22, lookY: 0.05), shadow: false)
+            .frame(width: 1024 * 1.2, height: 1024 * 1.2)
+            .offset(y: -1024 * 1.2 * 0.0895)
+            .frame(width: 1024, height: 1024)
+        write(render(view, scale: 1), to: url)
+    }
+
     /// `Imp --render-dmg-background <dir>`: background.png and background@2x.png for the
     /// installer disk image (scripts/dmg-settings.py places the icons on it).
     static func renderDMGBackground(to dir: URL) {

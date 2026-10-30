@@ -6,6 +6,8 @@ import VisionKit
 /// First run: how to bring your first Imp over.
 struct PairingView: View {
     let client: LinkClient
+    /// Starts hatching an Imp on this iPhone, for those who don't have a Mac at hand.
+    var hatch: (() -> Void)?
     @State private var scanning = false
     @State private var problem: String?
 
@@ -55,6 +57,12 @@ struct PairingView: View {
                 }
                 Button { pasteLink() } label: { Label("Paste Link", systemImage: "doc.on.clipboard") }
                     .buttonStyle(EmberButtonStyle(filled: !scannerAvailable))
+                if let hatch {
+                    Button("Or hatch an Imp on this iPhone", action: hatch)
+                        .font(.system(.subheadline, design: .rounded, weight: .medium))
+                        .foregroundStyle(Dungeon.muted)
+                        .padding(.top, 8)
+                }
             }
             .padding(.horizontal, 28).padding(.bottom, 24)
         }

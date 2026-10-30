@@ -17,6 +17,13 @@ if let url = argument(after: "--render-ios-icon") {
     }
     exit(0)
 }
+if let url = argument(after: "--render-mascot-icon") {
+    MainActor.assumeIsolated {
+        _ = NSApplication.shared
+        IconRenderer.renderMascotIcon(to: url)
+    }
+    exit(0)
+}
 if let url = argument(after: "--render-dmg-background") {
     MainActor.assumeIsolated { IconRenderer.renderDMGBackground(to: url) }
     exit(0)

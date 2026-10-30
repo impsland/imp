@@ -23,6 +23,17 @@ public enum Keychain {
         return SecItemCopyMatching(q as CFDictionary, nil) == errSecSuccess
     }
 
+    /// The names of the saved items that start with `prefix`. Reads no secrets, so it never asks.
+    public static func accounts(withPrefix prefix: String) -> [String] {
+        let q: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword, kSecAttrService: service,
+            kSecReturnAttributes: true, kSecMatchLimit: kSecMatchLimitAll,
+        ]
+        var out: CFTypeRef?
+        guard SecItemCopyMatching(q as CFDictionary, &out) == errSecSuccess, let items = out as? [[String: Any]] else { return [] }
+        return items.compactMap { $0[kSecAttrAccount as String] as? String }.filter { $0.hasPrefix(prefix) }
+    }
+
     /// The saved key (nil when there is none). May ask for the user's password, so call it only
     /// for something they asked for. Throws `AccessDenied` when they refuse.
     public static func read(_ account: String) throws -> String? {

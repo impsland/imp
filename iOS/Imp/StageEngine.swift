@@ -42,6 +42,9 @@ final class StageEngine {
     nonisolated static let baseSize: CGFloat = 112
     nonisolated static let restDrag = 2.4
     nonisolated static let bounce = 0.5
+    /// During a round Imps keep their speed longer and bounce harder, so a throw is worth it.
+    nonisolated static let gameDrag = 0.8
+    nonisolated static let gameBounce = 0.85
     nonisolated static let maxCarry = 3_200.0
     /// How long the Mac has to answer a toss.
     nonisolated static let tossTimeout: TimeInterval = 10
@@ -56,6 +59,13 @@ final class StageEngine {
     var touch: CGPoint?
     /// The Imp touched last (a jolt of the phone throws this one).
     private(set) var focus: UUID?
+
+    /// The round of Embers being played (or just finished, until its card is dismissed).
+    private(set) var round: GameRound?
+    var reduceMotion = false
+    private let haptics = GameHaptics()
+    /// A round is on: edges always bounce and nobody can be tossed away.
+    var isPlaying: Bool { round.map { !$0.isOver } ?? false }
 
     var isConnected: () -> Bool = { true }
     var send: (UUID, LinkSide, Double, Double) -> Void = { _, _, _, _ in }
@@ -98,6 +108,7 @@ final class StageEngine {
         bodies[id] = nil
         order.removeAll { $0 == id }
         if focus == id { focus = nil }
+        if order.isEmpty { round = nil }
     }
 
     // MARK: Events from the Mac
@@ -178,7 +189,7 @@ final class StageEngine {
     /// Throws `id` off `side` towards the Mac, if the Mac is there to catch it.
     @discardableResult
     func toss(_ id: UUID, side: LinkSide, speed: Double, velocityY: Double = 0) -> Bool {
-        guard var b = bodies[id] else { return false }
+        guard !isPlaying, var b = bodies[id] else { return false }
         guard isConnected() else {
             if !b.warnedOffline { warn(String(localized: "Your Mac isn't around")) }
             b.warnedOffline = true
@@ -192,6 +203,7 @@ final class StageEngine {
 
     /// Send to Mac from the menu: a gentle push off the right side (speed 0 for the Mac).
     func sendGently(_ id: UUID) {
+        guard !isPlaying else { return }
         guard isConnected() else { return warn(String(localized: "Your Mac isn't around")) }
         guard var b = bodies[id] else { return }
         fly(&b, side: .right, speed: 0, toss: true)
@@ -211,6 +223,65 @@ final class StageEngine {
             bodies[id]?.dizzyUntil = now.addingTimeInterval(3.2)
             felt(id, .shake)
         }
+    }
+
+    // MARK: Embers
+
+    /// Starts a round, if there is anyone to play with.
+    func startGame() {
+        guard !order.isEmpty else { return }
+        round = GameRound()
+        haptics.prepare()
+    }
+
+    /// Dismisses the finished round's card.
+    func endGame() { round = nil }
+
+    var best: Int { UserDefaults.standard.integer(forKey: "emberBest") }
+
+    private func finishGame(_ round: GameRound) {
+        let isBest = round.score > best
+        if isBest { UserDefaults.standard.set(round.score, forKey: "emberBest") }
+        haptics.finished()
+        AccessibilityNotification.Announcement(String(localized: "Time. \(round.score) points")).post()
+    }
+
+    /// How an Imp looks while playing: nil outside a round.
+    func gameMood(_ b: Body, at date: Date) -> Mood? {
+        guard isPlaying else { return nil }
+        if b.dizzyUntil > date { return .dizzy }
+        if b.phase == .dragging { return .curious }
+        return hypot(b.vel.dx, b.vel.dy) > GameRound.flightSpeed ? .excited : .idle
+    }
+
+    private func play(_ dt: Double, date: Date) {
+        guard var round, !round.isOver else { return }
+        let ids = order.filter { bodies[$0]?.phase == .free && bodies[$0]?.enteringFrom == nil }
+        var movers = ids.compactMap { id in
+            bodies[id].map { GameRound.Mover(id: id, pos: $0.pos, vel: $0.vel, radius: $0.size * 0.36) }
+        }
+        let events = round.advance(dt, in: field, movers: &movers, calm: reduceMotion)
+        for m in movers {
+            bodies[m.id]?.pos = m.pos
+            bodies[m.id]?.vel = m.vel
+        }
+        for event in events {
+            switch event {
+            case .caught(let id, _, let multiplier):
+                bodies[id]?.performance = Performance(key: "catch", steps: [
+                    AnticStep(duration: 0.6, mood: .excited, glyph: multiplier > 2 ? .heart : nil, hop: true)])
+                haptics.caught(multiplier)
+            case .bonk(let a, let b):
+                for id in [a, b] {
+                    bodies[id]?.dizzyUntil = date.addingTimeInterval(1.6)
+                    bodies[id]?.performance = nil
+                }
+                haptics.bonk()
+            case .finished:
+                finishGame(round)
+            }
+        }
+        self.round = round
     }
 
     // MARK: Fingers
@@ -295,7 +366,7 @@ final class StageEngine {
                 }
                 b.lean += (Self.lean(b.fingerVelocity.dx) - b.lean) * min(1, dt * 10)
             case .free:
-                let k = exp(-b.drag * dt)
+                let k = exp(-(isPlaying && b.enteringFrom == nil ? Self.gameDrag : b.drag) * dt)
                 b.vel = CGVector(dx: b.vel.dx * k, dy: b.vel.dy * k)
                 if let side = b.enteringFrom {
                     // Still on its way in: nothing stops it at the side it came through, and it
@@ -314,7 +385,10 @@ final class StageEngine {
                 b.pos.y += b.vel.dy * dt
                 b.lean += (Self.lean(b.vel.dx) - b.lean) * min(1, dt * 10)
                 if b.pos.x < -r * 1.2 || b.pos.x > size.width + r * 1.2 {
-                    if toss, let exit = b.exit {
+                    if toss, var exit = b.exit {
+                        // The height it really left at: a throw can carry it up or down on the way out.
+                        exit.height = min(max(Double(b.pos.y / max(1, size.height)), 0), 1)
+                        b.exit = exit
                         b.phase = .away(since: date)
                         send(id, exit.side, exit.height, exit.speed)
                     } else {
@@ -330,6 +404,7 @@ final class StageEngine {
             }
             bodies[id] = b
         }
+        play(dt, date: date)
         separate(dt)
     }
 
@@ -337,16 +412,17 @@ final class StageEngine {
 
     /// Soft bounces off the walls. Coming in through a side, that side doesn't count until it's inside.
     private func collide(_ b: inout Body, r: CGFloat, field f: CGRect) {
+        let bounce = isPlaying ? Self.gameBounce : Self.bounce
         let minX = r * 0.6, maxX = size.width - r * 0.6
         if b.pos.x < minX {
-            if b.enteringFrom != .left { b.pos.x = minX; b.vel.dx = abs(b.vel.dx) * Self.bounce }
+            if b.enteringFrom != .left { b.pos.x = minX; b.vel.dx = abs(b.vel.dx) * bounce }
         } else if b.pos.x > maxX {
-            if b.enteringFrom != .right { b.pos.x = maxX; b.vel.dx = -abs(b.vel.dx) * Self.bounce }
+            if b.enteringFrom != .right { b.pos.x = maxX; b.vel.dx = -abs(b.vel.dx) * bounce }
         } else if b.enteringFrom != nil {
             b.enteringFrom = nil
         }
-        if b.pos.y < f.minY + r * 0.2 { b.pos.y = f.minY + r * 0.2; b.vel.dy = abs(b.vel.dy) * Self.bounce }
-        if b.pos.y > f.maxY - r * 0.7 { b.pos.y = f.maxY - r * 0.7; b.vel.dy = -abs(b.vel.dy) * Self.bounce }
+        if b.pos.y < f.minY + r * 0.2 { b.pos.y = f.minY + r * 0.2; b.vel.dy = abs(b.vel.dy) * bounce }
+        if b.pos.y > f.maxY - r * 0.7 { b.pos.y = f.maxY - r * 0.7; b.vel.dy = -abs(b.vel.dy) * bounce }
     }
 
     /// Imps are soft, not ghosts: two that overlap drift apart.

@@ -1,0 +1,21 @@
+[package]
+name = "imp-shared"
+description = "What the Den and the Hop have in common"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+governor.workspace = true
+hex.workspace = true
+rand.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true

@@ -17,6 +17,109 @@
         }
       }
     },
+    "%@ didn't answer" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no respondió"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 没有回答"
+          }
+        }
+      }
+    },
+    "%@ has no brain yet." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ aún no tiene cerebro."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 还没有大脑。"
+          }
+        }
+      }
+    },
+    "%@ isn't around" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no está por aquí"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 不在附近"
+          }
+        }
+      }
+    },
+    "%@ needs pairing again" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ needs pairing again"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ necesita emparejarse de nuevo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要重新与 %@ 配对"
+          }
+        }
+      }
+    },
+    "%@ sleeps until it has a service to think with." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ duerme hasta que tenga un servicio con el que pensar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 会一直睡着，直到有了可以思考的服务。"
+          }
+        }
+      }
+    },
+    "%@ starts fresh and won't remember this chat." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ empieza de cero y no recordará este chat."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 会重新开始，不会记得这次聊天。"
+          }
+        }
+      }
+    },
     "%lld" : {
       "localizations" : {
         "es" : {
@@ -61,6 +164,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "把 Imp **扔出** Mac 屏幕"
+          }
+        }
+      }
+    },
+    "Add a tool server" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir un servidor de herramientas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加工具服务器"
+          }
+        }
+      }
+    },
+    "Address" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dirección"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地址"
+          }
+        }
+      }
+    },
+    "Again" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otra vez"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再来"
+          }
+        }
+      }
+    },
+    "An Imp needs a name of up to %lld characters." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un Imp necesita un nombre de hasta %lld caracteres."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 需要一个最多 %lld 个字符的名字。"
           }
         }
       }
@@ -168,6 +335,54 @@
         }
       }
     },
+    "Best %lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Récord %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最高 %lld"
+          }
+        }
+      }
+    },
+    "Brain" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerebro"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "大脑"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消"
+          }
+        }
+      }
+    },
     "Chat" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -210,6 +425,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关闭"
+          }
+        }
+      }
+    },
+    "Color" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "颜色"
           }
         }
       }
@@ -315,6 +546,70 @@
         }
       }
     },
+    "Delete" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除"
+          }
+        }
+      }
+    },
+    "Delete %@?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar %@?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除 %@？"
+          }
+        }
+      }
+    },
+    "Delete Imp" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除 Imp"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
+          }
+        }
+      }
+    },
     "Double-tap to dismiss." : {
       "localizations" : {
         "es" : {
@@ -331,6 +626,38 @@
         }
       }
     },
+    "Edit" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编辑"
+          }
+        }
+      }
+    },
+    "Edit Imp" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编辑 Imp"
+          }
+        }
+      }
+    },
     "Getting it from your Mac…" : {
       "localizations" : {
         "es" : {
@@ -343,6 +670,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在从你的 Mac 获取…"
+          }
+        }
+      }
+    },
+    "Give it a brain" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dale un cerebro"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "给它一个大脑"
+          }
+        }
+      }
+    },
+    "Hatch" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incubar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "孵化"
+          }
+        }
+      }
+    },
+    "Hatch an Imp" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incuba un Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "孵化一个 Imp"
+          }
+        }
+      }
+    },
+    "Header" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cabecera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求头"
           }
         }
       }
@@ -409,6 +800,22 @@
         }
       }
     },
+    "It thinks right here on your iPhone, with its tools, and can message your other Imps too." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piensa aquí mismo, en tu iPhone, con sus herramientas, y también puede escribir a tus otros Imps."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它就在你的 iPhone 上思考，可以使用自己的工具，也能给你的其他 Imp 发消息。"
+          }
+        }
+      }
+    },
     "It works on your Mac, with its tools, and can message the Imps there too. Pictures, voices and files it makes show up right here." : {
       "localizations" : {
         "es" : {
@@ -421,6 +828,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "它在你的 Mac 上用自己的工具工作，也能给那里的 Imp 发消息。它生成的图片、语音和文件都会显示在这里。"
+          }
+        }
+      }
+    },
+    "Its chats and keys are forgotten. This can't be undone." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se olvidan sus chats y claves. No se puede deshacer."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它的聊天和密钥都会被清除，此操作无法撤销。"
+          }
+        }
+      }
+    },
+    "Key" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clave"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "密钥"
+          }
+        }
+      }
+    },
+    "Lives on this iPhone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vive en este iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "住在这部 iPhone 上"
           }
         }
       }
@@ -487,6 +942,54 @@
         }
       }
     },
+    "Model" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modelo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模型"
+          }
+        }
+      }
+    },
+    "More" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多"
+          }
+        }
+      }
+    },
+    "Name" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名字"
+          }
+        }
+      }
+    },
     "New Chat" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -506,6 +1009,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新聊天"
+          }
+        }
+      }
+    },
+    "No brain yet" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún sin cerebro"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有大脑"
+          }
+        }
+      }
+    },
+    "On this iPhone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En este iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在这部 iPhone 上"
           }
         }
       }
@@ -533,6 +1068,70 @@
         }
       }
     },
+    "Optional" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opcional"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可选"
+          }
+        }
+      }
+    },
+    "Optional: how it talks and what it likes" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opcional: cómo habla y qué le gusta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可选：它怎么说话、喜欢什么"
+          }
+        }
+      }
+    },
+    "Or hatch an Imp on this iPhone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O incuba un Imp en este iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "或者在这部 iPhone 上孵化一个 Imp"
+          }
+        }
+      }
+    },
+    "Pair with a Mac" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vincular con un Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与 Mac 配对"
+          }
+        }
+      }
+    },
     "Paste Link" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -556,6 +1155,22 @@
         }
       }
     },
+    "Paste your API key" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pega tu clave de API"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴你的 API 密钥"
+          }
+        }
+      }
+    },
     "Pause" : {
       "localizations" : {
         "es" : {
@@ -568,6 +1183,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暂停"
+          }
+        }
+      }
+    },
+    "Personality" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalidad"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性格"
           }
         }
       }
@@ -600,6 +1231,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "播放"
+          }
+        }
+      }
+    },
+    "Play Embers" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugar a Brasas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玩火花"
           }
         }
       }
@@ -650,6 +1297,38 @@
         }
       }
     },
+    "Remove" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除"
+          }
+        }
+      }
+    },
+    "Remove saved key" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar la clave guardada"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除已保存的密钥"
+          }
+        }
+      }
+    },
     "Reply to %@" : {
       "localizations" : {
         "es" : {
@@ -662,6 +1341,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "回复 %@"
+          }
+        }
+      }
+    },
+    "Save" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存"
+          }
+        }
+      }
+    },
+    "Saved" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardada"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已保存"
           }
         }
       }
@@ -861,6 +1572,38 @@
         }
       }
     },
+    "Stopped." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detenido."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已停止。"
+          }
+        }
+      }
+    },
+    "That Imp isn't on this iPhone." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese Imp no está en este iPhone."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那个 Imp 不在这部 iPhone 上。"
+          }
+        }
+      }
+    },
     "That code isn't a pairing code from Imp." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -903,6 +1646,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这不是 Imp 的配对链接。"
+          }
+        }
+      }
+    },
+    "That isn't one Imp to take in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eso no es un único Imp que acoger."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这不是可以接收的单个 Imp。"
           }
         }
       }
@@ -969,6 +1728,22 @@
         }
       }
     },
+    "There's already an Imp like that here." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ya hay un Imp así aquí."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这里已经有这样的 Imp 了。"
+          }
+        }
+      }
+    },
     "Thinking…" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -988,6 +1763,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "思考中…"
+          }
+        }
+      }
+    },
+    "This Imp has no service and model to think with yet." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este Imp aún no tiene un servicio y un modelo con los que pensar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个 Imp 还没有可以思考的服务和模型。"
           }
         }
       }
@@ -1015,6 +1806,45 @@
         }
       }
     },
+    "This Imp is too big to move." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este Imp es demasiado grande para moverlo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个 Imp 太大，无法移动。"
+          }
+        }
+      }
+    },
+    "This Mac doesn't know this iPhone any more. Pair again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This Mac doesn't know this iPhone any more. Pair again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este Mac ya no reconoce este iPhone. Vuelve a emparejarlo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这台 Mac 已不认识这部 iPhone，请重新配对。"
+          }
+        }
+      }
+    },
     "This chat leaves your phone, but your Mac keeps it: it's in %@'s Brain › Memory › Chats. %@ starts fresh." : {
       "localizations" : {
         "en" : {
@@ -1033,6 +1863,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这个聊天会从手机上移走，但你的 Mac 会保留它：在 %1$@ 的“大脑 › 记忆 › 聊天”里。%2$@ 将重新开始。"
+          }
+        }
+      }
+    },
+    "Through the internet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Through the internet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A través de internet"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过互联网"
           }
         }
       }
@@ -1076,6 +1929,22 @@
         }
       }
     },
+    "Time. %lld points" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiempo. %lld puntos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时间到。%lld 分"
+          }
+        }
+      }
+    },
     "Today" : {
       "localizations" : {
         "es" : {
@@ -1092,6 +1961,22 @@
         }
       }
     },
+    "Tools (optional)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herramientas (opcional)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工具（可选）"
+          }
+        }
+      }
+    },
     "Try Again" : {
       "localizations" : {
         "es" : {
@@ -1104,6 +1989,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "再试一次"
+          }
+        }
+      }
+    },
+    "URL" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL"
           }
         }
       }
@@ -1177,6 +2078,22 @@
         }
       }
     },
+    "Value" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "值"
+          }
+        }
+      }
+    },
     "Video" : {
       "localizations" : {
         "es" : {
@@ -1189,6 +2106,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "视频"
+          }
+        }
+      }
+    },
+    "Web (HTTP) servers that speak MCP. Header values stay in this iPhone's Keychain." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidores web (HTTP) que hablan MCP. Los valores de las cabeceras se quedan en el llavero de este iPhone."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用 MCP 的网络 (HTTP) 服务器。请求头的值保存在这部 iPhone 的钥匙串中。"
           }
         }
       }
@@ -1294,6 +2227,22 @@
         }
       }
     },
+    "Your key stays in this iPhone's Keychain." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu clave se queda en el llavero de este iPhone."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的密钥只保存在这部 iPhone 的钥匙串中。"
+          }
+        }
+      }
+    },
     "from %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1352,6 +2301,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "“%@”"
+          }
+        }
+      }
+    },
+    "“%@” must start with https://. Plain http:// works only for devices on your own network." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” debe empezar por https://. http:// solo funciona con dispositivos de tu propia red."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”必须以 https:// 开头。普通的 http:// 只适用于你自己网络中的设备。"
           }
         }
       }

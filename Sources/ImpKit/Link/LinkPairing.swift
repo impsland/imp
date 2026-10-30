@@ -13,12 +13,15 @@ public struct LinkPairing: Equatable, Sendable, Codable {
     /// Host names or addresses to try when Bonjour can't see the Mac (another network, a VPN).
     public var hosts: [String]
     public var port: UInt16
+    /// The Hop this Mac waits at (`host:port`), for reaching it from anywhere. Tried last.
+    public var hop: String?
 
     public static let scheme = "implink"
     public static let secretBytes = 32
 
-    public init(mac: UUID, name: String, secret: Data, hosts: [String] = [], port: UInt16 = LinkProtocol.port) {
-        self.mac = mac; self.name = name; self.secret = secret; self.hosts = hosts; self.port = port
+    public init(mac: UUID, name: String, secret: Data, hosts: [String] = [], port: UInt16 = LinkProtocol.port,
+                hop: String? = nil) {
+        self.mac = mac; self.name = name; self.secret = secret; self.hosts = hosts; self.port = port; self.hop = hop
     }
 
     /// A fresh random secret.
@@ -45,6 +48,7 @@ public struct LinkPairing: Equatable, Sendable, Codable {
                      URLQueryItem(name: "key", value: Self.base64URL(secret))]
         if !hosts.isEmpty { items.append(URLQueryItem(name: "host", value: hosts.joined(separator: ","))) }
         if port != LinkProtocol.port { items.append(URLQueryItem(name: "port", value: String(port))) }
+        if let hop { items.append(URLQueryItem(name: "hop", value: hop)) }
         c.queryItems = items
         return c.url!
     }
@@ -59,7 +63,12 @@ public struct LinkPairing: Equatable, Sendable, Codable {
         let name = value("name").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? ""
         let hosts = (value("host") ?? "").split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
         let port = value("port").flatMap(UInt16.init) ?? LinkProtocol.port
-        self.init(mac: mac, name: name.isEmpty ? "Mac" : String(name.prefix(80)), secret: key, hosts: hosts, port: port)
+        var hop: String?
+        if let text = value("hop") {
+            guard let address = HopAddress(text) else { return nil }
+            hop = address.text
+        }
+        self.init(mac: mac, name: name.isEmpty ? "Mac" : String(name.prefix(80)), secret: key, hosts: hosts, port: port, hop: hop)
     }
 
     /// Reads a pairing link pasted as text (whitespace around it is fine).

@@ -1,0 +1,21 @@
+[package]
+name = "hop"
+description = "The Imp Hop: a blind relay between an iPhone and its Mac"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+mimalloc.workspace = true
+imp-shared.workspace = true
+ed25519-dalek.workspace = true
+rand.workspace = true
+socket2.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true

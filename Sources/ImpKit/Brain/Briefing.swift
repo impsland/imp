@@ -23,6 +23,14 @@ public enum Briefing {
     and verify the result honestly (met or not met) before telling the user it's done.
     """
 
+    /// What an Imp hatched on the iPhone is told besides its personality.
+    public static let pocket = """
+    You're a little animated character living on the user's iPhone. Your replies appear in a speech \
+    bubble that renders Markdown. You can't run commands or touch files, and you can't see the Mac. \
+    When you have the tools for it, act out how you feel with your animations, use the tools you were \
+    given, and message the user's other Imps to ask them things.
+    """
+
     /// A shortcut: its instruction, applied to what was on the clipboard (or alone, without a clip).
     public static func shortcut(_ prompt: String, clip: Clip?, imagePath: String? = nil) -> ChatMessage {
         let task = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -48,9 +56,9 @@ public enum Briefing {
         return message
     }
 
-    /// Another Imp of the troupe sent a message (`imp_message`): its answer goes back to it.
-    public static func message(from sender: String, _ text: String) -> ChatMessage {
-        .user("Message from \(sender), another Imp on the desktop: “\(text)”\n\n(Your reply goes back to \(sender).)")
+    /// Another Imp of the troupe sent a message (`imp_message`): its answer goes back to it. `place` says where it is.
+    public static func message(from sender: String, _ text: String, place: String = "on the desktop") -> ChatMessage {
+        .user("Message from \(sender), another Imp \(place): “\(text)”\n\n(Your reply goes back to \(sender).)")
     }
 
     /// Stands for the Imp's workspace folder in its instructions.

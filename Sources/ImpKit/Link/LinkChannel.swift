@@ -8,7 +8,9 @@ import os
 public enum LinkTLS {
     static let identity = Data("imp-link".utf8)
 
-    public static func parameters(psk: Data) -> NWParameters {
+    /// With `hop`, the connection first goes through the Hop's handshake (below TLS), then runs the
+    /// very same TLS end to end.
+    public static func parameters(psk: Data, hop: HopPass? = nil) -> NWParameters {
         let tls = NWProtocolTLS.Options()
         let key = psk.withUnsafeBytes { DispatchData(bytes: $0) }
         let id = identity.withUnsafeBytes { DispatchData(bytes: $0) }
@@ -23,6 +25,11 @@ public enum LinkTLS {
         tcp.noDelay = true
         let params = NWParameters(tls: tls, tcp: tcp)
         params.includePeerToPeer = true
+        if let hop {
+            let framer = NWProtocolFramer.Options(definition: HopFramer.definition)
+            framer[HopFramer.key] = hop
+            params.defaultProtocolStack.applicationProtocols.append(framer)
+        }
         return params
     }
 }
@@ -31,8 +38,19 @@ public enum LinkTLS {
 public final class LinkChannel: @unchecked Sendable {   // mutable state is only touched on `queue`
     public enum State: Sendable, Equatable {
         case ready
-        /// Gone for good (refused, wrong key, dropped). `reason` for logs.
-        case closed(reason: String?)
+        /// Gone for good. `why` says how, `reason` is for logs.
+        case closed(Close, reason: String?)
+    }
+
+    public enum Close: Sendable, Equatable {
+        /// Closed on purpose, or by the other side.
+        case ended
+        /// No way through: no route, refused, timed out, or the link went silent.
+        case unreachable
+        /// The other side answered but won't take our key (it doesn't know this pairing any more).
+        case rejected
+        /// The Hop turned the pairing's room away.
+        case hopRefused
     }
 
     public let id = UUID()
@@ -40,13 +58,18 @@ public final class LinkChannel: @unchecked Sendable {   // mutable state is only
     private let queue: DispatchQueue
     private var framer = LinkFrame()
     private var isClosed = false
+    private var wasReady = false
+    private var lastHeard = Date()
+    private var watchdog: DispatchSourceTimer?
+    private let hop: HopPass?
     private let log = Logger(subsystem: "app.imp.Imp", category: "link")
 
     public var onState: (@Sendable (State) -> Void)?
     public var onFrame: (@Sendable (Data) -> Void)?
 
-    public init(connection: NWConnection, queue: DispatchQueue? = nil) {
+    public init(connection: NWConnection, queue: DispatchQueue? = nil, hop: HopPass? = nil) {
         self.connection = connection
+        self.hop = hop
         self.queue = queue ?? DispatchQueue(label: "app.imp.link.\(UUID().uuidString.prefix(8))")
     }
 
@@ -55,20 +78,34 @@ public final class LinkChannel: @unchecked Sendable {   // mutable state is only
         self.init(connection: NWConnection(to: endpoint, using: LinkTLS.parameters(psk: psk)))
     }
 
+    /// Dials the Mac through the pairing's Hop. Nil when the pairing has none.
+    public convenience init?(hopOf pairing: LinkPairing) {
+        guard let address = pairing.hop.flatMap(HopAddress.init), let port = NWEndpoint.Port(rawValue: address.port) else { return nil }
+        let pass = HopPass(room: Hop.Room(secret: pairing.secret), role: .phone)
+        self.init(connection: NWConnection(host: NWEndpoint.Host(address.host), port: port,
+                                           using: LinkTLS.parameters(psk: pairing.psk, hop: pass)), hop: pass)
+    }
+
+    /// True once the Hop spliced this connection to the Mac.
+    public var isThroughHop: Bool { hop?.status == .go }
+
     public func start() {
         connection.stateUpdateHandler = { [weak self] state in
             guard let self else { return }
             switch state {
             case .ready:
+                self.wasReady = true
+                self.lastHeard = Date()
+                self.watch()
                 self.onState?(.ready)
                 self.receive()
             case .failed(let error):
-                self.finish(error.localizedDescription)
+                self.finish(error)
             case .waiting(let error):
                 // Unreachable for now (no route, refused, TLS said no): don't hang around waiting.
-                self.finish(error.localizedDescription)
+                self.finish(error)
             case .cancelled:
-                self.finish(nil)
+                self.finish(.ended, nil)
             default: break
             }
         }
@@ -85,7 +122,7 @@ public final class LinkChannel: @unchecked Sendable {   // mutable state is only
         queue.async { [weak self] in
             guard let self, !self.isClosed else { return }
             self.connection.send(content: data, completion: .contentProcessed { [weak self] error in
-                if let error { self?.finish(error.localizedDescription) }
+                if let error { self?.finish(error) }
             })
         }
     }
@@ -100,7 +137,7 @@ public final class LinkChannel: @unchecked Sendable {   // mutable state is only
             queue.async { [weak self] in
                 guard let self, !self.isClosed else { return done.resume(returning: false) }
                 self.connection.send(content: data, completion: .contentProcessed { [weak self] error in
-                    if let error { self?.finish(error.localizedDescription) }
+                    if let error { self?.finish(error) }
                     done.resume(returning: error == nil)
                 })
             }
@@ -111,32 +148,57 @@ public final class LinkChannel: @unchecked Sendable {   // mutable state is only
         queue.async { [weak self] in
             guard let self else { return }
             self.connection.cancel()
-            self.finish(nil)
+            self.finish(.ended, nil)
         }
+    }
+
+    /// Closes a link that has been silent too long: a half-dead connection (the other side left
+    /// the network, or slept) would otherwise only be noticed after TCP gives up, minutes later.
+    private func watch() {
+        let timer = DispatchSource.makeTimerSource(queue: queue)
+        timer.schedule(deadline: .now() + LinkProtocol.silenceLimit / 4, repeating: LinkProtocol.silenceLimit / 4)
+        timer.setEventHandler { [weak self] in
+            guard let self, Date().timeIntervalSince(self.lastHeard) > LinkProtocol.silenceLimit else { return }
+            self.connection.cancel()
+            self.finish(.unreachable, "silent for too long")
+        }
+        watchdog = timer
+        timer.resume()
     }
 
     private func receive() {
         connection.receive(minimumIncompleteLength: 1, maximumLength: 64 * 1024) { [weak self] data, _, complete, error in
             guard let self, !self.isClosed else { return }
+            self.lastHeard = Date()
             if let data, !data.isEmpty {
                 do {
                     for frame in try self.framer.feed(data) { self.onFrame?(frame) }
                 } catch {
                     self.connection.cancel()
-                    return self.finish("bad frame: \(error)")
+                    return self.finish(.ended, "bad frame: \(error)")
                 }
             }
-            if let error { return self.finish(error.localizedDescription) }
-            if complete { self.connection.cancel(); return self.finish("closed by the other side") }
+            if let error { return self.finish(error) }
+            if complete { self.connection.cancel(); return self.finish(.ended, "closed by the other side") }
             self.receive()
         }
     }
 
-    private func finish(_ reason: String?) {
+    /// The connection failed: before it was ever ready, a TLS error means someone answered and
+    /// refused us, anything else means we never got through.
+    private func finish(_ error: NWError) {
+        if hop?.status == .rejected { return finish(.hopRefused, "the Hop turned this pairing away") }
+        if !wasReady, case .tls = error { return finish(.rejected, error.localizedDescription) }
+        finish(wasReady ? .ended : .unreachable, error.localizedDescription)
+    }
+
+    private func finish(_ why: Close, _ reason: String?) {
         guard !isClosed else { return }
         isClosed = true
+        watchdog?.cancel()
+        watchdog = nil
         if case .failed = connection.state {} else if connection.state != .cancelled { connection.cancel() }
-        onState?(.closed(reason: reason))
+        onState?(.closed(why, reason: reason))
         onState = nil
         onFrame = nil
     }

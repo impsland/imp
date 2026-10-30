@@ -38,6 +38,14 @@ struct PhoneCard: View {
                         .buttonStyle(.imp(.primary, small: true))
                 }
             }
+            CardDivider()
+            Row("Server", info: "Lets your iPhone reach this Mac from anywhere, not just on your Wi-Fi. The server only passes encrypted data along. It can't read anything.") {
+                TextField(String("imp.example.org"), text: Binding(get: { model.prefs.server }, set: { model.prefs.server = $0 }))
+                    .impField(mono: true).autocorrectionDisabled().frame(width: 220)
+            }
+            if !model.prefs.server.isEmpty, ImpServer(model.prefs.server) == nil {
+                StatusText(text: "That isn't a server address. Use a host name such as imp.example.org.", symbol: "exclamationmark.triangle.fill", color: .orange)
+            }
         }
         .sheet(isPresented: $pairing) { PairingSheet(model: model) }
         .confirmationDialog("Forget every iPhone?", isPresented: $forgetting, titleVisibility: .visible) {

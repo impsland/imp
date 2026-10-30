@@ -5,6 +5,7 @@ import SwiftUI
 /// The phone's room: Imps floating in the dungeon, to drag, toss, tap and shake.
 struct PhoneStage: View {
     let client: LinkClient
+    let pocket: PocketRuntime
     var onChat: (UUID) -> Void
     @State private var engine = StageEngine()
     @State private var motion = MotionWatcher()
@@ -44,16 +45,19 @@ struct PhoneStage: View {
                                     .zIndex(2)
                             }
                         }
+                        GameLayer(engine: engine, date: timeline.date, size: geo.size, insets: geo.safeAreaInsets)
+                            .zIndex(3)
                     }
                     .animation(.spring(duration: 0.35), value: client.speeches.mapValues(\.id))
                 }
 
-                if client.imps.isEmpty && client.isConnected { EmptyHint(side: .left) }
+                if roster.isEmpty && client.isConnected { EmptyHint(side: .left) }
             }
             .coordinateSpace(name: "stage")
         }
         .ignoresSafeArea()
         .onAppear { wire() }
+        .onChange(of: pocket.looks) { engine.reconcile(roster) }
         .onChange(of: scenePhase, initial: true) { _, phase in
             if phase == .active { motion.start() } else { motion.stop() }
         }
@@ -63,15 +67,17 @@ struct PhoneStage: View {
 
     private func figure(_ b: StageEngine.Body, date: Date) -> some View {
         let id = b.imp.id
-        let connected = client.isConnected
-        let working = client.work[id]
+        let source: any ChatSource = pocket.contains(id) ? pocket : client
+        let awake = source.availability(id) == .ready
+        let working = source.working(id)
         let side = b.size
         let dizzy = b.dizzyUntil > date
         let mood: Mood = {
-            if !connected { return .sleepy }
+            if let m = engine.gameMood(b, at: date) { return m }
+            if !awake { return .sleepy }
             if dizzy { return .dizzy }
             if b.phase == .dragging { return abs(b.fingerVelocity.dx) > 500 ? .excited : .curious }
-            if let m = client.moods[id] { return m }
+            if let m = source.mood(id) { return m }
             return working != nil ? .working : .idle
         }()
         let gaze = engine.gaze(for: b)
@@ -80,7 +86,7 @@ struct PhoneStage: View {
             .frame(width: side, height: side)
             .background {
                 // Warm light around it, so it glows against the wall.
-                SoftGlow(color: Dungeon.ember, opacity: connected ? 0.16 : 0.05)
+                SoftGlow(color: Dungeon.ember, opacity: awake ? 0.16 : 0.05)
                     .frame(width: side * 2.3, height: side * 2.3)
             }
             .overlay(alignment: .top) {
@@ -89,48 +95,60 @@ struct PhoneStage: View {
             .overlay(alignment: .bottom) {
                 NameTag(name: b.imp.name).offset(y: 14).opacity(b.phase == .dragging ? 0.4 : 1)
             }
-            .opacity(connected ? 1 : 0.7)
+            .opacity(awake || engine.isPlaying ? 1 : 0.7)
             .contentShape(Circle().inset(by: side * 0.08))
-            .onTapGesture { onChat(id) }
+            .onTapGesture { if !engine.isPlaying { onChat(id) } }
             .gesture(DragGesture(minimumDistance: 3, coordinateSpace: .named("stage"))
                 .onChanged { engine.dragChanged(id, at: $0.location) }
                 .onEnded { engine.dragEnded(id, at: $0.location, predicted: $0.predictedEndLocation) })
             .contextMenu {
                 Button { onChat(id) } label: { Label("Chat", systemImage: "bubble.left.and.bubble.right") }
-                Button { client.newChat(id); onChat(id) } label: { Label("New Chat", systemImage: "square.and.pencil") }
+                Button { source.newChat(id); onChat(id) } label: { Label("New Chat", systemImage: "square.and.pencil") }
                 Button { engine.sendGently(id) } label: { Label("Send to Mac", systemImage: "macbook.and.iphone") }
             }
-            .position(x: b.pos.x, y: b.pos.y + engine.floatOffset(b, at: date, calm: !connected))
+            .position(x: b.pos.x, y: b.pos.y + engine.floatOffset(b, at: date, calm: !awake))
             .zIndex(b.phase == .dragging ? 1 : 0)
     }
 
     // MARK: Wiring
 
-    /// Hooks the engine to the client (once): events from the Mac in, tosses and feelings out.
+    /// The Imps on this phone: the Mac's, and the ones hatched here.
+    private var roster: [LinkImp] { Self.roster(client, pocket) }
+
+    private static func roster(_ client: LinkClient, _ pocket: PocketRuntime) -> [LinkImp] {
+        client.imps + pocket.looks.filter { look in !client.imps.contains { $0.id == look.id } }
+    }
+
+    /// Hooks the engine to the client and the pocket Imps (once): events in, tosses and feelings out.
     private func wire() {
         guard !wired else { return }
         wired = true
-        let engine = engine, client = client
+        let engine = engine, client = client, pocket = pocket
         engine.isConnected = { client.isConnected }
-        engine.send = { id, side, height, speed in client.toss(id, exit: side, height: height, speed: speed) }
+        engine.send = { id, side, height, speed in
+            if pocket.contains(id) { pocket.toss(id, exit: side, height: height, speed: speed) }
+            else { client.toss(id, exit: side, height: height, speed: speed) }
+        }
         engine.warn = { client.toast = $0 }
-        engine.felt = { client.felt($0, $1) }
-        client.onEvent = { event in
+        engine.felt = { if !pocket.contains($0) { client.felt($0, $1) } }
+        let hear: (StageEvent) -> Void = { event in
             switch event {
-            case .roster(let imps): engine.reconcile(imps)
+            case .roster: engine.reconcile(Self.roster(client, pocket))
             case .arrived(let imp, let entry): engine.arrive(imp, entry)
             case .left(let id): engine.leave(id)
             case .refused(let id, let why): engine.refused(id, why)
             case .animate(let id, let beats): engine.animate(id, beats)
             }
         }
+        client.onEvent = hear
+        pocket.onEvent = hear
         motion.onEvent = { event in
             switch event {
             case .thrown(let side): engine.jolt(side)
             case .shaken: engine.shake()
             }
         }
-        engine.reconcile(client.imps)
+        engine.reconcile(roster)
     }
 }
 

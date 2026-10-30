@@ -291,10 +291,35 @@ final class AppModel {
         guard let i = prefs.imps.firstIndex(where: { $0.id == id }), let device = prefs.imps[i].awayOn else { return }
         prefs.imps[i].awayOn = nil
         phone.left(id, from: device)
+        arrive(id, entry: entry)
+    }
+
+    /// An Imp comes onto the desktop through a side of the screen.
+    private func arrive(_ id: UUID, entry: LinkEntry) {
         if isHidden { setHidden(id, false) }
         flyIn?(id, entry)
         refreshTroupe()
         if let imp = imp(id) { focus(imp) }
+    }
+
+    /// A pocket Imp thrown off the phone moves in: a new Mac Imp with the id it had, its chats, its
+    /// service (found by address or added, and its key saved only if that service has none) and its
+    /// tool servers. It flies in from the side opposite the one it left by. Throws why it can't.
+    func adoptPocket(_ id: UUID, kit: String, secrets: LinkSecrets, entry: LinkEntry) throws {
+        var p = prefs
+        let adoption = try p.adopt(kit: kit, as: id, secrets: secrets)
+        guard let i = p.imps.firstIndex(where: { $0.id == id }) else { return }
+        p.imps[i].isActive = true
+        // Chats go to the Imp's folder before it appears, so it opens them as its own.
+        if persists {
+            var history = ChatHistory(folder: ChatHistory.folder(for: id))
+            for chat in adoption.imp.chats { history.adopt(chat) }
+        }
+        prefs = p
+        if let service = adoption.service, let key = adoption.apiKey, !assistant.hasKey(service) {
+            assistant.setKey(key, for: service)
+        }
+        arrive(id, entry: entry)
     }
 
     /// Calls an Imp back from its phone, in through the side of the screen nearest its spot.
@@ -336,6 +361,7 @@ final class AppModel {
         prefs = p
         try? FileManager.default.removeItem(at: Workspace.directory(for: id))
         ChatHistory.deleteFolder(for: id)
+        if persists { DenAccounts(inKeychain: prefs.keysInKeychain).forget(imp: id) }
     }
 
     /// Calls an Imp in and removes it for good (never the last one). Returns the Imp that took

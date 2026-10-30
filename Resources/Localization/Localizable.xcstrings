@@ -135,6 +135,22 @@
         }
       }
     },
+    "%@ didn't answer in time." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no respondió a tiempo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 没有及时回答。"
+          }
+        }
+      }
+    },
     "%@ flies off the screen onto your iPhone. Or throw it hard at the side of the screen." : {
       "localizations" : {
         "es" : {
@@ -357,6 +373,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 已被 macOS 或其他 App 占用。请选择其他按键。"
+          }
+        }
+      }
+    },
+    "%@ isn't reachable right now." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede llegar a %@ ahora mismo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "现在联系不上 %@。"
           }
         }
       }
@@ -2569,6 +2601,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imp 会先到家里，而不是出现在桌面上。它的个性和触发器决定它如何使用工具，包括在你的 Mac 上运行命令。请仔细阅读。"
+          }
+        }
+      }
+    },
+    "An Imp needs a name of up to %lld characters." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un Imp necesita un nombre de hasta %lld caracteres."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 需要一个不超过 %lld 个字符的名字。"
           }
         }
       }
@@ -8177,6 +8225,22 @@
         }
       }
     },
+    "Imp couldn't keep the account's key safe." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp no pudo guardar la clave de la cuenta de forma segura."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 无法安全保存账户的密钥。"
+          }
+        }
+      }
+    },
     "Imp starts" : {
       "localizations" : {
         "es" : {
@@ -9203,6 +9267,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "让 Imp 看到它操作的 App。仅用于电脑控制。"
+          }
+        }
+      }
+    },
+    "Lets your iPhone reach this Mac from anywhere, not just on your Wi-Fi. The server only passes encrypted data along. It can't read anything." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite que tu iPhone llegue a este Mac desde cualquier lugar, no solo en tu Wi-Fi. El servidor solo reenvía datos cifrados. No puede leer nada."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让你的 iPhone 在任何地方都能连到这台 Mac，而不只是在你的 Wi-Fi 上。服务器只转发加密数据，什么也读不到。"
           }
         }
       }
@@ -14729,6 +14809,22 @@
         }
       }
     },
+    "Server" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器"
+          }
+        }
+      }
+    },
     "Service" : {
       "localizations" : {
         "es" : {
@@ -15205,6 +15301,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "共享的动画对每个 Imp 都会播放。为单个 Imp 制作的动画只对它播放，并优先于共享的动画。内置动画的新版本会代替它播放。"
+          }
+        }
+      }
+    },
+    "Shares its animations, triggers and itself in the Den, and finds what other Imps shared. Needs a server in Settings. What it shares is public." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comparte sus animaciones, disparadores y a sí mismo en Den, y encuentra lo que compartieron otros Imps. Necesita un servidor en Ajustes. Lo que comparte es público."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 Den 中分享它的动画、触发器和它自己，并找到其他 Imp 分享的东西。需要在设置中填写服务器。它分享的内容是公开的。"
           }
         }
       }
@@ -15797,6 +15909,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打喷嚏"
+          }
+        }
+      }
+    },
+    "Solving the Den's challenge took too long." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resolver el desafío de Den tardó demasiado."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解答 Den 的挑战花了太久。"
           }
         }
       }
@@ -16697,6 +16825,22 @@
         }
       }
     },
+    "That Imp isn't out on the desktop." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese Imp no está en el escritorio."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那个 Imp 不在桌面上。"
+          }
+        }
+      }
+    },
     "That address didn't answer like a web page." : {
       "localizations" : {
         "es" : {
@@ -16905,6 +17049,22 @@
         }
       }
     },
+    "That iPhone went away." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese iPhone se fue."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那台 iPhone 不在了。"
+          }
+        }
+      }
+    },
     "That isn't a chat exported from Imp." : {
       "localizations" : {
         "es" : {
@@ -16933,6 +17093,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这不是套件：需要包含 imps、triggers、animations 或 mcpServers 的 JSON，或一个触发器，或一个 MCP 配置。"
+          }
+        }
+      }
+    },
+    "That isn't a server address. Use a host name such as imp.example.org." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esa no es una dirección de servidor. Usa un nombre de host como imp.example.org."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这不是服务器地址。请使用像 imp.example.org 这样的主机名。"
           }
         }
       }
@@ -16981,6 +17157,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这不是 imp://add 链接。"
+          }
+        }
+      }
+    },
+    "That isn't one Imp to take in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eso no es un solo Imp que se pueda acoger."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这不是一个可以接收的 Imp。"
           }
         }
       }
@@ -17089,6 +17281,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "API 返回 %lld：%@"
+          }
+        }
+      }
+    },
+    "The Den" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den"
+          }
+        }
+      }
+    },
+    "The Den answered %lld." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den respondió %lld."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den 返回了 %lld。"
+          }
+        }
+      }
+    },
+    "The Den sent a challenge Imp can't solve." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den envió un desafío que Imp no puede resolver."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den 发来了 Imp 解不了的挑战。"
+          }
+        }
+      }
+    },
+    "The Den sent an answer Imp can't read." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den envió una respuesta que Imp no puede leer."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den 发来了 Imp 读不懂的回答。"
+          }
+        }
+      }
+    },
+    "The Den sent more than Imp will accept." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den envió más de lo que Imp acepta."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den 发来的内容超过了 Imp 能接受的大小。"
+          }
+        }
+      }
+    },
+    "The Den's challenge ran out before it was solved." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El desafío de Den caducó antes de resolverse."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den 的挑战在解出之前就过期了。"
           }
         }
       }
@@ -17461,6 +17749,22 @@
         }
       }
     },
+    "The server turned this Mac away, so your iPhone can't reach it from afar." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El servidor rechazó este Mac, así que tu iPhone no puede llegar a él desde lejos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器拒绝了这台 Mac，所以你的 iPhone 无法从远处连到它。"
+          }
+        }
+      }
+    },
     "The tools it uses." : {
       "localizations" : {
         "es" : {
@@ -17473,6 +17777,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "它使用的工具。"
+          }
+        }
+      }
+    },
+    "There's already an Imp like that here." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ya hay un Imp así aquí."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这里已经有这样一个 Imp 了。"
           }
         }
       }
@@ -17537,6 +17857,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "想一想，灯泡一亮，跳一下。"
+          }
+        }
+      }
+    },
+    "This Imp has no service and model to think with yet." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este Imp aún no tiene servicio ni modelo con el que pensar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个 Imp 还没有用来思考的服务和模型。"
+          }
+        }
+      }
+    },
+    "This Imp is too big to move." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este Imp es demasiado grande para mudarse."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个 Imp 太大，搬不过去。"
           }
         }
       }
@@ -18029,6 +18381,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "立即试用"
+          }
+        }
+      }
+    },
+    "Try again in %lld seconds." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inténtalo de nuevo en %lld segundos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请在 %lld 秒后再试。"
           }
         }
       }
@@ -19971,6 +20339,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "担忧的眉毛"
+          }
+        }
+      }
+    },
+    "“%@” must start with https://. Plain http:// works only for devices on your own network." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” debe empezar por https://. http:// sin cifrar solo funciona con dispositivos de tu propia red."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” 必须以 https:// 开头。普通 http:// 只适用于你自己网络中的设备。"
           }
         }
       }

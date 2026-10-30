@@ -15,6 +15,14 @@ enum StageEvent {
     case animate(UUID, [AnimationBeat])
 }
 
+/// What the Mac tells the Imps hatched on this phone.
+enum PocketEvent {
+    case adopted(UUID)
+    case answer(id: UUID, text: String, failed: Bool)
+    case ask(id: UUID, from: LinkImp, to: UUID, text: String)
+    case linkLost
+}
+
 /// The phone's side of Imp Link: finds the paired Mac, keeps one connection to it, and holds what
 /// the Mac says (which Imps are here, their chats, what they're doing). The Mac keeps every
 /// Imp's brain; this is only the body and the chat.
@@ -25,9 +33,22 @@ final class LinkClient {
         case searching
         case connecting
         case connected(String)
+        /// The Mac answers but doesn't know this iPhone any more: it has to be paired again.
+        case unknown
     }
 
+    /// Where to try next.
+    private enum Route {
+        case direct(NWEndpoint)
+        case hop
+    }
+
+    /// How many times in a row the Mac may refuse our key before we say so.
+    private static let rejectionsBeforeSaying = 3
+
     private(set) var status: Status = .unpaired
+    /// The link is running through the Hop (the internet), not over the local network.
+    private(set) var viaHop = false
     private(set) var pairing: LinkPairing?
     private(set) var imps: [LinkImp] = []
     private(set) var others: [LinkImp] = []
@@ -42,6 +63,9 @@ final class LinkClient {
     var toast: String?
 
     @ObservationIgnored var onEvent: ((StageEvent) -> Void)?
+    @ObservationIgnored var onPocket: ((PocketEvent) -> Void)?
+    /// The Imps hatched on this phone, as the Mac is told of them.
+    @ObservationIgnored private(set) var troupe: [LinkImp] = []
 
     var isConnected: Bool { if case .connected = status { true } else { false } }
     var macName: String? { pairing?.name }
@@ -56,6 +80,10 @@ final class LinkClient {
     @ObservationIgnored private var channelWasReady = false
     @ObservationIgnored private var attempt = 0
     @ObservationIgnored private var failures = 0
+    @ObservationIgnored private var rejections = 0
+    @ObservationIgnored private var hopRefused = false
+    @ObservationIgnored private var monitor: NWPathMonitor?
+    @ObservationIgnored private var pathSignature: String?
     @ObservationIgnored private var retry: Task<Void, Never>?
     @ObservationIgnored private var pinger: Task<Void, Never>?
     @ObservationIgnored private var saver: Task<Void, Never>?
@@ -87,6 +115,8 @@ final class LinkClient {
         pairing = new
         status = .searching
         failures = 0
+        rejections = 0
+        hopRefused = false
         if active { start() }
     }
 
@@ -112,6 +142,7 @@ final class LinkClient {
         active = true
         status = .searching
         startBrowsing()
+        watchNetwork()
         // Bonjour usually answers in well under a second; if not, try the addresses in the link.
         scheduleConnect(after: 0.4)
     }
@@ -119,6 +150,8 @@ final class LinkClient {
     private func stop() {
         retry?.cancel(); pinger?.cancel()
         browser?.cancel(); browser = nil
+        monitor?.cancel(); monitor = nil
+        pathSignature = nil
         found = []
         closeChannel()
         if pairing != nil, !demo { status = .searching }
@@ -137,7 +170,9 @@ final class LinkClient {
         channel?.close()
         channel = nil
         channelWasReady = false
+        viaHop = false
         files.linkLost()
+        onPocket?(.linkLost)
     }
 
     // MARK: Finding the Mac
@@ -158,10 +193,38 @@ final class LinkClient {
         self.browser = browser
     }
 
-    /// Bonjour services first, then the addresses in the pairing.
-    private var candidates: [NWEndpoint] {
-        guard let pairing, let port = NWEndpoint.Port(rawValue: pairing.port) else { return found }
-        return found + pairing.hosts.map { NWEndpoint.hostPort(host: NWEndpoint.Host($0), port: port) }
+    /// Bonjour services first, then the addresses in the pairing, the Hop last.
+    private var candidates: [Route] {
+        guard let pairing else { return [] }
+        var routes = found.map(Route.direct)
+        if let port = NWEndpoint.Port(rawValue: pairing.port) {
+            routes += pairing.hosts.map { .direct(.hostPort(host: NWEndpoint.Host($0), port: port)) }
+        }
+        if !hopRefused, pairing.hop.flatMap(HopAddress.init) != nil { routes.append(.hop) }
+        return routes
+    }
+
+    /// When the network changes under a phone that isn't connected (Wi-Fi came back, it left the
+    /// train's hotspot), try again right away instead of waiting out the back-off.
+    private func watchNetwork() {
+        let monitor = NWPathMonitor()
+        monitor.pathUpdateHandler = { [weak self] path in
+            let signature = "\(path.status) " + path.availableInterfaces.map(\.name).sorted().joined(separator: ",")
+            let satisfied = path.status == .satisfied
+            DispatchQueue.main.async { MainActor.assumeIsolated { self?.pathChanged(signature, satisfied: satisfied) } }
+        }
+        monitor.start(queue: DispatchQueue(label: "app.imp.ImpPhone.path"))
+        self.monitor = monitor
+    }
+
+    private func pathChanged(_ signature: String, satisfied: Bool) {
+        let first = pathSignature == nil
+        let changed = pathSignature != signature
+        pathSignature = signature
+        guard active, !first, changed, satisfied, !isConnected else { return }
+        failures = 0
+        if !channelWasReady { closeChannel() }
+        scheduleConnect(after: 0.2)
     }
 
     private func scheduleConnect(after delay: TimeInterval) {
@@ -180,9 +243,16 @@ final class LinkClient {
             status = .searching
             return scheduleConnect(after: backoff())
         }
-        let endpoint = list[attempt % list.count]
-        status = .connecting
-        let channel = LinkChannel(to: endpoint, psk: pairing.psk)
+        let route = list[attempt % list.count]
+        let made: LinkChannel? = switch route {
+        case .direct(let endpoint): LinkChannel(to: endpoint, psk: pairing.psk)
+        case .hop: LinkChannel(hopOf: pairing)
+        }
+        guard let channel = made else {
+            attempt += 1
+            return scheduleConnect(after: 0.3)
+        }
+        if status != .unknown { status = .connecting }
         let id = channel.id
         channel.onState = { [weak self] state in
             DispatchQueue.main.async { MainActor.assumeIsolated { self?.channelChanged(id, state) } }
@@ -201,13 +271,17 @@ final class LinkClient {
         switch state {
         case .ready:
             channelWasReady = true
+            rejections = 0
+            viaHop = channel?.isThroughHop ?? false
             channel?.send(LinkRequest.hello(device: deviceID, name: UIDevice.current.name, version: LinkProtocol.version))
             startPinging()
-        case .closed(let reason):
+        case .closed(let why, let reason):
             log.info("link closed: \(reason ?? "-", privacy: .public)")
             let wasReady = channelWasReady
             channel = nil
+            viaHop = false
             files.linkLost()
+            onPocket?(.linkLost)
             channelWasReady = false
             pinger?.cancel()
             guard active else { return }
@@ -215,10 +289,24 @@ final class LinkClient {
             if wasReady {
                 failures = 0
                 scheduleConnect(after: 1)
+                return
+            }
+            attempt += 1
+            failures += 1
+            switch why {
+            case .rejected: rejections += 1
+            case .hopRefused: hopRefused = true
+            case .ended, .unreachable: break
+            }
+            if rejections >= Self.rejectionsBeforeSaying {
+                if rejections == Self.rejectionsBeforeSaying {
+                    toast = String(localized: "This Mac doesn't know this iPhone any more. Pair again.")
+                }
+                status = .unknown
+                // Keep trying, slowly: the Mac may only have been reset for a moment.
+                scheduleConnect(after: 30)
             } else {
-                attempt += 1
-                failures += 1
-                // Another candidate to try soon; a full round without luck backs off.
+                // Another candidate to try soon, a full round without luck backs off.
                 scheduleConnect(after: attempt % max(1, candidates.count) == 0 ? backoff() : 0.3)
             }
         }
@@ -231,7 +319,7 @@ final class LinkClient {
         pinger?.cancel()
         pinger = Task { [weak self] in
             while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(20))
+                try? await Task.sleep(for: .seconds(LinkProtocol.pingInterval))
                 guard !Task.isCancelled else { return }
                 self?.channel?.send(LinkRequest.ping)
             }
@@ -245,11 +333,18 @@ final class LinkClient {
         case .welcome(let mac, _, let imps, let others):
             status = .connected(mac)
             failures = 0
+            rejections = 0
             // Keep a name the user can recognise even if the Mac was renamed.
             if var p = pairing, p.name != mac, !mac.isEmpty { p.name = mac; pairing = p; PairingStore.save(p) }
             self.imps = imps
             self.others = others
             work = work.filter { id, _ in imps.contains { $0.id == id } }
+            // A pocket Imp the Mac already has finished moving home, even if the link dropped
+            // before the Mac could say so.
+            for id in Set(imps.map(\.id) + others.map(\.id)) where troupe.contains(where: { $0.id == id }) {
+                onPocket?(.adopted(id))
+            }
+            send(.troupe(troupe))
             onEvent?(.roster(imps))
         case .arrive(let imp, let entry):
             if let i = imps.firstIndex(where: { $0.id == imp.id }) { imps[i] = imp } else { imps.append(imp) }
@@ -286,6 +381,24 @@ final class LinkClient {
             return
         case .pong:
             break
+        case .adopted(let id):
+            onPocket?(.adopted(id))
+            return
+        case .answer(let id, let text, let failed):
+            onPocket?(.answer(id: id, text: text, failed: failed))
+            return
+        case .ask(let id, let from, let to, let text):
+            onPocket?(.ask(id: id, from: from, to: to, text: text))
+            return
+        case .route(let hop):
+            let hop = hop.flatMap(HopAddress.init)?.text
+            if var p = pairing, p.hop != hop {
+                p.hop = hop
+                pairing = p
+                PairingStore.save(p)
+                hopRefused = false
+            }
+            return                                   // nothing to save
         }
         scheduleSave()
     }
@@ -330,6 +443,7 @@ final class LinkClient {
         return true
     }
     func newChat(_ imp: UUID) {
+        guard isConnected else { return }
         chats[imp] = []
         send(.newChat(imp: imp))
     }
@@ -342,7 +456,20 @@ final class LinkClient {
         #endif
     }
 
-    private func send(_ request: LinkRequest) { channel?.send(request) }
+    /// Tells the Mac which Imps live on this phone (on connect, and whenever they change).
+    func setTroupe(_ looks: [LinkImp]) {
+        guard looks != troupe else { return }
+        troupe = looks
+        send(.troupe(looks))
+    }
+
+    /// Sends a request if the Mac is there to hear it.
+    @discardableResult
+    func send(_ request: LinkRequest) -> Bool {
+        guard isConnected, let channel else { return false }
+        channel.send(request)
+        return true
+    }
 
     // MARK: Keeping a copy
 

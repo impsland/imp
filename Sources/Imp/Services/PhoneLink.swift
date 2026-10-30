@@ -13,6 +13,9 @@ import os
 /// An Imp on a phone is still one of the Mac's Imps: its brain, keys, tools and chats stay here.
 /// The phone draws it and is its chat; this relays what it's doing (`watch`) and what the phone
 /// asks of it. A phone may only talk to the Imps that are on it.
+///
+/// A phone has Imps of its own too (pocket Imps), which think there. They talk with the Imps here
+/// in both directions (`imp_message`), and one tossed off the phone moves in for good (`adoptPocket`).
 @MainActor @Observable
 final class PhoneLink {
     struct Phone: Codable, Identifiable, Equatable {
@@ -26,6 +29,13 @@ final class PhoneLink {
         var mac: UUID
         var secret: Data
         var phones: [Phone]
+        /// Pocket Imps taken in, so a phone that asks again isn't refused (optional: older files lack it).
+        var adopted: [Adopted]?
+    }
+
+    private struct Adopted: Codable, Equatable {
+        var imp: UUID
+        var phone: UUID
     }
 
     /// Phones that have connected since pairing was set up.
@@ -36,15 +46,23 @@ final class PhoneLink {
     private(set) var isSetUp = false
     /// Why the Mac can't listen, if it can't.
     private(set) var problem: String?
+    /// The pocket Imps of the phones connected right now, as each phone announced them.
+    private var pocket: [UUID: [LinkImp]] = [:]
 
     @ObservationIgnored private unowned let app: AppModel
     @ObservationIgnored private var saved: Saved?
     @ObservationIgnored private var listener: NWListener?
+    /// The waiting connection at the Hop (when a server is set), and what it was started for.
+    @ObservationIgnored private var hopHost: HopHost?
+    @ObservationIgnored private var hopFor: (server: ImpServer, port: UInt16)?
+    @ObservationIgnored private var watchingServer = false
     @ObservationIgnored private var peers: [UUID: Peer] = [:]
     /// What each phone was last told about each of its Imps (only changes are sent).
     @ObservationIgnored private var sent: [UUID: Snapshot] = [:]
     @ObservationIgnored private var flushing: Set<UUID> = []
     @ObservationIgnored private var lastOthers: [LinkImp] = []
+    /// Questions Imps here asked pocket Imps, waiting for the answer.
+    @ObservationIgnored private var asks: [UUID: Ask] = [:]
     @ObservationIgnored private let queue = DispatchQueue(label: "app.imp.Imp.link")
     @ObservationIgnored private let log = Logger(subsystem: "app.imp.Imp", category: "link")
     @ObservationIgnored private let file: URL
@@ -56,6 +74,11 @@ final class PhoneLink {
         var name = ""
         var since = Date()
         init(_ channel: LinkChannel) { self.channel = channel }
+    }
+
+    private struct Ask {
+        let phone: UUID
+        let reply: CheckedContinuation<String, Error>
     }
 
     /// What a phone knows about one of its Imps.
@@ -71,6 +94,10 @@ final class PhoneLink {
     static let chatPage = 40
     /// Longest message a phone may send.
     static let maxText = 20_000
+    /// Seconds a pocket Imp has to answer an Imp here.
+    static let askTimeout: TimeInterval = 120
+    /// Most pocket Imps a phone may announce.
+    static let maxPocket = 50
 
     init(app: AppModel, file: URL = URL.applicationSupportDirectory.appendingPathComponent("Imp/iphone.json")) {
         self.app = app
@@ -88,6 +115,7 @@ final class PhoneLink {
         isSetUp = true
         listen()
         watchOthers()
+        startWatchingServer()
     }
 
     /// The pairing link (and QR code) for a new phone. Sets the link up the first time.
@@ -98,10 +126,11 @@ final class PhoneLink {
             isSetUp = true
             listen()
             watchOthers()
+            startWatchingServer()
         }
         let s = saved!
         return LinkPairing(mac: s.mac, name: Self.macName, secret: s.secret, hosts: Self.hosts(),
-                           port: listener?.port?.rawValue ?? LinkProtocol.port)
+                           port: listener?.port?.rawValue ?? LinkProtocol.port, hop: ImpServer(app.prefs.server)?.hop)
     }
 
     /// Forgets every phone: a new secret, so old pairing codes stop working, and every Imp on a
@@ -113,11 +142,14 @@ final class PhoneLink {
         peers.values.forEach { $0.channel.close() }
         peers = [:]
         connected = [:]
+        pocket = [:]
+        failAsks(of: nil)
         phones = []
         sent = [:]
         listener?.cancel()
         listener = nil
         saved = nil
+        updateHop()
         isSetUp = false
         problem = nil
         try? FileManager.default.removeItem(at: file)
@@ -176,7 +208,10 @@ final class PhoneLink {
                 log.error("link listener failed: \(e.localizedDescription, privacy: .public)")
                 Task { @MainActor in self?.relisten() }
             case .ready:
-                Task { @MainActor in self?.problem = nil }
+                Task { @MainActor in
+                    self?.problem = nil
+                    self?.updateHop()
+                }
             default: break
             }
         }
@@ -204,7 +239,7 @@ final class PhoneLink {
             Task { @MainActor in self?.handle(request, from: id) }
         }
         channel.onState = { [weak self] state in
-            guard case .closed(let reason) = state else { return }
+            guard case .closed(_, let reason) = state else { return }
             Task { @MainActor in self?.dropped(id, reason: reason) }
         }
         channel.start()
@@ -214,8 +249,50 @@ final class PhoneLink {
         guard let peer = peers.removeValue(forKey: id) else { return }
         if let device = peer.device, !peers.values.contains(where: { $0.device == device }) {
             connected[device] = nil
+            pocket[device] = nil
+            failAsks(of: device)
             log.info("iPhone “\(peer.name, privacy: .public)” left: \(reason ?? "closed", privacy: .public)")
         }
+    }
+
+    // MARK: Reaching this Mac from anywhere
+
+    /// Follows the server setting: phones are told where to find the Hop, and the waiting connection
+    /// there follows it.
+    private func startWatchingServer() {
+        if !watchingServer { watchServer() }
+    }
+
+    private func watchServer() {
+        guard saved != nil else { return watchingServer = false }
+        watchingServer = true
+        let server = withObservationTracking { ImpServer(app.prefs.server) } onChange: { [weak self] in
+            Task { @MainActor in self?.watchServer() }
+        }
+        updateHop()
+        let route = LinkUpdate.route(hop: server?.hop)
+        peers.values.filter { $0.device != nil }.forEach { $0.channel.send(route) }
+    }
+
+    /// Keeps one connection waiting at the Hop while a server is set and a phone is paired. Over it,
+    /// phones come in as plain TCP to the Link listener on this Mac, where TLS ends as it always does.
+    private func updateHop() {
+        let want = (saved != nil ? ImpServer(app.prefs.server) : nil)
+            .flatMap { server in listener?.port.map { (server, $0.rawValue) } }
+        if let want, let have = hopFor, want.0 == have.server, want.1 == have.port { return }
+        hopHost?.stop()
+        hopHost = nil
+        hopFor = nil
+        guard let (server, port) = want, let s = saved, let address = HopAddress(server.hop) else { return }
+        let host = HopHost(address: address, room: Hop.Room(secret: s.secret), loopbackPort: port)
+        host.onRejected = { [weak self] in
+            Task { @MainActor in
+                self?.problem = String(localized: "The server turned this Mac away, so your iPhone can't reach it from afar.")
+            }
+        }
+        host.start()
+        hopHost = host
+        hopFor = (server, port)
     }
 
     // MARK: From the phone
@@ -258,7 +335,27 @@ final class PhoneLink {
                 return peer.channel.send(LinkUpdate.fileFailed(id: transfer, reason: String(localized: "That Imp isn't on this phone.")))
             }
             sendFile(ref, of: model, transfer: transfer, over: peer.channel)
+        case .troupe(let imps):
+            pocket[device] = Array(imps.compactMap(Self.announced).prefix(Self.maxPocket))
+        case .adopt(let imp, let kit, let secrets, let exit, let height, let speed):
+            adopt(imp, kit: kit, secrets: secrets, entry: .after(exit: exit, height: height, speed: speed), from: device)
+        case .message(let id, let from, let to, let text):
+            relay(id, from: from, to: to, text: text, device: device)
+        case .answered(let id, let text, let failed):
+            guard asks[id]?.phone == device else { return }
+            let words = String(text.prefix(Self.maxText))
+            settle(id, failed ? .failure(ToolArgumentError(words)) : .success(words))
         }
+    }
+
+    /// A pocket Imp as announced, kept to what's sane.
+    private static func announced(_ imp: LinkImp) -> LinkImp? {
+        let name = imp.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { return nil }
+        var imp = imp
+        imp.name = String(name.prefix(PocketImp.maxName))
+        imp.hue = imp.hue.isFinite ? min(max(imp.hue, 0), 1) : 0
+        return imp
     }
 
     /// Sends a file one of the Imp's replies shows or links to, in parts, at the network's pace.
@@ -303,6 +400,14 @@ final class PhoneLink {
         peer.device = device
         peer.name = name.isEmpty ? String(localized: "iPhone") : name
         peer.since = Date()
+        // A phone that reconnects can beat the death of its old connection: that one goes now, so
+        // nothing is sent twice.
+        for (id, old) in peers where id != peer.channel.id && old.device == device {
+            peers[id] = nil
+            old.channel.onState = nil
+            old.channel.onFrame = nil
+            old.channel.close()
+        }
         connected[device] = peer.name
         if let i = phones.firstIndex(where: { $0.id == device }) {
             phones[i].name = peer.name
@@ -315,11 +420,92 @@ final class PhoneLink {
         let mine = app.prefs.imps.filter { $0.isActive && $0.awayOn == device }
         peer.channel.send(LinkUpdate.welcome(mac: Self.macName, version: LinkProtocol.version,
                                              imps: mine.map(LinkImp.init), others: others()))
+        peer.channel.send(LinkUpdate.route(hop: ImpServer(app.prefs.server)?.hop))
         // Everything about them, fresh.
         for p in mine {
             sent[p.id] = nil
             watch(p.id)
         }
+    }
+
+    // MARK: Pocket Imps
+
+    /// The Imps hatched on connected phones, by name, with the phone each is on.
+    var pocketImps: [(imp: LinkImp, phone: UUID)] {
+        pocket.flatMap { phone, imps in imps.map { ($0, phone) } }.sorted { $0.imp.name < $1.imp.name }
+    }
+
+    /// An Imp here asks a pocket Imp something and waits for its answer (`askTimeout`). Throws why it
+    /// can't be answered: its phone went away, it took too long, or the Imp says it couldn't.
+    func ask(_ imp: LinkImp, on phone: UUID, from sender: ImpProfile, text: String) async throws -> String {
+        let channels = channels(for: phone)
+        guard pocket[phone]?.contains(where: { $0.id == imp.id }) == true, !channels.isEmpty else {
+            throw ToolArgumentError(String(localized: "\(imp.name) isn't reachable right now."))
+        }
+        let id = UUID()
+        let words = String(text.prefix(Self.maxText))
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { reply in
+                asks[id] = Ask(phone: phone, reply: reply)
+                channels.forEach { $0.send(LinkUpdate.ask(id: id, from: LinkImp(sender), to: imp.id, text: words)) }
+                if Task.isCancelled { return settle(id, .failure(CancellationError())) }
+                Task { [weak self] in
+                    try? await Task.sleep(for: .seconds(Self.askTimeout))
+                    self?.settle(id, .failure(ToolArgumentError(String(localized: "\(imp.name) didn't answer in time."))))
+                }
+            }
+        } onCancel: {
+            Task { @MainActor [weak self] in self?.settle(id, .failure(CancellationError())) }
+        }
+    }
+
+    private func settle(_ id: UUID, _ result: Result<String, Error>) {
+        asks.removeValue(forKey: id)?.reply.resume(with: result)
+    }
+
+    /// Questions to a phone that's gone (nil: every phone) fail now, not after the wait.
+    private func failAsks(of phone: UUID?) {
+        for (id, ask) in asks where phone == nil || ask.phone == phone {
+            settle(id, .failure(ToolArgumentError(String(localized: "That iPhone went away."))))
+        }
+    }
+
+    /// A pocket Imp asks an Imp here. Only the Imps the phone announced may ask, and only Imps out
+    /// on the desktop answer. Whatever goes wrong comes back as a failed answer.
+    private func relay(_ id: UUID, from: UUID, to: UUID, text: String, device: UUID) {
+        func reply(_ text: String, failed: Bool) {
+            channels(for: device).forEach { $0.send(LinkUpdate.answer(id: id, text: String(text.prefix(Self.maxText)), failed: failed)) }
+        }
+        let words = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let me = pocket[device]?.first(where: { $0.id == from }) else {
+            return reply(String(localized: "That Imp isn't on this phone."), failed: true)
+        }
+        guard !words.isEmpty, let target = app.profile(to), target.isActive, target.awayOn == nil, let model = app.imp(to) else {
+            return reply(String(localized: "That Imp isn't out on the desktop."), failed: true)
+        }
+        let sender = ChatTurn.Sender(id: me.id, name: me.name, hue: me.hue)
+        let place = app.prefs.impTalk.place(asked: nil)
+        Task {
+            do { reply(try await model.answer(String(words.prefix(Self.maxText)), from: sender, in: place), failed: false) }
+            catch { reply(error.localizedDescription, failed: true) }
+        }
+    }
+
+    /// A pocket Imp moves in. A phone that asks again for one already taken in is told so again.
+    private func adopt(_ imp: UUID, kit: String, secrets: LinkSecrets, entry: LinkEntry, from device: UUID) {
+        let record = Adopted(imp: imp, phone: device)
+        if app.profile(imp) != nil, saved?.adopted?.contains(record) != true {
+            return refuse(imp, on: device, reason: PocketError.alreadyHere.localizedDescription)
+        }
+        if app.profile(imp) == nil {
+            do { try app.adoptPocket(imp, kit: kit, secrets: secrets, entry: entry) }
+            catch { return refuse(imp, on: device, reason: error.localizedDescription) }
+            let taken = (saved?.adopted ?? []) + [record]
+            saved?.adopted = Array(taken.suffix(500))
+            save()
+            log.info("a pocket Imp moved in from iPhone “\(self.name(of: device) ?? "", privacy: .public)”")
+        }
+        channels(for: device).forEach { $0.send(LinkUpdate.adopted(imp: imp)) }
     }
 
     // MARK: To the phone

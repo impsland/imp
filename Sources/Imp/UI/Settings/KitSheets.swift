@@ -24,6 +24,8 @@ final class KitFlow: Identifiable {
 
     /// Opened from the triggers every Imp shares: what it adds is for every Imp to begin with.
     let forEveryImp: Bool
+    /// Runs once the user has confirmed and something was added (the Den counts an install).
+    var onAdded: (() -> Void)?
 
     init(imp: UUID?, text: String = "", forEveryImp: Bool = false) {
         self.imp = imp
@@ -612,6 +614,7 @@ struct KitReviewSheet: View {
         }
         withAnimation(.snappy(duration: 0.2)) { model.prefs = prefs }
         router.kitFlow = nil
+        flow.onAdded?()
         // New Imps hatch on the stage first. Then, if a tool needs keys, its form opens.
         let needing = added.needingSecrets.first
         let target = review.target ?? flow.imp ?? added.imps.first?.id

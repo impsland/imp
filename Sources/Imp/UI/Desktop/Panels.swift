@@ -154,6 +154,12 @@ final class Panels {
         impTarget = end
         let path = TravelPath(from: start, to: end, travel, size: side)
         model.react(travel == .slide ? .excited : .surprised, for: 0.25)
+        await follow(duration: path.duration) { path.at($0) }
+    }
+
+    /// Moves the Imp's window along `at` (0…1 → where it is and how far it leans) over `duration`
+    /// seconds, frame by frame. Returns when it has arrived, or when the journey was stopped.
+    private func follow(duration: Double, _ at: @escaping @Sendable (Double) -> (origin: CGPoint, lean: Double)) async {
         let began = CACurrentMediaTime()
         await withCheckedContinuation { (done: CheckedContinuation<Void, Never>) in
             arriving = done
@@ -161,8 +167,8 @@ final class Panels {
                 nonisolated(unsafe) let t = t                   // fires on the main run loop
                 MainActor.assumeIsolated {
                     guard let self, self.travelTimer === t else { return t.invalidate() }
-                    let k = min(1, (CACurrentMediaTime() - began) / path.duration)
-                    let point = path.at(k)
+                    let k = min(1, (CACurrentMediaTime() - began) / duration)
+                    let point = at(k)
                     self.impPanel.setFrameOrigin(point.origin)
                     self.model.carryLean = point.lean
                     guard k >= 1 else { return }
@@ -277,7 +283,8 @@ final class Panels {
         })
     }
 
-    /// Back from the phone: in from just past a side of the desktop, carried on by the throw.
+    /// Back from the phone: it glides in from just past a side of the desktop, at the height it
+    /// was thrown off the phone, carried on by the throw and braking to a stop (as on the phone).
     func flyIn(_ entry: LinkEntry) {
         stopTravel()
         let screens = NSScreen.screens
@@ -285,14 +292,22 @@ final class Panels {
               let screen = screens.first(where: { $0.frame == frame }) else { return show() }
         let size = impPanel.frame.width
         let visible = screen.visibleFrame
+        // Its middle at the throw's height, kept clear of the menu bar and the Dock.
         let y = min(max(point.y - size / 2, visible.minY + 8), visible.maxY - size - 8)
-        impPanel.setFrameOrigin(CGPoint(x: entry.side == .left ? frame.minX - size - 4 : frame.maxX + 4, y: y))
-        impPanel.orderFrontRegardless()
+        let start = CGPoint(x: entry.side == .left ? frame.minX - size - 4 : frame.maxX + 4, y: y)
         // A harder throw carries it further in (never past the middle).
-        let reach = min(140 + entry.speed * 0.12, visible.width * 0.45)
+        let reach = min(160 + entry.speed * 0.12, visible.width * 0.45)
         let land = CGPoint(x: entry.side == .left ? visible.minX + reach : visible.maxX - size - reach, y: y)
+        let glide = GlidePath(from: start, to: land, speed: entry.speed)
+        bubblePanel.orderOut(nil)
+        impPanel.setFrameOrigin(start)
+        model.carryLean = glide.at(0).lean
+        impPanel.orderFrontRegardless()
+        restOrigin = nil
+        impTarget = land
+        model.react(.surprised, for: glide.duration * 0.7)       // whoa, a new screen
         Task { [weak self] in
-            await self?.travel(to: land, entry.speed > 1_200 ? .jump : .hop)
+            await self?.follow(duration: glide.duration) { glide.at($0) }
             self?.savePosition()
             self?.layoutBubble()
         }

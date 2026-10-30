@@ -96,6 +96,13 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { keychain = newValue }
     }
     private var keychain: Bool?
+    /// The Imp server (its Den and Hop) the user picked: a host name such as `imp.example.org`, or
+    /// `http://localhost:8080` while trying one out. Empty: none (see `ImpServer`).
+    public var server: String {
+        get { serverAddress ?? "" }
+        set { serverAddress = newValue }
+    }
+    private var serverAddress: String?
     /// BCP-47 identifier for dictation. Empty = system language.
     public var dictationLocale = ""
     /// The troupe. Always at least one: the little red Imp, waiting in the app's window.

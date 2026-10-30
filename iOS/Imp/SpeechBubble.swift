@@ -45,7 +45,7 @@ struct SpeechBubble: View {
         .background {
             BubbleShape(tail: tailOffset)
                 .fill(Dungeon.deep.opacity(0.94))
-                .overlay(BubbleShape(tail: tailOffset).stroke(Color.imp(speech.hue).opacity(0.55), lineWidth: 1.2))
+                .overlay(BubbleShape(tail: tailOffset).stroke(Color.imp(speech.hue).opacity(0.55), style: StrokeStyle(lineWidth: 1.2, lineJoin: .round)))
                 .shadow(color: .black.opacity(0.35), radius: 10, y: 4)
         }
         .contentShape(Rectangle())
@@ -77,15 +77,51 @@ struct SpeechBubble: View {
     }
 }
 
-/// A rounded bubble with a little tail at the bottom, `tail` points from the middle.
+/// A rounded bubble with a tail at the bottom, `tail` points from the middle, drawn as one outline
+/// (so the border runs around the tail too, with no seam across its base). Held back from the
+/// corners, the tail leans the rest of the way toward whatever it points at.
 struct BubbleShape: Shape {
     var tail: CGFloat
+    var radius: CGFloat = 16
+    /// Half the tail's base, and how far it reaches below the bubble.
+    var halfBase: CGFloat = 11
+    var length: CGFloat = 12
+
+    var animatableData: CGFloat {
+        get { tail }
+        set { tail = newValue }
+    }
+
     func path(in rect: CGRect) -> Path {
-        var p = Path(roundedRect: rect, cornerRadius: 16, style: .continuous)
-        let x = min(max(rect.midX + tail, rect.minX + 22), rect.maxX - 22)
-        p.move(to: CGPoint(x: x - 9, y: rect.maxY - 0.5))
-        p.addQuadCurve(to: CGPoint(x: x, y: rect.maxY + 10), control: CGPoint(x: x - 2, y: rect.maxY + 4))
-        p.addQuadCurve(to: CGPoint(x: x + 9, y: rect.maxY - 0.5), control: CGPoint(x: x + 2, y: rect.maxY + 4))
+        let r = min(radius, rect.width / 2, rect.height / 2)
+        let margin = r + halfBase + 2
+        let wanted = rect.midX + tail
+        // The base stays on the straight edge; the tip leans toward where it should point.
+        let x = rect.width > 2 * margin ? min(max(wanted, rect.minX + margin), rect.maxX - margin) : rect.midX
+        let lean = min(max(wanted - x, -halfBase * 0.9), halfBase * 0.9)
+        let tip = CGPoint(x: x + lean, y: rect.maxY + length)
+        let w = halfBase, bottom = rect.maxY
+
+        var p = Path()
+        p.move(to: CGPoint(x: rect.minX + r, y: rect.minY))
+        p.addLine(to: CGPoint(x: rect.maxX - r, y: rect.minY))
+        p.addArc(tangent1End: CGPoint(x: rect.maxX, y: rect.minY), tangent2End: CGPoint(x: rect.maxX, y: rect.minY + r), radius: r)
+        p.addLine(to: CGPoint(x: rect.maxX, y: bottom - r))
+        p.addArc(tangent1End: CGPoint(x: rect.maxX, y: bottom), tangent2End: CGPoint(x: rect.maxX - r, y: bottom), radius: r)
+        // The tail: it curves out of the edge and narrows to a soft point, and back.
+        p.addLine(to: CGPoint(x: x + w, y: bottom))
+        // Leaning, both sides sweep the same way (so neither folds back over the other).
+        let sweep = lean * 0.65
+        p.addCurve(to: tip,
+                   control1: CGPoint(x: x + w * 0.3 + sweep, y: bottom),
+                   control2: CGPoint(x: tip.x + w * 0.12, y: bottom + length * 0.5))
+        p.addCurve(to: CGPoint(x: x - w, y: bottom),
+                   control1: CGPoint(x: tip.x - w * 0.12, y: bottom + length * 0.5),
+                   control2: CGPoint(x: x - w * 0.3 + sweep, y: bottom))
+        p.addLine(to: CGPoint(x: rect.minX + r, y: bottom))
+        p.addArc(tangent1End: CGPoint(x: rect.minX, y: bottom), tangent2End: CGPoint(x: rect.minX, y: bottom - r), radius: r)
+        p.addLine(to: CGPoint(x: rect.minX, y: rect.minY + r))
+        p.addArc(tangent1End: CGPoint(x: rect.minX, y: rect.minY), tangent2End: CGPoint(x: rect.minX + r, y: rect.minY), radius: r)
         p.closeSubpath()
         return p
     }
