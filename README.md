@@ -129,9 +129,9 @@ one can handle private work while another uses a bigger cloud model.
   & Data Access); the Tools tab shows what's missing, with buttons. If it still doesn't work after
   granting, remove Imp from the list and add it again (+), then restart Imp. Try it without a model:
   `Imp --observe Finder [--screenshot out.png]` prints the element tree.
-- **Browser extension.** Add `Extensions/Chrome` to Chrome, Brave or Edge and Imp knows the
-  website you're on, and can hop right onto a button on the page. Its toolbar popup shows whether
-  it's connected and what Imp sees. Local only (see its README).
+- **Browser extension.** Add `Extensions/Browser` to Chrome, Brave, Edge, Firefox or Safari and Imp
+  knows the website you're on, and can hop right onto a button on the page. Its toolbar popup shows
+  whether it's connected and what Imp sees. Local only (see its README for each browser's steps).
 - **More tools with MCP.** Connect Model Context Protocol servers, local or on the web.
 - **A whole troupe.** Several Imps, each with its own name, colour, personality and model. They
   share one clock and stop drawing whenever they can't be seen, so a big troupe stays light on the

@@ -82,6 +82,16 @@ private func toolExchange(_ ask: String = "Make it sound nicer", file: String = 
         #expect(context[0].content == "S")
     }
 
+    @Test func whatIsSaidDuringARecapIsKept() {
+        var m = ChatMemory()
+        m.remember([.user("a"), .assistant("1")])
+        m.remember([.user("b"), .assistant("2")])
+        let covered = m.exchangeCount
+        m.remember([.user("c"), .assistant("3")])   // while the recap was being written
+        m.recapped("- a and b", covering: covered)
+        #expect(m.messages.map(\.content) == ["b", "2", "c", "3"])
+    }
+
     @Test func aBlankRecapForgetsNothing() {
         var m = ChatMemory()
         m.remember([.user("a"), .assistant("1")])

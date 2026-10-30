@@ -50,8 +50,8 @@ struct ServerStatus: View {
         case (false, _): ("moon.zzz", .secondary, String(localized: "Starts when an Imp that's out needs it"))
         case (true, .ready(let count, let names)?):
             ("checkmark.circle.fill", .green, names.isEmpty
-                ? String(localized: "^[\(count) tool](inflect: true)")
-                : String(localized: "^[\(count) tool](inflect: true): \(names.prefix(6).joined(separator: ", "))"))
+                ? String(localized: "\(count) tools")
+                : String(localized: "\(count) tools: \(names.prefix(6).joined(separator: ", "))"))
         case (true, .failed(let message)?): ("exclamationmark.triangle.fill", .orange, message)
         case (true, _): ("ellipsis.circle", .secondary, String(localized: "Starting…"))
         }

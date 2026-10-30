@@ -229,8 +229,8 @@ struct TriggerFields: View {
         case .keys:
             HotkeyField(hotkey: $hotkey)
         case .clicks:
-            CompactMenu(title: "^[\(trigger.clicks) click](inflect: true)") {
-                ForEach(1...Trigger.maxClicks, id: \.self) { n in Button("^[\(n) click](inflect: true)") { trigger.number = n } }
+            CompactMenu(title: "\(trigger.clicks) clicks") {
+                ForEach(1...Trigger.maxClicks, id: \.self) { n in Button("\(n) clicks") { trigger.number = n } }
             }
         case .battery, .busy:
             Stepper(value: number(trigger.kind == .battery ? 20 : 85), in: 5...95, step: 5) {

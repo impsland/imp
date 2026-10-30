@@ -249,23 +249,6 @@
         }
       }
     },
-    "%@ is hiding. Click to show the Imps on your desktop again." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ se está escondiendo. Haz clic para volver a mostrar los Imps en tu escritorio."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 藏起来了。点按以在桌面上重新显示 Imp。"
-          }
-        }
-      }
-    },
     "%@ is in front" : {
       "localizations" : {
         "es" : {
@@ -470,23 +453,6 @@
         }
       }
     },
-    "%@ sums up this chat and remembers only the recap and the last exchange. The whole chat stays to read. Use it when a chat grows too long." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ resume este chat y solo recuerda el resumen y el último intercambio. El chat completo sigue ahí para leerlo. Úsalo cuando un chat se alargue demasiado."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 会总结这个对话，只记住摘要和最后一轮交流。完整对话仍可阅读。对话太长时使用。"
-          }
-        }
-      }
-    },
     "%@ sums up this chat and remembers only the recap and the last exchange. The whole chat stays to read. Use it when a chat grows too long; recap again as often as you like." : {
       "localizations" : {
         "es" : {
@@ -643,6 +609,144 @@
         }
       }
     },
+    "%lld Imps" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Imp"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Imps"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Imp"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Imps"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个 Imp"
+          }
+        }
+      }
+    },
+    "%lld animations" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld animation"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld animations"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld animación"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld animaciones"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个动画"
+          }
+        }
+      }
+    },
+    "%lld beats" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld beat"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld beats"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld paso"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pasos"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个节拍"
+          }
+        }
+      }
+    },
     "%lld beats · %@" : {
       "localizations" : {
         "en" : {
@@ -735,6 +839,144 @@
         }
       }
     },
+    "%lld chats" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld chat"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld chats"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld chat"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld chats"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个对话"
+          }
+        }
+      }
+    },
+    "%lld chats added" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld chat added"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld chats added"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld chat añadido"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld chats añadidos"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已添加 %lld 个聊天"
+          }
+        }
+      }
+    },
+    "%lld clicks" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld click"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld clicks"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld clic"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld clics"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 次点按"
+          }
+        }
+      }
+    },
     "%lld clicks on the Imp" : {
       "localizations" : {
         "es" : {
@@ -763,6 +1005,236 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 度"
+          }
+        }
+      }
+    },
+    "%lld earlier messages" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld earlier message"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld earlier messages"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld mensaje anterior"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld mensajes anteriores"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 条更早的消息"
+          }
+        }
+      }
+    },
+    "%lld exchanges and a recap · about %@ tokens sent" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld exchange and a recap · about %2$@ tokens sent"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld exchanges and a recap · about %2$@ tokens sent"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld intercambio y un resumen · unos %2$@ tokens enviados"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld intercambios y un resumen · unos %2$@ tokens enviados"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld 轮交流和一次回顾 · 约发送 %2$@ 个 token"
+          }
+        }
+      }
+    },
+    "%lld exchanges · about %@ tokens sent" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld exchange · about %2$@ tokens sent"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld exchanges · about %2$@ tokens sent"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld intercambio · unos %2$@ tokens enviados"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld intercambios · unos %2$@ tokens enviados"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld 轮交流 · 约发送了 %2$@ 个 token"
+          }
+        }
+      }
+    },
+    "%lld messages" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld message"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld messages"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld mensaje"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld mensajes"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 条消息"
+          }
+        }
+      }
+    },
+    "%lld models" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld model"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld models"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld modelo"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld modelos"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个模型"
           }
         }
       }
@@ -925,6 +1397,144 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 次"
+          }
+        }
+      }
+    },
+    "%lld tools" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld tool"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld tools"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld herramienta"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld herramientas"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个工具"
+          }
+        }
+      }
+    },
+    "%lld tools: %@" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld tool: %2$@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld tools: %2$@"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld herramienta: %2$@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld herramientas: %2$@"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld 个工具：%2$@"
+          }
+        }
+      }
+    },
+    "%lld triggers" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld trigger"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld triggers"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld disparador"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld disparadores"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个触发器"
           }
         }
       }
@@ -1151,23 +1761,6 @@
         }
       }
     },
-    "A kit is Imps, triggers and tools somebody shared as JSON. Paste it, give a web address or an imp:// link, or drop a file. You'll see what's in it before anything is added." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un kit son Imps, disparadores y herramientas que alguien compartió como JSON. Pégalo, indica una dirección web o un enlace imp://, o suelta un archivo. Verás lo que contiene antes de añadir nada."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "套件是别人以 JSON 分享的 Imp、触发器和工具。粘贴它、输入网址或 imp:// 链接，或拖入文件。添加之前你会先看到其中的内容。"
-          }
-        }
-      }
-    },
     "A kit is Imps, triggers, tools and animations somebody shared as JSON. Paste it, give a web address or an imp:// link, or drop a file. You'll see what's in it before anything is added." : {
       "localizations" : {
         "es" : {
@@ -1308,23 +1901,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新对话。在下方向 %@ 提问：对话会被保存，可以从上方列表回到这里。"
-          }
-        }
-      }
-    },
-    "A nod, a shake and more. None plays on its own, so give one a start or try it." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Asentir, negar y más. Ninguna se reproduce sola, así que dale un inicio a una o pruébala."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "点头、摇头等等。它们都不会自动播放，可为其设置开始方式或试一试。"
           }
         }
       }
@@ -1537,12 +2113,42 @@
         }
       }
     },
-    "Add ^[%lld Imp](inflect: true)" : {
+    "Add %lld Imps" : {
       "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Add %lld Imp"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Add %lld Imps"
+                }
+              }
+            }
+          }
+        },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añadir ^[%lld Imp](inflect: true)"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Añadir %lld Imp"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Añadir %lld Imps"
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
@@ -1553,12 +2159,42 @@
         }
       }
     },
-    "Add ^[%lld item](inflect: true)" : {
+    "Add %lld items" : {
       "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Add %lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Add %lld items"
+                }
+              }
+            }
+          }
+        },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añadir ^[%lld elemento](inflect: true)"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Añadir %lld elemento"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Añadir %lld elementos"
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
@@ -1649,23 +2285,6 @@
         }
       }
     },
-    "Add a trigger" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añadir un disparador"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "添加触发器"
-          }
-        }
-      }
-    },
     "Add a trigger for every Imp" : {
       "localizations" : {
         "es" : {
@@ -1726,23 +2345,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "从套件添加额外工具和触发器"
-          }
-        }
-      }
-    },
-    "Add triggers from a kit" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añadir disparadores de un kit"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "从套件添加触发器"
           }
         }
       }
@@ -2817,23 +3419,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "节拍一个接一个播放。每个节拍保持一个姿势：心情、脸朝向、倾斜、形状、动作、符号、跳跃。空格键播放，⌘Z 撤销，←→ 选择节拍，⌫ 删除节拍。"
-          }
-        }
-      }
-    },
-    "Beats play one after another. Each holds a pose: a mood, where the face turns, a tilt, a shape, a symbol, a hop." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los pasos se reproducen uno tras otro. Cada uno mantiene una pose: un ánimo, hacia dónde gira la cara, una inclinación, una forma, un símbolo, un saltito."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "节拍会依次播放。每个节拍保持一个姿态：心情、脸转向的方向、倾斜、形状、符号、蹦跳。"
           }
         }
       }
@@ -5084,23 +5669,6 @@
         }
       }
     },
-    "Drag to turn its face. The dot in the middle is you. Off: it follows the cursor (or its mood decides)." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arrastra para girar su cara. El punto del centro eres tú. Desactivado: sigue el cursor (o lo decide su ánimo)."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "拖动以转动它的脸。中间的圆点代表你。关闭时：它会跟随指针（或由它的心情决定）。"
-          }
-        }
-      }
-    },
     "Dragging" : {
       "localizations" : {
         "es" : {
@@ -5209,23 +5777,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "复制"
-          }
-        }
-      }
-    },
-    "Duplicate the beat" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Duplicar el paso"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "复制此节拍"
           }
         }
       }
@@ -5732,23 +6283,6 @@
         }
       }
     },
-    "Expressions" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Expresiones"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "表情"
-          }
-        }
-      }
-    },
     "Extra tools" : {
       "localizations" : {
         "es" : {
@@ -6241,23 +6775,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "抬头凝望，满足又陶醉。"
-          }
-        }
-      }
-    },
-    "Gestures" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gestos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手势"
           }
         }
       }
@@ -6998,23 +7515,6 @@
         }
       }
     },
-    "Hops" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Saltitos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "蹦跳"
-          }
-        }
-      }
-    },
     "Hops and wobbles with laughter." : {
       "localizations" : {
         "es" : {
@@ -7111,23 +7611,6 @@
         }
       }
     },
-    "How it reacts to tickles, cuddles, being carried, shaken, startled or stared at. Stroking needs slow strokes to and fro." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cómo reacciona a cosquillas, mimos, que lo lleven, lo sacudan, lo asusten o lo miren fijamente. Para acariciarlo, haz caricias lentas de un lado a otro."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "它对挠痒、拥抱、被拎着、被摇晃、受惊或被盯着看的反应。抚摸时需要来回慢慢地划。"
-          }
-        }
-      }
-    },
     "How long it plays (%@ plays it at its own pace)" : {
       "localizations" : {
         "es" : {
@@ -7140,40 +7623,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "播放时长（%@ 按自己的节奏播放）"
-          }
-        }
-      }
-    },
-    "How long it plays (at %@'s own pace)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuánto dura (al ritmo propio de %@)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "播放时长（按 %@ 自己的节奏）"
-          }
-        }
-      }
-    },
-    "How many recent exchanges are sent with each message. Fewer is faster and cheaper. Older ones stay in the chat to read." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuántos intercambios recientes se envían con cada mensaje. Menos es más rápido y barato. Los anteriores siguen en el chat para leerlos."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每条消息附带发送的最近对话轮数。越少越快、越便宜。更早的内容仍保留在对话中可供阅读。"
           }
         }
       }
@@ -9404,23 +9853,6 @@
         }
       }
     },
-    "Mouse games, pokes and finding its favourite colour." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Juegos con el ratón, toques y encontrar su color favorito."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "鼠标游戏、戳一戳，以及寻找它最爱的颜色。"
-          }
-        }
-      }
-    },
     "Move" : {
       "localizations" : {
         "es" : {
@@ -9433,40 +9865,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "动作"
-          }
-        }
-      }
-    },
-    "Move the beat earlier" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mover el paso antes"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将节拍前移"
-          }
-        }
-      }
-    },
-    "Move the beat later" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mover el paso después"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将节拍后移"
           }
         }
       }
@@ -10367,23 +10765,6 @@
         }
       }
     },
-    "None yet. Add one or ask %@." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aún no hay ninguno. Añade uno o pídeselo a %@."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "还没有。添加一个或问问 %@。"
-          }
-        }
-      }
-    },
     "None yet. Add one, import a kit, or ask %@." : {
       "localizations" : {
         "es" : {
@@ -10396,23 +10777,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "还没有。添加一个、导入工具包，或让 %@ 来设置。"
-          }
-        }
-      }
-    },
-    "None. Add a click trigger so clicking an Imp does something." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ninguno. Añade un disparador de clic para que hacer clic en un Imp haga algo."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无。添加点按触发器，点按 Imp 时才会有反应。"
           }
         }
       }
@@ -10931,23 +11295,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "仅在尝试时"
-          }
-        }
-      }
-    },
-    "Only while it wears the colour it loves. Find it to unlock them. Previews always work." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo mientras lleve su color favorito. Encuéntralo para desbloquearlas. Las vistas previas siempre funcionan."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "仅在它穿着最爱的颜色时可用。找到这个颜色即可解锁。预览始终可用。"
           }
         }
       }
@@ -12200,23 +12547,6 @@
         }
       }
     },
-    "Preview" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vista previa"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "预览"
-          }
-        }
-      }
-    },
     "Preview. Where it looks" : {
       "localizations" : {
         "es" : {
@@ -12725,23 +13055,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "移除密钥"
-          }
-        }
-      }
-    },
-    "Remove the beat" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quitar el paso"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "移除此节拍"
           }
         }
       }
@@ -14346,23 +14659,6 @@
         }
       }
     },
-    "Share all triggers as a kit" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compartir todos los disparadores como kit"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将所有触发器共享为套件"
-          }
-        }
-      }
-    },
     "Share as Kit" : {
       "localizations" : {
         "es" : {
@@ -14455,23 +14751,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "将“%@”共享为套件。不包含密钥。"
-          }
-        }
-      }
-    },
-    "Shared" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compartidos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "共享"
           }
         }
       }
@@ -14648,23 +14927,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "显示全部 %lld 个"
-          }
-        }
-      }
-    },
-    "Show earlier" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar anteriores"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示更早内容"
           }
         }
       }
@@ -15293,23 +15555,6 @@
         }
       }
     },
-    "Squish" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aplastado"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "挤扁"
-          }
-        }
-      }
-    },
     "Squishes into your hold, blushing, while you keep pressing." : {
       "localizations" : {
         "es" : {
@@ -15886,23 +16131,6 @@
         }
       }
     },
-    "Tall" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alto"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "高"
-          }
-        }
-      }
-    },
     "Tangerine" : {
       "localizations" : {
         "es" : {
@@ -16175,23 +16403,6 @@
         }
       }
     },
-    "That isn't a kit: expected JSON with imps, triggers or mcpServers, a trigger, or an MCP setup." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eso no es un kit: se esperaba JSON con imps, triggers o mcpServers, un disparador o una configuración MCP."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这不是套件：应为包含 imps、triggers 或 mcpServers 的 JSON、单个触发器或 MCP 设置。"
-          }
-        }
-      }
-    },
     "That isn't a kit: expected JSON with imps, triggers, animations or mcpServers, a trigger, or an MCP setup." : {
       "localizations" : {
         "es" : {
@@ -16380,35 +16591,18 @@
         }
       }
     },
-    "The Imp extension for Chrome, Arc, Brave or Edge tells Imps which website you're on. It talks only to Imp on this Mac. Load the folder from the button in chrome://extensions with Developer mode on." : {
-      "extractionState" : "stale",
+    "The Imp extension for Chrome, Brave, Edge, Firefox or Safari tells Imps which website you're on. It talks only to Imp on this Mac. The button shows its folder, with a README on adding it to each browser. Pin it: its popup shows whether it's connected." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La extensión de Imp para Chrome, Arc, Brave o Edge les dice a los Imps en qué sitio web estás. Solo se comunica con Imp en este Mac. Carga la carpeta desde el botón en chrome://extensions con el modo de desarrollador activado."
+            "value" : "La extensión de Imp para Chrome, Brave, Edge, Firefox o Safari les dice a los Imps en qué sitio web estás. Solo se comunica con Imp en este Mac. El botón muestra su carpeta, con un README que explica cómo añadirla a cada navegador. Fíjala: su ventana emergente muestra si está conectada."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "适用于 Chrome、Arc、Brave 或 Edge 的 Imp 扩展会告诉 Imp 你正在浏览哪个网站。它只与这台 Mac 上的 Imp 通信。在 chrome://extensions 中打开开发者模式，然后通过按钮载入该文件夹。"
-          }
-        }
-      }
-    },
-    "The Imp extension for Chrome, Brave or Edge tells Imps which website you're on. It talks only to Imp on this Mac. Load the folder from the button in chrome://extensions with Developer mode on, then pin it: its popup shows whether it's connected." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La extensión de Imp para Chrome, Brave o Edge les dice a los Imps en qué sitio web estás. Solo se comunica con Imp en este Mac. Carga la carpeta desde el botón en chrome://extensions con el modo de desarrollador activado y fíjala: su ventana emergente muestra si está conectada."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "适用于 Chrome、Brave 或 Edge 的 Imp 扩展会告诉 Imp 你正在浏览哪个网站。它只与这台 Mac 上的 Imp 通信。在 chrome://extensions 中打开开发者模式，通过按钮载入该文件夹，然后将其固定：它的弹出窗口会显示是否已连接。"
+            "value" : "适用于 Chrome、Brave、Edge、Firefox 或 Safari 的 Imp 扩展会告诉 Imp 你正在浏览哪个网站。它只与这台 Mac 上的 Imp 通信。按钮会显示它的文件夹，其中的 README 说明了如何把它添加到各个浏览器。将其固定：它的弹出窗口会显示是否已连接。"
           }
         }
       }
@@ -16553,23 +16747,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "爱心标记的是 %@ 最喜欢的颜色。"
-          }
-        }
-      }
-    },
-    "The icon in the list" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El icono de la lista"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "列表中的图标"
           }
         }
       }
@@ -17086,23 +17263,6 @@
         }
       }
     },
-    "Touch" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tacto"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "触摸"
-          }
-        }
-      }
-    },
     "Translator" : {
       "localizations" : {
         "es" : {
@@ -17211,23 +17371,6 @@
         }
       }
     },
-    "Triggers every Imp answers. Clicks go to the Imp you click and everything else to the one you talked to last." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Disparadores a los que responde todo Imp. Los clics van al Imp en el que haces clic y lo demás, al último con el que hablaste."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每个 Imp 都会响应的触发器。点按交给你点按的 Imp，其余交给你最后对话的 Imp。"
-          }
-        }
-      }
-    },
     "Triggers for every Imp" : {
       "localizations" : {
         "es" : {
@@ -17240,23 +17383,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "适用于每个 Imp 的触发器"
-          }
-        }
-      }
-    },
-    "Triggers work while %@ is out on your desktop" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los disparadores funcionan mientras %@ está fuera, en tu escritorio"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 在桌面上时，触发器才会工作"
           }
         }
       }
@@ -17433,23 +17559,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "翻一个完整的侧手翻，笑着落地。"
-          }
-        }
-      }
-    },
-    "Turns every animation on, with its original starts" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activa todas las animaciones, con sus inicios originales"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开所有动画，使用原始触发方式"
           }
         }
       }
@@ -18100,23 +18209,6 @@
         }
       }
     },
-    "What %@ is sent from the chat you're in. Chats are saved. Switch between them at the top of the chat." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lo que recibe %@ del chat en el que estás. Los chats se guardan. Cambia entre ellos arriba del chat."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 从当前对话中收到的内容。对话会被保存，可在对话顶部切换。"
-          }
-        }
-      }
-    },
     "What %@ is sent from the chat you're in. Every chat is saved: carry on in an older one, save it as a file, or bring one in." : {
       "localizations" : {
         "es" : {
@@ -18357,29 +18449,6 @@
         }
       }
     },
-    "When something happens, %@ gets your instruction and what happened, then decides what to do. Keys work anywhere on your Mac. You can also ask %@ to set one up." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "When something happens, %1$@ gets your instruction and what happened, then decides what to do. Keys work anywhere on your Mac. You can also ask %2$@ to set one up."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuando pasa algo, %@ recibe tu instrucción y lo que pasó, y decide qué hacer. Las teclas funcionan en cualquier parte del Mac. También puedes pedirle a %@ que configure uno."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "发生某事时，%@ 会收到你的指令和发生的情况，然后决定怎么做。按键在 Mac 上的任何地方都有效。你也可以让 %@ 来设置一个。"
-          }
-        }
-      }
-    },
     "When something happens, the Imp gets your instruction and what happened, then decides what to do. Keys work anywhere on your Mac. You can also ask %@ to set one up." : {
       "localizations" : {
         "es" : {
@@ -18424,40 +18493,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一个 Imp 发给另一个 Imp 的消息去往何处。“你的对话”是指你与接收方 Imp 的对话。"
-          }
-        }
-      }
-    },
-    "Where it looks" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hacia dónde mira"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "它看向哪里"
-          }
-        }
-      }
-    },
-    "Who gets the triggers and tools that aren't an Imp's own." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quién recibe los disparadores y herramientas que no son de un Imp."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "谁接收不属于某个 Imp 的触发器和工具。"
           }
         }
       }
@@ -18938,248 +18973,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "缩小"
-          }
-        }
-      }
-    },
-    "^[%lld Imp](inflect: true)" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld Imp](inflect: true)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 个 Imp"
-          }
-        }
-      }
-    },
-    "^[%lld animation](inflect: true)" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld animación](inflect: true)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 个动画"
-          }
-        }
-      }
-    },
-    "^[%lld beat](inflect: true)" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld paso](inflect: true)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 个节拍"
-          }
-        }
-      }
-    },
-    "^[%lld chat](inflect: true)" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld chat](inflect: true)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 个对话"
-          }
-        }
-      }
-    },
-    "^[%lld chat](inflect: true) added" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld chat](inflect: true) añadido"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已添加 %lld 个聊天"
-          }
-        }
-      }
-    },
-    "^[%lld click](inflect: true)" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld clic](inflect: true)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 次点按"
-          }
-        }
-      }
-    },
-    "^[%lld earlier message](inflect: true)" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld mensaje anterior](inflect: true)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 条更早的消息"
-          }
-        }
-      }
-    },
-    "^[%lld exchange](inflect: true) and a recap · about %@ tokens sent" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "^[%1$lld exchange](inflect: true) and a recap · about %2$@ tokens sent"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld intercambio](inflect: true) y un resumen · unos %@ tokens enviados"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 轮交流和一次回顾 · 约发送 %@ 个 token"
-          }
-        }
-      }
-    },
-    "^[%lld exchange](inflect: true) · about %@ tokens sent" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "^[%1$lld exchange](inflect: true) · about %2$@ tokens sent"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld intercambio](inflect: true) · unos %@ tokens enviados"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 轮交流 · 约发送了 %@ 个 token"
-          }
-        }
-      }
-    },
-    "^[%lld message](inflect: true)" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld mensaje](inflect: true)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 条消息"
-          }
-        }
-      }
-    },
-    "^[%lld model](inflect: true)" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld modelo](inflect: true)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 个模型"
-          }
-        }
-      }
-    },
-    "^[%lld tool](inflect: true)" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld herramienta](inflect: true)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 个工具"
-          }
-        }
-      }
-    },
-    "^[%lld tool](inflect: true): %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "^[%1$lld tool](inflect: true): %2$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld herramienta](inflect: true): %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 个工具：%@"
-          }
-        }
-      }
-    },
-    "^[%lld trigger](inflect: true)" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "^[%lld disparador](inflect: true)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 个触发器"
           }
         }
       }

@@ -1,5 +1,6 @@
 // The toolbar popup: whether Imp is connected, and what it's been told about this tab.
 
+const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
 
 function render(s) {
@@ -18,7 +19,7 @@ function render(s) {
 }
 
 async function ask(type) {
-  try { return await chrome.runtime.sendMessage({ type }); } catch (_) { return null; }
+  try { return await api.runtime.sendMessage({ type }); } catch { return null; }
 }
 
 $("reconnect").addEventListener("click", async () => {

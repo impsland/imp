@@ -292,10 +292,10 @@ private struct KitHero: View {
                     .lineLimit(3).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
             }
             HStack(spacing: 6) {
-                if !kit.imps.isEmpty { Badge("^[\(kit.imps.count) Imp](inflect: true)", symbol: "person.fill", color: Dungeon.cream) }
-                if !kit.triggers.isEmpty { Badge("^[\(kit.triggers.count) trigger](inflect: true)", symbol: "bolt.fill", color: Dungeon.cream) }
-                if !kit.servers.isEmpty { Badge("^[\(kit.servers.count) tool](inflect: true)", symbol: "puzzlepiece.extension.fill", color: Dungeon.cream) }
-                if !kit.animations.isEmpty { Badge("^[\(kit.animations.count) animation](inflect: true)", symbol: "wand.and.stars", color: Dungeon.cream) }
+                if !kit.imps.isEmpty { Badge("\(kit.imps.count) Imps", symbol: "person.fill", color: Dungeon.cream) }
+                if !kit.triggers.isEmpty { Badge("\(kit.triggers.count) triggers", symbol: "bolt.fill", color: Dungeon.cream) }
+                if !kit.servers.isEmpty { Badge("\(kit.servers.count) tools", symbol: "puzzlepiece.extension.fill", color: Dungeon.cream) }
+                if !kit.animations.isEmpty { Badge("\(kit.animations.count) animations", symbol: "wand.and.stars", color: Dungeon.cream) }
             }
             StatusText(text: "From \(origin)", symbol: "tray.and.arrow.down")
         }
@@ -409,7 +409,7 @@ struct KitReviewSheet: View {
 
     private var addTitle: LocalizedStringKey {
         let onlyImps = review.triggers.isEmpty && review.servers.isEmpty && review.animations.isEmpty
-        return onlyImps && !review.imps.isEmpty ? "Add ^[\(review.imps.count) Imp](inflect: true)" : "Add ^[\(review.count) item](inflect: true)"
+        return onlyImps && !review.imps.isEmpty ? "Add \(review.imps.count) Imps" : "Add \(review.count) items"
     }
 
     private func name(of imp: ImpProfile) -> String { imp.name.isEmpty ? String(localized: "Unnamed Imp") : imp.name }
@@ -483,15 +483,15 @@ struct KitReviewSheet: View {
                     if tools.isEmpty {
                         Badge("No tools", symbol: "wrench.and.screwdriver.fill")
                     } else {
-                        Badge("^[\(tools.count) tool](inflect: true)", symbol: "wrench.and.screwdriver.fill").help(tools.joined(separator: ", "))
+                        Badge("\(tools.count) tools", symbol: "wrench.and.screwdriver.fill").help(tools.joined(separator: ", "))
                     }
                     if !servers.isEmpty {
                         Badge(verbatim: servers.joined(separator: ", "), symbol: "puzzlepiece.extension.fill").help("The tools it uses.")
                     }
-                    if !imp.triggers.isEmpty { Badge("^[\(imp.triggers.count) trigger](inflect: true)", symbol: "bolt.fill") }
-                    if !imp.chats.isEmpty { Badge("^[\(imp.chats.count) chat](inflect: true)", symbol: "bubble.left.and.bubble.right.fill") }
+                    if !imp.triggers.isEmpty { Badge("\(imp.triggers.count) triggers", symbol: "bolt.fill") }
+                    if !imp.chats.isEmpty { Badge("\(imp.chats.count) chats", symbol: "bubble.left.and.bubble.right.fill") }
                     if !imp.animations.isEmpty {
-                        Badge("^[\(imp.animations.count) animation](inflect: true)", symbol: "wand.and.stars")
+                        Badge("\(imp.animations.count) animations", symbol: "wand.and.stars")
                             .help(imp.animations.map(\.title).joined(separator: ", "))
                     }
                     if !imp.traits.isPlain { Badge(verbatim: imp.traits.summary, symbol: "theatermasks.fill").help("Its character, in everything it does.") }
@@ -578,7 +578,7 @@ struct KitReviewSheet: View {
                 }
                 FlowLayout(spacing: 6, lineSpacing: 6) {
                     Badge(verbatim: String(format: "%.1f s", a.duration), symbol: "timer")
-                    Badge("^[\(a.beats.count) beat](inflect: true)", symbol: "metronome.fill")
+                    Badge("\(a.beats.count) beats", symbol: "metronome.fill")
                     if let r = a.replaces { Badge("Instead of \(r.title)", symbol: "arrow.triangle.swap") }
                     ForEach(AnimationTrigger.allCases.filter(a.triggers.contains)) { t in Badge(verbatim: t.title, symbol: t.symbol) }
                 }

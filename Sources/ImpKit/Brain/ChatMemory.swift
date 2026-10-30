@@ -51,14 +51,17 @@ public struct ChatMemory: Codable, Equatable, Sendable {
         if all.count > Self.storedExchanges { messages = all.suffix(Self.storedExchanges).flatMap { $0 } }
     }
 
-    /// The chat recapped: `summary` stands for everything but the last exchange, an earlier recap
-    /// included (the request hands it over to be folded in). An empty summary changes nothing: a
-    /// recap that came back blank must not cost the chat what it remembered.
-    public mutating func recapped(_ summary: String) {
+    /// The chat recapped: `summary` was written from the first `covered` exchanges (all, by default)
+    /// and stands for them but the last, an earlier recap included (the request hands it over to be
+    /// folded in). That last exchange stays, and so does anything said while the recap was written.
+    /// An empty summary changes nothing: a recap that came back blank must not cost the chat what
+    /// it remembered.
+    public mutating func recapped(_ summary: String, covering covered: Int? = nil) {
         let text = summary.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
         recap = text
-        messages = Self.exchanges(in: messages).last ?? []
+        let all = Self.exchanges(in: messages)
+        messages = all.dropFirst(max(min(covered ?? all.count, all.count) - 1, 0)).flatMap { $0 }
     }
 
     /// Exchanges remembered.

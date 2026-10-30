@@ -276,7 +276,7 @@ struct ModelBrowser: View {
                     .listStyle(.plain)
                 }
             }
-            Text("^[\(filtered.count) model](inflect: true)").font(.caption).foregroundStyle(.secondary)
+            Text("\(filtered.count) models").font(.caption).foregroundStyle(.secondary)
         }
         .padding(12)
         .frame(width: 380, height: 360)

@@ -2,6 +2,8 @@
 # background rendered by the app (Imp --render-dmg-background). Used by `make dist`:
 #   dmgbuild -s scripts/dmg-settings.py -D app=build/Imp.app -D background=<dir>/background.png Imp build/Imp.dmg
 # Window size, icon size and icon centres match IconRenderer.DMGBackground.
+# The mounted volume wears the app's icon. The .dmg file itself keeps the system's disk-image icon:
+# a custom file icon lives in a resource fork, which downloads strip.
 import os
 
 app = defines["app"]  # noqa: F821 (dmgbuild provides `defines`)
@@ -11,6 +13,7 @@ format = "UDZO"
 filesystem = "APFS"
 files = [app]
 symlinks = {"Applications": "/Applications"}
+icon = os.path.join(app, "Contents", "Resources", "AppIcon.icns")
 
 default_view = "icon-view"
 show_status_bar = False

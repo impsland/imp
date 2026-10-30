@@ -155,7 +155,7 @@ struct ToolsTab: View {
     private var browserCard: some View {
         let bridge = BrowserBridge.shared
         return Card("Browser", icon: "globe",
-                    info: "The Imp extension for Chrome, Brave or Edge tells Imps which website you're on. It talks only to Imp on this Mac. Load the folder from the button in chrome://extensions with Developer mode on, then pin it: its popup shows whether it's connected.") {
+                    info: "The Imp extension for Chrome, Brave, Edge, Firefox or Safari tells Imps which website you're on. It talks only to Imp on this Mac. The button shows its folder, with a README on adding it to each browser. Pin it: its popup shows whether it's connected.") {
             HStack(spacing: 8) {
                 if let page = bridge.page, bridge.isConnected {
                     StatusText(text: "Connected to \(page.browser)", symbol: "checkmark.circle.fill", color: .green)
@@ -271,10 +271,10 @@ enum ExtensionFolder {
     private static var source: URL? {
         let bundled = Bundle.main.resourceURL?.appendingPathComponent("Browser Extension")
         if let bundled, FileManager.default.fileExists(atPath: bundled.path) { return bundled }
-        // Built from source: Sources/Imp/UI/Settings/ToolsTab.swift → Extensions/Chrome.
+        // Built from source: Sources/Imp/UI/Settings/ToolsTab.swift → Extensions/Browser.
         let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
             .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-            .appendingPathComponent("Extensions/Chrome")
+            .appendingPathComponent("Extensions/Browser")
         return FileManager.default.fileExists(atPath: source.path) ? source : nil
     }
 }

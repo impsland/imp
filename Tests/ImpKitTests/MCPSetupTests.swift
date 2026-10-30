@@ -18,6 +18,15 @@ import Testing
         #expect(servers[1].headers == ["Authorization": "Bearer x"])
     }
 
+    @Test func keepsNumbersAndEmptyArguments() {
+        let s = MCPServerConfig.parse(setup: #"{"command": "srv", "args": ["--port", 8080, "--name", "", "-v"]}"#)
+        #expect(s.first?.arguments == ["--port", "8080", "--name", "", "-v"])
+        var copy = s[0]
+        copy.commandLine = s[0].commandLine
+        #expect(copy.arguments == s[0].arguments)
+        #expect(MCPServerConfig(name: "", transport: .stdio).commandLine == "")
+    }
+
     @Test func readsSnippetsAndBareServers() {
         let pair = MCPServerConfig.parse(setup: #""memory": {"command": "npx", "args": ["-y", "@modelcontextprotocol/server-memory"]},"#)
         #expect(pair.map(\.name) == ["memory"])

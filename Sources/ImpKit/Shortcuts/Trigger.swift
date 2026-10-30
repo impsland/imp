@@ -199,15 +199,13 @@ public struct Trigger: Codable, Hashable, Sendable {
     /// Minutes after midnight from "9:05", "21:30", "9pm", "7:15 am". Nil if it isn't a time.
     public static func minuteOfDay(parsing text: String) -> Int? {
         var s = text.lowercased().trimmingCharacters(in: .whitespaces)
-        var offset = 0
-        if s.hasSuffix("am") || s.hasSuffix("pm") {
-            offset = s.hasSuffix("pm") ? 12 * 60 : 0
-            s = String(s.dropLast(2)).trimmingCharacters(in: .whitespaces)
-        }
+        let twelveHour = s.hasSuffix("am") || s.hasSuffix("pm")
+        let offset = s.hasSuffix("pm") ? 12 * 60 : 0
+        if twelveHour { s = String(s.dropLast(2)).trimmingCharacters(in: .whitespaces) }
         let parts = s.split(separator: ":").map { Int($0) }
         guard (1...2).contains(parts.count), let h = parts[0], let m = parts.count > 1 ? parts[1] : 0,
               (0..<60).contains(m), (0..<24).contains(h) else { return nil }
-        if offset > 0 || text.lowercased().hasSuffix("am") {
+        if twelveHour {
             guard (1...12).contains(h) else { return nil }
             return (h % 12) * 60 + m + offset
         }

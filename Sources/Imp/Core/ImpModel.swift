@@ -352,6 +352,7 @@ final class ImpModel {
         guard canRecap else { return }
         let chat = history.current.id
         let request = Recap.request(history.current.memory, name: profile.name)
+        let covered = history.current.memory.exchangeCount
         isRecapping = true
         recapError = nil
         recapTask = Task { [weak self, brain = profile.brain] in
@@ -361,7 +362,7 @@ final class ImpModel {
                 let (summary, _) = try await self.app.assistant.chat(request, brain: brain, tools: nil)
                 try Task.checkCancellation()
                 guard self.history.current.id == chat else { return }
-                self.history.recap(summary)
+                self.history.recap(summary, covering: covered)
                 self.log.info("\(self.profile.name, privacy: .public) recapped a chat")
             } catch is CancellationError {
             } catch {

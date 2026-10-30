@@ -270,7 +270,7 @@ final class AppModel {
         p.shortcuts.removeAll { $0.performer == id }
         prefs = p
         try? FileManager.default.removeItem(at: Workspace.directory(for: id))
-        try? FileManager.default.removeItem(at: ChatHistory.folder(for: id))
+        ChatHistory.deleteFolder(for: id)
     }
 
     /// Calls an Imp in and removes it for good (never the last one). Returns the Imp that took

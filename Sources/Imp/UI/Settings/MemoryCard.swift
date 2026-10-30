@@ -154,7 +154,7 @@ struct MemoryCard: View {
             }
         }
         if let failure { say(failure, ok: false) }
-        else if added > 0 { say(String(localized: "^[\(added) chat](inflect: true) added"), ok: true) }
+        else if added > 0 { say(String(localized: "\(added) chats added"), ok: true) }
     }
 }
 
@@ -186,7 +186,7 @@ private struct ChatRow: View {
                 HStack(spacing: 4) {
                     Text(chat.updated, format: .dateTime.day().month().year().hour().minute())
                     Text(verbatim: "·")
-                    Text("^[\(chat.turns) message](inflect: true)")
+                    Text("\(chat.turns) messages")
                 }
                 .font(.system(size: 11)).foregroundStyle(Dungeon.muted).lineLimit(1)
             }
@@ -268,9 +268,9 @@ private struct CurrentChat: View {
         guard !memory.isEmpty else { return String(localized: "Nothing said yet") }
         let n = memory.exchangeCount
         let tokens = memory.estimatedTokens(exchanges: profile.memoryExchanges, tools: profile.remembersToolCalls)
-        let size = tokens >= 1000 ? String(format: "%.1fk", Double(tokens) / 1000) : "\(tokens)"
+        let size = tokens.formatted(.number.notation(.compactName).precision(.fractionLength(0...1)))
         return memory.recap == nil
-            ? String(localized: "^[\(n) exchange](inflect: true) · about \(size) tokens sent")
-            : String(localized: "^[\(n) exchange](inflect: true) and a recap · about \(size) tokens sent")
+            ? String(localized: "\(n) exchanges · about \(size) tokens sent")
+            : String(localized: "\(n) exchanges and a recap · about \(size) tokens sent")
     }
 }

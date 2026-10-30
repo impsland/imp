@@ -37,8 +37,8 @@ iconutil -c icns "$ICONSET" -o "$STAGE/Contents/Resources/AppIcon.icns"
 for catalog in Resources/Localization/*.xcstrings; do
   xcrun xcstringstool compile "$catalog" --output-directory "$STAGE/Contents/Resources"
 done
-# The browser extension rides along: Settings › Tools › Browser shows it, to load in Chrome.
-cp -R Extensions/Chrome "$STAGE/Contents/Resources/Browser Extension"
+# The browser extension rides along: Settings › Tools › Browser shows it, to add to a browser.
+cp -R Extensions/Browser "$STAGE/Contents/Resources/Browser Extension"
 
 IDENTITY="${IMP_SIGN_IDENTITY:-$(security find-identity -v -p codesigning 2>/dev/null | awk -F'"' '/Apple Development/ {print $2; exit}')}"
 if [[ -n "$IDENTITY" ]]; then

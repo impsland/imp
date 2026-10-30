@@ -12,7 +12,7 @@ final class BrowserBridge {
         case notConnected, timeout
         var errorDescription: String? {
             switch self {
-            case .notConnected: "No browser extension is connected. Install the Imp extension (Extensions/Chrome) and keep the browser open."
+            case .notConnected: "No browser extension is connected. The user can add the Imp extension (Settings › Tools › Browser) and keep the browser open."
             case .timeout: "The browser extension didn't answer in time."
             }
         }

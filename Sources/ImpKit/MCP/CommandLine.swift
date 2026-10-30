@@ -4,7 +4,10 @@ extension MCPServerConfig {
     /// The stdio command as one editable line, e.g. `npx -y @modelcontextprotocol/server-memory`.
     /// Splits on whitespace, honouring single/double quotes and backslash escapes.
     public var commandLine: String {
-        get { ([command] + arguments).filter { !$0.isEmpty }.map(Self.quote).joined(separator: " ") }
+        get {
+            let words = [command] + arguments
+            return words.allSatisfy(\.isEmpty) ? "" : words.map(Self.quote).joined(separator: " ")
+        }
         set {
             let words = Self.split(newValue)
             command = words.first ?? ""

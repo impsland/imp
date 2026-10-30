@@ -136,8 +136,9 @@ public struct ChatHistory: Sendable {
     /// the chat you're in. It is listed first like any chat that was just talked in.
     public mutating func append(_ turn: ChatTurn, remembering exchange: [ChatMessage]? = nil, withPeer peer: ChatTurn.Sender) {
         if current.peer == peer.id { return append(turn, remembering: exchange) }
-        var chat = chat(with: peer.id).flatMap { load($0.id) }
-            ?? Chat(title: String(localized: "With \(peer.name)"), peer: peer.id)
+        let saved = chat(with: peer.id)
+        var chat = saved.flatMap { load($0.id) }
+            ?? Chat(id: saved?.id ?? UUID(), title: saved?.title ?? String(localized: "With \(peer.name)"), peer: peer.id)
         Self.add(turn, remembering: exchange, to: &chat)
         save(chat)
     }
@@ -153,8 +154,8 @@ public struct ChatHistory: Sendable {
 
     /// The model's recap replaces what it remembered before the last exchange, and shows in the
     /// chat as a turn of its own.
-    public mutating func recap(_ summary: String, at date: Date = Date()) {
-        current.memory.recapped(summary)
+    public mutating func recap(_ summary: String, covering covered: Int? = nil, at date: Date = Date()) {
+        current.memory.recapped(summary, covering: covered)
         append(ChatTurn(date: date, request: "Recap", reply: summary, via: .recap))
     }
 
@@ -194,6 +195,12 @@ public struct ChatHistory: Sendable {
         saveIndex()
         guard let file = file(id) else { return }
         Self.writer.async { try? FileManager.default.removeItem(at: file) }
+    }
+
+    /// Deletes an Imp's chats for good, after any save still queued for them.
+    public static func deleteFolder(for imp: UUID) {
+        let folder = folder(for: imp)
+        writer.async { try? FileManager.default.removeItem(at: folder) }
     }
 
     /// Deletes every chat (the folder too).

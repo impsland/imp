@@ -42,15 +42,14 @@ extension MCPServerConfig {
     }
 
     private static func server(from object: [String: Any], name: String?) -> MCPServerConfig? {
-        let strings = { (key: String) -> [String: String] in
-            (object[key] as? [String: Any])?.compactMapValues { $0 as? String ?? ($0 as? NSNumber)?.stringValue } ?? [:]
-        }
+        let text = { (value: Any) -> String? in value as? String ?? (value as? NSNumber)?.stringValue }
+        let strings = { (key: String) -> [String: String] in (object[key] as? [String: Any])?.compactMapValues(text) ?? [:] }
         if let url = (object["url"] ?? object["serverUrl"]) as? String, !url.isEmpty {
             return MCPServerConfig(name: name ?? suggestedName(url: url), transport: .http, url: url, headers: strings("headers"))
         }
         guard let command = object["command"] as? String, !command.isEmpty else { return nil }
         var server = MCPServerConfig(name: name ?? "", transport: .stdio, environment: strings("env"))
-        let args = (object["args"] as? [Any])?.compactMap { $0 as? String } ?? []
+        let args = (object["args"] as? [Any])?.compactMap(text) ?? []
         // Some snippets put the whole command line in `command`.
         if args.isEmpty && command.contains(" ") { server.commandLine = command } else { server.command = command; server.arguments = args }
         if server.name.isEmpty { server.name = suggestedName(commandLine: server.arguments + [server.command]) }

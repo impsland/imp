@@ -218,7 +218,7 @@ private struct EarlierTurns: View {
         Button { once() } label: {
             HStack(spacing: 6) {
                 Image(systemName: "chevron.up").font(.system(size: 9, weight: .bold))
-                Text("^[\(count) earlier message](inflect: true)").font(.system(size: 11, weight: .medium))
+                Text("\(count) earlier messages").font(.system(size: 11, weight: .medium))
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 4)

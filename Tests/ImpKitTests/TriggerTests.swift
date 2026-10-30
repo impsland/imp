@@ -33,6 +33,7 @@ import Testing
         #expect(Trigger.minuteOfDay(parsing: "21:30") == 1290)
         #expect(Trigger.minuteOfDay(parsing: "9pm") == 1260)
         #expect(Trigger.minuteOfDay(parsing: "12am") == 0)
+        #expect(Trigger.minuteOfDay(parsing: " 12am ") == 0 && Trigger.minuteOfDay(parsing: "13 am") == nil)
         #expect(Trigger.minuteOfDay(parsing: "7:15 am") == 435)
         #expect(Trigger.minuteOfDay(parsing: "25:00") == nil && Trigger.minuteOfDay(parsing: "soon") == nil)
     }

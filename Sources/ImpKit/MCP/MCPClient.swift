@@ -28,10 +28,11 @@ public actor MCPClient {
         try await transport.send(["jsonrpc": "2.0", "method": "notifications/initialized"])
     }
 
-    /// All tools, following pagination.
+    /// All tools, following pagination (until there's no next page, or a server repeats one).
     public func listTools() async throws -> [ToolSpec] {
         var tools: [ToolSpec] = []
         var cursor: String?
+        var seen: Set<String> = []
         repeat {
             let params: JSONValue = cursor.map { ["cursor": .string($0)] } ?? [:]
             let result = try await request("tools/list", params, timeout: 30)
@@ -40,7 +41,7 @@ public actor MCPClient {
                 tools.append(ToolSpec(name: name, description: t["description"]?.string ?? "",
                                       inputSchema: t["inputSchema"] ?? ["type": "object"]))
             }
-            cursor = result["nextCursor"]?.string
+            cursor = result["nextCursor"]?.string.flatMap { seen.insert($0).inserted ? $0 : nil }
         } while cursor != nil
         return tools
     }
