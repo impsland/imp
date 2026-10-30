@@ -16,16 +16,19 @@ Start Imp first or afterwards: the extension connects by itself, and finds Imp a
 
 **Firefox** (142+)
 
-1. Open `about:debugging#/runtime/this-firefox`.
-2. Click **Load Temporary Add-on…** and pick `manifest.json` in this folder.
+1. Run `./make-firefox.sh` in this folder. It writes the Firefox build to `build/extension-firefox` (Firefox
+   runs the background script as an event page, which Chrome's MV3 manifest doesn't allow).
+2. Open `about:debugging#/runtime/this-firefox`.
+3. Click **Load Temporary Add-on…** and pick `build/extension-firefox/manifest.json` in the repository.
 
 Firefox removes a temporary add-on when it quits, so load it again after a restart.
 
 **Safari**
 
 1. In Safari › Settings › Advanced, turn on **Show features for web developers**.
-2. In Safari › Settings › Developer, click **Add Temporary Extension…** and pick this folder.
-3. In Safari › Settings › Extensions, select **Imp** and allow it on every website (it needs that to read a page or find a button on it).
+2. Run `./make-firefox.sh` (as for Firefox above).
+3. In Safari › Settings › Developer, click **Add Temporary Extension…** and pick `build/extension-firefox`.
+4. In Safari › Settings › Extensions, select **Imp** and allow it on every website (it needs that to read a page or find a button on it).
 
 Safari removes a temporary extension when it quits or after 24 hours. Keeping it for good takes an app signed by an
 Apple developer account (`xcrun safari-web-extension-packager` makes the Xcode project); Imp isn't signed by Apple.
