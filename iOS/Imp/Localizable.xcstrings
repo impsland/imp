@@ -33,6 +33,38 @@
         }
       }
     },
+    "**Mac:** All Imps › App › iPhone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Mac:** Todos los Imps › App › iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Mac：**所有 Imp › App › iPhone"
+          }
+        }
+      }
+    },
+    "**Throw** an Imp off your Mac's screen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Lanza** un Imp fuera del Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把 Imp **扔出** Mac 屏幕"
+          }
+        }
+      }
+    },
     "Answering %@…" : {
       "localizations" : {
         "es" : {
@@ -501,29 +533,6 @@
         }
       }
     },
-    "On your Mac: Imp › All Imps › App › iPhone › Pair…" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "On your Mac: Imp › All Imps › App › iPhone › Pair…"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En tu Mac: Imp › Todos los Imps › App › iPhone › Enlazar…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在你的 Mac 上：Imp › 所有 Imp › App › iPhone › 配对…"
-          }
-        }
-      }
-    },
     "Paste Link" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -703,25 +712,18 @@
         }
       }
     },
-    "Scan the code with the Camera" : {
-      "extractionState" : "manual",
+    "Scan the code with **Camera**" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scan the code with the Camera"
-          }
-        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escanea el código con la Cámara"
+            "value" : "Escanea el código con la **Cámara**"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "用相机扫描二维码"
+            "value" : "用**相机**扫描代码"
           }
         }
       }
@@ -1086,29 +1088,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今天"
-          }
-        }
-      }
-    },
-    "Toss an Imp off the side of your Mac's screen" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Toss an Imp off the side of your Mac's screen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lanza un Imp por el lado de la pantalla de tu Mac"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "把一个 Imp 从 Mac 屏幕的边缘扔出去"
           }
         }
       }

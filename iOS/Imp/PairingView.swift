@@ -27,12 +27,14 @@ struct PairingView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 36).padding(.top, 6)
 
-            VStack(alignment: .leading, spacing: 14) {
-                step(1, "On your Mac: Imp › All Imps › App › iPhone › Pair…")
-                step(2, "Scan the code with the Camera")
-                step(3, "Toss an Imp off the side of your Mac's screen")
+            VStack(alignment: .leading, spacing: 0) {
+                step(1, icon: "macbook", "**Mac:** All Imps › App › iPhone")
+                connector
+                step(2, icon: "qrcode.viewfinder", "Scan the code with **Camera**")
+                connector
+                step(3, icon: "hand.draw.fill", "**Throw** an Imp off your Mac's screen")
             }
-            .padding(18)
+            .padding(.horizontal, 16).padding(.vertical, 14)
             .card()
             .padding(.horizontal, 20).padding(.top, 22)
 
@@ -70,18 +72,41 @@ struct PairingView: View {
         }
     }
 
-    private func step(_ n: Int, _ text: LocalizedStringKey) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
-            Text("\(n)")
-                .font(.system(.footnote, design: .rounded, weight: .bold))
-                .foregroundStyle(Dungeon.deep)
-                .frame(width: 22, height: 22)
-                .background(Circle().fill(Dungeon.flame))
+    /// One step, on one line: an icon (numbered) and a short phrase, the key word in bold.
+    private func step(_ n: Int, icon: String, _ text: LocalizedStringKey) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Dungeon.flame)
+                .frame(width: 36, height: 36)
+                .background(Dungeon.ember.opacity(0.16), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay(alignment: .topTrailing) {
+                    Text(verbatim: "\(n)")
+                        .font(.system(size: 10, weight: .heavy, design: .rounded))
+                        .foregroundStyle(Dungeon.deep)
+                        .frame(width: 16, height: 16)
+                        .background(Circle().fill(Dungeon.flame))
+                        .offset(x: 5, y: -5)
+                }
             Text(text)
                 .font(.system(.subheadline, design: .rounded))
                 .foregroundStyle(Dungeon.cream)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+            Spacer(minLength: 0)
         }
+        .accessibilityElement(children: .combine)
+    }
+
+    /// A faint dotted line from one step's icon to the next.
+    private var connector: some View {
+        Rectangle()
+            .fill(Dungeon.ember.opacity(0.35))
+            .frame(width: 1.5, height: 10)
+            .mask(VStack(spacing: 2) { ForEach(0..<3, id: \.self) { _ in Capsule().frame(height: 2.5) } })
+            .padding(.leading, 17.25)
+            .padding(.vertical, 3)
+            .accessibilityHidden(true)
     }
 
     private func pasteLink() {
