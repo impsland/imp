@@ -200,6 +200,7 @@ final class ImpModel {
     func react(_ mood: Mood, for seconds: Double) {
         if life.antic?.isWake == false { life.cancel() }
         flash = (mood, Date().addingTimeInterval(seconds))
+        if app.isAway(id) { app.phone.animate(id, beats: [AnimationBeat(duration: seconds, mood: mood.rawValue)]) }
     }
 
     func touch() {

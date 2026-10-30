@@ -41,6 +41,7 @@ final class Panels {
 
         impHost.onClick = { [weak self] _, time in self?.clicked(at: time) }
         impHost.onHandling = { [weak self] handling in self?.handled(handling) }
+        impHost.onFling = { [weak self] cursor, velocity in self?.flung(at: cursor, velocity: velocity) ?? false }
         impHost.menuProvider = { [weak self] in
             guard let self else { return NSMenu() }
             return self.menuProvider?(self.model) ?? NSMenu()
@@ -218,6 +219,97 @@ final class Panels {
     func show() {
         impPanel.orderFrontRegardless()
         layoutBubble()
+    }
+
+    // MARK: Tossing to the iPhone and back
+
+    /// A carry that hits an outer side of the desktop hard is a throw (see `Toss.desktopExit`):
+    /// onto the iPhone if one's around, else it bounces off the edge. Only once an iPhone is set
+    /// up; until then the edges are just edges. True when it was a throw.
+    private func flung(at cursor: CGPoint, velocity: CGVector) -> Bool {
+        let app = model.app
+        guard app.phone.isSetUp, !app.isAway(model.id),
+              let exit = Toss.desktopExit(cursor: cursor, velocity: velocity, screens: NSScreen.screens.map(\.frame)) else { return false }
+        steady?.cancel()
+        app.reactions.release(.pickUp, by: model)
+        let speed = Double(abs(velocity.dx))
+        guard app.sendToPhone(model.id, entry: .after(exit: exit.side, height: exit.height, speed: speed)) else {
+            bounce(off: exit.side)
+            return true
+        }
+        flyOff(exit.side, speed: speed) { [weak app] in app?.refreshTroupe() }
+        return true
+    }
+
+    /// From the menu: off the nearer side of its screen (or `side`), gently, onto the phone.
+    func sendToPhone(_ side: LinkSide?, then done: @escaping @MainActor () -> Void) {
+        let frame = impPanel.frame
+        let screen = (impPanel.screen ?? NSScreen.main)?.frame ?? frame
+        let exit = side ?? (frame.midX < screen.midX ? .left : .right)
+        let height = screen.height > 0 ? Double((screen.maxY - frame.midY) / screen.height) : 0.5
+        guard model.app.sendToPhone(model.id, entry: .after(exit: exit, height: height, speed: 0)) else { return done() }
+        flyOff(exit, speed: 1_600, then: done)
+    }
+
+    /// Keeps going the way it was thrown, out past the edge of its screen, then goes.
+    private func flyOff(_ side: LinkSide, speed: Double, then done: @escaping @MainActor () -> Void) {
+        stopTravel()
+        restOrigin = nil
+        bubblePanel.orderOut(nil)
+        let start = impPanel.frame.origin, size = impPanel.frame.width
+        let screen = (impPanel.screen ?? NSScreen.main)?.frame ?? impPanel.frame
+        let end = CGPoint(x: side == .left ? screen.minX - size - 24 : screen.maxX + 24, y: start.y + 18)
+        let duration = min(0.4, max(0.14, Double(abs(end.x - start.x)) / max(speed, 1_400)))
+        model.carryLean = side == .left ? -14 : 14
+        model.react(.excited, for: duration + 0.2)
+        impTarget = end
+        NSAnimationContext.runAnimationGroup({ ctx in
+            ctx.duration = duration
+            ctx.timingFunction = CAMediaTimingFunction(name: .easeIn)
+            impPanel.animator().setFrameOrigin(end)
+        }, completionHandler: { [weak self] in
+            MainActor.assumeIsolated {
+                self?.impTarget = nil
+                self?.model.carryLean = 0
+                self?.impPanel.orderOut(nil)
+                done()
+            }
+        })
+    }
+
+    /// Back from the phone: in from just past a side of the desktop, carried on by the throw.
+    func flyIn(_ entry: LinkEntry) {
+        stopTravel()
+        let screens = NSScreen.screens
+        guard let (frame, point) = Toss.desktopEntry(entry, screens: screens.map(\.frame)),
+              let screen = screens.first(where: { $0.frame == frame }) else { return show() }
+        let size = impPanel.frame.width
+        let visible = screen.visibleFrame
+        let y = min(max(point.y - size / 2, visible.minY + 8), visible.maxY - size - 8)
+        impPanel.setFrameOrigin(CGPoint(x: entry.side == .left ? frame.minX - size - 4 : frame.maxX + 4, y: y))
+        impPanel.orderFrontRegardless()
+        // A harder throw carries it further in (never past the middle).
+        let reach = min(140 + entry.speed * 0.12, visible.width * 0.45)
+        let land = CGPoint(x: entry.side == .left ? visible.minX + reach : visible.maxX - size - reach, y: y)
+        Task { [weak self] in
+            await self?.travel(to: land, entry.speed > 1_200 ? .jump : .hop)
+            self?.savePosition()
+            self?.layoutBubble()
+        }
+    }
+
+    /// Thrown at the edge with no phone to catch it: it bounces back in and says so.
+    private func bounce(off side: LinkSide) {
+        let screen = (impPanel.screen ?? NSScreen.main)?.visibleFrame ?? impPanel.frame
+        let size = impPanel.frame.width
+        let back = CGPoint(x: side == .left ? screen.minX + 90 : screen.maxX - size - 90, y: impPanel.frame.minY)
+        model.carryLean = 0
+        Task { [weak self] in
+            guard let self else { return }
+            await self.travel(to: back, .bounce)
+            self.savePosition()
+            self.model.complain(String(localized: "Your iPhone isn't around. Open Imp on it, on the same network as this Mac, then throw me again."))
+        }
     }
 
     func hide() {

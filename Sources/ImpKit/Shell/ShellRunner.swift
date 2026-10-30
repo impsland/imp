@@ -16,6 +16,9 @@ public enum ShellRunner {
 
     public static func run(_ command: String, in directory: URL, environment extra: [String: String] = [:],
                            timeout: TimeInterval = defaultTimeout) async throws -> Result {
+        #if !os(macOS)
+        throw CocoaError(.featureUnsupported)        // only a Mac runs commands (the iPhone shares ImpKit)
+        #else
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         // The user's shell environment (nvm, pyenv… from .zshrc), however Imp was opened.
         var env = await LoginEnvironment.resolved()
@@ -64,6 +67,7 @@ public enum ShellRunner {
 
         return Result(status: status, output: collected.text.trimmingCharacters(in: .whitespacesAndNewlines),
                       timedOut: collected.timedOut)
+        #endif
     }
 
     /// Thread-safe output buffer.

@@ -34,10 +34,16 @@ final class AppModel {
     @ObservationIgnored private weak var listener: ImpModel?
     @ObservationIgnored private(set) lazy var reactions = Reactions(app: self)
     @ObservationIgnored private(set) lazy var stage = Stage(app: self)
+    /// The iPhones Imps can be tossed onto.
+    @ObservationIgnored private(set) lazy var phone = PhoneLink(app: self)
     /// Called after Imps appear or disappear, or hide or show. The panels follow.
     @ObservationIgnored var onTroupeChange: (() -> Void)?
     /// Flies an activated Imp's window to a screen point (back into the app's window), then calls back.
     @ObservationIgnored var flyHome: ((UUID, CGPoint, @escaping @MainActor () -> Void) -> Void)?
+    /// Throws an Imp's window off a side of the desktop (nil: the nearer one), then calls back.
+    @ObservationIgnored var flyOff: ((UUID, LinkSide?, @escaping @MainActor () -> Void) -> Void)?
+    /// An Imp back from a phone flies in from a side of the desktop.
+    @ObservationIgnored var flyIn: ((UUID, LinkEntry) -> Void)?
     @ObservationIgnored private var started = false
     /// Everything was just wiped (see `resetToFirstLaunch`): never save again in this run.
     @ObservationIgnored private var erased = false
@@ -59,8 +65,12 @@ final class AppModel {
         HotkeyCenter.shared.onPress = { [weak self] key in self?.handle(key) }
     }
 
-    /// The Imp you talked to last (or the first one out), if any Imp is out on the desktop.
-    var focused: ImpModel? { imps.first { $0.id == focusID } ?? imps.first }
+    /// The Imp you talked to last (or the first one out), if any Imp is out on the desktop. Imps on
+    /// an iPhone are out too, but you talk to them on the phone.
+    var focused: ImpModel? {
+        let here = imps.filter { !isAway($0.id) }
+        return here.first { $0.id == focusID } ?? here.first
+    }
     func imp(_ id: UUID) -> ImpModel? { imps.first { $0.id == id } }
     func focus(_ imp: ImpModel) { focusID = imp.id }
     func profile(_ id: UUID) -> ImpProfile? { prefs.imps.first { $0.id == id } }
@@ -86,6 +96,7 @@ final class AppModel {
         senses.start()
         BrowserBridge.shared.onPage = { [weak self] page in self?.fire(.page(url: page.url, title: page.title)) }
         BrowserBridge.shared.start()
+        phone.start()
         // "Imp starts" once everyone's on screen.
         Task { [weak self] in
             try? await Task.sleep(for: .seconds(2))
@@ -103,7 +114,7 @@ final class AppModel {
         for s in prefs.liveShortcuts where s.fires(on: event, in: state) {
             if case .busy = event, lastLoad >= s.trigger.percent { continue }     // still over the line: not news
             guard Date().timeIntervalSince(lastFired[s.id] ?? .distantPast) >= Self.rest,
-                  let imp = performer(for: s), imp.isAvailable, !hiddenImps.contains(imp.id) else { continue }
+                  let imp = performer(for: s), imp.isAvailable, !hiddenImps.contains(imp.id), !isAway(imp.id) else { continue }
             lastFired[s.id] = Date()
             imp.perform(s, happened: event.description)
         }
@@ -228,7 +239,7 @@ final class AppModel {
     }
 
     /// Lets an Imp out onto the desktop (optionally exactly at `origin`, where it was drawn in the
-    /// window, so it doesn't jump), or calls it back into the window.
+    /// window, so it doesn't jump), or calls it back into the window (from an iPhone too).
     func setActive(_ id: UUID, _ on: Bool, at origin: CGPoint? = nil) {
         guard let i = prefs.imps.firstIndex(where: { $0.id == id }), prefs.imps[i].isActive != on else { return }
         if on { setHidden(false) }                         // letting one out means you want to see them
@@ -236,12 +247,65 @@ final class AppModel {
         var p = prefs
         if let origin { p.imps[i].origin = origin }
         p.imps[i].isActive = on
+        if !on, let device = p.imps[i].awayOn {
+            p.imps[i].awayOn = nil
+            phone.left(id, from: device)
+        }
         prefs = p
         if on, let imp = imp(id) {
             focus(imp)
             if !imp.isReady { imp.greetNewcomer() }
         }
     }
+
+    // MARK: iPhone
+
+    /// Whether this Imp is on an iPhone (out, but not on the desktop).
+    func isAway(_ id: UUID) -> Bool { profile(id)?.awayOn != nil }
+
+    /// Imps out on the desktop itself (not hiding on a phone): the ones that see each other.
+    var desktopImps: [ImpModel] { imps.filter { !isAway($0.id) } }
+
+    /// Tosses an Imp onto the iPhone: it lands there coming in from `entry`. False when no phone is
+    /// around (then it stays). Its window is on its way off the desktop; `refreshTroupe` puts it away.
+    @discardableResult
+    func sendToPhone(_ id: UUID, entry: LinkEntry) -> Bool {
+        guard let i = prefs.imps.firstIndex(where: { $0.id == id }), prefs.imps[i].isActive,
+              prefs.imps[i].awayOn == nil, let device = phone.nearestPhone, phone.send(id, entry: entry) else { return false }
+        imp(id)?.stopWaitingForUser()                      // a text box can't follow it
+        prefs.imps[i].awayOn = device
+        hiddenImps.remove(id)
+        phone.watch(id)
+        return true
+    }
+
+    /// From the menu: off the nearer side of the screen, onto the phone.
+    func sendToPhone(_ id: UUID) {
+        guard phone.nearestPhone != nil, !isAway(id) else { return }
+        let fly = flyOff ?? { _, _, done in done() }
+        fly(id, nil) { [weak self] in self?.refreshTroupe() }
+    }
+
+    /// Back from the phone (thrown off it, or called back here): it flies onto the desktop.
+    func cameBack(_ id: UUID, entry: LinkEntry) {
+        guard let i = prefs.imps.firstIndex(where: { $0.id == id }), let device = prefs.imps[i].awayOn else { return }
+        prefs.imps[i].awayOn = nil
+        phone.left(id, from: device)
+        if isHidden { setHidden(id, false) }
+        flyIn?(id, entry)
+        refreshTroupe()
+        if let imp = imp(id) { focus(imp) }
+    }
+
+    /// Calls an Imp back from its phone, in through the side of the screen nearest its spot.
+    func callBack(_ id: UUID) {
+        let screen = NSScreen.main?.frame ?? .zero
+        let x = profile(id)?.origin?.x ?? screen.maxX
+        cameBack(id, entry: LinkEntry(side: x < screen.midX ? .left : .right, height: 0.6, speed: 0))
+    }
+
+    /// The panels follow who's where.
+    func refreshTroupe() { onTroupeChange?() }
 
     /// Hatches a new Imp: its own colour, name and personality, and a copy of `parent`'s models.
     /// It waits in the window until it's activated. Returns its id.
@@ -265,6 +329,7 @@ final class AppModel {
     /// Removes an Imp for good (never the last one), with its shortcuts.
     func removeImp(_ id: UUID) {
         guard prefs.imps.count > 1 else { return }
+        if let device = profile(id)?.awayOn { phone.left(id, from: device) }
         var p = prefs
         p.imps.removeAll { $0.id == id }
         p.shortcuts.removeAll { $0.performer == id }

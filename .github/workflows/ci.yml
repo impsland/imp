@@ -16,3 +16,12 @@ jobs:
         run: make build
       - name: Test
         run: make test
+
+  iphone:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build Imp for iPhone (Simulator)
+        run: |
+          xcodebuild -project iOS/ImpPhone.xcodeproj -scheme ImpPhone -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath .build/ios CODE_SIGNING_ALLOWED=NO -quiet build

@@ -40,12 +40,12 @@ if let i = args.firstIndex(of: "--render-home"), args.indices.contains(i + 2) {
     let url = URL(fileURLWithPath: args[i + 2])
     MainActor.assumeIsolated {
         _ = NSApplication.shared
-        // Optional review args: imps=N, select=N (Nth Imp), out=N (Nth Imp is on the desktop), hidden=1, width=W, height=H.
+        // Optional review args: imps=N, select=N (Nth Imp), out=N (Nth Imp is on the desktop), away=N (Nth Imp is on an iPhone), hidden=1, width=W, height=H.
         func number(_ key: String) -> Double? { args.first { $0.hasPrefix(key + "=") }.flatMap { Double($0.dropFirst(key.count + 1)) } }
         IconRenderer.renderHome(screen: args[i + 1], to: url,
                                 width: number("width").map { CGFloat($0) } ?? 780, height: number("height").map { CGFloat($0) } ?? 600,
                                 sampleImps: number("imps").map(Int.init) ?? 1, select: number("select").map(Int.init) ?? 0,
-                                out: number("out").map(Int.init), hidden: number("hidden") == 1)
+                                out: number("out").map(Int.init), away: number("away").map(Int.init), hidden: number("hidden") == 1)
     }
     exit(0)
 }

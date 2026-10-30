@@ -133,7 +133,7 @@ enum IconRenderer {
     /// `Imp --render-home <screen> <file.png> [imps=N] [select=N] [out=N] [hidden=1] [width=W] [height=H]`: the real
     /// app window (live controls) rendered offscreen for design review. Screens: `home`, `egg`, an Imp tab
     /// (`looks`, `brain`, `tools`, `shortcuts`), `general-<tab>`, or the `add-service` / `add-tool` / `add-shortcut` / `edit-shortcut` / `animation-editor` / `animation-details` sheets. `hidden=1`: the desktop Imps are hidden.
-    static func renderHome(screen: String, to url: URL, width: CGFloat = 780, height: CGFloat = 600, sampleImps: Int = 1, select: Int = 0, out: Int? = nil, hidden: Bool = false) {
+    static func renderHome(screen: String, to url: URL, width: CGFloat = 780, height: CGFloat = 600, sampleImps: Int = 1, select: Int = 0, out: Int? = nil, away: Int? = nil, hidden: Bool = false) {
         let model = AppModel(persist: false)          // review renders never write the user's preferences
         model.prefs = ImpPreferences()
         for _ in 1..<max(1, sampleImps) { model.addImp() }
@@ -152,6 +152,10 @@ enum IconRenderer {
             model.prefs.ai.add(Service(name: "Ollama", baseURL: "http://localhost:11434/v1", model: "llama3.2"))
         }
         if let out, model.prefs.imps.indices.contains(out) { model.prefs.imps[out].isActive = true }
+        if let away, model.prefs.imps.indices.contains(away) {
+            model.prefs.imps[away].isActive = true
+            model.prefs.imps[away].awayOn = UUID()
+        }
         if hidden { model.setHidden(true) }
         let router = HomeRouter()
         router.selection = chosen

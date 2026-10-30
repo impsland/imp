@@ -116,6 +116,8 @@ final class Reactions {
         lastPlayed["\(imp.id)/\(ref.key)"] = Date()
         imp.touch()
         imp.life.perform(ref)
+        // On an iPhone: the phone acts it out.
+        if app.isAway(imp.id) { app.phone.animate(imp.id, beats: Antics.beats(for: ref, prefs: app.prefs, imp: imp.id) ?? []) }
         if let reaction = ref.preset { app.stage.broadcast(.reacted(reaction), from: imp) }
     }
 

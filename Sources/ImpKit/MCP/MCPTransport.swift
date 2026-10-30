@@ -45,7 +45,11 @@ func makeTransport(for config: MCPServerConfig) throws -> any MCPTransport {
         guard !config.command.trimmingCharacters(in: .whitespaces).isEmpty else {
             throw MCPError.badConfig(String(localized: "No command set for \(config.name)."))
         }
+        #if os(macOS)
         return StdioTransport(command: config.command, arguments: config.arguments, environment: config.environment)
+        #else
+        throw MCPError.badConfig(String(localized: "\(config.name) runs a command, and only a Mac can do that."))
+        #endif
     case .http:
         guard let url = URL(string: config.url.trimmingCharacters(in: .whitespaces)),
               ["http", "https"].contains(url.scheme), url.host != nil else {

@@ -1,4 +1,7 @@
+#if canImport(Carbon)
 import Carbon.HIToolbox
+#endif
+
 
 /// A global shortcut, stored in Carbon terms (virtual key code + Carbon modifier mask)
 /// so it can be registered directly with `RegisterEventHotKey`.

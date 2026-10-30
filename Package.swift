@@ -3,8 +3,9 @@ import PackageDescription
 
 let package = Package(
     name: "Imp",
-    platforms: [.macOS(.v14)],
+    platforms: [.macOS(.v14), .iOS(.v17)],
     products: [
+        .library(name: "ImpKit", targets: ["ImpKit"]),
         .executable(name: "Imp", targets: ["Imp"]),
     ],
     targets: [

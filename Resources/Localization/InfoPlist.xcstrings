@@ -72,6 +72,30 @@
           }
         }
       }
+    },
+    "NSLocalNetworkUsageDescription": {
+      "comment": "Why Imp asks to use the local network (the iPhone link).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imp talks to your iPhone over the local network, so you can toss Imps onto it and chat with them there."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imp habla con tu iPhone por la red local, para que puedas lanzarle Imps y chatear con ellos allí."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imp 通过本地网络与你的 iPhone 通信，这样你就能把 Imp 扔到手机上，并在那里和它们聊天。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

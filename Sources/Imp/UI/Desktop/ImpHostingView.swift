@@ -33,6 +33,9 @@ final class ImpHostingView: NSHostingView<ImpView> {
     var onPictureHover: ((Bool) -> Void)?
     /// A picture was dropped on Imp: its pasteboard. Returns whether it was taken.
     var onDropPicture: ((NSPasteboard) -> Bool)?
+    /// While carried: the pointer and how fast it's going (points a second, y up). Returns true when
+    /// that's a throw off the desktop and it has been dealt with: the carry ends there.
+    var onFling: ((_ cursor: CGPoint, _ velocity: CGVector) -> Bool)?
     private var dragStart: CGPoint?
     private var windowStart: CGPoint?
     private var dragged = false
@@ -44,6 +47,12 @@ final class ImpHostingView: NSHostingView<ImpView> {
     private var press = PressGestures()
     private var lastDrag: (x: CGFloat, t: TimeInterval)?
     private var speed: CGFloat = 0
+    /// How fast the hand moves, from the mouse's own movement: it keeps counting when the pointer
+    /// is stopped by the edge of the screen (that push is what makes a throw).
+    private var push = CGVector.zero
+    private var lastPush: TimeInterval?
+    /// Thrown off the desktop: the rest of this press is ignored.
+    private var thrown = false
 
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 
@@ -120,6 +129,9 @@ final class ImpHostingView: NSHostingView<ImpView> {
         press = PressGestures()
         lastDrag = nil
         speed = 0
+        push = .zero
+        lastPush = nil
+        thrown = false
         onHandling?(.pressed)
         holdTimer?.invalidate()
         holdTimer = Timer.scheduledTimer(withTimeInterval: PressGestures.holdAfter, repeats: false) { [weak self] _ in
@@ -150,6 +162,18 @@ final class ImpHostingView: NSHostingView<ImpView> {
             speed = speed * 0.7 + v * 0.3                      // smoothed: mice report in bursts
         }
         lastDrag = (now.x, event.timestamp)
+        if let last = lastPush, event.timestamp > last {
+            let dt = max(event.timestamp - last, 1.0 / 240)
+            // deltaY grows downward; Cocoa's y grows up.
+            let v = CGVector(dx: event.deltaX / dt, dy: -event.deltaY / dt)
+            push = CGVector(dx: push.dx * 0.55 + v.dx * 0.45, dy: push.dy * 0.55 + v.dy * 0.45)
+        }
+        lastPush = event.timestamp
+        if let onFling, onFling(now, push) {
+            thrown = true
+            dragStart = nil
+            return
+        }
         onHandling?(.carried(speed: speed))
         if press.drag(to: now, at: event.timestamp) { onHandling?(.shaken) }
     }
@@ -157,6 +181,7 @@ final class ImpHostingView: NSHostingView<ImpView> {
     override func mouseUp(with event: NSEvent) {
         defer { dragStart = nil }
         holdTimer?.invalidate()
+        if thrown { thrown = false; return }
         let moved = dragStart.map { hypot(NSEvent.mouseLocation.x - $0.x, NSEvent.mouseLocation.y - $0.y) } ?? 0
         // A quick, short press is a click even if the hand wobbled (clicks and trackpad taps often
         // move a few points). Undo the nudge. Only a real move is a drag.

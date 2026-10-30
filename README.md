@@ -67,6 +67,7 @@ If that's a model running on your own Mac, nothing leaves your Mac at all.
 | Chats and settings  | Your Mac (`~/Library/Application Support/Imp`)                         |
 | Voice               | Apple speech recognition, on device whenever your Mac supports it      |
 | Your requests       | Only the model service you added (local or remote, your choice)        |
+| iPhone link         | Only phones you paired, encrypted end to end (off until you pair one)  |
 
 ## Bring any model
 
@@ -132,6 +133,8 @@ one can handle private work while another uses a bigger cloud model.
 - **Browser extension.** Add `Extensions/Browser` to Chrome, Brave, Edge, Firefox or Safari and Imp
   knows the website you're on, and can hop right onto a button on the page. Its toolbar popup shows
   whether it's connected and what Imp sees. Local only (see its README for each browser's steps).
+- **Imps on your iPhone.** Throw an Imp hard at the left or right side of your screen and it flies
+  onto your iPhone (see [Imp on your iPhone](#imp-on-your-iphone)).
 - **More tools with MCP.** Connect Model Context Protocol servers, local or on the web.
 - **A whole troupe.** Several Imps, each with its own name, colour, personality and model. They
   share one clock and stop drawing whenever they can't be seen, so a big troupe stays light on the
@@ -252,6 +255,33 @@ Ready-made kits to borrow, and how to add yours, are in the community registry: 
 
 <p align="center"><img src="docs/moods.png" width="760" alt="Imp's moods"></p>
 
+## Imp on your iPhone
+
+**Imp for iPhone** (in [`iOS/`](iOS)) is where your Imps go when you throw them off your Mac.
+An Imp is never in two places: grab one and fling it hard at the far left or right side of your
+screen and it leaves the desktop, flying in from the *other* side of your iPhone's screen, as if it
+went straight through (throw it off the left of the Mac, it comes in from the right of the phone).
+With several displays only the outer sides throw: carrying an Imp from one display to the next is
+just a carry. Or right-click it › **Send to iPhone**.
+
+On the phone it's the same Imp, drawn by the same code: drag it around with your finger, tap it to
+chat. It still thinks on your Mac, with its model, keys, tools and memory, so you can give it work
+from the couch, and it can message the Imps still on your desktop (`imp_message`). To send it back,
+flick it hard off a side of the phone's screen, or hold the phone and jolt it sideways like a throw:
+it flies onto your Mac from the opposite side. A shake makes everyone on the phone dizzy. Clicking
+the little phone on its pedestal in the Mac's window, or **Call Home**, brings it back too.
+
+**Pairing.** All Imps › App › iPhone › **Pair…** shows a QR code. Scan it with the iPhone's Camera
+(or **Scan Code** in the app). The code carries a 256-bit secret that never travels over the
+network: both sides derive a TLS pre-shared key from it, so only phones that scanned it can connect,
+and everything they say is encrypted. The Mac finds the phone with Bonjour on your Wi-Fi.
+**Forget…** makes a new secret and brings every Imp home.
+
+**Beyond Wi-Fi.** The link is plain framed JSON over any authenticated stream. Today the phone can
+also reach the Mac by address (the code includes the Mac's addresses and port 47824), so a VPN such
+as Tailscale already works from anywhere. A relay for the open internet can carry the same
+end-to-end encrypted frames later, with nothing else changing.
+
 ## Get started with a local model
 
 ```sh
@@ -275,6 +305,10 @@ ollama serve
 ```sh
 make install   # builds Imp.app and copies it to /Applications
 ```
+
+The iPhone app: `make ios` (needs [XcodeGen](https://github.com/yonaskolb/XcodeGen)) generates
+`iOS/ImpPhone.xcodeproj` and builds it for the Simulator. Open the project and set your team to
+install it on your phone. It shares `ImpKit` and the Imp renderer with the Mac.
 
 After changing any text in the app, run `make strings` to add it to the String Catalog
 (`Resources/Localization/Localizable.xcstrings`), then translate the new entries (in Xcode or any

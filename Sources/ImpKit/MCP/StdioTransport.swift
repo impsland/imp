@@ -1,3 +1,5 @@
+#if os(macOS)
+// Child processes are macOS-only (the iPhone app shares ImpKit but never runs commands).
 import Foundation
 
 /// Runs a server as a child process. Newline-delimited JSON on stdin/stdout.
@@ -132,3 +134,4 @@ public final class StdioTransport: MCPTransport, @unchecked Sendable {
         continuation.finish()
     }
 }
+#endif

@@ -218,7 +218,7 @@ struct ImpStage: View {
         let imp = id.flatMap(model.profile)
         let isCurrent = offset == 0
         ZStack(alignment: .bottom) {
-            Pedestal(hue: imp?.hue ?? 0.08, lit: isCurrent && (imp?.isActive != true || imp.map { model.isHiding($0.id) } == true))
+            Pedestal(hue: imp?.hue ?? 0.08, lit: isCurrent && (imp?.isActive != true || imp?.awayOn != nil || imp.map { model.isHiding($0.id) } == true))
                 .frame(width: 170)
             if let imp {
                 impFigure(imp, offset: offset)
@@ -255,7 +255,16 @@ struct ImpStage: View {
     @ViewBuilder private func impFigure(_ imp: ImpProfile, offset: Int) -> some View {
         let side = Panels.baseSize * imp.scale
         Group {
-            if imp.isActive && model.isHiding(imp.id) {
+            if imp.isActive, let phone = imp.awayOn {
+                // Out on an iPhone: a little phone with it inside. Click it to call it back.
+                AwayImp(hue: imp.hue, phone: model.phone.name(of: phone), connected: model.phone.connected[phone] != nil, still: offset != 0)
+                    .transition(.scale(scale: 0.6, anchor: .bottom).combined(with: .opacity))
+                    .contentShape(Rectangle())
+                    .onTapGesture { if offset == 0 { model.callBack(imp.id) } }
+                    .allowsHitTesting(offset == 0)
+                    .accessibilityAddTraits(.isButton)
+                    .contextMenu { contextMenu(for: imp) }
+            } else if imp.isActive && model.isHiding(imp.id) {
                 // Out, but hidden: a little ghost under a sheet. Click it to bring it back.
                 HidingImp(hue: imp.hue, clock: BodyClock(imp.id), center: {
                     offset == 0 ? router.slot(side: side).map { CGPoint(x: $0.midX, y: $0.midY) } : nil
@@ -289,7 +298,9 @@ struct ImpStage: View {
         }
         .frame(width: side, height: side)
         .animation(.snappy(duration: 0.3), value: model.isHiding(imp.id))
-        .accessibilityLabel(imp.isActive && model.isHiding(imp.id) ? String(localized: "\(imp.name), hiding") : imp.name)
+        .animation(.snappy(duration: 0.3), value: imp.awayOn)
+        .accessibilityLabel(imp.awayOn != nil ? String(localized: "\(imp.name), on your iPhone")
+                            : imp.isActive && model.isHiding(imp.id) ? String(localized: "\(imp.name), hiding") : imp.name)
     }
 
     /// The others watch whoever's in the doorway.
@@ -304,7 +315,9 @@ struct ImpStage: View {
         Button { router.openSettings(imp.id) } label: { Label("Settings…", systemImage: "slider.horizontal.3") }
         Button { toggleActive(imp.id) } label: { Label(Self.release(imp), systemImage: imp.isActive ? "house.fill" : "flame.fill") }
         Button { router.renaming = true } label: { Label("Rename", systemImage: "pencil") }
-        if imp.isActive && model.isHiding(imp.id) {
+        if imp.isActive && imp.awayOn != nil {
+            Button { model.callBack(imp.id) } label: { Label("Call \(imp.name) Back from iPhone", systemImage: "iphone.and.arrow.forward") }
+        } else if imp.isActive && model.isHiding(imp.id) {
             Button { withAnimation(.snappy(duration: 0.25)) { model.setHidden(imp.id, false) } } label: {
                 Label("Show \(imp.name)", systemImage: "eye")
             }

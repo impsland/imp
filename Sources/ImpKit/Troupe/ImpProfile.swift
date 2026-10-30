@@ -30,6 +30,10 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     public var brain: Brain?
     /// Where it sits on screen (bottom-left of its panel). `nil` until placed.
     public var origin: CGPoint?
+    /// The iPhone it was tossed onto (that phone's id, see `LinkRequest.hello`). It's still out
+    /// and still thinks on this Mac, but its body is on the phone, so the desktop doesn't show it.
+    /// `nil`: here on the Mac.
+    public var awayOn: UUID?
     /// MCP servers (from `ImpPreferences.mcpServers`) whose tools this Imp may use.
     public var servers: [UUID] = []
     /// May run commands on this Mac (the `shell` tool): on by default, it's how an Imp does things.

@@ -45,8 +45,14 @@
 	<true/>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>Imps control other apps when you ask them to (they run AppleScript through their shell).</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_imp-link._tcp</string>
+	</array>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Imp talks to your iPhone over the local network, so you can toss Imps onto it and chat with them there.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Imp listens when you talk to it (click Imp or press its voice shortcut).</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

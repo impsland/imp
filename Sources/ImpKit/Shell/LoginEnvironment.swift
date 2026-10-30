@@ -1,3 +1,5 @@
+#if os(macOS)
+// Child processes are macOS-only (the iPhone app shares ImpKit but never runs commands).
 import Foundation
 
 /// The environment a new Terminal window would have: what the user's shell sets up in all its
@@ -116,3 +118,4 @@ public enum LoginEnvironment {
         }
     }
 }
+#endif

@@ -135,6 +135,22 @@
         }
       }
     },
+    "%@ flies off the screen onto your iPhone. Or throw it hard at the side of the screen." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ sale volando de la pantalla hacia tu iPhone. O lánzalo con fuerza contra el borde de la pantalla."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 会飞出屏幕，落到你的 iPhone 上。也可以把它用力扔向屏幕边缘。"
+          }
+        }
+      }
+    },
     "%@ goes back into the Imps' window, and its triggers rest." : {
       "localizations" : {
         "es" : {
@@ -229,6 +245,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 已被 %@ 使用"
+          }
+        }
+      }
+    },
+    "%@ is connected." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ está conectado."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 已连接。"
           }
         }
       }
@@ -605,6 +637,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@，正在躲藏"
+          }
+        }
+      }
+    },
+    "%@, on your iPhone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, en tu iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@，在你的 iPhone 上"
           }
         }
       }
@@ -2627,6 +2675,22 @@
         }
       }
     },
+    "Another iPhone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otro iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "另一台 iPhone"
+          }
+        }
+      }
+    },
     "Answers" : {
       "localizations" : {
         "es" : {
@@ -3087,6 +3151,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "醒着"
+          }
+        }
+      }
+    },
+    "Away" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fuera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不在"
           }
         }
       }
@@ -3809,6 +3889,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "忙碌"
+          }
+        }
+      }
+    },
+    "Call %@ Back from iPhone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traer a %@ desde el iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把 %@ 从 iPhone 叫回来"
           }
         }
       }
@@ -4949,6 +5045,22 @@
         }
       }
     },
+    "Copied" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已复制"
+          }
+        }
+      }
+    },
     "Copies %@ as a kit. You see what's in it first. Chats and API keys are never included." : {
       "localizations" : {
         "es" : {
@@ -5009,6 +5121,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "拷贝上一条回复"
+          }
+        }
+      }
+    },
+    "Copy Link" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar enlace"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拷贝链接"
           }
         }
       }
@@ -5521,6 +5649,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "执行"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
           }
         }
       }
@@ -6651,6 +6795,22 @@
         }
       }
     },
+    "For a phone that can't scan: paste the link in Imp on the iPhone (Paste Link). Keep it private: it lets a phone in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para un teléfono que no puede escanear: pega el enlace en Imp en el iPhone (Pegar enlace). Mantenlo en privado: deja entrar a un teléfono."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手机无法扫码时：在 iPhone 上的 Imp 中粘贴此链接（粘贴链接）。请妥善保管：它能让手机接入。"
+          }
+        }
+      }
+    },
     "For every Imp on %@" : {
       "localizations" : {
         "es" : {
@@ -6679,6 +6839,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "适用于使用它的所有 Imp"
+          }
+        }
+      }
+    },
+    "Forget every iPhone?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Olvidar todos los iPhone?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记所有 iPhone？"
+          }
+        }
+      }
+    },
+    "Forget iPhones" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Olvidar los iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记 iPhone"
+          }
+        }
+      }
+    },
+    "Forget…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Olvidar…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记…"
           }
         }
       }
@@ -7937,6 +8145,22 @@
         }
       }
     },
+    "Imp can't listen for your iPhone on this network." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp no puede escuchar a tu iPhone en esta red."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 无法在此网络上等待你的 iPhone 连接。"
+          }
+        }
+      }
+    },
     "Imp starts" : {
       "localizations" : {
         "es" : {
@@ -8109,6 +8333,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imp 通过 Apple 听写听你说话，尽可能在本机处理。"
+          }
+        }
+      }
+    },
+    "Imps on a phone come back to your desktop. The old code stops working; pair again with a new one." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los Imps que estén en un teléfono vuelven a tu escritorio. El código anterior deja de funcionar; vuelve a enlazar con uno nuevo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手机上的 Imp 会回到你的桌面。旧的代码将失效，请用新代码重新配对。"
           }
         }
       }
@@ -11021,6 +11261,22 @@
         }
       }
     },
+    "On %@. Click to call it back to your desktop." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En %@. Haz clic para traerlo de vuelta a tu escritorio."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 %@ 上。点按可把它叫回桌面。"
+          }
+        }
+      }
+    },
     "On battery" : {
       "localizations" : {
         "es" : {
@@ -11033,6 +11289,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用电池时"
+          }
+        }
+      }
+    },
+    "On it: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahí: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在上面：%@"
           }
         }
       }
@@ -11097,6 +11369,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在这台 Mac 上"
+          }
+        }
+      }
+    },
+    "On your iPhone. Click to call it back to your desktop." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En tu iPhone. Haz clic para traerlo de vuelta a tu escritorio."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在你的 iPhone 上。点按可把它叫回桌面。"
           }
         }
       }
@@ -11359,6 +11647,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开 %@"
+          }
+        }
+      }
+    },
+    "Open Imp on your iPhone first (same network as this Mac)." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre primero Imp en tu iPhone (en la misma red que este Mac)."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先在 iPhone 上打开 Imp（与这台 Mac 处于同一网络）。"
+          }
+        }
+      }
+    },
+    "Open Imp on your iPhone." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre Imp en tu iPhone."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 iPhone 上打开 Imp。"
           }
         }
       }
@@ -11695,6 +12015,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "节奏"
+          }
+        }
+      }
+    },
+    "Pair an iPhone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlazar un iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配对 iPhone"
+          }
+        }
+      }
+    },
+    "Pairing code" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Código de enlace"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配对代码"
+          }
+        }
+      }
+    },
+    "Pair…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlazar…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配对…"
           }
         }
       }
@@ -14035,6 +14403,22 @@
         }
       }
     },
+    "Scan this code with the iPhone's Camera, or tap Scan Code in Imp." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escanea este código con la Cámara del iPhone, o toca Escanear código en Imp."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用 iPhone 的“相机”扫描此代码，或在 Imp 中轻点“扫描代码”。"
+          }
+        }
+      }
+    },
     "Scared" : {
       "localizations" : {
         "es" : {
@@ -14159,6 +14543,44 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "送 %@ 回家"
+          }
+        }
+      }
+    },
+    "Send %@ to %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send %1$@ to %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar a %1$@ a %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把 %1$@ 送到 %2$@"
+          }
+        }
+      }
+    },
+    "Send %@ to iPhone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar a %@ al iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把 %@ 送到 iPhone"
           }
         }
       }
@@ -14883,6 +15305,22 @@
         }
       }
     },
+    "Show Code…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar código…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示代码…"
+          }
+        }
+      }
+    },
     "Show Hidden Imps" : {
       "localizations" : {
         "es" : {
@@ -15027,6 +15465,22 @@
         }
       }
     },
+    "Show the code again to pair one more. Each scan lets that phone in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra el código otra vez para enlazar otro. Cada escaneo deja entrar a ese teléfono."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再次显示代码即可再配对一台。每次扫描都会让那台手机接入。"
+          }
+        }
+      }
+    },
     "Show the extension's folder" : {
       "localizations" : {
         "es" : {
@@ -15087,6 +15541,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已显示"
+          }
+        }
+      }
+    },
+    "Shows a code to scan with your iPhone's camera. You need Imp for iPhone, on the same network as this Mac." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra un código para escanear con la cámara de tu iPhone. Necesitas Imp para iPhone, en la misma red que este Mac."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示一个代码，用 iPhone 的相机扫描。你需要 iPhone 版 Imp，并与这台 Mac 处于同一网络。"
           }
         }
       }
@@ -16735,6 +17205,22 @@
         }
       }
     },
+    "The code holds a secret only your phone and this Mac know. It never goes over the network: they use it to recognise each other and to encrypt everything they say." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El código guarda un secreto que solo conocen tu teléfono y este Mac. Nunca viaja por la red: lo usan para reconocerse y para cifrar todo lo que se dicen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个代码包含一个只有你的手机和这台 Mac 知道的密钥。它从不经过网络传输：两者用它来相互识别，并加密彼此之间的所有通信。"
+          }
+        }
+      }
+    },
     "The heart marks %@'s favourite colour." : {
       "localizations" : {
         "es" : {
@@ -17051,6 +17537,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开心地连蹦三下。"
+          }
+        }
+      }
+    },
+    "Throw an Imp hard at the left or right side of your screen and it flies onto your iPhone. It still thinks on this Mac: chat with it there, and throw it back." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lanza un Imp con fuerza contra el borde izquierdo o derecho de la pantalla y saldrá volando hacia tu iPhone. Sigue pensando en este Mac: chatea con él allí y lánzalo de vuelta."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把 Imp 用力扔向屏幕的左边或右边，它就会飞到你的 iPhone 上。它仍在这台 Mac 上思考：在手机上和它聊天，再把它扔回来。"
+          }
+        }
+      }
+    },
+    "Throw an Imp hard at the side of your screen. It lands on your phone." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lanza un Imp con fuerza contra el borde de la pantalla. Aterriza en tu teléfono."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把 Imp 用力扔向屏幕边缘，它会落到你的手机上。"
           }
         }
       }
@@ -18065,6 +18583,22 @@
         }
       }
     },
+    "Waiting for your iPhone…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esperando a tu iPhone…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待你的 iPhone…"
+          }
+        }
+      }
+    },
     "Waking up tools" : {
       "localizations" : {
         "es" : {
@@ -18929,6 +19463,22 @@
         }
       }
     },
+    "Your iPhone isn't around. Open Imp on it, on the same network as this Mac, then throw me again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu iPhone no está cerca. Abre Imp en él, en la misma red que este Mac, y vuelve a lanzarme."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的 iPhone 不在附近。请在手机上打开 Imp，并与这台 Mac 处于同一网络，然后再扔我一次。"
+          }
+        }
+      }
+    },
     "Your own %@" : {
       "localizations" : {
         "es" : {
@@ -19149,6 +19699,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沉重的眼睑"
+          }
+        }
+      }
+    },
+    "iPhone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone"
           }
         }
       }
