@@ -21,7 +21,7 @@ struct GameLayer: View {
                         .transition(.scale(scale: 0.92).combined(with: .opacity))
                 } else {
                     Scoreboard(score: round.score, progress: round.progress)
-                        .position(x: size.width / 2, y: insets.top + 66)
+                        .position(x: size.width / 2, y: insets.top + 24)
                         .allowsHitTesting(false)
                 }
             }
@@ -43,7 +43,14 @@ struct GameLayer: View {
         }
         .animation(.spring(duration: 0.4), value: offer)
         .animation(.spring(duration: 0.4), value: engine.round?.isOver)
+        .preference(key: EmbersPlaying.self, value: engine.isPlaying)
     }
+}
+
+/// A round of Embers is on: the status pill steps aside so the score has the top of the screen.
+struct EmbersPlaying: PreferenceKey {
+    static let defaultValue = false
+    static func reduce(value: inout Bool, nextValue: () -> Bool) { value = value || nextValue() }
 }
 
 /// The score, with a thin ring running down the round.

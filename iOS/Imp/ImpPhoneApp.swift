@@ -54,6 +54,8 @@ struct RootView: View {
     let pocket: PocketRuntime
     @State private var sheet: Sheet?
     @State private var confirmUnpair = false
+    /// A round of Embers is on (see `EmbersPlaying`).
+    @State private var playing = false
     @State private var toast: String?
 
     private var onStage: Bool { client.pairing != nil || !pocket.imps.isEmpty }
@@ -67,11 +69,16 @@ struct RootView: View {
             } else {
                 PhoneStage(client: client, pocket: pocket) { sheet = .chat($0) }
                     .transition(.opacity)
+                    .onPreferenceChange(EmbersPlaying.self) { playing = $0 }
                 VStack {
                     StatusPill(client: client, confirmUnpair: $confirmUnpair, hatch: { sheet = .hatch }, pair: { sheet = .pair })
                     Spacer()
                 }
                 .padding(.top, 6)
+                .opacity(playing ? 0 : 1)
+                .offset(y: playing ? -12 : 0)
+                .allowsHitTesting(!playing)
+                .animation(.spring(duration: 0.4), value: playing)
             }
         }
         .animation(.easeInOut(duration: 0.35), value: onStage)
