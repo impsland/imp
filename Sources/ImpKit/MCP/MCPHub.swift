@@ -153,10 +153,22 @@ public actor MCPHub: ToolProvider {
             entries[config.id]?.specs = specs
             entries[config.id]?.task = nil
             status[config.id] = .ready(toolCount: specs.count, toolNames: specs.map(\.name))
+            let key = ObjectIdentifier(client)
+            await client.onEnd { [weak self] error in Task { await self?.ended(config.id, client: key, error) } }
         case .failure(let error):
             entries[config.id]?.task = nil
             status[config.id] = .failed(error.localizedDescription)
         }
+        notify()
+    }
+
+    /// A ready server went away (its process exited): its tools are no longer offered, and
+    /// Settings says why.
+    private func ended(_ id: UUID, client: ObjectIdentifier, _ error: MCPError) {
+        guard let current = entries[id]?.client, ObjectIdentifier(current) == client else { return }
+        entries[id]?.client = nil
+        entries[id]?.specs = []
+        status[id] = .failed(error.localizedDescription)
         notify()
     }
 

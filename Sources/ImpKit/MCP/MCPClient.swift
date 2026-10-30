@@ -8,6 +8,9 @@ public actor MCPClient {
     private var nextID = 0
     private var pending: [Int: (cont: CheckedContinuation<JSONValue, Error>, timer: Task<Void, Never>)] = [:]
     private var reader: Task<Void, Never>?
+    private var closing = false
+    private var ended: MCPError?
+    private var onEnded: (@Sendable (MCPError) -> Void)?
 
     public init(config: MCPServerConfig) throws { transport = try makeTransport(for: config) }
     init(transport: any MCPTransport) { self.transport = transport }
@@ -52,7 +55,13 @@ public actor MCPClient {
         return Self.toolResultText(from: result)
     }
 
+    /// `handler` runs once if the server goes away by itself (not on `close()`), at once if it already has.
+    public func onEnd(_ handler: @escaping @Sendable (MCPError) -> Void) {
+        if let ended { handler(ended) } else { onEnded = handler }
+    }
+
     public func close() async {
+        closing = true
         reader?.cancel()
         await transport.close()
         failAll(MCPError.closed(nil))
@@ -105,7 +114,14 @@ public actor MCPClient {
         for id in Array(pending.keys) { finish(id, .failure(error)) }
     }
 
-    private func transportEnded() { failAll(MCPError.closed(transport.lastWords)) }
+    private func transportEnded() {
+        let error = MCPError.closed(transport.lastWords)
+        failAll(error)
+        guard !closing, ended == nil else { return }
+        ended = error
+        onEnded?(error)
+        onEnded = nil
+    }
 
     private func handle(_ message: JSONValue) async {
         let id = message["id"]

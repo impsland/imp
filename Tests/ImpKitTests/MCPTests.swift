@@ -24,11 +24,25 @@ for line in sys.stdin:
     sys.stdout.write(json.dumps({"jsonrpc": "2.0", "id": i, "result": r}) + "\n"); sys.stdout.flush()
 """#
 
-private func writeFakeServer() throws -> String {
+/// Lists one tool, then exits with a word on stderr.
+private let exitingServer = #"""
+import sys, json
+for line in sys.stdin:
+    msg = json.loads(line); m, i = msg.get("method"), msg.get("id")
+    if i is None: continue
+    if m == "initialize":
+        r = {"protocolVersion": "2025-06-18", "capabilities": {"tools": {}}, "serverInfo": {"name": "x", "version": "1"}}
+    else:
+        r = {"tools": [{"name": "t", "description": "", "inputSchema": {"type": "object"}}]}
+    sys.stdout.write(json.dumps({"jsonrpc": "2.0", "id": i, "result": r}) + "\n"); sys.stdout.flush()
+    if m == "tools/list": sys.stderr.write("out of coffee\n"); sys.exit(3)
+"""#
+
+private func writeFakeServer(_ source: String = fakeServer) throws -> String {
     let dir = FileManager.default.temporaryDirectory.appendingPathComponent("imp-mcp-\(UUID().uuidString)")
     try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
     let path = dir.appendingPathComponent("server.py")
-    try fakeServer.write(to: path, atomically: true, encoding: .utf8)
+    try source.write(to: path, atomically: true, encoding: .utf8)
     return path.path
 }
 
@@ -90,6 +104,20 @@ struct MCPTests {
             #expect(error.localizedDescription.contains("not found"))
         }
         await transport.close()
+    }
+
+    @Test func aServerThatExitsStopsOfferingItsTools() async throws {
+        let config = MCPServerConfig(name: "x", transport: .stdio, command: "/usr/bin/python3",
+                                     arguments: [try writeFakeServer(exitingServer)])
+        let hub = MCPHub()
+        await hub.update([config])
+        for _ in 0..<50 {
+            if case .failed = await hub.status[config.id] { break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        guard case .failed(let why) = await hub.status[config.id] else { Issue.record("still ready"); return }
+        #expect(why.contains("out of coffee"))
+        #expect(await hub.tools().isEmpty)
     }
 
     @Test func hubConnectsAndRoutesCalls() async throws {

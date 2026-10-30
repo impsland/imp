@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 /// One exchange with an Imp, as shown in its chat: what you asked, the tools it used (each
 /// with its request and response) and its reply, or the error that stopped it.
@@ -194,13 +195,12 @@ public struct ChatHistory: Sendable {
         if id == current.id { current = Chat() }
         saveIndex()
         guard let file = file(id) else { return }
-        Self.writer.async { try? FileManager.default.removeItem(at: file) }
+        Self.remove(file)
     }
 
     /// Deletes an Imp's chats for good, after any save still queued for them.
     public static func deleteFolder(for imp: UUID) {
-        let folder = folder(for: imp)
-        writer.async { try? FileManager.default.removeItem(at: folder) }
+        remove(folder(for: imp))
     }
 
     /// Deletes every chat (the folder too).
@@ -208,7 +208,7 @@ public struct ChatHistory: Sendable {
         chats = []
         current = Chat()
         guard let folder else { return }
-        Self.writer.async { try? FileManager.default.removeItem(at: folder) }
+        Self.remove(folder)
     }
 
     // MARK: Files
@@ -236,30 +236,50 @@ public struct ChatHistory: Sendable {
             chats.removeAll { $0.id == chat.id }
             chats.insert(chat.summary, at: 0)
         }
-        guard let file = file(chat.id), let data = try? Self.encoder.encode(chat) else { return saveIndex() }
-        write(data, to: file)
-        saveIndex()
+        defer { saveIndex() }
+        guard let file = file(chat.id) else { return }   // kept in memory only
+        do { write(try Self.encoder.encode(chat), to: file) } catch {
+            Self.log.error("couldn't encode chat \(chat.id, privacy: .public): \(error.localizedDescription, privacy: .public)")
+        }
     }
 
     private func saveIndex() {
-        guard let folder, let data = try? Self.encoder.encode(Index(current: current.isEmpty ? nil : current.id, chats: chats))
-        else { return }
-        write(data, to: folder.appendingPathComponent("index.json"))
+        guard let folder else { return }
+        do {
+            write(try Self.encoder.encode(Index(current: current.isEmpty ? nil : current.id, chats: chats)),
+                  to: folder.appendingPathComponent("index.json"))
+        } catch {
+            Self.log.error("couldn't encode the chat list: \(error.localizedDescription, privacy: .public)")
+        }
     }
 
     /// Written off the main thread (a chat can be a few megabytes); later saves win, since each
     /// writes the whole file atomically.
     private func write(_ data: Data, to file: URL) {
         Self.writer.async {
-            try? FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
-            try? data.write(to: file, options: .atomic)
+            do {
+                try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+                try data.write(to: file, options: .atomic)
+            } catch {
+                Self.log.error("couldn't save \(file.lastPathComponent, privacy: .public): \(error.localizedDescription, privacy: .public)")
+            }
         }
     }
 
-    /// One queue for every write, so they land in order.
+    /// Deletes a chat file or folder after the writes queued before it (one that's already gone is fine).
+    private static func remove(_ url: URL) {
+        writer.async {
+            do { try FileManager.default.removeItem(at: url) } catch CocoaError.fileNoSuchFile {} catch {
+                log.error("couldn't delete \(url.lastPathComponent, privacy: .public): \(error.localizedDescription, privacy: .public)")
+            }
+        }
+    }
+
+    /// One queue for every write and delete, so they land in order.
     private static let writer = DispatchQueue(label: "app.imp.history", qos: .utility)
-    /// Waits for pending writes (tests).
-    static func flush() { writer.sync {} }
+    private static let log = Logger(subsystem: "app.imp.Imp", category: "history")
+    /// Waits for every queued write and delete: before quitting, so none is lost, and in tests.
+    public static func flush() { writer.sync {} }
 
     private static let encoder: JSONEncoder = {
         let e = JSONEncoder()

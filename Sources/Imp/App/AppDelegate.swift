@@ -43,6 +43,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         log.info("Imp is awake")
     }
 
+    func applicationWillTerminate(_ notification: Notification) {
+        // Chats are written in the background: let the last saves and deletes land.
+        ChatHistory.flush()
+    }
+
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         HomeWindow.shared.reveal(model)
         return false
