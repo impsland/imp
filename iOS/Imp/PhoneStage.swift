@@ -13,49 +13,53 @@ struct PhoneStage: View {
     @State private var wired = false
 
     var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                // Touches that miss every Imp still make them look.
-                Color.clear.contentShape(Rectangle())
-                    .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .named("stage"))
-                        .onChanged { engine.touch = $0.location }
-                        .onEnded { _ in engine.touch = nil })
+        // The stage runs edge to edge, so the screen's safe area (notch, Dynamic Island, home
+        // indicator) is measured outside it, for what has to stay clear of them.
+        GeometryReader { screen in
+            GeometryReader { geo in
+                ZStack {
+                    // Touches that miss every Imp still make them look.
+                    Color.clear.contentShape(Rectangle())
+                        .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .named("stage"))
+                            .onChanged { engine.touch = $0.location }
+                            .onEnded { _ in engine.touch = nil })
 
-                TimelineView(.animation(paused: scenePhase != .active)) { timeline in
-                    let _ = engine.step(timeline.date, size: geo.size, insets: geo.safeAreaInsets)
-                    ZStack {
-                        ForEach(engine.order, id: \.self) { id in
-                            if let body = engine.bodies[id] {
-                                figure(body, date: timeline.date)
+                    TimelineView(.animation(paused: scenePhase != .active)) { timeline in
+                        let _ = engine.step(timeline.date, size: geo.size, insets: geo.safeAreaInsets)
+                        ZStack {
+                            ForEach(engine.order, id: \.self) { id in
+                                if let body = engine.bodies[id] {
+                                    figure(body, date: timeline.date)
+                                }
                             }
-                        }
-                        // Talks with other Imps, above the talker's head, kept on screen.
-                        ForEach(engine.order, id: \.self) { id in
-                            if let b = engine.bodies[id], b.phase == .free || b.phase == .dragging, let speech = client.speeches[id] {
-                                let x = min(max(b.pos.x, 137), geo.size.width - 137)
-                                let top = b.pos.y + engine.floatOffset(b, at: timeline.date, calm: false) - b.size * 0.4 - 14
-                                Color.clear.frame(width: 1, height: 1)
-                                    .overlay(alignment: .bottom) {
-                                        SpeechBubble(speech: speech, tailOffset: b.pos.x - x) { client.dismissSpeech(id) }
-                                            .fixedSize(horizontal: false, vertical: true)
-                                            .transition(.scale(scale: 0.6, anchor: .bottom).combined(with: .opacity))
-                                            .id(speech.id)
-                                    }
-                                    .position(x: x, y: top)
-                                    .zIndex(2)
+                            // Talks with other Imps, above the talker's head, kept on screen.
+                            ForEach(engine.order, id: \.self) { id in
+                                if let b = engine.bodies[id], b.phase == .free || b.phase == .dragging, let speech = client.speeches[id] {
+                                    let x = min(max(b.pos.x, 137), geo.size.width - 137)
+                                    let top = b.pos.y + engine.floatOffset(b, at: timeline.date, calm: false) - b.size * 0.4 - 14
+                                    Color.clear.frame(width: 1, height: 1)
+                                        .overlay(alignment: .bottom) {
+                                            SpeechBubble(speech: speech, tailOffset: b.pos.x - x) { client.dismissSpeech(id) }
+                                                .fixedSize(horizontal: false, vertical: true)
+                                                .transition(.scale(scale: 0.6, anchor: .bottom).combined(with: .opacity))
+                                                .id(speech.id)
+                                        }
+                                        .position(x: x, y: top)
+                                        .zIndex(2)
+                                }
                             }
+                            GameLayer(engine: engine, date: timeline.date, size: geo.size, insets: screen.safeAreaInsets)
+                                .zIndex(3)
                         }
-                        GameLayer(engine: engine, date: timeline.date, size: geo.size, insets: geo.safeAreaInsets)
-                            .zIndex(3)
+                        .animation(.spring(duration: 0.35), value: client.speeches.mapValues(\.id))
                     }
-                    .animation(.spring(duration: 0.35), value: client.speeches.mapValues(\.id))
-                }
 
-                if roster.isEmpty && client.isConnected { EmptyHint(side: .left) }
+                    if roster.isEmpty && client.isConnected { EmptyHint(side: .left) }
+                }
+                .coordinateSpace(name: "stage")
             }
-            .coordinateSpace(name: "stage")
+            .ignoresSafeArea()
         }
-        .ignoresSafeArea()
         .onAppear { wire() }
         .onChange(of: pocket.looks) { engine.reconcile(roster) }
         .onChange(of: scenePhase, initial: true) { _, phase in
