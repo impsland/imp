@@ -231,3 +231,47 @@ import Network
         client.close()
     }
 }
+
+@Suite struct LinkFilesTests {
+    let base = URL(fileURLWithPath: "/Users/me/Library/Application Support/Imp/Workspace/abc")
+
+    @Test func resolvesLikeTheBubble() {
+        #expect(LinkFiles.resolve("voice.mp3", base: base)?.path == base.path + "/voice.mp3")
+        #expect(LinkFiles.resolve("out/pic%20one.png", base: base)?.path == base.path + "/out/pic one.png")
+        #expect(LinkFiles.resolve("/tmp/a.png", base: base)?.path == "/tmp/a.png")
+        #expect(LinkFiles.resolve("file:///tmp/b.mov", base: base)?.path == "/tmp/b.mov")
+        #expect(LinkFiles.resolve("voice.mp3#autoplay", base: base)?.path == base.path + "/voice.mp3")
+        #expect(LinkFiles.resolve("../x.txt", base: base)?.path == base.deletingLastPathComponent().path + "/x.txt")
+        #expect(LinkFiles.resolve("https://example.com/a.png", base: base) == nil)
+        #expect(LinkFiles.resolve("  ", base: base) == nil)
+        #expect(LinkFiles.isWeb("https://x.y/z.mp4") && !LinkFiles.isWeb("z.mp4"))
+    }
+
+    @Test func onlyWhatARepliesMentions() {
+        let replies = ["Here you go: ![Pip says hi](pip%20hi.mp3#autoplay)", "Saved to [the report](/tmp/report.pdf)."]
+        #expect(LinkFiles.isMentioned("pip%20hi.mp3#autoplay", in: replies))
+        #expect(LinkFiles.isMentioned("pip%20hi.mp3", in: replies))
+        #expect(LinkFiles.isMentioned("/tmp/report.pdf", in: replies))
+        #expect(!LinkFiles.isMentioned("/etc/passwd", in: replies))
+        #expect(!LinkFiles.isMentioned("a", in: ["a"]))
+    }
+
+    @Test func filePartsAndSpeechRoundTrip() throws {
+        let part = LinkFilePart(name: "voice.mp3", size: 10, offset: 6, data: Data([1, 2, 3, 4]))
+        #expect(part.isLast)
+        let speech = LinkSpeech(id: UUID(), role: .reply, peer: "Pip", hue: 0.57, question: "Ready?", text: "Yes!")
+        for u: LinkUpdate in [.file(id: UUID(), part: part), .fileFailed(id: UUID(), reason: "gone"),
+                              .speech(imp: UUID(), speech: speech), .speech(imp: UUID(), speech: nil),
+                              .work(imp: UUID(), work: LinkWork(request: "Ready?", status: nil, partial: "", from: "Pip"))] {
+            var framer = LinkFrame()
+            let body = try #require(try framer.feed(LinkFrame.encode(u)).first)
+            #expect(LinkFrame.decode(LinkUpdate.self, body) == u)
+        }
+        let r = LinkRequest.file(id: UUID(), imp: UUID(), ref: "voice.mp3")
+        var framer = LinkFrame()
+        #expect(LinkFrame.decode(LinkRequest.self, try #require(try framer.feed(LinkFrame.encode(r)).first)) == r)
+        // A work update from an older Mac (no `from`) still reads.
+        let old = Data(#"{"work":{"imp":"1A1A1A1A-0000-4000-8000-00000000F00D","work":{"request":"hi","partial":""}}}"#.utf8)
+        #expect(LinkFrame.decode(LinkUpdate.self, old) != nil)
+    }
+}

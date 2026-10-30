@@ -16,7 +16,7 @@ struct PairingView: View {
             Spacer(minLength: 20)
             ZStack {
                 SoftGlow(color: Dungeon.ember, opacity: 0.3).frame(width: 340, height: 340)
-                LiveImp(imp: .greeter, mood: .idle).frame(width: 176, height: 176)
+                TiltImp().frame(width: 176, height: 176)
             }
             Text("Imp for iPhone")
                 .font(.system(size: 32, weight: .bold, design: .rounded))

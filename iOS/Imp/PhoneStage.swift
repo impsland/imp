@@ -28,7 +28,24 @@ struct PhoneStage: View {
                                 figure(body, date: timeline.date)
                             }
                         }
+                        // Talks with other Imps, above the talker's head, kept on screen.
+                        ForEach(engine.order, id: \.self) { id in
+                            if let b = engine.bodies[id], b.phase == .free || b.phase == .dragging, let speech = client.speeches[id] {
+                                let x = min(max(b.pos.x, 137), geo.size.width - 137)
+                                let top = b.pos.y + engine.floatOffset(b, at: timeline.date, calm: false) - b.size * 0.4 - 14
+                                Color.clear.frame(width: 1, height: 1)
+                                    .overlay(alignment: .bottom) {
+                                        SpeechBubble(speech: speech, tailOffset: b.pos.x - x) { client.dismissSpeech(id) }
+                                            .fixedSize(horizontal: false, vertical: true)
+                                            .transition(.scale(scale: 0.6, anchor: .bottom).combined(with: .opacity))
+                                            .id(speech.id)
+                                    }
+                                    .position(x: x, y: top)
+                                    .zIndex(2)
+                            }
+                        }
                     }
+                    .animation(.spring(duration: 0.35), value: client.speeches.mapValues(\.id))
                 }
 
                 if client.imps.isEmpty && client.isConnected { EmptyHint(side: .left) }

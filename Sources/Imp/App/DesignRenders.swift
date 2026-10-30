@@ -17,6 +17,16 @@ enum IconRenderer {
         }
     }
 
+    /// `Imp --render-ios-icon <file.png>`: the iPhone app's icon (iOS/scripts/make-icon.sh). The
+    /// Mac icon's tile and Imp, full bleed and opaque: iOS cuts its own corners and refuses alpha.
+    static func renderIOSIcon(to url: URL) {
+        guard let image = render(AppIcon(fullBleed: true).frame(width: 1024, height: 1024), scale: 1),
+              let ctx = CGContext(data: nil, width: 1024, height: 1024, bitsPerComponent: 8, bytesPerRow: 0,
+                                  space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue) else { return }
+        ctx.draw(image, in: CGRect(x: 0, y: 0, width: 1024, height: 1024))
+        write(ctx.makeImage(), to: url)
+    }
+
     /// `Imp --render-dmg-background <dir>`: background.png and background@2x.png for the
     /// installer disk image (scripts/dmg-settings.py places the icons on it).
     static func renderDMGBackground(to dir: URL) {
@@ -439,21 +449,32 @@ enum IconRenderer {
     }
 
     private struct AppIcon: View {
+        /// The tile fills the whole square (iOS), instead of sitting inside macOS's icon grid.
+        var fullBleed = false
+
         var body: some View {
             GeometryReader { geo in
-                let s = geo.size.width
+                // The Mac tile is the canvas less a 9.8% margin; everything is sized off the tile.
+                let tile = fullBleed ? geo.size.width : geo.size.width * (1 - 2 * 0.098)
+                let fill = LinearGradient(colors: [Color(red: 0.995, green: 0.975, blue: 0.945), Color(red: 0.95, green: 0.91, blue: 0.86)],
+                                          startPoint: .top, endPoint: .bottom)
                 ZStack {
-                    RoundedRectangle(cornerRadius: s * 0.225, style: .continuous)
-                        .fill(LinearGradient(colors: [Color(red: 0.995, green: 0.975, blue: 0.945), Color(red: 0.95, green: 0.91, blue: 0.86)],
-                                             startPoint: .top, endPoint: .bottom))
-                        .padding(s * 0.098)
-                        .shadow(color: .black.opacity(0.22), radius: s * 0.02, y: s * 0.01)
+                    if fullBleed {
+                        Rectangle().fill(fill)
+                    } else {
+                        RoundedRectangle(cornerRadius: tile * 0.28, style: .continuous).fill(fill)
+                            .frame(width: tile, height: tile)
+                            .shadow(color: .black.opacity(0.22), radius: tile * 0.025, y: tile * 0.012)
+                    }
                     // The character spans ~66% of its canvas. This makes the head about 70% of the tile,
                     // centred on its visual middle (horn tips to base).
+                    // Full bleed, a touch smaller: iOS rounds the corners off, and the horns must stay inside.
+                    let k = fullBleed ? 1.2 : 1.318
                     ImpPortrait(face: .settled(.idle, lookX: 0.22, lookY: 0.05))
-                        .frame(width: s * 1.06, height: s * 1.06)
-                        .offset(y: -s * 0.095)
+                        .frame(width: tile * k, height: tile * k)
+                        .offset(y: -tile * k * 0.0895)
                 }
+                .frame(width: geo.size.width, height: geo.size.height)
             }
         }
     }

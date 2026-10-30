@@ -2,5 +2,5 @@
 build/
 .swiftpm/
 .env
-*.xcodeproj/xcuserdata/
+**/xcuserdata/
 .DS_Store

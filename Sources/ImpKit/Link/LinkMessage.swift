@@ -96,10 +96,58 @@ public struct LinkWork: Codable, Sendable, Equatable {
     public var status: String?
     /// The answer so far, as it streams in.
     public var partial: String
+    /// Another Imp asked, not you: its name. (It shows as a speech bubble, not in your chat.)
+    public var from: String?
 
-    public init(request: String, status: String?, partial: String) {
-        self.request = request; self.status = status; self.partial = partial
+    public init(request: String, status: String?, partial: String, from: String? = nil) {
+        self.request = request; self.status = status; self.partial = partial; self.from = from
     }
+}
+
+/// An Imp talking with another Imp (`imp_message`), as its speech bubble shows it: asked by one,
+/// answering it, or waiting for another's answer. The phone shows it above the Imp.
+public struct LinkSpeech: Codable, Sendable, Equatable, Identifiable {
+    public enum Role: String, Codable, Sendable {
+        /// Another Imp asked this one something; it's thinking.
+        case asked
+        /// This Imp's answer to that question.
+        case reply
+        /// This Imp asked another one and waits for the answer.
+        case asking
+    }
+    public var id: UUID
+    public var role: Role
+    /// The other Imp, with its colour.
+    public var peer: String
+    public var hue: Double
+    public var question: String
+    /// The answer (`reply`), so far if it's still streaming.
+    public var text: String
+
+    public init(id: UUID, role: Role, peer: String, hue: Double, question: String, text: String = "") {
+        self.id = id; self.role = role; self.peer = peer; self.hue = hue; self.question = question; self.text = text
+    }
+}
+
+/// A piece of a file the phone asked for (`LinkRequest.file`), in order.
+public struct LinkFilePart: Codable, Sendable, Equatable {
+    /// The file's name, for showing and for its type.
+    public var name: String
+    /// The whole file's size in bytes.
+    public var size: Int
+    public var offset: Int
+    public var data: Data
+
+    public init(name: String, size: Int, offset: Int, data: Data) {
+        self.name = name; self.size = size; self.offset = offset; self.data = data
+    }
+
+    public var isLast: Bool { offset + data.count >= size }
+
+    /// Bytes per part: small enough to keep frames light, big enough to move a video quickly.
+    public static let chunk = 256 * 1024
+    /// The biggest file a phone may fetch.
+    public static let maxSize = 512 * 1024 * 1024
 }
 
 /// iPhone → Mac.
@@ -116,6 +164,10 @@ public enum LinkRequest: Codable, Sendable, Equatable {
     case toss(imp: UUID, exit: LinkSide, height: Double, speed: Double)
     /// Patted, spun or shaken on the phone: the Mac plays the animation that answers to it.
     case felt(imp: UUID, feeling: LinkFeeling)
+    /// A file a reply shows or links to (a picture, a voice, a video, a document), as written in
+    /// the reply: a path on the Mac, relative to the Imp's folder or absolute. The Mac sends it
+    /// back in parts (`LinkUpdate.file`), or says why not (`fileFailed`). `id` names the transfer.
+    case file(id: UUID, imp: UUID, ref: String)
     /// Still there (sent while idle, so a dead connection is noticed).
     case ping
 }
@@ -142,6 +194,12 @@ public enum LinkUpdate: Codable, Sendable, Equatable {
     case animate(imp: UUID, beats: [AnimationBeat])
     /// A toss didn't work out (it bounces back): why.
     case refused(imp: UUID, reason: String)
+    /// What it's saying to another Imp right now (nil: nothing).
+    case speech(imp: UUID, speech: LinkSpeech?)
+    /// A part of a file the phone asked for.
+    case file(id: UUID, part: LinkFilePart)
+    /// The file can't be sent: why.
+    case fileFailed(id: UUID, reason: String)
     case pong
 }
 

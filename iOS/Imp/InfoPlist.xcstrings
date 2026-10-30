@@ -1,75 +1,87 @@
 {
-  "sourceLanguage": "en",
-  "version": "1.0",
-  "strings": {
-    "NSLocalNetworkUsageDescription": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imp finds your Mac on your network, so the Imps you toss can land here."
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imp busca tu Mac en tu red para que los Imps que lances puedan aterrizar aquí."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imp 会在你的网络中寻找 Mac，让你扔出的 Imp 能落到这里。"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp"
           }
         }
       }
     },
-    "NSCameraUsageDescription": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imp scans the pairing code your Mac shows."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imp escanea el código de emparejamiento que muestra tu Mac."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imp 会扫描你的 Mac 上显示的配对二维码。"
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Imp"
           }
         }
       }
     },
-    "CFBundleDisplayName": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imp"
+    "NSCameraUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp scans the pairing code your Mac shows."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imp"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp escanea el código de emparejamiento que muestra tu Mac."
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imp"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 会扫描你的 Mac 上显示的配对二维码。"
+          }
+        }
+      }
+    },
+    "NSLocalNetworkUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp finds your Mac on your network, so the Imps you toss can land here."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp busca tu Mac en tu red para que los Imps que lances puedan aterrizar aquí."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 会在你的网络中寻找 Mac，让你扔出的 Imp 能落到这里。"
           }
         }
       }
     }
-  }
+  },
+  "version" : "1.0"
 }

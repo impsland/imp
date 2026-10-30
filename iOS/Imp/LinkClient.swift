@@ -34,6 +34,10 @@ final class LinkClient {
     private(set) var chats: [UUID: [LinkTurn]] = [:]
     private(set) var work: [UUID: LinkWork] = [:]
     private(set) var moods: [UUID: Mood] = [:]
+    /// What each Imp is saying to another Imp (a bubble above it on the stage).
+    private(set) var speeches: [UUID: LinkSpeech] = [:]
+    /// Files from the Mac that replies show (pictures, voices, videos, documents).
+    @ObservationIgnored private(set) lazy var files = LinkFileStore(client: self)
     /// A short message to show (a toss that didn't work out, a pairing that didn't read).
     var toast: String?
 
@@ -133,6 +137,7 @@ final class LinkClient {
         channel?.close()
         channel = nil
         channelWasReady = false
+        files.linkLost()
     }
 
     // MARK: Finding the Mac
@@ -202,6 +207,7 @@ final class LinkClient {
             log.info("link closed: \(reason ?? "-", privacy: .public)")
             let wasReady = channelWasReady
             channel = nil
+            files.linkLost()
             channelWasReady = false
             pinger?.cancel()
             guard active else { return }
@@ -252,7 +258,7 @@ final class LinkClient {
         case .leave(let id):
             guard let i = imps.firstIndex(where: { $0.id == id }) else { break }
             let imp = imps.remove(at: i)
-            work[id] = nil; moods[id] = nil
+            work[id] = nil; moods[id] = nil; speeches[id] = nil
             if !others.contains(where: { $0.id == id }) { others.append(imp) }
             onEvent?(.left(id))
         case .look(let imp):
@@ -270,6 +276,14 @@ final class LinkClient {
             onEvent?(.animate(id, beats))
         case .refused(let id, let reason):
             onEvent?(.refused(id, reason))
+        case .speech(let id, let speech):
+            heard(speech, from: id)
+        case .file(let transfer, let part):
+            files.received(part, for: transfer)
+            return                                   // nothing to save
+        case .fileFailed(let transfer, let reason):
+            files.failed(transfer, reason: reason)
+            return
         case .pong:
             break
         }
@@ -285,6 +299,36 @@ final class LinkClient {
     }
 
     func stop(_ imp: UUID) { send(.stop(imp: imp)) }
+
+    /// Hides a speech bubble (tapped away).
+    func dismissSpeech(_ imp: UUID) { speeches[imp] = nil }
+
+    @ObservationIgnored private var speechClear: [UUID: Task<Void, Never>] = [:]
+
+    /// The Mac's bubble came or went. One that goes stays a little longer here, long enough to read
+    /// (the Mac hides its bubbles on its own clock, and you may only just have looked).
+    private func heard(_ speech: LinkSpeech?, from id: UUID) {
+        speechClear[id]?.cancel()
+        if let speech {
+            speeches[id] = speech
+            return
+        }
+        guard let shown = speeches[id] else { return }
+        let words = shown.question.count + shown.text.count
+        let linger = min(18, 4 + Double(words) * 0.04)
+        speechClear[id] = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(linger))
+            guard !Task.isCancelled, self?.speeches[id]?.id == shown.id else { return }
+            self?.speeches[id] = nil
+        }
+    }
+
+    /// Asks the Mac for a file (see `LinkFileStore`).
+    func requestFile(_ transfer: UUID, imp: UUID, ref: String) -> Bool {
+        guard isConnected, let channel else { return false }
+        channel.send(LinkRequest.file(id: transfer, imp: imp, ref: ref))
+        return true
+    }
     func newChat(_ imp: UUID) {
         chats[imp] = []
         send(.newChat(imp: imp))
@@ -358,6 +402,8 @@ final class LinkClient {
         ]
         work[bob.id] = LinkWork(request: "Summarise today's mail", status: "Reading mail", partial: "You have three new messages: one from")
         moods[bob.id] = .working
+        speeches[pip.id] = LinkSpeech(id: UUID(), role: .reply, peer: "Moss", hue: 0.25, question: "Is the backup done?",
+                                      text: "Yes! All **42 files** are safe on the external disk.")
     }
 
     var isDemo: Bool { demo }

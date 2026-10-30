@@ -90,6 +90,23 @@ public final class LinkChannel: @unchecked Sendable {   // mutable state is only
         }
     }
 
+    /// Sends one message and returns once the network has taken it (or the link is gone), so a
+    /// big stream (a file in parts) goes at the network's pace instead of piling up in memory.
+    /// False when the link closed first.
+    @discardableResult
+    public func sendAndWait<T: Encodable & Sendable>(_ value: T) async -> Bool {
+        guard let data = try? LinkFrame.encode(value) else { return false }
+        return await withCheckedContinuation { (done: CheckedContinuation<Bool, Never>) in
+            queue.async { [weak self] in
+                guard let self, !self.isClosed else { return done.resume(returning: false) }
+                self.connection.send(content: data, completion: .contentProcessed { [weak self] error in
+                    if let error { self?.finish(error.localizedDescription) }
+                    done.resume(returning: error == nil)
+                })
+            }
+        }
+    }
+
     public func close() {
         queue.async { [weak self] in
             guard let self else { return }

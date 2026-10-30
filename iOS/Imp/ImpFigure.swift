@@ -1,10 +1,12 @@
 import ImpKit
 import SwiftUI
 
-/// Where to look: a head turn (−1…1 each axis) toward a point. Saturates ~220 pt away, like the Mac's.
+/// Where to look: a head turn (−1…1 each axis, y down) toward a point. Saturates ~220 pt away,
+/// like the Mac's. The Mac measures from the bottom of the screen and turns its y over; UIKit's y
+/// already grows downward, so a point above the Imp is negative here (a look up).
 enum Gaze {
     static func toward(_ p: CGPoint, from c: CGPoint) -> CGPoint {
-        let dx = p.x - c.x, dy = c.y - p.y
+        let dx = p.x - c.x, dy = p.y - c.y
         let d = max(1, hypot(dx, dy))
         let k = min(1, d / 220)
         return CGPoint(x: dx / d * k, y: dy / d * k)

@@ -9,9 +9,6 @@ struct ImpPhoneApp: App {
     init() {
         #if DEBUG
         // Screenshots and demos without a Mac: `-demo` fills the stage with a few Imps.
-        if let i = CommandLine.arguments.firstIndex(of: "-renderIcon"), CommandLine.arguments.indices.contains(i + 1) {
-            IconRender.run(to: CommandLine.arguments[i + 1])
-        }
         if CommandLine.arguments.contains("-demo") { _client = State(initialValue: Self.demoClient()) }
         // End-to-end checks against a real Mac in the Simulator: `-pair <implink://…>` pairs at launch.
         if let i = CommandLine.arguments.firstIndex(of: "-pair"), CommandLine.arguments.indices.contains(i + 1),
@@ -93,9 +90,11 @@ struct RootView: View {
         }
         #if DEBUG
         .task {
-            if CommandLine.arguments.contains("-openChat"), let first = client.imps.first {
+            if CommandLine.arguments.contains("-openChat") {
+                // Waits for the Imps (from the demo, or from a Mac it's connecting to).
+                for _ in 0..<120 where client.imps.isEmpty { try? await Task.sleep(for: .milliseconds(250)) }
                 try? await Task.sleep(for: .seconds(1.5))
-                chat = ChatRoute(id: first.id)
+                if let first = client.imps.first { chat = ChatRoute(id: first.id) }
             }
             // `-ask <text>`: once connected, asks the first Imp and opens its chat (end-to-end checks).
             if let i = CommandLine.arguments.firstIndex(of: "-ask"), CommandLine.arguments.indices.contains(i + 1) {

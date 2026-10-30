@@ -26,7 +26,7 @@ xcodebuild -project iOS/ImpPhone.xcodeproj -scheme ImpPhone -destination 'generi
 
 Debug builds understand `-demo` (two Imps and a chat, no network) and `-openChat`, handy for screenshots,
 and `-pair <implink://…>` with `-ask <text>` for end-to-end checks against a running Mac.
-`scripts/make-icon.sh` re-renders the app icon with the Mac's renderer.
+`scripts/make-icon.sh` re-renders the app icon from the Mac app's own icon art (`Imp --render-ios-icon`).
 
 ## Pairing and tossing
 

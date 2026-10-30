@@ -1,24 +1,33 @@
 import ImpKit
+import QuickLook
 import SwiftUI
 
 /// An Imp's chat. The Mac does the thinking; this shows the turns it sends and sends what you type.
+/// Replies are drawn from their Markdown like the Mac's bubble: text, lists, code and tables, and
+/// the pictures, voices, videos and files they show, fetched from the Mac (`LinkFileStore`).
 struct ChatSheet: View {
     let client: LinkClient
     let impID: UUID
     @State private var text = ""
     @FocusState private var focused: Bool
+    @State private var confirmingNewChat = false
+    /// A file to look at full screen (Quick Look).
+    @State private var preview: URL?
+    @State private var problem: String?
+    /// Voices in replies that arrive after this play on their own (older ones wait for a tap).
+    @State private var openedAt = Date()
 
     private var imp: LinkImp? { client.imps.first { $0.id == impID } }
     private var turns: [LinkTurn] { client.chats[impID] ?? [] }
-    private var work: LinkWork? { client.work[impID] }
+    /// Work you asked for. A question from another Imp shows as its speech bubble on the stage.
+    private var work: LinkWork? { client.work[impID].flatMap { $0.from == nil ? $0 : nil } }
 
     var body: some View {
         VStack(spacing: 0) {
             if let imp {
                 header(imp)
-                Divider().overlay(Dungeon.cardEdge)
                 transcript(imp)
-                composer
+                composer(imp)
             } else {
                 // The Imp went back to the Mac while the chat was open.
                 ContentUnavailableView("This Imp is back on your Mac", systemImage: "macbook")
@@ -26,33 +35,67 @@ struct ChatSheet: View {
             }
         }
         .background(Dungeon.deep)
+        .environment(\.openURL, OpenURLAction { url in open(url) })
+        .quickLookPreview($preview)
+        .overlay(alignment: .top) {
+            if let problem {
+                Label(problem, systemImage: "exclamationmark.triangle.fill")
+                    .font(.system(.footnote, design: .rounded, weight: .medium))
+                    .foregroundStyle(Dungeon.cream)
+                    .padding(.horizontal, 14).padding(.vertical, 9)
+                    .background(.ultraThinMaterial, in: Capsule())
+                    .padding(.top, 70)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .task(id: problem) {
+                        try? await Task.sleep(for: .seconds(3))
+                        withAnimation { self.problem = nil }
+                    }
+            }
+        }
+        .animation(.spring(duration: 0.35), value: problem)
+        .confirmationDialog("Start a new chat?", isPresented: $confirmingNewChat, titleVisibility: .visible) {
+            Button("New Chat") {
+                client.newChat(impID)
+                openedAt = Date()
+                UINotificationFeedbackGenerator().notificationOccurred(.success)
+            }
+        } message: {
+            Text("This chat leaves your phone, but your Mac keeps it: it's in \(imp?.name ?? "the Imp")'s Brain › Memory › Chats. \(imp?.name ?? "The Imp") starts fresh.")
+        }
     }
 
     // MARK: Header
 
     private func header(_ imp: LinkImp) -> some View {
         HStack(spacing: 12) {
-            LiveImp(imp: imp, mood: mood).frame(width: 46, height: 46)
+            LiveImp(imp: imp, mood: mood).frame(width: 48, height: 48)
             VStack(alignment: .leading, spacing: 2) {
                 Text(imp.name).font(.system(.headline, design: .rounded)).foregroundStyle(Dungeon.cream)
-                Text(status)
-                    .font(.system(.caption, design: .rounded))
-                    .foregroundStyle(Dungeon.muted)
-                    .lineLimit(1)
+                HStack(spacing: 5) {
+                    Circle().fill(statusColor).frame(width: 6, height: 6)
+                    Text(status)
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(Dungeon.muted)
+                        .lineLimit(1)
+                        .contentTransition(.opacity)
+                }
             }
             Spacer()
-            Button {
-                client.newChat(impID)
-            } label: {
+            Button { confirmingNewChat = true } label: {
                 Image(systemName: "square.and.pencil")
                     .font(.system(size: 17, weight: .medium))
+                    .foregroundStyle(Dungeon.cream)
                     .frame(width: 38, height: 38)
                     .background(Dungeon.card, in: Circle())
+                    .overlay(Circle().strokeBorder(Dungeon.cardEdge))
             }
-            .disabled(!client.isConnected)
+            .disabled(!client.isConnected || (turns.isEmpty && work == nil))
+            .opacity(client.isConnected && !(turns.isEmpty && work == nil) ? 1 : 0.4)
             .accessibilityLabel("New Chat")
         }
-        .padding(.horizontal, 18).padding(.top, 22).padding(.bottom, 10)
+        .padding(.horizontal, 18).padding(.top, 20).padding(.bottom, 12)
+        .background(alignment: .bottom) { Rectangle().fill(Dungeon.cardEdge).frame(height: 1) }
+        .animation(.easeInOut(duration: 0.2), value: status)
     }
 
     private var mood: Mood {
@@ -63,8 +106,14 @@ struct ChatSheet: View {
 
     private var status: String {
         if !client.isConnected { return String(localized: "Your Mac isn't around") }
-        if let work { return work.status ?? String(localized: "Thinking…") }
+        if let work { return work.status ?? (work.partial.isEmpty ? String(localized: "Thinking…") : String(localized: "Answering…")) }
+        if let w = client.work[impID], let from = w.from { return String(localized: "Answering \(from)…") }
         return String(localized: "Ready")
+    }
+
+    private var statusColor: Color {
+        if !client.isConnected { return Dungeon.muted }
+        return client.work[impID] != nil ? Dungeon.flame : Dungeon.good
     }
 
     // MARK: Transcript
@@ -72,84 +121,120 @@ struct ChatSheet: View {
     private func transcript(_ imp: LinkImp) -> some View {
         ScrollViewReader { proxy in
             ScrollView {
-                LazyVStack(spacing: 14) {
-                    if turns.isEmpty && work == nil { emptyState }
-                    ForEach(turns) { turn in TurnView(turn: turn, name: imp.name) }
-                    if let work { LiveTurn(work: work, name: imp.name) }
+                LazyVStack(spacing: 18) {
+                    if turns.isEmpty && work == nil { emptyState(imp) }
+                    ForEach(Array(turns.enumerated()), id: \.element.id) { i, turn in
+                        if let label = Self.separator(turn.date, after: i > 0 ? turns[i - 1].date : nil) {
+                            DaySeparator(text: label)
+                        }
+                        TurnView(turn: turn, imp: imp, client: client, fresh: turn.date > openedAt,
+                                 retry: client.isConnected ? { client.ask(impID, turn.request) } : nil)
+                    }
+                    if let work { LiveTurn(work: work, imp: imp, client: client) }
                     Color.clear.frame(height: 1).id("end")
                 }
-                .padding(.horizontal, 16).padding(.vertical, 14)
+                .padding(.horizontal, 14).padding(.vertical, 16)
             }
             .defaultScrollAnchor(.bottom)
             .scrollDismissesKeyboard(.interactively)
-            .onChange(of: turns.count) { withAnimation { proxy.scrollTo("end") } }
-            .onChange(of: work?.partial) { proxy.scrollTo("end") }
-            .onChange(of: focused) { _, on in if on { withAnimation { proxy.scrollTo("end") } } }
+            .onChange(of: turns.last?.id) { _, _ in
+                withAnimation(.spring(duration: 0.4)) { proxy.scrollTo("end", anchor: .bottom) }
+                if turns.last?.date ?? .distantPast > openedAt {
+                    UINotificationFeedbackGenerator().notificationOccurred(turns.last?.failed == true ? .error : .success)
+                }
+            }
+            .onChange(of: work?.partial) { proxy.scrollTo("end", anchor: .bottom) }
+            .onChange(of: work == nil) { withAnimation { proxy.scrollTo("end", anchor: .bottom) } }
+            .onChange(of: focused) { _, on in if on { withAnimation { proxy.scrollTo("end", anchor: .bottom) } } }
         }
     }
 
-    private var emptyState: some View {
-        VStack(spacing: 8) {
+    /// "Today 14:05" when a new day starts, or after a long pause.
+    static func separator(_ date: Date, after previous: Date?) -> String? {
+        if let previous, Calendar.current.isDate(previous, inSameDayAs: date), date.timeIntervalSince(previous) < 3_600 { return nil }
+        let day: String
+        if Calendar.current.isDateInToday(date) { day = String(localized: "Today") }
+        else if Calendar.current.isDateInYesterday(date) { day = String(localized: "Yesterday") }
+        else { day = date.formatted(.dateTime.weekday(.wide).day().month()) }
+        return "\(day) \(date.formatted(date: .omitted, time: .shortened))"
+    }
+
+    private func emptyState(_ imp: LinkImp) -> some View {
+        VStack(spacing: 10) {
             Image(systemName: "bubble.left.and.text.bubble.right").font(.system(size: 30, weight: .light)).foregroundStyle(Dungeon.ember)
-            Text("Ask me anything — I work on your Mac. I can message the Imps on your Mac too.")
+            Text("Ask \(imp.name) anything")
+                .font(.system(.headline, design: .rounded)).foregroundStyle(Dungeon.cream)
+            Text("It works on your Mac, with its tools, and can message the Imps there too. Pictures, voices and files it makes show up right here.")
                 .font(.system(.callout, design: .rounded))
                 .foregroundStyle(Dungeon.muted)
                 .multilineTextAlignment(.center)
         }
-        .padding(.vertical, 28).padding(.horizontal, 12)
+        .padding(.vertical, 36).padding(.horizontal, 18)
     }
 
     // MARK: Composer
 
-    private var composer: some View {
+    private func composer(_ imp: LinkImp) -> some View {
         VStack(spacing: 8) {
-            if !client.others.isEmpty && text.isEmpty {
+            if !client.others.isEmpty && text.isEmpty && client.isConnected {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         ForEach(client.others) { other in
-                            Button { text = String(localized: "Ask \(other.name) to "); focused = true } label: {
-                                Text(other.name)
-                                    .font(.system(.footnote, design: .rounded, weight: .medium))
-                                    .padding(.horizontal, 12).padding(.vertical, 6)
-                                    .background(Dungeon.card, in: Capsule())
-                                    .overlay(Capsule().strokeBorder(Dungeon.cardEdge))
+                            Button {
+                                text = String(localized: "Ask \(other.name) to ")
+                                focused = true
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Circle().fill(Color.imp(other.hue)).frame(width: 8, height: 8)
+                                    Text(other.name).font(.system(.footnote, design: .rounded, weight: .medium))
+                                }
+                                .padding(.horizontal, 12).padding(.vertical, 6)
+                                .background(Dungeon.card, in: Capsule())
+                                .overlay(Capsule().strokeBorder(Dungeon.cardEdge))
                             }
                             .buttonStyle(.plain)
                             .foregroundStyle(Dungeon.cream)
+                            .accessibilityHint("Starts a message asking \(other.name) to do something.")
                         }
                     }
                     .padding(.horizontal, 16)
                 }
             }
             if !client.isConnected {
-                Text("Your Mac isn't around. Chats resume when it is.")
+                Label("Your Mac isn't around. Chats resume when it is.", systemImage: "wifi.slash")
                     .font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
             }
             HStack(alignment: .bottom, spacing: 10) {
-                TextField("Message", text: $text, axis: .vertical)
-                    .lineLimit(1...5)
+                TextField("Message \(imp.name)", text: $text, axis: .vertical)
+                    .lineLimit(1...6)
                     .focused($focused)
-                    .submitLabel(.send)
-                    .onSubmit(send)
+                    .foregroundStyle(Dungeon.cream)
                     .padding(.horizontal, 14).padding(.vertical, 10)
-                    .background(Dungeon.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                    .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).strokeBorder(Dungeon.cardEdge))
-                if work != nil {
-                    Button { client.stop(impID) } label: { glyph("stop.fill") }
+                    .background(Dungeon.card, in: RoundedRectangle(cornerRadius: 21, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 21, style: .continuous).strokeBorder(focused ? Dungeon.ember.opacity(0.6) : Dungeon.cardEdge))
+                if work != nil && trimmed.isEmpty {
+                    Button { client.stop(impID); UIImpactFeedbackGenerator(style: .medium).impactOccurred() } label: { glyph("stop.fill") }
                         .accessibilityLabel("Stop")
+                        .transition(.scale.combined(with: .opacity))
                 } else {
                     Button(action: send) { glyph("arrow.up") }
-                        .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        .disabled(trimmed.isEmpty)
+                        .opacity(trimmed.isEmpty ? 0.45 : 1)
                         .accessibilityLabel("Send")
+                        .transition(.scale.combined(with: .opacity))
                 }
             }
-            .padding(.horizontal, 16)
+            .animation(.spring(duration: 0.3), value: work == nil)
+            .padding(.horizontal, 14)
             .disabled(!client.isConnected)
             .opacity(client.isConnected ? 1 : 0.5)
         }
-        .padding(.top, 8).padding(.bottom, 10)
-        .background(Dungeon.deep.opacity(0.95))
+        .padding(.top, 10).padding(.bottom, 10)
+        .background(alignment: .top) { Rectangle().fill(Dungeon.cardEdge).frame(height: 1) }
+        .background(Dungeon.deep)
     }
+
+    private var trimmed: String { text.trimmingCharacters(in: .whitespacesAndNewlines) }
 
     private func glyph(_ name: String) -> some View {
         Image(systemName: name)
@@ -160,116 +245,198 @@ struct ChatSheet: View {
     }
 
     private func send() {
-        client.ask(impID, text)
+        guard !trimmed.isEmpty else { return }
+        client.ask(impID, trimmed)
         text = ""
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+
+    // MARK: Links
+
+    /// Web links open in Safari; a file on the Mac comes over and opens in Quick Look.
+    private func open(_ url: URL) -> OpenURLAction.Result {
+        if let scheme = url.scheme?.lowercased(), scheme != "file" { return .systemAction }
+        let ref = url.absoluteString
+        Task {
+            do { preview = try await client.files.file(imp: impID, ref: ref) }
+            catch { problem = error.localizedDescription }
+        }
+        return .handled
     }
 }
 
 // MARK: - Turns
 
-private func markdown(_ s: String) -> Text {
-    let options = AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)
-    if let a = try? AttributedString(markdown: s, options: options) { return Text(a) }
-    return Text(s)
+private struct DaySeparator: View {
+    var text: String
+    var body: some View {
+        Text(text)
+            .font(.system(.caption2, design: .rounded, weight: .semibold))
+            .foregroundStyle(Dungeon.muted)
+            .padding(.horizontal, 10).padding(.vertical, 4)
+            .background(Dungeon.card, in: Capsule())
+            .padding(.top, 4)
+    }
 }
 
-private struct Bubble: View {
+/// What you asked: on the right, in ember.
+private struct AskBubble: View {
     var text: String
-    var mine: Bool
-    var failed = false
+    var retry: (() -> Void)?
 
     var body: some View {
-        markdown(text)
+        Text(Inline.text(text))
             .font(.system(.body, design: .rounded))
-            .foregroundStyle(mine ? Dungeon.deep : Dungeon.cream)
-            .textSelection(.enabled)
+            .foregroundStyle(Dungeon.deep)
+            .tint(Dungeon.deep)
             .padding(.horizontal, 14).padding(.vertical, 10)
-            .background(fill, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-            .overlay {
-                if !mine { RoundedRectangle(cornerRadius: 20, style: .continuous).strokeBorder(failed ? Color.red.opacity(0.4) : Dungeon.cardEdge) }
+            .background(LinearGradient(colors: [Dungeon.flame, Dungeon.ember], startPoint: .top, endPoint: .bottom),
+                        in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .contextMenu {
+                Button { UIPasteboard.general.string = text } label: { Label("Copy", systemImage: "doc.on.doc") }
+                if let retry { Button(action: retry) { Label("Ask Again", systemImage: "arrow.clockwise") } }
             }
-            .frame(maxWidth: .infinity, alignment: mine ? .trailing : .leading)
-            .padding(mine ? .leading : .trailing, 44)
-    }
-
-    private var fill: AnyShapeStyle {
-        if mine { return AnyShapeStyle(LinearGradient(colors: [Dungeon.flame, Dungeon.ember], startPoint: .top, endPoint: .bottom)) }
-        if failed { return AnyShapeStyle(Color.red.opacity(0.18)) }
-        return AnyShapeStyle(Dungeon.card)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.leading, 48)
     }
 }
 
 private struct TurnView: View {
     var turn: LinkTurn
-    var name: String
+    var imp: LinkImp
+    var client: LinkClient
+    /// Arrived while the chat was open (its voice may play on its own).
+    var fresh: Bool
+    var retry: (() -> Void)?
 
     var body: some View {
-        VStack(spacing: 6) {
-            if let from = turn.from {
-                Text("from \(from)")
-                    .font(.system(.caption, design: .rounded, weight: .medium))
-                    .foregroundStyle(Dungeon.ember)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                Bubble(text: turn.request, mine: false)
-            } else {
-                Bubble(text: turn.request, mine: true)
-            }
-            if !turn.steps.isEmpty {
-                Text(stepsLine)
-                    .font(.system(.caption, design: .rounded))
-                    .foregroundStyle(Dungeon.muted)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 6)
-            }
-            Bubble(text: turn.reply, mine: false, failed: turn.failed)
+        VStack(spacing: 8) {
+            AskBubble(text: turn.request, retry: retry)
+            if !turn.steps.isEmpty { StepsLine(steps: turn.steps) }
+            ReplyCard(text: turn.reply, imp: imp, client: client, failed: turn.failed, autoplay: fresh, retry: turn.failed ? retry : nil)
         }
-    }
-
-    private var stepsLine: String {
-        turn.steps.count == 1 ? turn.steps[0] : String(localized: "Ran \(turn.steps.count) tools")
     }
 }
 
-/// What the Imp is working on right now: your message, its step, the answer as it streams in.
+/// The tools it used, folded into one line ("Ran 3 tools ›"); tap to list them.
+private struct StepsLine: View {
+    var steps: [String]
+    @State private var open = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Button { withAnimation(.snappy) { open.toggle() } } label: {
+                HStack(spacing: 5) {
+                    Image(systemName: "gearshape.2.fill").font(.system(size: 10))
+                    Text(steps.count == 1 ? steps[0] : String(localized: "Ran \(steps.count) tools"))
+                        .lineLimit(1)
+                    if steps.count > 1 {
+                        Image(systemName: "chevron.right").font(.system(size: 9, weight: .bold)).rotationEffect(.degrees(open ? 90 : 0))
+                    }
+                }
+                .font(.system(.caption, design: .rounded, weight: .medium))
+                .foregroundStyle(Dungeon.muted)
+            }
+            .buttonStyle(.plain)
+            .disabled(steps.count < 2)
+            if open {
+                VStack(alignment: .leading, spacing: 3) {
+                    ForEach(Array(steps.enumerated()), id: \.offset) { _, step in
+                        Label(step, systemImage: "checkmark").labelStyle(.titleAndIcon)
+                    }
+                }
+                .font(.system(.caption, design: .rounded))
+                .foregroundStyle(Dungeon.muted)
+                .padding(.leading, 16)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading, 8)
+    }
+}
+
+/// The Imp's answer: its Markdown, drawn block by block, in a card on the left.
+private struct ReplyCard: View {
+    var text: String
+    var imp: LinkImp
+    var client: LinkClient
+    var failed = false
+    var streaming = false
+    var autoplay = false
+    var retry: (() -> Void)?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if failed {
+                Label("Couldn't answer", systemImage: "exclamationmark.triangle.fill")
+                    .font(.system(.caption, design: .rounded, weight: .semibold))
+                    .foregroundStyle(Color(red: 1, green: 0.55, blue: 0.5))
+            }
+            ReplyBlocks(text: text, imp: imp, client: client, autoplay: autoplay)
+            if streaming { TypingDots(compact: true) }
+            if let retry {
+                Button(action: retry) { Label("Try Again", systemImage: "arrow.clockwise") }
+                    .font(.system(.footnote, design: .rounded, weight: .semibold))
+                    .foregroundStyle(Dungeon.flame)
+                    .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 14).padding(.vertical, 12)
+        .background(failed ? AnyShapeStyle(Color.red.opacity(0.14)) : AnyShapeStyle(Dungeon.card),
+                    in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous)
+            .strokeBorder(failed ? Color.red.opacity(0.35) : Dungeon.cardEdge))
+        .contextMenu {
+            Button { UIPasteboard.general.string = text } label: { Label("Copy", systemImage: "doc.on.doc") }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.trailing, 28)
+    }
+}
+
+/// The answer being written: your message, what it's doing, the words so far.
 private struct LiveTurn: View {
     var work: LinkWork
-    var name: String
+    var imp: LinkImp
+    var client: LinkClient
 
     var body: some View {
-        VStack(spacing: 6) {
-            Bubble(text: work.request, mine: true)
+        VStack(spacing: 8) {
+            AskBubble(text: work.request)
             if let status = work.status {
-                Text(status)
-                    .font(.system(.caption, design: .rounded))
-                    .foregroundStyle(Dungeon.muted)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 6)
+                HStack(spacing: 6) {
+                    ProgressView().controlSize(.mini).tint(Dungeon.muted)
+                    Text(status).lineLimit(1)
+                }
+                .font(.system(.caption, design: .rounded, weight: .medium))
+                .foregroundStyle(Dungeon.muted)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 8)
             }
             if work.partial.isEmpty {
-                TypingDots()
+                TypingDots().frame(maxWidth: .infinity, alignment: .leading)
             } else {
-                VStack(alignment: .leading, spacing: 6) {
-                    Bubble(text: work.partial, mine: false)
-                    TypingDots().padding(.leading, 8)
-                }
+                ReplyCard(text: work.partial, imp: imp, client: client, streaming: true)
             }
         }
     }
 }
 
-private struct TypingDots: View {
+struct TypingDots: View {
+    var compact = false
     var body: some View {
         TimelineView(.animation(minimumInterval: 1 / 30)) { tl in
             let t = tl.date.timeIntervalSinceReferenceDate
             HStack(spacing: 5) {
                 ForEach(0..<3, id: \.self) { i in
-                    Circle().fill(Dungeon.muted).frame(width: 7, height: 7)
-                        .opacity(0.4 + 0.6 * max(0, sin(t * 5 - Double(i) * 0.8)))
+                    Circle().fill(Dungeon.muted).frame(width: compact ? 5 : 7, height: compact ? 5 : 7)
+                        .opacity(0.35 + 0.65 * max(0, sin(t * 5 - Double(i) * 0.8)))
                 }
             }
-            .padding(.horizontal, 14).padding(.vertical, 12)
-            .background(Dungeon.card, in: Capsule())
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, compact ? 0 : 14).padding(.vertical, compact ? 2 : 12)
+            .background(compact ? AnyShapeStyle(.clear) : AnyShapeStyle(Dungeon.card), in: Capsule())
         }
+        .accessibilityLabel("Writing")
     }
 }

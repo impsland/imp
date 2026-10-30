@@ -8161,6 +8161,22 @@
         }
       }
     },
+    "Imp can't read that file." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp no puede leer ese archivo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 无法读取那个文件。"
+          }
+        }
+      }
+    },
     "Imp starts" : {
       "localizations" : {
         "es" : {
@@ -16665,6 +16681,22 @@
         }
       }
     },
+    "That Imp isn't on this phone." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese Imp no está en este teléfono."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那个 Imp 不在这台手机上。"
+          }
+        }
+      }
+    },
     "That address didn't answer like a web page." : {
       "localizations" : {
         "es" : {
@@ -16757,6 +16789,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "该文件太大，不像是聊天（上限为 %lld MB）。"
+          }
+        }
+      }
+    },
+    "That file isn't in this chat." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese archivo no está en este chat."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那个文件不在这个聊天里。"
           }
         }
       }
@@ -17217,6 +17265,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这个代码包含一个只有你的手机和这台 Mac 知道的密钥。它从不经过网络传输：两者用它来相互识别，并加密彼此之间的所有通信。"
+          }
+        }
+      }
+    },
+    "The file is too big to send to the phone." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El archivo es demasiado grande para enviarlo al teléfono."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件太大，无法发送到手机。"
+          }
+        }
+      }
+    },
+    "The file isn't on the Mac any more." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El archivo ya no está en el Mac."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个文件已不在 Mac 上。"
           }
         }
       }

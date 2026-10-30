@@ -1,6 +1,6 @@
 // Live Imp Link (opt-in): plays an iPhone against a running Imp on this Mac, over loopback.
 //   IMP_LINK_SECRET=<base64 secret from …/Imp/iphone.json> IMP_LINK_DEVICE=<phone id> IMP_LINK_IMP=<an Imp on that phone>
-//   swift test --filter LinkLiveTests
+//   swift test --filter LinkLiveTests   (IMP_LINK_STAY=1: leave the Imp on the phone at the end)
 // The Imp must be on that phone (`awayOn`). Its model isn't needed: a failed answer is still an answer.
 
 import Foundation
@@ -59,9 +59,10 @@ struct LinkLiveTests {
         let worked = inbox.updates.contains { if case .work(let id, let w) = $0 { return id == imp && w?.request == words }; return false }
         print("saw work in progress:", worked)
 
-        // Ping, and a toss back to the Mac: it says the Imp has left the phone.
+        // Ping, and a toss back to the Mac: it says the Imp has left the phone (IMP_LINK_STAY=1 keeps it there).
         channel.send(LinkRequest.ping)
         #expect(try await wait(inbox) { $0.contains(.pong) })
+        guard env["IMP_LINK_STAY"] != "1" else { return }
         channel.send(LinkRequest.toss(imp: imp, exit: .right, height: 0.4, speed: 1800))
         #expect(try await wait(inbox) { $0.contains(.leave(imp: imp)) })
         for u in inbox.updates { print("got:", String(describing: u).prefix(160)) }

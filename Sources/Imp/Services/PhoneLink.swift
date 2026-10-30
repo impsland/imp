@@ -64,6 +64,7 @@ final class PhoneLink {
         var mood: String
         var work: LinkWork?
         var chat: [LinkTurn]
+        var speech: LinkSpeech?
     }
 
     /// Turns of the current chat a phone is sent (it shows the latest; the Mac keeps them all).
@@ -252,6 +253,48 @@ final class PhoneLink {
             case .drop: .drop
             }
             app.reactions.play(trigger, by: model)
+        case .file(let transfer, let imp, let ref):
+            guard let model = own(imp) else {
+                return peer.channel.send(LinkUpdate.fileFailed(id: transfer, reason: String(localized: "That Imp isn't on this phone.")))
+            }
+            sendFile(ref, of: model, transfer: transfer, over: peer.channel)
+        }
+    }
+
+    /// Sends a file one of the Imp's replies shows or links to, in parts, at the network's pace.
+    /// Only files a reply mentions (see `LinkFiles`), only regular files, never too big.
+    private func sendFile(_ ref: String, of imp: ImpModel, transfer: UUID, over channel: LinkChannel) {
+        var texts = imp.history.current.turns.map(\.reply)
+        if let b = imp.bubble { texts.append(b.text) }
+        if let w = imp.work { texts.append(w.text) }
+        func fail(_ reason: String) { channel.send(LinkUpdate.fileFailed(id: transfer, reason: reason)) }
+        guard LinkFiles.isMentioned(ref, in: texts), let url = LinkFiles.resolve(ref, base: Workspace.directory(for: imp.id)) else {
+            return fail(String(localized: "That file isn't in this chat."))
+        }
+        let log = log
+        Task.detached(priority: .userInitiated) {
+            let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
+            guard values?.isRegularFile == true, let size = values?.fileSize else {
+                return channel.send(LinkUpdate.fileFailed(id: transfer, reason: String(localized: "The file isn't on the Mac any more.")))
+            }
+            guard size <= LinkFilePart.maxSize else {
+                return channel.send(LinkUpdate.fileFailed(id: transfer, reason: String(localized: "The file is too big to send to the phone.")))
+            }
+            guard let handle = try? FileHandle(forReadingFrom: url) else {
+                return channel.send(LinkUpdate.fileFailed(id: transfer, reason: String(localized: "Imp can't read that file.")))
+            }
+            defer { try? handle.close() }
+            var offset = 0
+            repeat {
+                guard let data = try? handle.read(upToCount: LinkFilePart.chunk) else {
+                    return channel.send(LinkUpdate.fileFailed(id: transfer, reason: String(localized: "Imp can't read that file.")))
+                }
+                let part = LinkFilePart(name: url.lastPathComponent, size: size, offset: offset, data: data)
+                guard await channel.sendAndWait(LinkUpdate.file(id: transfer, part: part)) else { return }
+                offset += data.count
+                if data.isEmpty { break }
+            } while offset < size
+            log.info("sent \(url.lastPathComponent, privacy: .public) (\(size) bytes) to the phone")
         }
     }
 
@@ -326,6 +369,7 @@ final class PhoneLink {
         if before?.mood != now.mood { updates.append(.mood(imp: id, mood: now.mood)) }
         if before?.chat != now.chat { updates.append(.chat(imp: id, turns: now.chat)) }
         if before == nil || before?.work != now.work { updates.append(.work(imp: id, work: now.work)) }
+        if before == nil || before?.speech != now.speech { updates.append(.speech(imp: id, speech: now.speech)) }
         sent[id] = now
         for channel in channels(for: device) { updates.forEach(channel.send) }
     }
@@ -342,10 +386,25 @@ final class PhoneLink {
     private func snapshot(_ id: UUID) -> Snapshot? {
         guard let imp = app.imp(id), let profile = app.profile(id) else { return nil }
         let work = imp.work.map { w in
-            LinkWork(request: w.ask.request, status: w.steps.last { $0.state == .running }?.title, partial: w.text)
+            LinkWork(request: w.ask.request, status: w.steps.last { $0.state == .running }?.title, partial: w.text,
+                     from: w.received?.peer.name)
         }
+        // Talks with other Imps show as its speech bubble on the phone, not in your chat there.
+        let chat = imp.history.current.turns.filter { $0.sender == nil }.suffix(Self.chatPage).map(LinkTurn.init)
         return Snapshot(look: LinkImp(profile), mood: (imp.activity?.mood ?? .idle).rawValue, work: work,
-                        chat: imp.history.current.turns.suffix(Self.chatPage).map(LinkTurn.init))
+                        chat: chat, speech: Self.speech(imp.bubble))
+    }
+
+    /// The bubble's talk with another Imp, if that's what it shows.
+    private static func speech(_ bubble: Bubble?) -> LinkSpeech? {
+        guard let b = bubble, let ex = b.exchange, [.thinking, .result, .error].contains(b.phase) else { return nil }
+        let role: LinkSpeech.Role = switch ex.role {
+        case .asked: .asked
+        case .reply: .reply
+        case .asking: .asking
+        }
+        return LinkSpeech(id: b.id, role: role, peer: ex.peer.name, hue: ex.peer.hue, question: ex.question,
+                          text: role == .reply ? b.text : "")
     }
 
     /// Keeps every phone told which Imps are out on the Mac (to send messages to).
@@ -380,7 +439,7 @@ final class PhoneLink {
                   flags & IFF_UP != 0, flags & IFF_LOOPBACK == 0 else { continue }
             var host = [CChar](repeating: 0, count: Int(NI_MAXHOST))
             guard getnameinfo(sa, socklen_t(sa.pointee.sa_len), &host, socklen_t(host.count), nil, 0, NI_NUMERICHOST) == 0 else { continue }
-            let address = String(cString: host)
+            let address = String(decoding: host.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }, as: UTF8.self)
             if !address.hasPrefix("169.254."), !hosts.contains(address) { hosts.append(address) }
         }
         return Array(hosts.prefix(6))
