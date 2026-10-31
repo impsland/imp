@@ -57,7 +57,7 @@ struct StageOrb: View {
 
     var body: some View {
         Button { clip?.toggle() } label: {
-            TimelineView(.animation(minimumInterval: 1 / 30)) { tl in
+            TimelineView(Energy.shared.schedule(lively: false)) { tl in
                 let t = tl.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 3600)
                 let playing = clip?.isPlaying ?? false
                 let level = clip?.level(at: t) ?? 0

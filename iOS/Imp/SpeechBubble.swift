@@ -154,7 +154,7 @@ struct SpeechBubble: View {
 
     private struct Dots: View {
         var body: some View {
-            TimelineView(.animation(minimumInterval: 1 / 30)) { tl in
+            TimelineView(Energy.shared.schedule(lively: false)) { tl in
                 let t = tl.date.timeIntervalSinceReferenceDate
                 HStack(spacing: 4) {
                     ForEach(0..<3, id: \.self) { i in
@@ -175,7 +175,7 @@ private struct VoiceRim: View {
     var tail: CGFloat
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1 / 30)) { tl in
+        TimelineView(Energy.shared.schedule(lively: false)) { tl in
             let t = tl.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 3600)
             let voice = StageVoice.shared.level(owner: owner, at: t)
             let presence = voice.playing ? 0.5 + 0.5 * voice.level : 0.22

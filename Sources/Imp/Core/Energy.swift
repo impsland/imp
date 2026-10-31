@@ -1,25 +1,33 @@
 import AppKit
+import ImpKit
 import Observation
 
-/// How hard the Imps may work: the frame rate they draw at while moving, which drops in Low Power Mode.
+/// How hard the Imps may work: the frame rate they draw at while moving, which drops in Low Power
+/// Mode and when the Mac runs hot.
 @MainActor @Observable
 final class Energy {
     static let shared = Energy()
 
-    private(set) var lowPower = ProcessInfo.processInfo.isLowPowerModeEnabled
+    private(set) var budget = Energy.read()
 
     /// Seconds between frames while something moves.
-    var frame: Double { lowPower ? Self.savingFrame : Self.fullFrame }
+    var frame: Double { budget == .full ? Self.fullFrame : Self.savingFrame }
 
     nonisolated static let fullFrame = 1.0 / 60
     nonisolated static let savingFrame = 1.0 / 30
 
-    @ObservationIgnored private var observer: NSObjectProtocol?
+    @ObservationIgnored private var observers: [NSObjectProtocol] = []
 
     private init() {
-        observer = NotificationCenter.default.addObserver(forName: .NSProcessInfoPowerStateDidChange, object: nil, queue: .main) { _ in
-            MainActor.assumeIsolated { Energy.shared.lowPower = ProcessInfo.processInfo.isLowPowerModeEnabled }
+        for name in [Notification.Name.NSProcessInfoPowerStateDidChange, ProcessInfo.thermalStateDidChangeNotification] {
+            observers.append(NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { _ in
+                MainActor.assumeIsolated { Energy.shared.budget = Energy.read() }
+            })
         }
+    }
+
+    private static func read() -> FramePolicy.Budget {
+        FramePolicy.budget(lowPower: ProcessInfo.processInfo.isLowPowerModeEnabled, thermal: ProcessInfo.processInfo.thermalState)
     }
 }
 

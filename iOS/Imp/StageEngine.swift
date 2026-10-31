@@ -55,6 +55,8 @@ final class StageEngine {
     private(set) var size = CGSize(width: 393, height: 852)
     private var insets = EdgeInsets()
     private var last: Date?
+    /// How fast the stage needs drawing (see `StagePacer`).
+    let pacer = StagePacer()
     /// Where a finger is touching the screen, for the Imps to glance at.
     var touch: CGPoint?
     /// The Imp touched last (a jolt of the phone throws this one).
@@ -102,6 +104,7 @@ final class StageEngine {
         bodies[b.imp.id] = b
         order.removeAll { $0 == b.imp.id }
         order.append(b.imp.id)
+        pacer.wake()
     }
 
     private func remove(_ id: UUID) {
@@ -167,6 +170,7 @@ final class StageEngine {
 
     func animate(_ id: UUID, _ beats: [AnimationBeat]) {
         guard bodies[id] != nil, !beats.isEmpty else { return }
+        pacer.wake()
         bodies[id]?.performance = Performance(key: "mac", steps: beats.map(AnticStep.init))
     }
 
@@ -187,6 +191,7 @@ final class StageEngine {
     // MARK: Throwing
 
     private func fly(_ b: inout Body, side: LinkSide, speed: Double, toss: Bool, vy: Double = 0) {
+        pacer.wake()
         b.phase = .flyingOut(toss: toss)
         b.enteringFrom = nil
         b.drag = 0
@@ -242,6 +247,7 @@ final class StageEngine {
     /// Starts a round, if there is anyone to play with. The first one (or one asked for) begins with the lesson.
     func startGame(tutorial: Bool = false) {
         guard !order.isEmpty else { return }
+        pacer.wake()
         let coaching = tutorial || !UserDefaults.standard.bool(forKey: Self.tutorialKey)
         round = GameRound(coaching: coaching)
         haptics.prepare()
@@ -354,6 +360,7 @@ final class StageEngine {
             b.warnedOffline = false
             b.performance = nil
             focus = id
+            pacer.wake()
             order.removeAll { $0 == id }
             order.append(id)
         case .dragging: break
@@ -464,6 +471,7 @@ final class StageEngine {
         }
         play(dt, date: date)
         separate(dt)
+        pacer.settle(moving: isMoving(at: date), empty: order.isEmpty && round == nil, at: date)
     }
 
     static func lean(_ vx: Double) -> Double { max(-14, min(14, vx * 0.012)) }
@@ -495,6 +503,7 @@ final class StageEngine {
                 let reach = (a.size + c.size) * 0.34
                 guard d < reach else { continue }
                 let push = (reach - d) * 6 * dt
+                pacer.separating = true
                 let ux = dx / d, uy = dy / d
                 a.pos.x -= ux * push; a.pos.y -= uy * push
                 c.pos.x += ux * push; c.pos.y += uy * push
@@ -515,8 +524,13 @@ final class StageEngine {
     /// What `b` looks at: the finger if one is down, otherwise the closest friend.
     func gaze(for b: Body) -> (point: CGPoint, attentive: Bool)? {
         if let touch { return (touch, false) }
-        let friends = order.compactMap { bodies[$0] }.filter { $0.imp.id != b.imp.id && $0.phase == .free }
-        guard let near = friends.min(by: { hypot($0.pos.x - b.pos.x, $0.pos.y - b.pos.y) < hypot($1.pos.x - b.pos.x, $1.pos.y - b.pos.y) }) else { return nil }
-        return (near.pos, true)
+        var near: CGPoint?
+        var nearest = CGFloat.infinity
+        for id in order where id != b.imp.id {
+            guard let other = bodies[id], other.phase == .free else { continue }
+            let d = hypot(other.pos.x - b.pos.x, other.pos.y - b.pos.y)
+            if d < nearest { nearest = d; near = other.pos }
+        }
+        return near.map { ($0, true) }
     }
 }

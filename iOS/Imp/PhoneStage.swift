@@ -15,6 +15,9 @@ struct PhoneStage: View {
     @State private var deleting: LinkImp?
     @State private var engine = StageEngine()
     @State private var motion = MotionWatcher()
+    @State private var sizes = BubbleSizes()
+    /// How fast the stage is drawn right now (the engine says, see `StagePacer`).
+    @State private var pace = StagePace.lively
     @Environment(\.scenePhase) private var scenePhase
     @State private var wired = false
 
@@ -27,10 +30,10 @@ struct PhoneStage: View {
                     // Touches that miss every Imp still make them look.
                     Color.clear.contentShape(Rectangle())
                         .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .named("stage"))
-                            .onChanged { engine.touch = $0.location }
+                            .onChanged { engine.touch = $0.location; engine.pacer.wake() }
                             .onEnded { _ in engine.touch = nil })
 
-                    TimelineView(.animation(paused: scenePhase != .active)) { timeline in
+                    TimelineView(Energy.shared.schedule(lively: pace == .lively, paused: scenePhase != .active || pace == .idle)) { timeline in
                         let _ = engine.step(timeline.date, size: geo.size, insets: geo.safeAreaInsets)
                         ZStack {
                             ForEach(engine.order, id: \.self) { id in
@@ -95,7 +98,8 @@ struct PhoneStage: View {
         for id in engine.order {
             guard let b = engine.bodies[id], b.phase == .free || b.phase == .dragging,
                   let speech = client.speeches[id] ?? pocket.speeches[id] else { continue }
-            let box = SpeechBubble.size(of: speech)
+            let (box, isNew) = sizes.size(of: speech)
+            if isNew { engine.pacer.wake(at: date) }
             let x = min(max(b.pos.x, box.width / 2 + 12), max(size.width - box.width / 2 - 12, box.width / 2 + 12))
             var top = b.pos.y - b.size * 0.4 - 14
             var frame = CGRect(x: x - box.width / 2, y: top - box.height, width: box.width, height: box.height)
@@ -106,6 +110,7 @@ struct PhoneStage: View {
             frames.append(frame)
             placed[id] = (speech, x, top)
         }
+        sizes.keep(placed.values.map(\.speech.id))
         return placed
     }
 
@@ -126,6 +131,7 @@ struct PhoneStage: View {
             if let m = source.mood(id) { return m }
             return working != nil ? .working : .idle
         }()
+        engine.pacer.note(mood: mood, of: id, at: date)
         let gaze = engine.gaze(for: b)
         return ImpFigure(imp: b.imp, mood: mood, performance: b.performance, lean: b.lean,
                          gaze: gaze.map { Gaze.toward($0.point, from: b.pos) }, attentive: gaze?.attentive ?? false, date: date)
@@ -136,7 +142,7 @@ struct PhoneStage: View {
                     .frame(width: side * 2.3, height: side * 2.3)
             }
             .overlay(alignment: .top) {
-                if working != nil { ThinkingDots().offset(y: -side * 0.12).transition(.scale.combined(with: .opacity)) }
+                if working != nil { ThinkingDots(date: date).offset(y: -side * 0.12).transition(.scale.combined(with: .opacity)) }
             }
             .overlay(alignment: .bottom) {
                 NameTag(name: b.imp.name).offset(y: 14).opacity(b.phase == .dragging ? 0.4 : 1)
@@ -179,6 +185,8 @@ struct PhoneStage: View {
         guard !wired else { return }
         wired = true
         let engine = engine, client = client, pocket = pocket
+        let pace = $pace
+        engine.pacer.onChange = { pace.wrappedValue = $0 }
         engine.isConnected = { client.isConnected }
         engine.send = { id, side, height, speed in
             if pocket.contains(id) { pocket.toss(id, exit: side, height: height, speed: speed) }
@@ -200,7 +208,7 @@ struct PhoneStage: View {
         motion.onEvent = { event in
             switch event {
             case .thrown(let side): engine.jolt(side)
-            case .shaken: engine.shake()
+            case .shaken: engine.shake(); engine.pacer.wake()
             }
         }
         engine.reconcile(roster)
@@ -221,19 +229,20 @@ private struct NameTag: View {
 }
 
 /// Three dots bouncing above an Imp that's working on something.
+/// It bounces with the stage's own clock, so it costs no timeline of its own.
 private struct ThinkingDots: View {
+    var date: Date
+
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1 / 30)) { tl in
-            let t = tl.date.timeIntervalSinceReferenceDate
-            HStack(spacing: 4) {
-                ForEach(0..<3, id: \.self) { i in
-                    Circle().fill(Dungeon.flame).frame(width: 5, height: 5)
-                        .offset(y: -3 * max(0, sin(t * 6 - Double(i) * 0.9)))
-                }
+        let t = date.timeIntervalSinceReferenceDate
+        HStack(spacing: 4) {
+            ForEach(0..<3, id: \.self) { i in
+                Circle().fill(Dungeon.flame).frame(width: 5, height: 5)
+                    .offset(y: -3 * max(0, sin(t * 6 - Double(i) * 0.9)))
             }
-            .padding(.horizontal, 9).padding(.vertical, 6)
-            .background(.black.opacity(0.35), in: Capsule())
         }
+        .padding(.horizontal, 9).padding(.vertical, 6)
+        .background(.black.opacity(0.35), in: Capsule())
         .allowsHitTesting(false)
     }
 }
@@ -271,26 +280,45 @@ struct EmptyHint: View {
     }
 }
 
-/// The phone's own motion: a throw of the whole phone, or a shake.
+/// The phone's own motion: a throw of the whole phone, or a shake. Sampled off the main queue (only
+/// an event comes back to it), and no faster than a jolt needs: a throw lasts a tenth of a second.
 @MainActor
 final class MotionWatcher {
+    /// Samples a second.
+    nonisolated static let rate = 50.0
+
     private let manager = CMMotionManager()
-    private var jolts = JoltDetector()
+    private let queue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "app.imp.motion"
+        queue.maxConcurrentOperationCount = 1
+        return queue
+    }()
     var onEvent: ((JoltDetector.Event) -> Void)?
 
     func start() {
         guard manager.isDeviceMotionAvailable, !manager.isDeviceMotionActive else { return }
-        jolts = JoltDetector()
-        manager.deviceMotionUpdateInterval = 1 / 60
-        manager.startDeviceMotionUpdates(to: .main) { [weak self] data, _ in
+        let sampler = JoltSampler { [weak self] event in
+            Task { @MainActor in self?.onEvent?(event) }
+        }
+        manager.deviceMotionUpdateInterval = 1 / Self.rate
+        manager.startDeviceMotionUpdates(to: queue) { data, _ in
             guard let data else { return }
-            let x = data.userAcceleration.x, t = data.timestamp
-            MainActor.assumeIsolated {
-                guard let self, let event = self.jolts.feed(x: x, at: t) else { return }
-                self.onEvent?(event)
-            }
+            sampler.feed(x: data.userAcceleration.x, at: data.timestamp)
         }
     }
 
     func stop() { manager.stopDeviceMotionUpdates() }
+}
+
+/// Feeds the jolt detector from the motion queue (one at a time, so it needs no lock).
+private final class JoltSampler: @unchecked Sendable {
+    private var jolts = JoltDetector()
+    private let onEvent: @Sendable (JoltDetector.Event) -> Void
+
+    init(onEvent: @escaping @Sendable (JoltDetector.Event) -> Void) { self.onEvent = onEvent }
+
+    func feed(x: Double, at t: TimeInterval) {
+        if let event = jolts.feed(x: x, at: t) { onEvent(event) }
+    }
 }
