@@ -94,7 +94,9 @@ final class ImpMenu: NSObject, NSMenuDelegate {
         let fresh = add(menu, String(localized: "New Chat"), symbol: "plus.bubble", action: #selector(newChat))
         if !visit.isAwake { fresh.action = nil }
         menu.addItem(.separator())
-        for peer in app.link.connectedPeers {
+        // Only the devices its doors lead to: back where it came from, or on to the others.
+        let doors = Set([LinkSide.left, .right].flatMap { app.link.bands(of: imp.id, side: $0).map(\.device) })
+        for peer in app.link.connectedPeers where doors.contains(peer.id) {
             let item = add(menu, String(localized: "Send \(name) to \(peer.name)…"),
                            symbol: peer.kind == .mac ? "desktopcomputer" : "iphone.gen3", action: #selector(sendToDevice(_:)))
             item.representedObject = peer.id

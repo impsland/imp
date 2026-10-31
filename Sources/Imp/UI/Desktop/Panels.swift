@@ -239,7 +239,7 @@ final class Panels {
     /// Only once a device is linked; until then the edges are just edges. True when it was a throw.
     private func flung(at cursor: CGPoint, velocity: CGVector) -> Bool {
         let app = model.app
-        guard app.link.isLinked, !app.isAway(model.id),
+        guard app.link.isLinked || model.visit != nil, !app.isAway(model.id),
               let exit = Toss.desktopExit(cursor: cursor, velocity: velocity, screens: NSScreen.screens.map(\.frame)) else { return false }
         steady?.cancel()
         app.reactions.release(.pickUp, by: model)

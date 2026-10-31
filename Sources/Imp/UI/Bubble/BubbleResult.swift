@@ -15,7 +15,7 @@ struct ResultView: View {
     var body: some View {
         if let exchange = bubble.exchange { ExchangeHeader(exchange: exchange).padding(.bottom, 4) }
         if !bubble.text.isEmpty {
-            let blocks = Markdown.blocks(bubble.text)
+            let blocks = model.replyBlocks(bubble.text)
             let voice = VoiceReply.style(bubble, prefs: model.prefs) != nil
             let reply = MarkdownView(blocks: blocks, base: Workspace.directory(for: model.id),
                                      onImageLoad: measuring ? nil : { layout.onToggle?() },

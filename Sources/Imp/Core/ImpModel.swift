@@ -304,6 +304,7 @@ final class ImpModel {
 
     /// Starts a fresh chat; the one you were in stays in the list to come back to.
     func newChat() {
+        if visit?.isAwake == false { return }              // its home keeps the chats, and it can't hear
         stopForChatChange()
         history.startNew()
         if visit != nil { app.link.newChat(id) }
@@ -466,7 +467,7 @@ final class ImpModel {
     /// Opens a text box in the bubble: type to this Imp instead of talking.
     func startTyping(prefill: String = "", prompt: String? = nil) {
         touch()
-        app.focus(self)
+        if visit == nil { app.focus(self) }
         cancel()
         setActivity(.typing)
         show(Bubble(text: prefill, phase: .typing, prompt: prompt ?? String(localized: "Ask \(profile.name) anything…")), autoHide: false)
@@ -500,7 +501,7 @@ final class ImpModel {
     /// Returns false when there's no text box to take it.
     @discardableResult
     func attach(_ picture: EncodedImage) -> Bool {
-        guard var b = bubble, takesTyping else { return false }
+        guard var b = bubble, takesTyping, visit == nil else { return false }
         b.attachment = picture
         bubble = b
         return true
