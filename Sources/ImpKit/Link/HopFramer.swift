@@ -1,16 +1,14 @@
 import Foundation
 import Network
 
-/// What a connection through the Hop carries: the room to join, and what the relay answered.
-public final class HopPass: @unchecked Sendable {
-    let room: Hop.Room
-    let role: Hop.Role
+/// What a connection through the Hop carries: who it is at the relay, and what the relay answered.
+public final class HopPass: @unchecked Sendable {   // `answer` is only touched under `lock`
+    let credentials: Hop.Credentials
     private let lock = NSLock()
     private var answer: Hop.Status?
 
-    public init(room: Hop.Room, role: Hop.Role) {
-        self.room = room
-        self.role = role
+    public init(_ credentials: Hop.Credentials) {
+        self.credentials = credentials
     }
 
     /// The relay's answer, once it gave one.
@@ -34,7 +32,7 @@ final class HopFramer: NWProtocolFramerImplementation {
 
     func start(framer: NWProtocolFramer.Instance) -> NWProtocolFramer.StartResult {
         guard let pass = framer.options[Self.key] as? HopPass else { return .willMarkReady }
-        framer.writeOutput(data: pass.room.hello(as: pass.role))
+        framer.writeOutput(data: pass.credentials.hello)
         return .willMarkReady
     }
 
@@ -47,7 +45,7 @@ final class HopFramer: NWProtocolFramerImplementation {
             switch step {
             case .nonce:
                 guard let nonce = Self.read(Hop.nonceBytes, from: framer) else { return Hop.nonceBytes }
-                guard let proof = try? pass.room.proof(as: pass.role, nonce: nonce) else {
+                guard let proof = try? pass.credentials.proof(nonce: nonce) else {
                     framer.markFailed(error: .posix(.EINVAL))
                     return 0
                 }
