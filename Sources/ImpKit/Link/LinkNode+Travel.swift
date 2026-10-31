@@ -150,7 +150,7 @@ extension LinkNode {
         let imps = Array(imps.prefix(64))
         guard imps != ownStage else { return }
         ownStage = imps
-        for session in connections.values where session.standing == .peer { session.channel.send(.stage(imps: imps)) }
+        for session in connections.values { session.channel.send(.stage(imps: imps)) }
     }
 
     /// Tells every peer our routes if they changed since it last heard.

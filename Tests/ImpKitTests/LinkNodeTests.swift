@@ -341,6 +341,27 @@ private func throwImp(_ imp: LinkImp, from: Probe, to: Probe, accepting: Bool = 
         #expect(a.node.isConnected(c.id))
     }
 
+    @Test func anImpOfTheHolderAsksTheVisitorItHoldsEvenWhenOnlyVisitingItsHome() async throws {
+        let a = try Probe(1), b = try Probe(2), c = try Probe(3)
+        await a.start(); await b.start(); await c.start()
+        defer { a.node.stop(); b.node.stop(); c.node.stop() }
+        try await link(a, b)
+        try await link(c, b)
+        let visitor = testImp(1), local = testImp(7)
+        try await throwImp(visitor, from: a, to: b)
+        #expect(await a.passed()?.outcome == .took)
+        try await throwImp(visitor, from: b, to: c)
+        #expect(await b.passed()?.outcome == .took)
+        #expect(await until { a.node.holder(of: visitor.id) == c.id })
+        // C's own Imp and the visitor share C's screen; A hears about it though C only visits A.
+        c.node.setStage([LinkStaged(imp: visitor, home: a.id), LinkStaged(imp: local, home: c.id)])
+        #expect(await until { a.node.stage(of: c.id).count == 2 })
+        let q = UUID()
+        #expect(c.node.talk(id: q, from: local, to: visitor.id, toHome: a.id, text: "hello?", holder: c.id) == .via(a.id))
+        let asked = await a.receivedMessage { m, from in if case .message(let id, _, _, _, _, _) = m { return id == q && from == c.id } else { return false } }
+        #expect(asked != nil)
+    }
+
     @Test func theNewestHolderWinsAndThePreviousOneHearsGone() async throws {
         let a = try Probe(1), b = try Probe(2)
         await a.start(); await b.start()

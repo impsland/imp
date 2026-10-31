@@ -260,18 +260,19 @@ extension LinkNode {
         greet(s)
     }
 
-    /// First things after a handshake: tell a peer where we are and what is on our screen, deliver
-    /// news that was waiting, and claim what we hold from this device.
+    /// First things after a handshake: tell a peer where we are, deliver news that was waiting,
+    /// claim what we hold from this device, then say what is on our screen (after the claims, so a
+    /// home we only visit already knows we hold its Imp and listens).
     private func greet(_ s: Session) {
         guard let remote = s.remote else { return }
         if s.standing == .peer {
             let routes = currentRoutes()
             published[remote.id] = routes
             s.channel.send(.routes(door: book.door, routes: routes))
-            s.channel.send(.stage(imps: ownStage))
         }
         deliverNotices()
         claimEverything(on: s)
+        s.channel.send(.stage(imps: ownStage))
     }
 
     func inviteIsFresh(now: Date = Date()) -> Bool {

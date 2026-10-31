@@ -305,6 +305,18 @@ func testImp(_ n: Int) -> LinkImp {
         #expect(!LinkAccess.allows(.hello(device: UUID(), name: "", kind: .mac, key: Data(), version: 2, proof: Data(), join: nil), from: other.id, standing: .peer, ledger: ledger, visits: visits))
     }
 
+    @Test func aHolderOrAHomeMaySayWhatIsOnItsScreen() {
+        // So Imps on a screen holding our Imp can talk to it, even when that device only visits us.
+        var ledger = AwayLedger()
+        _ = ledger.mint(testImp(2).id, to: holder.id)
+        var visits = Visits()
+        visits.arrive(testImp(1), entry: LinkEntry(side: .left, height: 0, speed: 0), from: holder.id, home: linkCard(home), ticket: LinkCrypto.mintTicket())
+        let stage: LinkMessage = .stage(imps: [])
+        #expect(LinkAccess.allows(stage, from: holder.id, standing: .visitor, ledger: ledger, visits: Visits()))
+        #expect(LinkAccess.allows(stage, from: home.id, standing: .visitor, ledger: AwayLedger(), visits: visits))
+        #expect(!LinkAccess.allows(stage, from: other.id, standing: .visitor, ledger: ledger, visits: visits))
+    }
+
     @Test func aVisitorMayAskOnlyWhatItHolds() {
         var ledger = AwayLedger()
         _ = ledger.mint(testImp(2).id, to: holder.id)

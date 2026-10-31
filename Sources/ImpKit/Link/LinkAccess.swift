@@ -27,7 +27,11 @@ public enum LinkAccess {
         case .message(_, _, let target, _, _, _):
             // A visitor holds the target's body: that is its right to ask it something.
             return standing == .peer || ledger.authorises(device, for: target)
-        case .routes, .stage, .pass, .took, .declined, .adopt, .adopted:
+        case .stage:
+            // What's on a screen: from a peer, from a holder of one of our Imps (Imps there may talk
+            // to it), or from the home of an Imp visiting us.
+            return standing == .peer || !ledger.held(by: device).isEmpty || visits.visits.contains { $0.home.id == device }
+        case .routes, .pass, .took, .declined, .adopt, .adopted:
             return standing == .peer
         case .look(let imp):
             return visits.visit(of: imp.id)?.home.id == device
