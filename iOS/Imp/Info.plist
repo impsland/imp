@@ -49,9 +49,9 @@
 		<string>_imp-link._tcp</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>Imp scans the pairing code your Mac shows.</string>
+	<string>Imp scans the code another device shows.</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Imp finds your Mac on your network, so the Imps you toss can land here.</string>
+	<string>Imp finds your other devices on your network, so the Imps you toss can land here.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

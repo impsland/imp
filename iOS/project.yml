@@ -57,8 +57,8 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleDevelopmentRegion: en
         CFBundleLocalizations: [en, es, zh-Hans]
-        NSLocalNetworkUsageDescription: Imp finds your Mac on your network, so the Imps you toss can land here.
-        NSCameraUsageDescription: Imp scans the pairing code your Mac shows.
+        NSLocalNetworkUsageDescription: Imp finds your other devices on your network, so the Imps you toss can land here.
+        NSCameraUsageDescription: Imp scans the code another device shows.
         NSBonjourServices: ["_imp-link._tcp"]
         # Pocket Imps may think with a model server on your own network, over http.
         NSAppTransportSecurity:

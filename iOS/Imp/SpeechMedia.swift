@@ -11,10 +11,10 @@ struct BubbleVoice: View {
     var auto: Bool
     var speech: UUID
     var speaker: LinkImp
-    var client: LinkClient
+    var hub: LinkHub
 
-    init(ref: String, title: String, auto: Bool, speech: UUID, speaker: LinkImp, client: LinkClient) {
-        self.ref = ref; self.title = title; self.auto = auto; self.speech = speech; self.speaker = speaker; self.client = client
+    init(ref: String, title: String, auto: Bool, speech: UUID, speaker: LinkImp, hub: LinkHub) {
+        self.ref = ref; self.title = title; self.auto = auto; self.speech = speech; self.speaker = speaker; self.hub = hub
         _file = State(initialValue: ReplyFile(ref: ref))
     }
     @State private var file: ReplyFile
@@ -36,7 +36,7 @@ struct BubbleVoice: View {
 
     private func load() async {
         let key = StageVoice.key(speech: speech, ref: ref)
-        await file.load(imp: speaker.id, client: client)
+        await file.load(imp: speaker.id, hub: hub)
         guard case .ready(let url) = file.state, !Task.isCancelled else {
             StageVoice.shared.cancel(key: key)
             return
@@ -115,10 +115,10 @@ struct BubbleVideo: View {
     var auto: Bool
     var speech: UUID
     var speaker: LinkImp
-    var client: LinkClient
+    var hub: LinkHub
 
-    init(ref: String, title: String, auto: Bool, speech: UUID, speaker: LinkImp, client: LinkClient) {
-        self.ref = ref; self.title = title; self.auto = auto; self.speech = speech; self.speaker = speaker; self.client = client
+    init(ref: String, title: String, auto: Bool, speech: UUID, speaker: LinkImp, hub: LinkHub) {
+        self.ref = ref; self.title = title; self.auto = auto; self.speech = speech; self.speaker = speaker; self.hub = hub
         _file = State(initialValue: ReplyFile(ref: ref))
     }
     @State private var file: ReplyFile
@@ -147,7 +147,7 @@ struct BubbleVideo: View {
 
     private func load() async {
         let key = StageVoice.key(speech: speech, ref: ref)
-        await file.load(imp: speaker.id, client: client)
+        await file.load(imp: speaker.id, hub: hub)
         guard case .ready(let url) = file.state, !Task.isCancelled else {
             StageVoice.shared.cancel(key: key)
             return
@@ -163,10 +163,10 @@ struct BubbleThumb: View {
     var ref: String
     var alt: String
     var imp: UUID
-    var client: LinkClient
+    var hub: LinkHub
 
-    init(ref: String, alt: String, imp: UUID, client: LinkClient) {
-        self.ref = ref; self.alt = alt; self.imp = imp; self.client = client
+    init(ref: String, alt: String, imp: UUID, hub: LinkHub) {
+        self.ref = ref; self.alt = alt; self.imp = imp; self.hub = hub
         _file = State(initialValue: ReplyFile(ref: ref))
     }
     @State private var file: ReplyFile
@@ -192,7 +192,7 @@ struct BubbleThumb: View {
     }
 
     private func load() async {
-        await file.load(imp: imp, client: client)
+        await file.load(imp: imp, hub: hub)
         guard case .ready(let url) = file.state else { return }
         if url.isFileURL {
             image = await Task.detached { UIImage(contentsOfFile: url.path)?.preparingForDisplay() }.value

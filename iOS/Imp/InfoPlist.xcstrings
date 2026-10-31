@@ -42,19 +42,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp scans the pairing code your Mac shows."
+            "value" : "Imp scans the code another device shows."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp escanea el código de emparejamiento que muestra tu Mac."
+            "value" : "Imp escanea el código que muestra otro dispositivo."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 会扫描你的 Mac 上显示的配对二维码。"
+            "value" : "Imp 会扫描另一台设备上显示的二维码。"
           }
         }
       }
@@ -65,19 +65,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp finds your Mac on your network, so the Imps you toss can land here."
+            "value" : "Imp finds your other devices on your network, so the Imps you toss can land here."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp busca tu Mac en tu red para que los Imps que lances puedan aterrizar aquí."
+            "value" : "Imp busca tus otros dispositivos en tu red para que los Imps que lances puedan aterrizar aquí."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 会在你的网络中寻找 Mac，让你扔出的 Imp 能落到这里。"
+            "value" : "Imp 会在你的网络中寻找你的其他设备，让你扔出的 Imp 能落到这里。"
           }
         }
       }

@@ -11,10 +11,23 @@ final class StageEngine {
         /// Floating free: friction, soft bounces off the walls.
         case free
         case dragging
-        /// Flying off a side. `toss`: tell the Mac once it's gone (otherwise the Mac called it, or it just leaves).
+        /// Flying off a side. `toss`: throw it to the device its door leads to once it's gone
+        /// (otherwise its home called it, or it just leaves).
         case flyingOut(toss: Bool)
-        /// Out of sight, waiting for the Mac to say yes (`leave`) or no (`refused`).
-        case away(since: Date)
+        /// Out of sight, waiting for the other device to say yes (`leave`) or no (`refused`).
+        case away
+    }
+
+    /// How an Imp leaves the screen: the way it went, and the device its door led to.
+    struct Exit: Equatable {
+        var side: LinkSide
+        var height: Double
+        /// Points a second (0: gently, from a menu).
+        var speed: Double
+        /// The device it is thrown to; nil when it just leaves.
+        var to: UUID?
+        /// Moving in for good on a Mac (`PocketRuntime.move`), not just visiting.
+        var moves = false
     }
 
     struct Body {
@@ -35,7 +48,7 @@ final class StageEngine {
         var lastSample: (point: CGPoint, time: Date)?
         var fingerVelocity = CGVector.zero
         var warnedOffline = false
-        var exit: (side: LinkSide, height: Double, speed: Double)?
+        var exit: Exit?
         var size: CGFloat { StageEngine.baseSize * imp.scale }
     }
 
@@ -46,8 +59,6 @@ final class StageEngine {
     nonisolated static let gameDrag = 0.8
     nonisolated static let gameBounce = 0.85
     nonisolated static let maxCarry = 3_200.0
-    /// How long the Mac has to answer a toss.
-    nonisolated static let tossTimeout: TimeInterval = 10
 
     private(set) var bodies: [UUID: Body] = [:]
     /// Back to front: whoever was touched last is on top.
@@ -71,22 +82,32 @@ final class StageEngine {
     /// A game is on: edges always bounce, nobody can be tossed away and a tap on an Imp opens no chat.
     var isPlaying: Bool { echo != nil || (round.map { !$0.isOver } ?? false) }
 
+    /// Whether any device is connected to throw Imps to.
     var isConnected: () -> Bool = { true }
-    var send: (UUID, LinkSide, Double, Double) -> Void = { _, _, _, _ in }
+    /// Where an Imp thrown off a side at a height goes (see `LinkDoors`).
+    var door: (UUID, LinkSide, Double) -> LinkDoors.Outcome = { _, _, _ in .bounce(.nobodyConnected) }
+    /// The side (the given one first) and height an Imp leaves by to reach a device, if a door leads there.
+    var way: (UUID, UUID, LinkSide) -> (side: LinkSide, height: Double)? = { _, _, _ in nil }
+    /// What to say when an Imp bounces off a side that leads nowhere.
+    var hint: (UUID, LinkDoors.Bounce, LinkSide) -> String = { _, _, _ in "" }
+    /// An Imp that was thrown has left the screen.
+    var send: (UUID, Exit) -> Void = { _, _ in }
     var warn: (String) -> Void = { _ in }
     var felt: (UUID, LinkFeeling) -> Void = { _, _ in }
 
     // MARK: Roster
 
-    /// Brings the bodies in line with the Mac's list: new Imps appear at rest, Imps the Mac no
-    /// longer lists go, and an Imp that was waiting for an answer and is still ours comes back.
+    /// Brings the bodies in line with the screen's list: new Imps appear at rest and Imps no longer
+    /// listed go. One that is away waits for the other device's answer (`leave` or `refused`).
     func reconcile(_ imps: [LinkImp]) {
         let ids = Set(imps.map(\.id))
-        for id in order where !ids.contains(id) { remove(id) }
+        for id in order where !ids.contains(id) {
+            if case .away = bodies[id]?.phase { continue }
+            remove(id)
+        }
         for (n, imp) in imps.enumerated() {
             if var body = bodies[imp.id] {
                 body.imp = imp
-                if case .away = body.phase { comeBack(&body, note: nil) }
                 bodies[imp.id] = body
             } else {
                 var b = Body(imp: imp, pos: restingSpot(n), floatPhase: Double(n) * 1.7)
@@ -116,7 +137,7 @@ final class StageEngine {
         if order.isEmpty { round = nil; endEcho() }
     }
 
-    // MARK: Events from the Mac
+    // MARK: Events from other devices
 
     func arrive(_ imp: LinkImp, _ entry: LinkEntry) {
         let r = StageEngine.baseSize * imp.scale / 2
@@ -146,7 +167,7 @@ final class StageEngine {
         guard var b = bodies[id] else { return }
         if case .away = b.phase { remove(id); return }
         let side: LinkSide = b.pos.x < size.width / 2 ? .left : .right
-        fly(&b, side: side, speed: 1_300, toss: false)
+        fly(&b, side: side, speed: 1_300, to: nil)
         bodies[id] = b
     }
 
@@ -192,39 +213,50 @@ final class StageEngine {
 
     // MARK: Throwing
 
-    private func fly(_ b: inout Body, side: LinkSide, speed: Double, toss: Bool, vy: Double = 0) {
+    private func fly(_ b: inout Body, side: LinkSide, speed: Double, to device: UUID?, moves: Bool = false, vy: Double = 0) {
         pacer.wake()
-        b.phase = .flyingOut(toss: toss)
+        b.phase = .flyingOut(toss: device != nil)
         b.enteringFrom = nil
         b.drag = 0
         let v = max(speed, 1_100)
         b.vel = CGVector(dx: side == .left ? -v : v, dy: vy * 0.5)
-        b.exit = (side, min(max(Double(b.pos.y / max(1, size.height)), 0), 1), toss ? speed : 0)
+        b.exit = Exit(side: side, height: min(max(Double(b.pos.y / max(1, size.height)), 0), 1), speed: device == nil ? 0 : speed,
+                      to: device, moves: moves)
         b.performance = Performance(key: "thrown", steps: [AnticStep(duration: 1.5, mood: .excited, move: nil)])
     }
 
-    /// Throws `id` off `side` towards the Mac, if the Mac is there to catch it.
+    /// The height of an Imp on the screen: 0 the top, 1 the bottom.
+    private func height(of b: Body) -> Double { min(max(Double(b.pos.y / max(1, size.height)), 0), 1) }
+
+    /// Throws `id` off `side` to the device that side leads to at the Imp's height. A side that leads
+    /// nowhere bounces it back with a hint (once, until it is picked up again).
     @discardableResult
     func toss(_ id: UUID, side: LinkSide, speed: Double, velocityY: Double = 0) -> Bool {
         guard !isPlaying, var b = bodies[id] else { return false }
-        guard isConnected() else {
-            if !b.warnedOffline { warn(String(localized: "Your Mac isn't around")) }
+        switch door(id, side, height(of: b)) {
+        case .bounce(let why):
+            if !b.warnedOffline { warn(hint(id, why, side)) }
             b.warnedOffline = true
             bodies[id] = b
             return false
+        case .to(let device):
+            fly(&b, side: side, speed: speed, to: device, vy: velocityY)
+            bodies[id] = b
+            return true
         }
-        fly(&b, side: side, speed: speed, toss: true, vy: velocityY)
-        bodies[id] = b
-        return true
     }
 
-    /// Send to Mac from the menu: a gentle push off the right side (speed 0 for the Mac).
-    func sendGently(_ id: UUID) {
-        guard !isPlaying else { return }
-        guard isConnected() else { return warn(String(localized: "Your Mac isn't around")) }
-        guard var b = bodies[id] else { return }
-        fly(&b, side: .right, speed: 0, toss: true)
-        b.vel = CGVector(dx: 700, dy: 0)
+    /// Send to a device from the menu: a gentle push off the nearer side that leads there (speed 0).
+    /// `moves`: it moves in for good on a Mac (`PocketRuntime.move`), not just visiting.
+    func sendGently(_ id: UUID, to device: UUID, moves: Bool = false) {
+        guard !isPlaying, var b = bodies[id] else { return }
+        let nearer: LinkSide = b.pos.x < size.width / 2 ? .left : .right
+        guard let way = way(id, device, nearer) else { return warn(hint(id, .nobodyConnected, nearer)) }
+        fly(&b, side: way.side, speed: 0, to: device, moves: moves)
+        // Drifts towards the height of its door on the way out.
+        let reach = way.side == .left ? b.pos.x + b.size / 2 : size.width - b.pos.x + b.size / 2
+        let dy = (way.height * size.height - b.pos.y) * 700 / max(1, reach)
+        b.vel = CGVector(dx: way.side == .left ? -700 : 700, dy: dy)
         bodies[id] = b
     }
 
@@ -561,24 +593,22 @@ final class StageEngine {
                 if b.pos.x < -r * 1.2 || b.pos.x > size.width + r * 1.2 {
                     if toss, var exit = b.exit {
                         // The height it really left at: a throw can carry it up or down on the way out.
-                        exit.height = min(max(Double(b.pos.y / max(1, size.height)), 0), 1)
+                        exit.height = height(of: b)
                         b.exit = exit
-                        b.phase = .away(since: date)
+                        b.phase = .away
                         // Written back first: a toss that is refused at once (`refused`) must
                         // find the Imp away, and what it does to the body has to stay.
                         bodies[id] = b
-                        send(id, exit.side, exit.height, exit.speed)
+                        send(id, exit)
                         continue
                     } else {
                         remove(id)
                         continue
                     }
                 }
-            case .away(let since):
-                if date.timeIntervalSince(since) > Self.tossTimeout {
-                    refused(id, String(localized: "Your Mac didn't answer"))
-                    continue
-                }
+            case .away:
+                // The other device's answer (or its silence) arrives as `leave` or `refused`.
+                break
             }
             bodies[id] = b
         }

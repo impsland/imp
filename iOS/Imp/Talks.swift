@@ -5,20 +5,20 @@ import SwiftUI
 /// here hold, and the ones the Mac's chats hold. They overlap, and `TalkLog` counts each once.
 @MainActor
 enum Talks {
-    static func threads(of id: UUID, client: LinkClient, pocket: PocketRuntime) -> [TalkThread] {
-        TalkLog.threads(of: id, from: pocket.talkLines + (client.talkLines[id] ?? []))
+    static func threads(of id: UUID, hub: LinkHub, pocket: PocketRuntime) -> [TalkThread] {
+        TalkLog.threads(of: id, from: pocket.talkLines + (hub.talkLines[id] ?? []))
     }
 }
 
 /// An Imp's talks, read-only: one row per Imp it talked with, and a tap opens the whole conversation.
 /// What's on this phone shows at once; the Mac's join when it answers (an older Mac never does).
 struct TalksSheet: View {
-    let client: LinkClient
+    let hub: LinkHub
     let pocket: PocketRuntime
     let impID: UUID
 
-    private var threads: [TalkThread] { Talks.threads(of: impID, client: client, pocket: pocket) }
-    private var name: String { pocket.imp(impID)?.name ?? client.imp(impID)?.name ?? "" }
+    private var threads: [TalkThread] { Talks.threads(of: impID, hub: hub, pocket: pocket) }
+    private var name: String { pocket.imp(impID)?.name ?? hub.imp(impID)?.name ?? "" }
 
     var body: some View {
         NavigationStack {
@@ -43,10 +43,10 @@ struct TalksSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .navigationDestination(for: UUID.self) { peer in
-                TalkConversation(client: client, pocket: pocket, impID: impID, peerID: peer)
+                TalkConversation(hub: hub, pocket: pocket, impID: impID, peerID: peer)
             }
         }
-        .task { client.requestTalks(impID) }
+        .task { hub.requestTalks(impID) }
     }
 }
 
@@ -84,12 +84,12 @@ private struct TalkRow: View {
 
 /// One talk, read like a messenger: the question from the one who asked, the answer from the other.
 private struct TalkConversation: View {
-    let client: LinkClient
+    let hub: LinkHub
     let pocket: PocketRuntime
     let impID: UUID
     let peerID: UUID
 
-    private var thread: TalkThread? { Talks.threads(of: impID, client: client, pocket: pocket).first { $0.peer.id == peerID } }
+    private var thread: TalkThread? { Talks.threads(of: impID, hub: hub, pocket: pocket).first { $0.peer.id == peerID } }
 
     var body: some View {
         let lines = thread?.lines ?? []
@@ -104,7 +104,7 @@ private struct TalkConversation: View {
                             .background(Dungeon.card, in: Capsule())
                             .padding(.top, 4)
                     }
-                    Exchange(line: line, client: client)
+                    Exchange(line: line, hub: hub)
                 }
             }
             .padding(.horizontal, 14).padding(.vertical, 16)
@@ -126,7 +126,7 @@ private struct TalkConversation: View {
 /// A question and its answer, each under a small chip with the Imp's name in its colour.
 private struct Exchange: View {
     var line: TalkLine
-    var client: LinkClient
+    var hub: LinkHub
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -154,7 +154,7 @@ private struct Exchange: View {
                     .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(Color.red.opacity(0.35)))
                 } else {
                     ReplyBlocks(text: line.reply, imp: LinkImp(id: line.answerer.id, name: line.answerer.name, hue: line.answerer.hue, scale: 1, traits: .plain),
-                                client: client)
+                                hub: hub)
                         .padding(.horizontal, 14).padding(.vertical, 12)
                         .background(Dungeon.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(Dungeon.cardEdge))

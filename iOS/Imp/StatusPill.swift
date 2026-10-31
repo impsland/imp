@@ -1,36 +1,40 @@
 import ImpKit
 import SwiftUI
 
-/// The connection at a glance, and a menu: hatching an Imp, the Imps on the Mac, pairing and unpairing.
+/// The links at a glance, and a menu: hatching an Imp, linking another device, forgetting one, and
+/// calling home the Imps of this iPhone that other devices hold.
 struct StatusPill: View {
-    let client: LinkClient
-    @Binding var confirmUnpair: Bool
+    let hub: LinkHub
+    let pocket: PocketRuntime
+    @Binding var forgetting: LinkDevice?
     var hatch: () -> Void
     var pair: () -> Void
 
     var body: some View {
         Menu {
             Button(action: hatch) { Label("Hatch an Imp", systemImage: "plus.circle") }
-            if client.pairing == nil {
-                Button(action: pair) { Label("Pair with a Mac", systemImage: "macbook.and.iphone") }
-            }
-            if !client.others.isEmpty {
-                Section("On your Mac") {
-                    ForEach(client.others) { imp in
-                        Label(imp.name, systemImage: "pawprint")
+            Button(action: pair) { Label("Link a Device", systemImage: "macbook.and.iphone") }
+            if !awayImps.isEmpty {
+                Section("Away") {
+                    ForEach(awayImps, id: \.id) { imp in
+                        Button { hub.callHome(imp.id) } label: { Label("Call \(imp.name) Home", systemImage: "house") }
                     }
                 }
             }
-            if client.pairing != nil {
-                Button(role: .destructive) { confirmUnpair = true } label: {
-                    Label("Unpair from Mac", systemImage: "link.badge.minus")
+            if !hub.links.isEmpty {
+                Section("Linked") {
+                    ForEach(hub.links) { link in
+                        Button(role: .destructive) { forgetting = link.device } label: {
+                            Label("Forget \(link.device.name)", systemImage: "link.badge.minus")
+                        }
+                    }
                 }
             }
         } label: {
             HStack(spacing: 8) {
                 Circle().fill(dot).frame(width: 8, height: 8)
                     .shadow(color: dot.opacity(0.8), radius: 4)
-                if client.viaHop && client.isConnected {
+                if hub.connectedPeers.contains(where: { hub.viaHop.contains($0.id) }) {
                     Image(systemName: "globe").font(.system(size: 11, weight: .semibold)).foregroundStyle(Dungeon.muted)
                         .accessibilityLabel("Through the internet")
                 }
@@ -44,20 +48,22 @@ struct StatusPill: View {
             .background(.black.opacity(0.3), in: Capsule())
             .overlay(Capsule().strokeBorder(Dungeon.cardEdge))
         }
-        .animation(.easeInOut(duration: 0.25), value: client.status)
+        .animation(.easeInOut(duration: 0.25), value: hub.connectedPeers)
     }
 
-    private var mac: String { client.macName ?? String(localized: "your Mac") }
+    /// The Imps of this iPhone that another device holds.
+    private var awayImps: [LinkImp] { pocket.looks.filter { hub.away.contains($0.id) } }
 
     private var text: String {
-        if client.pairing == nil { return String(localized: "On this iPhone") }
-        switch client.status {
-        case .connected(let name): return String(localized: "Connected to \(name)")
-        case .connecting: return String(localized: "Connecting to \(mac)…")
-        case .searching, .unpaired: return String(localized: "Looking for \(mac)…")
-        case .unknown: return String(localized: "\(mac) needs pairing again")
+        let connected = hub.connectedPeers
+        if hub.links.isEmpty { return String(localized: "On this iPhone") }
+        switch connected.count {
+        case 0:
+            return hub.links.count == 1 ? String(localized: "Looking for \(hub.links[0].device.name)…") : String(localized: "Looking for your devices…")
+        case 1: return String(localized: "Connected to \(connected[0].name)")
+        default: return String(localized: "Connected to \(connected.count) devices")
         }
     }
 
-    private var dot: Color { client.isConnected || client.pairing == nil ? Dungeon.good : Dungeon.flame }
+    private var dot: Color { !hub.connectedPeers.isEmpty || hub.links.isEmpty ? Dungeon.good : Dungeon.flame }
 }

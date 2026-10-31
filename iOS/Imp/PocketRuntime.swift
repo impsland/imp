@@ -3,8 +3,9 @@ import ImpKit
 import Observation
 
 /// The Imps hatched on this iPhone, alive: each thinks here, with its own service and tools, one ask
-/// at a time. They message each other directly, and the Imps on the Mac through the link. Moving one
-/// to the Mac is a toss the Mac has to confirm.
+/// at a time, wherever its body is. They message each other directly, and the Imps of other devices
+/// through the link. An Imp thrown to another device is still at home here: its holder asks it things
+/// and hears back. Moving one to a Mac for good is an explicit move the Mac has to confirm.
 @MainActor @Observable
 final class PocketRuntime {
     private struct Failure: LocalizedError, Sendable {
@@ -18,30 +19,27 @@ final class PocketRuntime {
         var abort: @MainActor () -> Void
     }
 
-    /// How long a pocket Imp waits for a Mac Imp's answer.
-    private static let answerTimeout: TimeInterval = 120
     private static let animations = Reaction.allCases.filter { !$0.unlocksWithFavoriteColor }.map(\.rawValue)
 
     private let store: PocketStore
     private(set) var work: [UUID: LinkWork] = [:]
     /// What each pocket Imp is saying to another Imp (a bubble above it on the stage), like the
-    /// Mac Imps' in `LinkClient.speeches`.
+    /// visiting Imps' in `LinkHub.speeches`.
     private(set) var speeches: [UUID: LinkSpeech] = [:]
 
     @ObservationIgnored var onEvent: ((StageEvent) -> Void)?
-    @ObservationIgnored private let client: LinkClient
+    @ObservationIgnored private let hub: LinkHub
     @ObservationIgnored private let brain: PocketBrain
     @ObservationIgnored private var running: [UUID: Task<Void, Never>] = [:]
     @ObservationIgnored private var waiting: [UUID: [Job]] = [:]
     @ObservationIgnored private var pending: [UUID: CheckedContinuation<String, Error>] = [:]
     @ObservationIgnored private var speechClear: [UUID: Task<Void, Never>] = [:]
 
-    init(client: LinkClient, store: PocketStore = PocketStore()) {
-        self.client = client
+    init(hub: LinkHub, store: PocketStore = PocketStore()) {
+        self.hub = hub
         self.store = store
         brain = PocketBrain(secrets: store.secrets)
-        client.onPocket = { [weak self] in self?.heard($0) }
-        client.setTroupe(looks)
+        hub.onPocket = { [weak self] in self?.heard($0) }
     }
 
     // MARK: The Imps
@@ -59,12 +57,9 @@ final class PocketRuntime {
         }
     }
 
-    /// The paired Mac's name on the network (`.local` first): where a model server on the Mac is
-    /// reached from this phone. Nil when no Mac is paired.
-    var macHost: String? {
-        let hosts = client.pairing?.hosts ?? []
-        return hosts.first { $0.hasSuffix(".local") } ?? hosts.first
-    }
+    /// A linked Mac's name on the network (`.local` first): where a model server on the Mac is
+    /// reached from this phone. Nil when no Mac is linked.
+    var macHost: String? { hub.macHost }
 
     func hasBrain(_ id: UUID) -> Bool {
         store.imp(id).map { (try? $0.validate()) != nil } ?? false
@@ -72,20 +67,21 @@ final class PocketRuntime {
 
     func hatch(_ imp: PocketImp) {
         store.add(imp)
-        client.setTroupe(looks)
     }
 
     func edit(_ id: UUID, _ change: (inout PocketImp) -> Void) {
         store.update(id, change)
-        client.setTroupe(looks)
+        if let look = store.imp(id)?.look { tell(id, .look(imp: look)) }
     }
 
+    /// Deletes an Imp. If another device holds it, it is called home first so that device lets go.
     func delete(_ id: UUID) {
+        hub.node.callHome(id)
+        hub.refresh()
         forget(id)
-        client.setTroupe(looks)
     }
 
-    /// The Imp is gone (deleted, or taken in by the Mac): what it was doing stops, what waited for it
+    /// The Imp is gone (deleted, or taken in by a Mac): what it was doing stops, what waited for it
     /// is told it isn't around, and nothing of it stays on the stage.
     private func forget(_ id: UUID) {
         store.remove(id)
@@ -96,22 +92,26 @@ final class PocketRuntime {
         for job in dropped { job.abort() }
     }
 
-    // MARK: Moving home
+    // MARK: Moving in for good
 
-    /// Throws `id` to the Mac. It stays here until the Mac says it has it (`PocketEvent.adopted`).
-    func toss(_ id: UUID, exit: LinkSide, height: Double, speed: Double) {
+    /// Moves `id` to the linked Mac `device` for good. It stays here until the Mac says it has it
+    /// (`PocketEvent.adopted`), which it only does once its user agreed.
+    func move(_ id: UUID, exit: StageEngine.Exit, to device: UUID) {
         guard let imp = store.imp(id) else {
             onEvent?(.refused(id, String(localized: "That Imp isn't on this iPhone.")))
             return
         }
         // Its answer would be lost on the way: it has to finish first.
         guard running[id] == nil else {
-            onEvent?(.refused(id, String(localized: "\(imp.name) is busy thinking. Toss it once it's done.")))
+            onEvent?(.refused(id, String(localized: "\(imp.name) is busy thinking. Move it once it's done.")))
             return
         }
         do {
-            let request = try imp.adoption(secrets: store.secrets, exit: exit, height: height, speed: speed)
-            guard client.send(request) else { throw Failure(String(localized: "Your Mac isn't around")) }
+            let (kit, secrets) = try imp.adoption(secrets: store.secrets)
+            let entry = LinkEntry.after(exit: exit.side, height: exit.height, speed: exit.speed)
+            guard hub.node.adopt(id, kit: kit, secrets: secrets, entry: entry, to: device) != nil else {
+                throw Failure(String(localized: "\(hub.deviceName(device)) isn't around"))
+            }
         } catch {
             onEvent?(.refused(id, error.localizedDescription))
         }
@@ -142,43 +142,47 @@ final class PocketRuntime {
             await self?.report(work, for: id)
         }
         store.update(id) { $0.record(result) }
+        pushChat(id)
         return result
     }
 
-    private func report(_ work: LinkWork?, for id: UUID) { self.work[id] = work }
+    private func report(_ work: LinkWork?, for id: UUID) {
+        self.work[id] = work
+        pushWork(id)
+    }
 
     // MARK: Messaging
 
     private func talk(for imp: PocketImp) -> PocketTalk {
         let id = imp.id
-        let here = store.imps.filter { $0.id != id && hasBrain($0.id) }.map(\.name)
-        var taken = Set(here.map { $0.lowercased() })
-        taken.insert(imp.name.lowercased())
-        let macs = macImps.map(\.name).filter { taken.insert($0.lowercased()).inserted }
-        return PocketTalk(others: here + macs, send: { [weak self] to, text in
+        let me = hub.node.device.id
+        let here = store.imps.filter { hasBrain($0.id) }.map { LinkStaged(imp: $0.look, home: me) }
+        var taken = Set([imp.name.lowercased()])
+        let named = targets(of: id, here: here).filter { taken.insert($0.imp.name.lowercased()).inserted }
+        return PocketTalk(others: named.map(\.imp.name), send: { [weak self] to, text in
             guard let self else { throw CancellationError() }
-            return try await self.deliver(text, to: to, from: id)
+            return try await self.deliver(text, to: to, from: id, among: named)
         }, animations: Self.animations, play: { [weak self] names in
             await self?.play(names, for: id)
         })
     }
 
-    /// The Imps on the Mac, when it's there.
-    private var macImps: [LinkImp] { client.isConnected ? client.imps + client.others : [] }
+    /// The Imps `id` can message: those of this iPhone and the ones on the screen its body is on.
+    private func targets(of id: UUID, here: [LinkStaged]) -> [LinkStaged] {
+        let stage = hub.node.holder(of: id).map { hub.node.stage(of: $0) } ?? hub.staged
+        return LinkTalks.targets(of: id, mine: here, stage: stage)
+    }
 
-    private func deliver(_ text: String, to name: String, from id: UUID) async throws -> String {
-        guard let sender = store.imp(id).map({ ChatTurn.Sender(id: $0.id, name: $0.name, hue: $0.hue) }) else { throw CancellationError() }
-        if let other = store.imps.first(where: { $0.id != id && $0.name.caseInsensitiveCompare(name) == .orderedSame }) {
-            let asking = say(.asking, to: other.name, hue: other.hue, text, for: id)
-            defer { unsay(asking, for: id) }
-            return try await asked(other, text, from: sender)
+    private func deliver(_ text: String, to name: String, from id: UUID, among targets: [LinkStaged]) async throws -> String {
+        guard let sender = store.imp(id), let target = targets.first(where: { $0.imp.name.caseInsensitiveCompare(name) == .orderedSame }) else {
+            throw Failure(String(localized: "\(name) isn't around"))
         }
-        if let mac = macImps.first(where: { $0.name.caseInsensitiveCompare(name) == .orderedSame }) {
-            let asking = say(.asking, to: mac.name, hue: mac.hue, text, for: id)
-            defer { unsay(asking, for: id) }
-            return try await askMac(mac, text, from: id)
+        let asking = say(.asking, to: target.imp.name, hue: target.imp.hue, text, for: id)
+        defer { unsay(asking, for: id) }
+        if let other = store.imp(target.id), target.home == hub.node.device.id {
+            return try await asked(other, text, from: ChatTurn.Sender(id: sender.id, name: sender.name, hue: sender.hue))
         }
-        throw Failure(String(localized: "\(name) isn't around"))
+        return try await askAway(target, text, from: sender.look)
     }
 
     /// Another pocket Imp's answer, once it has got round to it.
@@ -218,18 +222,17 @@ final class PocketRuntime {
         return (reply, failed)
     }
 
-    /// A Mac Imp's answer, or why there isn't one.
-    private func askMac(_ mac: LinkImp, _ text: String, from id: UUID) async throws -> String {
+    /// The answer of an Imp on another device, or why there isn't one. The node fails a question
+    /// nobody answers in time, and one whose device went away.
+    private func askAway(_ target: LinkStaged, _ text: String, from imp: LinkImp) async throws -> String {
         let message = UUID()
+        let unreachable = Failure(String(localized: "\(target.imp.name) isn't around"))
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
-                guard client.send(.message(id: message, from: id, to: mac.id, text: text)) else {
-                    return continuation.resume(throwing: Failure(String(localized: "Your Mac isn't around")))
-                }
-                pending[message] = continuation
-                Task {
-                    try? await Task.sleep(for: .seconds(Self.answerTimeout))
-                    finish(message, .failure(Failure(String(localized: "\(mac.name) didn't answer"))))
+                let holder = hub.node.holder(of: imp.id) ?? hub.node.device.id
+                switch hub.node.talk(id: message, from: imp, to: target.id, toHome: target.home, text: text, holder: holder) {
+                case .via: pending[message] = continuation
+                case .here, .unreachable: continuation.resume(throwing: unreachable)
                 }
             }
         } onCancel: {
@@ -246,33 +249,72 @@ final class PocketRuntime {
         if !beats.isEmpty { onEvent?(.animate(id, beats)) }
     }
 
-    // MARK: Hearing the Mac
+    // MARK: Hearing other devices
 
     private func heard(_ event: PocketEvent) {
         switch event {
         case .adopted(let id):
             forget(id)
-            client.setTroupe(looks)
+            hub.refresh()
             onEvent?(.left(id))
         case .answer(let id, let text, let failed):
             finish(id, failed ? .failure(Failure(text)) : .success(text))
-        case .ask(let id, let from, let to, let text):
+        case .asked(let id, let from, let to, let text, let by):
+            let gone = LinkMessage.answer(id: id, text: String(localized: "That Imp isn't on this iPhone."), failed: true)
             guard store.contains(to) else {
-                client.send(.answered(id: id, text: String(localized: "That Imp isn't on this iPhone."), failed: true))
+                hub.node.send(gone, to: by)
                 return
             }
-            enqueue(to, abort: { [self] in
-                client.send(.answered(id: id, text: String(localized: "That Imp isn't on this iPhone."), failed: true))
-            }) { [self] in await serve(id, from, to, text) }
-        case .linkLost:
-            for id in pending.keys { finish(id, .failure(Failure(String(localized: "Your Mac isn't around")))) }
+            enqueue(to, abort: { [self] in hub.node.send(gone, to: by) }) { [self] in
+                let (reply, failed) = await respond(to: text, of: to, from: ChatTurn.Sender(id: from.id, name: from.name, hue: from.hue))
+                hub.node.send(.answer(id: id, text: reply, failed: failed), to: by)
+            }
+        case .claimed(let id):
+            pushAll(id)
+        case .ask(let id, let text):
+            ask(id, text)
+        case .stop(let id):
+            stop(id)
+        case .newChat(let id):
+            newChat(id)
+        case .felt(let id, let feeling):
+            let step: AnticStep = switch feeling {
+            case .poke: AnticStep(duration: 0.7, mood: .surprised, glyph: .exclaim)
+            case .cuddle: AnticStep(duration: 1.2, mood: .happy, glyph: .heart)
+            case .shake: AnticStep(duration: 1.6, mood: .dizzy)
+            case .drop: AnticStep(duration: 0.9, mood: .surprised, glyph: .sweat)
+            }
+            tell(id, .animate(imp: id, beats: [AnimationBeat(step)]))
+        case .file(let transfer, _, let from):
+            // A pocket Imp has no folder: what its replies show is on the web, which the holder loads itself.
+            hub.node.send(.fileFailed(id: transfer, reason: String(localized: "That file isn't on this iPhone.")), to: from)
+        case .talks(let id, let from):
+            let lines = talkLines.filter { $0.asker.id == id || $0.answerer.id == id }
+            hub.node.send(.talkLines(imp: id, lines: TalkLog.forLink(lines)), to: from)
         }
     }
 
-    /// A Mac Imp's question for one of ours.
-    private func serve(_ id: UUID, _ from: LinkImp, _ to: UUID, _ text: String) async {
-        let (reply, failed) = await respond(to: text, of: to, from: ChatTurn.Sender(id: from.id, name: from.name, hue: from.hue))
-        client.send(.answered(id: id, text: reply, failed: failed))
+    // MARK: Telling the holder
+
+    /// Tells the device that holds `id` (if another does) something about it.
+    private func tell(_ id: UUID, _ message: LinkMessage) {
+        if let holder = hub.node.holder(of: id) { hub.node.send(message, to: holder) }
+    }
+
+    private func pushChat(_ id: UUID) { tell(id, .chat(imp: id, turns: Array(turns(id).suffix(200)))) }
+
+    private func pushWork(_ id: UUID) {
+        tell(id, .work(imp: id, work: work[id]))
+        tell(id, .mood(imp: id, mood: (mood(id) ?? .idle).rawValue))
+    }
+
+    /// A new holder hears how the Imp looks and what it's doing.
+    private func pushAll(_ id: UUID) {
+        guard let look = store.imp(id)?.look else { return }
+        tell(id, .look(imp: look))
+        pushChat(id)
+        pushWork(id)
+        tell(id, .speech(imp: id, speech: speeches[id]))
     }
 
     // MARK: On the stage
@@ -283,6 +325,7 @@ final class PocketRuntime {
         let speech = LinkSpeech(id: UUID(), role: role, peer: peer, hue: hue, question: question, text: answer)
         if let old = speeches[id] { dismiss(old, for: id) }
         speeches[id] = speech
+        tell(id, .speech(imp: id, speech: speech))
         guard role == .reply else { return speech.id }
         // Voices in the reply take their turns; the bubble stays up while they do (web ones only:
         // a pocket Imp has no folder on the Mac).
@@ -310,6 +353,7 @@ final class PocketRuntime {
         speechClear[id]?.cancel()
         speechClear[id] = nil
         speeches[id] = nil
+        tell(id, .speech(imp: id, speech: nil))
         StageVoice.shared.drop(owner: speech.id.uuidString)
     }
 }
@@ -326,7 +370,9 @@ extension PocketRuntime: ChatSource {
 
     func peers(_ id: UUID) -> [LinkImp] {
         var seen: Set<String> = [store.imp(id)?.name.lowercased() ?? ""]
-        return (looks + macImps).filter { $0.id != id && seen.insert($0.name.lowercased()).inserted }
+        let me = hub.node.device.id
+        return targets(of: id, here: looks.map { LinkStaged(imp: $0, home: me) }).map(\.imp)
+            .filter { seen.insert($0.name.lowercased()).inserted }
     }
 
     func intro(_ imp: LinkImp, _ availability: ChatAvailability) -> (title: String, text: String) {
@@ -347,5 +393,8 @@ extension PocketRuntime: ChatSource {
 
     func stop(_ id: UUID) { running[id]?.cancel() }
 
-    func newChat(_ id: UUID) { store.update(id) { $0.newChat() } }
+    func newChat(_ id: UUID) {
+        store.update(id) { $0.newChat() }
+        pushChat(id)
+    }
 }

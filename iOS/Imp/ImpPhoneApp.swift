@@ -3,41 +3,37 @@ import SwiftUI
 
 @main
 struct ImpPhoneApp: App {
-    @State private var client: LinkClient
+    @State private var hub: LinkHub
     @State private var pocket: PocketRuntime
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
-        let client = LinkClient()
+        let hub = LinkHub()
         #if DEBUG
-        // Screenshots and demos without a Mac: `-demo` fills the stage with a few Imps.
-        if CommandLine.arguments.contains("-demo") { client.loadDemo() }
-        // End-to-end checks against a real Mac in the Simulator: `-pair <implink://…>` pairs at launch.
-        if let i = CommandLine.arguments.firstIndex(of: "-pair"), CommandLine.arguments.indices.contains(i + 1),
-           let pairing = LinkPairing(string: CommandLine.arguments[i + 1]) {
-            client.pair(pairing)
+        // End-to-end checks against a real Mac in the Simulator: `-join <implink://…>` links at launch.
+        if let i = CommandLine.arguments.firstIndex(of: "-join"), CommandLine.arguments.indices.contains(i + 1) {
+            hub.join(code: CommandLine.arguments[i + 1])
         }
         #endif
-        _client = State(initialValue: client)
-        _pocket = State(initialValue: PocketRuntime(client: client))
+        _hub = State(initialValue: hub)
+        _pocket = State(initialValue: PocketRuntime(hub: hub))
     }
 
     var body: some Scene {
         WindowGroup {
-            RootView(client: client, pocket: pocket)
+            RootView(hub: hub, pocket: pocket)
                 .preferredColorScheme(.dark)
                 .tint(Dungeon.ember)
                 .onOpenURL { url in
-                    // A pairing link opened from the Camera app (or Notes, Messages…).
-                    if let pairing = LinkPairing(url: url) { client.pair(pairing) }
-                    else { client.toast = String(localized: "That isn't a pairing link from Imp.") }
+                    // A link to join opened from the Camera app (or Notes, Messages…).
+                    if !hub.join(code: url.absoluteString) { hub.toast = String(localized: "That isn't a link from Imp.") }
                 }
-                .onChange(of: scenePhase, initial: true) { _, phase in client.setActive(phase == .active) }
+                .onChange(of: scenePhase, initial: true) { _, phase in hub.setActive(phase == .active) }
         }
     }
 }
 
-/// Pairing when there's nothing yet; the stage once there's a Mac or an Imp hatched on this iPhone.
+/// Linking when there's nothing yet; the stage once there's a linked device or an Imp hatched on this iPhone.
 struct RootView: View {
     /// What's in the sheet.
     private enum Sheet: Hashable, Identifiable {
@@ -51,28 +47,28 @@ struct RootView: View {
         var isChat: Bool { if case .chat = self { true } else { false } }
     }
 
-    let client: LinkClient
+    let hub: LinkHub
     let pocket: PocketRuntime
     @State private var sheet: Sheet?
-    @State private var confirmUnpair = false
+    @State private var forgetting: LinkDevice?
     /// A round of Embers is on (see `EmbersPlaying`).
     @State private var playing = false
     @State private var toast: String?
 
-    private var onStage: Bool { client.pairing != nil || !pocket.imps.isEmpty }
+    private var onStage: Bool { !hub.links.isEmpty || !hub.visits.isEmpty || !pocket.imps.isEmpty }
 
     var body: some View {
         ZStack {
             DungeonBackdrop()
             if !onStage {
-                PairingView(client: client) { sheet = .hatch }
+                PairingView(hub: hub) { sheet = .hatch }
                     .transition(.opacity)
             } else {
-                PhoneStage(client: client, pocket: pocket, onChat: { sheet = .chat($0) }, onEdit: { sheet = .edit($0) }, onTalks: { sheet = .talks($0) })
+                PhoneStage(hub: hub, pocket: pocket, onChat: { sheet = .chat($0) }, onEdit: { sheet = .edit($0) }, onTalks: { sheet = .talks($0) })
                     .transition(.opacity)
                     .onPreferenceChange(EmbersPlaying.self) { playing = $0 }
                 VStack {
-                    StatusPill(client: client, confirmUnpair: $confirmUnpair, hatch: { sheet = .hatch }, pair: { sheet = .pair })
+                    StatusPill(hub: hub, pocket: pocket, forgetting: $forgetting, hatch: { sheet = .hatch }, pair: { sheet = .pair })
                     Spacer()
                 }
                 .padding(.top, 6)
@@ -84,17 +80,17 @@ struct RootView: View {
         }
         .animation(.easeInOut(duration: 0.35), value: onStage)
         .overlay(alignment: .bottom) { ToastView(text: toast).padding(.bottom, 28) }
-        .onChange(of: client.toast) { _, text in
+        .onChange(of: hub.toast) { _, text in
             guard let text else { return }
             toast = text
-            client.toast = nil
+            hub.toast = nil
             Task {
                 try? await Task.sleep(for: .seconds(2.8))
                 if toast == text { toast = nil }
             }
         }
-        .onChange(of: client.pairing != nil) { _, paired in
-            if paired, sheet == .pair { sheet = nil }
+        .onChange(of: hub.links.count) { old, new in
+            if new > old, sheet == .pair { sheet = nil }
         }
         .sheet(item: $sheet) { route in
             content(route)
@@ -102,25 +98,27 @@ struct RootView: View {
                 .presentationDragIndicator(.visible)
                 .presentationBackground(Dungeon.deep)
         }
-        .confirmationDialog("Unpair from \(client.macName ?? "Mac")?", isPresented: $confirmUnpair, titleVisibility: .visible) {
-            Button("Unpair", role: .destructive) { client.unpair() }
-        } message: {
-            Text("The Imps on this phone stay with your Mac. You can pair again any time.")
+        .confirmationDialog(forgetting.map { String(localized: "Forget \($0.name)?") } ?? "",
+                            isPresented: Binding(get: { forgetting != nil }, set: { if !$0 { forgetting = nil } }),
+                            titleVisibility: .visible, presenting: forgetting) { device in
+            Button("Forget", role: .destructive) { hub.forget(device.id) }
+        } message: { _ in
+            Text("Imps of this iPhone it holds come home, and its Imps visiting here go home. You can link again any time.")
         }
         #if DEBUG
         .task {
             if CommandLine.arguments.contains("-hatch") { sheet = .hatch }
             if CommandLine.arguments.contains("-openChat") {
                 // Waits for the Imps (from the demo, or from a Mac it's connecting to).
-                for _ in 0..<120 where client.imps.isEmpty { try? await Task.sleep(for: .milliseconds(250)) }
+                for _ in 0..<120 where hub.visits.isEmpty { try? await Task.sleep(for: .milliseconds(250)) }
                 try? await Task.sleep(for: .seconds(1.5))
-                if let first = client.imps.first { sheet = .chat(first.id) }
+                if let first = hub.visits.first { sheet = .chat(first.id) }
             }
-            // `-ask <text>`: once connected, asks the first Imp and opens its chat (end-to-end checks).
+            // `-ask <text>`: once a visiting Imp is awake, asks the first one and opens its chat (end-to-end checks).
             if let i = CommandLine.arguments.firstIndex(of: "-ask"), CommandLine.arguments.indices.contains(i + 1) {
-                for _ in 0..<120 where !(client.isConnected && !client.imps.isEmpty) { try? await Task.sleep(for: .milliseconds(250)) }
-                guard let first = client.imps.first else { return }
-                client.ask(first.id, CommandLine.arguments[i + 1])
+                for _ in 0..<120 where !(hub.visits.first.map { hub.isAwake($0.id) } ?? false) { try? await Task.sleep(for: .milliseconds(250)) }
+                guard let first = hub.visits.first else { return }
+                hub.ask(first.id, CommandLine.arguments[i + 1])
                 sheet = .chat(first.id)
             }
         }
@@ -131,12 +129,12 @@ struct RootView: View {
         switch route {
         case .chat(let id):
             if pocket.contains(id) {
-                ChatSheet(client: client, source: pocket, pocket: pocket, impID: id) { sheet = .edit(id) }
+                ChatSheet(hub: hub, source: pocket, pocket: pocket, impID: id) { sheet = .edit(id) }
             } else {
-                ChatSheet(client: client, source: client, pocket: pocket, impID: id)
+                ChatSheet(hub: hub, source: hub, pocket: pocket, impID: id)
             }
         case .talks(let id):
-            TalksSheet(client: client, pocket: pocket, impID: id)
+            TalksSheet(hub: hub, pocket: pocket, impID: id)
         case .hatch:
             PocketEditor(pocket: pocket, editing: nil) { sheet = nil }
         case .edit(let id):
@@ -144,7 +142,7 @@ struct RootView: View {
         case .pair:
             ZStack {
                 DungeonBackdrop()
-                PairingView(client: client)
+                PairingView(hub: hub)
             }
         }
     }
