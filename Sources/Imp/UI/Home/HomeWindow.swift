@@ -159,7 +159,7 @@ final class HomeRouter {
     /// A borrowed tool whose form should open (an Imp asked the user to fill in its keys).
     var serverToEdit: UUID?
     /// A kit being added (the text box, then the review). Nothing is applied until its Add.
-    var kitFlow: KitFlow?
+    var kitFlow: KitFlow? { didSet { if oldValue !== kitFlow { oldValue?.abandon() } } }
     /// A talk between two Imps being read (a sheet).
     var talk: TalkRequest?
 

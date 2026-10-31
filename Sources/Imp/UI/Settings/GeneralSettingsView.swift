@@ -170,7 +170,7 @@ private struct AppPane: View {
                 LanguageRow(model: model)
             }
 
-            PhoneCard(model: model)
+            DevicesCard(model: model)
 
             Card("Backup", icon: "shippingbox.fill") {
                 Row("Export all Imps", info: "Saves every Imp, with its triggers and tools, as one .json file. API keys are never saved.") {

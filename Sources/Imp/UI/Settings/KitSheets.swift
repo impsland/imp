@@ -26,6 +26,16 @@ final class KitFlow: Identifiable {
     let forEveryImp: Bool
     /// Runs once the user has confirmed and something was added (the Den counts an install).
     var onAdded: (() -> Void)?
+    /// A pocket Imp from another device asking to move in for good: Add answers yes, and leaving the
+    /// review any other way answers no.
+    var adoption: ((Bool) -> Void)?
+
+    /// The review is gone without Add: a pocket Imp waiting to move in is turned down.
+    func abandon() {
+        let decide = adoption
+        adoption = nil
+        decide?(false)
+    }
 
     init(imp: UUID?, text: String = "", forEveryImp: Bool = false) {
         self.imp = imp
@@ -601,6 +611,12 @@ struct KitReviewSheet: View {
     // MARK: Adding
 
     private func add() {
+        if let decide = flow.adoption {
+            flow.adoption = nil
+            router.kitFlow = nil
+            decide(true)
+            return
+        }
         var prefs = model.prefs
         let added = prefs.add(kit, imps: review.imps, triggers: review.triggers, servers: review.servers,
                               animations: review.animations, for: review.target,

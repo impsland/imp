@@ -227,39 +227,54 @@ final class Panels {
         layoutBubble()
     }
 
-    // MARK: Tossing to the iPhone and back
+    // MARK: Throwing to other devices and back
 
     /// A carry that hits an outer side of the desktop hard is a throw (see `Toss.desktopExit`):
-    /// onto the iPhone if one's around, else it bounces off the edge. Only once an iPhone is set
-    /// up; until then the edges are just edges. True when it was a throw.
+    /// onto the device that side leads to at that height, else it bounces off the edge and says why.
+    /// Only once a device is linked; until then the edges are just edges. True when it was a throw.
     private func flung(at cursor: CGPoint, velocity: CGVector) -> Bool {
         let app = model.app
-        guard app.phone.isSetUp, !app.isAway(model.id),
+        guard app.link.isLinked, !app.isAway(model.id),
               let exit = Toss.desktopExit(cursor: cursor, velocity: velocity, screens: NSScreen.screens.map(\.frame)) else { return false }
         steady?.cancel()
         app.reactions.release(.pickUp, by: model)
         let speed = Double(abs(velocity.dx))
-        guard app.sendToPhone(model.id, entry: .after(exit: exit.side, height: exit.height, speed: speed)) else {
-            bounce(off: exit.side)
-            return true
+        switch app.link.door(of: model.id, side: exit.side, height: exit.height) {
+        case .bounce(let why):
+            bounce(off: exit.side, saying: DeviceLink.hint(why))
+        case .to(let device):
+            if app.send(model.id, to: device, side: exit.side, height: exit.height, speed: speed) {
+                flyOff(exit.side, speed: speed) { [weak app] in app?.refreshTroupe() }
+            } else {
+                bounce(off: exit.side, saying: DeviceLink.hint(.nobodyConnected))
+            }
         }
-        flyOff(exit.side, speed: speed) { [weak app] in app?.refreshTroupe() }
         return true
     }
 
-    /// From the menu: off the nearer side of its screen (or `side`), gently, onto the phone.
-    func sendToPhone(_ side: LinkSide?, then done: @escaping @MainActor () -> Void) {
+    /// From the menu: gently off the nearer side of its screen (the other one if that side doesn't
+    /// lead to the device), onto `device`.
+    func send(to device: UUID, then done: @escaping @MainActor () -> Void) {
+        let app = model.app
         let frame = impPanel.frame
         let screen = (impPanel.screen ?? NSScreen.main)?.frame ?? frame
-        let exit = side ?? (frame.midX < screen.midX ? .left : .right)
+        let nearer: LinkSide = frame.midX < screen.midX ? .left : .right
         let height = screen.height > 0 ? Double((screen.maxY - frame.midY) / screen.height) : 0.5
-        guard model.app.sendToPhone(model.id, entry: .after(exit: exit, height: height, speed: 0)) else { return done() }
-        flyOff(exit, speed: 1_600, then: done)
+        for side in [nearer, nearer.opposite] {
+            guard let band = app.link.bands(of: model.id, side: side).first(where: { $0.device == device }) else { continue }
+            // Where it is, if that is the device's share of the side; else the middle of the share.
+            let at = band.top <= height && height < band.bottom ? height : (band.top + band.bottom) / 2
+            guard app.send(model.id, to: device, side: side, height: at, speed: 0) else { break }
+            return flyOff(side, speed: 1_600, then: done)
+        }
+        model.complain(DeviceLink.hint(.nobodyConnected))
+        done()
     }
 
     /// Keeps going the way it was thrown, out past the edge of its screen, then goes.
     private func flyOff(_ side: LinkSide, speed: Double, then done: @escaping @MainActor () -> Void) {
         stopTravel()
+        departing = true
         restOrigin = nil
         bubblePanel.orderOut(nil)
         let start = impPanel.frame.origin, size = impPanel.frame.width
@@ -278,14 +293,26 @@ final class Panels {
                 self?.impTarget = nil
                 self?.model.carryLean = 0
                 self?.impPanel.orderOut(nil)
+                self?.departing = false
                 done()
+                // Sent straight back before it had gone: it comes in now.
+                if let entry = self?.comingBack {
+                    self?.comingBack = nil
+                    self?.flyIn(entry)
+                }
             }
         })
     }
 
-    /// Back from the phone: it glides in from just past a side of the desktop, at the height it
-    /// was thrown off the phone, carried on by the throw and braking to a stop (as on the phone).
+    /// Flying off the desktop (it is not gone until the window is out), and, if the device sent it
+    /// back meanwhile, how it comes in once it is.
+    private var departing = false
+    private var comingBack: LinkEntry?
+
+    /// Back from another device: it glides in from just past a side of the desktop, at the height it
+    /// was thrown off there, carried on by the throw and braking to a stop.
     func flyIn(_ entry: LinkEntry) {
+        guard !departing else { return comingBack = entry }
         stopTravel()
         let screens = NSScreen.screens
         guard let (frame, point) = Toss.desktopEntry(entry, screens: screens.map(\.frame)),
@@ -313,8 +340,8 @@ final class Panels {
         }
     }
 
-    /// Thrown at the edge with no phone to catch it: it bounces back in and says so.
-    private func bounce(off side: LinkSide) {
+    /// Thrown at the edge with nobody to catch it: it bounces back in and says why.
+    private func bounce(off side: LinkSide, saying why: String) {
         let screen = (impPanel.screen ?? NSScreen.main)?.visibleFrame ?? impPanel.frame
         let size = impPanel.frame.width
         let back = CGPoint(x: side == .left ? screen.minX + 90 : screen.maxX - size - 90, y: impPanel.frame.minY)
@@ -323,7 +350,7 @@ final class Panels {
             guard let self else { return }
             await self.travel(to: back, .bounce)
             self.savePosition()
-            self.model.complain(String(localized: "Your iPhone isn't around. Open Imp on it, on the same network as this Mac, then throw me again."))
+            self.model.complain(why)
         }
     }
 

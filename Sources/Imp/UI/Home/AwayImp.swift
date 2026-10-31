@@ -1,14 +1,14 @@
 import ImpKit
 import SwiftUI
 
-/// An Imp that's out on an iPhone, as it shows on its pedestal: a little phone with the Imp
+/// An Imp that's out on another device, as it shows on its pedestal: a little phone with the Imp
 /// peeking out of its screen, glowing in its colour. So the window explains why it isn't on the
 /// desktop (and a click brings it back).
 struct AwayImp: View {
     let hue: Double
-    /// The phone it's on, if known.
-    var phone: String?
-    /// The phone is around: the Imp is awake on it (else it dozes).
+    /// The device it's on, if known.
+    var device: String?
+    /// The device is around: the Imp is awake on it (else it dozes).
     var connected: Bool
     var still = false
     @Environment(\.stageAwake) private var awake
@@ -67,8 +67,8 @@ struct AwayImp: View {
                 .position(x: geo.size.width / 2, y: geo.size.height - h / 2)
             }
         }
-        .help(phone.map { String(localized: "On \($0). Click to call it back to your desktop.") }
-              ?? String(localized: "On your iPhone. Click to call it back to your desktop."))
+        .help(device.map { String(localized: "On \($0). Click to call it back to your desktop.") }
+              ?? String(localized: "On another device. Click to call it back to your desktop."))
     }
 
     private var face: Face {

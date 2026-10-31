@@ -19,9 +19,9 @@ final class TroupeWindows {
             guard let panels = self?.panels[id], panels.isImpVisible else { return done() }
             panels.fly(to: origin, then: done)
         }
-        app.flyOff = { [weak self] id, side, done in
+        app.flyOff = { [weak self] id, device, done in
             guard let panels = self?.panels[id], panels.isImpVisible else { return done() }
-            panels.sendToPhone(side, then: done)
+            panels.send(to: device, then: done)
         }
         app.flyIn = { [weak self] id, entry in
             guard let self, let panels = self.panels[id] else { return }
@@ -42,7 +42,7 @@ final class TroupeWindows {
             panels[id] = nil
             shown.remove(id)
         }
-        // Each Imp shows unless everyone is hidden or it is, on its own, or it's on an iPhone.
+        // Each Imp shows unless everyone is hidden or it is, on its own, or it's on another device.
         for (id, p) in panels {
             let visible = !app.isHiding(id) && !app.isAway(id)
             guard visible != shown.contains(id) else { continue }
