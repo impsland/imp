@@ -6,7 +6,8 @@ options:
   developmentLanguage: en
 packages:
   Imp:
-    path: ..
+    # Spelt this way so the project names the package ".." and not the checkout folder.
+    path: ../Sources/..
 settings:
   base:
     SWIFT_VERSION: "6.0"
