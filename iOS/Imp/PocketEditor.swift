@@ -27,7 +27,7 @@ struct PocketEditor: View {
     /// The sizes the Mac offers too.
     private static let sizes: [(name: LocalizedStringKey, scale: Double)] = [("Small", 0.75), ("Medium", 1), ("Large", 1.35), ("Huge", 1.7)]
 
-    private enum Field: Hashable { case name, address, key, model }
+    private enum Field: Hashable { case name, personality, address, key, model }
 
     @State private var name: String
     @State private var hue: Double
@@ -73,14 +73,24 @@ struct PocketEditor: View {
             Form {
                 preview
                 Section {
-                    TextField("Name", text: $name)
-                        .textInputAutocapitalization(.words)
-                        .focused($focus, equals: .name)
-                        .submitLabel(.next)
-                        .onSubmit { focus = .address }
-                    if let problem = nameProblem { Problem(text: problem) }
+                    HStack {
+                        TextField("Name", text: $name)
+                            .textInputAutocapitalization(.words)
+                            .focused($focus, equals: .name)
+                            .submitLabel(.next)
+                            .onSubmit { focus = .personality }
+                        if let problem = nameProblem { IssueBadge(text: problem) }
+                    }
                     TextField("Optional: how it talks and what it likes", text: $personality, axis: .vertical)
                         .lineLimit(2...5)
+                        .focused($focus, equals: .personality)
+                        .submitLabel(.next)
+                        // One paragraph: Return moves on instead of starting a new line.
+                        .onChange(of: personality) { _, text in
+                            guard text.contains("\n") else { return }
+                            personality = text.replacingOccurrences(of: "\n", with: "")
+                            focus = .address
+                        }
                 } header: {
                     Text("Imp")
                 } footer: {
@@ -99,7 +109,16 @@ struct PocketEditor: View {
                 toolsSection
                 if editing != nil {
                     Section {
+                        // The dialog hangs on the button: two on the same view and only one ever shows.
                         Button("Delete Imp", role: .destructive) { confirmingDelete = true }
+                            .confirmationDialog("Delete \(name.trimmed)?", isPresented: $confirmingDelete, titleVisibility: .visible) {
+                                Button("Delete", role: .destructive) {
+                                    if let editing { pocket.delete(editing) }
+                                    done()
+                                }
+                            } message: {
+                                Text("Its chats and keys are forgotten. This can't be undone.")
+                            }
                     }
                     .listRowBackground(Dungeon.card)
                 }
@@ -114,17 +133,6 @@ struct PocketEditor: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(editing == nil ? "Hatch" : "Save", action: save).disabled(!canSave)
                 }
-                ToolbarItem(placement: .keyboard) {
-                    Button("Done") { focus = nil }
-                }
-            }
-            .confirmationDialog("Delete \(name.trimmed)?", isPresented: $confirmingDelete, titleVisibility: .visible) {
-                Button("Delete", role: .destructive) {
-                    if let editing { pocket.delete(editing) }
-                    done()
-                }
-            } message: {
-                Text("Its chats and keys are forgotten. This can't be undone.")
             }
             .confirmationDialog("Remove this tool server?", isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
                                 titleVisibility: .visible) {
@@ -181,15 +189,15 @@ struct PocketEditor: View {
             }
             presetChips
             field("Address") {
-                TextField("Address", text: $address, prompt: Text(verbatim: "https://openrouter.ai/api/v1"))
-                    .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
-                    .focused($focus, equals: .address)
-                    .submitLabel(.next)
-                    .onSubmit { focus = .key }
-            }
-            if let problem = addressProblem { Problem(text: problem) }
-            if let hint = localHint {
-                Text(hint).font(.footnote).foregroundStyle(Dungeon.muted)
+                HStack(spacing: 4) {
+                    TextField("Address", text: $address, prompt: Text(verbatim: "https://openrouter.ai/api/v1"))
+                        .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
+                        .focused($focus, equals: .address)
+                        .submitLabel(.next)
+                        .onSubmit { focus = .key }
+                    if let problem = addressProblem { IssueBadge(text: problem) }
+                    else if let hint = localHint { IssueBadge(text: hint, kind: .info) }
+                }
             }
             field("Key") {
                 SecureField("Key", text: $key, prompt: Text(keyKept ? LocalizedStringKey("Saved") : (matched?.isLocal == true ? "Not needed" : "Paste your API key")))
@@ -208,6 +216,7 @@ struct PocketEditor: View {
                         .focused($focus, equals: .model)
                         .submitLabel(.done)
                         .onSubmit { focus = nil }
+                    if let problem = modelProblem { IssueBadge(text: problem) }
                     Button("Choose") { focus = nil; choosingModel = true }
                         .font(.system(.footnote, design: .rounded, weight: .semibold))
                         .buttonStyle(.borderless)
@@ -215,7 +224,6 @@ struct PocketEditor: View {
                         .disabled(address.trimmed.isEmpty || addressProblem != nil)
                 }
             }
-            if let problem = modelProblem { Problem(text: problem) }
         } header: {
             Text("Brain")
         } footer: {
@@ -227,7 +235,7 @@ struct PocketEditor: View {
     /// One chip per well-known service: the name fills the address, the arrow opens where to get started.
     private var presetChips: some View {
         Wrap(spacing: 8) {
-            ForEach(ServicePreset.all) { preset in
+            ForEach(ServicePreset.phone) { preset in
                 let picked = matched == preset
                 HStack(spacing: 0) {
                     Button { choose(preset) } label: {
@@ -257,27 +265,23 @@ struct PocketEditor: View {
 
     private var matched: ServicePreset? { ServicePreset.matching(address) }
 
+    /// A service on your Mac is reached by the Mac's name on your network (`.local`, which follows
+    /// the Mac when its Wi-Fi address changes), else its address, both from the pairing. Without a
+    /// pairing there's a name to replace.
     private func choose(_ preset: ServicePreset) {
         withAnimation(.snappy) {
-            if preset.isLocal, let host = pocket.macHost { address = preset.baseURL(onHost: host) } else { address = preset.baseURL }
+            address = preset.isLocal ? preset.baseURL(onHost: pocket.macHost ?? Self.yourMac) : preset.baseURL
         }
         focus = preset.isLocal ? .model : .key
     }
 
+    /// Stands in for the Mac's name until you put it there.
+    private static let yourMac = "your-mac.local"
+
     /// What a service on your computer needs before the iPhone can reach it.
     private var localHint: String? {
-        guard let preset = matched, preset.isLocal else { return nil }
-        var lines: [String] = []
-        let host = Self.host(address)
-        if host == "localhost" || host == "127.0.0.1" {
-            lines.append(String(localized: "On your iPhone, use your Mac's name or address instead of localhost."))
-        }
-        switch preset.name {
-        case "Ollama": lines.append(String(localized: "Ollama has to listen on the network: start it with OLLAMA_HOST=0.0.0.0."))
-        case "LM Studio": lines.append(String(localized: "In LM Studio, turn on \"Serve on Local Network\"."))
-        default: lines.append(String(localized: "The server has to listen on the network, not just on localhost."))
-        }
-        return lines.joined(separator: " ")
+        guard matched?.isLocal == true else { return nil }
+        return String(localized: "The server has to listen on the network, not just on localhost.")
     }
 
     /// The key to list models with: what's typed, or the one kept in the Keychain.
@@ -300,7 +304,7 @@ struct PocketEditor: View {
                     Text("Optional").font(.footnote).foregroundStyle(Dungeon.muted)
                     Spacer()
                     if toolsBroken && !toolsOpen {
-                        Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Dungeon.flame)
+                        Image(systemName: "exclamationmark.circle.fill").foregroundStyle(Dungeon.flame)
                             .accessibilityLabel("Needs attention")
                     }
                     let count = servers.filter { !$0.isBlank }.count
@@ -349,10 +353,12 @@ struct PocketEditor: View {
             }
             field("Name") { TextField("Name", text: server.name, prompt: Text("Optional")) }
             field("URL") {
-                TextField("URL", text: server.url, prompt: Text(verbatim: "https://example.com/mcp"))
-                    .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
+                HStack(spacing: 4) {
+                    TextField("URL", text: server.url, prompt: Text(verbatim: "https://example.com/mcp"))
+                        .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
+                    if let problem = serverProblem(value) { IssueBadge(text: problem) }
+                }
             }
-            if let problem = serverProblem(value) { Problem(text: problem) }
             Divider().overlay(Dungeon.cardEdge)
             Text("Authorization header (optional)")
                 .font(.system(.caption, design: .rounded, weight: .semibold)).foregroundStyle(Dungeon.muted)
@@ -389,16 +395,25 @@ struct PocketEditor: View {
     private var hasBrain: Bool { !address.trimmed.isEmpty || !model.trimmed.isEmpty }
 
     private var addressProblem: String? {
-        if address.trimmed.isEmpty { return hasBrain ? PocketError.noBrain.errorDescription : nil }
+        if address.trimmed.isEmpty { return hasBrain ? String(localized: "Add the service's address.") : nil }
+        if Self.host(address) == Self.yourMac {
+            return String(localized: "Put your Mac's name in place of your-mac.local (System Settings › General › Sharing), or its Wi-Fi address. Or pair your Mac and pick the preset again.")
+        }
+        if let host = Self.host(address), host == "localhost" || host == "127.0.0.1" {
+            return String(localized: "On your iPhone, use your Mac's name or address instead of localhost.")
+        }
         return Self.problem { try PocketImp.check(url: address) }
     }
 
     private var modelProblem: String? {
-        model.trimmed.isEmpty && !address.trimmed.isEmpty ? PocketError.noBrain.errorDescription : nil
+        model.trimmed.isEmpty && !address.trimmed.isEmpty ? String(localized: "Pick a model, or type its name.") : nil
     }
 
+    /// A card you haven't filled in yet is fine (it's left out); one with something in it needs its address.
     private func serverProblem(_ server: ServerDraft) -> String? {
-        server.url.trimmed.isEmpty && !server.isBlank ? PocketError.badURL("").errorDescription : Self.problem { try PocketImp.check(url: server.url) }
+        if server.isBlank { return nil }
+        if server.url.trimmed.isEmpty { return String(localized: "Add the server's address.") }
+        return Self.problem { try PocketImp.check(url: server.url) }
     }
 
     private var canSave: Bool {
@@ -503,9 +518,9 @@ private struct ModelPicker: View {
             Group {
                 if let failure {
                     ContentUnavailableView {
-                        Label("Couldn't list the models", systemImage: "exclamationmark.triangle")
+                        Label("Couldn't list the models", systemImage: "exclamationmark.circle")
                     } description: {
-                        Text(failure)
+                        IssueBadge(text: failure)
                     } actions: {
                         Button("Try Again") { Task { await load() } }
                     }
@@ -539,16 +554,6 @@ private struct ModelPicker: View {
         } catch {
             failure = error.localizedDescription
         }
-    }
-}
-
-/// Why a field can't be used yet.
-private struct Problem: View {
-    var text: String
-    var body: some View {
-        Label(text, systemImage: "exclamationmark.triangle.fill")
-            .font(.system(.footnote, design: .rounded, weight: .medium))
-            .foregroundStyle(Dungeon.flame)
     }
 }
 

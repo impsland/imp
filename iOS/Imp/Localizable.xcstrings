@@ -232,6 +232,38 @@
         }
       }
     },
+    "Add the server's address." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade la dirección del servidor."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请填写服务器的地址。"
+          }
+        }
+      }
+    },
+    "Add the service's address." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade la dirección del servicio."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请填写服务的地址。"
+          }
+        }
+      }
+    },
     "Address" : {
       "localizations" : {
         "es" : {
@@ -1040,22 +1072,6 @@
         }
       }
     },
-    "In LM Studio, turn on \"Serve on Local Network\"." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En LM Studio, activa \"Serve on Local Network\"."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在 LM Studio 中打开“Serve on Local Network”。"
-          }
-        }
-      }
-    },
     "It thinks right here on your iPhone, with its tools, and can message your other Imps too." : {
       "localizations" : {
         "es" : {
@@ -1525,22 +1541,6 @@
         }
       }
     },
-    "Ollama has to listen on the network: start it with OLLAMA_HOST=0.0.0.0." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ollama tiene que escuchar en la red: inícialo con OLLAMA_HOST=0.0.0.0."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ollama 需要在网络上监听：用 OLLAMA_HOST=0.0.0.0 启动它。"
-          }
-        }
-      }
-    },
     "On this iPhone" : {
       "localizations" : {
         "es" : {
@@ -1747,6 +1747,22 @@
         }
       }
     },
+    "Pick a model, or type its name." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige un modelo o escribe su nombre."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择一个模型，或输入它的名称。"
+          }
+        }
+      }
+    },
     "Picture" : {
       "localizations" : {
         "es" : {
@@ -1791,6 +1807,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "玩火花"
+          }
+        }
+      }
+    },
+    "Put your Mac's name in place of your-mac.local (System Settings › General › Sharing), or its Wi-Fi address. Or pair your Mac and pick the preset again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pon el nombre de tu Mac en lugar de your-mac.local (Ajustes del Sistema › General › Compartir), o su dirección Wi-Fi. O enlaza tu Mac y vuelve a elegir el ajuste."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把 your-mac.local 换成你的 Mac 的名称（系统设置 › 通用 › 共享）或它的 Wi-Fi 地址。也可以先配对 Mac，再重新选择预设。"
           }
         }
       }

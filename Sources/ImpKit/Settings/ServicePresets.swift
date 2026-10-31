@@ -27,6 +27,10 @@ public struct ServicePreset: Sendable, Hashable, Identifiable {
                       link: URL(string: "https://github.com/spilneo/RouteBar")!, isLocal: true),
     ]
 
+    /// The ones the iPhone offers: a cloud service, and a router that runs on your Mac and reaches
+    /// every model you've set up there (the phone gets to it by the Mac's name on your network).
+    public static let phone: [ServicePreset] = all.filter { ["OpenRouter", "OmniRoute"].contains($0.name) }
+
     /// The preset an address belongs to: the same host (any machine for a local one) and port.
     public static func matching(_ address: String) -> ServicePreset? {
         guard let wanted = URLComponents(string: address.trimmingCharacters(in: .whitespacesAndNewlines)),

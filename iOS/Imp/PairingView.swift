@@ -41,12 +41,9 @@ struct PairingView: View {
             .padding(.horizontal, 20).padding(.top, 22)
 
             if let problem {
-                Label(problem, systemImage: "exclamationmark.triangle.fill")
-                    .font(.system(.footnote, design: .rounded, weight: .medium))
-                    .foregroundStyle(Dungeon.flame)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 30).padding(.top, 14)
-                    .transition(.opacity)
+                // Just caused (a bad scan or paste): its words open at once, then fold into the icon.
+                IssueBadge(text: problem, opensAtOnce: true)
+                    .padding(.top, 10)
             }
             Spacer(minLength: 16)
 

@@ -24,6 +24,11 @@ xcodebuild -project iOS/ImpPhone.xcodeproj -scheme ImpPhone -destination 'generi
     -derivedDataPath .build/ios CODE_SIGNING_ALLOWED=NO build
 ```
 
+To send it to your iPhone in one go (connected by cable, or over Wi-Fi once paired in Xcode), run
+`make ios-device` from the repository root: it signs with the team signed in to Xcode (or
+`TEAM=<Team ID>`), installs on the one connected iPhone (or `DEVICE=<name or UDID>`) and opens it.
+`CONFIG=Debug` sends a debug build.
+
 Debug builds understand `-demo` (two Imps and a chat, no network), `-demoVoice <url>` (one of them answers out loud), `-openChat` and `-hatch`, handy for screenshots,
 and `-pair <implink://…>` with `-ask <text>` for end-to-end checks against a running Mac.
 `scripts/make-icon.sh` re-renders the app icon from the Mac app's own icon art (`Imp --render-ios-icon`).

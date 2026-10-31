@@ -7,6 +7,10 @@ struct PhoneStage: View {
     let client: LinkClient
     let pocket: PocketRuntime
     var onChat: (UUID) -> Void
+    /// Opens an Imp hatched here in the editor.
+    var onEdit: (UUID) -> Void = { _ in }
+    /// An Imp hatched here, waiting for "Delete" to be confirmed.
+    @State private var deleting: LinkImp?
     @State private var engine = StageEngine()
     @State private var motion = MotionWatcher()
     @Environment(\.scenePhase) private var scenePhase
@@ -64,6 +68,13 @@ struct PhoneStage: View {
             .ignoresSafeArea()
         }
         .onAppear { wire() }
+        .confirmationDialog(deleting.map { String(localized: "Delete \($0.name)?") } ?? "",
+                            isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }),
+                            titleVisibility: .visible, presenting: deleting) { imp in
+            Button("Delete", role: .destructive) { pocket.delete(imp.id) }
+        } message: { _ in
+            Text("Its chats and keys are forgotten. This can't be undone.")
+        }
         .onChange(of: pocket.looks) { engine.reconcile(roster) }
         .onChange(of: scenePhase, initial: true) { _, phase in
             if phase == .active { motion.start() } else { motion.stop() }
@@ -113,7 +124,15 @@ struct PhoneStage: View {
             .contextMenu {
                 Button { onChat(id) } label: { Label("Chat", systemImage: "bubble.left.and.bubble.right") }
                 Button { source.newChat(id); onChat(id) } label: { Label("New Chat", systemImage: "square.and.pencil") }
-                Button { engine.sendGently(id) } label: { Label("Send to Mac", systemImage: "macbook.and.iphone") }
+                if pocket.contains(id) {
+                    Button { onEdit(id) } label: { Label("Edit", systemImage: "slider.horizontal.3") }
+                }
+                if client.pairing != nil {
+                    Button { engine.sendGently(id) } label: { Label("Send to Mac", systemImage: "macbook.and.iphone") }
+                }
+                if pocket.contains(id) {
+                    Button(role: .destructive) { deleting = b.imp } label: { Label("Delete", systemImage: "trash") }
+                }
             }
             .position(x: b.pos.x, y: b.pos.y + engine.floatOffset(b, at: date, calm: !awake))
             .zIndex(b.phase == .dragging ? 1 : 0)

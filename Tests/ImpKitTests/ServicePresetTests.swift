@@ -8,6 +8,7 @@ import Testing
         #expect(ServicePreset.all.first { $0.name == "OmniRoute" }?.baseURL == "http://localhost:20128/v1")
         #expect(ServicePreset.all.allSatisfy { $0.link.scheme == "https" })
         #expect(!ServicePreset.all.contains { $0.baseURL.contains("api.openai.com") })
+        #expect(ServicePreset.phone.map(\.name) == ["OpenRouter", "OmniRoute"])
     }
 
     @Test func addressesFindTheirPreset() {

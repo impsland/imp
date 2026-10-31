@@ -426,20 +426,27 @@ private struct ReplyCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             if failed {
-                Label("Couldn't answer", systemImage: "exclamationmark.triangle.fill")
-                    .font(.system(.caption, design: .rounded, weight: .semibold))
-                    .foregroundStyle(Color(red: 1, green: 0.55, blue: 0.5))
-            }
-            ReplyBlocks(text: text, imp: imp, client: client, autoplay: autoplay)
-            if streaming { TypingDots(compact: true) }
-            if let retry {
-                Button(action: retry) { Label("Try Again", systemImage: "arrow.clockwise") }
-                    .font(.system(.footnote, design: .rounded, weight: .semibold))
-                    .foregroundStyle(Dungeon.flame)
-                    .buttonStyle(.plain)
+                // What went wrong is behind the badge, not spelled out in the chat.
+                HStack(spacing: 6) {
+                    Text("Couldn't answer")
+                        .font(.system(.subheadline, design: .rounded, weight: .semibold))
+                        .foregroundStyle(Dungeon.cream)
+                    if !text.isEmpty { IssueBadge(text: text) }
+                    Spacer(minLength: 8)
+                    if let retry {
+                        Button(action: retry) { Label("Try Again", systemImage: "arrow.clockwise").labelStyle(.iconOnly) }
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Dungeon.flame)
+                            .buttonStyle(.plain)
+                            .frame(width: 30, height: 30)
+                    }
+                }
+            } else {
+                ReplyBlocks(text: text, imp: imp, client: client, autoplay: autoplay)
+                if streaming { TypingDots(compact: true) }
             }
         }
-        .padding(.horizontal, 14).padding(.vertical, 12)
+        .padding(.horizontal, 14).padding(.vertical, failed ? 6 : 12)
         .background(failed ? AnyShapeStyle(Color.red.opacity(0.14)) : AnyShapeStyle(Dungeon.card),
                     in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous)

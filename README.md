@@ -287,8 +287,9 @@ already there with the same address), and its key comes along unless that servic
 One with no brain yet moves too, and thinks with the Mac's starred service. An Imp that's busy
 thinking stays until it's done. The phone drops its copy once the Mac confirms, and it never becomes
 a pocket Imp again. Nothing is kept in step between the two. Hatching one, pick its size, and a
-service in one tap (OpenRouter, or Ollama, LM Studio or OmniRoute running on your Mac, reached by
-its name on your network).
+service in one tap: OpenRouter, or OmniRoute running on your Mac, reached by the Mac's name on your
+network (from the pairing, so it still works when the Mac's Wi-Fi address changes). Hold a pocket
+Imp to edit or delete it.
 
 Every Imp on the phone, pocket or Mac, messages the others (`imp_message`), just like Imps on the
 desktop do, and the talk shows in bubbles over their heads. A voice reply plays with the Imp seen

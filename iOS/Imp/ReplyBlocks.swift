@@ -104,8 +104,7 @@ private struct FileStatus: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(label).font(.system(.subheadline, design: .rounded, weight: .medium)).foregroundStyle(Dungeon.cream).lineLimit(1)
                 switch file.state {
-                case .failed(let why):
-                    Text(why).font(.system(.caption, design: .rounded)).foregroundStyle(Dungeon.muted).lineLimit(2)
+                case .failed: EmptyView()
                 default:
                     if let progress, progress > 0 {
                         ProgressView(value: progress).tint(Dungeon.ember)
@@ -115,7 +114,8 @@ private struct FileStatus: View {
                 }
             }
             Spacer(minLength: 0)
-            if case .failed = file.state {
+            if case .failed(let why) = file.state {
+                IssueBadge(text: why)
                 Button(action: retry) { Image(systemName: "arrow.clockwise").font(.system(size: 15, weight: .semibold)) }
                     .foregroundStyle(Dungeon.flame).accessibilityLabel("Try Again")
             }
