@@ -29,7 +29,7 @@ struct DoorLabels: View {
                         .offset(y: door.top * height)
                 }
             }
-            .frame(width: engine.size.width, height: height, alignment: near.side == .left ? .leading : .trailing)
+            .frame(width: engine.size.width, height: height, alignment: near.side == .left ? .topLeading : .topTrailing)
             .opacity(shown)
             .animation(engine.reduceMotion ? nil : .easeOut(duration: 0.15), value: engine.litDoor)
             .allowsHitTesting(false)
