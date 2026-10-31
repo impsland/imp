@@ -78,7 +78,6 @@
 		260261CF11237CBD49ED5244 /* EchoFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoFeedback.swift; sourceTree = "<group>"; };
 		2A5E56E2B80612481500C8FE /* ImpRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpRenderer.swift; sourceTree = "<group>"; };
 		36040976E160D83A9ED7131E /* PhoneStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneStage.swift; sourceTree = "<group>"; };
-		370A79DE1D8628B408938EE3 /* .. */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ..; path = ..; sourceTree = SOURCE_ROOT; };
 		37A695264BBAD32A874A57EB /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		425EA0CF393C2A5B4C8C8E79 /* EmbersCoach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbersCoach.swift; sourceTree = "<group>"; };
 		496385172A5237326FD3A24B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -86,6 +85,7 @@
 		5A7D2F37C84A4B750CDB3F71 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		6406F33EC0C8528E9FA96CAA /* PairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingView.swift; sourceTree = "<group>"; };
 		6406F8E129883536DA4BD5F3 /* SpeechMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechMedia.swift; sourceTree = "<group>"; };
+		69D3BA1E1D62779FCC642D13 /* imp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = imp; path = ..; sourceTree = SOURCE_ROOT; };
 		6AC024C76203D641C929D0A5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		8151B96260694FD93D8F45E8 /* GameRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRound.swift; sourceTree = "<group>"; };
 		825ADE440948D012933C3A77 /* Energy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Energy.swift; sourceTree = "<group>"; };
@@ -127,7 +127,7 @@
 		0896923E2770E96595D122C0 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				370A79DE1D8628B408938EE3 /* .. */,
+				69D3BA1E1D62779FCC642D13 /* imp */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -272,7 +272,7 @@
 			mainGroup = B5CDA9C1053B2C41F684A3C8;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A2F2A8D08D663E1CB6BEC2B8 /* XCLocalSwiftPackageReference "../Sources/.." */,
+				E3F6BEEFAAF8DAB54323AC36 /* XCLocalSwiftPackageReference ".." */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A6AFC50D01AF18744D03FEBA /* Products */;
@@ -546,9 +546,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		A2F2A8D08D663E1CB6BEC2B8 /* XCLocalSwiftPackageReference "../Sources/.." */ = {
+		E3F6BEEFAAF8DAB54323AC36 /* XCLocalSwiftPackageReference ".." */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../Sources/..;
+			relativePath = ..;
 		};
 /* End XCLocalSwiftPackageReference section */
 
