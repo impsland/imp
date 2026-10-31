@@ -138,8 +138,9 @@ wouldn't work anywhere else); with no service left, they sleep until you add one
 - **Browser extension.** Add `Extensions/Browser` to Chrome, Brave, Edge, Firefox or Safari and Imp
   knows the website you're on, and can hop right onto a button on the page. Its toolbar popup shows
   whether it's connected and what Imp sees. Local only (see its README for each browser's steps).
-- **Imps on your iPhone.** Throw an Imp hard at the left or right side of your screen and it flies
-  onto your iPhone (see [Imp on your iPhone](#imp-on-your-iphone)).
+- **Imps on your other devices, and your friends'.** Throw an Imp hard at the left or right side of
+  your screen and it flies onto your iPhone, another Mac, or a friend's device, and keeps thinking at
+  home (see [Imps on other devices](#imps-on-other-devices)).
 - **More tools with MCP.** Connect Model Context Protocol servers, local or on the web.
 - **A whole troupe.** Several Imps, each with its own name, colour, personality and model. They
   share one clock and stop drawing whenever they can't be seen, so a big troupe stays light on the
@@ -260,7 +261,7 @@ Ready-made kits to borrow, and how to add yours, are in the community registry: 
 
 <p align="center"><img src="docs/moods.png" width="760" alt="Imp's moods"></p>
 
-## Imp on your iPhone
+## Imps on other devices
 
 **Imp for iPhone** (in [`iOS/`](iOS)) is where your Imps go when you throw them off your Mac, and a
 place for Imps of its own. It links with Macs and other iPhones the same way a Mac does, so any
@@ -268,7 +269,7 @@ device can invite and any can join, and one device can have many links. An Imp i
 screen and it leaves the desktop, flying in from the *other* side of your iPhone's screen, as if it
 went straight through (throw it off the left of the Mac, it comes in from the right of the phone).
 With several displays only the outer sides throw: carrying an Imp from one display to the next is
-just a carry. Or right-click it › **Send to iPhone**.
+just a carry. Or right-click it › **Send to** a device.
 
 **Doors.** Where a thrown Imp goes depends on the side. An Imp at home can leave by either side, to any
 device you're connected to. A visiting Imp that came in through one side goes back to where it came
@@ -343,6 +344,20 @@ one Imp or many, and the tones are soft and follow the silent switch. The first 
 lesson (watch two runes light, then tap them yourself), then a card with the rules and a countdown.
 It can be skipped, and "How to play" on the end card brings it back. Imps can't be picked up or
 tossed away while it runs, and tapping one opens no chat. Your best score is kept.
+
+**On the Mac.** Imp's settings › **Devices** shows this Mac's code, **Scan Code…** (hold the other
+device's code up to the Mac's camera, or paste its link or a picture of its code), the linked devices
+and what each holds, **Forget…**, **Forget Everyone…** and the server. While you carry an Imp near an
+outer side of the desktop, the doors on that side are labelled with the devices they lead to, the same
+way the phone does it. Imps visiting the Mac fly in, float with yours and chat when you click them;
+they think at their homes, sleep while their home is away, and their menu has **Send Home**.
+
+**Trust.** Mark your own devices **Mine** in the Devices card or sheet. An Imp visiting a device that
+isn't yours, or asked something by an Imp whose home isn't one of your devices, talks but doesn't use
+its tools: no commands, no controlling the computer, no tool servers. Such a device only gets files from
+the Imp's own folder. A visiting Imp still thinks with its home's model and keys, so whoever you pass it
+to chats on your service. You can call it home at any time, from anywhere: its home is always the one
+that decides where it is.
 
 **Linking.** The first screen offers **Show my code**, **Scan a code** and **Hatch an Imp** (and
 **Paste Link**), and the name other devices see for your iPhone, which you can change there. On a Mac, use
