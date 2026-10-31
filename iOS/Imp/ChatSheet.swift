@@ -41,8 +41,8 @@ struct ChatSheet: View {
                 transcript(imp)
                 composer(imp)
             } else {
-                // The Imp went back to the Mac while the chat was open.
-                ContentUnavailableView("This Imp is back on your Mac", systemImage: "macbook")
+                // The Imp went home while the chat was open.
+                ContentUnavailableView("This Imp has gone home", systemImage: "house")
                     .foregroundStyle(Dungeon.muted)
             }
         }
