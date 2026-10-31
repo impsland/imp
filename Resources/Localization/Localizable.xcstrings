@@ -152,13 +152,52 @@
       }
     },
     "%@ didn't take me." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no me aceptó."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 没有收下我。"
+          }
+        }
+      }
     },
     "%@ doesn't know this Mac any more. Link it again in Settings." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ya no conoce este Mac. Vuelve a vincularlo en Ajustes."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 已不认识这台 Mac。请在“设置”中重新关联。"
+          }
+        }
+      }
     },
     "%@ doesn't know this Mac any more. Link it again." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ya no conoce este Mac. Vuelve a vincularlo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 已不认识这台 Mac。请重新关联。"
+          }
+        }
+      }
     },
     "%@ flies back to %@. If it is away, %@ goes now and %@ hears when it is back." : {
       "localizations" : {
@@ -204,23 +243,6 @@
         }
       }
     },
-    "%@ flies off the screen onto your iPhone. Or throw it hard at the side of the screen." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ sale volando de la pantalla hacia tu iPhone. O lánzalo con fuerza contra el borde de la pantalla."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 会飞出屏幕，落到你的 iPhone 上。也可以把它用力扔向屏幕边缘。"
-          }
-        }
-      }
-    },
     "%@ goes back into the Imps' window, and its triggers rest." : {
       "localizations" : {
         "es" : {
@@ -260,7 +282,20 @@
       }
     },
     "%@ has no room for me." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no tiene sitio para mí."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 没有地方容纳我了。"
+          }
+        }
+      }
     },
     "%@ hides until you show it again from the menu bar (Show) or click it in the Imps' window. Its triggers rest meanwhile." : {
       "localizations" : {
@@ -382,45 +417,6 @@
         }
       }
     },
-    "%@ is away, so %@ is asleep and can't answer until it's back." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ is away, so %2$@ is asleep and can't answer until it's back."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ está fuera de alcance, así que %2$@ está dormido y no puede responder hasta que vuelva."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ 不在线，所以 %2$@ 睡着了，要等它回来才能回答。"
-          }
-        }
-      }
-    },
-    "%@ is connected." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ está conectado."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 已连接。"
-          }
-        }
-      }
-    },
     "%@ is hiding. Click to bring it back to your desktop." : {
       "localizations" : {
         "es" : {
@@ -454,10 +450,36 @@
       }
     },
     "%@ is in the middle of a game." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ está en plena partida."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 正在玩游戏。"
+          }
+        }
+      }
     },
     "%@ is linked." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ está vinculado."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 已关联。"
+          }
+        }
+      }
     },
     "%@ is off" : {
       "localizations" : {
@@ -540,7 +562,20 @@
       }
     },
     "%@ isn't the device it was when you linked it, so Imp turned it away." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ya no es el dispositivo que vinculaste, así que Imp lo rechazó."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 已不是你当初关联的那台设备，所以 Imp 拒绝了它。"
+          }
+        }
+      }
     },
     "%@ key" : {
       "localizations" : {
@@ -705,7 +740,20 @@
       }
     },
     "%@ wouldn't link: its code ran out or was replaced. Show a fresh one." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no quiso vincularse: su código caducó o fue reemplazado. Muestra uno nuevo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 没有关联：它的二维码已过期或被替换。请显示一个新的。"
+          }
+        }
+      }
     },
     "%@'s animations" : {
       "localizations" : {
@@ -1885,45 +1933,37 @@
         }
       }
     },
-    "**Open** Imp on your iPhone" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "**Abre** Imp en tu iPhone"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在 iPhone 上**打开** Imp"
-          }
-        }
-      }
-    },
     "**Open** Imp on your other device" : {
-
-    },
-    "**Scan** this code with Camera" : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "**Escanea** este código con la Cámara"
+            "value" : "**Abre** Imp en tu otro dispositivo"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "用相机**扫描**此码"
+            "value" : "在你的另一台设备上**打开** Imp"
           }
         }
       }
     },
     "**Scan** this code, or paste its link" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Escanea** este código o pega su enlace"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**扫描**此二维码，或粘贴它的链接"
+          }
+        }
+      }
     },
     "**Throw** an Imp off your screen" : {
       "localizations" : {
@@ -2054,7 +2094,20 @@
       }
     },
     "A device" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un dispositivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一台设备"
+          }
+        }
+      }
     },
     "A friendly double nod." : {
       "localizations" : {
@@ -3003,21 +3056,17 @@
       }
     },
     "Another device" : {
-
-    },
-    "Another iPhone" : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Otro iPhone"
+            "value" : "Otro dispositivo"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "另一台 iPhone"
+            "value" : "另一台设备"
           }
         }
       }
@@ -4225,21 +4274,17 @@
       }
     },
     "Call %@ Back" : {
-
-    },
-    "Call %@ Back from iPhone" : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traer a %@ desde el iPhone"
+            "value" : "Hacer volver a %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把 %@ 从 iPhone 叫回来"
+            "value" : "召回 %@"
           }
         }
       }
@@ -5941,7 +5986,20 @@
       }
     },
     "Devices" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispositivos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设备"
+          }
+        }
+      }
     },
     "Dictation isn't available for %@ right now." : {
       "localizations" : {
@@ -7134,21 +7192,17 @@
       }
     },
     "For a device that can't scan: paste the link in Join… on the other device. Keep it private: it lets a device link with this Mac for a while." : {
-
-    },
-    "For a phone that can't scan: paste the link in Imp on the iPhone (Paste Link). Keep it private: it lets a phone in." : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para un teléfono que no puede escanear: pega el enlace en Imp en el iPhone (Pegar enlace). Mantenlo en privado: deja entrar a un teléfono."
+            "value" : "Para un dispositivo que no puede escanear: pega el enlace en «Unirse…» en el otro dispositivo. Mantenlo en privado: permite que un dispositivo se vincule con este Mac durante un rato."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手机无法扫码时：在 iPhone 上的 Imp 中粘贴此链接（粘贴链接）。请妥善保管：它能让手机接入。"
+            "value" : "对于无法扫描的设备：在另一台设备上的“加入…”中粘贴此链接。请保密：它能让一台设备在一段时间内与这台 Mac 关联。"
           }
         }
       }
@@ -7186,53 +7240,97 @@
       }
     },
     "Forget %@" : {
-
-    },
-    "Forget %@?" : {
-
-    },
-    "Forget Everyone" : {
-
-    },
-    "Forget Everyone…" : {
-
-    },
-    "Forget every device?" : {
-
-    },
-    "Forget every iPhone?" : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Olvidar todos los iPhone?"
+            "value" : "Olvidar %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "忘记所有 iPhone？"
+            "value" : "忘记 %@"
+          }
+        }
+      }
+    },
+    "Forget %@?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Olvidar %@?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记 %@？"
+          }
+        }
+      }
+    },
+    "Forget Everyone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Olvidar a todos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记所有设备"
+          }
+        }
+      }
+    },
+    "Forget Everyone…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Olvidar a todos…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记所有设备…"
+          }
+        }
+      }
+    },
+    "Forget every device?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Olvidar todos los dispositivos?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记所有设备？"
           }
         }
       }
     },
     "Forget everyone" : {
-
-    },
-    "Forget iPhones" : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Olvidar los iPhone"
+            "value" : "Olvidar a todos"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "忘记 iPhone"
+            "value" : "忘记所有设备"
           }
         }
       }
@@ -7702,7 +7800,20 @@
       }
     },
     "Has: %@" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiene: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "持有：%@"
+          }
+        }
+      }
     },
     "Hatch a New Imp" : {
       "localizations" : {
@@ -8510,28 +8621,37 @@
         }
       }
     },
-    "Imp can't listen for your iPhone on this network." : {
-      "extractionState" : "stale",
+    "Imp can't listen for your other devices on this network." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp no puede escuchar a tu iPhone en esta red."
+            "value" : "Imp no puede esperar a tus otros dispositivos en esta red."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 无法在此网络上等待你的 iPhone 连接。"
+            "value" : "Imp 无法在此网络上监听你的其他设备。"
           }
         }
       }
     },
-    "Imp can't listen for your other devices on this network." : {
-
-    },
     "Imp can't read its list of linked devices." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp no puede leer su lista de dispositivos vinculados."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 无法读取已关联设备的列表。"
+          }
+        }
+      }
     },
     "Imp can't read that file." : {
       "localizations" : {
@@ -8550,7 +8670,20 @@
       }
     },
     "Imp can't save its list of linked devices." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp no puede guardar su lista de dispositivos vinculados."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 无法保存已关联设备的列表。"
+          }
+        }
+      }
     },
     "Imp couldn't keep the account's key safe." : {
       "localizations" : {
@@ -8569,10 +8702,36 @@
       }
     },
     "Imp couldn't reach that device. Is it open, on the same network or the same server?" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp no pudo llegar a ese dispositivo. ¿Está abierto, en la misma red o con el mismo servidor?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 无法连接到那台设备。它是否已打开，并处在同一网络或同一服务器上？"
+          }
+        }
+      }
     },
     "Imp has reached its limit of linked devices." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp ha llegado a su límite de dispositivos vinculados."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 已达到可关联设备的上限。"
+          }
+        }
+      }
     },
     "Imp starts" : {
       "localizations" : {
@@ -8751,27 +8910,36 @@
       }
     },
     "Imps it holds come back to your desktop. To link again, one of you shows a new code." : {
-
-    },
-    "Imps on a phone come back to your desktop. The old code stops working; pair again with a new one." : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los Imps que estén en un teléfono vuelven a tu escritorio. El código anterior deja de funcionar; vuelve a enlazar con uno nuevo."
+            "value" : "Los Imps que tiene vuelven a tu escritorio. Para vincular de nuevo, uno de los dos muestra un código nuevo."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手机上的 Imp 会回到你的桌面。旧的代码将失效，请用新代码重新配对。"
+            "value" : "它持有的 Imp 会回到你的桌面。要再次关联，由其中一方显示新的二维码。"
           }
         }
       }
     },
     "Imps on other devices come back to your desktop. The old codes stop working; link again with a new one." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los Imps de otros dispositivos vuelven a tu escritorio. Los códigos antiguos dejan de funcionar; vincula de nuevo con uno nuevo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他设备上的 Imp 会回到你的桌面。旧二维码将失效；请用新的重新关联。"
+          }
+        }
+      }
     },
     "Imps talk in" : {
       "localizations" : {
@@ -9126,7 +9294,20 @@
       }
     },
     "Join…" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unirse…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加入…"
+          }
+        }
+      }
     },
     "Just %@" : {
       "localizations" : {
@@ -9614,23 +9795,6 @@
         }
       }
     },
-    "Lets your iPhone reach this Mac from anywhere, not just on your Wi-Fi. The server only passes encrypted data along. It can't read anything." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Permite que tu iPhone llegue a este Mac desde cualquier lugar, no solo en tu Wi-Fi. El servidor solo reenvía datos cifrados. No puede leer nada."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "让你的 iPhone 在任何地方都能连到这台 Mac，而不只是在你的 Wi-Fi 上。服务器只转发加密数据，什么也读不到。"
-          }
-        }
-      }
-    },
     "Levitate" : {
       "localizations" : {
         "es" : {
@@ -9712,31 +9876,148 @@
       }
     },
     "Link" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vincular"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关联"
+          }
+        }
+      }
     },
     "Link a device" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vincular un dispositivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关联设备"
+          }
+        }
+      }
     },
     "Link this Mac with your iPhone or another Mac. Throw an Imp hard at the left or right side of your screen and it flies onto a linked device. It still thinks on this Mac: chat with it there, and throw it back." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vincula este Mac con tu iPhone u otro Mac. Lanza un Imp con fuerza contra el lado izquierdo o derecho de la pantalla y volará a un dispositivo vinculado. Sigue pensando en este Mac: charla con él allí y devuélvelo lanzándolo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将这台 Mac 与你的 iPhone 或另一台 Mac 关联。用力把 Imp 扔向屏幕左侧或右侧，它就会飞到已关联的设备上。它仍在这台 Mac 上思考：可以在那边和它聊天，再把它扔回来。"
+          }
+        }
+      }
     },
     "Link with a device" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vincular con un dispositivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与设备关联"
+          }
+        }
+      }
     },
     "Link with another device" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vincular con otro dispositivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与另一台设备关联"
+          }
+        }
+      }
     },
     "Linked with %@." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vinculado con %@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已与 %@ 关联。"
+          }
+        }
+      }
     },
     "Linking code" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Código de vinculación"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关联二维码"
+          }
+        }
+      }
     },
     "Linking isn't running on this Mac." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La vinculación no está activa en este Mac."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这台 Mac 上未运行关联功能。"
+          }
+        }
+      }
     },
     "Linking…" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vinculando…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在关联…"
+          }
+        }
+      }
     },
     "Listening" : {
       "localizations" : {
@@ -11441,7 +11722,20 @@
       }
     },
     "None of your other devices is around. Open Imp on one, then throw me again." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguno de tus otros dispositivos está cerca. Abre Imp en uno y vuelve a lanzarme."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的其他设备都不在附近。请在其中一台上打开 Imp，然后再扔我一次。"
+          }
+        }
+      }
     },
     "None yet." : {
       "localizations" : {
@@ -11764,7 +12058,20 @@
       }
     },
     "On another device. Click to call it back to your desktop." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En otro dispositivo. Haz clic para hacerlo volver a tu escritorio."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在另一台设备上。点按可将它召回桌面。"
+          }
+        }
+      }
     },
     "On battery" : {
       "localizations" : {
@@ -11778,23 +12085,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用电池时"
-          }
-        }
-      }
-    },
-    "On it: %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ahí: %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在上面：%@"
           }
         }
       }
@@ -11832,7 +12122,20 @@
       }
     },
     "On the other device, show its code and copy its link, then paste it here. Scanning with the camera comes soon." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En el otro dispositivo, muestra su código y copia su enlace; luego pégalo aquí. Escanear con la cámara llegará pronto."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在另一台设备上显示它的二维码并复制链接，然后粘贴到这里。相机扫描即将推出。"
+          }
+        }
+      }
     },
     "On the web" : {
       "localizations" : {
@@ -11862,23 +12165,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在这台 Mac 上"
-          }
-        }
-      }
-    },
-    "On your iPhone. Click to call it back to your desktop." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En tu iPhone. Haz clic para traerlo de vuelta a tu escritorio."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在你的 iPhone 上。点按可把它叫回桌面。"
           }
         }
       }
@@ -12146,38 +12432,17 @@
       }
     },
     "Open Imp on a linked device first (same network as this Mac, or the same server)." : {
-
-    },
-    "Open Imp on your iPhone first (same network as this Mac)." : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre primero Imp en tu iPhone (en la misma red que este Mac)."
+            "value" : "Abre primero Imp en un dispositivo vinculado (en la misma red que este Mac o con el mismo servidor)."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请先在 iPhone 上打开 Imp（与这台 Mac 处于同一网络）。"
-          }
-        }
-      }
-    },
-    "Open Imp on your iPhone." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abre Imp en tu iPhone."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在 iPhone 上打开 Imp。"
+            "value" : "请先在已关联的设备上打开 Imp（与这台 Mac 处于同一网络或同一服务器）。"
           }
         }
       }
@@ -12518,57 +12783,6 @@
         }
       }
     },
-    "Pair an iPhone" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enlazar un iPhone"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "配对 iPhone"
-          }
-        }
-      }
-    },
-    "Pairing code" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Código de enlace"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "配对代码"
-          }
-        }
-      }
-    },
-    "Pair…" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enlazar…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "配对…"
-          }
-        }
-      }
-    },
     "Pale" : {
       "localizations" : {
         "es" : {
@@ -12666,7 +12880,20 @@
       }
     },
     "Paste the link another device shows with its code." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pega el enlace que otro dispositivo muestra con su código."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴另一台设备随二维码显示的链接。"
+          }
+        }
+      }
     },
     "Pasted text" : {
       "localizations" : {
@@ -14972,23 +15199,6 @@
         }
       }
     },
-    "Scan this code with the iPhone's Camera, or tap Scan Code in Imp." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escanea este código con la Cámara del iPhone, o toca Escanear código en Imp."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用 iPhone 的“相机”扫描此代码，或在 Imp 中轻点“扫描代码”。"
-          }
-        }
-      }
-    },
     "Scared" : {
       "localizations" : {
         "es" : {
@@ -15117,29 +15327,6 @@
         }
       }
     },
-    "Send %@ to %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Send %1$@ to %2$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enviar a %1$@ a %2$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "把 %1$@ 送到 %2$@"
-          }
-        }
-      }
-    },
     "Send %@ to %@…" : {
       "localizations" : {
         "en" : {
@@ -15163,21 +15350,17 @@
       }
     },
     "Send %@ to Another Device…" : {
-
-    },
-    "Send %@ to iPhone" : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enviar a %@ al iPhone"
+            "value" : "Enviar a %@ a otro dispositivo…"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把 %@ 送到 iPhone"
+            "value" : "把 %@ 送到另一台设备…"
           }
         }
       }
@@ -16094,23 +16277,6 @@
         }
       }
     },
-    "Show the code again to pair one more. Each scan lets that phone in." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Muestra el código otra vez para enlazar otro. Cada escaneo deja entrar a ese teléfono."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "再次显示代码即可再配对一台。每次扫描都会让那台手机接入。"
-          }
-        }
-      }
-    },
     "Show the extension's folder" : {
       "localizations" : {
         "es" : {
@@ -16176,21 +16342,17 @@
       }
     },
     "Shows a code for another device to scan. Each scan links that device with this Mac." : {
-
-    },
-    "Shows a code to scan with your iPhone's camera. You need Imp for iPhone, on the same network as this Mac." : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muestra un código para escanear con la cámara de tu iPhone. Necesitas Imp para iPhone, en la misma red que este Mac."
+            "value" : "Muestra un código para que otro dispositivo lo escanee. Cada escaneo vincula ese dispositivo con este Mac."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示一个代码，用 iPhone 的相机扫描。你需要 iPhone 版 Imp，并与这台 Mac 处于同一网络。"
+            "value" : "显示供另一台设备扫描的二维码。每次扫描都会让该设备与这台 Mac 关联。"
           }
         }
       }
@@ -17348,44 +17510,36 @@
       }
     },
     "That Imp isn't on this device." : {
-
-    },
-    "That Imp isn't on this phone." : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ese Imp no está en este teléfono."
+            "value" : "Ese Imp no está en este dispositivo."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "那个 Imp 不在这台手机上。"
-          }
-        }
-      }
-    },
-    "That Imp isn't out on the desktop." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ese Imp no está en el escritorio."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "那个 Imp 不在桌面上。"
+            "value" : "那个 Imp 不在这台设备上。"
           }
         }
       }
     },
     "That Imp isn't out." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese Imp no está fuera."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那个 Imp 没有出来。"
+          }
+        }
+      }
     },
     "That address didn't answer like a web page." : {
       "localizations" : {
@@ -17468,16 +17622,68 @@
       }
     },
     "That device" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese dispositivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那台设备"
+          }
+        }
+      }
     },
     "That device didn't answer in time." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese dispositivo no respondió a tiempo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那台设备没有及时响应。"
+          }
+        }
+      }
     },
     "That device isn't the one you linked before. Forget it first, then link it again." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese dispositivo no es el que vinculaste antes. Olvídalo primero y vuelve a vincularlo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那台设备不是你之前关联的那台。请先忘记它，再重新关联。"
+          }
+        }
+      }
     },
     "That device wouldn't link. Its code may have run out: show a fresh one." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese dispositivo no quiso vincularse. Puede que su código haya caducado: muestra uno nuevo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那台设备没有关联。它的二维码可能已过期：请显示一个新的。"
+          }
+        }
+      }
     },
     "That file is too big to be a chat (the limit is %lld MB)." : {
       "localizations" : {
@@ -17607,23 +17813,6 @@
         }
       }
     },
-    "That iPhone went away." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ese iPhone se fue."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "那台 iPhone 不在了。"
-          }
-        }
-      }
-    },
     "That isn't a chat exported from Imp." : {
       "localizations" : {
         "es" : {
@@ -17657,7 +17846,20 @@
       }
     },
     "That isn't a link from Imp." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eso no es un enlace de Imp."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这不是 Imp 的链接。"
+          }
+        }
+      }
     },
     "That isn't a server address. Use a host name such as imp.example.org." : {
       "localizations" : {
@@ -17772,7 +17974,20 @@
       }
     },
     "That's this Mac's own code. Use the one on the other device." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese es el código de este mismo Mac. Usa el del otro dispositivo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是这台 Mac 自己的二维码。请使用另一台设备上的。"
+          }
+        }
+      }
     },
     "That's too big for a kit (the limit is %lld KB)." : {
       "localizations" : {
@@ -18107,47 +18322,52 @@
       }
     },
     "The code holds a key only this Mac and the device that scans it will share. Everything they say to each other is encrypted, and nobody else can link with this Mac without a code you showed them." : {
-
-    },
-    "The code holds a secret only your phone and this Mac know. It never goes over the network: they use it to recognise each other and to encrypt everything they say." : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El código guarda un secreto que solo conocen tu teléfono y este Mac. Nunca viaja por la red: lo usan para reconocerse y para cifrar todo lo que se dicen."
+            "value" : "El código contiene una clave que solo compartirán este Mac y el dispositivo que lo escanee. Todo lo que se digan va cifrado, y nadie más puede vincularse con este Mac sin un código que tú le hayas mostrado."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这个代码包含一个只有你的手机和这台 Mac 知道的密钥。它从不经过网络传输：两者用它来相互识别，并加密彼此之间的所有通信。"
+            "value" : "二维码中含有一把密钥，只有这台 Mac 和扫描它的设备共享。它们之间的所有通信都经过加密，没有你出示的二维码，其他人无法与这台 Mac 关联。"
           }
         }
       }
     },
     "The device I came from isn't around, so I can't go back that way." : {
-
-    },
-    "The file is too big to send to the phone." : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El archivo es demasiado grande para enviarlo al teléfono."
+            "value" : "El dispositivo de donde vengo no está cerca, así que no puedo volver por ahí."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件太大，无法发送到手机。"
+            "value" : "我来的那台设备不在附近，所以不能从这边回去。"
           }
         }
       }
     },
     "The file is too big to send." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El archivo es demasiado grande para enviarlo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件太大，无法发送。"
+          }
+        }
+      }
     },
     "The file isn't on the Mac any more." : {
       "localizations" : {
@@ -18326,21 +18546,17 @@
       }
     },
     "The server turned this Mac away, so your devices can't reach it from afar." : {
-
-    },
-    "The server turned this Mac away, so your iPhone can't reach it from afar." : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El servidor rechazó este Mac, así que tu iPhone no puede llegar a él desde lejos."
+            "value" : "El servidor rechazó este Mac, así que tus dispositivos no pueden llegar a él desde lejos."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "服务器拒绝了这台 Mac，所以你的 iPhone 无法从远处连到它。"
+            "value" : "服务器拒绝了这台 Mac，所以你的设备无法从远处连接它。"
           }
         }
       }
@@ -18394,7 +18610,20 @@
       }
     },
     "There's nowhere else to go that way." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay otro lugar adonde ir por ese lado."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那一边没有别的地方可去。"
+          }
+        }
+      }
     },
     "Thinking" : {
       "localizations" : {
@@ -18493,10 +18722,36 @@
       }
     },
     "This Mac can't link with any more devices." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este Mac no puede vincularse con más dispositivos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这台 Mac 无法再关联更多设备。"
+          }
+        }
+      }
     },
     "This Mac's code" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Código de este Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这台 Mac 的二维码"
+          }
+        }
+      }
     },
     "This can't be undone." : {
       "localizations" : {
@@ -18558,40 +18813,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开心地连蹦三下。"
-          }
-        }
-      }
-    },
-    "Throw an Imp hard at the left or right side of your screen and it flies onto your iPhone. It still thinks on this Mac: chat with it there, and throw it back." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lanza un Imp con fuerza contra el borde izquierdo o derecho de la pantalla y saldrá volando hacia tu iPhone. Sigue pensando en este Mac: chatea con él allí y lánzalo de vuelta."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "把 Imp 用力扔向屏幕的左边或右边，它就会飞到你的 iPhone 上。它仍在这台 Mac 上思考：在手机上和它聊天，再把它扔回来。"
-          }
-        }
-      }
-    },
-    "Throw an Imp hard at the side of your screen. It lands on your phone." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lanza un Imp con fuerza contra el borde de la pantalla. Aterriza en tu teléfono."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "把 Imp 用力扔向屏幕边缘，它会落到你的手机上。"
           }
         }
       }
@@ -19425,7 +19646,20 @@
       }
     },
     "Unlinks every device and makes the old codes stop working." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desvincula todos los dispositivos e invalida los códigos antiguos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消所有设备的关联，并使旧二维码失效。"
+          }
+        }
+      }
     },
     "Unnamed" : {
       "localizations" : {
@@ -19594,7 +19828,20 @@
       }
     },
     "Via the server" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por el servidor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "经由服务器"
+          }
+        }
+      }
     },
     "Violet" : {
       "localizations" : {
@@ -19628,25 +19875,21 @@
         }
       }
     },
-    "Waiting for your iPhone…" : {
-      "extractionState" : "stale",
+    "Waiting for your other device…" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esperando a tu iPhone…"
+            "value" : "Esperando a tu otro dispositivo…"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在等待你的 iPhone…"
+            "value" : "正在等待你的另一台设备…"
           }
         }
       }
-    },
-    "Waiting for your other device…" : {
-
     },
     "Waking up tools" : {
       "localizations" : {
@@ -20273,7 +20516,20 @@
       }
     },
     "With a server, your devices find each other from anywhere, not just on your Wi-Fi, and this Mac's code works from anywhere too. The server only passes encrypted data along. It can't read anything." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con un servidor, tus dispositivos se encuentran desde cualquier lugar, no solo en tu Wi-Fi, y el código de este Mac también funciona desde cualquier lugar. El servidor solo transmite datos cifrados. No puede leer nada."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有了服务器，你的设备在任何地方都能找到彼此，不只是在同一 Wi-Fi 下，这台 Mac 的二维码也能随处使用。服务器只传递加密数据，什么也读不到。"
+          }
+        }
+      }
     },
     "With clipboard" : {
       "localizations" : {
@@ -20483,23 +20739,6 @@
         }
       }
     },
-    "Your chats with %@. Pick one to carry on where you left off." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tus chats con %@. Elige uno para seguir donde lo dejaste."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你与 %@ 的对话。选择一个，从上次中断处继续。"
-          }
-        }
-      }
-    },
     "Your chats with %@. Pick one to carry on where you left off. Talks with other Imps open to read." : {
       "localizations" : {
         "es" : {
@@ -20560,23 +20799,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的默认模型"
-          }
-        }
-      }
-    },
-    "Your iPhone isn't around. Open Imp on it, on the same network as this Mac, then throw me again." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tu iPhone no está cerca. Abre Imp en él, en la misma red que este Mac, y vuelve a lanzarme."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你的 iPhone 不在附近。请在手机上打开 Imp，并与这台 Mac 处于同一网络，然后再扔我一次。"
           }
         }
       }
@@ -20805,23 +21027,6 @@
         }
       }
     },
-    "iPhone" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone"
-          }
-        }
-      }
-    },
     "npx -y @modelcontextprotocol/server-memory" : {
       "localizations" : {
         "es" : {
@@ -20994,6 +21199,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "担忧的眉毛"
+          }
+        }
+      }
+    },
+    "“%@” is a file on %@, so it can't be shown here." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "“%1$@” is a file on %2$@, so it can't be shown here."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%1$@» es un archivo de %2$@, así que no se puede mostrar aquí."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%1$@”是 %2$@ 上的文件，无法在此显示。"
           }
         }
       }
