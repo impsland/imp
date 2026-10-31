@@ -21,6 +21,8 @@ struct ChatSheet: View {
     @State private var problem: String?
     /// Voices in replies that arrive after this play on their own (older ones wait for a tap).
     @State private var openedAt = Date()
+    /// The bottom of the transcript is on screen (otherwise a jump-to-latest button shows).
+    @State private var atEnd = true
 
     private var imp: LinkImp? { source.imp(impID) }
     private var turns: [LinkTurn] { source.turns(impID) }
@@ -156,10 +158,30 @@ struct ChatSheet: View {
                     }
                     if let work { LiveTurn(work: work, imp: imp, client: client) }
                     Color.clear.frame(height: 1).id("end")
+                        .onAppear { atEnd = true }
+                        .onDisappear { atEnd = false }
                 }
                 .padding(.horizontal, 14).padding(.vertical, 16)
             }
             .defaultScrollAnchor(.bottom)
+            .overlay(alignment: .bottomTrailing) {
+                if !atEnd && !(turns.isEmpty && work == nil) {
+                    Button {
+                        withAnimation(.spring(duration: 0.4)) { proxy.scrollTo("end", anchor: .bottom) }
+                    } label: {
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(Dungeon.cream)
+                            .frame(width: 36, height: 36)
+                            .background(.ultraThinMaterial, in: Circle())
+                            .overlay(Circle().strokeBorder(Dungeon.cardEdge))
+                    }
+                    .padding(12)
+                    .accessibilityLabel("Jump to latest")
+                    .transition(.scale.combined(with: .opacity))
+                }
+            }
+            .animation(.spring(duration: 0.3), value: atEnd)
             .scrollDismissesKeyboard(.interactively)
             .onChange(of: turns.last?.id) { _, _ in
                 withAnimation(.spring(duration: 0.4)) { proxy.scrollTo("end", anchor: .bottom) }
@@ -328,6 +350,7 @@ private struct AskBubble: View {
                         in: RoundedRectangle(cornerRadius: 20, style: .continuous))
             .contextMenu {
                 Button { UIPasteboard.general.string = text } label: { Label("Copy", systemImage: "doc.on.doc") }
+                ShareLink(item: text) { Label("Share", systemImage: "square.and.arrow.up") }
                 if let retry { Button(action: retry) { Label("Ask Again", systemImage: "arrow.clockwise") } }
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -423,6 +446,7 @@ private struct ReplyCard: View {
             .strokeBorder(failed ? Color.red.opacity(0.35) : Dungeon.cardEdge))
         .contextMenu {
             Button { UIPasteboard.general.string = text } label: { Label("Copy", systemImage: "doc.on.doc") }
+            if !streaming { ShareLink(item: text) { Label("Share", systemImage: "square.and.arrow.up") } }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.trailing, 28)

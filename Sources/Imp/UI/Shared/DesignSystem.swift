@@ -426,6 +426,55 @@ struct ChoiceChip: View {
     }
 }
 
+/// A `ChoiceChip` with a small ↗ at its end that opens `link` (where to get a key or a model):
+/// the name picks, the arrow leads out.
+struct LinkedChoiceChip: View {
+    let title: String
+    let picked: Bool
+    let link: URL
+    let linkHelp: String
+    let action: () -> Void
+    @Environment(\.impTint) private var tint
+    @Environment(\.openURL) private var openURL
+    @State private var hover = false
+    @State private var hoverLink = false
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Button(action: action) {
+                Text(verbatim: title)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded)).lineLimit(1).minimumScaleFactor(0.7)
+                    .padding(.leading, 12).padding(.trailing, 4)
+                    .frame(maxWidth: .infinity, minHeight: 28)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityAddTraits(picked ? .isSelected : [])
+            Button { openURL(link) } label: {
+                Image(systemName: "arrow.up.right")
+                    .font(.system(size: 9, weight: .bold))
+                    .frame(width: 18, height: 18)
+                    .background(Circle().fill(Color.white.opacity(hoverLink ? (picked ? 0.28 : 0.16) : 0)))
+                    .padding(.trailing, 6)
+                    .frame(minHeight: 28)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .onHover { hoverLink = $0 }
+            .help(linkHelp)
+            .accessibilityLabel(linkHelp)
+        }
+        .frame(maxWidth: .infinity)
+        .foregroundStyle(picked ? Color.white : Dungeon.cream.opacity(0.9))
+        .background(Capsule().fill(picked ? AnyShapeStyle(tint.gradient) : AnyShapeStyle(Color.white.opacity(hover ? 0.1 : 0.06))))
+        .overlay(Capsule().strokeBorder(picked ? Color.white.opacity(0.2) : Dungeon.cardEdge))
+        .contentShape(Capsule())
+        .onHover { hover = $0 }
+        .animation(.easeOut(duration: 0.12), value: hover)
+        .animation(.easeOut(duration: 0.12), value: hoverLink)
+    }
+}
+
 /// A status line in the window's voice: a coloured dot or symbol and a few words.
 struct StatusText: View {
     let text: Text

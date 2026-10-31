@@ -108,6 +108,7 @@ struct RootView: View {
         }
         #if DEBUG
         .task {
+            if CommandLine.arguments.contains("-hatch") { sheet = .hatch }
             if CommandLine.arguments.contains("-openChat") {
                 // Waits for the Imps (from the demo, or from a Mac it's connecting to).
                 for _ in 0..<120 where client.imps.isEmpty { try? await Task.sleep(for: .milliseconds(250)) }

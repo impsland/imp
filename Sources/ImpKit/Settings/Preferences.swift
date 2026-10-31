@@ -156,10 +156,13 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     public static let clickID = UUID(uuidString: "C11C0000-0000-4000-8000-000000000001")!
     public static let doubleClickID = UUID(uuidString: "C11C0000-0000-4000-8000-000000000002")!
 
-    /// Removes a service everywhere: the default brain and every Imp's own brain.
+    /// Removes a service everywhere: the default brain and every Imp's own brain. An Imp that used it
+    /// follows the default brain from now on, with the default service's model, not the one it had
+    /// picked for the service that's gone. With no service left it sleeps until it gets one.
     public mutating func removeService(_ id: UUID) {
+        let wasDefault = ai.brain.service == id
         ai.remove(service: id)
-        for i in imps.indices { imps[i].brain?.reassign(from: id, to: ai.services.first?.id) }
+        for i in imps.indices { imps[i].brain = imps[i].brain?.without(service: id, wasDefault: wasDefault) }
     }
 
     /// Removes an MCP server from the library and from every Imp that used it.

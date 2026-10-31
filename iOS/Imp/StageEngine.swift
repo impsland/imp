@@ -149,8 +149,18 @@ final class StageEngine {
         warn(reason)
         guard var b = bodies[id] else { return }
         switch b.phase {
-        case .away, .flyingOut: comeBack(&b, note: reason)
-        default: break
+        case .away:
+            comeBack(&b, note: reason)
+        case .flyingOut:
+            // Still on its way out (and in sight): it turns around instead of coming in anew.
+            b.phase = .free
+            b.drag = 4.5
+            b.vel = CGVector(dx: -b.vel.dx * 0.3, dy: b.vel.dy * 0.3)
+            b.enteringFrom = nil
+            b.performance = Performance(key: "bounce", steps: [AnticStep(duration: 0.8, mood: .sad, glyph: .sweat),
+                                                               AnticStep(duration: 0.6, mood: .content)])
+        default:
+            break
         }
         bodies[id] = b
     }
@@ -434,7 +444,11 @@ final class StageEngine {
                         exit.height = min(max(Double(b.pos.y / max(1, size.height)), 0), 1)
                         b.exit = exit
                         b.phase = .away(since: date)
+                        // Written back first: a toss that is refused at once (`refused`) must
+                        // find the Imp away, and what it does to the body has to stay.
+                        bodies[id] = b
                         send(id, exit.side, exit.height, exit.speed)
+                        continue
                     } else {
                         remove(id)
                         continue

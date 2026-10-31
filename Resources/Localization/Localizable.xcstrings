@@ -1665,6 +1665,54 @@
         }
       }
     },
+    "**Open** Imp on your iPhone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Abre** Imp en tu iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 iPhone 上**打开** Imp"
+          }
+        }
+      }
+    },
+    "**Scan** this code with Camera" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Escanea** este código con la Cámara"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用相机**扫描**此码"
+          }
+        }
+      }
+    },
+    "**Throw** an Imp off your screen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Lanza** un Imp fuera de la pantalla"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把一个 Imp **扔出**屏幕"
+          }
+        }
+      }
+    },
     "1 click on the Imp" : {
       "localizations" : {
         "es" : {
@@ -11764,6 +11812,7 @@
       }
     },
     "Open Imp on your iPhone." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14500,6 +14549,7 @@
       }
     },
     "Scan this code with the iPhone's Camera, or tap Scan Code in Imp." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17990,6 +18040,7 @@
       }
     },
     "Throw an Imp hard at the side of your screen. It lands on your phone." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {

@@ -61,18 +61,57 @@ import Testing
 
     @Test func removingAServiceFixesEveryBrain() {
         var p = ImpPreferences()
-        let cloud = Service(name: "Cloud", baseURL: "https://cloud.example/v1")
-        let local = Service(name: "Local", baseURL: "http://localhost:11434/v1")
+        let cloud = Service(name: "Cloud", baseURL: "https://cloud.example/v1", model: "cloud-model")
+        let local = Service(name: "Local", baseURL: "http://localhost:11434/v1", model: "llama")
         p.ai.add(cloud)
         p.ai.add(local)
         var pip = ImpProfile.newcomer(joining: p.imps)
-        pip.brain = Brain(service: local.id, model: "llama")
-        p.imps.append(pip)
+        pip.brain = Brain(service: local.id, model: "llama:70b")
+        var mo = ImpProfile.newcomer(joining: p.imps + [pip])
+        mo.brain = Brain(service: cloud.id, model: "cloud-big")
+        p.imps += [pip, mo]
         p.removeService(local.id)
-        #expect(p.imps[1].brain?.service == cloud.id)
+        // Pip follows the default again: its service and that service's model, not the one it picked
+        // for the service that's gone (that model would only fail on another service).
+        #expect(p.imps[1].brain == nil)
         #expect(p.ai.service(in: p.imps[1].brain)?.id == cloud.id)
+        #expect(p.ai.model(in: p.imps[1].brain) == "cloud-model")
+        #expect(p.imps[2].brain == Brain(service: cloud.id, model: "cloud-big"))
         p.removeService(cloud.id)
-        #expect(p.imps[1].brain?.service == nil && p.ai.service(in: p.imps[1].brain) == nil)
+        #expect(p.imps.allSatisfy { $0.brain == nil })
+        #expect(p.ai.service(in: p.imps[1].brain) == nil && p.ai.model(in: p.imps[1].brain).isEmpty)
+    }
+
+    @Test func removingTheDefaultResetsModelsPickedForIt() {
+        var p = ImpPreferences()
+        let first = Service(name: "First", baseURL: "https://first.example/v1", model: "one")
+        let second = Service(name: "Second", baseURL: "https://second.example/v1", model: "two")
+        p.ai.add(first)
+        p.ai.add(second)
+        p.ai.brain.model = "legacy-one"
+        var pip = ImpProfile.newcomer(joining: p.imps)
+        pip.brain = Brain(service: nil, model: "one-mini")          // the default service, its own model
+        var mo = ImpProfile.newcomer(joining: p.imps + [pip])
+        mo.brain = Brain(service: second.id, model: "two-mini")
+        p.imps += [pip, mo]
+        p.removeService(first.id)
+        #expect(p.ai.defaultService == second.id)
+        #expect(p.ai.brain.model.isEmpty)
+        #expect(p.imps[1].brain == nil && p.ai.model(in: p.imps[1].brain) == "two")
+        #expect(p.imps[2].brain == Brain(service: second.id, model: "two-mini"))
+    }
+
+    @Test func removingAnotherServiceKeepsTheDefaultsModels() {
+        var p = ImpPreferences()
+        let first = Service(name: "First", baseURL: "https://first.example/v1", model: "one")
+        let other = Service(name: "Other", baseURL: "https://other.example/v1", model: "x")
+        p.ai.add(first)
+        p.ai.add(other)
+        var pip = ImpProfile.newcomer(joining: p.imps)
+        pip.brain = Brain(service: nil, model: "one-mini")
+        p.imps.append(pip)
+        p.removeService(other.id)
+        #expect(p.imps[1].brain == Brain(service: nil, model: "one-mini"))
     }
 
     @Test func troupeRoundTrips() throws {

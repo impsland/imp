@@ -11,9 +11,25 @@ import Foundation
 public struct PocketService: Codable, Equatable, Sendable {
     public var baseURL: String
     public var model: String
+    /// What the service is called (a preset's name, "Ollama" say), for the Mac to name it if it moves
+    /// there. Optional, so Imps saved before it existed still load.
+    public var name: String?
 
-    public init(baseURL: String = "", model: String = "") {
-        self.baseURL = baseURL; self.model = model
+    public init(baseURL: String = "", model: String = "", name: String? = nil) {
+        self.baseURL = baseURL; self.model = model; self.name = name
+    }
+
+    /// No address and no model: the Imp has no brain yet (it sleeps on the phone, and on the Mac
+    /// it thinks with the Mac's default service).
+    public var isEmpty: Bool {
+        baseURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    /// What to call the service: its name, a preset's, or its address's host.
+    public var label: String? {
+        if let name = name?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty { return name }
+        if let preset = ServicePreset.matching(baseURL) { return preset.name }
+        return URL(string: baseURL.trimmingCharacters(in: .whitespacesAndNewlines))?.host
     }
 }
 
@@ -88,14 +104,16 @@ public struct PocketImp: Codable, Equatable, Sendable, Identifiable {
     /// Fit to use: a name, https (or a device on your own network) for every address, and a model.
     public func validate() throws {
         try validateAsMove()
-        guard !brain.model.trimmingCharacters(in: .whitespaces).isEmpty else { throw PocketError.noBrain }
+        guard !brain.baseURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              !brain.model.trimmingCharacters(in: .whitespaces).isEmpty else { throw PocketError.noBrain }
     }
 
-    /// What moving home needs: `validate` without insisting on a model (the Mac has its own default).
+    /// What moving home needs: `validate` without insisting on a brain. One with no address at all
+    /// moves without one and thinks with the Mac's default service there.
     func validateAsMove() throws {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, trimmed.count <= Self.maxName else { throw PocketError.badName }
-        try Self.check(url: brain.baseURL)
+        if !brain.baseURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { try Self.check(url: brain.baseURL) }
         guard servers.count <= Self.maxServers else { throw PocketError.tooBig }
         for server in servers { try Self.check(url: server.url) }
     }

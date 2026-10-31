@@ -95,16 +95,25 @@ public struct AIConfig: Codable, Hashable, Sendable {
         services[i].model = model
     }
 
-    /// Removes a service. A brain that used it moves to the first remaining one (or none).
+    /// Removes a service. If it was the default, the first remaining one is the default now (or
+    /// none), and the model an older version saved with it goes too: it was that service's.
     public mutating func remove(service id: UUID) {
         services.removeAll { $0.id == id }
-        brain.reassign(from: id, to: services.first?.id)
+        if brain.service == id {
+            brain.service = services.first?.id
+            brain.model = ""
+        }
     }
 }
 
 extension Brain {
-    /// Points the brain at service `new` if it used `old`.
-    public mutating func reassign(from old: UUID, to new: UUID?) {
-        if service == old { service = new }
+    /// The brain after service `old` is gone: one that used it follows the default brain again, its
+    /// service and that service's model (a model named for `old` would only fail somewhere else).
+    /// Nil when it used `old`, and so does one that followed the default with a model of its own when
+    /// `old` was the default. Unchanged otherwise.
+    public func without(service old: UUID, wasDefault: Bool) -> Brain? {
+        if service == old { return nil }
+        if service == nil, wasDefault { return nil }
+        return self
     }
 }

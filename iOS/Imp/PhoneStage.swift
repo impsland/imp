@@ -34,12 +34,14 @@ struct PhoneStage: View {
                             }
                             // Talks with other Imps, above the talker's head, kept on screen.
                             ForEach(engine.order, id: \.self) { id in
-                                if let b = engine.bodies[id], b.phase == .free || b.phase == .dragging, let speech = client.speeches[id] {
+                                if let b = engine.bodies[id], b.phase == .free || b.phase == .dragging, let speech = client.speeches[id] ?? pocket.speeches[id] {
                                     let x = min(max(b.pos.x, 137), geo.size.width - 137)
                                     let top = b.pos.y + engine.floatOffset(b, at: timeline.date, calm: false) - b.size * 0.4 - 14
                                     Color.clear.frame(width: 1, height: 1)
                                         .overlay(alignment: .bottom) {
-                                            SpeechBubble(speech: speech, tailOffset: b.pos.x - x) { client.dismissSpeech(id) }
+                                            SpeechBubble(speech: speech, speaker: b.imp, client: client, isPocket: pocket.contains(id), tailOffset: b.pos.x - x) {
+                                                if pocket.contains(id) { pocket.dismissSpeech(id) } else { client.dismissSpeech(id) }
+                                            }
                                                 .fixedSize(horizontal: false, vertical: true)
                                                 .transition(.scale(scale: 0.6, anchor: .bottom).combined(with: .opacity))
                                                 .id(speech.id)
@@ -52,6 +54,7 @@ struct PhoneStage: View {
                                 .zIndex(3)
                         }
                         .animation(.spring(duration: 0.35), value: client.speeches.mapValues(\.id))
+                        .animation(.spring(duration: 0.35), value: pocket.speeches.mapValues(\.id))
                     }
 
                     if roster.isEmpty && client.isConnected { EmptyHint(side: .left) }
@@ -64,6 +67,8 @@ struct PhoneStage: View {
         .onChange(of: pocket.looks) { engine.reconcile(roster) }
         .onChange(of: scenePhase, initial: true) { _, phase in
             if phase == .active { motion.start() } else { motion.stop() }
+            // A voice doesn't go on talking from a phone that's been put away.
+            if phase == .background { StageVoice.shared.interrupt() }
         }
     }
 

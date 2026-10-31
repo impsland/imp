@@ -147,6 +147,52 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         #expect(!(try JSONEncoder().encode(prefs.ai)).contains(Data("sk-very".utf8)))
     }
 
+    @Test func anImpWithNoBrainMovesAndFollowsTheMacsDefault() throws {
+        var (imp, store) = pocketImp()
+        imp.brain = PocketService()
+        #expect(throws: PocketError.noBrain) { try imp.validate() }
+        let (kit, secrets) = try adopt(imp.adoption(secrets: store, exit: .left, height: 0.5, speed: 0))
+        #expect(secrets.apiKey == nil)                  // a key without a service goes nowhere
+        #expect(try Kit.parse(kit, limit: LinkProtocol.maxFrame).imps.first?.brain == nil)
+        var prefs = ImpPreferences()
+        let mine = Service(name: "Mine", baseURL: "https://mine.example/v1", model: "m")
+        prefs.ai.add(mine)
+        let adoption = try prefs.adopt(kit: kit, as: imp.id, secrets: secrets)
+        #expect(prefs.ai.services == [mine])
+        #expect(adoption.service == nil && adoption.apiKey == nil)
+        let profile = try #require(prefs.imps.first { $0.id == imp.id })
+        #expect(prefs.ai.service(in: profile.brain)?.id == mine.id)
+    }
+
+    @Test func aModelWithoutAnAddressDoesNotMove() throws {
+        var (imp, store) = pocketImp()
+        imp.brain = PocketService(baseURL: " ", model: "phone-model")
+        #expect(throws: PocketError.noBrain) { try imp.validate() }
+        let (kit, _) = try adopt(imp.adoption(secrets: store, exit: .left, height: 0.5, speed: 0))
+        #expect(try Kit.parse(kit, limit: LinkProtocol.maxFrame).imps.first?.brain == nil)
+    }
+
+    @Test func aServiceMovesUnderItsOwnName() throws {
+        var (imp, store) = pocketImp()
+        imp.brain = PocketService(baseURL: "https://openrouter.ai/api/v1", model: "openai/gpt-6-luna")
+        var (kit, secrets) = try adopt(imp.adoption(secrets: store, exit: .left, height: 0.5, speed: 0))
+        var prefs = ImpPreferences()
+        _ = try prefs.adopt(kit: kit, as: imp.id, secrets: secrets)
+        #expect(prefs.ai.services.map(\.name) == ["OpenRouter"])
+        imp.id = UUID()
+        imp.brain = PocketService(baseURL: "http://studio.local:1234/v1", model: "qwen", name: "Studio")
+        (kit, secrets) = try adopt(imp.adoption(secrets: store, exit: .left, height: 0.5, speed: 0))
+        _ = try prefs.adopt(kit: kit, as: imp.id, secrets: secrets)
+        #expect(prefs.ai.services.map(\.name) == ["OpenRouter", "Studio"])
+    }
+
+    @Test func olderPocketImpsLoadWithoutAServiceName() throws {
+        let old = #"{"baseURL":"https://x.example/v1","model":"m"}"#
+        let service = try JSONDecoder().decode(PocketService.self, from: Data(old.utf8))
+        #expect(service.name == nil && service.label == "x.example")
+        #expect(PocketService().isEmpty && !service.isEmpty)
+    }
+
     @Test func reusesServicesAndServersTheMacHas() throws {
         let (imp, store) = pocketImp()
         let (kit, secrets) = try adopt(imp.adoption(secrets: store, exit: .left, height: 0, speed: 0))

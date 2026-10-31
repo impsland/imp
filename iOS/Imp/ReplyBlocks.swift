@@ -241,7 +241,7 @@ private struct AudioBlock: View {
             }
         }
         .task(id: ref) { await load() }
-        .onDisappear { player.pause() }
+        .onDisappear { player.leave() }
     }
 
     private func load() async {
@@ -249,13 +249,19 @@ private struct AudioBlock: View {
         await f.load(imp: imp.id, client: client)
         guard case .ready(let url) = f.state else { return }
         await player.measure(url)
-        if autoplay { player.toggle(url) }
+        // Its turn comes after any voice that is talking (on the stage too), never over it.
+        if autoplay { player.autoplay(url) }
     }
 }
 
-/// One AVPlayer for a block, with what the controls show.
+/// One AVPlayer for a block, with what the controls show. It shares the stage's voice (`StageVoice`):
+/// starting it pauses whatever else plays, and the other way round.
 @MainActor @Observable
-final class PlayerModel {
+final class PlayerModel: StageVoicePlayer {
+    /// Nothing the stage's bubbles own: this is the chat's.
+    var owner: String? { nil }
+    @ObservationIgnored private let key = "chat|\(UUID().uuidString)"
+
     private(set) var isPlaying = false
     private(set) var elapsed = 0.0
     private(set) var duration = 0.0
@@ -266,11 +272,23 @@ final class PlayerModel {
     @ObservationIgnored private var ended: NSObjectProtocol?
 
     func toggle(_ url: URL) {
-        prepare(url)
         if isPlaying { pause(); return }
+        begin(url)
+    }
+
+    /// A reply that just arrived speaks in its turn (once): after whatever is talking now.
+    func autoplay(_ url: URL) {
+        StageVoice.shared.ready(key: key, owner: nil) { [weak self] in
+            self?.begin(url)
+            return self != nil
+        }
+    }
+
+    private func begin(_ url: URL) {
+        prepare(url)
         // Plays out loud even with the ring switch on silent, like any media app.
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-        try? AVAudioSession.sharedInstance().setActive(true)
+        StageVoice.activateSession()
+        StageVoice.shared.started(self)
         if progress >= 0.999 { player?.seek(to: .zero) }
         player?.play()
         isPlaying = true
@@ -279,6 +297,21 @@ final class PlayerModel {
     func pause() {
         player?.pause()
         isPlaying = false
+        StageVoice.shared.stopped(self)
+    }
+
+    /// Something else started.
+    func yield() {
+        player?.pause()
+        isPlaying = false
+    }
+
+    /// Its block went away: it stops, and gives up its turn.
+    func leave() {
+        player?.pause()
+        isPlaying = false
+        StageVoice.shared.cancel(key: key)
+        StageVoice.shared.finished(self)
     }
 
     /// Reads how long it is before it's played (the controls show it right away).
@@ -307,7 +340,11 @@ final class PlayerModel {
         }
         ended = NotificationCenter.default.addObserver(forName: AVPlayerItem.didPlayToEndTimeNotification, object: p.currentItem,
                                                        queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.isPlaying = false }
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.isPlaying = false
+                StageVoice.shared.finished(self)
+            }
         }
     }
 
@@ -331,12 +368,13 @@ private struct VideoBlock: View {
         _file = State(initialValue: ReplyFile(ref: ref))
     }
     @State private var file: ReplyFile
-    @State private var player: AVPlayer?
+    @State private var clip: StageClip?
 
     var body: some View {
         Group {
-            if let player {
-                VideoPlayer(player: player)
+            if let clip {
+                // Playing it (its own controls) pauses whatever else talks.
+                VideoPlayer(player: clip.player)
                     .aspectRatio(16 / 9, contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                     .contextMenu {
@@ -351,15 +389,14 @@ private struct VideoBlock: View {
             }
         }
         .task(id: ref) { await load() }
-        .onDisappear { player?.pause() }
+        .onDisappear { clip?.pause() }
     }
 
     private func load() async {
         let f = file
         await f.load(imp: imp.id, client: client)
-        if case .ready(let url) = f.state {
-            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
-            player = AVPlayer(url: url)
+        if case .ready(let url) = f.state, clip == nil {
+            clip = StageClip(url: url, kind: .video, key: "chat|\(UUID().uuidString)", owner: nil)
         }
     }
 }

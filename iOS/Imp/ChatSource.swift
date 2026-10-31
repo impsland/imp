@@ -37,7 +37,13 @@ extension LinkClient: ChatSource {
     func working(_ id: UUID) -> LinkWork? { work[id] }
     func mood(_ id: UUID) -> Mood? { moods[id] }
     func availability(_ id: UUID) -> ChatAvailability { isConnected ? .ready : .offline }
-    func peers(_ id: UUID) -> [LinkImp] { isConnected ? others : [] }
+
+    /// Everyone this Imp can message: the other Imps on this phone and the ones still on the Mac.
+    func peers(_ id: UUID) -> [LinkImp] {
+        guard isConnected else { return [] }
+        var seen: Set<String> = [imp(id)?.name.lowercased() ?? ""]
+        return (imps + others).filter { $0.id != id && seen.insert($0.name.lowercased()).inserted }
+    }
 
     func intro(_ imp: LinkImp, _ availability: ChatAvailability) -> (title: String, text: String) {
         (String(localized: "Ask \(imp.name) anything"),

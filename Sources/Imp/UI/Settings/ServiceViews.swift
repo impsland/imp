@@ -142,17 +142,6 @@ struct KeyField: View {
     }
 }
 
-/// Well-known OpenAI-compatible addresses, offered only as shortcuts for typing the base URL.
-/// Nothing in Imp depends on them.
-enum ServiceHints {
-    static let all: [(name: String, baseURL: String)] = [
-        ("OpenRouter", "https://openrouter.ai/api/v1"),
-        ("Ollama", "http://localhost:11434/v1"),
-        ("LM Studio", "http://localhost:1234/v1"),
-        ("OpenAI", "https://api.openai.com/v1"),
-    ]
-}
-
 /// "Add a service": any OpenAI-compatible endpoint. One-click addresses on top, then address,
 /// name and key, with a connection test.
 struct AddServiceSheet: View {
@@ -180,15 +169,16 @@ struct AddServiceSheet: View {
         SheetScaffold(icon: "server.rack", title: "Add a service",
                       info: "Any OpenAI-compatible API, in the cloud or on this Mac. The key stays on this Mac. Every Imp on it uses its model, unless one picks its own.") {
             VStack(alignment: .leading, spacing: 10) {
-                EvenGrid(minWidth: 96, spacing: 6) {
-                    ForEach(ServiceHints.all, id: \.name) { hint in
-                        ChoiceChip(verbatim: hint.name, picked: draft.baseURL == hint.baseURL) {
-                            let wasHint = name.isEmpty || ServiceHints.all.contains { $0.name == name }
-                            baseURL = hint.baseURL
-                            if wasHint { name = hint.name }
+                EvenGrid(minWidth: 104, spacing: 6) {
+                    ForEach(ServicePreset.all) { preset in
+                        LinkedChoiceChip(title: preset.name, picked: draft.baseURL == preset.baseURL, link: preset.link,
+                                         linkHelp: preset.link.absoluteString) {
+                            let wasPreset = name.isEmpty || ServicePreset.all.contains { $0.name == name }
+                            baseURL = preset.baseURL
+                            if wasPreset { name = preset.name }
                             check = nil
                         }
-                        .help(hint.baseURL)
+                        .help(preset.baseURL)
                     }
                 }
                 FieldRow("Address") {

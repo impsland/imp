@@ -160,6 +160,7 @@ final class LinkClient {
     private func teardown(clearCache: Bool) {
         stop()
         imps = []; others = []; chats = [:]; work = [:]; moods = [:]
+        for (id, speech) in speeches { drop(speech, for: id) }
         if clearCache { Cache.delete() }
         onEvent?(.roster([]))
     }
@@ -171,8 +172,18 @@ final class LinkClient {
         channel = nil
         channelWasReady = false
         viaHop = false
+        linkDropped()
+    }
+
+    /// The link is gone: files in flight fail, pocket Imps stop waiting for the Mac, and a Mac Imp's
+    /// talk that can't go on (a question waiting for its answer) leaves the stage. A reply stays
+    /// up to be read, then goes the way it would have.
+    private func linkDropped() {
         files.linkLost()
         onPocket?(.linkLost)
+        for (id, speech) in speeches {
+            if speech.role == .reply { heard(nil, from: id) } else { drop(speech, for: id) }
+        }
     }
 
     // MARK: Finding the Mac
@@ -280,8 +291,7 @@ final class LinkClient {
             let wasReady = channelWasReady
             channel = nil
             viaHop = false
-            files.linkLost()
-            onPocket?(.linkLost)
+            linkDropped()
             channelWasReady = false
             pinger?.cancel()
             guard active else { return }
@@ -353,7 +363,8 @@ final class LinkClient {
         case .leave(let id):
             guard let i = imps.firstIndex(where: { $0.id == id }) else { break }
             let imp = imps.remove(at: i)
-            work[id] = nil; moods[id] = nil; speeches[id] = nil
+            work[id] = nil; moods[id] = nil
+            if let speech = speeches[id] { drop(speech, for: id) }
             if !others.contains(where: { $0.id == id }) { others.append(imp) }
             onEvent?(.left(id))
         case .look(let imp):
@@ -414,25 +425,37 @@ final class LinkClient {
     func stop(_ imp: UUID) { send(.stop(imp: imp)) }
 
     /// Hides a speech bubble (tapped away).
-    func dismissSpeech(_ imp: UUID) { speeches[imp] = nil }
+    func dismissSpeech(_ imp: UUID) {
+        if let speech = speeches[imp] { drop(speech, for: imp) }
+    }
 
     @ObservationIgnored private var speechClear: [UUID: Task<Void, Never>] = [:]
 
+    /// Takes a bubble off the stage for good, and its voices with it.
+    private func drop(_ speech: LinkSpeech, for id: UUID) {
+        speechClear[id]?.cancel()
+        speechClear[id] = nil
+        speeches[id] = nil
+        StageVoice.shared.drop(owner: speech.id.uuidString)
+    }
+
     /// The Mac's bubble came or went. One that goes stays a little longer here, long enough to read
-    /// (the Mac hides its bubbles on its own clock, and you may only just have looked).
+    /// (the Mac hides its bubbles on its own clock, and you may only just have looked), and while
+    /// its voice is still playing or waiting its turn.
     private func heard(_ speech: LinkSpeech?, from id: UUID) {
         speechClear[id]?.cancel()
+        speechClear[id] = nil
         if let speech {
+            if let old = speeches[id], old.id != speech.id { StageVoice.shared.drop(owner: old.id.uuidString) }
             speeches[id] = speech
+            StageVoice.shared.expect(speech) { _ in true }
             return
         }
         guard let shown = speeches[id] else { return }
-        let words = shown.question.count + shown.text.count
-        let linger = min(18, 4 + Double(words) * 0.04)
         speechClear[id] = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(linger))
-            guard !Task.isCancelled, self?.speeches[id]?.id == shown.id else { return }
-            self?.speeches[id] = nil
+            try? await StageVoice.shared.linger(over: shown)
+            guard !Task.isCancelled, let self, speeches[id]?.id == shown.id else { return }
+            drop(shown, for: id)
         }
     }
 
@@ -531,6 +554,11 @@ final class LinkClient {
         moods[bob.id] = .working
         speeches[pip.id] = LinkSpeech(id: UUID(), role: .reply, peer: "Moss", hue: 0.25, question: "Is the backup done?",
                                       text: "Yes! All **42 files** are safe on the external disk.")
+        // `-demoVoice <url>`: Pip answers out loud instead (a web address, so it plays with no Mac).
+        if let i = CommandLine.arguments.firstIndex(of: "-demoVoice"), CommandLine.arguments.indices.contains(i + 1) {
+            speeches[pip.id] = LinkSpeech(id: UUID(), role: .reply, peer: "Moss", hue: 0.25, question: "Is the backup done?",
+                                          text: "Said it out loud:\n\n![Voice reply](\(CommandLine.arguments[i + 1])#autoplay)")
+        }
     }
 
     var isDemo: Bool { demo }

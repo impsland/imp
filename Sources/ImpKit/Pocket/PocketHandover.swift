@@ -26,8 +26,13 @@ extension PocketImp {
     /// The kit with this Imp in it and the secrets that go with it, named as the kit names its servers.
     func handover(_ store: PocketSecrets) -> (kit: String, secrets: LinkSecrets) {
         var kit = Kit()
+        // No service yet: no brain goes (a model means nothing without its service), and on the Mac
+        // it follows the default service and its model.
+        let address = brain.baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        let kitBrain: KitBrain? = address.isEmpty ? nil
+            : KitBrain(model: brain.model.trimmingCharacters(in: .whitespacesAndNewlines), serviceName: brain.label, baseURL: address)
         var imp = KitImp(name: name.trimmingCharacters(in: .whitespacesAndNewlines), hue: hue, scale: scale, personality: personality,
-                         brain: KitBrain(model: brain.model, serviceName: URL(string: brain.baseURL)?.host, baseURL: brain.baseURL),
+                         brain: kitBrain,
                          chats: chats.filter { $0.peer == nil && !$0.isEmpty })
         imp.traits = traits
         kit.servers = servers.map {
@@ -38,7 +43,7 @@ extension PocketImp {
         }
         imp.servers = kit.servers.map(\.id)
         kit.imps = [imp]
-        var secrets = LinkSecrets(apiKey: store.get(.apiKey, imp: id).flatMap { $0.isEmpty ? nil : $0 })
+        var secrets = LinkSecrets(apiKey: address.isEmpty ? nil : store.get(.apiKey, imp: id).flatMap { $0.isEmpty ? nil : $0 })
         let keys = kit.serverKeys
         for server in servers {
             guard let header = server.header, let key = keys[server.id],

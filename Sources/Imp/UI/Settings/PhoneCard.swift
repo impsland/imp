@@ -57,8 +57,10 @@ struct PhoneCard: View {
 }
 
 /// The pairing code: a QR code for the iPhone's camera, the link itself to copy, and who's connected.
-private struct PairingSheet: View {
+struct PairingSheet: View {
     let model: AppModel
+    /// Shown instead of this Mac's own pairing (design renders: nothing is set up or listened for).
+    var preview: LinkPairing?
     @Environment(\.dismiss) private var dismiss
     @State private var pairing: LinkPairing?
     @State private var copied = false
@@ -79,18 +81,25 @@ private struct PairingSheet: View {
                 .padding(10)
                 .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.white))
                 .accessibilityLabel("Pairing code")
-                VStack(alignment: .leading, spacing: 12) {
-                    step(1, "Open Imp on your iPhone.")
-                    step(2, "Scan this code with the iPhone's Camera, or tap Scan Code in Imp.")
-                    step(3, "Throw an Imp hard at the side of your screen. It lands on your phone.")
-                    if let newcomer {
-                        StatusText(verbatim: String(localized: "\(newcomer) is connected."), symbol: "checkmark.circle.fill", color: .green)
-                    } else {
-                        HStack(spacing: 6) {
-                            ProgressView().controlSize(.small)
-                            Text("Waiting for your iPhone…").font(.system(size: 12)).foregroundStyle(Dungeon.muted)
+                VStack(alignment: .leading, spacing: 0) {
+                    step(1, icon: "iphone.gen3", "**Open** Imp on your iPhone")
+                    connector
+                    step(2, icon: "qrcode.viewfinder", "**Scan** this code with Camera")
+                    connector
+                    step(3, icon: "hand.draw.fill", "**Throw** an Imp off your screen")
+                    Group {
+                        if let newcomer {
+                            StatusText(verbatim: String(localized: "\(newcomer) is connected."), symbol: "checkmark.circle.fill", color: .green)
+                                .transition(.opacity.combined(with: .scale(scale: 0.9, anchor: .leading)))
+                        } else {
+                            HStack(spacing: 6) {
+                                ProgressView().controlSize(.small)
+                                Text("Waiting for your iPhone…").font(.system(size: 12)).foregroundStyle(Dungeon.muted)
+                            }
                         }
                     }
+                    .padding(.top, 16)
+                    .animation(.snappy, value: newcomer)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -111,7 +120,7 @@ private struct PairingSheet: View {
         }
         .onAppear {
             before = Set(model.phone.connected.keys)
-            pairing = model.phone.pairing()
+            pairing = preview ?? model.phone.pairing()
         }
     }
 
@@ -120,12 +129,41 @@ private struct PairingSheet: View {
         model.phone.connected.first { !before.contains($0.key) }?.value
     }
 
-    private func step(_ n: Int, _ text: LocalizedStringKey) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text(verbatim: "\(n)").font(.system(size: 12, weight: .heavy, design: .rounded)).foregroundStyle(Dungeon.deep)
-                .frame(width: 20, height: 20).background(Circle().fill(Dungeon.flame))
-            Text(text).font(.system(size: 13)).foregroundStyle(Dungeon.cream).fixedSize(horizontal: false, vertical: true)
+    /// One step on one line, as the iPhone shows them: an icon with its number, a short phrase with
+    /// the key word in bold.
+    private func step(_ n: Int, icon: String, _ text: LocalizedStringKey) -> some View {
+        HStack(spacing: 11) {
+            Image(systemName: icon)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Dungeon.flame)
+                .frame(width: 32, height: 32)
+                .background(Dungeon.ember.opacity(0.16), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+                .overlay(alignment: .topTrailing) {
+                    Text(verbatim: "\(n)")
+                        .font(.system(size: 9, weight: .heavy, design: .rounded))
+                        .foregroundStyle(Dungeon.deep)
+                        .frame(width: 15, height: 15)
+                        .background(Circle().fill(Dungeon.flame))
+                        .offset(x: 5, y: -5)
+                }
+            Text(text)
+                .font(.system(size: 13))
+                .foregroundStyle(Dungeon.cream)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
+        .accessibilityElement(children: .combine)
+    }
+
+    /// A faint dotted line from one step's icon to the next.
+    private var connector: some View {
+        Rectangle()
+            .fill(Dungeon.ember.opacity(0.35))
+            .frame(width: 1.5, height: 9)
+            .mask(VStack(spacing: 2) { ForEach(0..<3, id: \.self) { _ in Capsule().frame(height: 2) } })
+            .padding(.leading, 15.25)
+            .padding(.vertical, 3)
+            .accessibilityHidden(true)
     }
 
     /// A crisp QR code for `text` (medium error correction).

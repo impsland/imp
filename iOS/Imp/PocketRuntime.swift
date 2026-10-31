@@ -12,7 +12,11 @@ final class PocketRuntime {
         init(_ text: String) { errorDescription = text }
     }
 
-    private typealias Job = @MainActor () async -> Void
+    /// Something an Imp has to do, after what it's doing now. `abort` says so if the Imp goes before its turn.
+    private struct Job {
+        var run: @MainActor () async -> Void
+        var abort: @MainActor () -> Void
+    }
 
     /// How long a pocket Imp waits for a Mac Imp's answer.
     private static let answerTimeout: TimeInterval = 120
@@ -20,6 +24,9 @@ final class PocketRuntime {
 
     private let store: PocketStore
     private(set) var work: [UUID: LinkWork] = [:]
+    /// What each pocket Imp is saying to another Imp (a bubble above it on the stage), like the
+    /// Mac Imps' in `LinkClient.speeches`.
+    private(set) var speeches: [UUID: LinkSpeech] = [:]
 
     @ObservationIgnored var onEvent: ((StageEvent) -> Void)?
     @ObservationIgnored private let client: LinkClient
@@ -27,6 +34,7 @@ final class PocketRuntime {
     @ObservationIgnored private var running: [UUID: Task<Void, Never>] = [:]
     @ObservationIgnored private var waiting: [UUID: [Job]] = [:]
     @ObservationIgnored private var pending: [UUID: CheckedContinuation<String, Error>] = [:]
+    @ObservationIgnored private var speechClear: [UUID: Task<Void, Never>] = [:]
 
     init(client: LinkClient, store: PocketStore = PocketStore()) {
         self.client = client
@@ -43,6 +51,13 @@ final class PocketRuntime {
     var secrets: any PocketSecrets { store.secrets }
 
     func contains(_ id: UUID) -> Bool { store.contains(id) }
+
+    /// The paired Mac's name on the network (`.local` first): where a model server on the Mac is
+    /// reached from this phone. Nil when no Mac is paired.
+    var macHost: String? {
+        let hosts = client.pairing?.hosts ?? []
+        return hosts.first { $0.hasSuffix(".local") } ?? hosts.first
+    }
 
     func hasBrain(_ id: UUID) -> Bool {
         store.imp(id).map { (try? $0.validate()) != nil } ?? false
@@ -63,18 +78,30 @@ final class PocketRuntime {
         client.setTroupe(looks)
     }
 
+    /// The Imp is gone (deleted, or taken in by the Mac): what it was doing stops, what waited for it
+    /// is told it isn't around, and nothing of it stays on the stage.
     private func forget(_ id: UUID) {
-        running[id]?.cancel()
-        waiting[id] = nil
-        work[id] = nil
         store.remove(id)
+        let dropped = waiting.removeValue(forKey: id) ?? []
+        running[id]?.cancel()
+        work[id] = nil
+        if let speech = speeches[id] { dismiss(speech, for: id) }
+        for job in dropped { job.abort() }
     }
 
     // MARK: Moving home
 
     /// Throws `id` to the Mac. It stays here until the Mac says it has it (`PocketEvent.adopted`).
     func toss(_ id: UUID, exit: LinkSide, height: Double, speed: Double) {
-        guard let imp = store.imp(id) else { return }
+        guard let imp = store.imp(id) else {
+            onEvent?(.refused(id, String(localized: "That Imp isn't on this iPhone.")))
+            return
+        }
+        // Its answer would be lost on the way: it has to finish first.
+        guard running[id] == nil else {
+            onEvent?(.refused(id, String(localized: "\(imp.name) is busy thinking. Toss it once it's done.")))
+            return
+        }
         do {
             let request = try imp.adoption(secrets: store.secrets, exit: exit, height: height, speed: speed)
             guard client.send(request) else { throw Failure(String(localized: "Your Mac isn't around")) }
@@ -86,8 +113,8 @@ final class PocketRuntime {
     // MARK: Asking
 
     /// Runs `job` after what the Imp is already doing.
-    private func enqueue(_ id: UUID, _ job: @escaping Job) {
-        waiting[id, default: []].append(job)
+    private func enqueue(_ id: UUID, abort: @escaping @MainActor () -> Void = {}, _ run: @escaping @MainActor () async -> Void) {
+        waiting[id, default: []].append(Job(run: run, abort: abort))
         if running[id] == nil { next(id) }
     }
 
@@ -98,7 +125,7 @@ final class PocketRuntime {
             return
         }
         let job = waiting[id]!.removeFirst()
-        running[id] = Task { await job(); next(id) }
+        running[id] = Task { await job.run(); next(id) }
     }
 
     /// One ask, from you or from another Imp: thinks, files the turn in its chat.
@@ -135,9 +162,13 @@ final class PocketRuntime {
     private func deliver(_ text: String, to name: String, from id: UUID) async throws -> String {
         guard let sender = store.imp(id).map({ ChatTurn.Sender(id: $0.id, name: $0.name, hue: $0.hue) }) else { throw CancellationError() }
         if let other = store.imps.first(where: { $0.id != id && $0.name.caseInsensitiveCompare(name) == .orderedSame }) {
+            let asking = say(.asking, to: other.name, hue: other.hue, text, for: id)
+            defer { unsay(asking, for: id) }
             return try await asked(other, text, from: sender)
         }
         if let mac = macImps.first(where: { $0.name.caseInsensitiveCompare(name) == .orderedSame }) {
+            let asking = say(.asking, to: mac.name, hue: mac.hue, text, for: id)
+            defer { unsay(asking, for: id) }
             return try await askMac(mac, text, from: id)
         }
         throw Failure(String(localized: "\(name) isn't around"))
@@ -146,18 +177,38 @@ final class PocketRuntime {
     /// Another pocket Imp's answer, once it has got round to it.
     private func asked(_ other: PocketImp, _ text: String, from sender: ChatTurn.Sender) async throws -> String {
         try await withCheckedThrowingContinuation { continuation in
-            enqueue(other.id) { [self] in
-                guard hasBrain(other.id) else {
-                    return continuation.resume(throwing: Failure(String(localized: "\(other.name) has no brain yet.")))
-                }
-                do {
-                    let answer = try await answer(text, of: other.id, from: sender)
-                    continuation.resume(with: answer.turn.failed ? .failure(Failure(answer.turn.reply)) : .success(answer.turn.reply))
-                } catch {
-                    continuation.resume(throwing: error)
-                }
+            enqueue(other.id, abort: {
+                continuation.resume(throwing: Failure(String(localized: "\(other.name) isn't around")))
+            }) { [self] in
+                let (reply, failed) = await respond(to: text, of: other.id, from: sender)
+                continuation.resume(with: failed ? .failure(Failure(reply)) : .success(reply))
             }
         }
+    }
+
+    /// One question from another Imp, here: it shows on the stage while the Imp thinks, and so does
+    /// the answer (or why there is none). The text goes straight back to the asker; only the
+    /// bubble waits for a voice (see `StageVoice`).
+    private func respond(to text: String, of id: UUID, from sender: ChatTurn.Sender) async -> (reply: String, failed: Bool) {
+        guard let imp = store.imp(id) else { return (String(localized: "That Imp isn't on this iPhone."), true) }
+        let said = say(.asked, to: sender.name, hue: sender.hue, text, for: id)
+        var reply = ""
+        var failed = false
+        do {
+            guard hasBrain(id) else { throw Failure(String(localized: "\(imp.name) has no brain yet.")) }
+            let answer = try await answer(text, of: id, from: sender)
+            (reply, failed) = (answer.turn.reply, answer.turn.failed)
+        } catch is CancellationError {
+            (reply, failed) = (String(localized: "Stopped."), true)
+        } catch {
+            (reply, failed) = (error.localizedDescription, true)
+        }
+        // Deleted or taken in meanwhile: nobody is left to say it.
+        if store.contains(id) {
+            unsay(said, for: id)
+            say(.reply, to: sender.name, hue: sender.hue, text, answer: reply, for: id)
+        }
+        return (reply, failed)
     }
 
     /// A Mac Imp's answer, or why there isn't one.
@@ -199,7 +250,13 @@ final class PocketRuntime {
         case .answer(let id, let text, let failed):
             finish(id, failed ? .failure(Failure(text)) : .success(text))
         case .ask(let id, let from, let to, let text):
-            enqueue(to) { [self] in await serve(id, from, to, text) }
+            guard store.contains(to) else {
+                client.send(.answered(id: id, text: String(localized: "That Imp isn't on this iPhone."), failed: true))
+                return
+            }
+            enqueue(to, abort: { [self] in
+                client.send(.answered(id: id, text: String(localized: "That Imp isn't on this iPhone."), failed: true))
+            }) { [self] in await serve(id, from, to, text) }
         case .linkLost:
             for id in pending.keys { finish(id, .failure(Failure(String(localized: "Your Mac isn't around")))) }
         }
@@ -207,18 +264,46 @@ final class PocketRuntime {
 
     /// A Mac Imp's question for one of ours.
     private func serve(_ id: UUID, _ from: LinkImp, _ to: UUID, _ text: String) async {
-        var reply = ""
-        var failed = false
-        do {
-            guard hasBrain(to) else { throw PocketError.noBrain }
-            let answer = try await answer(text, of: to, from: ChatTurn.Sender(id: from.id, name: from.name, hue: from.hue))
-            (reply, failed) = (answer.turn.reply, answer.turn.failed)
-        } catch is CancellationError {
-            (reply, failed) = (String(localized: "Stopped."), true)
-        } catch {
-            (reply, failed) = (error.localizedDescription, true)
-        }
+        let (reply, failed) = await respond(to: text, of: to, from: ChatTurn.Sender(id: from.id, name: from.name, hue: from.hue))
         client.send(.answered(id: id, text: reply, failed: failed))
+    }
+
+    // MARK: On the stage
+
+    /// Puts a bubble above `id`'s head. Returns its id, to take it away again.
+    @discardableResult
+    private func say(_ role: LinkSpeech.Role, to peer: String, hue: Double, _ question: String, answer: String = "", for id: UUID) -> UUID {
+        let speech = LinkSpeech(id: UUID(), role: role, peer: peer, hue: hue, question: question, text: answer)
+        if let old = speeches[id] { dismiss(old, for: id) }
+        speeches[id] = speech
+        guard role == .reply else { return speech.id }
+        // Voices in the reply take their turns; the bubble stays up while they do (web ones only:
+        // a pocket Imp has no folder on the Mac).
+        StageVoice.shared.expect(speech) { LinkFiles.isWeb($0) }
+        speechClear[id] = Task { [weak self] in
+            try? await StageVoice.shared.linger(over: speech)
+            guard !Task.isCancelled, let self, speeches[id]?.id == speech.id else { return }
+            dismiss(speech, for: id)
+        }
+        return speech.id
+    }
+
+    /// Takes away the bubble `speech` if it's still the one showing (its answer came in).
+    private func unsay(_ speech: UUID, for id: UUID) {
+        guard let shown = speeches[id], shown.id == speech else { return }
+        dismiss(shown, for: id)
+    }
+
+    /// Hides an Imp's bubble (tapped away).
+    func dismissSpeech(_ id: UUID) {
+        if let speech = speeches[id] { dismiss(speech, for: id) }
+    }
+
+    private func dismiss(_ speech: LinkSpeech, for id: UUID) {
+        speechClear[id]?.cancel()
+        speechClear[id] = nil
+        speeches[id] = nil
+        StageVoice.shared.drop(owner: speech.id.uuidString)
     }
 }
 

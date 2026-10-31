@@ -165,7 +165,8 @@ final class PhoneLink {
     func name(of phone: UUID) -> String? { connected[phone] ?? phones.first { $0.id == phone }?.name }
 
     private func save() {
-        guard var s = saved else { return }
+        // A model that doesn't persist (design renders, tests) never touches the real pairing.
+        guard app.persists, var s = saved else { return }
         s.phones = phones
         saved = s
         do {
@@ -470,8 +471,9 @@ final class PhoneLink {
         }
     }
 
-    /// A pocket Imp asks an Imp here. Only the Imps the phone announced may ask, and only Imps out
-    /// on the desktop answer. Whatever goes wrong comes back as a failed answer.
+    /// A pocket Imp asks an Imp here. Only the Imps the phone announced may ask, and any Imp that's
+    /// out answers: on the desktop, or on a phone (it still thinks here, and its bubble shows there).
+    /// Whatever goes wrong comes back as a failed answer.
     private func relay(_ id: UUID, from: UUID, to: UUID, text: String, device: UUID) {
         func reply(_ text: String, failed: Bool) {
             channels(for: device).forEach { $0.send(LinkUpdate.answer(id: id, text: String(text.prefix(Self.maxText)), failed: failed)) }
@@ -480,7 +482,7 @@ final class PhoneLink {
         guard let me = pocket[device]?.first(where: { $0.id == from }) else {
             return reply(String(localized: "That Imp isn't on this phone."), failed: true)
         }
-        guard !words.isEmpty, let target = app.profile(to), target.isActive, target.awayOn == nil, let model = app.imp(to) else {
+        guard !words.isEmpty, let target = app.profile(to), target.isActive, let model = app.imp(to) else {
             return reply(String(localized: "That Imp isn't out on the desktop."), failed: true)
         }
         let sender = ChatTurn.Sender(id: me.id, name: me.name, hue: me.hue)

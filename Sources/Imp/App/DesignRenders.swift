@@ -152,7 +152,7 @@ enum IconRenderer {
 
     /// `Imp --render-home <screen> <file.png> [imps=N] [select=N] [out=N] [hidden=1] [width=W] [height=H]`: the real
     /// app window (live controls) rendered offscreen for design review. Screens: `home`, `egg`, an Imp tab
-    /// (`looks`, `brain`, `tools`, `shortcuts`), `general-<tab>`, or the `add-service` / `add-tool` / `add-shortcut` / `edit-shortcut` / `animation-editor` / `animation-details` sheets. `hidden=1`: the desktop Imps are hidden.
+    /// (`looks`, `brain`, `tools`, `shortcuts`), `general-<tab>`, or the `add-service` / `pair-phone` / `add-tool` / `add-shortcut` / `edit-shortcut` / `animation-editor` / `animation-details` sheets. `hidden=1`: the desktop Imps are hidden.
     static func renderHome(screen: String, to url: URL, width: CGFloat = 780, height: CGFloat = 600, sampleImps: Int = 1, select: Int = 0, out: Int? = nil, away: Int? = nil, hidden: Bool = false) {
         let model = AppModel(persist: false)          // review renders never write the user's preferences
         model.prefs = ImpPreferences()
@@ -191,6 +191,9 @@ enum IconRenderer {
         }
         let root: AnyView = switch screen {
         case "add-service": AnyView(AddServiceSheet(model: model) { _ in }.background(Color(nsColor: .windowBackgroundColor)))
+        case "pair-phone":
+            AnyView(PairingSheet(model: model, preview: LinkPairing(mac: UUID(), name: "Mac", secret: LinkPairing.newSecret()))
+                .background(Color(nsColor: .windowBackgroundColor)))
         case "add-tool": AnyView(ServerEditor(draft: MCPExamples.examples.first { !$0.isComplete }!.server,
                                                   isNew: true, hub: model.assistant.hub) { _ in }
             .background(Color(nsColor: .windowBackgroundColor)))

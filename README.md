@@ -77,13 +77,18 @@ Imp works with any **OpenAI-compatible** service. Nothing is built in: you add t
 | ------------ | -------------- | ------------------------------- |
 | Ollama       | On your Mac    | `http://localhost:11434/v1`     |
 | LM Studio    | On your Mac    | `http://localhost:1234/v1`      |
+| OmniRoute    | On your Mac    | `http://localhost:20128/v1`     |
 | OpenRouter   | In the cloud   | `https://openrouter.ai/api/v1`  |
-| OpenAI       | In the cloud   | `https://api.openai.com/v1`     |
 | Anything else that speaks the OpenAI API | Anywhere | Its `/v1` address |
+
+**Add a service** offers these as one-click addresses; the little ↗ on each opens where you get a
+key or a model for it.
 
 Pick a service's model once, when you add it: every Imp on that service uses it, and the starred
 service is the one new Imps start with. An Imp can still pick its own service or model, so a local
-one can handle private work while another uses a bigger cloud model.
+one can handle private work while another uses a bigger cloud model. Remove a service and the Imps
+that used it go back to the starred one, with its model (a model picked for the service that's gone
+wouldn't work anywhere else); with no service left, they sleep until you add one.
 
 ## What it can do
 
@@ -277,9 +282,18 @@ servers you give it. Keys and header values stay in the phone's Keychain. It wor
 paired, or while yours is out of reach, but it can't run commands, control the computer, set
 triggers or read the Mac's senses. Throw it off a side of the phone while the Mac is connected and
 it moves home: a full Mac Imp with its chats, looks, personality, service and tool servers, flying
-in from the opposite side. The phone drops its copy once the Mac confirms, and it never becomes a
-pocket Imp again. Nothing is kept in step between the two. Pocket Imps and Mac Imps message each
-other both ways (`imp_message`), just like Imps on the desktop do.
+in from the opposite side. Its service joins the Mac's services under its own name (or is the one
+already there with the same address), and its key comes along unless that service already has one.
+One with no brain yet moves too, and thinks with the Mac's starred service. An Imp that's busy
+thinking stays until it's done. The phone drops its copy once the Mac confirms, and it never becomes
+a pocket Imp again. Nothing is kept in step between the two. Hatching one, pick its size, and a
+service in one tap (OpenRouter, or Ollama, LM Studio or OmniRoute running on your Mac, reached by
+its name on your network).
+
+Every Imp on the phone, pocket or Mac, messages the others (`imp_message`), just like Imps on the
+desktop do, and the talk shows in bubbles over their heads. A voice reply plays with the Imp seen
+speaking, its bubble glowing with the voice; voices take turns, one at a time, so a back-and-forth
+between Imps never talks over itself. The Imps don't wait for a voice to finish before thinking on.
 
 **Embers.** When the Imps on the phone can't think (the Mac is away, or an Imp has no brain yet),
 a little flame shows in the corner. Tap it for a 45-second round: embers drift up through the
