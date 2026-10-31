@@ -151,7 +151,27 @@
         }
       }
     },
+    "%@ didn't take me." : {
+
+    },
+    "%@ doesn't know this Mac any more. Link it again in Settings." : {
+
+    },
+    "%@ doesn't know this Mac any more. Link it again." : {
+
+    },
+    "%@ flies off the screen onto %@. Or throw it hard at the side of the screen." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ flies off the screen onto %2$@. Or throw it hard at the side of the screen."
+          }
+        }
+      }
+    },
     "%@ flies off the screen onto your iPhone. Or throw it hard at the side of the screen." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -204,6 +224,9 @@
           }
         }
       }
+    },
+    "%@ has no room for me." : {
+
     },
     "%@ hides until you show it again from the menu bar (Show) or click it in the Imps' window. Its triggers rest meanwhile." : {
       "localizations" : {
@@ -266,6 +289,7 @@
       }
     },
     "%@ is connected." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -312,6 +336,12 @@
           }
         }
       }
+    },
+    "%@ is in the middle of a game." : {
+
+    },
+    "%@ is linked." : {
+
     },
     "%@ is off" : {
       "localizations" : {
@@ -392,6 +422,9 @@
           }
         }
       }
+    },
+    "%@ isn't the device it was when you linked it, so Imp turned it away." : {
+
     },
     "%@ key" : {
       "localizations" : {
@@ -554,6 +587,9 @@
           }
         }
       }
+    },
+    "%@ wouldn't link: its code ran out or was replaced. Show a fresh one." : {
+
     },
     "%@'s animations" : {
       "localizations" : {
@@ -1712,6 +1748,7 @@
       }
     },
     "**Open** Imp on your iPhone" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1727,7 +1764,11 @@
         }
       }
     },
+    "**Open** Imp on your other device" : {
+
+    },
     "**Scan** this code with Camera" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1742,6 +1783,9 @@
           }
         }
       }
+    },
+    "**Scan** this code, or paste its link" : {
+
     },
     "**Throw** an Imp off your screen" : {
       "localizations" : {
@@ -1870,6 +1914,9 @@
           }
         }
       }
+    },
+    "A device" : {
+
     },
     "A friendly double nod." : {
       "localizations" : {
@@ -2817,7 +2864,11 @@
         }
       }
     },
+    "Another device" : {
+
+    },
     "Another iPhone" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4035,7 +4086,11 @@
         }
       }
     },
+    "Call %@ Back" : {
+
+    },
     "Call %@ Back from iPhone" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -5747,6 +5802,9 @@
         }
       }
     },
+    "Devices" : {
+
+    },
     "Dictation isn't available for %@ right now." : {
       "localizations" : {
         "es" : {
@@ -6937,7 +6995,11 @@
         }
       }
     },
+    "For a device that can't scan: paste the link in Join… on the other device. Keep it private: it lets a device link with this Mac for a while." : {
+
+    },
     "For a phone that can't scan: paste the link in Imp on the iPhone (Paste Link). Keep it private: it lets a phone in." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -6985,7 +7047,23 @@
         }
       }
     },
+    "Forget %@" : {
+
+    },
+    "Forget %@?" : {
+
+    },
+    "Forget Everyone" : {
+
+    },
+    "Forget Everyone…" : {
+
+    },
+    "Forget every device?" : {
+
+    },
     "Forget every iPhone?" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -7001,7 +7079,11 @@
         }
       }
     },
+    "Forget everyone" : {
+
+    },
     "Forget iPhones" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -7480,6 +7562,9 @@
           }
         }
       }
+    },
+    "Has: %@" : {
+
     },
     "Hatch a New Imp" : {
       "localizations" : {
@@ -8288,6 +8373,7 @@
       }
     },
     "Imp can't listen for your iPhone on this network." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8302,6 +8388,12 @@
           }
         }
       }
+    },
+    "Imp can't listen for your other devices on this network." : {
+
+    },
+    "Imp can't read its list of linked devices." : {
+
     },
     "Imp can't read that file." : {
       "localizations" : {
@@ -8319,6 +8411,9 @@
         }
       }
     },
+    "Imp can't save its list of linked devices." : {
+
+    },
     "Imp couldn't keep the account's key safe." : {
       "localizations" : {
         "es" : {
@@ -8334,6 +8429,12 @@
           }
         }
       }
+    },
+    "Imp couldn't reach that device. Is it open, on the same network or the same server?" : {
+
+    },
+    "Imp has reached its limit of linked devices." : {
+
     },
     "Imp starts" : {
       "localizations" : {
@@ -8511,7 +8612,11 @@
         }
       }
     },
+    "Imps it holds come back to your desktop. To link again, one of you shows a new code." : {
+
+    },
     "Imps on a phone come back to your desktop. The old code stops working; pair again with a new one." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8526,6 +8631,9 @@
           }
         }
       }
+    },
+    "Imps on other devices come back to your desktop. The old codes stop working; link again with a new one." : {
+
     },
     "Imps talk in" : {
       "localizations" : {
@@ -8878,6 +8986,9 @@
           }
         }
       }
+    },
+    "Join…" : {
+
     },
     "Just %@" : {
       "localizations" : {
@@ -9366,6 +9477,7 @@
       }
     },
     "Lets your iPhone reach this Mac from anywhere, not just on your Wi-Fi. The server only passes encrypted data along. It can't read anything." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9460,6 +9572,33 @@
           }
         }
       }
+    },
+    "Link" : {
+
+    },
+    "Link a device" : {
+
+    },
+    "Link this Mac with your iPhone or another Mac. Throw an Imp hard at the left or right side of your screen and it flies onto a linked device. It still thinks on this Mac: chat with it there, and throw it back." : {
+
+    },
+    "Link with a device" : {
+
+    },
+    "Link with another device" : {
+
+    },
+    "Linked with %@." : {
+
+    },
+    "Linking code" : {
+
+    },
+    "Linking isn't running on this Mac." : {
+
+    },
+    "Linking…" : {
+
     },
     "Listening" : {
       "localizations" : {
@@ -11163,6 +11302,9 @@
         }
       }
     },
+    "None of your other devices is around. Open Imp on one, then throw me again." : {
+
+    },
     "None yet." : {
       "localizations" : {
         "es" : {
@@ -11483,6 +11625,9 @@
         }
       }
     },
+    "On another device. Click to call it back to your desktop." : {
+
+    },
     "On battery" : {
       "localizations" : {
         "es" : {
@@ -11500,6 +11645,7 @@
       }
     },
     "On it: %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11547,6 +11693,9 @@
         }
       }
     },
+    "On the other device, show its code and copy its link, then paste it here. Scanning with the camera comes soon." : {
+
+    },
     "On the web" : {
       "localizations" : {
         "es" : {
@@ -11580,6 +11729,7 @@
       }
     },
     "On your iPhone. Click to call it back to your desktop." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11857,7 +12007,11 @@
         }
       }
     },
+    "Open Imp on a linked device first (same network as this Mac, or the same server)." : {
+
+    },
     "Open Imp on your iPhone first (same network as this Mac)." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12227,6 +12381,7 @@
       }
     },
     "Pair an iPhone" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12243,6 +12398,7 @@
       }
     },
     "Pairing code" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12259,6 +12415,7 @@
       }
     },
     "Pair…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12369,6 +12526,9 @@
           }
         }
       }
+    },
+    "Paste the link another device shows with its code." : {
+
     },
     "Pasted text" : {
       "localizations" : {
@@ -14820,6 +14980,7 @@
       }
     },
     "Send %@ to %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -14841,7 +15002,21 @@
         }
       }
     },
+    "Send %@ to %@…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send %1$@ to %2$@…"
+          }
+        }
+      }
+    },
+    "Send %@ to Another Device…" : {
+
+    },
     "Send %@ to iPhone" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -15770,6 +15945,7 @@
       }
     },
     "Show the code again to pair one more. Each scan lets that phone in." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -15849,7 +16025,11 @@
         }
       }
     },
+    "Shows a code for another device to scan. Each scan links that device with this Mac." : {
+
+    },
     "Shows a code to scan with your iPhone's camera. You need Imp for iPhone, on the same network as this Mac." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17017,7 +17197,11 @@
         }
       }
     },
+    "That Imp isn't on this device." : {
+
+    },
     "That Imp isn't on this phone." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17034,6 +17218,7 @@
       }
     },
     "That Imp isn't out on the desktop." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17048,6 +17233,9 @@
           }
         }
       }
+    },
+    "That Imp isn't out." : {
+
     },
     "That address didn't answer like a web page." : {
       "localizations" : {
@@ -17128,6 +17316,18 @@
           }
         }
       }
+    },
+    "That device" : {
+
+    },
+    "That device didn't answer in time." : {
+
+    },
+    "That device isn't the one you linked before. Forget it first, then link it again." : {
+
+    },
+    "That device wouldn't link. Its code may have run out: show a fresh one." : {
+
     },
     "That file is too big to be a chat (the limit is %lld MB)." : {
       "localizations" : {
@@ -17258,6 +17458,7 @@
       }
     },
     "That iPhone went away." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17304,6 +17505,9 @@
           }
         }
       }
+    },
+    "That isn't a link from Imp." : {
+
     },
     "That isn't a server address. Use a host name such as imp.example.org." : {
       "localizations" : {
@@ -17416,6 +17620,9 @@
           }
         }
       }
+    },
+    "That's this Mac's own code. Use the one on the other device." : {
+
     },
     "That's too big for a kit (the limit is %lld KB)." : {
       "localizations" : {
@@ -17749,7 +17956,11 @@
         }
       }
     },
+    "The code holds a key only this Mac and the device that scans it will share. Everything they say to each other is encrypted, and nobody else can link with this Mac without a code you showed them." : {
+
+    },
     "The code holds a secret only your phone and this Mac know. It never goes over the network: they use it to recognise each other and to encrypt everything they say." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17765,7 +17976,11 @@
         }
       }
     },
+    "The device I came from isn't around, so I can't go back that way." : {
+
+    },
     "The file is too big to send to the phone." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17780,6 +17995,9 @@
           }
         }
       }
+    },
+    "The file is too big to send." : {
+
     },
     "The file isn't on the Mac any more." : {
       "localizations" : {
@@ -17957,7 +18175,11 @@
         }
       }
     },
+    "The server turned this Mac away, so your devices can't reach it from afar." : {
+
+    },
     "The server turned this Mac away, so your iPhone can't reach it from afar." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -18020,6 +18242,9 @@
           }
         }
       }
+    },
+    "There's nowhere else to go that way." : {
+
     },
     "Thinking" : {
       "localizations" : {
@@ -18117,6 +18342,12 @@
         }
       }
     },
+    "This Mac can't link with any more devices." : {
+
+    },
+    "This Mac's code" : {
+
+    },
     "This can't be undone." : {
       "localizations" : {
         "es" : {
@@ -18182,6 +18413,7 @@
       }
     },
     "Throw an Imp hard at the left or right side of your screen and it flies onto your iPhone. It still thinks on this Mac: chat with it there, and throw it back." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -19042,6 +19274,9 @@
         }
       }
     },
+    "Unlinks every device and makes the old codes stop working." : {
+
+    },
     "Unnamed" : {
       "localizations" : {
         "es" : {
@@ -19208,6 +19443,9 @@
         }
       }
     },
+    "Via the server" : {
+
+    },
     "Violet" : {
       "localizations" : {
         "es" : {
@@ -19241,6 +19479,7 @@
       }
     },
     "Waiting for your iPhone…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -19255,6 +19494,9 @@
           }
         }
       }
+    },
+    "Waiting for your other device…" : {
+
     },
     "Waking up tools" : {
       "localizations" : {
@@ -19880,6 +20122,9 @@
         }
       }
     },
+    "With a server, your devices find each other from anywhere, not just on your Wi-Fi, and this Mac's code works from anywhere too. The server only passes encrypted data along. It can't read anything." : {
+
+    },
     "With clipboard" : {
       "localizations" : {
         "es" : {
@@ -20170,6 +20415,7 @@
       }
     },
     "Your iPhone isn't around. Open Imp on it, on the same network as this Mac, then throw me again." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -20410,6 +20656,7 @@
       }
     },
     "iPhone" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
