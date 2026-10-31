@@ -36,6 +36,7 @@ struct PhoneStage: View {
                     TimelineView(Energy.shared.schedule(lively: pace == .lively, paused: scenePhase != .active || pace == .idle)) { timeline in
                         let _ = engine.step(timeline.date, size: geo.size, insets: geo.safeAreaInsets)
                         ZStack {
+                            EchoFloor(engine: engine, date: timeline.date, reduceMotion: engine.reduceMotion)
                             ForEach(engine.order, id: \.self) { id in
                                 if let body = engine.bodies[id] {
                                     figure(body, date: timeline.date)

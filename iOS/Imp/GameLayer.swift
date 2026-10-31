@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// Embers on the stage: the way in (a small flame when the Imps are asleep), the sparks, the score
-/// and the end card. Drawn inside the stage's own timeline, so it reads the engine each frame.
+/// The games on the stage: the ways in (a flame for Embers and a rune circle for Echo, in the
+/// bottom corners, when the Imps are asleep), and for Embers the sparks, the score and the end card.
+/// Drawn inside the stage's own timeline, so it reads the engine each frame.
 struct GameLayer: View {
     let engine: StageEngine
     let date: Date
@@ -11,22 +12,33 @@ struct GameLayer: View {
 
     var body: some View {
         let _ = engine.reduceMotion = reduceMotion
-        let offer = engine.round == nil && !engine.order.isEmpty && !engine.isConnected()
+        let offer = engine.round == nil && engine.echo == nil && !engine.order.isEmpty && !engine.isConnected()
         let lesson = engine.round.map { $0.phase == .fling || $0.phase == .rules } ?? false
         ZStack {
+            if let echo = engine.echo {
+                EchoLayer(engine: engine, session: echo, date: date, size: size, insets: insets, reduceMotion: reduceMotion)
+            }
             if let round = engine.round {
                 Sparks(round: round, reduceMotion: reduceMotion)
                     .allowsHitTesting(false)
                 if round.isOver {
-                    EndCard(score: round.score, best: engine.best, isRecord: round.isRecord,
+                    EndCard(round: round, best: engine.best,
                             again: { engine.startGame() }, done: { engine.endGame() }, howTo: { engine.startGame(tutorial: true) })
                         .transition(.scale(scale: 0.92).combined(with: .opacity))
                 } else {
                     switch round.phase {
                     case .playing:
-                        Scoreboard(score: round.score, ring: round.ring, kindle: round.kindleGlow, blaze: round.blazeLevel)
+                        Scoreboard(score: round.score, ring: round.ring, kindle: round.kindleGlow, blaze: round.blazeLevel,
+                                   clean: round.isClean, untouched: round.isUntouched)
                             .position(x: size.width / 2, y: insets.top + 24)
                             .allowsHitTesting(false)
+                        if let special = round.special {
+                            SpecialBanner(special: special, reduceMotion: reduceMotion)
+                                .frame(maxWidth: size.width - 32)
+                                .position(x: size.width / 2, y: insets.top + (special.inIntro ? 96 : 76))
+                                .allowsHitTesting(false)
+                                .transition(.scale(scale: 0.8).combined(with: .opacity))
+                        }
                     case .fling:
                         CoachCaption(text: GameRound.caption)
                             .frame(maxWidth: size.width - 32)
@@ -55,41 +67,64 @@ struct GameLayer: View {
                 }
             }
             if offer {
-                Button { engine.startGame() } label: {
-                    Image(systemName: "flame.fill")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(Dungeon.flame)
-                        .frame(width: 48, height: 48)
-                        .background(.black.opacity(0.3), in: Circle())
-                        .overlay(Circle().strokeBorder(Dungeon.cardEdge))
-                        .shadow(color: Dungeon.ember.opacity(0.35), radius: 10)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Play Embers")
-                .position(x: size.width - 40, y: size.height - insets.bottom - 36)
-                .transition(.scale(scale: 0.6).combined(with: .opacity))
+                GameButton(symbol: "flame.fill", tint: Dungeon.flame, glow: Dungeon.ember) { engine.startGame() }
+                    .accessibilityLabel("Play Embers")
+                    .position(x: size.width - 40, y: size.height - insets.bottom - 36)
+                    .transition(.scale(scale: 0.6).combined(with: .opacity))
+                GameButton(symbol: "circle.grid.2x2.fill", tint: EchoArt.accent, glow: EchoArt.accent) { engine.startEcho() }
+                    .accessibilityLabel("Play Echo")
+                    .position(x: 40, y: size.height - insets.bottom - 36)
+                    .transition(.scale(scale: 0.6).combined(with: .opacity))
             }
         }
         .animation(.spring(duration: 0.4), value: offer)
         .animation(.spring(duration: 0.4), value: engine.round?.isOver)
         .animation(.spring(duration: 0.4), value: engine.round?.phase)
+        .animation(.spring(duration: 0.4), value: engine.round?.special?.kind)
+        .animation(.spring(duration: 0.4), value: engine.round?.special?.inIntro)
+        .animation(.spring(duration: 0.4), value: engine.echo?.round.phase)
+        .animation(.spring(duration: 0.4), value: engine.echo?.round.isLesson)
         .preference(key: EmbersPlaying.self, value: engine.isPlaying)
     }
 }
 
-/// A round of Embers is on: the status pill steps aside so the score has the top of the screen.
+/// The way into a game: a small round button in a bottom corner.
+private struct GameButton: View {
+    var symbol: String
+    var tint: Color
+    var glow: Color
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(tint)
+                .frame(width: 48, height: 48)
+                .background(.black.opacity(0.3), in: Circle())
+                .overlay(Circle().strokeBorder(Dungeon.cardEdge))
+                .shadow(color: glow.opacity(0.35), radius: 10)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+/// A game is on (Embers or Echo): the status pill steps aside so the score has the top of the screen.
 struct EmbersPlaying: PreferenceKey {
     static let defaultValue = false
     static func reduce(value: inout Bool, nextValue: () -> Bool) { value = value || nextValue() }
 }
 
 /// The score, with a thin ring running down the round. It runs hotter in the Blaze and flashes green
-/// when kindling refills it.
+/// when kindling refills it. Two small badges show what is still within reach: a round with no smoke
+/// hit, and one where nothing got away; each dims for good when it is lost.
 private struct Scoreboard: View {
     var score: Int
     var ring: Double
     var kindle: Double
     var blaze: Double
+    var clean: Bool
+    var untouched: Bool
 
     var body: some View {
         HStack(spacing: 8) {
@@ -107,12 +142,25 @@ private struct Scoreboard: View {
                 .foregroundStyle(Dungeon.cream)
                 .overlay { Text("\(score)").font(.system(size: 22, weight: .bold, design: .rounded)).monospacedDigit()
                     .foregroundStyle(Dungeon.flame).opacity(blaze) }
+            HStack(spacing: 6) {
+                badge("smoke.fill", SparkArt.wisp, kept: clean)
+                badge("sparkles", SparkArt.gold, kept: untouched)
+            }
         }
         .padding(.horizontal, 14).padding(.vertical, 6)
         .background(.black.opacity(0.3), in: Capsule())
         .overlay(Capsule().strokeBorder(SparkArt.hot.opacity(0.55 * blaze), lineWidth: 1.5))
         .shadow(color: SparkArt.hot.opacity(0.6 * blaze), radius: 4 + 14 * blaze)
         .accessibilityElement(children: .ignore)
+    }
+
+    private func badge(_ symbol: String, _ color: Color, kept: Bool) -> some View {
+        Image(systemName: symbol)
+            .font(.system(size: 12, weight: .semibold))
+            .foregroundStyle(color)
+            .opacity(kept ? 1 : 0.18)
+            .scaleEffect(kept ? 1 : 0.7)
+            .animation(.spring(duration: 0.35), value: kept)
     }
 
     private func arc(_ color: Color, _ opacity: Double) -> some View {
@@ -129,6 +177,29 @@ enum SparkArt {
     static let hot = Color(red: 1, green: 0.5, blue: 0.24)
     static let smokeEdge = Color(red: 0.6, green: 0.54, blue: 0.74)
     static let smokeCore = Color(red: 0.09, green: 0.06, blue: 0.14)
+    static let gold = Color(red: 1, green: 0.84, blue: 0.3)
+    static let chain = Color(red: 1, green: 0.45, blue: 0.62)
+
+    /// The colour of a special phase.
+    static func color(for kind: GameRound.Special.Kind) -> Color {
+        switch kind {
+        case .chain: chain
+        case .storm: wisp
+        case .shower: gold
+        }
+    }
+
+    /// A golden spark, falling in the shower.
+    static func golden(_ ctx: inout GraphicsContext, at p: CGPoint, radius r: Double, fade: Double, pulse: Double) {
+        SoftLight.glow(&ctx, at: p, radius: r * 5 * pulse, color: gold, opacity: 0.6 * fade)
+        dot(&ctx, p, r * 0.8, Color(red: 1, green: 0.97, blue: 0.8).opacity(fade))
+    }
+
+    /// An ember of a ring: a pinker halo and a white-hot core, so the ring reads as one thing.
+    static func link(_ ctx: inout GraphicsContext, at p: CGPoint, radius r: Double, fade: Double, pulse: Double) {
+        SoftLight.glow(&ctx, at: p, radius: r * 4.5, color: chain, opacity: 0.55 * fade * pulse)
+        dot(&ctx, p, r * 0.7, Color(red: 1, green: 0.93, blue: 0.85).opacity(fade))
+    }
 
     static func ember(_ ctx: inout GraphicsContext, at p: CGPoint, radius r: Double, fade: Double, pulse: Double) {
         SoftLight.glow(&ctx, at: p, radius: r * 4.5, color: Dungeon.ember, opacity: 0.55 * fade * pulse)
@@ -164,13 +235,22 @@ private struct Sparks: View {
     var body: some View {
         Canvas { ctx, size in
             blaze(&ctx, size)
+            phaseGlow(&ctx, size)
+            var rings: [Int: [CGPoint]] = [:]
             for e in round.embers {
                 let rise = min(1, max(0, e.pos.y / (size.height * 0.2)))
-                let fade = min(1, e.age / 0.5) * (e.held ? 1 : rise)
+                let fade = e.kind == .gold ? min(1, e.age / 0.3) : min(1, e.age / 0.5) * (e.held ? 1 : rise)
                 switch e.kind {
                 case .ember:
                     let pulse = reduceMotion ? 1 : 0.85 + 0.15 * sin(e.age * 7 + e.phase)
-                    SparkArt.ember(&ctx, at: e.pos, radius: e.radius, fade: fade, pulse: pulse)
+                    if e.ring, let group = e.group {
+                        rings[group, default: []].append(e.pos)
+                        SparkArt.link(&ctx, at: e.pos, radius: e.radius, fade: fade, pulse: pulse)
+                    } else {
+                        SparkArt.ember(&ctx, at: e.pos, radius: e.radius, fade: fade, pulse: pulse)
+                    }
+                case .gold:
+                    SparkArt.golden(&ctx, at: e.pos, radius: e.radius, fade: fade, pulse: reduceMotion ? 1 : 0.85 + 0.15 * sin(e.age * 9 + e.phase))
                 case .kindling:
                     let pulse = reduceMotion ? 1 : 0.88 + 0.12 * sin(e.age * 3.2 + e.phase)
                     SparkArt.kindling(&ctx, at: e.pos, radius: e.radius, fade: fade, pulse: pulse)
@@ -186,6 +266,13 @@ private struct Sparks: View {
                     SparkArt.dot(&ctx, e.pos, e.radius * 0.8, .white)
                 }
             }
+            // A thin thread through the embers of a ring, so it reads as one thing to take in one flight.
+            for points in rings.values where points.count > 1 {
+                var path = Path()
+                path.addLines(points)
+                if points.count > 2 { path.closeSubpath() }
+                ctx.stroke(path, with: .color(SparkArt.chain.opacity(0.32)), lineWidth: 1.5)
+            }
             for s in round.bursts {
                 let fade = 1 - s.age / s.life
                 let color: Color = switch s.kind {
@@ -193,6 +280,7 @@ private struct Sparks: View {
                 case .kindling: Dungeon.good
                 case .smoke: SparkArt.smokeEdge
                 case .ember: Dungeon.flame
+                case .gold: SparkArt.gold
                 }
                 SparkArt.dot(&ctx, s.pos, s.radius, color.opacity(s.kind == .smoke ? 0.7 * fade : fade))
             }
@@ -216,19 +304,31 @@ private struct Sparks: View {
         }
     }
 
+    /// A soft wash from the top of the screen while a special phase is on: orange-pink for rings,
+    /// blue for the wisp storm, gold for the shower. It swells in and fades out with the phase.
+    private func phaseGlow(_ ctx: inout GraphicsContext, _ size: CGSize) {
+        guard let special = round.special else { return }
+        let level = min(1, special.elapsed / 0.6) * min(1, special.remaining / 0.8)
+        let color = SparkArt.color(for: special.kind)
+        ctx.fill(Path(CGRect(x: 0, y: 0, width: size.width, height: 220)),
+                 with: .linearGradient(Gradient(colors: [color.opacity(0.26 * level), color.opacity(0)]),
+                                       startPoint: .zero, endPoint: CGPoint(x: 0, y: 220)))
+    }
+
     private func popup(_ ctx: inout GraphicsContext, _ p: GameRound.Popup) {
         let t = p.age / p.style.life
         let color: Color = switch p.kind {
         case .wisp: SparkArt.wisp
         case .kindling: Dungeon.good
         case .smoke: SparkArt.smokeEdge
+        case .gold: SparkArt.gold
         case .ember: p.style == .note ? SparkArt.hot : Dungeon.flame
         }
         let text = Text(p.text).font(.system(size: p.style.size, weight: .bold, design: .rounded)).foregroundStyle(color)
         var c = ctx
-        c.opacity = min(1, 2.2 * (1 - t))
+        c.opacity = p.style == .award ? min(1, 3 * (1 - t)) : min(1, 2.2 * (1 - t))
         c.translateBy(x: p.pos.x, y: p.pos.y - 18 - p.style.rise * t)
-        if p.style == .cheer, !reduceMotion {
+        if p.style == .cheer || p.style == .award, !reduceMotion {
             let s = 0.7 + 0.3 * min(1, p.age * 9) + 0.06 * sin(p.age * 5)
             c.scaleBy(x: s, y: s)
         }
@@ -236,48 +336,205 @@ private struct Sparks: View {
     }
 }
 
-/// The score, the best, and what next.
+/// The score, the best, what the round earned, and what next.
 private struct EndCard: View {
-    var score: Int
+    var round: GameRound
     var best: Int
-    var isRecord: Bool
     var again: () -> Void
     var done: () -> Void
     var howTo: () -> Void
 
     var body: some View {
-        VStack(spacing: 18) {
-            VStack(spacing: 2) {
-                Text("\(score)")
-                    .font(.system(size: 58, weight: .bold, design: .rounded))
-                    .foregroundStyle(Dungeon.flame)
-                if isRecord {
-                    Text("New best!")
-                        .font(.system(.callout, design: .rounded, weight: .bold))
-                        .foregroundStyle(SparkArt.hot)
-                } else {
-                    Text("Best \(best)")
-                        .font(.system(.callout, design: .rounded, weight: .medium))
+        CardFit {
+            VStack(spacing: 16) {
+                VStack(spacing: 2) {
+                    Text(verbatim: "\(round.score)")
+                        .font(.system(size: 58, weight: .bold, design: .rounded))
+                        .foregroundStyle(Dungeon.flame)
+                    if round.isRecord {
+                        Text("New best!")
+                            .font(.system(.callout, design: .rounded, weight: .bold))
+                            .foregroundStyle(SparkArt.hot)
+                    } else {
+                        Text("Best \(best)")
+                            .font(.system(.callout, design: .rounded, weight: .medium))
+                            .foregroundStyle(Dungeon.muted)
+                    }
+                }
+                .accessibilityElement(children: .combine)
+                if round.flawless || round.cleanBurn {
+                    VStack(spacing: 8) {
+                        if round.flawless {
+                            Prize(symbol: "sparkles", color: SparkArt.gold, title: String(localized: "Nothing got away"),
+                                  points: GameRound.flawlessBonus,
+                                  note: round.flawlessRounds > 1 ? String(localized: "\(round.flawlessRounds) times") : nil)
+                        }
+                        if round.cleanBurn {
+                            Prize(symbol: "smoke.fill", color: SparkArt.wisp, title: String(localized: "Clean burn"),
+                                  points: GameRound.cleanBonus,
+                                  note: round.cleanStreak > 1 ? String(localized: "\(round.cleanStreak) in a row") : nil)
+                        }
+                    }
+                }
+                ViewThatFits {
+                    HStack(alignment: .top, spacing: 22) { stats }
+                    VStack(spacing: 8) { stats }
+                }
+                VStack(spacing: 6) {
+                    HStack(spacing: 10) {
+                        Button("Done", action: done).buttonStyle(EmberButtonStyle(filled: false))
+                        Button("Again", action: again).buttonStyle(EmberButtonStyle())
+                    }
+                    Button("How to play", action: howTo)
+                        .font(.system(.footnote, design: .rounded, weight: .medium))
+                        .foregroundStyle(Dungeon.muted)
+                        .padding(.vertical, 8)
+                }
+            }
+        }
+        .gameCard(maxWidth: 320, bottom: 14)
+    }
+
+    /// What the round came to, a few numbers: the best combo, waves caught whole, and what got away.
+    @ViewBuilder private var stats: some View {
+        Stat(value: "\(round.bestCombo)", label: String(localized: "Best combo"))
+        if round.wavesJudged > 0 {
+            Stat(value: "\(round.perfectWaves)/\(round.wavesJudged)", label: String(localized: "Perfect waves"))
+        }
+        if round.escaped > 0 {
+            Stat(value: "\(round.escaped)", label: String(localized: "Got away"))
+        }
+    }
+}
+
+/// A prize on the end card: a badge, its name, and the points it paid.
+struct Prize: View {
+    var symbol: String
+    var color: Color
+    var title: String
+    var points: Int?
+    var note: String?
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: symbol)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(color)
+                .frame(width: 26)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title)
+                    .font(.system(.subheadline, design: .rounded, weight: .bold))
+                    .foregroundStyle(Dungeon.cream)
+                if let note {
+                    Text(note)
+                        .font(.system(.caption, design: .rounded, weight: .medium))
                         .foregroundStyle(Dungeon.muted)
                 }
             }
-            .accessibilityElement(children: .combine)
-            VStack(spacing: 6) {
-                HStack(spacing: 10) {
-                    Button("Done", action: done).buttonStyle(EmberButtonStyle(filled: false))
-                    Button("Again", action: again).buttonStyle(EmberButtonStyle())
-                }
-                Button("How to play", action: howTo)
-                    .font(.system(.footnote, design: .rounded, weight: .medium))
-                    .foregroundStyle(Dungeon.muted)
-                    .padding(.vertical, 8)
+            Spacer(minLength: 6)
+            if let points {
+                Text(verbatim: "+\(points)")
+                    .font(.system(.subheadline, design: .rounded, weight: .bold))
+                    .monospacedDigit()
+                    .foregroundStyle(color)
             }
         }
-        .padding(.horizontal, 24).padding(.top, 24).padding(.bottom, 14)
-        .frame(maxWidth: 300)
-        .background(Dungeon.deep.opacity(0.92), in: RoundedRectangle(cornerRadius: 26, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 26, style: .continuous).strokeBorder(Dungeon.cardEdge))
-        .shadow(color: .black.opacity(0.4), radius: 24, y: 8)
+        .padding(.horizontal, 14).padding(.vertical, 9)
+        .background(color.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(color.opacity(0.35)))
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// One number with its name under it.
+struct Stat: View {
+    var value: String
+    var label: String
+
+    var body: some View {
+        VStack(spacing: 1) {
+            Text(verbatim: value)
+                .font(.system(.title3, design: .rounded, weight: .bold))
+                .monospacedDigit()
+                .foregroundStyle(Dungeon.cream)
+            Text(label)
+                .font(.system(.caption, design: .rounded, weight: .medium))
+                .foregroundStyle(Dungeon.muted)
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// What a special phase is called, and what to do in it.
+extension GameRound.Special.Kind {
+    var title: String {
+        switch self {
+        case .chain: String(localized: "Ring time!")
+        case .storm: String(localized: "Wisp storm!")
+        case .shower: String(localized: "Golden shower!")
+        }
+    }
+
+    var hint: String {
+        switch self {
+        case .chain: String(localized: "Take each ring in one flight")
+        case .storm: String(localized: "Blue wisps pay five")
+        case .shower: String(localized: "Catch the gold")
+        }
+    }
+}
+
+/// Announces a special phase, big for a moment, then a slim label with the phase running down.
+private struct SpecialBanner: View {
+    var special: GameRound.Special
+    var reduceMotion: Bool
+
+    var body: some View {
+        let color = SparkArt.color(for: special.kind)
+        VStack(spacing: 6) {
+            Text(special.kind.title)
+                .font(.system(special.inIntro ? .title : .subheadline, design: .rounded, weight: .heavy))
+                .foregroundStyle(color)
+                .shadow(color: color.opacity(special.inIntro ? 0.7 : 0), radius: 14)
+                .scaleEffect(special.inIntro && !reduceMotion ? 1 + 0.08 * sin(special.elapsed * 6) : 1)
+            if special.inIntro {
+                Text(special.kind.hint)
+                    .font(.system(.callout, design: .rounded, weight: .semibold))
+                    .foregroundStyle(Dungeon.cream)
+            } else {
+                Capsule().fill(color.opacity(0.25)).frame(width: 110, height: 4)
+                    .overlay(alignment: .leading) {
+                        Capsule().fill(color).frame(width: 110 * (1 - special.progress), height: 4)
+                    }
+            }
+        }
+        .multilineTextAlignment(.center)
+        .padding(.horizontal, 18).padding(.vertical, special.inIntro ? 12 : 8)
+        .background(.black.opacity(special.inIntro ? 0.34 : 0.26), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .accessibilityHidden(true)
+    }
+}
+
+/// A card's contents: as they are if there is room, scrolling if Dynamic Type makes them too tall.
+struct CardFit<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        ViewThatFits(in: .vertical) {
+            content
+            ScrollView { content }.scrollBounceBehavior(.basedOnSize)
+        }
+    }
+}
+
+extension View {
+    /// The dark rounded card the games put their words on.
+    func gameCard(maxWidth: CGFloat = 320, top: CGFloat = 24, bottom: CGFloat = 24) -> some View {
+        padding(.horizontal, 24).padding(.top, top).padding(.bottom, bottom)
+            .frame(maxWidth: maxWidth)
+            .background(Dungeon.deep.opacity(0.92), in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 26, style: .continuous).strokeBorder(Dungeon.cardEdge))
+            .shadow(color: .black.opacity(0.4), radius: 24, y: 8)
     }
 }
 
@@ -296,13 +553,48 @@ final class GameHaptics {
     func smoked() { notice.notificationOccurred(.warning) }
     func blaze() { heavy.impactOccurred() }
     func tick(_ n: Int) { n > 0 ? light.impactOccurred(intensity: 0.5) : heavy.impactOccurred(intensity: 0.8) }
+
+    /// A whole wave: two quick taps, harder for every wave in a row.
+    func perfect(_ streak: Int) {
+        let force = min(1, 0.55 + 0.15 * Double(streak))
+        soft.impactOccurred(intensity: force)
+        later(0.07) { self.light.impactOccurred(intensity: force) }
+    }
+
+    /// A ring in one flight: a knock, then a settling.
+    func ring() {
+        heavy.impactOccurred(intensity: 0.7)
+        later(0.1) { self.soft.impactOccurred(intensity: 1) }
+        later(0.2) { self.soft.impactOccurred(intensity: 0.5) }
+    }
+
+    /// A special phase begins: a firm tap with a softer one behind it.
+    func phase() {
+        heavy.impactOccurred(intensity: 0.8)
+        later(0.12) { self.soft.impactOccurred(intensity: 0.7) }
+    }
+
+    /// No smoke all round: a clean, bright success.
+    func cleanBurn() { notice.notificationOccurred(.success) }
+
+    /// Nothing got away: taps climbing, then the success.
+    func flawless() {
+        for i in 0..<6 { later(0.08 * Double(i)) { self.light.impactOccurred(intensity: 0.35 + 0.13 * Double(i)) } }
+        later(0.55) { self.notice.notificationOccurred(.success) }
+        later(0.8) { self.heavy.impactOccurred(intensity: 1) }
+    }
+
     /// A new best gets a second tap after the success.
     func finished(best: Bool) {
         notice.notificationOccurred(.success)
         guard best else { return }
+        later(0.22) { self.heavy.impactOccurred(intensity: 0.7) }
+    }
+
+    private func later(_ seconds: Double, _ tap: @escaping @MainActor () -> Void) {
         Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(220))
-            heavy.impactOccurred(intensity: 0.7)
+            try? await Task.sleep(for: .seconds(seconds))
+            tap()
         }
     }
 }

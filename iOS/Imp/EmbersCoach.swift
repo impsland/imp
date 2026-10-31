@@ -97,20 +97,19 @@ struct RulesCard: View {
     var play: () -> Void
 
     var body: some View {
-        VStack(spacing: 18) {
-            VStack(alignment: .leading, spacing: 14) {
-                row(.ember, "Catch embers. More in one flight, more points.")
-                row(.kindling, "Kindling gives you more time.")
-                row(.smoke, "Steer clear of smoke.")
-                if bonk { row(.bonk, "Bonk Imps together for a bonus.") }
+        CardFit {
+            VStack(spacing: 18) {
+                VStack(alignment: .leading, spacing: 14) {
+                    row(.ember, "Catch embers. More in one flight, more points.")
+                    row(.wave, "Catch a whole wave for a bonus. Let none get away.")
+                    row(.kindling, "Kindling gives you more time.")
+                    row(.smoke, "Steer clear of smoke. A round without any pays a bonus.")
+                    if bonk { row(.bonk, "Bonk Imps together for a bonus.") }
+                }
+                Button("Play", action: play).buttonStyle(EmberButtonStyle())
             }
-            Button("Play", action: play).buttonStyle(EmberButtonStyle())
         }
-        .padding(24)
-        .frame(maxWidth: 320)
-        .background(Dungeon.deep.opacity(0.92), in: RoundedRectangle(cornerRadius: 26, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 26, style: .continuous).strokeBorder(Dungeon.cardEdge))
-        .shadow(color: .black.opacity(0.4), radius: 24, y: 8)
+        .gameCard()
         .onTapGesture(perform: play)
     }
 
@@ -134,7 +133,7 @@ struct RulesCard: View {
 
 /// A tiny live drawing of what a row is about.
 private struct RuleIcon: View {
-    enum Kind { case ember, kindling, smoke, bonk }
+    enum Kind { case ember, wave, kindling, smoke, bonk }
     /// Room for the widest glow, all the way to where it fades to nothing.
     static let canvas: CGFloat = 80
     var kind: Kind
@@ -146,6 +145,11 @@ private struct RuleIcon: View {
             switch kind {
             case .ember:
                 SparkArt.ember(&ctx, at: c, radius: 5.5, fade: 1, pulse: 0.88 + 0.12 * sin(t * 7))
+            case .wave:
+                for k in 0..<3 {
+                    let y = c.y + (Double(k) - 1) * 15 - 3 * sin(t * 2.4 + Double(k) * 0.5)
+                    SparkArt.ember(&ctx, at: CGPoint(x: c.x, y: y), radius: 4.5, fade: 1, pulse: 0.88 + 0.12 * sin(t * 7 + Double(k)))
+                }
             case .kindling:
                 SparkArt.kindling(&ctx, at: c, radius: 6, fade: 1, pulse: 0.9 + 0.1 * sin(t * 3.2))
             case .smoke:

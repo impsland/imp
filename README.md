@@ -300,16 +300,33 @@ speaking, its bubble glowing with the voice; voices take turns, one at a time, s
 between Imps never talks over itself. The Imps don't wait for a voice to finish before thinking on.
 
 **Embers.** When the Imps on the phone can't think (the Mac is away, or an Imp has no brain yet),
-a little flame shows in the corner. Tap it for a 45-second round: embers drift up through the
-dungeon and you fling the Imps through them. Catching several in one flight builds a combo (reach
-×5 for an "Ablaze!"), two Imps that bonk mid-air score a bonus, and a rare blue wisp is worth five.
-The heat rises over the round, and the last 10 seconds are a Blaze where every point counts double.
-A green kindling spark adds 5 seconds when caught (a round never runs past 75), a few embers rise
-together in swarms, and dark smoke costs 2 points and your combo if an Imp flies through it. The
-first round starts with a short lesson: fling an Imp through three embers, a card with the rules,
-and a 3-2-1 countdown. It can be skipped, and "How to play" on the end card brings it back. The
-edges always bounce during a round, so nobody gets thrown to the Mac by accident. Your best score
-is kept.
+a little flame shows in the bottom-right corner. Tap it for a 45-second round: embers rise through the
+dungeon in waves (a column, a slant, a chevron) and you fling the Imps through them. Catching several
+in one flight builds a combo (reach ×5 for an "Ablaze!"), two Imps that bonk mid-air score a bonus,
+and a rare blue wisp is worth five. Take every ember of a wave for a "Perfect wave!" bonus that grows
+with each wave in a row. Twice a round a banner announces a special phase: **Ring time** (rings of
+eight embers that pay a bonus when one flight takes the whole ring), a **Wisp storm** (slower blue
+wisps, five points each) or a **Golden shower** (gold sparks worth three each, falling); no smoke rises
+during them. The heat rises over the round, and the last 10 seconds are a Blaze where every point
+counts double. A green kindling spark adds 5 seconds when caught (a round never runs past 75), and
+dark smoke costs 2 points and your combo if an Imp flies through it. Two small badges by the score
+show what is still within reach: end a round with **no smoke hit** for a "Clean burn" (+15, and a
+streak of clean rounds is kept) and with **no ember got away** (an ember that leaves the top
+uncaught is a miss) for "Nothing got away" (+25, a golden finale from the Imps). The end card shows
+the best combo, perfect waves and what got away. The first round starts with a short lesson: fling
+an Imp through three embers, a card with the rules, and a 3-2-1 countdown. It can be skipped, and
+"How to play" on the end card brings it back. The edges always bounce during a round, so nobody gets
+thrown to the Mac by accident. Your best score is kept.
+
+**Echo.** Beside the flame, in the bottom-left corner, a ring of four dots opens a memory game. Four
+runes (flame, leaf, drop, moon) sit on the dungeon floor; the Imps hop to them and light them in a
+sequence, each with its own tone and its own pattern of taps, and you tap the same sequence back.
+Every round adds one rune. A slip makes the Imps dizzy and costs one of three lives (the same
+sequence plays again); a clean round pays double and every fifth wins a life back. It works with
+one Imp or many, and the tones are soft and follow the silent switch. The first round is a hands-on
+lesson (watch two runes light, then tap them yourself), then a card with the rules and a countdown.
+It can be skipped, and "How to play" on the end card brings it back. Imps can't be picked up or
+tossed away while it runs, and tapping one opens no chat. Your best score is kept.
 
 **Pairing.** All Imps › App › iPhone › **Pair…** shows a QR code. Scan it with the iPhone's Camera
 (or **Scan Code** in the app). The code carries a 256-bit secret that never travels over the
