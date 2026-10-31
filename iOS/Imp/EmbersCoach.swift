@@ -116,8 +116,12 @@ struct RulesCard: View {
 
     private func row(_ icon: RuleIcon.Kind, _ text: LocalizedStringKey) -> some View {
         HStack(spacing: 14) {
+            // Drawn on a canvas big enough for the whole glow (the kindling's reaches ~33 pt), which
+            // keeps a 34 pt place in the row: the light fades out on its own instead of at a box's edge.
             RuleIcon(kind: icon, t: reduceMotion ? 0 : date.timeIntervalSinceReferenceDate)
+                .frame(width: RuleIcon.canvas, height: RuleIcon.canvas)
                 .frame(width: 34, height: 34)
+                .allowsHitTesting(false)
             Text(text)
                 .font(.system(.subheadline, design: .rounded, weight: .medium))
                 .foregroundStyle(Dungeon.cream)
@@ -131,6 +135,8 @@ struct RulesCard: View {
 /// A tiny live drawing of what a row is about.
 private struct RuleIcon: View {
     enum Kind { case ember, kindling, smoke, bonk }
+    /// Room for the widest glow, all the way to where it fades to nothing.
+    static let canvas: CGFloat = 80
     var kind: Kind
     var t: Double
 
