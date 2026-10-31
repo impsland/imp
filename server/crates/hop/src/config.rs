@@ -23,8 +23,8 @@ impl Default for Config {
         Self {
             addr: SocketAddr::from(([0, 0, 0, 0], 4677)),
             handshake: Duration::from_secs(10),
-            per_ip_connections: 16,
-            per_ip_per_minute: 30,
+            per_ip_connections: 64,
+            per_ip_per_minute: 120,
             max_connections: 20_000,
             idle: Duration::from_secs(120),
             bytes_per_second: 4 * 1024 * 1024,

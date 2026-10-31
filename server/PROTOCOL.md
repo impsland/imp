@@ -101,8 +101,8 @@ Bonjour and the addresses in the pairing link.
 | limit | default | variable |
 |-------|---------|----------|
 | handshake deadline (steps 1 to 3) | 10 s | `HOP_HANDSHAKE_SECS` |
-| concurrent connections per IP (IPv4 address, IPv6 /64) | 16 | `HOP_PER_IP_CONNECTIONS` |
-| new connections per IP | 30 per minute | `HOP_PER_IP_PER_MINUTE` |
+| concurrent connections per IP (IPv4 address, IPv6 /64) | 64 | `HOP_PER_IP_CONNECTIONS` |
+| new connections per IP | 120 per minute | `HOP_PER_IP_PER_MINUTE` |
 | all connections | 20 000 | `HOP_MAX_CONNECTIONS` |
 | idle session (no bytes either way) | 120 s | `HOP_IDLE_SECS` |
 | bandwidth per session, each way | 4 MiB/s | `HOP_BYTES_PER_SECOND` |
