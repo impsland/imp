@@ -4,8 +4,8 @@ One Imp server runs two services from one Rust workspace and one Docker image:
 
 - **Den**: where Imps keep accounts and share what they make (kits: whole Imps, animations,
   triggers, tools). An HTTPS JSON API under `/v1/`, an MCP endpoint, and a small web gallery.
-- **Hop**: a blind relay that lets an iPhone reach its Mac from anywhere. It splices two TCP
-  streams and never sees what they carry.
+- **Hop**: a blind relay that lets a device reach another device (a host) from anywhere. It
+  splices two TCP streams and never sees what they carry.
 
 Clients pick a server by host name (`ImpServer` in ImpKit): the Den is `https://<host>`, the Hop is
 `<host>:4677`.
@@ -14,87 +14,101 @@ Clients pick a server by host name (`ImpServer` in ImpKit): the Den is `https://
 
 ### Why the Hop can't read anything
 
-The Mac and the iPhone already speak TLS with a pre-shared key derived from the pairing secret
-(`LinkTLS`, `LinkPairing.psk`). Over the Hop they speak exactly the same TLS, end to end. The Hop
-only forwards the encrypted bytes. It never holds the pairing secret or the TLS key, so it can't
+Two devices already speak TLS with a pre-shared key derived from the pairing secret (`LinkTLS`,
+`LinkPairing.psk`). Over the Hop they speak exactly the same TLS, end to end. The Hop only forwards
+the encrypted bytes. It never holds the pairing secret, the door key or the TLS key, so it can't
 decrypt, alter or forge traffic. Tampering breaks the TLS record MAC and closes the link.
 
-What the Hop does see: the room key (a public key, below), both sides' IP addresses, timing and
-volume. Nothing about Imps, chats or files.
+What the Hop does see: the room and the gate (public keys, below), every side's IP address, timing
+and volume. Nothing about Imps, chats or files.
 
-### Room keys
+### Room and gate
 
-Both sides derive the same Ed25519 key pair from the pairing secret:
+Any device, a Mac or an iPhone, can host. Many devices can join one host.
 
 ```
-seed = HMAC-SHA256(key: secret, message: "imp-hop room v1")     32 bytes
-room = Ed25519 public key of seed (RFC 8032)                    32 bytes
+room = the host device's own Ed25519 public key (RFC 8032)                       32 bytes
+seed = HMAC-SHA256(key: doorKey, message: "imp-hop gate v2")                      32 bytes
+gate = Ed25519 public key of seed, the room's guest key                          32 bytes
 ```
 
-The room is the Hop's only identifier. A side proves it belongs in a room by signing a fresh nonce,
-so a room can't be joined (or squatted) by someone who has only seen its public key.
+Only the device that holds the room's private key can wait as host. Every invited guest can derive
+the guest key from the door key, so guests prove themselves with the gate key and nothing else: a
+guest can join but can never wait as host, so it can't hijack the room. The Hop never sees the seed.
+
+A host names its gate in its hello and signs it. A guest is only spliced to a waiting host whose gate
+is the guest's gate.
 
 ### Wire format
 
 All integers are single bytes. A connection is plain TCP.
 
 ```
-1. client -> hop   hello    "IMPHOP" (6 ASCII bytes), version 0x01, role, room (32 bytes)   40 bytes
+1. client -> hop   hello    "IMPHOP" (6 ASCII bytes), version 0x02, role, room (32), gate (32)   72 bytes
 2. hop -> client   nonce    32 random bytes
-3. client -> hop   proof    Ed25519 signature (64 bytes) of: "imp-hop/1" (9 ASCII bytes) || role || nonce
+3. client -> hop   proof    Ed25519 signature (64 bytes, verified strictly) of:
+                              host:  "imp-hop/2" (9 ASCII bytes) || 0x01 || nonce || gate, by the room key
+                              guest: "imp-hop/2" (9 ASCII bytes) || 0x02 || nonce || room, by the gate key
 4. hop -> client   status   1 byte
 5. both ways       the link's own TLS bytes, until either side closes
 ```
 
-Roles: `0x01` Mac (hosts the room and waits), `0x02` iPhone (joins).
+Roles: `0x01` host (owns the room and waits), `0x02` guest (joins).
 
 Status:
 
 | byte | meaning | client does |
 |------|---------|-------------|
 | `0x00` | go: the other side is spliced in | start TLS |
-| `0x01` | rejected: bad hello or proof | give up on the Hop for this pairing |
+| `0x01` | rejected: bad hello or proof, or a gate that doesn't match the waiting host's | give up on the Hop for this pairing |
 | `0x02` | busy: a limit was hit | back off, try later |
-| `0x03` | nobody came: the wait ran out | Mac: wait again. iPhone: try other routes, then back off |
+| `0x03` | nobody came: the wait ran out, or a newer host replaced this one | host: wait again. guest: try other routes, then back off |
 
 The Hop closes the connection after any status other than `0x00`.
 
 ### Rooms
 
-- A Mac keeps one waiting connection per room. A new Mac hello for the same room replaces the older
-  waiter (which gets `0x03`). A Mac waits at most 5 minutes, then gets `0x03` and dials again.
-- An iPhone that joins a room with a waiting Mac is spliced to it at once (both get `0x00`).
-  Otherwise it waits up to 15 seconds for a Mac.
-- After a splice the Mac dials a fresh waiting connection for the next phone.
-- A room has at most 4 live sessions.
+- A room has at most one waiting host connection. A new host hello for the same room replaces the
+  older waiter (which gets `0x03`). A host waits at most 5 minutes, then gets `0x03` and dials again.
+- A guest that joins a room with a waiting host is spliced to it at once (both get `0x00`) if the
+  gates are equal. If they differ, the guest gets `0x01` and the host keeps waiting.
+- A guest that arrives with no host waiting waits up to 15 seconds. When a host arrives, the waiting
+  guests are looked at in order: those with another gate get `0x01`, the first with the host's gate is
+  spliced, the others keep waiting.
+- A host connection serves one guest. After a splice the host dials a fresh waiting connection for
+  the next guest (client behaviour).
+- A room has at most 16 live sessions, so several people can join one device.
 
-### The Mac's side
+### The host's side
 
-Network.framework's TLS on an outbound connection is always the TLS client, and the iPhone dials out
-as a client too. So the Mac forwards each spliced Hop connection to its own Link listener on
-loopback. TLS ends in the same place, with the same key, as it does on Wi-Fi, and everything after
-the handshake is identical.
+Network.framework's TLS on an outbound connection is always the TLS client, and a guest dials out as
+a client too. So the host forwards each spliced Hop connection to its own Link listener on loopback.
+TLS ends in the same place, with the same key, as it does on Wi-Fi, and everything after the
+handshake is identical.
 
-### The iPhone's side
+### The guest's side
 
 A Network.framework protocol framer below TLS performs steps 1 to 4 and then passes bytes through,
-so the iPhone's `LinkChannel` runs unchanged on top. The Hop is the last route the iPhone tries,
-after Bonjour and the addresses in the pairing link.
+so the guest's `LinkChannel` runs unchanged on top. The Hop is the last route a guest tries, after
+Bonjour and the addresses in the pairing link.
 
 ### Pairing link
 
-`implink://pair?...&hop=<host>:<port>` adds the Hop to a pairing. It's set when the Mac has a server.
+`implink://pair?...&hop=<host>:<port>` adds the Hop to a pairing. It's set when the host has a server.
 
 ### Limits (defaults, all configurable)
 
-| limit | default |
-|-------|---------|
-| handshake deadline (steps 1 to 3) | 10 s |
-| concurrent connections per IP (IPv4 address, IPv6 /64) | 16 |
-| new connections per IP | 30 per minute |
-| all connections | 20 000 |
-| idle session (no bytes either way) | 120 s |
-| bandwidth per session, each way | 4 MiB/s |
+| limit | default | variable |
+|-------|---------|----------|
+| handshake deadline (steps 1 to 3) | 10 s | `HOP_HANDSHAKE_SECS` |
+| concurrent connections per IP (IPv4 address, IPv6 /64) | 16 | `HOP_PER_IP_CONNECTIONS` |
+| new connections per IP | 30 per minute | `HOP_PER_IP_PER_MINUTE` |
+| all connections | 20 000 | `HOP_MAX_CONNECTIONS` |
+| idle session (no bytes either way) | 120 s | `HOP_IDLE_SECS` |
+| bandwidth per session, each way | 4 MiB/s | `HOP_BYTES_PER_SECOND` |
+| a host waits | 5 min | `HOP_HOST_WAIT_SECS` |
+| a guest waits for a host | 15 s | `HOP_GUEST_WAIT_SECS` |
+| live sessions per room | 16 | `HOP_ROOM_SESSIONS` |
 
 The Link pings every 20 seconds and drops a link that has been silent for 45, so a live session is never idle.
 

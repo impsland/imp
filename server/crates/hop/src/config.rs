@@ -13,8 +13,8 @@ pub struct Config {
     pub max_connections: usize,
     pub idle: Duration,
     pub bytes_per_second: u64,
-    pub mac_wait: Duration,
-    pub phone_wait: Duration,
+    pub host_wait: Duration,
+    pub guest_wait: Duration,
     pub room_sessions: usize,
 }
 
@@ -28,9 +28,9 @@ impl Default for Config {
             max_connections: 20_000,
             idle: Duration::from_secs(120),
             bytes_per_second: 4 * 1024 * 1024,
-            mac_wait: Duration::from_secs(300),
-            phone_wait: Duration::from_secs(15),
-            room_sessions: 4,
+            host_wait: Duration::from_secs(300),
+            guest_wait: Duration::from_secs(15),
+            room_sessions: 16,
         }
     }
 }
@@ -48,8 +48,8 @@ impl Config {
             max_connections: env_parse("HOP_MAX_CONNECTIONS", d.max_connections)?,
             idle: secs("HOP_IDLE_SECS", d.idle)?,
             bytes_per_second: env_parse("HOP_BYTES_PER_SECOND", d.bytes_per_second)?.max(1),
-            mac_wait: secs("HOP_MAC_WAIT_SECS", d.mac_wait)?,
-            phone_wait: secs("HOP_PHONE_WAIT_SECS", d.phone_wait)?,
+            host_wait: secs("HOP_HOST_WAIT_SECS", d.host_wait)?,
+            guest_wait: secs("HOP_GUEST_WAIT_SECS", d.guest_wait)?,
             room_sessions: env_parse("HOP_ROOM_SESSIONS", d.room_sessions)?,
         })
     }

@@ -76,27 +76,33 @@ impl Installs {
         }
     }
 
-    /// Writes the counted installs. What can't be written is kept for the next round.
+    /// Writes the counted installs in one transaction. What can't be written is kept for the next round.
     pub async fn flush(&self, pool: &SqlitePool) {
         let batch =
             std::mem::take(&mut *self.pending.lock().unwrap_or_else(PoisonError::into_inner));
-        for (item, n) in batch {
-            let written = sqlx::query("UPDATE items SET installs = installs + ?1 WHERE id = ?2")
-                .bind(n)
-                .bind(item)
-                .execute(pool)
-                .await;
-            if let Err(e) = written {
-                tracing::error!(error = %e, "writing installs failed");
-                *self
-                    .pending
-                    .lock()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .entry(item)
-                    .or_insert(0) += n;
+        if batch.is_empty() {
+            return;
+        }
+        if let Err(e) = write(pool, &batch).await {
+            tracing::error!(error = %e, "writing installs failed");
+            let mut pending = self.pending.lock().unwrap_or_else(PoisonError::into_inner);
+            for (item, n) in batch {
+                *pending.entry(item).or_insert(0) += n;
             }
         }
     }
+}
+
+async fn write(pool: &SqlitePool, batch: &HashMap<i64, i64>) -> Result<(), sqlx::Error> {
+    let mut tx = pool.begin().await?;
+    for (item, n) in batch {
+        sqlx::query("UPDATE items SET installs = installs + ?1 WHERE id = ?2")
+            .bind(n)
+            .bind(item)
+            .execute(&mut *tx)
+            .await?;
+    }
+    tx.commit().await
 }
 
 impl Default for Installs {

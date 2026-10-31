@@ -6,15 +6,15 @@ use imp_shared::ip::IpKey;
 use socket2::{SockRef, TcpKeepalive};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
-use tokio::sync::watch;
+use tokio::sync::{oneshot, watch};
 use tokio::task::JoinSet;
 use tokio::time::{interval, sleep, timeout};
 
 use crate::config::Config;
-use crate::handshake::{self, Failure, Role, Room};
+use crate::handshake::{self, Failure, Key, Role};
 use crate::limits::Limits;
 use crate::relay;
-use crate::rooms::{Arrival, Peer, Rooms, adopt};
+use crate::rooms::{Arrival, Peer, Rooms, Wake, adopt};
 use crate::wire;
 
 struct Shared {
@@ -77,7 +77,7 @@ async fn connection(shared: Arc<Shared>, mut stream: TcpStream, peer: SocketAddr
         return;
     };
     let shaken = timeout(shared.config.handshake, handshake::run(&mut stream)).await;
-    let (room, role) = match shaken {
+    let who = match shaken {
         Ok(Ok(found)) => found,
         Ok(Err(Failure::Rejected)) => {
             tracing::debug!(ip = %ip.log_tag(), "rejected");
@@ -87,17 +87,18 @@ async fn connection(shared: Arc<Shared>, mut stream: TcpStream, peer: SocketAddr
         Ok(Err(Failure::Closed)) | Err(_) => return,
     };
     let me = Peer { stream, conn };
-    match shared.rooms.arrive(room, role, me) {
+    match shared.rooms.arrive(who, me) {
         Arrival::Paired => {}
-        Arrival::Busy(mut me) => {
-            let _ = me.stream.write_all(&[wire::BUSY]).await;
+        Arrival::Busy(me) => say(me, wire::BUSY).await,
+        Arrival::Rejected(me) => say(me, wire::REJECTED).await,
+        Arrival::Wait { id, mut rx, me } => {
+            wait(&shared, who.room, who.role, id, &mut rx, me).await;
         }
-        Arrival::Wait { id, mut rx, me } => wait(&shared, room, role, id, &mut rx, me).await,
     }
 }
 
 enum Outcome {
-    Paired(Peer),
+    Woke(Wake),
     Dropped,
     TimedOut,
     Gone,
@@ -105,26 +106,27 @@ enum Outcome {
 
 async fn wait(
     shared: &Arc<Shared>,
-    room: Room,
+    room: Key,
     role: Role,
     id: u64,
-    rx: &mut tokio::sync::oneshot::Receiver<Peer>,
+    rx: &mut oneshot::Receiver<Wake>,
     mut me: Peer,
 ) {
     let limit = match role {
-        Role::Mac => shared.config.mac_wait,
-        Role::Phone => shared.config.phone_wait,
+        Role::Host => shared.config.host_wait,
+        Role::Guest => shared.config.guest_wait,
     };
     let mut stop = shared.stop.clone();
     let mut probe = [0u8; 1];
     let outcome = tokio::select! {
-        arrived = &mut *rx => arrived.map_or(Outcome::Dropped, Outcome::Paired),
+        arrived = &mut *rx => arrived.map_or(Outcome::Dropped, Outcome::Woke),
         () = sleep(limit) => Outcome::TimedOut,
         _ = me.stream.read(&mut probe) => Outcome::Gone,
         _ = stop.changed() => Outcome::Dropped,
     };
     let other = match outcome {
-        Outcome::Paired(other) => other,
+        Outcome::Woke(Wake::Peer(other)) => other,
+        Outcome::Woke(Wake::Rejected) => return say(me, wire::REJECTED).await,
         Outcome::Gone => {
             shared.rooms.leave(&room, id);
             return;
@@ -132,21 +134,22 @@ async fn wait(
         Outcome::TimedOut => {
             shared.rooms.leave(&room, id);
             match rx.try_recv() {
-                Ok(other) => other,
-                Err(_) => return nobody_came(me).await,
+                Ok(Wake::Peer(other)) => other,
+                Ok(Wake::Rejected) => return say(me, wire::REJECTED).await,
+                Err(_) => return say(me, wire::NOBODY_CAME).await,
             }
         }
-        Outcome::Dropped => return nobody_came(me).await,
+        Outcome::Dropped => return say(me, wire::NOBODY_CAME).await,
     };
     let session = adopt(&shared.rooms, room);
-    let (mut mac, mut phone) = match role {
-        Role::Mac => (me, other),
-        Role::Phone => (other, me),
+    let (mut host, mut guest) = match role {
+        Role::Host => (me, other),
+        Role::Guest => (other, me),
     };
     let go = async {
         tokio::try_join!(
-            mac.stream.write_all(&[wire::GO]),
-            phone.stream.write_all(&[wire::GO])
+            host.stream.write_all(&[wire::GO]),
+            guest.stream.write_all(&[wire::GO])
         )
     };
     if go.await.is_ok() {
@@ -155,17 +158,18 @@ async fn wait(
             let _ = stop.changed().await;
         };
         relay::splice(
-            mac.stream,
-            phone.stream,
+            host.stream,
+            guest.stream,
             shared.config.bytes_per_second,
             shared.config.idle,
             stopped,
         )
         .await;
     }
-    drop((session, mac.conn, phone.conn));
+    drop((session, host.conn, guest.conn));
 }
 
-async fn nobody_came(mut me: Peer) {
-    let _ = me.stream.write_all(&[wire::NOBODY_CAME]).await;
+/// Tells a client its status; the connection closes when `me` drops.
+async fn say(mut me: Peer, status: u8) {
+    let _ = me.stream.write_all(&[status]).await;
 }
