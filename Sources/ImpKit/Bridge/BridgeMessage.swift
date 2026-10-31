@@ -25,13 +25,15 @@ public struct BridgeImp: Equatable, Sendable, Codable {
     /// Skin colour as a hue (0…1, red is 0).
     public var hue: Double
     public var scale: Double
+    /// Its character (lids, brows, eye size, horns…), so the popup draws the same face.
+    public var traits: ImpTraits
     /// A `Mood` raw value ("idle", "thinking", "working", "sleepy"…).
     public var mood: String
     /// Out on an iPhone, not on this Mac's desktop.
     public var away: Bool
 
-    public init(name: String, hue: Double, scale: Double, mood: String, away: Bool) {
-        self.name = name; self.hue = hue; self.scale = scale; self.mood = mood; self.away = away
+    public init(name: String, hue: Double, scale: Double, traits: ImpTraits = .plain, mood: String, away: Bool) {
+        self.name = name; self.hue = hue; self.scale = scale; self.traits = traits; self.mood = mood; self.away = away
     }
 }
 

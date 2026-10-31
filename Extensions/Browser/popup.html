@@ -2,50 +2,75 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Imp</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
+  <!-- Small icons, drawn once and used by name. -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-found" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8" cy="8" r="1.9"/></symbol>
+    <symbol id="i-miss" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.4 10.4 14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-read" viewBox="0 0 16 16"><path d="M4 1.75h5.4L13 5.4v8.1a.75.75 0 0 1-.75.75h-8.5A.75.75 0 0 1 3 13.5v-11a.75.75 0 0 1 1-.75z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M5.5 8.5h5M5.5 11h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 16 16"><path d="M1.5 8S4 3.6 8 3.6 14.5 8 14.5 8 12 12.4 8 12.4 1.5 8 1.5 8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="8" cy="8" r="2"/></symbol>
+    <symbol id="i-blind" viewBox="0 0 16 16"><path d="M1.5 8S4 3.6 8 3.6 14.5 8 14.5 8 12 12.4 8 12.4 1.5 8 1.5 8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M3 13 13 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 8 12"><path d="M1.6 0h4.8C7.3 0 8 .7 8 1.6v8.8c0 .9-.7 1.6-1.6 1.6H1.6C.7 12 0 11.3 0 10.4V1.6C0 .7.7 0 1.6 0zM1.4 1.6v8.8h5.2V1.6z"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 16 16"><path d="M13.6 6.5A5.5 5.5 0 1 0 13 11l-1.4-.8A4 4 0 1 1 12 6.5H9.5V8H15V2.5h-1.5z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 16 16"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5A1 1 0 0 1 13 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm1.5 0h4V5a2 2 0 0 0-4 0z"/></symbol>
+  </svg>
+
   <!-- The Imps that are out, alive: they watch your pointer, blink, and sleep while Imp is away. -->
   <header id="stage" class="stage">
-    <p id="status" class="status"><span class="dot"></span><span id="status-text">Checking…</span></p>
-    <div id="imps" class="imps" aria-hidden="true"></div>
+    <div class="bar">
+      <p id="status" class="status" role="status"><span class="dot"></span><span id="status-text">Checking…</span></p>
+      <button id="reconnect" type="button" class="glass" title="Reconnect to Imp" aria-label="Reconnect to Imp">
+        <svg aria-hidden="true"><use href="#i-refresh"/></svg>
+      </button>
+    </div>
+    <div id="imps" class="imps"></div>
     <div class="floor"></div>
+    <div class="dim"></div>
   </header>
 
-  <main>
-    <section id="tab" class="card tab" hidden>
-      <div class="favicon"><img id="tab-icon" alt=""><span id="tab-letter"></span></div>
+  <main id="main" hidden>
+    <section id="tab" class="card tab" aria-label="The tab Imp knows" hidden>
+      <div class="favicon"><img id="tab-icon" alt="" hidden><span id="tab-letter"></span></div>
       <div class="tab-text">
         <div id="tab-title" class="title"></div>
         <div id="tab-host" class="host"></div>
       </div>
-      <span id="tab-sight" class="sight"></span>
+      <span id="tab-sight" class="sight" role="img" tabindex="0"><svg aria-hidden="true"><use id="tab-sight-icon" href="#i-eye"/></svg></span>
     </section>
 
-    <section id="activity" class="card activity" hidden>
-      <h2>Lately</h2>
+    <section id="activity" class="card activity" aria-labelledby="activity-title" hidden>
+      <h2 id="activity-title">Lately</h2>
       <ul id="activity-list"></ul>
+      <p id="activity-empty" class="muted" hidden>Nothing yet. When Imp reads a page or looks for something on one, it shows up here.</p>
     </section>
 
     <section id="offline" class="card offline" hidden>
       <p class="lead">Imp is asleep.</p>
       <p class="muted">Start Imp on this Mac and this connects by itself. Keep the browser open, that's all.</p>
+      <a class="get" href="https://github.com/impsland/imp" target="_blank" rel="noopener">Don't have Imp? Get it</a>
     </section>
   </main>
 
   <footer>
     <span class="private" title="The extension talks only to 127.0.0.1:47823. Nothing leaves your Mac.">
-      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5A1 1 0 0 1 13 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm1.5 0h4V5a2 2 0 0 0-4 0z"/></svg>
+      <svg aria-hidden="true"><use href="#i-lock"/></svg>
       Stays on this Mac
     </span>
-    <span class="actions">
-      <button id="reconnect" type="button" class="icon" title="Reconnect" aria-label="Reconnect">
-        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.6 6.5A5.5 5.5 0 1 0 13 11l-1.4-.8A4 4 0 1 1 12 6.5H9.5V8H15V2.5h-1.5z"/></svg>
-      </button>
-      <button id="open" type="button" class="primary">Open Imp</button>
-    </span>
+    <button id="open" type="button" class="primary">Open Imp</button>
   </footer>
-  <a id="get" class="get" href="https://github.com/impsland/imp" target="_blank" rel="noopener" hidden>Don't have Imp? Get it</a>
-  <script src="popup.js"></script>
+
+  <template id="row">
+    <li>
+      <span class="glyph"><svg aria-hidden="true"><use href="#i-read"/></svg></span>
+      <span class="what"></span>
+      <span class="when"></span>
+    </li>
+  </template>
+
+  <script type="module" src="popup.js"></script>
 </body>
 </html>

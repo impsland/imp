@@ -1,93 +1,154 @@
 // The toolbar popup: the Imps that are out (alive: they watch your pointer, blink, think, sleep),
 // what tab Imp knows you're on, and what it just did there.
+//
+// The background pushes its state over a port, whenever it changes; nothing here polls, and
+// nothing waits on the background: a click updates the screen at once, then the news follows.
+// Every render step only touches the DOM when its value changed.
+
+import { ImpCanvas, Clock, reducedMotion } from "./imp.js";
 
 const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
-const NS = "http://www.w3.org/2000/svg";
+const SVG_NS = "http://www.w3.org/2000/svg";
 
-// While Imp isn't there (or is too old to say who's out), one red Imp stands in.
-const STAND_IN = [{ name: "", hue: 0, scale: 1, mood: "idle", away: false }];
-const THINKING = new Set(["thinking", "working", "listening"]);
-const HAPPY = new Set(["happy", "love", "content", "giggly", "excited", "delight"]);
-const LOW = new Set(["sad", "error", "scared", "bored"]);
+// While Imp isn't there (or hasn't said who's out yet), one red Imp stands in.
+const STAND_IN = { name: "", hue: 0, scale: 1, mood: "idle", away: false, traits: null };
+const MAX_IMPS = 4;
+const MIN_TRYING = 600;    // a reconnect shows as "trying" at least this long (ms), so it reads as an answer
+const GIVE_UP = 5000;      // ...and never longer than this
+const AGO_EVERY = 20_000;
+const WANDER_EVERY = 2600;
 
-let state = null;
-let drawn = "";
+const still = reducedMotion();
+const clock = new Clock();
+
+let state = null;          // the background's last word
+let tab = null;            // the tab in front: { url, title, icon }
+let trying = 0;            // when Reconnect was pressed (0: not trying)
+let online = false;        // which layout is showing; kept steady while trying, so nothing jumps
 let pointer = null;
+let port = null;
 
-// MARK: Status
+// MARK: Small helpers
 
-function render(s) {
-  state = s;
-  const on = !!(s && s.connected);
-  const status = $("status");
-  status.classList.toggle("on", on);
-  status.classList.toggle("connecting", !on && !!(s && s.connecting));
-  $("status-text").textContent = on
-    ? (s.browser ? `Connected · ${s.browser}` : "Connected")
-    : (s && s.connecting ? "Connecting…" : "Not connected");
-  $("stage").classList.toggle("asleep", !on);
-  $("offline").hidden = on;
-  $("get").hidden = on;
-  renderTab(on ? s.page : null);
-  renderActivity(on ? s.activity || [] : [], on && s.page ? hostOf(s.page.url) : "");
-  renderImps(on ? (s.troupe && s.troupe.length ? s.troupe : STAND_IN) : STAND_IN, on);
-}
-
-function renderTab(page) {
-  $("tab").hidden = !page;
-  if (!page) return;
-  let host = "";
-  try { host = new URL(page.url).host; } catch {}
-  $("tab-title").textContent = page.title || host || "Untitled page";
-  $("tab-host").textContent = host || page.url;
-  const icon = $("tab-icon");
-  const usable = page.icon && /^(https?:|data:image\/)/.test(page.icon);
-  icon.hidden = !usable;
-  if (usable && icon.src !== page.icon) icon.src = page.icon;
-  icon.onerror = () => { icon.hidden = true; $("tab-letter").hidden = false; };
-  $("tab-letter").hidden = usable;
-  $("tab-letter").textContent = (host.replace(/^www\./, "")[0] || "•").toUpperCase();
-  // Imp can look inside ordinary web pages; the browser keeps its own pages and store to itself.
-  const sight = $("tab-sight");
-  const seen = /^https?:/.test(page.url) && !/(chrome\.google\.com\/webstore|chromewebstore\.google\.com|addons\.mozilla\.org)/.test(page.url);
-  sight.className = `sight ${seen ? "yes" : "no"}`;
-  sight.textContent = seen ? "👁" : "–";
-  sight.title = seen ? "Imp can read this page and find things on it, when it needs to."
-                     : "The browser keeps this page to itself: Imp only knows its address.";
+function setText(el, text) {
+  if (el.textContent !== text) el.textContent = text;
 }
 
 function hostOf(url) {
   try { return new URL(url).host; } catch { return ""; }
 }
 
+function icon(use, name) {
+  use.setAttribute("href", `#${name}`);
+}
+
+const clamp = (x, lo, hi) => Math.min(Math.max(x, lo), hi);
+
+// MARK: Render
+
+function render() {
+  const connected = !!state?.connected;
+  if (!trying) online = connected;
+  $("main").hidden = !state;
+  renderStatus(connected);
+  $("offline").hidden = !state || online;
+  renderTab(online ? tab : null);
+  renderActivity(state && online ? state.activity : null);
+  if (state) renderImps(state.troupe?.length ? state.troupe : [STAND_IN]);
+}
+
+function renderStatus(connected) {
+  const text = trying ? "Connecting…"
+    : connected ? (state.browser ? `Connected · ${state.browser}` : "Connected")
+    : state ? "Not connected" : "Checking…";
+  setText($("status-text"), text);
+  $("status").classList.toggle("on", connected && !trying);
+  $("status").classList.toggle("connecting", !!trying || !state);
+  $("stage").classList.toggle("asleep", !online);
+  const button = $("reconnect");
+  button.classList.toggle("spin", !!trying);
+  button.setAttribute("aria-busy", trying ? "true" : "false");
+}
+
+// MARK: The tab
+
+function renderTab(page) {
+  $("tab").hidden = !page;
+  if (!page) return;
+  const host = hostOf(page.url);
+  setText($("tab-title"), page.title || host || "Untitled page");
+  setText($("tab-host"), host || page.url);
+  setText($("tab-letter"), (host.replace(/^www\./, "")[0] || "•").toUpperCase());
+  const img = $("tab-icon");
+  const usable = /^(https?:|data:image\/)/.test(page.icon);
+  if (usable && img.getAttribute("src") !== page.icon) img.src = page.icon;
+  if (!usable) img.removeAttribute("src");
+  img.hidden = !usable || img.dataset.broken === page.icon;
+  $("tab-letter").hidden = !img.hidden;
+  // Imp can look inside ordinary web pages; the browser keeps its own pages and store to itself.
+  const seen = /^https?:/.test(page.url) && !/(chrome\.google\.com\/webstore|chromewebstore\.google\.com|addons\.mozilla\.org)/.test(page.url);
+  const sight = $("tab-sight");
+  sight.className = `sight ${seen ? "yes" : "no"}`;
+  icon($("tab-sight-icon"), seen ? "i-eye" : "i-blind");
+  const label = seen ? "Imp can read this page and find things on it, when it needs to."
+                     : "The browser keeps this page to itself: Imp only knows its address.";
+  sight.title = label;
+  sight.setAttribute("aria-label", label);
+}
+
+$("tab-icon").addEventListener("error", (e) => {
+  e.target.dataset.broken = e.target.getAttribute("src");
+  e.target.hidden = true;
+  $("tab-letter").hidden = false;
+});
+
+async function refreshTab() {
+  try {
+    const [t] = await api.tabs.query({ active: true, currentWindow: true });
+    tab = t?.url ? { url: t.url, title: t.title || "", icon: t.favIconUrl || "" } : null;
+  } catch {
+    tab = null;
+  }
+  render();
+}
+
+api.tabs.onUpdated.addListener((id, change, t) => {
+  if (t.active && (change.url || change.title || change.favIconUrl)) refreshTab();
+});
+
+// MARK: What Imp did
+
+let activityKey = "";
+let agoCells = [];   // [{ el, at }]
+
 /// What Imp just did. The site is named only when it isn't the tab you're on.
-function renderActivity(items, here) {
-  const list = $("activity-list");
-  $("activity").hidden = items.length === 0;
-  list.replaceChildren(...items.map((a) => {
-    const li = document.createElement("li");
+function renderActivity(items) {
+  $("activity").hidden = !items;
+  if (!items) return;
+  $("activity-empty").hidden = items.length > 0;
+  const here = tab ? hostOf(tab.url) : "";
+  const key = `${here}|${items.map((a) => `${a.at}${a.ok}`).join()}`;
+  if (key === activityKey) return;
+  activityKey = key;
+  agoCells = [];
+  $("activity-list").replaceChildren(...items.map((a) => {
+    const li = $("row").content.firstElementChild.cloneNode(true);
+    const [glyph, what, when] = li.children;
     if (!a.ok) li.className = "missed";
-    const glyph = document.createElement("span");
-    glyph.className = "glyph";
-    glyph.textContent = a.kind === "find" ? (a.ok ? "🎯" : "🔍") : "📖";
-    const what = document.createElement("span");
-    what.className = "what";
+    icon(glyph.querySelector("use"), a.kind === "find" ? (a.ok ? "i-found" : "i-miss") : "i-read");
     if (a.kind === "find") {
-      what.append(a.ok ? "Found " : "Looked for ");
       const b = document.createElement("b");
       b.textContent = `“${a.query}”`;
-      what.append(b);
+      what.append(a.ok ? "Found " : "Looked for ", b);
     } else {
       what.append(a.ok ? "Read the page" : "Couldn't read the page");
     }
     if (a.host && a.host !== here) what.append(` · ${a.host}`);
-    const when = document.createElement("span");
-    when.className = "when";
-    when.textContent = ago(a.at);
-    li.append(glyph, what, when);
+    agoCells.push({ el: when, at: a.at });
     return li;
   }));
+  tickAgo();
 }
 
 function ago(at) {
@@ -98,142 +159,164 @@ function ago(at) {
   return `${Math.round(s / 3600)}h`;
 }
 
+function tickAgo() {
+  for (const c of agoCells) setText(c.el, ago(c.at));
+}
+
 // MARK: The Imps
 
-/// Imp's palette for a hue: a lit top, its own colour, a deep underside and darker horns.
-function colors(hue) {
-  const h = Math.round(((hue % 1) + 1) % 1 * 360);
-  return { light: `hsl(${h} 85% 70%)`, base: `hsl(${h} 72% 54%)`, deep: `hsl(${h} 70% 36%)`, horn: `hsl(${h} 55% 26%)` };
+const cells = [];   // one per Imp on the stage: { root, canvas, name, phone, fig, look, size, mood, rect, wander }
+
+function makeCell(n) {
+  const root = document.createElement("div");
+  root.className = "imp";
+  const canvas = document.createElement("canvas");
+  canvas.setAttribute("role", "img");
+  const tag = document.createElement("span");
+  tag.className = "tag";
+  const name = document.createElement("span");
+  name.className = "name";
+  const phone = document.createElementNS(SVG_NS, "svg");
+  phone.classList.add("phone");
+  phone.setAttribute("aria-hidden", "true");
+  phone.append(document.createElementNS(SVG_NS, "use"));
+  icon(phone.firstChild, "i-phone");
+  tag.append(name, phone);
+  root.append(canvas, tag);
+  $("imps").append(root);
+  const fig = new ImpCanvas(canvas, { live: !still, phase: n * 1.7 });
+  if (!still) clock.add(fig);
+  return { root, canvas, tag, name, phone, fig, look: "", size: 0, mood: "", rect: null, wander: null };
 }
 
-function el(name, attrs, parent) {
-  const node = document.createElementNS(NS, name);
-  for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
-  if (parent) parent.append(node);
-  return node;
+function removeCell(cell) {
+  clock.remove(cell.fig);
+  cell.root.remove();
 }
 
-function renderImps(imps, awake) {
-  const shown = imps.slice(0, 4);
-  const key = JSON.stringify([awake, shown.map((i) => [i.name, Math.round(i.hue * 100), i.scale, i.mood, i.away])]);
-  if (key === drawn) return;
-  drawn = key;
+function renderImps(list) {
+  const shown = list.slice(0, MAX_IMPS);
   const many = shown.length > 2;
-  $("imps").replaceChildren(...shown.map((imp, n) => drawImp(imp, n, awake, many)));
-  look();
+  let changed = false;
+  while (cells.length > shown.length) { removeCell(cells.pop()); changed = true; }
+  shown.forEach((imp, n) => {
+    if (!cells[n]) { cells[n] = makeCell(n); changed = true; }
+    changed = updateCell(cells[n], imp, many) || changed;
+  });
+  if (changed) for (const cell of cells) cell.rect = null;   // the layout moved: measure again when needed
 }
 
-function drawImp(imp, n, awake, many) {
-  const mood = awake ? (imp.away ? "sleepy" : imp.mood || "idle") : "sleepy";
-  const size = Math.round((many ? 62 : 78) * Math.min(Math.max(imp.scale || 1, 0.75), 1.35));
-  const c = colors(imp.hue || 0);
-  const wrap = document.createElement("div");
-  wrap.className = `imp${imp.away ? " away" : ""}`;
-  wrap.title = imp.away ? `${imp.name} is on your iPhone` : imp.name;
+/// Brings one Imp up to date; true if its size changed. Only what differs is touched.
+function updateCell(cell, imp, many) {
+  const away = !!imp.away;
+  const mood = !online || away ? "sleepy" : imp.mood || "idle";
+  if (mood !== cell.mood) { cell.mood = mood; cell.fig.setMood(mood); }
 
-  const svg = el("svg", { viewBox: "0 0 100 100", width: size, height: size });
-  const defs = el("defs", {}, svg);
-  const grad = el("radialGradient", { id: `skin${n}`, cx: "38%", cy: "30%", r: "75%" }, defs);
-  el("stop", { offset: "0%", "stop-color": c.light }, grad);
-  el("stop", { offset: "55%", "stop-color": c.base }, grad);
-  el("stop", { offset: "100%", "stop-color": c.deep }, grad);
+  const look = JSON.stringify([imp.hue, imp.traits]);
+  if (look !== cell.look) { cell.look = look; cell.fig.setImp(imp); }
 
-  el("ellipse", { cx: 50, cy: 93, rx: 30, ry: 4.5, fill: "rgba(0,0,0,0.3)" }, svg);
-  // Two curled horns, then the soft mochi head.
-  el("path", { d: "M31 36 C24 27 25 15 35 9 C31 17 34 25 41 30 Z", fill: c.horn }, svg);
-  el("path", { d: "M69 36 C76 27 75 15 65 9 C69 17 66 25 59 30 Z", fill: c.horn }, svg);
-  el("path", { d: "M8 72 C8 43 27 26 50 26 C73 26 92 43 92 72 C92 87 75 91 50 91 C25 91 8 87 8 72 Z", fill: `url(#skin${n})` }, svg);
-  el("ellipse", { cx: 36, cy: 40, rx: 12, ry: 6, fill: "rgba(255,255,255,0.18)", transform: "rotate(-18 36 40)" }, svg);
+  const size = Math.round((many ? 70 : 88) * clamp(Number(imp.scale) || 1, 0.75, 1.05));
+  const resized = size !== cell.size;
+  if (resized) { cell.size = size; cell.fig.resize(size); }
 
-  // The eyes: they move together toward the pointer (`look`).
-  const eyes = el("g", { class: "eyes" }, svg);
-  if (mood === "sleepy") {
-    for (const x of [37, 63]) el("path", { d: `M${x - 7} 62 Q${x} 67 ${x + 7} 62`, stroke: "#fff", "stroke-width": 3.2, fill: "none", "stroke-linecap": "round" }, eyes);
-    el("text", { x: 70, y: 30, class: "zz" }, svg).textContent = "z";
-    el("text", { x: 78, y: 22, class: "zz two" }, svg).textContent = "z";
-  } else if (HAPPY.has(mood)) {
-    for (const x of [37, 63]) el("path", { d: `M${x - 7} 64 Q${x} 54 ${x + 7} 64`, stroke: "#fff", "stroke-width": 3.6, fill: "none", "stroke-linecap": "round" }, eyes);
-  } else {
-    const low = LOW.has(mood);
-    const blink = el("g", { class: "blink" }, eyes);
-    blink.style.animationDelay = `${-n * 1.7}s`;
-    for (const x of [37, 63]) el("rect", { x: x - 6.5, y: low ? 58 : 53, width: 13, height: low ? 12 : 17, rx: 6.5, fill: "#fff" }, blink);
-  }
-  if (THINKING.has(mood)) {
-    const dots = el("g", { class: "think" }, svg);
-    [40, 50, 60].forEach((x) => el("circle", { cx: x, cy: 18, r: 3.2 }, dots));
-  }
-  wrap.append(svg);
-  if (imp.name) {
-    const tag = document.createElement("span");
-    tag.className = "tag";
-    tag.textContent = imp.name;
-    if (imp.away) {
-      // A little phone: it's out on your iPhone.
-      const phone = el("svg", { viewBox: "0 0 8 12" }, tag);
-      el("path", { d: "M1.6 0h4.8C7.3 0 8 .7 8 1.6v8.8c0 .9-.7 1.6-1.6 1.6H1.6C.7 12 0 11.3 0 10.4V1.6C0 .7.7 0 1.6 0zM1.4 1.6v8.8h5.2V1.6z" }, phone);
-    }
-    wrap.append(tag);
-  }
-  return wrap;
+  const name = String(imp.name || "");
+  const label = away ? `${name} is on your iPhone` : name;
+  if (cell.canvas.getAttribute("aria-label") !== (label || "Imp")) cell.canvas.setAttribute("aria-label", label || "Imp");
+  cell.root.title = label;
+  cell.root.classList.toggle("away", away);
+  setText(cell.name, name);
+  cell.tag.hidden = !name;
+  cell.phone.style.display = away ? "" : "none";
+  return resized;
 }
 
-/// Every awake Imp looks at the pointer (or, with none in the popup, now and then somewhere else).
-function look() {
-  for (const wrap of document.querySelectorAll(".imp")) {
-    const eyes = wrap.querySelector(".eyes");
-    if (!eyes) continue;
-    const box = wrap.querySelector("svg").getBoundingClientRect();
-    const cx = box.left + box.width / 2, cy = box.top + box.height * 0.6;
-    const target = pointer ?? wander;
-    const dx = target.x - cx, dy = target.y - cy;
-    const d = Math.max(1, Math.hypot(dx, dy));
-    const reach = Math.min(1, d / 120) * 5;
-    eyes.style.transform = `translate(${(dx / d) * reach}px, ${(dy / d) * reach * 0.7}px)`;
+// MARK: Looking at the pointer
+
+/// Where the pointer is from an Imp, as -1…1 on both axes (or where it glances while there is none).
+function aim(cell) {
+  if (!pointer) return cell.fig.setGaze(cell.wander);
+  cell.rect ??= cell.canvas.getBoundingClientRect();
+  const dx = pointer.x - (cell.rect.left + cell.rect.width / 2);
+  const dy = pointer.y - (cell.rect.top + cell.rect.height / 2);
+  const d = Math.max(1, Math.hypot(dx, dy));
+  const k = Math.min(1, d / 220);
+  cell.fig.setGaze([(dx / d) * k, (dy / d) * k]);
+}
+
+function aimAll() {
+  for (const cell of cells) aim(cell);
+}
+
+let wanderTimer = 0;
+
+// Rests when the popup is hidden: no frames, no timers.
+function rest() {
+  clock.pause(document.hidden);
+  clearInterval(wanderTimer);
+  if (document.hidden || still) return;
+  wanderTimer = setInterval(() => {
+    if (pointer) return;
+    for (const cell of cells) cell.wander = [(Math.random() - 0.5) * 1.6, (Math.random() - 0.5) * 0.7];
+    aimAll();
+  }, WANDER_EVERY);
+}
+
+if (!still) { // with reduced motion the Imps hold still poses and don't follow the pointer
+  document.addEventListener("pointermove", (e) => { pointer = { x: e.clientX, y: e.clientY }; aimAll(); }, { passive: true });
+  document.documentElement.addEventListener("pointerleave", () => { pointer = null; aimAll(); });
+}
+document.addEventListener("visibilitychange", rest);
+setInterval(() => { if (!document.hidden) tickAgo(); }, AGO_EVERY);
+rest();
+
+// MARK: The background
+
+function connect() {
+  try {
+    port = api.runtime.connect({ name: "popup" });
+  } catch {
+    return; // the extension was reloaded under this popup: nothing to talk to
   }
+  port.onMessage.addListener((s) => {
+    state = s;
+    settle();
+    render();
+  });
+  // The background was put to sleep: asking again wakes it.
+  port.onDisconnect.addListener(() => { port = null; setTimeout(connect, 300); });
 }
 
-let wander = { x: 165, y: 40 };
-document.addEventListener("pointermove", (e) => { pointer = { x: e.clientX, y: e.clientY }; look(); });
-document.addEventListener("pointerleave", () => { pointer = null; look(); });
-setInterval(() => {
-  if (pointer) return;
-  wander = { x: 40 + Math.random() * 250, y: Math.random() * 220 };
-  look();
-}, 2400);
-
-// MARK: Talking to the background
-
-async function ask(type) {
-  try { return await api.runtime.sendMessage({ type }); } catch { return null; }
+/// Ends "trying" once the attempt is over and has been on show long enough to be seen.
+function settle() {
+  if (!trying) return;
+  const waited = performance.now() - trying;
+  if (waited >= GIVE_UP || (waited >= MIN_TRYING && !state?.connecting)) trying = 0;
 }
 
-$("reconnect").addEventListener("click", async () => {
-  const button = $("reconnect");
-  button.disabled = true;
-  button.classList.add("spin");
-  render(await ask("reconnect"));
-  // Give the socket a moment, then show how it went.
-  setTimeout(async () => {
-    render(await ask("status"));
-    button.disabled = false;
-    button.classList.remove("spin");
-  }, 900);
+const settleAndRender = () => { settle(); render(); };
+
+// Pressing Reconnect changes the screen right now; the background is only told.
+$("reconnect").addEventListener("click", () => {
+  if (trying) return;
+  trying = performance.now();
+  if (!port) connect();
+  port?.postMessage({ type: "reconnect" });
+  setTimeout(settleAndRender, MIN_TRYING);
+  setTimeout(settleAndRender, GIVE_UP);
+  render();
 });
 
 // Opens Imp's window, starting Imp if it isn't running (its imp:// link). The browser may ask
 // first; the tab stays where it is.
 $("open").addEventListener("click", async () => {
   try {
-    const [tab] = await api.tabs.query({ active: true, currentWindow: true });
-    if (tab?.id !== undefined && /^https?:/.test(tab.url || "")) await api.tabs.update(tab.id, { url: "imp://settings" });
+    const [t] = await api.tabs.query({ active: true, currentWindow: true });
+    if (t?.id !== undefined && /^https?:/.test(t.url || "")) await api.tabs.update(t.id, { url: "imp://settings" });
     else await api.tabs.create({ url: "imp://settings" });
   } catch {}
   window.close();
 });
 
-(async () => {
-  render(await ask("status"));
-  // Keep it fresh while the popup is open (Imp may start meanwhile, an Imp starts thinking).
-  setInterval(async () => render(await ask("status")), 1000);
-})();
+render();
+connect();
+refreshTab();
