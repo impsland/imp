@@ -93,7 +93,7 @@ import Testing
 }
 
 @Suite struct LinkTransfersTests {
-    let a = linkDevice(2).id, b = linkDevice(3).id
+    let a = linkDevice(2).id, b = linkDevice(3).id, c = linkDevice(4).id
 
     @Test func aThrowIsAnsweredOnceByTheDeviceItWentTo() {
         var t = Transfers()
@@ -193,5 +193,58 @@ import Testing
         for _ in 0..<Transfers.remembered { _ = t.received(UUID(), from: a) }
         let r7470 = t.received(first, from: a)
         #expect(r7470 == .new)
+    }
+
+    @Test func onlyWhatIsOnTheTargetsScreenMayAsk() {
+        let asker = testImp(1), other = testImp(2)
+        let screen = [LinkStaged(imp: asker, home: a)]
+        #expect(LinkTalks.mayAsk(asker: asker.id, screen: screen, forwarded: false, sender: a, senderStage: [], known: []))
+        #expect(!LinkTalks.mayAsk(asker: other.id, screen: screen, forwarded: false, sender: a, senderStage: [], known: []))
+        // Forwarded: the sender holds the asker, or is its home according to a stage we know.
+        #expect(LinkTalks.mayAsk(asker: asker.id, screen: screen, forwarded: true, sender: b, senderStage: screen, known: []))
+        #expect(LinkTalks.mayAsk(asker: asker.id, screen: screen, forwarded: true, sender: a, senderStage: [], known: screen))
+        #expect(!LinkTalks.mayAsk(asker: asker.id, screen: screen, forwarded: true, sender: b, senderStage: [], known: screen))
+    }
+
+    @Test func aQuestionIdIsNeverInFlightTwiceAndSendersAreCounted() {
+        var pending = LinkTalks.Pending()
+        let q = UUID()
+        let first = pending.sent(q, from: a, to: b), second = pending.sent(q, from: c, to: b)
+        #expect(first && !second)
+        #expect(pending.questions[q]?.from == a)
+        for _ in 0..<3 { pending.sent(UUID(), from: a, to: b) }
+        #expect(pending.count(from: a) == 4 && pending.count(from: c) == 0)
+    }
+
+    @Test func expiredThrowsAreRememberedForALateTook() {
+        var t = Transfers()
+        let now = Date(), x = UUID(), y = UUID()
+        t.sent(x, imp: UUID(), to: a, now: now, timeout: 1)
+        t.sent(y, imp: UUID(), to: a, now: now, timeout: 1)
+        #expect(t.expired(now: now.addingTimeInterval(2)).count == 2)
+        let wrong = t.late(x, by: b, now: now.addingTimeInterval(3))
+        let right = t.late(x, by: a, now: now.addingTimeInterval(3))
+        let twice = t.late(x, by: a, now: now.addingTimeInterval(3))
+        #expect(wrong == nil && right?.id == x && twice == nil)
+        // Forgotten after ten minutes.
+        let old = t.late(y, by: a, now: now.addingTimeInterval(2 + Transfers.buriedLife))
+        #expect(old == nil)
+        // Bounded.
+        let first = UUID()
+        t.sent(first, imp: UUID(), to: a, now: now, timeout: 1)
+        _ = t.expired(now: now.addingTimeInterval(2))
+        for _ in 0..<Transfers.buriedCount { t.sent(UUID(), imp: UUID(), to: a, now: now, timeout: 1) }
+        _ = t.expired(now: now.addingTimeInterval(2))
+        let evicted = t.late(first, by: a, now: now.addingTimeInterval(3))
+        #expect(evicted == nil)
+    }
+
+    @Test func aWaitingThrowIsNeverForgottenToMakeRoom() {
+        var t = Transfers()
+        let first = UUID()
+        _ = t.received(first, from: a)
+        for _ in 0..<(Transfers.remembered + 10) { _ = t.received(UUID(), from: b) }
+        #expect(t.isWaiting(first))
+        #expect(t.waiting(from: a) == 1 && t.waiting(from: b) == Transfers.remembered + 10)
     }
 }

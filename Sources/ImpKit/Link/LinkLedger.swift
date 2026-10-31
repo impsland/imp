@@ -45,6 +45,8 @@ public struct AwayLedger: Codable, Sendable, Equatable {
     public mutating func mint(_ imp: UUID, to holder: UUID) -> Data {
         let ticket = LinkCrypto.mintTicket()
         let generation = (entry(of: imp)?.generation ?? 0) + 1
+        // Whoever held it before is not the holder any more, and hears so.
+        if let previous = entry(of: imp)?.holder, previous != holder { tell(previous, imp) }
         entries.removeAll { $0.imp == imp }
         entries.append(Entry(imp: imp, holder: holder, ticket: LinkCrypto.hash(ticket: ticket), generation: generation))
         return ticket

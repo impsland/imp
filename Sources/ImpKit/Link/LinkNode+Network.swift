@@ -11,6 +11,7 @@ extension LinkNode {
     public func start() async {
         guard !running else { return }
         running = true
+        callHomeUnanswered()
         let (stream, continuation) = AsyncStream.makeStream(of: Note.self)
         notes = continuation
         noteTask = Task { @MainActor [weak self] in
@@ -33,6 +34,16 @@ extension LinkNode {
         }
         reconcile()
         _ = await ready.wait()
+    }
+
+    /// Throws of our own Imps that were in the air when this device last stopped, and never got an
+    /// answer: the Imp is called home, so a receiver that did take it hears `gone` when it claims.
+    private func callHomeUnanswered() {
+        let lost = book.passing.filter { transfers.outgoing[$0.transfer] == nil }
+        guard !lost.isEmpty else { return }
+        book.passing.removeAll { p in lost.contains(p) }
+        for p in lost where book.away.holder(of: p.imp) == p.to { book.away.callHome(p.imp) }
+        commit()
     }
 
     /// Stops everything and closes every connection. An iPhone calls this when the app leaves the front.
@@ -191,6 +202,8 @@ extension LinkNode {
         let now = Date()
         for t in transfers.expired(now: now) { finishPass(t, .declined(.timeout)) }
         for lapsed in transfers.lapsed(now: now) { arrivals[lapsed.id] = nil }
+        // Nothing stays that no longer waits for the app.
+        for id in arrivals.keys where !transfers.isWaiting(id) { arrivals[id] = nil }
         for q in talks.expired(now: now) { fail(q) }
         for session in sessions {
             if let deadline = session.handshakeDeadline, now > deadline { retire(session) }

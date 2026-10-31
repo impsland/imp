@@ -117,6 +117,17 @@ extension LinkNode {
         return result
     }
 
+    /// The other side forgot us: ends the link on this side as `forget` does, without a goodbye. Our
+    /// Imps it held are called home and the Imps of its that visit us are sent home.
+    func dropped(_ device: UUID) -> Forgotten {
+        var result = Forgotten()
+        result.calledHome = book.away.callHome(from: device)
+        result.sentHome = book.visits.sendHome(of: device).map(\.imp.id)
+        book.away.dropNotices(for: device)
+        dropLink(device)
+        return result
+    }
+
     /// Removes a link from the book (no goodbye, no Imps moved: the callers do that).
     func dropLink(_ device: UUID) {
         book.links.removeAll { $0.id == device }
@@ -166,9 +177,13 @@ extension LinkNode {
         } else {
             home = card
             ticket = book.away.mint(imp.id, to: device)
-            commit()
         }
         let transfer = UUID()
+        if home?.id == identity.id {
+            book.passing.append(LinkBook.Passing(transfer: transfer, imp: imp.id, to: device))
+            commit()
+            deliverNotices()
+        }
         transfers.sent(transfer, imp: imp.id, to: device, timeout: options.transferTimeout)
         session.channel.send(.pass(transfer: transfer, imp: imp, entry: entry, home: home, ticket: ticket))
         return transfer
@@ -183,6 +198,13 @@ extension LinkNode {
         transfers.sent(transfer, imp: imp, to: device, kind: .adopt, timeout: options.transferTimeout)
         session.channel.send(.adopt(transfer: transfer, imp: imp, kit: kit, secrets: secrets, entry: entry))
         return transfer
+    }
+
+    /// Whether a thrown Imp (or adoption) still waits for the app's answer and can be taken: the app
+    /// checks before it does anything it can't undo (adopting an Imp's kit, say).
+    public func canAccept(_ transfer: UUID) -> Bool {
+        guard let arrival = arrivals[transfer] else { return false }
+        return connections[arrival.from] != nil && transfers.isWaiting(transfer)
     }
 
     /// The app takes an Imp (or an adoption) that was thrown here. False if it can't any more: it
@@ -232,16 +254,38 @@ extension LinkNode {
 
     /// An answer to a throw of ours came in (or the throw ran out of time).
     func answered(_ transfer: UUID, by device: UUID, _ outcome: Passed.Outcome) {
-        guard let throwing = transfers.answered(transfer, by: device) else { return }
+        guard let throwing = transfers.answered(transfer, by: device) else {
+            // A `took` after we gave up: the receiver has the body. A visit of ours leaves now; an Imp
+            // of ours that isn't theirs any more is told so.
+            if outcome == .took, let late = transfers.late(transfer, by: device), late.kind == .pass {
+                if book.visits.visit(of: late.imp) != nil {
+                    finishPass(late, .took)
+                } else if book.away.holder(of: late.imp) != late.to {
+                    send(.gone(imp: late.imp), to: late.to)
+                }
+            }
+            return
+        }
         finishPass(throwing, outcome)
     }
 
     func finishPass(_ t: Transfers.Outgoing, _ outcome: Passed.Outcome) {
+        var outcome = outcome
         if t.kind == .pass {
+            if book.passing.contains(where: { $0.transfer == t.id }) {
+                book.passing.removeAll { $0.transfer == t.id }
+                commit()
+            }
             switch outcome {
             case .took:
-                // It's gone from here; a visit's ticket went with it.
-                if book.visits.leave(t.imp) != nil { commit() }
+                if book.visits.leave(t.imp) != nil {
+                    // It's gone from here; a visit's ticket went with it.
+                    commit()
+                } else if book.away.holder(of: t.imp) != t.to {
+                    // We called it home meanwhile: the receiver must let go.
+                    send(.gone(imp: t.imp), to: t.to)
+                    outcome = .declined(.other)
+                }
             case .declined(let reason):
                 // An Imp of ours that wasn't taken is not away. If we can't tell whether it was
                 // (no answer), the receiver is told to let go in case it took it after all.
@@ -256,9 +300,10 @@ extension LinkNode {
 
     /// An Imp thrown here that still waits for the app's answer: the Imp, where it came from and how.
     func onPass(_ transfer: UUID, imp: LinkImp, entry: LinkEntry, home: LinkCard?, ticket: Data?, on s: Session, _ message: LinkMessage) {
-        guard let from = s.remote?.id else { return }
+        guard let remote = s.remote else { return }
+        let from = remote.id
         guard isNew(transfer, from: from, on: s, timeout: options.transferTimeout) else { return }
-        if let reason = refusal(of: imp, home: home, from: s.remote!) {
+        if let reason = refusal(of: imp, home: home, from: remote) ?? crowded(from) {
             transfers.answer(transfer, .declined(reason))
             return s.channel.send(.declined(transfer: transfer, reason: reason))
         }
@@ -269,8 +314,20 @@ extension LinkNode {
     func onAdopt(_ transfer: UUID, imp: UUID, on s: Session, _ message: LinkMessage) {
         guard let from = s.remote?.id else { return }
         guard isNew(transfer, from: from, on: s, timeout: Transfers.adoptTimeout) else { return }
+        if let reason = crowded(from) {
+            transfers.answer(transfer, .declined(reason))
+            return s.channel.send(.declined(transfer: transfer, reason: reason))
+        }
         arrivals[transfer] = Arrival(transfer: transfer, from: from, imp: imp, kind: .adopt)
         emit(.message(message, from: from))
+    }
+
+    /// How many thrown Imps one device may have waiting for the app at once.
+    static let waitingPerSender = 8
+
+    /// `full` if `sender` already has as many throws waiting as it may (the one just noted counts).
+    private func crowded(_ sender: UUID) -> LinkDecline? {
+        transfers.waiting(from: sender) > Self.waitingPerSender ? .full : nil
     }
 
     /// Notes a throw that arrived. False if it was a repeat (answered again, or still waiting).
@@ -294,7 +351,11 @@ extension LinkNode {
             // Coming home: only its holder can bring it.
             return book.away.authorises(sender.id, for: imp.id) ? nil : .notLinked
         }
-        if home.id == identity.id { return .notLinked }
+        if home.id == identity.id || book.away.isAway(imp.id) { return .notLinked }
+        // An Imp of ours that is here, or one we already hold a visit of from somebody else, can't be
+        // thrown in again.
+        if ownStage.contains(where: { $0.id == imp.id && $0.home == identity.id }) { return .other }
+        if let visit = book.visits.visit(of: imp.id), visit.from != sender.id { return .other }
         if let link = book.links.first(where: { $0.id == home.id }), !LinkCrypto.equal(link.device.key, home.device.key) { return .notLinked }
         if home.id == sender.id, !LinkCrypto.equal(home.device.key, sender.key) { return .notLinked }
         if book.visits.visit(of: imp.id) == nil && book.visits.isFull { return .full }
@@ -332,7 +393,7 @@ extension LinkNode {
     public func talk(id: UUID, from: LinkImp, to: UUID, toHome: UUID, text: String, holder: UUID) -> LinkTalks.First {
         let first = LinkTalks.first(me: identity.id, targetHome: toHome, holder: holder, connected: Set(connections.keys))
         guard case .via(let device) = first else { return first }
-        talks.sent(id, from: nil, to: device, timeout: options.answerTimeout)
+        guard talks.sent(id, from: nil, to: device, timeout: options.answerTimeout) else { return .unreachable }
         let question = LinkMessage.message(id: id, from: from, to: to, toHome: toHome, text: String(text.prefix(LinkProtocol.maxText)), forwarded: false)
         guard send(question, to: device) else {
             _ = talks.answered(id, by: device)

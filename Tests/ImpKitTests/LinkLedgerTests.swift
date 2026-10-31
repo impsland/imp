@@ -313,4 +313,15 @@ func testImp(_ n: Int) -> LinkImp {
         #expect(!LinkAccess.allows(ask(testImp(3).id), from: holder.id, standing: .visitor, ledger: ledger, visits: Visits()))
         #expect(LinkAccess.allows(ask(testImp(3).id), from: holder.id, standing: .peer, ledger: ledger, visits: Visits()))
     }
+
+    @Test func mintingOverAPreviousHolderTellsItGone() {
+        var ledger = AwayLedger()
+        let first = UUID(), second = UUID()
+        _ = ledger.mint(testImp(1).id, to: first)
+        _ = ledger.mint(testImp(1).id, to: first)
+        #expect(ledger.notices.isEmpty)
+        _ = ledger.mint(testImp(1).id, to: second)
+        #expect(ledger.holder(of: testImp(1).id) == second)
+        #expect(ledger.takeNotices(for: first) == [testImp(1).id])
+    }
 }

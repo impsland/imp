@@ -31,7 +31,13 @@ public struct Transfers: Sendable {
     /// How many answers are remembered for repeats.
     static let remembered = 256
 
+    /// How long, and how many, expired throws are remembered, so a late `took` can still be dealt with.
+    static let buriedLife: TimeInterval = 10 * 60
+    static let buriedCount = 256
+
     public private(set) var outgoing: [UUID: Outgoing] = [:]
+    private var buried: [UUID: (throwing: Outgoing, until: Date)] = [:]
+    private var buriedOrder: [UUID] = []
     private var incoming: [UUID: (from: UUID, reply: Reply, deadline: Date)] = [:]
     private var order: [UUID] = []
 
@@ -57,14 +63,30 @@ public struct Transfers: Sendable {
     /// The throws that ran out of time.
     public mutating func expired(now: Date = Date()) -> [Outgoing] {
         let late = outgoing.values.filter { $0.deadline <= now }
-        late.forEach { outgoing[$0.id] = nil }
+        late.forEach { outgoing[$0.id] = nil; bury($0, now: now) }
         return late
+    }
+
+    /// A `took` came from `device` for a throw that already ran out of time (or whose connection
+    /// dropped). Nil unless it is one we remember, thrown to that device.
+    public mutating func late(_ id: UUID, by device: UUID, now: Date = Date()) -> Outgoing? {
+        guard let known = buried[id], known.throwing.to == device, known.until > now else { return nil }
+        buried[id] = nil
+        return known.throwing
+    }
+
+    private mutating func bury(_ t: Outgoing, now: Date) {
+        buried[t.id] = (t, now.addingTimeInterval(Self.buriedLife))
+        buriedOrder.append(t.id)
+        while buriedOrder.count > Self.buriedCount || (buriedOrder.first.map { (buried[$0]?.until ?? .distantPast) <= now } ?? false) {
+            buried[buriedOrder.removeFirst()] = nil
+        }
     }
 
     /// The throws to `device`, which just went away.
     public mutating func lost(_ device: UUID) -> [Outgoing] {
         let gone = outgoing.values.filter { $0.to == device }
-        gone.forEach { outgoing[$0.id] = nil }
+        gone.forEach { outgoing[$0.id] = nil; bury($0, now: Date()) }
         return gone
     }
 
@@ -87,9 +109,15 @@ public struct Transfers: Sendable {
         }
         incoming[id] = (device, .waiting, now.addingTimeInterval(timeout))
         order.append(id)
-        if order.count > Self.remembered { incoming[order.removeFirst()] = nil }
+        // The oldest answered one goes; one still waiting for the app is never forgotten.
+        if order.count > Self.remembered, let i = order.firstIndex(where: { incoming[$0]?.reply != .waiting }) {
+            incoming[order.remove(at: i)] = nil
+        }
         return .new
     }
+
+    /// How many throws from `device` still wait for an answer.
+    public func waiting(from device: UUID) -> Int { incoming.values.filter { $0.from == device && $0.reply == .waiting }.count }
 
     /// Whether a throw was received and is still waiting for an answer.
     public func isWaiting(_ id: UUID) -> Bool { incoming[id]?.reply == .waiting }

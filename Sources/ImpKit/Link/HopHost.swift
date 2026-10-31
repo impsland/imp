@@ -15,6 +15,14 @@ public final class HopHost: @unchecked Sendable {   // mutable state is only tou
     private var delay: TimeInterval = 1
     private var redial: DispatchWorkItem?
     private var splices: [ObjectIdentifier: Splice] = [:]
+    private var greeted = false
+
+    /// How long the relay may take to answer the hello, how long a host waits at the relay (see
+    /// `server/PROTOCOL.md`) and how much longer than that we allow, and how many guests are spliced at once.
+    static let handshakeLimit: TimeInterval = 10
+    static let hostWait: TimeInterval = 5 * 60
+    static let slack: TimeInterval = 60
+    static let maxSplices = 32
 
     /// The relay turned this host away (it won't be tried again until restarted).
     public var onRejected: (@Sendable () -> Void)?
@@ -62,6 +70,17 @@ public final class HopHost: @unchecked Sendable {   // mutable state is only tou
         let c = NWConnection(host: NWEndpoint.Host(address.host), port: port, using: .tcp)
         waiting = c
         dialed = Date()
+        greeted = false
+        // A connection that never gets through the hello, or that waits for far longer than the relay
+        // says it will, is given up on.
+        queue.asyncAfter(deadline: .now() + Self.handshakeLimit) { [weak self, weak c] in
+            guard let self, let c, c === self.waiting, !self.greeted else { return }
+            self.lost(c)
+        }
+        queue.asyncAfter(deadline: .now() + Self.hostWait + Self.slack) { [weak self, weak c] in
+            guard let self, let c, c === self.waiting else { return }
+            self.lost(c)
+        }
         c.stateUpdateHandler = { [weak self, weak c] state in
             guard let self, let c else { return }
             switch state {
@@ -81,6 +100,7 @@ public final class HopHost: @unchecked Sendable {   // mutable state is only tou
         Self.read(Hop.nonceBytes, from: c) { [weak self] nonce in
             guard let self, c === self.waiting else { return }
             guard let nonce, let proof = try? self.credentials.proof(nonce: nonce) else { return self.lost(c) }
+            self.greeted = true
             c.send(content: proof, completion: .contentProcessed { [weak self] error in
                 if error != nil { self?.lost(c) }
             })
@@ -95,10 +115,13 @@ public final class HopHost: @unchecked Sendable {   // mutable state is only tou
     private func answered(_ c: NWConnection, _ status: Hop.Status) {
         switch status {
         case .go:
+            // Too many guests at once, or no way to reach our own listener: let this one go.
+            guard splices.count < Self.maxSplices, let splice = Splice(hop: c, loopbackPort: loopbackPort, queue: queue) else {
+                return lost(c)
+            }
             delay = 1
             waiting = nil
             c.stateUpdateHandler = nil
-            let splice = Splice(hop: c, loopbackPort: loopbackPort, queue: queue)
             let id = ObjectIdentifier(splice)
             splices[id] = splice
             splice.onEnd = { [weak self] in self?.splices[id] = nil }
@@ -151,9 +174,10 @@ public final class HopHost: @unchecked Sendable {   // mutable state is only tou
         private var ended = false
         var onEnd: (() -> Void)?
 
-        init(hop: NWConnection, loopbackPort: UInt16, queue: DispatchQueue) {
+        init?(hop: NWConnection, loopbackPort: UInt16, queue: DispatchQueue) {
+            guard let port = NWEndpoint.Port(rawValue: loopbackPort) else { return nil }
             self.hop = hop
-            self.local = NWConnection(host: "127.0.0.1", port: NWEndpoint.Port(rawValue: loopbackPort)!, using: .tcp)
+            self.local = NWConnection(host: "127.0.0.1", port: port, using: .tcp)
             self.queue = queue
         }
 

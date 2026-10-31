@@ -290,13 +290,40 @@ import Network
         #expect(LinkFiles.isWeb("https://x.y/z.mp4") && !LinkFiles.isWeb("z.mp4"))
     }
 
-    @Test func onlyWhatARepliesMentions() {
-        let replies = ["Here you go: ![Pip says hi](pip%20hi.mp3#autoplay)", "Saved to [the report](/tmp/report.pdf)."]
-        #expect(LinkFiles.isMentioned("pip%20hi.mp3#autoplay", in: replies))
-        #expect(LinkFiles.isMentioned("pip%20hi.mp3", in: replies))
-        #expect(LinkFiles.isMentioned("/tmp/report.pdf", in: replies))
-        #expect(!LinkFiles.isMentioned("/etc/passwd", in: replies))
-        #expect(!LinkFiles.isMentioned("a", in: ["a"]))
+    @Test func onlyWhatARepliesReferences() {
+        let replies = ["Here you go: ![Pip says hi](pip%20hi.mp3#autoplay)", "Saved to [the report](/tmp/report.pdf \"Report\").",
+                       "<img src=\"out/pic.png\"> and [site](https://example.com/a(1).png) and [x](<my file.txt>)"]
+        #expect(LinkFiles.references(in: replies) == ["pip%20hi.mp3#autoplay", "/tmp/report.pdf", "https://example.com/a(1).png", "my file.txt", "out/pic.png"])
+        #expect(LinkFiles.isMentioned("pip%20hi.mp3#autoplay", base: base, in: replies))
+        #expect(LinkFiles.isMentioned("pip hi.mp3", base: base, in: replies))
+        #expect(LinkFiles.isMentioned("/tmp/report.pdf", base: base, in: replies))
+        #expect(LinkFiles.isMentioned("./out/../out/pic.png", base: base, in: replies))
+        #expect(!LinkFiles.isMentioned("/etc/passwd", base: base, in: replies))
+        // Prose that merely contains a path is not a reference, nor is a longer or shorter path.
+        #expect(!LinkFiles.isMentioned("/etc/passwd", base: base, in: ["don't read /etc/passwd"]))
+        #expect(!LinkFiles.isMentioned("/tmp/report", base: base, in: replies))
+        #expect(!LinkFiles.isMentioned("/tmp/report.pdf.bak", base: base, in: replies))
+        #expect(!LinkFiles.isMentioned("a", base: base, in: ["a"]))
+    }
+
+    @Test func anUntrustedHolderGetsOnlyFilesInTheImpsFolder() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("linkfiles-\(UUID().uuidString)")
+        let folder = root.appendingPathComponent("imp"), other = root.appendingPathComponent("other")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: other, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        try FileManager.default.createSymbolicLink(at: folder.appendingPathComponent("out"), withDestinationURL: other)
+        let replies = ["![a](pic.png) ![b](\(other.path)/secret.txt) ![c](out/secret.txt) ![d](../other/x.txt)"]
+        #expect(LinkFiles.mayServe("pic.png", base: folder, in: replies, trusted: false))
+        // Referenced, but outside the folder (directly, through a symlink, or by climbing out).
+        for ref in ["\(other.path)/secret.txt", "out/secret.txt", "../other/x.txt"] {
+            #expect(!LinkFiles.mayServe(ref, base: folder, in: replies, trusted: false))
+            #expect(LinkFiles.mayServe(ref, base: folder, in: replies, trusted: true))
+        }
+        // Inside, but never referenced.
+        #expect(!LinkFiles.mayServe("other.png", base: folder, in: replies, trusted: false))
+        #expect(LinkFiles.mayServe("pic.png", base: folder, in: replies, trusted: true))
+        #expect(!LinkFiles.isInside(folder.deletingLastPathComponent().appendingPathComponent("imp-evil/x"), folder: folder))
     }
 
     @Test func filePartsAndSpeechRoundTrip() throws {

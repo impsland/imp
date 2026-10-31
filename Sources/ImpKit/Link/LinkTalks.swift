@@ -47,6 +47,20 @@ public enum LinkTalks {
         return .refuse
     }
 
+    /// Whether a question for an Imp of this device may be answered: its asker must be on the screen the
+    /// target's body is on (`screen`: our own stage if the target is here, the holder's stage if it is
+    /// away). A forwarded one must also come from a device whose stage (`senderStage`) holds the asker,
+    /// or which is the asker's home according to some stage we know (`known`).
+    public static func mayAsk(asker: UUID, screen: [LinkStaged], forwarded: Bool, sender: UUID,
+                              senderStage: [LinkStaged], known: [LinkStaged]) -> Bool {
+        guard screen.contains(where: { $0.id == asker }) else { return false }
+        guard forwarded else { return true }
+        return senderStage.contains { $0.id == asker } || known.contains { $0.id == asker && $0.home == sender }
+    }
+
+    /// How many questions one device may have in flight through this one.
+    public static let perSender = 16
+
     /// Questions in flight, so each answer finds its way back, and a question nobody answers fails.
     public struct Pending: Sendable {
         public struct Question: Sendable, Equatable {
@@ -62,9 +76,16 @@ public enum LinkTalks {
 
         public init() {}
 
-        public mutating func sent(_ id: UUID, from: UUID?, to: UUID, now: Date = Date(), timeout: TimeInterval = LinkProtocol.answerTimeout) {
+        /// False if a question with this id is in flight already (it is not replaced).
+        @discardableResult
+        public mutating func sent(_ id: UUID, from: UUID?, to: UUID, now: Date = Date(), timeout: TimeInterval = LinkProtocol.answerTimeout) -> Bool {
+            guard questions[id] == nil else { return false }
             questions[id] = Question(id: id, from: from, to: to, deadline: now.addingTimeInterval(timeout))
+            return true
         }
+
+        /// How many questions `device` has in flight through here.
+        public func count(from device: UUID) -> Int { questions.values.filter { $0.from == device }.count }
 
         /// An answer came from `device`. Nil unless it is the one the question went to.
         public mutating func answered(_ id: UUID, by device: UUID) -> Question? {

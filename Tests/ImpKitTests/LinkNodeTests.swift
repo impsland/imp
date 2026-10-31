@@ -423,7 +423,7 @@ private func throwImp(_ imp: LinkImp, from: Probe, to: Probe, accepting: Bool = 
         #expect(await until { a.node.holder(of: imp.id) == b.id })
         let result = a.node.forget(b.id)
         #expect(result.calledHome == [imp.id] && a.node.links.isEmpty && !a.node.away.isAway(imp.id))
-        #expect(await b.take { if case .forgotten(let id) = $0 { return id == a.id } else { return false } } != nil)
+        #expect(await b.take { if case .forgotten(let id, _) = $0 { return id == a.id } else { return false } } != nil)
         #expect(b.node.links.isEmpty)
         #expect(await until { !a.node.isConnected(b.id) && !b.node.isConnected(a.id) })
     }
@@ -447,7 +447,11 @@ private func throwImp(_ imp: LinkImp, from: Probe, to: Probe, accepting: Bool = 
         defer { a.node.stop(); b.node.stop(); c.node.stop() }
         try await link(b, a)
         try await link(b, c)
-        let asker = testImp(1), target = testImp(9)
+        let asker = testImp(1), target = testImp(9), far = testImp(8)
+        // A's Imp is on A's screen with B's Imp 9 (B threw it to A); B's Imp 8 is held by A too.
+        try await throwImp(target, from: b, to: a)
+        a.node.setStage([LinkStaged(imp: asker, home: a.id), LinkStaged(imp: target, home: b.id)])
+        #expect(await until { b.node.stage(of: a.id).count == 2 })
         let q = UUID()
         // Straight to a connected home: A asks B.
         #expect(a.node.talk(id: q, from: asker, to: target.id, toHome: b.id, text: "hi", holder: a.id) == .via(b.id))
@@ -456,17 +460,25 @@ private func throwImp(_ imp: LinkImp, from: Probe, to: Probe, accepting: Bool = 
         b.node.send(.answer(id: q, text: "hello", failed: false), to: a.id)
         let back = await a.receivedMessage { m, _ in if case .answer(let id, "hello", false) = m { return id == q } else { return false } }
         #expect(back != nil)
+        // The same question id can't be in flight twice.
+        let again = UUID()
+        #expect(a.node.talk(id: again, from: asker, to: target.id, toHome: b.id, text: "1", holder: a.id) == .via(b.id))
+        #expect(a.node.talk(id: again, from: asker, to: target.id, toHome: b.id, text: "2", holder: a.id) == .unreachable)
 
         // A's Imp is held by B and the target lives on C: A can only reach B, which forwards once.
+        try await throwImp(asker, from: a, to: b)
+        try await throwImp(far, from: c, to: b)
+        b.node.setStage([LinkStaged(imp: asker, home: a.id), LinkStaged(imp: far, home: c.id)])
+        #expect(await until { c.node.stage(of: b.id).count == 2 })
         let q2 = UUID()
-        #expect(a.node.talk(id: q2, from: asker, to: target.id, toHome: c.id, text: "you there?", holder: b.id) == .via(b.id))
+        #expect(a.node.talk(id: q2, from: asker, to: far.id, toHome: c.id, text: "you there?", holder: b.id) == .via(b.id))
         let forwarded = await c.receivedMessage { m, from in if case .message(let id, _, _, _, let text, let forwarded) = m { return id == q2 && forwarded && text == "you there?" && from == b.id } else { return false } }
         #expect(forwarded != nil)
         c.node.send(.answer(id: q2, text: "yes", failed: false), to: b.id)
         let relayed = await a.receivedMessage { m, from in if case .answer(let id, "yes", false) = m { return id == q2 && from == b.id } else { return false } }
         #expect(relayed != nil)
         // B did not ask the app about it: it only passed it on.
-        #expect(!b.has { if case .message(.message, _) = $0 { return true } else { return false } })
+        #expect(!b.has { if case .message(.message(let id, _, _, _, _, _), _) = $0 { return id == q2 } else { return false } })
 
         // A question that was forwarded already isn't forwarded again, even to a home that is connected.
         let q3 = UUID()
@@ -486,5 +498,223 @@ private func throwImp(_ imp: LinkImp, from: Probe, to: Probe, accepting: Bool = 
         #expect(a.node.talk(id: q, from: testImp(1), to: UUID(), toHome: b.id, text: "?", holder: a.id) == .via(b.id))
         let failed = await a.receivedMessage { m, _ in if case .answer(let id, _, true) = m { return id == q } else { return false } }
         #expect(failed != nil)
+    }
+}
+
+// MARK: Authority, trust, consistency and limits
+
+private func saved(_ probe: Probe) throws -> LinkBook {
+    let book = try probe.storage.load()
+    return try #require(book)
+}
+
+extension LinkNodeTests {
+    @Test func aQuestionForAnImpIsOnlyPutByWhatIsOnItsScreen() async throws {
+        let a = try Probe(1), b = try Probe(2)
+        await a.start(); await b.start()
+        defer { a.node.stop(); b.node.stop() }
+        try await link(a, b)
+        let asker = testImp(1), target = testImp(9)
+        b.node.setStage([LinkStaged(imp: target, home: b.id)])
+        #expect(await until { a.node.stage(of: b.id).count == 1 })
+        // The asker isn't on B's screen: failed, and the app is never asked.
+        let q = UUID()
+        #expect(a.node.talk(id: q, from: asker, to: target.id, toHome: b.id, text: "hi", holder: a.id) == .via(b.id))
+        #expect(await a.receivedMessage { m, _ in if case .answer(let id, _, true) = m { return id == q } else { return false } } != nil)
+        #expect(!b.has { if case .message(.message, _) = $0 { return true } else { return false } })
+        // Once it visits B's screen it may ask.
+        b.node.setStage([LinkStaged(imp: target, home: b.id), LinkStaged(imp: asker, home: a.id)])
+        #expect(await until { a.node.stage(of: b.id).count == 2 })
+        let q2 = UUID()
+        #expect(a.node.talk(id: q2, from: asker, to: target.id, toHome: b.id, text: "hi", holder: a.id) == .via(b.id))
+        #expect(await b.receivedMessage { m, _ in if case .message(let id, _, _, _, _, _) = m { return id == q2 } else { return false } } != nil)
+    }
+
+    @Test func whatIsNotTheirsAnyMoreGetsGoneNotSilence() async throws {
+        let a = try Probe(1), b = try Probe(2)
+        await a.start(); await b.start()
+        defer { a.node.stop(); b.node.stop() }
+        try await link(a, b)
+        let imp = testImp(1)
+        // B thinks it holds an Imp of A's that A has at home.
+        func stale() {
+            b.node.book.visits.arrive(imp, entry: entry, from: a.id, home: a.node.card, ticket: LinkCrypto.mintTicket())
+        }
+        stale()
+        let id = UUID()
+        b.node.send(.file(id: id, imp: imp.id, ref: "x.png"), to: a.id)
+        #expect(await b.receivedMessage { m, from in if case .fileFailed(let f, _) = m { return f == id && from == a.id } else { return false } } != nil)
+        #expect(await b.receivedMessage { m, from in if case .gone(let g) = m { return g == imp.id && from == a.id } else { return false } } != nil)
+        #expect(b.node.visits.visits.isEmpty)
+        stale()
+        b.node.send(.ask(imp: imp.id, text: "hi"), to: a.id)
+        #expect(await b.receivedMessage { m, _ in if case .gone = m { return true } else { return false } } != nil)
+        #expect(!a.has { if case .message(.ask, _) = $0 { return true } else { return false } })
+    }
+
+    @Test func aThrownImpMayNotBeOneWeHaveOrHold() async throws {
+        let a = try Probe(1), b = try Probe(2), c = try Probe(3)
+        await a.start(); await b.start(); await c.start()
+        defer { a.node.stop(); b.node.stop(); c.node.stop() }
+        try await link(a, b); try await link(a, c)
+        // B pretends to hold an Imp of its own that A has at home.
+        let mine = testImp(1)
+        a.node.setStage([LinkStaged(imp: mine, home: a.id)])
+        b.node.book.visits.arrive(mine, entry: entry, from: c.id, home: b.node.card, ticket: LinkCrypto.mintTicket())
+        #expect(b.node.pass(mine, entry: entry, to: a.id) != nil)
+        #expect(await b.passed()?.outcome == .declined(.other))
+        // An Imp of C's already visiting A from C can't come in again from B.
+        let visitor = testImp(2)
+        try await throwImp(visitor, from: c, to: a)
+        b.node.book.visits.arrive(visitor, entry: entry, from: c.id, home: c.node.card, ticket: LinkCrypto.mintTicket())
+        #expect(b.node.pass(visitor, entry: entry, to: a.id) != nil)
+        #expect(await b.passed()?.outcome == .declined(.other))
+        #expect(a.node.visits.visit(of: visitor.id)?.from == c.id)
+        // Only the holder brings an away Imp home.
+        let away = testImp(3)
+        try await throwImp(away, from: a, to: c)
+        b.node.book.visits.arrive(away, entry: entry, from: c.id, home: a.node.card, ticket: LinkCrypto.mintTicket())
+        #expect(b.node.pass(away, entry: entry, to: a.id) != nil)
+        #expect(await b.passed()?.outcome == .declined(.notLinked))
+        #expect(a.node.holder(of: away.id) == c.id)
+    }
+
+    @Test func theAppCanTellWhetherAThrowCanStillBeTaken() async throws {
+        let a = try Probe(1), b = try Probe(2)
+        await a.start(); await b.start()
+        defer { a.node.stop(); b.node.stop() }
+        try await link(a, b)
+        let transfer = try await throwImp(testImp(1), from: a, to: b, accepting: false)
+        #expect(b.node.canAccept(transfer))
+        #expect(!b.node.canAccept(UUID()))
+        b.node.decline(transfer, reason: .other)
+        #expect(!b.node.canAccept(transfer))
+        #expect(!b.node.accept(transfer))
+        let second = try await throwImp(testImp(2), from: a, to: b)
+        #expect(!b.node.canAccept(second))
+    }
+
+    @Test func trustIsPerLinkAndNeverForOthers() async throws {
+        let a = try Probe(1), b = try Probe(2)
+        await a.start(); await b.start()
+        defer { a.node.stop(); b.node.stop() }
+        #expect(!a.node.isTrusted(b.id))
+        a.node.setTrusted(b.id, true)   // not linked yet
+        #expect(!a.node.isTrusted(b.id))
+        try await link(a, b)
+        #expect(!a.node.isTrusted(b.id) && !a.node.links[0].trusted)
+        a.node.setTrusted(b.id, true)
+        #expect(a.node.isTrusted(b.id))
+        // It is kept, and a book from before trust existed reads as nobody trusted.
+        let again = try LinkNode(name: "x", kind: .mac, storage: a.storage)
+        #expect(again.isTrusted(b.id))
+        var json = try #require(JSONSerialization.jsonObject(with: JSONEncoder.link.encode(saved(a))) as? [String: Any])
+        json["passing"] = nil
+        json["links"] = (json["links"] as? [[String: Any]])?.map { var l = $0; l["trusted"] = nil; return l }
+        let old = try JSONDecoder.link.decode(LinkBook.self, from: JSONSerialization.data(withJSONObject: json))
+        #expect(old.links.count == 1 && !old.links[0].trusted && old.passing.isEmpty)
+        // Requests are as trusted as the device they come from; a question as its asker's home.
+        let imp = testImp(1)
+        #expect(a.node.isTrusted(.ask(imp: imp.id, text: "x"), from: b.id))
+        #expect(!a.node.isTrusted(.ask(imp: imp.id, text: "x"), from: UUID()))
+        let question = LinkMessage.message(id: UUID(), from: imp, to: UUID(), toHome: a.id, text: "?", forwarded: false)
+        #expect(!a.node.isTrusted(question, from: b.id))   // nobody said where the asker lives
+        b.node.setStage([LinkStaged(imp: imp, home: b.id)])
+        #expect(await until { a.node.stage(of: b.id).count == 1 })
+        #expect(a.node.isTrusted(question, from: b.id))
+        a.node.setTrusted(b.id, false)
+        #expect(!a.node.isTrusted(question, from: b.id) && !a.node.isTrusted(.file(id: UUID(), imp: imp.id, ref: "x"), from: b.id))
+    }
+
+    @Test func aTakenImpWeCalledHomeMeanwhileIsToldGone() async throws {
+        let a = try Probe(1), b = try Probe(2)
+        await a.start(); await b.start()
+        defer { a.node.stop(); b.node.stop() }
+        try await link(a, b)
+        let imp = testImp(1)
+        let transfer = try await throwImp(imp, from: a, to: b, accepting: false)
+        #expect(a.node.callHome(imp.id) == b.id)
+        #expect(b.node.accept(transfer))
+        #expect(await a.passed()?.outcome == .declined(.other))
+        #expect(await until { b.node.visits.visits.isEmpty })
+        #expect(a.node.holder(of: imp.id) == nil)
+    }
+
+    @Test func aLateTookForAnImpOfOursIsToldGone() async throws {
+        let a = try Probe(1) { $0.transferTimeout = 0.2 }, b = try Probe(2)
+        await a.start(); await b.start()
+        defer { a.node.stop(); b.node.stop() }
+        try await link(a, b)
+        let imp = testImp(1)
+        let transfer = try await throwImp(imp, from: a, to: b, accepting: false)
+        #expect(await a.passed()?.outcome == .declined(.timeout))
+        // B only decides afterwards. Its `took` is late: A has called the Imp home.
+        #expect(b.node.accept(transfer))
+        #expect(await until { b.node.visits.visits.isEmpty })
+        #expect(a.node.holder(of: imp.id) == nil)
+    }
+
+    @Test func throwsNobodyAnsweredAreCalledHomeAfterARestart() async throws {
+        let imp = testImp(1), to = linkDevice(2).id
+        var book = LinkBook(device: linkDevice(1).id, seed: linkDevice(1).seed, door: LinkCrypto.randomKey())
+        _ = book.away.mint(imp.id, to: to)
+        book.passing = [LinkBook.Passing(transfer: UUID(), imp: imp.id, to: to)]
+        let a = try Probe(1, storage: LinkMemoryStorage(book))
+        #expect(a.node.away.isAway(imp.id))
+        await a.start()
+        defer { a.node.stop() }
+        #expect(!a.node.away.isAway(imp.id) && a.node.away.notices == [AwayLedger.Notice(device: to, imp: imp.id)])
+        #expect(try saved(a).passing.isEmpty)
+    }
+
+    @Test func aThrowOfOursIsInTheBookUntilItIsAnswered() async throws {
+        let a = try Probe(1), b = try Probe(2)
+        await a.start(); await b.start()
+        defer { a.node.stop(); b.node.stop() }
+        try await link(a, b)
+        let transfer = try await throwImp(testImp(1), from: a, to: b, accepting: false)
+        #expect(try saved(a).passing.map(\.transfer) == [transfer])
+        b.node.decline(transfer, reason: .other)
+        #expect(await a.passed()?.outcome == .declined(.other))
+        #expect(try saved(a).passing.isEmpty)
+    }
+
+    @Test func aDeviceThatForgetsUsEndsWhatForgettingWouldHave() async throws {
+        let a = try Probe(1), b = try Probe(2)
+        await a.start(); await b.start()
+        defer { a.node.stop(); b.node.stop() }
+        try await link(a, b)
+        let mine = testImp(1), theirs = testImp(2)
+        try await throwImp(mine, from: a, to: b)
+        try await throwImp(theirs, from: b, to: a)
+        #expect(await until { a.node.holder(of: mine.id) == b.id && b.node.holder(of: theirs.id) == a.id })
+        a.node.forget(b.id)
+        let event = await b.take { if case .forgotten = $0 { return true } else { return false } }
+        guard case .forgotten(let id, let result)? = event else { Issue.record("no forgotten event"); return }
+        // Our Imp it held is called home; its own was already told `gone` before the goodbye.
+        #expect(id == a.id && result.calledHome == [theirs.id])
+        #expect(b.node.visits.visits.isEmpty && !b.node.away.isAway(theirs.id) && b.node.links.isEmpty)
+    }
+
+    @Test func aConnectionThatSendsTooFastIsClosed() async throws {
+        let a = try Probe(1), b = try Probe(2) { $0.frameRate = 1; $0.frameBurst = 30 }
+        await a.start(); await b.start()
+        defer { a.node.stop(); b.node.stop() }
+        try await link(a, b)
+        for _ in 0..<200 { a.node.send(.ping, to: b.id) }
+        #expect(await b.take { if case .disconnected(let id) = $0 { return id == a.id } else { return false } } != nil)
+    }
+
+    @Test func aDeviceCannotLeaveMoreThanEightThrowsWaiting() async throws {
+        let a = try Probe(1), b = try Probe(2)
+        await a.start(); await b.start()
+        defer { a.node.stop(); b.node.stop() }
+        try await link(a, b)
+        let ids = (1...10).compactMap { a.node.pass(testImp($0), entry: entry, to: b.id) }
+        #expect(ids.count == 10)
+        #expect(await a.passed { $0.transfer == ids[8] }?.outcome == .declined(.full))
+        #expect(await a.passed { $0.transfer == ids[9] }?.outcome == .declined(.full))
+        #expect(ids.prefix(8).allSatisfy { b.node.canAccept($0) })
+        #expect(!b.node.canAccept(ids[8]))
     }
 }

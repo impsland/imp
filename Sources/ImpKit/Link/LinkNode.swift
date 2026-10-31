@@ -36,6 +36,9 @@ public final class LinkNode {
         public var joinTimeout: TimeInterval = 30
         /// How often timeouts are looked at.
         public var tick: TimeInterval = 0.5
+        /// How many frames a connection may send per second, and in one burst; more closes it.
+        public var frameRate: Double = 100
+        public var frameBurst: Double = 400
 
         public init() {}
     }
@@ -77,8 +80,9 @@ public final class LinkNode {
         case disconnected(UUID)
         /// A link was made (a device scanned our code, or we scanned its).
         case linked(LinkDevice)
-        /// The other side forgot us: the link is gone on this side too.
-        case forgotten(UUID)
+        /// The other side forgot us: the link is gone on this side too, our Imps it held are called home
+        /// and the Imps of its that visited us are sent home (the app removes those bodies).
+        case forgotten(UUID, Forgotten)
         /// A message the node didn't deal with itself, from a device allowed to send it. `stage`,
         /// `claim` and `release` arrive after the node updated its books.
         case message(LinkMessage, from: UUID)
@@ -210,6 +214,42 @@ public final class LinkNode {
     /// The bands of a side, for labelling, while an Imp is carried near it.
     public func bands(of imp: UUID, side: LinkSide) -> [LinkDoors.Band] {
         LinkDoors.bands(side: side, travel: travel(of: imp), connected: connectedPeers.map(\.id))
+    }
+
+    // MARK: Trust
+
+    /// Marks a linked device as one of the owner's own (or not). Visitors and unknown devices can't be.
+    public func setTrusted(_ device: UUID, _ on: Bool) {
+        guard let i = book.links.firstIndex(where: { $0.id == device }), book.links[i].trusted != on else { return }
+        book.links[i].trusted = on
+        commit()
+    }
+
+    /// Whether a device is linked and marked as one of the owner's own. Nobody else ever is.
+    public func isTrusted(_ device: UUID) -> Bool {
+        book.links.first { $0.id == device }?.trusted ?? false
+    }
+
+    /// Whether what `message` asks of this device comes from a trusted source, which is when its Imp
+    /// may use tools to answer. A request of a holder (`ask`, `file`…) is trusted if the holder is. A
+    /// question from an Imp is trusted if its home is this device (and `device` holds it) or a trusted
+    /// one, and `device` is that home or trusted too. Anything else is not.
+    public func isTrusted(_ message: LinkMessage, from device: UUID) -> Bool {
+        switch message {
+        case .ask, .stop, .newChat, .felt, .file, .talks:
+            return isTrusted(device)
+        case .message(_, let asker, _, _, _, _):
+            guard let home = askerHome(asker.id, via: device) else { return false }
+            if home == identity.id { return device == identity.id || book.away.holder(of: asker.id) == device }
+            return isTrusted(home) && (device == home || isTrusted(device))
+        default:
+            return false
+        }
+    }
+
+    /// The home of an Imp, as `device` (or this device) says it stages it.
+    private func askerHome(_ imp: UUID, via device: UUID) -> UUID? {
+        (ownStage + (stages[device] ?? [])).first { $0.id == imp }?.home
     }
 
     /// The device holding one of this device's Imps that is away.

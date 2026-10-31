@@ -93,7 +93,14 @@ edges always bounce.
 and, unless the receiver is the Imp's home, the Imp's home card (device id, name, kind, public key, door
 key, routes) and its ticket. The receiver answers `took`, or `declined` with a reason (full, playing a
 game, not linked) and the Imp bounces back. No answer in 10 seconds is a decline. A repeated transfer id is
-answered again, never taken twice.
+answered again, never taken twice. A receiver declines an Imp that is one of its own at home, one it
+already has a visit of from another device, and an Imp it is the home of unless the sender is its holder.
+A device has at most 8 throws from one sender waiting for its app (the rest are declined `full`), and a
+waiting throw is never forgotten to make room. A throw of an Imp of the thrower's own that no answer came
+for is called home (the receiver is told `gone`); it is remembered in the book, so after a restart the
+same happens to any that were in the air. A `took` that arrives after that: for one of the thrower's Imps
+it answers `gone`, for a visit that was passed on the body leaves (the receiver has it). The thrower
+remembers its last 256 timed-out throws for 10 minutes for this.
 
 **Coming home.** An Imp passed to its home is home: its tickets die and it is free to leave by either side.
 
@@ -113,7 +120,9 @@ The home keeps, for every Imp that is away, its holder, a hash of its current ti
   soon as it can. The home is always the source of truth.
 
 The home answers `ask`, `stop`, `newChat`, `felt`, `file` and `talks` for an Imp only from its current
-holder, and sends that Imp's looks, chat, work, mood, speech, animations and files only to it.
+holder, and sends that Imp's looks, chat, work, mood, speech, animations and files only to it. From anyone
+else it answers `gone` for the Imp (and `fileFailed` for a `file`): it isn't theirs any more. Making a new
+ticket for an Imp whose holder is another device tells that device `gone`.
 
 ## Imps talking
 
@@ -122,6 +131,26 @@ Every device tells every connected device which Imps are on its screen (`stage`)
 `message` to the device that can answer: the target's home, or the holder of the asking Imp, which answers
 for its own Imps and forwards once to the target's home. The `answer` goes back the same way. Messages time
 out after 120 seconds and are at most 20 000 characters.
+
+The home of the target only lets an Imp ask if the asker is on the screen the target's body is on: the
+target is here and the asker is on this device's stage, or the target is away and the asker is on the
+holder's stage. A forwarded message must also come from a device whose stage has the asker, or which is
+the asker's home according to a stage we know. Anything else is answered as failed, and the app never
+hears of it. A question id already in flight is refused; one device may have 16 questions in flight
+through another (more are answered `busy`).
+
+## Trust
+
+A link may be marked **trusted**: one of the owner's own devices (`setTrusted`, off by default; visitors
+and unknown devices never are). The node only knows and tells (`isTrusted`, and `isTrusted(_:from:)` for a
+request or message); the apps decide what an Imp may do:
+
+- An Imp asked (`ask`) from a holder that isn't trusted, and an Imp asked by an Imp whose home is neither
+  this device nor a trusted one, answers without tools.
+- A holder that isn't trusted is only served files inside the Imp's own folder. For every holder a file is
+  only served if a reply of the Imp references it (a Markdown link or image destination, or a `src`/`href`
+  attribute) and it is the very same file once both are resolved (symlinks and `..` included), not a
+  mention in prose or a longer or shorter path.
 
 ## Moving in for good
 
@@ -132,8 +161,12 @@ shows the usual kit review first and answers `adopted` only once its user agreed
 
 Forgetting a device ends the link on this side (the other side hears `bye` if it's connected), calls this
 device's Imps home from it and sends its visiting Imps home. Forgetting everyone also makes a new door key,
-so every old code and link stops working.
+so every old code and link stops working. A device that hears it was forgotten (`bye`, or `linked: false`
+in the welcome) does the same on its side, and its app is told which Imps came home and which went home.
 
 ## Limits
 
-16 links, 24 visiting Imps, 32 connections, 4 MiB frames, 20 000-character texts, 120-second answers.
+16 links, 24 visiting Imps, 32 connections, 4 MiB frames, 20 000-character texts, 120-second answers. A
+connection may send 100 frames a second (a burst of 400); more closes it. A host splices at most 32
+guests at the Hop at once; its waiting connection has 10 seconds to get through the hello and gives up
+after the Hop's wait (5 minutes) and a minute.

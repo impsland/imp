@@ -31,9 +31,21 @@ final class Session: Hashable {
     var claiming: Set<UUID> = []
     var closeKind: LinkChannel.Close = .ended
     let outcome = Once<Outcome>()
+    /// Frames this connection may still send in a burst; it refills with time.
+    var tokens: Double
+    var refilled = Date()
 
-    init(channel: LinkChannel, target: DialTarget?, handshakeDeadline: Date) {
-        self.channel = channel; self.target = target; self.handshakeDeadline = handshakeDeadline
+    init(channel: LinkChannel, target: DialTarget?, handshakeDeadline: Date, burst: Double) {
+        self.channel = channel; self.target = target; self.handshakeDeadline = handshakeDeadline; tokens = burst
+    }
+
+    /// Takes a frame's token. False when the other side is sending faster than it may.
+    func admit(rate: Double, burst: Double, now: Date = Date()) -> Bool {
+        tokens = min(burst, tokens + now.timeIntervalSince(refilled) * rate)
+        refilled = now
+        guard tokens >= 1 else { return false }
+        tokens -= 1
+        return true
     }
 
     nonisolated static func == (a: Session, b: Session) -> Bool { a === b }
@@ -47,7 +59,8 @@ extension LinkNode {
     // MARK: Sessions
 
     func open(_ channel: LinkChannel, target: DialTarget?) -> Session {
-        let session = Session(channel: channel, target: target, handshakeDeadline: Date().addingTimeInterval(options.handshakeTimeout))
+        let session = Session(channel: channel, target: target, handshakeDeadline: Date().addingTimeInterval(options.handshakeTimeout),
+                          burst: options.frameBurst)
         sessions.insert(session)
         Task { @MainActor [weak self] in
             for await event in channel.events { self?.handle(event, on: session) }
@@ -63,6 +76,10 @@ extension LinkNode {
             s.binding = binding
             if let target = s.target { sendHello(s, to: target) }
         case .frame(let data):
+            guard s.admit(rate: options.frameRate, burst: options.frameBurst) else {
+                log.debug("closed a connection that sent too fast")
+                return retire(s)
+            }
             guard let message = LinkFrame.decode(LinkMessage.self, data), message.isSound else {
                 // Whatever we can't read is ignored, except in the handshake, where it can't be right.
                 if !s.established { retire(s) }
@@ -198,9 +215,7 @@ extension LinkNode {
                 if book.links[index].device.name != remote.name { book.links[index].device.name = remote.name; commit() }
             } else {
                 // It forgot us: so do we, but a visitor may still have business with it.
-                book.links.remove(at: index)
-                commit()
-                emit(.forgotten(target.id))
+                emit(.forgotten(target.id, dropped(target.id)))
             }
         } else if linked {
             // It thinks we are linked and we don't: say so, and it forgets us too.
@@ -296,8 +311,16 @@ extension LinkNode {
         let from = remote.id
         guard LinkAccess.allows(message, from: from, standing: standing, ledger: book.away, visits: book.visits) else {
             log.debug("dropped a message that \(from, privacy: .public) may not send")
-            if case .message(let id, _, _, _, _, _) = message {
-                s.channel.send(.answer(id: id, text: "That Imp can't be asked from there.", failed: true))
+            switch message {
+            case .message(let id, _, _, _, _, _):
+                s.channel.send(.answer(id: id, text: Self.unreachable, failed: true))
+            case .ask(let imp, _), .stop(let imp), .newChat(let imp), .felt(let imp, _), .talks(let imp):
+                // It isn't theirs any more: say so rather than leave them asking.
+                s.channel.send(.gone(imp: imp))
+            case .file(let id, let imp, _):
+                s.channel.send(.fileFailed(id: id, reason: "That file isn't available."))
+                s.channel.send(.gone(imp: imp))
+            default: break
             }
             return
         }
@@ -306,12 +329,15 @@ extension LinkNode {
         case .pong, .hello, .welcome: break
         case .bye(let reason):
             if reason == Self.forgottenReason, book.links.contains(where: { $0.id == from }) {
-                dropLink(from)
-                emit(.forgotten(from))
+                let result = dropped(from)
+                retire(s)
+                emit(.forgotten(from, result))
+            } else {
+                retire(s)
             }
-            retire(s)
         case .routes(let door, let routes):
-            if let i = book.links.firstIndex(where: { $0.id == from }) {
+            if let i = book.links.firstIndex(where: { $0.id == from }),
+               book.links[i].door != door || book.links[i].routes != routes {
                 book.links[i].door = door
                 book.links[i].routes = routes
                 commit()
@@ -402,9 +428,21 @@ extension LinkNode {
         guard let from = s.remote?.id else { return }
         switch LinkTalks.received(me: identity.id, targetHome: toHome, forwarded: forwarded, sender: from, connected: Set(connections.keys)) {
         case .answer:
+            // Only what is on the screen the target's body is on may ask it something.
+            let screen = book.away.holder(of: to).map { stages[$0] ?? [] } ?? ownStage
+            guard LinkTalks.mayAsk(asker: imp.id, screen: screen, forwarded: forwarded, sender: from,
+                                   senderStage: stages[from] ?? [], known: ownStage + stages.values.joined()) else {
+                log.debug("refused a question that \(from, privacy: .public) may not put")
+                return s.channel.send(.answer(id: id, text: Self.unreachable, failed: true))
+            }
             emit(.message(message, from: from))
         case .forward(let target):
-            talks.sent(id, from: from, to: target, timeout: options.answerTimeout)
+            guard talks.count(from: from) < LinkTalks.perSender else {
+                return s.channel.send(.answer(id: id, text: Self.busy, failed: true))
+            }
+            guard talks.sent(id, from: from, to: target, timeout: options.answerTimeout) else {
+                return s.channel.send(.answer(id: id, text: Self.unreachable, failed: true))
+            }
             let forward = LinkMessage.message(id: id, from: imp, to: to, toHome: toHome, text: text, forwarded: true)
             if !send(forward, to: target) {
                 _ = talks.answered(id, by: target)
@@ -425,6 +463,7 @@ extension LinkNode {
     }
 
     static let unreachable = "That Imp can't be reached right now."
+    static let busy = "Too many questions are waiting. Try again in a moment."
 
     /// A question that will never be answered: fail it the way an answer would arrive.
     func fail(_ question: LinkTalks.Pending.Question) {
