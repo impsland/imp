@@ -37,15 +37,15 @@ final class AppModel {
     @ObservationIgnored private weak var listener: ImpModel?
     @ObservationIgnored private(set) lazy var reactions = Reactions(app: self)
     @ObservationIgnored private(set) lazy var stage = Stage(app: self)
-    /// The iPhones Imps can be tossed onto.
-    @ObservationIgnored private(set) lazy var phone = PhoneLink(app: self)
+    /// The devices Imps can be thrown to (see `docs/LINK.md`).
+    @ObservationIgnored private(set) lazy var link = DeviceLink(app: self)
     /// Called after Imps appear or disappear, or hide or show. The panels follow.
     @ObservationIgnored var onTroupeChange: (() -> Void)?
     /// Flies an activated Imp's window to a screen point (back into the app's window), then calls back.
     @ObservationIgnored var flyHome: ((UUID, CGPoint, @escaping @MainActor () -> Void) -> Void)?
-    /// Throws an Imp's window off a side of the desktop (nil: the nearer one), then calls back.
-    @ObservationIgnored var flyOff: ((UUID, LinkSide?, @escaping @MainActor () -> Void) -> Void)?
-    /// An Imp back from a phone flies in from a side of the desktop.
+    /// Throws an Imp's window off the desktop towards a device, then calls back.
+    @ObservationIgnored var flyOff: ((UUID, UUID, @escaping @MainActor () -> Void) -> Void)?
+    /// An Imp back from another device flies in from a side of the desktop.
     @ObservationIgnored var flyIn: ((UUID, LinkEntry) -> Void)?
     @ObservationIgnored private var started = false
     /// Everything was just wiped (see `resetToFirstLaunch`): never save again in this run.
@@ -100,7 +100,7 @@ final class AppModel {
         BrowserBridge.shared.onPage = { [weak self] page in self?.fire(.page(url: page.url, title: page.title)) }
         BrowserBridge.shared.start()
         tellBrowser()
-        phone.start()
+        link.start()
         // "Imp starts" once everyone's on screen.
         Task { [weak self] in
             try? await Task.sleep(for: .seconds(2))
@@ -251,9 +251,9 @@ final class AppModel {
         var p = prefs
         if let origin { p.imps[i].origin = origin }
         p.imps[i].isActive = on
-        if !on, let device = p.imps[i].awayOn {
+        if !on, p.imps[i].awayOn != nil {
             p.imps[i].awayOn = nil
-            phone.left(id, from: device)
+            link.callHome(id)
         }
         prefs = p
         if on, let imp = imp(id) {
@@ -262,40 +262,87 @@ final class AppModel {
         }
     }
 
-    // MARK: iPhone
+    // MARK: Other devices
 
-    /// Whether this Imp is on an iPhone (out, but not on the desktop).
+    /// Whether this Imp is on another device (out, but not on the desktop).
     func isAway(_ id: UUID) -> Bool { profile(id)?.awayOn != nil }
 
-    /// Imps out on the desktop itself (not hiding on a phone): the ones that see each other.
+    /// Imps out on the desktop itself (not on another device): the ones that see each other.
     var desktopImps: [ImpModel] { imps.filter { !isAway($0.id) } }
 
-    /// Tosses an Imp onto the iPhone: it lands there coming in from `entry`. False when no phone is
-    /// around (then it stays). Its window is on its way off the desktop; `refreshTroupe` puts it away.
+    /// What a throw off the desktop needs to remember until the other device answers.
+    private struct Throw {
+        var imp: UUID
+        var side: LinkSide
+        var height: Double
+    }
+
+    /// Throws that wait for an answer, by transfer. The Imp's window is on its way off the desktop,
+    /// but its body stays here until the other device takes it.
+    @ObservationIgnored private var throwing: [UUID: Throw] = [:]
+
+    /// Throws an Imp off `side` of the desktop towards `device`: it lands there coming in from the
+    /// other side. False when it can't go (the device isn't around any more). Its window is on its way
+    /// off the desktop; the answer decides whether it stays away (`passed`) or comes back.
     @discardableResult
-    func sendToPhone(_ id: UUID, entry: LinkEntry) -> Bool {
-        guard let i = prefs.imps.firstIndex(where: { $0.id == id }), prefs.imps[i].isActive,
-              prefs.imps[i].awayOn == nil, let device = phone.nearestPhone, phone.send(id, entry: entry) else { return false }
+    func send(_ id: UUID, to device: UUID, side: LinkSide, height: Double, speed: Double) -> Bool {
+        guard let profile = profile(id), profile.isActive, profile.awayOn == nil, !throwing.values.contains(where: { $0.imp == id }),
+              let transfer = link.pass(profile, entry: .after(exit: side, height: height, speed: speed), to: device) else { return false }
+        throwing[transfer] = Throw(imp: id, side: side, height: height)
         imp(id)?.stopWaitingForUser()                      // a text box can't follow it
-        prefs.imps[i].awayOn = device
         hiddenImps.remove(id)
-        phone.watch(id)
         return true
     }
 
-    /// From the menu: off the nearer side of the screen, onto the phone.
-    func sendToPhone(_ id: UUID) {
-        guard phone.nearestPhone != nil, !isAway(id) else { return }
+    /// From the menu: off the nearer side of the screen, gently, onto a device.
+    func send(_ id: UUID, to device: UUID) {
+        guard link.isConnected(device), !isAway(id) else { return }
         let fly = flyOff ?? { _, _, done in done() }
-        fly(id, nil) { [weak self] in self?.refreshTroupe() }
+        fly(id, device) { [weak self] in self?.refreshTroupe() }
     }
 
-    /// Back from the phone (thrown off it, or called back here): it flies onto the desktop.
-    func cameBack(_ id: UUID, entry: LinkEntry) {
-        guard let i = prefs.imps.firstIndex(where: { $0.id == id }), let device = prefs.imps[i].awayOn else { return }
+    /// A thrown Imp was taken (it stays away, held by that device) or sent back (it flies in again
+    /// and says why).
+    func passed(_ passed: LinkNode.Passed) {
+        guard passed.kind == .pass, let thrown = throwing.removeValue(forKey: passed.transfer) else { return }
+        switch passed.outcome {
+        case .took:
+            held(thrown.imp, by: passed.to)
+            refreshTroupe()
+        case .declined(let reason):
+            let text = DeviceLink.hint(reason, device: link.name(of: passed.to) ?? String(localized: "That device"))
+            arrive(thrown.imp, entry: LinkEntry(side: thrown.side, height: thrown.height, speed: 900))
+            Task { [weak self] in
+                try? await Task.sleep(for: .seconds(1.3))
+                self?.imp(thrown.imp)?.complain(text)
+            }
+        }
+    }
+
+    /// A device holds this Imp now: it is out, but not on the desktop.
+    func held(_ id: UUID, by device: UUID) {
+        guard let i = prefs.imps.firstIndex(where: { $0.id == id }), prefs.imps[i].awayOn != device else { return }
+        prefs.imps[i].awayOn = device
+        hiddenImps.remove(id)
+        link.watch(id)
+    }
+
+    /// At start, the link's ledger says where each Imp is: that is the truth, whatever was saved.
+    func reconcileAway(_ holders: [UUID: UUID]) {
+        var p = prefs
+        for i in p.imps.indices { p.imps[i].awayOn = holders[p.imps[i].id] }
+        if p != prefs { prefs = p }
+    }
+
+    /// Back from another device (thrown off it, or called back here): it flies onto the desktop
+    /// through `entry`, else through the side nearest its spot.
+    func cameHome(_ id: UUID, entry: LinkEntry? = nil) {
+        guard let i = prefs.imps.firstIndex(where: { $0.id == id }), prefs.imps[i].awayOn != nil else { return }
         prefs.imps[i].awayOn = nil
-        phone.left(id, from: device)
-        arrive(id, entry: entry)
+        link.forget(imp: id)
+        let screen = NSScreen.main?.frame ?? .zero
+        let x = prefs.imps[i].origin?.x ?? screen.maxX
+        arrive(id, entry: entry ?? LinkEntry(side: x < screen.midX ? .left : .right, height: 0.6, speed: 0))
     }
 
     /// An Imp comes onto the desktop through a side of the screen.
@@ -306,9 +353,10 @@ final class AppModel {
         if let imp = imp(id) { focus(imp) }
     }
 
-    /// A pocket Imp thrown off the phone moves in: a new Mac Imp with the id it had, its chats, its
-    /// service (found by address or added, and its key saved only if that service has none) and its
-    /// tool servers. It flies in from the side opposite the one it left by. Throws why it can't.
+    /// A pocket Imp that moves in for good (the user agreed in the kit review): a new Mac Imp with
+    /// the id it had, its chats, its service (found by address or added, and its key saved only if
+    /// that service has none) and its tool servers. It flies in from the side opposite the one it
+    /// left by. Throws why it can't.
     func adoptPocket(_ id: UUID, kit: String, secrets: LinkSecrets, entry: LinkEntry) throws {
         var p = prefs
         let adoption = try p.adopt(kit: kit, as: id, secrets: secrets)
@@ -326,11 +374,10 @@ final class AppModel {
         arrive(id, entry: entry)
     }
 
-    /// Calls an Imp back from its phone, in through the side of the screen nearest its spot.
+    /// Calls an Imp back from the device that holds it, in through the side of the screen nearest its spot.
     func callBack(_ id: UUID) {
-        let screen = NSScreen.main?.frame ?? .zero
-        let x = profile(id)?.origin?.x ?? screen.maxX
-        cameBack(id, entry: LinkEntry(side: x < screen.midX ? .left : .right, height: 0.6, speed: 0))
+        link.callHome(id)
+        cameHome(id)
     }
 
     /// The panels follow who's where.
@@ -372,7 +419,7 @@ final class AppModel {
     /// Removes an Imp for good (never the last one), with its shortcuts.
     func removeImp(_ id: UUID) {
         guard prefs.imps.count > 1 else { return }
-        if let device = profile(id)?.awayOn { phone.left(id, from: device) }
+        if isAway(id) { link.callHome(id) }
         var p = prefs
         p.imps.removeAll { $0.id == id }
         p.shortcuts.removeAll { $0.performer == id }

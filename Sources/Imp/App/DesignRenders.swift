@@ -198,7 +198,8 @@ enum IconRenderer {
                 .background(Color(nsColor: .windowBackgroundColor)))
         case "add-service": AnyView(AddServiceSheet(model: model) { _ in }.background(Color(nsColor: .windowBackgroundColor)))
         case "pair-phone":
-            AnyView(PairingSheet(model: model, preview: LinkPairing(mac: UUID(), name: "Mac", secret: LinkPairing.newSecret()))
+            AnyView(PairingSheet(model: model, preview: LinkInvite(device: LinkDevice(id: UUID(), name: "Mac", kind: .mac, key: Data(count: 32)),
+                                                           door: Data(count: 32), invite: Data(count: 32), routes: LinkRoutes(hosts: ["mac.local"])))
                 .background(Color(nsColor: .windowBackgroundColor)))
         case "add-tool": AnyView(ServerEditor(draft: MCPExamples.examples.first { !$0.isComplete }!.server,
                                                   isNew: true, hub: model.assistant.hub) { _ in }

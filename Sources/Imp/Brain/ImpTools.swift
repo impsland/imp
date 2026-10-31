@@ -43,16 +43,16 @@ final class OwnToolHost {
     /// The others it can talk to: out on the desktop, not itself.
     private var others: [ImpModel] { app?.imps.filter { $0.id != id } ?? [] }
 
-    /// Imps on the user's iPhones it can message too, by name (a name an Imp here has is theirs alone).
-    private var pocketImps: [(imp: LinkImp, phone: UUID)] {
+    /// Imps of other devices it can message too, by name: those on the screen its body is on (a name
+    /// an Imp here has is theirs alone).
+    private var remoteImps: [LinkStaged] {
         guard let app else { return [] }
-        let taken = Set(app.prefs.imps.map { $0.name.lowercased() })
-        var seen = taken
-        return app.phone.pocketImps.filter { seen.insert($0.imp.name.lowercased()).inserted }
+        var seen = Set(app.prefs.imps.map { $0.name.lowercased() })
+        return app.link.targets(of: id).filter { seen.insert($0.imp.name.lowercased()).inserted }
     }
 
     func specs() -> [ToolSpec] {
-        OwnTools.specs(groups, animations: playable.map(\.name), imps: others.map(\.profile.name), pocket: pocketImps.map(\.imp.name),
+        OwnTools.specs(groups, animations: playable.map(\.name), imps: others.map(\.profile.name), pocket: remoteImps.map(\.imp.name),
                        browser: BrowserBridge.shared.isConnected, talk: app?.prefs.impTalk ?? .own)
     }
 
@@ -389,10 +389,10 @@ final class OwnToolHost {
         let me = profile ?? .imp
         let sender = ChatTurn.Sender(id: me.id, name: me.name, hue: me.hue)
         guard let other = others.first(where: { $0.profile.name.caseInsensitiveCompare(to) == .orderedSame }) else {
-            guard let app, let pocket = pocketImps.first(where: { $0.imp.name.caseInsensitiveCompare(to) == .orderedSame }) else {
+            guard let app, let remote = remoteImps.first(where: { $0.imp.name.caseInsensitiveCompare(to) == .orderedSame }) else {
                 throw ToolArgumentError("\(to) isn't out on the desktop.")
             }
-            return "\(pocket.imp.name) says: \(try await app.phone.ask(pocket.imp, on: pocket.phone, from: me, text: text))"
+            return "\(remote.imp.name) says: \(try await app.link.talk(from: me, to: remote, text: text))"
         }
         let place = (app?.prefs.impTalk ?? .own).place(asked: args["chat"]?.string)
         let reply = try await other.answer(text, from: sender, in: place)

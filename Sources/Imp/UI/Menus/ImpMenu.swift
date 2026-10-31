@@ -59,13 +59,19 @@ final class ImpMenu: NSObject, NSMenuDelegate {
         menu.addItem(.separator())
         add(menu, String(localized: "Hide \(name)"), symbol: "eye.slash", action: #selector(hide))
             .toolTip = String(localized: "\(name) hides until you show it again from the menu bar (Show) or click it in the Imps' window. Its triggers rest meanwhile.")
-        if app.phone.isSetUp {
-            let phone = app.phone.nearestPhone.flatMap(app.phone.name(of:))
-            let item = add(menu, phone.map { String(localized: "Send \(name) to \($0)") } ?? String(localized: "Send \(name) to iPhone"),
-                           symbol: "iphone.gen3", action: #selector(sendToPhone))
-            item.toolTip = phone == nil ? String(localized: "Open Imp on your iPhone first (same network as this Mac).")
-                : String(localized: "\(name) flies off the screen onto your iPhone. Or throw it hard at the side of the screen.")
-            if phone == nil { item.action = nil }                  // greyed out until a phone is around
+        if app.link.isLinked {
+            let around = app.link.connectedPeers
+            for peer in around {
+                let item = add(menu, String(localized: "Send \(name) to \(peer.name)…"),
+                               symbol: peer.kind == .mac ? "desktopcomputer" : "iphone.gen3", action: #selector(sendToDevice(_:)))
+                item.representedObject = peer.id
+                item.toolTip = String(localized: "\(name) flies off the screen onto \(peer.name). Or throw it hard at the side of the screen.")
+            }
+            if around.isEmpty {
+                let item = add(menu, String(localized: "Send \(name) to Another Device…"), symbol: "iphone.gen3", action: #selector(sendToDevice(_:)))
+                item.toolTip = String(localized: "Open Imp on a linked device first (same network as this Mac, or the same server).")
+                item.action = nil                                  // greyed out until a device is around
+            }
         }
         add(menu, String(localized: "Send \(name) Home"), symbol: "house", action: #selector(sendHome))
             .toolTip = String(localized: "\(name) goes back into the Imps' window, and its triggers rest.")
@@ -129,7 +135,10 @@ final class ImpMenu: NSObject, NSMenuDelegate {
     @objc private func copyLast() { imp.copyBubble() }
     @objc private func openChat() { imp.openChat() }
     @objc private func hide() { app.setHidden(imp.id, true) }
-    @objc private func sendToPhone() { app.sendToPhone(imp.id) }
+    @objc private func sendToDevice(_ sender: NSMenuItem) {
+        guard let device = sender.representedObject as? UUID else { return }
+        app.send(imp.id, to: device)
+    }
     @objc private func setSize(_ sender: NSMenuItem) {
         guard let i = index, let scale = (sender.representedObject as? NSNumber)?.doubleValue else { return }
         app.prefs.imps[i].scale = scale

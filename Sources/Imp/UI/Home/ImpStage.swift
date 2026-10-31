@@ -255,9 +255,9 @@ struct ImpStage: View {
     @ViewBuilder private func impFigure(_ imp: ImpProfile, offset: Int) -> some View {
         let side = Panels.baseSize * imp.scale
         Group {
-            if imp.isActive, let phone = imp.awayOn {
-                // Out on an iPhone: a little phone with it inside. Click it to call it back.
-                AwayImp(hue: imp.hue, phone: model.phone.name(of: phone), connected: model.phone.connected[phone] != nil, still: offset != 0)
+            if imp.isActive, let device = imp.awayOn {
+                // Out on another device: a little phone with it inside. Click it to call it back.
+                AwayImp(hue: imp.hue, device: model.link.name(of: device), connected: model.link.isConnected(device), still: offset != 0)
                     .transition(.scale(scale: 0.6, anchor: .bottom).combined(with: .opacity))
                     .contentShape(Rectangle())
                     .onTapGesture { if offset == 0 { model.callBack(imp.id) } }
@@ -316,7 +316,7 @@ struct ImpStage: View {
         Button { toggleActive(imp.id) } label: { Label(Self.release(imp), systemImage: imp.isActive ? "house.fill" : "flame.fill") }
         Button { router.renaming = true } label: { Label("Rename", systemImage: "pencil") }
         if imp.isActive && imp.awayOn != nil {
-            Button { model.callBack(imp.id) } label: { Label("Call \(imp.name) Back from iPhone", systemImage: "iphone.and.arrow.forward") }
+            Button { model.callBack(imp.id) } label: { Label("Call \(imp.name) Back", systemImage: "iphone.and.arrow.forward") }
         } else if imp.isActive && model.isHiding(imp.id) {
             Button { withAnimation(.snappy(duration: 0.25)) { model.setHidden(imp.id, false) } } label: {
                 Label("Show \(imp.name)", systemImage: "eye")

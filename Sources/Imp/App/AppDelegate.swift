@@ -44,6 +44,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        model.link.stop()
         // Chats are written in the background: let the last saves and deletes land.
         ChatHistory.flush()
     }
