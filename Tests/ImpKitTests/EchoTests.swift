@@ -184,6 +184,23 @@ import Testing
         #expect(round.stop().isEmpty)
     }
 
+    /// A hitch that makes one frame very long still lights every rune, in order, and gives the turn once.
+    @Test func aLongFrameStillShowsTheWholeSequenceOnce() {
+        var round = started(seed: 9)
+        _ = repeatAll(&round)
+        _ = round.advance(3)
+        let events = round.advance(10)
+        let lit = events.compactMap { event -> Int? in
+            if case .light(let rune, _) = event { rune } else { nil }
+        }
+        let turns = events.filter { event -> Bool in
+            if case .yourTurn = event { true } else { false }
+        }
+        #expect(lit == round.sequence)
+        #expect(turns.count == 1)
+        #expect(round.phase == .repeating)
+    }
+
     @Test func runesFadeAfterTheyLight() {
         var round = started()
         _ = round.tap(round.sequence[0])

@@ -186,7 +186,7 @@ struct GameRound {
 
     /// No smoke hit so far.
     var isClean: Bool { smokeHits == 0 }
-    /// Nothing got away so far (and enough has been judged for it to count).
+    /// Nothing got away so far.
     var isUntouched: Bool { escaped == 0 }
 
     /// How hot the round has run: 0 at the start, 1 as the Blaze nears.
@@ -626,6 +626,7 @@ struct GameRound {
         let ringBonus = ringPays ? Self.ringBonus * doubled : 0
         score += waveBonus + ringBonus
         let at = onScreen(spot ?? CGPoint(x: field.midX, y: field.midY))
+        // One event per judgement, so a ring buzzes and animates once (not as a ring and a wave).
         if ringPays {
             rings += 1
             popups.append(Popup(text: String(localized: "Ring! +\(waveBonus + ringBonus)"), pos: at, kind: .ember, style: .cheer))
@@ -634,8 +635,8 @@ struct GameRound {
             let text = perfectStreak > 1 ? String(localized: "Perfect ×\(perfectStreak)! +\(waveBonus)")
                                          : String(localized: "Perfect wave! +\(waveBonus)")
             popups.append(Popup(text: text, pos: at, kind: .ember, style: .cheer))
+            events.append(.perfectWave(imp, streak: perfectStreak, points: waveBonus))
         }
-        events.append(.perfectWave(imp, streak: perfectStreak, points: waveBonus))
     }
 
     // MARK: Catching

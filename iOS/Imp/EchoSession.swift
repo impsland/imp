@@ -242,7 +242,6 @@ final class EchoSession {
         if isBest { UserDefaults.standard.set(score, forKey: Self.bestKey) }
         round.isRecord = isBest
         game.finished(best: isBest)
-        if round.completed { sound.cleared() }
         for (i, id) in stage.ids.enumerated() {
             let steps: [AnticStep]
             let delay = 0.1 * Double(i)

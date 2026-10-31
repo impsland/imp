@@ -2735,6 +2735,22 @@
         }
       }
     },
+    "Score %lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntos %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "得分 %lld"
+          }
+        }
+      }
+    },
     "Score %lld, lives %lld" : {
       "localizations" : {
         "es" : {

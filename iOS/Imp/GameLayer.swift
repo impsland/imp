@@ -152,6 +152,7 @@ private struct Scoreboard: View {
         .overlay(Capsule().strokeBorder(SparkArt.hot.opacity(0.55 * blaze), lineWidth: 1.5))
         .shadow(color: SparkArt.hot.opacity(0.6 * blaze), radius: 4 + 14 * blaze)
         .accessibilityElement(children: .ignore)
+        .accessibilityLabel(String(localized: "Score \(score)"))
     }
 
     private func badge(_ symbol: String, _ color: Color, kept: Bool) -> some View {
