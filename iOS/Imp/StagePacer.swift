@@ -59,7 +59,7 @@ extension StageEngine {
     /// Whether anything on the stage moves right now, or is about to.
     func isMoving(at date: Date) -> Bool {
         // A finished game's card alone is drawn at the calm pace.
-        if touch != nil || round.map({ !$0.isSettled }) == true || echo.map({ !$0.round.isOver }) == true { return true }
+        if touch != nil || round.map({ !$0.isSettled }) == true || echo.map({ !$0.round.isOver || !$0.sparks.isEmpty || !$0.popups.isEmpty }) == true { return true }
         return bodies.values.contains { b in
             b.phase != .free || b.enteringFrom != nil || b.vel != .zero || b.dizzyUntil > date
                 || b.performance.map { date.timeIntervalSince($0.started) < $0.duration } ?? false
