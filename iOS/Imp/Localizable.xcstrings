@@ -164,6 +164,38 @@
         }
       }
     },
+    "%@ is asleep" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ está dormido"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 睡着了"
+          }
+        }
+      }
+    },
+    "%@ is away. It wakes when %@ is back." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no está. Despierta cuando %@ vuelva."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 不在。%@ 回来后它就会醒来。"
+          }
+        }
+      }
+    },
     "%@ is busy thinking. Move it once it's done." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -245,6 +277,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 不是当初连接的那台设备。"
+          }
+        }
+      }
+    },
+    "%@ moves in on %@ for good, and its key goes with it. %@ asks you to look it over first." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ se muda a %@ para siempre y su llave se va con él. %@ te pide que lo revises antes."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 将永久搬到 %@，它的密钥也会一起带走。%@ 请你先过目。"
           }
         }
       }
@@ -352,6 +400,22 @@
         }
       }
     },
+    "%lld devices" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld dispositivos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 台设备"
+          }
+        }
+      }
+    },
     "%lld in a row" : {
       "localizations" : {
         "es" : {
@@ -396,75 +460,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 次"
-          }
-        }
-      }
-    },
-    "**Scan** it with the other" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "**Scan** it with the other"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "**Escanéalo** con el otro"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用另一台设备**扫描**"
-          }
-        }
-      }
-    },
-    "**Show** a code on one device" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "**Show** a code on one device"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "**Muestra** un código en un dispositivo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在一台设备上**显示**二维码"
-          }
-        }
-      }
-    },
-    "**Throw** an Imp off the side of a screen" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "**Throw** an Imp off the side of a screen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "**Lanza** un Imp por el borde de una pantalla"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "从屏幕边缘**扔出**一个 Imp"
           }
         }
       }
@@ -636,25 +631,18 @@
         }
       }
     },
-    "another device" : {
-      "extractionState" : "manual",
+    "Another device scans it" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "another device"
-          }
-        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "otro dispositivo"
+            "value" : "Otro dispositivo lo escanea"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "另一台设备"
+            "value" : "由另一台设备扫描"
           }
         }
       }
@@ -762,6 +750,22 @@
         }
       }
     },
+    "Asleep" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dormido"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "睡着了"
+          }
+        }
+      }
+    },
     "Authorization header (optional)" : {
       "localizations" : {
         "es" : {
@@ -797,6 +801,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "外出"
+          }
+        }
+      }
+    },
+    "Back to %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De vuelta a %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回到 %@"
           }
         }
       }
@@ -932,6 +952,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "召 %@ 回家"
+          }
+        }
+      }
+    },
+    "Call Home" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llamar a casa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "召回"
           }
         }
       }
@@ -1174,6 +1210,38 @@
         }
       }
     },
+    "Connected" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已连接"
+          }
+        }
+      }
+    },
+    "Connected through the server" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectado mediante el servidor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过服务器连接"
+          }
+        }
+      }
+    },
     "Connected to %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1193,29 +1261,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已连接到 %@"
-          }
-        }
-      }
-    },
-    "Connected to %lld devices" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connected to %lld devices"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conectado a %lld dispositivos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已连接 %lld 台设备"
           }
         }
       }
@@ -1358,6 +1403,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除 Imp"
+          }
+        }
+      }
+    },
+    "Devices" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispositivos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设备"
           }
         }
       }
@@ -1538,29 +1599,6 @@
         }
       }
     },
-    "Forget" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forget"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Olvidar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "忘记"
-          }
-        }
-      }
-    },
     "Forget %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1603,6 +1641,150 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "忘记 %@？"
+          }
+        }
+      }
+    },
+    "Forget Everyone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Olvidar a todos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记所有设备"
+          }
+        }
+      }
+    },
+    "Forget Everyone…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Olvidar a todos…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记所有设备…"
+          }
+        }
+      }
+    },
+    "Forget every device?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Olvidar todos los dispositivos?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记所有设备？"
+          }
+        }
+      }
+    },
+    "Forget…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Olvidar…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记…"
+          }
+        }
+      }
+    },
+    "Forgot %@." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ olvidado."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已忘记 %@。"
+          }
+        }
+      }
+    },
+    "Forgot %@. The Imps went home." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ olvidado. Los Imps volvieron a casa."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已忘记 %@。小鬼们都回家了。"
+          }
+        }
+      }
+    },
+    "Forgot everyone." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos olvidados."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已忘记所有设备。"
+          }
+        }
+      }
+    },
+    "Forgot everyone. The Imps went home." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos olvidados. Los Imps volvieron a casa."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已忘记所有设备。小鬼们都回家了。"
+          }
+        }
+      }
+    },
+    "From Imp on another device" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desde Imp en otro dispositivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "来自另一台设备上的 Imp"
           }
         }
       }
@@ -1699,6 +1881,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "孵化一个 Imp"
+          }
+        }
+      }
+    },
+    "Hatch an Imp here, or link another device with a code and throw Imps between them." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cría un Imp aquí, o vincula otro dispositivo con un código y lanza Imps de uno a otro."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在这里孵化一个 Imp，或用代码关联另一台设备，在它们之间互相抛 Imp。"
           }
         }
       }
@@ -1859,48 +2057,34 @@
         }
       }
     },
-    "Imps of this iPhone it holds come home, and its Imps visiting here go home. You can link again any time." : {
-      "extractionState" : "manual",
+    "Imps of this iPhone on other devices come home, and every Imp visiting here goes home. Codes shown before stop working; link again with a new one." : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imps of this iPhone it holds come home, and its Imps visiting here go home. You can link again any time."
-          }
-        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los Imps de este iPhone que tiene vuelven a casa, y sus Imps que visitan aquí regresan. Puedes vincular de nuevo cuando quieras."
+            "value" : "Los Imps de este iPhone que estén en otros dispositivos vuelven a casa, y todos los Imps que visitan este iPhone regresan a la suya. Los códigos mostrados antes dejan de funcionar; vuelve a vincular con uno nuevo."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "它手上属于这台 iPhone 的 Imp 会回家，来这里做客的 Imp 也会回去。你随时可以重新连接。"
+            "value" : "此 iPhone 上位于其他设备的 Imp 会回家，来此做客的 Imp 也都会回到各自的家。之前显示过的代码将失效；请用新代码重新关联。"
           }
         }
       }
     },
-    "Imps you throw from your other devices land here. Drag them, chat with them, throw them back." : {
-      "extractionState" : "manual",
+    "Imps of this iPhone that %@ holds come home. Its Imps visiting here go home to it. To link again, one of you shows a new code." : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imps you throw from your other devices land here. Drag them, chat with them, throw them back."
-          }
-        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los Imps que lances desde tus otros dispositivos aterrizan aquí. Arrástralos, charla con ellos, devuélvelos."
+            "value" : "Los Imps de este iPhone que tiene %@ vuelven a casa. Sus Imps que visitan este iPhone vuelven con él. Para vincular de nuevo, uno de los dos muestra un código nuevo."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你从其他设备扔来的 Imp 会落在这里。拖动它们、和它们聊天，再把它们扔回去。"
+            "value" : "%@ 持有的此 iPhone 的 Imp 会回家。它来此做客的 Imp 会回到它那里。要再次关联，请其中一方显示新代码。"
           }
         }
       }
@@ -1956,29 +2140,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "它的聊天和密钥都会被清除，此操作无法撤销。"
-          }
-        }
-      }
-    },
-    "its home" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "its home"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "su casa"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "它的家"
           }
         }
       }
@@ -2114,29 +2275,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "性格留空即使用友好的默认设定。"
-          }
-        }
-      }
-    },
-    "Link a Device" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Link a Device"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vincular un dispositivo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "连接设备"
           }
         }
       }
@@ -2281,25 +2419,18 @@
         }
       }
     },
-    "Looking for your devices…" : {
-      "extractionState" : "manual",
+    "Make one right here" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Looking for your devices…"
-          }
-        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buscando tus dispositivos…"
+            "value" : "Crea uno aquí mismo"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在寻找你的设备…"
+            "value" : "就在这里造一个"
           }
         }
       }
@@ -2400,25 +2531,50 @@
         }
       }
     },
-    "Move to %@" : {
-      "extractionState" : "manual",
+    "Move" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Move to %@"
-          }
-        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mover a %@"
+            "value" : "Mover"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "移到 %@"
+            "value" : "移动"
+          }
+        }
+      }
+    },
+    "Move %@ to %@?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Mover %@ a %@?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把 %@ 移到 %@？"
+          }
+        }
+      }
+    },
+    "Move to %@…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mover a %@…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移到 %@…"
           }
         }
       }
@@ -2602,6 +2758,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "还没有对话"
+          }
+        }
+      }
+    },
+    "Nobody here" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nadie aquí"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这里没有人"
+          }
+        }
+      }
+    },
+    "Nobody is linked yet. Show your code to another device, or scan theirs, and Imps can travel between you." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía no hay nadie vinculado. Muestra tu código a otro dispositivo, o escanea el suyo, y los Imps podrán viajar entre ustedes."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有关联任何设备。向另一台设备出示你的代码，或扫描对方的代码，Imp 就能在你们之间往来。"
           }
         }
       }
@@ -2805,6 +2993,22 @@
         }
       }
     },
+    "Opens your devices" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre tus dispositivos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开你的设备"
+          }
+        }
+      }
+    },
     "Optional" : {
       "localizations" : {
         "es" : {
@@ -2837,18 +3041,18 @@
         }
       }
     },
-    "Or hatch an Imp on this iPhone" : {
+    "Other devices see this iPhone as" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O incuba un Imp en este iPhone"
+            "value" : "Los demás dispositivos ven este iPhone como"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "或者在这部 iPhone 上孵化一个 Imp"
+            "value" : "其他设备看到的此 iPhone 名称"
           }
         }
       }
@@ -3068,18 +3272,18 @@
         }
       }
     },
-    "Put your Mac's name in place of your-mac.local (System Settings › General › Sharing), or its Wi-Fi address. Or pair your Mac and pick the preset again." : {
+    "Put your Mac's name in place of your-mac.local (System Settings › General › Sharing), or its Wi-Fi address. Or link your Mac and pick the preset again." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pon el nombre de tu Mac en lugar de your-mac.local (Ajustes del Sistema › General › Compartir), o su dirección Wi-Fi. O enlaza tu Mac y vuelve a elegir el ajuste."
+            "value" : "Pon el nombre de tu Mac en lugar de your-mac.local (Ajustes del Sistema › General › Compartir), o su dirección Wi-Fi. O vincula tu Mac y elige el ajuste de nuevo."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把 your-mac.local 换成你的 Mac 的名称（系统设置 › 通用 › 共享）或它的 Wi-Fi 地址。也可以先配对 Mac，再重新选择预设。"
+            "value" : "把 your-mac.local 换成你的 Mac 的名称（系统设置 › 通用 › 共享），或它的 Wi-Fi 地址。或者关联你的 Mac 后重新选择预设。"
           }
         }
       }
@@ -3274,25 +3478,34 @@
         }
       }
     },
-    "Scan Code" : {
-      "extractionState" : "manual",
+    "Scan a Code" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scan Code"
-          }
-        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escanear código"
+            "value" : "Escanear un código"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "扫描二维码"
+            "value" : "扫描代码"
+          }
+        }
+      }
+    },
+    "Scan a code" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escanear un código"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "扫描代码"
           }
         }
       }
@@ -3444,6 +3657,22 @@
         }
       }
     },
+    "Server" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器"
+          }
+        }
+      }
+    },
     "Share" : {
       "localizations" : {
         "es" : {
@@ -3499,15 +3728,8 @@
         }
       }
     },
-    "Show My Code" : {
-      "extractionState" : "manual",
+    "Show my code" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show My Code"
-          }
-        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3517,7 +3739,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示我的二维码"
+            "value" : "显示我的代码"
           }
         }
       }
@@ -3737,6 +3959,22 @@
         }
       }
     },
+    "That Imp isn't on this iPhone." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese Imp no está en este iPhone."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那个 Imp 不在这部 iPhone 上。"
+          }
+        }
+      }
+    },
     "That code has run out. Ask for a new one." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3852,22 +4090,6 @@
         }
       }
     },
-    "That Imp isn't on this iPhone." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ese Imp no está en este iPhone."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "那个 Imp 不在这部 iPhone 上。"
-          }
-        }
-      }
-    },
     "That is this iPhone's own code." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3910,6 +4132,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这不是 Imp 的链接。"
+          }
+        }
+      }
+    },
+    "That isn't a server address. Use a host name such as imp.example.org." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eso no es una dirección de servidor. Usa un nombre de host como imp.example.org."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这不是服务器地址。请使用类似 imp.example.org 的主机名。"
           }
         }
       }
@@ -3999,6 +4237,22 @@
         }
       }
     },
+    "This Imp has gone home" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este Imp se ha ido a casa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个 Imp 已经回家了"
+          }
+        }
+      }
+    },
     "This chat leaves your phone, but %@ keeps it. %@ starts fresh." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4045,25 +4299,18 @@
         }
       }
     },
-    "This Imp is back on your Mac" : {
-      "extractionState" : "manual",
+    "This iPhone is called" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This Imp is back on your Mac"
-          }
-        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Este Imp ha vuelto a tu Mac"
+            "value" : "Este iPhone se llama"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这个 Imp 已回到你的 Mac"
+            "value" : "此 iPhone 的名称"
           }
         }
       }
@@ -4407,6 +4654,22 @@
         }
       }
     },
+    "Visiting here: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De visita aquí: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在这里做客：%@"
+          }
+        }
+      }
+    },
     "Voice" : {
       "localizations" : {
         "es" : {
@@ -4503,6 +4766,38 @@
         }
       }
     },
+    "With %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 %@ 那里"
+          }
+        }
+      }
+    },
+    "With a server, your devices find each other from anywhere, not just on your Wi-Fi. The server only passes encrypted data along. It can't read anything." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con un servidor, tus dispositivos se encuentran desde cualquier lugar, no solo en tu Wi-Fi. El servidor solo transmite datos cifrados. No puede leer nada."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有了服务器，你的设备在任何地方都能互相找到，不只限于你的 Wi-Fi。服务器只负责转发加密数据，什么也读不到。"
+          }
+        }
+      }
+    },
     "Writing" : {
       "localizations" : {
         "es" : {
@@ -4567,52 +4862,6 @@
         }
       }
     },
-    "Your Mac isn't around" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your Mac isn't around"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tu Mac no está cerca"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你的 Mac 不在附近"
-          }
-        }
-      }
-    },
-    "Your Mac isn't around. Chats resume when it is." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your Mac isn't around. Chats resume when it is."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tu Mac no está cerca. Los chats continúan cuando vuelva."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你的 Mac 不在附近。它回来后聊天会继续。"
-          }
-        }
-      }
-    },
     "Your turn" : {
       "localizations" : {
         "es" : {
@@ -4625,6 +4874,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "轮到你"
+          }
+        }
+      }
+    },
+    "another device" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "another device"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "otro dispositivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "另一台设备"
+          }
+        }
+      }
+    },
+    "its home" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "its home"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "su casa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它的家"
           }
         }
       }

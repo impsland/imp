@@ -2,7 +2,7 @@ import CoreMotion
 import ImpKit
 import SwiftUI
 
-/// The Imp on the pairing screen, alive in your hand: tip the phone and it leans and slides that
+/// The Imp on the first screen, alive in your hand: tip the phone and it leans and slides that
 /// way and looks downhill, a sudden tilt startles it, a shake makes it dizzy, a tap makes it hop,
 /// and it watches your finger.
 struct TiltImp: View {

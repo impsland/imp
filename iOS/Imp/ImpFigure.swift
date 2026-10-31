@@ -62,7 +62,7 @@ extension Mood {
 }
 
 extension LinkImp {
-    /// The stand-in shown on the pairing screen.
+    /// The stand-in shown on the first screen.
     static let greeter = LinkImp(id: UUID(uuidString: "00000000-0000-4000-8000-0000000000A1")!, name: "Imp",
                                  hue: 0, scale: 1, traits: .plain)
 }

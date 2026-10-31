@@ -20,6 +20,7 @@
 		3C05A501D4D7A0017C6BBA17 /* ReplyBlocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D36860F51AAB868812CA05 /* ReplyBlocks.swift */; };
 		3DEB2BEE904FC2E55AD6181E /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7D2F37C84A4B750CDB3F71 /* Palette.swift */; };
 		3F9E73CF6E992866F6169F11 /* EmbersCoach.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425EA0CF393C2A5B4C8C8E79 /* EmbersCoach.swift */; };
+		41EBEB8EB9C33F028E03E6F8 /* DevicesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C698C25A550AFC9B832F1A6 /* DevicesSheet.swift */; };
 		4ABD8A5451824A83F23B28E9 /* PocketStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE7028C65676801485C56B3 /* PocketStore.swift */; };
 		5160526D57D45232F430B758 /* ImpRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E56E2B80612481500C8FE /* ImpRenderer.swift */; };
 		5291E2FE7332DD9EBAE3A954 /* PocketEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535920C67E324CBF24FF6E52 /* PocketEditor.swift */; };
@@ -48,6 +49,7 @@
 		E53ED1E407B5D3666EDB99F4 /* TiltImp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C4C921D3632C8A4B97CB80 /* TiltImp.swift */; };
 		E8BA8DE233B42D3C55E93B74 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86EC44471EB3D16C062A1ABF /* Geometry.swift */; };
 		E8F42E3DB6AFD272B99A32B1 /* Horn.swift in Sources */ = {isa = PBXBuildFile; fileRef = E850DCFCD50F8C2C190C14FC /* Horn.swift */; };
+		EA5E82369840514CDDF46CC5 /* DoorLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22CC9AAAE11FAD57BE03816E /* DoorLabels.swift */; };
 		ED518BB57886BAA35227B480 /* Energy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825ADE440948D012933C3A77 /* Energy.swift */; };
 		F14DF98DC306C127EAD0E386 /* StatusPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CDA1D6F43D1F4F6733CC21 /* StatusPill.swift */; };
 		F1D25052BB301E187AD667A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 496385172A5237326FD3A24B /* Assets.xcassets */; };
@@ -61,6 +63,7 @@
 		00E6EB59723598749562B958 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		01F56C1437E4CA7EF22A4E83 /* StagePacer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StagePacer.swift; sourceTree = "<group>"; };
 		06FA16062C38989EC0152F05 /* ImpFigure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpFigure.swift; sourceTree = "<group>"; };
+		0C698C25A550AFC9B832F1A6 /* DevicesSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesSheet.swift; sourceTree = "<group>"; };
 		0D2E54D6D3896160943BF9DC /* SoftLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftLight.swift; sourceTree = "<group>"; };
 		0DC695E7AE998FA6BF5BA85B /* ImpPhone.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ImpPhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		119D64EC1BB7DA6B29762583 /* IssueBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IssueBadge.swift; sourceTree = "<group>"; };
@@ -71,9 +74,11 @@
 		1CE7028C65676801485C56B3 /* PocketStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketStore.swift; sourceTree = "<group>"; };
 		1D6F4A4BEABAB147C1273508 /* Performance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Performance.swift; sourceTree = "<group>"; };
 		1ECB649C0FBB83036E8DEEF0 /* EchoLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoLayer.swift; sourceTree = "<group>"; };
+		22CC9AAAE11FAD57BE03816E /* DoorLabels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoorLabels.swift; sourceTree = "<group>"; };
 		260261CF11237CBD49ED5244 /* EchoFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoFeedback.swift; sourceTree = "<group>"; };
 		2A5E56E2B80612481500C8FE /* ImpRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpRenderer.swift; sourceTree = "<group>"; };
 		36040976E160D83A9ED7131E /* PhoneStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneStage.swift; sourceTree = "<group>"; };
+		370A79DE1D8628B408938EE3 /* .. */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ..; path = ..; sourceTree = SOURCE_ROOT; };
 		37A695264BBAD32A874A57EB /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		425EA0CF393C2A5B4C8C8E79 /* EmbersCoach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbersCoach.swift; sourceTree = "<group>"; };
 		496385172A5237326FD3A24B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -81,7 +86,6 @@
 		5A7D2F37C84A4B750CDB3F71 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		6406F33EC0C8528E9FA96CAA /* PairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingView.swift; sourceTree = "<group>"; };
 		6406F8E129883536DA4BD5F3 /* SpeechMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechMedia.swift; sourceTree = "<group>"; };
-		69D3BA1E1D62779FCC642D13 /* imp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = imp; path = ..; sourceTree = SOURCE_ROOT; };
 		6AC024C76203D641C929D0A5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		8151B96260694FD93D8F45E8 /* GameRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRound.swift; sourceTree = "<group>"; };
 		825ADE440948D012933C3A77 /* Energy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Energy.swift; sourceTree = "<group>"; };
@@ -123,7 +127,7 @@
 		0896923E2770E96595D122C0 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				69D3BA1E1D62779FCC642D13 /* imp */,
+				370A79DE1D8628B408938EE3 /* .. */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -135,6 +139,8 @@
 				0004317A91411D2ECE455BA7 /* BubbleSizes.swift */,
 				19446029336D379F770CD86B /* ChatSheet.swift */,
 				C694EC257AF0DCC56DCBE571 /* ChatSource.swift */,
+				0C698C25A550AFC9B832F1A6 /* DevicesSheet.swift */,
+				22CC9AAAE11FAD57BE03816E /* DoorLabels.swift */,
 				A29BD2E76FF01C7C44A08B73 /* EchoCoach.swift */,
 				260261CF11237CBD49ED5244 /* EchoFeedback.swift */,
 				1ECB649C0FBB83036E8DEEF0 /* EchoLayer.swift */,
@@ -266,7 +272,7 @@
 			mainGroup = B5CDA9C1053B2C41F684A3C8;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				E3F6BEEFAAF8DAB54323AC36 /* XCLocalSwiftPackageReference ".." */,
+				A2F2A8D08D663E1CB6BEC2B8 /* XCLocalSwiftPackageReference "../Sources/.." */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A6AFC50D01AF18744D03FEBA /* Products */;
@@ -300,6 +306,8 @@
 				034344F3DCE4CAA7C0BDB830 /* BubbleSizes.swift in Sources */,
 				B3DDDC12FE1679378FCB5BDD /* ChatSheet.swift in Sources */,
 				619257764618CB4FC702F0B1 /* ChatSource.swift in Sources */,
+				41EBEB8EB9C33F028E03E6F8 /* DevicesSheet.swift in Sources */,
+				EA5E82369840514CDDF46CC5 /* DoorLabels.swift in Sources */,
 				D231E46FA5F1E2EB08A97EF3 /* EchoCoach.swift in Sources */,
 				0D11DCAC05BEBE9162AA69E4 /* EchoFeedback.swift in Sources */,
 				2BD7F069A2A074BC7B861920 /* EchoLayer.swift in Sources */,
@@ -538,9 +546,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		E3F6BEEFAAF8DAB54323AC36 /* XCLocalSwiftPackageReference ".." */ = {
+		A2F2A8D08D663E1CB6BEC2B8 /* XCLocalSwiftPackageReference "../Sources/.." */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ..;
+			relativePath = ../Sources/..;
 		};
 /* End XCLocalSwiftPackageReference section */
 

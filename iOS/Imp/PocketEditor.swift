@@ -266,8 +266,8 @@ struct PocketEditor: View {
     private var matched: ServicePreset? { ServicePreset.matching(address) }
 
     /// A service on your Mac is reached by the Mac's name on your network (`.local`, which follows
-    /// the Mac when its Wi-Fi address changes), else its address, both from the pairing. Without a
-    /// pairing there's a name to replace.
+    /// the Mac when its Wi-Fi address changes), else its address, both from the link. Without a
+    /// linked Mac there's a name to replace.
     private func choose(_ preset: ServicePreset) {
         withAnimation(.snappy) {
             address = preset.isLocal ? preset.baseURL(onHost: pocket.macHost ?? Self.yourMac) : preset.baseURL
@@ -397,7 +397,7 @@ struct PocketEditor: View {
     private var addressProblem: String? {
         if address.trimmed.isEmpty { return hasBrain ? String(localized: "Add the service's address.") : nil }
         if Self.host(address) == Self.yourMac {
-            return String(localized: "Put your Mac's name in place of your-mac.local (System Settings › General › Sharing), or its Wi-Fi address. Or pair your Mac and pick the preset again.")
+            return String(localized: "Put your Mac's name in place of your-mac.local (System Settings › General › Sharing), or its Wi-Fi address. Or link your Mac and pick the preset again.")
         }
         if let host = Self.host(address), host == "localhost" || host == "127.0.0.1" {
             return String(localized: "On your iPhone, use your Mac's name or address instead of localhost.")

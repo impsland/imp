@@ -4,11 +4,11 @@ import SwiftUI
 import UIKit
 import VisionKit
 
-/// First run: how to bring your first Imp over, and how to link another device.
+/// First run, with nothing linked and no Imp yet: the live Imp and three ways to begin.
 struct PairingView: View {
     let hub: LinkHub
-    /// Starts hatching an Imp on this iPhone, for those who don't have a Mac at hand.
-    var hatch: (() -> Void)?
+    /// Starts hatching an Imp on this iPhone, for those who don't have another device at hand.
+    var hatch: () -> Void
     @State private var scanning = false
     @State private var showingCode = false
     @State private var problem: String?
@@ -25,127 +25,124 @@ struct PairingView: View {
             Text("Imp for iPhone")
                 .font(.system(size: 32, weight: .bold, design: .rounded))
                 .foregroundStyle(Dungeon.cream)
-            Text("Imps you throw from your other devices land here. Drag them, chat with them, throw them back.")
+            Text("Hatch an Imp here, or link another device with a code and throw Imps between them.")
                 .font(.system(.callout, design: .rounded))
                 .foregroundStyle(Dungeon.muted)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 36).padding(.top, 6)
 
-            VStack(alignment: .leading, spacing: 0) {
-                step(1, icon: "qrcode", "**Show** a code on one device")
-                connector
-                step(2, icon: "qrcode.viewfinder", "**Scan** it with the other")
-                connector
-                step(3, icon: "hand.draw.fill", "**Throw** an Imp off the side of a screen")
+            VStack(spacing: 10) {
+                choice("Show my code", detail: "Another device scans it", icon: "qrcode") { showingCode = true }
+                if scannerAvailable {
+                    choice("Scan a code", detail: "From Imp on another device", icon: "qrcode.viewfinder") { problem = nil; scanning = true }
+                }
+                choice("Hatch an Imp", detail: "Make one right here", icon: "sparkles", action: hatch)
             }
-            .padding(.horizontal, 16).padding(.vertical, 14)
-            .card()
-            .padding(.horizontal, 20).padding(.top, 22)
+            .padding(.horizontal, 24).padding(.top, 24)
 
-            if let problem {
-                // Just caused (a bad scan or paste): its words open at once, then fold into the icon.
-                IssueBadge(text: problem, opensAtOnce: true)
-                    .padding(.top, 10)
+            HStack(spacing: 6) {
+                if let problem { IssueBadge(text: problem, opensAtOnce: true) }
+                Button { problem = LinkClipboard.join(hub) } label: { Label("Paste Link", systemImage: "doc.on.clipboard") }
+                    .font(.system(.subheadline, design: .rounded, weight: .medium))
+                    .foregroundStyle(Dungeon.muted)
             }
+            .padding(.top, 14)
             Spacer(minLength: 16)
 
-            VStack(spacing: 10) {
-                Button { showingCode = true } label: { Label("Show My Code", systemImage: "qrcode") }
-                    .buttonStyle(EmberButtonStyle(filled: false))
-                if scannerAvailable {
-                    Button { problem = nil; scanning = true } label: { Label("Scan Code", systemImage: "qrcode.viewfinder") }
-                        .buttonStyle(EmberButtonStyle())
-                }
-                Button { pasteLink() } label: { Label("Paste Link", systemImage: "doc.on.clipboard") }
-                    .buttonStyle(EmberButtonStyle(filled: !scannerAvailable))
-                if let hatch {
-                    Button("Or hatch an Imp on this iPhone", action: hatch)
-                        .font(.system(.subheadline, design: .rounded, weight: .medium))
-                        .foregroundStyle(Dungeon.muted)
-                        .padding(.top, 8)
-                }
+            VStack(spacing: 6) {
+                Text("Other devices see this iPhone as")
+                    .font(.system(.footnote, design: .rounded))
+                    .foregroundStyle(Dungeon.muted)
+                NameField(hub: hub)
             }
-            .padding(.horizontal, 28).padding(.bottom, 24)
+            .padding(.horizontal, 40).padding(.bottom, 24)
         }
         .animation(.easeInOut, value: problem)
         .sheet(isPresented: $showingCode) { InviteSheet(hub: hub) }
-        .fullScreenCover(isPresented: $scanning) {
-            ScannerScreen { code in
-                scanning = false
-                if !hub.join(code: code) { problem = String(localized: "That code isn't from Imp.") }
-            } cancel: { scanning = false }
-        }
+        .fullScreenCover(isPresented: $scanning) { LinkScanner(hub: hub, problem: $problem, scanning: $scanning) }
     }
 
-    /// One step, on one line: an icon (numbered) and a short phrase, the key word in bold.
-    private func step(_ n: Int, icon: String, _ text: LocalizedStringKey) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(Dungeon.flame)
-                .frame(width: 36, height: 36)
-                .background(Dungeon.ember.opacity(0.16), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-                .overlay(alignment: .topTrailing) {
-                    Text(verbatim: "\(n)")
-                        .font(.system(size: 10, weight: .heavy, design: .rounded))
-                        .foregroundStyle(Dungeon.deep)
-                        .frame(width: 16, height: 16)
-                        .background(Circle().fill(Dungeon.flame))
-                        .offset(x: 5, y: -5)
+    /// One way to begin: an icon, what it does and a line on what happens.
+    private func choice(_ title: LocalizedStringKey, detail: LocalizedStringKey, icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(Dungeon.flame)
+                    .frame(width: 42, height: 42)
+                    .background(Dungeon.ember.opacity(0.16), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(title).font(.system(.body, design: .rounded, weight: .semibold))
+                    Text(detail).font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
                 }
-            Text(text)
-                .font(.system(.subheadline, design: .rounded))
-                .foregroundStyle(Dungeon.cream)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-            Spacer(minLength: 0)
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").font(.system(size: 12, weight: .bold)).foregroundStyle(Dungeon.muted)
+            }
+            .foregroundStyle(Dungeon.cream)
+            .padding(.horizontal, 14).padding(.vertical, 10)
+            .card()
         }
-        .accessibilityElement(children: .combine)
-    }
-
-    /// A faint dotted line from one step's icon to the next.
-    private var connector: some View {
-        Rectangle()
-            .fill(Dungeon.ember.opacity(0.35))
-            .frame(width: 1.5, height: 10)
-            .mask(VStack(spacing: 2) { ForEach(0..<3, id: \.self) { _ in Capsule().frame(height: 2.5) } })
-            .padding(.leading, 17.25)
-            .padding(.vertical, 3)
-            .accessibilityHidden(true)
-    }
-
-    private func pasteLink() {
-        guard let string = UIPasteboard.general.string, !string.isEmpty else {
-            problem = String(localized: "Copy the link from the other device first, then paste it here.")
-            return
-        }
-        if hub.join(code: string) {
-            problem = nil
-        } else {
-            problem = String(localized: "The clipboard doesn't hold a link from Imp.")
-        }
+        .buttonStyle(.plain)
     }
 }
 
-// MARK: - Showing
+// MARK: - Pieces shared with the Devices sheet
 
-/// This iPhone's invite, as a code another device scans (or a link it opens). A code works for 15
-/// minutes after it was last on screen.
-private struct InviteSheet: View {
+/// The name other devices see for this iPhone, edited in place.
+struct NameField: View {
+    let hub: LinkHub
+    @State private var text = ""
+    @FocusState private var focused: Bool
+
+    var body: some View {
+        TextField("Name", text: $text)
+            .focused($focused)
+            .submitLabel(.done)
+            .multilineTextAlignment(.center)
+            .font(.system(.body, design: .rounded, weight: .semibold))
+            .foregroundStyle(Dungeon.cream)
+            .padding(.horizontal, 14).padding(.vertical, 10)
+            .background(Dungeon.card, in: Capsule())
+            .overlay(Capsule().strokeBorder(focused ? Dungeon.ember.opacity(0.6) : Dungeon.cardEdge))
+            .onAppear { text = hub.name }
+            .onSubmit(commit)
+            .onChange(of: focused) { _, now in if !now { commit() } }
+    }
+
+    /// Keeps the new name, or the old one if the field was emptied.
+    private func commit() {
+        let new = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !new.isEmpty, new != hub.name { hub.rename(new) }
+        text = hub.name
+    }
+}
+
+/// Links with the code on the clipboard.
+@MainActor
+enum LinkClipboard {
+    /// Joins from the clipboard; what went wrong, if anything.
+    static func join(_ hub: LinkHub) -> String? {
+        guard let string = UIPasteboard.general.string, !string.isEmpty else {
+            return String(localized: "Copy the link from the other device first, then paste it here.")
+        }
+        return hub.join(code: string) ? nil : String(localized: "The clipboard doesn't hold a link from Imp.")
+    }
+}
+
+/// This iPhone's invite as a QR code and a link to share. Showing it makes a new code; once it's
+/// off the screen it still works for 15 minutes.
+struct InviteCode: View {
     let hub: LinkHub
     @State private var invite: LinkInvite?
 
     var body: some View {
-        VStack(spacing: 18) {
-            Text("Scan this with Imp on another device")
-                .font(.system(.headline, design: .rounded))
-                .foregroundStyle(Dungeon.cream)
+        VStack(spacing: 14) {
             if let invite, let image = Self.code(for: invite.url.absoluteString) {
                 Image(uiImage: image)
                     .interpolation(.none)
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: 280)
+                    .frame(maxWidth: 240)
                     .padding(14)
                     .background(.white, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                     .accessibilityLabel("Link code")
@@ -154,11 +151,6 @@ private struct InviteSheet: View {
                     .padding(.horizontal, 40)
             }
         }
-        .padding(24)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Dungeon.deep)
-        .presentationDetents([.large])
-        .presentationDragIndicator(.visible)
         .onAppear { invite = hub.node.invite() }
         .onDisappear { hub.node.inviteHidden() }
     }
@@ -171,6 +163,40 @@ private struct InviteSheet: View {
         guard let image = filter.outputImage?.transformed(by: CGAffineTransform(scaleX: 8, y: 8)),
               let cg = CIContext().createCGImage(image, from: image.extent) else { return nil }
         return UIImage(cgImage: cg)
+    }
+}
+
+/// The code on its own, from the first screen.
+private struct InviteSheet: View {
+    let hub: LinkHub
+
+    var body: some View {
+        VStack(spacing: 18) {
+            Text("Scan this with Imp on another device")
+                .font(.system(.headline, design: .rounded))
+                .foregroundStyle(Dungeon.cream)
+            InviteCode(hub: hub)
+        }
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Dungeon.deep)
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+    }
+}
+
+/// The camera, reading a code from another device and linking with it. A code that isn't from Imp is
+/// reported in `problem`.
+struct LinkScanner: View {
+    let hub: LinkHub
+    @Binding var problem: String?
+    @Binding var scanning: Bool
+
+    var body: some View {
+        ScannerScreen { code in
+            scanning = false
+            problem = hub.join(code: code) ? nil : String(localized: "That code isn't from Imp.")
+        } cancel: { scanning = false }
     }
 }
 

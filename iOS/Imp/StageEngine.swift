@@ -77,6 +77,9 @@ final class StageEngine {
     private(set) var round: GameRound?
     var reduceMotion = false
     private let haptics = GameHaptics()
+    private let ticks = UISelectionFeedbackGenerator()
+    /// The device whose door the carried Imp is in front of, if it is near enough to an edge.
+    private(set) var litDoor: UUID?
     /// The round of Echo being played (or just finished, until its card is dismissed).
     private(set) var echo: EchoSession?
     /// A game is on: edges always bounce, nobody can be tossed away and a tap on an Imp opens no chat.
@@ -88,6 +91,8 @@ final class StageEngine {
     var door: (UUID, LinkSide, Double) -> LinkDoors.Outcome = { _, _, _ in .bounce(.nobodyConnected) }
     /// The side (the given one first) and height an Imp leaves by to reach a device, if a door leads there.
     var way: (UUID, UUID, LinkSide) -> (side: LinkSide, height: Double)? = { _, _, _ in nil }
+    /// The doors on a side for an Imp, to label while it is carried (see `DoorLabels`).
+    var doors: (UUID, LinkSide) -> [LinkHub.DoorLabel] = { _, _ in [] }
     /// What to say when an Imp bounces off a side that leads nowhere.
     var hint: (UUID, LinkDoors.Bounce, LinkSide) -> String = { _, _, _ in "" }
     /// An Imp that was thrown has left the screen.
@@ -227,6 +232,31 @@ final class StageEngine {
 
     /// The height of an Imp on the screen: 0 the top, 1 the bottom.
     private func height(of b: Body) -> Double { min(max(Double(b.pos.y / max(1, size.height)), 0), 1) }
+
+    /// How far from the edge an Imp's door labels start to show, and where they are fully shown.
+    nonisolated static let doorReach: CGFloat = 150
+    nonisolated static let doorNear: CGFloat = 60
+
+    /// The Imp in a hand, if any (and no game is on).
+    var carried: Body? { isPlaying ? nil : order.lazy.compactMap { self.bodies[$0] }.first { $0.phase == .dragging } }
+
+    /// The side a carried Imp is nearer to and how close it is to it: 0 out of reach, 1 at the door.
+    func nearness(of b: Body) -> (side: LinkSide, amount: Double) {
+        let left = b.pos.x < size.width / 2
+        let distance = left ? b.pos.x : size.width - b.pos.x
+        let amount = (Self.doorReach - distance) / (Self.doorReach - Self.doorNear)
+        return (left ? .left : .right, min(max(Double(amount), 0), 1))
+    }
+
+    /// Keeps `litDoor` to the door under the finger, with a tick each time it changes to another.
+    private func light(_ b: Body) {
+        var lit: UUID?
+        let near = nearness(of: b)
+        if !isPlaying, near.amount > 0.5, case .to(let device) = door(b.imp.id, near.side, height(of: b)) { lit = device }
+        guard lit != litDoor else { return }
+        litDoor = lit
+        if lit != nil { ticks.selectionChanged() }
+    }
 
     /// Throws `id` off `side` to the device that side leads to at the Imp's height. A side that leads
     /// nowhere bounces it back with a hint (once, until it is picked up again).
@@ -505,6 +535,7 @@ final class StageEngine {
             b.warnedOffline = false
             b.performance = nil
             focus = id
+            ticks.prepare()
             pacer.wake()
             order.removeAll { $0 == id }
             order.append(id)
@@ -522,6 +553,7 @@ final class StageEngine {
         b.pos = CGPoint(x: min(max(p.x + b.grab.width, -r), size.width + r),
                         y: min(max(p.y + b.grab.height, field.minY), field.maxY))
         bodies[id] = b
+        light(b)
         if let out = Toss.phoneExit(point: p, velocity: b.fingerVelocity, bounds: size) {
             toss(id, side: out.side, speed: abs(b.fingerVelocity.dx), velocityY: b.fingerVelocity.dy)
         }
@@ -529,6 +561,7 @@ final class StageEngine {
 
     func dragEnded(_ id: UUID, at p: CGPoint, predicted: CGPoint, now: Date = Date()) {
         touch = nil
+        litDoor = nil
         guard var b = bodies[id], b.phase == .dragging else { return }
         // Stopped before letting go: no momentum.
         if let s = b.lastSample, now.timeIntervalSince(s.time) > 0.08 { b.fingerVelocity = .zero }

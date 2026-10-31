@@ -4,7 +4,7 @@ import SwiftUI
 /// Whether an Imp can take a message right now.
 enum ChatAvailability {
     case ready
-    /// Its brain is on a device that isn't connected.
+    /// Its brain is on a device that isn't connected: a visiting Imp sleeps until its home is back.
     case offline
     /// A pocket Imp with no service and model to think with.
     case noBrain
@@ -48,6 +48,9 @@ extension LinkHub: ChatSource {
 
     func intro(_ imp: LinkImp, _ availability: ChatAvailability) -> (title: String, text: String) {
         let home = visit(imp.id)?.home.device.name ?? String(localized: "its home")
+        if availability == .offline {
+            return (String(localized: "\(imp.name) is asleep"), String(localized: "\(home) is away. It wakes when \(home) is back."))
+        }
         return (String(localized: "Ask \(imp.name) anything"),
                 String(localized: "It works on \(home), with its tools, and can message the Imps there too. Pictures, voices and files it makes show up right here."))
     }
