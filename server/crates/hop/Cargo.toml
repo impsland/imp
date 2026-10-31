@@ -1,6 +1,6 @@
 [package]
 name = "hop"
-description = "The Imp Hop: a blind relay between an iPhone and its Mac"
+description = "The Imp Hop: a blind relay between a guest and the host it joins"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

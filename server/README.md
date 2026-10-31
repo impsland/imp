@@ -3,7 +3,7 @@
 One Rust workspace, one Docker image, two services. The wire contract is in [PROTOCOL.md](PROTOCOL.md).
 
 - **den** (`crates/den`): accounts, shared kits, the web gallery and the MCP endpoint over HTTP.
-- **hop** (`crates/hop`): the blind relay that lets an iPhone reach its Mac. Listens on TCP 4677.
+- **hop** (`crates/hop`): the blind relay that lets a device reach the device that hosts it. Listens on TCP 4677.
 - **shared** (`crates/shared`): configuration, client IP, rate limiting, logging and shutdown helpers.
 
 ## Run locally
@@ -46,7 +46,7 @@ network that Caddy sits on.
 | `DEN_ALTCHA_COST` | den | proof-of-work cost, default 5000 |
 | `DEN_LOG_FORMAT` | den | `json` or text |
 | `HOP_ADDR`, `HOP_LOG_FORMAT` | hop | listen address, default `0.0.0.0:4677`, and log format |
-| `HOP_HANDSHAKE_SECS`, `HOP_PER_IP_CONNECTIONS`, `HOP_PER_IP_PER_MINUTE`, `HOP_MAX_CONNECTIONS`, `HOP_IDLE_SECS`, `HOP_BYTES_PER_SECOND`, `HOP_MAC_WAIT_SECS`, `HOP_PHONE_WAIT_SECS`, `HOP_ROOM_SESSIONS` | hop | the limits table in PROTOCOL.md |
+| `HOP_HANDSHAKE_SECS`, `HOP_PER_IP_CONNECTIONS`, `HOP_PER_IP_PER_MINUTE`, `HOP_MAX_CONNECTIONS`, `HOP_IDLE_SECS`, `HOP_BYTES_PER_SECOND`, `HOP_HOST_WAIT_SECS`, `HOP_GUEST_WAIT_SECS`, `HOP_ROOM_SESSIONS` | hop | the limits table in PROTOCOL.md |
 
 ## Moderation
 

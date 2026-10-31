@@ -6,12 +6,20 @@ use tokio::net::TcpStream;
 
 use crate::wire;
 
-pub type Room = [u8; 32];
+pub type Key = [u8; 32];
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Role {
-    Mac,
-    Phone,
+    Host,
+    Guest,
+}
+
+/// Who is at the door: a proven host of `room`, or a proven holder of `gate`'s key.
+#[derive(Clone, Copy, Debug)]
+pub struct Arrived {
+    pub role: Role,
+    pub room: Key,
+    pub gate: Key,
 }
 
 pub enum Failure {
@@ -27,7 +35,7 @@ impl From<std::io::Error> for Failure {
     }
 }
 
-pub async fn run(stream: &mut TcpStream) -> Result<(Room, Role), Failure> {
+pub async fn run(stream: &mut TcpStream) -> Result<Arrived, Failure> {
     let mut hello = [0u8; wire::HELLO_LEN];
     stream.read_exact(&mut hello).await?;
     if &hello[..6] != wire::MAGIC || hello[6] != wire::VERSION {
@@ -35,24 +43,30 @@ pub async fn run(stream: &mut TcpStream) -> Result<(Room, Role), Failure> {
     }
     let role_byte = hello[7];
     let role = match role_byte {
-        wire::MAC => Role::Mac,
-        wire::PHONE => Role::Phone,
+        wire::HOST => Role::Host,
+        wire::GUEST => Role::Guest,
         _ => return Err(Failure::Rejected),
     };
-    let mut room = [0u8; 32];
-    room.copy_from_slice(&hello[8..]);
-    let key = VerifyingKey::from_bytes(&room).map_err(|_| Failure::Rejected)?;
+    let room: Key = hello[8..40].try_into().map_err(|_| Failure::Rejected)?;
+    let gate: Key = hello[40..].try_into().map_err(|_| Failure::Rejected)?;
+    // The host signs with the room key and names the gate. A guest signs with the gate key and names the room.
+    let (signer, named) = match role {
+        Role::Host => (&room, &gate),
+        Role::Guest => (&gate, &room),
+    };
+    let key = VerifyingKey::from_bytes(signer).map_err(|_| Failure::Rejected)?;
 
     let nonce: [u8; wire::NONCE_LEN] = rand::random();
     stream.write_all(&nonce).await?;
 
     let mut proof = [0u8; wire::PROOF_LEN];
     stream.read_exact(&mut proof).await?;
-    let mut message = Vec::with_capacity(wire::PROOF_PREFIX.len() + 1 + nonce.len());
+    let mut message = Vec::with_capacity(wire::PROOF_PREFIX.len() + 1 + 32 + 32);
     message.extend_from_slice(wire::PROOF_PREFIX);
     message.push(role_byte);
     message.extend_from_slice(&nonce);
+    message.extend_from_slice(named);
     key.verify_strict(&message, &Signature::from_bytes(&proof))
         .map_err(|_| Failure::Rejected)?;
-    Ok((room, role))
+    Ok(Arrived { role, room, gate })
 }
