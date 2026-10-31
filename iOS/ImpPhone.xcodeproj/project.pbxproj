@@ -35,6 +35,7 @@
 		AE1DFD9644628E88D62348A5 /* Performance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6F4A4BEABAB147C1273508 /* Performance.swift */; };
 		B3DDDC12FE1679378FCB5BDD /* ChatSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19446029336D379F770CD86B /* ChatSheet.swift */; };
 		B7CA0B90DB6761F8C22BA91E /* PocketRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = F364A4DE6BAD316298E3E073 /* PocketRuntime.swift */; };
+		BE17BC88E7F643C073B6791B /* Talks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7C6595FE067AC51F19AE88 /* Talks.swift */; };
 		CB1362A800AD5DE520C03318 /* StageVoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B34102EB8A566B60FE68FF4A /* StageVoice.swift */; };
 		D641B96BDC01E6071DE86AAD /* GameRound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8151B96260694FD93D8F45E8 /* GameRound.swift */; };
 		E173ECE55498D9DC68051497 /* PhoneStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36040976E160D83A9ED7131E /* PhoneStage.swift */; };
@@ -74,6 +75,7 @@
 		6AC024C76203D641C929D0A5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		8151B96260694FD93D8F45E8 /* GameRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRound.swift; sourceTree = "<group>"; };
 		86EC44471EB3D16C062A1ABF /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
+		8F7C6595FE067AC51F19AE88 /* Talks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talks.swift; sourceTree = "<group>"; };
 		90BCDE56EC7E08CB95A42B3A /* LinkFileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkFileStore.swift; sourceTree = "<group>"; };
 		92E940BF293260A542D370CE /* ImpPhoneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpPhoneApp.swift; sourceTree = "<group>"; };
 		A9CDA1D6F43D1F4F6733CC21 /* StatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPill.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				C3A5CF20C2B71E285BCA988D /* StageEngine.swift */,
 				B34102EB8A566B60FE68FF4A /* StageVoice.swift */,
 				A9CDA1D6F43D1F4F6733CC21 /* StatusPill.swift */,
+				8F7C6595FE067AC51F19AE88 /* Talks.swift */,
 				6AC024C76203D641C929D0A5 /* Theme.swift */,
 				C5C4C921D3632C8A4B97CB80 /* TiltImp.swift */,
 			);
@@ -305,6 +308,7 @@
 				AC858C246A969D5EFA7444F0 /* StageEngine.swift in Sources */,
 				CB1362A800AD5DE520C03318 /* StageVoice.swift in Sources */,
 				F14DF98DC306C127EAD0E386 /* StatusPill.swift in Sources */,
+				BE17BC88E7F643C073B6791B /* Talks.swift in Sources */,
 				81C420D8F13B53FB34B2B8E2 /* Theme.swift in Sources */,
 				E53ED1E407B5D3666EDB99F4 /* TiltImp.swift in Sources */,
 			);
@@ -362,7 +366,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.16.2;
+				MARKETING_VERSION = 1.17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -449,7 +453,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.16.2;
+				MARKETING_VERSION = 1.17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
