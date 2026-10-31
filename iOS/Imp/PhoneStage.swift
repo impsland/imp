@@ -4,7 +4,7 @@ import SwiftUI
 
 /// The phone's room: Imps floating in the dungeon, to drag, toss, tap and shake.
 struct PhoneStage: View {
-    let client: LinkClient
+    let hub: LinkHub
     let pocket: PocketRuntime
     var onChat: (UUID) -> Void
     /// Opens an Imp hatched here in the editor.
@@ -48,8 +48,8 @@ struct PhoneStage: View {
                                 if let b = engine.bodies[id], let place = places[id] {
                                     Color.clear.frame(width: 1, height: 1)
                                         .overlay(alignment: .bottom) {
-                                            SpeechBubble(speech: place.speech, speaker: b.imp, client: client, isPocket: pocket.contains(id), tailOffset: b.pos.x - place.x) {
-                                                if pocket.contains(id) { pocket.dismissSpeech(id) } else { client.dismissSpeech(id) }
+                                            SpeechBubble(speech: place.speech, speaker: b.imp, hub: hub, isPocket: pocket.contains(id), tailOffset: b.pos.x - place.x) {
+                                                if pocket.contains(id) { pocket.dismissSpeech(id) } else { hub.dismissSpeech(id) }
                                             }
                                                 .fixedSize(horizontal: false, vertical: true)
                                                 .transition(.scale(scale: 0.6, anchor: .bottom).combined(with: .opacity))
@@ -62,11 +62,11 @@ struct PhoneStage: View {
                             GameLayer(engine: engine, date: timeline.date, size: geo.size, insets: screen.safeAreaInsets)
                                 .zIndex(3)
                         }
-                        .animation(.spring(duration: 0.35), value: client.speeches.mapValues(\.id))
+                        .animation(.spring(duration: 0.35), value: hub.speeches.mapValues(\.id))
                         .animation(.spring(duration: 0.35), value: pocket.speeches.mapValues(\.id))
                     }
 
-                    if roster.isEmpty && client.isConnected { EmptyHint(side: .left) }
+                    if roster.isEmpty && !hub.connectedPeers.isEmpty { EmptyHint(side: .left) }
                 }
                 .coordinateSpace(name: "stage")
             }
@@ -80,7 +80,10 @@ struct PhoneStage: View {
         } message: { _ in
             Text("Its chats and keys are forgotten. This can't be undone.")
         }
-        .onChange(of: pocket.looks) { engine.reconcile(roster) }
+        .onChange(of: staged) {
+            engine.reconcile(roster)
+            hub.setStage(staged)
+        }
         .onChange(of: scenePhase, initial: true) { _, phase in
             if phase == .active { motion.start() } else { motion.stop() }
             // A voice doesn't go on talking from a phone that's been put away.
@@ -98,7 +101,7 @@ struct PhoneStage: View {
         var frames: [CGRect] = []
         for id in engine.order {
             guard let b = engine.bodies[id], b.phase == .free || b.phase == .dragging,
-                  let speech = client.speeches[id] ?? pocket.speeches[id] else { continue }
+                  let speech = hub.speeches[id] ?? pocket.speeches[id] else { continue }
             let (box, isNew) = sizes.size(of: speech)
             if isNew { engine.pacer.wake(at: date) }
             let x = min(max(b.pos.x, box.width / 2 + 12), max(size.width - box.width / 2 - 12, box.width / 2 + 12))
@@ -119,7 +122,7 @@ struct PhoneStage: View {
 
     private func figure(_ b: StageEngine.Body, date: Date) -> some View {
         let id = b.imp.id
-        let source: any ChatSource = pocket.contains(id) ? pocket : client
+        let source: any ChatSource = pocket.contains(id) ? pocket : hub
         let awake = source.availability(id) == .ready
         let working = source.working(id)
         let side = b.size
@@ -161,11 +164,22 @@ struct PhoneStage: View {
                 if pocket.contains(id) {
                     Button { onEdit(id) } label: { Label("Edit", systemImage: "slider.horizontal.3") }
                 }
-                if client.pairing != nil {
-                    Button { engine.sendGently(id) } label: { Label("Send to Mac", systemImage: "macbook.and.iphone") }
+                ForEach(hub.connectedPeers) { device in
+                    if hub.way(of: id, to: device.id, preferring: .right) != nil {
+                        Button { engine.sendGently(id, to: device.id) } label: {
+                            Label("Send to \(device.name)", systemImage: device.kind == .mac ? "macbook" : "iphone")
+                        }
+                    }
                 }
                 if pocket.contains(id) {
+                    ForEach(hub.connectedPeers.filter { $0.kind == .mac }) { mac in
+                        Button { engine.sendGently(id, to: mac.id, moves: true) } label: {
+                            Label("Move to \(mac.name)", systemImage: "macbook.and.iphone")
+                        }
+                    }
                     Button(role: .destructive) { deleting = b.imp } label: { Label("Delete", systemImage: "trash") }
+                } else {
+                    Button(role: .destructive) { hub.sendHome(id) } label: { Label("Send Home", systemImage: "house") }
                 }
             }
             .position(x: b.pos.x, y: b.pos.y + engine.floatOffset(b, at: date, calm: !awake))
@@ -174,37 +188,47 @@ struct PhoneStage: View {
 
     // MARK: Wiring
 
-    /// The Imps on this phone: the Mac's, and the ones hatched here.
-    private var roster: [LinkImp] { Self.roster(client, pocket) }
+    /// The Imps on this screen: the ones hatched here that are at home, and the visitors.
+    private var roster: [LinkImp] { staged.map(\.imp) }
+    private var staged: [LinkStaged] { Self.staged(hub, pocket) }
 
-    private static func roster(_ client: LinkClient, _ pocket: PocketRuntime) -> [LinkImp] {
-        client.imps + pocket.looks.filter { look in !client.imps.contains { $0.id == look.id } }
+    private static func staged(_ hub: LinkHub, _ pocket: PocketRuntime) -> [LinkStaged] {
+        let me = hub.node.device.id
+        return pocket.looks.filter { !hub.away.contains($0.id) }.map { LinkStaged(imp: $0, home: me) } + hub.visitors
     }
 
-    /// Hooks the engine to the client and the pocket Imps (once): events in, tosses and feelings out.
+    /// Hooks the engine to the hub and the pocket Imps (once): events in, tosses and feelings out.
     private func wire() {
         guard !wired else { return }
         wired = true
-        let engine = engine, client = client, pocket = pocket
+        let engine = engine, hub = hub, pocket = pocket
         let pace = $pace
         engine.pacer.onChange = { pace.wrappedValue = $0 }
-        engine.isConnected = { client.isConnected }
-        engine.send = { id, side, height, speed in
-            if pocket.contains(id) { pocket.toss(id, exit: side, height: height, speed: speed) }
-            else { client.toss(id, exit: side, height: height, speed: speed) }
+        hub.isPlaying = { engine.isPlaying }
+        engine.isConnected = { !hub.connectedPeers.isEmpty }
+        engine.door = { hub.door(of: $0, side: $1, height: $2) }
+        engine.way = { hub.way(of: $0, to: $1, preferring: $2) }
+        engine.hint = { hub.hint(for: $0, bounce: $1, side: $2) }
+        engine.send = { id, exit in
+            guard let device = exit.to, let imp = engine.bodies[id]?.imp else { return }
+            if exit.moves {
+                pocket.move(id, exit: exit, to: device)
+            } else if !hub.pass(imp, exit: exit, to: device) {
+                engine.refused(id, String(localized: "\(hub.deviceName(device)) isn't around"))
+            }
         }
-        engine.warn = { client.toast = $0 }
-        engine.felt = { if !pocket.contains($0) { client.felt($0, $1) } }
+        engine.warn = { hub.toast = $0 }
+        engine.felt = { if !pocket.contains($0) { hub.felt($0, $1) } }
         let hear: (StageEvent) -> Void = { event in
             switch event {
-            case .roster: engine.reconcile(Self.roster(client, pocket))
+            case .roster: engine.reconcile(Self.staged(hub, pocket).map(\.imp))
             case .arrived(let imp, let entry): engine.arrive(imp, entry)
             case .left(let id): engine.leave(id)
             case .refused(let id, let why): engine.refused(id, why)
             case .animate(let id, let beats): engine.animate(id, beats)
             }
         }
-        client.onEvent = hear
+        hub.onEvent = hear
         pocket.onEvent = hear
         motion.onEvent = { event in
             switch event {
@@ -213,6 +237,7 @@ struct PhoneStage: View {
             }
         }
         engine.reconcile(roster)
+        hub.setStage(staged)
     }
 }
 
@@ -248,7 +273,7 @@ private struct ThinkingDots: View {
     }
 }
 
-/// Shown when the Mac is there and nothing is on the phone yet.
+/// Shown when another device is there and nothing is on the phone yet.
 struct EmptyHint: View {
     var side: LinkSide
     @State private var go = false
@@ -269,7 +294,7 @@ struct EmptyHint: View {
             }
             .frame(width: 220, height: 70)
             .clipped()
-            Text("Throw an Imp off the side of your Mac's screen — it lands here.")
+            Text("Throw an Imp off the side of another screen — it lands here.")
                 .font(.system(.callout, design: .rounded, weight: .medium))
                 .foregroundStyle(Dungeon.muted)
                 .multilineTextAlignment(.center)

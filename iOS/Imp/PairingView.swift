@@ -1,14 +1,16 @@
+import CoreImage.CIFilterBuiltins
 import ImpKit
 import SwiftUI
 import UIKit
 import VisionKit
 
-/// First run: how to bring your first Imp over.
+/// First run: how to bring your first Imp over, and how to link another device.
 struct PairingView: View {
-    let client: LinkClient
+    let hub: LinkHub
     /// Starts hatching an Imp on this iPhone, for those who don't have a Mac at hand.
     var hatch: (() -> Void)?
     @State private var scanning = false
+    @State private var showingCode = false
     @State private var problem: String?
 
     private let scannerAvailable = CodeScanner.isAvailable
@@ -23,18 +25,18 @@ struct PairingView: View {
             Text("Imp for iPhone")
                 .font(.system(size: 32, weight: .bold, design: .rounded))
                 .foregroundStyle(Dungeon.cream)
-            Text("Imps you toss from your Mac live here. Drag them, chat with them, throw them back.")
+            Text("Imps you throw from your other devices land here. Drag them, chat with them, throw them back.")
                 .font(.system(.callout, design: .rounded))
                 .foregroundStyle(Dungeon.muted)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 36).padding(.top, 6)
 
             VStack(alignment: .leading, spacing: 0) {
-                step(1, icon: "macbook", "**Mac:** All Imps › App › iPhone")
+                step(1, icon: "qrcode", "**Show** a code on one device")
                 connector
-                step(2, icon: "qrcode.viewfinder", "Scan the code with **Camera**")
+                step(2, icon: "qrcode.viewfinder", "**Scan** it with the other")
                 connector
-                step(3, icon: "hand.draw.fill", "**Throw** an Imp off your Mac's screen")
+                step(3, icon: "hand.draw.fill", "**Throw** an Imp off the side of a screen")
             }
             .padding(.horizontal, 16).padding(.vertical, 14)
             .card()
@@ -48,6 +50,8 @@ struct PairingView: View {
             Spacer(minLength: 16)
 
             VStack(spacing: 10) {
+                Button { showingCode = true } label: { Label("Show My Code", systemImage: "qrcode") }
+                    .buttonStyle(EmberButtonStyle(filled: false))
                 if scannerAvailable {
                     Button { problem = nil; scanning = true } label: { Label("Scan Code", systemImage: "qrcode.viewfinder") }
                         .buttonStyle(EmberButtonStyle())
@@ -64,15 +68,11 @@ struct PairingView: View {
             .padding(.horizontal, 28).padding(.bottom, 24)
         }
         .animation(.easeInOut, value: problem)
+        .sheet(isPresented: $showingCode) { InviteSheet(hub: hub) }
         .fullScreenCover(isPresented: $scanning) {
             ScannerScreen { code in
-                if let pairing = LinkPairing(string: code) {
-                    scanning = false
-                    client.pair(pairing)
-                } else {
-                    scanning = false
-                    problem = String(localized: "That code isn't a pairing code from Imp.")
-                }
+                scanning = false
+                if !hub.join(code: code) { problem = String(localized: "That code isn't from Imp.") }
             } cancel: { scanning = false }
         }
     }
@@ -116,15 +116,61 @@ struct PairingView: View {
 
     private func pasteLink() {
         guard let string = UIPasteboard.general.string, !string.isEmpty else {
-            problem = String(localized: "Copy the pairing link on your Mac first, then paste it here.")
+            problem = String(localized: "Copy the link from the other device first, then paste it here.")
             return
         }
-        if let pairing = LinkPairing(string: string) {
+        if hub.join(code: string) {
             problem = nil
-            client.pair(pairing)
         } else {
-            problem = String(localized: "The clipboard doesn't hold a pairing link from Imp.")
+            problem = String(localized: "The clipboard doesn't hold a link from Imp.")
         }
+    }
+}
+
+// MARK: - Showing
+
+/// This iPhone's invite, as a code another device scans (or a link it opens). A code works for 15
+/// minutes after it was last on screen.
+private struct InviteSheet: View {
+    let hub: LinkHub
+    @State private var invite: LinkInvite?
+
+    var body: some View {
+        VStack(spacing: 18) {
+            Text("Scan this with Imp on another device")
+                .font(.system(.headline, design: .rounded))
+                .foregroundStyle(Dungeon.cream)
+            if let invite, let image = Self.code(for: invite.url.absoluteString) {
+                Image(uiImage: image)
+                    .interpolation(.none)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 280)
+                    .padding(14)
+                    .background(.white, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .accessibilityLabel("Link code")
+                ShareLink(item: invite.url) { Label("Share Link", systemImage: "square.and.arrow.up") }
+                    .buttonStyle(EmberButtonStyle(filled: false))
+                    .padding(.horizontal, 40)
+            }
+        }
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Dungeon.deep)
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .onAppear { invite = hub.node.invite() }
+        .onDisappear { hub.node.inviteHidden() }
+    }
+
+    /// The text as a black-and-white QR code.
+    private static func code(for text: String) -> UIImage? {
+        let filter = CIFilter.qrCodeGenerator()
+        filter.message = Data(text.utf8)
+        filter.correctionLevel = "M"
+        guard let image = filter.outputImage?.transformed(by: CGAffineTransform(scaleX: 8, y: 8)),
+              let cg = CIContext().createCGImage(image, from: image.extent) else { return nil }
+        return UIImage(cgImage: cg)
     }
 }
 
@@ -138,7 +184,7 @@ private struct ScannerScreen: View {
         ZStack(alignment: .top) {
             CodeScanner(onCode: found).ignoresSafeArea()
             HStack {
-                Text("Scan the code on your Mac")
+                Text("Scan the code on the other device")
                     .font(.system(.subheadline, design: .rounded, weight: .semibold))
                     .foregroundStyle(Dungeon.cream)
                     .padding(.horizontal, 14).padding(.vertical, 8)

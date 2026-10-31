@@ -11,7 +11,7 @@ struct SpeechBubble: View {
     var speech: LinkSpeech
     /// The Imp saying it: its colours glow around a spoken reply, and its folder holds the files.
     var speaker: LinkImp
-    var client: LinkClient
+    var hub: LinkHub
     /// A pocket Imp has no folder on the Mac: only what's on the web can load.
     var isPocket = false
     /// Where the tail points, from the bubble's middle (points).
@@ -127,12 +127,12 @@ struct SpeechBubble: View {
         case .rule:
             Rectangle().fill(Dungeon.cardEdge).frame(height: 1)
         case .image(let url, let alt, _):
-            BubbleThumb(ref: url.absoluteString, alt: alt, imp: speaker.id, client: client)
+            BubbleThumb(ref: url.absoluteString, alt: alt, imp: speaker.id, hub: hub)
         case .media(let url, let title, let kind, let auto):
             if kind == .audio {
-                BubbleVoice(ref: url.absoluteString, title: title, auto: auto, speech: speech.id, speaker: speaker, client: client)
+                BubbleVoice(ref: url.absoluteString, title: title, auto: auto, speech: speech.id, speaker: speaker, hub: hub)
             } else {
-                BubbleVideo(ref: url.absoluteString, title: title, auto: auto, speech: speech.id, speaker: speaker, client: client)
+                BubbleVideo(ref: url.absoluteString, title: title, auto: auto, speech: speech.id, speaker: speaker, hub: hub)
             }
         }
     }

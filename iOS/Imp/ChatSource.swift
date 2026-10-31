@@ -4,13 +4,13 @@ import SwiftUI
 /// Whether an Imp can take a message right now.
 enum ChatAvailability {
     case ready
-    /// Its brain is on a Mac that isn't connected.
+    /// Its brain is on a device that isn't connected.
     case offline
     /// A pocket Imp with no service and model to think with.
     case noBrain
 }
 
-/// Where a chat lives: the Mac (its Imps think there) or this iPhone (pocket Imps). The chat sheet
+/// Where a chat lives: the Imp's home (visiting Imps think there) or this iPhone (pocket Imps). The chat sheet
 /// works against either.
 @MainActor
 protocol ChatSource {
@@ -30,27 +30,32 @@ protocol ChatSource {
     func newChat(_ id: UUID)
 }
 
-extension LinkClient: ChatSource {
+extension LinkHub: ChatSource {
     var restingStatus: String { String(localized: "Ready") }
-    func imp(_ id: UUID) -> LinkImp? { imps.first { $0.id == id } }
+    func imp(_ id: UUID) -> LinkImp? { visit(id)?.imp }
     func turns(_ id: UUID) -> [LinkTurn] { chats[id] ?? [] }
     func working(_ id: UUID) -> LinkWork? { work[id] }
     func mood(_ id: UUID) -> Mood? { moods[id] }
-    func availability(_ id: UUID) -> ChatAvailability { isConnected ? .ready : .offline }
+    func availability(_ id: UUID) -> ChatAvailability { isAwake(id) ? .ready : .offline }
 
-    /// Everyone this Imp can message: the other Imps on this phone and the ones still on the Mac.
+    /// Everyone this visiting Imp can message: the Imps on this screen and on its home's.
     func peers(_ id: UUID) -> [LinkImp] {
-        guard isConnected else { return [] }
+        guard isAwake(id), let home = visit(id)?.home.id else { return [] }
         var seen: Set<String> = [imp(id)?.name.lowercased() ?? ""]
-        return (imps + others).filter { $0.id != id && seen.insert($0.name.lowercased()).inserted }
+        return LinkTalks.targets(of: id, mine: node.stage(of: home), stage: staged).map(\.imp)
+            .filter { seen.insert($0.name.lowercased()).inserted }
     }
 
     func intro(_ imp: LinkImp, _ availability: ChatAvailability) -> (title: String, text: String) {
-        (String(localized: "Ask \(imp.name) anything"),
-         String(localized: "It works on your Mac, with its tools, and can message the Imps there too. Pictures, voices and files it makes show up right here."))
+        let home = visit(imp.id)?.home.device.name ?? String(localized: "its home")
+        return (String(localized: "Ask \(imp.name) anything"),
+                String(localized: "It works on \(home), with its tools, and can message the Imps there too. Pictures, voices and files it makes show up right here."))
     }
 
     func newChatNote(_ imp: LinkImp) -> String {
-        String(localized: "This chat leaves your phone, but your Mac keeps it: it's in \(imp.name)'s Brain › Memory › Chats. \(imp.name) starts fresh.")
+        guard let home = visit(imp.id)?.home.device else { return String(localized: "\(imp.name) starts fresh.") }
+        return home.kind == .mac
+            ? String(localized: "This chat leaves your phone, but \(home.name) keeps it: it's in \(imp.name)'s Brain › Memory › Chats. \(imp.name) starts fresh.")
+            : String(localized: "This chat leaves your phone, but \(home.name) keeps it. \(imp.name) starts fresh.")
     }
 }

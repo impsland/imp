@@ -3,9 +3,9 @@ import Foundation
 import ImpKit
 import Observation
 
-/// Files that replies show, fetched from the Mac on demand: a picture an Imp drew, a voice another
-/// Imp recorded, a video, a document it saved. They live on the Mac (in the Imp's folder), so the
-/// phone asks for each by the reference the reply uses and the Mac streams it over the link in
+/// Files that replies show, fetched from the Imp's home on demand: a picture an Imp drew, a voice another
+/// Imp recorded, a video, a document it saved. They live on the home (in the Imp's folder), so the
+/// phone asks for each by the reference the reply uses and the home streams it over the link in
 /// parts. Kept in the cache afterwards; the same reference asked twice at once is fetched once.
 @MainActor @Observable
 final class LinkFileStore {
@@ -13,9 +13,9 @@ final class LinkFileStore {
         case offline, refused(String), lost
         var errorDescription: String? {
             switch self {
-            case .offline: String(localized: "Your Mac isn't around")
+            case .offline: String(localized: "Its home isn't around")
             case .refused(let why): why
-            case .lost: String(localized: "The connection to your Mac dropped. Try again.")
+            case .lost: String(localized: "The connection dropped. Try again.")
             }
         }
     }
@@ -23,7 +23,7 @@ final class LinkFileStore {
     /// How far along each fetch is (0…1), by `key(imp:ref:)`.
     private(set) var progress: [String: Double] = [:]
 
-    @ObservationIgnored private unowned let client: LinkClient
+    @ObservationIgnored private unowned let hub: LinkHub
     @ObservationIgnored private var transfers: [UUID: Transfer] = [:]
     @ObservationIgnored private var byKey: [String: UUID] = [:]
 
@@ -36,7 +36,7 @@ final class LinkFileStore {
         init(key: String, folder: URL) { self.key = key; self.folder = folder }
     }
 
-    init(client: LinkClient) { self.client = client }
+    init(hub: LinkHub) { self.hub = hub }
 
     nonisolated static func key(imp: UUID, ref: String) -> String { "\(imp.uuidString)|\(ref)" }
 
@@ -53,7 +53,7 @@ final class LinkFileStore {
         return files.first { !$0.lastPathComponent.hasPrefix(".") }
     }
 
-    /// The file on this phone, fetching it from the Mac if needed.
+    /// The file on this phone, fetching it from the Imp's home if needed.
     func file(imp: UUID, ref: String) async throws -> URL {
         if let url = cached(imp: imp, ref: ref) { return url }
         let key = Self.key(imp: imp, ref: ref)
@@ -65,7 +65,7 @@ final class LinkFileStore {
             transfers[id] = t
             byKey[key] = id
             progress[key] = 0
-            if !client.requestFile(id, imp: imp, ref: ref) { finish(id, .failure(Failure.offline)) }
+            if !hub.requestFile(id, imp: imp, ref: ref) { finish(id, .failure(Failure.offline)) }
         }
     }
 

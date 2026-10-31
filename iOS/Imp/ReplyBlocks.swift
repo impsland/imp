@@ -9,7 +9,7 @@ import SwiftUI
 struct ReplyBlocks: View {
     var text: String
     var imp: LinkImp
-    var client: LinkClient
+    var hub: LinkHub
     /// A voice marked `#autoplay` starts on its own (only in replies that just arrived).
     var autoplay = false
 
@@ -51,12 +51,12 @@ struct ReplyBlocks: View {
             }
             .background(Color.black.opacity(0.3), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         case .image(let url, let alt, let link):
-            PictureBlock(ref: url.absoluteString, alt: alt, link: link, imp: imp, client: client)
+            PictureBlock(ref: url.absoluteString, alt: alt, link: link, imp: imp, hub: hub)
         case .media(let url, let title, let kind, let auto):
             if kind == .audio {
-                AudioBlock(ref: url.absoluteString, title: title, imp: imp, client: client, autoplay: auto && autoplay)
+                AudioBlock(ref: url.absoluteString, title: title, imp: imp, hub: hub, autoplay: auto && autoplay)
             } else {
-                VideoBlock(ref: url.absoluteString, title: title, imp: imp, client: client)
+                VideoBlock(ref: url.absoluteString, title: title, imp: imp, hub: hub)
             }
         case .table(let table):
             TableBlock(table: table)
@@ -81,11 +81,11 @@ final class ReplyFile {
         isWeb = LinkFiles.isWeb(ref)
     }
 
-    func load(imp: UUID, client: LinkClient) async {
+    func load(imp: UUID, hub: LinkHub) async {
         if isWeb, let url = URL(string: ref) { state = .ready(url); return }
         if case .ready = state { return }
         state = .loading
-        do { state = .ready(try await client.files.file(imp: imp, ref: ref)) }
+        do { state = .ready(try await hub.files.file(imp: imp, ref: ref)) }
         catch { state = .failed(error.localizedDescription) }
     }
 }
@@ -132,10 +132,10 @@ private struct PictureBlock: View {
     var alt: String
     var link: URL?
     var imp: LinkImp
-    var client: LinkClient
+    var hub: LinkHub
 
-    init(ref: String, alt: String, link: URL?, imp: LinkImp, client: LinkClient) {
-        self.ref = ref; self.alt = alt; self.link = link; self.imp = imp; self.client = client
+    init(ref: String, alt: String, link: URL?, imp: LinkImp, hub: LinkHub) {
+        self.ref = ref; self.alt = alt; self.link = link; self.imp = imp; self.hub = hub
         _file = State(initialValue: ReplyFile(ref: ref))
     }
     @State private var file: ReplyFile
@@ -159,7 +159,7 @@ private struct PictureBlock: View {
                     }
                     .accessibilityLabel(alt.isEmpty ? String(localized: "Picture") : alt)
             } else {
-                FileStatus(file: file, progress: client.files.progress[LinkFileStore.key(imp: imp.id, ref: ref)],
+                FileStatus(file: file, progress: hub.files.progress[LinkFileStore.key(imp: imp.id, ref: ref)],
                            icon: "photo", label: alt.isEmpty ? String(localized: "Picture") : alt) { Task { await load() } }
             }
         }
@@ -169,7 +169,7 @@ private struct PictureBlock: View {
 
     private func load() async {
         let f = file
-        await f.load(imp: imp.id, client: client)
+        await f.load(imp: imp.id, hub: hub)
         guard case .ready(let url) = f.state else { return }
         if url.isFileURL {
             image = await Task.detached { UIImage(contentsOfFile: url.path)?.preparingForDisplay() }.value
@@ -193,11 +193,11 @@ private struct AudioBlock: View {
     var ref: String
     var title: String
     var imp: LinkImp
-    var client: LinkClient
+    var hub: LinkHub
     var autoplay: Bool
 
-    init(ref: String, title: String, imp: LinkImp, client: LinkClient, autoplay: Bool) {
-        self.ref = ref; self.title = title; self.imp = imp; self.client = client; self.autoplay = autoplay
+    init(ref: String, title: String, imp: LinkImp, hub: LinkHub, autoplay: Bool) {
+        self.ref = ref; self.title = title; self.imp = imp; self.hub = hub; self.autoplay = autoplay
         _file = State(initialValue: ReplyFile(ref: ref))
     }
     @State private var file: ReplyFile
@@ -236,7 +236,7 @@ private struct AudioBlock: View {
                     if url.isFileURL { ShareLink(item: url) { Label("Share…", systemImage: "square.and.arrow.up") } }
                 }
             } else {
-                FileStatus(file: file, progress: client.files.progress[LinkFileStore.key(imp: imp.id, ref: ref)],
+                FileStatus(file: file, progress: hub.files.progress[LinkFileStore.key(imp: imp.id, ref: ref)],
                            icon: "waveform", label: title.isEmpty ? String(localized: "Sound") : title) { Task { await load() } }
             }
         }
@@ -246,7 +246,7 @@ private struct AudioBlock: View {
 
     private func load() async {
         let f = file
-        await f.load(imp: imp.id, client: client)
+        await f.load(imp: imp.id, hub: hub)
         guard case .ready(let url) = f.state else { return }
         await player.measure(url)
         // Its turn comes after any voice that is talking (on the stage too), never over it.
@@ -361,10 +361,10 @@ private struct VideoBlock: View {
     var ref: String
     var title: String
     var imp: LinkImp
-    var client: LinkClient
+    var hub: LinkHub
 
-    init(ref: String, title: String, imp: LinkImp, client: LinkClient) {
-        self.ref = ref; self.title = title; self.imp = imp; self.client = client
+    init(ref: String, title: String, imp: LinkImp, hub: LinkHub) {
+        self.ref = ref; self.title = title; self.imp = imp; self.hub = hub
         _file = State(initialValue: ReplyFile(ref: ref))
     }
     @State private var file: ReplyFile
@@ -384,7 +384,7 @@ private struct VideoBlock: View {
                     }
                     .accessibilityLabel(title.isEmpty ? String(localized: "Video") : title)
             } else {
-                FileStatus(file: file, progress: client.files.progress[LinkFileStore.key(imp: imp.id, ref: ref)],
+                FileStatus(file: file, progress: hub.files.progress[LinkFileStore.key(imp: imp.id, ref: ref)],
                            icon: "film", label: title.isEmpty ? String(localized: "Video") : title) { Task { await load() } }
             }
         }
@@ -394,7 +394,7 @@ private struct VideoBlock: View {
 
     private func load() async {
         let f = file
-        await f.load(imp: imp.id, client: client)
+        await f.load(imp: imp.id, hub: hub)
         if case .ready(let url) = f.state, clip == nil {
             clip = StageClip(url: url, kind: .video, key: "chat|\(UUID().uuidString)", owner: nil)
         }

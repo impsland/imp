@@ -8,7 +8,7 @@ import SwiftUI
 /// the pictures, voices, videos and files they show, fetched from the Mac (`LinkFileStore`).
 struct ChatSheet: View {
     /// Where files in replies come from (the Mac).
-    let client: LinkClient
+    let hub: LinkHub
     let source: any ChatSource
     /// The Imps hatched here: their chats hold half of every talk.
     let pocket: PocketRuntime
@@ -50,7 +50,7 @@ struct ChatSheet: View {
         .environment(\.openURL, OpenURLAction { url in open(url) })
         .quickLookPreview($preview)
         .sheet(isPresented: $showingTalks) {
-            TalksSheet(client: client, pocket: pocket, impID: impID)
+            TalksSheet(hub: hub, pocket: pocket, impID: impID)
                 .presentationDragIndicator(.visible)
                 .presentationBackground(Dungeon.deep)
         }
@@ -157,10 +157,10 @@ struct ChatSheet: View {
                         if let label = Self.separator(turn.date, after: i > 0 ? turns[i - 1].date : nil) {
                             DaySeparator(text: label)
                         }
-                        TurnView(turn: turn, imp: imp, client: client, fresh: turn.date > openedAt,
+                        TurnView(turn: turn, imp: imp, hub: hub, fresh: turn.date > openedAt,
                                  retry: availability == .ready ? { source.ask(impID, turn.request) } : nil)
                     }
-                    if let work { LiveTurn(work: work, imp: imp, client: client) }
+                    if let work { LiveTurn(work: work, imp: imp, hub: hub) }
                     Color.clear.frame(height: 1).id("end")
                         .onAppear { atEnd = true }
                         .onDisappear { atEnd = false }
@@ -318,7 +318,7 @@ struct ChatSheet: View {
         if let scheme = url.scheme?.lowercased(), scheme != "file" { return .systemAction }
         let ref = url.absoluteString
         Task {
-            do { preview = try await client.files.file(imp: impID, ref: ref) }
+            do { preview = try await hub.files.file(imp: impID, ref: ref) }
             catch { problem = error.localizedDescription }
         }
         return .handled
@@ -365,7 +365,7 @@ private struct AskBubble: View {
 private struct TurnView: View {
     var turn: LinkTurn
     var imp: LinkImp
-    var client: LinkClient
+    var hub: LinkHub
     /// Arrived while the chat was open (its voice may play on its own).
     var fresh: Bool
     var retry: (() -> Void)?
@@ -374,7 +374,7 @@ private struct TurnView: View {
         VStack(spacing: 8) {
             AskBubble(text: turn.request, retry: retry)
             if !turn.steps.isEmpty { StepsLine(steps: turn.steps) }
-            ReplyCard(text: turn.reply, imp: imp, client: client, failed: turn.failed, autoplay: fresh, retry: turn.failed ? retry : nil)
+            ReplyCard(text: turn.reply, imp: imp, hub: hub, failed: turn.failed, autoplay: fresh, retry: turn.failed ? retry : nil)
         }
     }
 }
@@ -421,7 +421,7 @@ private struct StepsLine: View {
 private struct ReplyCard: View {
     var text: String
     var imp: LinkImp
-    var client: LinkClient
+    var hub: LinkHub
     var failed = false
     var streaming = false
     var autoplay = false
@@ -446,7 +446,7 @@ private struct ReplyCard: View {
                     }
                 }
             } else {
-                ReplyBlocks(text: text, imp: imp, client: client, autoplay: autoplay)
+                ReplyBlocks(text: text, imp: imp, hub: hub, autoplay: autoplay)
                 if streaming { TypingDots(compact: true) }
             }
         }
@@ -468,7 +468,7 @@ private struct ReplyCard: View {
 private struct LiveTurn: View {
     var work: LinkWork
     var imp: LinkImp
-    var client: LinkClient
+    var hub: LinkHub
 
     var body: some View {
         VStack(spacing: 8) {
@@ -486,7 +486,7 @@ private struct LiveTurn: View {
             if work.partial.isEmpty {
                 TypingDots().frame(maxWidth: .infinity, alignment: .leading)
             } else {
-                ReplyCard(text: work.partial, imp: imp, client: client, streaming: true)
+                ReplyCard(text: work.partial, imp: imp, hub: hub, streaming: true)
             }
         }
     }

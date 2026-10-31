@@ -5,7 +5,7 @@ import Security
 /// Generic passwords in the Keychain: usable in the background after the first unlock, never copied
 /// to another device.
 private enum Keychain {
-    private static func query(_ service: String, _ account: String) -> [String: Any] {
+    static func query(_ service: String, _ account: String) -> [String: Any] {
         [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service, kSecAttrAccount as String: account]
     }
 
@@ -18,12 +18,14 @@ private enum Keychain {
         return out as? Data
     }
 
-    static func write(_ data: Data, _ service: String, _ account: String) {
+    /// Replaces the item. The status says whether it was kept.
+    @discardableResult
+    static func write(_ data: Data, _ service: String, _ account: String) -> OSStatus {
         delete(service, account)
         var q = query(service, account)
         q[kSecValueData as String] = data
         q[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
-        SecItemAdd(q as CFDictionary, nil)
+        return SecItemAdd(q as CFDictionary, nil)
     }
 
     static func delete(_ service: String, _ account: String) {
@@ -31,21 +33,38 @@ private enum Keychain {
     }
 }
 
-/// The pairing holds the secret that opens the link, so it lives in the Keychain, not in preferences.
-enum PairingStore {
-    private static let service = "app.imp.ImpPhone.pairing"
-    private static let account = "mac"
+/// The link book holds this iPhone's signing key and the secrets that open its links, so it lives in
+/// the Keychain, not in preferences.
+struct KeychainLinkStorage: LinkStorage {
+    private static let service = "app.imp.ImpPhone.link"
+    private static let account = "book"
 
-    static func load() -> LinkPairing? {
-        Keychain.read(service, account).flatMap { try? JSONDecoder().decode(LinkPairing.self, from: $0) }
+    /// What went wrong with the Keychain, as its status code.
+    private struct Failure: LocalizedError {
+        var status: OSStatus
+        var errorDescription: String? { SecCopyErrorMessageString(status, nil) as String? ?? "Keychain error \(status)" }
     }
 
-    static func save(_ pairing: LinkPairing) {
-        guard let data = try? JSONEncoder().encode(pairing) else { return }
-        Keychain.write(data, service, account)
+    func load() throws -> LinkBook? {
+        var q = Keychain.query(Self.service, Self.account)
+        q[kSecReturnData as String] = true
+        q[kSecMatchLimit as String] = kSecMatchLimitOne
+        var out: CFTypeRef?
+        let status = SecItemCopyMatching(q as CFDictionary, &out)
+        if status == errSecItemNotFound { return nil }
+        guard status == errSecSuccess, let data = out as? Data else { throw Failure(status: status) }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .secondsSince1970
+        return try decoder.decode(LinkBook.self, from: data)
     }
 
-    static func delete() { Keychain.delete(service, account) }
+    func save(_ book: LinkBook) throws {
+        // The same dates as `LinkFileStorage` writes.
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .secondsSince1970
+        let status = Keychain.write(try encoder.encode(book), Self.service, Self.account)
+        guard status == errSecSuccess else { throw Failure(status: status) }
+    }
 }
 
 /// The keys and header values of the Imps hatched on this iPhone. Nothing else holds them.
