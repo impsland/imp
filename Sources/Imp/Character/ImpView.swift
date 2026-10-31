@@ -26,6 +26,8 @@ struct ImpView: View {
                                  glyphAge: glyph?.1 ?? 0, glyphFade: (glyph?.2 ?? 0) / 0.5)
             }
         }
+        // A visitor whose home is away sleeps, dimmed.
+        .opacity(model.visit?.isAwake == false ? 0.55 : 1)
         .onChange(of: pace == .resting, initial: true) { _, resting in model.onRestingChange?(resting) }
         .accessibilityLabel("Imp")
     }

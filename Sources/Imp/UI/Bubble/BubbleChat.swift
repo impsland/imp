@@ -24,6 +24,11 @@ struct ChatView: View {
         let live = model.chatWork
         VStack(alignment: .leading, spacing: 10) {
             header
+            if let visit = model.visit, !visit.isAwake {
+                Label("\(model.profile.name) is asleep: \(visit.homeName) is away", systemImage: "moon.zzz.fill")
+                    .font(.system(size: 11)).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             if let error = model.recapError {
                 Label("Couldn't recap: \(error)", systemImage: "exclamationmark.triangle.fill")
                     .font(.system(size: 11)).foregroundStyle(.orange)
@@ -123,7 +128,7 @@ struct ChatView: View {
                 ConfirmButton(icon: "plus.bubble", confirm: "New chat?", help: "New chat (this one stays in the list)") {
                     model.startNewChat()
                 }
-                deleteButton
+                if model.visit == nil { deleteButton }
             }
         }
         .frame(height: 20)
@@ -304,7 +309,7 @@ private struct RecapCard: View {
                 InfoTip("\(model.profile.name) remembers this recap instead of the messages above it (they stay here to read), plus the last message before it.")
             }
             .foregroundStyle(tint)
-            MarkdownView(blocks: Markdown.blocks(turn.reply), base: Workspace.directory(for: model.id), fontSize: 12,
+            MarkdownView(blocks: model.replyBlocks(turn.reply), base: Workspace.directory(for: model.id), fontSize: 12,
                          onImageLoad: measuring ? nil : { layout.onToggle?() }, measuring: measuring)
                 .foregroundStyle(.secondary)
         }
@@ -351,7 +356,7 @@ private struct TurnView: View {
                 // (`#autoplay`), once: scrolling back through older ones never plays them.
                 let fresh = !live && model.freshTurns.contains(turn.id)
                 if turn.via == .imp, let sender = turn.sender { ExchangeChip(role: .reply, peer: sender) }
-                MarkdownView(blocks: Markdown.blocks(turn.reply), base: Workspace.directory(for: model.id), fontSize: 13,
+                MarkdownView(blocks: model.replyBlocks(turn.reply), base: Workspace.directory(for: model.id), fontSize: 13,
                              onImageLoad: measuring ? nil : { layout.onToggle?() },
                              mediaOwner: turn.id.uuidString, autoplay: fresh && model.prefs.autoplaysMedia && !measuring,
                              measuring: measuring)

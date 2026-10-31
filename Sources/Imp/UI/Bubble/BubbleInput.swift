@@ -57,7 +57,8 @@ struct TypingField: View {
                 }
                 .onChange(of: text) { _, now in if !chat && !measuring { model.typingChanged(now) } }
                 .onExitCommand { model.dismissBubble() }
-            if !chat { IconButton(icon: "mic", help: "Talk instead") { model.talk() } }
+                .disabled(asleep)
+            if !chat && model.visit == nil { IconButton(icon: "mic", help: "Talk instead") { model.talk() } }
             Button(action: send) {
                 Image(systemName: "arrow.up")
                     .font(.system(size: 12, weight: .bold))
@@ -68,7 +69,7 @@ struct TypingField: View {
             }
             .buttonStyle(.plain)
             .disabled(empty)
-            .help(busy ? "\(model.profile.name) is still answering" : "Send (↩)")
+            .help(asleep ? "\(model.profile.name) is asleep" : busy ? "\(model.profile.name) is still answering" : "Send (↩)")
             .animation(.easeOut(duration: 0.15), value: empty)
         }
         .task(id: bubble.id) {
@@ -81,7 +82,10 @@ struct TypingField: View {
 
     /// In the chat, a new message waits until the answer to the last one is in (sending would
     /// stop it).
-    private var busy: Bool { chat && model.work != nil }
+    private var busy: Bool { chat && model.work != nil || asleep }
+
+    /// A visitor whose home is away can't be asked anything.
+    private var asleep: Bool { model.visit?.isAwake == false }
 
     private func send() {
         guard !busy else { return }
@@ -97,7 +101,7 @@ struct TypingField: View {
         guard pasteMonitor == nil else { return }
         pasteMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let mods = event.modifierFlags.intersection([.command, .control, .option])
-            guard focused, event.keyCode == 9 /* V */, mods == .command || mods == .control else { return event }
+            guard focused, model.visit == nil, event.keyCode == 9 /* V */, mods == .command || mods == .control else { return event }
             if let picture = Pasteboard.picture() {
                 model.attach(picture)
             } else {

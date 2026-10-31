@@ -17,6 +17,7 @@ final class ImpMenu: NSObject, NSMenuDelegate {
     }
 
     func make() -> NSMenu {
+        if let visit = imp.visit { return makeVisitor(visit) }
         let menu = NSMenu()
         menu.appearance = NSApp.appearance
         menu.delegate = self
@@ -78,6 +79,34 @@ final class ImpMenu: NSObject, NSMenuDelegate {
         return menu
     }
 
+    /// A visiting Imp's menu: its brain is at its home, so there is no Colour, Size or triggers here.
+    private func makeVisitor(_ visit: Visiting) -> NSMenu {
+        let menu = NSMenu()
+        menu.appearance = NSApp.appearance
+        menu.delegate = self
+        let name = visit.look.name
+        menu.addItem(.sectionHeader(title: visit.isAwake ? String(localized: "\(name), visiting from \(visit.homeName)")
+                                                         : String(localized: "\(name) is asleep: \(visit.homeName) is away")))
+        if imp.isBusy { add(menu, String(localized: "Stop"), symbol: "stop.circle", action: #selector(stop)) }
+        if imp.bubble?.phase == .result { add(menu, String(localized: "Copy Last Reply"), symbol: "doc.on.doc", action: #selector(copyLast)) }
+        add(menu, String(localized: "Chat"), symbol: "bubble.left.and.bubble.right", action: #selector(openChat))
+            .toolTip = String(localized: "Everything you and \(name) said, with the tools it used.")
+        let fresh = add(menu, String(localized: "New Chat"), symbol: "plus.bubble", action: #selector(newChat))
+        if !visit.isAwake { fresh.action = nil }
+        menu.addItem(.separator())
+        // Only the devices its doors lead to: back where it came from, or on to the others.
+        let doors = Set([LinkSide.left, .right].flatMap { app.link.bands(of: imp.id, side: $0).map(\.device) })
+        for peer in app.link.connectedPeers where doors.contains(peer.id) {
+            let item = add(menu, String(localized: "Send \(name) to \(peer.name)…"),
+                           symbol: peer.kind == .mac ? "desktopcomputer" : "iphone.gen3", action: #selector(sendToDevice(_:)))
+            item.representedObject = peer.id
+            item.toolTip = String(localized: "\(name) flies off the screen onto \(peer.name). Or throw it hard at the side of the screen.")
+        }
+        add(menu, String(localized: "Send \(name) Home"), symbol: "house", action: #selector(sendVisitorHome))
+            .toolTip = String(localized: "\(name) flies back to \(visit.homeName). If it is away, \(name) goes now and \(visit.homeName) hears when it is back.")
+        return menu
+    }
+
     // MARK: Building
 
     @discardableResult
@@ -134,6 +163,8 @@ final class ImpMenu: NSObject, NSMenuDelegate {
     @objc private func stop() { imp.dismissBubble() }
     @objc private func copyLast() { imp.copyBubble() }
     @objc private func openChat() { imp.openChat() }
+    @objc private func newChat() { imp.startNewChat() }
+    @objc private func sendVisitorHome() { app.sendHome(visitor: imp.id) }
     @objc private func hide() { app.setHidden(imp.id, true) }
     @objc private func sendToDevice(_ sender: NSMenuItem) {
         guard let device = sender.representedObject as? UUID else { return }

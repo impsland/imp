@@ -162,7 +162,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@没有接住我。"
+            "value" : "%@ 没有收下我。"
           }
         }
       }
@@ -178,7 +178,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 已不再认识这台 Mac。请在设置中重新连接。"
+            "value" : "%@ 已不认识这台 Mac。请在“设置”中重新关联。"
           }
         }
       }
@@ -194,7 +194,29 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 已不再认识这台 Mac。请重新连接。"
+            "value" : "%@ 已不认识这台 Mac。请重新关联。"
+          }
+        }
+      }
+    },
+    "%@ flies back to %@. If it is away, %@ goes now and %@ hears when it is back." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ flies back to %2$@. If it is away, %3$@ goes now and %4$@ hears when it is back."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ vuelve volando a %2$@. Si está fuera de alcance, %3$@ se va ya y %4$@ se entera cuando vuelva."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 会飞回 %2$@。如果它不在线，%3$@ 会马上离开，等 %4$@ 回来后才会得知。"
           }
         }
       }
@@ -216,7 +238,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 飞出屏幕，落到 %2$@ 上。也可以把它用力扔向屏幕边缘。"
+            "value" : "%1$@ 会飞出屏幕，落到 %2$@ 上。也可以用力把它扔向屏幕边缘。"
           }
         }
       }
@@ -270,7 +292,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 没有地方放我了。"
+            "value" : "%@ 没有地方容纳我了。"
           }
         }
       }
@@ -335,6 +357,66 @@
         }
       }
     },
+    "%@ is asleep" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ está dormido"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 睡着了"
+          }
+        }
+      }
+    },
+    "%@ is asleep: %@ is away" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is asleep: %2$@ is away"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ está dormido: %2$@ está fuera de alcance"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 睡着了：%2$@ 不在线"
+          }
+        }
+      }
+    },
+    "%@ is away, so %@ can't think right now. It wakes up when %@ is back." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is away, so %2$@ can't think right now. It wakes up when %3$@ is back."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ está fuera de alcance, así que %2$@ no puede pensar ahora. Se despierta cuando %3$@ vuelva."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 不在线，所以 %2$@ 现在无法思考。%3$@ 回来后它就会醒来。"
+          }
+        }
+      }
+    },
     "%@ is hiding. Click to bring it back to your desktop." : {
       "localizations" : {
         "es" : {
@@ -372,7 +454,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ está en mitad de una partida."
+            "value" : "%@ está en plena partida."
           }
         },
         "zh-Hans" : {
@@ -394,7 +476,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 已连接。"
+            "value" : "%@ 已关联。"
           }
         }
       }
@@ -484,13 +566,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ no es el dispositivo que vinculaste, así que Imp lo rechazó."
+            "value" : "%@ ya no es el dispositivo que vinculaste, así que Imp lo rechazó."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 已不是你当初连接的那台设备，所以 Imp 拒绝了它。"
+            "value" : "%@ 已不是你当初关联的那台设备，所以 Imp 拒绝了它。"
           }
         }
       }
@@ -662,13 +744,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ no quiso vincularse: su código caducó o se cambió. Muestra uno nuevo."
+            "value" : "%@ no quiso vincularse: su código caducó o fue reemplazado. Muestra uno nuevo."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 无法连接：它的代码已过期或已更换。请显示一个新代码。"
+            "value" : "%@ 没有关联：它的二维码已过期或被替换。请显示一个新的。"
           }
         }
       }
@@ -803,6 +885,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@，在你的 iPhone 上"
+          }
+        }
+      }
+    },
+    "%@, visiting from %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, visiting from %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, de visita desde %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@，来自 %2$@ 的访客"
           }
         }
       }
@@ -1840,7 +1944,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在另一台设备上**打开** Imp"
+            "value" : "在你的另一台设备上**打开** Imp"
           }
         }
       }
@@ -1856,7 +1960,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "**扫描**此代码，或粘贴它的链接"
+            "value" : "**扫描**此二维码，或粘贴它的链接"
           }
         }
       }
@@ -4174,13 +4278,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamar a %@ de vuelta"
+            "value" : "Hacer volver a %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "叫 %@ 回来"
+            "value" : "召回 %@"
           }
         }
       }
@@ -7178,7 +7282,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "要忘记 %@ 吗？"
+            "value" : "忘记 %@？"
           }
         }
       }
@@ -7194,7 +7298,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全部忘记"
+            "value" : "忘记所有设备"
           }
         }
       }
@@ -7210,7 +7314,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全部忘记…"
+            "value" : "忘记所有设备…"
           }
         }
       }
@@ -7226,7 +7330,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "要忘记所有设备吗？"
+            "value" : "忘记所有设备？"
           }
         }
       }
@@ -7242,7 +7346,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全部忘记"
+            "value" : "忘记所有设备"
           }
         }
       }
@@ -8538,13 +8642,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp no puede escuchar a tus otros dispositivos en esta red."
+            "value" : "Imp no puede esperar a tus otros dispositivos en esta red."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 无法在此网络上等待你的其他设备。"
+            "value" : "Imp 无法在此网络上监听你的其他设备。"
           }
         }
       }
@@ -8560,7 +8664,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 无法读取已连接设备的列表。"
+            "value" : "Imp 无法读取已关联设备的列表。"
           }
         }
       }
@@ -8592,7 +8696,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 无法保存已连接设备的列表。"
+            "value" : "Imp 无法保存已关联设备的列表。"
           }
         }
       }
@@ -8618,13 +8722,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp no pudo llegar a ese dispositivo. ¿Está abierto, en la misma red o en el mismo servidor?"
+            "value" : "Imp no pudo llegar a ese dispositivo. ¿Está abierto, en la misma red o con el mismo servidor?"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 无法连接到那台设备。它是否已打开，并在同一网络或同一服务器上？"
+            "value" : "Imp 无法连接到那台设备。它是否已打开，并处在同一网络或同一服务器上？"
           }
         }
       }
@@ -8640,7 +8744,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 已达到可连接设备的上限。"
+            "value" : "Imp 已达到可关联设备的上限。"
           }
         }
       }
@@ -8842,13 +8946,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los Imps que tiene vuelven a tu escritorio. Para volver a vincularos, uno de los dos muestra un código nuevo."
+            "value" : "Los Imps que tiene vuelven a tu escritorio. Para vincular de nuevo, uno de los dos muestra un código nuevo."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "它带着的 Imp 会回到你的桌面。要重新连接，请由其中一方显示一个新代码。"
+            "value" : "它持有的 Imp 会回到你的桌面。要再次关联，由其中一方显示新的二维码。"
           }
         }
       }
@@ -8858,13 +8962,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los Imps de otros dispositivos vuelven a tu escritorio. Los códigos antiguos dejan de funcionar; vuelve a vincular con uno nuevo."
+            "value" : "Los Imps de otros dispositivos vuelven a tu escritorio. Los códigos antiguos dejan de funcionar; vincula de nuevo con uno nuevo."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "其他设备上的 Imp 会回到你的桌面。旧代码将失效；请用新代码重新连接。"
+            "value" : "其他设备上的 Imp 会回到你的桌面。旧二维码将失效；请用新的重新关联。"
           }
         }
       }
@@ -9798,7 +9902,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接"
+            "value" : "关联"
           }
         }
       }
@@ -9814,7 +9918,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接设备"
+            "value" : "关联设备"
           }
         }
       }
@@ -9824,13 +9928,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vincula este Mac con tu iPhone u otro Mac. Lanza un Imp con fuerza contra el borde izquierdo o derecho de la pantalla y saldrá volando hacia un dispositivo vinculado. Sigue pensando en este Mac: chatea con él allí y lánzalo de vuelta."
+            "value" : "Vincula este Mac con tu iPhone u otro Mac. Lanza un Imp con fuerza contra el lado izquierdo o derecho de la pantalla y volará a un dispositivo vinculado. Sigue pensando en este Mac: charla con él allí y devuélvelo lanzándolo."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将这台 Mac 与你的 iPhone 或另一台 Mac 连接。把 Imp 用力扔向屏幕左侧或右侧，它就会飞到已连接的设备上。它仍在这台 Mac 上思考：在那边和它聊天，再把它扔回来。"
+            "value" : "将这台 Mac 与你的 iPhone 或另一台 Mac 关联。用力把 Imp 扔向屏幕左侧或右侧，它就会飞到已关联的设备上。它仍在这台 Mac 上思考：可以在那边和它聊天，再把它扔回来。"
           }
         }
       }
@@ -9846,7 +9950,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "与设备连接"
+            "value" : "与设备关联"
           }
         }
       }
@@ -9862,7 +9966,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "与另一台设备连接"
+            "value" : "与另一台设备关联"
           }
         }
       }
@@ -9878,7 +9982,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已与 %@ 连接。"
+            "value" : "已与 %@ 关联。"
           }
         }
       }
@@ -9894,7 +9998,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接代码"
+            "value" : "关联二维码"
           }
         }
       }
@@ -9910,7 +10014,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这台 Mac 上的连接功能未在运行。"
+            "value" : "这台 Mac 上未运行关联功能。"
           }
         }
       }
@@ -9926,7 +10030,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在连接…"
+            "value" : "正在关联…"
           }
         }
       }
@@ -11644,7 +11748,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你的其他设备都不在。请在其中一台上打开 Imp，然后再扔我一次。"
+            "value" : "你的其他设备都不在附近。请在其中一台上打开 Imp，然后再扔我一次。"
           }
         }
       }
@@ -11974,13 +12078,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En otro dispositivo. Haz clic para llamarlo de vuelta a tu escritorio."
+            "value" : "En otro dispositivo. Haz clic para hacerlo volver a tu escritorio."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在另一台设备上。点按可把它叫回桌面。"
+            "value" : "在另一台设备上。点按可将它召回桌面。"
           }
         }
       }
@@ -12332,13 +12436,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre primero Imp en un dispositivo vinculado (en la misma red que este Mac o en el mismo servidor)."
+            "value" : "Abre primero Imp en un dispositivo vinculado (en la misma red que este Mac o con el mismo servidor)."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请先在已连接的设备上打开 Imp（与这台 Mac 在同一网络或同一服务器上）。"
+            "value" : "请先在已关联的设备上打开 Imp（与这台 Mac 处于同一网络或同一服务器）。"
           }
         }
       }
@@ -15282,7 +15386,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enviar %1$@ a %2$@…"
+            "value" : "Enviar a %1$@ a %2$@…"
           }
         },
         "zh-Hans" : {
@@ -15298,7 +15402,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enviar %@ a otro dispositivo…"
+            "value" : "Enviar a %@ a otro dispositivo…"
           }
         },
         "zh-Hans" : {
@@ -16312,7 +16416,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示一个代码供另一台设备扫描。每次扫描都会把那台设备与这台 Mac 连接。"
+            "value" : "显示供另一台设备扫描的二维码。每次扫描都会让该设备与这台 Mac 关联。"
           }
         }
       }
@@ -17496,7 +17600,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "那个 Imp 不在外面。"
+            "value" : "那个 Imp 没有出来。"
           }
         }
       }
@@ -17608,7 +17712,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "那台设备没有及时回应。"
+            "value" : "那台设备没有及时响应。"
           }
         }
       }
@@ -17624,7 +17728,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "那台设备不是你之前连接的那台。请先忘记它，再重新连接。"
+            "value" : "那台设备不是你之前关联的那台。请先忘记它，再重新关联。"
           }
         }
       }
@@ -17640,7 +17744,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "那台设备无法连接。它的代码可能已过期：请显示一个新代码。"
+            "value" : "那台设备没有关联。它的二维码可能已过期：请显示一个新的。"
           }
         }
       }
@@ -17938,13 +18042,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ese es el código de este Mac. Usa el del otro dispositivo."
+            "value" : "Ese es el código de este mismo Mac. Usa el del otro dispositivo."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这是这台 Mac 自己的代码。请使用另一台设备上的代码。"
+            "value" : "这是这台 Mac 自己的二维码。请使用另一台设备上的。"
           }
         }
       }
@@ -18292,7 +18396,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "代码中有一把只有这台 Mac 和扫描它的设备才会共享的密钥。它们之间的一切通信都经过加密，没有你出示的代码，任何人都无法与这台 Mac 连接。"
+            "value" : "二维码中含有一把密钥，只有这台 Mac 和扫描它的设备共享。它们之间的所有通信都经过加密，没有你出示的二维码，其他人无法与这台 Mac 关联。"
           }
         }
       }
@@ -18302,13 +18406,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El dispositivo del que vine no está, así que no puedo volver por ahí."
+            "value" : "El dispositivo de donde vengo no está cerca, así que no puedo volver por ahí."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "我来的那台设备不在，所以我没法从那边回去。"
+            "value" : "我来的那台设备不在附近，所以不能从这边回去。"
           }
         }
       }
@@ -18516,7 +18620,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "服务器拒绝了这台 Mac，所以你的设备无法远程连接到它。"
+            "value" : "服务器拒绝了这台 Mac，所以你的设备无法从远处连接它。"
           }
         }
       }
@@ -18590,13 +18694,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Por ahí no hay ningún otro sitio adonde ir."
+            "value" : "No hay otro lugar adonde ir por ese lado."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "那边没有别的地方可去。"
+            "value" : "那一边没有别的地方可去。"
           }
         }
       }
@@ -18708,7 +18812,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这台 Mac 无法再连接更多设备。"
+            "value" : "这台 Mac 无法再关联更多设备。"
           }
         }
       }
@@ -18740,7 +18844,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这台 Mac 的代码"
+            "value" : "这台 Mac 的二维码"
           }
         }
       }
@@ -19642,13 +19746,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desvincula todos los dispositivos y hace que los códigos antiguos dejen de funcionar."
+            "value" : "Desvincula todos los dispositivos e invalida los códigos antiguos."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "断开所有设备，并使旧代码失效。"
+            "value" : "取消所有设备的关联，并使旧二维码失效。"
           }
         }
       }
@@ -19824,13 +19928,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A través del servidor"
+            "value" : "Por el servidor"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "通过服务器"
+            "value" : "经由服务器"
           }
         }
       }
@@ -20518,7 +20622,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有了服务器，你的设备在任何地方都能互相找到，而不仅限于你的 Wi-Fi，这台 Mac 的代码也能在任何地方使用。服务器只负责转发加密数据，无法读取任何内容。"
+            "value" : "有了服务器，你的设备在任何地方都能找到彼此，不只是在同一 Wi-Fi 下，这台 Mac 的二维码也能随处使用。服务器只传递加密数据，什么也读不到。"
           }
         }
       }
@@ -21191,6 +21295,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "担忧的眉毛"
+          }
+        }
+      }
+    },
+    "“%@” is a file on %@, so it can't be shown here." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "“%1$@” is a file on %2$@, so it can't be shown here."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%1$@» es un archivo de %2$@, así que no se puede mostrar aquí."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%1$@”是 %2$@ 上的文件，无法在此显示。"
           }
         }
       }

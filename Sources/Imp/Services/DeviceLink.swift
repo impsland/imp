@@ -76,6 +76,8 @@ final class DeviceLink {
         self.node = node
         // The ledger is the truth about where our Imps are.
         app.reconcileAway(Dictionary(node.away.entries.map { ($0.imp, $0.holder) }, uniquingKeysWith: { $1 }))
+        // The Imps visiting before the app closed are back, asleep until their homes connect.
+        node.visits.visits.forEach { app.welcome(visiting($0), entry: nil) }
         refresh()
         watchServer()
         watchStage()
@@ -102,8 +104,8 @@ final class DeviceLink {
     func bands(of imp: UUID, side: LinkSide) -> [LinkDoors.Band] { node?.bands(of: imp, side: side) ?? [] }
 
     /// Throws an Imp to a device. The answer comes back to the app as `passed`.
-    func pass(_ profile: ImpProfile, entry: LinkEntry, to device: UUID) -> UUID? {
-        node?.pass(LinkImp(profile), entry: entry, to: device)
+    func pass(_ imp: LinkImp, entry: LinkEntry, to device: UUID) -> UUID? {
+        node?.pass(imp, entry: entry, to: device)
     }
 
     /// Takes one of our Imps back from the device that holds it.
@@ -111,6 +113,31 @@ final class DeviceLink {
         node?.callHome(imp)
         sent[imp] = nil
         refresh()
+    }
+
+    /// Sends a visiting Imp home from here. False if it isn't one.
+    func sendHome(visitor imp: UUID) -> Bool {
+        guard node?.sendHome(imp) == true else { return false }
+        refresh()
+        return true
+    }
+
+    // MARK: To the home of a visiting Imp
+
+    func ask(_ imp: UUID, _ text: String) { tell(imp, .ask(imp: imp, text: String(text.prefix(LinkProtocol.maxText)))) }
+    func stop(_ imp: UUID) { tell(imp, .stop(imp: imp)) }
+    func newChat(_ imp: UUID) { tell(imp, .newChat(imp: imp)) }
+    func felt(_ imp: UUID, _ feeling: LinkFeeling) { tell(imp, .felt(imp: imp, feeling: feeling)) }
+
+    private func tell(_ imp: UUID, _ message: LinkMessage) {
+        guard let home = node?.visits.visit(of: imp)?.home.id else { return }
+        node?.send(message, to: home)
+    }
+
+    /// A visit as the desktop draws it: asleep while its home isn't connected.
+    private func visiting(_ visit: Visits.Visit) -> Visiting {
+        Visiting(look: visit.imp, homeID: visit.home.id, homeName: visit.home.device.name,
+                 isAwake: node?.isConnected(visit.home.id) == true, side: visit.side)
     }
 
     /// An Imp that came home or was deleted needs nothing more said about it.
@@ -143,10 +170,10 @@ final class DeviceLink {
         refresh()
     }
 
-    /// Imps of ours that were held by a device that is gone come home. (Visiting Imps sent home
-    /// have no body on this Mac yet: `Forgotten.sentHome` is for the desktop to draw them.)
+    /// Imps of ours that were held by a device that is gone come home, and the visitors from it go home.
     private func returned(_ forgotten: LinkNode.Forgotten) {
         forgotten.calledHome.forEach { app.cameHome($0) }
+        forgotten.sentHome.forEach { app.farewell(visitor: $0) }
     }
 
     // MARK: Events
@@ -199,6 +226,8 @@ final class DeviceLink {
             return Peer(id: id, name: link.device.name, kind: link.device.kind, reach: reach, imps: node.away.held(by: id))
         }
         if now != peers { peers = now }
+        // Visitors sleep while their homes are away, and wear the looks their homes gave them.
+        for visit in node.visits.visits { app.visitor(visit.id)?.update(visiting(visit)) }
     }
 
     // MARK: From other devices
@@ -255,25 +284,40 @@ final class DeviceLink {
         case .answer(let id, let text, let failed):
             let words = String(text.prefix(LinkProtocol.maxText))
             settle(id, failed ? .failure(ToolArgumentError(words)) : .success(words))
+        case .look:
+            refresh()                                          // the node has its new looks
+        case .chat(let imp, let turns): app.visitor(imp)?.heard(chat: turns)
+        case .work(let imp, let work): app.visitor(imp)?.heard(work: work)
+        case .mood(let imp, let mood): app.visitor(imp)?.heard(mood: mood)
+        case .speech(let imp, let speech): app.visitor(imp)?.heard(speech: speech)
+        case .animate(let imp, let beats): app.visitor(imp)?.acted(beats)
+        case .gone(let imp):
+            app.farewell(visitor: imp)
+            refresh()
         default:
-            // Everything a visiting Imp's home says about it (look, chat, work, mood, speech,
-            // animations, files, `gone`) is for the desktop to draw: visits aren't shown yet.
+            // The rest of what a visiting Imp's home says (files, talks) isn't shown on the Mac yet.
             break
         }
     }
 
     // MARK: Imps coming and going
 
-    /// An Imp was thrown here. Ours coming home are taken; a visitor can't be shown yet, so it bounces.
+    /// An Imp was thrown here. Ours coming home are taken; a visitor is drawn on the desktop (the
+    /// node says no when it holds as many visits as it can).
     private func thrown(_ transfer: UUID, imp: LinkImp, entry: LinkEntry, home: LinkCard?, from device: UUID) {
         guard let node else { return }
-        guard home == nil, app.profile(imp.id) != nil else {
-            log.info("turned down a visiting Imp: visits aren't shown on the Mac yet")
-            return node.decline(transfer, reason: .other)
-        }
-        if node.accept(transfer) {
-            app.cameHome(imp.id, entry: entry)
+        if home != nil {
+            guard node.accept(transfer), let visit = node.visits.visit(of: imp.id) else { return }
+            app.welcome(visiting(visit), entry: entry)
             refresh()
+        } else if app.profile(imp.id) != nil {
+            if node.accept(transfer) {
+                app.cameHome(imp.id, entry: entry)
+                refresh()
+            }
+        } else {
+            log.info("turned down an Imp that isn't ours and has no home to think at")
+            node.decline(transfer, reason: .other)
         }
     }
 
@@ -417,7 +461,7 @@ final class DeviceLink {
         guard let node else { return [] }
         let me = node.device.id
         let mine = app.prefs.imps.filter(\.isActive).map { LinkStaged(imp: LinkImp($0), home: me) }
-        let stage = node.holder(of: imp).map(node.stage(of:)) ?? []
+        let stage = node.holder(of: imp).map(node.stage(of:)) ?? visitorsStaged
         return LinkTalks.targets(of: imp, mine: mine, stage: stage).filter { $0.home != me }
     }
 
@@ -484,11 +528,16 @@ final class DeviceLink {
         node?.setServer(server.flatMap { HopAddress($0.hop) })
     }
 
-    /// The other devices are told which Imps are on this desktop. (Visiting Imps join them once the
-    /// desktop draws them.)
+    /// The Imps visiting this desktop, as the other devices are told.
+    private var visitorsStaged: [LinkStaged] {
+        app.visitors.compactMap { model in model.visit.map { LinkStaged(imp: $0.look, home: $0.homeID) } }
+    }
+
+    /// The other devices are told which Imps are on this desktop, visitors too.
     private func watchStage() {
         let staged = withObservationTracking {
             app.prefs.imps.filter { $0.isActive && $0.awayOn == nil }.map { LinkStaged(imp: LinkImp($0), home: node?.device.id ?? UUID()) }
+                + visitorsStaged
         } onChange: { [weak self] in
             Task { @MainActor in self?.watchStage() }
         }

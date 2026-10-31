@@ -434,6 +434,34 @@ enum IconRenderer {
         snapshot(host, to: url, dark: dark)
     }
 
+    /// `Imp --render-visitor <file.png> [dark]`: two Imps visiting from a Mac mini, one awake with a
+    /// chat that mentions a picture, one asleep because its home is away. Nothing real is touched.
+    static func renderVisitor(to url: URL, dark: Bool) {
+        let model = AppModel(persist: false)
+        func visitor(_ name: String, hue: Double, awake: Bool) -> ImpModel {
+            let look = LinkImp(id: UUID(), name: name, hue: hue, scale: 1, traits: ImpTraits())
+            let imp = ImpModel(id: look.id, app: model,
+                               visiting: Visiting(look: look, homeID: UUID(), homeName: "Mac mini", isAwake: awake, side: .left))
+            let date = Date(timeIntervalSinceReferenceDate: 812_000_000)
+            var chat = ChatHistory(folder: nil)
+            chat.append(ChatTurn(date: date, request: "Draw me a cat", reply: "Here it is: ![A cat](cat.png)"))
+            imp.showSample(chat)
+            return imp
+        }
+        let layout = BubbleLayout()
+        let sheet = HStack(alignment: .top, spacing: 0) {
+            ForEach([visitor("Pip", hue: 0.58, awake: true), visitor("Mo", hue: 0.33, awake: false)], id: \.id) { imp in
+                VStack(spacing: 0) {
+                    ImpView(model: imp).frame(width: 120, height: 120)
+                    BubbleCard(bubble: Bubble(phase: .chat), model: imp, layout: layout, measuring: true)
+                }
+            }
+        }
+        let host = NSHostingView(rootView: sheet)
+        host.frame.size = host.fittingSize
+        snapshot(host, to: url, dark: dark)
+    }
+
     /// `Imp --render-voice <file.png> [dark]`: a speaking bubble's glow and smoke for a few Imp
     /// colours, resting and at rising loudness (a plain card stands in for the glass).
     static func renderVoice(to url: URL, dark: Bool) {

@@ -84,6 +84,13 @@ if let url = argument(after: "--render-exchange") {
     }
     exit(0)
 }
+if let url = argument(after: "--render-visitor") {
+    MainActor.assumeIsolated {
+        _ = NSApplication.shared
+        IconRenderer.renderVisitor(to: url, dark: args.contains("dark"))
+    }
+    exit(0)
+}
 if let url = argument(after: "--render-voice") {
     MainActor.assumeIsolated { IconRenderer.renderVoice(to: url, dark: args.contains("dark")) }
     exit(0)
