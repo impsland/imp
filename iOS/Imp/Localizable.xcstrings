@@ -104,6 +104,22 @@
         }
       }
     },
+    "%@ rune" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runa %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@符文"
+          }
+        }
+      }
+    },
     "%@ sleeps until it has a service to think with." : {
       "localizations" : {
         "es" : {
@@ -168,6 +184,54 @@
         }
       }
     },
+    "%lld in a row" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld seguidas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连续 %lld 次"
+          }
+        }
+      }
+    },
+    "%lld points" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld puntos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 分"
+          }
+        }
+      }
+    },
+    "%lld times" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld veces"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 次"
+          }
+        }
+      }
+    },
     "**Mac:** All Imps › App › iPhone" : {
       "localizations" : {
         "es" : {
@@ -212,6 +276,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "+5 秒"
+          }
+        }
+      }
+    },
+    "A life back!" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Una vida de vuelta!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回了一条命！"
           }
         }
       }
@@ -479,6 +559,22 @@
         }
       }
     },
+    "Best combo" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mejor combo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最佳连击"
+          }
+        }
+      }
+    },
     "Blaze ×2" : {
       "localizations" : {
         "es" : {
@@ -507,6 +603,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "烈焰时刻。得分翻倍。"
+          }
+        }
+      }
+    },
+    "Blue wisps pay five" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los fuegos fatuos azules dan cinco"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "蓝色幽火值五分"
           }
         }
       }
@@ -575,6 +687,22 @@
         }
       }
     },
+    "Catch a whole wave for a bonus. Let none get away." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atrapa una oleada entera para ganar un extra. Que no se escape ninguna."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接住整波火花可得奖励，别让任何一颗溜走。"
+          }
+        }
+      }
+    },
     "Catch embers. More in one flight, more points." : {
       "localizations" : {
         "es" : {
@@ -587,6 +715,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "接住火花。一次飞行接得越多，得分越高。"
+          }
+        }
+      }
+    },
+    "Catch the gold" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atrapa el oro"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接住金色火花"
           }
         }
       }
@@ -626,6 +770,86 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择"
+          }
+        }
+      }
+    },
+    "Clean burn" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fuego limpio"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无烟烈焰"
+          }
+        }
+      }
+    },
+    "Clean burn! +%lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Fuego limpio! +%lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无烟烈焰！+%lld"
+          }
+        }
+      }
+    },
+    "Clean burn." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fuego limpio."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无烟烈焰。"
+          }
+        }
+      }
+    },
+    "Clean! +%lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Limpio! +%lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "零失误！+%lld"
+          }
+        }
+      }
+    },
+    "Clean. %lld points" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpio. %lld puntos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "零失误。%lld 分"
           }
         }
       }
@@ -866,6 +1090,54 @@
         }
       }
     },
+    "Drop" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gota"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "水滴"
+          }
+        }
+      }
+    },
+    "Echo over. %lld points" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eco terminado. %lld puntos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echo 结束。%lld 分"
+          }
+        }
+      }
+    },
+    "Echo over. %lld points. New best!" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eco terminado. %lld puntos. ¡Nuevo récord!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echo 结束。%lld 分。新纪录！"
+          }
+        }
+      }
+    },
     "Edit" : {
       "localizations" : {
         "es" : {
@@ -894,6 +1166,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "编辑 Imp"
+          }
+        }
+      }
+    },
+    "End Echo" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminar Eco"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "结束 Echo"
+          }
+        }
+      }
+    },
+    "Every rune, all the way" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todas las runas, hasta el final"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一路记完所有符文"
+          }
+        }
+      }
+    },
+    "Flame" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llama"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "火焰"
           }
         }
       }
@@ -942,6 +1262,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "给它一个大脑"
+          }
+        }
+      }
+    },
+    "Golden shower!" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Lluvia dorada!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黄金雨！"
+          }
+        }
+      }
+    },
+    "Got away" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escaparon"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "溜走"
           }
         }
       }
@@ -1216,6 +1568,22 @@
         }
       }
     },
+    "Leaf" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoja"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "叶子"
+          }
+        }
+      }
+    },
     "Leave the personality empty for a friendly default." : {
       "localizations" : {
         "es" : {
@@ -1244,6 +1612,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "住在这部 iPhone 上"
+          }
+        }
+      }
+    },
+    "Longest echo" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eco más largo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最长回响"
           }
         }
       }
@@ -1374,6 +1758,22 @@
         }
       }
     },
+    "Moon" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luna"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月亮"
+          }
+        }
+      }
+    },
     "More" : {
       "localizations" : {
         "es" : {
@@ -1477,6 +1877,22 @@
         }
       }
     },
+    "Nice!" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Bien!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "漂亮！"
+          }
+        }
+      }
+    },
     "No brain yet" : {
       "localizations" : {
         "es" : {
@@ -1573,6 +1989,102 @@
         }
       }
     },
+    "Not quite" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "差一点"
+          }
+        }
+      }
+    },
+    "Not quite. Watch again" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casi. Mira otra vez"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "差一点。再看一遍"
+          }
+        }
+      }
+    },
+    "Nothing got away" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se escapó ninguna"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一颗也没溜走"
+          }
+        }
+      }
+    },
+    "Nothing got away! +%lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡No se escapó ninguna! +%lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一颗也没溜走！+%lld"
+          }
+        }
+      }
+    },
+    "Nothing got away." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se escapó ninguna."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一颗也没溜走。"
+          }
+        }
+      }
+    },
+    "Now you: tap them in the same order" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahora tú: tócalas en el mismo orden"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "轮到你：按同样的顺序点按"
+          }
+        }
+      }
+    },
     "On this iPhone" : {
       "localizations" : {
         "es" : {
@@ -1624,6 +2136,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在 iPhone 上，请用 Mac 的名称或地址代替 localhost。"
+          }
+        }
+      }
+    },
+    "Oops!" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Ups!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哎呀！"
           }
         }
       }
@@ -1763,6 +2291,86 @@
         }
       }
     },
+    "Perfect echo!" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Eco perfecto!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完美回响！"
+          }
+        }
+      }
+    },
+    "Perfect echo! %lld points" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Eco perfecto! %lld puntos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完美回响！%lld 分"
+          }
+        }
+      }
+    },
+    "Perfect wave! +%lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Oleada perfecta! +%lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完美一波！+%lld"
+          }
+        }
+      }
+    },
+    "Perfect waves" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oleadas perfectas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完美波次"
+          }
+        }
+      }
+    },
+    "Perfect ×%lld! +%lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Perfecto ×%lld! +%lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完美 ×%lld！+%lld"
+          }
+        }
+      }
+    },
     "Personality" : {
       "localizations" : {
         "es" : {
@@ -1823,6 +2431,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "播放"
+          }
+        }
+      }
+    },
+    "Play Echo" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugar a Eco"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玩 Echo"
           }
         }
       }
@@ -1985,6 +2609,38 @@
         }
       }
     },
+    "Ring time!" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Hora de los aros!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "圆环时刻！"
+          }
+        }
+      }
+    },
+    "Ring! +%lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Aro! +%lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "圆环！+%lld"
+          }
+        }
+      }
+    },
     "Save" : {
       "localizations" : {
         "es" : {
@@ -2075,6 +2731,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "用**相机**扫描代码"
+          }
+        }
+      }
+    },
+    "Score %lld, lives %lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntos %lld, vidas %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "得分 %lld，生命 %lld"
           }
         }
       }
@@ -2189,6 +2861,22 @@
         }
       }
     },
+    "Slips" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fallos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "失误"
+          }
+        }
+      }
+    },
     "Small" : {
       "localizations" : {
         "es" : {
@@ -2253,18 +2941,18 @@
         }
       }
     },
-    "Steer clear of smoke." : {
+    "Steer clear of smoke. A round without any pays a bonus." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Evita el humo."
+            "value" : "Evita el humo. Una ronda sin nada de humo da un extra."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "避开烟雾。"
+            "value" : "避开烟雾。整局不碰烟雾可得奖励。"
           }
         }
       }
@@ -2308,6 +2996,22 @@
         }
       }
     },
+    "Take each ring in one flight" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atrapa cada aro en un solo vuelo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每个圆环一次飞行接完"
+          }
+        }
+      }
+    },
     "Talks" : {
       "localizations" : {
         "es" : {
@@ -2320,6 +3024,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "对话"
+          }
+        }
+      }
+    },
+    "Tap them back in the same order. Each round adds one." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tócalas en el mismo orden. Cada ronda añade una."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按同样的顺序点回去。每一轮多一个。"
           }
         }
       }
@@ -2619,6 +3339,22 @@
         }
       }
     },
+    "Three slips and it's over. A clean round pays double." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tres fallos y se acaba. Una ronda sin fallos paga el doble."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "失误三次就结束。零失误的一轮得分翻倍。"
+          }
+        }
+      }
+    },
     "Through the internet" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2809,6 +3545,22 @@
         }
       }
     },
+    "Try the %@ rune" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prueba la runa %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "试试%@符文"
+          }
+        }
+      }
+    },
     "URL" : {
       "localizations" : {
         "es" : {
@@ -2958,6 +3710,70 @@
         }
       }
     },
+    "Watch" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mira"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "观察"
+          }
+        }
+      }
+    },
+    "Watch again" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mira otra vez"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再看一遍"
+          }
+        }
+      }
+    },
+    "Watch the Imps light the runes" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mira cómo los Imps encienden las runas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "看 Imp 点亮符文"
+          }
+        }
+      }
+    },
+    "Watch the Imps light the runes." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mira cómo los Imps encienden las runas."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "看 Imp 点亮符文。"
+          }
+        }
+      }
+    },
     "Web (HTTP) servers that speak MCP. Header values stay in this iPhone's Keychain." : {
       "localizations" : {
         "es" : {
@@ -2974,6 +3790,22 @@
         }
       }
     },
+    "Wisp storm!" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Tormenta de fuegos fatuos!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "幽火风暴！"
+          }
+        }
+      }
+    },
     "Writing" : {
       "localizations" : {
         "es" : {
@@ -2986,6 +3818,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在书写"
+          }
+        }
+      }
+    },
+    "Wrong rune" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runa equivocada"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "符文错了"
+          }
+        }
+      }
+    },
+    "Wrong rune. %lld lives left" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runa equivocada. Quedan %lld vidas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "符文错了。还剩 %lld 条命"
           }
         }
       }
@@ -3087,6 +3951,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的密钥只保存在这部 iPhone 的钥匙串中。"
+          }
+        }
+      }
+    },
+    "Your turn" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu turno"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "轮到你"
           }
         }
       }

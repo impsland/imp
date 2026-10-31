@@ -64,8 +64,10 @@ final class StageEngine {
     private(set) var round: GameRound?
     var reduceMotion = false
     private let haptics = GameHaptics()
-    /// A round is on: edges always bounce and nobody can be tossed away.
-    var isPlaying: Bool { round.map { !$0.isOver } ?? false }
+    /// The round of Echo being played (or just finished, until its card is dismissed).
+    private(set) var echo: EchoSession?
+    /// A game is on: edges always bounce, nobody can be tossed away and a tap on an Imp opens no chat.
+    var isPlaying: Bool { echo != nil || (round.map { !$0.isOver } ?? false) }
 
     var isConnected: () -> Bool = { true }
     var send: (UUID, LinkSide, Double, Double) -> Void = { _, _, _, _ in }
@@ -108,7 +110,7 @@ final class StageEngine {
         bodies[id] = nil
         order.removeAll { $0 == id }
         if focus == id { focus = nil }
-        if order.isEmpty { round = nil }
+        if order.isEmpty { round = nil; endEcho() }
     }
 
     // MARK: Events from the Mac
@@ -241,7 +243,7 @@ final class StageEngine {
 
     /// Starts a round, if there is anyone to play with. The first one (or one asked for) begins with the lesson.
     func startGame(tutorial: Bool = false) {
-        guard !order.isEmpty else { return }
+        guard !order.isEmpty, echo == nil else { return }
         let coaching = tutorial || !UserDefaults.standard.bool(forKey: Self.tutorialKey)
         round = GameRound(coaching: coaching)
         haptics.prepare()
@@ -262,25 +264,35 @@ final class StageEngine {
     var best: Int { UserDefaults.standard.integer(forKey: "emberBest") }
 
     /// Keeps the best, and says whether this round beat it.
-    private func finishGame(_ round: GameRound) -> Bool {
+    private func finishGame(_ round: inout GameRound) -> Bool {
+        let defaults = UserDefaults.standard
         let isBest = round.score > best
-        if isBest { UserDefaults.standard.set(round.score, forKey: "emberBest") }
+        if isBest { defaults.set(round.score, forKey: "emberBest") }
+        // Clean rounds in a row, and rounds where nothing got away.
+        round.cleanStreak = round.cleanBurn ? defaults.integer(forKey: "emberCleanStreak") + 1 : 0
+        defaults.set(round.cleanStreak, forKey: "emberCleanStreak")
+        round.flawlessRounds = defaults.integer(forKey: "emberFlawless") + (round.flawless ? 1 : 0)
+        defaults.set(round.flawlessRounds, forKey: "emberFlawless")
         haptics.finished(best: isBest)
         let points = round.score
-        AccessibilityNotification.Announcement(isBest ? String(localized: "Time. \(points) points. New best!")
-                                                       : String(localized: "Time. \(points) points")).post()
+        var words = [isBest ? String(localized: "Time. \(points) points. New best!") : String(localized: "Time. \(points) points")]
+        if round.flawless { words.append(String(localized: "Nothing got away.")) }
+        if round.cleanBurn { words.append(String(localized: "Clean burn.")) }
+        AccessibilityNotification.Announcement(words.joined(separator: " ")).post()
         return isBest
     }
 
     /// How an Imp looks while playing: nil outside a round.
     func gameMood(_ b: Body, at date: Date) -> Mood? {
         guard isPlaying else { return nil }
+        if let echo { return echo.mood(of: b.imp.id, dizzy: b.dizzyUntil > date) }
         if b.dizzyUntil > date { return .dizzy }
         if b.phase == .dragging { return .curious }
         return hypot(b.vel.dx, b.vel.dy) > GameRound.flightSpeed ? .excited : .idle
     }
 
     private func play(_ dt: Double, date: Date) {
+        if echo != nil { return playEcho(dt, date: date) }
         guard var round else { return }
         if round.isOver {
             round.settle(dt, in: field, calm: reduceMotion)
@@ -328,13 +340,111 @@ final class StageEngine {
             case .blaze:
                 haptics.blaze()
                 AccessibilityNotification.Announcement(String(localized: "Blaze. Points count double")).post()
+            case .perfectWave(let id, let streak, _):
+                haptics.perfect(streak)
+                if let id {
+                    bodies[id]?.performance = Performance(key: "catch", steps: [
+                        AnticStep(duration: 0.8, mood: .happy, glyph: .sparkles, hop: true)])
+                }
+            case .ring(let id, _):
+                haptics.ring()
+                if let id {
+                    bodies[id]?.performance = Performance(key: "catch", steps: [
+                        AnticStep(duration: 1.1, mood: .excited, glyph: .sparkles, hop: true, move: BodyMove(kind: .spin))])
+                }
+            case .special(let kind):
+                haptics.phase()
+                AccessibilityNotification.Announcement("\(kind.title) \(kind.hint)").post()
+            case .specialEnded:
+                break
+            case .cleanBurn:
+                haptics.cleanBurn()
+                celebrate(glyph: .sparkles, move: nil, at: date)
+            case .flawless:
+                haptics.flawless()
+                celebrate(glyph: .heart, move: BodyMove(kind: .spin), at: date)
             case .countdown:
                 UserDefaults.standard.set(true, forKey: Self.tutorialKey)
             case .tick(let n):
                 haptics.tick(n)
             case .finished:
-                round.isRecord = finishGame(round)
+                round.isRecord = finishGame(&round)
             }
+        }
+    }
+
+    /// Every Imp takes a turn at a little dance, one after the other.
+    private func celebrate(glyph: Glyph, move: BodyMove?, at date: Date) {
+        for (i, id) in order.enumerated() where bodies[id]?.phase == .free {
+            bodies[id]?.performance = Performance(key: "catch", steps: [
+                AnticStep(duration: 0.12 * Double(i) + 0.05, mood: .happy),
+                AnticStep(duration: 1.2, mood: .excited, glyph: glyph, hop: true, move: move),
+                AnticStep(duration: 0.6, mood: .happy)], at: date)
+        }
+    }
+
+    // MARK: Echo
+
+    nonisolated static let echoTutorialKey = "echoTutorialSeen"
+
+    /// Starts a round of Echo, if there is anyone to play with and Embers isn't on. The first one
+    /// (or one asked for) begins with the guided step.
+    func startEcho(tutorial: Bool = false) {
+        guard !order.isEmpty, round == nil else { return }
+        echo?.close()
+        let coaching = tutorial || !UserDefaults.standard.bool(forKey: Self.echoTutorialKey)
+        // Whoever is in a hand is put down, and everyone settles.
+        for id in order where bodies[id]?.phase == .dragging { bodies[id]?.phase = .free; bodies[id]?.vel = .zero }
+        echo = EchoSession(coaching: coaching)
+    }
+
+    /// Dismisses Echo (and its card).
+    func endEcho() {
+        echo?.close()
+        echo = nil
+    }
+
+    /// The player is done: the round ends with what it earned.
+    func stopEcho(now: Date = Date()) {
+        guard let echo else { return }
+        apply(echo.stop(in: field, stage: echoStage(now)), now: now)
+    }
+
+    /// Moves the guided step on: to the countdown.
+    func skipEchoLesson(now: Date = Date()) {
+        guard let echo else { return }
+        apply(echo.skip(in: field, stage: echoStage(now)), now: now)
+    }
+
+    /// The player taps rune `rune`.
+    func tapRune(_ rune: Int, now: Date = Date()) {
+        guard let echo else { return }
+        apply(echo.tap(rune, in: field, stage: echoStage(now)), now: now)
+    }
+
+    private func echoStage(_ date: Date) -> EchoSession.Stage {
+        let ids = order.filter { bodies[$0]?.phase == .free && bodies[$0]?.enteringFrom == nil }
+        return EchoSession.Stage(ids: ids, positions: Dictionary(uniqueKeysWithValues: ids.compactMap { id in bodies[id].map { (id, $0.pos) } }),
+                                 date: date, calm: reduceMotion)
+    }
+
+    private func playEcho(_ dt: Double, date: Date) {
+        guard let echo else { return }
+        let stage = echoStage(date)
+        // Nobody drifts: whatever speed an Imp had when the game began dies away.
+        for id in stage.ids { if let v = bodies[id]?.vel { let k = exp(-8 * dt); bodies[id]?.vel = CGVector(dx: v.dx * k, dy: v.dy * k) } }
+        apply(echo.advance(dt, in: field, stage: stage), now: date)
+    }
+
+    /// Puts the Imps where the game wants them and has them act.
+    private func apply(_ out: EchoSession.Output, now: Date) {
+        for (id, p) in out.places {
+            bodies[id]?.pos = p
+            bodies[id]?.vel = .zero
+        }
+        for cue in out.cues {
+            bodies[cue.id]?.performance = cue.performance
+            if cue.dizzy > 0 { bodies[cue.id]?.dizzyUntil = now.addingTimeInterval(cue.dizzy) }
         }
     }
 
@@ -342,6 +452,8 @@ final class StageEngine {
 
     func dragChanged(_ id: UUID, at p: CGPoint, now: Date = Date()) {
         guard var b = bodies[id] else { return }
+        // In Echo the Imps stand on the runes: nobody is picked up.
+        if echo != nil, b.phase != .dragging { return }
         touch = p
         switch b.phase {
         case .free:

@@ -9,10 +9,12 @@
 /* Begin PBXBuildFile section */
 		003ED416A016798061351095 /* SpeechBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 138E937C2DEA200C16A64509 /* SpeechBubble.swift */; };
 		0B3DE9AB90535E8776AC383B /* LinkFileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BCDE56EC7E08CB95A42B3A /* LinkFileStore.swift */; };
+		0D11DCAC05BEBE9162AA69E4 /* EchoFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260261CF11237CBD49ED5244 /* EchoFeedback.swift */; };
 		0E79EEB23068CD9964B66A3F /* Antics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154403A8E907ABF7EDDA394A /* Antics.swift */; };
 		15117A49B4DBDDD10DE49934 /* GameLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA159EED58442BB21A2A0AE /* GameLayer.swift */; };
 		1C96E45CBCBA8A7EF5F6210A /* SpeechMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6406F8E129883536DA4BD5F3 /* SpeechMedia.swift */; };
 		23C08AEC21F5B1A13756D2CC /* IssueBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 119D64EC1BB7DA6B29762583 /* IssueBadge.swift */; };
+		2BD7F069A2A074BC7B861920 /* EchoLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECB649C0FBB83036E8DEEF0 /* EchoLayer.swift */; };
 		33D971EE0258680DE6F44E9F /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E6EB59723598749562B958 /* Keychain.swift */; };
 		3C05A501D4D7A0017C6BBA17 /* ReplyBlocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D36860F51AAB868812CA05 /* ReplyBlocks.swift */; };
 		3DEB2BEE904FC2E55AD6181E /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7D2F37C84A4B750CDB3F71 /* Palette.swift */; };
@@ -29,6 +31,7 @@
 		63904DE69AEB8444314796F6 /* ImpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 40F15208B694E2CE6ED040FB /* ImpKit */; };
 		81C420D8F13B53FB34B2B8E2 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AC024C76203D641C929D0A5 /* Theme.swift */; };
 		89CC8ED69C7348C7877DE96F /* PairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6406F33EC0C8528E9FA96CAA /* PairingView.swift */; };
+		8DD927F981630F907BEE0E97 /* EchoSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9577E387669653C6BBB7E9 /* EchoSession.swift */; };
 		911FB7B7ACF9505556653992 /* LinkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540B98CA530667A006631F93 /* LinkClient.swift */; };
 		A7E4796D1F6325E22606E988 /* SoftLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2E54D6D3896160943BF9DC /* SoftLight.swift */; };
 		AC858C246A969D5EFA7444F0 /* StageEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A5CF20C2B71E285BCA988D /* StageEngine.swift */; };
@@ -37,6 +40,7 @@
 		B7CA0B90DB6761F8C22BA91E /* PocketRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = F364A4DE6BAD316298E3E073 /* PocketRuntime.swift */; };
 		BE17BC88E7F643C073B6791B /* Talks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7C6595FE067AC51F19AE88 /* Talks.swift */; };
 		CB1362A800AD5DE520C03318 /* StageVoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B34102EB8A566B60FE68FF4A /* StageVoice.swift */; };
+		D231E46FA5F1E2EB08A97EF3 /* EchoCoach.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29BD2E76FF01C7C44A08B73 /* EchoCoach.swift */; };
 		D641B96BDC01E6071DE86AAD /* GameRound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8151B96260694FD93D8F45E8 /* GameRound.swift */; };
 		E173ECE55498D9DC68051497 /* PhoneStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36040976E160D83A9ED7131E /* PhoneStage.swift */; };
 		E53ED1E407B5D3666EDB99F4 /* TiltImp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C4C921D3632C8A4B97CB80 /* TiltImp.swift */; };
@@ -61,6 +65,8 @@
 		19446029336D379F770CD86B /* ChatSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSheet.swift; sourceTree = "<group>"; };
 		1CE7028C65676801485C56B3 /* PocketStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketStore.swift; sourceTree = "<group>"; };
 		1D6F4A4BEABAB147C1273508 /* Performance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Performance.swift; sourceTree = "<group>"; };
+		1ECB649C0FBB83036E8DEEF0 /* EchoLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoLayer.swift; sourceTree = "<group>"; };
+		260261CF11237CBD49ED5244 /* EchoFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoFeedback.swift; sourceTree = "<group>"; };
 		2A5E56E2B80612481500C8FE /* ImpRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpRenderer.swift; sourceTree = "<group>"; };
 		36040976E160D83A9ED7131E /* PhoneStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneStage.swift; sourceTree = "<group>"; };
 		37A695264BBAD32A874A57EB /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -71,13 +77,14 @@
 		5A7D2F37C84A4B750CDB3F71 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		6406F33EC0C8528E9FA96CAA /* PairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingView.swift; sourceTree = "<group>"; };
 		6406F8E129883536DA4BD5F3 /* SpeechMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechMedia.swift; sourceTree = "<group>"; };
-		69D3BA1E1D62779FCC642D13 /* imp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = imp; path = ..; sourceTree = SOURCE_ROOT; };
 		6AC024C76203D641C929D0A5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		8151B96260694FD93D8F45E8 /* GameRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRound.swift; sourceTree = "<group>"; };
 		86EC44471EB3D16C062A1ABF /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		8F7C6595FE067AC51F19AE88 /* Talks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talks.swift; sourceTree = "<group>"; };
 		90BCDE56EC7E08CB95A42B3A /* LinkFileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkFileStore.swift; sourceTree = "<group>"; };
 		92E940BF293260A542D370CE /* ImpPhoneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpPhoneApp.swift; sourceTree = "<group>"; };
+		9F9577E387669653C6BBB7E9 /* EchoSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoSession.swift; sourceTree = "<group>"; };
+		A29BD2E76FF01C7C44A08B73 /* EchoCoach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoCoach.swift; sourceTree = "<group>"; };
 		A9CDA1D6F43D1F4F6733CC21 /* StatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPill.swift; sourceTree = "<group>"; };
 		AA17C8D6E7748402B3655100 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		B31C2D953C56557D2B30BCF3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -89,6 +96,7 @@
 		C694EC257AF0DCC56DCBE571 /* ChatSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSource.swift; sourceTree = "<group>"; };
 		CB667F35A19A58EFCAAF5CB6 /* Extras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extras.swift; sourceTree = "<group>"; };
 		D47753BE03D2BFEAC228BC5D /* Puppet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Puppet.swift; sourceTree = "<group>"; };
+		E63754CA2FF46D7698A260E9 /* agent-af79d8609727a77d5 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "agent-af79d8609727a77d5"; path = ..; sourceTree = SOURCE_ROOT; };
 		E850DCFCD50F8C2C190C14FC /* Horn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Horn.swift; sourceTree = "<group>"; };
 		F1D36860F51AAB868812CA05 /* ReplyBlocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyBlocks.swift; sourceTree = "<group>"; };
 		F364A4DE6BAD316298E3E073 /* PocketRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketRuntime.swift; sourceTree = "<group>"; };
@@ -109,7 +117,7 @@
 		0896923E2770E96595D122C0 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				69D3BA1E1D62779FCC642D13 /* imp */,
+				E63754CA2FF46D7698A260E9 /* agent-af79d8609727a77d5 */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -120,6 +128,10 @@
 				496385172A5237326FD3A24B /* Assets.xcassets */,
 				19446029336D379F770CD86B /* ChatSheet.swift */,
 				C694EC257AF0DCC56DCBE571 /* ChatSource.swift */,
+				A29BD2E76FF01C7C44A08B73 /* EchoCoach.swift */,
+				260261CF11237CBD49ED5244 /* EchoFeedback.swift */,
+				1ECB649C0FBB83036E8DEEF0 /* EchoLayer.swift */,
+				9F9577E387669653C6BBB7E9 /* EchoSession.swift */,
 				425EA0CF393C2A5B4C8C8E79 /* EmbersCoach.swift */,
 				BBA159EED58442BB21A2A0AE /* GameLayer.swift */,
 				8151B96260694FD93D8F45E8 /* GameRound.swift */,
@@ -278,6 +290,10 @@
 				0E79EEB23068CD9964B66A3F /* Antics.swift in Sources */,
 				B3DDDC12FE1679378FCB5BDD /* ChatSheet.swift in Sources */,
 				619257764618CB4FC702F0B1 /* ChatSource.swift in Sources */,
+				D231E46FA5F1E2EB08A97EF3 /* EchoCoach.swift in Sources */,
+				0D11DCAC05BEBE9162AA69E4 /* EchoFeedback.swift in Sources */,
+				2BD7F069A2A074BC7B861920 /* EchoLayer.swift in Sources */,
+				8DD927F981630F907BEE0E97 /* EchoSession.swift in Sources */,
 				3F9E73CF6E992866F6169F11 /* EmbersCoach.swift in Sources */,
 				54258AB0FC3D143CFDA758BA /* Extras.swift in Sources */,
 				5D04D4EA1EB2CA2824106315 /* Face.swift in Sources */,
