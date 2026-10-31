@@ -3583,6 +3583,22 @@
         }
       }
     },
+    "Back to %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De vuelta a %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回到 %@"
+          }
+        }
+      }
+    },
     "Back to %@'s model, %@" : {
       "localizations" : {
         "en" : {
@@ -11669,6 +11685,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "才不要"
+          }
+        }
+      }
+    },
+    "Nobody here" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nadie aquí"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这里没有人"
           }
         }
       }

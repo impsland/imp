@@ -462,6 +462,26 @@ enum IconRenderer {
         snapshot(host, to: url, dark: dark)
     }
 
+    /// `Imp --render-doors <file.png> [dark]`: the doors along a display's edges while an Imp is
+    /// carried: two devices on the left (one lit), a visit's way back on the right, and a side that leads nowhere.
+    static func renderDoors(to url: URL, dark: Bool) {
+        let mini = DoorSign(id: UUID(), name: "Mac mini", kind: .mac, top: 0, bottom: 0.5, isBack: false)
+        let phone = DoorSign(id: UUID(), name: "Art's iPhone", kind: .phone, top: 0.5, bottom: 1, isBack: false)
+        let back = DoorSign(id: UUID(), name: "Mac mini", kind: .mac, top: 0, bottom: 1, isBack: true)
+        func panel(_ board: DoorBoard) -> some View {
+            DoorSignsView(board: board).frame(width: 240, height: 260)
+                .background(Color(white: dark ? 0.2 : 0.55))
+        }
+        let sheet = HStack(spacing: 8) {
+            panel(DoorBoard(side: .left, signs: [mini, phone], lit: phone.id, shown: true))
+            panel(DoorBoard(side: .right, signs: [back], lit: back.id, shown: true))
+            panel(DoorBoard(side: .left, signs: [], shown: true))
+        }
+        let host = NSHostingView(rootView: sheet)
+        host.frame.size = host.fittingSize
+        snapshot(host, to: url, dark: dark)
+    }
+
     /// `Imp --render-voice <file.png> [dark]`: a speaking bubble's glow and smoke for a few Imp
     /// colours, resting and at rising loudness (a plain card stands in for the glass).
     static func renderVoice(to url: URL, dark: Bool) {
