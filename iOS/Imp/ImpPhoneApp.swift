@@ -41,7 +41,7 @@ struct RootView: View {
         case hatch
         case edit(UUID)
         case talks(UUID)
-        case pair
+        case devices
 
         var id: Self { self }
         var isChat: Bool { if case .chat = self { true } else { false } }
@@ -50,7 +50,6 @@ struct RootView: View {
     let hub: LinkHub
     let pocket: PocketRuntime
     @State private var sheet: Sheet?
-    @State private var forgetting: LinkDevice?
     /// A round of Embers is on (see `EmbersPlaying`).
     @State private var playing = false
     @State private var toast: String?
@@ -61,14 +60,14 @@ struct RootView: View {
         ZStack {
             DungeonBackdrop()
             if !onStage {
-                PairingView(hub: hub) { sheet = .hatch }
+                PairingView(hub: hub, hatch: { sheet = .hatch })
                     .transition(.opacity)
             } else {
                 PhoneStage(hub: hub, pocket: pocket, onChat: { sheet = .chat($0) }, onEdit: { sheet = .edit($0) }, onTalks: { sheet = .talks($0) })
                     .transition(.opacity)
                     .onPreferenceChange(EmbersPlaying.self) { playing = $0 }
                 VStack {
-                    StatusPill(hub: hub, pocket: pocket, forgetting: $forgetting, hatch: { sheet = .hatch }, pair: { sheet = .pair })
+                    StatusPill(hub: hub, devices: { sheet = .devices }, hatch: { sheet = .hatch })
                     Spacer()
                 }
                 .padding(.top, 6)
@@ -89,21 +88,11 @@ struct RootView: View {
                 if toast == text { toast = nil }
             }
         }
-        .onChange(of: hub.links.count) { old, new in
-            if new > old, sheet == .pair { sheet = nil }
-        }
         .sheet(item: $sheet) { route in
             content(route)
                 .presentationDetents(route.isChat ? [.medium, .large] : [.large])
                 .presentationDragIndicator(.visible)
                 .presentationBackground(Dungeon.deep)
-        }
-        .confirmationDialog(forgetting.map { String(localized: "Forget \($0.name)?") } ?? "",
-                            isPresented: Binding(get: { forgetting != nil }, set: { if !$0 { forgetting = nil } }),
-                            titleVisibility: .visible, presenting: forgetting) { device in
-            Button("Forget", role: .destructive) { hub.forget(device.id) }
-        } message: { _ in
-            Text("Imps of this iPhone it holds come home, and its Imps visiting here go home. You can link again any time.")
         }
         #if DEBUG
         .task {
@@ -139,11 +128,8 @@ struct RootView: View {
             PocketEditor(pocket: pocket, editing: nil) { sheet = nil }
         case .edit(let id):
             PocketEditor(pocket: pocket, editing: id) { sheet = pocket.contains(id) ? .chat(id) : nil }
-        case .pair:
-            ZStack {
-                DungeonBackdrop()
-                PairingView(hub: hub)
-            }
+        case .devices:
+            DevicesSheet(hub: hub, pocket: pocket)
         }
     }
 }

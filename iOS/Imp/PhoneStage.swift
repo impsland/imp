@@ -13,6 +13,8 @@ struct PhoneStage: View {
     var onTalks: (UUID) -> Void = { _ in }
     /// An Imp hatched here, waiting for "Delete" to be confirmed.
     @State private var deleting: LinkImp?
+    /// An Imp hatched here, waiting for "Move to" a Mac to be confirmed.
+    @State private var moving: (imp: LinkImp, mac: LinkDevice)?
     @State private var engine = StageEngine()
     @State private var motion = MotionWatcher()
     @State private var sizes = BubbleSizes()
@@ -59,6 +61,7 @@ struct PhoneStage: View {
                                         .zIndex(2)
                                 }
                             }
+                            DoorLabels(engine: engine).zIndex(2)
                             GameLayer(engine: engine, date: timeline.date, size: geo.size, insets: screen.safeAreaInsets)
                                 .zIndex(3)
                         }
@@ -79,6 +82,13 @@ struct PhoneStage: View {
             Button("Delete", role: .destructive) { pocket.delete(imp.id) }
         } message: { _ in
             Text("Its chats and keys are forgotten. This can't be undone.")
+        }
+        .confirmationDialog(moving.map { String(localized: "Move \($0.imp.name) to \($0.mac.name)?") } ?? "",
+                            isPresented: Binding(get: { moving != nil }, set: { if !$0 { moving = nil } }),
+                            titleVisibility: .visible, presenting: moving) { move in
+            Button("Move") { engine.sendGently(move.imp.id, to: move.mac.id, moves: true) }
+        } message: { move in
+            Text("\(move.imp.name) moves in on \(move.mac.name) for good, and its key goes with it. \(move.mac.name) asks you to look it over first.")
         }
         .onChange(of: staged) {
             engine.reconcile(roster)
@@ -159,7 +169,9 @@ struct PhoneStage: View {
                 .onEnded { engine.dragEnded(id, at: $0.location, predicted: $0.predictedEndLocation) })
             .contextMenu {
                 Button { onChat(id) } label: { Label("Chat", systemImage: "bubble.left.and.bubble.right") }
-                Button { source.newChat(id); onChat(id) } label: { Label("New Chat", systemImage: "square.and.pencil") }
+                if awake {
+                    Button { source.newChat(id); onChat(id) } label: { Label("New Chat", systemImage: "square.and.pencil") }
+                }
                 Button { onTalks(id) } label: { Label("Talks", systemImage: "bubble.left.and.bubble.right") }
                 if pocket.contains(id) {
                     Button { onEdit(id) } label: { Label("Edit", systemImage: "slider.horizontal.3") }
@@ -173,8 +185,8 @@ struct PhoneStage: View {
                 }
                 if pocket.contains(id) {
                     ForEach(hub.connectedPeers.filter { $0.kind == .mac }) { mac in
-                        Button { engine.sendGently(id, to: mac.id, moves: true) } label: {
-                            Label("Move to \(mac.name)", systemImage: "macbook.and.iphone")
+                        Button { moving = (b.imp, mac) } label: {
+                            Label("Move to \(mac.name)…", systemImage: "macbook.and.iphone")
                         }
                     }
                     Button(role: .destructive) { deleting = b.imp } label: { Label("Delete", systemImage: "trash") }
@@ -208,6 +220,7 @@ struct PhoneStage: View {
         engine.isConnected = { !hub.connectedPeers.isEmpty }
         engine.door = { hub.door(of: $0, side: $1, height: $2) }
         engine.way = { hub.way(of: $0, to: $1, preferring: $2) }
+        engine.doors = { hub.doors(of: $0, side: $1) }
         engine.hint = { hub.hint(for: $0, bounce: $1, side: $2) }
         engine.send = { id, exit in
             guard let device = exit.to, let imp = engine.bodies[id]?.imp else { return }

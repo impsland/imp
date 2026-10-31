@@ -50,8 +50,8 @@ final class LinkHub {
     private(set) var viaHop: Set<UUID> = []
     /// The Imps visiting this iPhone.
     private(set) var visits: [Visits.Visit] = []
-    /// Imps hatched here that another device holds right now.
-    private(set) var away: Set<UUID> = []
+    /// Imps hatched here that another device holds right now, and who holds each.
+    private(set) var holders: [UUID: UUID] = [:]
     private(set) var chats: [UUID: [LinkTurn]] = [:]
     private(set) var work: [UUID: LinkWork] = [:]
     private(set) var moods: [UUID: Mood] = [:]
@@ -90,7 +90,7 @@ final class LinkHub {
             node = try! LinkNode(name: name, kind: .phone, storage: LinkMemoryStorage())
         }
         toast = problem
-        node.setServer(UserDefaults.standard.string(forKey: Self.serverKey).flatMap(HopAddress.init))
+        node.setServer(UserDefaults.standard.string(forKey: Self.serverKey).flatMap(Self.hop))
         node.onEvent = { [weak self] in self?.handle($0) }
         refresh()
     }
@@ -108,11 +108,19 @@ final class LinkHub {
     @discardableResult
     func setServer(_ text: String) -> Bool {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard text.isEmpty || HopAddress(text) != nil else { return false }
+        guard text.isEmpty || ImpServer(text) != nil else { return false }
         UserDefaults.standard.set(text, forKey: Self.serverKey)
-        node.setServer(HopAddress(text))
+        node.setServer(Self.hop(text))
         return true
     }
+
+    /// The server as written, or nil, as the address of its Hop.
+    private nonisolated static func hop(_ text: String) -> HopAddress? {
+        ImpServer(text).flatMap { HopAddress($0.hop) }
+    }
+
+    /// The Imp server this iPhone waits at, as last set (empty: none).
+    var server: String { UserDefaults.standard.string(forKey: Self.serverKey) ?? "" }
 
     /// Where a model server on a linked Mac is reached from this phone: its name on the network
     /// (`.local` first). Nil when no Mac is linked.
@@ -149,8 +157,11 @@ final class LinkHub {
         set(&online, Set(node.connected))
         set(&viaHop, Set(node.connected.filter(node.isThroughHop)))
         set(&visits, node.visits.visits)
-        set(&away, Set(node.away.entries.map(\.imp)))
+        set(&holders, Dictionary(node.away.entries.map { ($0.imp, $0.holder) }, uniquingKeysWith: { $1 }))
     }
+
+    /// Imps hatched here that another device holds right now.
+    var away: Set<UUID> { Set(holders.keys) }
 
     func isConnected(_ device: UUID) -> Bool { online.contains(device) }
 
@@ -188,20 +199,39 @@ final class LinkHub {
 
     /// Ends the link with a device: the Imps it held come home and the ones visiting from it go home.
     func forget(_ device: UUID) {
+        let name = deviceName(device)
         let result = node.forget(device)
+        forgotten(result, forgetting: name)
+    }
+
+    /// Ends every link and makes a new door key, so every code shown before stops working.
+    func forgetEveryone() {
+        forgotten(node.forgetEveryone(), forgetting: nil)
+    }
+
+    /// Clears what a forgotten device left on the stage, and says what became of the Imps.
+    private func forgotten(_ result: LinkNode.Forgotten, forgetting name: String?) {
         refresh()
         for imp in result.sentHome {
             clear(imp)
             onEvent?(.left(imp))
         }
         onEvent?(.roster)
+        let moved = !result.calledHome.isEmpty || !result.sentHome.isEmpty
+        if let name {
+            toast = moved ? String(localized: "Forgot \(name). The Imps went home.") : String(localized: "Forgot \(name).")
+        } else {
+            toast = moved ? String(localized: "Forgot everyone. The Imps went home.") : String(localized: "Forgot everyone.")
+        }
+    }
+
+    /// A device this one knows: a linked one, or the home of a visiting Imp.
+    func device(_ id: UUID) -> LinkDevice? {
+        links.first { $0.id == id }?.device ?? visits.first { $0.home.id == id }?.home.device
     }
 
     /// A linked device's name, or a stand-in once it's gone.
-    func deviceName(_ id: UUID) -> String {
-        links.first { $0.id == id }?.device.name ?? visits.first { $0.home.id == id }?.home.device.name
-            ?? String(localized: "another device")
-    }
+    func deviceName(_ id: UUID) -> String { device(id)?.name ?? String(localized: "another device") }
 
     /// The Imps on this screen changed: the other devices are told.
     func setStage(_ imps: [LinkStaged]) {
@@ -249,6 +279,26 @@ final class LinkHub {
             }
         }
         return nil
+    }
+
+    /// One device's share of a side, for labelling it while an Imp is carried.
+    struct DoorLabel: Identifiable, Equatable {
+        var device: LinkDevice
+        /// The heights from `top` to `bottom` (0 is the top of the screen).
+        var top: Double
+        var bottom: Double
+        /// The door an Imp that came to visit goes back through.
+        var isBack: Bool
+        var id: UUID { device.id }
+    }
+
+    /// The doors on a side of the screen for an Imp, top to bottom.
+    func doors(of imp: UUID, side: LinkSide) -> [DoorLabel] {
+        var back: UUID?
+        if case .visit(let entry, let from) = node.travel(of: imp), entry == side { back = from }
+        return node.bands(of: imp, side: side).compactMap { band in
+            device(band.device).map { DoorLabel(device: $0, top: band.top, bottom: band.bottom, isBack: band.device == back) }
+        }
     }
 
     /// What to tell the person when an Imp bounces off a side that leads nowhere.

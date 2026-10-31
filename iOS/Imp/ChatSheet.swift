@@ -132,7 +132,7 @@ struct ChatSheet: View {
 
     private var status: String {
         switch availability {
-        case .offline: return String(localized: "Your Mac isn't around")
+        case .offline: return String(localized: "Asleep")
         case .noBrain: return String(localized: "No brain yet")
         case .ready: break
         }
@@ -212,7 +212,7 @@ struct ChatSheet: View {
     private func emptyState(_ imp: LinkImp) -> some View {
         let intro = source.intro(imp, availability)
         return VStack(spacing: 10) {
-            Image(systemName: availability == .noBrain ? "moon.zzz" : "bubble.left.and.text.bubble.right")
+            Image(systemName: availability != .ready ? "moon.zzz" : "bubble.left.and.text.bubble.right")
                 .font(.system(size: 30, weight: .light)).foregroundStyle(Dungeon.ember)
             Text(intro.title)
                 .font(.system(.headline, design: .rounded)).foregroundStyle(Dungeon.cream)
@@ -255,7 +255,7 @@ struct ChatSheet: View {
             }
             switch availability {
             case .offline:
-                Label("Your Mac isn't around. Chats resume when it is.", systemImage: "wifi.slash")
+                Label(source.intro(imp, availability).text, systemImage: "moon.zzz")
                     .font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
             case .noBrain:
                 Button { edit?() } label: { Label("Give it a brain", systemImage: "sparkles") }
