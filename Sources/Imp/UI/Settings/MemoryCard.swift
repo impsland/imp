@@ -13,6 +13,8 @@ struct MemoryCard: View {
     @State private var showsAll = false
     @State private var deleting: ChatSummary?
     @State private var notice: (text: String, ok: Bool)?
+    /// Talks with other Imps, read from every Imp's chats (nil until loaded).
+    @State private var talks: [TalkThread] = []
 
     private var name: String { imp.callName }
     private var live: ImpModel? { model.imp(imp.id) }
@@ -48,8 +50,13 @@ struct MemoryCard: View {
             }
             CardDivider()
             chatList
+            if !talks.isEmpty {
+                CardDivider()
+                talkList
+            }
         }
         .task(id: live == nil) { reloadStored() }
+        .task(id: history?.chats.first?.updated) { talks = TalkLog.threads(of: imp.id, from: await model.talkLines()) }
         .confirmationDialog("Delete “\(deleting?.title ?? "")”?", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }),
                             presenting: deleting) { chat in
             Button("Delete", role: .destructive) { delete(chat.id) }
@@ -83,7 +90,7 @@ struct MemoryCard: View {
                 VStack(spacing: 2) {
                     ForEach(showsAll ? chats : Array(chats.prefix(Self.shortList))) { chat in
                         ChatRow(chat: chat, isCurrent: chat.id == history?.current.id, canContinue: live != nil, name: name,
-                                open: { open(chat.id) }, export: { export(chat) }, delete: { deleting = chat })
+                                readTalk: talkOpener(for: chat), open: { open(chat.id) }, export: { export(chat) }, delete: { deleting = chat })
                     }
                 }
                 if chats.count > Self.shortList {
@@ -96,8 +103,31 @@ struct MemoryCard: View {
         }
     }
 
+    /// What \(name) and each other Imp said to each other, both ways (their halves are in both Imps' chats).
+    private var talkList: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Text("Talks").font(.system(size: 13)).lineLimit(1)
+                InfoTip("What \(name) and other Imps said to each other, both ways, to read. \(name)'s side of each is in its chats above (\"With …\"), which you can delete there.")
+                Text(verbatim: "\(talks.count)").font(.system(size: 11, weight: .semibold)).foregroundStyle(Dungeon.muted)
+            }
+            VStack(spacing: 2) {
+                ForEach(talks) { talk in
+                    TalkRow(talk: talk) { HomeWindow.shared.showTalk(model, imp: imp.id, peer: talk.peer.id) }
+                }
+            }
+        }
+    }
+
+    /// Opens the merged talk with a peer chat's Imp, when there is one to read.
+    private func talkOpener(for chat: ChatSummary) -> (() -> Void)? {
+        guard let peer = chat.peer, talks.contains(where: { $0.peer.id == peer }) else { return nil }
+        return { HomeWindow.shared.showTalk(model, imp: imp.id, peer: peer) }
+    }
+
     private func reloadStored() {
-        stored = live == nil ? ChatHistory(folder: ChatHistory.folder(for: imp.id)) : nil
+        // Renders and tests (nothing persists) never read the user's real chats.
+        stored = live == nil ? ChatHistory(folder: model.persists ? ChatHistory.folder(for: imp.id) : nil) : nil
     }
 
     /// Carries on in a chat: it becomes the current one, and opens beside the Imp.
@@ -164,6 +194,8 @@ private struct ChatRow: View {
     let isCurrent: Bool
     let canContinue: Bool
     let name: String
+    /// A chat with another Imp: opens the talk with it, both sides.
+    let readTalk: (() -> Void)?
     let open: () -> Void
     let export: () -> Void
     let delete: () -> Void
@@ -197,6 +229,9 @@ private struct ChatRow: View {
                     .disabled(!canContinue)
                     .help(canContinue ? "Make this the chat you're in and open it" : "Let \(name) out to continue this chat")
             }
+            if let readTalk {
+                HoverIconButton(systemName: "text.bubble", help: "Read the whole talk, both sides", action: readTalk)
+            }
             if chat.peer == nil {
                 HoverIconButton(systemName: "square.and.arrow.up", help: "Save as a file", action: export)
             }
@@ -206,11 +241,46 @@ private struct ChatRow: View {
         .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white.opacity(hover ? 0.04 : 0)))
         .onHover { hover = $0 }
         .contextMenu {
+            if let readTalk { Button("Read Talk") { readTalk() } }
             if !isCurrent { Button("Continue") { open() }.disabled(!canContinue) }
             if chat.peer == nil { Button("Save as File…") { export() } }
             Divider()
             Button("Delete…", role: .destructive) { delete() }
         }
+    }
+}
+
+/// A talk with another Imp in the list: who, when, how much, and Read.
+struct TalkRow: View {
+    let talk: TalkThread
+    let open: () -> Void
+    @State private var hover = false
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "person.2")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(Color.imp(talk.peer.hue))
+                .frame(width: 24, height: 24)
+                .background(RoundedRectangle(cornerRadius: 7, style: .continuous).fill(Color.imp(talk.peer.hue).opacity(0.16)))
+            VStack(alignment: .leading, spacing: 1) {
+                Text(verbatim: talk.peer.name).font(.system(size: 12.5, weight: .semibold)).lineLimit(1)
+                HStack(spacing: 4) {
+                    Text(talk.updated, format: .dateTime.day().month().year().hour().minute())
+                    Text(verbatim: "·")
+                    Text("\(talk.lines.count) exchanges")
+                }
+                .font(.system(size: 11)).foregroundStyle(Dungeon.muted).lineLimit(1)
+            }
+            Spacer(minLength: 8)
+            Button { open() } label: { Label("Read", systemImage: "text.bubble") }
+                .buttonStyle(.imp(.secondary, small: true))
+                .help("Read everything they said to each other")
+        }
+        .padding(.horizontal, 6).padding(.vertical, 5)
+        .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white.opacity(hover ? 0.04 : 0)))
+        .onHover { hover = $0 }
+        .contextMenu { Button("Read") { open() } }
     }
 }
 

@@ -1,9 +1,10 @@
 import ImpKit
 import SwiftUI
 
-/// An Imp talking with another Imp, above its head: who (a chip in the other Imp's colour), the
-/// question, and the answer when it comes. The same talk the Mac shows in the Imp's bubble; it
-/// stays out of your chat. An answer with sound is the Imp *speaking*: the bubble's rim glows in the
+/// An Imp talking with another Imp, above its head: who (a chip in the other Imp's colour), and
+/// what it says. The question shows once, in the bubble of the Imp that asks it: the one asked is a
+/// chip with thinking dots, and its answer a chip with the answer (and a muted line of the question,
+/// since the asking bubble is gone by then). The same talk the Mac shows; it stays out of your chat. An answer with sound is the Imp *speaking*: the bubble's rim glows in the
 /// speaker's colours and swells with the voice, and a small orb (tap it to pause or play) follows
 /// the loudness. Pictures show as thumbnails, videos as a small player.
 struct SpeechBubble: View {
@@ -28,6 +29,24 @@ struct SpeechBubble: View {
         }
     }
 
+    /// About how big a bubble comes out, to keep bubbles from landing on each other (the tail's
+    /// reach included). The real size is up to the layout.
+    static func size(of speech: LinkSpeech) -> CGSize {
+        func lines(_ text: String, perLine: Int) -> Int {
+            text.split(separator: "\n", omittingEmptySubsequences: false).reduce(0) { $0 + max(1, ($1.count + perLine - 1) / perLine) }
+        }
+        let tail: CGFloat = 12
+        switch speech.role {
+        case .asked:
+            return CGSize(width: max(96, 40 + 7.5 * CGFloat(speech.peer.count + 6)), height: 54 + tail)
+        case .asking:
+            return CGSize(width: 250, height: 58 + 19 * CGFloat(min(5, lines(speech.question, perLine: 32))) + tail)
+        case .reply:
+            let body = min(speech.text.contains("![") ? 210 : 150, 20 * CGFloat(lines(speech.text, perLine: 34)))
+            return CGSize(width: 250, height: 62 + body + tail)
+        }
+    }
+
     var body: some View {
         let blocks = blocks
         let speaks = !Markdown.voices(blocks).isEmpty
@@ -43,7 +62,7 @@ struct SpeechBubble: View {
                 Text("“\(speech.question)”")
                     .font(.system(.caption, design: .rounded))
                     .foregroundStyle(Dungeon.muted)
-                    .lineLimit(2)
+                    .lineLimit(1)
                 ScrollView {
                     VStack(alignment: .leading, spacing: 6) {
                         ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in row(block) }
@@ -54,15 +73,18 @@ struct SpeechBubble: View {
                 .frame(maxHeight: media ? 210 : 150)
                 .fixedSize(horizontal: false, vertical: true)
             } else {
-                Text(speech.question)
-                    .font(.system(.subheadline, design: .rounded))
-                    .foregroundStyle(Dungeon.cream)
-                    .lineLimit(5)
+                // The one asked only thinks: the question is in the asker's bubble.
+                if speech.role == .asking {
+                    Text(speech.question)
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(Dungeon.cream)
+                        .lineLimit(5)
+                }
                 Dots().padding(.top, 1)
             }
         }
         .padding(.horizontal, 13).padding(.vertical, 10)
-        .frame(width: 250, alignment: .leading)
+        .frame(width: speech.role == .asked ? nil : 250, alignment: .leading)
         .background {
             BubbleShape(tail: tailOffset)
                 .fill(Dungeon.deep.opacity(0.94))

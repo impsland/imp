@@ -201,6 +201,9 @@ public enum LinkRequest: Codable, Sendable, Equatable {
     case message(id: UUID, from: UUID, to: UUID, text: String)
     /// The reply to a Mac Imp's `ask`: what the pocket Imp said, or why it couldn't (`failed`).
     case answered(id: UUID, text: String, failed: Bool)
+    /// What an Imp (on this phone, or hatched here) said with other Imps, as far as the Mac's chats
+    /// know. The Mac answers `talks`. (A Mac older than this ignores it.)
+    case talks(imp: UUID)
 }
 
 /// Mac → iPhone.
@@ -241,6 +244,9 @@ public enum LinkUpdate: Codable, Sendable, Equatable {
     case answer(id: UUID, text: String, failed: Bool)
     /// A Mac Imp asks a pocket Imp something (`imp_message`). The phone answers with `answered`.
     case ask(id: UUID, from: LinkImp, to: UUID, text: String)
+    /// The answer to `talks`: every exchange in the Mac's chats that the Imp asked or answered
+    /// (`TalkLog.forLink`). The phone adds what its own Imps' chats hold.
+    case talks(imp: UUID, lines: [TalkLine])
 }
 
 /// What you did to an Imp on the phone's screen.

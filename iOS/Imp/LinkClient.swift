@@ -57,6 +57,9 @@ final class LinkClient {
     private(set) var moods: [UUID: Mood] = [:]
     /// What each Imp is saying to another Imp (a bubble above it on the stage).
     private(set) var speeches: [UUID: LinkSpeech] = [:]
+    /// What the Mac's chats say each Imp talked about with other Imps (`requestTalks`). Not kept
+    /// between launches; a Mac that doesn't know `talks` never fills it.
+    private(set) var talkLines: [UUID: [TalkLine]] = [:]
     /// Files from the Mac that replies show (pictures, voices, videos, documents).
     @ObservationIgnored private(set) lazy var files = LinkFileStore(client: self)
     /// A short message to show (a toss that didn't work out, a pairing that didn't read).
@@ -159,7 +162,7 @@ final class LinkClient {
 
     private func teardown(clearCache: Bool) {
         stop()
-        imps = []; others = []; chats = [:]; work = [:]; moods = [:]
+        imps = []; others = []; chats = [:]; work = [:]; moods = [:]; talkLines = [:]
         for (id, speech) in speeches { drop(speech, for: id) }
         if clearCache { Cache.delete() }
         onEvent?(.roster([]))
@@ -390,6 +393,9 @@ final class LinkClient {
         case .fileFailed(let transfer, let reason):
             files.failed(transfer, reason: reason)
             return
+        case .talks(let id, let lines):
+            talkLines[id] = lines
+            return                                   // nothing to save
         case .pong:
             break
         case .adopted(let id):
@@ -423,6 +429,9 @@ final class LinkClient {
     }
 
     func stop(_ imp: UUID) { send(.stop(imp: imp)) }
+
+    /// Asks the Mac what the Imp has said with other Imps; the answer lands in `talkLines`.
+    func requestTalks(_ imp: UUID) { send(.talks(imp: imp)) }
 
     /// Hides a speech bubble (tapped away).
     func dismissSpeech(_ imp: UUID) {
@@ -549,6 +558,16 @@ final class LinkClient {
             LinkTurn(id: UUID(), date: now.addingTimeInterval(-200), request: "Can you ask Moss to tidy my Downloads folder?", reply: "Done: Moss sorted 42 files into folders.", failed: false, steps: ["Ran 2 tools"]),
             LinkTurn(id: UUID(), date: now.addingTimeInterval(-100), request: "Are the backups finished?", from: "Moss",
                      reply: "I couldn't reach the disk.", failed: true),
+        ]
+        let me = ChatTurn.Sender(id: bob.id, name: bob.name, hue: bob.hue)
+        let friend = ChatTurn.Sender(id: pip.id, name: pip.name, hue: pip.hue)
+        talkLines[bob.id] = [
+            TalkLine(id: UUID(), date: now.addingTimeInterval(-86_400 * 2), asker: me, answerer: friend,
+                     question: "Write a two-line poem about backups.", reply: "Copies asleep on a distant shelf,\nkeeping my files safe from myself.", failed: false),
+            TalkLine(id: UUID(), date: now.addingTimeInterval(-3_600), asker: friend, answerer: me,
+                     question: "What's the weather like in Lisbon?", reply: "Sunny, around **24°C**.", failed: false),
+            TalkLine(id: UUID(), date: now.addingTimeInterval(-600), asker: me, answerer: friend,
+                     question: "Is the backup done?", reply: "I couldn't reach the disk.", failed: true),
         ]
         work[bob.id] = LinkWork(request: "Summarise today's mail", status: "Reading mail", partial: "You have three new messages: one from")
         moods[bob.id] = .working

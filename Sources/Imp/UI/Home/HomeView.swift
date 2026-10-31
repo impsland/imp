@@ -34,6 +34,12 @@ struct HomeView: View {
                 .environment(\.impTint, tint)
                 .tint(tint)
         }
+        .sheet(item: $router.talk) { talk in
+            let tint = model.profile(talk.imp).map { Color.imp($0.hue) } ?? Color.imp
+            TalkSheet(model: model, request: talk)
+                .environment(\.impTint, tint)
+                .tint(tint)
+        }
         .environment(\.colorScheme, .dark)
         .environment(\.stageAwake, router.isAwake)
         .tint(Color.imp)

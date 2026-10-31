@@ -47,6 +47,12 @@ final class HomeWindow {
         router.kitFlow = flow
     }
 
+    /// Opens the window on a talk between two Imps: it comes up as a sheet over what's showing.
+    func showTalk(_ model: AppModel, imp: UUID, peer: UUID) {
+        reveal(model)
+        router.talk = TalkRequest(imp: imp, peer: peer)
+    }
+
     private func open(_ model: AppModel) {
         if router.selection.flatMap(model.profile) == nil {
             let shown = model.prefs.imps.filter { !router.unhatched.contains($0.id) }
@@ -154,6 +160,8 @@ final class HomeRouter {
     var serverToEdit: UUID?
     /// A kit being added (the text box, then the review). Nothing is applied until its Add.
     var kitFlow: KitFlow?
+    /// A talk between two Imps being read (a sheet).
+    var talk: TalkRequest?
 
     /// Whether the window can be seen at all. Nothing animates while it can't.
     var isAwake = true

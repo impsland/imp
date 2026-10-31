@@ -10,12 +10,15 @@ struct ChatSheet: View {
     /// Where files in replies come from (the Mac).
     let client: LinkClient
     let source: any ChatSource
+    /// The Imps hatched here: their chats hold half of every talk.
+    let pocket: PocketRuntime
     let impID: UUID
     /// Opens the Imp's settings. Only the Imps hatched on this iPhone have any.
     var edit: (() -> Void)?
     @State private var text = ""
     @FocusState private var focused: Bool
     @State private var confirmingNewChat = false
+    @State private var showingTalks = false
     /// A file to look at full screen (Quick Look).
     @State private var preview: URL?
     @State private var problem: String?
@@ -46,6 +49,11 @@ struct ChatSheet: View {
         .background(Dungeon.deep)
         .environment(\.openURL, OpenURLAction { url in open(url) })
         .quickLookPreview($preview)
+        .sheet(isPresented: $showingTalks) {
+            TalksSheet(client: client, pocket: pocket, impID: impID)
+                .presentationDragIndicator(.visible)
+                .presentationBackground(Dungeon.deep)
+        }
         .overlay(alignment: .top) {
             if let problem {
                 Label(problem, systemImage: "exclamationmark.triangle.fill")
@@ -90,21 +98,17 @@ struct ChatSheet: View {
                 }
             }
             Spacer()
-            if let edit {
-                Menu {
+            Menu {
+                if let edit {
                     Button(action: edit) { Label("Edit", systemImage: "slider.horizontal.3") }
-                    Button { confirmingNewChat = true } label: { Label("New Chat", systemImage: "square.and.pencil") }
-                        .disabled(!canStartOver)
-                } label: {
-                    roundGlyph("ellipsis")
                 }
-                .accessibilityLabel("More")
-            } else {
-                Button { confirmingNewChat = true } label: { roundGlyph("square.and.pencil") }
+                Button { confirmingNewChat = true } label: { Label("New Chat", systemImage: "square.and.pencil") }
                     .disabled(!canStartOver)
-                    .opacity(canStartOver ? 1 : 0.4)
-                    .accessibilityLabel("New Chat")
+                Button { showingTalks = true } label: { Label("Talks", systemImage: "bubble.left.and.bubble.right") }
+            } label: {
+                roundGlyph("ellipsis")
             }
+            .accessibilityLabel("More")
         }
         .padding(.horizontal, 18).padding(.top, 20).padding(.bottom, 12)
         .background(alignment: .bottom) { Rectangle().fill(Dungeon.cardEdge).frame(height: 1) }

@@ -3,7 +3,8 @@ import SwiftUI
 
 /// How two Imps talking to each other read, in the bubble and in the chat. Whoever's words these
 /// are, a small chip in that Imp's colour says what's going on ("Pip asks", "Reply to Pip",
-/// "Asking Mo…"), the question is quoted under it with a bar, and a reply is plain body text.
+/// "Asking Mo…"), and a reply is plain body text. The question is quoted once: by the Imp that
+/// asks it ("Asking Mo…"), not again by the Imp that is asked.
 struct ExchangeChip: View {
     let role: Bubble.Exchange.Role
     let peer: ChatTurn.Sender
@@ -34,8 +35,8 @@ struct ExchangeChip: View {
     }
 }
 
-/// The chip and, for a question, the question quoted: its bar is the colour of whoever asked
-/// (the other Imp when it asks, this one when it does the asking).
+/// The chip and, for the Imp doing the asking, its question quoted with a bar in its own colour.
+/// The Imp being asked shows only the chip, so the question isn't on screen twice.
 struct ExchangeHeader: View {
     @Environment(\.impTint) private var tint
     let exchange: Bubble.Exchange
@@ -43,7 +44,7 @@ struct ExchangeHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             ExchangeChip(role: exchange.role, peer: exchange.peer)
-            if exchange.role != .reply, !exchange.question.isEmpty {
+            if exchange.role == .asking, !exchange.question.isEmpty {
                 Text(exchange.question)
                     .font(.system(size: 13))
                     .foregroundStyle(.secondary)
@@ -52,7 +53,7 @@ struct ExchangeHeader: View {
                     .padding(.leading, 10)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .overlay(alignment: .leading) {
-                        Capsule().fill(exchange.role == .asked ? Color.imp(exchange.peer.hue) : tint).frame(width: 3)
+                        Capsule().fill(tint).frame(width: 3)
                     }
             }
         }

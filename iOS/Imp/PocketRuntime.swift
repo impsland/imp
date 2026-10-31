@@ -52,6 +52,13 @@ final class PocketRuntime {
 
     func contains(_ id: UUID) -> Bool { store.contains(id) }
 
+    /// What the Imps hatched here said to each other (and were asked by Mac Imps), from their chats.
+    var talkLines: [TalkLine] {
+        store.imps.flatMap { imp in
+            TalkLog.lines(answeredBy: ChatTurn.Sender(id: imp.id, name: imp.name, hue: imp.hue), in: imp.chats)
+        }
+    }
+
     /// The paired Mac's name on the network (`.local` first): where a model server on the Mac is
     /// reached from this phone. Nil when no Mac is paired.
     var macHost: String? {

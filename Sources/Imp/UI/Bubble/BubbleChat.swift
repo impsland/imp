@@ -162,22 +162,31 @@ struct ChatView: View {
 private struct ChatPicker: View {
     let model: ImpModel
     let changed: () -> Void
+    /// The talks this Imp had with other Imps, newest first (read from every Imp's chats).
+    @State private var talks: [TalkThread] = []
 
     var body: some View {
         let history = model.history
         Menu {
-            if !history.chats.isEmpty {
+            // Chats with you. A conversation with another Imp is a talk (below), read, not carried on.
+            let chats = history.chats.filter { $0.peer == nil }
+            if !chats.isEmpty {
                 Section("Chats") {
-                    ForEach(history.chats.prefix(30)) { chat in
+                    ForEach(chats.prefix(30)) { chat in
                         Toggle(isOn: Binding(get: { chat.id == history.current.id },
                                              set: { _ in model.switchChat(to: chat.id); changed() })) {
-                            // A chat between two Imps (not with you) has two people on it.
-                            if chat.peer != nil {
-                                Label(chat.title.isEmpty ? String(localized: "Chat") : chat.title, systemImage: "person.2.fill")
-                            } else {
-                                Text(chat.title.isEmpty ? String(localized: "Chat") : chat.title)
-                            }
+                            Text(chat.title.isEmpty ? String(localized: "Chat") : chat.title)
                             Text(chat.updated, format: .dateTime.day().month().hour().minute())
+                        }
+                    }
+                }
+            }
+            if !talks.isEmpty {
+                Section("Talks") {
+                    ForEach(talks.prefix(10)) { talk in
+                        Button { HomeWindow.shared.showTalk(model.app, imp: model.id, peer: talk.peer.id) } label: {
+                            Label(talk.peer.name, systemImage: "person.2")
+                            Text(talk.updated, format: .dateTime.day().month().hour().minute())
                         }
                     }
                 }
@@ -195,7 +204,10 @@ private struct ChatPicker: View {
         .buttonStyle(.plain)
         .menuIndicator(.hidden)
         .fixedSize()
-        .help("Your chats with \(model.profile.name). Pick one to carry on where you left off.")
+        .help("Your chats with \(model.profile.name). Pick one to carry on where you left off. Talks with other Imps open to read.")
+        .task(id: model.history.chats.first?.updated) {
+            talks = TalkLog.threads(of: model.id, from: await model.app.talkLines())
+        }
     }
 
     private var title: String {

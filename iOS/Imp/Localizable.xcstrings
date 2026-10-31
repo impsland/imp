@@ -136,6 +136,22 @@
         }
       }
     },
+    "%@'s talks" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Charlas de %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 的对话"
+          }
+        }
+      }
+    },
     "%lld" : {
       "localizations" : {
         "es" : {
@@ -1525,6 +1541,22 @@
         }
       }
     },
+    "No talks yet" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay charlas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有对话"
+          }
+        }
+      }
+    },
     "Not needed" : {
       "localizations" : {
         "es" : {
@@ -2272,6 +2304,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已停止。"
+          }
+        }
+      }
+    },
+    "Talks" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Charlas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对话"
           }
         }
       }

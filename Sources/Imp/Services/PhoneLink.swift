@@ -342,6 +342,15 @@ final class PhoneLink {
             adopt(imp, kit: kit, secrets: secrets, entry: .after(exit: exit, height: height, speed: speed), from: device)
         case .message(let id, let from, let to, let text):
             relay(id, from: from, to: to, text: text, device: device)
+        case .talks(let imp):
+            // Only for an Imp that's on this phone or one of its pocket Imps; nothing else is shared.
+            guard app.profile(imp)?.awayOn == device || pocket[device]?.contains(where: { $0.id == imp }) == true else { return }
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                let mine = await app.talkLines().filter { $0.asker.id == imp || $0.answerer.id == imp }
+                let update = LinkUpdate.talks(imp: imp, lines: TalkLog.forLink(mine))
+                for peer in peers.values where peer.device == device { peer.channel.send(update) }
+            }
         case .answered(let id, let text, let failed):
             guard asks[id]?.phone == device else { return }
             let words = String(text.prefix(Self.maxText))

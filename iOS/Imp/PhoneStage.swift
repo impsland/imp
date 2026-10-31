@@ -9,6 +9,8 @@ struct PhoneStage: View {
     var onChat: (UUID) -> Void
     /// Opens an Imp hatched here in the editor.
     var onEdit: (UUID) -> Void = { _ in }
+    /// Opens what the Imp said with other Imps.
+    var onTalks: (UUID) -> Void = { _ in }
     /// An Imp hatched here, waiting for "Delete" to be confirmed.
     @State private var deleting: LinkImp?
     @State private var engine = StageEngine()
@@ -37,20 +39,19 @@ struct PhoneStage: View {
                                 }
                             }
                             // Talks with other Imps, above the talker's head, kept on screen.
+                            let places = bubbles(size: geo.size, date: timeline.date)
                             ForEach(engine.order, id: \.self) { id in
-                                if let b = engine.bodies[id], b.phase == .free || b.phase == .dragging, let speech = client.speeches[id] ?? pocket.speeches[id] {
-                                    let x = min(max(b.pos.x, 137), geo.size.width - 137)
-                                    let top = b.pos.y + engine.floatOffset(b, at: timeline.date, calm: false) - b.size * 0.4 - 14
+                                if let b = engine.bodies[id], let place = places[id] {
                                     Color.clear.frame(width: 1, height: 1)
                                         .overlay(alignment: .bottom) {
-                                            SpeechBubble(speech: speech, speaker: b.imp, client: client, isPocket: pocket.contains(id), tailOffset: b.pos.x - x) {
+                                            SpeechBubble(speech: place.speech, speaker: b.imp, client: client, isPocket: pocket.contains(id), tailOffset: b.pos.x - place.x) {
                                                 if pocket.contains(id) { pocket.dismissSpeech(id) } else { client.dismissSpeech(id) }
                                             }
                                                 .fixedSize(horizontal: false, vertical: true)
                                                 .transition(.scale(scale: 0.6, anchor: .bottom).combined(with: .opacity))
-                                                .id(speech.id)
+                                                .id(place.speech.id)
                                         }
-                                        .position(x: x, y: top)
+                                        .position(x: place.x, y: place.top + engine.floatOffset(b, at: timeline.date, calm: false))
                                         .zIndex(2)
                                 }
                             }
@@ -81,6 +82,31 @@ struct PhoneStage: View {
             // A voice doesn't go on talking from a phone that's been put away.
             if phase == .background { StageVoice.shared.interrupt() }
         }
+    }
+
+    // MARK: Talk bubbles
+
+    /// Where each talking Imp's bubble goes. Each sits over its Imp's head; one that would land on a
+    /// bubble placed before it (in the stage's fixed order, so nothing swaps places as the Imps
+    /// float) goes up above that one. Floating isn't counted, so nothing jitters.
+    private func bubbles(size: CGSize, date: Date) -> [UUID: (speech: LinkSpeech, x: CGFloat, top: CGFloat)] {
+        var placed: [UUID: (speech: LinkSpeech, x: CGFloat, top: CGFloat)] = [:]
+        var frames: [CGRect] = []
+        for id in engine.order {
+            guard let b = engine.bodies[id], b.phase == .free || b.phase == .dragging,
+                  let speech = client.speeches[id] ?? pocket.speeches[id] else { continue }
+            let box = SpeechBubble.size(of: speech)
+            let x = min(max(b.pos.x, box.width / 2 + 12), max(size.width - box.width / 2 - 12, box.width / 2 + 12))
+            var top = b.pos.y - b.size * 0.4 - 14
+            var frame = CGRect(x: x - box.width / 2, y: top - box.height, width: box.width, height: box.height)
+            for other in frames.sorted(by: { $0.minY > $1.minY }) where frame.insetBy(dx: -4, dy: -6).intersects(other) {
+                top = other.minY - 8
+                frame.origin.y = top - box.height
+            }
+            frames.append(frame)
+            placed[id] = (speech, x, top)
+        }
+        return placed
     }
 
     // MARK: One Imp
@@ -124,6 +150,7 @@ struct PhoneStage: View {
             .contextMenu {
                 Button { onChat(id) } label: { Label("Chat", systemImage: "bubble.left.and.bubble.right") }
                 Button { source.newChat(id); onChat(id) } label: { Label("New Chat", systemImage: "square.and.pencil") }
+                Button { onTalks(id) } label: { Label("Talks", systemImage: "bubble.left.and.bubble.right") }
                 if pocket.contains(id) {
                     Button { onEdit(id) } label: { Label("Edit", systemImage: "slider.horizontal.3") }
                 }

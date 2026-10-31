@@ -152,7 +152,7 @@ enum IconRenderer {
 
     /// `Imp --render-home <screen> <file.png> [imps=N] [select=N] [out=N] [hidden=1] [width=W] [height=H]`: the real
     /// app window (live controls) rendered offscreen for design review. Screens: `home`, `egg`, an Imp tab
-    /// (`looks`, `brain`, `tools`, `shortcuts`), `general-<tab>`, or the `add-service` / `pair-phone` / `add-tool` / `add-shortcut` / `edit-shortcut` / `animation-editor` / `animation-details` sheets. `hidden=1`: the desktop Imps are hidden.
+    /// (`looks`, `brain`, `tools`, `shortcuts`), `general-<tab>`, or the `add-service` / `pair-phone` / `add-tool` / `add-shortcut` / `edit-shortcut` / `animation-editor` / `animation-details` sheets (and `talk`, the talk viewer with a made-up talk; `brain` has one in Memory). `hidden=1`: the desktop Imps are hidden.
     static func renderHome(screen: String, to url: URL, width: CGFloat = 780, height: CGFloat = 600, sampleImps: Int = 1, select: Int = 0, out: Int? = nil, away: Int? = nil, hidden: Bool = false) {
         let model = AppModel(persist: false)          // review renders never write the user's preferences
         model.prefs = ImpPreferences()
@@ -177,6 +177,7 @@ enum IconRenderer {
             model.prefs.imps[away].awayOn = UUID()
         }
         if hidden { model.setHidden(true) }
+        model.sampleTalks = sampleTalks(for: model.prefs.imps[model.prefs.imps.firstIndex { $0.id == chosen } ?? 0])
         let router = HomeRouter()
         router.selection = chosen
         switch screen {
@@ -185,11 +186,16 @@ enum IconRenderer {
         case let s where s.hasPrefix("general-"):
             router.screen = .general
             router.generalTab = GeneralTab(rawValue: String(s.dropFirst(8))) ?? .services
+        case "talk": router.screen = .home
         default:
             router.screen = .imp(chosen)
             router.impTab = ImpTab.allCases.first { $0.rawValue == screen || $0.title.lowercased() == screen } ?? .looks
         }
         let root: AnyView = switch screen {
+        case "talk":
+            AnyView(TalkSheet(model: model, request: TalkRequest(imp: chosen, peer: model.sampleTalks[0].asker.id))
+                .environment(\.impTint, Color.imp(model.profile(chosen)?.hue ?? 0.57))
+                .background(Color(nsColor: .windowBackgroundColor)))
         case "add-service": AnyView(AddServiceSheet(model: model) { _ in }.background(Color(nsColor: .windowBackgroundColor)))
         case "pair-phone":
             AnyView(PairingSheet(model: model, preview: LinkPairing(mac: UUID(), name: "Mac", secret: LinkPairing.newSecret()))
@@ -220,6 +226,23 @@ enum IconRenderer {
         host.cacheDisplay(in: host.bounds, to: rep)
         try? rep.representation(using: .png, properties: [:])?.write(to: url)
         window.orderOut(nil)
+    }
+
+    /// A made-up talk between `imp` and a made-up Pip, over two days, for the renders.
+    private static func sampleTalks(for imp: ImpProfile) -> [TalkLine] {
+        let me = ChatTurn.Sender(id: imp.id, name: imp.name, hue: imp.hue)
+        let pip = ChatTurn.Sender(id: UUID(), name: "Pip", hue: 0.58)
+        let day = Date(timeIntervalSinceReferenceDate: 812_000_000)
+        func line(_ minutes: Double, _ asker: ChatTurn.Sender, _ answerer: ChatTurn.Sender, _ q: String, _ r: String, failed: Bool = false) -> TalkLine {
+            TalkLine(id: UUID(), date: day + minutes * 60, asker: asker, answerer: answerer, question: q, reply: r, failed: failed)
+        }
+        return [
+            line(0, pip, me, "Can you check whether the user has anything on tomorrow afternoon? They asked me to plan a picnic.",
+                 "Tomorrow after 3 pm is free. **Sunny**, too."),
+            line(4, me, pip, "Do you have a basket?", "Two. One has a squeaky lid:\n\n- wicker\n- tin"),
+            line(26 * 60, pip, me, "Is the user vegetarian?", "Couldn't reach the model.", failed: true),
+            line(26 * 60 + 3, me, pip, "Sorry, what time is the picnic?", "Half past four, by the pond."),
+        ]
     }
 
     /// `Imp --render-kit <file.png> [entry]`: the sheet for adding a kit (its review, or the text box).

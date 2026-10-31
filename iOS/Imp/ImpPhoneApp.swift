@@ -44,6 +44,7 @@ struct RootView: View {
         case chat(UUID)
         case hatch
         case edit(UUID)
+        case talks(UUID)
         case pair
 
         var id: Self { self }
@@ -67,7 +68,7 @@ struct RootView: View {
                 PairingView(client: client) { sheet = .hatch }
                     .transition(.opacity)
             } else {
-                PhoneStage(client: client, pocket: pocket, onChat: { sheet = .chat($0) }, onEdit: { sheet = .edit($0) })
+                PhoneStage(client: client, pocket: pocket, onChat: { sheet = .chat($0) }, onEdit: { sheet = .edit($0) }, onTalks: { sheet = .talks($0) })
                     .transition(.opacity)
                     .onPreferenceChange(EmbersPlaying.self) { playing = $0 }
                 VStack {
@@ -130,10 +131,12 @@ struct RootView: View {
         switch route {
         case .chat(let id):
             if pocket.contains(id) {
-                ChatSheet(client: client, source: pocket, impID: id) { sheet = .edit(id) }
+                ChatSheet(client: client, source: pocket, pocket: pocket, impID: id) { sheet = .edit(id) }
             } else {
-                ChatSheet(client: client, source: client, impID: id)
+                ChatSheet(client: client, source: client, pocket: pocket, impID: id)
             }
+        case .talks(let id):
+            TalksSheet(client: client, pocket: pocket, impID: id)
         case .hatch:
             PocketEditor(pocket: pocket, editing: nil) { sheet = nil }
         case .edit(let id):
