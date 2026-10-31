@@ -7,7 +7,7 @@ cd "$(dirname "$0")"
 out=../../build/extension-firefox
 rm -rf "$out"
 mkdir -p "$out"
-cp -R background.js popup.js popup.html popup.css icons "$out/"
+cp -R ./*.js ./*.html ./*.css icons "$out/"
 python3 -I - "$out/manifest.json" <<'PY'
 import json, sys
 path = sys.argv[1]

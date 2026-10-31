@@ -47,7 +47,7 @@ Everything stays on your Mac: the extension talks to `ws://127.0.0.1:47823`, and
 - Always: the **URL and title of the active tab**, when it changes.
 - Only when Imp asks: the **on-screen position of one element** matching a text, or the page's **visible text**.
 
-Imp tells the extension only which Imps are out, their names, colours and moods, for the popup to draw.
+Imp tells the extension only which Imps are out, their names, colours, looks and moods, for the popup to draw.
 
 No page content is read otherwise. Nothing is injected up front: a small function runs in the active tab only when Imp asks, which is why the extension needs the `tabs` and `scripting` permissions plus http(s) host access (`activeTab` only covers a user click on the extension, which can't work for a background request). The `alarms` permission wakes it every 30 seconds while Imp isn't connected, since browsers put an idle extension to sleep.
 

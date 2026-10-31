@@ -1,24 +1,35 @@
 // Imp bridge: tells the Imp desktop app which page the active tab shows, and finds
 // elements / reads text on that page when Imp asks. Talks only to ws://127.0.0.1:47823.
 // One script for every browser: a service worker in Chrome, an event page in Firefox and Safari.
+// Either may be put to sleep when idle and woken by an event, so nothing is kept anywhere but in
+// these variables: what Imp tells us again on every connection, and a short list of what it just
+// did (gone with the sleep, on purpose).
 
 const api = globalThis.browser ?? globalThis.chrome;
 const ADDRESS = "ws://127.0.0.1:47823";
-// Event pages and service workers are suspended when idle, which ends their timers. An alarm
-// wakes the background again, so Imp started later is found within a minute.
+// Sleeping ends timers. An alarm wakes the background again, so Imp started later is found within a minute.
 const WAKE_ALARM = "connect";
+const PING_MS = 20_000;     // socket traffic keeps a Chrome service worker alive (Chrome 116+)
+const RETRY_FIRST = 1_000;
+const RETRY_LAST = 30_000;
+const ACTIVITY_KEPT = 6;
+
+// Everything the popup draws. Pushed to it whenever it changes.
+const state = {
+  connected: false,   // the socket to Imp is open
+  connecting: false,  // an attempt is in flight
+  browser: "",
+  troupe: [],         // the Imps out, as Imp described them: [{ name, hue, scale, traits, mood, away }]
+  activity: [],       // what Imp just did on pages, newest first: [{ kind, query, ok, host, at }]
+};
+const popups = new Set();   // open popup ports
+const browserReady = detectBrowser().then((name) => { state.browser = name; publish(); return name; });
 
 let socket = null;
-let backoff = 1000;
+let backoff = RETRY_FIRST;
 let pingTimer = null;
 let retryTimer = null;
 let lastSent = "";
-let connectedSince = null;   // when the socket to Imp opened (null: not connected)
-let lastPage = null;         // the active tab: { url, title, icon }
-let troupe = [];             // the Imps out right now, as Imp described them: [{ name, hue, scale, mood, away }]
-let activity = [];           // what Imp just did on pages, newest first: [{ kind, query, ok, host, at }]
-const ACTIVITY_KEPT = 6;
-const browserName = detectBrowser();
 
 // The browser's own name when it says (Firefox and its forks), else from the extension's
 // scheme (Safari) or the Chromium brand list (Brave, Edge, Vivaldi, Opera, Chrome).
@@ -29,9 +40,48 @@ async function detectBrowser() {
   return ["Brave", "Microsoft Edge", "Vivaldi", "Opera"].find(name => brands.includes(name)) ?? "Chrome";
 }
 
-function send(obj) {
-  if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(obj));
+// MARK: Popup
+
+// The popup holds a port open while it's showing: it gets the state at once and again on every
+// change (no polling), and its buttons are messages that need no answer.
+api.runtime.onConnect.addListener((port) => {
+  if (port.name !== "popup") return;
+  popups.add(port);
+  port.onDisconnect.addListener(() => popups.delete(port));
+  port.onMessage.addListener((msg) => { if (msg?.type === "reconnect") reconnect(); });
+  port.postMessage(state);
+});
+
+// Tells every open popup, once per burst of changes.
+let publishQueued = false;
+function publish() {
+  if (publishQueued || !popups.size) return;
+  publishQueued = true;
+  queueMicrotask(() => {
+    publishQueued = false;
+    for (const port of popups) {
+      try { port.postMessage(state); } catch { popups.delete(port); }
+    }
+  });
 }
+
+// The toolbar button says whether Imp is listening (hover it, or open the popup).
+function showBadge() {
+  const on = state.connected;
+  api.action.setTitle({ title: on ? "Imp: connected" : "Imp: not connected (is Imp running?)" });
+  api.action.setBadgeText({ text: on ? "" : "off" });
+  api.action.setBadgeBackgroundColor({ color: "#6b5a5a" });
+}
+
+function setLink(connected, connecting) {
+  const changed = state.connected !== connected;
+  state.connected = connected;
+  state.connecting = connecting;
+  if (changed) showBadge();
+  publish();
+}
+
+// MARK: Connection
 
 function connect() {
   if (socket && socket.readyState <= WebSocket.OPEN) return;
@@ -39,16 +89,15 @@ function connect() {
   let s;
   try { s = new WebSocket(ADDRESS); } catch { return retry(); }
   socket = s;
+  setLink(false, true);
   // Each handler checks it still belongs to the current socket: one closed by Reconnect reports late.
   s.onopen = async () => {
     if (s !== socket) return;
-    backoff = 1000;
-    connectedSince = Date.now();
-    showState();
-    send({ type: "hello", browser: await browserName, version: 1 });
-    // Socket traffic keeps a Chrome service worker alive (Chrome 116+).
+    backoff = RETRY_FIRST;
+    setLink(true, false);
+    send({ type: "hello", browser: await browserReady, version: 1 });
     clearInterval(pingTimer);
-    pingTimer = setInterval(() => send({ type: "pong" }), 20000);
+    pingTimer = setInterval(() => send({ type: "pong" }), PING_MS);
     lastSent = "";
     reportActive();
   };
@@ -57,9 +106,7 @@ function connect() {
     if (s !== socket) return;
     clearInterval(pingTimer);
     socket = null;
-    connectedSince = null;
-    troupe = [];
-    showState();
+    setLink(false, false);
     retry();
   };
   s.onerror = () => s.close();
@@ -68,48 +115,24 @@ function connect() {
 function retry() {
   clearTimeout(retryTimer);
   retryTimer = setTimeout(connect, backoff);
-  backoff = Math.min(backoff * 2, 30000);
+  backoff = Math.min(backoff * 2, RETRY_LAST);
 }
 
-// The toolbar button says whether Imp is listening (hover it, or open the popup).
-function showState() {
-  const on = connectedSince !== null;
-  api.action.setTitle({ title: on ? "Imp: connected" : "Imp: not connected (is Imp running?)" });
-  api.action.setBadgeText({ text: on ? "" : "off" });
-  api.action.setBadgeBackgroundColor({ color: "#6b5a5a" });
+// Drops the socket (if any) and dials again at once; the popup hears "connecting" right away.
+function reconnect() {
+  backoff = RETRY_FIRST;
+  const old = socket;
+  socket = null;
+  clearInterval(pingTimer);
+  old?.close();
+  connect();
 }
 
-// The popup asks how things are, or to try connecting again right away.
-api.runtime.onMessage.addListener((msg, sender, reply) => {
-  if (sender.id !== api.runtime.id || !msg) return;
-  if (msg.type === "reconnect") {
-    backoff = 1000;
-    const old = socket;
-    clearInterval(pingTimer);
-    socket = null;
-    connectedSince = null;
-    troupe = [];
-    old?.close();
-    connect();
-  }
-  if (msg.type === "status" || msg.type === "reconnect") {
-    browserName.then(browser => reply({
-      connected: connectedSince !== null,
-      connecting: socket?.readyState === WebSocket.CONNECTING,
-      since: connectedSince,
-      browser,
-      page: lastPage,
-      troupe,
-      activity,
-      address: ADDRESS,
-    }));
-    return true; // answers asynchronously
-  }
-});
+function send(obj) {
+  if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(obj));
+}
 
-api.alarms.onAlarm.addListener((alarm) => { if (alarm.name === WAKE_ALARM) connect(); });
-api.runtime.onStartup.addListener(connect);
-api.runtime.onInstalled.addListener(connect);
+// MARK: The active tab
 
 async function activeTab() {
   const [tab] = await api.tabs.query({ active: true, lastFocusedWindow: true });
@@ -122,8 +145,7 @@ async function reportActive() {
   const key = `${tab.id}|${tab.url}|${tab.title}`;
   if (key === lastSent) return;
   lastSent = key;
-  lastPage = { url: tab.url, title: tab.title || "", icon: tab.favIconUrl || "" };
-  send({ type: "page", url: lastPage.url, title: lastPage.title });
+  send({ type: "page", url: tab.url, title: tab.title || "" });
 }
 
 api.tabs.onActivated.addListener(() => reportActive());
@@ -132,10 +154,13 @@ api.tabs.onUpdated.addListener((id, change, tab) => {
 });
 api.windows.onFocusChanged.addListener((w) => { if (w !== api.windows.WINDOW_ID_NONE) reportActive(); });
 
+// MARK: What Imp asks
+
 async function handle(raw) {
   const msg = JSON.parse(raw);
   if (msg.type === "troupe") {
-    troupe = Array.isArray(msg.imps) ? msg.imps.slice(0, 8) : [];
+    state.troupe = Array.isArray(msg.imps) ? msg.imps.slice(0, 8) : [];
+    publish();
     return;
   }
   const tab = await activeTab();
@@ -151,12 +176,12 @@ async function handle(raw) {
   }
 }
 
-// Remembers what Imp just did, for the popup to show (in memory only: it's gone when the browser
-// puts the extension to sleep, and it never holds what the page said).
+// Remembers what Imp just did, for the popup to show (it never holds what the page said).
 function note(kind, query, ok, tab) {
   let host = "";
   try { host = tab?.url ? new URL(tab.url).host : ""; } catch {}
-  activity = [{ kind, query: query.slice(0, 80), ok, host, at: Date.now() }, ...activity].slice(0, ACTIVITY_KEPT);
+  state.activity = [{ kind, query: query.slice(0, 80), ok, host, at: Date.now() }, ...state.activity].slice(0, ACTIVITY_KEPT);
+  publish();
 }
 
 // On-demand injection: no content script sits on every page; code runs only when Imp asks.
@@ -230,8 +255,13 @@ function locateInPage(query) {
   };
 }
 
-// Registered on every start (create replaces an alarm of the same name); 30 s is the shortest
-// period Chrome allows.
-api.alarms.create(WAKE_ALARM, { periodInMinutes: 0.5 });
-showState();
+// MARK: Start
+
+// This runs on every wake-up, so no install or startup listeners are needed. The alarm is only
+// created when missing: creating it again would push its next ring back each time we wake.
+api.alarms.onAlarm.addListener((alarm) => { if (alarm.name === WAKE_ALARM) connect(); });
+api.alarms.get(WAKE_ALARM).then((alarm) => {
+  if (!alarm) api.alarms.create(WAKE_ALARM, { periodInMinutes: 0.5 }); // 30 s is the shortest Chrome allows
+});
+showBadge();
 connect();

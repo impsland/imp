@@ -355,7 +355,7 @@ final class AppModel {
         let troupe = withObservationTracking {
             imps.map { imp in
                 let p = imp.profile
-                return BridgeImp(name: p.name, hue: p.hue, scale: p.scale, mood: (imp.activity?.mood ?? .idle).rawValue, away: p.awayOn != nil)
+                return BridgeImp(name: p.name, hue: p.hue, scale: p.scale, traits: p.traits, mood: (imp.activity?.mood ?? .idle).rawValue, away: p.awayOn != nil)
             }
         } onChange: { [weak self] in
             Task { @MainActor in self?.tellBrowser() }
