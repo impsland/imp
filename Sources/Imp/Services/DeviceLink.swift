@@ -189,9 +189,9 @@ final class DeviceLink {
         case .linked(let device):
             log.info("linked with “\(device.name, privacy: .public)”")
             refresh()
-        case .forgotten(let id):
+        case .forgotten(_, let result):
             log.info("a device forgot this Mac")
-            if let node { node.away.held(by: id).forEach { node.callHome($0); app.cameHome($0) } }
+            returned(result)
             refresh()
         case .message(let message, let from):
             receive(message, from: from)
@@ -422,7 +422,8 @@ final class DeviceLink {
         var texts = imp.history.current.turns.map(\.reply)
         if let b = imp.bubble { texts.append(b.text) }
         if let w = imp.work { texts.append(w.text) }
-        guard LinkFiles.isMentioned(ref, in: texts), let url = LinkFiles.resolve(ref, base: Workspace.directory(for: imp.id)) else {
+        let folder = Workspace.directory(for: imp.id)
+        guard LinkFiles.mayServe(ref, base: folder, in: texts, trusted: node.isTrusted(device)), let url = LinkFiles.resolve(ref, base: folder) else {
             return fail(file: transfer, String(localized: "That file isn't in this chat."), to: device)
         }
         let log = log

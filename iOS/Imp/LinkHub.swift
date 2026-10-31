@@ -331,7 +331,11 @@ final class LinkHub {
             for visit in visits where visit.home.id == id { lost(visit: visit.id) }
         case .linked(let device):
             toast = String(localized: "Linked with \(device.name)")
-        case .forgotten(let id):
+        case .forgotten(let id, let result):
+            for imp in result.sentHome {
+                clear(imp)
+                onEvent?(.left(imp))
+            }
             let who = before.first { $0.id == id }?.device.name ?? String(localized: "A device")
             toast = String(localized: "\(who) forgot this iPhone")
         case .message(let message, let from):
