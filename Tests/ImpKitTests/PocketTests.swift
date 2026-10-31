@@ -92,15 +92,9 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
 }
 
 @Suite struct PocketHandoverTests {
-    private func adopt(_ request: LinkRequest) throws -> (kit: String, secrets: LinkSecrets) {
-        guard case .adopt(_, let kit, let secrets, _, _, _) = request else { throw PocketError.notOnePocketImp }
-        return (kit, secrets)
-    }
-
     @Test func kitHoldsTheImpAndItsChatsButNoSecrets() throws {
         let (imp, store) = pocketImp(chats: [chat(3, title: "Old"), chat(2, title: "New")])
-        let request = try imp.adoption(secrets: store, exit: .left, height: 0.3, speed: 900)
-        let (kit, secrets) = try adopt(request)
+        let (kit, secrets) = try imp.adoption(secrets: store)
         #expect(!kit.contains("sk-very-secret"))
         #expect(!kit.contains("header-secret"))
         #expect(secrets.apiKey == "sk-very-secret")
@@ -123,7 +117,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
 
     @Test func aMacTakesItInAsAnOrdinaryImpWithItsId() throws {
         let (imp, store) = pocketImp(chats: [chat(2)])
-        let (kit, secrets) = try adopt(imp.adoption(secrets: store, exit: .right, height: 0.5, speed: 0))
+        let (kit, secrets) = try imp.adoption(secrets: store)
         var prefs = ImpPreferences()
         prefs.imps = [ImpProfile.imp, ImpProfile(name: "Pocket Pip", hue: 0.1, favoriteHue: 0.6, personality: "x")]
         let adoption = try prefs.adopt(kit: kit, as: imp.id, secrets: secrets)
@@ -151,7 +145,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         var (imp, store) = pocketImp()
         imp.brain = PocketService()
         #expect(throws: PocketError.noBrain) { try imp.validate() }
-        let (kit, secrets) = try adopt(imp.adoption(secrets: store, exit: .left, height: 0.5, speed: 0))
+        let (kit, secrets) = try imp.adoption(secrets: store)
         #expect(secrets.apiKey == nil)                  // a key without a service goes nowhere
         #expect(try Kit.parse(kit, limit: LinkProtocol.maxFrame).imps.first?.brain == nil)
         var prefs = ImpPreferences()
@@ -168,20 +162,20 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         var (imp, store) = pocketImp()
         imp.brain = PocketService(baseURL: " ", model: "phone-model")
         #expect(throws: PocketError.noBrain) { try imp.validate() }
-        let (kit, _) = try adopt(imp.adoption(secrets: store, exit: .left, height: 0.5, speed: 0))
+        let (kit, _) = try imp.adoption(secrets: store)
         #expect(try Kit.parse(kit, limit: LinkProtocol.maxFrame).imps.first?.brain == nil)
     }
 
     @Test func aServiceMovesUnderItsOwnName() throws {
         var (imp, store) = pocketImp()
         imp.brain = PocketService(baseURL: "https://openrouter.ai/api/v1", model: "openai/gpt-6-luna")
-        var (kit, secrets) = try adopt(imp.adoption(secrets: store, exit: .left, height: 0.5, speed: 0))
+        var (kit, secrets) = try imp.adoption(secrets: store)
         var prefs = ImpPreferences()
         _ = try prefs.adopt(kit: kit, as: imp.id, secrets: secrets)
         #expect(prefs.ai.services.map(\.name) == ["OpenRouter"])
         imp.id = UUID()
         imp.brain = PocketService(baseURL: "http://studio.local:1234/v1", model: "qwen", name: "Studio")
-        (kit, secrets) = try adopt(imp.adoption(secrets: store, exit: .left, height: 0.5, speed: 0))
+        (kit, secrets) = try imp.adoption(secrets: store)
         _ = try prefs.adopt(kit: kit, as: imp.id, secrets: secrets)
         #expect(prefs.ai.services.map(\.name) == ["OpenRouter", "Studio"])
     }
@@ -195,7 +189,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
 
     @Test func reusesServicesAndServersTheMacHas() throws {
         let (imp, store) = pocketImp()
-        let (kit, secrets) = try adopt(imp.adoption(secrets: store, exit: .left, height: 0, speed: 0))
+        let (kit, secrets) = try imp.adoption(secrets: store)
         var prefs = ImpPreferences()
         let mine = Service(name: "Mine", baseURL: "https://LLM.example.com/v1/", model: "big")
         prefs.ai.add(mine)
@@ -211,7 +205,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
 
     @Test func refusesWhatIsNotOnePocketImp() throws {
         let (imp, store) = pocketImp()
-        let (kit, secrets) = try adopt(imp.adoption(secrets: store, exit: .left, height: 0, speed: 0))
+        let (kit, secrets) = try imp.adoption(secrets: store)
         var prefs = ImpPreferences()
         prefs.imps = [ImpProfile(id: imp.id, name: "Other", hue: 0.1, favoriteHue: 0.6, personality: "")]
         #expect(throws: PocketError.alreadyHere) { try prefs.adopt(kit: kit, as: imp.id, secrets: secrets) }
@@ -245,9 +239,9 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         // Three chats of about 2 MB each: only the newest can travel.
         let big = (0..<3).map { chat(20, size: 40_000, title: "Chat \($0)") }
         let (imp, store) = pocketImp(chats: big)
-        let request = try imp.adoption(secrets: store, exit: .left, height: 0, speed: 0)
-        #expect(try LinkFrame.encode(request).count <= LinkProtocol.maxFrame + 4)
-        let (kit, _) = try adopt(request)
+        let (kit, secrets) = try imp.adoption(secrets: store)
+        let probe = LinkMessage.adopt(transfer: UUID(), imp: imp.id, kit: kit, secrets: secrets, entry: LinkEntry(side: .left, height: 0, speed: 0))
+        #expect(try LinkFrame.encode(probe).count <= LinkProtocol.maxFrame + 4)
         let titles = try Kit.parse(kit, limit: LinkProtocol.maxFrame).imps[0].chats.map(\.title)
         #expect(titles.last == "Chat 2")
         #expect(!titles.contains("Chat 0"))
@@ -255,8 +249,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
 
     @Test func halvesAHugeChatThatStandsAlone() throws {
         let (imp, store) = pocketImp(chats: [chat(60, size: 60_000)])
-        let request = try imp.adoption(secrets: store, exit: .left, height: 0, speed: 0)
-        let (kit, _) = try adopt(request)
+        let (kit, _) = try imp.adoption(secrets: store)
         let chat = try #require(Kit.parse(kit, limit: LinkProtocol.maxFrame).imps[0].chats.first)
         #expect(chat.turns.count < 60 && chat.turns.last?.request.hasPrefix("q59") == true)
     }
@@ -265,20 +258,15 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         let imp = LinkImp(id: UUID(), name: "Pip", hue: 0.3, scale: 1, traits: .plain)
         let id = UUID()
         let secrets = LinkSecrets(apiKey: "k", headers: ["Notes": ["Authorization": "v"]])
-        for r: LinkRequest in [.troupe([imp]), .troupe([]),
-                               .adopt(imp: id, kit: #"{"imp":2}"#, secrets: secrets, exit: .right, height: 0.4, speed: 1200),
-                               .adopt(imp: id, kit: "", secrets: LinkSecrets(), exit: .left, height: 0, speed: 0),
-                               .message(id: id, from: imp.id, to: UUID(), text: "hello 🧡"),
-                               .answered(id: id, text: "nope", failed: true)] {
+        let entry = LinkEntry(side: .right, height: 0.4, speed: 1200)
+        for m: LinkMessage in [.adopt(transfer: id, imp: id, kit: #"{"imp":2}"#, secrets: secrets, entry: entry),
+                               .adopt(transfer: id, imp: id, kit: "", secrets: LinkSecrets(), entry: LinkEntry(side: .left, height: 0, speed: 0)),
+                               .message(id: id, from: imp, to: UUID(), toHome: UUID(), text: "hello 🧡", forwarded: false),
+                               .answer(id: id, text: "nope", failed: true), .adopted(transfer: id),
+                               .declined(transfer: id, reason: .other)] {
             var framer = LinkFrame()
-            let body = try #require(try framer.feed(LinkFrame.encode(r)).first)
-            #expect(LinkFrame.decode(LinkRequest.self, body) == r)
-        }
-        for u: LinkUpdate in [.adopted(imp: id), .answer(id: id, text: "hi", failed: false), .answer(id: id, text: "busy", failed: true),
-                              .ask(id: id, from: imp, to: UUID(), text: "ping"), .refused(imp: id, reason: "no")] {
-            var framer = LinkFrame()
-            let body = try #require(try framer.feed(LinkFrame.encode(u)).first)
-            #expect(LinkFrame.decode(LinkUpdate.self, body) == u)
+            let body = try #require(try framer.feed(LinkFrame.encode(m)).first)
+            #expect(LinkFrame.decode(LinkMessage.self, body) == m)
         }
     }
 }
