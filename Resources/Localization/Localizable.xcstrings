@@ -160,12 +160,46 @@
     "%@ doesn't know this Mac any more. Link it again." : {
 
     },
+    "%@ flies back to %@. If it is away, %@ goes now and %@ hears when it is back." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ flies back to %2$@. If it is away, %3$@ goes now and %4$@ hears when it is back."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ vuelve volando a %2$@. Si está fuera de alcance, %3$@ se va ya y %4$@ se entera cuando vuelva."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 会飞回 %2$@。如果它不在线，%3$@ 会马上离开，等 %4$@ 回来后才会得知。"
+          }
+        }
+      }
+    },
     "%@ flies off the screen onto %@. Or throw it hard at the side of the screen." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@ flies off the screen onto %2$@. Or throw it hard at the side of the screen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ sale volando de la pantalla hacia %2$@. O lánzalo con fuerza contra el borde de la pantalla."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 会飞出屏幕，落到 %2$@ 上。也可以用力把它扔向屏幕边缘。"
           }
         }
       }
@@ -284,6 +318,88 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 已被 %@ 使用"
+          }
+        }
+      }
+    },
+    "%@ is asleep" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ está dormido"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 睡着了"
+          }
+        }
+      }
+    },
+    "%@ is asleep: %@ is away" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is asleep: %2$@ is away"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ está dormido: %2$@ está fuera de alcance"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 睡着了：%2$@ 不在线"
+          }
+        }
+      }
+    },
+    "%@ is away, so %@ can't think right now. It wakes up when %@ is back." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is away, so %2$@ can't think right now. It wakes up when %3$@ is back."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ está fuera de alcance, así que %2$@ no puede pensar ahora. Se despierta cuando %3$@ vuelva."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 不在线，所以 %2$@ 现在无法思考。%3$@ 回来后它就会醒来。"
+          }
+        }
+      }
+    },
+    "%@ is away, so %@ is asleep and can't answer until it's back." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is away, so %2$@ is asleep and can't answer until it's back."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ está fuera de alcance, así que %2$@ está dormido y no puede responder hasta que vuelva."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 不在线，所以 %2$@ 睡着了，要等它回来才能回答。"
           }
         }
       }
@@ -721,6 +837,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@，在你的 iPhone 上"
+          }
+        }
+      }
+    },
+    "%@, visiting from %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, visiting from %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, de visita desde %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@，来自 %2$@ 的访客"
           }
         }
       }
@@ -15008,6 +15146,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Send %1$@ to %2$@…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar a %1$@ a %2$@…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把 %1$@ 送到 %2$@…"
           }
         }
       }

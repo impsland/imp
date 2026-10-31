@@ -36,6 +36,7 @@ final class TroupeWindows {
         sync()
     }
 
+    @discardableResult
     private func makePanels(for imp: ImpModel?) -> Panels? {
         guard let imp else { return nil }
         let p = Panels(model: imp)
