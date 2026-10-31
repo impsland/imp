@@ -11,6 +11,7 @@
 		0B3DE9AB90535E8776AC383B /* LinkFileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BCDE56EC7E08CB95A42B3A /* LinkFileStore.swift */; };
 		0E79EEB23068CD9964B66A3F /* Antics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154403A8E907ABF7EDDA394A /* Antics.swift */; };
 		15117A49B4DBDDD10DE49934 /* GameLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA159EED58442BB21A2A0AE /* GameLayer.swift */; };
+		1C96E45CBCBA8A7EF5F6210A /* SpeechMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6406F8E129883536DA4BD5F3 /* SpeechMedia.swift */; };
 		33D971EE0258680DE6F44E9F /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E6EB59723598749562B958 /* Keychain.swift */; };
 		3C05A501D4D7A0017C6BBA17 /* ReplyBlocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D36860F51AAB868812CA05 /* ReplyBlocks.swift */; };
 		3DEB2BEE904FC2E55AD6181E /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7D2F37C84A4B750CDB3F71 /* Palette.swift */; };
@@ -33,6 +34,7 @@
 		AE1DFD9644628E88D62348A5 /* Performance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6F4A4BEABAB147C1273508 /* Performance.swift */; };
 		B3DDDC12FE1679378FCB5BDD /* ChatSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19446029336D379F770CD86B /* ChatSheet.swift */; };
 		B7CA0B90DB6761F8C22BA91E /* PocketRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = F364A4DE6BAD316298E3E073 /* PocketRuntime.swift */; };
+		CB1362A800AD5DE520C03318 /* StageVoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B34102EB8A566B60FE68FF4A /* StageVoice.swift */; };
 		D641B96BDC01E6071DE86AAD /* GameRound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8151B96260694FD93D8F45E8 /* GameRound.swift */; };
 		E173ECE55498D9DC68051497 /* PhoneStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36040976E160D83A9ED7131E /* PhoneStage.swift */; };
 		E53ED1E407B5D3666EDB99F4 /* TiltImp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C4C921D3632C8A4B97CB80 /* TiltImp.swift */; };
@@ -65,6 +67,7 @@
 		540B98CA530667A006631F93 /* LinkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkClient.swift; sourceTree = "<group>"; };
 		5A7D2F37C84A4B750CDB3F71 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		6406F33EC0C8528E9FA96CAA /* PairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingView.swift; sourceTree = "<group>"; };
+		6406F8E129883536DA4BD5F3 /* SpeechMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechMedia.swift; sourceTree = "<group>"; };
 		69D3BA1E1D62779FCC642D13 /* imp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = imp; path = ..; sourceTree = SOURCE_ROOT; };
 		6AC024C76203D641C929D0A5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		8151B96260694FD93D8F45E8 /* GameRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRound.swift; sourceTree = "<group>"; };
@@ -74,6 +77,7 @@
 		A9CDA1D6F43D1F4F6733CC21 /* StatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPill.swift; sourceTree = "<group>"; };
 		AA17C8D6E7748402B3655100 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		B31C2D953C56557D2B30BCF3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B34102EB8A566B60FE68FF4A /* StageVoice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageVoice.swift; sourceTree = "<group>"; };
 		B6297667BC85BA102DF6A825 /* Face.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Face.swift; sourceTree = "<group>"; };
 		BBA159EED58442BB21A2A0AE /* GameLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLayer.swift; sourceTree = "<group>"; };
 		C3A5CF20C2B71E285BCA988D /* StageEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageEngine.swift; sourceTree = "<group>"; };
@@ -130,7 +134,9 @@
 				1CE7028C65676801485C56B3 /* PocketStore.swift */,
 				F1D36860F51AAB868812CA05 /* ReplyBlocks.swift */,
 				138E937C2DEA200C16A64509 /* SpeechBubble.swift */,
+				6406F8E129883536DA4BD5F3 /* SpeechMedia.swift */,
 				C3A5CF20C2B71E285BCA988D /* StageEngine.swift */,
+				B34102EB8A566B60FE68FF4A /* StageVoice.swift */,
 				A9CDA1D6F43D1F4F6733CC21 /* StatusPill.swift */,
 				6AC024C76203D641C929D0A5 /* Theme.swift */,
 				C5C4C921D3632C8A4B97CB80 /* TiltImp.swift */,
@@ -291,7 +297,9 @@
 				3C05A501D4D7A0017C6BBA17 /* ReplyBlocks.swift in Sources */,
 				A7E4796D1F6325E22606E988 /* SoftLight.swift in Sources */,
 				003ED416A016798061351095 /* SpeechBubble.swift in Sources */,
+				1C96E45CBCBA8A7EF5F6210A /* SpeechMedia.swift in Sources */,
 				AC858C246A969D5EFA7444F0 /* StageEngine.swift in Sources */,
+				CB1362A800AD5DE520C03318 /* StageVoice.swift in Sources */,
 				F14DF98DC306C127EAD0E386 /* StatusPill.swift in Sources */,
 				81C420D8F13B53FB34B2B8E2 /* Theme.swift in Sources */,
 				E53ED1E407B5D3666EDB99F4 /* TiltImp.swift in Sources */,
@@ -350,7 +358,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.15.0;
+				MARKETING_VERSION = 1.16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -437,7 +445,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.15.0;
+				MARKETING_VERSION = 1.16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
