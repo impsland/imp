@@ -21,8 +21,8 @@ struct DevicesCard: View {
                     .buttonStyle(.imp(link.isLinked ? .secondary : .primary, small: true))
             }
             CardDivider()
-            Row("Link with another device", info: "Paste the link another device shows with its code.") {
-                Button { joining = true } label: { Label("Join…", systemImage: "link") }
+            Row("Link with another device", info: "Scan the code another device shows with this Mac's camera, or paste its link.") {
+                Button { joining = true } label: { Label("Scan Code…", systemImage: "qrcode.viewfinder") }
                     .buttonStyle(.imp(.secondary, small: true))
             }
             ForEach(link.peers.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }) { peer in
@@ -81,10 +81,12 @@ struct DevicesCard: View {
     }
 }
 
-/// Link with a device whose code was copied: paste its link.
+/// Link with another device: hold its code up to this Mac's camera, or paste its link (or a picture
+/// of its code, such as a screenshot).
 struct JoinSheet: View {
     let model: AppModel
     @Environment(\.dismiss) private var dismiss
+    @State private var scanner = CodeScanner()
     @State private var text = ""
     @State private var joining = false
     @State private var error: String?
@@ -93,9 +95,10 @@ struct JoinSheet: View {
     private var invite: LinkInvite? { LinkInvite(string: text) }
 
     var body: some View {
-        SheetScaffold(icon: "link", title: "Link with a device",
-                      info: "On the other device, show its code and copy its link, then paste it here. Scanning with the camera comes soon.") {
-            VStack(alignment: .leading, spacing: 10) {
+        SheetScaffold(icon: "qrcode.viewfinder", title: "Link with a device",
+                      info: "Show the code on the other device and hold it up to this Mac's camera, or paste its link.") {
+            VStack(alignment: .leading, spacing: 12) {
+                viewfinder
                 TextField(String("implink://join?…"), text: $text)
                     .impField(mono: true).autocorrectionDisabled()
                     .disabled(joining || linked != nil)
@@ -116,25 +119,73 @@ struct JoinSheet: View {
             Button { paste() } label: { Label("Paste", systemImage: "doc.on.clipboard") }
                 .buttonStyle(.imp(.secondary))
                 .disabled(joining || linked != nil)
+                .help("Pastes a link, or a picture of a code")
             Spacer()
             if linked == nil { SheetCancelButton { dismiss() } }
             if linked != nil {
                 Button("Done") { dismiss() }.buttonStyle(.primary).keyboardShortcut(.defaultAction)
             } else {
-                Button { join() } label: { Label("Link", systemImage: "link") }
+                Button { invite.map(join) } label: { Label("Link", systemImage: "link") }
                     .buttonStyle(.primary).keyboardShortcut(.defaultAction)
                     .disabled(invite == nil || joining)
             }
         }
+        .task { await scanner.start { found($0) } }
+        .onDisappear { scanner.stop() }
+    }
+
+    /// The camera, with a frame to aim the code at, or why there's no picture.
+    private var viewfinder: some View {
+        ZStack {
+            Color.black
+            switch scanner.state {
+            case .starting:
+                ProgressView().controlSize(.small)
+            case .scanning:
+                CameraPreview(session: scanner.session)
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(linked != nil ? Color.green : Dungeon.flame, style: StrokeStyle(lineWidth: 3, dash: [22, 12]))
+                    .frame(width: 150, height: 150)
+                    .shadow(color: .black.opacity(0.5), radius: 6)
+                    .accessibilityHidden(true)
+            case .denied:
+                VStack(spacing: 10) {
+                    Text("Imp may not use the camera.").font(.system(size: 13)).foregroundStyle(Dungeon.cream)
+                    Button("Open Privacy Settings") { NSWorkspace.shared.open(CodeScanner.privacySettings) }
+                        .buttonStyle(.imp(.secondary, small: true))
+                }
+            case .noCamera:
+                Text("This Mac has no camera. Paste the link instead.").font(.system(size: 13)).foregroundStyle(Dungeon.cream)
+            }
+        }
+        .frame(height: 220)
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(Dungeon.cardEdge))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Camera")
+    }
+
+    /// A code the camera saw: an Imp code links at once, anything else is ignored.
+    private func found(_ code: String) {
+        guard !joining, linked == nil, let invite = LinkInvite(string: code) else { return }
+        text = code
+        join(invite)
     }
 
     private func paste() {
-        text = NSPasteboard.general.string(forType: .string)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         error = nil
+        let pasteboard = NSPasteboard.general
+        if let string = pasteboard.string(forType: .string)?.trimmingCharacters(in: .whitespacesAndNewlines), !string.isEmpty {
+            text = string
+        } else if let picture = NSImage(pasteboard: pasteboard)?.cgImage(forProposedRect: nil, context: nil, hints: nil),
+                  let code = CodeScanner.codes(in: picture).first(where: { LinkInvite(string: $0) != nil }) {
+            text = code
+        } else {
+            error = String(localized: "There's no Imp link or code to paste.")
+        }
     }
 
-    private func join() {
-        guard let invite else { return }
+    private func join(_ invite: LinkInvite) {
         error = nil
         joining = true
         Task {
@@ -202,7 +253,7 @@ struct PairingSheet: View {
                 copied = true
             } label: { Label(copied ? "Copied" : "Copy Link", systemImage: copied ? "checkmark" : "link") }
                 .buttonStyle(.imp(.secondary))
-                .help("For a device that can't scan: paste the link in Join… on the other device. Keep it private: it lets a device link with this Mac for a while.")
+                .help("For a device that can't scan: paste the link in Scan Code… on the other device. Keep it private: it lets a device link with this Mac for a while.")
             Spacer()
             Button("Done") { dismiss() }.buttonStyle(.primary).keyboardShortcut(.defaultAction)
         }

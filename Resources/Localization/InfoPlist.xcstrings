@@ -74,25 +74,49 @@
       }
     },
     "NSLocalNetworkUsageDescription": {
-      "comment": "Why Imp asks to use the local network (the iPhone link).",
+      "comment": "Why Imp asks to use the local network (the link with other devices).",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Imp talks to your iPhone over the local network, so you can toss Imps onto it and chat with them there."
+            "value": "Imp talks to your other devices over the local network, so you can throw Imps onto them and chat with them there."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Imp habla con tu iPhone por la red local, para que puedas lanzarle Imps y chatear con ellos allí."
+            "value": "Imp habla con tus otros dispositivos por la red local, para que puedas lanzarles Imps y chatear con ellos allí."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Imp 通过本地网络与你的 iPhone 通信，这样你就能把 Imp 扔到手机上，并在那里和它们聊天。"
+            "value": "Imp 通过本地网络与你的其他设备通信，这样你就能把 Imp 扔到它们上面，并在那里和它们聊天。"
+          }
+        }
+      }
+    },
+    "NSCameraUsageDescription": {
+      "comment": "Why Imp asks to use the camera (scanning another device's code).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imp scans the code another device shows, to link with it."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imp escanea el código que muestra otro dispositivo para vincularse con él."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imp 扫描另一台设备显示的代码，以便与它连接。"
           }
         }
       }

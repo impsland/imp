@@ -51,8 +51,10 @@
 	</array>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Imp scans the code another device shows, to link with it.</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Imp talks to your iPhone over the local network, so you can toss Imps onto it and chat with them there.</string>
+	<string>Imp talks to your other devices over the local network, so you can throw Imps onto them and chat with them there.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Imp listens when you talk to it (click Imp or press its voice shortcut).</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
