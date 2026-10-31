@@ -354,13 +354,14 @@ final class LinkHub {
         case (.adopt, .took):
             onPocket?(.adopted(passed.imp))
         case (_, .declined(let reason)):
-            onEvent?(.refused(passed.imp, switch reason {
+            let why = switch reason {
             case .full: String(localized: "\(to) has no room for another Imp")
             case .playing: String(localized: "\(to) is playing a game")
             case .notLinked: String(localized: "\(to) doesn't know this iPhone")
             case .timeout: String(localized: "\(to) didn't answer")
             case .other: String(localized: "\(to) didn't take it")
-            }))
+            }
+            onEvent?(.refused(passed.imp, why))
         }
     }
 
