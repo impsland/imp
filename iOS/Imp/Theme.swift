@@ -22,13 +22,14 @@ enum Dungeon {
 /// The wall with a few embers floating up, like the Mac's stage.
 struct DungeonBackdrop: View {
     var quiet = false
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         ZStack {
             Dungeon.wall
             Canvas { ctx, size in Self.bricks(&ctx, size: size) }
             if !quiet {
-                TimelineView(.animation(minimumInterval: 1 / 20)) { timeline in
+                TimelineView(Energy.shared.schedule(lively: false, paused: scenePhase != .active, fastest: 1 / 20)) { timeline in
                     Canvas { ctx, size in Self.embers(&ctx, size: size, t: timeline.date.timeIntervalSinceReferenceDate) }
                 }
             }

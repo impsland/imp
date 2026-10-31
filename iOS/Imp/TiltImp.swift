@@ -7,6 +7,7 @@ import SwiftUI
 /// and it watches your finger.
 struct TiltImp: View {
     @State private var tilt = TiltWatcher()
+    @Environment(\.scenePhase) private var scenePhase
     @State private var touch: CGPoint?
     @State private var performance: Performance?
     @State private var flash: (mood: Mood, until: Date)?
@@ -14,7 +15,7 @@ struct TiltImp: View {
     var body: some View {
         GeometryReader { geo in
             let size = geo.size
-            TimelineView(.animation) { timeline in
+            TimelineView(Energy.shared.schedule(lively: true, paused: scenePhase != .active, fastest: 1 / 60)) { timeline in
                 let date = timeline.date
                 let state = tilt.state(at: date)
                 let center = CGPoint(x: size.width / 2 + state.slide, y: size.height / 2)
@@ -38,6 +39,7 @@ struct TiltImp: View {
             tilt.start()
         }
         .onDisappear { tilt.stop() }
+        .onChange(of: scenePhase) { _, phase in if phase == .active { tilt.start() } else { tilt.stop() } }
         .accessibilityElement()
         .accessibilityLabel("Imp")
         .accessibilityHint("Tilt your phone or tap it.")

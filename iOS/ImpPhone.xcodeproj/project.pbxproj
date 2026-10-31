@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		003ED416A016798061351095 /* SpeechBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 138E937C2DEA200C16A64509 /* SpeechBubble.swift */; };
+		034344F3DCE4CAA7C0BDB830 /* BubbleSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0004317A91411D2ECE455BA7 /* BubbleSizes.swift */; };
 		0B3DE9AB90535E8776AC383B /* LinkFileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BCDE56EC7E08CB95A42B3A /* LinkFileStore.swift */; };
 		0E79EEB23068CD9964B66A3F /* Antics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154403A8E907ABF7EDDA394A /* Antics.swift */; };
 		15117A49B4DBDDD10DE49934 /* GameLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA159EED58442BB21A2A0AE /* GameLayer.swift */; };
@@ -38,10 +39,12 @@
 		BE17BC88E7F643C073B6791B /* Talks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7C6595FE067AC51F19AE88 /* Talks.swift */; };
 		CB1362A800AD5DE520C03318 /* StageVoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B34102EB8A566B60FE68FF4A /* StageVoice.swift */; };
 		D641B96BDC01E6071DE86AAD /* GameRound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8151B96260694FD93D8F45E8 /* GameRound.swift */; };
+		DB2F5016E620AC22BD213646 /* StagePacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F56C1437E4CA7EF22A4E83 /* StagePacer.swift */; };
 		E173ECE55498D9DC68051497 /* PhoneStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36040976E160D83A9ED7131E /* PhoneStage.swift */; };
 		E53ED1E407B5D3666EDB99F4 /* TiltImp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C4C921D3632C8A4B97CB80 /* TiltImp.swift */; };
 		E8BA8DE233B42D3C55E93B74 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86EC44471EB3D16C062A1ABF /* Geometry.swift */; };
 		E8F42E3DB6AFD272B99A32B1 /* Horn.swift in Sources */ = {isa = PBXBuildFile; fileRef = E850DCFCD50F8C2C190C14FC /* Horn.swift */; };
+		ED518BB57886BAA35227B480 /* Energy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825ADE440948D012933C3A77 /* Energy.swift */; };
 		F14DF98DC306C127EAD0E386 /* StatusPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CDA1D6F43D1F4F6733CC21 /* StatusPill.swift */; };
 		F1D25052BB301E187AD667A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 496385172A5237326FD3A24B /* Assets.xcassets */; };
 		F26B2C853848B5A93429CB93 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 37A695264BBAD32A874A57EB /* Localizable.xcstrings */; };
@@ -50,7 +53,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0004317A91411D2ECE455BA7 /* BubbleSizes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleSizes.swift; sourceTree = "<group>"; };
 		00E6EB59723598749562B958 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		01F56C1437E4CA7EF22A4E83 /* StagePacer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StagePacer.swift; sourceTree = "<group>"; };
 		06FA16062C38989EC0152F05 /* ImpFigure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpFigure.swift; sourceTree = "<group>"; };
 		0D2E54D6D3896160943BF9DC /* SoftLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftLight.swift; sourceTree = "<group>"; };
 		0DC695E7AE998FA6BF5BA85B /* ImpPhone.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ImpPhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,11 +76,12 @@
 		5A7D2F37C84A4B750CDB3F71 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		6406F33EC0C8528E9FA96CAA /* PairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingView.swift; sourceTree = "<group>"; };
 		6406F8E129883536DA4BD5F3 /* SpeechMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechMedia.swift; sourceTree = "<group>"; };
-		69D3BA1E1D62779FCC642D13 /* imp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = imp; path = ..; sourceTree = SOURCE_ROOT; };
 		6AC024C76203D641C929D0A5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		8151B96260694FD93D8F45E8 /* GameRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRound.swift; sourceTree = "<group>"; };
+		825ADE440948D012933C3A77 /* Energy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Energy.swift; sourceTree = "<group>"; };
 		86EC44471EB3D16C062A1ABF /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		8F7C6595FE067AC51F19AE88 /* Talks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talks.swift; sourceTree = "<group>"; };
+		8FB77C579AB0375925076112 /* agent-ad3c26cf9d3ceb5f0 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "agent-ad3c26cf9d3ceb5f0"; path = ..; sourceTree = SOURCE_ROOT; };
 		90BCDE56EC7E08CB95A42B3A /* LinkFileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkFileStore.swift; sourceTree = "<group>"; };
 		92E940BF293260A542D370CE /* ImpPhoneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpPhoneApp.swift; sourceTree = "<group>"; };
 		A9CDA1D6F43D1F4F6733CC21 /* StatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPill.swift; sourceTree = "<group>"; };
@@ -109,7 +115,7 @@
 		0896923E2770E96595D122C0 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				69D3BA1E1D62779FCC642D13 /* imp */,
+				8FB77C579AB0375925076112 /* agent-ad3c26cf9d3ceb5f0 */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -118,9 +124,11 @@
 			isa = PBXGroup;
 			children = (
 				496385172A5237326FD3A24B /* Assets.xcassets */,
+				0004317A91411D2ECE455BA7 /* BubbleSizes.swift */,
 				19446029336D379F770CD86B /* ChatSheet.swift */,
 				C694EC257AF0DCC56DCBE571 /* ChatSource.swift */,
 				425EA0CF393C2A5B4C8C8E79 /* EmbersCoach.swift */,
+				825ADE440948D012933C3A77 /* Energy.swift */,
 				BBA159EED58442BB21A2A0AE /* GameLayer.swift */,
 				8151B96260694FD93D8F45E8 /* GameRound.swift */,
 				06FA16062C38989EC0152F05 /* ImpFigure.swift */,
@@ -141,6 +149,7 @@
 				138E937C2DEA200C16A64509 /* SpeechBubble.swift */,
 				6406F8E129883536DA4BD5F3 /* SpeechMedia.swift */,
 				C3A5CF20C2B71E285BCA988D /* StageEngine.swift */,
+				01F56C1437E4CA7EF22A4E83 /* StagePacer.swift */,
 				B34102EB8A566B60FE68FF4A /* StageVoice.swift */,
 				A9CDA1D6F43D1F4F6733CC21 /* StatusPill.swift */,
 				8F7C6595FE067AC51F19AE88 /* Talks.swift */,
@@ -276,9 +285,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E79EEB23068CD9964B66A3F /* Antics.swift in Sources */,
+				034344F3DCE4CAA7C0BDB830 /* BubbleSizes.swift in Sources */,
 				B3DDDC12FE1679378FCB5BDD /* ChatSheet.swift in Sources */,
 				619257764618CB4FC702F0B1 /* ChatSource.swift in Sources */,
 				3F9E73CF6E992866F6169F11 /* EmbersCoach.swift in Sources */,
+				ED518BB57886BAA35227B480 /* Energy.swift in Sources */,
 				54258AB0FC3D143CFDA758BA /* Extras.swift in Sources */,
 				5D04D4EA1EB2CA2824106315 /* Face.swift in Sources */,
 				15117A49B4DBDDD10DE49934 /* GameLayer.swift in Sources */,
@@ -306,6 +317,7 @@
 				003ED416A016798061351095 /* SpeechBubble.swift in Sources */,
 				1C96E45CBCBA8A7EF5F6210A /* SpeechMedia.swift in Sources */,
 				AC858C246A969D5EFA7444F0 /* StageEngine.swift in Sources */,
+				DB2F5016E620AC22BD213646 /* StagePacer.swift in Sources */,
 				CB1362A800AD5DE520C03318 /* StageVoice.swift in Sources */,
 				F14DF98DC306C127EAD0E386 /* StatusPill.swift in Sources */,
 				BE17BC88E7F643C073B6791B /* Talks.swift in Sources */,

@@ -50,7 +50,7 @@ struct LiveImp: View {
     var gaze: CGPoint?
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1 / 30)) { timeline in
+        TimelineView(Energy.shared.schedule(lively: false)) { timeline in
             ImpFigure(imp: imp, mood: mood, performance: performance, gaze: gaze, date: timeline.date)
         }
     }

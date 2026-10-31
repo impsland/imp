@@ -495,7 +495,7 @@ private struct LiveTurn: View {
 struct TypingDots: View {
     var compact = false
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1 / 30)) { tl in
+        TimelineView(Energy.shared.schedule(lively: false)) { tl in
             let t = tl.date.timeIntervalSinceReferenceDate
             HStack(spacing: 5) {
                 ForEach(0..<3, id: \.self) { i in
