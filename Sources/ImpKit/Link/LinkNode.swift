@@ -255,7 +255,7 @@ public final class LinkNode {
                       Int32(i.ifa_flags) & (IFF_UP | IFF_RUNNING | IFF_LOOPBACK) == (IFF_UP | IFF_RUNNING) else { continue }
                 var buffer = [CChar](repeating: 0, count: Int(NI_MAXHOST))
                 guard getnameinfo(sa, socklen_t(sa.pointee.sa_len), &buffer, socklen_t(buffer.count), nil, 0, NI_NUMERICHOST) == 0 else { continue }
-                let address = String(cString: buffer)
+                let address = String(decoding: buffer.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }, as: UTF8.self)
                 // Link-local addresses (169.254…) are no use to anyone else.
                 if !address.hasPrefix("169.254.") { names.append(address) }
             }
