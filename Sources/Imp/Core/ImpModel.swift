@@ -72,6 +72,9 @@ final class ImpModel {
     /// Its chats, kept across launches: the one you're in (what the chat shows, and what the
     /// model remembers of it) and the saved ones to go back to.
     private(set) var history: ChatHistory
+    /// Set for an Imp visiting from another device: its body is here and its brain at its home, so
+    /// what it says and does comes from there (see "Visiting" at the end of this file).
+    private(set) var visit: Visiting?
     /// Turns answered while the chat was open: only their media may start on its own
     /// (`#autoplay`); older turns never replay when you scroll back to them.
     private(set) var freshTurns: Set<UUID> = []
@@ -116,12 +119,14 @@ final class ImpModel {
 
     static let sleepAfter: TimeInterval = 240
 
-    init(id: UUID, app: AppModel) {
+    init(id: UUID, app: AppModel, visiting: Visiting? = nil) {
         self.id = id
         self.app = app
+        visit = visiting
         clock = BodyClock(id)
-        history = app.persists ? ChatHistory(folder: ChatHistory.folder(for: id))
-                               : ChatHistory(folder: nil)
+        // A visitor's chats are its home's: what it shows is a copy of the current one.
+        history = app.persists && visiting == nil ? ChatHistory(folder: ChatHistory.folder(for: id))
+                                                  : ChatHistory(folder: nil)
         // Audio or video in the bubble holds it up while it plays; the clock starts when it stops.
         playbackObserver = NotificationCenter.default.addObserver(forName: Playback.didChange, object: nil,
                                                                   queue: .main) { [weak self] note in
@@ -133,7 +138,7 @@ final class ImpModel {
         }
     }
 
-    var profile: ImpProfile { app.prefs.imps.first { $0.id == id } ?? .imp }
+    var profile: ImpProfile { visit?.profile ?? app.prefs.imps.first { $0.id == id } ?? .imp }
     var prefs: ImpPreferences { app.prefs }
     /// The model this Imp uses: its own, or the default.
     var isReady: Bool { app.assistant.isReady(profile.brain) }
@@ -173,6 +178,7 @@ final class ImpModel {
     // MARK: Mood
 
     func mood(at date: Date) -> Mood {
+        if visit?.isAwake == false { return .sleepy }
         if let flash, flash.until > date { return flash.mood }
         if let activity { return activity.mood }
         if let m = life.step?.mood { return m }
@@ -300,6 +306,7 @@ final class ImpModel {
     func newChat() {
         stopForChatChange()
         history.startNew()
+        if visit != nil { app.link.newChat(id) }
     }
 
     /// New Chat from the chat panel: the panel closes and a fresh text box opens above the Imp
@@ -344,7 +351,7 @@ final class ImpModel {
     }
 
     /// Something to recap: more than the last exchange is remembered.
-    var canRecap: Bool { history.current.memory.exchangeCount > 1 && work == nil && !isRecapping }
+    var canRecap: Bool { visit == nil && history.current.memory.exchangeCount > 1 && work == nil && !isRecapping }
 
     /// Has the model sum up the current chat, then forgets everything before the last exchange
     /// in favour of that recap (it shows in the chat; the turns above it stay there to read).
@@ -410,7 +417,11 @@ final class ImpModel {
         job?.cancel()
         job = nil
         // Stopped half-way (✕, a click, a new request): the history still shows what it did.
-        if let w = work { record(w.ask, reply: String(localized: "Stopped before answering."), failed: true, peerChat: w.peerChat) }
+        if let w = work {
+            // A visitor's home keeps the chat: it is told to stop, and records it.
+            if visit == nil { record(w.ask, reply: String(localized: "Stopped before answering."), failed: true, peerChat: w.peerChat) }
+            else { app.link.stop(id) }
+        }
         work = nil
         pendingActs = []
         finishReply(.failure(ToolArgumentError("\(profile.name) stopped before answering.")))
@@ -431,6 +442,7 @@ final class ImpModel {
     /// Clicks on this Imp (`count` in a row): stops whatever it's doing, else does what that many
     /// clicks are set to (Triggers tab: out of the box, one types and two open settings).
     func clicked(_ count: Int) {
+        if visit != nil { return clickedVisitor() }
         touch()
         app.focus(self)
         if app.finishListening(for: self) { return }
@@ -607,12 +619,13 @@ final class ImpModel {
     /// Four quick clicks: whatever animation answers to pokes (a tantrum, out of the box).
     func flurry() {
         touch()
+        felt(.poke)
         // The first click opened a text box. A poking spree isn't a conversation.
         stopWaitingForUser()
         guard let ref = prefs.ref(for: .poke, imp: id) else { return }
         cancel()
         app.reactions.play(ref, by: self)
-        guard ref == .preset(.angry) else { return }
+        guard ref == .preset(.angry), visit == nil else { return }
         let lines = [String(localized: "Poke me again and I'll translate your diary into Klingon."),
                      String(localized: "I bite. Metaphorically. Mostly."),
                      String(localized: "I'm a demon, not a stress ball."),
@@ -637,6 +650,7 @@ final class ImpModel {
     }
 
     private func start(_ source: Source) {
+        if visit != nil { return askHome(source) }
         touch()
         app.focus(self)
         cancel()
@@ -915,5 +929,142 @@ final class ImpModel {
         guard var b = bubble, b.phase == .thinking else { return }
         b.text = text
         bubble = b
+    }
+}
+
+// MARK: Visiting
+//
+// An Imp visiting from another device has no brain here. It asks its home, and shows what the home
+// says it is doing (`heard`): the work as it streams in, the chat, its mood, the talks it has with
+// other Imps and the animations it plays.
+
+extension ImpModel {
+    /// Its looks changed, or its home came or went. A home that goes out of reach puts it to sleep,
+    /// and what it was working on can't go on.
+    func update(_ visiting: Visiting) {
+        let before = visit
+        guard visiting != before else { return }
+        visit = visiting
+        if before?.look.scale != visiting.look.scale { onScaleChange?() }
+        guard before?.isAwake != false, !visiting.isAwake else { return }
+        work = nil
+        dropWork()
+        if bubble?.exchange != nil { bubble = nil }
+    }
+
+    /// The chat at its home, as the home shows it.
+    func heard(chat turns: [LinkTurn]) {
+        var copy = ChatHistory(folder: nil)
+        for t in turns {
+            let steps = t.steps.map { ChatTurn.Step(icon: "wrench.and.screwdriver", title: $0, request: "", response: nil, failed: false) }
+            copy.append(ChatTurn(id: t.id, date: t.date, request: t.request, reply: t.reply, failed: t.failed, steps: steps, via: .typed))
+        }
+        history = copy
+    }
+
+    /// What it is working on at its home: the request, the step it is at and the answer so far. When
+    /// the work ends, the answer (or what went wrong) is the newest turn of the chat.
+    func heard(work heard: LinkWork?) {
+        guard let heard else {
+            guard work != nil else { return }
+            if let last = history.turns.last, last.failed { fail(String(localized: "thinking"), ToolArgumentError(last.reply)) }
+            else { showAnswer(history.turns.last?.reply ?? "", title: "") }
+            return
+        }
+        // Answering another Imp shows as a talk bubble (`heard(speech:)`), not as work.
+        guard heard.from == nil else { return }
+        if work == nil {
+            let heading = "“\(heard.request)”"
+            work = Work(ask: ChatTurn(request: heard.request, via: .typed), heading: heading, title: "")
+            thinking(heading, captions: Captions.thinking)
+        }
+        if let status = heard.status, work?.steps.last?.title != status {
+            work?.steps = work?.steps.map { var s = $0; s.state = .done; return s } ?? []
+            addStep(Bubble.Step(icon: "gearshape", title: status, tool: "home"))
+        }
+        stream(heard.partial, title: "")
+    }
+
+    /// What it is feeling at its home: thinking and using tools show as they do on any Imp.
+    func heard(mood name: String) {
+        switch Mood(rawValue: name) {
+        case .working?: setActivity(.tools)
+        case .thinking?: setActivity(.thinking)
+        default: if work == nil { setActivity(nil) }
+        }
+    }
+
+    /// What it says to another Imp, or another Imp to it, as a bubble over its head. The home hides
+    /// the bubble when its time is up (an answer also leaves on this Mac's own clock).
+    func heard(speech: LinkSpeech?) {
+        guard let speech else {
+            if let b = bubble, b.exchange != nil, b.phase == .thinking { bubble = nil }
+            return
+        }
+        // Not over a text box, the chat or its own work.
+        guard bubble == nil || bubble?.exchange != nil else { return }
+        let role: Bubble.Exchange.Role = switch speech.role {
+        case .asked: .asked
+        case .reply: .reply
+        case .asking: .asking
+        }
+        let peer = ChatTurn.Sender(id: speech.id, name: speech.peer, hue: speech.hue)
+        let exchange = Bubble.Exchange(role: role, peer: peer, question: speech.question)
+        if speech.role == .reply {
+            var b = Bubble(id: speech.id, text: speech.text, phase: .result)
+            b.exchange = exchange
+            show(b)
+        } else if bubble?.id != speech.id {
+            var b = Bubble(id: speech.id, title: "“\(speech.question)”", text: Captions.thinking.randomElement()!, phase: .thinking)
+            b.exchange = exchange
+            show(b, autoHide: false)
+        }
+    }
+
+    /// The home acts an animation out on this body.
+    func acted(_ beats: [AnimationBeat]) {
+        guard visit?.isAwake == true else { return }
+        touch()
+        life.perform(beats: beats)
+    }
+
+    /// You pet, poke or shake it: its home feels it too.
+    func felt(_ feeling: LinkFeeling) {
+        guard visit?.isAwake == true else { return }
+        app.link.felt(id, feeling)
+    }
+
+    /// A click: stops what it is doing, else a text box opens to ask it something.
+    private func clickedVisitor() {
+        touch()
+        if [.thinking, .tools].contains(activity) { cancel(); react(.surprised, for: 0.6); return }
+        if bubble?.phase == .typing { return dismissBubble() }
+        guard visit?.isAwake == true else { return sleeping() }
+        startTyping()
+    }
+
+    /// It asked for something: the words go to its home, which answers (typed words only: the
+    /// microphone, triggers and clipboard belong to the Mac that thinks).
+    private func askHome(_ source: Source) {
+        guard case .typed(let words, _) = source else { return }
+        let text = words.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return }
+        touch()
+        guard visit?.isAwake == true else { return sleeping() }
+        work = nil
+        dropWork()
+        app.link.ask(id, text)
+        let heading = "“\(text)”"
+        work = Work(ask: ChatTurn(request: text, via: .typed), heading: heading, title: "")
+        thinking(heading, captions: Captions.thinking)
+    }
+
+    /// Its home is away: it says so, and why it can't answer. (The chat says it in its own header.)
+    private func sleeping() {
+        react(.sad, for: 1.2)
+        guard !isChatting, let visit else { return }
+        show(Bubble(title: String(localized: "\(visit.look.name) is asleep"),
+                    text: String(localized: "\(visit.homeName) is away, so \(visit.look.name) can't think right now. It wakes up when \(visit.homeName) is back."),
+                    phase: .hint))
     }
 }

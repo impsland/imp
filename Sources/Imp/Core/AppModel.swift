@@ -12,6 +12,9 @@ final class AppModel {
     /// The Imps out on the desktop (activated profiles, in their saved order). May be empty: then
     /// every Imp is waiting in the app's window.
     private(set) var imps: [ImpModel] = []
+    /// Imps visiting the desktop from other devices: drawn here, thinking at their homes. They are
+    /// not this Mac's Imps, so they have no place in its list or settings.
+    private(set) var visitors: [ImpModel] = []
     /// The Imp you talked to last. Talk/Type from the menu bar and URL commands go to it.
     private(set) var focusID = ImpProfile.defaultID
     private(set) var failedHotkeys: Set<Hotkey> = []
@@ -45,8 +48,12 @@ final class AppModel {
     @ObservationIgnored var flyHome: ((UUID, CGPoint, @escaping @MainActor () -> Void) -> Void)?
     /// Throws an Imp's window off the desktop towards a device, then calls back.
     @ObservationIgnored var flyOff: ((UUID, UUID, @escaping @MainActor () -> Void) -> Void)?
-    /// An Imp back from another device flies in from a side of the desktop.
+    /// An Imp back from another device, or a visitor, flies in from a side of the desktop.
     @ObservationIgnored var flyIn: ((UUID, LinkEntry) -> Void)?
+    /// A visitor that leaves for good flies off past a side of the desktop, then calls back.
+    @ObservationIgnored var flyAway: ((UUID, LinkSide, @escaping @MainActor () -> Void) -> Void)?
+    /// The visitors on their way out (their panels are still flying off).
+    @ObservationIgnored private var leaving: Set<UUID> = []
     @ObservationIgnored private var started = false
     /// Everything was just wiped (see `resetToFirstLaunch`): never save again in this run.
     @ObservationIgnored private var erased = false
@@ -75,6 +82,10 @@ final class AppModel {
         return here.first { $0.id == focusID } ?? here.first
     }
     func imp(_ id: UUID) -> ImpModel? { imps.first { $0.id == id } }
+    func visitor(_ id: UUID) -> ImpModel? { visitors.first { $0.id == id } }
+    /// Every Imp body on the desktop: this Mac's own, and the visitors.
+    var bodies: [ImpModel] { imps + visitors }
+    func body(_ id: UUID) -> ImpModel? { imp(id) ?? visitor(id) }
     func focus(_ imp: ImpModel) { focusID = imp.id }
     func profile(_ id: UUID) -> ImpProfile? { prefs.imps.first { $0.id == id } }
 
@@ -163,7 +174,7 @@ final class AppModel {
         isHidden = hidden
         if !hidden { hiddenImps = [] }
         // Nobody can type into or talk to a hidden Imp: close its text box, stop listening.
-        if hidden { imps.forEach { $0.stopWaitingForUser() } }
+        if hidden { bodies.forEach { $0.stopWaitingForUser() } }
         onTroupeChange?()
     }
 
@@ -172,14 +183,14 @@ final class AppModel {
         if hidden {
             guard !hiddenImps.contains(id) else { return }
             hiddenImps.insert(id)
-            imp(id)?.stopWaitingForUser()
+            body(id)?.stopWaitingForUser()
         } else {
             guard isHidden || hiddenImps.contains(id) else { return }
             hiddenImps.remove(id)
             if isHidden {
                 // Everyone was hidden: just this one comes back.
                 isHidden = false
-                hiddenImps.formUnion(imps.map(\.id).filter { $0 != id })
+                hiddenImps.formUnion(bodies.map(\.id).filter { $0 != id })
             }
         }
         onTroupeChange?()
@@ -189,7 +200,7 @@ final class AppModel {
     func isHiding(_ id: UUID) -> Bool { isHidden || hiddenImps.contains(id) }
 
     /// Some Imp that's out is hidden (the menu bar then offers Show).
-    var anyHiding: Bool { !imps.isEmpty && (isHidden || imps.contains { hiddenImps.contains($0.id) }) }
+    var anyHiding: Bool { !imps.isEmpty && (isHidden || bodies.contains { hiddenImps.contains($0.id) }) }
 
     // MARK: Animations
 
@@ -286,12 +297,18 @@ final class AppModel {
     /// off the desktop; the answer decides whether it stays away (`passed`) or comes back.
     @discardableResult
     func send(_ id: UUID, to device: UUID, side: LinkSide, height: Double, speed: Double) -> Bool {
-        guard let profile = profile(id), profile.isActive, profile.awayOn == nil, !throwing.values.contains(where: { $0.imp == id }),
-              let transfer = link.pass(profile, entry: .after(exit: side, height: height, speed: speed), to: device) else { return false }
+        guard let look = thrownLook(id), !throwing.values.contains(where: { $0.imp == id }),
+              let transfer = link.pass(look, entry: .after(exit: side, height: height, speed: speed), to: device) else { return false }
         throwing[transfer] = Throw(imp: id, side: side, height: height)
-        imp(id)?.stopWaitingForUser()                      // a text box can't follow it
+        body(id)?.stopWaitingForUser()                     // a text box can't follow it
         hiddenImps.remove(id)
         return true
+    }
+
+    /// How an Imp on the desktop is thrown on: one of this Mac's that is out here, or a visitor.
+    private func thrownLook(_ id: UUID) -> LinkImp? {
+        if let profile = profile(id) { return profile.isActive && profile.awayOn == nil ? LinkImp(profile) : nil }
+        return visitor(id)?.visit?.look
     }
 
     /// From the menu: off the nearer side of the screen, gently, onto a device.
@@ -307,14 +324,19 @@ final class AppModel {
         guard passed.kind == .pass, let thrown = throwing.removeValue(forKey: passed.transfer) else { return }
         switch passed.outcome {
         case .took:
-            held(thrown.imp, by: passed.to)
+            if let visitor = visitor(thrown.imp) {
+                visitor.retire()                           // on to another device: this body is done
+                visitors.removeAll { $0 === visitor }
+            } else {
+                held(thrown.imp, by: passed.to)
+            }
             refreshTroupe()
         case .declined(let reason):
             let text = DeviceLink.hint(reason, device: link.name(of: passed.to) ?? String(localized: "That device"))
             arrive(thrown.imp, entry: LinkEntry(side: thrown.side, height: thrown.height, speed: 900))
             Task { [weak self] in
                 try? await Task.sleep(for: .seconds(1.3))
-                self?.imp(thrown.imp)?.complain(text)
+                self?.body(thrown.imp)?.complain(text)
             }
         }
     }
@@ -382,6 +404,47 @@ final class AppModel {
 
     /// The panels follow who's where.
     func refreshTroupe() { onTroupeChange?() }
+
+    // MARK: Visiting Imps
+
+    /// A visiting Imp is here: it flies in through `entry`, or (no entry: it was visiting before
+    /// the app started) waits at its seat. One already here only has its looks and home updated.
+    func welcome(_ visiting: Visiting, entry: LinkEntry?) {
+        let id = visiting.look.id
+        leaving.remove(id)
+        if let model = visitor(id) {
+            model.update(visiting)
+        } else {
+            let model = ImpModel(id: id, app: self, visiting: visiting)
+            visitors.append(model)
+            if started { model.start() }
+        }
+        guard let entry else { return refreshTroupe() }
+        if isHiding(id) { setHidden(id, false) }
+        flyIn?(id, entry)
+        refreshTroupe()
+    }
+
+    /// A visitor leaves for good (its home called it back, or it was sent home): it flies off past
+    /// the side it came in by, and is gone.
+    func farewell(visitor id: UUID) {
+        guard let model = visitor(id), leaving.insert(id).inserted else { return }
+        let side = model.visit?.side ?? .left
+        model.retire()
+        let gone: @MainActor () -> Void = { [weak self] in
+            guard let self, leaving.remove(id) != nil else { return }
+            visitors.removeAll { $0.id == id }
+            refreshTroupe()
+        }
+        guard let flyAway else { return gone() }
+        flyAway(id, side, gone)
+    }
+
+    /// Sends a visiting Imp home from here: its body leaves now, and its home hears when it can.
+    func sendHome(visitor id: UUID) {
+        guard visitor(id) != nil, link.sendHome(visitor: id) else { return }
+        farewell(visitor: id)
+    }
 
     /// Hatches a new Imp: its own colour, name and personality, and a copy of `parent`'s models.
     /// It waits in the window until it's activated. Returns its id.

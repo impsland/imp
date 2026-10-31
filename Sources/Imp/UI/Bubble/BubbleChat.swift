@@ -24,6 +24,11 @@ struct ChatView: View {
         let live = model.chatWork
         VStack(alignment: .leading, spacing: 10) {
             header
+            if let visit = model.visit, !visit.isAwake {
+                Label("\(visit.homeName) is away, so \(model.profile.name) is asleep and can't answer until it's back.", systemImage: "moon.zzz.fill")
+                    .font(.system(size: 11)).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             if let error = model.recapError {
                 Label("Couldn't recap: \(error)", systemImage: "exclamationmark.triangle.fill")
                     .font(.system(size: 11)).foregroundStyle(.orange)
@@ -123,7 +128,7 @@ struct ChatView: View {
                 ConfirmButton(icon: "plus.bubble", confirm: "New chat?", help: "New chat (this one stays in the list)") {
                     model.startNewChat()
                 }
-                deleteButton
+                if model.visit == nil { deleteButton }
             }
         }
         .frame(height: 20)

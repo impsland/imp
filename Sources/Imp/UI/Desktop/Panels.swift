@@ -117,7 +117,9 @@ final class Panels {
         let screen = NSScreen.main ?? NSScreen.screens.first
         let visible = screen?.visibleFrame ?? CGRect(x: 0, y: 0, width: 1440, height: 900)
         // Newcomers line up to the left of the troupe, along the bottom of the screen.
-        let seat = CGFloat(model.app.prefs.imps.firstIndex { $0.id == model.id } ?? 0)
+        let app = model.app
+        let seat = CGFloat(app.prefs.imps.firstIndex { $0.id == model.id }
+                           ?? app.prefs.imps.count + (app.visitors.firstIndex { $0.id == model.id } ?? 0))
         let seatHome = CGPoint(x: max(visible.minX + 8, visible.maxX - side - 28 - seat * (Self.baseSize + 16)), y: visible.minY + 20)
         guard let saved = model.profile.origin else { return seatHome }
         // If the saved spot is off-screen now (monitor unplugged), the seat it is.
@@ -196,6 +198,7 @@ final class Panels {
             reactions.pressed(model)
         case .held:
             reactions.handle(.hold, by: model, held: true)
+            model.felt(.cuddle)
         case .unheld:
             reactions.release(.hold, by: model)
         case .lifted:
@@ -210,12 +213,14 @@ final class Panels {
             }
         case .shaken:
             reactions.handle(.shake, by: model)
+            model.felt(.shake)
         case .dropped(let distance):
             steady?.cancel()
             model.carryLean = 0
             reactions.release(.pickUp, by: model)
             restOrigin = nil                // the user placed Imp, so don't slide it back
             savePosition()
+            model.felt(.drop)
             // A new spot: say hello to anyone there, else land and look around.
             if distance > 40 && model.app.stage.arrived(model) { return }
             reactions.handle(.drop, by: model)
@@ -272,7 +277,7 @@ final class Panels {
     }
 
     /// Keeps going the way it was thrown, out past the edge of its screen, then goes.
-    private func flyOff(_ side: LinkSide, speed: Double, then done: @escaping @MainActor () -> Void) {
+    func flyOff(_ side: LinkSide, speed: Double, then done: @escaping @MainActor () -> Void) {
         stopTravel()
         departing = true
         restOrigin = nil

@@ -100,6 +100,7 @@ final class ImpLife {
 
         // Waking: the cursor sneaks up on a sleeping imp.
         if model.mood(at: now) == .sleepy {
+            guard model.visit?.isAwake != false else { return }       // asleep because its home is away
             let d = hypot(mouse.x - model.impCenter.x, mouse.y - model.impCenter.y)
             if d < 80 {
                 model.touch()
@@ -166,6 +167,12 @@ final class ImpLife {
             }
         } ?? steps
         play(Antic(name: ref.key, steps: aimed, sticky: true))
+    }
+
+    /// Plays beats another device sent: the Imp's home acting an animation out on its body here.
+    func perform(beats: [AnimationBeat]) {
+        guard !beats.isEmpty else { return }
+        play(Antic(name: "home", steps: beats.map(AnticStep.init), sticky: true))
     }
 
     /// Whether this Imp may play `reaction` now: the ones that unlock with a favourite colour

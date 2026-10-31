@@ -23,21 +23,30 @@ final class TroupeWindows {
             guard let panels = self?.panels[id], panels.isImpVisible else { return done() }
             panels.send(to: device, then: done)
         }
+        app.flyAway = { [weak self] id, side, done in
+            guard let panels = self?.panels[id], panels.isImpVisible else { return done() }
+            panels.flyOff(side, speed: 1_600, then: done)
+        }
         app.flyIn = { [weak self] id, entry in
-            guard let self, let panels = self.panels[id] else { return }
+            // A visitor's panels are made as it arrives.
+            guard let self, let panels = self.panels[id] ?? self.makePanels(for: self.app.visitor(id)) else { return }
             self.shown.insert(id)
             panels.flyIn(entry)
         }
         sync()
     }
 
+    private func makePanels(for imp: ImpModel?) -> Panels? {
+        guard let imp else { return nil }
+        let p = Panels(model: imp)
+        p.menuProvider = menuProvider
+        panels[imp.id] = p
+        return p
+    }
+
     private func sync() {
-        for imp in app.imps where panels[imp.id] == nil {
-            let p = Panels(model: imp)
-            p.menuProvider = menuProvider
-            panels[imp.id] = p
-        }
-        for (id, p) in panels where app.imp(id) == nil {
+        for imp in app.bodies where panels[imp.id] == nil { makePanels(for: imp) }
+        for (id, p) in panels where app.body(id) == nil {
             p.close()
             panels[id] = nil
             shown.remove(id)
