@@ -67,7 +67,7 @@ If that's a model running on your own Mac, nothing leaves your Mac at all.
 | Chats and settings  | Your Mac (`~/Library/Application Support/Imp`)                         |
 | Voice               | Apple speech recognition, on device whenever your Mac supports it      |
 | Your requests       | Only the model service you added (local or remote, your choice)        |
-| iPhone link         | Only phones you paired, encrypted end to end (off until you pair one)  |
+| Device links        | Only devices you linked, encrypted end to end (off until you link one) |
 
 ## Bring any model
 
@@ -262,12 +262,21 @@ Ready-made kits to borrow, and how to add yours, are in the community registry: 
 
 ## Imp on your iPhone
 
-**Imp for iPhone** (in [`iOS/`](iOS)) is where your Imps go when you throw them off your Mac.
-An Imp is never in two places: grab one and fling it hard at the far left or right side of your
+**Imp for iPhone** (in [`iOS/`](iOS)) is where your Imps go when you throw them off your Mac, and a
+place for Imps of its own. It links with Macs and other iPhones the same way a Mac does, so any
+device can invite and any can join, and one device can have many links. An Imp is never in two places: grab one and fling it hard at the far left or right side of your
 screen and it leaves the desktop, flying in from the *other* side of your iPhone's screen, as if it
 went straight through (throw it off the left of the Mac, it comes in from the right of the phone).
 With several displays only the outer sides throw: carrying an Imp from one display to the next is
 just a carry. Or right-click it › **Send to iPhone**.
+
+**Doors.** Where a thrown Imp goes depends on the side. An Imp at home can leave by either side, to any
+device you're connected to. A visiting Imp that came in through one side goes back to where it came
+from by that same side, and on to any other device by the other. When a side leads to several
+devices, it's split into bands from top to bottom, one per device, and how high you throw picks one.
+While you carry an Imp near an edge, the phone labels the bands with the devices' names (the way back
+is marked "back to" its device), lights the one under your finger with a tick, and says so faintly
+when a side leads nowhere. With VoiceOver, the Imp's menu has **Send to** each device instead.
 
 On the phone it's the same Imp, drawn by the same code: drag it around with your finger, tap it to
 chat. It still thinks on your Mac, with its model, keys, tools and memory, so you can give it work
@@ -276,19 +285,26 @@ flick it hard off a side of the phone's screen, or hold the phone and jolt it si
 it flies onto your Mac from the opposite side. A shake makes everyone on the phone dizzy. Clicking
 the little phone on its pedestal in the Mac's window, or **Call Home**, brings it back too.
 
+**Visits.** An Imp away from its home keeps thinking there, with its home's model, keys, tools and
+memory. If that device goes away, the visiting Imp falls asleep, its chat says so and waits, and it
+wakes when the device is back. A visiting Imp's menu has **Chat**, **Talks** and **Send Home**. The
+**Devices** sheet lists, under each device, which of your Imps it holds, each with **Call Home**.
+Passing a visiting Imp on to a third device hands that device a **ticket**, a secret it uses to
+reach the Imp's home and act for that one Imp, even when it isn't linked to the home.
+
 **Imps hatched on the phone.** Hatch one from the status menu and it lives in your pocket. It thinks
 on the iPhone, with an OpenAI-compatible service (address, model and key) and any web (HTTP) tool
 servers you give it. Keys and header values stay in the phone's Keychain. It works with no Mac
-paired, or while yours is out of reach, but it can't run commands, control the computer, set
-triggers or read the Mac's senses. Throw it off a side of the phone while the Mac is connected and
-it moves home: a full Mac Imp with its chats, looks, personality, service and tool servers, flying
+linked, or while yours is out of reach, but it can't run commands, control the computer, set
+triggers or read the Mac's senses. Throw it off a side of the phone to another iPhone and it visits
+there. Choose **Move to <Mac>…** in its menu while a Mac is connected and it moves home for good: a full Mac Imp with its chats, looks, personality, service and tool servers, flying
 in from the opposite side. Its service joins the Mac's services under its own name (or is the one
 already there with the same address), and its key comes along unless that service already has one.
 One with no brain yet moves too, and thinks with the Mac's starred service. An Imp that's busy
 thinking stays until it's done. The phone drops its copy once the Mac confirms, and it never becomes
 a pocket Imp again. Nothing is kept in step between the two. Hatching one, pick its size, and a
 service in one tap: OpenRouter, or OmniRoute running on your Mac, reached by the Mac's name on your
-network (from the pairing, so it still works when the Mac's Wi-Fi address changes). Hold a pocket
+network (from the link, so it still works when the Mac's Wi-Fi address changes). Hold a pocket
 Imp to edit or delete it.
 
 Every Imp on the phone, pocket or Mac, messages the others (`imp_message`), just like Imps on the
@@ -299,7 +315,7 @@ another Imp back together, to read later. A voice reply plays with the Imp seen
 speaking, its bubble glowing with the voice; voices take turns, one at a time, so a back-and-forth
 between Imps never talks over itself. The Imps don't wait for a voice to finish before thinking on.
 
-**Embers.** When the Imps on the phone can't think (the Mac is away, or an Imp has no brain yet),
+**Embers.** When the Imps on the phone can't think (their home is away, or an Imp has no brain yet),
 a little flame shows in the bottom-right corner. Tap it for a 45-second round: embers rise through the
 dungeon in waves (a column, a slant, a chevron) and you fling the Imps through them. Catching several
 in one flight builds a combo (reach ×5 for an "Ablaze!"), two Imps that bonk mid-air score a bonus,
@@ -316,7 +332,7 @@ uncaught is a miss) for "Nothing got away" (+25, a golden finale from the Imps).
 the best combo, perfect waves and what got away. The first round starts with a short lesson: fling
 an Imp through three embers, a card with the rules, and a 3-2-1 countdown. It can be skipped, and
 "How to play" on the end card brings it back. The edges always bounce during a round, so nobody gets
-thrown to the Mac by accident. Your best score is kept.
+thrown to another device by accident. Your best score is kept.
 
 **Echo.** Beside the flame, in the bottom-left corner, a ring of four dots opens a memory game. Four
 runes (flame, leaf, drop, moon) sit on the dungeon floor; the Imps hop to them and light them in a
@@ -328,24 +344,32 @@ lesson (watch two runes light, then tap them yourself), then a card with the rul
 It can be skipped, and "How to play" on the end card brings it back. Imps can't be picked up or
 tossed away while it runs, and tapping one opens no chat. Your best score is kept.
 
-**Pairing.** All Imps › App › iPhone › **Pair…** shows a QR code. Scan it with the iPhone's Camera
-(or **Scan Code** in the app). The code carries a 256-bit secret that never travels over the
-network: both sides derive a TLS pre-shared key from it, so only phones that scanned it can connect,
-and everything they say is encrypted. The Mac finds the phone with Bonjour on your Wi-Fi.
-**Forget…** makes a new secret and brings every Imp home.
+**Linking.** The first screen offers **Show my code**, **Scan a code** and **Hatch an Imp** (and
+**Paste Link**), and the name other devices see for your iPhone, which you can change there. On a Mac, use
+the Devices card in Imp's settings. Either device can show a code and the other scan it (with the
+iPhone's Camera, or **Scan a Code** in the app); a code works for 15 minutes after it was last on screen,
+and several devices can scan it. The code carries the inviter's public key, which the scanner pins, so
+nobody can pass for it later. Both sides derive a TLS pre-shared key from a secret in the code that never
+travels over the network, and the connection adds a fresh key exchange, so even a recording of a session
+can't be read afterwards. Everything they say is encrypted. A device finds the other with Bonjour on your
+Wi-Fi. The status pill on the phone shows how many devices are connected and opens the **Devices** sheet:
+this iPhone's name and code, the linked devices (connected, via the server, or away), the Imps each holds,
+**Forget…** per device and **Forget Everyone…**. Forgetting calls your Imps home from that device and
+sends its Imps home too; forgetting everyone also makes every code shown before stop working.
 
-**Beyond Wi-Fi.** The phone also tries the Mac's addresses (port 47824), so a VPN such as
-Tailscale works from anywhere. Without one, set an Imp server in All Imps › App › iPhone ›
-**Server**. The Mac then waits at that server's **Hop**, a blind relay, and the phone goes through
-it when nothing closer answers. The Hop only splices two TCP streams. The same pre-shared-key TLS
-runs end to end inside them, so the server never holds the key and can't read or change what
-passes. A room at the Hop is an Ed25519 key derived from the pairing secret, and joining it takes a
-signature, so nobody else can sit in it. Phones learn about a new server without pairing again.
+**Beyond Wi-Fi.** Devices also try each other's addresses (port 47824), so a VPN such as Tailscale
+works from anywhere. Without one, set an Imp server (the **Server** field in the Devices sheet, or the
+Mac's Devices card). A device then waits at that server's **Hop**, a blind relay, and the others go
+through it when nothing closer answers. The Hop only splices two TCP streams. The same pre-shared-key
+TLS runs end to end inside them, so the server never holds the key and can't read or change what passes.
+Only the device that waits can hold its room, and joining it takes a signature from a key derived from
+the code's secret, so nobody else can sit in it. Devices learn about a new server without linking again.
+The iPhone only takes part while the app is in front.
 
 If the link drops, both sides notice within 45 seconds (or at once when the phone's network
 changes), and the phone reconnects on its own. An Imp that was on the phone stays there and shows
-up again as soon as the link is back. A phone whose Mac forgot it (**Forget…**) says so and asks to
-be paired again.
+up again as soon as the link is back. A phone whose Mac forgot it says so, and one of you shows a
+new code to link again.
 
 ## The Den
 
