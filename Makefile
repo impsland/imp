@@ -48,8 +48,9 @@ clean:
 	rm -rf .build build
 
 # Plays a Mac, an iPhone and an Imp against a running Den and Hop (see server/README.md).
+# IMP_SERVER: the Den's URL (default http://localhost:8080). IMP_HOP: the Hop's host:port (default localhost:4677).
 test-server:
-	IMP_SERVER=$${IMP_SERVER:-http://localhost:8080} $(SWIFT) test --filter ServerLiveTests
+	IMP_SERVER=$${IMP_SERVER:-http://localhost:8080} IMP_HOP=$${IMP_HOP:-localhost:4677} $(SWIFT) test --filter 'ServerLiveTests|HopLiveTests'
 
 # Lists the commands.
 help:
