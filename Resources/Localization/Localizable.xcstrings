@@ -1135,6 +1135,52 @@
         }
       }
     },
+    "%lld exchanges" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld exchange"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld exchanges"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld intercambio"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld intercambios"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 次交流"
+          }
+        }
+      }
+    },
     "%lld exchanges and a recap · about %@ tokens sent" : {
       "localizations" : {
         "en" : {
@@ -11245,6 +11291,22 @@
         }
       }
     },
+    "Nothing said between them yet." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía no se han dicho nada."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它们之间还没说过话。"
+          }
+        }
+      }
+    },
     "Nothing said yet" : {
       "localizations" : {
         "es" : {
@@ -13268,6 +13330,38 @@
         }
       }
     },
+    "Read" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leer"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "阅读"
+          }
+        }
+      }
+    },
+    "Read Talk" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leer la charla"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "阅读对话"
+          }
+        }
+      }
+    },
     "Read all" : {
       "localizations" : {
         "es" : {
@@ -13280,6 +13374,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "阅读全部"
+          }
+        }
+      }
+    },
+    "Read everything they said to each other" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lee todo lo que se dijeron"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "阅读它们彼此说过的一切"
+          }
+        }
+      }
+    },
+    "Read the whole talk, both sides" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lee toda la charla, de ambos lados"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "阅读完整对话，双方都有"
           }
         }
       }
@@ -16779,6 +16905,22 @@
         }
       }
     },
+    "Talk with %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Charla con %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与 %@ 的对话"
+          }
+        }
+      }
+    },
     "Talking" : {
       "localizations" : {
         "es" : {
@@ -16791,6 +16933,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "说话"
+          }
+        }
+      }
+    },
+    "Talks" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Charlas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对话"
           }
         }
       }
@@ -19226,6 +19384,38 @@
         }
       }
     },
+    "What %@ and %@ said to each other, both ways. This is only to read: it comes from both Imps' chats." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que %1$@ y %2$@ se dijeron, en ambos sentidos. Solo para leer: viene de los chats de ambos Imps."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 和 %2$@ 彼此说过的话，双向都有。仅供阅读：内容来自两个 Imp 的聊天。"
+          }
+        }
+      }
+    },
+    "What %@ and other Imps said to each other, both ways, to read. %@'s side of each is in its chats above (\"With …\"), which you can delete there." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que %1$@ y otros Imps se dijeron, en ambos sentidos, para leer. La parte de %2$@ de cada charla está en sus chats de arriba («Con …»), donde puedes borrarla."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 与其他 Imp 彼此说过的话，双向都有，供阅读。%2$@ 那一方的内容在上面的聊天里（“与 …”），可以在那里删除。"
+          }
+        }
+      }
+    },
     "What %@ can do by itself. Its model decides when to use each one." : {
       "localizations" : {
         "es" : {
@@ -19899,6 +20089,7 @@
       }
     },
     "Your chats with %@. Pick one to carry on where you left off." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -19910,6 +20101,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你与 %@ 的对话。选择一个，从上次中断处继续。"
+          }
+        }
+      }
+    },
+    "Your chats with %@. Pick one to carry on where you left off. Talks with other Imps open to read." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus chats con %@. Elige uno para seguir donde lo dejaste. Las charlas con otros Imps se abren para leer."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你和 %@ 的聊天。选一个从上次停下的地方继续。与其他 Imp 的对话会打开供阅读。"
           }
         }
       }

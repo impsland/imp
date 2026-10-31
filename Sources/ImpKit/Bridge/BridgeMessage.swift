@@ -19,6 +19,22 @@ public struct BridgeRect: Equatable, Sendable, Codable {
     }
 }
 
+/// An Imp as the extension's popup draws it: only its looks and what it's up to, nothing it said.
+public struct BridgeImp: Equatable, Sendable, Codable {
+    public var name: String
+    /// Skin colour as a hue (0…1, red is 0).
+    public var hue: Double
+    public var scale: Double
+    /// A `Mood` raw value ("idle", "thinking", "working", "sleepy"…).
+    public var mood: String
+    /// Out on an iPhone, not on this Mac's desktop.
+    public var away: Bool
+
+    public init(name: String, hue: Double, scale: Double, mood: String, away: Bool) {
+        self.name = name; self.hue = hue; self.scale = scale; self.mood = mood; self.away = away
+    }
+}
+
 /// Extension → app.
 public enum BridgeInbound: Equatable, Sendable, Decodable {
     case hello(browser: String, version: Int)
@@ -59,8 +75,11 @@ public enum BridgeInbound: Equatable, Sendable, Decodable {
 public enum BridgeOutbound: Equatable, Sendable, Encodable {
     case locate(id: String, query: String)
     case text(id: String, limit: Int)
+    /// The Imps out right now, for the extension's popup to draw (sent on connect and when they
+    /// change). An extension that doesn't know it ignores it.
+    case troupe([BridgeImp])
 
-    private enum Key: String, CodingKey { case type, id, query, limit }
+    private enum Key: String, CodingKey { case type, id, query, limit, imps }
 
     public func encode(to encoder: Encoder) throws {
         var c = encoder.container(keyedBy: Key.self)
@@ -69,6 +88,8 @@ public enum BridgeOutbound: Equatable, Sendable, Encodable {
             try c.encode("locate", forKey: .type); try c.encode(id, forKey: .id); try c.encode(query, forKey: .query)
         case .text(let id, let limit):
             try c.encode("text", forKey: .type); try c.encode(id, forKey: .id); try c.encode(limit, forKey: .limit)
+        case .troupe(let imps):
+            try c.encode("troupe", forKey: .type); try c.encode(imps, forKey: .imps)
         }
     }
 

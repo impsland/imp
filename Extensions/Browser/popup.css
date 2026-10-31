@@ -8,49 +8,144 @@
   --accent: #c0392b;
   --ok: #2e9d57;
   --off: #9a8a86;
+  --flame: #ffcc5c;
+  --ember: #ff9e42;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #241a1d;
-    --card: #2f2327;
+    --bg: #1f1619;
+    --card: #2a1f23;
     --text: #f4ebe4;
     --muted: #b3a29d;
-    --edge: rgba(255, 235, 225, 0.1);
+    --edge: rgba(255, 235, 225, 0.09);
     --accent: #ff6b5a;
+    --ok: #4fd17f;
   }
 }
 * { box-sizing: border-box; }
 body {
-  width: 320px;
+  width: 330px;
   margin: 0;
-  padding: 14px;
   background: var(--bg);
   color: var(--text);
   font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 }
-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-header img { border-radius: 8px; }
-h1 { margin: 0; font-size: 15px; font-weight: 700; }
-h2 { margin: 0 0 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
-.status { margin: 1px 0 0; display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--off); }
-.status.on .dot { background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent); }
-.status.on { color: var(--ok); }
-section { background: var(--card); border: 1px solid var(--edge); border-radius: 10px; padding: 10px 12px; }
-section p { margin: 0 0 6px; }
-ol { margin: 4px 0 8px; padding-left: 18px; color: var(--muted); }
-.page .title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.page .url { color: var(--muted); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.note { margin-top: 8px !important; color: var(--muted); font-size: 11.5px; }
-.link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 12px; }
-.link:hover { text-decoration: underline; }
-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
-button {
-  font: inherit; font-weight: 600; font-size: 12px;
-  padding: 5px 12px; border-radius: 999px; border: 0; cursor: pointer;
-  background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent);
+[hidden] { display: none !important; }
+
+/* The stage: the app's dungeon, a warm glow, the Imps on a floor. */
+.stage {
+  position: relative;
+  height: 138px;
+  margin: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 105%, rgba(255, 158, 66, 0.28), transparent 60%),
+    linear-gradient(#2c1425, #4a1a22);
+  transition: filter 0.6s ease;
 }
-button:hover { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+.stage.asleep { filter: saturate(0.55) brightness(0.8); }
+.floor {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 26px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.28));
+}
+.status {
+  position: absolute; top: 10px; left: 12px; z-index: 2;
+  margin: 0; padding: 3px 9px 3px 8px; border-radius: 999px;
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11.5px; font-weight: 600; color: #f4ebe4;
+  background: rgba(0, 0, 0, 0.32); backdrop-filter: blur(6px);
+}
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--off); }
+.status.on .dot { background: #4fd17f; box-shadow: 0 0 0 3px rgba(79, 209, 127, 0.25); }
+.status.connecting .dot { background: var(--flame); animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.35; } }
+
+.imps {
+  position: absolute; left: 0; right: 0; bottom: 10px; top: 30px;
+  display: flex; align-items: flex-end; justify-content: center; gap: 6px;
+}
+.imp { position: relative; display: flex; flex-direction: column; align-items: center; }
+.imp > svg { display: block; overflow: visible; animation: float 3.2s ease-in-out infinite; }
+.imp:nth-child(2) > svg { animation-delay: -0.8s; }
+.imp:nth-child(3) > svg { animation-delay: -1.7s; }
+.imp:nth-child(4) > svg { animation-delay: -2.4s; }
+@keyframes float { 50% { transform: translateY(-4px); } }
+.imp.away { opacity: 0.6; }
+.imp .tag svg { width: 8px; height: 10px; fill: currentColor; margin-left: 3px; vertical-align: -1px; }
+.imp .tag {
+  margin-top: 1px; padding: 0 7px; border-radius: 999px;
+  font-size: 10.5px; font-weight: 600; color: rgba(255, 245, 235, 0.88);
+  background: rgba(0, 0, 0, 0.3); white-space: nowrap; max-width: 90px; overflow: hidden; text-overflow: ellipsis;
+}
+.eyes { transition: transform 0.12s ease-out; }
+.blink { transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
+@keyframes blink { 0%, 95%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.12); } }
+.zz { font: 700 11px/1 -apple-system, system-ui, sans-serif; fill: rgba(255, 240, 225, 0.8); animation: zz 2.6s ease-in-out infinite; }
+.zz.two { animation-delay: -1.3s; }
+@keyframes zz { 0% { opacity: 0; transform: translate(0, 4px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(6px, -12px); } }
+.think circle { fill: var(--flame); animation: think 1.1s ease-in-out infinite; }
+.think circle:nth-child(2) { animation-delay: 0.15s; }
+.think circle:nth-child(3) { animation-delay: 0.3s; }
+@keyframes think { 50% { transform: translateY(-3px); opacity: 0.45; } }
+
+/* Cards. */
+main { padding: 12px 12px 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.card { background: var(--card); border: 1px solid var(--edge); border-radius: 12px; padding: 10px 12px; }
+h2 { margin: 0 0 6px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.muted { color: var(--muted); margin: 0; font-size: 12px; }
+.lead { margin: 0 0 3px; font-weight: 700; }
+
+.tab { display: flex; align-items: center; gap: 10px; }
+.favicon {
+  flex: none; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+  background: color-mix(in srgb, var(--accent) 12%, transparent); overflow: hidden;
+}
+.favicon img { width: 18px; height: 18px; }
+.favicon span { font-weight: 800; color: var(--accent); font-size: 14px; }
+.tab-text { min-width: 0; flex: 1; }
+.title { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.host { color: var(--muted); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sight {
+  flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 12px; cursor: default;
+}
+.sight.yes { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+.sight.no { background: color-mix(in srgb, var(--off) 18%, transparent); color: var(--muted); }
+
+.activity ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.activity li { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.activity .what { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.activity .what b { font-weight: 650; }
+.activity .when { color: var(--muted); font-size: 11px; flex: none; }
+.activity .glyph {
+  flex: none; width: 20px; height: 20px; border-radius: 6px; display: grid; place-items: center; font-size: 11px;
+  background: color-mix(in srgb, var(--ember) 18%, transparent);
+}
+.activity .missed { opacity: 0.6; }
+
+/* Footer. */
+footer { display: flex; align-items: center; justify-content: space-between; padding: 12px; }
+.private { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 11px; }
+.private svg { width: 11px; height: 11px; fill: currentColor; }
+.actions { display: inline-flex; align-items: center; gap: 6px; }
+button {
+  font: inherit; font-weight: 650; font-size: 12px; border: 0; cursor: pointer;
+  padding: 5px 12px; border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+button:hover { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+button:active { transform: scale(0.96); }
+button.primary { background: var(--accent); color: #fff; }
+button.primary:hover { background: color-mix(in srgb, var(--accent) 88%, #000); }
+button.icon { width: 28px; height: 28px; padding: 0; display: grid; place-items: center; }
+button.icon svg { width: 14px; height: 14px; fill: currentColor; }
+button.icon.spin svg { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 button:disabled { opacity: 0.5; cursor: default; }
-.private { color: var(--muted); font-size: 11px; }
-.private::before { content: "🔒 "; }
+.get { display: block; text-align: center; margin: -4px 0 12px; color: var(--accent); font-size: 12px; font-weight: 600; text-decoration: none; }
+.get:hover { text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  .imp > svg, .blink, .zz, .think circle, .status.connecting .dot { animation: none; }
+}

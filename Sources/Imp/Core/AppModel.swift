@@ -23,6 +23,9 @@ final class AppModel {
     /// Imps hidden one at a time (from an Imp's own menu), while the rest stay out. For this run of the app only, like `isHidden`.
     private(set) var hiddenImps: Set<UUID> = []
 
+    /// Talks between Imps made up for offscreen design renders (added to what `talkLines()` finds).
+    @ObservationIgnored var sampleTalks: [TalkLine] = []
+
     @ObservationIgnored let dictation = Dictation()
     /// What Imp notices about the Mac: sets off triggers, and tells the model how the Mac is.
     @ObservationIgnored let senses = Senses()
@@ -96,6 +99,7 @@ final class AppModel {
         senses.start()
         BrowserBridge.shared.onPage = { [weak self] page in self?.fire(.page(url: page.url, title: page.title)) }
         BrowserBridge.shared.start()
+        tellBrowser()
         phone.start()
         // "Imp starts" once everyone's on screen.
         Task { [weak self] in
@@ -343,6 +347,20 @@ final class AppModel {
         profile.brain = parent.flatMap { self.profile($0)?.brain }      // none: it follows the default brain
         prefs.imps.append(profile)
         return profile.id
+    }
+
+    /// Keeps the browser extension's popup told which Imps are out, how they look and how they
+    /// are (thinking, asleep…), as it changes. Nothing they said goes there.
+    private func tellBrowser() {
+        let troupe = withObservationTracking {
+            imps.map { imp in
+                let p = imp.profile
+                return BridgeImp(name: p.name, hue: p.hue, scale: p.scale, mood: (imp.activity?.mood ?? .idle).rawValue, away: p.awayOn != nil)
+            }
+        } onChange: { [weak self] in
+            Task { @MainActor in self?.tellBrowser() }
+        }
+        BrowserBridge.shared.setTroupe(troupe)
     }
 
     /// Removes a service everywhere, its saved key included.

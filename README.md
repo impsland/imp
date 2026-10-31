@@ -292,7 +292,10 @@ network (from the pairing, so it still works when the Mac's Wi-Fi address change
 Imp to edit or delete it.
 
 Every Imp on the phone, pocket or Mac, messages the others (`imp_message`), just like Imps on the
-desktop do, and the talk shows in bubbles over their heads. A voice reply plays with the Imp seen
+desktop do, and the talk shows in bubbles over their heads: the question once, over the Imp asking,
+a small "thinking" bubble over the one asked, then its answer. Every talk is kept: an Imp's
+**Talks** (in its chat's menu, on the Mac and the phone) puts both sides of each conversation with
+another Imp back together, to read later. A voice reply plays with the Imp seen
 speaking, its bubble glowing with the voice; voices take turns, one at a time, so a back-and-forth
 between Imps never talks over itself. The Imps don't wait for a voice to finish before thinking on.
 

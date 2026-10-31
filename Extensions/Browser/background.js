@@ -14,7 +14,10 @@ let pingTimer = null;
 let retryTimer = null;
 let lastSent = "";
 let connectedSince = null;   // when the socket to Imp opened (null: not connected)
-let lastPage = null;         // what Imp was last told: { url, title }
+let lastPage = null;         // the active tab: { url, title, icon }
+let troupe = [];             // the Imps out right now, as Imp described them: [{ name, hue, scale, mood, away }]
+let activity = [];           // what Imp just did on pages, newest first: [{ kind, query, ok, host, at }]
+const ACTIVITY_KEPT = 6;
 const browserName = detectBrowser();
 
 // The browser's own name when it says (Firefox and its forks), else from the extension's
@@ -55,6 +58,7 @@ function connect() {
     clearInterval(pingTimer);
     socket = null;
     connectedSince = null;
+    troupe = [];
     showState();
     retry();
   };
@@ -84,6 +88,7 @@ api.runtime.onMessage.addListener((msg, sender, reply) => {
     clearInterval(pingTimer);
     socket = null;
     connectedSince = null;
+    troupe = [];
     old?.close();
     connect();
   }
@@ -94,6 +99,8 @@ api.runtime.onMessage.addListener((msg, sender, reply) => {
       since: connectedSince,
       browser,
       page: lastPage,
+      troupe,
+      activity,
       address: ADDRESS,
     }));
     return true; // answers asynchronously
@@ -115,8 +122,8 @@ async function reportActive() {
   const key = `${tab.id}|${tab.url}|${tab.title}`;
   if (key === lastSent) return;
   lastSent = key;
-  lastPage = { url: tab.url, title: tab.title || "" };
-  send({ type: "page", ...lastPage });
+  lastPage = { url: tab.url, title: tab.title || "", icon: tab.favIconUrl || "" };
+  send({ type: "page", url: lastPage.url, title: lastPage.title });
 }
 
 api.tabs.onActivated.addListener(() => reportActive());
@@ -127,14 +134,29 @@ api.windows.onFocusChanged.addListener((w) => { if (w !== api.windows.WINDOW_ID_
 
 async function handle(raw) {
   const msg = JSON.parse(raw);
+  if (msg.type === "troupe") {
+    troupe = Array.isArray(msg.imps) ? msg.imps.slice(0, 8) : [];
+    return;
+  }
   const tab = await activeTab();
   if (msg.type === "locate") {
-    const rect = tab ? await run(tab, locateInPage, [String(msg.query || "")]) : null;
+    const query = String(msg.query || "");
+    const rect = tab ? await run(tab, locateInPage, [query]) : null;
     send({ type: "located", id: msg.id, rect: rect || null });
+    note("find", query, !!rect, tab);
   } else if (msg.type === "text") {
     const text = tab ? await run(tab, textInPage, [Number(msg.limit) || 20000]) : "";
     send({ type: "text", id: msg.id, text: text || "" });
+    note("read", "", !!text, tab);
   }
+}
+
+// Remembers what Imp just did, for the popup to show (in memory only: it's gone when the browser
+// puts the extension to sleep, and it never holds what the page said).
+function note(kind, query, ok, tab) {
+  let host = "";
+  try { host = tab?.url ? new URL(tab.url).host : ""; } catch {}
+  activity = [{ kind, query: query.slice(0, 80), ok, host, at: Date.now() }, ...activity].slice(0, ACTIVITY_KEPT);
 }
 
 // On-demand injection: no content script sits on every page; code runs only when Imp asks.

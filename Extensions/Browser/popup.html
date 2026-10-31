@@ -5,36 +5,47 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <header>
-    <img src="icons/48.png" width="32" height="32" alt="">
-    <div>
-      <h1>Imp</h1>
-      <p id="status" class="status"><span class="dot"></span><span id="status-text">Checking…</span></p>
-    </div>
+  <!-- The Imps that are out, alive: they watch your pointer, blink, and sleep while Imp is away. -->
+  <header id="stage" class="stage">
+    <p id="status" class="status"><span class="dot"></span><span id="status-text">Checking…</span></p>
+    <div id="imps" class="imps" aria-hidden="true"></div>
+    <div class="floor"></div>
   </header>
 
-  <section id="connected" hidden>
-    <h2>Imp sees</h2>
-    <div class="page">
-      <div id="page-title" class="title"></div>
-      <div id="page-url" class="url"></div>
-    </div>
-    <p class="note">Only this tab's address and title. Imp reads a page, or finds something on it, only when it needs to.</p>
-  </section>
+  <main>
+    <section id="tab" class="card tab" hidden>
+      <div class="favicon"><img id="tab-icon" alt=""><span id="tab-letter"></span></div>
+      <div class="tab-text">
+        <div id="tab-title" class="title"></div>
+        <div id="tab-host" class="host"></div>
+      </div>
+      <span id="tab-sight" class="sight"></span>
+    </section>
 
-  <section id="disconnected" hidden>
-    <p>Imp isn't answering. Start Imp on this Mac and it connects by itself.</p>
-    <ol>
-      <li>Open Imp (it lives in the menu bar).</li>
-      <li>Leave this browser open. That's all.</li>
-    </ol>
-    <a class="link" href="https://github.com/impsland/imp" target="_blank" rel="noopener">Don't have Imp? Get it</a>
-  </section>
+    <section id="activity" class="card activity" hidden>
+      <h2>Lately</h2>
+      <ul id="activity-list"></ul>
+    </section>
+
+    <section id="offline" class="card offline" hidden>
+      <p class="lead">Imp is asleep.</p>
+      <p class="muted">Start Imp on this Mac and this connects by itself. Keep the browser open, that's all.</p>
+    </section>
+  </main>
 
   <footer>
-    <button id="reconnect" type="button">Reconnect</button>
-    <span class="private" title="The extension talks only to 127.0.0.1:47823. Nothing leaves your Mac.">Stays on this Mac</span>
+    <span class="private" title="The extension talks only to 127.0.0.1:47823. Nothing leaves your Mac.">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5A1 1 0 0 1 13 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm1.5 0h4V5a2 2 0 0 0-4 0z"/></svg>
+      Stays on this Mac
+    </span>
+    <span class="actions">
+      <button id="reconnect" type="button" class="icon" title="Reconnect" aria-label="Reconnect">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.6 6.5A5.5 5.5 0 1 0 13 11l-1.4-.8A4 4 0 1 1 12 6.5H9.5V8H15V2.5h-1.5z"/></svg>
+      </button>
+      <button id="open" type="button" class="primary">Open Imp</button>
+    </span>
   </footer>
+  <a id="get" class="get" href="https://github.com/impsland/imp" target="_blank" rel="noopener" hidden>Don't have Imp? Get it</a>
   <script src="popup.js"></script>
 </body>
 </html>

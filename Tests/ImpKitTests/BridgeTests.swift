@@ -24,6 +24,12 @@ import Foundation
         #expect(o["type"] as? String == "locate" && o["id"] as? String == "7" && o["query"] as? String == "Add to Cart")
         let t = try #require(JSONSerialization.jsonObject(with: BridgeOutbound.text(id: "8", limit: 50).encoded()) as? [String: Any])
         #expect(t["type"] as? String == "text" && t["limit"] as? Int == 50)
+        let pip = BridgeImp(name: "Pip", hue: 0.6, scale: 1.35, mood: "thinking", away: false)
+        let r = try #require(JSONSerialization.jsonObject(with: BridgeOutbound.troupe([pip]).encoded()) as? [String: Any])
+        let imps = try #require(r["imps"] as? [[String: Any]])
+        #expect(r["type"] as? String == "troupe" && imps.count == 1)
+        #expect(imps[0]["name"] as? String == "Pip" && imps[0]["hue"] as? Double == 0.6 && imps[0]["mood"] as? String == "thinking")
+        #expect(imps[0]["away"] as? Bool == false && imps[0]["scale"] as? Double == 1.35)
     }
 
     @Test func originAllowList() {

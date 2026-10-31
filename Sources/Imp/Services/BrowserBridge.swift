@@ -26,6 +26,8 @@ final class BrowserBridge {
     @ObservationIgnored var onPage: ((BrowserPage) -> Void)?
     /// The last page reported (nil when no extension is connected).
     private(set) var page: BrowserPage?
+    /// The Imps out right now, as the extension's popup draws them (`setTroupe`).
+    @ObservationIgnored private var troupe: [BridgeImp] = []
     var isConnected: Bool { !peers.isEmpty }
 
     private final class Peer: @unchecked Sendable { // `browser` is touched on the main actor only
@@ -127,6 +129,21 @@ final class BrowserBridge {
         active = peer.id
         log.info("extension connected (\(self.peers.count) total)")
         receive(peer)
+        push(.troupe(troupe), to: peer)
+    }
+
+    /// Tells every connected extension which Imps are out and how they are (only when it changed).
+    func setTroupe(_ imps: [BridgeImp]) {
+        guard imps != troupe else { return }
+        troupe = imps
+        peers.forEach { push(.troupe(imps), to: $0) }
+    }
+
+    /// A message nobody answers.
+    private func push(_ message: BridgeOutbound, to peer: Peer) {
+        let meta = NWProtocolWebSocket.Metadata(opcode: .text)
+        let ctx = NWConnection.ContentContext(identifier: "bridge", metadata: [meta])
+        peer.connection.send(content: message.encoded(), contentContext: ctx, isComplete: true, completion: .idempotent)
     }
 
     private func receive(_ peer: Peer) {
