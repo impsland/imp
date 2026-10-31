@@ -1,12 +1,12 @@
 import Foundation
 import Network
 
-/// The Mac's side of the Hop: keeps one connection waiting at the relay for a phone. When a phone
-/// is spliced in, the bytes go straight on to this Mac's own Link listener on loopback, so TLS ends
-/// in the same place, with the same key, as it does on Wi-Fi. Then it dials the next waiting one.
+/// A host's side of the Hop: keeps one connection waiting at the relay for a guest. When a guest
+/// is spliced in, the bytes go straight on to this device's own Link listener on loopback, so TLS
+/// ends in the same place, with the same key, as it does on Wi-Fi. Then it dials the next waiting one.
 public final class HopHost: @unchecked Sendable {   // mutable state is only touched on `queue`
     private let address: HopAddress
-    private let room: Hop.Room
+    private let credentials: Hop.Credentials
     private let loopbackPort: UInt16
     private let queue = DispatchQueue(label: "app.imp.hop.host")
     private var running = false
@@ -16,12 +16,12 @@ public final class HopHost: @unchecked Sendable {   // mutable state is only tou
     private var redial: DispatchWorkItem?
     private var splices: [ObjectIdentifier: Splice] = [:]
 
-    /// The relay turned this pairing away (it won't be tried again until restarted).
+    /// The relay turned this host away (it won't be tried again until restarted).
     public var onRejected: (@Sendable () -> Void)?
 
-    public init(address: HopAddress, room: Hop.Room, loopbackPort: UInt16) {
+    public init(address: HopAddress, credentials: Hop.Credentials, loopbackPort: UInt16) {
         self.address = address
-        self.room = room
+        self.credentials = credentials
         self.loopbackPort = loopbackPort
     }
 
@@ -40,6 +40,18 @@ public final class HopHost: @unchecked Sendable {   // mutable state is only tou
             waiting?.cancel()
             waiting = nil
             splices.values.forEach { $0.end() }
+        }
+    }
+
+    /// The network changed: forget the back-off and wait again right away.
+    public func retryNow() {
+        queue.async { [self] in
+            guard running else { return }
+            delay = 1
+            redial?.cancel()
+            waiting?.cancel()
+            waiting = nil
+            dial()
         }
     }
 
@@ -63,12 +75,12 @@ public final class HopHost: @unchecked Sendable {   // mutable state is only tou
 
     /// Hello, then the proof for the relay's nonce, then its answer.
     private func greet(_ c: NWConnection) {
-        c.send(content: room.hello(as: .mac), completion: .contentProcessed { [weak self] error in
+        c.send(content: credentials.hello, completion: .contentProcessed { [weak self] error in
             if error != nil { self?.lost(c) }
         })
         Self.read(Hop.nonceBytes, from: c) { [weak self] nonce in
             guard let self, c === self.waiting else { return }
-            guard let nonce, let proof = try? self.room.proof(as: .mac, nonce: nonce) else { return self.lost(c) }
+            guard let nonce, let proof = try? self.credentials.proof(nonce: nonce) else { return self.lost(c) }
             c.send(content: proof, completion: .contentProcessed { [weak self] error in
                 if error != nil { self?.lost(c) }
             })
@@ -130,7 +142,7 @@ public final class HopHost: @unchecked Sendable {   // mutable state is only tou
 
     // MARK: Passing bytes on
 
-    /// One phone's connection from the relay, joined to this Mac's Link listener. Each chunk is
+    /// One guest's connection from the relay, joined to this device's Link listener. Each chunk is
     /// read only after the last was handed on, so a slow side slows the other down.
     private final class Splice: @unchecked Sendable {
         private let hop: NWConnection

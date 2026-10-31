@@ -1,65 +1,86 @@
 import CryptoKit
 import Foundation
 
-/// The Hop: a blind relay that lets an iPhone reach its Mac from anywhere (see `server/PROTOCOL.md`).
-/// Both sides dial the relay, prove they know the pairing secret by signing a nonce, and the relay
-/// splices their two streams. What flows after that is the Link's own TLS, end to end, so the relay
-/// only ever sees encrypted bytes.
+/// The Hop: a blind relay that lets two devices reach each other from anywhere (see
+/// `server/PROTOCOL.md`). A host waits in a room named by its own public key; a guest joins by
+/// proving it knows the host's door key. The relay splices the two streams, and what flows after
+/// that is the Link's own TLS, end to end, so the relay only ever sees encrypted bytes.
 public enum Hop {
     public enum Role: UInt8, Sendable {
-        /// Hosts the room and waits.
-        case mac = 1
-        /// Joins it.
-        case phone = 2
+        /// Owns the room and waits in it.
+        case host = 1
+        /// Joins the room.
+        case guest = 2
     }
 
     /// The relay's answer once the proof was checked.
     public enum Status: UInt8, Sendable {
         /// The other side is spliced in: start TLS.
         case go = 0
-        /// Bad hello or proof: give up on the Hop for this pairing.
+        /// Bad hello or proof: give up on the Hop for now.
         case rejected = 1
         /// A limit was hit: back off.
         case busy = 2
-        /// Nobody came before the wait ran out.
+        /// Nobody came before the wait ran out, or nobody is waiting.
         case nobody = 3
     }
 
-    static let version: UInt8 = 1
+    static let version: UInt8 = 2
     static let magic = Data("IMPHOP".utf8)
-    static let proofTag = Data("imp-hop/1".utf8)
-    static let roomTag = Data("imp-hop room v1".utf8)
+    static let proofTag = Data("imp-hop/2".utf8)
+    static let gateTag = Data("imp-hop gate v2".utf8)
+    public static let keyBytes = 32
     public static let nonceBytes = 32
     public static let proofBytes = 64
+    public static let helloBytes = 6 + 2 + 32 + 32
 
-    /// A pairing's room: an Ed25519 key pair both sides derive from the pairing secret. Its public
-    /// half names the room at the relay, and only someone holding the secret can sign for it.
-    public struct Room: Sendable {
-        private let key: Curve25519.Signing.PrivateKey
+    /// What one side needs to speak to the relay: the room, the gate and a way to sign.
+    public struct Credentials: Sendable {
+        public let role: Role
+        /// The host's device public key: how the relay names the room.
+        public let room: Data
+        /// The public half of the key every guest derives from the door key.
+        public let gate: Data
+        private let signer: @Sendable (Data) throws -> Data
 
-        public init(secret: Data) {
-            let seed = Data(HMAC<SHA256>.authenticationCode(for: Hop.roomTag, using: SymmetricKey(data: secret)))
-            // A 32-byte seed always makes a key.
-            key = try! Curve25519.Signing.PrivateKey(rawRepresentation: seed)
+        /// The host: signs with its device key.
+        public init(host identity: LinkIdentity, door: Data) {
+            role = .host
+            room = identity.publicKey
+            gate = Hop.gate(door: door).publicKey.rawRepresentation
+            signer = { identity.sign($0) }
         }
 
-        /// The room's public key: how the relay knows it.
-        public var id: Data { key.publicKey.rawRepresentation }
-
-        /// First message to the relay: "IMPHOP", the version, the role and the room (40 bytes).
-        public func hello(as role: Role) -> Data {
-            Hop.magic + [Hop.version, role.rawValue] + id
+        /// A guest of `room`: signs with the gate key derived from the host's door key.
+        public init(guestOf room: Data, door: Data) {
+            let key = Hop.gate(door: door)
+            role = .guest
+            self.room = room
+            gate = key.publicKey.rawRepresentation
+            signer = { try key.signature(for: $0) }
         }
 
-        /// What gets signed to answer the relay's nonce.
-        public static func proofMessage(as role: Role, nonce: Data) -> Data {
-            Hop.proofTag + [role.rawValue] + nonce
+        /// First message to the relay: "IMPHOP", the version, the role, the room and the gate (72 bytes).
+        public var hello: Data {
+            Hop.magic + [Hop.version, role.rawValue] + room + gate
         }
 
-        /// The signature the relay checks against the room (64 bytes).
-        public func proof(as role: Role, nonce: Data) throws -> Data {
-            try key.signature(for: Self.proofMessage(as: role, nonce: nonce))
+        /// The signature the relay checks (64 bytes).
+        public func proof(nonce: Data) throws -> Data {
+            try signer(Hop.proofMessage(role: role, nonce: nonce, room: room, gate: gate))
         }
+    }
+
+    /// What gets signed to answer the relay's nonce: a host vouches for the gate, a guest for the room.
+    public static func proofMessage(role: Role, nonce: Data, room: Data, gate: Data) -> Data {
+        proofTag + [role.rawValue] + nonce + (role == .host ? gate : room)
+    }
+
+    /// The guests' key, the same for everyone who knows the door key.
+    static func gate(door: Data) -> Curve25519.Signing.PrivateKey {
+        let seed = Data(HMAC<SHA256>.authenticationCode(for: gateTag, using: SymmetricKey(data: door)))
+        // A 32-byte seed always makes a key.
+        return try! Curve25519.Signing.PrivateKey(rawRepresentation: seed)
     }
 }
 
@@ -72,11 +93,7 @@ public struct HopAddress: Equatable, Sendable {
 
     public init?(host: String, port: UInt16) {
         let host = host.lowercased()
-        let labels = host.split(separator: ".", omittingEmptySubsequences: false)
-        guard port > 0, host.utf8.count <= Self.longest,
-              !labels.isEmpty, labels.allSatisfy({ !$0.isEmpty && !$0.hasPrefix("-") && !$0.hasSuffix("-") }),
-              host.utf8.allSatisfy({ ($0 >= 0x61 && $0 <= 0x7A) || ($0 >= 0x30 && $0 <= 0x39) || $0 == 0x2D || $0 == 0x2E })
-        else { return nil }
+        guard port > 0, Self.isHost(host) else { return nil }
         self.host = host
         self.port = port
     }
@@ -90,4 +107,12 @@ public struct HopAddress: Equatable, Sendable {
     }
 
     public var text: String { "\(host):\(port)" }
+
+    /// Whether `host` is a plain lower-case host name or IPv4 address.
+    static func isHost(_ host: String) -> Bool {
+        let labels = host.split(separator: ".", omittingEmptySubsequences: false)
+        return host.utf8.count <= longest
+            && !labels.isEmpty && labels.allSatisfy({ !$0.isEmpty && !$0.hasPrefix("-") && !$0.hasSuffix("-") })
+            && host.utf8.allSatisfy({ ($0 >= 0x61 && $0 <= 0x7A) || ($0 >= 0x30 && $0 <= 0x39) || $0 == 0x2D || $0 == 0x2E })
+    }
 }

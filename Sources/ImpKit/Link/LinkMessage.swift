@@ -1,31 +1,38 @@
 import Foundation
 
-// Imp Link: how the Mac and an iPhone talk. The Mac keeps every Imp's brain (models, keys, tools,
-// chats); an Imp tossed onto the iPhone is the same Imp, just away from the desktop: the phone is
-// its body and its chat. Messages are JSON, one per frame (`LinkFrame`), over any reliable,
-// authenticated byte stream: today TLS with a pre-shared key on the local network (`LinkChannel`),
-// tomorrow the same frames through a relay over the internet.
-//
-// The phone has Imps of its own too (`PocketImp`): they think on the phone. They reach the Mac only
-// to talk to its Imps, and to move home (`adopt`).
+// Imp Link 2: how devices talk (see `docs/LINK.md`). Every Imp thinks at its home; its body can be on
+// any linked device. Messages are JSON, one per frame (`LinkFrame`), over TLS (`LinkChannel`),
+// whether the bytes came over Wi-Fi or through the Hop.
 
-/// The protocol's version. Each side says its own in `hello`/`welcome`; a side ignores message
-/// types it doesn't know, so newer peers can add some without breaking older ones.
+/// The protocol's constants and limits. Each side says its own version in `hello`/`welcome`; a side
+/// ignores message types it doesn't know, so newer peers can add some without breaking older ones.
 public enum LinkProtocol {
-    public static let version = 1
-    /// Bonjour service type the Mac advertises.
+    public static let version = 2
+    /// Bonjour service type devices advertise.
     public static let serviceType = "_imp-link._tcp"
-    /// The Mac listens here too, so a phone can reach it by address (another network, a VPN).
+    /// A device listens here when it can, so another can reach it by address (another network, a VPN).
     public static let port: UInt16 = 47_824
     /// Frames bigger than this are refused (chats are sent a page at a time).
     public static let maxFrame = 4 << 20
-    /// The phone pings this often (seconds) while it's connected.
+    /// Each side pings this often (seconds).
     public static let pingInterval: TimeInterval = 20
-    /// A link that hasn't heard a thing for this long (seconds) is dead: both sides close it.
+    /// A connection that hasn't heard a thing for this long (seconds) is dead: both sides close it.
     public static let silenceLimit: TimeInterval = 45
+    /// A visitor without a valid claim is closed after this long (seconds).
+    public static let visitorGrace: TimeInterval = 15
+    /// A thrown Imp that isn't answered in this time (seconds) bounces back.
+    public static let transferTimeout: TimeInterval = 10
+    /// A message between Imps that isn't answered in this time (seconds) fails.
+    public static let answerTimeout: TimeInterval = 120
+    /// An invite works this long (seconds) after its code was last on screen.
+    public static let inviteLife: TimeInterval = 15 * 60
+    public static let maxLinks = 16
+    public static let maxVisits = 24
+    public static let maxConnections = 32
+    public static let maxText = 20_000
 }
 
-/// A side of a screen an Imp is tossed off, or flies in from.
+/// A side of a screen an Imp is thrown off, or flies in from.
 public enum LinkSide: String, Codable, Sendable, Equatable {
     case left, right
 
@@ -48,13 +55,20 @@ public struct LinkEntry: Codable, Sendable, Equatable {
         self.speed = max(speed.isFinite ? speed : 0, 0)
     }
 
+    /// From the network: out-of-range numbers are brought into range.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(side: try c.decode(LinkSide.self, forKey: .side), height: try c.decode(Double.self, forKey: .height),
+                  speed: try c.decode(Double.self, forKey: .speed))
+    }
+
     /// Where it enters after being thrown off `exit` at `height` (it carries on the way it went).
     public static func after(exit: LinkSide, height: Double, speed: Double) -> LinkEntry {
         LinkEntry(side: exit.opposite, height: height, speed: speed)
     }
 }
 
-/// What the phone needs to draw an Imp exactly as the Mac does.
+/// What a device needs to draw an Imp exactly as its home does.
 public struct LinkImp: Codable, Sendable, Equatable, Identifiable {
     public var id: UUID
     public var name: String
@@ -71,7 +85,17 @@ public struct LinkImp: Codable, Sendable, Equatable, Identifiable {
     }
 }
 
-/// One line of a chat, as the phone shows it.
+/// An Imp on someone's screen, and the device it thinks on.
+public struct LinkStaged: Codable, Sendable, Equatable, Identifiable {
+    public var imp: LinkImp
+    public var home: UUID
+
+    public init(imp: LinkImp, home: UUID) { self.imp = imp; self.home = home }
+
+    public var id: UUID { imp.id }
+}
+
+/// One line of a chat, as a holder shows it.
 public struct LinkTurn: Codable, Sendable, Equatable, Identifiable {
     public var id: UUID
     public var date: Date
@@ -112,7 +136,7 @@ public struct LinkWork: Codable, Sendable, Equatable {
 }
 
 /// An Imp talking with another Imp (`imp_message`), as its speech bubble shows it: asked by one,
-/// answering it, or waiting for another's answer. The phone shows it above the Imp.
+/// answering it, or waiting for another's answer.
 public struct LinkSpeech: Codable, Sendable, Equatable, Identifiable {
     public enum Role: String, Codable, Sendable {
         /// Another Imp asked this one something; it's thinking.
@@ -136,7 +160,7 @@ public struct LinkSpeech: Codable, Sendable, Equatable, Identifiable {
     }
 }
 
-/// A piece of a file the phone asked for (`LinkRequest.file`), in order.
+/// A piece of a file a holder asked for (`LinkMessage.file`), in order.
 public struct LinkFilePart: Codable, Sendable, Equatable {
     /// The file's name, for showing and for its type.
     public var name: String
@@ -153,11 +177,11 @@ public struct LinkFilePart: Codable, Sendable, Equatable {
 
     /// Bytes per part: small enough to keep frames light, big enough to move a video quickly.
     public static let chunk = 256 * 1024
-    /// The biggest file a phone may fetch.
+    /// The biggest file a holder may fetch.
     public static let maxSize = 512 * 1024 * 1024
 }
 
-/// The secrets of a pocket Imp that moves to the Mac: they travel apart from its kit, which never
+/// The secrets of a pocket Imp that moves to a Mac: they travel apart from its kit, which never
 /// holds any. Never log it.
 public struct LinkSecrets: Codable, Sendable, Equatable {
     /// The key of its service, if it has one.
@@ -170,55 +194,91 @@ public struct LinkSecrets: Codable, Sendable, Equatable {
     }
 }
 
-/// iPhone → Mac.
-public enum LinkRequest: Codable, Sendable, Equatable {
-    /// First message on a connection: who's calling.
-    case hello(device: UUID, name: String, version: Int)
-    /// A message for an Imp on the phone, typed into its chat.
+/// What you did to an Imp on a screen.
+public enum LinkFeeling: String, Codable, Sendable {
+    case poke, cuddle, shake, drop
+}
+
+/// Why a thrown Imp bounces back.
+public enum LinkDecline: String, Codable, Sendable, Equatable {
+    /// No room for another Imp.
+    case full
+    /// Playing a game.
+    case playing
+    /// Not linked, or not allowed.
+    case notLinked
+    /// No answer in time (made up by the thrower, never sent).
+    case timeout
+    /// The receiver's user said no, or something else.
+    case other
+
+    /// A reason a newer version made up is still a no.
+    public init(from decoder: Decoder) throws {
+        self = LinkDecline(rawValue: try decoder.singleValueContainer().decode(String.self)) ?? .other
+    }
+}
+
+/// Both directions share this one enum: every device is a host to some and a guest to others, and
+/// either side can send any message. What a device does with one depends on who sent it (see
+/// `LinkAccess`). Messages this version doesn't know decode to nil and are ignored. `imp` is always
+/// the Imp's id.
+public enum LinkMessage: Codable, Sendable, Equatable {
+    // MARK: Connection
+
+    /// First message on a connection, guest to host: who's calling, signed for this connection.
+    case hello(device: UUID, name: String, kind: LinkKind, key: Data, version: Int, proof: Data, join: Data?)
+    /// The host's answer: who it is, whether the guest is a linked peer, signed for this connection.
+    case welcome(device: UUID, name: String, kind: LinkKind, version: Int, linked: Bool, proof: Data)
+    /// Still there (sent regularly, so a dead connection is noticed).
+    case ping
+    case pong
+    /// This device is closing the connection on purpose; `reason` is for people.
+    case bye(reason: String)
+    /// Where this device can be reached (its door key opens its TLS); sent after a handshake and
+    /// whenever its addresses or its server change.
+    case routes(door: Data, routes: LinkRoutes)
+    /// The Imps on this device's screen right now (sent whenever they change).
+    case stage(imps: [LinkStaged])
+
+    // MARK: Throwing
+
+    /// An Imp flies onto the receiver's screen. Unless the receiver is its home, the home's card and
+    /// the Imp's ticket come with it.
+    case pass(transfer: UUID, imp: LinkImp, entry: LinkEntry, home: LinkCard?, ticket: Data?)
+    case took(transfer: UUID)
+    /// The Imp bounces back.
+    case declined(transfer: UUID, reason: LinkDecline)
+    /// A holder asks its Imp's home to recognise it as the holder, with the ticket it has.
+    case claim(imp: UUID, ticket: Data)
+    /// The home's answer to a good claim: the new ticket (the old one is dead).
+    case claimed(imp: UUID, ticket: Data)
+    /// The receiver is not this Imp's holder (any more): its body there has to go.
+    case gone(imp: UUID)
+    /// Sends a visiting Imp home from wherever it is.
+    case release(imp: UUID, ticket: Data)
+
+    // MARK: A holder asks an Imp's home
+
+    /// A message for the Imp, typed into its chat.
     case ask(imp: UUID, text: String)
     /// Stop what it's working on.
     case stop(imp: UUID)
     /// Start a fresh chat.
     case newChat(imp: UUID)
-    /// Thrown off a side of the phone: it flies onto the Mac.
-    case toss(imp: UUID, exit: LinkSide, height: Double, speed: Double)
-    /// Patted, spun or shaken on the phone: the Mac plays the animation that answers to it.
+    /// Patted, spun or shaken: the home plays the animation that answers to it.
     case felt(imp: UUID, feeling: LinkFeeling)
     /// A file a reply shows or links to (a picture, a voice, a video, a document), as written in
-    /// the reply: a path on the Mac, relative to the Imp's folder or absolute. The Mac sends it
-    /// back in parts (`LinkUpdate.file`), or says why not (`fileFailed`). `id` names the transfer.
+    /// the reply: a path on the home, relative to the Imp's folder or absolute. The home sends it
+    /// back in parts (`filePart`), or says why not (`fileFailed`). `id` names the transfer.
     case file(id: UUID, imp: UUID, ref: String)
-    /// Still there (sent while idle, so a dead connection is noticed).
-    case ping
-    /// The Imps hatched on the phone, sent after `welcome` and whenever they change. Mac Imps can
-    /// message these, and only these may send messages (`message`).
-    case troupe([LinkImp])
-    /// A pocket Imp moves home: thrown off a side of the phone, it flies onto the Mac as an ordinary
-    /// Mac Imp. `kit` is its kit (`PocketImp.adoption`). The Mac answers `adopted`, or `refused` and
-    /// the phone keeps it. The phone deletes its copy only after `adopted`.
-    case adopt(imp: UUID, kit: String, secrets: LinkSecrets, exit: LinkSide, height: Double, speed: Double)
-    /// A pocket Imp asks a Mac Imp something (`imp_message`). The Mac answers with `answer`.
-    case message(id: UUID, from: UUID, to: UUID, text: String)
-    /// The reply to a Mac Imp's `ask`: what the pocket Imp said, or why it couldn't (`failed`).
-    case answered(id: UUID, text: String, failed: Bool)
-    /// What an Imp (on this phone, or hatched here) said with other Imps, as far as the Mac's chats
-    /// know. The Mac answers `talks`. (A Mac older than this ignores it.)
+    /// Asks for what the Imp said with other Imps, as far as the home's chats know.
     case talks(imp: UUID)
-}
 
-/// Mac → iPhone.
-public enum LinkUpdate: Codable, Sendable, Equatable {
-    /// Answer to `hello`: this Mac, the Imps on this phone, and the ones on the Mac (to talk about).
-    case welcome(mac: String, version: Int, imps: [LinkImp], others: [LinkImp])
-    /// An Imp flies onto the phone.
-    case arrive(imp: LinkImp, entry: LinkEntry)
-    /// An Imp leaves the phone (called back on the Mac). `entry` is nil when it just goes.
-    case leave(imp: UUID)
+    // MARK: A home tells the holder
+
     /// Looks changed (colour, size, character).
     case look(imp: LinkImp)
-    /// The Imps out on the Mac changed.
-    case others([LinkImp])
-    /// The latest turns of an Imp's current chat, oldest first.
+    /// The latest turns of the Imp's current chat, oldest first.
     case chat(imp: UUID, turns: [LinkTurn])
     /// What it's working on (nil: nothing).
     case work(imp: UUID, work: LinkWork?)
@@ -226,32 +286,67 @@ public enum LinkUpdate: Codable, Sendable, Equatable {
     case mood(imp: UUID, mood: String)
     /// Plays an animation, beat by beat.
     case animate(imp: UUID, beats: [AnimationBeat])
-    /// A toss didn't work out (it bounces back): why.
-    case refused(imp: UUID, reason: String)
     /// What it's saying to another Imp right now (nil: nothing).
     case speech(imp: UUID, speech: LinkSpeech?)
-    /// A part of a file the phone asked for.
-    case file(id: UUID, part: LinkFilePart)
+    /// A part of a file the holder asked for.
+    case filePart(id: UUID, part: LinkFilePart)
     /// The file can't be sent: why.
     case fileFailed(id: UUID, reason: String)
-    case pong
-    /// Where else this Mac can be reached from the internet (a Hop, `host:port`), nil if nowhere.
-    /// Sent after `welcome`, so a phone paired earlier learns it without pairing again.
-    case route(hop: String?)
-    /// The Mac took the pocket Imp in: it lives there now.
-    case adopted(imp: UUID)
-    /// The reply to a pocket Imp's `message`: what the Mac Imp said, or why it couldn't (`failed`).
+    /// The answer to `talks`: every exchange in the home's chats that the Imp asked or answered
+    /// (`TalkLog.forLink`).
+    case talkLines(imp: UUID, lines: [TalkLine])
+
+    // MARK: Imps talking
+
+    /// An Imp asks another something (`imp_message`). `toHome` is the target's home, which
+    /// answers; a device that isn't it forwards the question there once (`forwarded`).
+    case message(id: UUID, from: LinkImp, to: UUID, toHome: UUID, text: String, forwarded: Bool)
+    /// The reply to a `message`: what the Imp said, or why it couldn't (`failed`).
     case answer(id: UUID, text: String, failed: Bool)
-    /// A Mac Imp asks a pocket Imp something (`imp_message`). The phone answers with `answered`.
-    case ask(id: UUID, from: LinkImp, to: UUID, text: String)
-    /// The answer to `talks`: every exchange in the Mac's chats that the Imp asked or answered
-    /// (`TalkLog.forLink`). The phone adds what its own Imps' chats hold.
-    case talks(imp: UUID, lines: [TalkLine])
+
+    // MARK: Moving in for good
+
+    /// An Imp hatched here moves to the receiver for good: `kit` is its kit (`PocketImp.adoption`).
+    /// The receiver answers `adopted` once its user agreed, or `declined`; the sender deletes its
+    /// copy only after `adopted`.
+    case adopt(transfer: UUID, imp: UUID, kit: String, secrets: LinkSecrets, entry: LinkEntry)
+    case adopted(transfer: UUID)
 }
 
-/// What you did to an Imp on the phone's screen.
-public enum LinkFeeling: String, Codable, Sendable {
-    case poke, cuddle, shake, drop
+extension LinkMessage {
+    /// Whether the sizes and counts in a message from the network are sane. The node drops a
+    /// message that isn't; the frame limit already bounds everything else.
+    public var isSound: Bool {
+        func name(_ s: String) -> Bool { s.count <= LinkDevice.longestName * 2 }
+        func text(_ s: String) -> Bool { s.count <= LinkProtocol.maxText }
+        func key(_ d: Data) -> Bool { d.count == LinkCrypto.keyBytes }
+        func imp(_ i: LinkImp) -> Bool { name(i.name) }
+        switch self {
+        case .hello(_, let n, _, let k, _, let proof, let join):
+            return name(n) && key(k) && proof.count == Hop.proofBytes && (join.map(key) ?? true)
+        case .welcome(_, let n, _, _, _, let proof): return name(n) && proof.count == Hop.proofBytes
+        case .bye(let reason): return reason.count <= 200
+        case .routes(let door, _): return key(door)
+        case .stage(let imps): return imps.count <= 64 && imps.allSatisfy { imp($0.imp) }
+        case .pass(_, let i, _, let home, let ticket):
+            return imp(i) && (ticket.map(key) ?? true) && (home == nil) == (ticket == nil) && (home.map { name($0.device.name) } ?? true)
+        case .claim(_, let t), .claimed(_, let t), .release(_, let t): return key(t)
+        case .ask(_, let t): return text(t)
+        case .file(_, _, let ref): return ref.count <= 4_096
+        case .look(let i): return imp(i)
+        case .chat(_, let turns): return turns.count <= 500 && turns.allSatisfy { $0.steps.count <= 200 }
+        case .mood(_, let m): return m.count <= 40
+        case .animate(_, let beats): return beats.count <= 256
+        case .filePart(_, let p):
+            return p.data.count <= 1 << 20 && p.size >= 0 && p.size <= LinkFilePart.maxSize && p.offset >= 0 && p.offset <= p.size && name(p.name)
+        case .fileFailed(_, let reason): return reason.count <= 500
+        case .talkLines(_, let lines): return lines.count <= 300
+        case .message(_, let from, _, _, let t, _): return imp(from) && text(t)
+        case .answer(_, let t, _): return text(t)
+        case .adopt(_, _, let kit, _, _): return kit.utf8.count <= LinkProtocol.maxFrame
+        case .ping, .pong, .gone, .stop, .newChat, .felt, .talks, .work, .speech, .took, .declined, .adopted: return true
+        }
+    }
 }
 
 /// Length-prefixed frames: a 4-byte big-endian length, then that many bytes of JSON.

@@ -5,18 +5,18 @@ import Foundation
 // takes it in as an ordinary Mac Imp.
 
 extension PocketImp {
-    /// The request that moves this Imp to the Mac, thrown off `exit` at `height`. Secrets are read
-    /// from `secrets` into the request, never into the kit. Oldest chats and turns are dropped until
+    /// The kit that moves this Imp to another device, and its secrets (`LinkNode.adopt`). Secrets are read
+    /// from `store` into the secrets, never into the kit. Oldest chats and turns are dropped until
     /// it fits a frame (`LinkProtocol.maxFrame`).
-    public func adoption(secrets store: PocketSecrets, exit: LinkSide, height: Double, speed: Double) throws -> LinkRequest {
+    public func adoption(secrets store: PocketSecrets) throws -> (kit: String, secrets: LinkSecrets) {
         try validateAsMove()
         var imp = self
         while true {
             let (kit, secrets) = imp.handover(store)
-            let request = LinkRequest.adopt(imp: id, kit: kit, secrets: secrets, exit: exit, height: height, speed: speed)
+            let probe = LinkMessage.adopt(transfer: UUID(), imp: id, kit: kit, secrets: secrets, entry: LinkEntry(side: .left, height: 0, speed: 0))
             do {
-                _ = try LinkFrame.encode(request)
-                return request
+                _ = try LinkFrame.encode(probe)
+                return (kit, secrets)
             } catch LinkFrame.Failure.tooBig {
                 guard imp.shrink() else { throw PocketError.tooBig }
             }

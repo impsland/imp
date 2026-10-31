@@ -5,76 +5,81 @@ import Network
 
 @Suite struct LinkFrameTests {
     @Test func roundTripsMessagesAcrossSplitReads() throws {
-        let a = LinkRequest.ask(imp: UUID(), text: "Rename the screenshots 🗂️")
-        let b = LinkRequest.toss(imp: UUID(), exit: .left, height: 0.25, speed: 2100)
+        let a = LinkMessage.ask(imp: UUID(), text: "Rename the screenshots 🗂️")
+        let b = LinkMessage.pass(transfer: UUID(), imp: LinkImp(ImpProfile.imp), entry: LinkEntry(side: .left, height: 0.25, speed: 2100), home: nil, ticket: nil)
         let bytes = try LinkFrame.encode(a) + LinkFrame.encode(b)
         var framer = LinkFrame()
         var bodies: [Data] = []
         // A byte at a time: frames only come out whole.
         for byte in bytes { bodies += try framer.feed(Data([byte])) }
         #expect(bodies.count == 2)
-        #expect(LinkFrame.decode(LinkRequest.self, bodies[0]) == a)
-        #expect(LinkFrame.decode(LinkRequest.self, bodies[1]) == b)
+        #expect(LinkFrame.decode(LinkMessage.self, bodies[0]) == a)
+        #expect(LinkFrame.decode(LinkMessage.self, bodies[1]) == b)
     }
 
-    @Test func refusesHugeFrames() {
+    @Test func refusesHugeFrames() throws {
         var framer = LinkFrame()
         let huge = UInt32(LinkProtocol.maxFrame + 1).bigEndian
         #expect(throws: LinkFrame.Failure.self) { try framer.feed(withUnsafeBytes(of: huge) { Data($0) }) }
+        // Just at the limit is fine: it only waits for the rest.
+        var edge = LinkFrame()
+        #expect(try edge.feed(withUnsafeBytes(of: UInt32(LinkProtocol.maxFrame).bigEndian) { Data($0) }).isEmpty)
     }
 
     @Test func unknownMessagesAreIgnored() {
-        #expect(LinkFrame.decode(LinkUpdate.self, Data(#"{"teleport":{"imp":"x"}}"#.utf8)) == nil)
-        #expect(LinkFrame.decode(LinkUpdate.self, Data("garbage".utf8)) == nil)
+        #expect(LinkFrame.decode(LinkMessage.self, Data(#"{"teleport":{"imp":"x"}}"#.utf8)) == nil)
+        #expect(LinkFrame.decode(LinkMessage.self, Data("garbage".utf8)) == nil)
     }
 
-    @Test func updatesRoundTrip() throws {
+    @Test func messagesRoundTrip() throws {
         let imp = LinkImp(ImpProfile.imp)
         let turn = LinkTurn(id: UUID(), date: Date(timeIntervalSince1970: 1_700_000_000), request: "hi", from: "Pip",
                             reply: "hello", failed: false, steps: ["Ran a command"])
         let beats = [AnimationBeat(duration: 0.4, mood: "happy")]
-        for u: LinkUpdate in [.welcome(mac: "Studio", version: 1, imps: [imp], others: []),
-                              .arrive(imp: imp, entry: LinkEntry(side: .right, height: 0.3, speed: 1800)),
-                              .chat(imp: imp.id, turns: [turn]),
-                              .work(imp: imp.id, work: LinkWork(request: "hi", status: "Thinking", partial: "Hel")),
-                              .work(imp: imp.id, work: nil),
-                              .animate(imp: imp.id, beats: beats),
-                              .leave(imp: imp.id)] {
+        let card = LinkCard(device: LinkIdentity(name: "Mac", kind: .mac).device, door: LinkCrypto.randomKey(), routes: LinkRoutes(hosts: ["a.local"]))
+        for m: LinkMessage in [.pass(transfer: UUID(), imp: imp, entry: LinkEntry(side: .right, height: 0.3, speed: 1800), home: card, ticket: LinkCrypto.mintTicket()),
+                               .took(transfer: UUID()), .declined(transfer: UUID(), reason: .full),
+                               .claim(imp: imp.id, ticket: LinkCrypto.mintTicket()), .gone(imp: imp.id),
+                               .stage(imps: [LinkStaged(imp: imp, home: UUID())]),
+                               .chat(imp: imp.id, turns: [turn]),
+                               .work(imp: imp.id, work: LinkWork(request: "hi", status: "Thinking", partial: "Hel")),
+                               .work(imp: imp.id, work: nil),
+                               .animate(imp: imp.id, beats: beats),
+                               .message(id: UUID(), from: imp, to: UUID(), toHome: UUID(), text: "hi", forwarded: false),
+                               .answer(id: UUID(), text: "yes", failed: false)] {
             var framer = LinkFrame()
-            let body = try #require(try framer.feed(LinkFrame.encode(u)).first)
-            #expect(LinkFrame.decode(LinkUpdate.self, body) == u)
+            let body = try #require(try framer.feed(LinkFrame.encode(m)).first)
+            #expect(LinkFrame.decode(LinkMessage.self, body) == m)
+            #expect(m.isSound)
         }
+    }
+
+    @Test func soundnessChecksSizesAndKeys() {
+        let imp = LinkImp(ImpProfile.imp)
+        let long = String(repeating: "a", count: LinkProtocol.maxText + 1)
+        #expect(LinkMessage.ask(imp: imp.id, text: String(repeating: "a", count: LinkProtocol.maxText)).isSound)
+        #expect(!LinkMessage.ask(imp: imp.id, text: long).isSound)
+        #expect(!LinkMessage.answer(id: UUID(), text: long, failed: false).isSound)
+        #expect(!LinkMessage.message(id: UUID(), from: imp, to: UUID(), toHome: UUID(), text: long, forwarded: false).isSound)
+        #expect(!LinkMessage.claim(imp: imp.id, ticket: Data(repeating: 1, count: 31)).isSound)
+        #expect(!LinkMessage.routes(door: Data(), routes: .none).isSound)
+        // A card and a ticket come together.
+        #expect(!LinkMessage.pass(transfer: UUID(), imp: imp, entry: LinkEntry(side: .left, height: 0, speed: 0), home: nil, ticket: LinkCrypto.mintTicket()).isSound)
+        #expect(!LinkMessage.stage(imps: Array(repeating: LinkStaged(imp: imp, home: UUID()), count: 65)).isSound)
+    }
+
+    @Test func routesAndDevicesAreCheckedWhereverTheyComeFrom() {
+        let bad = Data(#"{"hosts":["a b"],"port":47824}"#.utf8)
+        #expect(LinkFrame.decode(LinkRoutes.self, bad) == nil)
+        #expect(LinkFrame.decode(LinkRoutes.self, Data(#"{"hosts":["a.local"],"port":0}"#.utf8)) == nil)
+        let device = Data(#"{"id":"\#(UUID().uuidString)","name":"x","kind":"mac","key":"AAAA"}"#.utf8)
+        #expect(LinkFrame.decode(LinkDevice.self, device) == nil)
     }
 
     @Test func entryCarriesOnTheWayItWent() {
         let e = LinkEntry.after(exit: .left, height: 0.4, speed: 1500)
         #expect(e.side == .right && e.height == 0.4)
         #expect(LinkEntry(side: .left, height: 7, speed: -3) == LinkEntry(side: .left, height: 1, speed: 0))
-    }
-}
-
-@Suite struct LinkPairingTests {
-    @Test func linkRoundTrips() throws {
-        let p = LinkPairing(mac: UUID(), name: "Art’s MacBook Pro", secret: LinkPairing.newSecret(), hosts: ["art.local", "100.64.0.7"])
-        #expect(p.url.scheme == "implink")
-        let back = try #require(LinkPairing(url: p.url))
-        #expect(back == p)
-        #expect(LinkPairing(string: "  \(p.url.absoluteString)\n") == p)
-    }
-
-    @Test func rejectsBrokenLinks() {
-        let mac = UUID().uuidString
-        #expect(LinkPairing(string: "implink://pair?mac=\(mac)&key=c2hvcnQ") == nil)            // short key
-        #expect(LinkPairing(string: "implink://pair?key=\(LinkPairing.base64URL(LinkPairing.newSecret()))") == nil)  // no Mac
-        #expect(LinkPairing(string: "https://pair?mac=\(mac)") == nil)
-        #expect(LinkPairing(string: "") == nil)
-    }
-
-    @Test func keyIsDerivedNotTheSecret() {
-        let s = LinkPairing.newSecret()
-        #expect(s.count == 32 && s != LinkPairing.newSecret())
-        #expect(LinkPairing.psk(for: s) == LinkPairing.psk(for: s))
-        #expect(LinkPairing.psk(for: s) != s && LinkPairing.psk(for: s).count == 32)
     }
 }
 
@@ -163,8 +168,8 @@ import Network
     }
 }
 
-/// A real TLS-PSK handshake over loopback: the same key connects and messages flow; another key
-/// is refused before any message.
+/// A real TLS-PSK handshake over loopback: the same door connects, both ends derive the same binding
+/// and messages flow; another door is refused before any message.
 @Suite(.serialized) struct LinkChannelTests {
     private final class Box<T>: @unchecked Sendable {
         private let lock = NSLock()
@@ -173,15 +178,15 @@ import Network
         var value: T { get { lock.withLock { _value } } set { lock.withLock { _value = newValue } } }
     }
 
-    private func listen(psk: Data, onFrame: @escaping @Sendable (LinkChannel, Data) -> Void) async throws -> (NWListener, UInt16, Box<[LinkChannel]>) {
-        let params = LinkTLS.parameters(psk: psk)
+    private func listen(door: Data, onEvent: @escaping @Sendable (LinkChannel, LinkChannel.Event) -> Void) async throws -> (NWListener, UInt16, Box<[LinkChannel]>) {
+        let params = LinkCrypto.parameters(door: door)
         params.requiredInterfaceType = .loopback
         let listener = try NWListener(using: params, on: .any)
         let channels = Box<[LinkChannel]>([])
         listener.newConnectionHandler = { c in
             let ch = LinkChannel(connection: c)
-            ch.onFrame = { onFrame(ch, $0) }
             channels.value.append(ch)
+            Task { for await event in ch.events { onEvent(ch, event) } }
             ch.start()
         }
         let port = Box<UInt16?>(nil)
@@ -191,44 +196,63 @@ import Network
         return (listener, try #require(port.value), channels)
     }
 
-    @Test func sameKeyTalks() async throws {
-        let psk = LinkPairing.psk(for: LinkPairing.newSecret())
-        let (listener, port, _) = try await listen(psk: psk) { ch, body in
-            if case .hello(_, let name, _)? = LinkFrame.decode(LinkRequest.self, body) {
-                ch.send(LinkUpdate.welcome(mac: "Mac of \(name)", version: 1, imps: [], others: []))
+    @Test func sameDoorTalksAndSharesABinding() async throws {
+        let door = LinkCrypto.randomKey()
+        let hostBinding = Box<Data?>(nil)
+        let (listener, port, _) = try await listen(door: door) { ch, event in
+            switch event {
+            case .ready(let binding): hostBinding.value = binding
+            case .frame(let body): if LinkFrame.decode(LinkMessage.self, body) == .ping { ch.send(.pong) }
+            case .closed: break
             }
         }
         defer { listener.cancel() }
-        let got = Box<LinkUpdate?>(nil)
-        let client = LinkChannel(to: .hostPort(host: "127.0.0.1", port: NWEndpoint.Port(rawValue: port)!), psk: psk)
-        client.onFrame = { got.value = LinkFrame.decode(LinkUpdate.self, $0) }
-        client.onState = { if $0 == .ready { client.send(LinkRequest.hello(device: UUID(), name: "Phone", version: 1)) } }
+        let client = LinkChannel(to: .hostPort(host: "127.0.0.1", port: NWEndpoint.Port(rawValue: port)!), door: door)
         client.start()
-        for _ in 0..<300 where got.value == nil { try await Task.sleep(for: .milliseconds(10)) }
-        #expect(got.value == .welcome(mac: "Mac of Phone", version: 1, imps: [], others: []))
+        var binding: Data?
+        var ponged = false
+        for await event in client.events {
+            switch event {
+            case .ready(let b): binding = b; client.send(.ping)
+            case .frame(let body): ponged = LinkFrame.decode(LinkMessage.self, body) == .pong
+            case .closed: break
+            }
+            if ponged { break }
+        }
+        #expect(ponged)
+        #expect(binding?.count == LinkCrypto.keyBytes)
+        #expect(binding == hostBinding.value)
         client.close()
     }
 
-    @Test func otherKeyIsRefused() async throws {
-        let (listener, port, _) = try await listen(psk: LinkPairing.psk(for: LinkPairing.newSecret())) { ch, _ in
-            ch.send(LinkUpdate.pong)
-        }
+    @Test func otherDoorIsRefused() async throws {
+        let (listener, port, _) = try await listen(door: LinkCrypto.randomKey()) { ch, _ in ch.send(.pong) }
         defer { listener.cancel() }
-        let state = Box<LinkChannel.State?>(nil)
-        let got = Box(false)
-        let client = LinkChannel(to: .hostPort(host: "127.0.0.1", port: NWEndpoint.Port(rawValue: port)!),
-                                 psk: LinkPairing.psk(for: LinkPairing.newSecret()))
-        client.onFrame = { _ in got.value = true }
-        client.onState = { s in
-            state.value = s
-            if s == .ready { client.send(LinkRequest.ping) }
-        }
+        let client = LinkChannel(to: .hostPort(host: "127.0.0.1", port: NWEndpoint.Port(rawValue: port)!), door: LinkCrypto.randomKey())
         client.start()
-        for _ in 0..<500 { if case .closed? = state.value { break }; try await Task.sleep(for: .milliseconds(10)) }
-        #expect(state.value != .ready)
-        if case .closed(let why, _)? = state.value { #expect(why == .rejected) } else { Issue.record("expected the handshake to fail, got \(String(describing: state.value))") }
-        #expect(!got.value)
-        client.close()
+        var ready = false, frames = 0
+        var closed: LinkChannel.Close?
+        for await event in client.events {
+            switch event {
+            case .ready: ready = true
+            case .frame: frames += 1
+            case .closed(let why, _): closed = why
+            }
+        }
+        #expect(!ready && frames == 0)
+        #expect(closed == .rejected)
+    }
+
+    @Test func aSilentConnectionIsClosed() async throws {
+        let door = LinkCrypto.randomKey()
+        let (listener, port, _) = try await listen(door: door) { _, _ in }
+        defer { listener.cancel() }
+        let client = LinkChannel(connection: NWConnection(host: "127.0.0.1", port: NWEndpoint.Port(rawValue: port)!, using: LinkCrypto.parameters(door: door)),
+                                 pingInterval: 60, silenceLimit: 0.4)
+        client.start()
+        var closed: LinkChannel.Close?
+        for await event in client.events { if case .closed(let why, _) = event { closed = why } }
+        #expect(closed == .unreachable)
     }
 }
 
@@ -260,18 +284,16 @@ import Network
         let part = LinkFilePart(name: "voice.mp3", size: 10, offset: 6, data: Data([1, 2, 3, 4]))
         #expect(part.isLast)
         let speech = LinkSpeech(id: UUID(), role: .reply, peer: "Pip", hue: 0.57, question: "Ready?", text: "Yes!")
-        for u: LinkUpdate in [.file(id: UUID(), part: part), .fileFailed(id: UUID(), reason: "gone"),
-                              .speech(imp: UUID(), speech: speech), .speech(imp: UUID(), speech: nil),
-                              .work(imp: UUID(), work: LinkWork(request: "Ready?", status: nil, partial: "", from: "Pip"))] {
+        for m: LinkMessage in [.filePart(id: UUID(), part: part), .fileFailed(id: UUID(), reason: "gone"),
+                               .speech(imp: UUID(), speech: speech), .speech(imp: UUID(), speech: nil),
+                               .work(imp: UUID(), work: LinkWork(request: "Ready?", status: nil, partial: "", from: "Pip")),
+                               .file(id: UUID(), imp: UUID(), ref: "voice.mp3")] {
             var framer = LinkFrame()
-            let body = try #require(try framer.feed(LinkFrame.encode(u)).first)
-            #expect(LinkFrame.decode(LinkUpdate.self, body) == u)
+            let body = try #require(try framer.feed(LinkFrame.encode(m)).first)
+            #expect(LinkFrame.decode(LinkMessage.self, body) == m)
         }
-        let r = LinkRequest.file(id: UUID(), imp: UUID(), ref: "voice.mp3")
-        var framer = LinkFrame()
-        #expect(LinkFrame.decode(LinkRequest.self, try #require(try framer.feed(LinkFrame.encode(r)).first)) == r)
         // A work update from an older Mac (no `from`) still reads.
         let old = Data(#"{"work":{"imp":"1A1A1A1A-0000-4000-8000-00000000F00D","work":{"request":"hi","partial":""}}}"#.utf8)
-        #expect(LinkFrame.decode(LinkUpdate.self, old) != nil)
+        #expect(LinkFrame.decode(LinkMessage.self, old) != nil)
     }
 }

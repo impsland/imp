@@ -55,11 +55,11 @@ import Testing
         })
         #expect(sent.count == 300 && sent.last?.question == "399")
         #expect(TalkLog.forLink([line])[0].question.count == 1_500)
-        let update = LinkUpdate.talks(imp: pip.id, lines: sent)
+        let update = LinkMessage.talkLines(imp: pip.id, lines: sent)
         let data = try LinkFrame.encode(update)
         var frames = LinkFrame()
         let body = try #require(try frames.feed(data).first)
-        #expect(LinkFrame.decode(LinkUpdate.self, body) == update)
-        #expect(LinkFrame.decode(LinkRequest.self, try JSONEncoder.link.encode(LinkRequest.talks(imp: pip.id))) == .talks(imp: pip.id))
+        #expect(LinkFrame.decode(LinkMessage.self, body) == update)
+        #expect(LinkFrame.decode(LinkMessage.self, try JSONEncoder.link.encode(LinkMessage.talks(imp: pip.id))) == .talks(imp: pip.id))
     }
 }
