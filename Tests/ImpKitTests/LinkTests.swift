@@ -95,6 +95,25 @@ import Network
         #expect(Toss.desktopExit(cursor: CGPoint(x: 1511, y: 491), velocity: CGVector(dx: 1800, dy: 0), screens: [laptop])?.side == .right)
     }
 
+    @Test func approachingAnOuterSideNamesItAndTheSameHeightAsAThrow() throws {
+        let near = try #require(Toss.desktopApproach(cursor: CGPoint(x: 150, y: 736), within: 200, screens: [laptop]))
+        #expect(near.side == .left && near.screen == laptop)
+        #expect(abs(near.height - 0.25) < 0.01)
+        let exit = try #require(Toss.desktopExit(cursor: CGPoint(x: 3, y: 736), velocity: CGVector(dx: -2200, dy: 0), screens: [laptop]))
+        #expect(exit.height == near.height)
+        #expect(Toss.desktopApproach(cursor: CGPoint(x: 700, y: 500), within: 200, screens: [laptop]) == nil)
+    }
+
+    @Test func theSeamBetweenDisplaysHasNoDoors() throws {
+        let screens = [laptop, display]
+        // Beside the seam, where the displays meet: carrying across, not a way out.
+        #expect(Toss.desktopApproach(cursor: CGPoint(x: 1450, y: 500), within: 200, screens: screens) == nil)
+        // Where the taller display reaches past the laptop's height, its left side is outer again.
+        #expect(Toss.desktopApproach(cursor: CGPoint(x: 1600, y: 1200), within: 200, screens: screens)?.side == .left)
+        // The far side of the right-hand display.
+        #expect(try #require(Toss.desktopApproach(cursor: CGPoint(x: 4000, y: 500), within: 200, screens: screens)).side == .right)
+    }
+
     @Test func carriesAreNotThrows() {
         // Too slow, too vertical, or still far from the edge.
         #expect(Toss.desktopExit(cursor: CGPoint(x: 3, y: 500), velocity: CGVector(dx: -600, dy: 0), screens: [laptop]) == nil)

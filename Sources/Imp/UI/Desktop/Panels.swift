@@ -13,6 +13,8 @@ final class Panels {
     /// change, e.g. each dictation partial, was wasteful).
     private let measurer: NSHostingView<BubbleView>
     private let layout = BubbleLayout()
+    /// The doors along the desktop's edge while the Imp is carried near it.
+    private lazy var doorSigns = DoorSigns(model: model)
     private var bubbleVisible = false
     /// Builds the right-click menu for this Panels' Imp.
     var menuProvider: ((ImpModel) -> NSMenu)?
@@ -204,6 +206,7 @@ final class Panels {
         case .lifted:
             reactions.handle(.pickUp, by: model, held: true)
         case .carried(let speed):
+            doorSigns.carried(to: NSEvent.mouseLocation)
             // It dangles from the cursor: the body lags behind, so it leans the way it's going.
             model.carryLean = max(-14, min(14, Double(speed) * 0.012))
             steady?.cancel()
@@ -215,6 +218,7 @@ final class Panels {
             reactions.handle(.shake, by: model)
             model.felt(.shake)
         case .dropped(let distance):
+            doorSigns.hide()
             steady?.cancel()
             model.carryLean = 0
             reactions.release(.pickUp, by: model)
@@ -241,6 +245,7 @@ final class Panels {
         let app = model.app
         guard app.link.isLinked || model.visit != nil, !app.isAway(model.id),
               let exit = Toss.desktopExit(cursor: cursor, velocity: velocity, screens: NSScreen.screens.map(\.frame)) else { return false }
+        doorSigns.hide()
         steady?.cancel()
         app.reactions.release(.pickUp, by: model)
         let speed = Double(abs(velocity.dx))
@@ -360,6 +365,7 @@ final class Panels {
     }
 
     func hide() {
+        doorSigns.hide()
         bubblePanel.orderOut(nil)
         impPanel.orderOut(nil)
     }
