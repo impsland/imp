@@ -85,7 +85,7 @@ public enum LinkFiles {
             tail.insert(head.lastPathComponent, at: 0)
             head = head.deletingLastPathComponent()
         }
-        var path = head.path == "/" ? "/" : String(cString: buffer)
+        var path = head.path == "/" ? "/" : String(decoding: buffer.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }, as: UTF8.self)
         for part in tail { path = (path as NSString).appendingPathComponent(part) }
         return URL(fileURLWithPath: path)
     }

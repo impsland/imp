@@ -41,11 +41,15 @@ public enum Toss {
         -> (side: LinkSide, screen: CGRect, height: Double, gap: CGFloat)? {
         guard let screen = screens.first(where: { $0.insetBy(dx: -1, dy: -1).contains(cursor) }), screen.height > 0 else { return nil }
         let height = Double(min(max((screen.maxY - cursor.y) / screen.height, 0), 1))
-        return [LinkSide.left, .right]
-            .map { (side: $0, gap: abs(cursor.x - ($0 == .left ? screen.minX : screen.maxX))) }
-            .filter { $0.gap <= distance && isOuter($0.side, of: screen, at: cursor.y, screens: screens) }
-            .min { $0.gap < $1.gap }
-            .map { ($0.side, screen, height, $0.gap) }
+        var nearest: (side: LinkSide, gap: CGFloat)?
+        for side in [LinkSide.left, .right] {
+            let edge = side == .left ? screen.minX : screen.maxX
+            let gap = abs(cursor.x - edge)
+            guard gap <= distance, gap < nearest?.gap ?? .infinity,
+                  isOuter(side, of: screen, at: cursor.y, screens: screens) else { continue }
+            nearest = (side, gap)
+        }
+        return nearest.map { ($0.side, screen, height, $0.gap) }
     }
 
     /// Where an Imp tossed onto the desktop comes in: the screen furthest out on that side (at the

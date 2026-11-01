@@ -478,12 +478,15 @@ struct GameRound {
         case 0: // a column
             offsets = (0..<count).map { (0, 34 * Double($0)) }
         case 1: // a slant
-            offsets = (0..<count).map { (tilt * 22 * (Double($0) - Double(count - 1) / 2), 32 * Double($0)) }
+            offsets = (0..<count).map { (i: Int) -> (dx: Double, dy: Double) in (tilt * 22 * (Double(i) - Double(count - 1) / 2), 32 * Double(i)) }
         case 2: // a chevron
             let mid = Double(count - 1) / 2
-            offsets = (0..<count).map { (28 * (Double($0) - mid), 26 * abs(Double($0) - mid)) }
+            offsets = (0..<count).map { (i: Int) -> (dx: Double, dy: Double) in (28 * (Double(i) - mid), 26 * abs(Double(i) - mid)) }
         default: // two columns side by side
-            offsets = (0..<count).map { ((($0 % 2) == 0 ? -26.0 : 26.0), 34 * Double($0 / 2) + ($0 % 2 == 0 ? 0 : 14)) }
+            offsets = (0..<count).map { (i: Int) -> (dx: Double, dy: Double) in
+                let left = i % 2 == 0
+                return (left ? -26 : 26, 34 * Double(i / 2) + (left ? 0 : 14))
+            }
         }
         launch(offsets, around: x, speed: speed, phase: phase, ring: false)
     }
