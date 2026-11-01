@@ -23,7 +23,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.17.0</string>
+	<string>2.0.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -49,10 +49,10 @@
 	<array>
 		<string>_imp-link._tcp</string>
 	</array>
-	<key>NSHighResolutionCapable</key>
-	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Imp scans the code another device shows, to link with it.</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Imp talks to your other devices over the local network, so you can throw Imps onto them and chat with them there.</string>
 	<key>NSMicrophoneUsageDescription</key>
