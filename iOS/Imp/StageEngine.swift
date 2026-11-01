@@ -82,8 +82,11 @@ final class StageEngine {
     private(set) var litDoor: UUID?
     /// The round of Echo being played (or just finished, until its card is dismissed).
     private(set) var echo: EchoSession?
-    /// A game is on: edges always bounce, nobody can be tossed away and a tap on an Imp opens no chat.
+    /// A game is being played: Imps keep their speed and bounce harder (physics only).
     var isPlaying: Bool { echo != nil || (round.map { !$0.isOver } ?? false) }
+    /// A game's card is up, from the lesson to the card of the result: edges always bounce, nobody
+    /// can be tossed or passed in or out, and a tap on an Imp opens no chat.
+    var isBlocking: Bool { round != nil || echo != nil }
 
     /// Whether any device is connected to throw Imps to.
     var isConnected: () -> Bool = { true }
@@ -238,7 +241,7 @@ final class StageEngine {
     nonisolated static let doorNear: CGFloat = 60
 
     /// The Imp in a hand, if any (and no game is on).
-    var carried: Body? { isPlaying ? nil : order.lazy.compactMap { self.bodies[$0] }.first { $0.phase == .dragging } }
+    var carried: Body? { isBlocking ? nil : order.lazy.compactMap { self.bodies[$0] }.first { $0.phase == .dragging } }
 
     /// The side a carried Imp is nearer to and how close it is to it: 0 out of reach, 1 at the door.
     func nearness(of b: Body) -> (side: LinkSide, amount: Double) {
@@ -252,7 +255,7 @@ final class StageEngine {
     private func light(_ b: Body) {
         var lit: UUID?
         let near = nearness(of: b)
-        if !isPlaying, near.amount > 0.5, case .to(let device) = door(b.imp.id, near.side, height(of: b)) { lit = device }
+        if !isBlocking, near.amount > 0.5, case .to(let device) = door(b.imp.id, near.side, height(of: b)) { lit = device }
         guard lit != litDoor else { return }
         litDoor = lit
         if lit != nil { ticks.selectionChanged() }
@@ -262,7 +265,8 @@ final class StageEngine {
     /// nowhere bounces it back with a hint (once, until it is picked up again).
     @discardableResult
     func toss(_ id: UUID, side: LinkSide, speed: Double, velocityY: Double = 0) -> Bool {
-        guard !isPlaying, var b = bodies[id] else { return false }
+        // In a hand or free: one that is already on its way out (or away) isn't thrown a second time.
+        guard !isBlocking, var b = bodies[id], b.phase == .free || b.phase == .dragging else { return false }
         switch door(id, side, height(of: b)) {
         case .bounce(let why):
             if !b.warnedOffline { warn(hint(id, why, side)) }
@@ -279,7 +283,7 @@ final class StageEngine {
     /// Send to a device from the menu: a gentle push off the nearer side that leads there (speed 0).
     /// `moves`: it moves in for good on a Mac (`PocketRuntime.move`), not just visiting.
     func sendGently(_ id: UUID, to device: UUID, moves: Bool = false) {
-        guard !isPlaying, var b = bodies[id] else { return }
+        guard !isBlocking, var b = bodies[id], b.phase == .free else { return }
         let nearer: LinkSide = b.pos.x < size.width / 2 ? .left : .right
         guard let way = way(id, device, nearer) else { return warn(hint(id, .nobodyConnected, nearer)) }
         fly(&b, side: way.side, speed: 0, to: device, moves: moves)

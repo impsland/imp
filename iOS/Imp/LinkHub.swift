@@ -1,6 +1,7 @@
 import Foundation
 import ImpKit
 import Observation
+import SwiftUI
 import UIKit
 
 /// What the stage has to act out: things that happen at a moment, not states to show.
@@ -16,7 +17,8 @@ enum StageEvent {
 /// What other devices ask of the Imps hatched on this iPhone, which think here wherever they are.
 enum PocketEvent {
     /// Its holder asks something of an Imp that is away: it answers as if asked here.
-    case ask(UUID, String)
+    /// `trusted`: the holder is one of the owner's own devices, so the Imp may use its tools.
+    case ask(UUID, String, trusted: Bool)
     case stop(UUID)
     case newChat(UUID)
     case felt(UUID, LinkFeeling)
@@ -25,11 +27,20 @@ enum PocketEvent {
     /// A device became the holder of one of our Imps: it needs to hear how it looks and what it's doing.
     case claimed(UUID)
     /// A message between Imps: an Imp of ours is asked something by an Imp of another device.
-    case asked(id: UUID, from: LinkImp, to: UUID, text: String, by: UUID)
+    /// `trusted`: the asker's home is this iPhone or a trusted device, so the Imp may use its tools.
+    case asked(id: UUID, from: LinkImp, to: UUID, text: String, by: UUID, trusted: Bool)
     /// The answer to a message one of our Imps sent.
     case answer(id: UUID, text: String, failed: Bool)
     /// A linked Mac took an Imp of ours in for good.
     case adopted(UUID)
+    /// A Mac turned an Imp of ours down (it is back), or didn't answer: `sure` says whether it said no.
+    case notAdopted(UUID, by: UUID, sure: Bool)
+    /// A linked device connected, and its stage has been (or is about to be) told.
+    case connected(UUID)
+    /// The stage of a device changed (it is in `LinkNode.stage(of:)`).
+    case stage(UUID)
+    /// A device is no longer linked.
+    case lost(UUID)
 }
 
 /// The phone's side of Imp Link 2 (see `docs/LINK.md`): one `LinkNode` for this iPhone, and what
@@ -67,32 +78,77 @@ final class LinkHub {
     /// A short message to show (a toss that didn't work out, a code that didn't read).
     var toast: String?
 
-    @ObservationIgnored let node: LinkNode
+    /// This iPhone's node. While the saved links can't be read (`isLocked`) it is a stand-in that never
+    /// starts and writes nothing, so no new identity is made over the real one.
+    @ObservationIgnored private(set) var node: LinkNode
     @ObservationIgnored var onEvent: ((StageEvent) -> Void)?
     @ObservationIgnored var onPocket: ((PocketEvent) -> Void)?
-    /// Whether a game is on, which turns every thrown Imp away.
+    /// Whether a game's card is up, which turns every thrown Imp away.
     @ObservationIgnored var isPlaying: () -> Bool = { false }
     /// The Imps on this screen, as the other devices are told.
     @ObservationIgnored private(set) var staged: [LinkStaged] = []
 
-    @ObservationIgnored private var active = false
+    /// The app is in front or only inactive (Control Center, a permission prompt), not in the background.
+    @ObservationIgnored private var foreground = true
+    /// The saved links couldn't be read (the Keychain isn't open before the first unlock): the hub stays
+    /// offline and tries again when protected data is available.
+    private(set) var isLocked = false
+    @ObservationIgnored private var unlockWatch: Task<Void, Never>?
     @ObservationIgnored private var speechClear: [UUID: Task<Void, Never>] = [:]
 
     init() {
         let name = UserDefaults.standard.string(forKey: Self.nameKey) ?? UIDevice.current.name
         self.name = name
-        var problem: String?
-        do {
-            node = try LinkNode(name: name, kind: .phone, storage: KeychainLinkStorage())
-        } catch {
-            // The saved links can't be read: carry on without them (nothing is written over them).
-            problem = String(localized: "Imp couldn't read its links.")
+        if let real = try? LinkNode(name: name, kind: .phone, storage: KeychainLinkStorage()) {
+            node = real
+        } else {
+            // The saved links can't be read: carry on without them, offline (nothing is written over them).
             node = try! LinkNode(name: name, kind: .phone, storage: LinkMemoryStorage())
+            isLocked = true
+            toast = String(localized: "Imp couldn't read its links yet. It tries again when your iPhone is unlocked.")
+            unlockWatch = Task { [weak self] in
+                for await _ in NotificationCenter.default.notifications(named: UIApplication.protectedDataDidBecomeAvailableNotification) {
+                    guard let self else { return }
+                    if unlock() { return }
+                }
+            }
         }
-        toast = problem
+        wire()
+        refresh()
+    }
+
+    /// Sets the node up: the server it waits at and where it reports.
+    private func wire() {
         node.setServer(UserDefaults.standard.string(forKey: Self.serverKey).flatMap(Self.hop))
         node.onEvent = { [weak self] in self?.handle($0) }
+    }
+
+    /// Tries the saved links again. True once they are read and the real node has taken over.
+    @discardableResult
+    private func unlock() -> Bool {
+        guard isLocked else { return true }
+        guard let real = try? LinkNode(name: name, kind: .phone, storage: KeychainLinkStorage()) else { return false }
+        node.onEvent = nil
+        node = real
+        isLocked = false
+        unlockWatch?.cancel()
+        unlockWatch = nil
+        wire()
+        node.setStage(staged)
         refresh()
+        onEvent?(.roster)
+        if foreground { start() }
+        return true
+    }
+
+    private func start() {
+        guard !isLocked else { return }
+        Task {
+            await node.start()
+            // Put away while it was starting.
+            if !foreground { node.stop() }
+            refresh()
+        }
     }
 
     // MARK: This iPhone
@@ -131,21 +187,24 @@ final class LinkHub {
 
     // MARK: Lifecycle
 
-    /// The app is in front (true) or not. The node only lives in the foreground.
-    func setActive(_ on: Bool) {
-        guard on != active else { return }
-        active = on
-        if on {
-            Task {
-                await node.start()
-                // Put away while it was starting.
-                if !active { node.stop() }
-                refresh()
-            }
-        } else {
+    /// The app's scene changed. The node lives in the foreground: it starts when the app is active
+    /// and stops only in the background. Inactive (Control Center, the camera prompt) changes nothing.
+    func setScene(_ phase: ScenePhase) {
+        switch phase {
+        case .active:
+            foreground = true
+            if isLocked { unlock() }
+            if !node.isRunning { start() }
+        case .inactive:
+            break
+        case .background:
+            guard foreground || node.isRunning else { return }
+            foreground = false
             node.stop()
             refresh()
             for id in visits.map(\.id) { lost(visit: id) }
+        @unknown default:
+            break
         }
     }
 
@@ -170,7 +229,17 @@ final class LinkHub {
     /// Links with the device that showed `invite`, from a code that was scanned or opened. A failure
     /// is a toast; a success is announced when the node reports the link.
     func join(_ invite: LinkInvite) async {
+        if isLocked { unlock() }
+        guard !isLocked else {
+            toast = String(localized: "Imp can't open its links until your iPhone has been unlocked.")
+            return
+        }
         if !node.isRunning { await node.start() }
+        // Only the foreground keeps the node running: started while inactive, it must not outlive that.
+        defer {
+            if !foreground, node.isRunning { node.stop() }
+            refresh()
+        }
         do {
             _ = try await node.join(invite)
         } catch let error as LinkNode.JoinError {
@@ -202,12 +271,24 @@ final class LinkHub {
         let name = deviceName(device)
         let result = node.forget(device)
         forgotten(result, forgetting: name)
+        onPocket?(.lost(device))
     }
 
     /// Ends every link and makes a new door key, so every code shown before stops working.
     func forgetEveryone() {
+        let everyone = links.map(\.id)
         forgotten(node.forgetEveryone(), forgetting: nil)
+        for id in everyone { onPocket?(.lost(id)) }
     }
+
+    /// Marks a linked device as one of your own (or not): its Imps' requests may then use the tools of
+    /// the Imps hatched here. Off for every device until you say so.
+    func setTrusted(_ device: UUID, _ on: Bool) {
+        node.setTrusted(device, on)
+        refresh()
+    }
+
+    func isTrusted(_ device: UUID) -> Bool { node.isTrusted(device) }
 
     /// Clears what a forgotten device left on the stage, and says what became of the Imps.
     private func forgotten(_ result: LinkNode.Forgotten, forgetting name: String?) {
@@ -296,8 +377,12 @@ final class LinkHub {
     func doors(of imp: UUID, side: LinkSide) -> [DoorLabel] {
         var back: UUID?
         if case .visit(let entry, let from) = node.travel(of: imp), entry == side { back = from }
-        return node.bands(of: imp, side: side).compactMap { band in
-            device(band.device).map { DoorLabel(device: $0, top: band.top, bottom: band.bottom, isBack: band.device == back) }
+        // Every band is a door `door(of:side:height:)` leads through, so every band is labelled: a device
+        // whose name isn't known yet (it is connected, but hasn't introduced itself) gets a stand-in.
+        return node.bands(of: imp, side: side).map { band in
+            let known = device(band.device)
+                ?? LinkDevice(id: band.device, name: String(localized: "another device"), kind: .phone, key: Data())
+            return DoorLabel(device: known, top: band.top, bottom: band.bottom, isBack: band.device == back)
         }
     }
 
@@ -325,17 +410,20 @@ final class LinkHub {
         let before = links
         refresh()
         switch event {
-        case .connected: break
+        case .connected(let device, _): onPocket?(.connected(device.id))
         case .disconnected(let id):
             files.linkLost()
             for visit in visits where visit.home.id == id { lost(visit: visit.id) }
         case .linked(let device):
             toast = String(localized: "Linked with \(device.name)")
         case .forgotten(let id, let result):
+            // Their Imps visiting here go home (their bodies go); ours they held are home again.
             for imp in result.sentHome {
                 clear(imp)
                 onEvent?(.left(imp))
             }
+            onPocket?(.lost(id))
+            onEvent?(.roster)
             let who = before.first { $0.id == id }?.device.name ?? String(localized: "A device")
             toast = String(localized: "\(who) forgot this iPhone")
         case .message(let message, let from):
@@ -376,14 +464,15 @@ final class LinkHub {
         case .gone(let imp):
             clear(imp)
             onEvent?(.left(imp))
-        case .ask(let imp, let text): onPocket?(.ask(imp, text))
+        case .ask(let imp, let text): onPocket?(.ask(imp, text, trusted: node.isTrusted(message, from: from)))
+        case .stage: onPocket?(.stage(from))
         case .stop(let imp): onPocket?(.stop(imp))
         case .newChat(let imp): onPocket?(.newChat(imp))
         case .felt(let imp, let feeling): onPocket?(.felt(imp, feeling))
         case .file(let id, let imp, _): onPocket?(.file(id: id, imp: imp, from: from))
         case .talks(let imp): onPocket?(.talks(imp, from: from))
         case .message(let id, let imp, let to, _, let text, _):
-            onPocket?(.asked(id: id, from: imp, to: to, text: text, by: from))
+            onPocket?(.asked(id: id, from: imp, to: to, text: text, by: from, trusted: node.isTrusted(message, from: from)))
         case .answer(let id, let text, let failed): onPocket?(.answer(id: id, text: text, failed: failed))
         case .look: onEvent?(.roster)
         case .chat(let imp, let turns): chats[imp] = turns
@@ -391,8 +480,8 @@ final class LinkHub {
         case .mood(let imp, let name): moods[imp] = Mood(link: name)
         case .animate(let imp, let beats): onEvent?(.animate(imp, beats))
         case .speech(let imp, let speech): heard(speech, from: imp)
-        case .filePart(let id, let part): files.received(part, for: id)
-        case .fileFailed(let id, let reason): files.failed(id, reason: reason)
+        case .filePart(let id, let part): files.received(part, for: id, from: from)
+        case .fileFailed(let id, let reason): files.failed(id, reason: reason, from: from)
         case .talkLines(let imp, let lines): talkLines[imp] = lines
         default: break
         }
@@ -407,6 +496,9 @@ final class LinkHub {
             onEvent?(.left(passed.imp))
         case (.adopt, .took):
             onPocket?(.adopted(passed.imp))
+        case (.adopt, .declined(let reason)):
+            // Only a no is one. No answer may mean it was taken: the Mac's stage tells next time we meet.
+            onPocket?(.notAdopted(passed.imp, by: passed.to, sure: reason != .timeout))
         case (_, .declined(let reason)):
             let why = switch reason {
             case .full: String(localized: "\(to) has no room for another Imp")
@@ -439,9 +531,10 @@ final class LinkHub {
     }
 
     /// Asks the home for a file (see `LinkFileStore`).
-    func requestFile(_ transfer: UUID, imp: UUID, ref: String) -> Bool {
-        guard let home = visit(imp)?.home.id else { return false }
-        return node.send(.file(id: transfer, imp: imp, ref: ref), to: home)
+    /// Returns the home it was asked of, which is the only device whose parts count.
+    func requestFile(_ transfer: UUID, imp: UUID, ref: String) -> UUID? {
+        guard let home = visit(imp)?.home.id, node.send(.file(id: transfer, imp: imp, ref: ref), to: home) else { return nil }
+        return home
     }
 
     private func tell(_ imp: UUID, _ message: LinkMessage) {

@@ -19,7 +19,8 @@ public enum PocketSlot: Hashable, Sendable {
 /// secret is ever in a `PocketImp`, in its chats or in the kit that moves it to the Mac.
 public protocol PocketSecrets: Sendable {
     func get(_ slot: PocketSlot, imp: UUID) -> String?
-    func set(_ value: String, _ slot: PocketSlot, imp: UUID)
+    /// Keeps a secret. Throws if it couldn't be kept (the Keychain refused).
+    func set(_ value: String, _ slot: PocketSlot, imp: UUID) throws
     func remove(_ slot: PocketSlot, imp: UUID)
 }
 

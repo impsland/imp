@@ -10,12 +10,14 @@ import Observation
 @MainActor @Observable
 final class LinkFileStore {
     enum Failure: LocalizedError {
-        case offline, refused(String), lost
+        case offline, refused(String), lost, tooBig, badPart
         var errorDescription: String? {
             switch self {
             case .offline: String(localized: "Its home isn't around")
             case .refused(let why): why
             case .lost: String(localized: "The connection dropped. Try again.")
+            case .tooBig: String(localized: "That file is too big for this iPhone.")
+            case .badPart: String(localized: "The file didn't arrive in one piece. Try again.")
             }
         }
     }
@@ -27,13 +29,20 @@ final class LinkFileStore {
     @ObservationIgnored private var transfers: [UUID: Transfer] = [:]
     @ObservationIgnored private var byKey: [String: UUID] = [:]
 
+    /// The biggest file taken, whatever its home says it is (about 1 GB).
+    nonisolated static let biggest = 1_000_000_000
+
     private final class Transfer {
         let key: String
         let folder: URL
+        /// The device it was asked of: the only one whose parts count.
+        let home: UUID
+        /// Bytes written so far: the next part has to start there.
+        var written = 0
         var handle: FileHandle?
         var partial: URL?
         var waiting: [CheckedContinuation<URL, Error>] = []
-        init(key: String, folder: URL) { self.key = key; self.folder = folder }
+        init(key: String, folder: URL, home: UUID) { self.key = key; self.folder = folder; self.home = home }
     }
 
     init(hub: LinkHub) { self.hub = hub }
@@ -60,17 +69,22 @@ final class LinkFileStore {
         return try await withCheckedThrowingContinuation { c in
             if let id = byKey[key], let t = transfers[id] { t.waiting.append(c); return }
             let id = UUID()
-            let t = Transfer(key: key, folder: Self.folder(for: key))
+            guard let home = hub.requestFile(id, imp: imp, ref: ref) else { return c.resume(throwing: Failure.offline) }
+            let t = Transfer(key: key, folder: Self.folder(for: key), home: home)
             t.waiting.append(c)
             transfers[id] = t
             byKey[key] = id
             progress[key] = 0
-            if !hub.requestFile(id, imp: imp, ref: ref) { finish(id, .failure(Failure.offline)) }
         }
     }
 
-    func received(_ part: LinkFilePart, for id: UUID) {
-        guard let t = transfers[id] else { return }
+    func received(_ part: LinkFilePart, for id: UUID, from device: UUID) {
+        // Parts count from the home it was asked of, in order, of a file of a sane size.
+        guard let t = transfers[id], device == t.home else { return }
+        guard part.size <= Self.biggest else { return finish(id, .failure(Failure.tooBig)) }
+        guard part.offset == t.written, part.size >= 0, t.written + part.data.count <= max(part.size, 0) else {
+            return finish(id, .failure(Failure.badPart))
+        }
         do {
             if t.handle == nil {
                 let fm = FileManager.default
@@ -82,6 +96,7 @@ final class LinkFileStore {
                 t.handle = try FileHandle(forWritingTo: partial)
             }
             try t.handle?.write(contentsOf: part.data)
+            t.written += part.data.count
             progress[t.key] = part.size > 0 ? Double(part.offset + part.data.count) / Double(part.size) : 1
             guard part.isLast, let partial = t.partial else { return }
             try t.handle?.close()
@@ -96,7 +111,10 @@ final class LinkFileStore {
         }
     }
 
-    func failed(_ id: UUID, reason: String) { finish(id, .failure(Failure.refused(reason))) }
+    func failed(_ id: UUID, reason: String, from device: UUID) {
+        guard transfers[id]?.home == device else { return }
+        finish(id, .failure(Failure.refused(reason)))
+    }
 
     /// The link went down: every fetch in flight fails (they can be tried again).
     func linkLost() {

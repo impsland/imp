@@ -161,9 +161,9 @@ struct PhoneStage: View {
             .overlay(alignment: .bottom) {
                 NameTag(name: b.imp.name).offset(y: 14).opacity(b.phase == .dragging ? 0.4 : 1)
             }
-            .opacity(awake || engine.isPlaying ? 1 : 0.7)
+            .opacity(awake || engine.isBlocking ? 1 : 0.7)
             .contentShape(Circle().inset(by: side * 0.08))
-            .onTapGesture { if !engine.isPlaying { onChat(id) } }
+            .onTapGesture { if !engine.isBlocking { onChat(id) } }
             .gesture(DragGesture(minimumDistance: 3, coordinateSpace: .named("stage"))
                 .onChanged { engine.dragChanged(id, at: $0.location) }
                 .onEnded { engine.dragEnded(id, at: $0.location, predicted: $0.predictedEndLocation) })
@@ -216,7 +216,7 @@ struct PhoneStage: View {
         let engine = engine, hub = hub, pocket = pocket
         let pace = $pace
         engine.pacer.onChange = { pace.wrappedValue = $0 }
-        hub.isPlaying = { engine.isPlaying }
+        hub.isPlaying = { engine.isBlocking }
         engine.isConnected = { !hub.connectedPeers.isEmpty }
         engine.door = { hub.door(of: $0, side: $1, height: $2) }
         engine.way = { hub.way(of: $0, to: $1, preferring: $2) }
