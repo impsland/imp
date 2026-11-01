@@ -196,6 +196,22 @@
         }
       }
     },
+    "%@ is busy" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ está ocupado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 正忙"
+          }
+        }
+      }
+    },
     "%@ is busy thinking. Move it once it's done." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -215,6 +231,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 正在思考。等它想完再移动。"
+          }
+        }
+      }
+    },
+    "%@ is busy. Try again in a moment." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ está ocupado. Inténtalo en un momento."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 正忙。请稍后再试。"
           }
         }
       }
@@ -1359,6 +1391,22 @@
         }
       }
     },
+    "Couldn't save" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo guardar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法保存"
+          }
+        }
+      }
+    },
     "Delete" : {
       "localizations" : {
         "es" : {
@@ -1965,25 +2013,50 @@
         }
       }
     },
-    "Imp couldn't read its links." : {
-      "extractionState" : "manual",
+    "Imp can't open its links until your iPhone has been unlocked." : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp couldn't read its links."
-          }
-        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp no pudo leer sus vínculos."
+            "value" : "Imp no puede abrir sus vínculos hasta que desbloquees el iPhone."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 无法读取已有的连接。"
+            "value" : "iPhone 解锁之前，Imp 无法打开它的连接。"
+          }
+        }
+      }
+    },
+    "Imp couldn't keep the keys safely. %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp no pudo guardar las claves de forma segura. %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 无法安全地保存密钥。%@"
+          }
+        }
+      }
+    },
+    "Imp couldn't read its links yet. It tries again when your iPhone is unlocked." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp aún no puede leer sus vínculos. Lo intentará de nuevo cuando desbloquees el iPhone."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 暂时无法读取它的连接。iPhone 解锁后会再试一次。"
           }
         }
       }
@@ -2467,6 +2540,22 @@
         }
       }
     },
+    "Mine" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mía"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我的"
+          }
+        }
+      }
+    },
     "Model" : {
       "localizations" : {
         "es" : {
@@ -2925,6 +3014,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "轮到你：按同样的顺序点按"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "好"
           }
         }
       }
@@ -3959,6 +4064,22 @@
         }
       }
     },
+    "That Imp" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那个 Imp"
+          }
+        }
+      }
+    },
     "That Imp isn't on this iPhone." : {
       "localizations" : {
         "es" : {
@@ -4063,6 +4184,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "那台设备已用另一把密钥连接过。请先忘记它。"
+          }
+        }
+      }
+    },
+    "That file is too big for this iPhone." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese archivo es demasiado grande para este iPhone."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "该文件对这部 iPhone 来说太大了。"
           }
         }
       }
@@ -4194,6 +4331,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "连接断开了。请再试一次。"
+          }
+        }
+      }
+    },
+    "The file didn't arrive in one piece. Try again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El archivo no llegó completo. Inténtalo de nuevo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件没有完整送达。请重试。"
           }
         }
       }
@@ -4586,6 +4739,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "试试%@符文"
+          }
+        }
+      }
+    },
+    "Turn on only for your own devices: their requests may then use the tools of your Imps." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actívalo solo en tus propios dispositivos: sus peticiones podrán usar las herramientas de tus Imps."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅对你自己的设备开启：它们的请求可以使用你的 Imp 的工具。"
           }
         }
       }

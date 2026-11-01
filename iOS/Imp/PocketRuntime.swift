@@ -15,9 +15,14 @@ final class PocketRuntime {
 
     /// Something an Imp has to do, after what it's doing now. `abort` says so if the Imp goes before its turn.
     private struct Job {
+        /// The device that asked, if another did: its share of the queue is capped too.
+        var device: UUID?
         var run: @MainActor () async -> Void
         var abort: @MainActor () -> Void
     }
+
+    /// How many jobs one Imp may have queued (or running), and one remote device in all.
+    private static let queueLimit = 5
 
     private static let animations = Reaction.allCases.filter { !$0.unlocksWithFavoriteColor }.map(\.rawValue)
 
@@ -32,6 +37,10 @@ final class PocketRuntime {
     @ObservationIgnored private let brain: PocketBrain
     @ObservationIgnored private var running: [UUID: Task<Void, Never>] = [:]
     @ObservationIgnored private var waiting: [UUID: [Job]] = [:]
+    @ObservationIgnored private var queuedBy: [UUID: Int] = [:]
+    /// Imps on their way to a Mac for good: off the stage and not askable until the Mac says it has
+    /// them or says no, and, if it doesn't answer, until the next time that Mac's stage is seen.
+    private(set) var moving: [UUID: UUID] = [:]
     @ObservationIgnored private var pending: [UUID: CheckedContinuation<String, Error>] = [:]
     @ObservationIgnored private var speechClear: [UUID: Task<Void, Never>] = [:]
 
@@ -61,8 +70,10 @@ final class PocketRuntime {
     /// reached from this phone. Nil when no Mac is linked.
     var macHost: String? { hub.macHost }
 
+    func isMoving(_ id: UUID) -> Bool { moving[id] != nil }
+
     func hasBrain(_ id: UUID) -> Bool {
-        store.imp(id).map { (try? $0.validate()) != nil } ?? false
+        !isMoving(id) && store.imp(id).map { (try? $0.validate()) != nil } ?? false
     }
 
     func hatch(_ imp: PocketImp) {
@@ -76,6 +87,7 @@ final class PocketRuntime {
 
     /// Deletes an Imp. If another device holds it, it is called home first so that device lets go.
     func delete(_ id: UUID) {
+        guard !isMoving(id) else { return }
         hub.node.callHome(id)
         hub.refresh()
         forget(id)
@@ -85,7 +97,9 @@ final class PocketRuntime {
     /// is told it isn't around, and nothing of it stays on the stage.
     private func forget(_ id: UUID) {
         store.remove(id)
+        moving[id] = nil
         let dropped = waiting.removeValue(forKey: id) ?? []
+        for job in dropped { release(job) }
         running[id]?.cancel()
         work[id] = nil
         if let speech = speeches[id] { dismiss(speech, for: id) }
@@ -102,10 +116,13 @@ final class PocketRuntime {
             return
         }
         // Its answer would be lost on the way: it has to finish first.
-        guard running[id] == nil else {
+        guard moving[id] == nil else { return }
+        guard running[id] == nil, (waiting[id] ?? []).isEmpty else {
             onEvent?(.refused(id, String(localized: "\(imp.name) is busy thinking. Move it once it's done.")))
             return
         }
+        // Not askable from here on, so the kit taken below is the one that arrives.
+        moving[id] = device
         do {
             let (kit, secrets) = try imp.adoption(secrets: store.secrets)
             let entry = LinkEntry.after(exit: exit.side, height: exit.height, speed: exit.speed)
@@ -113,16 +130,55 @@ final class PocketRuntime {
                 throw Failure(String(localized: "\(hub.deviceName(device)) isn't around"))
             }
         } catch {
+            moving[id] = nil
             onEvent?(.refused(id, error.localizedDescription))
+        }
+    }
+
+    /// The Mac has the Imp, said no, or (`sure` false) didn't say.
+    private func settle(_ id: UUID, by device: UUID, sure: Bool) {
+        guard moving[id] == device else { return }
+        guard sure else { return }  // decided when that Mac's stage is next seen
+        moving[id] = nil
+        onEvent?(.refused(id, String(localized: "\(hub.deviceName(device)) didn't take it")))
+        onEvent?(.roster)
+    }
+
+    /// A Mac's stage is known again: an Imp it didn't answer for is there (it is the Mac's now) or isn't (back).
+    private func decide(movesTo device: UUID) {
+        let there = Set(hub.node.stage(of: device).filter { $0.home == device }.map(\.imp.id))
+        for (id, mac) in moving where mac == device {
+            if there.contains(id) {
+                forget(id)
+                hub.refresh()
+                onEvent?(.left(id))
+            } else {
+                moving[id] = nil
+                onEvent?(.refused(id, String(localized: "\(hub.deviceName(device)) didn't take it")))
+                onEvent?(.roster)
+            }
         }
     }
 
     // MARK: Asking
 
     /// Runs `job` after what the Imp is already doing.
-    private func enqueue(_ id: UUID, abort: @escaping @MainActor () -> Void = {}, _ run: @escaping @MainActor () async -> Void) {
-        waiting[id, default: []].append(Job(run: run, abort: abort))
+    /// False (nothing queued) when the Imp, or the device asking, already has as much as it may.
+    @discardableResult
+    private func enqueue(_ id: UUID, from device: UUID? = nil, abort: @escaping @MainActor () -> Void = {},
+                         _ run: @escaping @MainActor () async -> Void) -> Bool {
+        guard !isMoving(id), (waiting[id]?.count ?? 0) + (running[id] == nil ? 0 : 1) < Self.queueLimit,
+              device.map({ (queuedBy[$0] ?? 0) < Self.queueLimit }) ?? true else { return false }
+        if let device { queuedBy[device, default: 0] += 1 }
+        waiting[id, default: []].append(Job(device: device, run: run, abort: abort))
         if running[id] == nil { next(id) }
+        return true
+    }
+
+    private func release(_ job: Job) {
+        guard let device = job.device else { return }
+        queuedBy[device] = max(0, (queuedBy[device] ?? 1) - 1)
+        if queuedBy[device] == 0 { queuedBy[device] = nil }
     }
 
     private func next(_ id: UUID) {
@@ -132,13 +188,13 @@ final class PocketRuntime {
             return
         }
         let job = waiting[id]!.removeFirst()
-        running[id] = Task { await job.run(); next(id) }
+        running[id] = Task { await job.run(); release(job); next(id) }
     }
 
     /// One ask, from you or from another Imp: thinks, files the turn in its chat.
-    private func answer(_ text: String, of id: UUID, from sender: ChatTurn.Sender? = nil) async throws -> PocketAnswer {
+    private func answer(_ text: String, of id: UUID, from sender: ChatTurn.Sender? = nil, tools: Bool = true) async throws -> PocketAnswer {
         guard let imp = store.imp(id) else { throw Failure(String(localized: "That Imp isn't on this iPhone.")) }
-        let result = try await brain.ask(text, of: imp, from: sender, talk: talk(for: imp)) { [weak self] work in
+        let result = try await brain.ask(text, of: imp, from: sender, talk: talk(for: imp), tools: tools) { [weak self] work in
             await self?.report(work, for: id)
         }
         store.update(id) { $0.record(result) }
@@ -188,26 +244,28 @@ final class PocketRuntime {
     /// Another pocket Imp's answer, once it has got round to it.
     private func asked(_ other: PocketImp, _ text: String, from sender: ChatTurn.Sender) async throws -> String {
         try await withCheckedThrowingContinuation { continuation in
-            enqueue(other.id, abort: {
+            let queued = enqueue(other.id, abort: {
                 continuation.resume(throwing: Failure(String(localized: "\(other.name) isn't around")))
             }) { [self] in
-                let (reply, failed) = await respond(to: text, of: other.id, from: sender)
+                // Another Imp of this iPhone asks: it is the owner's own, so tools are allowed.
+                let (reply, failed) = await respond(to: text, of: other.id, from: sender, tools: true)
                 continuation.resume(with: failed ? .failure(Failure(reply)) : .success(reply))
             }
+            if !queued { continuation.resume(throwing: Failure(String(localized: "\(other.name) is busy"))) }
         }
     }
 
     /// One question from another Imp, here: it shows on the stage while the Imp thinks, and so does
     /// the answer (or why there is none). The text goes straight back to the asker; only the
     /// bubble waits for a voice (see `StageVoice`).
-    private func respond(to text: String, of id: UUID, from sender: ChatTurn.Sender) async -> (reply: String, failed: Bool) {
+    private func respond(to text: String, of id: UUID, from sender: ChatTurn.Sender, tools: Bool) async -> (reply: String, failed: Bool) {
         guard let imp = store.imp(id) else { return (String(localized: "That Imp isn't on this iPhone."), true) }
         let said = say(.asked, to: sender.name, hue: sender.hue, text, for: id)
         var reply = ""
         var failed = false
         do {
             guard hasBrain(id) else { throw Failure(String(localized: "\(imp.name) has no brain yet.")) }
-            let answer = try await answer(text, of: id, from: sender)
+            let answer = try await answer(text, of: id, from: sender, tools: tools)
             (reply, failed) = (answer.turn.reply, answer.turn.failed)
         } catch is CancellationError {
             (reply, failed) = (String(localized: "Stopped."), true)
@@ -259,20 +317,37 @@ final class PocketRuntime {
             onEvent?(.left(id))
         case .answer(let id, let text, let failed):
             finish(id, failed ? .failure(Failure(text)) : .success(text))
-        case .asked(let id, let from, let to, let text, let by):
+        case .notAdopted(let id, let device, let sure):
+            settle(id, by: device, sure: sure)
+        case .connected:
+            break
+        case .stage(let device):
+            decide(movesTo: device)
+        case .lost(let device):
+            // No way to hear from it any more: whatever it hasn't confirmed is still ours.
+            for (id, mac) in moving where mac == device {
+                moving[id] = nil
+                onEvent?(.refused(id, String(localized: "\(hub.deviceName(device)) didn't take it")))
+            }
+            onEvent?(.roster)
+        case .asked(let id, let from, let to, let text, let by, let trusted):
             let gone = LinkMessage.answer(id: id, text: String(localized: "That Imp isn't on this iPhone."), failed: true)
-            guard store.contains(to) else {
+            guard store.contains(to), !isMoving(to) else {
                 hub.node.send(gone, to: by)
                 return
             }
-            enqueue(to, abort: { [self] in hub.node.send(gone, to: by) }) { [self] in
-                let (reply, failed) = await respond(to: text, of: to, from: ChatTurn.Sender(id: from.id, name: from.name, hue: from.hue))
+            let queued = enqueue(to, from: by, abort: { [self] in hub.node.send(gone, to: by) }) { [self] in
+                let (reply, failed) = await respond(to: text, of: to, from: ChatTurn.Sender(id: from.id, name: from.name, hue: from.hue), tools: trusted)
                 hub.node.send(.answer(id: id, text: reply, failed: failed), to: by)
+            }
+            if !queued {
+                let name = store.imp(to)?.name ?? String(localized: "That Imp")
+                hub.node.send(.answer(id: id, text: String(localized: "\(name) is busy. Try again in a moment."), failed: true), to: by)
             }
         case .claimed(let id):
             pushAll(id)
-        case .ask(let id, let text):
-            ask(id, text)
+        case .ask(let id, let text, let trusted):
+            ask(id, text, from: hub.node.holder(of: id), tools: trusted)
         case .stop(let id):
             stop(id)
         case .newChat(let id):
@@ -385,10 +460,13 @@ extension PocketRuntime: ChatSource {
         String(localized: "\(imp.name) starts fresh and won't remember this chat.")
     }
 
-    func ask(_ id: UUID, _ text: String) {
+    func ask(_ id: UUID, _ text: String) { ask(id, text, from: nil, tools: true) }
+
+    /// `device`: another device asking (its share of the queue is capped); a full queue drops the ask.
+    private func ask(_ id: UUID, _ text: String, from device: UUID?, tools: Bool) {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, hasBrain(id) else { return }
-        enqueue(id) { [self] in _ = try? await answer(text, of: id) }
+        enqueue(id, from: device) { [self] in _ = try? await answer(text, of: id, tools: tools) }
     }
 
     func stop(_ id: UUID) { running[id]?.cancel() }

@@ -28,7 +28,7 @@ struct ImpPhoneApp: App {
                     // A link to join opened from the Camera app (or Notes, Messages…).
                     if !hub.join(code: url.absoluteString) { hub.toast = String(localized: "That isn't a link from Imp.") }
                 }
-                .onChange(of: scenePhase, initial: true) { _, phase in hub.setActive(phase == .active) }
+                .onChange(of: scenePhase, initial: true) { _, phase in hub.setScene(phase) }
         }
     }
 }

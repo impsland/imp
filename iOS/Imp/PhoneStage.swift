@@ -206,7 +206,7 @@ struct PhoneStage: View {
 
     private static func staged(_ hub: LinkHub, _ pocket: PocketRuntime) -> [LinkStaged] {
         let me = hub.node.device.id
-        return pocket.looks.filter { !hub.away.contains($0.id) }.map { LinkStaged(imp: $0, home: me) } + hub.visitors
+        return pocket.looks.filter { !hub.away.contains($0.id) && !pocket.isMoving($0.id) }.map { LinkStaged(imp: $0, home: me) } + hub.visitors
     }
 
     /// Hooks the engine to the hub and the pocket Imps (once): events in, tosses and feelings out.
