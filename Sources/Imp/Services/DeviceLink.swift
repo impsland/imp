@@ -22,6 +22,8 @@ final class DeviceLink {
         var reach: Reach
         /// The Imps of this Mac it holds right now.
         var imps: [UUID]
+        /// One of the owner's own devices: Imps that visit it may use their tools on this Mac.
+        var isTrusted = false
 
         var isConnected: Bool { reach != .away }
     }
@@ -38,6 +40,11 @@ final class DeviceLink {
     @ObservationIgnored private var flushing: Set<UUID> = []
     /// Questions Imps here asked Imps on other devices, waiting for the answer.
     @ObservationIgnored private var asks: [UUID: CheckedContinuation<String, Error>] = [:]
+    /// What each device has an Imp here working on for it: one answer at a time, a few waiting.
+    @ObservationIgnored private var lanes: [UUID: LinkLane<RemoteJob>] = [:]
+    /// Files being sent to each device, and the devices whose talk lines are being gathered.
+    @ObservationIgnored private var sending: [UUID: Int] = [:]
+    @ObservationIgnored private var listing: Set<UUID> = []
     @ObservationIgnored private let log = Logger(subsystem: "app.imp.Imp", category: "link")
 
     /// What a device knows about one of our Imps that it holds.
@@ -47,6 +54,16 @@ final class DeviceLink {
         var work: LinkWork?
         var chat: [LinkTurn]
         var speech: LinkSpeech?
+    }
+
+    /// An Imp of another device asking one of ours.
+    private struct RemoteJob {
+        var id: UUID
+        var sender: LinkImp
+        var target: UUID
+        var text: String
+        /// The device it comes from when that isn't one of the owner's own: the answer uses no tools.
+        var limitedTo: String?
     }
 
     /// Turns of the current chat a device is sent (it shows the latest; the Mac keeps them all).
@@ -92,6 +109,12 @@ final class DeviceLink {
     var isLinked: Bool { !peers.isEmpty }
     /// The devices an Imp can be thrown to right now.
     var connectedPeers: [Peer] { peers.filter(\.isConnected) }
+    /// Marks a linked device as one of the owner's own (or not). Visitors are never.
+    func setTrusted(_ device: UUID, _ on: Bool) {
+        node?.setTrusted(device, on)
+        refresh()
+    }
+
     func name(of device: UUID) -> String? { peers.first { $0.id == device }?.name }
     func isConnected(_ device: UUID) -> Bool { peers.first { $0.id == device }?.isConnected == true }
 
@@ -137,7 +160,7 @@ final class DeviceLink {
     /// A visit as the desktop draws it: asleep while its home isn't connected.
     private func visiting(_ visit: Visits.Visit) -> Visiting {
         Visiting(look: visit.imp, homeID: visit.home.id, homeName: visit.home.device.name,
-                 isAwake: node?.isConnected(visit.home.id) == true, side: visit.side)
+                 isAwake: node?.isConnected(visit.home.id) == true, side: visit.side, from: visit.from)
     }
 
     /// An Imp that came home or was deleted needs nothing more said about it.
@@ -184,7 +207,8 @@ final class DeviceLink {
             problem = nil
             log.info("“\(device.name, privacy: .public)” is connected")
             refresh()
-        case .disconnected:
+        case .disconnected(let device):
+            _ = lanes[device]?.clear()                          // nobody is listening for what waited
             refresh()
         case .linked(let device):
             log.info("linked with “\(device.name, privacy: .public)”")
@@ -223,7 +247,8 @@ final class DeviceLink {
         let now = node.links.map { link -> Peer in
             let id = link.device.id
             let reach: Peer.Reach = !node.isConnected(id) ? .away : node.isThroughHop(id) ? .viaServer : .direct
-            return Peer(id: id, name: link.device.name, kind: link.device.kind, reach: reach, imps: node.away.held(by: id))
+            return Peer(id: id, name: link.device.name, kind: link.device.kind, reach: reach, imps: node.away.held(by: id),
+                        isTrusted: node.isTrusted(id))
         }
         if now != peers { peers = now }
         // Visitors sleep while their homes are away, and wear the looks their homes gave them.
@@ -254,7 +279,8 @@ final class DeviceLink {
         case .ask(let imp, let text):
             let words = String(text.trimmingCharacters(in: .whitespacesAndNewlines).prefix(LinkProtocol.maxText))
             guard let model = own(imp), !words.isEmpty else { return }
-            model.ask(words)
+            // Only the owner's own devices make an Imp use its tools.
+            model.ask(words, limitedTo: node.isTrusted(message, from: device) ? nil : name(of: device) ?? String(localized: "that device"))
         case .stop(let imp):
             own(imp)?.cancel()
         case .newChat(let imp):
@@ -274,13 +300,16 @@ final class DeviceLink {
             }
             sendFile(ref, of: model, transfer: transfer, to: device)
         case .talks(let imp):
+            guard listing.insert(device).inserted else { return }   // one list at a time per device
             Task { @MainActor [weak self] in
                 guard let self else { return }
+                defer { listing.remove(device) }
                 let mine = await app.talkLines().filter { $0.asker.id == imp || $0.answerer.id == imp }
                 node.send(.talkLines(imp: imp, lines: TalkLog.forLink(mine)), to: device)
             }
         case .message(let id, let sender, let to, _, let text, _):
-            answer(id, from: sender, to: to, text: text, back: device)
+            let limit = node.isTrusted(message, from: device) ? nil : name(of: device) ?? String(localized: "that device")
+            answer(RemoteJob(id: id, sender: sender, target: to, text: text, limitedTo: limit), back: device)
         case .answer(let id, let text, let failed):
             let words = String(text.prefix(LinkProtocol.maxText))
             settle(id, failed ? .failure(ToolArgumentError(words)) : .success(words))
@@ -307,6 +336,11 @@ final class DeviceLink {
     private func thrown(_ transfer: UUID, imp: LinkImp, entry: LinkEntry, home: LinkCard?, from device: UUID) {
         guard let node else { return }
         if home != nil {
+            // An Imp of this Mac is never somebody's visitor here, whatever the other device says.
+            guard app.profile(imp.id) == nil else {
+                log.info("turned down a visitor that has the id of one of this Mac's Imps")
+                return node.decline(transfer, reason: .other)
+            }
             guard node.accept(transfer), let visit = node.visits.visit(of: imp.id) else { return }
             app.welcome(visiting(visit), entry: entry)
             refresh()
@@ -328,15 +362,28 @@ final class DeviceLink {
             return node.decline(transfer, reason: .other)
         }
         let origin = name(of: device) ?? String(localized: "Another device")
-        let review = KitReview(kit: parsed, origin: origin, existing: app.prefs.shortcuts, services: app.prefs.ai.services, target: nil)
+        // What the review shows is what is adopted: the shell stays off, and what can't come isn't offered.
+        guard app.profile(imp) == nil, parsed.imps.count == 1, parsed.triggers.isEmpty, parsed.animations.isEmpty else {
+            return node.decline(transfer, reason: .other)
+        }
+        let review = KitReview(kit: parsed.narrowedForAdoption(), origin: origin, existing: app.prefs.shortcuts, services: app.prefs.ai.services, target: nil)
         let flow = KitFlow(imp: nil)
         flow.review = review
         flow.adoption = { [weak self] agreed in
             guard let self, let node = self.node else { return }
             guard agreed else { return node.decline(transfer, reason: .other) }
+            // Only if the phone still waits: nothing is adopted that can't be answered.
+            guard node.canAccept(transfer) else {
+                self.problem = String(localized: "\(origin) didn't wait for an answer, so its Imp didn't move in.")
+                return node.decline(transfer, reason: .timeout)
+            }
             do {
                 try self.app.adoptPocket(imp, kit: kit, secrets: secrets, entry: entry)
-                node.accept(transfer)
+                guard node.accept(transfer) else {
+                    self.app.sayGoodbye(imp)                    // it can't come after all: undo
+                    self.problem = String(localized: "\(origin) went away before its Imp could move in.")
+                    return
+                }
                 self.log.info("a pocket Imp moved in from “\(origin, privacy: .public)”")
             } catch {
                 node.decline(transfer, reason: .other)
@@ -348,7 +395,10 @@ final class DeviceLink {
 
     // MARK: To the device that holds an Imp
 
-    private func holder(of imp: UUID) -> UUID? { node?.holder(of: imp) }
+    func holder(of imp: UUID) -> UUID? { node?.holder(of: imp) }
+
+    /// Whether this Mac still holds the visit of an Imp (its body is a visitor's here).
+    func isVisiting(_ imp: UUID) -> Bool { node?.visits.visit(of: imp) != nil }
 
     /// An animation played on an Imp that's on another device: that device plays it.
     func animate(_ id: UUID, beats: [AnimationBeat]) {
@@ -423,11 +473,15 @@ final class DeviceLink {
         if let b = imp.bubble { texts.append(b.text) }
         if let w = imp.work { texts.append(w.text) }
         let folder = Workspace.directory(for: imp.id)
+        guard sending[device, default: 0] < LinkLane<Void>.files else {
+            return fail(file: transfer, String(localized: "Too many files are on their way to that device. Try again in a moment."), to: device)
+        }
         guard LinkFiles.mayServe(ref, base: folder, in: texts, trusted: node.isTrusted(device)), let url = LinkFiles.resolve(ref, base: folder) else {
             return fail(file: transfer, String(localized: "That file isn't in this chat."), to: device)
         }
-        let log = log
-        Task.detached(priority: .userInitiated) {
+        let log = log, id = imp.id
+        sending[device, default: 0] += 1
+        let sent = Task.detached(priority: .userInitiated) {
             func fail(_ reason: String) async { await node.send(.fileFailed(id: transfer, reason: reason), to: device) }
             let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
             guard values?.isRegularFile == true, let size = values?.fileSize else {
@@ -445,6 +499,8 @@ final class DeviceLink {
                 guard let data = try? handle.read(upToCount: LinkFilePart.chunk) else {
                     return await fail(String(localized: "Imp can't read that file."))
                 }
+                // Still the one that holds the Imp? Else the rest isn't sent.
+                guard await node.holder(of: id) == device else { return await fail(String(localized: "That Imp isn't on this device.")) }
                 let part = LinkFilePart(name: url.lastPathComponent, size: size, offset: offset, data: data)
                 guard await node.sendAndWait(.filePart(id: transfer, part: part), to: device) else { return }
                 offset += data.count
@@ -452,6 +508,15 @@ final class DeviceLink {
             } while offset < size
             log.info("sent \(url.lastPathComponent, privacy: .public) (\(size) bytes)")
         }
+        Task { [weak self] in
+            await sent.value
+            self?.fileSent(to: device)
+        }
+    }
+
+    private func fileSent(to device: UUID) {
+        sending[device] = max((sending[device] ?? 1) - 1, 0)
+        if sending[device] == 0 { sending[device] = nil }
     }
 
     // MARK: Imps talking
@@ -496,26 +561,43 @@ final class DeviceLink {
     }
 
     /// An Imp of this Mac answers another Imp.
-    private func reply(from sender: LinkImp, to target: UUID, text: String) async throws -> String {
+    private func reply(from sender: LinkImp, to target: UUID, text: String, limitedTo device: String? = nil) async throws -> String {
         let words = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !words.isEmpty, app.profile(target)?.isActive == true, let model = app.imp(target) else {
             throw ToolArgumentError(String(localized: "That Imp isn't out."))
         }
         let from = ChatTurn.Sender(id: sender.id, name: sender.name, hue: sender.hue)
         let place = app.prefs.impTalk.place(asked: nil)
-        return try await model.answer(String(words.prefix(LinkProtocol.maxText)), from: from, in: place)
+        return try await model.answer(String(words.prefix(LinkProtocol.maxText)), from: from, in: place, limitedTo: device)
     }
 
     /// An Imp on another device asks one of ours. Whatever goes wrong comes back as a failed answer.
-    private func answer(_ id: UUID, from sender: LinkImp, to target: UUID, text: String, back device: UUID) {
+    /// One at a time per device, a few waiting; past that it is told this Mac is busy.
+    private func answer(_ job: RemoteJob, back device: UUID) {
+        var lane = lanes[device] ?? LinkLane()
+        let admission = lane.submit(job)
+        lanes[device] = lane
+        switch admission {
+        case .run: run(job, back: device)
+        case .wait: break
+        case .busy:
+            node?.send(.answer(id: job.id, text: String(localized: "This Mac is busy with other questions from your device. Try again in a moment."), failed: true), to: device)
+        }
+    }
+
+    private func run(_ job: RemoteJob, back device: UUID) {
         Task { @MainActor [weak self] in
             guard let self else { return }
             do {
-                let said = try await reply(from: sender, to: target, text: text)
-                node?.send(.answer(id: id, text: String(said.prefix(LinkProtocol.maxText)), failed: false), to: device)
+                let said = try await reply(from: job.sender, to: job.target, text: job.text, limitedTo: job.limitedTo)
+                node?.send(.answer(id: job.id, text: String(said.prefix(LinkProtocol.maxText)), failed: false), to: device)
             } catch {
-                node?.send(.answer(id: id, text: String(error.localizedDescription.prefix(LinkProtocol.maxText)), failed: true), to: device)
+                node?.send(.answer(id: job.id, text: String(error.localizedDescription.prefix(LinkProtocol.maxText)), failed: true), to: device)
             }
+            var lane = lanes[device] ?? LinkLane()
+            let next = lane.finish()
+            lanes[device] = lane.isIdle ? nil : lane
+            if let next { run(next, back: device) }
         }
     }
 

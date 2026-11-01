@@ -262,7 +262,7 @@ final class AppModel {
         var p = prefs
         if let origin { p.imps[i].origin = origin }
         p.imps[i].isActive = on
-        if !on, p.imps[i].awayOn != nil {
+        if !on, p.imps[i].awayOn != nil || isThrowing(id) {
             p.imps[i].awayOn = nil
             link.callHome(id)
         }
@@ -321,17 +321,34 @@ final class AppModel {
     /// A thrown Imp was taken (it stays away, held by that device) or sent back (it flies in again
     /// and says why).
     func passed(_ passed: LinkNode.Passed) {
-        guard passed.kind == .pass, let thrown = throwing.removeValue(forKey: passed.transfer) else { return }
+        guard passed.kind == .pass else { return }
+        guard let thrown = throwing.removeValue(forKey: passed.transfer) else {
+            // A visitor we passed on whose `took` came after we gave up: the other device has it, so this body goes.
+            if passed.outcome == .took, let late = visitor(passed.imp), !link.isVisiting(passed.imp) {
+                late.retire()
+                visitors.removeAll { $0 === late }
+                refreshTroupe()
+            }
+            return
+        }
         switch passed.outcome {
         case .took:
             if let visitor = visitor(thrown.imp) {
                 visitor.retire()                           // on to another device: this body is done
                 visitors.removeAll { $0 === visitor }
-            } else {
+            } else if let profile = profile(thrown.imp), profile.isActive, link.holder(of: thrown.imp) == passed.to {
                 held(thrown.imp, by: passed.to)
+            } else {
+                // Deleted, called in or taken back while it was on its way: the other device lets go.
+                link.callHome(thrown.imp)
+                if let profile = profile(thrown.imp), profile.isActive, profile.awayOn == nil {
+                    arrive(thrown.imp, entry: LinkEntry(side: thrown.side, height: thrown.height, speed: 900))
+                }
             }
             refreshTroupe()
         case .declined(let reason):
+            // Deleted or called in meanwhile: nothing to bring back.
+            guard visitor(thrown.imp) != nil || profile(thrown.imp)?.isActive == true else { return }
             let text = DeviceLink.hint(reason, device: link.name(of: passed.to) ?? String(localized: "That device"))
             arrive(thrown.imp, entry: LinkEntry(side: thrown.side, height: thrown.height, speed: 900))
             Task { [weak self] in
@@ -359,7 +376,15 @@ final class AppModel {
     /// Back from another device (thrown off it, or called back here): it flies onto the desktop
     /// through `entry`, else through the side nearest its spot.
     func cameHome(_ id: UUID, entry: LinkEntry? = nil) {
-        guard let i = prefs.imps.firstIndex(where: { $0.id == id }), prefs.imps[i].awayOn != nil else { return }
+        guard let i = prefs.imps.firstIndex(where: { $0.id == id }) else { return }
+        guard prefs.imps[i].awayOn != nil else {
+            // Still on its way to a device that is gone: it flies back in.
+            if let flight = throwing.first(where: { $0.value.imp == id }) {
+                throwing[flight.key] = nil
+                arrive(id, entry: entry ?? LinkEntry(side: flight.value.side, height: flight.value.height, speed: 900))
+            }
+            return
+        }
         prefs.imps[i].awayOn = nil
         link.forget(imp: id)
         let screen = NSScreen.main?.frame ?? .zero
@@ -401,6 +426,9 @@ final class AppModel {
         link.callHome(id)
         cameHome(id)
     }
+
+    /// Whether an Imp of this Mac is on its way to another device (thrown, not yet answered).
+    func isThrowing(_ id: UUID) -> Bool { throwing.values.contains { $0.imp == id } }
 
     /// The panels follow who's where.
     func refreshTroupe() { onTroupeChange?() }
@@ -482,7 +510,7 @@ final class AppModel {
     /// Removes an Imp for good (never the last one), with its shortcuts.
     func removeImp(_ id: UUID) {
         guard prefs.imps.count > 1 else { return }
-        if isAway(id) { link.callHome(id) }
+        if isAway(id) || isThrowing(id) { link.callHome(id) }
         var p = prefs
         p.imps.removeAll { $0.id == id }
         p.shortcuts.removeAll { $0.performer == id }

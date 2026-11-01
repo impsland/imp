@@ -441,7 +441,7 @@ enum IconRenderer {
         func visitor(_ name: String, hue: Double, awake: Bool) -> ImpModel {
             let look = LinkImp(id: UUID(), name: name, hue: hue, scale: 1, traits: ImpTraits())
             let imp = ImpModel(id: look.id, app: model,
-                               visiting: Visiting(look: look, homeID: UUID(), homeName: "Mac mini", isAwake: awake, side: .left))
+                               visiting: Visiting(look: look, homeID: UUID(), homeName: "Mac mini", isAwake: awake, side: .left, from: UUID()))
             let date = Date(timeIntervalSinceReferenceDate: 812_000_000)
             var chat = ChatHistory(folder: nil)
             chat.append(ChatTurn(date: date, request: "Draw me a cat", reply: "Here it is: ![A cat](cat.png)"))
