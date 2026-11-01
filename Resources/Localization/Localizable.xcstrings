@@ -167,6 +167,22 @@
         }
       }
     },
+    "%@ didn't wait for an answer, so its Imp didn't move in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no esperó una respuesta, así que su Imp no se mudó."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 没有等到回答，所以它的 Imp 没有搬进来。"
+          }
+        }
+      }
+    },
     "%@ doesn't know this Mac any more. Link it again in Settings." : {
       "localizations" : {
         "es" : {
@@ -735,6 +751,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ 使用 %2$@ 的模型。输入其他模型可为它单独设置。"
+          }
+        }
+      }
+    },
+    "%@ went away before its Imp could move in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ se fue antes de que su Imp pudiera mudarse."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 在它的 Imp 搬进来之前就离开了。"
           }
         }
       }
@@ -8519,6 +8551,22 @@
         }
       }
     },
+    "I was hidden, so I couldn't go. Send me again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estaba oculto, así que no pude irme. Envíame de nuevo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我被隐藏了，所以没能出发。请再送我一次。"
+          }
+        }
+      }
+    },
     "I wasn't allowed to read the %@ key from your Keychain. Ask again and choose Allow, or paste the key in All Imps › Services." : {
       "localizations" : {
         "es" : {
@@ -9939,18 +9987,18 @@
         }
       }
     },
-    "Link this Mac with your iPhone or another Mac. Throw an Imp hard at the left or right side of your screen and it flies onto a linked device. It still thinks on this Mac: chat with it there, and throw it back." : {
+    "Link this Mac with your iPhone or another Mac. Throw an Imp hard at the left or right side of your screen and it flies onto a linked device. It still thinks on this Mac: chat with it there, and throw it back. Mark a device as yours (Mine) and the Imps on it may use their tools on this Mac. Others can only talk." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vincula este Mac con tu iPhone u otro Mac. Lanza un Imp con fuerza contra el lado izquierdo o derecho de la pantalla y volará a un dispositivo vinculado. Sigue pensando en este Mac: charla con él allí y devuélvelo lanzándolo."
+            "value" : "Vincula este Mac con tu iPhone u otro Mac. Lanza un Imp con fuerza hacia el lado izquierdo o derecho de la pantalla y volará a un dispositivo vinculado. Sigue pensando en este Mac: charla con él allí y devuélvelo. Marca un dispositivo como tuyo (Mío) y los Imps que estén en él podrán usar sus herramientas en este Mac. Los demás solo pueden charlar."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将这台 Mac 与你的 iPhone 或另一台 Mac 关联。用力把 Imp 扔向屏幕左侧或右侧，它就会飞到已关联的设备上。它仍在这台 Mac 上思考：可以在那边和它聊天，再把它扔回来。"
+            "value" : "将这台 Mac 与你的 iPhone 或另一台 Mac 关联。把 Imp 用力扔向屏幕左侧或右侧，它就会飞到已关联的设备上。它仍在这台 Mac 上思考：在那里和它聊天，再把它扔回来。将设备标记为“我的”后，其上的 Imp 可以在这台 Mac 上使用工具，其他设备只能聊天。"
           }
         }
       }
@@ -10725,6 +10773,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "麦克风"
+          }
+        }
+      }
+    },
+    "Mine" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mío"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我的"
           }
         }
       }
@@ -17397,6 +17461,22 @@
         }
       }
     },
+    "Switch on only for your own devices. A device that isn't yours can still chat with the Imps it holds, but they answer without their tools (no commands, no control of this Mac), and it only gets files from the Imp's own folder." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actívalo solo en tus propios dispositivos. Un dispositivo que no es tuyo aún puede charlar con los Imps que tiene, pero responden sin sus herramientas (sin comandos ni control de este Mac), y solo recibe archivos de la carpeta del propio Imp."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅对你自己的设备开启。不属于你的设备仍可与它所持有的 Imp 聊天，但 Imp 将不使用工具回答（不能执行命令，也不能控制这台 Mac），并且只能获取 Imp 自己文件夹中的文件。"
+          }
+        }
+      }
+    },
     "Swoon" : {
       "localizations" : {
         "es" : {
@@ -18865,6 +18945,22 @@
         }
       }
     },
+    "This Mac is busy with other questions from your device. Try again in a moment." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este Mac está ocupado con otras preguntas de tu dispositivo. Inténtalo de nuevo en un momento."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这台 Mac 正忙于处理你设备的其他提问。请稍后再试。"
+          }
+        }
+      }
+    },
     "This Mac's code" : {
       "localizations" : {
         "es" : {
@@ -19073,6 +19169,22 @@
         }
       }
     },
+    "Too many files are on their way to that device. Try again in a moment." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demasiados archivos van de camino a ese dispositivo. Inténtalo de nuevo en un momento."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发往该设备的文件太多了。请稍后再试。"
+          }
+        }
+      }
+    },
     "Too many requests (429). Even imps need a breather." : {
       "localizations" : {
         "es" : {
@@ -19273,6 +19385,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "适用于每个 Imp 的触发器"
+          }
+        }
+      }
+    },
+    "Trust: Imps visiting it may use their tools on this Mac, and it may fetch files they mention." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confianza: los Imps que lo visitan pueden usar sus herramientas en este Mac y puede obtener los archivos que mencionan."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "信任：到访的 Imp 可以在这台 Mac 上使用工具，该设备也可以获取它们提到的文件。"
           }
         }
       }
@@ -21247,6 +21375,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "小眼睛"
+          }
+        }
+      }
+    },
+    "that device" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ese dispositivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "那台设备"
           }
         }
       }
