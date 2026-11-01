@@ -40,6 +40,7 @@ struct PocketEditor: View {
     @State private var keyFor: String?
     @State private var servers: [ServerDraft]
     @State private var toolsOpen = false
+    @State private var saveProblem: String?
     @State private var confirmingDelete = false
     /// The tool server asked to be removed, while its saved value is being confirmed.
     @State private var removing: UUID?
@@ -142,6 +143,11 @@ struct PocketEditor: View {
                 }
             } message: {
                 Text("Its saved header value is forgotten.")
+            }
+            .alert("Couldn't save", isPresented: Binding(get: { saveProblem != nil }, set: { if !$0 { saveProblem = nil } })) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(saveProblem ?? "")
             }
             .sheet(isPresented: $choosingModel) {
                 ModelPicker(address: address.trimmed, key: keyToTry) { model = $0 }
@@ -445,6 +451,19 @@ struct PocketEditor: View {
         }
         let id = editing ?? look.id
         let words = personality.trimmed.isEmpty ? Persona.pocket(named: name.trimmed) : personality.trimmed
+        // The secrets first: if the Keychain won't keep them, nothing is saved and you are told.
+        let secrets = pocket.secrets
+        do {
+            if !key.isEmpty { try secrets.set(key, .apiKey, imp: id) }
+            else if !keyKept { secrets.remove(.apiKey, imp: id) }
+            for (draft, server) in made {
+                if !draft.value.isEmpty { try secrets.set(draft.value, .header(server.id), imp: id) }
+                else if server.header == nil { secrets.remove(.header(server.id), imp: id) }
+            }
+        } catch {
+            saveProblem = String(localized: "Imp couldn't keep the keys safely. \(error.localizedDescription)")
+            return
+        }
         if editing == nil {
             pocket.hatch(PocketImp(id: id, name: name.trimmed, hue: hue, scale: scale, traits: look.traits, personality: words, brain: service, servers: made.map(\.1)))
         } else {
@@ -456,13 +475,6 @@ struct PocketEditor: View {
                 imp.brain = service
                 imp.servers = made.map(\.1)
             }
-        }
-        let secrets = pocket.secrets
-        if !key.isEmpty { secrets.set(key, .apiKey, imp: id) }
-        else if !keyKept { secrets.remove(.apiKey, imp: id) }
-        for (draft, server) in made {
-            if !draft.value.isEmpty { secrets.set(draft.value, .header(server.id), imp: id) }
-            else if server.header == nil { secrets.remove(.header(server.id), imp: id) }
         }
         done()
     }

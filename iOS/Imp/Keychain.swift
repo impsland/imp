@@ -18,13 +18,16 @@ private enum Keychain {
         return out as? Data
     }
 
-    /// Replaces the item. The status says whether it was kept.
+    /// Replaces the item in place (the old value stays if that fails), or adds it. The status says whether it was kept.
     @discardableResult
     static func write(_ data: Data, _ service: String, _ account: String) -> OSStatus {
-        delete(service, account)
+        let access = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        let status = SecItemUpdate(query(service, account) as CFDictionary,
+                                   [kSecValueData as String: data, kSecAttrAccessible as String: access] as CFDictionary)
+        guard status == errSecItemNotFound else { return status }
         var q = query(service, account)
         q[kSecValueData as String] = data
-        q[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        q[kSecAttrAccessible as String] = access
         return SecItemAdd(q as CFDictionary, nil)
     }
 
@@ -33,17 +36,17 @@ private enum Keychain {
     }
 }
 
+/// What went wrong with the Keychain, as its status code.
+struct KeychainFailure: LocalizedError {
+    var status: OSStatus
+    var errorDescription: String? { SecCopyErrorMessageString(status, nil) as String? ?? "Keychain error \(status)" }
+}
+
 /// The link book holds this iPhone's signing key and the secrets that open its links, so it lives in
 /// the Keychain, not in preferences.
 struct KeychainLinkStorage: LinkStorage {
     private static let service = "app.imp.ImpPhone.link"
     private static let account = "book"
-
-    /// What went wrong with the Keychain, as its status code.
-    private struct Failure: LocalizedError {
-        var status: OSStatus
-        var errorDescription: String? { SecCopyErrorMessageString(status, nil) as String? ?? "Keychain error \(status)" }
-    }
 
     func load() throws -> LinkBook? {
         var q = Keychain.query(Self.service, Self.account)
@@ -52,7 +55,7 @@ struct KeychainLinkStorage: LinkStorage {
         var out: CFTypeRef?
         let status = SecItemCopyMatching(q as CFDictionary, &out)
         if status == errSecItemNotFound { return nil }
-        guard status == errSecSuccess, let data = out as? Data else { throw Failure(status: status) }
+        guard status == errSecSuccess, let data = out as? Data else { throw KeychainFailure(status: status) }
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .secondsSince1970
         return try decoder.decode(LinkBook.self, from: data)
@@ -63,7 +66,7 @@ struct KeychainLinkStorage: LinkStorage {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .secondsSince1970
         let status = Keychain.write(try encoder.encode(book), Self.service, Self.account)
-        guard status == errSecSuccess else { throw Failure(status: status) }
+        guard status == errSecSuccess else { throw KeychainFailure(status: status) }
     }
 }
 
@@ -75,8 +78,9 @@ struct PocketKeychain: PocketSecrets {
         Keychain.read(Self.service, slot.account(imp: imp)).flatMap { String(data: $0, encoding: .utf8) }
     }
 
-    func set(_ value: String, _ slot: PocketSlot, imp: UUID) {
-        Keychain.write(Data(value.utf8), Self.service, slot.account(imp: imp))
+    func set(_ value: String, _ slot: PocketSlot, imp: UUID) throws {
+        let status = Keychain.write(Data(value.utf8), Self.service, slot.account(imp: imp))
+        guard status == errSecSuccess else { throw KeychainFailure(status: status) }
     }
 
     func remove(_ slot: PocketSlot, imp: UUID) {

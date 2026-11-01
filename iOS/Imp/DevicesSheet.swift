@@ -127,6 +127,12 @@ struct DevicesSheet: View {
                 Button("Forget…", role: .destructive) { forgetting = device }
                     .font(.system(.footnote, design: .rounded, weight: .medium))
             }
+            Toggle(isOn: Binding(get: { hub.isTrusted(device.id) }, set: { hub.setTrusted(device.id, $0) })) {
+                Text("Mine").font(.system(.subheadline, design: .rounded, weight: .medium)).foregroundStyle(Dungeon.cream)
+            }
+            .tint(Dungeon.ember)
+            Text("Turn on only for your own devices: their requests may then use the tools of your Imps.")
+                .font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
             if !holding.isEmpty {
                 VStack(spacing: 0) {
                     ForEach(holding, id: \.id) { held($0, by: nil) }

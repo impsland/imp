@@ -42,15 +42,17 @@ public struct PocketBrain: Sendable {
     /// (not you): its turn is filed in a chat of its own and the Imp doesn't get to message anyone
     /// back (two Imps can't keep messaging each other forever). `onWork` hears what it's doing as it
     /// goes and, at the end, nil. A service that fails gives a failed turn. Cancelling the task (the
-    /// stop button) throws `CancellationError`, and nothing is kept.
-    public func ask(_ text: String, of imp: PocketImp, from sender: ChatTurn.Sender? = nil, talk: PocketTalk = PocketTalk(),
+    /// stop button) throws `CancellationError`, and nothing is kept. Without `tools` it is a plain
+    /// conversation: no tool server is called and the Imp has no tools of its own (for a request that
+    /// doesn't come from the owner's own device, see `docs/LINK.md`).
+    public func ask(_ text: String, of imp: PocketImp, from sender: ChatTurn.Sender? = nil, talk: PocketTalk = PocketTalk(), tools allowed: Bool = true,
                     onWork: @escaping @Sendable (LinkWork?) async -> Void = { _ in }) async throws -> PocketAnswer {
         let hub = MCPHub()
         let run = Run(request: text, from: sender?.name, onWork: onWork)
         let outcome: Result<(reply: String, memory: ChatMemory), Error>
         do {
             try imp.validate()
-            let configs = imp.servers.map { server in
+            let configs = (allowed ? imp.servers : []).map { server in
                 var config = MCPServerConfig(name: server.name, transport: .http, url: server.url)
                 config.id = server.id
                 if let header = server.header, let value = secrets.get(.header(server.id), imp: imp.id), !value.isEmpty {
@@ -61,7 +63,7 @@ public struct PocketBrain: Sendable {
             await hub.update(configs)
             var tools: [ToolProvider] = []
             if !configs.isEmpty { tools.append(hub) }
-            tools.append(PocketTools(talk: sender == nil ? talk : PocketTalk(animations: talk.animations, play: talk.play)))
+            if allowed { tools.append(PocketTools(talk: sender == nil ? talk : PocketTalk(animations: talk.animations, play: talk.play))) }
             let client = try OpenAIClient(baseURL: imp.brain.baseURL, apiKey: secrets.get(.apiKey, imp: imp.id) ?? "", session: session)
             let agent = Agent(client: client, model: imp.brain.model, tools: ToolSet(tools))
             let turn = sender.map { Briefing.message(from: $0.name, text, place: "in the user's troupe") } ?? .user(text)
