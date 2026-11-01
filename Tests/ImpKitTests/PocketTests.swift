@@ -441,3 +441,22 @@ private actor Sent {
         #expect(await log.all.last! == nil)
     }
 }
+
+@Suite("Reading saved pocket Imps")
+struct PocketLoadTests {
+    @Test func skipsWhatCannotBeReadAndRepeatedIds() throws {
+        let (good, _) = pocketImp()
+        let other = PocketImp(name: "Second")
+        let encoder = JSONEncoder()
+        let array = try JSONSerialization.jsonObject(with: encoder.encode([good, other, good])) as! [Any]
+        let saved = try JSONSerialization.data(withJSONObject: array + [["name": 3], "junk"])
+        let loaded = PocketImp.decodeAll(saved)
+        #expect(loaded.map(\.id) == [good.id, other.id])
+    }
+
+    @Test func notJsonIsNoImps() {
+        #expect(PocketImp.decodeAll(Data("not json".utf8)).isEmpty)
+        #expect(PocketImp.decodeAll(Data("{}".utf8)).isEmpty)
+        #expect(PocketImp.decodeAll(Data()).isEmpty)
+    }
+}

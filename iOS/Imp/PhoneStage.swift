@@ -341,7 +341,13 @@ final class MotionWatcher {
             Task { @MainActor in self?.onEvent?(event) }
         }
         manager.deviceMotionUpdateInterval = 1 / Self.rate
-        manager.startDeviceMotionUpdates(to: queue) { data, _ in
+        manager.startDeviceMotionUpdates(to: queue, withHandler: Self.handler(sampler))
+    }
+
+    /// Built outside the main actor: a closure written inside `start` would be main-actor isolated and
+    /// trap the moment CoreMotion calls it on the motion queue (the first Imp on the stage crashed).
+    nonisolated private static func handler(_ sampler: JoltSampler) -> CMDeviceMotionHandler {
+        { data, _ in
             guard let data else { return }
             sampler.feed(x: data.userAcceleration.x, at: data.timestamp)
         }

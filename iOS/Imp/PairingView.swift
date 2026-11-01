@@ -151,7 +151,11 @@ struct InviteCode: View {
                     .padding(.horizontal, 40)
             }
         }
-        .onAppear { invite = hub.node.invite() }
+        .task {
+            // Showing a code is what needs the local network: asked for here, not at launch.
+            await hub.useNetwork()
+            invite = hub.node.invite()
+        }
         .onDisappear { hub.node.inviteHidden() }
     }
 

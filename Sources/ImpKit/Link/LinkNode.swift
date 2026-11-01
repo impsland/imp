@@ -175,7 +175,8 @@ public final class LinkNode {
             book = LinkBook(device: fresh.id, seed: fresh.seed, door: LinkCrypto.randomKey())
             try storage.save(book)
         }
-        hosts = options.hosts ?? Self.localHosts()
+        // Found when the node starts, off the main thread: the host name lookup can block for seconds.
+        hosts = options.hosts ?? []
     }
 
     // MARK: What the app can ask
@@ -282,7 +283,7 @@ public final class LinkNode {
     }
 
     /// The host name and IPv4 addresses other devices on this network can try.
-    static func localHosts() -> [String] {
+    nonisolated static func localHosts() -> [String] {
         var names: [String] = []
         let host = ProcessInfo.processInfo.hostName.lowercased()
         if host.hasSuffix(".local") { names.append(host) }

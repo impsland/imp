@@ -13,7 +13,7 @@ final class PocketStore {
     init(secrets: any PocketSecrets = PocketKeychain(), url: URL = URL.applicationSupportDirectory.appending(path: "pocket-imps.json")) {
         self.secrets = secrets
         self.url = url
-        imps = (try? Data(contentsOf: url)).flatMap { try? JSONDecoder().decode([PocketImp].self, from: $0) } ?? []
+        imps = (try? Data(contentsOf: url)).map(PocketImp.decodeAll) ?? []
     }
 
     func imp(_ id: UUID) -> PocketImp? { imps.first { $0.id == id } }

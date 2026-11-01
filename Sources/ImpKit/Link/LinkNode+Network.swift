@@ -33,7 +33,16 @@ extension LinkNode {
             ready.fulfil(nil)
         }
         reconcile()
+        await refreshHosts()
         _ = await ready.wait()
+    }
+
+    /// Finds this device's host names and addresses (off the main thread: the host name lookup can
+    /// block) and publishes them if they changed.
+    func refreshHosts() async {
+        guard options.hosts == nil else { return }
+        let now = await Task.detached { Self.localHosts() }.value
+        if running, now != hosts { hosts = now; publishRoutes() }
     }
 
     /// Throws of our own Imps that were in the air when this device last stopped, and never got an
@@ -177,10 +186,7 @@ extension LinkNode {
             found = map
             kick(Array(map.keys))
         case .path:
-            if options.hosts == nil {
-                let now = Self.localHosts()
-                if now != hosts { hosts = now; publishRoutes() }
-            }
+            Task { await refreshHosts() }
             hopHost?.retryNow()
             kick(nil)
         }

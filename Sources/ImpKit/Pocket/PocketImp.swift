@@ -118,6 +118,27 @@ public struct PocketImp: Codable, Equatable, Sendable, Identifiable {
         for server in servers { try Self.check(url: server.url) }
     }
 
+    // MARK: Reading what was saved
+
+    /// The Imps in saved JSON, whatever state it is in: an entry that can't be read is skipped, a repeated
+    /// id keeps its first entry, and a look that isn't a number is put back to the default. Never throws,
+    /// so a bad file cannot keep the app from opening.
+    public static func decodeAll(_ data: Data) -> [PocketImp] {
+        struct Entry: Decodable {
+            let imp: PocketImp?
+            init(from decoder: Decoder) throws { imp = try? PocketImp(from: decoder) }
+        }
+        guard let entries = try? JSONDecoder().decode([Entry].self, from: data) else { return [] }
+        var seen: Set<UUID> = []
+        return entries.compactMap(\.imp).compactMap { saved in
+            guard seen.insert(saved.id).inserted else { return nil }
+            var imp = saved
+            if !imp.hue.isFinite { imp.hue = ImpProfile.defaultHue }
+            if !imp.scale.isFinite || imp.scale <= 0 { imp.scale = 1 }
+            return imp
+        }
+    }
+
     // MARK: Addresses
 
     /// https anywhere, or http for a device on your own network (this phone, `.local` names, private

@@ -50,6 +50,9 @@ enum PocketEvent {
 final class LinkHub {
     nonisolated static let nameKey = "yourName"
     nonisolated static let serverKey = "serverAddress"
+    /// Set once the person has used linking (showed or scanned a code, or linked a device). Until
+    /// then the node stays down, so iOS doesn't ask for the Local Network before it's needed.
+    nonisolated static let networkKey = "usedLocalNetwork"
 
     /// The devices this iPhone is linked with.
     private(set) var links: [LinkRecord] = []
@@ -141,14 +144,28 @@ final class LinkHub {
         return true
     }
 
+    /// Whether linking has been used: a device is linked, or a code was shown or scanned before.
+    private var wantsNetwork: Bool { UserDefaults.standard.bool(forKey: Self.networkKey) || !node.links.isEmpty }
+
     private func start() {
-        guard !isLocked else { return }
+        guard !isLocked, wantsNetwork else { return }
         Task {
             await node.start()
             // Put away while it was starting.
             if !foreground { node.stop() }
             refresh()
         }
+    }
+
+    /// Brings the node up for something that needs the local network (showing a code, linking). This
+    /// is what makes iOS ask for the Local Network permission, and it is remembered so the node comes
+    /// up by itself on later launches.
+    func useNetwork() async {
+        UserDefaults.standard.set(true, forKey: Self.networkKey)
+        if isLocked { unlock() }
+        guard !isLocked, !node.isRunning else { return }
+        await node.start()
+        refresh()
     }
 
     // MARK: This iPhone
@@ -229,6 +246,7 @@ final class LinkHub {
     /// Links with the device that showed `invite`, from a code that was scanned or opened. A failure
     /// is a toast; a success is announced when the node reports the link.
     func join(_ invite: LinkInvite) async {
+        UserDefaults.standard.set(true, forKey: Self.networkKey)
         if isLocked { unlock() }
         guard !isLocked else {
             toast = String(localized: "Imp can't open its links until your iPhone has been unlocked.")
