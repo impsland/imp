@@ -115,7 +115,7 @@ final class DoorSigns {
         let signs = app.link.bands(of: model.id, side: side).compactMap { band -> DoorSign? in
             guard let peer = app.link.peers.first(where: { $0.id == band.device }) else { return nil }
             return DoorSign(id: peer.id, name: peer.name, kind: peer.kind, top: band.top, bottom: band.bottom,
-                            isBack: model.visit.map { $0.side == side && $0.homeID == peer.id } ?? false)
+                            isBack: model.visit.map { $0.side == side && $0.from == peer.id } ?? false)
         }
         var lit: UUID?
         if case .to(let device) = app.link.door(of: model.id, side: side, height: approach.height) { lit = device }

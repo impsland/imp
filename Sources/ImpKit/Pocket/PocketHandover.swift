@@ -76,6 +76,31 @@ extension PocketImp {
 
 // MARK: - On the Mac
 
+extension KitImp {
+    /// What of a pocket Imp's kit is taken in: the Imp gets what a freshly hatched one has, except
+    /// the shell, which stays off until its owner switches it on in its settings.
+    mutating func narrowedForAdoption() {
+        triggers = []
+        animations = []
+        tools = [:]
+        usesShell = false
+        instructions = nil
+        exchangesSent = nil
+        sendsToolCalls = false
+    }
+}
+
+extension Kit {
+    /// This kit as taking a pocket Imp in would leave it, for the review to show what is adopted.
+    public func narrowedForAdoption() -> Kit {
+        var kit = self
+        kit.triggers = []
+        kit.animations = []
+        for i in kit.imps.indices { kit.imps[i].narrowedForAdoption() }
+        return kit
+    }
+}
+
 extension ImpPreferences {
     /// What taking a pocket Imp in did.
     public struct Adoption: Equatable, Sendable {
@@ -108,13 +133,7 @@ extension ImpPreferences {
             let given = secrets.headers[keys[kit.servers[i].id] ?? ""] ?? [:]
             for name in kit.servers[i].headers.keys { kit.servers[i].headers[name] = given[name] ?? "" }
         }
-        source.triggers = []
-        source.animations = []
-        source.tools = [:]
-        source.usesShell = true
-        source.instructions = nil
-        source.exchangesSent = nil
-        source.sendsToolCalls = true
+        source.narrowedForAdoption()
         kit.imps = [source]
 
         if let brain = source.brain, let address = brain.baseURL, ai.service(atAddress: address) == nil {

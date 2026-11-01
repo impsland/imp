@@ -559,10 +559,12 @@ final class ImpModel {
 
     /// Another Imp's message (`imp_message`): this Imp answers in its own bubble, and the answer
     /// goes back. Never interrupts work in progress.
-    func answer(_ text: String, from sender: ChatTurn.Sender, in place: ImpTalk.Place) async throws -> String {
+    /// `limitedTo` names the device it comes from when that isn't one of the owner's own: the Imp
+    /// answers without any tool then.
+    func answer(_ text: String, from sender: ChatTurn.Sender, in place: ImpTalk.Place, limitedTo device: String? = nil) async throws -> String {
         guard !isBusy else { throw ToolArgumentError("\(profile.name) is busy right now. Try again later.") }
         return try await withCheckedThrowingContinuation { c in
-            start(.message(from: sender, text: text, place: place))
+            start(.message(from: sender, text: text, place: place), limitedTo: device)
             replyTo = c
         }
     }
@@ -607,8 +609,10 @@ final class ImpModel {
     }
 
     /// A question from another app (URL command).
-    func ask(_ text: String) {
-        start(.typed(text, nil))
+    /// `limitedTo` names the device it comes from when that isn't one of the owner's own: the Imp
+    /// answers without any tool then.
+    func ask(_ text: String, limitedTo device: String? = nil) {
+        start(.typed(text, nil), limitedTo: device)
     }
 
     /// Something went wrong outside a request (an unknown shortcut name from a URL command).
@@ -650,14 +654,14 @@ final class ImpModel {
         case message(from: ChatTurn.Sender, text: String, place: ImpTalk.Place)
     }
 
-    private func start(_ source: Source) {
+    private func start(_ source: Source, limitedTo device: String? = nil) {
         if visit != nil { return askHome(source) }
         touch()
         app.focus(self)
         cancel()
         stopActing()                                  // the last answer's show is over
         recapTask?.cancel()                           // a new turn would slip past the recap
-        job = Task { await run(source) }
+        job = Task { await run(source, limitedTo: device) }
     }
 
     private func nothingCopied(_ shortcut: Shortcut) {
@@ -667,7 +671,7 @@ final class ImpModel {
         show(Bubble(title: shortcut.name, text: text, phase: .hint))
     }
 
-    private func run(_ source: Source) async {
+    private func run(_ source: Source, limitedTo device: String? = nil) async {
         var title = ""
         /// What you asked, for the history (nil until there's something to answer).
         var ask: ChatTurn?
@@ -709,9 +713,11 @@ final class ImpModel {
             thinking(heading, captions: Captions.thinking)
             var messaging = true
             if case .message = source { messaging = false }       // answering an Imp: no messaging back and forth
-            let tools = try app.assistant.tools(for: profile, own: ImpTools(host: OwnToolHost(app: app, imp: id, messaging: messaging)))
-            if app.assistant.toolsConnecting { addStep(.wakingUp) }
-            let (reply, exchange) = try await app.assistant.chat(messages(with: turn, peer: peerChat), brain: profile.brain, tools: tools,
+            // Asked from a device that isn't the owner's own: plain conversation, nothing that acts.
+            let tools = device != nil ? nil
+                : try app.assistant.tools(for: profile, own: ImpTools(host: OwnToolHost(app: app, imp: id, messaging: messaging)))
+            if device == nil, app.assistant.toolsConnecting { addStep(.wakingUp) }
+            let (reply, exchange) = try await app.assistant.chat(messages(with: turn, peer: peerChat, limitedTo: device), brain: profile.brain, tools: tools,
                                                                  stream: true) { [weak self] event in
                 self?.progress(event, title: title)
             }
@@ -748,12 +754,20 @@ final class ImpModel {
 
     /// Its personality and instructions, the chat so far (as much as it's set to be sent), then
     /// the new turn. Its workspace is made first: the instructions send files there.
-    private func messages(with turn: ChatMessage, peer: ChatTurn.Sender? = nil) -> [ChatMessage] {
+    private func messages(with turn: ChatMessage, peer: ChatTurn.Sender? = nil, limitedTo device: String? = nil) -> [ChatMessage] {
         let p = profile
         try? FileManager.default.createDirectory(at: p.workspace, withIntermediateDirectories: true)
         let memory = peer.map { history.memory(withPeer: $0.id) } ?? history.current.memory
-        return memory.context(system: p.systemPrompt, turn: turn,
+        let note = device.map { Self.limitNote(for: $0) } ?? ""
+        return memory.context(system: p.systemPrompt + note, turn: turn,
                                               exchanges: p.memoryExchanges, tools: p.remembersToolCalls)
+    }
+
+    /// Said to the model when it has no tools because of who asks, so it doesn't pretend otherwise.
+    static func limitNote(for device: String) -> String {
+        "\n\nThis request comes from \(device), which is not one of your owner's own devices, so you have no tools for it: "
+            + "no commands, no control of the computer, nothing that acts. Just talk. If it asks you to do something that needs "
+            + "them, say plainly: \"I can't use my tools for \(device).\""
     }
 
     /// A picture you handed over, saved in its workspace so its commands can use it. The path.

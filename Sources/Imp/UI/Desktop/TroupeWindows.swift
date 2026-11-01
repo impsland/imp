@@ -20,7 +20,14 @@ final class TroupeWindows {
             panels.fly(to: origin, then: done)
         }
         app.flyOff = { [weak self] id, device, done in
-            guard let panels = self?.panels[id], panels.isImpVisible else { return done() }
+            guard let panels = self?.panels[id], panels.isImpVisible else {
+                // Hidden: there is nothing to fly off. It comes out and says so, instead of nothing happening.
+                if let app = self?.app, let body = app.body(id) {
+                    app.setHidden(id, false)
+                    body.complain(String(localized: "I was hidden, so I couldn't go. Send me again."))
+                }
+                return done()
+            }
             panels.send(to: device, then: done)
         }
         app.flyAway = { [weak self] id, side, done in

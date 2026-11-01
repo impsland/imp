@@ -12,6 +12,8 @@ struct Visiting: Equatable {
     var isAwake: Bool
     /// The side of the desktop it came in by (it leaves by it when it goes home).
     var side: LinkSide
+    /// The device that threw it here: the door on `side` leads back to it.
+    var from: UUID
 
     /// Its looks as a profile, for the renderer and the bubble. It has no model or tools here.
     var profile: ImpProfile {

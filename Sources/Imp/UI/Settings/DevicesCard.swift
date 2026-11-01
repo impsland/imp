@@ -15,7 +15,7 @@ struct DevicesCard: View {
 
     var body: some View {
         Card("Devices", icon: "iphone.gen3",
-             info: "Link this Mac with your iPhone or another Mac. Throw an Imp hard at the left or right side of your screen and it flies onto a linked device. It still thinks on this Mac: chat with it there, and throw it back.") {
+             info: "Link this Mac with your iPhone or another Mac. Throw an Imp hard at the left or right side of your screen and it flies onto a linked device. It still thinks on this Mac: chat with it there, and throw it back. Mark a device as yours (Mine) and the Imps on it may use their tools on this Mac. Others can only talk.") {
             Row("This Mac's code", info: "Shows a code for another device to scan. Each scan links that device with this Mac.") {
                 Button { showingCode = true } label: { Label("Show Code…", systemImage: "qrcode") }
                     .buttonStyle(.imp(link.isLinked ? .secondary : .primary, small: true))
@@ -39,6 +39,10 @@ struct DevicesCard: View {
                         case .viaServer: StatusText(text: "Via the server", symbol: "circle.fill", color: .green)
                         case .away: StatusText(text: "Away", symbol: "circle.fill", color: Dungeon.muted)
                         }
+                        Toggle("Mine", isOn: Binding(get: { peer.isTrusted }, set: { link.setTrusted(peer.id, $0) }))
+                            .toggleStyle(.switch).controlSize(.small)
+                            .help("Trust: Imps visiting it may use their tools on this Mac, and it may fetch files they mention.")
+                        InfoTip("Switch on only for your own devices. A device that isn't yours can still chat with the Imps it holds, but they answer without their tools (no commands, no control of this Mac), and it only gets files from the Imp's own folder.")
                         Button(role: .destructive) { forgetting = peer } label: { Label("Forget…", systemImage: "xmark.circle") }
                             .buttonStyle(.imp(.destructive, small: true))
                     }

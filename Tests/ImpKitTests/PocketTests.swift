@@ -115,6 +115,14 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         #expect(parsed.servers.first?.headers == ["Authorization": ""])
     }
 
+    @Test func theReviewShowsTheShellOffAsAdoptionLeavesIt() throws {
+        let (imp, store) = pocketImp(chats: [chat(2)])
+        let (text, _) = try imp.adoption(secrets: store)
+        let parsed = try Kit.parse(text, limit: LinkProtocol.maxFrame)
+        let shown = parsed.narrowedForAdoption()
+        #expect(shown.imps.count == 1 && shown.imps.allSatisfy { !$0.usesShell && !$0.sendsToolCalls && $0.tools.isEmpty })
+    }
+
     @Test func aMacTakesItInAsAnOrdinaryImpWithItsId() throws {
         let (imp, store) = pocketImp(chats: [chat(2)])
         let (kit, secrets) = try imp.adoption(secrets: store)
@@ -128,6 +136,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         #expect(profile.hue == 0.4 && profile.scale == 1.2 && profile.traits == imp.traits)
         #expect(profile.personality == imp.personality)
         #expect(!profile.isActive)
+        #expect(!profile.usesShell && !profile.remembersToolCalls)
         #expect(adoption.imp.chats.count == 1 && adoption.imp.chats[0].turns.count == 2)
         #expect(adoption.apiKey == "sk-very-secret")
 
