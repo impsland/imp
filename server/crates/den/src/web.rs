@@ -1,4 +1,4 @@
-//! The web gallery: five files built into the binary.
+//! The web gallery: a few files built into the binary.
 
 use std::sync::Arc;
 
@@ -20,7 +20,8 @@ static INDEX: &[u8] = include_bytes!("../web/index.html");
 static APP_JS: &[u8] = include_bytes!("../web/assets/app.js");
 static IMP_JS: &[u8] = include_bytes!("../web/assets/imp.js");
 static SITE_CSS: &[u8] = include_bytes!("../web/assets/site.css");
-static FAVICON: &[u8] = include_bytes!("../web/assets/favicon.svg");
+static FAVICON_PNG: &[u8] = include_bytes!("../web/assets/favicon-32.png");
+static ICON_PNG: &[u8] = include_bytes!("../web/assets/imp-icon.png");
 
 pub fn routes() -> Router<Arc<Den>> {
     Router::new()
@@ -64,7 +65,8 @@ async fn asset(Path(name): Path<String>) -> Result<Response, Error> {
             HTML_CSP,
         )),
         "site.css" => Ok(file(SITE_CSS, "text/css; charset=utf-8", CACHE, HTML_CSP)),
-        "favicon.svg" => Ok(file(FAVICON, "image/svg+xml", CACHE, IMAGE_CSP)),
+        "favicon-32.png" => Ok(file(FAVICON_PNG, "image/png", CACHE, IMAGE_CSP)),
+        "imp-icon.png" => Ok(file(ICON_PNG, "image/png", CACHE, IMAGE_CSP)),
         _ => Err(Error::NotFound),
     }
 }

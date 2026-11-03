@@ -57,7 +57,7 @@ enum LiveEnv {
             switch event {
             case .text: await calls.streamed()
             case .toolStarted(let name, _): await calls.used(name)
-            case .toolFinished: break
+            case .toolFinished, .retrying: break
             }
         }
         #expect(reply.contains("42"), "got: \(reply)")

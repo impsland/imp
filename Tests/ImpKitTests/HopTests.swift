@@ -279,6 +279,8 @@ private final class FakeHop: @unchecked Sendable {
         again.start()
         #expect(await pings(again))
         again.close()
+        // The host's third wait is registered on its own time, after the second guest is through.
+        try await wait { relay.seen.filter { $0 == "host" }.count >= 3 }
         #expect(relay.seen.filter { $0 == "host" }.count == 3)
     }
 

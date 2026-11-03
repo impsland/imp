@@ -1,4 +1,5 @@
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -198,8 +199,8 @@ struct AddServiceSheet: View {
                 }
             }
             .padding(14)
-            .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Dungeon.card))
-            .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Dungeon.cardEdge))
+            .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Dungeon.card))
+            .overlay(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).strokeBorder(Dungeon.cardEdge))
         } footer: {
             Button("Test") { Task { await test() } }
                 .buttonStyle(.imp(.secondary)).disabled(!isValid || checking)
@@ -256,20 +257,26 @@ struct ModelBrowser: View {
                     List(filtered, id: \.self) { id in
                         Button { pick(id) } label: {
                             HStack {
-                                Text(id).font(.system(.body, design: .monospaced))
+                                Text(verbatim: id).font(Typeface.mono).foregroundStyle(Dungeon.cream)
                                 Spacer()
                             }
                             .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
+                        .impListRow()
                     }
                     .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.small, style: .continuous))
                 }
             }
-            Text("\(filtered.count) models").font(.caption).foregroundStyle(.secondary)
+            Text("\(filtered.count) models").font(Typeface.small).foregroundStyle(Dungeon.muted)
         }
         .padding(12)
         .frame(width: 380, height: 360)
+        .background(Dungeon.wall)
+        .environment(\.colorScheme, .dark)
+        .impControls()
         .task {
             do { all = try await load() }
             catch { self.error = error.localizedDescription }

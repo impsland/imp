@@ -1,5 +1,5 @@
 [package]
-name = "den"
+name = "imp-den"
 description = "The Imp Den: accounts and shared kits"
 version.workspace = true
 edition.workspace = true
@@ -7,10 +7,7 @@ rust-version.workspace = true
 license.workspace = true
 publish.workspace = true
 
-[lib]
-name = "den"
-path = "src/lib.rs"
-
+# The command stays `den`, as the image and compose call it.
 [[bin]]
 name = "den"
 path = "src/main.rs"

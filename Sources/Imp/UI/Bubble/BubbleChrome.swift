@@ -140,6 +140,20 @@ struct ResizeHandles: View {
     }
 }
 
+/// The chat's visible resize mark in its bottom corner (the edges and corners all resize too).
+/// It only decorates: the drag handles sit over it.
+struct ResizeGrip: View {
+    var body: some View {
+        Image(systemName: "arrow.down.right.and.arrow.up.left")
+            .font(.system(size: 9, weight: .semibold))
+            .rotationEffect(.degrees(90))
+            .foregroundStyle(.secondary)
+            .frame(width: 14, height: 14)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+    }
+}
+
 /// A small floating ✕ just outside the card's corner. The whole circle is the target.
 struct CloseButton: View {
     let action: () -> Void

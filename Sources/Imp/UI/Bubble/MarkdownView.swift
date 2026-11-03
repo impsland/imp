@@ -25,7 +25,9 @@ struct MarkdownView: View {
     var imageHeight: CGFloat = 240
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        // Files that are gone or can't be trusted show a line saying so (see `Markdown.checkingFiles`).
+        let blocks = Markdown.checkingFiles(self.blocks, base: base)
+        return VStack(alignment: .leading, spacing: 8) {
             let orders = Self.mediaOrders(blocks)
             ForEach(blocks.indices.filter { !heardOnly(blocks[$0]) }, id: \.self) { i in block(blocks[i], order: orders[i]) }
         }
@@ -45,7 +47,10 @@ struct MarkdownView: View {
         .lineSpacing(2)
         // Links to files (a path, often relative to the Imp's folder) open like web links do.
         .environment(\.openURL, OpenURLAction { url in
-            NSWorkspace.shared.open(Markdown.resolve(url, base: base)) ? .handled : .discarded
+            switch Markdown.target(url, base: base) {
+            case .file(let file), .other(let file): NSWorkspace.shared.open(file) ? .handled : .discarded
+            case .unavailable: .discarded
+            }
         })
     }
 

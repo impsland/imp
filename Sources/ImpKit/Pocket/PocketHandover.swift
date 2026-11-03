@@ -35,10 +35,11 @@ extension PocketImp {
                          brain: kitBrain,
                          chats: chats.filter { $0.peer == nil && !$0.isEmpty })
         imp.traits = traits
+        imp.toolsOff = toolsOff ?? []
         kit.servers = servers.map {
             var config = MCPServerConfig(name: $0.name, transport: .http, url: $0.url)
             config.id = $0.id
-            if let header = $0.header { config.headers = [header: ""] }
+            for header in $0.headers { config.headers[header] = "" }
             return config
         }
         imp.servers = kit.servers.map(\.id)
@@ -46,9 +47,9 @@ extension PocketImp {
         var secrets = LinkSecrets(apiKey: address.isEmpty ? nil : store.get(.apiKey, imp: id).flatMap { $0.isEmpty ? nil : $0 })
         let keys = kit.serverKeys
         for server in servers {
-            guard let header = server.header, let key = keys[server.id],
-                  let value = store.get(.header(server.id), imp: id), !value.isEmpty else { continue }
-            secrets.headers[key] = [header: value]
+            let values = store.headerValues(of: server, imp: id)
+            guard let key = keys[server.id], !values.isEmpty else { continue }
+            secrets.headers[key] = values
         }
         return (kit.json(pretty: false), secrets)
     }

@@ -184,7 +184,8 @@ public enum OwnTools {
     }
 
     /// Messaging another Imp. `pocket` names Imps that live on the user's iPhone, which are reached the same way.
-    public static func messageSpec(imps: [String], pocket: [String] = [], talk: ImpTalk = .own) -> ToolSpec {
+    public static func messageSpec(imps: [String], pocket: [String] = [], talk: ImpTalk = .own,
+                                   conversation: Bool = false) -> ToolSpec {
         var properties: [String: JSONValue] = ["to": ["type": "string", "enum": .array((imps + pocket).map { .string($0) })],
                                                "text": ["type": "string"]]
         if talk == .decides {
@@ -193,8 +194,15 @@ public enum OwnTools {
                 + "should see or take part in what's said)."
             properties["chat"] = ["type": "string", "enum": ["own", "shared"], "description": .string(where_)]
         }
+        if conversation {
+            let which = "Which conversation with that Imp: `new` starts a fresh one (a different subject), `continue` goes on in your latest "
+                + "one (a follow-up, it remembers what was said). Leave it out and it continues if you talked recently, else starts new. "
+                + "Only for a private chat between you two."
+            properties["conversation"] = ["type": "string", "enum": ["new", "continue"], "description": .string(which)]
+        }
         var about = "Send a message to another Imp out on the desktop and get its answer (it shows its own bubble). "
-            + "Keep it short and friendly."
+            + "Keep it short and friendly. Files in the answer come as imp-file:// links: show them with those links exactly as they are. "
+            + "To send a file of yours, put it in your folder and link or embed it in the text."
         if !pocket.isEmpty { about += " \(pocket.joined(separator: ", ")) live on the user's iPhone and answer there." }
         return ToolSpec(name: message, description: about,
                         inputSchema: ["type": "object", "properties": .object(properties), "required": ["to", "text"]])
@@ -202,7 +210,7 @@ public enum OwnTools {
 
     /// The tools for `groups`. `animations`: names it may play right now; `imps`: the others it can message.
     public static func specs(_ groups: Set<ImpToolGroup>, animations: [String], imps: [String], pocket: [String] = [], browser: Bool,
-                             talk: ImpTalk = .own) -> [ToolSpec] {
+                             talk: ImpTalk = .own, conversation: Bool = false) -> [ToolSpec] {
         var specs: [ToolSpec] = []
         if groups.contains(.body) {
             specs.append(playSpec(animations: animations))
@@ -254,9 +262,11 @@ public enum OwnTools {
                     + "(below number %), charger (flag: plugged in true/unplugged false), app (text: app name comes to the "
                     + "front), website (text: part of the address, needs the browser extension), time (text \"HH:MM\" daily), "
                     + "every (number minutes), back (user back after number minutes away), wake, start, busy (processor above "
-                    + "number %), hot, offline (flag: goes offline true / back online false). `only_if`: conditions that must "
+                    + "number %), hot, offline (flag: goes offline true / back online false), idle (number seconds left alone), enter / leave "
+                    + "(the cursor comes close to you / moves away). `only_if`: conditions that must "
                     + "hold too, same shape (battery, charger, app, website, busy, hot, offline, or hours with text \"22:00-07:00\"). "
-                    + "`do` is ask (default: you get the prompt) or opens something: type (text box), talk (listen), chat, settings. "
+                    + "`do` is ask (default: you get the prompt) or opens something: type (text box), talk (listen), chat, settings, or acts on your body with no thinking: sleep, wakeUp, play "
+                    + "(these take `animation`, a built-in animation's id or a custom one's, optional). "
                     + "Afterwards tell the user how to use it.",
                 inputSchema: ["type": "object",
                               "properties": [
@@ -266,6 +276,7 @@ public enum OwnTools {
                                 "only_if": ["type": "array", "items": condition(events: false)],
                                 "do": ["type": "string", "enum": .array(Shortcut.Command.allCases.map { .string($0.rawValue) })],
                                 "prompt": ["type": "string", "description": "What you should do when it goes off, in plain words to yourself."],
+                                "animation": ["type": "string", "description": "For do sleep, wakeUp or play: the animation to play."],
                                 "with_clipboard": ["type": "boolean", "description": "Hand over what the user copied (text or a picture)."],
                                 "every_imp": ["type": "boolean", "description": "For every Imp instead of just you."],
                               ],
@@ -304,7 +315,7 @@ public enum OwnTools {
                               "required": ["page"]]))
         }
         if groups.contains(.troupe), !imps.isEmpty || !pocket.isEmpty {
-            specs.append(messageSpec(imps: imps, pocket: pocket, talk: talk))
+            specs.append(messageSpec(imps: imps, pocket: pocket, talk: talk, conversation: conversation))
         }
         if groups.contains(.den) { specs += denSpecs }
         return specs
@@ -388,7 +399,7 @@ extension Trigger {
         let number = json["number"]?.int ?? (json["number"]?.string).flatMap { Int($0) }
         let text = json["text"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines)
         switch kind {
-        case .clicks, .battery, .every, .back, .busy:
+        case .clicks, .battery, .every, .back, .busy, .idle:
             if let number { self.number = number }
             if kind == .clicks, let n = number, !(1...Self.maxClicks).contains(n) {
                 throw ToolArgumentError("Clicks go from 1 to \(Self.maxClicks).")
@@ -404,7 +415,7 @@ extension Trigger {
             let parts = (text ?? "").split(separator: "-").map { Self.minuteOfDay(parsing: String($0)) }
             guard parts.count == 2, let a = parts[0], let b = parts[1] else { throw ToolArgumentError("Give hours as text \"22:00-07:00\".") }
             self.number = a; self.until = b
-        case .keys, .wake, .start, .hot:
+        case .keys, .wake, .start, .hot, .enter, .leave:
             break
         }
     }
@@ -434,7 +445,11 @@ extension Shortcut {
         self.init(name: name?.isEmpty == false ? name! : (old?.name ?? trigger.summary), hotkey: hotkey, prompt: prompt,
                   performer: performer,
                   usesClipboard: json["with_clipboard"]?.bool ?? false, trigger: trigger, conditions: conditions, command: command)
-        if let old { id = old.id; isEnabled = old.isEnabled }
+        if let old { id = old.id; isEnabled = old.isEnabled; animation = old.animation }
+        if let key = json["animation"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines), !key.isEmpty {
+            guard let ref = AnimationRef(key: key) else { throw ToolArgumentError("Unknown animation \(key).") }
+            animation = ref
+        }
         guard isRunnable else { throw ToolArgumentError("Give it a `prompt` (or `do` something, or hand over the clipboard).") }
     }
 

@@ -1,0 +1,704 @@
+{
+ "about": "Device link messages (docs/LINK.md). Each valid vector is one frame body exactly as the Swift encoder writes it (keys sorted here, dates in seconds since 1970, binary values base64). A client decodes every vector, encodes it again and gets an equal JSON value (compare parsed values, not text: key order and number spelling are not part of the contract). Unknown: well formed JSON this version does not understand, a receiver ignores it. Malformed: not a valid message, a receiver ignores it too. (Before the handshake is done a receiver closes the connection instead.) Unsound: decodes, but its sizes break the limits in isSound, so the node drops it.",
+ "version": 2,
+ "valid": [
+  {
+   "name": "hello",
+   "json": {
+    "hello": {
+     "device": "00000000-0000-0000-0000-000000000011",
+     "join": "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8=",
+     "key": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "kind": "phone",
+     "name": "Phone",
+     "proof": "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBw==",
+     "version": 2
+    }
+   }
+  },
+  {
+   "name": "hello-no-join",
+   "json": {
+    "hello": {
+     "device": "00000000-0000-0000-0000-000000000011",
+     "key": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "kind": "phone",
+     "name": "Phone",
+     "proof": "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBw==",
+     "version": 2
+    }
+   }
+  },
+  {
+   "name": "welcome",
+   "json": {
+    "welcome": {
+     "device": "00000000-0000-0000-0000-000000000010",
+     "kind": "mac",
+     "linked": true,
+     "name": "Studio Mac",
+     "proof": "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBw==",
+     "version": 2
+    }
+   }
+  },
+  {
+   "name": "ping",
+   "json": {
+    "ping": {}
+   }
+  },
+  {
+   "name": "pong",
+   "json": {
+    "pong": {}
+   }
+  },
+  {
+   "name": "bye",
+   "json": {
+    "bye": {
+     "reason": "Forgotten"
+    }
+   }
+  },
+  {
+   "name": "routes",
+   "json": {
+    "routes": {
+     "door": "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8=",
+     "routes": {
+      "hosts": [
+       "192.168.1.5"
+      ],
+      "port": 47824
+     }
+    }
+   }
+  },
+  {
+   "name": "stage",
+   "json": {
+    "stage": {
+     "imps": [
+      {
+       "home": "00000000-0000-0000-0000-000000000010",
+       "imp": {
+        "hue": 0.55,
+        "id": "00000000-0000-0000-0000-000000000001",
+        "name": "Pip",
+        "scale": 1,
+        "traits": {
+         "blush": 0.3,
+         "eyes": 0.1,
+         "horns": 10,
+         "lids": 0.2,
+         "slant": -0.5,
+         "squint": 0,
+         "tempo": 1.2,
+         "tilt": 2
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "pass-home",
+   "json": {
+    "pass": {
+     "entry": {
+      "height": 0.4,
+      "side": "left",
+      "speed": 600
+     },
+     "imp": {
+      "hue": 0.55,
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Pip",
+      "scale": 1,
+      "traits": {
+       "blush": 0.3,
+       "eyes": 0.1,
+       "horns": 10,
+       "lids": 0.2,
+       "slant": -0.5,
+       "squint": 0,
+       "tempo": 1.2,
+       "tilt": 2
+      }
+     },
+     "transfer": "00000000-0000-0000-0000-000000000040"
+    }
+   }
+  },
+  {
+   "name": "pass-visit",
+   "json": {
+    "pass": {
+     "entry": {
+      "height": 0.4,
+      "side": "left",
+      "speed": 600
+     },
+     "home": {
+      "device": {
+       "id": "00000000-0000-0000-0000-000000000010",
+       "key": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+       "kind": "mac",
+       "name": "Studio Mac"
+      },
+      "door": "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8=",
+      "routes": {
+       "hop": "hop.example.com:4677",
+       "hosts": [
+        "192.168.1.5",
+        "studio.local"
+       ],
+       "port": 47824
+      }
+     },
+     "imp": {
+      "hue": 0.55,
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Pip",
+      "scale": 1,
+      "traits": {
+       "blush": 0.3,
+       "eyes": 0.1,
+       "horns": 10,
+       "lids": 0.2,
+       "slant": -0.5,
+       "squint": 0,
+       "tempo": 1.2,
+       "tilt": 2
+      }
+     },
+     "ticket": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "transfer": "00000000-0000-0000-0000-000000000040"
+    }
+   }
+  },
+  {
+   "name": "took",
+   "json": {
+    "took": {
+     "transfer": "00000000-0000-0000-0000-000000000040"
+    }
+   }
+  },
+  {
+   "name": "declined",
+   "json": {
+    "declined": {
+     "reason": "notLinked",
+     "transfer": "00000000-0000-0000-0000-000000000040"
+    }
+   }
+  },
+  {
+   "name": "claim",
+   "json": {
+    "claim": {
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "ticket": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8="
+    }
+   }
+  },
+  {
+   "name": "claimed",
+   "json": {
+    "claimed": {
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "ticket": "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8="
+    }
+   }
+  },
+  {
+   "name": "gone",
+   "json": {
+    "gone": {
+     "imp": "00000000-0000-0000-0000-000000000001"
+    }
+   }
+  },
+  {
+   "name": "release",
+   "json": {
+    "release": {
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "ticket": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8="
+    }
+   }
+  },
+  {
+   "name": "ask",
+   "json": {
+    "ask": {
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "text": "What time is it?"
+    }
+   }
+  },
+  {
+   "name": "stop",
+   "json": {
+    "stop": {
+     "imp": "00000000-0000-0000-0000-000000000001"
+    }
+   }
+  },
+  {
+   "name": "newChat",
+   "json": {
+    "newChat": {
+     "imp": "00000000-0000-0000-0000-000000000001"
+    }
+   }
+  },
+  {
+   "name": "felt",
+   "json": {
+    "felt": {
+     "feeling": "cuddle",
+     "imp": "00000000-0000-0000-0000-000000000001"
+    }
+   }
+  },
+  {
+   "name": "file",
+   "json": {
+    "file": {
+     "id": "00000000-0000-0000-0000-000000000050",
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "ref": "notes/today.md"
+    }
+   }
+  },
+  {
+   "name": "talks",
+   "json": {
+    "talks": {
+     "imp": "00000000-0000-0000-0000-000000000001"
+    }
+   }
+  },
+  {
+   "name": "look",
+   "json": {
+    "look": {
+     "imp": {
+      "hue": 0.55,
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Pip",
+      "scale": 1,
+      "traits": {
+       "blush": 0.3,
+       "eyes": 0.1,
+       "horns": 10,
+       "lids": 0.2,
+       "slant": -0.5,
+       "squint": 0,
+       "tempo": 1.2,
+       "tilt": 2
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "chat",
+   "json": {
+    "chat": {
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "turns": [
+      {
+       "date": 1760000000,
+       "failed": false,
+       "from": "Bo",
+       "id": "00000000-0000-0000-0000-000000000020",
+       "reply": "Hello",
+       "request": "Hi",
+       "steps": [
+        "Read file"
+       ]
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "work",
+   "json": {
+    "work": {
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "work": {
+      "from": "Bo",
+      "partial": "He",
+      "request": "Hi",
+      "status": "Reading"
+     }
+    }
+   }
+  },
+  {
+   "name": "work-none",
+   "json": {
+    "work": {
+     "imp": "00000000-0000-0000-0000-000000000001"
+    }
+   }
+  },
+  {
+   "name": "mood",
+   "json": {
+    "mood": {
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "mood": "thinking"
+    }
+   }
+  },
+  {
+   "name": "animate",
+   "json": {
+    "animate": {
+     "beats": [
+      {
+       "duration": 0.5,
+       "glyph": "heart",
+       "hop": true,
+       "lookX": 0.2,
+       "mood": "happy",
+       "stretch": 0,
+       "tilt": 3
+      }
+     ],
+     "imp": "00000000-0000-0000-0000-000000000001"
+    }
+   }
+  },
+  {
+   "name": "speech",
+   "json": {
+    "speech": {
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "speech": {
+      "hue": 0.1,
+      "id": "00000000-0000-0000-0000-000000000060",
+      "peer": "Bo",
+      "question": "Q",
+      "role": "asking",
+      "text": ""
+     }
+    }
+   }
+  },
+  {
+   "name": "speech-none",
+   "json": {
+    "speech": {
+     "imp": "00000000-0000-0000-0000-000000000001"
+    }
+   }
+  },
+  {
+   "name": "filePart",
+   "json": {
+    "filePart": {
+     "id": "00000000-0000-0000-0000-000000000050",
+     "part": {
+      "data": "aGVsbG8=",
+      "name": "a.txt",
+      "offset": 0,
+      "size": 5
+     }
+    }
+   }
+  },
+  {
+   "name": "fileFailed",
+   "json": {
+    "fileFailed": {
+     "id": "00000000-0000-0000-0000-000000000050",
+     "reason": "No such file"
+    }
+   }
+  },
+  {
+   "name": "talkLines",
+   "json": {
+    "talkLines": {
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "lines": [
+      {
+       "answerer": {
+        "hue": 0.55,
+        "id": "00000000-0000-0000-0000-000000000001",
+        "name": "Pip"
+       },
+       "asker": {
+        "hue": 0.1,
+        "id": "00000000-0000-0000-0000-000000000002",
+        "name": "Bo"
+       },
+       "date": 1760000000,
+       "failed": false,
+       "id": "00000000-0000-0000-0000-000000000030",
+       "question": "Q",
+       "reply": "A"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "message",
+   "json": {
+    "message": {
+     "forwarded": false,
+     "from": {
+      "hue": 0.55,
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Pip",
+      "scale": 1,
+      "traits": {
+       "blush": 0.3,
+       "eyes": 0.1,
+       "horns": 10,
+       "lids": 0.2,
+       "slant": -0.5,
+       "squint": 0,
+       "tempo": 1.2,
+       "tilt": 2
+      }
+     },
+     "id": "00000000-0000-0000-0000-000000000070",
+     "text": "Hello",
+     "to": "00000000-0000-0000-0000-000000000003",
+     "toHome": "00000000-0000-0000-0000-000000000012"
+    }
+   }
+  },
+  {
+   "name": "answer",
+   "json": {
+    "answer": {
+     "failed": false,
+     "id": "00000000-0000-0000-0000-000000000070",
+     "text": "Hi back"
+    }
+   }
+  },
+  {
+   "name": "adopt",
+   "json": {
+    "adopt": {
+     "entry": {
+      "height": 0.4,
+      "side": "left",
+      "speed": 600
+     },
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "kit": "{\"imp\":1}",
+     "secrets": {
+      "apiKey": "sk-test",
+      "headers": {
+       "Files": {
+        "Authorization": "Bearer x"
+       }
+      }
+     },
+     "transfer": "00000000-0000-0000-0000-000000000080"
+    }
+   }
+  },
+  {
+   "name": "adopted",
+   "json": {
+    "adopted": {
+     "transfer": "00000000-0000-0000-0000-000000000080"
+    }
+   }
+  },
+  {
+   "name": "declined with a reason from the future",
+   "json": {
+    "declined": {
+     "transfer": "00000000-0000-0000-0000-000000000040",
+     "reason": "overbooked"
+    }
+   },
+   "reencodes": {
+    "declined": {
+     "transfer": "00000000-0000-0000-0000-000000000040",
+     "reason": "other"
+    }
+   }
+  }
+ ],
+ "unknown": [
+  {
+   "name": "a type from the future",
+   "json": {
+    "warp": {
+     "to": "mars"
+    }
+   }
+  },
+  {
+   "name": "not an object",
+   "json": [
+    "ping"
+   ]
+  }
+ ],
+ "malformed": [
+  {
+   "name": "hello without proof",
+   "json": {
+    "hello": {
+     "device": "00000000-0000-0000-0000-000000000011",
+     "join": "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8=",
+     "key": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "kind": "phone",
+     "name": "Phone",
+     "version": 2
+    }
+   }
+  },
+  {
+   "name": "device id is not a UUID",
+   "json": {
+    "hello": {
+     "device": "not-a-uuid",
+     "join": "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8=",
+     "key": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "kind": "phone",
+     "name": "Phone",
+     "proof": "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBw==",
+     "version": 2
+    }
+   }
+  },
+  {
+   "name": "unknown device kind",
+   "json": {
+    "hello": {
+     "device": "00000000-0000-0000-0000-000000000011",
+     "join": "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8=",
+     "key": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "kind": "tablet",
+     "name": "Phone",
+     "proof": "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBw==",
+     "version": 2
+    }
+   }
+  },
+  {
+   "name": "home card with a short door key",
+   "json": {
+    "pass": {
+     "entry": {
+      "height": 0.4,
+      "side": "left",
+      "speed": 600
+     },
+     "home": {
+      "device": {
+       "id": "00000000-0000-0000-0000-000000000010",
+       "key": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+       "kind": "mac",
+       "name": "Studio Mac"
+      },
+      "door": "AAEC",
+      "routes": {
+       "hop": "hop.example.com:4677",
+       "hosts": [
+        "192.168.1.5",
+        "studio.local"
+       ],
+       "port": 47824
+      }
+     },
+     "imp": {
+      "hue": 0.55,
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Pip",
+      "scale": 1,
+      "traits": {
+       "blush": 0.3,
+       "eyes": 0.1,
+       "horns": 10,
+       "lids": 0.2,
+       "slant": -0.5,
+       "squint": 0,
+       "tempo": 1.2,
+       "tilt": 2
+      }
+     },
+     "ticket": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "transfer": "00000000-0000-0000-0000-000000000040"
+    }
+   }
+  },
+  {
+   "name": "two message types in one frame",
+   "json": {
+    "ping": {},
+    "pong": {}
+   }
+  },
+  {
+   "name": "unknown feeling",
+   "json": {
+    "felt": {
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "feeling": "tickle"
+    }
+   }
+  }
+ ],
+ "unsound": [
+  {
+   "name": "claim with a short ticket",
+   "json": {
+    "claim": {
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "ticket": "AAEC"
+    }
+   }
+  },
+  {
+   "name": "pass with a ticket but no home card",
+   "json": {
+    "pass": {
+     "entry": {
+      "height": 0.4,
+      "side": "left",
+      "speed": 600
+     },
+     "home": null,
+     "imp": {
+      "hue": 0.55,
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Pip",
+      "scale": 1,
+      "traits": {
+       "blush": 0.3,
+       "eyes": 0.1,
+       "horns": 10,
+       "lids": 0.2,
+       "slant": -0.5,
+       "squint": 0,
+       "tempo": 1.2,
+       "tilt": 2
+      }
+     },
+     "ticket": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "transfer": "00000000-0000-0000-0000-000000000040"
+    }
+   }
+  }
+ ]
+}

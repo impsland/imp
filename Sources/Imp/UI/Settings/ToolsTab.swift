@@ -1,4 +1,5 @@
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -9,12 +10,14 @@ struct ToolsTab: View {
     @Binding var imp: ImpProfile
     @State private var editing: Draft?
     @State private var forgetting: MCPServerConfig?
+    /// Ids of the groups whose tool lists are open (`own.body`, `mcp.files`).
+    @State private var opened: Set<String> = []
     @Environment(\.impTint) private var tint
 
     private var name: String { imp.callName }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Metrics.gap) {
+        VStack(alignment: .leading, spacing: Spacing.medium) {
             Card("Abilities", icon: "sparkles",
                  info: "What \(name) can do by itself. Its model decides when to use each one.") {
                 VStack(spacing: 8) {
@@ -34,7 +37,7 @@ struct ToolsTab: View {
                         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
                         NSWorkspace.shared.open(folder)
                     }
-                    Toggle(String(""), isOn: $imp.usesShell).labelsHidden().toggleStyle(.switch).controlSize(.small)
+                    Toggle(String(""), isOn: $imp.usesShell).labelsHidden().toggleStyle(.impSwitchBare)
                         .help(imp.usesShell ? "\(name) can run commands" : "\(name) only talks")
                 }
             } content: {
@@ -112,6 +115,16 @@ struct ToolsTab: View {
     }
 
     private func ownToolRow(_ group: ImpToolGroup) -> some View {
+        let id = ToolRegistry.ownGroupID(group)
+        return VStack(alignment: .leading, spacing: 6) {
+            ownGroupHeader(group, id: id)
+            if opened.contains(id) {
+                toolSwitches(ToolRegistry.tools(in: group), groupOn: imp.uses(group))
+            }
+        }
+    }
+
+    private func ownGroupHeader(_ group: ImpToolGroup, id: String) -> some View {
         HStack(spacing: 10) {
             Image(systemName: group.symbol)
                 .font(.system(size: 12, weight: .semibold))
@@ -123,9 +136,46 @@ struct ToolsTab: View {
                 InfoTip(verbatim: group.summary)
             }
             Spacer(minLength: 8)
+            expander(id)
             Toggle(String(""), isOn: Binding(get: { imp.uses(group) }, set: { imp.setUses(group, $0) }))
-                .labelsHidden().toggleStyle(.switch).controlSize(.small)
+                .labelsHidden().toggleStyle(.impSwitchBare)
                 .help(imp.uses(group) ? "\(name) can do this" : "Off")
+        }
+    }
+
+    /// The chevron that opens or closes a group's list of tools.
+    private func expander(_ id: String) -> some View {
+        HoverIconButton(systemName: opened.contains(id) ? "chevron.up" : "chevron.down",
+                        help: opened.contains(id) ? "Hide the tools" : "Show the tools") {
+            withAnimation(.snappy(duration: 0.2)) { if !opened.insert(id).inserted { opened.remove(id) } }
+        }
+    }
+
+    /// One switch for each tool. While its group is off they're shown dimmed and can't be changed.
+    private func toolSwitches(_ tools: [ToolEntry], groupOn: Bool) -> some View {
+        VStack(spacing: 6) {
+            if tools.isEmpty { StatusText(text: "No tools yet.") }
+            ForEach(tools) { tool in
+                HStack(spacing: 8) {
+                    Text(verbatim: tool.title).font(.system(size: 12)).lineLimit(1)
+                    Spacer(minLength: 8)
+                    Toggle(String(""), isOn: Binding(get: { imp.uses(tool: tool.id) }, set: { imp.setUses(tool: tool.id, $0) }))
+                        .labelsHidden().toggleStyle(.impSwitchBare)
+                        .help(imp.uses(tool: tool.id) ? "\(name) can use it" : "Off")
+                }
+            }
+        }
+        .padding(.leading, 38)
+        .opacity(groupOn ? 1 : 0.5)
+        .disabled(!groupOn)
+    }
+
+    /// The tools a server told us about, as registry entries.
+    private func tools(of server: MCPServerConfig) -> [ToolEntry] {
+        guard case .ready(_, let names)? = model.assistant.toolStatus[server.id] else { return [] }
+        return names.map {
+            ToolEntry(id: ToolRegistry.mcpID(server: server.name, tool: $0), name: $0,
+                      group: ToolRegistry.mcpGroupID(server: server.name), title: $0)
         }
     }
 
@@ -183,7 +233,17 @@ struct ToolsTab: View {
 
     private func serverRow(_ server: MCPServerConfig) -> some View {
         let on = imp.servers.contains(server.id)
-        return HStack(spacing: 10) {
+        let id = ToolRegistry.mcpGroupID(server: server.name)
+        return VStack(alignment: .leading, spacing: 6) {
+            serverHeader(server, on: on, id: id)
+            if opened.contains(id) {
+                if on { toolSwitches(tools(of: server), groupOn: on) } else { StatusText(text: "Switch it on to choose its tools.").padding(.leading, 38) }
+            }
+        }
+    }
+
+    private func serverHeader(_ server: MCPServerConfig, on: Bool, id: String) -> some View {
+        HStack(spacing: 10) {
             Image(systemName: server.transport == .stdio ? "terminal.fill" : "globe")
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(on ? tint : .secondary)
@@ -198,12 +258,13 @@ struct ToolsTab: View {
                 }
             }
             Spacer(minLength: 8)
+            expander(id)
             ShareKitButton(kit: Kit(name: server.name, servers: [server]), help: "Share “\(server.name)” as a kit. Keys are left out.")
             HoverIconButton(systemName: "pencil", help: "Edit “\(server.name)”") { editing = Draft(server: server, isNew: false) }
             HoverIconButton(systemName: "trash", help: "Remove “\(server.name)” for every Imp", tint: .red) { forgetting = server }
             Toggle(String(""), isOn: Binding(get: { on }, set: { use in
                 if use { imp.servers.append(server.id) } else { imp.servers.removeAll { $0 == server.id } }
-            })).labelsHidden().toggleStyle(.switch).controlSize(.small)
+            })).labelsHidden().toggleStyle(.impSwitchBare)
                 .help(on ? "\(name) can use it" : "Let \(name) use it")
         }
     }

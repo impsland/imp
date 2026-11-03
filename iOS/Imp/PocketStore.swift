@@ -14,6 +14,7 @@ final class PocketStore {
         self.secrets = secrets
         self.url = url
         imps = (try? Data(contentsOf: url)).map(PocketImp.decodeAll) ?? []
+        for imp in imps { secrets.migrateLegacyHeaders(of: imp) }
     }
 
     func imp(_ id: UUID) -> PocketImp? { imps.first { $0.id == id } }
@@ -26,13 +27,17 @@ final class PocketStore {
         persist()
     }
 
-    /// Changes an Imp. The header values of servers it no longer has are forgotten.
+    /// Changes an Imp. The values of headers it no longer has are forgotten.
     func update(_ id: UUID, _ change: (inout PocketImp) -> Void) {
         guard let i = imps.firstIndex(where: { $0.id == id }) else { return }
         let before = imps[i].servers
         change(&imps[i])
-        let kept = Set(imps[i].servers.filter { $0.header != nil }.map(\.id))
-        for server in before where !kept.contains(server.id) { secrets.remove(.header(server.id), imp: id) }
+        for server in before {
+            let now = imps[i].servers.first { $0.id == server.id }
+            let kept = Set((now?.headers ?? []).map { $0.lowercased() })
+            for name in server.headers where !kept.contains(name.lowercased()) { secrets.remove(.header(server.id, name), imp: id) }
+            if now == nil { secrets.remove(.legacyHeader(server.id), imp: id) }
+        }
         persist()
     }
 

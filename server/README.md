@@ -2,9 +2,26 @@
 
 One Rust workspace, one Docker image, two services. The wire contract is in [PROTOCOL.md](PROTOCOL.md).
 
-- **den** (`crates/den`): accounts, shared kits, the web gallery and the MCP endpoint over HTTP.
-- **hop** (`crates/hop`): the blind relay that lets a device reach the device that hosts it. Listens on TCP 4677.
-- **shared** (`crates/shared`): configuration, client IP, rate limiting, logging and shutdown helpers.
+- **imp-den** (`crates/den`, command `den`): accounts, shared kits, the web gallery and the MCP endpoint over HTTP.
+- **imp-hop** (`crates/hop`, command `hop`): the blind relay that lets a device reach the device that hosts it. Listens on TCP 4677.
+- **imp-shared** (`crates/shared`): configuration, client IP, rate limiting, logging and shutdown helpers.
+- **imp-core** (`crates/core`) and **imp-cli** (`crates/cli`, command `imp`): the terminal app and the logic it shares.
+
+## Run from GitHub Packages
+
+The image is published as `ghcr.io/impsland/imp` for amd64 and arm64: `latest` follows `main`,
+and a tag such as `server-v1.1.0` publishes `1.1.0` and `1.1`. To try it on one computer:
+
+```sh
+docker run -d --name den -p 8080:8080 -v den-data:/data \
+  -e DEN_SECRET="$(openssl rand -base64 48)" -e DEN_PUBLIC_URL=http://localhost:8080 -e DEN_ADDR=0.0.0.0:8080 \
+  ghcr.io/impsland/imp serve
+docker run -d --name hop -p 4677:4677 -e HOP_ADDR=0.0.0.0:4677 --entrypoint hop ghcr.io/impsland/imp
+```
+
+Then set the server in Imp's Devices tab to `http://<this computer>:8080`. Keep the `DEN_SECRET` you chose:
+the Den needs the same one after a restart. For a public server with TLS, use Docker Compose below,
+which runs the same image.
 
 ## Run locally
 
@@ -12,10 +29,14 @@ One Rust workspace, one Docker image, two services. The wire contract is in [PRO
 DEN_SECRET="$(openssl rand -base64 48)" \
 DEN_PUBLIC_URL=http://localhost:8080 \
 DEN_DATABASE=/tmp/den.db \
-cargo run -p den
+cargo run -p imp-den
 
-cargo run -p hop
+cargo run -p imp-hop
 ```
+
+On a computer that just wants to be its own server, `imp serve` (from `crates/cli`) runs the Den and the Hop
+in one process, on the same ports (8080 and 4677), with data and a generated secret in its own data folder.
+The Docker image and the `den` and `hop` programs are not affected.
 
 Check with `cargo fmt --all`, `cargo clippy --workspace --all-targets --locked -- -D warnings` and
 `cargo test --workspace --locked`.
@@ -24,8 +45,10 @@ Check with `cargo fmt --all`, `cargo clippy --workspace --all-targets --locked -
 
 ```sh
 cp .env.example .env     # set DEN_SECRET, DEN_HOST and DEN_PUBLIC_URL
-docker compose up -d --build
+docker compose up -d     # pulls ghcr.io/impsland/imp (add --build to build it from this folder)
 ```
+
+`IMP_IMAGE` in `.env` picks another image or tag, for example `ghcr.io/impsland/imp:1.1`.
 
 Caddy terminates TLS for `DEN_HOST` on ports 80 and 443 and gets its certificate on its own, so
 the DNS name must already point at the server. The Hop is published directly on `4677/tcp`.

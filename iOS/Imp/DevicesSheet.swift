@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -18,18 +19,25 @@ struct DevicesSheet: View {
                 VStack(spacing: 18) {
                     thisIPhone
                     linked
+                    ShakeSettingsCard()
                     ServerCard(hub: hub)
+                    requests
                 }
                 .padding(.horizontal, 16).padding(.bottom, 24)
             }
+            .dismissesKeyboard()
+            .keyboardGap()
             .background(Dungeon.deep)
             .navigationTitle("Devices")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
+                // The navigation bar keeps the system's button: system chrome sizes and tints it.
+                ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() }.buttonStyle(.automatic) }
             }
         }
+        .impControls(tint: Dungeon.ember)
+        .tipHost()
         .fullScreenCover(isPresented: $scanning) { LinkScanner(hub: hub, problem: $problem, scanning: $scanning) }
         .confirmationDialog(forgetting.map { String(localized: "Forget \($0.name)?") } ?? "",
                             isPresented: Binding(get: { forgetting != nil }, set: { if !$0 { forgetting = nil } }),
@@ -48,29 +56,87 @@ struct DevicesSheet: View {
     // MARK: This iPhone
 
     private var thisIPhone: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: Spacing.medium) {
             Text("This iPhone is called")
-                .font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
+                .font(Typeface.caption).foregroundStyle(Dungeon.muted)
             NameField(hub: hub)
             Text("Scan this with Imp on another device")
-                .font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
-                .padding(.top, 4)
+                .font(Typeface.caption).foregroundStyle(Dungeon.muted)
+                .padding(.top, Spacing.tight)
             InviteCode(hub: hub)
-            HStack(spacing: 6) {
+            // Every button of the card is as wide as the card's content.
+            VStack(spacing: Spacing.small) {
                 if let problem { IssueBadge(text: problem, opensAtOnce: true) }
                 if CodeScanner.isAvailable {
                     Button { problem = nil; scanning = true } label: { Label("Scan a Code", systemImage: "qrcode.viewfinder") }
                         .buttonStyle(EmberButtonStyle())
                 }
+                Button { problem = LinkClipboard.join(hub) } label: { Label("Paste Link", systemImage: "doc.on.clipboard") }
+                    .buttonStyle(EmberButtonStyle(filled: false))
             }
-            Button { problem = LinkClipboard.join(hub) } label: { Label("Paste Link", systemImage: "doc.on.clipboard") }
-                .font(.system(.subheadline, design: .rounded, weight: .medium))
-                .foregroundStyle(Dungeon.muted)
         }
         .padding(16)
         .frame(maxWidth: .infinity)
-        .card()
+        .impCard()
         .animation(.easeInOut, value: problem)
+    }
+
+    // MARK: Requests
+
+    /// How long an Imp of this iPhone waits for its service and what it does when the network drops.
+    /// Changes count from the next request.
+    private var requests: some View {
+        VStack(alignment: .leading, spacing: Spacing.small) {
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.clockwise").font(.system(size: 12, weight: .semibold)).foregroundStyle(Dungeon.ember)
+                    .frame(width: 24, height: 24)
+                    .background(RoundedRectangle(cornerRadius: Radius.small, style: .continuous).fill(Dungeon.ember.opacity(0.16)))
+                    .accessibilityHidden(true)
+                Text("Requests").font(Typeface.cardTitle).foregroundStyle(Dungeon.cream).lineLimit(1)
+                    .accessibilityAddTraits(.isHeader)
+                IssueBadge(text: String(localized: "How long an Imp waits for a model, and what it does when the network drops for a moment."), kind: .info)
+                Spacer(minLength: 0)
+            }
+            limitRow("Wait up to", info: String(localized: "A request that hasn't finished after this long ends with a message instead of waiting on."),
+                     value: limit(\.timeoutSeconds), range: 5...600, step: 15) { "\(Int($0)) s" }
+            CardDivider()
+            limitRow("Retries", info: String(localized: "How many times a request is tried again after the network drops or the service is busy. Wrong keys and bad requests are never retried."),
+                     value: limit(\.retries, as: Double.self), range: 0...10, step: 1) { "\(Int($0))" }
+            CardDivider()
+            limitRow("First wait", info: String(localized: "The pause before the first retry."),
+                     value: limit(\.retryDelaySeconds), range: 0...60, step: 0.5) { "\($0.formatted()) s" }
+            CardDivider()
+            limitRow("Longer each time", info: String(localized: "Each pause is this many times longer than the one before."),
+                     value: limit(\.backoff), range: 1...10, step: 0.5) { "× \($0.formatted())" }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .impCard()
+    }
+
+    private func limitRow(_ title: LocalizedStringKey, info: String, value: Binding<Double>, range: ClosedRange<Double>, step: Double,
+                          text: @escaping (Double) -> String) -> some View {
+        HStack(spacing: 6) {
+            Text(title).font(Typeface.body).foregroundStyle(Dungeon.cream).lineLimit(2)
+            IssueBadge(text: info, kind: .info)
+            Spacer(minLength: 8)
+            ImpStepper(value: value, in: range, step: step) {
+                Text(verbatim: text(value.wrappedValue)).frame(minWidth: 44, alignment: .trailing)
+            }
+            .accessibilityLabel(title)
+        }
+        .frame(minHeight: Sizing.hit)
+    }
+
+    /// One of the limits as a number to step.
+    private func limit(_ path: WritableKeyPath<RequestLimits, Double>) -> Binding<Double> {
+        Binding(get: { pocket.limits[keyPath: path] },
+                set: { var l = pocket.limits; l[keyPath: path] = $0; pocket.setLimits(l) })
+    }
+
+    private func limit(_ path: WritableKeyPath<RequestLimits, Int>, as: Double.Type) -> Binding<Double> {
+        Binding(get: { Double(pocket.limits[keyPath: path]) },
+                set: { var l = pocket.limits; l[keyPath: path] = Int($0); pocket.setLimits(l) })
     }
 
     // MARK: Linked devices
@@ -79,24 +145,24 @@ struct DevicesSheet: View {
         VStack(alignment: .leading, spacing: 10) {
             if hub.links.isEmpty {
                 Text("Nobody is linked yet. Show your code to another device, or scan theirs, and Imps can travel between you.")
-                    .font(.system(.callout, design: .rounded)).foregroundStyle(Dungeon.muted)
+                    .font(Typeface.body).foregroundStyle(Dungeon.muted)
                     .padding(.horizontal, 4)
             } else {
                 Text("Linked")
-                    .font(.system(.footnote, design: .rounded, weight: .semibold)).foregroundStyle(Dungeon.muted)
+                    .font(Typeface.caption).foregroundStyle(Dungeon.muted)
                     .padding(.horizontal, 4)
                 ForEach(hub.links) { link in device(link.device) }
                 if !elsewhere.isEmpty {
                     Text("Away")
-                        .font(.system(.footnote, design: .rounded, weight: .semibold)).foregroundStyle(Dungeon.muted)
+                        .font(Typeface.caption).foregroundStyle(Dungeon.muted)
                         .padding(.horizontal, 4).padding(.top, 6)
                     VStack(spacing: 0) {
                         ForEach(elsewhere, id: \.id) { imp in held(imp, by: hub.holders[imp.id].map(hub.deviceName)) }
                     }
-                    .padding(14).card()
+                    .padding(14).impCard()
                 }
-                Button(role: .destructive) { forgettingEveryone = true } label: { Label("Forget Everyone…", systemImage: "xmark.circle") }
-                    .font(.system(.subheadline, design: .rounded, weight: .medium))
+                Button { forgettingEveryone = true } label: { Label("Forget Everyone…", systemImage: "xmark.circle") }
+                    .buttonStyle(.destructive)
                     .frame(maxWidth: .infinity).padding(.top, 8)
             }
         }
@@ -118,19 +184,19 @@ struct DevicesSheet: View {
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(Dungeon.flame)
                     .frame(width: 40, height: 40)
-                    .background(Dungeon.ember.opacity(0.16), in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+                    .background(Dungeon.ember.opacity(0.16), in: RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
                 VStack(alignment: .leading, spacing: 2) {
                     Text(device.name).font(.system(.body, design: .rounded, weight: .semibold)).foregroundStyle(Dungeon.cream)
                     status(of: device)
                 }
                 Spacer(minLength: 8)
-                Button("Forget…", role: .destructive) { forgetting = device }
-                    .font(.system(.footnote, design: .rounded, weight: .medium))
+                Button("Forget…") { forgetting = device }
+                    .buttonStyle(.destructive)
             }
             Toggle(isOn: Binding(get: { hub.isTrusted(device.id) }, set: { hub.setTrusted(device.id, $0) })) {
-                Text("Mine").font(.system(.subheadline, design: .rounded, weight: .medium)).foregroundStyle(Dungeon.cream)
+                Text("Mine").font(Typeface.label).foregroundStyle(Dungeon.cream)
             }
-            .tint(Dungeon.ember)
+            .toggleStyle(.impSwitch)
             Text("Turn on only for your own devices: their requests may then use the tools of your Imps.")
                 .font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
             if !holding.isEmpty {
@@ -144,7 +210,7 @@ struct DevicesSheet: View {
             }
         }
         .padding(14)
-        .card()
+        .impCard()
         .accessibilityElement(children: .contain)
     }
 
@@ -170,7 +236,7 @@ struct DevicesSheet: View {
             }
             Spacer(minLength: 8)
             Button { hub.callHome(imp.id) } label: { Label("Call Home", systemImage: "house") }
-                .font(.system(.footnote, design: .rounded, weight: .semibold))
+                .buttonStyle(.secondary)
                 .accessibilityLabel("Call \(imp.name) Home")
         }
         .padding(.vertical, 6)
@@ -193,19 +259,17 @@ private struct ServerCard: View {
                 }
             }
             TextField(String("imp.example.org"), text: $text)
+                .impField(mono: true)
                 .focused($focused)
                 .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
                 .submitLabel(.done)
-                .font(.system(.body, design: .monospaced))
-                .padding(.horizontal, 12).padding(.vertical, 9)
-                .background(Dungeon.card, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .onSubmit(commit)
                 .onChange(of: focused) { _, now in if !now { commit() } }
             Text("With a server, your devices find each other from anywhere, not just on your Wi-Fi. The server only passes encrypted data along. It can't read anything.")
                 .font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
         }
         .padding(14)
-        .card()
+        .impCard()
         .onAppear { text = hub.server }
     }
 

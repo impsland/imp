@@ -38,6 +38,14 @@ final class ImpModel {
     /// Degrees it swings while you carry it around (it lags behind the way it's going).
     var carryLean = 0.0
 
+    /// Where the cursor is while this Imp should be going after it (nil: it stays put). Set by its
+    /// inner life a few times a second, read by its window while it hops or glides.
+    @ObservationIgnored var followCursor: CGPoint?
+    /// Starts the window following `followCursor` (it does nothing when already there).
+    @ObservationIgnored var onFollow: (() -> Void)?
+    /// You have hold of it, or just did: it doesn't run after the cursor until then.
+    @ObservationIgnored var followBlockedUntil = Date.distantPast
+
     @ObservationIgnored var onBubbleChange: (() -> Void)?
     @ObservationIgnored var onScaleChange: (() -> Void)?
     /// Moves its window to a screen point (the bottom-left of its panel), the way `Travel` says.
@@ -104,6 +112,8 @@ final class ImpModel {
         var asking: Bubble.Exchange?
         /// The Imp whose chat of its own this work belongs to (nil: the chat you're in).
         var peerChat: ChatTurn.Sender?
+        /// Goes on in the latest chat with that Imp (false: a new conversation).
+        var continuing = true
     }
     private(set) var work: Work?
     /// The work, if it belongs in the chat you're in: talk with another Imp in a chat of its own
@@ -117,7 +127,9 @@ final class ImpModel {
     @ObservationIgnored private var streamShownAt = Date.distantPast
     @ObservationIgnored private let log = Logger(subsystem: "app.imp.Imp", category: "imp")
 
-    static let sleepAfter: TimeInterval = 240
+    /// Asleep: a trigger put it to sleep (by default, being left alone for a while) and nothing has
+    /// woken it since. Touching it, or a wake-up trigger, does.
+    private(set) var asleep = false
 
     init(id: UUID, app: AppModel, visiting: Visiting? = nil) {
         self.id = id
@@ -182,7 +194,9 @@ final class ImpModel {
         if let flash, flash.until > date { return flash.mood }
         if let activity { return activity.mood }
         if let m = life.step?.mood { return m }
-        if date.timeIntervalSince(lastActivity) > Self.sleepAfter { return .sleepy }
+        // No brain to think with: asleep, as on the iPhone (asking it says what is missing).
+        if visit == nil, !isReady { return .sleepy }
+        if asleep { return .sleepy }
         return .idle
     }
 
@@ -196,8 +210,7 @@ final class ImpModel {
 
     /// Nothing going on: no job, no bubble, no reaction, not asleep.
     func isFree(at date: Date) -> Bool {
-        (flash.map { $0.until <= date } ?? true) && !isBusy && bubble == nil
-            && date.timeIntervalSince(lastActivity) <= Self.sleepAfter
+        (flash.map { $0.until <= date } ?? true) && !isBusy && bubble == nil && !asleep
     }
 
     /// 0…1 "energy" for the current mood (mic loudness).
@@ -211,6 +224,7 @@ final class ImpModel {
 
     func touch() {
         lastActivity = Date()
+        asleep = false
         if life.antic?.isWake == false { life.cancel() }
     }
 
@@ -325,8 +339,6 @@ final class ImpModel {
         history.open(chat)
     }
 
-    func renameChat(_ chat: UUID, to title: String) { history.rename(chat, to: title) }
-
     /// A chat from a file: listed first, ready to carry on in (the chat you're in stays as it is).
     func importChat(_ chat: Chat) { history.adopt(chat) }
 
@@ -334,11 +346,6 @@ final class ImpModel {
     func deleteChat(_ chat: UUID) {
         if chat == history.current.id { stopForChatChange() }
         history.delete(chat)
-    }
-
-    func deleteAllChats() {
-        stopForChatChange()
-        history.deleteAll()
     }
 
     /// Shows `sample` as its chats (offscreen design renders only).
@@ -385,18 +392,27 @@ final class ImpModel {
     /// Adds the finished (or failed) request to the chat, with what the model should remember
     /// of it (`exchange`: nil when it never got an answer).
     private func record(_ ask: ChatTurn?, reply: String, failed: Bool = false, exchange: [ChatMessage]? = nil,
-                        peerChat: ChatTurn.Sender? = nil) {
+                        peerChat: ChatTurn.Sender? = nil, continuing: Bool = true) {
         guard var turn = ask else { return }
         turn.reply = reply
         turn.failed = failed
         turn.steps = finishedSteps.compactMap(\.saved)
         if let peerChat {
-            history.append(turn, remembering: exchange, withPeer: peerChat)
+            history.append(turn, remembering: exchange, withPeer: peerChat, continuing: continuing)
             return
         }
         if isChatting && !failed { freshTurns.insert(turn.id) }
         history.append(turn, remembering: exchange)
+        if visit == nil, !failed {
+            history.checkContext(threshold: app.prefs.contextNoticeTokens, exchanges: profile.memoryExchanges, tools: profile.remembersToolCalls)
+        }
     }
+
+    /// The long-chat suggestion is up for the chat you're in.
+    var showsContextNotice: Bool { visit == nil && history.contextNoticeShown }
+
+    /// Waves the long-chat suggestion away (it never comes back for this chat).
+    func dismissContextNotice() { history.dismissContextNotice() }
 
     func perform(_ link: Bubble.Link) {
         switch link {
@@ -420,7 +436,7 @@ final class ImpModel {
         // Stopped half-way (✕, a click, a new request): the history still shows what it did.
         if let w = work {
             // A visitor's home keeps the chat: it is told to stop, and records it.
-            if visit == nil { record(w.ask, reply: String(localized: "Stopped before answering."), failed: true, peerChat: w.peerChat) }
+            if visit == nil { record(w.ask, reply: String(localized: "Stopped before answering."), failed: true, peerChat: w.peerChat, continuing: w.continuing) }
             else { app.link.stop(id) }
         }
         work = nil
@@ -532,6 +548,7 @@ final class ImpModel {
     /// on the clipboard (or `clip`, from a URL command) unless it sends the instruction alone.
     /// `happened`: what set it off on the Mac (nil: the user did, with keys, clicks or a menu).
     func perform(_ shortcut: Shortcut, clip given: Clip? = nil, happened: String? = nil) {
+        if shortcut.runsLocally { return runLocal(shortcut) }
         touch()
         app.focus(self)
         switch shortcut.command {
@@ -541,6 +558,7 @@ final class ImpModel {
         case .settings:
             stopWaitingForUser()
             return HomeWindow.shared.show(app, settingsFor: id, tab: isReady ? nil : .brain)
+        case .sleep, .wakeUp, .play: return
         case .ask: break
         }
         if let given { return start(.shortcut(shortcut, given, happened: happened)) }
@@ -552,6 +570,31 @@ final class ImpModel {
         start(.shortcut(shortcut, clip, happened: happened))
     }
 
+    /// A trigger that acts on the body alone: no brain, no model call, just the Imp.
+    func runLocal(_ shortcut: Shortcut) {
+        switch shortcut.command {
+        case .sleep: fallAsleep(playing: shortcut.animation)
+        case .wakeUp: wakeUp(playing: shortcut.animation)
+        case .play: if let ref = shortcut.animation { life.perform(ref) }
+        default: break
+        }
+    }
+
+    /// Falls asleep, playing `ref` on the way if there is one.
+    func fallAsleep(playing ref: AnimationRef?) {
+        guard !asleep, visit?.isAwake != false else { return }
+        asleep = true
+        if let ref { life.perform(ref) }
+    }
+
+    /// Wakes up with `ref`, or its built-in wake-up. Does nothing for an Imp that is awake, or
+    /// asleep because its home is away.
+    func wakeUp(playing ref: AnimationRef?) {
+        guard visit?.isAwake != false, asleep || (visit == nil && !isReady) else { return }
+        touch()
+        if let ref { life.perform(ref) } else { life.wake() }
+    }
+
     /// Free to take on something the Mac set off: not working, and you're not typing, talking or chatting to it.
     var isAvailable: Bool {
         !isBusy && ![.typing, .listening, .chat].contains(bubble?.phase)
@@ -561,12 +604,17 @@ final class ImpModel {
     /// goes back. Never interrupts work in progress.
     /// `limitedTo` names the device it comes from when that isn't one of the owner's own: the Imp
     /// answers without any tool then.
-    func answer(_ text: String, from sender: ChatTurn.Sender, in place: ImpTalk.Place, limitedTo device: String? = nil) async throws -> String {
+    func answer(_ text: String, from sender: ChatTurn.Sender, in place: ImpTalk.Place, conversation: String? = nil,
+                limitedTo device: String? = nil) async throws -> String {
         guard !isBusy else { throw ToolArgumentError("\(profile.name) is busy right now. Try again later.") }
-        return try await withCheckedThrowingContinuation { c in
-            start(.message(from: sender, text: text, place: place), limitedTo: device)
+        // Files either side mentions are named by their owner Imp, so the other one can open them
+        // (a path relative to one Workspace means nothing in another). See `WorkspaceReference`.
+        let said = WorkspaceReference.canonicalize(text, owner: sender.id)
+        let reply: String = try await withCheckedThrowingContinuation { c in
+            start(.message(from: sender, text: said, place: place, conversation: conversation), limitedTo: device)
             replyTo = c
         }
+        return WorkspaceReference.canonicalize(reply, owner: profile.id)
     }
 
     private func finishReply(_ result: Result<String, Error>) {
@@ -651,7 +699,7 @@ final class ImpModel {
         /// it off on the Mac (nil: the user did).
         case shortcut(Shortcut, Clip?, happened: String?)
         /// Another Imp's message (`imp_message`).
-        case message(from: ChatTurn.Sender, text: String, place: ImpTalk.Place)
+        case message(from: ChatTurn.Sender, text: String, place: ImpTalk.Place, conversation: String?)
     }
 
     private func start(_ source: Source, limitedTo device: String? = nil) {
@@ -661,7 +709,18 @@ final class ImpModel {
         cancel()
         stopActing()                                  // the last answer's show is over
         recapTask?.cancel()                           // a new turn would slip past the recap
+        showPending(source)
         job = Task { await run(source, limitedTo: device) }
+    }
+
+    /// Typed words show at once, before the job has started: in the chat as the newest turn with
+    /// its dots (the earlier turns stay), else as the thinking bubble (the text box doesn't blink
+    /// away while the job starts). `run` takes over with the real request.
+    private func showPending(_ source: Source) {
+        guard case .typed(let words, _) = source else { return }
+        let heading = words.isEmpty ? String(localized: "A picture") : "“\(words)”"
+        work = Work(ask: ChatTurn(request: words, via: .typed), heading: heading, title: "")
+        thinking(heading, captions: Captions.thinking)
     }
 
     private func nothingCopied(_ shortcut: Shortcut) {
@@ -675,7 +734,7 @@ final class ImpModel {
         var title = ""
         /// What you asked, for the history (nil until there's something to answer).
         var ask: ChatTurn?
-        var received: Bubble.Exchange?, peerChat: ChatTurn.Sender?
+        var received: Bubble.Exchange?, peerChat: ChatTurn.Sender?, continuing = true
         do {
             let turn: ChatMessage, heading: String
             switch source {
@@ -701,15 +760,21 @@ final class ImpModel {
                 if case .text(let text)? = clip { copied = text }
                 ask = ChatTurn(request: shortcut.name, via: .shortcut, instruction: instruction.isEmpty ? nil : instruction,
                                copiedText: copied, picture: path)
-            case .message(let sender, let text, let place):
+            case .message(let sender, let text, let place, let conversation):
                 turn = Briefing.message(from: sender.name, text)
                 heading = "“\(text)”"
                 ask = ChatTurn(request: text, via: .imp, sender: sender)
                 received = Bubble.Exchange(role: .asked, peer: sender, question: text)
-                if place == .own { peerChat = sender }
+                if place == .own {
+                    peerChat = sender
+                    continuing = app.prefs.talkThreading.continues(asked: conversation, last: history.lastTalk(withPeer: sender.id),
+                                                                   windowMinutes: app.prefs.talkWindowMinutes)
+                }
             }
-            work = ask.map { Work(ask: $0, heading: heading, title: title, received: received, peerChat: peerChat) }
+            work = ask.map { Work(ask: $0, heading: heading, title: title, received: received, peerChat: peerChat, continuing: continuing) }
             log.info("\(self.profile.name, privacy: .public) works on “\(title.isEmpty ? "a message" : title, privacy: .public)”")
+            // No usable brain (a transferred Imp, say): say so and what to do, at once.
+            if let problem = app.assistant.problem(with: profile.brain, imp: profile.name) { throw problem }
             thinking(heading, captions: Captions.thinking)
             var messaging = true
             if case .message = source { messaging = false }       // answering an Imp: no messaging back and forth
@@ -717,12 +782,12 @@ final class ImpModel {
             let tools = device != nil ? nil
                 : try app.assistant.tools(for: profile, own: ImpTools(host: OwnToolHost(app: app, imp: id, messaging: messaging)))
             if device == nil, app.assistant.toolsConnecting { addStep(.wakingUp) }
-            let (reply, exchange) = try await app.assistant.chat(messages(with: turn, peer: peerChat, limitedTo: device), brain: profile.brain, tools: tools,
+            let (reply, exchange) = try await app.assistant.chat(messages(with: turn, peer: peerChat, continuing: continuing, limitedTo: device), brain: profile.brain, tools: tools,
                                                                  stream: true) { [weak self] event in
                 self?.progress(event, title: title)
             }
             try Task.checkCancellation()
-            record(ask, reply: reply, exchange: exchange, peerChat: peerChat)
+            record(ask, reply: reply, exchange: exchange, peerChat: peerChat, continuing: continuing)
             showAnswer(reply, title: title)
             finishReply(.success(reply))
         } catch is CancellationError {
@@ -734,7 +799,7 @@ final class ImpModel {
             startTyping(prompt: String(localized: "I didn't catch that. Type it?"))
         } catch {
             guard !Task.isCancelled else { return }
-            record(ask, reply: error.localizedDescription, failed: true, peerChat: peerChat)
+            record(ask, reply: error.localizedDescription, failed: true, peerChat: peerChat, continuing: continuing)
             fail(title.isEmpty ? String(localized: "thinking") : title, error)
             finishReply(.failure(ToolArgumentError("\(profile.name) couldn't answer: \(error.localizedDescription)")))
         }
@@ -754,10 +819,10 @@ final class ImpModel {
 
     /// Its personality and instructions, the chat so far (as much as it's set to be sent), then
     /// the new turn. Its workspace is made first: the instructions send files there.
-    private func messages(with turn: ChatMessage, peer: ChatTurn.Sender? = nil, limitedTo device: String? = nil) -> [ChatMessage] {
+    private func messages(with turn: ChatMessage, peer: ChatTurn.Sender? = nil, continuing: Bool = true, limitedTo device: String? = nil) -> [ChatMessage] {
         let p = profile
         try? FileManager.default.createDirectory(at: p.workspace, withIntermediateDirectories: true)
-        let memory = peer.map { history.memory(withPeer: $0.id) } ?? history.current.memory
+        let memory = peer.map { continuing ? history.memory(withPeer: $0.id) : ChatMemory() } ?? history.current.memory
         let note = device.map { Self.limitNote(for: $0) } ?? ""
         return memory.context(system: p.systemPrompt + note, turn: turn,
                                               exchanges: p.memoryExchanges, tools: p.remembersToolCalls)
@@ -796,7 +861,7 @@ final class ImpModel {
         app.stage.broadcast(.failed, from: self)
         // Setup problems point at the Brain tab and stay until dealt with.
         let needsSetup = switch error as? APIError {
-        case .missingKey?, .keyDenied?, .noService?, .noModel?: true
+        case .missingKey?, .keyDenied?, .noService?, .noModel?, .needsBrain?: true
         default: false
         }
         work = nil
@@ -892,7 +957,7 @@ final class ImpModel {
     private func addStep(_ step: Bubble.Step) {
         guard var w = work else { return }
         // Anything still "waking up" is done once real work starts.
-        for i in w.steps.indices where w.steps[i].icon == Bubble.Step.wakingUp.icon { w.steps[i].state = .done }
+        for i in w.steps.indices where w.steps[i].tool == nil { w.steps[i].state = .done }
         w.steps.append(step)
         work = w
         showSteps()
@@ -909,7 +974,10 @@ final class ImpModel {
     private func progress(_ event: AgentEvent, title: String) {
         switch event {
         case .text(let text):
+            endRetryNote()
             stream(text, title: title)
+        case .retrying(let notice):
+            showRetry(notice)
         case .toolStarted(let name, let arguments):
             stopStreaming()
             setActivity(.tools)
@@ -925,6 +993,27 @@ final class ImpModel {
             showSteps()
             setActivity(.thinking)                     // back to the model with the result
         }
+    }
+
+    /// "Retrying 2 of 3": the network hiccuped and the request goes again. One step, kept up to date.
+    private func showRetry(_ notice: RetryNotice) {
+        guard var w = work else { return }
+        let step = Bubble.Step(icon: "arrow.clockwise", title: notice.text)
+        if let i = w.steps.lastIndex(where: { $0.tool == nil && $0.icon == step.icon }) {
+            w.steps[i].title = step.title
+            w.steps[i].state = .running
+        } else {
+            w.steps.append(step)
+        }
+        work = w
+        showSteps()
+    }
+
+    /// The retry went through (or the answer started): its note is done.
+    private func endRetryNote() {
+        guard var w = work, let i = w.steps.lastIndex(where: { $0.tool == nil && $0.icon == "arrow.clockwise" && $0.state == .running }) else { return }
+        w.steps[i].state = .done
+        work = w
     }
 
     /// Steps of the finished job, with anything still running marked done.
@@ -993,8 +1082,11 @@ extension ImpModel {
             work = Work(ask: ChatTurn(request: heard.request, via: .typed), heading: heading, title: "")
             thinking(heading, captions: Captions.thinking)
         }
-        if let status = heard.status, work?.steps.last?.title != status {
-            work?.steps = work?.steps.map { var s = $0; s.state = .done; return s } ?? []
+        if let status = heard.status, var current = work, current.steps.last?.title != status {
+            // Read, change, then write back in one step: `work?.steps = work?.steps…` begins
+            // changing `work` before it reads it, and Swift stops the app on that overlap.
+            current.steps = current.steps.map { var s = $0; s.state = .done; return s }
+            work = current
             addStep(Bubble.Step(icon: "gearshape", title: status, tool: "home"))
         }
         stream(heard.partial, title: "")

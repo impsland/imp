@@ -10,6 +10,19 @@ One Imp server runs two services from one Rust workspace and one Docker image:
 Clients pick a server by host name (`ImpServer` in ImpKit): the Den is `https://<host>`, the Hop is
 `<host>:4677`.
 
+## Versions
+
+| thing | version | notes |
+|-------|---------|-------|
+| Hop handshake | `2` | Byte 7 of the hello (`0x02`) and the `imp-hop/2` proof tag. A hello with another version is rejected (`0x01`). |
+| Den API | `v1` | In the path. Added fields and endpoints are not a new version. |
+| Kit format | `1` to `3` | `"imp"` in a kit, the oldest reader that understands it (see `docs/KITS.md`). |
+| MCP | revision `2026-07-28` | Streamable HTTP. |
+| Device link | `2` | Carried over the Hop but not part of it (see `docs/LINK.md`). |
+
+Test vectors for the parts that clients share are in `Tests/Fixtures` (see its `README.md`). The Hop
+handshake bytes, keys and proofs are pinned by `Tests/ImpKitTests/HopTests.swift`.
+
 ## Hop
 
 ### Why the Hop can't read anything
@@ -160,6 +173,7 @@ Its kind comes from what's inside: `imp` (one Imp), `animation` (animations only
 | `POST` | `/v1/items/{handle}/{slug}/installs` | | `202`: count one install |
 | `POST` | `/v1/items/{handle}/{slug}/reports` | | `{ "reason" }` → `202` |
 | `GET` | `/v1/stats` | | totals |
+| `GET` | `/healthz` | | `200 ok` when the database answers (not under `/v1`, for monitors) |
 
 Kits are checked on the way in with the same limits as Imp: at most 512 KB, 20 Imps, 50 triggers,
 20 tools, 50 animations, 24 beats per animation and 20 s in total, known moods, glyphs and moves,

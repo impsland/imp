@@ -40,7 +40,7 @@ struct BubbleCard: View {
                     if bubble.phase == .result && !bubble.isStreaming && !layout.expanded && !measuring { model.startTyping() }
                 })
                 .overlay {
-                    if layout.expanded && bubble.phase == .result && !measuring {
+                    if (layout.expanded && bubble.phase == .result || bubble.phase == .chat) && !measuring {
                         ResizeHandles { edge, ended in layout.onResize?(edge, ended) }
                     }
                 }
@@ -93,7 +93,7 @@ struct BubbleCard: View {
                 }
             // The chat is a panel, not a speech bubble: no tail (its room stays, so it doesn't jump).
             Trail(offset: layout.tailX, width: width)
-                .opacity(layout.detached || bubble.phase == .chat ? 0 : 1)
+                .opacity(BubbleTail.isShown(chat: bubble.phase == .chat, expanded: layout.expanded, detached: layout.detached) ? 1 : 0)
         }
         .frame(width: width)
         .padding(BubbleView.margin)
@@ -110,8 +110,8 @@ struct BubbleCard: View {
         hover || layout.expanded || layout.detached || [.typing, .listening, .chat].contains(bubble.phase)
     }
 
-    /// The chat reads like a long reply: at reading width.
-    private var width: CGFloat { bubble.phase == .chat ? BubbleView.readingWidth : layout.width }
+    /// The chat is as wide as the user made it (see `BubbleSizing`).
+    private var width: CGFloat { bubble.phase == .chat ? layout.chatSize.width : layout.width }
 
     private var historyOffset: CGSize {
         switch layout.closeCorner {
@@ -155,6 +155,11 @@ struct BubbleCard: View {
         .padding(.top, bubble.phase == .typing ? 8 : 12)
         .padding(.bottom, bubble.phase == .typing ? 8 : (result && ResultView.hasFooter(bubble, layout) ? 5 : 12))
         .frame(maxWidth: .infinity, alignment: .leading)
+        // The chat is a window of the size the user chose: its transcript takes what the text box leaves.
+        .frame(height: bubble.phase == .chat ? layout.chatSize.height : nil, alignment: .top)
+        .overlay(alignment: .bottomTrailing) {
+            if bubble.phase == .chat && !measuring { ResizeGrip().padding(5) }
+        }
         .background {
             // Grab the card anywhere that isn't text or a button to move it.
             Glass(cornerRadius: 20, tint: bubble.phase == .error ? .red : .imp(model.profile.hue))
@@ -167,11 +172,4 @@ struct BubbleCard: View {
             }
         }
     }
-}
-
-// MARK: - Surfaces
-
-extension EnvironmentValues {
-    /// The colour of the Imp this bubble belongs to: buttons and accents follow it.
-    @Entry var impTint: Color = .imp
 }

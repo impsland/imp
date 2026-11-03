@@ -44,6 +44,8 @@ public struct KitImp: Equatable, Sendable, Identifiable {
     /// Its character (see `ImpTraits`) and its own animations.
     public var traits: ImpTraits = .plain
     public var animations: [MadeAnimation] = []
+    /// Single tools switched off, by registry id (`ToolRegistry`).
+    public var toolsOff: [String] = []
 
     public init(name: String, hue: Double = ImpProfile.defaultHue, favoriteHue: Double? = nil, scale: Double = 1, personality: String = "",
                 instructions: String? = nil, brain: KitBrain? = nil, usesShell: Bool = true, tools: [ImpToolGroup: Bool] = [:],
@@ -76,6 +78,7 @@ public struct KitImp: Equatable, Sendable, Identifiable {
                   chats: chats.filter { $0.peer == nil && !$0.isEmpty })
         traits = profile.traits
         animations = profile.animations
+        toolsOff = profile.disabledTools.sorted()
     }
 
     /// Whether it may use a group of its own tools: what the kit says, else what a new Imp has.
@@ -114,6 +117,7 @@ public struct KitImp: Equatable, Sendable, Identifiable {
         if case .object(let groups)? = json["tools"] {
             for group in ImpToolGroup.allCases { if let on = groups[group.rawValue]?.bool { imp.tools[group] = on } }
         }
+        if let list = json["toolsOff"]?.array { imp.toolsOff = list.compactMap(\.string) }
         if let list = json["mcpServers"]?.array {
             for case .string(let key) in list {
                 if let id = names[key] { if !imp.servers.contains(id) { imp.servers.append(id) } }
@@ -149,6 +153,7 @@ public struct KitImp: Equatable, Sendable, Identifiable {
             "tools": .object(Dictionary(uniqueKeysWithValues: ImpToolGroup.allCases.map { ($0.rawValue, JSONValue.bool(uses($0))) })),
             "sendsToolCalls": .bool(sendsToolCalls),
         ]
+        if !toolsOff.isEmpty { o["toolsOff"] = .array(toolsOff.map { .string($0) }) }
         if let instructions { o["instructions"] = .string(instructions) }
         if let exchangesSent { o["exchangesSent"] = .number(Double(exchangesSent)) }
         if let brain { o["brain"] = brain.kitJSON }
@@ -339,6 +344,7 @@ extension ImpPreferences {
         p.instructions = source.instructions
         p.usesShell = source.usesShell
         for group in ImpToolGroup.allCases { p.setUses(group, source.uses(group)) }
+        for id in source.toolsOff { p.setUses(tool: id, false) }
         p.exchangesSent = source.exchangesSent
         p.sendsToolCalls = source.sendsToolCalls ? nil : false
         if let b = source.brain {

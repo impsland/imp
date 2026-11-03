@@ -1,59 +1,28 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
+import UIKit
 
-/// The phone's look: the same cosy, warm dungeon as the Mac's home window.
-enum Dungeon {
-    static let deep = Color(red: 0.12, green: 0.06, blue: 0.11)
-    static let wallTop = Color(red: 0.17, green: 0.08, blue: 0.15)
-    static let wallBottom = Color(red: 0.29, green: 0.10, blue: 0.13)
-    static let ember = Color(red: 1.0, green: 0.62, blue: 0.26)
-    static let flame = Color(red: 1.0, green: 0.80, blue: 0.36)
-    static let cream = Color(red: 1.0, green: 0.95, blue: 0.88)
-    static let muted = Color(red: 1.0, green: 0.95, blue: 0.88).opacity(0.6)
-    static let card = Color.white.opacity(0.07)
-    static let cardEdge = Color.white.opacity(0.1)
-    static let good = Color(red: 0.45, green: 0.85, blue: 0.55)
-
-    static var wall: LinearGradient {
-        LinearGradient(colors: [wallTop, wallBottom], startPoint: .top, endPoint: .bottom)
-    }
-}
+// The phone's look is ImpDesign's: the same cosy, warm dungeon as the Mac's home window. What stays
+// here needs the phone's own services (its energy budget, the keyboard).
 
 /// The wall with a few embers floating up, like the Mac's stage.
 struct DungeonBackdrop: View {
     var quiet = false
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
-            Dungeon.wall
-            Canvas { ctx, size in Self.bricks(&ctx, size: size) }
-            if !quiet {
+            DungeonWall(floor: 0.32, floorStart: 0.65)
+            if !quiet && !reduceMotion {
                 TimelineView(Energy.shared.schedule(lively: false, paused: scenePhase != .active, fastest: 1 / 20)) { timeline in
                     Canvas { ctx, size in Self.embers(&ctx, size: size, t: timeline.date.timeIntervalSinceReferenceDate) }
                 }
             }
-            // A soft floor so the room has a bottom.
-            LinearGradient(colors: [.clear, .black.opacity(0.32)], startPoint: .init(x: 0.5, y: 0.65), endPoint: .bottom)
         }
         .ignoresSafeArea()
         .allowsHitTesting(false)
-    }
-
-    static func bricks(_ ctx: inout GraphicsContext, size: CGSize) {
-        let bw: CGFloat = 64, bh: CGFloat = 28
-        var row = 0
-        var y: CGFloat = 0
-        while y < size.height {
-            var x: CGFloat = row % 2 == 0 ? 0 : -bw / 2
-            while x < size.width {
-                let r = CGRect(x: x + 2, y: y + 2, width: bw - 4, height: bh - 4)
-                ctx.fill(Path(roundedRect: r, cornerRadius: 7), with: .color(.white.opacity(0.045 * (0.6 + 0.4 * noise(row, Int(x))))))
-                x += bw
-            }
-            y += bh
-            row += 1
-        }
     }
 
     /// Embers drifting up; one in a while is a heart.
@@ -78,38 +47,32 @@ struct DungeonBackdrop: View {
     }
 }
 
-/// A rounded card on the wall.
-struct CardBackground: ViewModifier {
-    var radius: CGFloat = 18
-    func body(content: Content) -> some View {
-        content
-            .background(Dungeon.card, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).strokeBorder(Dungeon.cardEdge))
+extension View {
+    /// On a scrolling screen with a text field: dragging the content or tapping an empty part of it
+    /// puts the keyboard away. Buttons, fields and menus inside take their own taps first.
+    func dismissesKeyboard() -> some View {
+        scrollDismissesKeyboard(.interactively)
+            .onTapGesture {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
+    }
+
+    /// On a form: the field being typed in rests `gap` above the keyboard, not right on it. While the
+    /// keyboard is up, the safe area ends that much higher, and SwiftUI scrolls the focused field
+    /// inside the safe area as usual.
+    func keyboardGap(_ gap: CGFloat = Spacing.huge) -> some View {
+        modifier(KeyboardGap(gap: gap))
     }
 }
 
-extension View {
-    func card(radius: CGFloat = 18) -> some View { modifier(CardBackground(radius: radius)) }
-}
+private struct KeyboardGap: ViewModifier {
+    let gap: CGFloat
+    @State private var keyboardUp = false
 
-/// The primary, warm button.
-struct EmberButtonStyle: ButtonStyle {
-    var filled = true
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.system(.body, design: .rounded, weight: .semibold))
-            .foregroundStyle(filled ? Dungeon.deep : Dungeon.cream)
-            .padding(.horizontal, 22).padding(.vertical, 13)
-            .frame(maxWidth: .infinity)
-            .background {
-                if filled {
-                    Capsule().fill(LinearGradient(colors: [Dungeon.flame, Dungeon.ember], startPoint: .top, endPoint: .bottom))
-                        .shadow(color: Dungeon.ember.opacity(0.4), radius: 12, y: 4)
-                } else {
-                    Capsule().fill(Dungeon.card).overlay(Capsule().strokeBorder(Dungeon.cardEdge))
-                }
-            }
-            .opacity(configuration.isPressed ? 0.8 : 1)
-            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+    func body(content: Content) -> some View {
+        content
+            .safeAreaPadding(.bottom, keyboardUp ? gap : 0)
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardUp = true }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardUp = false }
     }
 }

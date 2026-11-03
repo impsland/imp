@@ -1,0 +1,37 @@
+[package]
+name = "imp-cli"
+description = "The Imp command line app: configure Imps and chat with them from a terminal"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[lib]
+name = "imp_cli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "imp"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+imp-den.path = "../den"
+directories.workspace = true
+hex.workspace = true
+imp-hop.path = "../hop"
+imp-core.workspace = true
+keyring.workspace = true
+qrcode.workspace = true
+rand.workspace = true
+ratatui.workspace = true
+serde_json.workspace = true
+textwrap.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+toml.workspace = true

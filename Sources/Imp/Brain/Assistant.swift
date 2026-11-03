@@ -14,6 +14,8 @@ final class Assistant {
     /// Keys read so far, by service ID: each is read the first time a request needs it.
     @ObservationIgnored private var keys: [UUID: String] = [:]
     private(set) var ai = AIConfig()
+    /// How long a request may take and how it is retried (`ImpPreferences.requests`).
+    private(set) var limits = RequestLimits.standard
     /// Live state of each configured MCP server.
     private(set) var toolStatus: [UUID: MCPStatus] = [:]
 
@@ -38,9 +40,6 @@ final class Assistant {
     private static func account(_ id: UUID) -> String { "service.\(id.uuidString)" }
 
     func hasKey(_ service: UUID) -> Bool { keyed.contains(service) }
-
-    /// Where saved keys are, in a few words for the settings.
-    var keyPlace: String { inKeychain ? "your Keychain" : "a private file on this Mac" }
 
     /// A key an older version saved in the Keychain, while keys now live in the file. Imp doesn't
     /// read it (that could ask for the password): paste it again, or switch the Keychain on.
@@ -120,10 +119,20 @@ final class Assistant {
         return p.isLocal || hasKey(p.id)
     }
 
+    /// Why `brain` can't answer right now, in words that say what to do (nil: it can). Cheap: it
+    /// never reads a key, so a request can check it before it starts and fail at once.
+    func problem(with brain: Brain?, imp name: String) -> APIError? {
+        guard let service = ai.service(in: brain) else { return .needsBrain(imp: name) }
+        if ai.model(in: brain).isEmpty { return .noModel }
+        if !service.isLocal, !hasKey(service.id) { return .missingKey }
+        return nil
+    }
+
     var hasTools: Bool { servers.contains(where: \.isEnabled) }
 
-    func configure(ai: AIConfig, servers: [MCPServerConfig], keychain: Bool) {
+    func configure(ai: AIConfig, servers: [MCPServerConfig], keychain: Bool, limits: RequestLimits = .standard) {
         self.ai = ai
+        self.limits = limits
         if persists {
             if configured, keychain != inKeychain { moveKeys(toKeychain: keychain) }
             inKeychain = keychain
@@ -150,7 +159,7 @@ final class Assistant {
         return try client(for: service)
     }
 
-    /// Everything an Imp may use: its own tools (`own`: body, senses, setting itself up, the troupe),
+    /// Everything an Imp may use: its own tools (`own`: body, senses, setting itself up, the troupe, computer control, the Den),
     /// the shell in its own folder (unless switched off) and its MCP servers. The shell gets the
     /// Imp's service, key and model as environment variables.
     func tools(for imp: ImpProfile, own: ToolProvider? = nil) throws -> ToolProvider? {
@@ -163,8 +172,9 @@ final class Assistant {
             members.append(ShellTool(directory: directory, environment: environment))
         }
         if !imp.servers.isEmpty { members.append(MCPScope(hub: hub, servers: Set(imp.servers))) }
-        if imp.uses(.computer) { members.append(ComputerToolHost(control: computerControl(for: imp.id))) }
-        return members.isEmpty ? nil : ToolSet(members)
+        members.append(ComputerToolHost(control: computerControl(for: imp.id)))
+        // What is switched off for the Imp (groups and single tools) is applied here, once.
+        return ToolSet(members, selection: imp.toolSelection)
     }
 
     /// Each Imp's computer control, kept so it remembers its last look between calls and requests.
@@ -190,7 +200,7 @@ final class Assistant {
         let model = ai.model(in: brain)
         let client = try client(brain: brain)
         guard !model.isEmpty else { throw APIError.noModel }
-        let agent = Agent(client: client, model: model, tools: tools)
+        let agent = Agent(client: client, model: model, tools: tools, limits: limits)
         let (reply, transcript) = try await agent.run(messages, stream: stream) { event in await onEvent(event) }
         guard !reply.isEmpty else { throw APIError.emptyResponse("text") }
         return (reply, Array(transcript[max(messages.count - 1, 0)...]))

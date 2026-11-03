@@ -1,4 +1,5 @@
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -12,6 +13,7 @@ struct MemoryCard: View {
     @State private var stored: ChatHistory?
     @State private var showsAll = false
     @State private var deleting: ChatSummary?
+    @State private var deletingTalk: TalkThread?
     @State private var notice: (text: String, ok: Bool)?
     /// Talks with other Imps, read from every Imp's chats (nil until loaded).
     @State private var talks: [TalkThread] = []
@@ -28,17 +30,17 @@ struct MemoryCard: View {
             Row("Tool calls",
                 info: "Also sends the tools \(name) used and their results, so it can reuse a file or link. Off is smaller and cheaper.") {
                 Toggle(String(""), isOn: Binding(get: { imp.remembersToolCalls }, set: { imp.sendsToolCalls = $0 ? nil : false }))
-                    .labelsHidden().toggleStyle(.switch).controlSize(.small)
+                    .labelsHidden().toggleStyle(.impSwitchBare)
             }
             CardDivider()
             Row("Remembers",
-                info: "How many recent exchanges are sent with each message. More remembers more, but each message is bigger, slower and costs more: recap a long chat to keep it small. Older ones stay in the chat to read.") {
-                Picker(String(""), selection: Binding(get: { imp.memoryExchanges },
-                                              set: { imp.exchangesSent = $0 == ChatMemory.defaultExchanges ? nil : $0 })) {
-                    ForEach(ChatMemory.choices, id: \.self) { Text("Last \($0)").tag($0) }
-                    if !ChatMemory.choices.contains(imp.memoryExchanges) { Text("Last \(imp.memoryExchanges)").tag(imp.memoryExchanges) }
+                info: "How many recent exchanges are sent with each message. By default there is no limit, so nothing important is forgotten. A smaller number makes each message smaller, faster and cheaper. You get a gentle suggestion to recap or start a new chat when a chat grows long (see General). Older exchanges stay in the chat to read.") {
+                ImpPicker("Messages sent", selection: Binding(get: { imp.memoryExchanges },
+                                                              set: { imp.exchangesSent = $0 == ChatMemory.noLimit ? nil : $0 }),
+                          options: [ChatMemory.noLimit] + ChatMemory.choices
+                            + (ChatMemory.choices.contains(imp.memoryExchanges) || imp.memoryExchanges == ChatMemory.noLimit ? [] : [imp.memoryExchanges])) {
+                    $0 == ChatMemory.noLimit ? String(localized: "No limit") : String(localized: "Last \($0)")
                 }
-                .labelsHidden().pickerStyle(.menu).fixedSize()
             }
             CardDivider()
             if let live {
@@ -63,16 +65,23 @@ struct MemoryCard: View {
         } message: { _ in
             Text("What was said and \(name)'s memory of it are gone for good. Save it as a file first to keep it.")
         }
+        .confirmationDialog("Delete the talk with \(deletingTalk?.peer.name ?? "")?", isPresented: Binding(get: { deletingTalk != nil }, set: { if !$0 { deletingTalk = nil } }),
+                            presenting: deletingTalk) { talk in
+            Button("Delete", role: .destructive) { deleteTalk(talk) }
+        } message: { talk in
+            Text("\(name)'s side of the talk and its memory of it are gone for good. \(talk.peer.name) keeps its own.")
+        }
     }
 
     // MARK: Saved chats
 
     @ViewBuilder private var chatList: some View {
-        let chats = history?.chats ?? []
+        // Only chats with you: talks between Imps are listed once, under Talks.
+        let chats = history?.chatsWithYou ?? []
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
                 Text("Chats").font(.system(size: 13)).lineLimit(1)
-                InfoTip("Every chat with \(name), newest first. Continue one to pick up where you left off: \(name) remembers it as it was. Save one as a file to keep it or to carry it on with another Imp or on another Mac.")
+                InfoTip("Every chat you had with \(name), newest first. Talks with other Imps are listed under Talks. Continue one to pick up where you left off: \(name) remembers it as it was. Save one as a file to keep it or to carry it on with another Imp or on another Mac.")
                 if !chats.isEmpty { Text(verbatim: "\(chats.count)").font(.system(size: 11, weight: .semibold)).foregroundStyle(Dungeon.muted) }
                 Spacer(minLength: 8)
                 if let notice {
@@ -90,7 +99,7 @@ struct MemoryCard: View {
                 VStack(spacing: 2) {
                     ForEach(showsAll ? chats : Array(chats.prefix(Self.shortList))) { chat in
                         ChatRow(chat: chat, isCurrent: chat.id == history?.current.id, canContinue: live != nil, name: name,
-                                readTalk: talkOpener(for: chat), open: { open(chat.id) }, export: { export(chat) }, delete: { deleting = chat })
+                                read: { HomeWindow.shared.showChat(model, imp: imp.id, chat: chat.id) }, open: { open(chat.id) }, export: { export(chat) }, delete: { deleting = chat })
                     }
                 }
                 if chats.count > Self.shortList {
@@ -104,25 +113,28 @@ struct MemoryCard: View {
     }
 
     /// What \(name) and each other Imp said to each other, both ways (their halves are in both Imps' chats).
+    /// This is the only place a conversation between Imps is listed: the chats above are with you.
     private var talkList: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
                 Text("Talks").font(.system(size: 13)).lineLimit(1)
-                InfoTip("What \(name) and other Imps said to each other, both ways, to read. \(name)'s side of each is in its chats above (\"With …\"), which you can delete there.")
+                InfoTip("What \(name) and other Imps said to each other, both ways, to read as bubbles or JSON. Delete removes \(name)'s side of a talk. The other Imp keeps its own.")
                 Text(verbatim: "\(talks.count)").font(.system(size: 11, weight: .semibold)).foregroundStyle(Dungeon.muted)
             }
             VStack(spacing: 2) {
                 ForEach(talks) { talk in
-                    TalkRow(talk: talk) { HomeWindow.shared.showTalk(model, imp: imp.id, peer: talk.peer.id) }
+                    TalkRow(talk: talk, open: { HomeWindow.shared.showTalk(model, imp: imp.id, peer: talk.peer.id) },
+                            delete: { deletingTalk = talk })
                 }
             }
         }
     }
 
-    /// Opens the merged talk with a peer chat's Imp, when there is one to read.
-    private func talkOpener(for chat: ChatSummary) -> (() -> Void)? {
-        guard let peer = chat.peer, talks.contains(where: { $0.peer.id == peer }) else { return nil }
-        return { HomeWindow.shared.showTalk(model, imp: imp.id, peer: peer) }
+    /// Deletes this Imp's side of a talk: its saved chats with that Imp.
+    private func deleteTalk(_ talk: TalkThread) {
+        deletingTalk = nil
+        for chat in history?.chats ?? [] where chat.peer == talk.peer.id { delete(chat.id) }
+        talks.removeAll { $0.id == talk.id }
     }
 
     private func reloadStored() {
@@ -194,8 +206,8 @@ private struct ChatRow: View {
     let isCurrent: Bool
     let canContinue: Bool
     let name: String
-    /// A chat with another Imp: opens the talk with it, both sides.
-    let readTalk: (() -> Void)?
+    /// Reads the chat as bubbles or JSON.
+    let read: () -> Void
     let open: () -> Void
     let export: () -> Void
     let delete: () -> Void
@@ -204,7 +216,7 @@ private struct ChatRow: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: chat.peer != nil ? "person.2.fill" : (isCurrent ? "bubble.left.and.text.bubble.right.fill" : "bubble.left.and.bubble.right"))
+            Image(systemName: (isCurrent ? "bubble.left.and.text.bubble.right.fill" : "bubble.left.and.bubble.right"))
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundStyle(isCurrent ? tint : .secondary)
                 .frame(width: 24, height: 24)
@@ -229,21 +241,17 @@ private struct ChatRow: View {
                     .disabled(!canContinue)
                     .help(canContinue ? "Make this the chat you're in and open it" : "Let \(name) out to continue this chat")
             }
-            if let readTalk {
-                HoverIconButton(systemName: "text.bubble", help: "Read the whole talk, both sides", action: readTalk)
-            }
-            if chat.peer == nil {
-                HoverIconButton(systemName: "square.and.arrow.up", help: "Save as a file", action: export)
-            }
+            HoverIconButton(systemName: "text.bubble", help: "Read as bubbles or JSON", action: read)
+            HoverIconButton(systemName: "square.and.arrow.up", help: "Save as a file", action: export)
             HoverIconButton(systemName: "trash", help: "Delete this chat", tint: .red, action: delete)
         }
         .padding(.horizontal, 6).padding(.vertical, 5)
         .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white.opacity(hover ? 0.04 : 0)))
         .onHover { hover = $0 }
         .contextMenu {
-            if let readTalk { Button("Read Talk") { readTalk() } }
+            Button("Read") { read() }
             if !isCurrent { Button("Continue") { open() }.disabled(!canContinue) }
-            if chat.peer == nil { Button("Save as File…") { export() } }
+            Button("Save as File…") { export() }
             Divider()
             Button("Delete…", role: .destructive) { delete() }
         }
@@ -254,6 +262,7 @@ private struct ChatRow: View {
 struct TalkRow: View {
     let talk: TalkThread
     let open: () -> Void
+    var delete: (() -> Void)?
     @State private var hover = false
 
     var body: some View {
@@ -276,11 +285,15 @@ struct TalkRow: View {
             Button { open() } label: { Label("Read", systemImage: "text.bubble") }
                 .buttonStyle(.imp(.secondary, small: true))
                 .help("Read everything they said to each other")
+            if let delete { HoverIconButton(systemName: "trash", help: "Delete this Imp's side of the talk", tint: .red, action: delete) }
         }
         .padding(.horizontal, 6).padding(.vertical, 5)
         .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white.opacity(hover ? 0.04 : 0)))
         .onHover { hover = $0 }
-        .contextMenu { Button("Read") { open() } }
+        .contextMenu {
+            Button("Read") { open() }
+            if let delete { Divider(); Button("Delete…", role: .destructive) { delete() } }
+        }
     }
 }
 

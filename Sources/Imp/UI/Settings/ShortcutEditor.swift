@@ -1,4 +1,5 @@
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -38,7 +39,7 @@ struct ShortcutRow: View {
                 .clipped()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            Toggle(String(""), isOn: $action.isEnabled).labelsHidden().toggleStyle(.switch).controlSize(.mini)
+            Toggle(String(""), isOn: $action.isEnabled).labelsHidden().toggleStyle(.impSwitchBare)
                 .fixedSize()
                 .help(action.isEnabled ? "On" : "Off. Kept, but it never goes off.")
         }
@@ -80,7 +81,7 @@ struct ShortcutSheet: View {
 
     var body: some View {
         SheetScaffold(icon: shortcut.trigger.kind.symbol, title: isNew ? "New trigger" : "Edit trigger",
-                      info: "When it goes off, \(performerName) gets the instruction and what happened, then decides what to do with its tools. Or it just opens something, like the text box.") {
+                      info: "When it goes off, \(performerName) gets the instruction and what happened, then decides what to do with its tools. Or it just opens something, like the text box. Some act on its body with no thinking: sleep, wake up, or play an animation.") {
             IconButton(icon: "play.fill", help: "Try now", size: 28) { model.trigger(shortcut, trying: true) }
                 .disabled(!shortcut.isRunnable)
         } content: {
@@ -108,6 +109,9 @@ struct ShortcutSheet: View {
                             }
                         }
                     }
+                }
+                if shortcut.command.usesAnimation {
+                    FieldRow("Animation", info: animationInfo) { animationMenu }
                 }
                 if shortcut.command == .ask {
                     FieldRow("Input") {
@@ -139,8 +143,8 @@ struct ShortcutSheet: View {
                 }
             }
             .padding(14)
-            .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Dungeon.card))
-            .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Dungeon.cardEdge))
+            .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Dungeon.card))
+            .overlay(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).strokeBorder(Dungeon.cardEdge))
         } footer: {
             if !isNew {
                 HoverIconButton(systemName: "trash", help: "Delete", tint: .red) { confirmingDelete = true }
@@ -185,6 +189,42 @@ struct ShortcutSheet: View {
                     }
                 }
             }
+        }
+    }
+
+    private var animationInfo: LocalizedStringKey {
+        switch shortcut.command {
+        case .sleep: "Plays while it dozes off. It sleeps either way."
+        case .wakeUp: "Plays as it wakes up. Without one, it stretches awake the usual way."
+        default: "What it plays when this goes off."
+        }
+    }
+
+    /// The animation a local action plays: none (or the usual wake-up), a built-in one, or one made for this Imp.
+    private var animationMenu: some View {
+        CompactMenu(verbatim: animationName(shortcut.animation), symbol: "play.circle") {
+            Button(shortcut.command == .wakeUp ? "The usual wake-up" : "None") { shortcut.animation = nil }
+            let made = model.prefs.originals(for: imp)
+            if !made.isEmpty {
+                Menu("Made by you") {
+                    ForEach(made) { a in Button(a.title) { shortcut.animation = .custom(a.id) } }
+                }
+            }
+            ForEach(Reaction.Family.allCases, id: \.self) { family in
+                Menu(AnimationsPane.title(family)) {
+                    ForEach(Reaction.allCases.filter { $0.family == family }) { r in
+                        Button(r.title) { shortcut.animation = .preset(r) }
+                    }
+                }
+            }
+        }
+    }
+
+    private func animationName(_ ref: AnimationRef?) -> String {
+        switch ref {
+        case .preset(let r): r.title
+        case .custom(let id): model.prefs.customAnimation(id, imp: imp)?.title ?? String(localized: "Missing animation")
+        case nil: shortcut.command == .wakeUp ? String(localized: "The usual wake-up") : String(localized: "None")
         }
     }
 
@@ -233,7 +273,7 @@ struct TriggerFields: View {
                 ForEach(1...Trigger.maxClicks, id: \.self) { n in Button("\(n) clicks") { trigger.number = n } }
             }
         case .battery, .busy:
-            Stepper(value: number(trigger.kind == .battery ? 20 : 85), in: 5...95, step: 5) {
+            ImpStepper(value: number(trigger.kind == .battery ? 20 : 85), in: 5...95, step: 5) {
                 (trigger.kind == .battery ? Text("below \(trigger.percent) %") : Text("above \(trigger.percent) %")).monospacedDigit()
             }
             .fixedSize()
@@ -246,11 +286,9 @@ struct TriggerFields: View {
         case .app:
             HStack(spacing: 4) {
                 TextField("Any app", text: text).impField().frame(width: 140)
-                Menu {
+                HoverIconMenu(systemName: "chevron.down", help: "Pick an open app") {
                     ForEach(Self.runningApps, id: \.self) { name in Button(name) { trigger.text = name } }
-                } label: { Image(systemName: "chevron.down") }
-                .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
-                .help("Pick an open app")
+                }
             }
         case .website:
             HStack(spacing: 6) {
@@ -261,22 +299,30 @@ struct TriggerFields: View {
                 }
             }
         case .time:
-            DatePicker(String(""), selection: time(\.number), displayedComponents: .hourAndMinute).labelsHidden().fixedSize()
+            ImpTimeField(time: time(\.number))
         case .hours:
             HStack(spacing: 4) {
-                DatePicker(String(""), selection: time(\.number), displayedComponents: .hourAndMinute).labelsHidden().fixedSize()
-                Text(verbatim: "–").foregroundStyle(.secondary)
-                DatePicker(String(""), selection: time(\.until), displayedComponents: .hourAndMinute).labelsHidden().fixedSize()
+                ImpTimeField(time: time(\.number))
+                Text(verbatim: "–").foregroundStyle(Dungeon.muted)
+                ImpTimeField(time: time(\.until))
             }
         case .every, .back:
-            Stepper(value: number(trigger.kind == .every ? 60 : 15), in: 1...1440, step: trigger.minutes >= 60 ? 15 : 5) {
+            ImpStepper(value: number(trigger.kind == .every ? 60 : 15), in: 1...1440, step: trigger.minutes >= 60 ? 15 : 5) {
                 (trigger.kind == .every ? Text(verbatim: Self.span(trigger.minutes)) : Text("after \(Self.span(trigger.minutes)) away")).monospacedDigit()
             }
             .fixedSize()
-        case .wake, .start, .hot:
+        case .idle:
+            ImpStepper(value: number(Trigger.defaultIdleSeconds), in: Trigger.idleRange, step: idleStep) {
+                Text("after \(Trigger.seconds(trigger.idleSeconds))").monospacedDigit()
+            }
+            .fixedSize()
+        case .wake, .start, .hot, .enter, .leave:
             EmptyView()
         }
     }
+
+    /// Bigger steps for longer waits: 5 seconds under a minute, then 30 seconds, then a minute.
+    private var idleStep: Int { trigger.idleSeconds < 60 ? 5 : trigger.idleSeconds < 600 ? 30 : 60 }
 
     /// One of two values (plugged in or not, offline or not).
     private func choice(on: LocalizedStringKey, off: LocalizedStringKey) -> some View {

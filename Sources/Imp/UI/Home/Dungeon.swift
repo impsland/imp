@@ -1,26 +1,6 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
-
-/// The look of the Imps' home: a cosy little dungeon, warm and friendly rather than scary.
-enum Dungeon {
-    static let deep = Color(red: 0.12, green: 0.06, blue: 0.11)
-    static let wallTop = Color(red: 0.17, green: 0.08, blue: 0.15)
-    static let wallBottom = Color(red: 0.29, green: 0.10, blue: 0.13)
-    static let stone = Color(red: 0.42, green: 0.25, blue: 0.33)
-    static let stoneLight = Color(red: 0.55, green: 0.34, blue: 0.41)
-    static let doorway = Color(red: 0.07, green: 0.03, blue: 0.07)
-    static let ember = Color(red: 1.0, green: 0.62, blue: 0.26)
-    static let flame = Color(red: 1.0, green: 0.80, blue: 0.36)
-    static let cream = Color(red: 1.0, green: 0.95, blue: 0.88)
-    static let muted = Color(red: 1.0, green: 0.95, blue: 0.88).opacity(0.6)
-    /// Cards and wells sitting on the wall.
-    static let card = Color.white.opacity(0.055)
-    static let cardEdge = Color.white.opacity(0.09)
-
-    static var wall: LinearGradient {
-        LinearGradient(colors: [wallTop, wallBottom], startPoint: .top, endPoint: .bottom)
-    }
-}
 
 extension EnvironmentValues {
     /// False while the home window can't be seen: its animations pause.
@@ -35,37 +15,18 @@ struct DungeonBackdrop: View {
 
     var body: some View {
         ZStack {
-            Dungeon.wall
-            Canvas { ctx, size in Self.bricks(&ctx, size: size, opacity: quiet ? 0.03 : 0.045) }
+            DungeonWall(brickOpacity: quiet ? 0.03 : 0.045, floor: quiet ? 0.18 : 0.3)
             if !quiet {
                 TimelineView(.animation(minimumInterval: 1 / 20, paused: !awake)) { timeline in
                     Canvas { ctx, size in Self.embers(&ctx, size: size, t: timeline.date.timeIntervalSinceReferenceDate) }
                 }
             }
-            // A soft floor so the room has a bottom.
-            LinearGradient(colors: [.clear, .black.opacity(quiet ? 0.18 : 0.3)], startPoint: .init(x: 0.5, y: 0.7), endPoint: .bottom)
         }
         .ignoresSafeArea()
         .allowsHitTesting(false)
     }
 
     // MARK: Drawing
-
-    static func bricks(_ ctx: inout GraphicsContext, size: CGSize, opacity: Double) {
-        let bw: CGFloat = 64, bh: CGFloat = 28
-        var row = 0
-        var y: CGFloat = 0
-        while y < size.height {
-            var x: CGFloat = row % 2 == 0 ? 0 : -bw / 2
-            while x < size.width {
-                let r = CGRect(x: x + 2, y: y + 2, width: bw - 4, height: bh - 4)
-                ctx.fill(Path(roundedRect: r, cornerRadius: 7), with: .color(.white.opacity(opacity * (0.6 + 0.4 * noise(row, Int(x))))))
-                x += bw
-            }
-            y += bh
-            row += 1
-        }
-    }
 
     /// A round-topped doorway of chunky, friendly stones.
     static func arch(_ ctx: inout GraphicsContext, _ r: CGRect) {
@@ -165,10 +126,7 @@ struct DungeonBackdrop: View {
     }
 
     /// Cheap, stable pseudo-randomness in 0…1.
-    static func noise(_ a: Int, _ b: Int) -> Double {
-        let v = sin(Double(a) * 12.9898 + Double(b) * 78.233) * 43758.5453
-        return v - v.rounded(.down)
-    }
+    static func noise(_ a: Int, _ b: Int) -> Double { DungeonWall.noise(a, b) }
 }
 
 /// A round-topped doorway with a torch on each side: the Imp stands in it.

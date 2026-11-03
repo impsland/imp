@@ -2,7 +2,7 @@
 
 use std::process::ExitCode;
 
-use hop::Config;
+use imp_hop::Config;
 use imp_shared::{config, health, shutdown, telemetry};
 use tokio::net::TcpListener;
 
@@ -36,7 +36,7 @@ async fn main() -> ExitCode {
         }
     };
     tracing::info!(addr = %config.addr, "hop listening");
-    hop::run(listener, config, shutdown::signal()).await;
+    imp_hop::run(listener, config, shutdown::signal()).await;
     tracing::info!("hop stopped");
     ExitCode::SUCCESS
 }

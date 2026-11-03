@@ -30,6 +30,12 @@ public struct Shortcut: Codable, Identifiable, Hashable, Sendable {
         case chat
         /// Opens the Imp's settings.
         case settings
+        /// The Imp falls asleep (and plays `Shortcut.animation` doing it). Needs no brain.
+        case sleep
+        /// The Imp wakes up (with `Shortcut.animation`, else its built-in wake-up). Needs no brain.
+        case wakeUp
+        /// The Imp plays `Shortcut.animation`. Needs no brain.
+        case play
         public var id: String { rawValue }
 
         public var title: String {
@@ -39,8 +45,17 @@ public struct Shortcut: Codable, Identifiable, Hashable, Sendable {
             case .talk: String(localized: "Start listening")
             case .chat: String(localized: "Open the chat")
             case .settings: String(localized: "Open its settings")
+            case .sleep: String(localized: "Fall asleep")
+            case .wakeUp: String(localized: "Wake up")
+            case .play: String(localized: "Play an animation")
             }
         }
+
+        /// Happens on the Imp's own body and runs without a brain.
+        public var isLocal: Bool { self == .sleep || self == .wakeUp || self == .play }
+
+        /// Takes an animation to play (`Shortcut.animation`).
+        public var usesAnimation: Bool { isLocal }
 
         public var symbol: String {
             switch self {
@@ -49,6 +64,9 @@ public struct Shortcut: Codable, Identifiable, Hashable, Sendable {
             case .talk: "mic"
             case .chat: "bubble.left.and.bubble.right"
             case .settings: "slider.horizontal.3"
+            case .sleep: "moon.zzz"
+            case .wakeUp: "sun.max"
+            case .play: "play.circle"
             }
         }
     }
@@ -73,6 +91,14 @@ public struct Shortcut: Codable, Identifiable, Hashable, Sendable {
     }
     private var does: Command?
 
+    /// The animation a local command plays: while falling asleep, or waking up. `nil`: none when
+    /// falling asleep, the built-in wake-up when waking. Stored as its key, so older shortcuts load.
+    public var animation: AnimationRef? {
+        get { plays.flatMap(AnimationRef.init(key:)) }
+        set { plays = newValue?.key }
+    }
+    private var plays: String?
+
     /// The keys to listen for: set, and the trigger is keys.
     public var keys: Hotkey? { trigger.kind == .keys ? hotkey : nil }
 
@@ -90,8 +116,10 @@ public struct Shortcut: Codable, Identifiable, Hashable, Sendable {
     }
 
     public init(name: String, isEnabled: Bool = true, hotkey: Hotkey? = nil, prompt: String, performer: UUID? = nil,
-                usesClipboard: Bool = true, trigger: Trigger? = nil, conditions: [Trigger] = [], command: Command = .ask) {
+                usesClipboard: Bool = true, trigger: Trigger? = nil, conditions: [Trigger] = [], command: Command = .ask,
+                animation: AnimationRef? = nil) {
         self.name = name
+        self.plays = animation?.key
         self.isEnabled = isEnabled
         self.hotkey = hotkey
         self.prompt = prompt

@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 /// Talks to the Den (see `server/PROTOCOL.md`, "Den API v1"). It only ever speaks to the server the
@@ -76,7 +77,32 @@ public struct DenClient: Sendable {
         try await send(get(url(["v1", "items", id.handle, id.slug])))
     }
 
-    /// The kit's JSON text, at most `Kit.maxBytes`.
+    /// A kit as downloaded and checked: the item as the Den lists it, and the kit's text.
+    public struct Download: Equatable, Sendable {
+        public var item: DenItem
+        public var text: String
+    }
+
+    /// The item and its kit, installed only if the SHA-256 of the bytes received is the one the Den
+    /// lists for the item. Without a listed checksum, or with a different one, nothing is returned.
+    public func download(_ id: DenItemID) async throws -> Download {
+        let item = try await item(id)
+        let data = try await fetch(get(kitURL(of: id)), limit: Kit.maxBytes)
+        try Self.verify(data, against: item.sha256)
+        guard let text = String(data: data, encoding: .utf8) else { throw DenError.unreadable }
+        return Download(item: item, text: text)
+    }
+
+    /// Whether `data` hashes to `listed` (64 hex digits, any case).
+    static func verify(_ data: Data, against listed: String?) throws {
+        guard let listed = listed?.lowercased(), listed.utf8.count == 64, listed.utf8.allSatisfy({ ($0 >= 48 && $0 <= 57) || ($0 >= 97 && $0 <= 102) }) else {
+            throw DenError.noChecksum
+        }
+        let actual = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        guard actual == listed else { throw DenError.checksum }
+    }
+
+    /// The kit's JSON text, at most `Kit.maxBytes`. Not checked against a checksum: use `download`.
     public func kit(_ id: DenItemID) async throws -> String {
         let data = try await fetch(get(kitURL(of: id)), limit: Kit.maxBytes)
         guard let text = String(data: data, encoding: .utf8) else { throw DenError.unreadable }

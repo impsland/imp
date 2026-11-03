@@ -146,7 +146,7 @@ private func challenge(_ text: String) throws -> AltchaChallenge {
     let server = ImpServer("imp.example.org")!
 
     func client() -> DenClient {
-        var config = DenClient.configuration()
+        let config = DenClient.configuration()
         config.protocolClasses = [DenStub.self]
         DenStub.seen = []
         return DenClient(server: server, configuration: config)

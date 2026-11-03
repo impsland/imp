@@ -12,14 +12,14 @@ final class MemorySecrets: PocketSecrets, @unchecked Sendable {
 }
 
 private func pocketImp(chats: [Chat] = []) -> (PocketImp, MemorySecrets) {
-    let notes = PocketServer(name: "Notes", url: "https://notes.example.com/mcp", header: "Authorization")
+    let notes = PocketServer(name: "Notes", url: "https://notes.example.com/mcp", headers: ["Authorization"])
     let imp = PocketImp(name: "Pocket Pip", hue: 0.4, scale: 1.2, traits: ImpTraits(lids: 0.3),
                         personality: "You are Pip, sly and brief.",
                         brain: PocketService(baseURL: "https://llm.example.com/v1", model: "tiny-1"),
                         servers: [notes], chats: chats)
     let secrets = MemorySecrets()
     secrets.set("sk-very-secret", .apiKey, imp: imp.id)
-    secrets.set("Bearer header-secret", .header(notes.id), imp: imp.id)
+    secrets.set("Bearer header-secret", .header(notes.id, "Authorization"), imp: imp.id)
     return (imp, secrets)
 }
 
@@ -458,5 +458,65 @@ struct PocketLoadTests {
         #expect(PocketImp.decodeAll(Data("not json".utf8)).isEmpty)
         #expect(PocketImp.decodeAll(Data("{}".utf8)).isEmpty)
         #expect(PocketImp.decodeAll(Data()).isEmpty)
+    }
+}
+
+@Suite struct PocketHeaderTests {
+    @Test func namesAreCleanedAndKeptOnceWhateverTheirCase() {
+        let server = PocketServer(name: "S", url: "https://s.example.com", headers: [" Authorization ", "authorization", "", "X-Org"])
+        #expect(server.headers == ["Authorization", "X-Org"])
+    }
+
+    @Test func severalHeadersRoundTripAsNamesOnly() throws {
+        let server = PocketServer(name: "S", url: "https://s.example.com", headers: ["Authorization", "X-Org"])
+        let data = try JSONEncoder().encode(server)
+        let text = String(decoding: data, as: UTF8.self)
+        #expect(!text.contains("\"header\""))
+        #expect(try JSONDecoder().decode(PocketServer.self, from: data) == server)
+    }
+
+    @Test func theOldSingleHeaderIsReadIntoTheList() throws {
+        let id = UUID()
+        let json = #"{"id":"\#(id.uuidString)","name":"S","url":"https://s.example.com","header":"Authorization"}"#
+        let server = try JSONDecoder().decode(PocketServer.self, from: Data(json.utf8))
+        #expect(server.headers == ["Authorization"])
+        let none = try JSONDecoder().decode(PocketServer.self, from: Data(#"{"id":"\#(id.uuidString)","name":"S","url":"https://s.example.com"}"#.utf8))
+        #expect(none.headers.isEmpty)
+    }
+
+    @Test func secretsAreKeyedPerServerAndHeader() {
+        let imp = UUID(), a = UUID(), b = UUID()
+        let accounts = [PocketSlot.header(a, "Authorization"), .header(a, "X-Org"), .header(b, "Authorization"), .legacyHeader(a)].map { $0.account(imp: imp) }
+        #expect(Set(accounts).count == 4)
+        #expect(PocketSlot.header(a, "AUTHORIZATION").account(imp: imp) == PocketSlot.header(a, " authorization").account(imp: imp))
+    }
+
+    @Test func oldValueMovesOnceToTheNewPlace() {
+        let notes = PocketServer(name: "Notes", url: "https://n.example.com", headers: ["Authorization"])
+        let imp = PocketImp(name: "Pip", servers: [notes])
+        let secrets = MemorySecrets()
+        secrets.set("Bearer old", .legacyHeader(notes.id), imp: imp.id)
+        secrets.migrateLegacyHeaders(of: imp)
+        #expect(secrets.get(.header(notes.id, "Authorization"), imp: imp.id) == "Bearer old")
+        #expect(secrets.get(.legacyHeader(notes.id), imp: imp.id) == nil)
+        secrets.set("Bearer new", .header(notes.id, "Authorization"), imp: imp.id)
+        secrets.migrateLegacyHeaders(of: imp)
+        #expect(secrets.get(.header(notes.id, "Authorization"), imp: imp.id) == "Bearer new")
+    }
+
+    @Test func everyHeaderTravelsWithTheImpButNeverInTheKit() throws {
+        let notes = PocketServer(name: "Notes", url: "https://n.example.com/mcp", headers: ["Authorization", "X-Org"])
+        let imp = PocketImp(name: "Pip", brain: PocketService(baseURL: "https://llm.example.com/v1", model: "m"), servers: [notes])
+        let secrets = MemorySecrets()
+        secrets.set("Bearer one", .header(notes.id, "Authorization"), imp: imp.id)
+        secrets.set("org-two", .header(notes.id, "X-Org"), imp: imp.id)
+        let (kit, carried) = try imp.adoption(secrets: secrets)
+        #expect(!kit.contains("Bearer one") && !kit.contains("org-two"))
+        #expect(carried.headers == ["Notes": ["Authorization": "Bearer one", "X-Org": "org-two"]])
+        let parsed = try Kit.parse(kit, limit: LinkProtocol.maxFrame)
+        #expect(parsed.servers.first?.headers == ["Authorization": "", "X-Org": ""])
+        #expect(secrets.headerValues(of: notes, imp: imp.id) == ["Authorization": "Bearer one", "X-Org": "org-two"])
+        secrets.removeAll(of: imp)
+        #expect(secrets.headerValues(of: notes, imp: imp.id).isEmpty)
     }
 }

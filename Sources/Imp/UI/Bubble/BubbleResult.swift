@@ -43,7 +43,7 @@ struct ResultView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         if let limit = layout.textLimit {
             if layout.expanded {
-                ReadingScroll(height: limit) { text.padding(.trailing, 10).padding(.bottom, 14) }
+                ReadingScroll(height: limit) { text.padding(.bottom, 14) }
             } else if layout.mediaSpans.contains(where: { abs($0.bottom - limit) < 1 }) {
                 // Cut right below a picture: the picture shows whole, "Read all" waits under it.
                 VStack(spacing: 6) {

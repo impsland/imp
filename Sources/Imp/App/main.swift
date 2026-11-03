@@ -1,4 +1,5 @@
 import AppKit
+import SwiftUI
 import ImpKit
 
 // Offline renders (used by scripts/build-app.sh and for design review), then exit.
@@ -91,6 +92,13 @@ if let url = argument(after: "--render-visitor") {
     }
     exit(0)
 }
+if let url = argument(after: "--render-away") {
+    MainActor.assumeIsolated {
+        _ = NSApplication.shared
+        IconRenderer.renderAway(to: url, dark: args.contains("dark"))
+    }
+    exit(0)
+}
 if let url = argument(after: "--render-doors") {
     MainActor.assumeIsolated {
         _ = NSApplication.shared
@@ -111,13 +119,6 @@ if let url = argument(after: "--render-status-icon") {
     exit(0)
 }
 
-// Hidden registry check: `Imp --check-kit <file.json>...` reads each file with the real kit parser and prints
-// ok / problems / warnings / format version. Exits 1 if any file can't be read or has a problem.
-if let i = args.firstIndex(of: "--check-kit") {
-    let files = Array(args[(i + 1)...].filter { !$0.hasPrefix("--") })
-    exit(KitCheck.run(files: files))
-}
-
 // Hidden probe for computer control: `Imp --observe [app] [--screenshot out.png]` prints the element tree.
 if let i = args.firstIndex(of: "--observe") {
     let name = args.indices.contains(i + 1) && !args[i + 1].hasPrefix("--") ? args[i + 1] : nil
@@ -127,8 +128,5 @@ if let i = args.firstIndex(of: "--observe") {
 // MCP servers are child processes: a server that exits must not take Imp down with SIGPIPE.
 signal(SIGPIPE, SIG_IGN)
 
-let app = NSApplication.shared
-let delegate = AppDelegate()
-app.delegate = delegate
-app.setActivationPolicy(.accessory)
-app.run()
+// The SwiftUI app (the menu bar item and its panel) takes over from here.
+ImpApp.main()

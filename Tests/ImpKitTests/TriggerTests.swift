@@ -88,37 +88,6 @@ import Testing
         #expect(p.mostClicks(on: imp) == 2)
     }
 
-    @Test func olderSettingsKeepWhatClicksDid() throws {
-        var p = ImpPreferences()
-        p.shortcuts = []
-        p.click = .talk
-        p.doubleClickOpensSettings = false
-        // As saved by a version before click triggers: no `clicksSetUp`.
-        var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(p)) as! [String: Any]
-        json["clicksSetUp"] = nil
-        var old = try JSONDecoder().decode(ImpPreferences.self, from: JSONSerialization.data(withJSONObject: json))
-        #expect(old.shortcuts.isEmpty)
-        old.upgrade()
-        let imp = old.imps[0].id
-        #expect(old.clickShortcut(1, on: imp, in: nil)?.command == .talk)
-        #expect(old.clickShortcut(2, on: imp, in: nil) == nil)
-        let before = old
-        old.upgrade()
-        #expect(old == before, "only once")
-    }
-
-    @Test func mouseGamesSwitchedOffStayOffAnimationByAnimation() throws {
-        var p = ImpPreferences()
-        p.mouseGames = false
-        var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(p)) as! [String: Any]
-        json["clicksSetUp"] = nil
-        var old = try JSONDecoder().decode(ImpPreferences.self, from: JSONSerialization.data(withJSONObject: json))
-        old.upgrade()
-        #expect(old.mouseGames, "the hidden switch is back on…")
-        #expect(!old.isEnabled(.dizzy) && !old.isEnabled(.pet), "…and the cursor games are off one by one")
-        #expect(old.isEnabled(.angry) && old.isEnabled(.cuddle), "clicks and handling never were mouse games")
-    }
-
     @Test func anImpsOwnClickWinsOverTheShared() {
         var p = ImpPreferences()
         let imp = p.imps[0].id

@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import QuickLook
 import SwiftUI
@@ -47,6 +48,7 @@ struct ChatSheet: View {
             }
         }
         .background(Dungeon.deep)
+        .impControls(tint: Dungeon.ember)
         .environment(\.openURL, OpenURLAction { url in open(url) })
         .quickLookPreview($preview)
         .sheet(isPresented: $showingTalks) {
@@ -106,8 +108,10 @@ struct ChatSheet: View {
                     .disabled(!canStartOver)
                 Button { showingTalks = true } label: { Label("Talks", systemImage: "bubble.left.and.bubble.right") }
             } label: {
-                roundGlyph("ellipsis")
+                glyphButton("ellipsis")
             }
+            .menuStyle(.button)
+            .buttonStyle(.plain)                       // just the glyph: no pill from `.impControls`
             .accessibilityLabel("More")
         }
         .padding(.horizontal, 18).padding(.top, 20).padding(.bottom, 12)
@@ -115,13 +119,13 @@ struct ChatSheet: View {
         .animation(.easeInOut(duration: 0.2), value: status)
     }
 
-    private func roundGlyph(_ name: String) -> some View {
+    /// A bare glyph with a finger-sized target.
+    private func glyphButton(_ name: String) -> some View {
         Image(systemName: name)
-            .font(.system(size: 17, weight: .medium))
+            .font(.system(size: 19, weight: .semibold))
             .foregroundStyle(Dungeon.cream)
-            .frame(width: 38, height: 38)
-            .background(Dungeon.card, in: Circle())
-            .overlay(Circle().strokeBorder(Dungeon.cardEdge))
+            .frame(width: Sizing.hit, height: Sizing.hit)
+            .contentShape(Rectangle())
     }
 
     private var mood: Mood {
@@ -180,13 +184,14 @@ struct ChatSheet: View {
                             .background(.ultraThinMaterial, in: Circle())
                             .overlay(Circle().strokeBorder(Dungeon.cardEdge))
                     }
+                    .buttonStyle(.plain)
                     .padding(12)
                     .accessibilityLabel("Jump to latest")
                     .transition(.scale.combined(with: .opacity))
                 }
             }
             .animation(.spring(duration: 0.3), value: atEnd)
-            .scrollDismissesKeyboard(.interactively)
+            .dismissesKeyboard()
             .onChange(of: turns.last?.id) { _, _ in
                 withAnimation(.spring(duration: 0.4)) { proxy.scrollTo("end", anchor: .bottom) }
                 if turns.last?.date ?? .distantPast > openedAt {
@@ -259,8 +264,7 @@ struct ChatSheet: View {
                     .font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
             case .noBrain:
                 Button { edit?() } label: { Label("Give it a brain", systemImage: "sparkles") }
-                    .font(.system(.footnote, design: .rounded, weight: .semibold))
-                    .foregroundStyle(Dungeon.flame)
+                    .buttonStyle(.quiet)
             case .ready:
                 EmptyView()
             }
@@ -274,10 +278,12 @@ struct ChatSheet: View {
                     .overlay(RoundedRectangle(cornerRadius: 21, style: .continuous).strokeBorder(focused ? Dungeon.ember.opacity(0.6) : Dungeon.cardEdge))
                 if work != nil && trimmed.isEmpty {
                     Button { source.stop(impID); UIImpactFeedbackGenerator(style: .medium).impactOccurred() } label: { glyph("stop.fill") }
+                        .buttonStyle(.plain)
                         .accessibilityLabel("Stop")
                         .transition(.scale.combined(with: .opacity))
                 } else {
                     Button(action: send) { glyph("arrow.up") }
+                        .buttonStyle(.plain)
                         .disabled(trimmed.isEmpty)
                         .opacity(trimmed.isEmpty ? 0.45 : 1)
                         .accessibilityLabel("Send")

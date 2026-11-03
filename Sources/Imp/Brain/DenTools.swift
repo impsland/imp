@@ -54,15 +54,14 @@ struct DenTools {
         let id = try itemID(args)
         let item = try await client.item(id)
         var text = item.line + "\n" + client.page(of: id).absoluteString + "\n"
-        do { text += try Kit.parse(try await client.kit(id)).readableSummary } catch { text += "Its kit can't be read: \(error.localizedDescription)" }
+        do { text += try Kit.parse(try await client.download(id).text).readableSummary } catch { text += "Its kit can't be read: \(error.localizedDescription)" }
         return text
     }
 
     private func add(_ args: JSONValue, _ client: DenClient) async throws -> String {
         let id = try itemID(args)
         let item = try await client.item(id)
-        let flow = KitFlow.link(url: client.kitURL(of: id).absoluteString, imp: imp)
-        flow.onAdded = { Task { try? await client.countInstall(id) } }
+        let flow = KitFlow.den(id, client: client, imp: imp)
         HomeWindow.shared.showKit(app, flow)
         return "Opened the review of “\(item.name.isEmpty ? id.description : item.name)” for the user, who decides whether to add it."
             + (item.runsPrograms ? " It runs programs on the Mac, and the review says so." : "")

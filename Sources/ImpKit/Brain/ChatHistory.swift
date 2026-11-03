@@ -123,8 +123,35 @@ public struct ChatHistory: Sendable {
         chat.updated = turn.date
     }
 
+    // MARK: Long-chat notice
+
+    /// Raises the long-chat notice once per chat: true the first time what the model would be sent
+    /// of the chat you're in reaches `threshold` tokens (0 or less: never). Remembered with the chat,
+    /// so the same chat never raises it again, however much it is recapped or grows.
+    @discardableResult
+    public mutating func checkContext(threshold: Int, exchanges: Int, tools: Bool) -> Bool {
+        guard threshold > 0, current.contextNoticed != true, !current.memory.isEmpty,
+              current.memory.estimatedTokens(exchanges: exchanges, tools: tools) >= threshold else { return false }
+        current.contextNoticed = true
+        save(current, first: false)
+        return true
+    }
+
+    /// The notice is up for the chat you're in: raised, and not waved away.
+    public var contextNoticeShown: Bool { current.contextNoticed == true && current.contextDismissed != true }
+
+    /// Waves the notice away for good (for this chat).
+    public mutating func dismissContextNotice() {
+        guard current.contextNoticed == true, current.contextDismissed != true else { return }
+        current.contextDismissed = true
+        save(current, first: false)
+    }
+
     /// The saved chat with another Imp (one per peer, found by the peer's id, never by title).
     public func chat(with peer: UUID) -> ChatSummary? { chats.first { $0.peer == peer } }
+
+    /// When this Imp and `peer` last talked, in their newest chat together (nil: never).
+    public func lastTalk(withPeer peer: UUID) -> Date? { chat(with: peer)?.updated }
 
     /// What the model remembers of its chat with `peer` (nothing before the first message).
     /// Reads the file if it isn't the chat you're in.
@@ -135,9 +162,12 @@ public struct ChatHistory: Sendable {
 
     /// Adds a turn to the chat with `peer`, made on the first one ("With Pip"), without changing
     /// the chat you're in. It is listed first like any chat that was just talked in.
-    public mutating func append(_ turn: ChatTurn, remembering exchange: [ChatMessage]? = nil, withPeer peer: ChatTurn.Sender) {
-        if current.peer == peer.id { return append(turn, remembering: exchange) }
-        let saved = chat(with: peer.id)
+    /// `continuing: false` starts another chat with that Imp instead of adding to the newest one
+    /// (a new conversation: it becomes the newest, so the next message continues it).
+    public mutating func append(_ turn: ChatTurn, remembering exchange: [ChatMessage]? = nil, withPeer peer: ChatTurn.Sender,
+                                continuing: Bool = true) {
+        if continuing, current.peer == peer.id { return append(turn, remembering: exchange) }
+        let saved = continuing ? chat(with: peer.id) : nil
         var chat = saved.flatMap { load($0.id) }
             ?? Chat(id: saved?.id ?? UUID(), title: saved?.title ?? String(localized: "With \(peer.name)"), peer: peer.id)
         Self.add(turn, remembering: exchange, to: &chat)

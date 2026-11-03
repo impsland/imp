@@ -60,12 +60,14 @@ public struct DenItem: Decodable, Equatable, Sendable {
     public var installs: Int
     /// The kit runs programs on the Mac that adds it (MCP servers with a command).
     public var runsPrograms: Bool
+    /// The SHA-256 (lowercase hex) of the kit's bytes, as the Den lists it. Only an item's own page has it.
+    public var sha256: String?
 
     public var id: DenItemID? { DenItemID(handle: handle, slug: slug) }
 
     private enum Key: String, CodingKey {
         case handle, slug, name, kind, summary, tags, revision, installs
-        case runsPrograms = "runs_programs"
+        case runsPrograms = "runs_programs", sha256
     }
 
     public init(from decoder: Decoder) throws {
@@ -73,18 +75,20 @@ public struct DenItem: Decodable, Equatable, Sendable {
         handle = try c.decode(String.self, forKey: .handle)
         slug = try c.decode(String.self, forKey: .slug)
         name = try c.decodeIfPresent(String.self, forKey: .name) ?? ""
-        kind = try c.decodeIfPresent(String.self, forKey: .kind) ?? "kit"
+        let listedKind = try c.decodeIfPresent(String.self, forKey: .kind) ?? "kit"
+        kind = DenQuery.kinds.contains(listedKind) ? listedKind : "kit"
         summary = try c.decodeIfPresent(String.self, forKey: .summary) ?? ""
         tags = try c.decodeIfPresent([String].self, forKey: .tags) ?? []
         revision = try c.decodeIfPresent(Int.self, forKey: .revision) ?? 1
         installs = try c.decodeIfPresent(Int.self, forKey: .installs) ?? 0
         runsPrograms = try c.decodeIfPresent(Bool.self, forKey: .runsPrograms) ?? false
+        sha256 = try c.decodeIfPresent(String.self, forKey: .sha256)
     }
 
     public init(handle: String, slug: String, name: String = "", kind: String = "kit", summary: String = "", tags: [String] = [],
-                revision: Int = 1, installs: Int = 0, runsPrograms: Bool = false) {
+                revision: Int = 1, installs: Int = 0, runsPrograms: Bool = false, sha256: String? = nil) {
         self.handle = handle; self.slug = slug; self.name = name; self.kind = kind; self.summary = summary
-        self.tags = tags; self.revision = revision; self.installs = installs; self.runsPrograms = runsPrograms
+        self.tags = tags; self.revision = revision; self.installs = installs; self.runsPrograms = runsPrograms; self.sha256 = sha256
     }
 
     /// One line for the model: `handle/slug · kind · name · summary · #tags · installs`.
@@ -190,6 +194,8 @@ public struct DenError: LocalizedError, Equatable, Sendable {
         return DenError(status: status, title: title, detail: problem?.detail, retryAfter: wait)
     }
 
+    static let checksum = DenError(status: 0, title: String(localized: "The download doesn't match the checksum the Den lists, so Imp threw it away."))
+    static let noChecksum = DenError(status: 0, title: String(localized: "The Den listed no checksum for this download, so Imp won't install it."))
     static let unreadable = DenError(status: 0, title: String(localized: "The Den sent an answer Imp can't read."))
     static let tooLarge = DenError(status: 0, title: String(localized: "The Den sent more than Imp will accept."))
 }

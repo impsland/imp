@@ -80,6 +80,11 @@ final class LinkHub {
     private(set) var name: String
     /// A short message to show (a toss that didn't work out, a code that didn't read).
     var toast: String?
+    /// The last Imp a shake sent and how it went (see `ShakeSend.swift`).
+    var shakeReceipt: ShakeReceipt?
+    /// The last time each device was connected over the local network, for "was nearby lately".
+    @ObservationIgnored private var lastNearby: [UUID: Date] = [:]
+    @ObservationIgnored private var receiptClear: Task<Void, Never>?
 
     /// This iPhone's node. While the saved links can't be read (`isLocked`) it is a stand-in that never
     /// starts and writes nothing, so no new identity is made over the real one.
@@ -232,6 +237,8 @@ final class LinkHub {
         set(&connectedPeers, node.connectedPeers.sorted { $0.name < $1.name })
         set(&online, Set(node.connected))
         set(&viaHop, Set(node.connected.filter(node.isThroughHop)))
+        let now = Date()
+        for id in online.subtracting(viaHop) { lastNearby[id] = now }
         set(&visits, node.visits.visits)
         set(&holders, Dictionary(node.away.entries.map { ($0.imp, $0.holder) }, uniquingKeysWith: { $1 }))
     }
@@ -422,6 +429,55 @@ final class LinkHub {
         node.pass(imp, entry: .after(exit: exit.side, height: exit.height, speed: exit.speed), to: device) != nil
     }
 
+    // MARK: Shaking
+
+    /// The devices a shake may consider: the connected, linked ones, with how near each is.
+    func shakePeers() -> [ShakeTransfer.Peer] {
+        let linked = Set(links.map(\.id))
+        return connectedPeers.map { device in
+            ShakeTransfer.Peer(id: device.id, name: device.name, linked: linked.contains(device.id), connected: isConnected(device.id),
+                               viaHop: viaHop.contains(device.id), lastNearby: lastNearby[device.id], mine: isTrusted(device.id))
+        }
+    }
+
+    /// A shake started sending `imp` to `device`.
+    func shakeBegan(_ imp: LinkImp, to device: UUID) {
+        receiptClear?.cancel()
+        shakeReceipt = ShakeReceipt(imp: imp.id, impName: imp.name, device: device, deviceName: deviceName(device), state: .sending)
+    }
+
+    /// It did not go (nobody there to catch it).
+    func shakeFailed(_ imp: UUID) {
+        guard shakeReceipt?.imp == imp else { return }
+        shakeReceipt = nil
+    }
+
+    /// The person took it back within the few seconds they have.
+    func undoShake() {
+        guard let receipt = shakeReceipt, receipt.state == .arrived else { return }
+        receiptClear?.cancel()
+        shakeReceipt = nil
+        callHome(receipt.imp)
+        let text = String(localized: "\(receipt.impName) came back")
+        toast = text
+        UIAccessibility.post(notification: .announcement, argument: text)
+    }
+
+    /// The receipt stays for a few seconds after the Imp arrived, then goes.
+    private func shakeArrived(_ imp: UUID) {
+        guard var receipt = shakeReceipt, receipt.imp == imp else { return }
+        receipt.state = .arrived
+        shakeReceipt = receipt
+        UIAccessibility.post(notification: .announcement,
+                             argument: String(localized: "\(receipt.impName) is on \(receipt.deviceName). Undo is available."))
+        receiptClear?.cancel()
+        receiptClear = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(ShakeReceipt.undoSeconds))
+            guard !Task.isCancelled, self?.shakeReceipt?.imp == imp else { return }
+            self?.shakeReceipt = nil
+        }
+    }
+
     // MARK: Hearing the node
 
     private func handle(_ event: LinkNode.Event) {
@@ -512,6 +568,7 @@ final class LinkHub {
         case (.pass, .took):
             clear(passed.imp)
             onEvent?(.left(passed.imp))
+            shakeArrived(passed.imp)
         case (.adopt, .took):
             onPocket?(.adopted(passed.imp))
         case (.adopt, .declined(let reason)):
@@ -524,6 +581,10 @@ final class LinkHub {
             case .notLinked: String(localized: "\(to) doesn't know this iPhone")
             case .timeout: String(localized: "\(to) didn't answer")
             case .other: String(localized: "\(to) didn't take it")
+            }
+            if shakeReceipt?.imp == passed.imp {
+                shakeFailed(passed.imp)
+                UIAccessibility.post(notification: .announcement, argument: why)
             }
             onEvent?(.refused(passed.imp, why))
         }

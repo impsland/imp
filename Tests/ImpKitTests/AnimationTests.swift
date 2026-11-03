@@ -62,9 +62,8 @@ import Testing
         var p = ImpPreferences()
         p.setTrigger(.circle, true, for: .laugh)
         p.setEnabled(false, for: .nap)
-        p.doubleClickOpensSettings = false
         let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(p))
-        #expect(back.animation(for: .circle) == .laugh && !back.isEnabled(.nap) && !back.doubleClickOpensSettings)
+        #expect(back.animation(for: .circle) == .laugh && !back.isEnabled(.nap))
     }
 
     @Test func routinesStayPrivate() {

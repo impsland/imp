@@ -1,0 +1,50 @@
+{
+  "about": "Retry policy vectors. delays: a policy and the wait in seconds before retry number `retry` (1 is the first retry). Policy fields are clamped on construction: retries and delay are at least 0, multiplier at least 1. maxDelay defaults to 60. wait = min(delay * multiplier^(retry - 1), maxDelay), and 0 for retry <= 0 uses the exponent 0. limits: stored request limits are clamped, then become a policy. errors: whether a failed request is tried again. An error is an HTTP status from the service, a transport failure by its URLError name, a cancellation, or anything else (never retried). A request is only tried again while the number of retries made so far is below `retries`.",
+  "delays": [
+    { "policy": { "retries": 3, "delay": 1, "multiplier": 2 }, "retry": 1, "wait": 1 },
+    { "policy": { "retries": 3, "delay": 1, "multiplier": 2 }, "retry": 2, "wait": 2 },
+    { "policy": { "retries": 3, "delay": 1, "multiplier": 2 }, "retry": 3, "wait": 4 },
+    { "policy": { "retries": 10, "delay": 1, "multiplier": 2 }, "retry": 10, "wait": 60 },
+    { "policy": { "retries": 5, "delay": 2.5, "multiplier": 1 }, "retry": 4, "wait": 2.5 },
+    { "policy": { "retries": 5, "delay": 10, "multiplier": 3, "maxDelay": 50 }, "retry": 3, "wait": 50 },
+    { "policy": { "retries": 5, "delay": 0, "multiplier": 2 }, "retry": 3, "wait": 0 },
+    { "policy": { "retries": 5, "delay": -4, "multiplier": 2 }, "retry": 1, "wait": 0 },
+    { "policy": { "retries": 5, "delay": 1, "multiplier": 0.5 }, "retry": 3, "wait": 1 },
+    { "policy": { "retries": 5, "delay": 1, "multiplier": 2 }, "retry": 0, "wait": 1 }
+  ],
+  "limits": [
+    { "name": "defaults", "stored": { "timeoutSeconds": 120, "retries": 3, "retryDelaySeconds": 1, "backoff": 2 },
+      "clamped": { "timeoutSeconds": 120, "retries": 3, "retryDelaySeconds": 1, "backoff": 2 },
+      "policy": { "retries": 3, "delay": 1, "multiplier": 2 } },
+    { "name": "too small", "stored": { "timeoutSeconds": 1, "retries": -2, "retryDelaySeconds": -1, "backoff": 0 },
+      "clamped": { "timeoutSeconds": 5, "retries": 0, "retryDelaySeconds": 0, "backoff": 1 },
+      "policy": { "retries": 0, "delay": 0, "multiplier": 1 } },
+    { "name": "too large", "stored": { "timeoutSeconds": 100000, "retries": 99, "retryDelaySeconds": 500, "backoff": 50 },
+      "clamped": { "timeoutSeconds": 3600, "retries": 10, "retryDelaySeconds": 60, "backoff": 10 },
+      "policy": { "retries": 10, "delay": 60, "multiplier": 10 } }
+  ],
+  "errors": [
+    { "error": { "kind": "http", "status": 408 }, "retryable": true },
+    { "error": { "kind": "http", "status": 429 }, "retryable": true },
+    { "error": { "kind": "http", "status": 500 }, "retryable": true },
+    { "error": { "kind": "http", "status": 503 }, "retryable": true },
+    { "error": { "kind": "http", "status": 599 }, "retryable": true },
+    { "error": { "kind": "http", "status": 400 }, "retryable": false },
+    { "error": { "kind": "http", "status": 401 }, "retryable": false },
+    { "error": { "kind": "http", "status": 404 }, "retryable": false },
+    { "error": { "kind": "http", "status": 600 }, "retryable": false },
+    { "error": { "kind": "url", "code": "timedOut" }, "retryable": true },
+    { "error": { "kind": "url", "code": "networkConnectionLost" }, "retryable": true },
+    { "error": { "kind": "url", "code": "notConnectedToInternet" }, "retryable": true },
+    { "error": { "kind": "url", "code": "cannotConnectToHost" }, "retryable": true },
+    { "error": { "kind": "url", "code": "cannotFindHost" }, "retryable": true },
+    { "error": { "kind": "url", "code": "dnsLookupFailed" }, "retryable": true },
+    { "error": { "kind": "url", "code": "secureConnectionFailed" }, "retryable": true },
+    { "error": { "kind": "url", "code": "badURL" }, "retryable": false },
+    { "error": { "kind": "url", "code": "cancelled" }, "retryable": false },
+    { "error": { "kind": "url", "code": "serverCertificateUntrusted" }, "retryable": false },
+    { "error": { "kind": "cancelled" }, "retryable": false },
+    { "error": { "kind": "other" }, "retryable": false },
+    { "error": { "kind": "missingKey" }, "retryable": false }
+  ]
+}

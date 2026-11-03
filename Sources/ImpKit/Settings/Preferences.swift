@@ -1,11 +1,5 @@
 import Foundation
 
-/// What a plain click on Imp did before clicks became triggers (only read to carry it over).
-public enum ClickAction: String, Codable, CaseIterable, Sendable, Identifiable {
-    case type, talk
-    public var id: String { rawValue }
-}
-
 /// Where Imps talk when one messages another (`imp_message`).
 public enum ImpTalk: String, Codable, CaseIterable, Sendable, Identifiable {
     /// In a chat of their own: the receiver keeps one per Imp it talks with.
@@ -53,9 +47,6 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     public var shortcuts: [Shortcut] = []
     /// The MCP server library. Each Imp picks the ones it uses (`ImpProfile.servers`).
     public var mcpServers: [MCPServerConfig] = []
-    /// Before triggers: what a click did, and whether a double-click opened settings. Only read once,
-    /// to set up the click triggers that replace them (`upgrade()`).
-    public var click: ClickAction = .type
     public var appearance: Appearance = .system
     /// Imp entertains itself in quiet moments (glances, humming, ideas).
     public var antics = true
@@ -65,11 +56,17 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     public var animations: [Reaction: AnimationRule] = [:]
     /// Storage for `animationLibrary` (optional, so older settings load).
     var customAnimations: [MadeAnimation]?
-    public var doubleClickOpensSettings = true
-    /// The click triggers were set up (see `upgrade()`). Optional, so older settings load.
-    private var clicksSetUp: Bool?
+    /// The default body triggers (sleep, wake) already added, by id (see `addBodyDefaults()`).
+    /// Optional, so older settings load.
+    var addedDefaults: [UUID]?
     /// 0 = never.
     public var bubbleAutoHideSeconds: Double = 30
+    /// How long a model request may take and how it is retried (see `RequestLimits`). Optional storage, so older settings load.
+    public var requests: RequestLimits {
+        get { requestLimits ?? .standard }
+        set { requestLimits = newValue.clamped }
+    }
+    private var requestLimits: RequestLimits?
     /// Audio and video in a reply may start on their own when the Imp asks (`#autoplay`).
     public var autoplaysMedia: Bool {
         get { mediaAutoplay ?? true }
@@ -83,12 +80,51 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { voice = newValue }
     }
     private var voice: VoiceStyle?
+    /// The most lines the bubble's text box grows to before it scrolls (2 to 12). Optional storage, so older settings load.
+    public var inputMaxLines: Int {
+        get { BubbleSizing.clampedLines(inputLines ?? BubbleSizing.defaultInputLines) }
+        set { inputLines = BubbleSizing.clampedLines(newValue) }
+    }
+    private var inputLines: Int?
+    /// The size the user gave the full bubble (the chat), kept between launches. `nil`: the default size.
+    public var chatBubbleSize: CGSize? {
+        get {
+            guard let w = chatWidth, let h = chatHeight, w > 0, h > 0 else { return nil }
+            return CGSize(width: w, height: h)
+        }
+        set { chatWidth = newValue.map { Double($0.width) }; chatHeight = newValue.map { Double($0.height) } }
+    }
+    private var chatWidth: Double?
+    private var chatHeight: Double?
     /// Where Imps talk to each other. Optional storage, so older settings load.
     public var impTalk: ImpTalk {
         get { talk ?? .own }
         set { talk = newValue }
     }
     private var talk: ImpTalk?
+    /// Whether a message between Imps goes on in their latest conversation or starts a new one
+    /// (see `TalkThreading`). Optional storage, so older settings load.
+    public var talkThreading: TalkThreading {
+        get { threading ?? .decides }
+        set { threading = newValue }
+    }
+    private var threading: TalkThreading?
+    /// Minutes after which a conversation between two Imps counts as over (the `recent` rule, and what the
+    /// sender's own choice falls back to).
+    public var talkWindowMinutes: Int {
+        get { min(max(windowMinutes ?? 60, 1), TalkThreading.maxWindowMinutes) }
+        set { windowMinutes = min(max(newValue, 1), TalkThreading.maxWindowMinutes) }
+    }
+    private var windowMinutes: Int?
+    /// A chat that would send the model this many tokens (estimated, about four characters each)
+    /// gets a gentle suggestion to recap it or start a new chat. One of `contextNoticeChoices`.
+    public var contextNoticeTokens: Int {
+        get { noticeTokens.flatMap { Self.contextNoticeChoices.contains($0) ? $0 : nil } ?? Self.contextNoticeDefault }
+        set { noticeTokens = Self.contextNoticeChoices.contains(newValue) ? newValue : nil }
+    }
+    public static let contextNoticeChoices = [50_000, 100_000, 250_000, 500_000, 750_000, 1_000_000]
+    public static let contextNoticeDefault = 250_000
+    private var noticeTokens: Int?
     /// Keeps API keys in the login Keychain instead of a private file. Off unless the user turns it
     /// on: macOS may ask for their password when Imp reads a key from there (after an update, say).
     public var keysInKeychain: Bool {
@@ -108,48 +144,15 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     /// The troupe. Always at least one: the little red Imp, waiting in the app's window.
     public var imps: [ImpProfile] = [.waiting]
 
-    public init() { upgrade() }
-
-    /// Brings settings saved by an older version up to date. Clicks used to be fixed (a click typed
-    /// or talked, a double-click opened settings): now they're triggers shared by every Imp, which
-    /// start out doing just that and can be changed like any other.
-    public mutating func upgrade() {
-        giveServicesModels()
-        guard clicksSetUp != true else { return }
-        clicksSetUp = true
-        // "Mouse games" was a switch for every cursor game at once: now each animation has its own.
-        if !mouseGames {
-            for r in Reaction.allCases where rule(for: r).triggers.contains(where: \.watchesCursor) { setEnabled(false, for: r) }
-            mouseGames = true
-        }
-        guard !shortcuts.contains(where: { $0.trigger.kind == .clicks }) else { return }
-        var one = Shortcut(name: click == .talk ? String(localized: "Talk") : String(localized: "Type"), prompt: "", usesClipboard: false,
-                           trigger: .clicks(1), command: click == .talk ? .talk : .type)
+    /// A fresh install: one click types, a double-click opens settings, and the default body triggers
+    /// (sleep, wake) are there. Decoding saved settings never goes through here.
+    public init() {
+        var one = Shortcut(name: String(localized: "Type"), prompt: "", usesClipboard: false, trigger: .clicks(1), command: .type)
         one.id = Self.clickID
-        shortcuts.insert(one, at: 0)
-        if doubleClickOpensSettings {
-            var two = Shortcut(name: "Settings", prompt: "", usesClipboard: false, trigger: .clicks(2), command: .settings)
-            two.id = Self.doubleClickID
-            shortcuts.insert(two, at: 1)
-        }
-    }
-
-    /// Models used to belong to brains: every Imp that picked a service had to name a model too.
-    /// Now each service has one. A service without one takes the model the default brain or an Imp
-    /// named for it, and the Imps that named that same model just follow the service from now on.
-    /// The default brain's model stays as the last fallback, for Imps on a service that got none.
-    /// (Changes nothing once every service has a model, so it's safe on every launch.)
-    private mutating func giveServicesModels() {
-        for i in ai.services.indices where ai.services[i].model.isEmpty {
-            let id = ai.services[i].id
-            let legacy = ai.service()?.id == id ? ai.brain.model : ""
-            let named = [legacy] + imps.compactMap { $0.brain }.filter { ai.service(in: $0)?.id == id }.map(\.model)
-            guard let model = named.map({ $0.trimmingCharacters(in: .whitespaces) }).first(where: { !$0.isEmpty }) else { continue }
-            ai.services[i].model = model
-            for j in imps.indices where imps[j].brain.map({ ai.service(in: $0)?.id == id && $0.model.trimmingCharacters(in: .whitespaces) == model }) == true {
-                imps[j].brain?.model = ""
-            }
-        }
+        var two = Shortcut(name: "Settings", prompt: "", usesClipboard: false, trigger: .clicks(2), command: .settings)
+        two.id = Self.doubleClickID
+        shortcuts = [one, two]
+        addBodyDefaults()
     }
 
     /// Stable identities for the click triggers every install starts with.

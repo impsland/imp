@@ -33,9 +33,11 @@ public struct PocketAnswer: Sendable, Equatable {
 public struct PocketBrain: Sendable {
     public let secrets: PocketSecrets
     private let session: URLSession
+    /// How long a request may take and how it is retried.
+    public let limits: RequestLimits
 
-    public init(secrets: PocketSecrets, session: URLSession = .shared) {
-        self.secrets = secrets; self.session = session
+    public init(secrets: PocketSecrets, session: URLSession = .shared, limits: RequestLimits = .standard) {
+        self.secrets = secrets; self.session = session; self.limits = limits
     }
 
     /// Asks `imp` something and returns the finished turn. `sender` is the Imp that asked, if one did
@@ -55,9 +57,7 @@ public struct PocketBrain: Sendable {
             let configs = (allowed ? imp.servers : []).map { server in
                 var config = MCPServerConfig(name: server.name, transport: .http, url: server.url)
                 config.id = server.id
-                if let header = server.header, let value = secrets.get(.header(server.id), imp: imp.id), !value.isEmpty {
-                    config.headers = [header: value]
-                }
+                config.headers = secrets.headerValues(of: server, imp: imp.id)
                 return config
             }
             await hub.update(configs)
@@ -65,7 +65,7 @@ public struct PocketBrain: Sendable {
             if !configs.isEmpty { tools.append(hub) }
             if allowed { tools.append(PocketTools(talk: sender == nil ? talk : PocketTalk(animations: talk.animations, play: talk.play))) }
             let client = try OpenAIClient(baseURL: imp.brain.baseURL, apiKey: secrets.get(.apiKey, imp: imp.id) ?? "", session: session)
-            let agent = Agent(client: client, model: imp.brain.model, tools: ToolSet(tools))
+            let agent = Agent(client: client, model: imp.brain.model, tools: ToolSet(tools, selection: ToolSelection(toolsOff: Set(imp.toolsOff ?? []))), limits: limits)
             let turn = sender.map { Briefing.message(from: $0.name, text, place: "in the user's troupe") } ?? .user(text)
             let memory = imp.memory(with: sender?.id)
             let system = [imp.personality, Briefing.pocket].map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -100,6 +100,8 @@ public struct PocketBrain: Sendable {
         let onWork: @Sendable (LinkWork?) async -> Void
         private(set) var steps: [ChatTurn.Step] = []
         private var partial = ""
+        /// "Retrying 2 of 3" while a request is tried again.
+        private var retry: String?
 
         init(request: String, from: String?, onWork: @escaping @Sendable (LinkWork?) async -> Void) {
             self.request = request; self.from = from; self.onWork = onWork
@@ -111,10 +113,14 @@ public struct PocketBrain: Sendable {
             switch event {
             case .text(let text):
                 partial = text
+                retry = nil
+            case .retrying(let notice):
+                retry = notice.text
             case .toolStarted(let name, let arguments):
                 let label = ToolLabel(tool: name, arguments: arguments)
                 steps.append(ChatTurn.Step(icon: label.icon, title: label.title, request: label.request, response: nil, failed: false))
                 partial = ""
+                retry = nil
             case .toolFinished(_, let ok, let result):
                 if let i = steps.lastIndex(where: { $0.response == nil }) {
                     steps[i].response = result
@@ -125,7 +131,7 @@ public struct PocketBrain: Sendable {
         }
 
         private func report() async {
-            let status = steps.last { $0.response == nil }?.title
+            let status = retry ?? steps.last { $0.response == nil }?.title
             await onWork(LinkWork(request: request, status: status, partial: partial, from: from))
         }
     }

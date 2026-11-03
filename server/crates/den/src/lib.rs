@@ -14,7 +14,9 @@ mod installs;
 pub mod kit;
 pub mod mcp;
 mod meta;
+pub mod serve;
 mod web;
 
 pub use app::router;
 pub use den::Den;
+pub use serve::serve;

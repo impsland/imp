@@ -1,4 +1,6 @@
-/* The Den: the cosy dungeon, dark by default and light when the system asks. No external fonts, images or scripts. */
+/* The Den: the cosy dungeon, dark by default and light when the system asks. No external fonts, images or scripts.
+   The block between the markers is the same, word for word, as in the browser extension's popup.css. Change both together. */
+/* TOKENS BEGIN */
 :root {
   color-scheme: dark;
   --wall-top: #2b1426; --wall-bottom: #4a1a21; --deep: #1f0f1c; --doorway: #120712;
@@ -12,7 +14,7 @@
   --ok-bg: rgba(110, 210, 140, .14); --ok-edge: rgba(110, 210, 140, .45);
   --code-bg: rgba(0, 0, 0, .3);
   --glyph-bg: #6b4054; --glyph-fg: #fff2e0;
-  --focus: #ffcc5c;
+  --focus: #ffcc5c; --good: #73d98c;
   --shadow: 0 10px 30px rgba(0, 0, 0, .35);
   --bricks: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='56'%3E%3Cg fill='%23fff' fill-opacity='.045'%3E%3Crect x='2' y='2' width='60' height='24' rx='7'/%3E%3Crect x='-30' y='30' width='60' height='24' rx='7'/%3E%3Crect x='34' y='30' width='60' height='24' rx='7'/%3E%3C/g%3E%3C/svg%3E");
 }
@@ -30,11 +32,12 @@
     --ok-bg: #e6f6ea; --ok-edge: #9ccfa9;
     --code-bg: #f6ece3;
     --glyph-bg: #ead3c6; --glyph-fg: #6a3346;
-    --focus: #a82a31;
+    --focus: #a82a31; --good: #2c7a45;
     --shadow: 0 10px 28px rgba(90, 40, 50, .14);
   }
 }
 
+/* TOKENS END */
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
@@ -69,7 +72,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 @media (prefers-color-scheme: light) { .top { background: rgba(255, 252, 248, .85); } }
 .top-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 10px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); font-weight: 900; font-size: 1.2rem; text-decoration: none; letter-spacing: -.02em; }
-.brand-mark { border-radius: 9px; display: block; }
+.brand-mark { display: block; width: 32px; height: 32px; object-fit: contain; }
 .top nav a { color: var(--muted); text-decoration: none; font-weight: 700; padding: 6px 10px; border-radius: 8px; }
 .top nav a:hover { color: var(--text); background: var(--card); }
 .foot { border-top: 1px solid var(--edge); padding: 22px 0 30px; font-size: .9rem; }

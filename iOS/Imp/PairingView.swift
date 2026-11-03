@@ -1,4 +1,5 @@
 import CoreImage.CIFilterBuiltins
+import ImpDesign
 import ImpKit
 import SwiftUI
 import UIKit
@@ -16,6 +17,10 @@ struct PairingView: View {
     private let scannerAvailable = CodeScanner.isAvailable
 
     var body: some View {
+        // Scrolls, so the keyboard can't cover the name field on a small iPhone: the content keeps
+        // its height and the field is brought into view, instead of being squeezed into what's left.
+        GeometryReader { geo in
+        ScrollView {
         VStack(spacing: 0) {
             Spacer(minLength: 20)
             ZStack {
@@ -43,8 +48,7 @@ struct PairingView: View {
             HStack(spacing: 6) {
                 if let problem { IssueBadge(text: problem, opensAtOnce: true) }
                 Button { problem = LinkClipboard.join(hub) } label: { Label("Paste Link", systemImage: "doc.on.clipboard") }
-                    .font(.system(.subheadline, design: .rounded, weight: .medium))
-                    .foregroundStyle(Dungeon.muted)
+                    .buttonStyle(.quiet)
             }
             .padding(.top, 14)
             Spacer(minLength: 16)
@@ -57,7 +61,15 @@ struct PairingView: View {
             }
             .padding(.horizontal, 40).padding(.bottom, 24)
         }
+        .frame(maxWidth: .infinity, minHeight: geo.size.height)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .dismissesKeyboard()
+        .keyboardGap()
+        }
         .animation(.easeInOut, value: problem)
+        .impControls(tint: Dungeon.ember)
+        .tipHost()
         .sheet(isPresented: $showingCode) { InviteSheet(hub: hub) }
         .fullScreenCover(isPresented: $scanning) { LinkScanner(hub: hub, problem: $problem, scanning: $scanning) }
     }
@@ -70,7 +82,7 @@ struct PairingView: View {
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Dungeon.flame)
                     .frame(width: 42, height: 42)
-                    .background(Dungeon.ember.opacity(0.16), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .background(Dungeon.ember.opacity(0.16), in: RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
                 VStack(alignment: .leading, spacing: 1) {
                     Text(title).font(.system(.body, design: .rounded, weight: .semibold))
                     Text(detail).font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
@@ -80,7 +92,7 @@ struct PairingView: View {
             }
             .foregroundStyle(Dungeon.cream)
             .padding(.horizontal, 14).padding(.vertical, 10)
-            .card()
+            .impCard()
         }
         .buttonStyle(.plain)
     }
@@ -96,14 +108,11 @@ struct NameField: View {
 
     var body: some View {
         TextField("Name", text: $text)
+            .impField()
             .focused($focused)
             .submitLabel(.done)
             .multilineTextAlignment(.center)
-            .font(.system(.body, design: .rounded, weight: .semibold))
             .foregroundStyle(Dungeon.cream)
-            .padding(.horizontal, 14).padding(.vertical, 10)
-            .background(Dungeon.card, in: Capsule())
-            .overlay(Capsule().strokeBorder(focused ? Dungeon.ember.opacity(0.6) : Dungeon.cardEdge))
             .onAppear { text = hub.name }
             .onSubmit(commit)
             .onChange(of: focused) { _, now in if !now { commit() } }
@@ -144,11 +153,10 @@ struct InviteCode: View {
                     .scaledToFit()
                     .frame(maxWidth: 240)
                     .padding(14)
-                    .background(.white, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .background(.white, in: RoundedRectangle(cornerRadius: Radius.large, style: .continuous))
                     .accessibilityLabel("Link code")
                 ShareLink(item: invite.url) { Label("Share Link", systemImage: "square.and.arrow.up") }
                     .buttonStyle(EmberButtonStyle(filled: false))
-                    .padding(.horizontal, 40)
             }
         }
         .task {
@@ -184,6 +192,7 @@ private struct InviteSheet: View {
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Dungeon.deep)
+        .impControls(tint: Dungeon.ember)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
     }
@@ -213,6 +222,7 @@ private struct ScannerScreen: View {
     var body: some View {
         ZStack(alignment: .top) {
             CodeScanner(onCode: found).ignoresSafeArea()
+            ScanFrame()
             HStack {
                 Text("Scan the code on the other device")
                     .font(.system(.subheadline, design: .rounded, weight: .semibold))
@@ -224,12 +234,39 @@ private struct ScannerScreen: View {
                     Image(systemName: "xmark").font(.system(size: 14, weight: .bold))
                         .frame(width: 36, height: 36).background(.black.opacity(0.5), in: Circle())
                 }
+                .buttonStyle(.plain)
                 .foregroundStyle(Dungeon.cream)
                 .accessibilityLabel("Close")
             }
             .padding()
         }
         .background(.black)
+        .impControls(tint: Dungeon.ember)
+    }
+}
+
+/// Shows where to hold the code: a dashed rounded frame in the middle of the screen with the rest
+/// dimmed. The frame is a share of the shorter side, so it is centred and about as big on every iPhone,
+/// held upright or on its side, and it stays inside the safe area.
+private struct ScanFrame: View {
+    var body: some View {
+        GeometryReader { geo in
+            let side = min(geo.size.width, geo.size.height) * 0.68
+            let hole = CGRect(x: (geo.size.width - side) / 2, y: (geo.size.height - side) / 2, width: side, height: side)
+            let shape = RoundedRectangle(cornerRadius: Radius.bubble, style: .continuous)
+            ZStack {
+                // The dimming reaches past the safe area, the frame does not.
+                Path { path in
+                    path.addRect(CGRect(x: -1000, y: -1000, width: geo.size.width + 2000, height: geo.size.height + 2000))
+                    path.addPath(shape.path(in: hole))
+                }
+                .fill(Dungeon.deep.opacity(0.6), style: FillStyle(eoFill: true))
+                shape.path(in: hole)
+                    .stroke(Dungeon.flame, style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [12, 10]))
+            }
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 

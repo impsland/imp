@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -10,6 +11,8 @@ struct AwayImp: View {
     var device: String?
     /// The device is around: the Imp is awake on it (else it dozes).
     var connected: Bool
+    /// Its character, as on its desktop.
+    var traits = ImpTraits.plain
     var still = false
     @Environment(\.stageAwake) private var awake
 
@@ -72,8 +75,9 @@ struct AwayImp: View {
     }
 
     private var face: Face {
-        var f = impFace(hue: hue, mood: connected ? .happy : .sleepy)
-        f.lookY = 0.2
+        var f = impFace(hue: hue, mood: connected ? .idle : .sleepy)
+        if connected { f.lookY = 0.2 }
+        Puppet.apply(traits, to: &f)
         return f
     }
 }

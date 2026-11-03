@@ -73,6 +73,19 @@ public actor MCPHub: ToolProvider {
         return exposed().filter { servers.contains($0.server) }.map(\.spec)
     }
 
+    /// The tools with their registry entries (`mcp.<server>.<tool>`), of some servers or all.
+    public func catalog(from servers: Set<UUID>?) async -> [CatalogTool] {
+        await settle()
+        return exposed().filter { servers?.contains($0.server) ?? true }.map { item in
+            let name = entries[item.server]?.config.name ?? ""
+            let entry = ToolEntry(id: ToolRegistry.mcpID(server: name, tool: item.tool), name: item.spec.name,
+                                  group: ToolRegistry.mcpGroupID(server: name), title: item.tool)
+            return CatalogTool(entry: entry, spec: item.spec)
+        }
+    }
+
+    public func catalog() async -> [CatalogTool] { await catalog(from: nil) }
+
     /// Waits up to ten seconds for servers that are still connecting.
     private func settle() async {
         for _ in 0..<100 where entries.values.contains(where: { $0.client == nil && $0.task != nil }) {
@@ -192,6 +205,7 @@ public struct MCPScope: ToolProvider {
     }
 
     public func tools() async -> [ToolSpec] { await hub.tools(from: servers) }
+    public func catalog() async -> [CatalogTool] { await hub.catalog(from: servers) }
 
     public func call(_ name: String, arguments: String) async throws -> String {
         guard await tools().contains(where: { $0.name == name }) else { throw MCPError.badConfig("Unknown tool \(name).") }

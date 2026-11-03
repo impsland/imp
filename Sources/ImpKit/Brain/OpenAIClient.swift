@@ -8,6 +8,9 @@ public enum APIError: LocalizedError, Equatable, Sendable {
     case badURL(String)
     case http(status: Int, message: String)
     case emptyResponse(String)
+    /// The Imp has no service of its own, and neither does the default brain.
+    case needsBrain(imp: String)
+    case timedOut(seconds: Int)
 
     public var errorDescription: String? {
         switch self {
@@ -25,6 +28,10 @@ public enum APIError: LocalizedError, Equatable, Sendable {
             default: String(localized: "The API said \(status): \(message)")
             }
         case .emptyResponse(let what): String(localized: "The model returned no \(what).")
+        case .needsBrain(let imp):
+            String(localized: "\(imp) has no brain yet. Open its settings, choose the Brain tab and pick an AI service and a model.")
+        case .timedOut(let seconds):
+            String(localized: "No answer after \(seconds) seconds. The service may be slow or out of reach. Check its address on the Brain tab, or allow more time in Settings › Services.")
         }
     }
 }

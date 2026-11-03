@@ -121,35 +121,84 @@ api.tabs.onUpdated.addListener((id, change, t) => {
 
 let activityKey = "";
 let agoCells = [];   // [{ el, at }]
+let allItems = [];   // everything the background remembers, newest first
+let fullOpen = false;
+const PREVIEW = 5;
 
-/// What Imp just did. The site is named only when it isn't the tab you're on.
+/// One line of the list. The site is named only when it isn't the tab you're on.
+function makeRow(a, here) {
+  const li = $("row").content.firstElementChild.cloneNode(true);
+  const [glyph, what, when] = li.children;
+  if (!a.ok) li.className = "missed";
+  icon(glyph.querySelector("use"), a.kind === "find" ? (a.ok ? "i-found" : "i-miss") : "i-read");
+  if (a.kind === "find") {
+    const b = document.createElement("b");
+    b.textContent = `“${a.query}”`;
+    what.append(a.ok ? "Found " : "Looked for ", b);
+  } else {
+    what.append(a.ok ? "Read the page" : "Couldn't read the page");
+  }
+  if (a.host && a.host !== here) what.append(` · ${a.host}`);
+  agoCells.push({ el: when, at: a.at });
+  return li;
+}
+
 function renderActivity(items) {
   $("activity").hidden = !items;
   if (!items) return;
+  allItems = items;
   $("activity-empty").hidden = items.length > 0;
+  $("activity-all").hidden = items.length <= PREVIEW;
+  setText($("activity-all"), `See all ${items.length}`);
   const here = tab ? hostOf(tab.url) : "";
   const key = `${here}|${items.map((a) => `${a.at}${a.ok}`).join()}`;
   if (key === activityKey) return;
   activityKey = key;
-  agoCells = [];
-  $("activity-list").replaceChildren(...items.map((a) => {
-    const li = $("row").content.firstElementChild.cloneNode(true);
-    const [glyph, what, when] = li.children;
-    if (!a.ok) li.className = "missed";
-    icon(glyph.querySelector("use"), a.kind === "find" ? (a.ok ? "i-found" : "i-miss") : "i-read");
-    if (a.kind === "find") {
-      const b = document.createElement("b");
-      b.textContent = `“${a.query}”`;
-      what.append(a.ok ? "Found " : "Looked for ", b);
-    } else {
-      what.append(a.ok ? "Read the page" : "Couldn't read the page");
-    }
-    if (a.host && a.host !== here) what.append(` · ${a.host}`);
-    agoCells.push({ el: when, at: a.at });
-    return li;
-  }));
+  if (fullOpen) renderFull();
+  $("activity-list").replaceChildren(...items.slice(0, PREVIEW).map((a) => makeRow(a, here)));
+  agoCells = agoCells.filter((c) => c.el.isConnected);
   tickAgo();
 }
+
+// MARK: The full Lately list: opens in place of the popup's other cards, with search and a scrolling list.
+
+function renderFull() {
+  const q = $("full-search").value.trim().toLowerCase();
+  const here = tab ? hostOf(tab.url) : "";
+  const text = (a) => `${a.kind === "find" ? `${a.query} looked for found` : "read the page"} ${a.host || ""} ${a.ok ? "" : "missed couldn't"}`.toLowerCase();
+  const hits = q ? allItems.filter((a) => text(a).includes(q)) : allItems;
+  $("full-list").replaceChildren(...hits.map((a) => makeRow(a, here)));
+  agoCells = agoCells.filter((c) => c.el.isConnected);
+  $("full-empty").hidden = hits.length > 0;
+  setText($("full-empty"), allItems.length ? "Nothing matches that." : "Nothing yet.");
+  setText($("full-count"), q ? `${hits.length} of ${allItems.length}` : `${allItems.length} in all`);
+  tickAgo();
+}
+
+function openFull(open) {
+  fullOpen = open;
+  document.body.classList.toggle("full", open);
+  $("full").hidden = !open;
+  activityKey = "";
+  if (open) {
+    $("full-search").value = "";
+    renderFull();
+    $("full-search").focus();
+  } else {
+    render();
+    $("activity-all").focus();
+  }
+}
+
+$("activity-all").addEventListener("click", () => openFull(true));
+$("full-back").addEventListener("click", () => openFull(false));
+$("full-search").addEventListener("input", renderFull);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && fullOpen) {
+    e.preventDefault();
+    openFull(false);
+  }
+});
 
 function ago(at) {
   const s = Math.max(0, Math.round((Date.now() - at) / 1000));
@@ -209,7 +258,9 @@ function renderImps(list) {
 /// Brings one Imp up to date; true if its size changed. Only what differs is touched.
 function updateCell(cell, imp, many) {
   const away = !!imp.away;
-  const mood = !online || away ? "sleepy" : imp.mood || "idle";
+  // The status is the Imp's real one, wherever it is. Away only says where.
+  const status = ["working", "idle", "asleep"].includes(imp.status) ? imp.status : "idle";
+  const mood = !online || status === "asleep" ? "sleepy" : status === "working" && !["thinking", "working"].includes(imp.mood) ? "working" : imp.mood || "idle";
   if (mood !== cell.mood) { cell.mood = mood; cell.fig.setMood(mood); }
 
   const look = JSON.stringify([imp.hue, imp.traits]);
@@ -220,7 +271,9 @@ function updateCell(cell, imp, many) {
   if (resized) { cell.size = size; cell.fig.resize(size); }
 
   const name = String(imp.name || "");
-  const label = away ? `${name} is on your iPhone` : name;
+  const device = String(imp.device || "") || "your iPhone";
+  const doing = status === "working" ? (away ? `working on ${device}` : "working") : status === "asleep" ? "asleep" : "idle";
+  const label = !name ? "" : away || status !== "idle" ? `${name} is ${doing}${away && status !== "working" ? ` (on ${device})` : ""}` : name;
   if (cell.canvas.getAttribute("aria-label") !== (label || "Imp")) cell.canvas.setAttribute("aria-label", label || "Imp");
   cell.root.title = label;
   cell.root.classList.toggle("away", away);

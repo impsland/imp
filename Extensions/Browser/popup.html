@@ -16,6 +16,7 @@
     <symbol id="i-blind" viewBox="0 0 16 16"><path d="M1.5 8S4 3.6 8 3.6 14.5 8 14.5 8 12 12.4 8 12.4 1.5 8 1.5 8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M3 13 13 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
     <symbol id="i-phone" viewBox="0 0 8 12"><path d="M1.6 0h4.8C7.3 0 8 .7 8 1.6v8.8c0 .9-.7 1.6-1.6 1.6H1.6C.7 12 0 11.3 0 10.4V1.6C0 .7.7 0 1.6 0zM1.4 1.6v8.8h5.2V1.6z"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 16 16"><path d="M13.6 6.5A5.5 5.5 0 1 0 13 11l-1.4-.8A4 4 0 1 1 12 6.5H9.5V8H15V2.5h-1.5z"/></symbol>
+    <symbol id="i-back" viewBox="0 0 16 16"><path d="M9.5 3 4.5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-lock" viewBox="0 0 16 16"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5A1 1 0 0 1 13 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm1.5 0h4V5a2 2 0 0 0-4 0z"/></symbol>
   </svg>
 
@@ -46,6 +47,19 @@
       <h2 id="activity-title">Lately</h2>
       <ul id="activity-list"></ul>
       <p id="activity-empty" class="muted" hidden>Nothing yet. When Imp reads a page or looks for something on one, it shows up here.</p>
+      <button id="activity-all" type="button" class="more" hidden>See all</button>
+    </section>
+
+    <section id="full" class="card full" aria-labelledby="full-title" hidden>
+      <div class="full-head">
+        <button id="full-back" type="button" class="glass" title="Back" aria-label="Back to the popup"><svg aria-hidden="true"><use href="#i-back"/></svg></button>
+        <h2 id="full-title">Lately</h2>
+        <span id="full-count" class="count" aria-live="polite"></span>
+      </div>
+      <label class="sr-only" for="full-search">Search what Imp did</label>
+      <input id="full-search" type="search" placeholder="Search" autocomplete="off" spellcheck="false">
+      <ul id="full-list" class="scroll" tabindex="0" aria-label="Everything Imp did lately"></ul>
+      <p id="full-empty" class="muted" hidden>Nothing yet.</p>
     </section>
 
     <section id="offline" class="card offline" hidden>

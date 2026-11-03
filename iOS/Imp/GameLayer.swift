@@ -1,3 +1,4 @@
+import ImpDesign
 import SwiftUI
 
 /// The games on the stage: the ways in (a flame for Embers and a rune circle for Echo, in the
@@ -387,9 +388,7 @@ private struct EndCard: View {
                         Button("Again", action: again).buttonStyle(EmberButtonStyle())
                     }
                     Button("How to play", action: howTo)
-                        .font(.system(.footnote, design: .rounded, weight: .medium))
-                        .foregroundStyle(Dungeon.muted)
-                        .padding(.vertical, 8)
+                        .buttonStyle(.quiet)
                 }
             }
         }

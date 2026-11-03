@@ -34,6 +34,23 @@ import Foundation
         #expect(traits["lids"] as? Double == 0.3 && traits["horns"] as? Double == -10)
     }
 
+    @Test func statusMapping() throws {
+        // Busy on the phone is busy, not asleep.
+        #expect(BridgeStatus.of(mood: "idle", hasWork: true, away: true, deviceReachable: true) == .working)
+        #expect(BridgeStatus.of(mood: "thinking", hasWork: false, away: true, deviceReachable: true) == .working)
+        #expect(BridgeStatus.of(mood: "working", hasWork: false, away: false, deviceReachable: true) == .working)
+        #expect(BridgeStatus.of(mood: "idle", hasWork: false, away: true, deviceReachable: true) == .idle)
+        #expect(BridgeStatus.of(mood: "happy", hasWork: false, away: false, deviceReachable: true) == .idle)
+        #expect(BridgeStatus.of(mood: "sleepy", hasWork: false, away: true, deviceReachable: true) == .asleep)
+        #expect(BridgeStatus.of(mood: "idle", hasWork: false, away: true, deviceReachable: false) == .asleep)
+        #expect(BridgeStatus.of(mood: "idle", hasWork: false, away: false, deviceReachable: false) == .idle)
+        #expect(BridgeStatus.of(mood: "sleepy", hasWork: true, away: true, deviceReachable: false) == .working)
+        let imp = BridgeImp(name: "Pip", hue: 0.1, scale: 1, mood: "idle", away: true, status: .working, device: "Ann's iPhone")
+        let r = try #require(JSONSerialization.jsonObject(with: BridgeOutbound.troupe([imp]).encoded()) as? [String: Any])
+        let o = try #require((r["imps"] as? [[String: Any]])?.first)
+        #expect(o["status"] as? String == "working" && o["device"] as? String == "Ann's iPhone")
+    }
+
     @Test func originAllowList() {
         #expect(Bridge.isAllowedOrigin("chrome-extension://abcdef"))
         #expect(Bridge.isAllowedOrigin("moz-extension://x"))

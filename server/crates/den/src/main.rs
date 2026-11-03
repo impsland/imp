@@ -2,8 +2,8 @@
 
 use std::process::ExitCode;
 
-use den::config::Config;
-use den::{Den, admin, db};
+use imp_den::config::Config;
+use imp_den::{Den, admin, db};
 use imp_shared::config::{env_opt, env_parse};
 use imp_shared::{health, shutdown, telemetry};
 use tokio::net::TcpListener;
@@ -69,7 +69,7 @@ async fn serve() -> ExitCode {
     let den = Den::new(config, pool).await;
     let (stop, stopped) = watch::channel(false);
     let upkeep = tokio::spawn(std::sync::Arc::clone(&den).maintain(stopped));
-    let app = den::router(den).into_make_service_with_connect_info::<std::net::SocketAddr>();
+    let app = imp_den::router(den).into_make_service_with_connect_info::<std::net::SocketAddr>();
     let served = axum::serve(listener, app)
         .with_graceful_shutdown(shutdown::signal())
         .await;

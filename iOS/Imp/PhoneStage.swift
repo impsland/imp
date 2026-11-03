@@ -1,4 +1,5 @@
 import CoreMotion
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -6,6 +7,8 @@ import SwiftUI
 struct PhoneStage: View {
     let hub: LinkHub
     let pocket: PocketRuntime
+    /// A sheet is over the stage (chat, editor, devices): a shake there is not meant for the Imps.
+    var covered = false
     var onChat: (UUID) -> Void
     /// Opens an Imp hatched here in the editor.
     var onEdit: (UUID) -> Void = { _ in }
@@ -15,6 +18,8 @@ struct PhoneStage: View {
     @State private var deleting: LinkImp?
     /// An Imp hatched here, waiting for "Move to" a Mac to be confirmed.
     @State private var moving: (imp: LinkImp, mac: LinkDevice)?
+    /// A shake that wants the person to pick where the Imp goes.
+    @State private var asking: ShakeAsk?
     @State private var engine = StageEngine()
     @State private var motion = MotionWatcher()
     @State private var sizes = BubbleSizes()
@@ -76,6 +81,14 @@ struct PhoneStage: View {
             .ignoresSafeArea()
         }
         .onAppear { wire() }
+        .overlay(alignment: .bottom) { ShakeReceiptBar(hub: hub).padding(.bottom, 84) }
+        .confirmationDialog(asking?.title ?? "", isPresented: Binding(get: { asking != nil }, set: { if !$0 { asking = nil } }),
+                            titleVisibility: .visible, presenting: asking) { ask in
+            ForEach(ask.choices) { device in
+                Button("Send to \(device.name)") { sendShaken(ask.imp, to: device.id, side: nil) }
+            }
+        } message: { Text($0.message) }
+        .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in motion.configure() }
         .confirmationDialog(deleting.map { String(localized: "Delete \($0.name)?") } ?? "",
                             isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }),
                             titleVisibility: .visible, presenting: deleting) { imp in
@@ -99,6 +112,38 @@ struct PhoneStage: View {
             // A voice doesn't go on talking from a phone that's been put away.
             if phase == .background { StageVoice.shared.interrupt() }
         }
+    }
+
+    // MARK: Shake to send
+
+    /// A deliberate shake: sends the Imp moved last to the device nearby (see `docs/TRANSFER.md`), or
+    /// the Imps get dizzy as they always did when there is nothing to send or nowhere to send it.
+    private func shaken(from side: LinkSide?) {
+        engine.pacer.wake()
+        let settings = ShakeSettings(defaults: .standard)
+        let decision: ShakeTransfer.Decision = covered || engine.isBlocking ? .nothing(.off)
+            : ShakeTransfer.decide(imps: engine.shakeImps { hub.visit($0) == nil }, peers: hub.shakePeers(),
+                                   side: side, settings: settings, now: Date())
+        switch decision {
+        case .send(let imp, let device):
+            sendShaken(imp, to: device, side: side)
+        case .ask(let imp, let choices, let why):
+            guard let name = engine.bodies[imp]?.imp.name else { return engine.shake() }
+            let devices = choices.compactMap { hub.device($0) }
+            guard !devices.isEmpty else { return engine.shake() }
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            asking = ShakeAsk(imp: imp, impName: name, choices: devices, why: why)
+        case .nothing:
+            engine.shake()
+        }
+    }
+
+    /// Sends `imp` the way a menu send does (it drifts off the side and the other device answers), and
+    /// tells the person what is moving and where. If it cannot go, it stays where it is.
+    private func sendShaken(_ id: UUID, to device: UUID, side: LinkSide?) {
+        guard let imp = engine.bodies[id]?.imp, engine.sendGently(id, to: device, preferring: side) else { return }
+        hub.shakeBegan(imp, to: device)
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
     }
 
     // MARK: Talk bubbles
@@ -227,6 +272,7 @@ struct PhoneStage: View {
             if exit.moves {
                 pocket.move(id, exit: exit, to: device)
             } else if !hub.pass(imp, exit: exit, to: device) {
+                hub.shakeFailed(id)
                 engine.refused(id, String(localized: "\(hub.deviceName(device)) isn't around"))
             }
         }
@@ -246,7 +292,7 @@ struct PhoneStage: View {
         motion.onEvent = { event in
             switch event {
             case .thrown(let side): engine.jolt(side)
-            case .shaken: engine.shake(); engine.pacer.wake()
+            case .shaken: shaken(from: motion.shakeStart)
             }
         }
         engine.reconcile(roster)
@@ -319,51 +365,30 @@ struct EmptyHint: View {
     }
 }
 
-/// The phone's own motion: a throw of the whole phone, or a shake. Sampled off the main queue (only
-/// an event comes back to it), and no faster than a jolt needs: a throw lasts a tenth of a second.
+/// The phone's own motion: a throw of the whole phone, or a shake. Read from the shared `TiltSource`
+/// (one motion manager for the whole app), and only an event comes back to the stage.
 @MainActor
 final class MotionWatcher {
-    /// Samples a second.
-    nonisolated static let rate = 50.0
-
-    private let manager = CMMotionManager()
-    private let queue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.name = "app.imp.motion"
-        queue.maxConcurrentOperationCount = 1
-        return queue
-    }()
+    private var jolts = JoltDetector()
     var onEvent: ((JoltDetector.Event) -> Void)?
+    /// The way the last shake began.
+    var shakeStart: LinkSide? { jolts.shakeStart }
+
+    /// Applies the shake settings (how hard a shake has to be).
+    func configure() {
+        let sensitivity = ShakeSettings(defaults: .standard).sensitivity
+        guard jolts.threshold != sensitivity.threshold || jolts.shakeCount != sensitivity.pushes else { return }
+        jolts.threshold = sensitivity.threshold
+        jolts.shakeCount = sensitivity.pushes
+    }
 
     func start() {
-        guard manager.isDeviceMotionAvailable, !manager.isDeviceMotionActive else { return }
-        let sampler = JoltSampler { [weak self] event in
-            Task { @MainActor in self?.onEvent?(event) }
-        }
-        manager.deviceMotionUpdateInterval = 1 / Self.rate
-        manager.startDeviceMotionUpdates(to: queue, withHandler: Self.handler(sampler))
-    }
-
-    /// Built outside the main actor: a closure written inside `start` would be main-actor isolated and
-    /// trap the moment CoreMotion calls it on the motion queue (the first Imp on the stage crashed).
-    nonisolated private static func handler(_ sampler: JoltSampler) -> CMDeviceMotionHandler {
-        { data, _ in
-            guard let data else { return }
-            sampler.feed(x: data.userAcceleration.x, at: data.timestamp)
+        configure()
+        TiltSource.shared.attach(self) { [weak self] a, t in
+            guard let self, let event = jolts.feed(x: a.x, at: t) else { return }
+            onEvent?(event)
         }
     }
 
-    func stop() { manager.stopDeviceMotionUpdates() }
-}
-
-/// Feeds the jolt detector from the motion queue (one at a time, so it needs no lock).
-private final class JoltSampler: @unchecked Sendable {
-    private var jolts = JoltDetector()
-    private let onEvent: @Sendable (JoltDetector.Event) -> Void
-
-    init(onEvent: @escaping @Sendable (JoltDetector.Event) -> Void) { self.onEvent = onEvent }
-
-    func feed(x: Double, at t: TimeInterval) {
-        if let event = jolts.feed(x: x, at: t) { onEvent(event) }
-    }
+    func stop() { TiltSource.shared.detach(self) }
 }

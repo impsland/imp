@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -57,6 +58,8 @@ struct SpeechBubble: View {
                 Text(header)
                     .font(.system(.caption, design: .rounded, weight: .bold))
                     .foregroundStyle(Color.imp(speech.hue)).brightness(0.18)
+                    .lineLimit(1)
+                    .frame(maxWidth: 220, alignment: .leading)
             }
             if speech.role == .reply {
                 Text("“\(speech.question)”")
@@ -84,7 +87,10 @@ struct SpeechBubble: View {
             }
         }
         .padding(.horizontal, 13).padding(.vertical, 10)
+        // The stage proposes this bubble a 1 point wide anchor, so a bubble with no width of its own
+        // (the one asked) takes its ideal width instead of the proposal, or it wraps a letter per line.
         .frame(width: speech.role == .asked ? nil : 250, alignment: .leading)
+        .fixedSize(horizontal: speech.role == .asked, vertical: false)
         .background {
             BubbleShape(tail: tailOffset)
                 .fill(Dungeon.deep.opacity(0.94))

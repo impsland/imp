@@ -1,3 +1,4 @@
+import ImpDesign
 import SwiftUI
 
 /// The first round of Embers teaches itself: a line of embers to fling an Imp through, the rules on

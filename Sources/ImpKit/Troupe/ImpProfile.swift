@@ -24,7 +24,7 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     /// Sends the tools it called, and what they returned, with the rest of the chat. `nil` is
     /// on (optional, so profiles saved before it existed still load).
     public var sendsToolCalls: Bool?
-    /// How many recent exchanges of the chat it's sent. `nil`: `ChatMemory.defaultExchanges`.
+    /// How many recent exchanges of the chat it's sent. `nil`: no limit (`ChatMemory.noLimit`).
     public var exchangesSent: Int?
     /// Its models. `nil` uses the template brain (`AIConfig.brain`).
     public var brain: Brain?
@@ -43,9 +43,27 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     private var ownToolsOff: [ImpToolGroup]?
     /// Its own tools that are off by default (`ImpToolGroup.isOnByDefault`) and it may use.
     private var ownToolsOn: [ImpToolGroup]?
+    /// Single tools switched off, by registry id (`own.body.imp_speak`, `mcp.files.read_file`).
+    /// Optional, so older profiles load. Whole groups are `ownToolsOff` and `servers`.
+    private var toolsOff: [String]?
     /// Storage for `animations` and `traits` (optional, so older profiles load).
     var ownAnimations: [MadeAnimation]?
     var character: ImpTraits?
+    /// Storage for `follow` and `followSpeed` (optional, so older profiles load).
+    private var following: FollowMode?
+    private var followRate: Double?
+
+    /// How it follows the cursor. Eyes unless the user picks another way.
+    public var follow: FollowMode {
+        get { following ?? .eyes }
+        set { following = newValue == .eyes ? nil : newValue }
+    }
+
+    /// How quickly it follows (0.5 to 2, 1 is normal), in hops and glides.
+    public var followSpeed: Double {
+        get { FollowMath.clampedSpeed(followRate ?? FollowMath.defaultSpeed) }
+        set { followRate = newValue == FollowMath.defaultSpeed ? nil : FollowMath.clampedSpeed(newValue) }
+    }
 
     /// Whether it may use one group of its own tools (animations, its senses, setting itself up…).
     public func uses(_ group: ImpToolGroup) -> Bool {
@@ -61,6 +79,24 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
         if group.isOnByDefault { ownToolsOff = update(ownToolsOff, !on) } else { ownToolsOn = update(ownToolsOn, on) }
     }
 
+    /// Whether one tool (by registry id) is not switched off for it.
+    public func uses(tool id: String) -> Bool { !(toolsOff ?? []).contains(id) }
+
+    public mutating func setUses(tool id: String, _ on: Bool) {
+        var set = Set(toolsOff ?? [])
+        if on { set.remove(id) } else { set.insert(id) }
+        toolsOff = set.isEmpty ? nil : set.sorted()
+    }
+
+    /// The single tools switched off for it, by registry id.
+    public var disabledTools: Set<String> { Set(toolsOff ?? []) }
+
+    /// What is switched off for it, as `ToolSet` applies it. A group of an MCP server is on when the
+    /// server is in `servers`, which `MCPScope` already takes care of.
+    public var toolSelection: ToolSelection {
+        ToolSelection(groupsOff: Set(ImpToolGroup.allCases.filter { !uses($0) }.map(ToolRegistry.ownGroupID)), toolsOff: disabledTools)
+    }
+
     /// The groups of its own tools it may use.
     public var ownTools: Set<ImpToolGroup> { Set(ImpToolGroup.allCases.filter(uses)) }
 
@@ -74,7 +110,7 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     public var effectiveInstructions: String { instructions ?? Briefing.display }
 
     public var remembersToolCalls: Bool { sendsToolCalls ?? true }
-    public var memoryExchanges: Int { max(exchangesSent ?? ChatMemory.defaultExchanges, 1) }
+    public var memoryExchanges: Int { exchangesSent.map { max($0, 1) } ?? ChatMemory.noLimit }
 
     /// Its own folder (see `Workspace`).
     public var workspace: URL { Workspace.directory(for: id) }

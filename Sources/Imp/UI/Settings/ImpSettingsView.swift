@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -30,17 +31,17 @@ struct ImpSettingsView: View {
             }
             SegmentedTabs(tabs: ImpTab.allCases, selection: $router.impTab, title: \.title, icon: \.icon,
                           badge: { $0 == .brain && !model.isReady(id) })
-                .padding(.horizontal, Metrics.pagePadding)
+                .padding(.horizontal, Spacing.page)
                 .frame(maxWidth: Metrics.column)
                 .padding(.top, 6)
                 .padding(.bottom, 12)
             SettingsPage {
                 switch router.impTab {
                 case .looks:
-                    LooksTab(imp: imp)
+                    ImpLooksTab(imp: imp)
                     ShareCard(model: model, id: id)
                     GoodbyeCard(model: model, router: router, id: id)
-                case .moves: MovesTab(model: model, id: id)
+                case .moves: ImpMovesTab(model: model, id: id)
                 case .brain: BrainTab(model: model, imp: imp)
                 case .tools: ToolsTab(model: model, imp: imp)
                 case .triggers: TriggersTab(model: model, id: id)
@@ -50,6 +51,7 @@ struct ImpSettingsView: View {
             .transition(.opacity)
         }
         .environment(\.impTint, Color.imp(profile.hue))
+        .environment(\.publishContext, PublishContext(model: model, imp: id))
         .tint(Color.imp(profile.hue))
     }
 

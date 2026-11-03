@@ -24,6 +24,9 @@ final class ImpLife {
     @ObservationIgnored private var lastName = ""
     /// The animation holds its last beat until then (see `sustain`).
     @ObservationIgnored private var sustainedUntil = Date.distantPast
+    /// Turns the time since it was last touched, and where the cursor is, into events for the triggers.
+    @ObservationIgnored private var idleWatch = IdleWatch()
+    @ObservationIgnored private var proximity = CursorProximity()
 
     /// Seconds without mouse movement before Imp starts entertaining itself.
     static let quietAfter: Double = 5
@@ -98,16 +101,21 @@ final class ImpLife {
             || (model.flash.map { $0.until > now } ?? false) || model.app.stage.focus(for: model) != nil
         if nowLively != lively { lively = nowLively }
 
-        // Waking: the cursor sneaks up on a sleeping imp.
-        if model.mood(at: now) == .sleepy {
-            guard model.visit?.isAwake != false else { return }       // asleep because its home is away
-            let d = hypot(mouse.x - model.impCenter.x, mouse.y - model.impCenter.y)
-            if d < 80 {
-                model.touch()
-                wake()
+        // What happens to its body (left alone, the cursor coming close or going away) goes to the
+        // trigger list: falling asleep and waking are triggers there, like any other.
+        if model.visit?.isAwake != false {
+            let idleFor = now.timeIntervalSince(model.lastActivity)
+            let reach = hypot(mouse.x - model.impCenter.x, mouse.y - model.impCenter.y)
+            for event in [idleWatch.advance(to: idleFor), proximity.update(distance: reach)].compactMap({ $0 }) {
+                model.app.fireBody(event, on: model)
             }
-            return
         }
+
+        // Going after the cursor, if that is how this Imp is set: hops and glides stop with Reduce Motion.
+        let goes = FollowMath.moves(model.profile.follow, reduceMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
+            && model.visit == nil && model.isFree(at: now) && now >= model.followBlockedUntil && !model.app.isAway(model.id)
+        model.followCursor = goes ? mouse : nil
+        if goes { model.onFollow?() }
 
         // Advance the current routine.
         if let a = antic {
@@ -124,6 +132,9 @@ final class ImpLife {
                 }
             }
         }
+
+        // Asleep: nothing else happens until something wakes it.
+        if model.mood(at: now) == .sleepy { return }
 
         // Only play when nothing else is going on.
         let free = model.isFree(at: now) && model.prefs.antics

@@ -29,11 +29,37 @@ public struct BridgeImp: Equatable, Sendable, Codable {
     public var traits: ImpTraits
     /// A `Mood` raw value ("idle", "thinking", "working", "sleepy"…).
     public var mood: String
-    /// Out on an iPhone, not on this Mac's desktop.
+    /// Out on another device, not on this Mac's desktop.
     public var away: Bool
+    /// What it is really doing, wherever it is (`BridgeStatus` raw value).
+    public var status: String
+    /// The name of the device it is out on, when it is away and the name is known.
+    public var device: String?
 
-    public init(name: String, hue: Double, scale: Double, traits: ImpTraits = .plain, mood: String, away: Bool) {
+    public init(name: String, hue: Double, scale: Double, traits: ImpTraits = .plain, mood: String, away: Bool,
+                status: BridgeStatus? = nil, device: String? = nil) {
         self.name = name; self.hue = hue; self.scale = scale; self.traits = traits; self.mood = mood; self.away = away
+        self.status = (status ?? BridgeStatus.of(mood: mood, hasWork: false, away: away, deviceReachable: true)).rawValue
+        self.device = device
+    }
+}
+
+/// What an Imp is up to, as the extension shows it. An Imp out on a phone is still run by this Mac,
+/// so its mood and its work in progress here are its real state. Being away says where it is,
+/// never that it is asleep.
+public enum BridgeStatus: String, Sendable, Equatable {
+    case working, idle, asleep
+
+    /// - Parameters:
+    ///   - mood: the Imp's `Mood` raw value on this Mac.
+    ///   - hasWork: it has a request in progress (here or asked from its phone).
+    ///   - away: it is out on another device.
+    ///   - deviceReachable: that device is connected right now (ignored when not away).
+    public static func of(mood: String, hasWork: Bool, away: Bool, deviceReachable: Bool) -> BridgeStatus {
+        if hasWork || mood == "thinking" || mood == "working" { return .working }
+        if mood == "sleepy" { return .asleep }
+        if away && !deviceReachable { return .asleep }
+        return .idle
     }
 }
 

@@ -8,7 +8,7 @@ import SwiftUI
 final class ImpMenu: NSObject, NSMenuDelegate {
     private let app: AppModel
     private let imp: ImpModel
-    /// The header button's action, run once the menu has closed (see `StatusMenu.menuDidClose`).
+    /// The header button's action, run once the menu has closed (see `menuDidClose`).
     private var pending: (@MainActor @Sendable () -> Void)?
 
     init(app: AppModel, imp: ImpModel) {

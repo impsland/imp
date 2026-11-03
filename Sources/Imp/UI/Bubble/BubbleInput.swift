@@ -1,4 +1,5 @@
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -27,8 +28,8 @@ struct TypingField: View {
         .padding(chat ? 5 : 0)
         .background {
             if chat {
-                RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.primary.opacity(0.07))
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Color.primary.opacity(0.07))
+                RoundedRectangle(cornerRadius: Radius.medium, style: .continuous)
                     .strokeBorder(focused ? tint.opacity(0.6) : Color.primary.opacity(0.1), lineWidth: focused ? 1.5 : 1)
             }
         }
@@ -43,7 +44,7 @@ struct TypingField: View {
                       text: measuring ? .constant(bubble.text) : $text, axis: .vertical)
                 .textFieldStyle(.plain)
                 .font(.system(size: 14))
-                .lineLimit(1...6)
+                .lineLimit(1...model.prefs.inputMaxLines)
                 // Room above the first line's capitals and below the last line's descenders.
                 .padding(.vertical, 2)
                 .frame(minHeight: 26)

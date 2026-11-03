@@ -33,18 +33,50 @@ public struct PocketService: Codable, Equatable, Sendable {
     }
 }
 
-/// A tool server a pocket Imp uses, over HTTP. The header (an `Authorization`, say) is named here
-/// and its value is a secret (`PocketSecrets`).
+/// A tool server a pocket Imp uses, over HTTP. Its headers (an `Authorization`, say) are named here
+/// and every value is a secret (`PocketSecrets`).
 public struct PocketServer: Codable, Equatable, Sendable, Identifiable {
     public var id: UUID
     public var name: String
-    /// Without a password or a query: keys go in the header.
+    /// Without a password or a query: keys go in headers.
     public var url: String
-    /// The name of a header to send with a value from `PocketSecrets`, if the server wants one.
-    public var header: String?
+    /// The names of the headers to send, each with a value from `PocketSecrets`. Names only: a name is
+    /// in the list once, whatever its case.
+    public var headers: [String]
 
-    public init(id: UUID = UUID(), name: String, url: String, header: String? = nil) {
-        self.id = id; self.name = name; self.url = url; self.header = header
+    public static let maxHeaders = 10
+
+    public init(id: UUID = UUID(), name: String, url: String, headers: [String] = []) {
+        self.id = id; self.name = name; self.url = url; self.headers = Self.clean(headers)
+    }
+
+    private enum CodingKeys: String, CodingKey { case id, name, url, headers, header }
+
+    /// Reads the old shape too: a single `header`. Its name becomes the one entry of `headers`, and its
+    /// value is moved to the new place the first time the Imps are read (`PocketSecrets.migrateLegacyHeaders`).
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(UUID.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        url = try c.decode(String.self, forKey: .url)
+        let list = try c.decodeIfPresent([String].self, forKey: .headers) ?? []
+        let old = try c.decodeIfPresent(String.self, forKey: .header)
+        headers = Self.clean(list.isEmpty ? old.map { [$0] } ?? [] : list)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(id, forKey: .id)
+        try c.encode(name, forKey: .name)
+        try c.encode(url, forKey: .url)
+        try c.encode(headers, forKey: .headers)
+    }
+
+    /// Trimmed, without blanks and without repeats (header names ignore case), in order.
+    public static func clean(_ names: [String]) -> [String] {
+        var seen: Set<String> = []
+        return names.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty && seen.insert($0.lowercased()).inserted }
     }
 }
 
@@ -61,7 +93,7 @@ public enum PocketError: LocalizedError, Equatable, Sendable {
         switch self {
         case .badName: String(localized: "An Imp needs a name of up to \(PocketImp.maxName) characters.")
         case .badURL(let url): String(localized: "“\(url)” must start with https://. Plain http:// works only for devices on your own network.")
-        case .noBrain: String(localized: "This Imp has no service and model to think with yet.")
+        case .noBrain: String(localized: "This Imp has no service and model to think with yet. Open its settings and add them.")
         case .notOnePocketImp: String(localized: "That isn't one Imp to take in.")
         case .alreadyHere: String(localized: "There's already an Imp like that here.")
         case .tooBig: String(localized: "This Imp is too big to move.")
@@ -80,6 +112,8 @@ public struct PocketImp: Codable, Equatable, Sendable, Identifiable {
     public var personality: String
     public var brain: PocketService
     public var servers: [PocketServer]
+    /// Single tools switched off, by registry id (`ToolRegistry`). Optional, so saved Imps load.
+    public var toolsOff: [String]?
     /// Oldest first. The last chat with you is the one you're in. Talks with other Imps are chats of
     /// their own (`Chat.peer`).
     public internal(set) var chats: [Chat]
@@ -115,7 +149,10 @@ public struct PocketImp: Codable, Equatable, Sendable, Identifiable {
         guard !trimmed.isEmpty, trimmed.count <= Self.maxName else { throw PocketError.badName }
         if !brain.baseURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { try Self.check(url: brain.baseURL) }
         guard servers.count <= Self.maxServers else { throw PocketError.tooBig }
-        for server in servers { try Self.check(url: server.url) }
+        for server in servers {
+            try Self.check(url: server.url)
+            guard server.headers.count <= PocketServer.maxHeaders else { throw PocketError.tooBig }
+        }
     }
 
     // MARK: Reading what was saved

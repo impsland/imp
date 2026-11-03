@@ -13,6 +13,8 @@ struct Horn {
     let facing: Double
     let base: CGPoint
     let baseR: Double
+    /// Where the rounded tip sits, in the 100-unit design space of the head.
+    let tip: CGPoint
     let light: CGPoint
 
     static let rings = 14
@@ -77,6 +79,7 @@ struct Horn {
             return CGPoint(x: tip.x + tr * cos(phi), y: tip.y + tr * sin(phi))
         }, at: 1)
 
+        self.tip = tip
         self.front = front
         self.back = back
         facing = max(0, min(1, rootR.z * 4))

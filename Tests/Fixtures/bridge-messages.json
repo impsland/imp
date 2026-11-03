@@ -1,0 +1,190 @@
+{
+ "about": "Browser bridge messages (WebSocket between the Mac app and the browser extension, one JSON object per message, see the Browser bridge section of docs/MODELS.md). outbound: app to extension, the client builds the message and its JSON must equal the vector. inbound: extension to app, the client decodes the vector and gets `expect` (defaults fill what is missing). invalid inbound messages are rejected. Compare parsed values, not text.",
+ "outbound": [
+  {
+   "name": "troupe",
+   "json": {
+    "imps": [
+     {
+      "away": true,
+      "device": "iPhone",
+      "hue": 0.55,
+      "mood": "idle",
+      "name": "Pip",
+      "scale": 1,
+      "status": "idle",
+      "traits": {
+       "blush": 0.3,
+       "eyes": 0.1,
+       "horns": 10,
+       "lids": 0.2,
+       "slant": -0.5,
+       "squint": 0,
+       "tempo": 1.2,
+       "tilt": 2
+      }
+     }
+    ],
+    "type": "troupe"
+   }
+  },
+  {
+   "name": "locate",
+   "json": {
+    "id": "q1",
+    "query": "Sign in",
+    "type": "locate"
+   }
+  },
+  {
+   "name": "text",
+   "json": {
+    "id": "q2",
+    "limit": 4000,
+    "type": "text"
+   }
+  }
+ ],
+ "inbound": [
+  {
+   "name": "hello",
+   "json": {
+    "type": "hello",
+    "browser": "Chrome",
+    "version": 3
+   },
+   "expect": {
+    "type": "hello",
+    "browser": "Chrome",
+    "version": 3
+   }
+  },
+  {
+   "name": "hello with defaults",
+   "json": {
+    "type": "hello"
+   },
+   "expect": {
+    "type": "hello",
+    "browser": "Browser",
+    "version": 1
+   }
+  },
+  {
+   "name": "page",
+   "json": {
+    "type": "page",
+    "url": "https://example.com/",
+    "title": "Example"
+   },
+   "expect": {
+    "type": "page",
+    "url": "https://example.com/",
+    "title": "Example"
+   }
+  },
+  {
+   "name": "page without title",
+   "json": {
+    "type": "page",
+    "url": "https://example.com/"
+   },
+   "expect": {
+    "type": "page",
+    "url": "https://example.com/",
+    "title": ""
+   }
+  },
+  {
+   "name": "located",
+   "json": {
+    "type": "located",
+    "id": "q1",
+    "rect": {
+     "x": 10,
+     "y": 20,
+     "width": 100,
+     "height": 30
+    }
+   },
+   "expect": {
+    "type": "located",
+    "id": "q1",
+    "rect": {
+     "x": 10,
+     "y": 20,
+     "width": 100,
+     "height": 30
+    }
+   }
+  },
+  {
+   "name": "located nothing",
+   "json": {
+    "type": "located",
+    "id": "q1"
+   },
+   "expect": {
+    "type": "located",
+    "id": "q1",
+    "rect": null
+   }
+  },
+  {
+   "name": "text",
+   "json": {
+    "type": "text",
+    "id": "q2",
+    "text": "Hello page"
+   },
+   "expect": {
+    "type": "text",
+    "id": "q2",
+    "text": "Hello page"
+   }
+  },
+  {
+   "name": "pong",
+   "json": {
+    "type": "pong"
+   },
+   "expect": {
+    "type": "pong"
+   }
+  }
+ ],
+ "invalid": [
+  {
+   "name": "unknown type",
+   "json": {
+    "type": "teleport"
+   }
+  },
+  {
+   "name": "no type",
+   "json": {
+    "url": "https://example.com/"
+   }
+  },
+  {
+   "name": "page without url",
+   "json": {
+    "type": "page",
+    "title": "x"
+   }
+  },
+  {
+   "name": "located without id",
+   "json": {
+    "type": "located"
+   }
+  },
+  {
+   "name": "text without id",
+   "json": {
+    "type": "text",
+    "text": "x"
+   }
+  }
+ ]
+}

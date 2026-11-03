@@ -2,8 +2,9 @@ name: imp-server
 
 services:
   den:
+    # The published image. `docker compose up -d --build` builds it here from this folder instead.
+    image: ${IMP_IMAGE:-ghcr.io/impsland/imp:latest}
     build: .
-    image: imp-server
     command: ["serve"]
     restart: unless-stopped
     environment:
@@ -28,7 +29,7 @@ services:
         ipv4_address: 172.31.0.10
 
   hop:
-    image: imp-server
+    image: ${IMP_IMAGE:-ghcr.io/impsland/imp:latest}
     entrypoint: ["/usr/local/bin/hop"]
     restart: unless-stopped
     depends_on: [den]

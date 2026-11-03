@@ -36,6 +36,12 @@ public struct Trigger: Codable, Hashable, Sendable {
         case hot
         /// The network goes away (`flag` true) or comes back (false).
         case offline
+        /// Nobody has touched the Imp for `number` seconds (no click, no chat, nothing it did).
+        case idle
+        /// The cursor comes up to the Imp.
+        case enter
+        /// The cursor moves away from the Imp.
+        case leave
         /// Only as a condition: the time of day is between `number` and `until` (minutes after midnight).
         case hours
 
@@ -58,6 +64,9 @@ public struct Trigger: Codable, Hashable, Sendable {
             case .hot: String(localized: "Mac runs hot")
             case .offline: String(localized: "Network")
             case .hours: String(localized: "Time of day")
+            case .idle: String(localized: "Left alone")
+            case .enter: String(localized: "Cursor comes close")
+            case .leave: String(localized: "Cursor moves away")
             }
         }
 
@@ -78,6 +87,9 @@ public struct Trigger: Codable, Hashable, Sendable {
             case .hot: "thermometer.high"
             case .offline: "wifi.slash"
             case .hours: "clock"
+            case .idle: "moon.zzz"
+            case .enter: "cursorarrow.rays"
+            case .leave: "cursorarrow.motionlines"
             }
         }
 
@@ -88,9 +100,12 @@ public struct Trigger: Codable, Hashable, Sendable {
         public var isCondition: Bool {
             switch self {
             case .battery, .charger, .app, .website, .busy, .hot, .offline, .hours: true
-            case .keys, .clicks, .time, .every, .back, .wake, .start: false
+            case .keys, .clicks, .time, .every, .back, .wake, .start, .idle, .enter, .leave: false
             }
         }
+
+        /// Happens to the Imp itself, not on the Mac: needs no Mac state, so it can run without a brain.
+        public var isBodily: Bool { self == .idle || self == .enter || self == .leave }
 
         /// Happens on the Mac rather than to the Imp (keys and clicks are you, talking to it).
         public var isAmbient: Bool { self != .keys && self != .clicks }
@@ -127,8 +142,14 @@ public struct Trigger: Codable, Hashable, Sendable {
         case .busy: Trigger(.busy, number: 85)
         case .offline: Trigger(.offline, flag: true)
         case .hours: Trigger(.hours, number: 9 * 60, until: 18 * 60)
+        case .idle: Trigger(.idle, number: defaultIdleSeconds)
+        case .enter, .leave: Trigger(kind)
         }
     }
+
+    /// How long the Imp is left alone before it falls asleep, unless the user changes that trigger.
+    public static let defaultIdleSeconds = 240
+    public static let idleRange = 5...86_400
 
     // MARK: Values, within sensible ranges
 
@@ -136,6 +157,8 @@ public struct Trigger: Codable, Hashable, Sendable {
 
     public var clicks: Int { min(max(number ?? 1, 1), Self.maxClicks) }
     public var percent: Int { min(max(number ?? 20, 1), 99) }
+    /// idle: how many seconds of being left alone.
+    public var idleSeconds: Int { min(max(number ?? Self.defaultIdleSeconds, Self.idleRange.lowerBound), Self.idleRange.upperBound) }
     public var minutes: Int { min(max(number ?? 60, 1), 24 * 60) }
     public var minuteOfDay: Int { ((number ?? 0) % 1440 + 1440) % 1440 }
     public var endMinute: Int { ((until ?? 0) % 1440 + 1440) % 1440 }
@@ -163,6 +186,9 @@ public struct Trigger: Codable, Hashable, Sendable {
         case .hot: String(localized: "The Mac runs hot")
         case .offline: isOn ? String(localized: "Network goes away") : String(localized: "Network comes back")
         case .hours: String(localized: "Between \(Self.shownClock(minuteOfDay)) and \(Self.shownClock(endMinute))")
+        case .idle: String(localized: "Left alone for \(Self.seconds(idleSeconds))")
+        case .enter: String(localized: "The cursor comes close")
+        case .leave: String(localized: "The cursor moves away")
         }
     }
 
@@ -184,6 +210,11 @@ public struct Trigger: Codable, Hashable, Sendable {
     /// A number of minutes as the user's language writes a duration: "15 min", "1 hr 30 min".
     static func span(_ minutes: Int) -> String {
         Duration.seconds(minutes * 60).formatted(.units(allowed: [.hours, .minutes], width: .abbreviated))
+    }
+
+    /// A number of seconds as the user's language writes a duration: "4 min", "90 sec".
+    public static func seconds(_ seconds: Int) -> String {
+        Duration.seconds(seconds).formatted(.units(allowed: [.hours, .minutes, .seconds], width: .abbreviated))
     }
 
     /// A time of day the way the user's region writes it ("9:05 PM" or "21:05"), for showing.
@@ -257,6 +288,11 @@ public enum MacEvent: Equatable, Sendable {
     case busy(Int)
     case hot
     case network(offline: Bool)
+    /// The Imp has been left alone: the seconds since it was last touched, before and now.
+    /// (Sent as the clock moves, so a trigger goes off once, as the time passes its number.)
+    case idle(from: Double, to: Double)
+    /// The cursor came up to the Imp, or left it.
+    case cursorEnter, cursorLeave
 
     /// What happened, in words for the model.
     public var description: String {
@@ -272,6 +308,9 @@ public enum MacEvent: Equatable, Sendable {
         case .busy(let load): "The processor has been busy (\(load) %)."
         case .hot: "The Mac is running hot."
         case .network(let offline): offline ? "The network went away." : "The network is back."
+        case .idle(_, let to): "Nobody has touched the Imp for \(Int(to)) seconds."
+        case .cursorEnter: "The cursor came up to the Imp."
+        case .cursorLeave: "The cursor moved away from the Imp."
         }
     }
 }
@@ -290,6 +329,8 @@ extension Trigger {
         case (.wake, .wake), (.start, .start), (.hot, .hot): true
         case (.busy, .busy(let load)): load >= percent
         case (.offline, .network(let offline)): offline == isOn
+        case (.idle, .idle(let from, let to)): from < Double(idleSeconds) && to >= Double(idleSeconds)
+        case (.enter, .cursorEnter), (.leave, .cursorLeave): true
         default: false
         }
     }
@@ -305,7 +346,7 @@ extension Trigger {
         case .hot: s.hot
         case .offline: s.offline == isOn
         case .hours: Self.within(s.minuteOfDay, from: minuteOfDay, to: endMinute)
-        case .keys, .clicks, .time, .every, .back, .wake, .start: false
+        case .keys, .clicks, .time, .every, .back, .wake, .start, .idle, .enter, .leave: false
         }
     }
 

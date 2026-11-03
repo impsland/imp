@@ -1,4 +1,5 @@
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -156,7 +157,7 @@ struct AnimationEditor: View {
     // MARK: The editor
 
     private var editor: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 8) {
             HStack(alignment: .top, spacing: 12) {
                 stagePanel.frame(width: 268)
                 inspector
@@ -167,7 +168,7 @@ struct AnimationEditor: View {
         .background { shortcuts }
     }
 
-    private static let topHeight: CGFloat = 282
+    private static let topHeight: CGFloat = 256
 
     /// Keys for the timeline that have no button of their own.
     private var shortcuts: some View {
@@ -201,9 +202,9 @@ struct AnimationEditor: View {
                 }
             transport
         }
-        .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Color.black.opacity(0.22)))
-        .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Dungeon.cardEdge))
-        .clipShape(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous))
+        .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Color.black.opacity(0.22)))
+        .overlay(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).strokeBorder(Dungeon.cardEdge))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
     }
 
     private var transport: some View {
@@ -216,7 +217,7 @@ struct AnimationEditor: View {
             .help(playing == nil ? "Play it from the start (Space)" : "Stop (Space)")
             .accessibilityLabel(playing == nil ? "Play" : "Stop")
             Toggle(isOn: $loops) { Image(systemName: "repeat") }
-                .toggleStyle(.button).controlSize(.small)
+                .toggleStyle(.impButton)
                 .help("Play it again and again")
             HoverIconButton(systemName: "arrow.counterclockwise", help: "Play this beat again") {
                 playing = nil
@@ -281,18 +282,18 @@ struct AnimationEditor: View {
                 HoverIconButton(systemName: "chevron.left", help: "The beat before (←)") { pick(selected - 1) }.disabled(selected <= 0)
                 HoverIconButton(systemName: "chevron.right", help: "The beat after (→)") { pick(selected + 1) }.disabled(selected >= beats.count - 1)
             }
-            .padding(.horizontal, 12).padding(.top, 8).padding(.bottom, 6)
+            .padding(.horizontal, 12).padding(.top, 6).padding(.bottom, 5)
             CardDivider()
             ScrollView(.vertical) {
-                VStack(alignment: .leading, spacing: 9) { fields }
-                    .padding(.horizontal, 12).padding(.vertical, 10)
+                VStack(alignment: .leading, spacing: 6) { fields }
+                    .padding(.horizontal, 12).padding(.vertical, 8)
             }
             .scrollIndicators(.automatic)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Dungeon.card))
-        .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Dungeon.cardEdge))
-        .clipShape(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous))
+        .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Dungeon.card))
+        .overlay(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).strokeBorder(Dungeon.cardEdge))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
     }
 
     private static let label: CGFloat = 60
@@ -303,12 +304,13 @@ struct AnimationEditor: View {
                 Slider(value: Binding(get: { beat.wrappedValue.duration },
                                       set: { beat.wrappedValue.duration = max(0.05, ($0 * 20).rounded() / 20) }),
                        in: AnimationBeat.durationRange)
+                    .impSlider()
                     .help("Or drag the right edge of the beat on the timeline (hold ⌥ for finer steps)")
                 Text(verbatim: Self.seconds(beat.wrappedValue.duration))
                     .font(.system(size: 11.5, weight: .medium, design: .rounded).monospacedDigit())
                     .frame(width: 44, alignment: .trailing)
                 Toggle("Hop", isOn: Binding(get: { beat.wrappedValue.hop }, set: { beat.wrappedValue.hop = $0; if $0 { replayBeat() } }))
-                    .toggleStyle(.switch).controlSize(.mini).font(.system(size: 12))
+                    .toggleStyle(.impSwitch).fixedSize().font(.system(size: 12))
                     .help("A hop as the beat starts (it takes 0.75 s)")
             }
         }
@@ -323,7 +325,7 @@ struct AnimationEditor: View {
                         beat.wrappedValue.lookX = on ? 0 : nil
                         beat.wrappedValue.lookY = on ? 0.1 : nil
                     }))
-                    .toggleStyle(.switch).controlSize(.mini).font(.system(size: 12))
+                    .toggleStyle(.impSwitch).fixedSize().font(.system(size: 12))
                 Text(beat.wrappedValue.hasLook ? "Drag on the stage" : "Follows the cursor")
                     .font(.system(size: 11)).foregroundStyle(Dungeon.muted).lineLimit(1)
                 Spacer(minLength: 0)
@@ -357,7 +359,7 @@ struct AnimationEditor: View {
     // MARK: Timeline
 
     private var timeline: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 4) {
                 Text("Beats").font(.system(size: 13, weight: .bold, design: .rounded))
                 Text(verbatim: "\(beats.count)/\(MadeAnimation.maxBeats)").font(.system(size: 11, weight: .medium)).foregroundStyle(Dungeon.muted)
@@ -383,9 +385,9 @@ struct AnimationEditor: View {
                       onAdd: { add() }, onDuplicate: { duplicate() }, onSplit: { split() }, onRemove: { remove() },
                       onCopy: { copyPose() }, onPaste: { pastePose() })
         }
-        .padding(.horizontal, 12).padding(.vertical, 10)
-        .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Dungeon.card))
-        .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Dungeon.cardEdge))
+        .padding(.horizontal, 12).padding(.vertical, 8)
+        .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Dungeon.card))
+        .overlay(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).strokeBorder(Dungeon.cardEdge))
     }
 
     private func pick(_ i: Int) {
@@ -478,8 +480,8 @@ struct AnimationEditor: View {
         HStack(alignment: .top, spacing: 16) {
             VStack(spacing: 8) {
                 ZStack {
-                    RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Color.black.opacity(0.22))
-                    RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Dungeon.cardEdge)
+                    RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Color.black.opacity(0.22))
+                    RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).strokeBorder(Dungeon.cardEdge)
                     StageImp(hue: hue, performance: playing, traits: traits)
                         .frame(width: 150, height: 150)
                 }
@@ -505,11 +507,10 @@ struct AnimationEditor: View {
                     TextField("What it looks like, in a few words", text: $draft.made.about).impField()
                 }
                 FieldRow("For", info: "One made for a single Imp plays only for it, in place of a shared one.", width: 64) {
-                    Picker(String(""), selection: $draft.owner) {
-                        Text("Every Imp").tag(UUID?.none)
-                        ForEach(model.prefs.imps) { imp in Text("\(imp.callName) only").tag(Optional(imp.id)) }
+                    ImpPicker("For", selection: $draft.owner, options: [UUID?.none] + model.prefs.imps.map { Optional($0.id) }) { owner in
+                        guard let owner, let imp = model.prefs.imps.first(where: { $0.id == owner }) else { return String(localized: "Every Imp") }
+                        return String(localized: "\(imp.callName) only")
                     }
-                    .labelsHidden().pickerStyle(.menu).fixedSize()
                 }
                 FieldRow("Icon", width: 64) { IconPicker(symbol: $draft.made.symbol, extra: animation.replaces?.symbol) }
                 if !traits.isPlain {
@@ -645,7 +646,7 @@ private struct BeatTrack: View {
 
     static let gap: CGFloat = 3
     static let minTile: CGFloat = 30
-    static let tileHeight: CGFloat = 58
+    static let tileHeight: CGFloat = 54
     static let rulerHeight: CGFloat = 16
     /// Points per second: the whole animation fits the width at 1×, within reason.
     private var pps: CGFloat {
@@ -1008,15 +1009,14 @@ private struct MovePicker: View {
                 HStack(spacing: 8) {
                     Text(verbatim: Self.title(m)).font(.system(size: 11.5, weight: .medium)).foregroundStyle(Dungeon.cream).lineLimit(1)
                     Spacer(minLength: 4)
-                    Stepper(value: Binding(get: { beat.repeats }, set: { beat.times = $0; replay() }), in: AnimationBeat.timesRange) {
+                    ImpStepper(value: Binding(get: { beat.repeats }, set: { beat.times = $0; replay() }), in: AnimationBeat.timesRange) {
                         Text(verbatim: Self.unit(m, beat.repeats)).font(.system(size: 11.5).monospacedDigit()).foregroundStyle(Dungeon.muted)
                     }
-                    .controlSize(.small)
                     .help("How many times it goes")
                     Toggle(isOn: Binding(get: { beat.reverse == true }, set: { beat.reverse = $0 ? true : nil; replay() })) {
                         Image(systemName: "arrow.left.arrow.right")
                     }
-                    .toggleStyle(.button).controlSize(.small)
+                    .toggleStyle(.impButton)
                     .help("The other way round")
                 }
             }
@@ -1123,7 +1123,7 @@ private struct CompactSlider: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Slider(value: $value, in: range)
+            Slider(value: $value, in: range).impSlider()
             Text(verbatim: format(value)).font(.system(size: 11.5, weight: .medium, design: .rounded).monospacedDigit())
                 .frame(width: 38, alignment: .trailing)
         }
@@ -1142,7 +1142,7 @@ struct LabeledSlider: View {
     var body: some View {
         HStack(spacing: 8) {
             Text(left).font(.system(size: 11)).foregroundStyle(Dungeon.muted).lineLimit(1)
-            Slider(value: $value, in: range)
+            Slider(value: $value, in: range).impSlider()
             Text(right).font(.system(size: 11)).foregroundStyle(Dungeon.muted).lineLimit(1)
             Text(verbatim: format(value)).font(.system(size: 11.5, weight: .medium, design: .rounded).monospacedDigit())
                 .frame(width: 42, alignment: .trailing)

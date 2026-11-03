@@ -54,8 +54,8 @@ public struct Brain: Codable, Hashable, Sendable {
 /// whatever OpenAI-compatible service they like.
 public struct AIConfig: Codable, Hashable, Sendable {
     public var services: [Service] = []
-    /// The service new Imps (and Imps that never picked one) use. Its `model` is only what older
-    /// versions saved there (see `ImpPreferences.upgrade()`): models now belong to services.
+    /// The service new Imps (and Imps that never picked one) use. Models belong to services
+    /// (`Service.model`), so its `model` is only a last fallback.
     public var brain = Brain()
 
     public init() {}

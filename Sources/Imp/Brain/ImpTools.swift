@@ -23,8 +23,10 @@ final class OwnToolHost {
     }
 
     private var profile: ImpProfile? { app?.profile(id) }
+    /// Which groups exist for this request. What the Imp has switched off is `ToolSet`'s business
+    /// (`ToolSelection`), not this: here only what can't work right now is left out.
     private var groups: Set<ImpToolGroup> {
-        var g = profile?.ownTools ?? []
+        var g = Set(ImpToolGroup.allCases)
         if !messaging { g.remove(.troupe) }
         return g
     }
@@ -53,7 +55,8 @@ final class OwnToolHost {
 
     func specs() -> [ToolSpec] {
         OwnTools.specs(groups, animations: playable.map(\.name), imps: others.map(\.profile.name), pocket: remoteImps.map(\.imp.name),
-                       browser: BrowserBridge.shared.isConnected, talk: app?.prefs.impTalk ?? .own)
+                       browser: BrowserBridge.shared.isConnected, talk: app?.prefs.impTalk ?? .own,
+                       conversation: app?.prefs.talkThreading == .decides)
     }
 
     func call(_ name: String, arguments: String) async throws -> String {
@@ -395,7 +398,7 @@ final class OwnToolHost {
             return "\(remote.imp.name) says: \(try await app.link.talk(from: me, to: remote, text: text))"
         }
         let place = (app?.prefs.impTalk ?? .own).place(asked: args["chat"]?.string)
-        let reply = try await other.answer(text, from: sender, in: place)
+        let reply = try await other.answer(text, from: sender, in: place, conversation: args["conversation"]?.string)
         return "\(other.profile.name) says: \(reply)"
     }
 }

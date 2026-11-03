@@ -1,4 +1,5 @@
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -6,6 +7,9 @@ import SwiftUI
 @MainActor
 final class HomeWindow {
     static let shared = HomeWindow()
+    /// The window's content size when it first opens, and the smallest it can be made.
+    static let defaultSize = NSSize(width: 780, height: 640)
+    static let minimumSize = NSSize(width: 660, height: 540)
     private(set) var window: NSWindow?
     let router = HomeRouter()
 
@@ -53,6 +57,12 @@ final class HomeWindow {
         router.talk = TalkRequest(imp: imp, peer: peer)
     }
 
+    /// Opens a chat with you to read, as bubbles or as JSON.
+    func showChat(_ model: AppModel, imp: UUID, chat: UUID) {
+        reveal(model)
+        router.talk = TalkRequest(imp: imp, peer: imp, chat: chat)
+    }
+
     private func open(_ model: AppModel) {
         if router.selection.flatMap(model.profile) == nil {
             let shown = model.prefs.imps.filter { !router.unhatched.contains($0.id) }
@@ -70,8 +80,8 @@ final class HomeWindow {
             w.isMovableByWindowBackground = false
             w.appearance = NSAppearance(named: .darkAqua)       // the dungeon is always cosy and dark
             w.backgroundColor = NSColor(Dungeon.deep)
-            w.setContentSize(NSSize(width: 780, height: 600))
-            w.minSize = NSSize(width: 660, height: 540)
+            w.setContentSize(Self.defaultSize)
+            w.minSize = Self.minimumSize
             w.isReleasedWhenClosed = false
             w.setFrameAutosaveName("ImpHome")
             if !w.setFrameUsingName("ImpHome") { w.center() }
@@ -240,7 +250,7 @@ enum ImpTab: String, CaseIterable, Identifiable {
 
 /// Settings every Imp shares.
 enum GeneralTab: String, CaseIterable, Identifiable {
-    case services, talking, animations, permissions, app
+    case services, talking, animations, permissions, devices, app
     var id: String { rawValue }
 
     var title: String {
@@ -249,6 +259,7 @@ enum GeneralTab: String, CaseIterable, Identifiable {
         case .talking: String(localized: "Talking")
         case .animations: String(localized: "Animations")
         case .permissions: String(localized: "Permissions")
+        case .devices: String(localized: "Devices")
         case .app: String(localized: "App")
         }
     }
@@ -259,6 +270,7 @@ enum GeneralTab: String, CaseIterable, Identifiable {
         case .talking: "bubble.left.and.bubble.right.fill"
         case .animations: "sparkles"
         case .permissions: "lock.shield.fill"
+        case .devices: "point.3.connected.trianglepath.dotted"
         case .app: "gearshape.fill"
         }
     }

@@ -49,11 +49,34 @@ if [[ -z "${TEAM:-}" ]]; then
 fi
 
 (cd iOS && xcodegen generate --quiet)
+# Building for any iPhone makes Xcode log that its placeholder device has no iOS version: noise, so
+# that one line is dropped. Everything else xcodebuild says still shows.
 xcodebuild -project iOS/ImpPhone.xcodeproj -scheme ImpPhone -configuration "$CONFIG" \
   -destination 'generic/platform=iOS' -derivedDataPath "$DERIVED" \
-  DEVELOPMENT_TEAM="$TEAM" -allowProvisioningUpdates -quiet build
+  DEVELOPMENT_TEAM="$TEAM" -allowProvisioningUpdates -quiet build \
+  2> >(grep -v 'IDESchemeActionsInvocationRecord' >&2)
 
 APP="$DERIVED/Build/Products/$CONFIG-iphoneos/Imp.app"
-xcrun devicectl device install app --device "$DEVICE" "$APP"
-xcrun devicectl device process launch --device "$DEVICE" --terminate-existing app.imp.ImpPhone >/dev/null \
-  || echo "Installed. Unlock the iPhone and open Imp (the first time: Settings › General › VPN & Device Management › trust the developer)."
+LOG="$(mktemp)"
+trap 'rm -f "${LIST:-}" "$LOG"' EXIT
+
+# Over Wi-Fi the connection to the iPhone drops when it locks or sleeps, and sometimes mid-copy
+# ("Connection reset by peer"). Each step opens the connection again and tries a few times.
+attempt() {
+  local what="$1"; shift
+  for try in 1 2 3; do
+    xcrun devicectl device info details --device "$DEVICE" >/dev/null 2>&1 || true   # wakes the connection
+    if "$@" >"$LOG" 2>&1; then return 0; fi
+    if (( try < 3 )); then echo "The iPhone didn't answer while trying to $what. Trying again ($((try + 1)) of 3)…" >&2; sleep 3; fi
+  done
+  return 1
+}
+
+if ! attempt "install Imp" xcrun devicectl device install app --device "$DEVICE" "$APP"; then
+  grep -E "ERROR|error" "$LOG" | head -3 >&2
+  echo "error: couldn't install Imp on $DEVICE. Unlock it and keep it awake, or plug it in with a cable, then run make ios-device again." >&2
+  exit 1
+fi
+if ! attempt "open Imp" xcrun devicectl device process launch --device "$DEVICE" --terminate-existing app.imp.ImpPhone; then
+  echo "Installed. Unlock the iPhone and open Imp (the first time: Settings › General › VPN & Device Management › trust the developer)."
+fi

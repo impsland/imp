@@ -1,5 +1,6 @@
 import Carbon.HIToolbox
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -186,6 +187,14 @@ enum IconRenderer {
         case let s where s.hasPrefix("general-"):
             router.screen = .general
             router.generalTab = GeneralTab(rawValue: String(s.dropFirst(8))) ?? .services
+            if router.generalTab == .devices {
+                model.prefs.server = "imp.example.org"
+                model.link.showSample([
+                    .init(id: UUID(), name: "Anna's iPhone", kind: .phone, reach: .direct, imps: [], isTrusted: true),
+                    .init(id: UUID(), name: "Studio Mac", kind: .mac, reach: .viaServer, imps: [], isTrusted: true),
+                    .init(id: UUID(), name: "Old iPad phone", kind: .phone, reach: .away, imps: []),
+                ])
+            }
         case "talk": router.screen = .home
         default:
             router.screen = .imp(chosen)
@@ -457,6 +466,35 @@ enum IconRenderer {
                 }
             }
         }
+        let host = NSHostingView(rootView: sheet)
+        host.frame.size = host.fittingSize
+        snapshot(host, to: url, dark: dark)
+    }
+
+    /// `Imp --render-away <file.png> [dark]`: Imps away from the desktop as the slider shows them. Top row: on a
+    /// connected phone, on one out of reach, and at the neighbour size. Then hidden under the sheet with perky,
+    /// plain and droopy horns, at the middle size (112) and the neighbour size (0.62 of it).
+    static func renderAway(to url: URL, dark: Bool) {
+        func page(_ view: some View, scale: CGFloat = 1) -> some View {
+            view.frame(width: 112, height: 112).scaleEffect(scale, anchor: .bottom)
+                .frame(width: 124, height: 124 * max(scale, 0.62) + 8, alignment: .bottom)
+                .background(Dungeon.wallBottom)
+        }
+        let looks: [ImpTraits] = [ImpTraits(horns: 30), .plain, ImpTraits(horns: -30)]
+        let sheet = VStack(spacing: 6) {
+            HStack(spacing: 6) {
+                page(AwayImp(hue: 0.57, device: "iPhone", connected: true, still: true))
+                page(AwayImp(hue: 0.57, device: "iPhone", connected: false, still: true))
+                page(AwayImp(hue: 0.57, device: "iPhone", connected: true, still: true), scale: 0.62)
+            }
+            HStack(spacing: 6) {
+                ForEach(looks.indices, id: \.self) { page(HidingImp(hue: 0.08 + Double($0) * 0.25, traits: looks[$0], still: true)) }
+            }
+            HStack(spacing: 6) {
+                ForEach(looks.indices, id: \.self) { page(HidingImp(hue: 0.08 + Double($0) * 0.25, traits: looks[$0], still: true), scale: 0.62) }
+            }
+        }
+        .padding(8)
         let host = NSHostingView(rootView: sheet)
         host.frame.size = host.fittingSize
         snapshot(host, to: url, dark: dark)

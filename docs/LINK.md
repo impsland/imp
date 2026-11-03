@@ -139,6 +139,46 @@ the asker's home according to a stage we know. Anything else is answered as fail
 hears of it. A question id already in flight is refused; one device may have 16 questions in flight
 through another (more are answered `busy`).
 
+The tool `imp_message` has an optional `conversation` argument (`new` or `continue`) when the setting
+"Between Imps > Conversations" is "The Imp decides". It is not part of the wire format: `message` and
+`answer` are unchanged. The Imp that answers decides from its own chats whether the message goes on in
+its latest conversation with the asker or starts a new one (`TalkThreading`), so an asker on another
+device sends nothing extra and gets the setting's default rule (continue if the last message is younger
+than the window, 60 minutes unless changed).
+
+## File references
+
+A path in a reply is relative to one Imp's Workspace, so it means nothing once a text leaves that Imp.
+Every text that crosses from one Imp to another (the question, the answer, on this device or through a
+`talk`) therefore names the files it mentions as
+
+    imp-file://<owner-imp-uuid>/<percent-encoded path>?size=<bytes>&sha256=<64 lowercase hex>&type=<mime>#<fragment>
+
+`size`, `sha256`, `type` and the fragment (`#autoplay`) are optional (a checksum is only made for files up
+to 32 MiB). The sender rewrites only what is a regular file inside its own Workspace, and leaves web
+addresses and everything else as written. Nothing is copied: the owner id says whose Workspace the path
+is in, so the same reference means the same file for every reader.
+
+A reader accepts a reference only if all of this holds, and otherwise shows the reason in plain words
+instead of a broken link or picture:
+
+- The owner is a UUID and the path is relative and normalised: no `..`, no empty or `.` parts, no leading
+  `/` or `~`, no `\`, no control characters, at most 1024 bytes and 32 parts. Unknown query keys, repeated
+  keys and malformed values reject the whole reference.
+- The owner's Workspace is on this device, the file is there and is a regular file, and it is still inside
+  the Workspace once links are followed.
+- When given, the size and the checksum match the file.
+
+A phone gets the file over the existing `file` request with the reference as written. The Mac serves it
+only if a reply of that Imp shows it, and only after the same checks (inside the owner's Workspace, size
+and checksum). A phone that is not trusted is served only references to the asking Imp's own folder, so a
+file of another Imp is served to trusted devices alone. The phone checks size and checksum again on what it
+received and drops the file if they differ. A reference whose owner Workspace is on another device shows
+as "on another device" there. The Workspace stays with its home when an Imp visits, so a visitor's files
+are fetched from the home, not copied to the host.
+
+Shared test vectors (paths, references, checksums) are in `Tests/Fixtures/workspace-refs.json`.
+
 ## Trust
 
 A link may be marked **trusted**: one of the owner's own devices (`setTrusted`, off by default; visitors
@@ -163,6 +203,72 @@ Forgetting a device ends the link on this side (the other side hears `bye` if it
 device's Imps home from it and sends its visiting Imps home. Forgetting everyone also makes a new door key,
 so every old code and link stops working. A device that hears it was forgotten (`bye`, or `linked: false`
 in the welcome) does the same on its side, and its app is told which Imps came home and which went home.
+
+## Versions
+
+| thing | now | notes |
+|-------|-----|-------|
+| Protocol | `2` | Each side says its own in `hello` and `welcome`. The invite carries `v=2` and a code with another `v` is refused. |
+| Hop handshake | `2` | Byte 7 of the Hop hello and the `imp-hop/2` proof tag (see `server/PROTOCOL.md`). |
+| TLS labels | `imp-link/2`, `imp-link psk v2` | Bumped together with the protocol. |
+
+A message type or a field a side does not know is ignored, so a newer peer may add messages without
+breaking an older one. A change an older peer would misread (the handshake, a field that means something
+else) is a new protocol version.
+
+## Messages
+
+One JSON object per frame, with exactly one key: the message name. Its value holds the fields. UUIDs are
+text, binary values (`key`, `proof`, `ticket`, `door`, file `data`) are base64, dates are seconds since
+1970. `imp` is always the Imp's id. Both directions use the same set, and what a device does with a
+message depends on who sent it.
+
+```json
+{ "ask": { "imp": "00000000-0000-0000-0000-000000000001", "text": "What time is it?" } }
+{ "ping": {} }
+{ "declined": { "transfer": "00000000-0000-0000-0000-000000000040", "reason": "playing" } }
+```
+
+| message | fields | from, to |
+|---------|--------|----------|
+| `hello` | `device`, `name`, `kind` (`mac` or `phone`), `key`, `version`, `proof`, optional `join` | guest, host, first frame |
+| `welcome` | `device`, `name`, `kind`, `version`, `linked`, `proof` | host, guest, first answer |
+| `ping`, `pong` | none | either |
+| `bye` | `reason` (for people, at most 200 characters) | either |
+| `routes` | `door`, `routes` (`hosts`, `port`, optional `hop`) | either, after the handshake and on change |
+| `stage` | `imps`: list of `{ imp, home }`, `imp` being `{ id, name, hue, scale, traits }` | either, on change |
+| `pass` | `transfer`, `imp`, `entry` (`side` `left` or `right`, `height` 0 to 1, `speed`), `home` (a card: `device`, `door`, `routes`) and `ticket`, both present or both absent | thrower, receiver |
+| `took` | `transfer` | receiver, thrower |
+| `declined` | `transfer`, `reason`: `full`, `playing`, `notLinked`, `timeout` (made up by the thrower, never sent), `other` (also what a reason from a newer version reads as) | receiver, thrower |
+| `claim`, `claimed` | `imp`, `ticket` | holder to home, home to holder |
+| `gone` | `imp` | home or holder |
+| `release` | `imp`, `ticket` | holder or anyone with the ticket, to the holder |
+| `ask` | `imp`, `text` | holder, home |
+| `stop`, `newChat`, `talks` | `imp` | holder, home |
+| `felt` | `imp`, `feeling`: `poke`, `cuddle`, `shake`, `drop` | holder, home |
+| `file` | `id`, `imp`, `ref` | holder, home |
+| `filePart` | `id`, `part`: `{ name, size, offset, data }` | home, holder |
+| `fileFailed` | `id`, `reason` | home, holder |
+| `look` | `imp`: a looks object | home, holder |
+| `chat` | `imp`, `turns`: list of `{ id, date, request, from?, reply, failed, steps }` | home, holder |
+| `work` | `imp`, `work`: `{ request, status?, partial, from? }` or null | home, holder |
+| `mood` | `imp`, `mood` (a mood name) | home, holder |
+| `animate` | `imp`, `beats` (see `KITS.md`) | home, holder |
+| `speech` | `imp`, `speech`: `{ id, role` (`asked`, `reply`, `asking`), `peer`, `hue`, `question`, `text }` or null | home, holder |
+| `talkLines` | `imp`, `lines`: who asked whom, with question and reply | home, holder |
+| `message` | `id`, `from` (a looks object), `to`, `toHome`, `text`, `forwarded` | any device towards the target's home |
+| `answer` | `id`, `text`, `failed` | back the same way |
+| `adopt` | `transfer`, `imp`, `kit` (kit text), `secrets` (`apiKey?`, `headers`), `entry` | pocket device, Mac |
+| `adopted` | `transfer` | Mac, pocket device (a no is `declined`) |
+
+Optional fields are absent or `null`. Receiver limits (`isSound` in `LinkMessage.swift`): names up to 160
+characters, texts up to 20 000, `bye` up to 200, a `reason` of `fileFailed` up to 500, a file `ref` up
+to 4096, keys, doors and tickets exactly 32 bytes, proofs 64, up to 64 staged Imps, 500 turns of 200
+steps, 256 beats, 300 talk lines, file parts up to 1 MiB and files up to 512 MiB. A message over a limit
+is ignored.
+
+Test vectors for every message, and for ones that must be rejected: `Tests/Fixtures/link-messages.json`.
+The core models are described in `docs/MODELS.md`.
 
 ## Limits
 

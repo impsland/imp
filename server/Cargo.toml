@@ -1,9 +1,9 @@
 [workspace]
 resolver = "3"
-members = ["crates/shared", "crates/den", "crates/hop"]
+members = ["crates/shared", "crates/den", "crates/hop", "crates/core", "crates/cli"]
 
 [workspace.package]
-version = "1.0.0"
+version = "1.1.0"
 edition = "2024"
 rust-version = "1.99"
 license = "MIT"
@@ -40,9 +40,20 @@ socket2 = { version = "0.6.5", features = ["all"] }
 sqlx = { version = "0.9.0", default-features = false, features = ["runtime-tokio", "sqlite", "migrate", "macros"] }
 thiserror = "2.0.21"
 time = { version = "0.3.55", features = ["formatting"] }
-tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "net", "time", "signal", "sync", "io-util"] }
+tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "net", "time", "signal", "sync", "io-util", "process"] }
 tower = { version = "0.5.3", features = ["util"] }
 tower-http = { version = "0.7.1", default-features = false, features = ["cors"] }
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["json", "env-filter"] }
 imp-shared = { path = "crates/shared" }
+imp-core = { path = "crates/core" }
+clap = { version = "4.6.7", features = ["derive", "wrap_help", "env"] }
+toml = "1.1.8"
+directories = "6.0.0"
+futures-util = { version = "0.3.34", default-features = false }
+reqwest = { version = "0.13.5", default-features = false, features = ["stream", "rustls", "json"] }
+keyring = "4.2.0"
+qrcode = { version = "0.14.1", default-features = false }
+ratatui = { version = "0.30.2", default-features = false, features = ["crossterm"] }
+textwrap = "0.16.4"
+uuid = { version = "1.29.0", default-features = false, features = ["serde"] }

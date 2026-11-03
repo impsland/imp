@@ -30,6 +30,9 @@ final class DeviceLink {
 
     /// The linked devices.
     private(set) var peers: [Peer] = []
+    /// Made-up devices for the design renders (nothing is linked or listened for).
+    func showSample(_ sample: [Peer]) { peers = sample }
+
     /// Something that went wrong that the person may want to know.
     private(set) var problem: String?
 
@@ -480,9 +483,17 @@ final class DeviceLink {
             return fail(file: transfer, String(localized: "That file isn't in this chat."), to: device)
         }
         let log = log, id = imp.id
+        // An `imp-file` reference is only sent as it was shared: inside its owner's Workspace, with the size and checksum it names.
+        let named = WorkspaceReference(parsing: ref)
         sending[device, default: 0] += 1
         let sent = Task.detached(priority: .userInitiated) {
             func fail(_ reason: String) async { await node.send(.fileFailed(id: transfer, reason: reason), to: device) }
+            if let named {
+                guard LinkFiles.isInside(url, folder: Workspace.directory(for: named.owner)) else {
+                    return await fail(WorkspaceReference.Problem.outsideWorkspace.localizedDescription)
+                }
+                do { try named.verify(url) } catch { return await fail(error.localizedDescription) }
+            }
             let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
             guard values?.isRegularFile == true, let size = values?.fileSize else {
                 return await fail(String(localized: "The file isn't on the Mac any more."))
@@ -534,7 +545,8 @@ final class DeviceLink {
     /// An Imp here asks an Imp on another device something and waits for its answer. Throws why it
     /// can't be answered: its device went away, it took too long, or the Imp says it couldn't.
     func talk(from sender: ImpProfile, to target: LinkStaged, text: String) async throws -> String {
-        let words = String(text.prefix(LinkProtocol.maxText))
+        // Files it mentions are named by their owner, so the other Imp can tell whose they are (see `WorkspaceReference`).
+        let words = String(WorkspaceReference.canonicalize(text, owner: sender.id).prefix(LinkProtocol.maxText))
         let unreachable = ToolArgumentError(String(localized: "\(target.imp.name) isn't reachable right now."))
         guard let node else { throw unreachable }
         let id = UUID()

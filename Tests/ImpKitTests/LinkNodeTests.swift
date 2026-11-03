@@ -33,11 +33,15 @@ private final class Probe {
         node.onEvent = { [weak self] in self?.events.append($0) }
     }
 
+    /// How long a wait may take before the test gives up. Waits end as soon as their condition
+    /// holds, so this only matters on a busy machine, where reconnecting can take a few seconds.
+    static let patience: Double = 15
+
     func start() async { await node.start() }
 
     /// The first event not yet taken that `match` likes, waiting up to `seconds` for it.
     @discardableResult
-    func take(_ seconds: Double = 5, _ match: (LinkNode.Event) -> Bool) async -> LinkNode.Event? {
+    func take(_ seconds: Double = Probe.patience, _ match: (LinkNode.Event) -> Bool) async -> LinkNode.Event? {
         let end = Date().addingTimeInterval(seconds)
         while true {
             if let i = events.firstIndex(where: match) { return events.remove(at: i) }
@@ -52,13 +56,13 @@ private final class Probe {
         await until { self.node.standing(of: other.id) == standing }
     }
 
-    func receivedMessage(_ seconds: Double = 5, _ match: (LinkMessage, UUID) -> Bool) async -> LinkMessage? {
+    func receivedMessage(_ seconds: Double = Probe.patience, _ match: (LinkMessage, UUID) -> Bool) async -> LinkMessage? {
         let event = await take(seconds) { if case .message(let m, let from) = $0 { return match(m, from) } else { return false } }
         if case .message(let m, _)? = event { return m }
         return nil
     }
 
-    func passed(_ seconds: Double = 5, _ match: (LinkNode.Passed) -> Bool = { _ in true }) async -> LinkNode.Passed? {
+    func passed(_ seconds: Double = Probe.patience, _ match: (LinkNode.Passed) -> Bool = { _ in true }) async -> LinkNode.Passed? {
         let event = await take(seconds) { if case .passed(let p) = $0 { return match(p) } else { return false } }
         if case .passed(let p)? = event { return p }
         return nil
@@ -66,7 +70,7 @@ private final class Probe {
 }
 
 @MainActor
-private func until(_ seconds: Double = 5, _ condition: () -> Bool) async -> Bool {
+private func until(_ seconds: Double = Probe.patience, _ condition: () -> Bool) async -> Bool {
     let end = Date().addingTimeInterval(seconds)
     while !condition() {
         if Date() > end { return false }
@@ -273,6 +277,30 @@ private func throwImp(_ imp: LinkImp, from: Probe, to: Probe, accepting: Bool = 
         #expect(!b.node.accept(transfer))
     }
 
+    @Test func aShakeCannotReachADeviceThatIsNotLinked() async throws {
+        let a = try Probe(1), b = try Probe(2)
+        await a.start(); await b.start()
+        defer { a.node.stop(); b.node.stop() }
+        // Not linked, not connected: nothing is sent and nothing is away.
+        #expect(a.node.pass(testImp(1), entry: entry, to: b.id) == nil)
+        #expect(!a.node.away.isAway(testImp(1).id))
+    }
+
+    @Test func aTransferInterruptedByALostConnectionLeavesTheImpAtHome() async throws {
+        let a = try Probe(1), b = try Probe(2)
+        await a.start(); await b.start()
+        defer { a.node.stop(); b.node.stop() }
+        try await link(a, b)
+        try await throwImp(testImp(1), from: a, to: b, accepting: false)
+        b.node.stop()
+        let result = await a.passed()
+        guard case .declined? = result?.outcome else {
+            Issue.record("expected a decline, got \(String(describing: result))")
+            return
+        }
+        #expect(!a.node.away.isAway(testImp(1).id))
+    }
+
     @Test func aThrowNobodyAnswersTimesOutAndTheImpIsCalledHome() async throws {
         let a = try Probe(1) { $0.transferTimeout = 0.3 }, b = try Probe(2)
         await a.start(); await b.start()
@@ -295,11 +323,16 @@ private func throwImp(_ imp: LinkImp, from: Probe, to: Probe, accepting: Bool = 
         await a.start(); await b.start()
         defer { a.node.stop(); b.node.stop() }
         try await link(a, b)
-        let transfer = try await throwImp(testImp(1), from: a, to: b)
+        let imp = testImp(1)
+        let transfer = try await throwImp(imp, from: a, to: b)
         #expect(await a.passed()?.outcome == .took)
+        // Settled first: the visit's ticket is swapped with its home just after the pass is taken.
+        #expect(await until { a.node.away.entry(of: imp.id)?.generation == 2 && b.node.visits.visit(of: imp.id) != nil })
+        let ticket = try #require(b.node.visits.visit(of: imp.id)?.ticket)
+        #expect(await until { LinkCrypto.matches(ticket: ticket, hash: a.node.away.entry(of: imp.id)?.ticket ?? Data()) })
         let before = b.node.visits
         // The same pass arriving again is answered again by the node, and never reaches the app or the visits twice.
-        a.node.send(.pass(transfer: transfer, imp: testImp(1), entry: entry, home: a.node.card, ticket: LinkCrypto.mintTicket()), to: b.id)
+        a.node.send(.pass(transfer: transfer, imp: imp, entry: entry, home: a.node.card, ticket: LinkCrypto.mintTicket()), to: b.id)
         try await Task.sleep(for: .milliseconds(150))
         #expect(b.node.visits == before)
         #expect(!b.has { if case .message(.pass, _) = $0 { return true } else { return false } })
@@ -404,7 +437,9 @@ private func throwImp(_ imp: LinkImp, from: Probe, to: Probe, accepting: Bool = 
         // Offline: the news waits for the next connection.
         let other = testImp(2)
         try await throwImp(other, from: a, to: b)
-        #expect(await until { a.node.holder(of: other.id) == b.id })
+        // Settled: the holder is set when the Imp is sent, and the throw ends when `b`'s answer
+        // arrives. Going offline before that would rightly call the unanswered Imp home.
+        #expect(await until { a.node.holder(of: other.id) == b.id && a.node.book.passing.isEmpty })
         b.node.stop()
         #expect(await until { !a.node.isConnected(b.id) })
         #expect(a.node.callHome(other.id) == b.id)

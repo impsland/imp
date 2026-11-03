@@ -7,8 +7,8 @@ use axum::body::Body;
 use axum::http::{Method, Request, Response, StatusCode};
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
-use den::Den;
-use den::config::{Config, PublicUrl};
+use imp_den::Den;
+use imp_den::config::{Config, PublicUrl};
 use serde_json::{Value, json};
 use tower::ServiceExt;
 
@@ -36,10 +36,10 @@ impl Harness {
             altcha_cost: 10,
             json_logs: false,
         };
-        let pool = den::db::open(&path).await.unwrap();
+        let pool = imp_den::db::open(&path).await.unwrap();
         let den = Den::new(config, pool).await;
         Self {
-            app: den::router(Arc::clone(&den)),
+            app: imp_den::router(Arc::clone(&den)),
             den,
             database,
         }
@@ -266,7 +266,7 @@ async fn full_lifecycle() {
     assert_eq!(stats["by_kind"]["kit"], 1);
     assert_eq!(stats["by_kind"]["animation"], 0);
 
-    let hidden = den::admin::run(
+    let hidden = imp_den::admin::run(
         &h.database.to_string_lossy(),
         &["hide".to_owned(), "moody-fan/moody-moves".to_owned()],
     )
@@ -275,7 +275,7 @@ async fn full_lifecycle() {
     let response = h.send(Method::GET, uri, "10.0.0.1", None, None).await;
     assert_problem(&response, StatusCode::NOT_FOUND);
 
-    den::admin::run(
+    imp_den::admin::run(
         &h.database.to_string_lossy(),
         &["unhide".to_owned(), "moody-fan/moody-moves".to_owned()],
     )
@@ -491,7 +491,13 @@ async fn web_ui_and_headers() {
         );
         assert!(headers.contains_key("x-request-id"));
     }
-    for file in ["app.js", "imp.js", "site.css", "favicon.svg"] {
+    for file in [
+        "app.js",
+        "imp.js",
+        "site.css",
+        "favicon-32.png",
+        "imp-icon.png",
+    ] {
         let response = h
             .send(
                 Method::GET,

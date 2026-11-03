@@ -2,7 +2,7 @@ use std::net::SocketAddr;
 use std::time::Duration;
 
 use ed25519_dalek::{Signer, SigningKey};
-use hop::Config;
+use imp_hop::Config;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::oneshot;
@@ -24,7 +24,7 @@ async fn start(mutate: impl FnOnce(&mut Config)) -> Running {
     let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
     let addr = listener.local_addr().expect("addr");
     let (stop, stopped) = oneshot::channel::<()>();
-    let task = tokio::spawn(hop::run(listener, config, async move {
+    let task = tokio::spawn(imp_hop::run(listener, config, async move {
         let _ = stopped.await;
     }));
     Running { addr, stop, task }

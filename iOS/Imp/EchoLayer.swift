@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -325,9 +326,7 @@ private struct EchoEndCard: View {
                         Button("Again", action: again).buttonStyle(EmberButtonStyle())
                     }
                     Button("How to play", action: howTo)
-                        .font(.system(.footnote, design: .rounded, weight: .medium))
-                        .foregroundStyle(Dungeon.muted)
-                        .padding(.vertical, 8)
+                        .buttonStyle(.quiet)
                 }
             }
         }

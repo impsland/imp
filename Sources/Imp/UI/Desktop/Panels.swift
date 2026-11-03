@@ -63,6 +63,7 @@ final class Panels {
         layout.onDrag = { [weak self] ended in self?.dragBubble(ended: ended) }
         layout.onResize = { [weak self] edges, ended in self?.resizeBubble(edges, ended: ended) }
         model.onScaleChange = { [weak self] in self?.applyScale() }
+        model.onFollow = { [weak self] in self?.startFollowing() }
         model.onTravel = { [weak self] origin, travel in await self?.travel(to: origin, travel) }
         model.homeOrigin = { [weak self] in self?.home ?? .zero }
         model.onRestingChange = { [weak self] resting in self?.impHost.setBreathing(resting) }
@@ -135,6 +136,7 @@ final class Panels {
 
     /// Stops a journey where it is (a new one starts, or you grab the Imp).
     private func stopTravel() {
+        stopFollowing()
         travelTimer?.invalidate()
         travelTimer = nil
         if impTarget != nil, arriving != nil { impTarget = nil }
@@ -187,6 +189,77 @@ final class Panels {
         }
     }
 
+    // MARK: Following the cursor
+    //
+    // Set on the Imp's Moves tab: off, eyes (nothing here), or hops or glides after the cursor.
+    // The inner life decides a few times a second whether it may go (`ImpModel.followCursor`), and
+    // this moves the window, frame by frame, until it is close enough or told to stop. The maths is
+    // `FollowMath`. Reduce Motion, a mode of Off or Eyes, being held, or a bubble all stop it.
+
+    private var followTask: Task<Void, Never>?
+
+    private var mayFollow: Bool {
+        model.followCursor != nil && impPanel.isVisible && travelTimer == nil && impTarget == nil
+            && FollowMath.moves(model.profile.follow, reduceMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
+    }
+
+    private var center: CGPoint { CGPoint(x: impPanel.frame.midX, y: impPanel.frame.midY) }
+
+    /// The part of the desktop around `point` that windows may use (the screen minus the menu bar and Dock).
+    private func visibleFrame(around point: CGPoint) -> CGRect {
+        (NSScreen.screens.first { $0.frame.contains(point) } ?? impPanel.screen ?? NSScreen.main)?.visibleFrame
+            ?? CGRect(x: 0, y: 0, width: 1440, height: 900)
+    }
+
+    private func place(center point: CGPoint, side: Double) {
+        let kept = FollowMath.keepVisible(point, side: side, in: visibleFrame(around: point))
+        impPanel.setFrameOrigin(CGPoint(x: kept.x - side / 2, y: kept.y - side / 2))
+    }
+
+    private func startFollowing() {
+        guard followTask == nil, mayFollow, let cursor = model.followCursor,
+              FollowMath.target(center: center, cursor: cursor, side: Double(impPanel.frame.width)) != nil else { return }
+        restOrigin = nil
+        followTask = Task { [weak self] in
+            await self?.followCursor()
+            self?.followTask = nil
+        }
+    }
+
+    private func stopFollowing() {
+        followTask?.cancel()
+        followTask = nil
+    }
+
+    private func followCursor() async {
+        let side = Double(impPanel.frame.width)
+        let speed = model.profile.followSpeed
+        defer { savePosition() }
+        var last = CACurrentMediaTime()
+        while !Task.isCancelled, mayFollow, let cursor = model.followCursor {
+            let goal = FollowMath.keepVisible(cursor, side: side, in: visibleFrame(around: cursor))
+            if model.profile.follow == .hop {
+                guard let leg = FollowMath.hopLeg(center: center, cursor: goal, side: side, speed: speed) else { return }
+                let began = CACurrentMediaTime()
+                var k = 0.0
+                while k < 1, !Task.isCancelled, mayFollow {
+                    k = (CACurrentMediaTime() - began) / leg.duration
+                    place(center: leg.center(at: k), side: side)
+                    try? await Task.sleep(for: .milliseconds(16))
+                }
+                place(center: leg.ground(at: k), side: side)           // cut short: back on the ground
+                guard k >= 1 else { return }
+                try? await Task.sleep(for: .seconds(leg.pause))
+            } else {
+                guard let target = FollowMath.target(center: center, cursor: goal, side: side) else { return }
+                let now = CACurrentMediaTime()
+                place(center: FollowMath.glideStep(center: center, toward: target, side: side, speed: speed, dt: min(now - last, 0.05)), side: side)
+                last = now
+                try? await Task.sleep(for: .milliseconds(16))
+            }
+        }
+    }
+
     // MARK: Pressing and carrying
 
     /// Brings the Imp back upright once a carry stops moving (drags send no events while still).
@@ -196,6 +269,7 @@ final class Panels {
         let reactions = model.app.reactions
         switch handling {
         case .pressed:
+            model.followBlockedUntil = Date().addingTimeInterval(4)
             stopTravel()                    // caught mid-air
             reactions.pressed(model)
         case .held:
@@ -204,8 +278,10 @@ final class Panels {
         case .unheld:
             reactions.release(.hold, by: model)
         case .lifted:
+            model.followBlockedUntil = Date().addingTimeInterval(4)
             reactions.handle(.pickUp, by: model, held: true)
         case .carried(let speed):
+            model.followBlockedUntil = Date().addingTimeInterval(4)
             doorSigns.carried(to: NSEvent.mouseLocation)
             // It dangles from the cursor: the body lags behind, so it leans the way it's going.
             model.carryLean = max(-14, min(14, Double(speed) * 0.012))
@@ -218,6 +294,7 @@ final class Panels {
             reactions.handle(.shake, by: model)
             model.felt(.shake)
         case .dropped(let distance):
+            model.followBlockedUntil = Date().addingTimeInterval(4)
             doorSigns.hide()
             steady?.cancel()
             model.carryLean = 0
@@ -433,7 +510,6 @@ final class Panels {
 
     /// Where Imp lives when it isn't making room for a bubble.
     private var restOrigin: CGPoint?
-    private var previousApp: NSRunningApplication?
     /// Where Imp is animating to (so the bubble is placed for the final position, not mid-slide).
     private var impTarget: CGPoint?
     /// The bubble the current layout belongs to (a new one starts collapsed and attached).
@@ -477,6 +553,11 @@ final class Panels {
         var imp = impPanel.frame
         if let impTarget { imp.origin = impTarget }
         let rest = restOrigin ?? imp.origin
+
+        // The chat is the size the user gave it (or the default), kept within this screen.
+        if bubble.phase == .chat, chatResize == nil {
+            layout.chatSize = BubbleSizing.clamped(model.prefs.chatBubbleSize ?? BubbleSizing.defaultSize, visible: screen.size)
+        }
 
         // Measure: the whole bubble, and the bubble without its reply text (its "chrome").
         let natural = measure(limit: nil)
@@ -558,7 +639,46 @@ final class Panels {
     /// smaller scrolls). Any size within the screen.
     private var resizeAnchor: (mouse: CGPoint, frame: CGRect, width: CGFloat, text: CGFloat)?
 
+    /// Resizing the chat: the card's size at the start of the drag, and the panel's extra room
+    /// around it (margins and the tail's room), so the panel follows without being measured.
+    private var chatResize: (mouse: CGPoint, frame: CGRect, card: CGSize, extra: CGSize)?
+
+    private func resizeChat(_ edges: Edge.Set, ended: Bool) {
+        guard !ended else {
+            if chatResize != nil { model.app.prefs.chatBubbleSize = layout.chatSize }
+            chatResize = nil
+            return
+        }
+        let m = NSEvent.mouseLocation
+        let frame = bubblePanel.frame
+        if chatResize == nil {
+            chatResize = (m, frame, layout.chatSize,
+                          CGSize(width: frame.width - layout.chatSize.width, height: frame.height - layout.chatSize.height))
+        }
+        guard let a = chatResize else { return }
+        let screen = (bubblePanel.screen ?? NSScreen.main)?.visibleFrame ?? .infinite
+        let dx = m.x - a.mouse.x, dy = m.y - a.mouse.y
+        var card = a.card
+        if edges.contains(.leading) { card.width -= dx }
+        if edges.contains(.trailing) { card.width += dx }
+        if edges.contains(.top) { card.height += dy }
+        if edges.contains(.bottom) { card.height -= dy }
+        // A resized chat is the user's: it stays where it is, and Imp can go home.
+        if !layout.detached {
+            layout.detached = true
+            model.keepBubble()
+            if let r = restOrigin { restOrigin = nil; moveImp(to: r) }
+        }
+        card = BubbleSizing.clamped(card, visible: screen.size)
+        layout.chatSize = card
+        var next = CGRect(origin: .zero, size: CGSize(width: card.width + a.extra.width, height: card.height + a.extra.height))
+        next.origin.x = edges.contains(.leading) ? a.frame.maxX - next.width : a.frame.minX
+        next.origin.y = edges.contains(.top) ? a.frame.minY : a.frame.maxY - next.height
+        setBubbleFrame(clamped(next, to: screen))
+    }
+
     private func resizeBubble(_ edges: Edge.Set, ended: Bool) {
+        if model.bubble?.phase == .chat { return resizeChat(edges, ended: ended) }
         guard !ended else { resizeAnchor = nil; return }
         let m = NSEvent.mouseLocation
         if resizeAnchor == nil { resizeAnchor = (m, bubblePanel.frame, layout.width, layout.textLimit ?? Self.collapsedText) }
@@ -588,7 +708,7 @@ final class Panels {
 
     /// The user dragged the bubble: it's theirs to place now.
     private func bubbleMoved() {
-        guard !placingBubble, bubbleVisible, !layout.detached else {
+        guard BubbleTail.isUserDrag(dragging: dragAnchor != nil, placingOurselves: placingBubble), bubbleVisible, !layout.detached else {
             if layout.detached { updateCloseCorner() }
             return
         }
@@ -607,11 +727,7 @@ final class Panels {
 
     /// Keeps the card (not its transparent margins) within the screen, with headroom for the ✕.
     private func clamped(_ frame: CGRect, to screen: CGRect) -> CGRect {
-        var f = frame
-        let m = BubbleView.margin
-        f.origin.x = min(max(f.origin.x, screen.minX - m + 4), screen.maxX - f.width + m - 4)
-        f.origin.y = min(max(f.origin.y, screen.minY - m), panelTopLimit(screen) - f.height)
-        return f
+        BubbleSizing.onScreen(frame, visible: screen, margin: BubbleView.margin, topLimit: panelTopLimit(screen))
     }
 
     /// Puts the ✕ in a corner that's on screen: outside top-right by default, top-left near the
@@ -639,18 +755,12 @@ final class Panels {
         return size
     }
 
-    /// Typing (in the bubble, or in the chat) needs keyboard focus. Give it back to the app you
-    /// were in afterwards.
+    /// Typing (in the bubble, or in the chat) needs keyboard focus. The panel never activates
+    /// Imp (it is non-activating), so the app in front stays in front. Nothing here, or when the
+    /// bubble closes, may activate or hide any app.
     private func updateKeyFocus(for bubble: Bubble) {
-        if bubble.phase == .typing || bubble.phase == .chat {
-            if !bubblePanel.isKeyWindow {
-                let front = NSWorkspace.shared.frontmostApplication
-                if front?.processIdentifier != ProcessInfo.processInfo.processIdentifier { previousApp = front }
-                bubblePanel.makeKeyAndOrderFront(nil)
-            }
-        } else if bubblePanel.isKeyWindow, let app = previousApp {
-            previousApp = nil
-            app.activate()
+        if (bubble.phase == .typing || bubble.phase == .chat) && !bubblePanel.isKeyWindow {
+            bubblePanel.makeKeyAndOrderFront(nil)
         }
     }
 
@@ -670,7 +780,6 @@ final class Panels {
     }
 
     private func hideBubble() {
-        if bubblePanel.isKeyWindow, let app = previousApp { previousApp = nil; app.activate() }
         if let r = restOrigin {
             restOrigin = nil
             moveImp(to: r)

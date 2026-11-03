@@ -1,4 +1,5 @@
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -257,7 +258,7 @@ struct ImpStage: View {
         Group {
             if imp.isActive, let device = imp.awayOn {
                 // Out on another device: a little phone with it inside. Click it to call it back.
-                AwayImp(hue: imp.hue, device: model.link.name(of: device), connected: model.link.isConnected(device), still: offset != 0)
+                AwayImp(hue: imp.hue, device: model.link.name(of: device), connected: model.link.isConnected(device), traits: imp.traits, still: offset != 0)
                     .transition(.scale(scale: 0.6, anchor: .bottom).combined(with: .opacity))
                     .contentShape(Rectangle())
                     .onTapGesture { if offset == 0 { model.callBack(imp.id) } }
@@ -266,7 +267,7 @@ struct ImpStage: View {
                     .contextMenu { contextMenu(for: imp) }
             } else if imp.isActive && model.isHiding(imp.id) {
                 // Out, but hidden: a little ghost under a sheet. Click it to bring it back.
-                HidingImp(hue: imp.hue, clock: BodyClock(imp.id), center: {
+                HidingImp(hue: imp.hue, traits: imp.traits, clock: BodyClock(imp.id), center: {
                     offset == 0 ? router.slot(side: side).map { CGPoint(x: $0.midX, y: $0.midY) } : nil
                 }, still: offset != 0)
                     .transition(.scale(scale: 0.6, anchor: .bottom).combined(with: .opacity))

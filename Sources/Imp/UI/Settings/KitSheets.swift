@@ -1,4 +1,5 @@
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 import UniformTypeIdentifiers
@@ -16,6 +17,9 @@ final class KitFlow: Identifiable {
     var review: KitReview?
     /// Read as soon as the sheet opens (a link): the one thing a link may do is show this review.
     private var pending: KitSource?
+    private var pendingDen: (client: DenClient, id: DenItemID)?
+    /// Looking through the Den instead of pasting.
+    var browsing = false
     private var origin: String?
     private var fileName: String?
     private var settingText = false
@@ -58,7 +62,21 @@ final class KitFlow: Identifiable {
         return flow
     }
 
+    /// From the Den: the kit is downloaded, checked against the checksum the Den lists, and only then
+    /// shown in the review. Nothing is added before the user confirms there.
+    static func den(_ id: DenItemID, client: DenClient, imp: UUID?, forEveryImp: Bool = false) -> KitFlow {
+        let flow = KitFlow(imp: imp, text: id.description, forEveryImp: forEveryImp)
+        flow.pendingDen = (client, id)
+        flow.onAdded = { Task { try? await client.countInstall(id) } }
+        return flow
+    }
+
     func autoload(_ model: AppModel) async {
+        if let den = pendingDen {
+            pendingDen = nil
+            await read(den: den.id, client: den.client, model: model)
+            return
+        }
         guard let source = pending else { return }
         pending = nil
         await read(source, model: model)
@@ -87,6 +105,20 @@ final class KitFlow: Identifiable {
         }
     }
 
+    func read(den id: DenItemID, client: DenClient, model: AppModel) async {
+        browsing = false
+        error = nil
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            let download = try await client.download(id)
+            let host = client.base.host ?? client.base.absoluteString
+            try present(json: download.text, from: String(localized: "\(id.description) on \(host)"), model: model)
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
+
     private func read(_ source: KitSource, model: AppModel) async {
         error = nil
         isLoading = true
@@ -97,14 +129,18 @@ final class KitFlow: Identifiable {
             case .text(let t): json = t; from = origin ?? fileName.map { String(localized: "File “\($0)”") } ?? String(localized: "Pasted text")
             case .remote(let url): json = try await KitLoader.fetch(url); from = url.host ?? url.absoluteString
             }
-            let kit = try Kit.parse(json, limit: limit)
-            let imps = model.prefs.imps
-            // A kit of Imps is for the whole troupe (its shared triggers stay shared); other kits go to one Imp.
-            let target = kit.imps.isEmpty && !forEveryImp ? imp.flatMap { id in imps.contains { $0.id == id } ? id : nil } ?? imps.first?.id : nil
-            review = KitReview(kit: kit, origin: from, existing: model.prefs.shortcuts, services: model.prefs.ai.services, target: target)
+            try present(json: json, from: from, model: model)
         } catch {
             self.error = error.localizedDescription
         }
+    }
+
+    private func present(json: String, from: String, model: AppModel) throws {
+        let kit = try Kit.parse(json, limit: limit)
+        let imps = model.prefs.imps
+        // A kit of Imps is for the whole troupe (its shared triggers stay shared); other kits go to one Imp.
+        let target = kit.imps.isEmpty && !forEveryImp ? imp.flatMap { id in imps.contains { $0.id == id } ? id : nil } ?? imps.first?.id : nil
+        review = KitReview(kit: kit, origin: from, existing: model.prefs.shortcuts, services: model.prefs.ai.services, target: target)
     }
 }
 
@@ -169,6 +205,8 @@ struct KitFlowSheet: View {
         Group {
             if let review = flow.review {
                 KitReviewSheet(model: model, flow: flow, review: review, router: router)
+            } else if flow.browsing && !flow.isLoading {
+                DenBrowserSheet(model: model, flow: flow, router: router)
             } else {
                 KitEntrySheet(model: model, flow: flow, router: router)
             }
@@ -194,9 +232,14 @@ struct KitEntrySheet: View {
         SheetScaffold(icon: "shippingbox.fill", title: "Add a kit or an Imp",
                       info: "A kit is Imps, triggers, tools and animations somebody shared as JSON. Paste it, give a web address or an imp:// link, or drop a file. You'll see what's in it before anything is added.",
                       width: 520) {
-            Button { paste() } label: { Label("Paste", systemImage: "doc.on.clipboard") }
-                .buttonStyle(.imp(.secondary, small: true))
-                .help("Fill in from the clipboard.")
+            HStack(spacing: 8) {
+                Button { flow.browsing = true } label: { Label("Browse the Den", systemImage: "books.vertical") }
+                    .buttonStyle(.imp(.secondary, small: true))
+                    .help("Search what other people shared.")
+                Button { paste() } label: { Label("Paste", systemImage: "doc.on.clipboard") }
+                    .buttonStyle(.imp(.secondary, small: true))
+                    .help("Fill in from the clipboard.")
+            }
         } content: {
             if flow.isLoading {
                 loading
@@ -223,7 +266,7 @@ struct KitEntrySheet: View {
             Text("Opening the kit…").font(.system(size: 13, weight: .medium)).foregroundStyle(Dungeon.cream)
         }
         .frame(maxWidth: .infinity, minHeight: Self.dropHeight + Self.editorHeight)
-        .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Dungeon.card))
+        .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Dungeon.card))
         .accessibilityElement(children: .combine)
     }
 
@@ -236,8 +279,8 @@ struct KitEntrySheet: View {
             Button("Choose file…") { choose() }.buttonStyle(.imp(.secondary, small: true))
         }
         .frame(maxWidth: .infinity, minHeight: Self.dropHeight)
-        .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(dropping ? tint.opacity(0.14) : Dungeon.card))
-        .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous)
+        .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(dropping ? tint.opacity(0.14) : Dungeon.card))
+        .overlay(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous)
             .strokeBorder(dropping ? tint : Dungeon.cardEdge, style: StrokeStyle(lineWidth: dropping ? 1.5 : 1, dash: [6, 4])))
         .dropDestination(for: URL.self) { urls, _ in
             guard let file = urls.first(where: \.isFileURL) else { return false }
@@ -275,8 +318,8 @@ private struct ErrorBanner: View {
         .font(.system(size: 12.5)).foregroundStyle(Dungeon.cream)
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Color.orange.opacity(0.14)))
-        .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Color.orange.opacity(0.5)))
+        .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Color.orange.opacity(0.14)))
+        .overlay(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).strokeBorder(Color.orange.opacity(0.5)))
         .accessibilityElement(children: .combine)
     }
 }
@@ -387,6 +430,7 @@ struct KitReviewSheet: View {
             EmptyView()
         } content: {
             KitHero(kit: kit, origin: review.origin)
+            if !kit.permissions.isEmpty { permissionsCard }
             if !review.cautions.isEmpty { caution }
             if !kit.imps.isEmpty { impsSection }
             if !kit.triggers.isEmpty { triggersSection }
@@ -427,6 +471,39 @@ struct KitReviewSheet: View {
     private func name(of imp: ImpProfile) -> String { imp.name.isEmpty ? String(localized: "Unnamed Imp") : imp.name }
     private var targetName: String { review.target.flatMap(model.profile).map(name(of:)) ?? String(localized: "Every Imp") }
 
+    /// Everything the kit would be able to do, as plain lines, before the details below.
+    private var permissionsCard: some View {
+        let permissions = kit.permissions
+        return VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Image(systemName: "checklist").foregroundStyle(permissions.hasCautions ? .orange : Dungeon.muted)
+                Text("What this can do").font(.system(size: 13, weight: .bold, design: .rounded)).foregroundStyle(Dungeon.cream)
+                InfoTip("This is read from the kit itself, not from what its author says about it.")
+            }
+            ForEach(permissions.lines) { line in
+                Label {
+                    Text(verbatim: line.text).font(.system(size: 12)).foregroundStyle(Dungeon.cream.opacity(0.9))
+                        .textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
+                } icon: {
+                    Image(systemName: Self.symbol(line.kind)).foregroundStyle(line.isCaution ? .orange : Dungeon.muted)
+                }
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Dungeon.card))
+    }
+
+    private static func symbol(_ kind: KitPermissions.Line.Kind) -> String {
+        switch kind {
+        case .computer: "cursorarrow.click.2"
+        case .command, .shell: "terminal.fill"
+        case .remote: "network"
+        case .trigger: "bolt.fill"
+        case .tools: "wrench.and.screwdriver.fill"
+        }
+    }
+
     /// Code that would run on this Mac, said plainly.
     private var caution: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -442,8 +519,8 @@ struct KitReviewSheet: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Color.orange.opacity(0.14)))
-        .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Color.orange.opacity(0.5)))
+        .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Color.orange.opacity(0.14)))
+        .overlay(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).strokeBorder(Color.orange.opacity(0.5)))
     }
 
     /// A warning as a badge: what it is in a few words, the details in its tooltip.
@@ -466,7 +543,7 @@ struct KitReviewSheet: View {
                 SelectableCard(isOn: review.binding(imp: imp.id), tint: Color.imp(imp.hue)) { impCard(imp) }
             }
             if review.hasChats {
-                Toggle("Bring their chats along", isOn: $review.includeChats).toggleStyle(.checkbox)
+                Toggle("Bring their chats along", isOn: $review.includeChats).toggleStyle(.impSwitch)
                     .font(.system(size: 12.5)).foregroundStyle(Dungeon.cream)
                     .padding(.leading, 4)
             }
@@ -674,6 +751,8 @@ struct ShareKitButton: View {
     let kit: Kit
     let help: LocalizedStringResource
     @State private var copied = false
+    @State private var publishing = false
+    @Environment(\.publishContext) private var publishContext
 
     var body: some View {
         let linkable = kit.stamped.link != nil
@@ -681,10 +760,17 @@ struct ShareKitButton: View {
             Button("Copy kit") { done(KitSharing.copy(kit)) }
             Button("Copy link") { done(KitSharing.copyLink(kit)) }
                 .disabled(!linkable)
+            if publishContext != nil {
+                Divider()
+                Button("Publish to the Den…") { publishing = true }
+            }
         } label: {
             HoverGlyph(systemName: copied ? "checkmark" : "square.and.arrow.up", tint: copied ? .green : .secondary)
         }
-        .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
+        .menuStyle(.button).buttonStyle(.plain).menuIndicator(.hidden).fixedSize()
+        .sheet(isPresented: $publishing) {
+            if let publishContext { DenPublishSheet(context: publishContext, kit: kit) }
+        }
         .help(linkable ? String(localized: help) : String(localized: "\(String(localized: help)) It's too long for a link."))
         .accessibilityLabel(Text(help))
     }

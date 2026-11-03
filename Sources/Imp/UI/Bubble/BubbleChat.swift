@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -16,28 +17,33 @@ struct ChatView: View {
 
     /// Turns shown at first, and added by each page of earlier ones.
     static let page = 25
-    /// The transcript's height (fixed, so the bubble is measured right whatever it holds).
-    static let height: CGFloat = 380
+    /// The least height the transcript keeps, however much the text box grows.
+    static let minTranscript: CGFloat = 80
 
     var body: some View {
         let history = model.history
         let live = model.chatWork
         VStack(alignment: .leading, spacing: 10) {
             header
+            Divider().opacity(0.6)
             if let visit = model.visit, !visit.isAwake {
                 Label("\(model.profile.name) is asleep: \(visit.homeName) is away", systemImage: "moon.zzz.fill")
-                    .font(.system(size: 11)).foregroundStyle(.secondary)
+                    .font(.system(size: 12)).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
             if let error = model.recapError {
                 Label("Couldn't recap: \(error)", systemImage: "exclamationmark.triangle.fill")
-                    .font(.system(size: 11)).foregroundStyle(.orange)
+                    .font(.system(size: 12)).foregroundStyle(.orange)
                     .lineLimit(2)
+            }
+            if model.showsContextNotice {
+                ContextNotice(model: model, changed: changed)
             }
             if history.turns.isEmpty && live == nil {
                 Text("A new chat. Ask \(model.profile.name) anything below: it's saved, so you can come back to it from the list above.")
                     .font(.system(size: 13)).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxHeight: .infinity, alignment: .top)
             } else {
                 let shown = Array(history.latest(layout.chatPages * Self.page))
                 let earlier = history.turns.count - shown.count
@@ -70,11 +76,12 @@ struct ChatView: View {
                             }
                             Color.clear.frame(height: 1).id(Self.end)
                         }
-                        .padding(.trailing, 10)
+                        // The same room on both sides: no extra gutter on the right (the scroll bar
+                        // brings its own when it shows).
                         .padding(.bottom, 4)
                     }
                     .defaultScrollAnchor(.bottom)
-                    .frame(height: Self.height)
+                    .frame(minHeight: Self.minTranscript, maxHeight: .infinity)
                     // Keep the newest words in view as you send and as the answer streams in.
                     .onChange(of: history.turns.count) { _, _ in follow(reader) }
                     .onChange(of: live?.ask.date) { _, _ in follow(reader) }
@@ -111,27 +118,35 @@ struct ChatView: View {
     /// The chat you're in (a menu of the saved ones), then recap, new chat and delete.
     private var header: some View {
         HStack(spacing: 10) {
+            // The title gives way (one line, cut at the end) so the buttons always keep their room.
             ChatPicker(model: model, changed: changed)
-            Spacer(minLength: 4)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .layoutPriority(0)
             if model.isRecapping {
                 HStack(spacing: 5) {
                     ProgressView().controlSize(.mini)
-                    Text("Recapping…").font(.system(size: 10, weight: .medium)).foregroundStyle(.secondary)
+                    Text("Recapping…").font(.system(size: 11, weight: .medium)).foregroundStyle(.secondary)
+                        .lineLimit(1).fixedSize()
                 }
+                .layoutPriority(2)
             } else if model.canRecap {
                 ConfirmButton(icon: "rectangle.compress.vertical", confirm: "Recap?",
                               help: "Recap: \(model.profile.name) sums up this chat and remembers only that and the last message, so a long chat fits again") {
                     model.recapChat()
                 }
+                .fixedSize().layoutPriority(2)
             }
             if !model.history.isEmpty {
                 ConfirmButton(icon: "plus.bubble", confirm: "New chat?", help: "New chat (this one stays in the list)") {
                     model.startNewChat()
                 }
-                if model.visit == nil { deleteButton }
+                .fixedSize().layoutPriority(2)
+                if model.visit == nil { deleteButton.fixedSize().layoutPriority(2) }
             }
         }
-        .frame(height: 20)
+        .frame(height: 24)
+        .accessibilityElement(children: .contain)
+        .accessibilityAddTraits(.isHeader)
     }
 
     /// The chat changed: start at its newest turns, and re-measure the bubble.
@@ -153,13 +168,16 @@ struct ChatView: View {
             }
         } label: {
             if confirmingDelete {
-                Text("Delete chat?").font(.system(size: 10, weight: .semibold)).foregroundStyle(Color.red)
+                Text("Delete chat?").font(.system(size: 11, weight: .semibold)).foregroundStyle(Color.red)
+                    .lineLimit(1).fixedSize()
             } else {
-                Image(systemName: "trash").font(.system(size: 11, weight: .medium)).foregroundStyle(.secondary)
+                Image(systemName: "trash").font(.system(size: 12, weight: .medium)).foregroundStyle(.secondary)
+                    .frame(width: 24, height: 24).contentShape(Rectangle())
             }
         }
         .buttonStyle(.plain)
         .help("Delete this chat and \(model.profile.name)'s memory of it.")
+        .accessibilityLabel("Delete chat")
     }
 }
 
@@ -198,17 +216,17 @@ private struct ChatPicker: View {
             }
         } label: {
             HStack(spacing: 4) {
-                if model.history.current.peer != nil { Image(systemName: "person.2.fill").font(.system(size: 9)) }
-                Text(title).font(.system(size: 12, weight: .semibold)).lineLimit(1)
-                Image(systemName: "chevron.down").font(.system(size: 8, weight: .bold))
+                if model.history.current.peer != nil { Image(systemName: "person.2.fill").font(.system(size: 10)) }
+                Text(title).font(.system(size: 13, weight: .semibold)).lineLimit(1).truncationMode(.tail)
+                Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold)).foregroundStyle(.secondary).layoutPriority(1)
             }
-            .foregroundStyle(.secondary)
+            .foregroundStyle(.primary)
             .contentShape(Rectangle())
         }
         .menuStyle(.button)
         .buttonStyle(.plain)
         .menuIndicator(.hidden)
-        .fixedSize()
+        .fixedSize(horizontal: false, vertical: true)
         .help("Your chats with \(model.profile.name). Pick one to carry on where you left off. Talks with other Imps open to read.")
         .task(id: model.history.chats.first?.updated) {
             talks = TalkLog.threads(of: model.id, from: await model.app.talkLines())
@@ -234,7 +252,7 @@ private struct EarlierTurns: View {
     var body: some View {
         Button { once() } label: {
             HStack(spacing: 6) {
-                Image(systemName: "chevron.up").font(.system(size: 9, weight: .bold))
+                Image(systemName: "chevron.up").font(.system(size: 10, weight: .bold))
                 Text("\(count) earlier messages").font(.system(size: 11, weight: .medium))
             }
             .frame(maxWidth: .infinity)
@@ -281,14 +299,48 @@ private struct ConfirmButton: View {
             }
         } label: {
             if asking {
-                Text(confirm).font(.system(size: 10, weight: .semibold)).foregroundStyle(Color.accentColor)
+                Text(confirm).font(.system(size: 11, weight: .semibold)).foregroundStyle(Color.accentColor)
+                    .lineLimit(1).fixedSize()
             } else {
-                Image(systemName: icon).font(.system(size: 11, weight: .medium)).foregroundStyle(.secondary)
-                    .frame(width: 18, height: 18).contentShape(Rectangle())
+                Image(systemName: icon).font(.system(size: 12, weight: .medium)).foregroundStyle(.secondary)
+                    .frame(width: 24, height: 24).contentShape(Rectangle())
             }
         }
         .buttonStyle(.plain)
         .help(help)
+        .accessibilityLabel(help)
+    }
+}
+
+/// A quiet suggestion, once per chat, when the chat has grown long enough to be slow and costly
+/// (`ImpPreferences.contextNoticeTokens`). It never blocks anything: recap, start a new chat, or wave it away.
+private struct ContextNotice: View {
+    let model: ImpModel
+    let changed: () -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "text.badge.star").font(.system(size: 12)).foregroundStyle(.secondary)
+            Text("This chat is getting long. A recap or a new chat keeps \(model.profile.name) quick.")
+                .font(.system(size: 11)).foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 4)
+            if model.canRecap {
+                Button("Recap") { model.dismissContextNotice(); model.recapChat() }
+                    .buttonStyle(.imp(.secondary, small: true))
+            }
+            Button("New chat") { model.dismissContextNotice(); model.startNewChat(); changed() }
+                .buttonStyle(.imp(.secondary, small: true))
+            Button { model.dismissContextNotice(); changed() } label: {
+                Image(systemName: "xmark").font(.system(size: 10, weight: .semibold)).foregroundStyle(.secondary)
+                    .frame(width: 20, height: 20).contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help("Dismiss")
+            .accessibilityLabel("Dismiss")
+        }
+        .padding(.horizontal, 10).padding(.vertical, 6)
+        .background(RoundedRectangle(cornerRadius: 8).fill(Color.primary.opacity(0.06)))
     }
 }
 
@@ -304,7 +356,7 @@ private struct RecapCard: View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
                 Label("Recap", systemImage: "rectangle.compress.vertical").font(.system(size: 11, weight: .semibold))
-                Text(turn.date, format: .dateTime.day().month().hour().minute()).font(.system(size: 10)).foregroundStyle(.tertiary)
+                Text(turn.date, format: .dateTime.day().month().hour().minute()).font(.system(size: 11)).foregroundStyle(.secondary)
                 Spacer(minLength: 0)
                 InfoTip("\(model.profile.name) remembers this recap instead of the messages above it (they stay here to read), plus the last message before it.")
             }
@@ -335,7 +387,7 @@ private struct TurnView: View {
             Group {
                 if live { Text("Now") } else { Text(turn.date, format: .dateTime.day().month().hour().minute()) }
             }
-            .font(.system(size: 10)).foregroundStyle(.tertiary)
+            .font(.system(size: 11)).foregroundStyle(.secondary)
             .frame(maxWidth: .infinity)
             // Yours on the right; another Imp's on the left, in its colour.
             HStack {
@@ -386,7 +438,7 @@ private struct RequestCard: View {
                 ExchangeChip(role: .asked, peer: sender)
             } else if let header {
                 Label(header.title, systemImage: header.icon)
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.secondary)
             }
             if turn.via == .shortcut {
@@ -425,7 +477,7 @@ private struct RequestCard: View {
             if long {
                 Button(showAllText ? "Show less" : "Show all") { showAllText.toggle() }
                     .buttonStyle(.plain)
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(tint)
             }
         }

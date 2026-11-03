@@ -16,6 +16,8 @@ final class BubbleLayout {
     /// Reading mode, resized by the user (dragging the card's edges).
     var customWidth: CGFloat?
     var customTextHeight: CGFloat?
+    /// The full bubble (the chat): the card's size. The user resizes it, and it is saved in settings.
+    var chatSize = BubbleSizing.defaultSize
     /// The answer's steps are listed ("3 steps"), and these are opened to show request and response.
     /// Here, not in the view, so measuring sees them and the panel grows to fit.
     var showSteps = false
@@ -40,6 +42,7 @@ final class BubbleLayout {
     func copy() -> BubbleLayout {
         let c = BubbleLayout()
         c.tailX = tailX; c.textLimit = textLimit; c.expanded = expanded; c.detached = detached; c.closeCorner = closeCorner
+        c.chatSize = chatSize
         c.customWidth = customWidth; c.customTextHeight = customTextHeight
         c.showSteps = showSteps; c.openSteps = openSteps; c.chatPages = chatPages
         c.mediaSpans = mediaSpans

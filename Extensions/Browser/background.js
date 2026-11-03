@@ -19,7 +19,7 @@ const state = {
   connected: false,   // the socket to Imp is open
   connecting: false,  // an attempt is in flight
   browser: "",
-  troupe: [],         // the Imps out, as Imp described them: [{ name, hue, scale, traits, mood, away }]
+  troupe: [],         // the Imps out, as Imp described them: [{ name, hue, scale, traits, mood, away, status, device }]
   activity: [],       // what Imp just did on pages, newest first: [{ kind, query, ok, host, at }]
 };
 const popups = new Set();   // open popup ports
@@ -83,9 +83,34 @@ function setLink(connected, connecting) {
 
 // MARK: Connection
 
-function connect() {
-  if (socket && socket.readyState <= WebSocket.OPEN) return;
+// The browser logs every WebSocket that can't connect as an error, even a handled one, so the
+// extension's error list filled up whenever Imp was closed. A failed fetch logs nothing, so a
+// quick knock comes first: a closed port refuses at once, while Imp's socket accepts the
+// connection and waits for a WebSocket handshake (or answers), so the knock times out instead.
+const KNOCK_MS = 800;
+let knocking = false;
+
+async function impIsListening() {
+  const stop = new AbortController();
+  const timer = setTimeout(() => stop.abort(), KNOCK_MS);
+  try {
+    await fetch(ADDRESS.replace(/^ws/, "http") + "/", { cache: "no-store", signal: stop.signal });
+    return true;                                   // something answered on Imp's port
+  } catch (e) {
+    return e.name === "AbortError";                // accepted and waiting: Imp is there
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function connect() {
+  if (knocking || (socket && socket.readyState <= WebSocket.OPEN)) return;
   clearTimeout(retryTimer);
+  knocking = true;
+  const listening = await impIsListening();
+  knocking = false;
+  if (!listening) { setLink(false, false); return retry(); }
+  if (socket && socket.readyState <= WebSocket.OPEN) return;
   let s;
   try { s = new WebSocket(ADDRESS); } catch { return retry(); }
   socket = s;
@@ -125,6 +150,7 @@ function reconnect() {
   socket = null;
   clearInterval(pingTimer);
   old?.close();
+  setLink(false, true);
   connect();
 }
 

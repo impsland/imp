@@ -115,6 +115,8 @@ public struct JoltDetector: Sendable {
     private var lastSign = 0
     private var quietUntil: TimeInterval = -.infinity
     private var pending: (t: TimeInterval, side: LinkSide)?
+    /// The way the last shake began (its first push), for rules that care which side it went.
+    public private(set) var shakeStart: LinkSide?
 
     public init(threshold: Double = 2.0, window: TimeInterval = 0.45, shakeCount: Int = 4, cooldown: TimeInterval = 1.0) {
         self.threshold = threshold; self.window = window; self.shakeCount = shakeCount; self.cooldown = cooldown
@@ -129,6 +131,7 @@ public struct JoltDetector: Sendable {
             pushes.append((t, sign))
             if pending == nil, pushes.count == 1 { pending = (t, sign > 0 ? .right : .left) }
             if pushes.count >= shakeCount {
+                shakeStart = pending?.side
                 reset(until: t + cooldown)
                 return .shaken
             }

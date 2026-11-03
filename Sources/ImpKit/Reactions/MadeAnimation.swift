@@ -256,6 +256,17 @@ public enum AnimationRef: Hashable, Sendable {
     }
 
     public var preset: Reaction? { if case .preset(let r) = self { r } else { nil } }
+
+    /// The animation `key` names (the reverse of `key`).
+    public init?(key: String) {
+        if key.hasPrefix("custom-"), let id = UUID(uuidString: String(key.dropFirst("custom-".count))) {
+            self = .custom(id)
+        } else if let r = Reaction(rawValue: key) {
+            self = .preset(r)
+        } else {
+            return nil
+        }
+    }
 }
 
 // MARK: - The library

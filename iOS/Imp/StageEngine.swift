@@ -72,6 +72,9 @@ final class StageEngine {
     var touch: CGPoint?
     /// The Imp touched last (a jolt of the phone throws this one).
     private(set) var focus: UUID?
+    /// When each Imp was last carried, thrown or flew in, and last touched (a shake sends the one moved last).
+    private(set) var moved: [UUID: Date] = [:]
+    private(set) var touched: [UUID: Date] = [:]
 
     /// The round of Embers being played (or just finished, until its card is dismissed).
     private(set) var round: GameRound?
@@ -142,6 +145,8 @@ final class StageEngine {
         bodies[id] = nil
         order.removeAll { $0 == id }
         if focus == id { focus = nil }
+        moved[id] = nil
+        touched[id] = nil
         if order.isEmpty { round = nil; endEcho() }
     }
 
@@ -161,6 +166,7 @@ final class StageEngine {
         b.vel = CGVector(dx: entry.side == .left ? speed : -speed, dy: (f.midY - y) * 0.6)
         b.enteringFrom = entry.side
         b.performance = Performance(key: "arrive", steps: Self.arrivalSteps)
+        moved[imp.id] = Date()
         insert(b)
     }
 
@@ -282,16 +288,34 @@ final class StageEngine {
 
     /// Send to a device from the menu: a gentle push off the nearer side that leads there (speed 0).
     /// `moves`: it moves in for good on a Mac (`PocketRuntime.move`), not just visiting.
-    func sendGently(_ id: UUID, to device: UUID, moves: Bool = false) {
-        guard !isBlocking, var b = bodies[id], b.phase == .free else { return }
-        let nearer: LinkSide = b.pos.x < size.width / 2 ? .left : .right
-        guard let way = way(id, device, nearer) else { return warn(hint(id, .nobodyConnected, nearer)) }
+    /// `side`: the side to leave by if a door leads there (a shake leaves the way it was shaken).
+    /// False when it could not go (a game is on, the Imp is busy, no door leads there).
+    @discardableResult
+    func sendGently(_ id: UUID, to device: UUID, moves: Bool = false, preferring side: LinkSide? = nil) -> Bool {
+        guard !isBlocking, var b = bodies[id], b.phase == .free else { return false }
+        let nearer: LinkSide = side ?? (b.pos.x < size.width / 2 ? .left : .right)
+        guard let way = way(id, device, nearer) else {
+            warn(hint(id, .nobodyConnected, nearer))
+            return false
+        }
         fly(&b, side: way.side, speed: 0, to: device, moves: moves)
         // Drifts towards the height of its door on the way out.
         let reach = way.side == .left ? b.pos.x + b.size / 2 : size.width - b.pos.x + b.size / 2
         let dy = (way.height * size.height - b.pos.y) * 700 / max(1, reach)
         b.vel = CGVector(dx: way.side == .left ? -700 : 700, dy: dy)
         bodies[id] = b
+        moved[id] = Date()
+        return true
+    }
+
+    /// The Imps a shake may send: free on the screen (not held, flying, away or arriving), and
+    /// `allowed` says they are the phone's own (a visitor goes home by its own menu).
+    func shakeImps(allowed: (UUID) -> Bool) -> [ShakeTransfer.Imp] {
+        guard !isBlocking else { return [] }
+        return order.compactMap { id in
+            guard let b = bodies[id], b.phase == .free, b.enteringFrom == nil, allowed(id) else { return nil }
+            return ShakeTransfer.Imp(id: id, name: b.imp.name, lastMoved: moved[id], lastTouched: touched[id])
+        }
     }
 
     /// A sharp jolt of the whole phone: the focused Imp (or the only one) is thrown off that side.
@@ -539,6 +563,7 @@ final class StageEngine {
             b.warnedOffline = false
             b.performance = nil
             focus = id
+            touched[id] = now
             ticks.prepare()
             pacer.wake()
             order.removeAll { $0 == id }
@@ -567,6 +592,7 @@ final class StageEngine {
         touch = nil
         litDoor = nil
         guard var b = bodies[id], b.phase == .dragging else { return }
+        moved[id] = now
         // Stopped before letting go: no momentum.
         if let s = b.lastSample, now.timeIntervalSince(s.time) > 0.08 { b.fingerVelocity = .zero }
         let v = b.fingerVelocity

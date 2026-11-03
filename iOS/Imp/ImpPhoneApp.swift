@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -63,7 +64,7 @@ struct RootView: View {
                 PairingView(hub: hub, hatch: { sheet = .hatch })
                     .transition(.opacity)
             } else {
-                PhoneStage(hub: hub, pocket: pocket, onChat: { sheet = .chat($0) }, onEdit: { sheet = .edit($0) }, onTalks: { sheet = .talks($0) })
+                PhoneStage(hub: hub, pocket: pocket, covered: sheet != nil, onChat: { sheet = .chat($0) }, onEdit: { sheet = .edit($0) }, onTalks: { sheet = .talks($0) })
                     .transition(.opacity)
                     .onPreferenceChange(EmbersPlaying.self) { playing = $0 }
                 VStack {
@@ -78,6 +79,7 @@ struct RootView: View {
             }
         }
         .animation(.easeInOut(duration: 0.35), value: onStage)
+        .impControls(tint: Dungeon.ember)
         .overlay(alignment: .bottom) { ToastView(text: toast).padding(.bottom, 28) }
         .onChange(of: hub.toast) { _, text in
             guard let text else { return }

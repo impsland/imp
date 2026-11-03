@@ -63,7 +63,20 @@ final class LinkFileStore {
     }
 
     /// The file on this phone, fetching it from the Imp's home if needed.
+    /// A reference that names its size and checksum (`imp-file://…`, see `WorkspaceReference`) is
+    /// checked against them: a file that doesn't match is dropped and never shown.
     func file(imp: UUID, ref: String) async throws -> URL {
+        let url = try await fetch(imp: imp, ref: ref)
+        guard let named = WorkspaceReference(parsing: ref) else { return url }
+        let matches = await Task.detached { (try? named.verify(url)) != nil }.value
+        guard matches else {
+            try? FileManager.default.removeItem(at: url.deletingLastPathComponent())
+            throw Failure.badPart
+        }
+        return url
+    }
+
+    private func fetch(imp: UUID, ref: String) async throws -> URL {
         if let url = cached(imp: imp, ref: ref) { return url }
         let key = Self.key(imp: imp, ref: ref)
         return try await withCheckedThrowingContinuation { c in

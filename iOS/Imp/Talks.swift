@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -46,6 +47,7 @@ struct TalksSheet: View {
                 TalkConversation(hub: hub, pocket: pocket, impID: impID, peerID: peer)
             }
         }
+        .impControls(tint: Dungeon.ember)
         .task { hub.requestTalks(impID) }
     }
 }

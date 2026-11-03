@@ -257,7 +257,7 @@ Adding a field is not a new version (readers ignore keys they don't know, and gi
 default); only a change an older Imp would misread bumps it, and then Imp upgrades what older
 versions wrote as it reads. `"app"` is the version of Imp that wrote the file, for information only.
 
-Ready-made kits to borrow, and how to add yours, are in the community registry: [`registry/`](registry/README.md).
+Ready-made kits to borrow are in [the Den](#the-den). The fields for animations and an Imp's character are in [`docs/KITS.md`](docs/KITS.md).
 
 <p align="center"><img src="docs/moods.png" width="760" alt="Imp's moods"></p>
 
@@ -399,6 +399,25 @@ In the browser, the Den draws every Imp and plays every animation straight from 
 just as the apps do. Other agents can use it through MCP at `/v1/mcp`. The server, its API and how
 to run it with Docker are in [`server/`](server/README.md) (the contract is
 [`server/PROTOCOL.md`](server/PROTOCOL.md)).
+
+**Sharing in the Den.** The Den refuses kits with secrets (environment and header values must be
+empty), chats, or more than its limits. A few rules it can't check are up to whoever shares:
+
+- Every tool is a real, published package (npm or PyPI) that you checked exists, and `about` says what it does and needs.
+- Say what a kit can do. Computer control, terminal commands and tools that run programs belong in `about` and the personality.
+- Prompts are specific and short, and never ask an Imp to hide things from you.
+
+## Terminal
+
+There is also a command line version that works on any computer with a Rust toolchain. It makes Imps and chats with them in a terminal, using any OpenAI-compatible service.
+
+```sh
+cargo install --path server/crates/cli
+imp imp new pip --model gpt-5
+IMP_API_KEY=... imp chat
+```
+
+Your API key stays in an environment variable or the system keychain and is never written to the settings file. See [server/crates/cli/README.md](server/crates/cli/README.md).
 
 ## Get started with a local model
 

@@ -6,12 +6,12 @@ import os
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let model = AppModel()
     private var windows: TroupeWindows?
-    private var statusMenu: StatusMenu?
     private var impMenu: ImpMenu?
     private var sigterm: DispatchSourceSignal?
     private let log = Logger(subsystem: "app.imp.Imp", category: "app")
 
     func applicationWillFinishLaunching(_ notification: Notification) {
+        NSApp.setActivationPolicy(.accessory)
         NSAppleEventManager.shared().setEventHandler(self, andSelector: #selector(handleURL(_:reply:)),
                                                      forEventClass: AEEventClass(kInternetEventClass),
                                                      andEventID: AEEventID(kAEGetURL))
@@ -26,7 +26,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         sigterm = source
 
         let windows = TroupeWindows(app: model)
-        let menu = StatusMenu(model: model)
         // Right-clicking an Imp shows that Imp's own menu.
         windows.menuProvider = { [weak self] imp in
             guard let self else { return NSMenu() }
@@ -35,7 +34,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return menu.make()
         }
         self.windows = windows
-        statusMenu = menu
         MainMenu.install(openHome: #selector(openHome), target: self)
         model.start()
         // With nobody out on the desktop, say hello from the app's window.

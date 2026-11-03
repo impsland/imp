@@ -9,8 +9,9 @@ import Testing
         #expect(p.imps[0].id == ImpProfile.defaultID && p.imps[0].hue == 0 && p.imps[0].brain == nil)
         #expect(!p.imps[0].isActive)
         // It chats and has a shell, and nothing else: no borrowed tools, and no triggers but the
-        // two clicks every Imp shares (one types, two open settings).
-        #expect(p.shortcuts.map(\.trigger) == [.clicks(1), .clicks(2)] && p.shortcuts.allSatisfy { $0.performer == nil })
+        // two clicks every Imp shares (one types, two open settings), besides the body triggers.
+        #expect(p.shortcuts.filter { !$0.runsLocally || $0.trigger.kind == .clicks }.map(\.trigger) == [.clicks(1), .clicks(2)])
+        #expect(p.shortcuts.allSatisfy { $0.performer == nil })
         #expect(p.imps[0].servers.isEmpty)
         #expect(p.imps[0].usesShell)
     }
@@ -174,7 +175,7 @@ import Testing
         json["sendsToolCalls"] = nil
         json["exchangesSent"] = nil
         var imp = try JSONDecoder().decode(ImpProfile.self, from: JSONSerialization.data(withJSONObject: json))
-        #expect(imp.remembersToolCalls && imp.memoryExchanges == ChatMemory.defaultExchanges)
+        #expect(imp.remembersToolCalls && imp.memoryExchanges == ChatMemory.noLimit)
         imp.sendsToolCalls = false
         imp.exchangesSent = 5
         #expect(!imp.remembersToolCalls && imp.memoryExchanges == 5)

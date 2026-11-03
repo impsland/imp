@@ -10,10 +10,12 @@
 		003ED416A016798061351095 /* SpeechBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 138E937C2DEA200C16A64509 /* SpeechBubble.swift */; };
 		034344F3DCE4CAA7C0BDB830 /* BubbleSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0004317A91411D2ECE455BA7 /* BubbleSizes.swift */; };
 		0B3DE9AB90535E8776AC383B /* LinkFileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BCDE56EC7E08CB95A42B3A /* LinkFileStore.swift */; };
+		0CBB75F0ECF94815884A5A56 /* ImpDesign in Frameworks */ = {isa = PBXBuildFile; productRef = D0DA5B4C28B9E114AF43B303 /* ImpDesign */; };
 		0D11DCAC05BEBE9162AA69E4 /* EchoFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260261CF11237CBD49ED5244 /* EchoFeedback.swift */; };
 		0E79EEB23068CD9964B66A3F /* Antics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154403A8E907ABF7EDDA394A /* Antics.swift */; };
 		15117A49B4DBDDD10DE49934 /* GameLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA159EED58442BB21A2A0AE /* GameLayer.swift */; };
 		1C96E45CBCBA8A7EF5F6210A /* SpeechMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6406F8E129883536DA4BD5F3 /* SpeechMedia.swift */; };
+		2282C430AB2DE9BC75606654 /* PlayerSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD27D4A15777AC5A4BE38CA4 /* PlayerSurface.swift */; };
 		23C08AEC21F5B1A13756D2CC /* IssueBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 119D64EC1BB7DA6B29762583 /* IssueBadge.swift */; };
 		2BD7F069A2A074BC7B861920 /* EchoLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECB649C0FBB83036E8DEEF0 /* EchoLayer.swift */; };
 		33D971EE0258680DE6F44E9F /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E6EB59723598749562B958 /* Keychain.swift */; };
@@ -21,6 +23,7 @@
 		3DEB2BEE904FC2E55AD6181E /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7D2F37C84A4B750CDB3F71 /* Palette.swift */; };
 		3F9E73CF6E992866F6169F11 /* EmbersCoach.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425EA0CF393C2A5B4C8C8E79 /* EmbersCoach.swift */; };
 		41EBEB8EB9C33F028E03E6F8 /* DevicesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C698C25A550AFC9B832F1A6 /* DevicesSheet.swift */; };
+		4A5031D7E59287160CDFF657 /* ShakeSend.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB61C20306D3B20E4BCFD89 /* ShakeSend.swift */; };
 		4ABD8A5451824A83F23B28E9 /* PocketStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE7028C65676801485C56B3 /* PocketStore.swift */; };
 		5160526D57D45232F430B758 /* ImpRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E56E2B80612481500C8FE /* ImpRenderer.swift */; };
 		5291E2FE7332DD9EBAE3A954 /* PocketEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535920C67E324CBF24FF6E52 /* PocketEditor.swift */; };
@@ -97,6 +100,8 @@
 		A29BD2E76FF01C7C44A08B73 /* EchoCoach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoCoach.swift; sourceTree = "<group>"; };
 		A9CDA1D6F43D1F4F6733CC21 /* StatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPill.swift; sourceTree = "<group>"; };
 		AA17C8D6E7748402B3655100 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		AD27D4A15777AC5A4BE38CA4 /* PlayerSurface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerSurface.swift; sourceTree = "<group>"; };
+		AFB61C20306D3B20E4BCFD89 /* ShakeSend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShakeSend.swift; sourceTree = "<group>"; };
 		B31C2D953C56557D2B30BCF3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		B34102EB8A566B60FE68FF4A /* StageVoice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageVoice.swift; sourceTree = "<group>"; };
 		B6297667BC85BA102DF6A825 /* Face.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Face.swift; sourceTree = "<group>"; };
@@ -118,6 +123,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				63904DE69AEB8444314796F6 /* ImpKit in Frameworks */,
+				0CBB75F0ECF94815884A5A56 /* ImpDesign in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,10 +166,12 @@
 				37A695264BBAD32A874A57EB /* Localizable.xcstrings */,
 				6406F33EC0C8528E9FA96CAA /* PairingView.swift */,
 				36040976E160D83A9ED7131E /* PhoneStage.swift */,
+				AD27D4A15777AC5A4BE38CA4 /* PlayerSurface.swift */,
 				535920C67E324CBF24FF6E52 /* PocketEditor.swift */,
 				F364A4DE6BAD316298E3E073 /* PocketRuntime.swift */,
 				1CE7028C65676801485C56B3 /* PocketStore.swift */,
 				F1D36860F51AAB868812CA05 /* ReplyBlocks.swift */,
+				AFB61C20306D3B20E4BCFD89 /* ShakeSend.swift */,
 				138E937C2DEA200C16A64509 /* SpeechBubble.swift */,
 				6406F8E129883536DA4BD5F3 /* SpeechMedia.swift */,
 				C3A5CF20C2B71E285BCA988D /* StageEngine.swift */,
@@ -240,6 +248,7 @@
 			name = ImpPhone;
 			packageProductDependencies = (
 				40F15208B694E2CE6ED040FB /* ImpKit */,
+				D0DA5B4C28B9E114AF43B303 /* ImpDesign */,
 			);
 			productName = ImpPhone;
 			productReference = 0DC695E7AE998FA6BF5BA85B /* ImpPhone.app */;
@@ -332,11 +341,13 @@
 				3DEB2BEE904FC2E55AD6181E /* Palette.swift in Sources */,
 				AE1DFD9644628E88D62348A5 /* Performance.swift in Sources */,
 				E173ECE55498D9DC68051497 /* PhoneStage.swift in Sources */,
+				2282C430AB2DE9BC75606654 /* PlayerSurface.swift in Sources */,
 				5291E2FE7332DD9EBAE3A954 /* PocketEditor.swift in Sources */,
 				B7CA0B90DB6761F8C22BA91E /* PocketRuntime.swift in Sources */,
 				4ABD8A5451824A83F23B28E9 /* PocketStore.swift in Sources */,
 				5B87BCF69D14A451A0011983 /* Puppet.swift in Sources */,
 				3C05A501D4D7A0017C6BBA17 /* ReplyBlocks.swift in Sources */,
+				4A5031D7E59287160CDFF657 /* ShakeSend.swift in Sources */,
 				A7E4796D1F6325E22606E988 /* SoftLight.swift in Sources */,
 				003ED416A016798061351095 /* SpeechBubble.swift in Sources */,
 				1C96E45CBCBA8A7EF5F6210A /* SpeechMedia.swift in Sources */,
@@ -388,7 +399,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -402,7 +413,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -469,7 +480,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -489,7 +500,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -556,6 +567,10 @@
 		40F15208B694E2CE6ED040FB /* ImpKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ImpKit;
+		};
+		D0DA5B4C28B9E114AF43B303 /* ImpDesign */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ImpDesign;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -10,22 +11,36 @@ struct PocketEditor: View {
     let editing: UUID?
     var done: () -> Void
 
+    private struct HeaderDraft: Identifiable {
+        var id = UUID()
+        var name = ""
+        /// A new value. Empty keeps the saved one.
+        var value = ""
+        /// The name the saved value was kept under, if there is one.
+        var savedName: String?
+
+        var isBlank: Bool { name.trimmed.isEmpty && value.isEmpty }
+    }
+
     private struct ServerDraft: Identifiable {
         var id = UUID()
         var name = ""
         var url = ""
-        var header = ""
-        /// A new header value. Empty keeps the saved one.
-        var value = ""
-        /// The host the saved value was meant for.
+        var headers: [HeaderDraft] = []
+        /// The host the saved values were meant for.
         var savedFor: String?
 
-        var isBlank: Bool { [name, url, header, value].allSatisfy { $0.trimmed.isEmpty } }
+        var isBlank: Bool { name.trimmed.isEmpty && url.trimmed.isEmpty && headers.allSatisfy(\.isBlank) }
+        var holdsSecrets: Bool { headers.contains { $0.savedName != nil || !$0.value.isEmpty } }
     }
 
     private static let hues: [Double] = [0, 0.08, 0.15, 0.33, 0.5, 0.6, 0.75, 0.9]
     /// The sizes the Mac offers too.
-    private static let sizes: [(name: LocalizedStringKey, scale: Double)] = [("Small", 0.75), ("Medium", 1), ("Large", 1.35), ("Huge", 1.7)]
+    private static let sizes: [(name: String, scale: Double)] = [
+        (String(localized: "Small"), 0.75), (String(localized: "Medium"), 1), (String(localized: "Large"), 1.35), (String(localized: "Huge"), 1.7),
+    ]
+    /// The size a new Imp starts with.
+    private static let newSize = 1.7
 
     private enum Field: Hashable { case name, personality, address, key, model }
 
@@ -40,6 +55,7 @@ struct PocketEditor: View {
     @State private var keyFor: String?
     @State private var servers: [ServerDraft]
     @State private var toolsOpen = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var saveProblem: String?
     @State private var confirmingDelete = false
     /// The tool server asked to be removed, while its saved value is being confirmed.
@@ -57,92 +73,60 @@ struct PocketEditor: View {
         let secrets = pocket.secrets
         _name = State(initialValue: imp?.name ?? ImpProfile.randomName(avoiding: pocket.imps.map(\.name)))
         _hue = State(initialValue: imp?.hue ?? Self.hues.randomElement() ?? 0)
-        _scale = State(initialValue: Self.sizes.min { abs($0.scale - (imp?.scale ?? 1)) < abs($1.scale - (imp?.scale ?? 1)) }?.scale ?? 1)
+        _scale = State(initialValue: Self.sizes.min { abs($0.scale - (imp?.scale ?? Self.newSize)) < abs($1.scale - (imp?.scale ?? Self.newSize)) }?.scale ?? Self.newSize)
         _personality = State(initialValue: imp.map { $0.personality == Persona.pocket(named: $0.name) ? "" : $0.personality } ?? "")
         _address = State(initialValue: imp?.brain.baseURL ?? "")
         _model = State(initialValue: imp?.brain.model ?? "")
         _keyFor = State(initialValue: imp.flatMap { secrets.get(.apiKey, imp: $0.id) != nil ? Self.host($0.brain.baseURL) : nil })
-        _servers = State(initialValue: imp?.servers.map { server in
-            ServerDraft(id: server.id, name: server.name, url: server.url, header: server.header ?? "",
-                        savedFor: imp.flatMap { secrets.get(.header(server.id), imp: $0.id) != nil ? Self.host(server.url) : nil })
+        _servers = State(initialValue: imp?.servers.map { server -> ServerDraft in
+            let heads = server.headers.map { name in
+                HeaderDraft(name: name, savedName: imp.flatMap { secrets.get(.header(server.id, name), imp: $0.id) != nil ? name : nil })
+            }
+            return ServerDraft(id: server.id, name: server.name, url: server.url, headers: heads,
+                               savedFor: heads.contains { $0.savedName != nil } ? Self.host(server.url) : nil)
         } ?? [])
         look = LinkImp(id: imp?.id ?? UUID(), name: "", hue: 0, scale: 1, traits: imp?.traits ?? .plain)
     }
 
     var body: some View {
         NavigationStack {
-            Form {
-                preview
-                Section {
-                    HStack {
-                        TextField("Name", text: $name)
-                            .textInputAutocapitalization(.words)
-                            .focused($focus, equals: .name)
-                            .submitLabel(.next)
-                            .onSubmit { focus = .personality }
-                        if let problem = nameProblem { IssueBadge(text: problem) }
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(spacing: Spacing.medium) {
+                        preview
+                        impCard
+                        lookCard
+                        brainCard
+                        toolsCard(proxy)
+                        if editing != nil { deleteButton }
                     }
-                    TextField("Optional: how it talks and what it likes", text: $personality, axis: .vertical)
-                        .lineLimit(2...5)
-                        .focused($focus, equals: .personality)
-                        .submitLabel(.next)
-                        // One paragraph: Return moves on instead of starting a new line.
-                        .onChange(of: personality) { _, text in
-                            guard text.contains("\n") else { return }
-                            personality = text.replacingOccurrences(of: "\n", with: "")
-                            focus = .address
-                        }
-                } header: {
-                    Text("Imp")
-                } footer: {
-                    Text("Leave the personality empty for a friendly default.")
+                    .padding(.horizontal, Spacing.large)
+                    .padding(.vertical, Spacing.medium)
                 }
-                .listRowBackground(Dungeon.card)
-                Section("Look") {
-                    swatches
-                    Picker("Size", selection: $scale) {
-                        ForEach(Self.sizes, id: \.scale) { Text($0.name).tag($0.scale) }
-                    }
-                    .pickerStyle(.segmented)
-                }
-                .listRowBackground(Dungeon.card)
-                brainSection
-                toolsSection
-                if editing != nil {
-                    Section {
-                        // The dialog hangs on the button: two on the same view and only one ever shows.
-                        Button("Delete Imp", role: .destructive) { confirmingDelete = true }
-                            .confirmationDialog("Delete \(name.trimmed)?", isPresented: $confirmingDelete, titleVisibility: .visible) {
-                                Button("Delete", role: .destructive) {
-                                    if let editing { pocket.delete(editing) }
-                                    done()
-                                }
-                            } message: {
-                                Text("Its chats and keys are forgotten. This can't be undone.")
-                            }
-                    }
-                    .listRowBackground(Dungeon.card)
-                }
+                // Dragging or tapping empty space puts the keyboard away. Buttons and fields keep their taps.
+                .dismissesKeyboard()
+                .keyboardGap()
             }
-            .scrollContentBackground(.hidden)
+            .impControls(tint: Dungeon.ember)
             .background(Dungeon.deep)
-            .scrollDismissesKeyboard(.interactively)
             .navigationTitle(editing == nil ? "Hatch an Imp" : "Edit Imp")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel", action: done) }
+                // The navigation bar keeps the system's buttons: they sit in system chrome, which sizes,
+                // tints and reads them to VoiceOver by itself.
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel", action: done).buttonStyle(.automatic) }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(editing == nil ? "Hatch" : "Save", action: save).disabled(!canSave)
+                    Button(editing == nil ? "Hatch" : "Save", action: save).buttonStyle(.automatic).disabled(!canSave)
                 }
             }
             .confirmationDialog("Remove this tool server?", isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
                                 titleVisibility: .visible) {
                 Button("Remove", role: .destructive) {
-                    withAnimation { servers.removeAll { $0.id == removing } }
+                    withImpAnimation(reduceMotion: reduceMotion) { servers.removeAll { $0.id == removing } }
                     removing = nil
                 }
             } message: {
-                Text("Its saved header value is forgotten.")
+                Text("Its saved header values are forgotten.")
             }
             .alert("Couldn't save", isPresented: Binding(get: { saveProblem != nil }, set: { if !$0 { saveProblem = nil } })) {
                 Button("OK", role: .cancel) {}
@@ -153,17 +137,82 @@ struct PocketEditor: View {
                 ModelPicker(address: address.trimmed, key: keyToTry) { model = $0 }
             }
         }
+        .tipHost()
+    }
+
+    /// After a section opens or grows: scrolls so the new part is on screen, once the animation has run.
+    private func reveal(_ proxy: ScrollViewProxy, _ id: some Hashable, anchor: UnitPoint) {
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(reduceMotion ? 50 : 320))
+            withImpAnimation(.smooth, reduceMotion: reduceMotion) { proxy.scrollTo(id, anchor: anchor) }
+        }
+    }
+
+    private var deleteButton: some View {
+        // The dialog hangs on the button: two on the same view and only one ever shows.
+        Button { confirmingDelete = true } label: { Label("Delete Imp", systemImage: "trash") }
+            .buttonStyle(.destructive)
+            .frame(maxWidth: .infinity)
+            .confirmationDialog("Delete \(name.trimmed)?", isPresented: $confirmingDelete, titleVisibility: .visible) {
+                Button("Delete", role: .destructive) {
+                    if let editing { pocket.delete(editing) }
+                    done()
+                }
+            } message: {
+                Text("Its chats and keys are forgotten. This can't be undone.")
+            }
+    }
+
+    private func note(_ text: LocalizedStringKey) -> some View {
+        Text(text).font(Typeface.caption).foregroundStyle(Dungeon.muted)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: Imp
 
+    private var impCard: some View {
+        Card("Imp") {
+            field("Name") {
+                HStack(spacing: 4) {
+                    TextField("Name", text: $name)
+                        .impField()
+                        .textInputAutocapitalization(.words)
+                        .focused($focus, equals: .name)
+                        .submitLabel(.next)
+                        .onSubmit { focus = .personality }
+                    if let problem = nameProblem { IssueBadge(text: problem) }
+                }
+            }
+            field("Personality") {
+                TextArea("Personality", text: $personality, placeholder: "How it talks and what it likes", minLines: 3, maxLines: 8)
+                    .focused($focus, equals: .personality)
+                    .submitLabel(.next)
+                    // One paragraph: Return moves on instead of starting a new line.
+                    .onChange(of: personality) { _, text in
+                        guard text.contains("\n") else { return }
+                        personality = text.replacingOccurrences(of: "\n", with: "")
+                        focus = .address
+                    }
+            }
+            note("Leave the personality empty for a friendly default.")
+        }
+    }
+
+    private var lookCard: some View {
+        Card("Look") {
+            swatches
+            ImpSegmented("Size", selection: $scale, options: Self.sizes.map(\.scale)) { value in
+                Self.sizes.first { $0.scale == value }?.name ?? ""
+            }
+        }
+    }
+
     private var preview: some View {
-        LiveImp(imp: LinkImp(id: look.id, name: name, hue: hue, scale: scale, traits: look.traits))
+        // The same Imp as on the first screen: it leans and looks the way the phone tips.
+        TiltImp(imp: LinkImp(id: look.id, name: name, hue: hue, scale: scale, traits: look.traits), interactive: false)
             .frame(width: 100 * scale, height: 100 * scale)
             .frame(maxWidth: .infinity, minHeight: 180)
-            .animation(.spring(duration: 0.4, bounce: 0.3), value: scale)
-            .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets())
+            .impAnimation(.spring(duration: 0.4, bounce: 0.3), value: scale)
             .accessibilityHidden(true)
     }
 
@@ -175,28 +224,29 @@ struct PocketEditor: View {
                     Circle().fill(Color.imp(value))
                         .frame(width: 28, height: 28)
                         .overlay(Circle().strokeBorder(Dungeon.cream, lineWidth: chosen ? 2.5 : 0).padding(-4))
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, minHeight: Sizing.hit)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Color")
                 .accessibilityAddTraits(chosen ? .isSelected : [])
             }
         }
-        .padding(.vertical, 4)
     }
 
     // MARK: Brain
 
-    private var brainSection: some View {
-        Section {
+    private var brainCard: some View {
+        Card("Brain") {
             if !hasBrain {
                 Label("No brain yet: it sleeps until you give it one.", systemImage: "moon.zzz")
-                    .font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
+                    .font(Typeface.caption).foregroundStyle(Dungeon.muted)
             }
             presetChips
             field("Address") {
                 HStack(spacing: 4) {
                     TextField("Address", text: $address, prompt: Text(verbatim: "https://openrouter.ai/api/v1"))
+                        .impField(mono: true)
                         .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
                         .focused($focus, equals: .address)
                         .submitLabel(.next)
@@ -207,35 +257,41 @@ struct PocketEditor: View {
             }
             field("Key") {
                 SecureField("Key", text: $key, prompt: Text(keyKept ? LocalizedStringKey("Saved") : (matched?.isLocal == true ? "Not needed" : "Paste your API key")))
+                    .impField(mono: true)
                     .textInputAutocapitalization(.never).autocorrectionDisabled()
                     .focused($focus, equals: .key)
                     .submitLabel(.next)
                     .onSubmit { focus = .model }
             }
             if keyKept && key.isEmpty {
-                Button("Remove saved key", role: .destructive) { keyFor = nil }
+                Button { keyFor = nil } label: { Label("Remove saved key", systemImage: "key.slash") }
+                    .buttonStyle(.destructive)
             }
             field("Model") {
-                HStack(spacing: 8) {
+                // One well: the Choose button sits inside the field, so the shapes match.
+                HStack(spacing: 6) {
                     TextField("Model", text: $model, prompt: Text(verbatim: "openai/gpt-6-luna"))
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                         .focused($focus, equals: .model)
                         .submitLabel(.done)
                         .onSubmit { focus = nil }
                     if let problem = modelProblem { IssueBadge(text: problem) }
-                    Button("Choose") { focus = nil; choosingModel = true }
-                        .font(.system(.footnote, design: .rounded, weight: .semibold))
-                        .buttonStyle(.borderless)
-                        .foregroundStyle(Dungeon.flame)
-                        .disabled(address.trimmed.isEmpty || addressProblem != nil)
+                    let canChoose = !(address.trimmed.isEmpty || addressProblem != nil)
+                    Button { focus = nil; choosingModel = true } label: {
+                        Text("Choose").font(Typeface.label)
+                            .foregroundStyle(canChoose ? Dungeon.ember : Dungeon.muted)
+                            .padding(.leading, 10)
+                            .frame(minHeight: Sizing.hit)
+                            .overlay(alignment: .leading) { Rectangle().fill(Dungeon.cardEdge).frame(width: 1).padding(.vertical, 8) }
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!canChoose)
                 }
+                .impField(mono: true)
             }
-        } header: {
-            Text("Brain")
-        } footer: {
-            Text("An OpenAI-compatible service. Your key stays in this iPhone's Keychain.")
+            note("An OpenAI-compatible service. Your key stays in this iPhone's Keychain.")
         }
-        .listRowBackground(Dungeon.card)
     }
 
     /// One chip per well-known service: the name fills the address, the arrow opens where to get started.
@@ -246,24 +302,26 @@ struct PocketEditor: View {
                 HStack(spacing: 0) {
                     Button { choose(preset) } label: {
                         Text(verbatim: preset.name)
-                            .padding(.leading, 12).padding(.trailing, 4).padding(.vertical, 7)
+                            .padding(.leading, 12).padding(.trailing, 4)
+                            .frame(minHeight: Sizing.hit)
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .accessibilityAddTraits(picked ? .isSelected : [])
                     Button { openURL(preset.link) } label: {
                         Image(systemName: "arrow.up.right").font(.system(size: 10, weight: .bold))
-                            .padding(.leading, 4).padding(.trailing, 10).padding(.vertical, 7)
+                            .padding(.leading, 4).padding(.trailing, 12)
+                            .frame(minHeight: Sizing.hit)
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Open \(preset.name)'s page")
                 }
-                .font(.system(.footnote, design: .rounded, weight: .semibold))
-                .foregroundStyle(picked ? Dungeon.deep : Dungeon.cream)
-                .background(picked ? AnyShapeStyle(LinearGradient(colors: [Dungeon.flame, Dungeon.ember], startPoint: .top, endPoint: .bottom))
-                                   : AnyShapeStyle(Dungeon.card), in: Capsule())
-                .overlay(Capsule().strokeBorder(Dungeon.cardEdge))
+                // The same look as `ChoiceChip`, split in two so the arrow can open the service's page.
+                .font(Typeface.label)
+                .foregroundStyle(picked ? Color.white : Dungeon.cream.opacity(0.9))
+                .background(picked ? AnyShapeStyle(Dungeon.ember.gradient) : AnyShapeStyle(Color.white.opacity(0.06)), in: Capsule())
+                .overlay(Capsule().strokeBorder(picked ? Color.white.opacity(0.2) : Dungeon.cardEdge))
             }
         }
         .padding(.vertical, 2)
@@ -299,15 +357,15 @@ struct PocketEditor: View {
 
     // MARK: Tools
 
-    private var toolsSection: some View {
-        Section {
-            DisclosureGroup(isExpanded: $toolsOpen) {
-                Text("Tools let your Imp reach things beyond chat: a web (HTTP) MCP server it can call to search, fetch or do things for you.")
-                    .font(.footnote).foregroundStyle(Dungeon.muted)
+    private func toolsCard(_ proxy: ScrollViewProxy) -> some View {
+        Card {
+            Button {
+                withImpAnimation(Timing.smooth, reduceMotion: reduceMotion) { toolsOpen.toggle() }
+                if toolsOpen { reveal(proxy, "tools", anchor: .top) }
             } label: {
-                HStack {
-                    Text("Tools")
-                    Text("Optional").font(.footnote).foregroundStyle(Dungeon.muted)
+                HStack(spacing: 8) {
+                    Text("Tools").font(Typeface.cardTitle).foregroundStyle(Dungeon.cream)
+                    Text("Optional").font(Typeface.caption).foregroundStyle(Dungeon.muted)
                     Spacer()
                     if toolsBroken && !toolsOpen {
                         Image(systemName: "exclamationmark.circle.fill").foregroundStyle(Dungeon.flame)
@@ -316,78 +374,116 @@ struct PocketEditor: View {
                     let count = servers.filter { !$0.isBlank }.count
                     if count > 0 && !toolsOpen {
                         Text("\(count)")
-                            .font(.system(.footnote, design: .rounded, weight: .bold))
+                            .font(Typeface.small.weight(.bold))
                             .foregroundStyle(Dungeon.deep)
                             .padding(.horizontal, 8).padding(.vertical, 2)
                             .background(Dungeon.ember, in: Capsule())
                     }
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold)).foregroundStyle(Dungeon.muted)
+                        .rotationEffect(.degrees(toolsOpen ? 90 : 0))
                 }
+                .frame(minHeight: Sizing.hit)
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
+            .accessibilityAddTraits(.isHeader)
+            .accessibilityValue(toolsOpen ? Text("Open") : Text("Closed"))
             if toolsOpen {
+                note("Tools let your Imp reach things beyond chat: a web (HTTP) MCP server it can call to search, fetch or do things for you.")
                 ForEach($servers) { $server in
-                    serverCard($server)
+                    serverCard($server, proxy)
                 }
-                Button { addServer() } label: { Label("Add a tool server", systemImage: "plus.circle.fill") }
+                Button { addServer(proxy) } label: { Label("Add a tool server", systemImage: "plus") }
+                    .buttonStyle(.secondary)
                     .disabled(servers.count >= PocketImp.maxServers)
-                    .foregroundStyle(servers.count >= PocketImp.maxServers ? Dungeon.muted : Dungeon.flame)
+                note("Up to \(PocketImp.maxServers) servers. Header values stay in this iPhone's Keychain.")
             }
-        } footer: {
-            if toolsOpen { Text("Up to \(PocketImp.maxServers) servers. Header values stay in this iPhone's Keychain.") }
         }
-        .listRowBackground(Dungeon.card)
+        .id("tools")
     }
 
     private var toolsBroken: Bool { servers.contains { !$0.isBlank && serverProblem($0) != nil } }
 
-    private func addServer() {
+    private func addServer(_ proxy: ScrollViewProxy) {
         let draft = ServerDraft()
-        withAnimation { servers.append(draft) }
+        withImpAnimation(reduceMotion: reduceMotion) { servers.append(draft) }
+        reveal(proxy, draft.id, anchor: .top)
     }
 
-    private func serverCard(_ server: Binding<ServerDraft>) -> some View {
+    private func addHeader(_ server: Binding<ServerDraft>, _ proxy: ScrollViewProxy) {
+        let draft = HeaderDraft()
+        withImpAnimation(reduceMotion: reduceMotion) { server.wrappedValue.headers.append(draft) }
+        reveal(proxy, draft.id, anchor: .center)
+    }
+
+    private func serverCard(_ server: Binding<ServerDraft>, _ proxy: ScrollViewProxy) -> some View {
         let value = server.wrappedValue
-        let kept = value.savedFor != nil && value.savedFor == Self.host(value.url)
+        let hostKept = value.savedFor != nil && value.savedFor == Self.host(value.url)
         return VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Image(systemName: "wrench.and.screwdriver.fill").foregroundStyle(Dungeon.ember)
                 Text(value.name.trimmed.isEmpty ? (Self.host(value.url) ?? String(localized: "New tool server")) : value.name.trimmed)
                     .font(.system(.subheadline, design: .rounded, weight: .semibold)).lineLimit(1)
                 Spacer()
-                Button(role: .destructive) { remove(value) } label: { Image(systemName: "trash") }
-                    .buttonStyle(.borderless)
+                Button { remove(value) } label: { Image(systemName: "trash") }
+                    .buttonStyle(.destructive)
                     .accessibilityLabel("Remove tool server")
             }
-            field("Name") { TextField("Name", text: server.name, prompt: Text("Optional")) }
+            field("Name") { TextField("Name", text: server.name, prompt: Text("Optional")).impField() }
             field("URL") {
                 HStack(spacing: 4) {
                     TextField("URL", text: server.url, prompt: Text(verbatim: "https://example.com/mcp"))
+                        .impField(mono: true)
                         .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
                     if let problem = serverProblem(value) { IssueBadge(text: problem) }
                 }
             }
-            Divider().overlay(Dungeon.cardEdge)
-            Text("Authorization header (optional)")
+            CardDivider()
+            Text("Headers (optional)")
                 .font(.system(.caption, design: .rounded, weight: .semibold)).foregroundStyle(Dungeon.muted)
-            field("Header") {
-                TextField("Header", text: server.header, prompt: Text(verbatim: "Authorization"))
-                    .textInputAutocapitalization(.never).autocorrectionDisabled()
+            ForEach(server.headers) { $header in
+                let kept = hostKept && header.savedName != nil
+                VStack(alignment: .leading, spacing: Spacing.small) {
+                    HStack(spacing: Spacing.small) {
+                        TextField("Header", text: $header.name, prompt: Text(verbatim: "Authorization"))
+                            .impField(mono: true)
+                            .textInputAutocapitalization(.never).autocorrectionDisabled()
+                        Button { removeHeader(header.id, from: server) } label: { Image(systemName: "minus.circle") }
+                            .buttonStyle(.quiet)
+                            .accessibilityLabel("Remove header")
+                    }
+                    SecureField("Value", text: $header.value, prompt: kept ? Text("Saved") : Text(verbatim: "Bearer …"))
+                        .impField(mono: true)
+                        .textInputAutocapitalization(.never).autocorrectionDisabled()
+                }
+                .id(header.id)
             }
-            field("Value") {
-                SecureField("Value", text: server.value, prompt: Text(kept ? LocalizedStringKey("Saved") : "Token or key"))
-                    .textInputAutocapitalization(.never).autocorrectionDisabled()
-            }
+            Button { addHeader(server, proxy) } label: { Label("Add a header", systemImage: "plus") }
+                .buttonStyle(.imp(.secondary, small: true))
+                .disabled(value.headers.count >= PocketServer.maxHeaders)
         }
-        .padding(.vertical, 4)
+        .padding(12)
+        .impCard(radius: Radius.medium)
+        .id(value.id)
+    }
+
+    private func removeHeader(_ id: UUID, from server: Binding<ServerDraft>) {
+        withImpAnimation(reduceMotion: reduceMotion) { server.wrappedValue.headers.removeAll { $0.id == id } }
     }
 
     private func remove(_ server: ServerDraft) {
         let kept = server.savedFor != nil && server.savedFor == Self.host(server.url)
-        if kept || !server.value.isEmpty { removing = server.id }
-        else { withAnimation { servers.removeAll { $0.id == server.id } } }
+        if (kept && server.holdsSecrets) || server.headers.contains(where: { !$0.value.isEmpty }) { removing = server.id }
+        else { withImpAnimation(reduceMotion: reduceMotion) { servers.removeAll { $0.id == server.id } } }
     }
 
     private func field<Content: View>(_ title: LocalizedStringKey, @ViewBuilder _ content: () -> Content) -> some View {
-        LabeledContent(title) { content().multilineTextAlignment(.trailing) }
+        VStack(alignment: .leading, spacing: Spacing.tight) {
+            Text(title).font(Typeface.caption).foregroundStyle(Dungeon.muted)
+            content()
+        }
+        .padding(.vertical, Spacing.tight)
     }
 
     // MARK: Checking
@@ -441,24 +537,42 @@ struct PocketEditor: View {
     private func save() {
         guard canSave else { return }
         let service = PocketService(baseURL: address.trimmed, model: model.trimmed, name: address.trimmed.isEmpty ? nil : matched?.name)
-        let made = servers.filter { !$0.isBlank }.map { draft in
-            let url = draft.url.trimmed
-            let kept = draft.savedFor != nil && draft.savedFor == Self.host(url)
-            let hasValue = !draft.value.isEmpty || kept
-            let server = PocketServer(id: draft.id, name: draft.name.trimmed.isEmpty ? Self.host(url) ?? url : draft.name.trimmed, url: url,
-                                      header: hasValue ? (draft.header.trimmed.isEmpty ? "Authorization" : draft.header.trimmed) : nil)
-            return (draft, server)
-        }
+        /// A header to keep: its name and the value to store now, or the saved one under `from`.
+        struct Plan { var name: String; var typed: String; var from: String? }
         let id = editing ?? look.id
+        let made: [(ServerDraft, PocketServer, [Plan])] = servers.filter { !$0.isBlank }.map { draft in
+            let url = draft.url.trimmed
+            let hostKept = draft.savedFor != nil && draft.savedFor == Self.host(url)
+            var seen: Set<String> = []
+            var plans: [Plan] = []
+            for header in draft.headers {
+                let kept = hostKept && header.savedName != nil
+                guard !header.value.isEmpty || kept else { continue }
+                let name = header.name.trimmed.isEmpty ? "Authorization" : header.name.trimmed
+                guard plans.count < PocketServer.maxHeaders, seen.insert(name.lowercased()).inserted else { continue }
+                plans.append(Plan(name: name, typed: header.value, from: kept ? header.savedName : nil))
+            }
+            let server = PocketServer(id: draft.id, name: draft.name.trimmed.isEmpty ? Self.host(url) ?? url : draft.name.trimmed, url: url,
+                                      headers: plans.map(\.name))
+            return (draft, server, plans)
+        }
         let words = personality.trimmed.isEmpty ? Persona.pocket(named: name.trimmed) : personality.trimmed
         // The secrets first: if the Keychain won't keep them, nothing is saved and you are told.
         let secrets = pocket.secrets
         do {
             if !key.isEmpty { try secrets.set(key, .apiKey, imp: id) }
             else if !keyKept { secrets.remove(.apiKey, imp: id) }
-            for (draft, server) in made {
-                if !draft.value.isEmpty { try secrets.set(draft.value, .header(server.id), imp: id) }
-                else if server.header == nil { secrets.remove(.header(server.id), imp: id) }
+            for (_, server, plans) in made {
+                for plan in plans {
+                    if !plan.typed.isEmpty {
+                        try secrets.set(plan.typed, .header(server.id, plan.name), imp: id)
+                    } else if let old = plan.from, old.lowercased() != plan.name.lowercased(),
+                              let value = secrets.get(.header(server.id, old), imp: id) {
+                        // A saved value under a header that was renamed moves with it.
+                        try secrets.set(value, .header(server.id, plan.name), imp: id)
+                        secrets.remove(.header(server.id, old), imp: id)
+                    }
+                }
             }
         } catch {
             saveProblem = String(localized: "Imp couldn't keep the keys safely. \(error.localizedDescription)")
@@ -535,6 +649,7 @@ private struct ModelPicker: View {
                         IssueBadge(text: failure)
                     } actions: {
                         Button("Try Again") { Task { await load() } }
+                            .buttonStyle(.primary)
                     }
                 } else if models == nil {
                     ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -542,8 +657,13 @@ private struct ModelPicker: View {
                     ContentUnavailableView(query.isEmpty ? "No models found" : "No match", systemImage: "magnifyingglass")
                 } else {
                     List(shown, id: \.self) { id in
-                        Button { pick(id); dismiss() } label: { Text(verbatim: id).foregroundStyle(Dungeon.cream) }
-                            .listRowBackground(Dungeon.card)
+                        Button { pick(id); dismiss() } label: {
+                            Text(verbatim: id).font(Typeface.mono).foregroundStyle(Dungeon.cream)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .impListRow()
                     }
                     .scrollContentBackground(.hidden)
                 }
@@ -553,8 +673,10 @@ private struct ModelPicker: View {
             .textInputAutocapitalization(.never)
             .navigationTitle("Models")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.buttonStyle(.automatic) } }
         }
+        .impControls(tint: Dungeon.ember)
+        .tipHost()
         .task { await load() }
     }
 

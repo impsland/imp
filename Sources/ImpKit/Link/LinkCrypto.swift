@@ -7,7 +7,6 @@ import Security
 /// the TLS settings, the proofs that tie a handshake to its own connection, and tickets.
 public enum LinkCrypto {
     public static let keyBytes = 32
-    public static let ticketBytes = 32
 
     // MARK: Keys
 

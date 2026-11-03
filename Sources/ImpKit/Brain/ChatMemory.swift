@@ -16,7 +16,9 @@ public struct ChatMemory: Codable, Equatable, Sendable {
     /// Exchanges kept at most (older ones go: nothing sends them any more). As many as the longest
     /// "Remembers" choice, so whatever is picked there is really sent, and a recap sees all of it.
     public static let storedExchanges = 1_000
-    /// The "Remembers" choices (exchanges sent with each message).
+    /// "Remembers" with no limit: every exchange kept (up to `storedExchanges`) is sent. The default.
+    public static let noLimit = Int.max
+    /// The "Remembers" choices (exchanges sent with each message), besides no limit.
     public static let choices = [5, 10, 20, 50, 100, 200, 500, 1_000]
     /// A tool result longer than this is clipped when it's remembered (the model saw it whole
     /// when it called the tool; later turns rarely need every byte of a file it read).
@@ -108,6 +110,10 @@ public struct Chat: Codable, Equatable, Identifiable, Sendable {
     public var memory: ChatMemory
     /// The Imp this chat is with, when it's where two Imps talk (nil: a chat with you).
     public var peer: UUID?
+    /// The long-chat notice (see `ChatHistory.checkContext`) was raised for this chat, and whether
+    /// you waved it away. Optional, so chats saved before they existed still load.
+    public var contextNoticed: Bool?
+    public var contextDismissed: Bool?
 
     public init(id: UUID = UUID(), title: String = "", created: Date = Date(), turns: [ChatTurn] = [], memory: ChatMemory = ChatMemory(),
                 peer: UUID? = nil) {

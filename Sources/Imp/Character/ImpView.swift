@@ -43,9 +43,9 @@ struct ImpView: View {
             // Another Imp is on stage: watch it.
             cue.gaze = Gaze.toward(friend, from: model.impCenter)
             cue.attentive = true
-        } else {
+        } else if model.profile.follow.eyesFollow {
             cue.gaze = Gaze.toward(NSEvent.mouseLocation, from: model.impCenter)
-        }
+        }                                                       // off: it looks straight ahead
         return cue
     }
 }

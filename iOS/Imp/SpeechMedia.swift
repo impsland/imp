@@ -1,4 +1,5 @@
 import AVKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -127,7 +128,7 @@ struct BubbleVideo: View {
     var body: some View {
         Group {
             if let clip {
-                VideoPlayer(player: clip.player)
+                PlayerSurface(player: clip.player)
                     .aspectRatio(16 / 9, contentMode: .fit)
                     .frame(maxWidth: .infinity)
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))

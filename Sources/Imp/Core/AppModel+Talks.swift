@@ -24,3 +24,14 @@ extension AppModel {
         return samples + found
     }
 }
+
+extension AppModel {
+    /// One of an Imp's chats, whole: live if it's out, else from its file (read off the main actor).
+    /// Offscreen renders and tests never read the user's chats.
+    func chat(_ id: UUID, of impID: UUID) async -> Chat? {
+        if let live = imp(impID) { return live.history.chat(id) }
+        guard persists else { return nil }
+        let folder = ChatHistory.folder(for: impID)
+        return await Task.detached(priority: .userInitiated) { ChatHistory(folder: folder).chat(id) }.value
+    }
+}

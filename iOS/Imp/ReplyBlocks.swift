@@ -1,4 +1,5 @@
 import AVKit
+import ImpDesign
 import ImpKit
 import QuickLook
 import SwiftUI
@@ -22,6 +23,30 @@ struct ReplyBlocks: View {
         }
         .textSelection(.enabled)
         .tint(Dungeon.flame)
+        // A link to a file (a document, a sheet, anything Quick Look shows) is fetched from its home, then previewed.
+        .environment(\.openURL, OpenURLAction { url in
+            guard !LinkFiles.isWeb(url.absoluteString), url.scheme == nil || WorkspaceReference.isReference(url.absoluteString) else {
+                return .systemAction
+            }
+            open(file: url.absoluteString)
+            return .handled
+        })
+        .quickLookPreview($preview)
+        .alert("This file can't be opened", isPresented: Binding(get: { problem != nil }, set: { if !$0 { problem = nil } })) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(problem ?? "")
+        }
+    }
+
+    @State private var preview: URL?
+    @State private var problem: String?
+
+    private func open(file ref: String) {
+        Task {
+            do { preview = try await hub.files.file(imp: imp.id, ref: ref) }
+            catch { problem = error.localizedDescription }
+        }
     }
 
     @ViewBuilder private func view(for block: MarkdownBlock) -> some View {
@@ -117,7 +142,9 @@ private struct FileStatus: View {
             if case .failed(let why) = file.state {
                 IssueBadge(text: why)
                 Button(action: retry) { Image(systemName: "arrow.clockwise").font(.system(size: 15, weight: .semibold)) }
+                    .buttonStyle(.plain)
                     .foregroundStyle(Dungeon.flame).accessibilityLabel("Try Again")
+                    .frame(minWidth: Sizing.hit, minHeight: Sizing.hit).contentShape(Rectangle())
             }
         }
         .padding(12)
@@ -215,12 +242,13 @@ private struct AudioBlock: View {
                             .background(Circle().fill(LinearGradient(colors: [Dungeon.flame, Dungeon.ember], startPoint: .top, endPoint: .bottom)))
                             .contentTransition(.symbolEffect(.replace))
                     }
+                    .buttonStyle(.plain)
                     .accessibilityLabel(player.isPlaying ? "Pause" : "Play")
                     VStack(alignment: .leading, spacing: 4) {
                         Text(title.isEmpty ? url.deletingPathExtension().lastPathComponent : title)
                             .font(.system(.subheadline, design: .rounded, weight: .medium)).foregroundStyle(Dungeon.cream).lineLimit(1)
                         Slider(value: Binding(get: { player.progress }, set: { player.seek(to: $0, url: url) }))
-                            .tint(Dungeon.ember)
+                            .impSlider()
                             .controlSize(.mini)
                         HStack {
                             Text(PlayerModel.clock(player.elapsed))
@@ -374,7 +402,7 @@ private struct VideoBlock: View {
         Group {
             if let clip {
                 // Playing it (its own controls) pauses whatever else talks.
-                VideoPlayer(player: clip.player)
+                PlayerSurface(player: clip.player)
                     .aspectRatio(16 / 9, contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                     .contextMenu {

@@ -1,4 +1,5 @@
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -125,8 +126,8 @@ struct ServerEditor: View {
                 }
             }
             .padding(14)
-            .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Dungeon.card))
-            .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Dungeon.cardEdge))
+            .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Dungeon.card))
+            .overlay(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).strokeBorder(Dungeon.cardEdge))
         } footer: {
             Button("Test") { Task { await test() } }.buttonStyle(.secondary).disabled(testing || !isValid)
             if testing { ProgressView().controlSize(.small) }

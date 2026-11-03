@@ -79,20 +79,61 @@ private struct LoadedMedia: View {
                          seek: { media?.seek(to: $0) }) { media?.toggle() }
             case .video:
                 VideoFrame {
-                    if let media, !media.failed { VideoPlayer(player: media.player) }
-                    else { Color.black.opacity(0.15).overlay { if media?.failed == true { Unplayable(title: title) } } }
+                    if let media, !media.failed { PlayerSurface(player: media.player) }
+                    else { Color.black.opacity(0.15).overlay { if let media, media.failed { Unplayable(title: title, missing: media.missing) } } }
                 }
             }
         }
     }
 }
 
+/// AppKit's own player view, with its standard controls. SwiftUI's `VideoPlayer` is not used: it
+/// lives in an overlay framework that needs AVKit already loaded, and an app that names no AVKit
+/// type of its own isn't linked to AVKit, so the first video stopped the app.
+struct PlayerSurface: NSViewRepresentable {
+    let player: AVPlayer
+
+    func makeNSView(context: Context) -> AVPlayerView {
+        let view = ScrollThroughPlayerView()
+        view.controlsStyle = .inline
+        view.videoGravity = .resizeAspect
+        view.player = player
+        return view
+    }
+
+    func updateNSView(_ view: AVPlayerView, context: Context) {
+        if view.player !== player { view.player = player }
+    }
+
+    static func dismantleNSView(_ view: AVPlayerView, coordinator: ()) {
+        view.player = nil
+    }
+}
+
+/// A player that leaves the scroll wheel to the chat around it. `AVPlayerView` turns scrolling
+/// into seeking, so scrolling past a video jumped through it. Its timeline still seeks.
+final class ScrollThroughPlayerView: AVPlayerView {
+    override func scrollWheel(with event: NSEvent) {
+        if let next = nextResponder { next.scrollWheel(with: event) }
+    }
+}
+
 /// A video (or a sound in a video's place) that can't be played: the file is missing or not media.
 private struct Unplayable: View {
     let title: String
+    var missing = false
+
+    private var text: String {
+        switch (missing, title.isEmpty) {
+        case (true, true): String(localized: "This file isn't there any more.")
+        case (true, false): String(localized: "\(title) isn't there any more.")
+        case (false, true): String(localized: "Can't play this")
+        case (false, false): String(localized: "Can't play \(title)")
+        }
+    }
 
     var body: some View {
-        Label(title.isEmpty ? "Can't play this" : "Can't play \(title)", systemImage: "exclamationmark.triangle")
+        Label(text, systemImage: "exclamationmark.triangle")
             .font(.system(size: 11)).foregroundStyle(.secondary)
             .padding(8)
     }
@@ -249,6 +290,8 @@ final class Media {
     var owner: String? { slot?.owner }
     /// The file is missing or isn't something AVFoundation plays.
     private(set) var failed = false
+    /// It failed because the file on this Mac isn't there.
+    let missing: Bool
     /// "0:12 / 0:45" (just the elapsed time until the length is known).
     private(set) var time: String?
     /// 0…1 of the way through (0 until the length is known).
@@ -265,6 +308,8 @@ final class Media {
     init(url: URL, kind: MarkdownBlock.MediaKind, slot: Slot?) {
         self.slot = slot
         self.kind = kind
+        missing = url.isFileURL && !FileManager.default.fileExists(atPath: url.path)
+        failed = missing
         let item = AVPlayerItem(url: url)
         player = AVPlayer(playerItem: item)
         player.actionAtItemEnd = .pause

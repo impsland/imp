@@ -1,0 +1,84 @@
+{
+  "description": "Tool ids and which tools are offered. An id is own.<group>.<tool> for a built-in tool and mcp.<server>.<tool> for a tool of an MCP server, where <server> is the server's name with anything outside letters, digits, underscore and hyphen turned into an underscore. A group id is the id without its last part. A tool is offered when neither its group nor its id is switched off. A tool without an id is never switched off. Calling a tool that is not offered is refused.",
+  "ids": [
+    { "kind": "own", "group": "body", "tool": "imp_speak", "id": "own.body.imp_speak", "groupID": "own.body" },
+    { "kind": "own", "group": "den", "tool": "den_search", "id": "own.den.den_search", "groupID": "own.den" },
+    { "kind": "mcp", "server": "files", "tool": "read_file", "id": "mcp.files.read_file", "groupID": "mcp.files" },
+    { "kind": "mcp", "server": "My Speech!", "tool": "say.text", "id": "mcp.My_Speech_.say.text", "groupID": "mcp.My_Speech_" }
+  ],
+  "cases": [
+    {
+      "name": "nothing switched off",
+      "tools": [
+        { "id": "own.body.imp_speak", "name": "imp_speak", "group": "own.body" },
+        { "id": "mcp.files.read_file", "name": "files__read_file", "group": "mcp.files" },
+        { "name": "shell" }
+      ],
+      "groupsOff": [],
+      "toolsOff": [],
+      "offered": ["imp_speak", "files__read_file", "shell"]
+    },
+    {
+      "name": "one tool off",
+      "tools": [
+        { "id": "own.body.imp_speak", "name": "imp_speak", "group": "own.body" },
+        { "id": "own.body.imp_move", "name": "imp_move", "group": "own.body" },
+        { "name": "shell" }
+      ],
+      "groupsOff": [],
+      "toolsOff": ["own.body.imp_speak"],
+      "offered": ["imp_move", "shell"]
+    },
+    {
+      "name": "a whole group off",
+      "tools": [
+        { "id": "own.body.imp_speak", "name": "imp_speak", "group": "own.body" },
+        { "id": "own.body.imp_move", "name": "imp_move", "group": "own.body" },
+        { "id": "own.senses.mac_status", "name": "mac_status", "group": "own.senses" }
+      ],
+      "groupsOff": ["own.body"],
+      "toolsOff": [],
+      "offered": ["mac_status"]
+    },
+    {
+      "name": "the duplicate speech server off, the built-in speech kept",
+      "tools": [
+        { "id": "own.body.imp_speak", "name": "imp_speak", "group": "own.body" },
+        { "id": "mcp.speech.say", "name": "speech__say", "group": "mcp.speech" },
+        { "id": "mcp.speech.voices", "name": "speech__voices", "group": "mcp.speech" }
+      ],
+      "groupsOff": ["mcp.speech"],
+      "toolsOff": [],
+      "offered": ["imp_speak"]
+    },
+    {
+      "name": "one tool of a server off",
+      "tools": [
+        { "id": "mcp.files.read_file", "name": "files__read_file", "group": "mcp.files" },
+        { "id": "mcp.files.write_file", "name": "files__write_file", "group": "mcp.files" }
+      ],
+      "groupsOff": [],
+      "toolsOff": ["mcp.files.write_file"],
+      "offered": ["files__read_file"]
+    },
+    {
+      "name": "a tool id that matches nothing changes nothing",
+      "tools": [
+        { "id": "own.body.imp_speak", "name": "imp_speak", "group": "own.body" }
+      ],
+      "groupsOff": ["own.nothing"],
+      "toolsOff": ["own.body.imp_sing"],
+      "offered": ["imp_speak"]
+    },
+    {
+      "name": "everything off",
+      "tools": [
+        { "id": "own.body.imp_speak", "name": "imp_speak", "group": "own.body" },
+        { "id": "mcp.files.read_file", "name": "files__read_file", "group": "mcp.files" }
+      ],
+      "groupsOff": ["own.body", "mcp.files"],
+      "toolsOff": [],
+      "offered": []
+    }
+  ]
+}

@@ -30,10 +30,12 @@ install: app
 	rm -rf /Applications/Imp.app && cp -R build/Imp.app /Applications/ && open /Applications/Imp.app
 
 # The iPhone app (iOS/): regenerates its Xcode project (XcodeGen) and builds it for the Simulator.
+# Xcode's note that the placeholder device has no iOS version is noise, so that one line is dropped.
 ios:
 	cd iOS && xcodegen generate
-	xcodebuild -project iOS/ImpPhone.xcodeproj -scheme ImpPhone -destination 'generic/platform=iOS Simulator' \
-		-derivedDataPath .build/ios CODE_SIGNING_ALLOWED=NO -quiet build
+	set -o pipefail; xcodebuild -project iOS/ImpPhone.xcodeproj -scheme ImpPhone -destination 'generic/platform=iOS Simulator' \
+		-derivedDataPath .build/ios CODE_SIGNING_ALLOWED=NO -quiet build 2>&1 \
+		| { grep -v 'IDESchemeActionsInvocationRecord' || true; }
 
 # Sends the iPhone app to your iPhone: builds it signed, installs it on the connected phone and opens it.
 # DEVICE=<name or UDID> picks one of several phones, TEAM=<Team ID> signs with another team, CONFIG=Debug for a debug build.

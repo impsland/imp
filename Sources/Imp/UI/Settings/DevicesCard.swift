@@ -1,10 +1,11 @@
 import AppKit
 import CoreImage.CIFilterBuiltins
+import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// Settings › App › Devices: this Mac's code, the devices it is linked with, and the server that lets
-/// them find each other from anywhere.
+/// Settings › Devices: this Mac's code, the devices it is linked with, and the server that lets
+/// them find each other from anywhere. The map above it shows the same devices as a picture.
 struct DevicesCard: View {
     let model: AppModel
     @State private var showingCode = false
@@ -14,7 +15,7 @@ struct DevicesCard: View {
     private var link: DeviceLink { model.link }
 
     var body: some View {
-        Card("Devices", icon: "iphone.gen3",
+        Card("Link devices", icon: "iphone.gen3",
              info: "Link this Mac with your iPhone or another Mac. Throw an Imp hard at the left or right side of your screen and it flies onto a linked device. It still thinks on this Mac: chat with it there, and throw it back. Mark a device as yours (Mine) and the Imps on it may use their tools on this Mac. Others can only talk.") {
             Row("This Mac's code", info: "Shows a code for another device to scan. Each scan links that device with this Mac.") {
                 Button { showingCode = true } label: { Label("Show Code…", systemImage: "qrcode") }
@@ -35,12 +36,14 @@ struct DevicesCard: View {
                             .foregroundStyle(Dungeon.muted)
                             .accessibilityHidden(true)
                         switch peer.reach {
-                        case .direct: StatusText(text: "Connected", symbol: "circle.fill", color: .green)
-                        case .viaServer: StatusText(text: "Via the server", symbol: "circle.fill", color: .green)
+                        case .direct: StatusText(text: "Connected on the local network", symbol: "circle.fill", color: .green)
+                        case .viaServer:
+                            StatusText(verbatim: ImpServer(model.prefs.server).map { String(localized: "Connected through \($0.hopHost)") }
+                                       ?? String(localized: "Connected through the server"), symbol: "circle.fill", color: .green)
                         case .away: StatusText(text: "Away", symbol: "circle.fill", color: Dungeon.muted)
                         }
                         Toggle("Mine", isOn: Binding(get: { peer.isTrusted }, set: { link.setTrusted(peer.id, $0) }))
-                            .toggleStyle(.switch).controlSize(.small)
+                            .toggleStyle(.impSwitch).fixedSize()
                             .help("Trust: Imps visiting it may use their tools on this Mac, and it may fetch files they mention.")
                         InfoTip("Switch on only for your own devices. A device that isn't yours can still chat with the Imps it holds, but they answer without their tools (no commands, no control of this Mac), and it only gets files from the Imp's own folder.")
                         Button(role: .destructive) { forgetting = peer } label: { Label("Forget…", systemImage: "xmark.circle") }
@@ -247,8 +250,8 @@ struct PairingSheet: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(14)
-            .background(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).fill(Dungeon.card))
-            .overlay(RoundedRectangle(cornerRadius: Metrics.corner, style: .continuous).strokeBorder(Dungeon.cardEdge))
+            .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Dungeon.card))
+            .overlay(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).strokeBorder(Dungeon.cardEdge))
         } footer: {
             Button {
                 guard let invite else { return }

@@ -23,8 +23,7 @@ import Foundation
 ///   `KitError.newerVersion` ("update Imp"), rather than half-reading it.
 /// - Adding a field, or an optional section, is not a new version: readers ignore keys they don't know,
 ///   and a missing one takes its default. Only a change older readers would misread (a field that means
-///   something else, a required one) bumps `currentVersion`; `migrate(_:from:)` then upgrades what older
-///   versions wrote, as JSON, before it's read, so the reader only ever deals with the newest shape.
+///   something else, a required one) bumps `currentVersion`.
 /// - `"app"` is the version of Imp that wrote the file. Informational: nothing reads it.
 public struct Kit: Equatable, Sendable {
     public static let currentVersion = 3
@@ -72,13 +71,6 @@ public struct Kit: Equatable, Sendable {
         return servers.filter { !used.contains($0.id) }
     }
 
-    /// Upgrades a kit written in an older format to the current one, before it's read. Version 2 only
-    /// added `imps` and 3 `animations` and `traits`, so there's nothing to rewrite yet. A future breaking change adds its step here,
-    /// one version at a time (`if version < 3 { … }`).
-    static func migrate(_ json: JSONValue, from version: Int) -> JSONValue {
-        json
-    }
-
     // MARK: Reading
 
     /// A kit from pasted or downloaded text. Throws when the text isn't a kit at all; items that
@@ -118,11 +110,10 @@ public struct Kit: Equatable, Sendable {
     }
 
     private static func envelope(_ original: JSONValue) throws -> Kit {
-        var json = original
+        let json = original
         if let version = json["imp"] {
             guard let v = version.int, v >= 1 else { throw KitError.notAKit }
             guard v <= currentVersion else { throw KitError.newerVersion(v) }
-            json = migrate(json, from: v)
         }
         var kit = Kit(name: json["name"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
                       about: json["about"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
@@ -412,7 +403,7 @@ extension Trigger {
     var kitJSON: JSONValue {
         var o: [String: JSONValue] = ["kind": .string(kind.rawValue)]
         switch kind {
-        case .clicks, .battery, .every, .back, .busy:
+        case .clicks, .battery, .every, .back, .busy, .idle:
             if let number { o["number"] = .number(Double(number)) }
         case .charger, .offline:
             if let flag { o["flag"] = .bool(flag) }
@@ -422,7 +413,7 @@ extension Trigger {
             o["text"] = .string(Self.clock(minuteOfDay))
         case .hours:
             o["text"] = .string(Self.clock(minuteOfDay) + "-" + Self.clock(endMinute))
-        case .keys, .wake, .start, .hot:
+        case .keys, .wake, .start, .hot, .enter, .leave:
             break
         }
         return .object(o)
@@ -438,6 +429,7 @@ extension Shortcut {
         if !conditions.isEmpty { o["only_if"] = .array(conditions.map(\.kitJSON)) }
         if command != .ask { o["do"] = .string(command.rawValue) }
         if !prompt.isEmpty { o["prompt"] = .string(prompt) }
+        if let animation { o["animation"] = .string(animation.key) }
         return .object(o)
     }
 

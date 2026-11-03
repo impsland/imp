@@ -65,8 +65,7 @@ final class AppModel {
     init(persist: Bool = true) {
         store = persist ? PreferencesStore() : nil
         assistant = Assistant(usesKeychain: persist)
-        var loaded = store?.load() ?? ImpPreferences()
-        loaded.upgrade()
+        let loaded = store?.load() ?? ImpPreferences()
         prefs = loaded
         store?.save(loaded)
         syncTroupe()
@@ -100,7 +99,7 @@ final class AppModel {
         // Ask the user's shell for its PATH now, so the first tool server or command doesn't wait.
         Task.detached(priority: .utility) { _ = await LoginEnvironment.resolved() }
         Self.applyAppearance(prefs.appearance)
-        assistant.configure(ai: prefs.ai, servers: prefs.liveServers, keychain: prefs.keysInKeychain)
+        assistant.configure(ai: prefs.ai, servers: prefs.liveServers, keychain: prefs.keysInKeychain, limits: prefs.requests)
         reactions.apply(prefs)
         HotkeyCenter.shared.install()
         registerHotkeys()
@@ -116,6 +115,19 @@ final class AppModel {
         Task { [weak self] in
             try? await Task.sleep(for: .seconds(2))
             self?.fire(.start)
+        }
+    }
+
+    /// Something happened to `imp`'s body (left alone for a while, the cursor came close or went
+    /// away). Triggers that act on the body run at once, with no brain. The ones that ask the model
+    /// wait their turn, as for any other event.
+    func fireBody(_ event: MacEvent, on imp: ImpModel) {
+        for s in prefs.bodyShortcuts(of: imp.id, on: event, in: senses.state) {
+            if s.runsLocally { imp.runLocal(s); continue }
+            guard !isHidden, Date().timeIntervalSince(lastFired[s.id] ?? .distantPast) >= Self.rest,
+                  imp.isAvailable, !hiddenImps.contains(imp.id), !isAway(imp.id) else { continue }
+            lastFired[s.id] = Date()
+            imp.perform(s, happened: event.description)
         }
     }
 
@@ -143,7 +155,7 @@ final class AppModel {
         if p.liveShortcuts.map(\.keys) != old.liveShortcuts.map(\.keys) { registerHotkeys() }
         if p.appearance != old.appearance { Self.applyAppearance(p.appearance) }
         if p.watchesCursor != old.watchesCursor { reactions.apply(p) }
-        assistant.configure(ai: p.ai, servers: p.liveServers, keychain: p.keysInKeychain)
+        assistant.configure(ai: p.ai, servers: p.liveServers, keychain: p.keysInKeychain, limits: p.requests)
         if p.imps != old.imps {
             noticeFavoriteColors(p.imps, before: old.imps)
             syncTroupe()
@@ -493,7 +505,12 @@ final class AppModel {
         let troupe = withObservationTracking {
             imps.map { imp in
                 let p = imp.profile
-                return BridgeImp(name: p.name, hue: p.hue, scale: p.scale, traits: p.traits, mood: (imp.activity?.mood ?? .idle).rawValue, away: p.awayOn != nil)
+                let mood = (imp.activity?.mood ?? .idle).rawValue
+                let device = p.awayOn
+                let status = BridgeStatus.of(mood: mood, hasWork: imp.work != nil, away: device != nil,
+                                             deviceReachable: device.map { link.isConnected($0) } ?? true)
+                return BridgeImp(name: p.name, hue: p.hue, scale: p.scale, traits: p.traits, mood: mood, away: device != nil,
+                                 status: status, device: device.flatMap { link.name(of: $0) })
             }
         } onChange: { [weak self] in
             Task { @MainActor in self?.tellBrowser() }

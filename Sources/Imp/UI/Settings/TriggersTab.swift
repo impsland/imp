@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -31,7 +32,7 @@ struct TriggersTab: View {
         // filled from a kit. (Two cards with the kit buttons on only one left people wondering what
         // "Shared" was, and how to share or import those.)
         Card("Triggers", icon: "bolt.fill",
-             info: "When something happens, the Imp gets your instruction and what happened, then decides what to do. Keys work anywhere on your Mac. You can also ask \(name) to set one up.") {
+             info: "When something happens, the Imp gets your instruction and what happened, then decides what to do. Keys work anywhere on your Mac. Falling asleep when left alone and waking when the cursor comes close are triggers too: change their times and animations, or switch them off. You can also ask \(name) to set one up.") {
             HStack(spacing: 8) {
                 if copied { StatusText(text: "Kit copied", symbol: "checkmark.circle.fill", color: .green) }
                 if model.profile(id)?.isActive == false && !mine.isEmpty {

@@ -1,5 +1,5 @@
 // Live Hop (opt-in): Link nodes whose only route to each other is a running Hop, over TCP.
-//   cd server && cargo run -p hop &                      (listens on HOP_ADDR, 0.0.0.0:4677 by default)
+//   cd server && cargo run -p imp-hop &                  (listens on HOP_ADDR, 0.0.0.0:4677 by default)
 //   IMP_HOP=127.0.0.1:4677 swift test --skip-build --filter HopLiveTests
 // The nodes have no host names and no Bonjour, so a guest can only reach its host through the Hop.
 // The Hop limits each address to 30 new connections a minute by default; repeated runs against one Hop need

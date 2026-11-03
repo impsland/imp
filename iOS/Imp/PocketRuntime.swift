@@ -34,7 +34,9 @@ final class PocketRuntime {
 
     @ObservationIgnored var onEvent: ((StageEvent) -> Void)?
     @ObservationIgnored private let hub: LinkHub
-    @ObservationIgnored private let brain: PocketBrain
+    @ObservationIgnored private var brain: PocketBrain
+    /// How long a request may take and how it is retried. Kept in UserDefaults (`RequestLimits.Key`).
+    private(set) var limits = RequestLimits.stored()
     @ObservationIgnored private var running: [UUID: Task<Void, Never>] = [:]
     @ObservationIgnored private var waiting: [UUID: [Job]] = [:]
     @ObservationIgnored private var queuedBy: [UUID: Int] = [:]
@@ -47,8 +49,21 @@ final class PocketRuntime {
     init(hub: LinkHub, store: PocketStore = PocketStore()) {
         self.hub = hub
         self.store = store
-        brain = PocketBrain(secrets: store.secrets)
+        brain = PocketBrain(secrets: store.secrets, limits: RequestLimits.stored())
         hub.onPocket = { [weak self] in self?.heard($0) }
+    }
+
+    /// Keeps new request limits and uses them from the next request on, no restart needed.
+    func setLimits(_ new: RequestLimits) {
+        let clamped = new.clamped
+        guard clamped != limits else { return }
+        limits = clamped
+        let defaults = UserDefaults.standard
+        defaults.set(clamped.timeoutSeconds, forKey: RequestLimits.Key.timeout)
+        defaults.set(clamped.retries, forKey: RequestLimits.Key.retries)
+        defaults.set(clamped.retryDelaySeconds, forKey: RequestLimits.Key.delay)
+        defaults.set(clamped.backoff, forKey: RequestLimits.Key.backoff)
+        brain = PocketBrain(secrets: store.secrets, limits: clamped)
     }
 
     // MARK: The Imps

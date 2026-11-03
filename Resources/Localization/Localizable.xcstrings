@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     "%@ (now %@)" : {
       "localizations" : {
         "en" : {
@@ -19,6 +22,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@（现为 %@）"
+          }
+        }
+      }
+    },
+    "%@ (this Mac)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (este Mac)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@（这台 Mac）"
           }
         }
       }
@@ -55,6 +74,22 @@
         }
       }
     },
+    "%@ can control your Mac: it takes screenshots and clicks and types in other apps." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ puede controlar tu Mac: hace capturas de pantalla, hace clic y escribe en otras apps."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 可以控制你的 Mac：它会截屏，并在其他 App 中点击和输入。"
+          }
+        }
+      }
+    },
     "%@ can do this" : {
       "localizations" : {
         "es" : {
@@ -83,6 +118,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 可以运行命令"
+          }
+        }
+      }
+    },
+    "%@ can run commands on your Mac." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ puede ejecutar comandos en tu Mac."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 可以在你的 Mac 上运行命令。"
           }
         }
       }
@@ -259,6 +310,28 @@
         }
       }
     },
+    "%@ gets these tools: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ gets these tools: %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ recibe estas herramientas: %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 获得这些工具：%2$@"
+          }
+        }
+      }
+    },
     "%@ goes back into the Imps' window, and its triggers rest." : {
       "localizations" : {
         "es" : {
@@ -293,6 +366,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 有自己的模型。%@ 上的其他 Imp 使用 %@。"
+          }
+        }
+      }
+    },
+    "%@ has no brain yet. Open its settings, choose the Brain tab and pick an AI service and a model." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ aún no tiene cerebro. Abre sus ajustes, elige la pestaña Cerebro y escoge un servicio de IA y un modelo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 还没有大脑。打开它的设置，选择“大脑”标签，然后选一个 AI 服务和模型。"
           }
         }
       }
@@ -593,6 +682,22 @@
         }
       }
     },
+    "%@ isn't there any more." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ya no está."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 已经不在了。"
+          }
+        }
+      }
+    },
     "%@ key" : {
       "localizations" : {
         "es" : {
@@ -621,6 +726,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 需要大脑才能对话。点按进行设置。"
+          }
+        }
+      }
+    },
+    "%@ on %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ on %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ en %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 在 %2$@"
           }
         }
       }
@@ -717,6 +844,22 @@
         }
       }
     },
+    "%@ s" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ s"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 秒"
+          }
+        }
+      }
+    },
     "%@ sums up this chat and remembers only the recap and the last exchange. The whole chat stays to read. Use it when a chat grows too long; recap again as often as you like." : {
       "localizations" : {
         "es" : {
@@ -729,6 +872,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 会总结这段聊天，只记住总结和最后一轮对话。完整聊天仍可阅读。聊天过长时使用；可以随时再次总结。"
+          }
+        }
+      }
+    },
+    "%@ to %@, %@, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ to %2$@, %3$@, %4$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ a %2$@, %3$@, %4$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 到 %2$@，%3$@，%4$@"
           }
         }
       }
@@ -835,6 +1000,28 @@
         }
       }
     },
+    "%@'s side of the talk and its memory of it are gone for good. %@ keeps its own." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@'s side of the talk and its memory of it are gone for good. %2$@ keeps its own."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La parte de %1$@ en la charla y su recuerdo de ella se pierden para siempre. %2$@ conserva la suya."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 这一边的对话及其记忆将永久消失。%2$@ 会保留自己的那一份。"
+          }
+        }
+      }
+    },
     "%@'s triggers" : {
       "localizations" : {
         "es" : {
@@ -905,6 +1092,28 @@
         }
       }
     },
+    "%@, on %@. Tools: %@. Talks to: %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, on %2$@. Tools: %3$@. Talks to: %4$@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, en %2$@. Herramientas: %3$@. Habla con: %4$@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@，在 %2$@。工具：%3$@。可交谈对象：%4$@。"
+          }
+        }
+      }
+    },
     "%@, on your iPhone" : {
       "localizations" : {
         "es" : {
@@ -939,6 +1148,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@，来自 %2$@ 的访客"
+          }
+        }
+      }
+    },
+    "%lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
           }
         }
       }
@@ -1527,6 +1752,22 @@
         }
       }
     },
+    "%lld installs" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld instalaciones"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 次安装"
+          }
+        }
+      }
+    },
     "%lld messages" : {
       "localizations" : {
         "en" : {
@@ -1569,6 +1810,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 条消息"
+          }
+        }
+      }
+    },
+    "%lld min" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld min"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 分钟"
           }
         }
       }
@@ -1715,6 +1972,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "百分之 %lld"
+          }
+        }
+      }
+    },
+    "%lld s" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld s"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 秒"
           }
         }
       }
@@ -1965,6 +2238,38 @@
         }
       }
     },
+    "%lldM" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lldM"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lldM"
+          }
+        }
+      }
+    },
+    "%lldk" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lldk"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lldk"
+          }
+        }
+      }
+    },
     "**Open** Imp on your other device" : {
       "localizations" : {
         "es" : {
@@ -2121,6 +2426,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "专属对话"
+          }
+        }
+      }
+    },
+    "A chat that grows this long gets one gentle suggestion to recap it or start a new chat. Nothing is cut or blocked. The size is an estimate of what an Imp sends with each message, about four characters per token." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando un chat llega a este tamaño, recibes una sugerencia amable para resumirlo o empezar un chat nuevo. No se corta ni se bloquea nada. El tamaño es una estimación de lo que un Imp envía con cada mensaje, unos cuatro caracteres por token."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对话增长到这个长度时，你会收到一次温和的提示，建议总结或开始新对话。不会截断或阻止任何内容。这个大小是对 Imp 每条消息所发送内容的估算，约每个 token 四个字符。"
           }
         }
       }
@@ -2285,6 +2606,22 @@
         }
       }
     },
+    "A message sent within this time of the last one between two Imps continues their conversation. Later ones start a new one." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un mensaje enviado dentro de este tiempo desde el último entre dos Imps continúa su conversación. Los posteriores empiezan una nueva."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "两个 Imp 之间，在上一条消息之后这段时间内发送的消息会延续原来的对话。更晚的消息会开始新的对话。"
+          }
+        }
+      }
+    },
     "A move played across the whole beat. Give it time: a spin or a flip looks best at 0.8 s or more." : {
       "localizations" : {
         "es" : {
@@ -2377,6 +2714,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开心地快速扭一扭。"
+          }
+        }
+      }
+    },
+    "A request that hasn't finished after this long ends with a message instead of waiting on." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una petición que no ha terminado tras este tiempo acaba con un mensaje en lugar de seguir esperando."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "超过这个时间还没完成的请求会结束并给出提示，而不是一直等下去。"
           }
         }
       }
@@ -2729,6 +3082,22 @@
         }
       }
     },
+    "Add a trigger" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir un disparador"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加触发器"
+          }
+        }
+      }
+    },
     "Add a trigger for every Imp" : {
       "localizations" : {
         "es" : {
@@ -2953,6 +3322,54 @@
         }
       }
     },
+    "Always continue" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar siempre"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "始终延续"
+          }
+        }
+      }
+    },
+    "Always start new" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empezar siempre una nueva"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "始终新开"
+          }
+        }
+      }
+    },
+    "An Imp" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一个 Imp"
+          }
+        }
+      }
+    },
     "An Imp arrives at home, not out on your desktop. Its personality and triggers steer what it does with its tools, commands on your Mac included. Read them." : {
       "localizations" : {
         "es" : {
@@ -3013,6 +3430,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法载入包含密码的地址。"
+          }
+        }
+      }
+    },
+    "Animation" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animación"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动画"
           }
         }
       }
@@ -3291,6 +3724,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开任意网站"
+          }
+        }
+      }
+    },
+    "Anyone who can reach the Den can read this and add it. Chats, memory, API keys and the model settings are never included." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cualquiera que pueda llegar al Den puede leer esto y añadirlo. Nunca se incluyen chats, memoria, claves de API ni los ajustes del modelo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "任何能访问 Den 的人都可以查看并添加它。对话、记忆、API 密钥和模型设置绝不会包含在内。"
           }
         }
       }
@@ -4289,6 +4738,22 @@
         }
       }
     },
+    "Browse the Den" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explorar el Den"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "浏览 Den"
+          }
+        }
+      }
+    },
     "Browser" : {
       "localizations" : {
         "es" : {
@@ -4429,6 +4894,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "可以控制你的 Mac：截屏，并在其他 App 中点按和输入"
+          }
+        }
+      }
+    },
+    "Can talk to %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puede hablar con %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可以与 %@ 交谈"
           }
         }
       }
@@ -4609,6 +5090,22 @@
         }
       }
     },
+    "Change its character" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar su carácter"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "改变它的性格"
+          }
+        }
+      }
+    },
     "Changed" : {
       "localizations" : {
         "es" : {
@@ -4637,6 +5134,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更改…"
+          }
+        }
+      }
+    },
+    "Channels" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canales"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渠道"
           }
         }
       }
@@ -4721,6 +5234,22 @@
         }
       }
     },
+    "Chat size" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tamaño del chat"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对话大小"
+          }
+        }
+      }
+    },
     "Chat with %@: everything you said, and keep talking" : {
       "localizations" : {
         "es" : {
@@ -4749,6 +5278,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "对话"
+          }
+        }
+      }
+    },
+    "Check what happened" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprobar qué pasó"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看发生了什么"
           }
         }
       }
@@ -5137,6 +5682,22 @@
         }
       }
     },
+    "Click, type and scroll" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer clic, escribir y desplazarse"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击、输入和滚动"
+          }
+        }
+      }
+    },
     "Clicking" : {
       "localizations" : {
         "es" : {
@@ -5425,6 +5986,54 @@
         }
       }
     },
+    "Connected on the local network" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectado en la red local"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已通过本地网络连接"
+          }
+        }
+      }
+    },
+    "Connected through %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectado mediante %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过 %@ 连接"
+          }
+        }
+      }
+    },
+    "Connected through the server" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectado mediante el servidor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过服务器连接"
+          }
+        }
+      }
+    },
     "Connected to %@" : {
       "localizations" : {
         "es" : {
@@ -5437,6 +6046,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已连接到 %@"
+          }
+        }
+      }
+    },
+    "Connecting" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectando"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在连接"
           }
         }
       }
@@ -5473,6 +6098,22 @@
         }
       }
     },
+    "Continue if recent" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar si es reciente"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "较新时延续"
+          }
+        }
+      }
+    },
     "Controls your Mac" : {
       "localizations" : {
         "es" : {
@@ -5485,6 +6126,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "控制你的 Mac"
+          }
+        }
+      }
+    },
+    "Conversations" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversaciones"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对话"
           }
         }
       }
@@ -5533,6 +6190,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "拷贝"
+          }
+        }
+      }
+    },
+    "Copy JSON" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar JSON"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拷贝 JSON"
           }
         }
       }
@@ -5857,6 +6530,22 @@
         }
       }
     },
+    "Cursor comes close" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El cursor se acerca"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "光标靠近"
+          }
+        }
+      }
+    },
     "Cursor games" : {
       "localizations" : {
         "es" : {
@@ -5869,6 +6558,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "指针游戏"
+          }
+        }
+      }
+    },
+    "Cursor moves away" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El cursor se aleja"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "光标移开"
           }
         }
       }
@@ -5937,6 +6642,22 @@
         }
       }
     },
+    "Default" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predeterminado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认"
+          }
+        }
+      }
+    },
     "Delete" : {
       "localizations" : {
         "es" : {
@@ -5953,6 +6674,22 @@
         }
       }
     },
+    "Delete chat" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar chat"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除对话"
+          }
+        }
+      }
+    },
     "Delete chat?" : {
       "localizations" : {
         "es" : {
@@ -5965,6 +6702,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除对话？"
+          }
+        }
+      }
+    },
+    "Delete the talk with %@?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar la charla con %@?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除与 %@ 的对话？"
+          }
+        }
+      }
+    },
+    "Delete this Imp's side of the talk" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar la parte de este Imp en la charla"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除这个 Imp 这一边的对话"
           }
         }
       }
@@ -6033,6 +6802,22 @@
         }
       }
     },
+    "Den server" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidor del Den"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den 服务器"
+          }
+        }
+      }
+    },
     "Details" : {
       "localizations" : {
         "es" : {
@@ -6081,6 +6866,22 @@
         }
       }
     },
+    "Dismiss" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descartar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忽略"
+          }
+        }
+      }
+    },
     "Dizzy" : {
       "localizations" : {
         "es" : {
@@ -6109,6 +6910,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "执行"
+          }
+        }
+      }
+    },
+    "Doesn't talk to other Imps" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No habla con otros Imps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不与其他 Imp 交谈"
           }
         }
       }
@@ -6161,6 +6978,22 @@
         }
       }
     },
+    "Downloads it and shows what it does. Nothing is added yet." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo descarga y muestra lo que hace. Aún no se añade nada."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "先下载并展示它的功能，暂不会添加任何内容。"
+          }
+        }
+      }
+    },
     "Doze" : {
       "localizations" : {
         "es" : {
@@ -6205,6 +7038,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "将 Imp 拖到“应用程序”"
+          }
+        }
+      }
+    },
+    "Drag an edge or corner of the chat bubble to resize it. The size is kept for next time." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrastra un borde o una esquina de la burbuja del chat para cambiar su tamaño. El tamaño se guarda para la próxima vez."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拖动对话气泡的边缘或角来调整大小。大小会保留到下次。"
           }
         }
       }
@@ -6401,6 +7250,22 @@
         }
       }
     },
+    "Each pause is this many times longer than the one before." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada pausa dura estas veces más que la anterior."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每次等待都是上一次的这么多倍。"
+          }
+        }
+      }
+    },
     "Edit" : {
       "localizations" : {
         "es" : {
@@ -6509,6 +7374,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "永远在鼓励你。"
+          }
+        }
+      }
+    },
+    "Enter the address of a Den to search it. It's the same server as in Settings under Devices." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escribe la dirección de un Den para buscar en él. Es el mismo servidor que en Ajustes, en Dispositivos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入 Den 的地址来搜索它。它与“设置”里“设备”中的服务器是同一个。"
           }
         }
       }
@@ -6689,24 +7570,24 @@
         }
       }
     },
-    "Every chat with %@, newest first. Continue one to pick up where you left off: %@ remembers it as it was. Save one as a file to keep it or to carry it on with another Imp or on another Mac." : {
+    "Every chat you had with %@, newest first. Talks with other Imps are listed under Talks. Continue one to pick up where you left off: %@ remembers it as it was. Save one as a file to keep it or to carry it on with another Imp or on another Mac." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Every chat with %1$@, newest first. Continue one to pick up where you left off: %2$@ remembers it as it was. Save one as a file to keep it or to carry it on with another Imp or on another Mac."
+            "value" : "Every chat you had with %1$@, newest first. Talks with other Imps are listed under Talks. Continue one to pick up where you left off: %2$@ remembers it as it was. Save one as a file to keep it or to carry it on with another Imp or on another Mac."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Todos los chats con %1$@, los más recientes primero. Continúa uno para seguir donde lo dejaste: %2$@ lo recuerda tal como estaba. Guarda uno como archivo para conservarlo o continuarlo con otro Imp o en otro Mac."
+            "value" : "Todos los chats que tuviste con %1$@, los más recientes primero. Las charlas con otros Imps aparecen en Charlas. Continúa uno para retomarlo donde lo dejaste: %2$@ lo recuerda tal como estaba. Guarda uno como archivo para conservarlo o para seguir con otro Imp o en otro Mac."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "与 %1$@ 的所有聊天，最新的在前。继续某个聊天即可接着聊：%2$@ 记得它原来的样子。把聊天存为文件，可以保留它，或与另一个 Imp、在另一台 Mac 上继续。"
+            "value" : "你与 %1$@ 的所有对话，最新的在前。与其他 Imp 的对话列在“对话”里。继续某个对话即可接着上次的内容：%2$@ 会记得当时的样子。把对话存为文件，可以保存它，或在另一个 Imp 或另一台 Mac 上继续。"
           }
         }
       }
@@ -6787,6 +7668,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每小时"
+          }
+        }
+      }
+    },
+    "Everything" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部"
           }
         }
       }
@@ -6951,6 +7848,22 @@
         }
       }
     },
+    "Fall asleep" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quedarse dormido"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "入睡"
+          }
+        }
+      }
+    },
     "Fall in love" : {
       "localizations" : {
         "es" : {
@@ -7011,6 +7924,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "它会表现的情绪。有些是 Imp 之间的互动反应。"
+          }
+        }
+      }
+    },
+    "File" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件"
           }
         }
       }
@@ -7127,6 +8056,22 @@
         }
       }
     },
+    "First wait" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Primera espera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "首次等待"
+          }
+        }
+      }
+    },
     "Flinch" : {
       "localizations" : {
         "es" : {
@@ -7219,6 +8164,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "折叠"
+          }
+        }
+      }
+    },
+    "Following the cursor" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seguir el cursor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟随光标"
           }
         }
       }
@@ -7603,6 +8564,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "瞥一眼"
+          }
+        }
+      }
+    },
+    "Glide" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deslizarse"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑行"
           }
         }
       }
@@ -8183,6 +9160,22 @@
         }
       }
     },
+    "Hide the tools" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar las herramientas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐藏工具"
+          }
+        }
+      }
+    },
     "Hide what Imp did" : {
       "localizations" : {
         "es" : {
@@ -8295,6 +9288,22 @@
         }
       }
     },
+    "Hour" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hora"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小时"
+          }
+        }
+      }
+    },
     "How %@ always looks and moves: tired eyes, a frown, droopy horns, a slower pace. It shows in every mood and animation, and while it follows the cursor." : {
       "localizations" : {
         "es" : {
@@ -8307,6 +9316,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 平时的样子和动作：疲惫的眼睛、皱起的眉头、耷拉的角、较慢的节奏。无论哪种心情和动画，以及跟随指针时，都会体现出来。"
+          }
+        }
+      }
+    },
+    "How %@ follows your cursor. Off: it looks ahead. Eyes: it watches the cursor. Hop and Glide: it also moves after it." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cómo %@ sigue tu cursor. Desactivado: mira al frente. Ojos: mira el cursor. Saltito y Deslizarse: además se mueve tras él."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 如何跟随你的光标。关：它看向前方。眼睛：它注视光标。蹦跳和滑行：它还会跟着移动。"
           }
         }
       }
@@ -8359,6 +9384,22 @@
         }
       }
     },
+    "How long an Imp waits for a model, and what it does when the network drops for a moment." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuánto espera un Imp a un modelo y qué hace cuando la red se cae un momento."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 等待模型的时长，以及网络短暂中断时它会怎么做。"
+          }
+        }
+      }
+    },
     "How long it plays (%@ plays it at its own pace)" : {
       "localizations" : {
         "es" : {
@@ -8375,18 +9416,50 @@
         }
       }
     },
-    "How many recent exchanges are sent with each message. More remembers more, but each message is bigger, slower and costs more: recap a long chat to keep it small. Older ones stay in the chat to read." : {
+    "How many lines the text box grows to as you type before it scrolls." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cuántos intercambios recientes se envían con cada mensaje. Más recuerda más, pero cada mensaje es más grande, más lento y cuesta más: resume un chat largo para mantenerlo pequeño. Los anteriores siguen en el chat para leerlos."
+            "value" : "Hasta cuántas líneas crece el cuadro de texto mientras escribes antes de desplazarse."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每条消息附带发送多少轮最近的对话。越多记得越多，但每条消息更大、更慢、更贵：长聊天可以总结来保持精简。更早的内容仍留在聊天中可供阅读。"
+            "value" : "输入时文本框最多增长到多少行，超过后开始滚动。"
+          }
+        }
+      }
+    },
+    "How many recent exchanges are sent with each message. By default there is no limit, so nothing important is forgotten. A smaller number makes each message smaller, faster and cheaper. You get a gentle suggestion to recap or start a new chat when a chat grows long (see General). Older exchanges stay in the chat to read." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuántos intercambios recientes se envían con cada mensaje. Por defecto no hay límite, así que no se olvida nada importante. Un número menor hace que cada mensaje sea más pequeño, rápido y barato. Recibes una sugerencia amable para resumir o empezar un chat nuevo cuando un chat se alarga (consulta General). Los intercambios más antiguos siguen en el chat para leerlos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每条消息附带发送多少条最近的往来。默认没有上限，所以不会忘掉重要的内容。数值越小，每条消息越小、越快、越省钱。对话变长时，你会收到总结或新开对话的温和提示（见“通用”）。较早的往来仍保留在对话中供阅读。"
+          }
+        }
+      }
+    },
+    "How many times a request is tried again after the network drops or the service is busy. Wrong keys and bad requests are never retried." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuántas veces se repite una petición cuando la red se cae o el servicio está ocupado. Las claves incorrectas y las peticiones erróneas nunca se repiten."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "网络中断或服务繁忙时，请求会重试的次数。密钥错误和无效请求永远不会重试。"
           }
         }
       }
@@ -8973,6 +10046,22 @@
         }
       }
     },
+    "Imps and their tools" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imps y sus herramientas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 及其工具"
+          }
+        }
+      }
+    },
     "Imps ask for as little as they can. The last two are only for computer control." : {
       "localizations" : {
         "es" : {
@@ -9373,6 +10462,22 @@
         }
       }
     },
+    "JSON" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JSON"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JSON"
+          }
+        }
+      }
+    },
     "Jittery" : {
       "localizations" : {
         "es" : {
@@ -9581,6 +10686,22 @@
         }
       }
     },
+    "Kits" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kits"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "套件"
+          }
+        }
+      }
+    },
     "Language" : {
       "localizations" : {
         "es" : {
@@ -9693,6 +10814,38 @@
         }
       }
     },
+    "Left alone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无人理会"
+          }
+        }
+      }
+    },
+    "Left alone for %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo durante %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无人理会 %@"
+          }
+        }
+      }
+    },
     "Length" : {
       "localizations" : {
         "es" : {
@@ -9705,6 +10858,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "时长"
+          }
+        }
+      }
+    },
+    "Less" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更少"
           }
         }
       }
@@ -9987,6 +11156,22 @@
         }
       }
     },
+    "Link devices" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vincular dispositivos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关联设备"
+          }
+        }
+      }
+    },
     "Link this Mac with your iPhone or another Mac. Throw an Imp hard at the left or right side of your screen and it flies onto a linked device. It still thinks on this Mac: chat with it there, and throw it back. Mark a device as yours (Mine) and the Imps on it may use their tools on this Mac. Others can only talk." : {
       "localizations" : {
         "es" : {
@@ -10099,6 +11284,38 @@
         }
       }
     },
+    "List extra tools" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listar herramientas extra"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "列出额外工具"
+          }
+        }
+      }
+    },
+    "List its triggers" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listar sus disparadores"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "列出它的触发器"
+          }
+        }
+      }
+    },
     "Listening" : {
       "localizations" : {
         "es" : {
@@ -10147,6 +11364,22 @@
         }
       }
     },
+    "Local network" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Red local"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地网络"
+          }
+        }
+      }
+    },
     "Local program" : {
       "localizations" : {
         "es" : {
@@ -10175,6 +11408,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已锁定。它只在最爱的颜色下才会这样做。你仍可观看预览。"
+          }
+        }
+      }
+    },
+    "Long chats" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chats largos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "长对话"
+          }
+        }
+      }
+    },
+    "Longer each time" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más larga cada vez"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每次更长"
           }
         }
       }
@@ -10223,6 +11488,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "四处张望"
+          }
+        }
+      }
+    },
+    "Look at an animation" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mirar una animación"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看动画"
+          }
+        }
+      }
+    },
+    "Look at something in the Den" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mirar algo en el Den"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看 Den 中的内容"
+          }
+        }
+      }
+    },
+    "Look at the screen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mirar la pantalla"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看屏幕"
           }
         }
       }
@@ -10553,6 +11866,22 @@
         }
       }
     },
+    "Make an animation" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear una animación"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "制作动画"
+          }
+        }
+      }
+    },
     "Make an animation of your own, beat by beat" : {
       "localizations" : {
         "es" : {
@@ -10645,6 +11974,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "生成图片"
+          }
+        }
+      }
+    },
+    "Map" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mapa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地图"
           }
         }
       }
@@ -10745,6 +12090,38 @@
         }
       }
     },
+    "Message another Imp" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escribir a otro Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "给另一个 Imp 发消息"
+          }
+        }
+      }
+    },
+    "Messages sent" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mensajes enviados"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已发送的消息"
+          }
+        }
+      }
+    },
     "Messages the other Imps on your desktop and hears their answers." : {
       "localizations" : {
         "es" : {
@@ -10825,6 +12202,22 @@
         }
       }
     },
+    "Minute" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minuto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分钟"
+          }
+        }
+      }
+    },
     "Missed you" : {
       "localizations" : {
         "es" : {
@@ -10837,6 +12230,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "想你了"
+          }
+        }
+      }
+    },
+    "Missing animation" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animación no encontrada"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到动画"
           }
         }
       }
@@ -10937,6 +12346,22 @@
         }
       }
     },
+    "More" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多"
+          }
+        }
+      }
+    },
     "Move" : {
       "localizations" : {
         "es" : {
@@ -10949,6 +12374,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "动作"
+          }
+        }
+      }
+    },
+    "Move around the screen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moverse por la pantalla"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在屏幕上移动"
           }
         }
       }
@@ -11093,6 +12534,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "名称"
+          }
+        }
+      }
+    },
+    "Name in the Den" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre en el Den"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 Den 中的名称"
           }
         }
       }
@@ -11481,6 +12938,22 @@
         }
       }
     },
+    "Newest" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más recientes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新"
+          }
+        }
+      }
+    },
     "Next Imp" : {
       "localizations" : {
         "es" : {
@@ -11557,6 +13030,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "桌面上没有 Imp"
+          }
+        }
+      }
+    },
+    "No answer after %lld seconds. The service may be slow or out of reach. Check its address on the Brain tab, or allow more time in Settings › Services." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin respuesta tras %lld segundos. Puede que el servicio vaya lento o no se pueda alcanzar. Revisa su dirección en la pestaña Cerebro o da más tiempo en Ajustes › Servicios."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 秒后仍没有回答。服务可能很慢或无法连接。请在“大脑”标签中检查它的地址，或在“设置 › 服务”中允许更长时间。"
           }
         }
       }
@@ -11641,6 +13130,22 @@
         }
       }
     },
+    "No limit" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin límite"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无限制"
+          }
+        }
+      }
+    },
     "No model picked yet. Pick one on the Brain tab." : {
       "localizations" : {
         "es" : {
@@ -11689,6 +13194,22 @@
         }
       }
     },
+    "No other Imps to talk to" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay otros Imps con quienes hablar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有可交谈的其他 Imp"
+          }
+        }
+      }
+    },
     "No setup on the clipboard. Copy the JSON, command or address from the tool's page." : {
       "localizations" : {
         "es" : {
@@ -11733,6 +13254,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无工具"
+          }
+        }
+      }
+    },
+    "No tools yet." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay herramientas."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂无工具。"
           }
         }
       }
@@ -11833,6 +13370,22 @@
         }
       }
     },
+    "None" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguno"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无"
+          }
+        }
+      }
+    },
     "None of your other devices is around. Open Imp on one, then throw me again." : {
       "localizations" : {
         "es" : {
@@ -11929,6 +13482,22 @@
         }
       }
     },
+    "Not in use" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin usar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未使用"
+          }
+        }
+      }
+    },
     "Not needed on this Mac" : {
       "localizations" : {
         "es" : {
@@ -11941,6 +13510,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这台 Mac 上不需要"
+          }
+        }
+      }
+    },
+    "Nothing found." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontró nada."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "什么也没找到。"
           }
         }
       }
@@ -11977,22 +13562,6 @@
         }
       }
     },
-    "Nothing said between them yet." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Todavía no se han dicho nada."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "它们之间还没说过话。"
-          }
-        }
-      }
-    },
     "Nothing said yet" : {
       "localizations" : {
         "es" : {
@@ -12005,6 +13574,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "还没说过话"
+          }
+        }
+      }
+    },
+    "Nothing said yet." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no se ha dicho nada."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有说过什么。"
           }
         }
       }
@@ -12233,6 +13818,22 @@
         }
       }
     },
+    "On the local network" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En la red local"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在本地网络上"
+          }
+        }
+      }
+    },
     "On the web" : {
       "localizations" : {
         "es" : {
@@ -12427,6 +14028,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "仅当 %@ 时"
+          }
+        }
+      }
+    },
+    "Only looks and text. No tools or commands." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo aspecto y texto. Sin herramientas ni comandos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅外观和文字，没有工具或命令。"
           }
         }
       }
@@ -13327,6 +14944,38 @@
         }
       }
     },
+    "Play an animation" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reproducir una animación"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放动画"
+          }
+        }
+      }
+    },
+    "Play animations" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reproducir animaciones"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放动画"
+          }
+        }
+      }
+    },
     "Play it again and again" : {
       "localizations" : {
         "es" : {
@@ -13423,6 +15072,22 @@
         }
       }
     },
+    "Plays as it wakes up. Without one, it stretches awake the usual way." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se reproduce al despertar. Sin una, se despierta estirándose como de costumbre."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "醒来时播放。没有的话，它会照常伸个懒腰醒来。"
+          }
+        }
+      }
+    },
     "Plays audio and video when an answer asks for it. Otherwise you press play." : {
       "localizations" : {
         "es" : {
@@ -13467,6 +15132,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "以这种性格播放它的一个动画"
+          }
+        }
+      }
+    },
+    "Plays while it dozes off. It sleeps either way." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se reproduce mientras se adormece. Se duerme de todos modos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打瞌睡时播放。不管有没有，它都会睡着。"
           }
         }
       }
@@ -13611,6 +15292,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在戳云端…"
+          }
+        }
+      }
+    },
+    "Popular" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Populares"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "热门"
           }
         }
       }
@@ -13839,6 +15536,70 @@
         }
       }
     },
+    "Publish" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Publicar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发布"
+          }
+        }
+      }
+    },
+    "Publish to the Den" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Publicar en el Den"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发布到 Den"
+          }
+        }
+      }
+    },
+    "Publish to the Den…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Publicar en el Den…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发布到 Den…"
+          }
+        }
+      }
+    },
+    "Published: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Publicado: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已发布：%@"
+          }
+        }
+      }
+    },
     "Pulling some strings…" : {
       "localizations" : {
         "es" : {
@@ -13983,22 +15744,6 @@
         }
       }
     },
-    "Read Talk" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leer la charla"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "阅读对话"
-          }
-        }
-      }
-    },
     "Read all" : {
       "localizations" : {
         "es" : {
@@ -14011,6 +15756,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "阅读全部"
+          }
+        }
+      }
+    },
+    "Read as bubbles or JSON" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leer como burbujas o JSON"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以气泡或 JSON 阅读"
           }
         }
       }
@@ -14031,18 +15792,34 @@
         }
       }
     },
-    "Read the whole talk, both sides" : {
+    "Read the Mac's state" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lee toda la charla, de ambos lados"
+            "value" : "Leer el estado del Mac"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "阅读完整对话，双方都有"
+            "value" : "读取 Mac 的状态"
+          }
+        }
+      }
+    },
+    "Read the browser page" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leer la página del navegador"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "读取浏览器页面"
           }
         }
       }
@@ -14223,6 +16000,38 @@
         }
       }
     },
+    "Reduce Motion is on, so %@ only follows with its eyes." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reducir movimiento está activado, así que %@ solo te sigue con los ojos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“减弱动态效果”已开启，所以 %@ 只会用眼睛跟随。"
+          }
+        }
+      }
+    },
+    "Relaying" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retransmitiendo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "转发中"
+          }
+        }
+      }
+    },
     "Remembers" : {
       "localizations" : {
         "es" : {
@@ -14315,6 +16124,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "永久移除 %@"
+          }
+        }
+      }
+    },
+    "Remove a trigger" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar un disparador"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除触发器"
+          }
+        }
+      }
+    },
+    "Remove an animation" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar una animación"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除动画"
+          }
+        }
+      }
+    },
+    "Remove an extra tool" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar una herramienta extra"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除额外工具"
           }
         }
       }
@@ -14559,6 +16416,22 @@
         }
       }
     },
+    "Requests" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peticiones"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求"
+          }
+        }
+      }
+    },
     "Reset" : {
       "localizations" : {
         "es" : {
@@ -14587,6 +16460,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "全部重置"
+          }
+        }
+      }
+    },
+    "Reset size" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restablecer tamaño"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置大小"
           }
         }
       }
@@ -14747,6 +16636,44 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "恢复原始版本"
+          }
+        }
+      }
+    },
+    "Retries" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重试"
+          }
+        }
+      }
+    },
+    "Retrying %lld of %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Retrying %1$lld of %2$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentando %1$lld de %2$lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在重试，第 %1$lld 次，共 %2$lld 次"
           }
         }
       }
@@ -15019,6 +16946,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "与 Mac 相同"
+          }
+        }
+      }
+    },
+    "Same conversation for" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Misma conversación durante"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同一对话持续"
           }
         }
       }
@@ -15407,6 +17350,22 @@
         }
       }
     },
+    "Search" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索"
+          }
+        }
+      }
+    },
     "Search models…" : {
       "localizations" : {
         "es" : {
@@ -15419,6 +17378,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "搜索模型…"
+          }
+        }
+      }
+    },
+    "Search the Den" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar en el Den"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索 Den"
+          }
+        }
+      }
+    },
+    "Search what other people shared." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Busca lo que ha compartido otra gente."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索其他人分享的内容。"
           }
         }
       }
@@ -15653,6 +17644,28 @@
         }
       }
     },
+    "Server %@, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Server %1$@, %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidor %1$@, %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器 %1$@，%2$@"
+          }
+        }
+      }
+    },
     "Service" : {
       "localizations" : {
         "es" : {
@@ -15681,6 +17694,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "服务"
+          }
+        }
+      }
+    },
+    "Set a server in Settings under Devices first." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Primero configura un servidor en Ajustes, en Dispositivos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先在“设置”的“设备”中设置服务器。"
           }
         }
       }
@@ -16053,6 +18082,22 @@
         }
       }
     },
+    "Share in the Den" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir en el Den"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 Den 中分享"
+          }
+        }
+      }
+    },
     "Share the triggers every Imp answers as a kit" : {
       "localizations" : {
         "es" : {
@@ -16389,6 +18434,22 @@
         }
       }
     },
+    "Show more" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar más"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示更多"
+          }
+        }
+      }
+    },
     "Show off" : {
       "localizations" : {
         "es" : {
@@ -16449,6 +18510,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "显示扩展的文件夹"
+          }
+        }
+      }
+    },
+    "Show the tools" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar las herramientas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示工具"
           }
         }
       }
@@ -16805,6 +18882,22 @@
         }
       }
     },
+    "Speak out loud" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hablar en voz alta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "大声说话"
+          }
+        }
+      }
+    },
     "Speaks out loud" : {
       "localizations" : {
         "es" : {
@@ -16849,6 +18942,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imp 的语音识别已关闭。请在“系统设置” › “隐私与安全性” › “语音识别”中打开。"
+          }
+        }
+      }
+    },
+    "Speed" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velocidad"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "速度"
           }
         }
       }
@@ -17349,6 +19458,22 @@
         }
       }
     },
+    "Suggest at" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sugerir a partir de"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提示阈值"
+          }
+        }
+      }
+    },
     "Sulk" : {
       "localizations" : {
         "es" : {
@@ -17461,6 +19586,22 @@
         }
       }
     },
+    "Switch it on to choose its tools." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actívalo para elegir sus herramientas."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启后即可选择它的工具。"
+          }
+        }
+      }
+    },
     "Switch on only for your own devices. A device that isn't yours can still chat with the Imps it holds, but they answer without their tools (no commands, no control of this Mac), and it only gets files from the Imp's own folder." : {
       "localizations" : {
         "es" : {
@@ -17525,6 +19666,54 @@
         }
       }
     },
+    "Tags (separated by commas)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etiquetas (separadas por comas)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标签（用逗号分隔）"
+          }
+        }
+      }
+    },
+    "Take back from the Den" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retirar del Den"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从 Den 撤回"
+          }
+        }
+      }
+    },
+    "Take something from the Den" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomar algo del Den"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从 Den 获取内容"
+          }
+        }
+      }
+    },
     "Talk" : {
       "localizations" : {
         "es" : {
@@ -17569,22 +19758,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "与 %@ 交谈"
-          }
-        }
-      }
-    },
-    "Talk with %@" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Charla con %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "与 %@ 的对话"
           }
         }
       }
@@ -17681,6 +19854,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "测试"
+          }
+        }
+      }
+    },
+    "Text box lines" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Líneas del cuadro de texto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文本框行数"
           }
         }
       }
@@ -18133,6 +20322,22 @@
         }
       }
     },
+    "That name can't be used." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese nombre no se puede usar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不能使用这个名称。"
+          }
+        }
+      }
+    },
     "That took more than %lld seconds." : {
       "localizations" : {
         "es" : {
@@ -18193,6 +20398,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "文件过大，无法读取（上限为 %lld MB）。请不含对话导出，或一次导出少量 Imp。"
+          }
+        }
+      }
+    },
+    "That's too big to share (%lld KB at most)." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es demasiado grande para compartirlo (máximo %lld KB)."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "太大了，无法分享（最多 %lld KB）。"
           }
         }
       }
@@ -18269,6 +20490,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Den 返回了 %lld。"
+          }
+        }
+      }
+    },
+    "The Den is where people share Imps, animations, triggers and tools. Search it, pick something and you'll see what it can do before anything is added." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El Den es donde la gente comparte Imps, animaciones, disparadores y herramientas. Busca, elige algo y verás lo que puede hacer antes de añadir nada."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den 是大家分享 Imp、动画、触发器和工具的地方。搜索并选一个，在添加之前你就能看到它能做什么。"
+          }
+        }
+      }
+    },
+    "The Den listed no checksum for this download, so Imp won't install it." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El Den no indicó ninguna suma de verificación para esta descarga, así que Imp no la instalará."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den 没有为这次下载提供校验和，所以 Imp 不会安装它。"
           }
         }
       }
@@ -18513,6 +20766,38 @@
         }
       }
     },
+    "The cursor comes close" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El cursor se acerca"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "光标靠近"
+          }
+        }
+      }
+    },
+    "The cursor moves away" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El cursor se aleja"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "光标移开"
+          }
+        }
+      }
+    },
     "The device I came from isn't around, so I can't go back that way." : {
       "localizations" : {
         "es" : {
@@ -18525,6 +20810,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "我来的那台设备不在附近，所以不能从这边回去。"
+          }
+        }
+      }
+    },
+    "The download doesn't match the checksum the Den lists, so Imp threw it away." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La descarga no coincide con la suma de verificación que indica el Den, así que Imp la descartó."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下载内容与 Den 提供的校验和不一致，所以 Imp 把它丢弃了。"
           }
         }
       }
@@ -18705,6 +21006,22 @@
         }
       }
     },
+    "The pause before the first retry." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La pausa antes del primer reintento."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第一次重试前的等待。"
+          }
+        }
+      }
+    },
     "The server answered %lld." : {
       "localizations" : {
         "es" : {
@@ -18749,6 +21066,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "它使用的工具。"
+          }
+        }
+      }
+    },
+    "The usual wake-up" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El despertar de siempre"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平常的醒来方式"
           }
         }
       }
@@ -18865,18 +21198,18 @@
         }
       }
     },
-    "This Imp has no service and model to think with yet." : {
+    "This Imp has no service and model to think with yet. Open its settings and add them." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Este Imp aún no tiene servicio ni modelo con el que pensar."
+            "value" : "Este Imp aún no tiene un servicio y un modelo con los que pensar. Abre sus ajustes y añádelos."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这个 Imp 还没有用来思考的服务和模型。"
+            "value" : "这个 Imp 还没有用来思考的服务和模型。打开它的设置添加吧。"
           }
         }
       }
@@ -18909,6 +21242,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这个 Imp 没穿它最爱的颜色"
+          }
+        }
+      }
+    },
+    "This Mac" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这台 Mac"
           }
         }
       }
@@ -18993,6 +21342,134 @@
         }
       }
     },
+    "This chat is getting long. A recap or a new chat keeps %@ quick." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este chat se está alargando. Un resumen o un chat nuevo mantiene a %@ ágil."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个对话越来越长了。总结一下或新开对话，能让 %@ 保持敏捷。"
+          }
+        }
+      }
+    },
+    "This file changed after it was shared, so it isn't opened." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este archivo cambió después de compartirse, así que no se abre."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个文件在分享后被改动过，所以不会打开。"
+          }
+        }
+      }
+    },
+    "This file is on another device and isn't here to open." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este archivo está en otro dispositivo y no se puede abrir aquí."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个文件在另一台设备上，无法在这里打开。"
+          }
+        }
+      }
+    },
+    "This file is outside the Imp's own folder, so it isn't opened." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este archivo está fuera de la carpeta del Imp, así que no se abre."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个文件不在 Imp 自己的文件夹里，所以不会打开。"
+          }
+        }
+      }
+    },
+    "This file isn't there any more." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este archivo ya no está."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个文件已经不在了。"
+          }
+        }
+      }
+    },
+    "This file link is broken, so the file can't be opened." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este enlace al archivo está roto, así que el archivo no se puede abrir."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个文件链接已损坏，无法打开文件。"
+          }
+        }
+      }
+    },
+    "This is read from the kit itself, not from what its author says about it." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto se lee del propio kit, no de lo que dice su autor."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是从套件本身读取的，而不是作者对它的描述。"
+          }
+        }
+      }
+    },
+    "This isn't a file that can be opened." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto no es un archivo que se pueda abrir."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这不是可以打开的文件。"
+          }
+        }
+      }
+    },
     "This key is in your Keychain. Paste it here again, or turn on “Use the Keychain” in All Imps › Services." : {
       "localizations" : {
         "es" : {
@@ -19037,6 +21514,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开心地连蹦三下。"
+          }
+        }
+      }
+    },
+    "Through %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mediante %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过 %@"
           }
         }
       }
@@ -19201,6 +21694,72 @@
         }
       }
     },
+    "Tool %@ adds tools named %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Tool %1$@ adds tools named %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La herramienta %1$@ añade herramientas llamadas %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工具 %1$@ 会添加名为 %2$@ 的工具"
+          }
+        }
+      }
+    },
+    "Tool %@ connects to %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Tool %1$@ connects to %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La herramienta %1$@ se conecta a %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工具 %1$@ 连接到 %2$@"
+          }
+        }
+      }
+    },
+    "Tool %@ runs this command on your Mac: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Tool %1$@ runs this command on your Mac: %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La herramienta %1$@ ejecuta este comando en tu Mac: %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工具 %1$@ 会在你的 Mac 上运行这条命令：%2$@"
+          }
+        }
+      }
+    },
     "Tool calls" : {
       "localizations" : {
         "es" : {
@@ -19277,6 +21836,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "翻译"
+          }
+        }
+      }
+    },
+    "Trigger %@ starts on: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Trigger %1$@ starts on: %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El disparador %1$@ se activa con: %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触发器 %1$@ 在以下情况启动：%2$@"
           }
         }
       }
@@ -20019,6 +22600,22 @@
         }
       }
     },
+    "Use its Den account" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar su cuenta del Den"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用它的 Den 账户"
+          }
+        }
+      }
+    },
     "Use the Keychain" : {
       "localizations" : {
         "es" : {
@@ -20083,18 +22680,18 @@
         }
       }
     },
-    "Via the server" : {
+    "View as" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Por el servidor"
+            "value" : "Ver como"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "经由服务器"
+            "value" : "查看方式"
           }
         }
       }
@@ -20111,6 +22708,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "紫罗兰"
+          }
+        }
+      }
+    },
+    "Wait up to" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esperar hasta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最多等待"
           }
         }
       }
@@ -20143,6 +22756,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在等待你的另一台设备…"
+          }
+        }
+      }
+    },
+    "Wake up" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Despertar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "唤醒"
           }
         }
       }
@@ -20275,34 +22904,46 @@
         }
       }
     },
-    "What %@ and %@ said to each other, both ways. This is only to read: it comes from both Imps' chats." : {
+    "What %@ and %@ said to each other, both ways. This is only to read: it comes from both Imps' chats. Show it as bubbles or as JSON, and copy the JSON." : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "What %1$@ and %2$@ said to each other, both ways. This is only to read: it comes from both Imps' chats. Show it as bubbles or as JSON, and copy the JSON."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lo que %1$@ y %2$@ se dijeron, en ambos sentidos. Solo para leer: viene de los chats de ambos Imps."
+            "value" : "Lo que %1$@ y %2$@ se dijeron entre sí, en ambos sentidos. Es solo para leer: viene de los chats de ambos Imps. Muéstralo como burbujas o como JSON, y copia el JSON."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 和 %2$@ 彼此说过的话，双向都有。仅供阅读：内容来自两个 Imp 的聊天。"
+            "value" : "%1$@ 和 %2$@ 彼此说过的话，双向都有。仅供阅读：内容来自两个 Imp 的对话。可以显示为气泡或 JSON，也可以拷贝 JSON。"
           }
         }
       }
     },
-    "What %@ and other Imps said to each other, both ways, to read. %@'s side of each is in its chats above (\"With …\"), which you can delete there." : {
+    "What %@ and other Imps said to each other, both ways, to read as bubbles or JSON. Delete removes %@'s side of a talk. The other Imp keeps its own." : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "What %1$@ and other Imps said to each other, both ways, to read as bubbles or JSON. Delete removes %2$@'s side of a talk. The other Imp keeps its own."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lo que %1$@ y otros Imps se dijeron, en ambos sentidos, para leer. La parte de %2$@ de cada charla está en sus chats de arriba («Con …»), donde puedes borrarla."
+            "value" : "Lo que %1$@ y otros Imps se dijeron entre sí, en ambos sentidos, para leer como burbujas o JSON. Eliminar quita la parte de %2$@ en una charla. El otro Imp conserva la suya."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 与其他 Imp 彼此说过的话，双向都有，供阅读。%2$@ 那一方的内容在上面的聊天里（“与 …”），可以在那里删除。"
+            "value" : "%1$@ 和其他 Imp 彼此说过的话，双向都有，可以用气泡或 JSON 阅读。“删除”会移除 %2$@ 这一边的对话，另一个 Imp 会保留自己的那一份。"
           }
         }
       }
@@ -20371,6 +23012,22 @@
         }
       }
     },
+    "What each Imp can use and which Imps it can message, so you don't have to ask. Change them in the Imp's own Tools tab." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que puede usar cada Imp y a qué Imps puede escribir, para que no tengas que preguntar. Cámbialos en la pestaña Herramientas del propio Imp."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每个 Imp 能用什么、能给哪些 Imp 发消息，一目了然，不用再问。可在该 Imp 自己的“工具”标签页中修改。"
+          }
+        }
+      }
+    },
     "What is it called?" : {
       "localizations" : {
         "es" : {
@@ -20383,6 +23040,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "它叫什么？"
+          }
+        }
+      }
+    },
+    "What is it, in a sentence" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qué es, en una frase"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用一句话说说它是什么"
           }
         }
       }
@@ -20419,6 +23092,22 @@
         }
       }
     },
+    "What it plays when this goes off." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que reproduce cuando esto se activa."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它被触发时播放的内容。"
+          }
+        }
+      }
+    },
     "What it's called, its icon in the list, and which Imps play it." : {
       "localizations" : {
         "es" : {
@@ -20431,6 +23120,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "它叫什么、在列表中的图标，以及哪些 Imp 播放它。"
+          }
+        }
+      }
+    },
+    "What people will see it can do" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que la gente verá que puede hacer"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "大家会看到它能做什么"
           }
         }
       }
@@ -20483,6 +23188,22 @@
         }
       }
     },
+    "What this can do" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que puede hacer esto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它能做什么"
+          }
+        }
+      }
+    },
     "What was said and %@'s memory of it are gone for good. Save it as a file first to keep it." : {
       "localizations" : {
         "es" : {
@@ -20495,6 +23216,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "聊天内容和 %@ 对它的记忆将被永久删除。要保留请先存为文件。"
+          }
+        }
+      }
+    },
+    "What you and %@ said in this chat. This is only to read. Show it as bubbles or as JSON, and copy the JSON." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que tú y %@ dijisteis en este chat. Es solo para leer. Muéstralo como burbujas o como JSON, y copia el JSON."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你和 %@ 在这个对话中说过的话。仅供阅读。可以显示为气泡或 JSON，也可以拷贝 JSON。"
           }
         }
       }
@@ -20531,18 +23268,18 @@
         }
       }
     },
-    "When it goes off, %@ gets the instruction and what happened, then decides what to do with its tools. Or it just opens something, like the text box." : {
+    "When it goes off, %@ gets the instruction and what happened, then decides what to do with its tools. Or it just opens something, like the text box. Some act on its body with no thinking: sleep, wake up, or play an animation." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cuando se dispara, %@ recibe la instrucción y lo que pasó, y decide qué hacer con sus herramientas. O simplemente abre algo, como el cuadro de texto."
+            "value" : "Cuando se activa, %@ recibe la instrucción y lo que pasó, y decide qué hacer con sus herramientas. O simplemente abre algo, como el cuadro de texto. Algunos actúan sobre su cuerpo sin pensar: dormir, despertar o reproducir una animación."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触发时，%@ 会收到指令和发生的事，然后决定用工具做什么。或者只是打开某样东西，比如文本框。"
+            "value" : "触发时，%@ 会收到你的指令和发生的事，然后决定用工具做什么。或者只是打开某个东西，比如文本框。有些则不用思考，直接作用于它的身体：入睡、醒来或播放动画。"
           }
         }
       }
@@ -20563,18 +23300,18 @@
         }
       }
     },
-    "When something happens, the Imp gets your instruction and what happened, then decides what to do. Keys work anywhere on your Mac. You can also ask %@ to set one up." : {
+    "When something happens, the Imp gets your instruction and what happened, then decides what to do. Keys work anywhere on your Mac. Falling asleep when left alone and waking when the cursor comes close are triggers too: change their times and animations, or switch them off. You can also ask %@ to set one up." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cuando pasa algo, el Imp recibe tu instrucción y lo que pasó, y decide qué hacer. Las teclas funcionan en cualquier parte del Mac. También puedes pedirle a %@ que configure uno."
+            "value" : "Cuando pasa algo, el Imp recibe tu instrucción y lo que pasó, y decide qué hacer. Las teclas funcionan en cualquier parte de tu Mac. Dormirse cuando lo dejas solo y despertar cuando el cursor se acerca también son disparadores: cambia sus tiempos y animaciones, o desactívalos. También puedes pedirle a %@ que configure uno."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "发生某件事时，Imp 会收到你的指令和发生的事，然后决定怎么做。按键在 Mac 上任何地方都有效。你也可以让 %@ 来设置。"
+            "value" : "发生某件事时，Imp 会收到你的指令和发生的事，然后决定怎么做。按键在 Mac 上的任何地方都有效。无人理会时入睡、光标靠近时醒来也是触发器：可以修改它们的时间和动画，或者关闭。你也可以让 %@ 帮你设置一个。"
           }
         }
       }
@@ -20607,6 +23344,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一个 Imp 发给另一个 Imp 的消息去往何处。“你的对话”是指你与接收方 Imp 的对话。"
+          }
+        }
+      }
+    },
+    "Whether a message to an Imp goes on in your latest conversation with it or starts a new one. “The Imp decides” lets the sender choose, and falls back to the time below when it doesn't. Only for chats of their own." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si un mensaje a un Imp continúa tu última conversación con él o empieza una nueva. “El Imp decide” deja que elija quien envía, y si no elige, se usa el tiempo de abajo. Solo para chats propios de ellos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发给 Imp 的消息是接着你与它最近的对话，还是新开一个。“由 Imp 决定”让发送方来选，没选时则采用下面的时间。仅适用于它们之间的对话。"
           }
         }
       }
@@ -21059,6 +23812,22 @@
         }
       }
     },
+    "Your devices and how they talk. A solid line is connected, a dashed one is not. A line through a server shows its name." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus dispositivos y cómo se comunican. Una línea continua significa conectado y una discontinua, no. Una línea que pasa por un servidor muestra su nombre."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的设备以及它们之间的通信方式。实线表示已连接，虚线表示未连接。经过服务器的线会显示服务器的名称。"
+          }
+        }
+      }
+    },
     "Your own %@" : {
       "localizations" : {
         "es" : {
@@ -21151,6 +23920,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "高于 %lld %%"
+          }
+        }
+      }
+    },
+    "after %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "después de %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 之后"
           }
         }
       }
@@ -21283,6 +24068,54 @@
         }
       }
     },
+    "nobody" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nadie"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有人"
+          }
+        }
+      }
+    },
+    "none" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ninguno"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无"
+          }
+        }
+      }
+    },
+    "not in use" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sin usar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未使用"
+          }
+        }
+      }
+    },
     "npx -y @modelcontextprotocol/server-memory" : {
       "localizations" : {
         "es" : {
@@ -21327,6 +24160,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "快"
+          }
+        }
+      }
+    },
+    "relaying" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "retransmitiendo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "转发中"
           }
         }
       }
@@ -21475,6 +24324,22 @@
         }
       }
     },
+    "× %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "× %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "× %@"
+          }
+        }
+      }
+    },
     "“%@” is a file on %@, so it can't be shown here." : {
       "localizations" : {
         "en" : {
@@ -21569,6 +24434,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "“%@”使用相同的按键且优先，因此这个不会触发。"
+          }
+        }
+      }
+    },
+    "“%@”: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "“%1$@”: %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%1$@»: %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%1$@”：%2$@"
           }
         }
       }

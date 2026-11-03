@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -27,6 +28,7 @@ struct StatusPill: View {
                 .background(.black.opacity(0.3), in: Capsule())
                 .overlay(Capsule().strokeBorder(Dungeon.cardEdge))
             }
+            .buttonStyle(.plain)
             .accessibilityHint("Opens your devices")
             HStack {
                 Spacer()
@@ -36,7 +38,10 @@ struct StatusPill: View {
                         .frame(width: 32, height: 32)
                         .background(.black.opacity(0.3), in: Circle())
                         .overlay(Circle().strokeBorder(Dungeon.cardEdge))
+                        .frame(width: Sizing.hit, height: Sizing.hit)
+                        .contentShape(Circle())
                 }
+                .buttonStyle(.plain)
                 .accessibilityLabel("Hatch an Imp")
             }
             .padding(.trailing, 16)

@@ -4,10 +4,16 @@ import SwiftUI
 
 /// The Imp on the first screen, alive in your hand: tip the phone and it leans and slides that
 /// way and looks downhill, a sudden tilt startles it, a shake makes it dizzy, a tap makes it hop,
-/// and it watches your finger.
+/// and it watches your finger. The editor's preview is the same view, so it moves the same way.
 struct TiltImp: View {
+    /// Who to draw. The first screen shows the greeter.
+    var imp: LinkImp = .greeter
+    /// Whether a finger can touch it (it looks, and a tap makes it hop). Off when the Imp sits
+    /// inside a scrolling form and only follows the phone.
+    var interactive = true
     @State private var tilt = TiltWatcher()
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var touch: CGPoint?
     @State private var performance: Performance?
     @State private var flash: (mood: Mood, until: Date)?
@@ -21,7 +27,7 @@ struct TiltImp: View {
                 let center = CGPoint(x: size.width / 2 + state.slide, y: size.height / 2)
                 // A finger wins; otherwise it looks the way the phone tips (downhill).
                 let gaze = touch.map { Gaze.toward($0, from: center) } ?? state.look
-                ImpFigure(imp: .greeter, mood: mood(at: date, state: state), performance: performance,
+                ImpFigure(imp: imp, mood: mood(at: date, state: state), performance: performance,
                           lean: state.lean, gaze: gaze, attentive: touch != nil, date: date)
                     .offset(x: state.slide)
             }
@@ -31,20 +37,26 @@ struct TiltImp: View {
                 .onEnded { value in
                     touch = nil
                     if hypot(value.translation.width, value.translation.height) < 8 { hop() }
-                })
+                }, isEnabled: interactive)
         }
         .onAppear {
             tilt.onShake = { flash = (.dizzy, Date().addingTimeInterval(2.6)) }
             tilt.onJolt = { if flash == nil || flash!.until < Date() { flash = (.surprised, Date().addingTimeInterval(0.9)) } }
-            tilt.start()
+            updateMotion()
         }
         .onDisappear { tilt.stop() }
-        .onChange(of: scenePhase) { _, phase in if phase == .active { tilt.start() } else { tilt.stop() } }
+        .onChange(of: scenePhase) { updateMotion() }
+        .onChange(of: reduceMotion) { updateMotion() }
         .accessibilityElement()
         .accessibilityLabel("Imp")
-        .accessibilityHint("Tilt your phone or tap it.")
-        .accessibilityAddTraits(.isButton)
-        .accessibilityAction { hop() }
+        .accessibilityHint(interactive ? "Tilt your phone or tap it." : "")
+        .accessibilityAddTraits(interactive ? .isButton : [])
+        .accessibilityAction { if interactive { hop() } }
+    }
+
+    /// Follows the phone while the screen is showing and Reduce Motion is off.
+    private func updateMotion() {
+        if scenePhase == .active && !reduceMotion { tilt.start() } else { tilt.stop() }
     }
 
     private func mood(at date: Date, state: TiltWatcher.State) -> Mood {
@@ -60,32 +72,22 @@ struct TiltImp: View {
     }
 }
 
-/// Reads how the phone is held (gravity, from Core Motion) and turns it into how the Imp leans,
-/// slides and looks. Smoothed with springs so the Imp moves like it has weight. Read once a frame.
+/// The phone's motion, read once for every screen that wants it: one `CMMotionManager`, started
+/// when the first watcher attaches and stopped when the last one lets go (so the first screen and
+/// an editor opened over it share it).
 @MainActor
-final class TiltWatcher {
-    struct State {
-        /// Degrees, toward the low side.
-        var lean = 0.0
-        /// Points sideways, toward the low side.
-        var slide: CGFloat = 0
-        /// Head turn (−1…1, y down).
-        var look = CGPoint.zero
-    }
+final class TiltSource {
+    static let shared = TiltSource()
 
-    var onShake: (() -> Void)?
-    var onJolt: (() -> Void)?
-
-    private let manager = CMMotionManager()
-    private var gravity = (x: 0.0, y: -1.0, z: 0.0)
+    private(set) var gravity = (x: 0.0, y: -1.0, z: 0.0)
     /// How the phone is usually held (slowly follows the hand), so "level" is however you hold it.
-    private var rest: (y: Double, z: Double)?
-    private var jolts = JoltDetector(threshold: 1.6)
-    private var current = State()
-    private var velocity = (lean: 0.0, slide: 0.0, x: 0.0, y: 0.0)
-    private var last: Date?
+    private(set) var rest: (y: Double, z: Double)?
+    private let manager = CMMotionManager()
+    private var listeners: [ObjectIdentifier: (_ acceleration: (x: Double, y: Double, z: Double), _ time: TimeInterval) -> Void] = [:]
 
-    func start() {
+    /// Starts the motion updates if nobody has. `onSample` gets the user acceleration (g) and the time of each sample.
+    func attach(_ owner: AnyObject, onSample: @escaping (_ acceleration: (x: Double, y: Double, z: Double), _ time: TimeInterval) -> Void) {
+        listeners[ObjectIdentifier(owner)] = onSample
         guard manager.isDeviceMotionAvailable, !manager.isDeviceMotionActive else { return }
         manager.deviceMotionUpdateInterval = 1 / 60
         manager.startDeviceMotionUpdates(to: .main) { [weak self] data, _ in
@@ -100,16 +102,58 @@ final class TiltWatcher {
                 } else {
                     self.rest = (g.y, g.z)
                 }
-                switch self.jolts.feed(x: a.x, at: t) {
-                case .shaken?: self.onShake?()
-                case .thrown?: self.onJolt?()
-                case nil: if abs(a.y) > 1.6 || abs(a.z) > 1.6 { self.onJolt?() }
-                }
+                for listener in Array(self.listeners.values) { listener((a.x, a.y, a.z), t) }
             }
         }
     }
 
-    func stop() { manager.stopDeviceMotionUpdates() }
+    func detach(_ owner: AnyObject) {
+        listeners[ObjectIdentifier(owner)] = nil
+        if listeners.isEmpty { manager.stopDeviceMotionUpdates() }
+    }
+}
+
+/// Turns how the phone is held (from the shared `TiltSource`) into how the Imp leans, slides and
+/// looks. Smoothed with springs so the Imp moves like it has weight. Read once a frame.
+@MainActor
+final class TiltWatcher {
+    struct State {
+        /// Degrees, toward the low side.
+        var lean = 0.0
+        /// Points sideways, toward the low side.
+        var slide: CGFloat = 0
+        /// Head turn (−1…1, y down).
+        var look = CGPoint.zero
+    }
+
+    var onShake: (() -> Void)?
+    var onJolt: (() -> Void)?
+
+    /// Held upright and still, which is what the Imp sees when it isn't following the phone.
+    private var gravity: (x: Double, y: Double, z: Double) { running ? TiltSource.shared.gravity : (0, -1, 0) }
+    private var rest: (y: Double, z: Double)? { running ? TiltSource.shared.rest : nil }
+    private var running = false
+    private var jolts = JoltDetector(threshold: 1.6)
+    private var current = State()
+    private var velocity = (lean: 0.0, slide: 0.0, x: 0.0, y: 0.0)
+    private var last: Date?
+
+    func start() {
+        running = true
+        TiltSource.shared.attach(self) { [weak self] a, t in
+            guard let self else { return }
+            switch jolts.feed(x: a.x, at: t) {
+            case .shaken?: onShake?()
+            case .thrown?: onJolt?()
+            case nil: if abs(a.y) > 1.6 || abs(a.z) > 1.6 { onJolt?() }
+            }
+        }
+    }
+
+    func stop() {
+        running = false
+        TiltSource.shared.detach(self)
+    }
 
     /// Where the Imp is this frame: springs pulled toward what the tilt asks for.
     func state(at date: Date) -> State {

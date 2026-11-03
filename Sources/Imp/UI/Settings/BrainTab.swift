@@ -1,4 +1,5 @@
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -35,7 +36,7 @@ struct BrainTab: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Metrics.gap) {
+        VStack(alignment: .leading, spacing: Spacing.medium) {
             Card("Service", icon: "server.rack",
                  info: "Where \(name) thinks. Any OpenAI-compatible service, in the cloud or on this Mac. The star marks the one new Imps use.") {
                 EvenGrid(minWidth: 150, spacing: 8) {
