@@ -24,9 +24,10 @@ struct FlowLayout: Layout {
     }
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let w = proposal.width ?? 360
-        let r = arrange(w, subviews)
-        return CGSize(width: proposal.width ?? r.size.width, height: r.size.height)
+        // An open width (none, or endless) lays out at 360 and reports what it used.
+        let given = proposal.width.flatMap { $0.isFinite ? $0 : nil }
+        let r = arrange(given ?? 360, subviews)
+        return CGSize(width: given ?? r.size.width, height: r.size.height)
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {

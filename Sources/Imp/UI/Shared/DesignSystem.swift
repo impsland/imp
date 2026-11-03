@@ -44,7 +44,15 @@ struct EvenGrid: Layout {
     var maxColumns = Int.max
     var spacing: CGFloat = 8
 
+    /// As wide as up to four columns at their narrowest: the size asked for when the width is open.
+    private func naturalWidth(_ count: Int) -> CGFloat {
+        (minWidth + spacing) * CGFloat(min(max(count, 1), 4)) - spacing
+    }
+
     private func rows(_ width: CGFloat, _ subviews: Subviews) -> [(range: Range<Int>, width: CGFloat, height: CGFloat)] {
+        // SwiftUI also asks "how big at an endless width?": that is the natural width, not a crash
+        // turning infinity into a column count.
+        let width = width.isFinite ? width : naturalWidth(subviews.count)
         let fit = min(max(1, Int((width + spacing) / (minWidth + spacing))), maxColumns)
         var out: [(Range<Int>, CGFloat, CGFloat)] = []
         var start = 0
@@ -60,7 +68,7 @@ struct EvenGrid: Layout {
     }
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let width = proposal.width ?? (minWidth + spacing) * CGFloat(min(subviews.count, 4)) - spacing
+        let width = proposal.width.flatMap { $0.isFinite ? $0 : nil } ?? naturalWidth(subviews.count)
         let r = rows(width, subviews)
         let height = r.map(\.height).reduce(0, +) + spacing * CGFloat(max(r.count - 1, 0))
         return CGSize(width: width, height: height)
