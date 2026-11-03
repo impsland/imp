@@ -16,6 +16,15 @@ jobs:
         run: make build
       - name: Test
         run: make test
+      # A test that stops the process leaves only "unexpected signal" in the log: keep the crash reports.
+      - name: Crash reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: crash-reports
+          path: ~/Library/Logs/DiagnosticReports/*.ips
+          if-no-files-found: ignore
+          retention-days: 7
 
   iphone:
     runs-on: macos-latest
