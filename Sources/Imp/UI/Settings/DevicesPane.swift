@@ -1,3 +1,4 @@
+import AppKit
 import ImpDesign
 import ImpKit
 import SwiftUI
@@ -14,10 +15,10 @@ struct DevicesPane: View {
         let peers = model.link.peers.map { peer in
             DeviceMap.Peer(id: peer.id, name: peer.name, kind: peer.kind,
                            reach: { switch peer.reach { case .direct: .direct; case .viaServer: .viaServer; case .away: .away } }(),
-                           isTrusted: peer.isTrusted)
+                           isTrusted: peer.isTrusted, stage: peer.stage)
         }
         return DeviceMap.build(thisMac: DeviceLink.deviceName, peers: peers, server: model.prefs.server,
-                               imps: model.prefs.imps, mcpServers: model.prefs.mcpServers)
+                               imps: model.prefs.imps, mcpServers: model.prefs.mcpServers, visitors: model.link.visitorsStaged)
     }
 
     var body: some View {
@@ -25,7 +26,7 @@ struct DevicesPane: View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             Card("Map", icon: "point.3.connected.trianglepath.dotted",
                  info: "Your devices and how they talk. A solid line is connected, a dashed one is not. A line through a server shows its name.") {
-                DeviceMapView(map: map, imps: model.prefs.imps)
+                DeviceMapView(map: map)
                 MapLegend()
             }
             ImpsCard(map: map)
@@ -79,7 +80,6 @@ extension DeviceMap.Node {
 
 private struct DeviceMapView: View {
     let map: DeviceMap
-    let imps: [ImpProfile]
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private static let nodeSize = CGSize(width: 150, height: 66)
@@ -159,17 +159,16 @@ private struct DeviceMapView: View {
 
     @ViewBuilder
     private func edges(_ spots: [String: CGPoint]) -> some View {
-        let lines = segments.compactMap { segment -> (DeviceMap.State, CGPoint, CGPoint)? in
-            guard let a = spots[segment.from], let b = spots[segment.to] else { return nil }
-            return (segment.state, a, b)
-        }
+        let lines = cutLines(spots)
         TimelineView(.animation(minimumInterval: 1.0 / 30, paused: reduceMotion || !lines.contains { $0.0 == .connected })) { context in
             let phase = reduceMotion ? 0 : -context.date.timeIntervalSinceReferenceDate * 14
             Canvas { canvas, _ in
-                for (state, a, b) in lines {
+                for (state, pieces) in lines {
                     var path = Path()
-                    path.move(to: a)
-                    path.addLine(to: b)
+                    for (a, b) in pieces {
+                        path.move(to: a)
+                        path.addLine(to: b)
+                    }
                     switch state {
                     case .connected:
                         canvas.stroke(path, with: .color(state.color.opacity(0.85)),
@@ -185,19 +184,51 @@ private struct DeviceMapView: View {
         .accessibilityHidden(true)
     }
 
+    /// The lines to stroke, each as the pieces that show. The tiles and labels are see-through, so
+    /// no line may run under them: each line is cut where it crosses any tile or label, its own or
+    /// another's.
+    private func cutLines(_ spots: [String: CGPoint]) -> [(DeviceMap.State, [(CGPoint, CGPoint)])] {
+        let tile = CGSize(width: Self.nodeSize.width + 6, height: Self.nodeSize.height + 6)
+        var boxes = map.nodes.compactMap { node in spots[node.id].map { Self.box(around: $0, size: tile) } }
+        for segment in segments {
+            guard let label = segment.label, let a = spots[segment.from], let b = spots[segment.to] else { continue }
+            let mid = CGPoint(x: a.x + (b.x - a.x) * segment.anchor, y: a.y + (b.y - a.y) * segment.anchor)
+            let size = Self.pillSize(label)
+            boxes.append(Self.box(around: mid, size: CGSize(width: size.width + 8, height: size.height + 6)))
+        }
+        return segments.compactMap { segment -> (DeviceMap.State, [(CGPoint, CGPoint)])? in
+            guard let a = spots[segment.from], let b = spots[segment.to] else { return nil }
+            return (segment.state, DeviceMap.pieces(from: a, to: b, outside: boxes))
+        }
+    }
+
+    private static func box(around center: CGPoint, size: CGSize) -> CGRect {
+        CGRect(x: center.x - size.width / 2, y: center.y - size.height / 2, width: size.width, height: size.height)
+    }
+
+    private static let pillFont: NSFont = {
+        let base = NSFont.systemFont(ofSize: 11, weight: .medium)
+        return base.fontDescriptor.withDesign(.rounded).flatMap { NSFont(descriptor: $0, size: 11) } ?? base
+    }()
+
+    /// The size of a line's label (`pill`): its words, the dot and the padding.
+    private static func pillSize(_ text: String) -> CGSize {
+        let words = (text as NSString).size(withAttributes: [.font: pillFont])
+        return CGSize(width: ceil(words.width) + 6 + 5 + 16, height: ceil(words.height) + 6)
+    }
+
     private func pill(_ text: String, state: DeviceMap.State) -> some View {
         HStack(spacing: 5) {
             Circle().fill(state.color).frame(width: 6, height: 6)
             Text(verbatim: text).font(.system(size: 11, weight: .medium, design: .rounded)).foregroundStyle(Dungeon.cream).lineLimit(1)
         }
         .padding(.horizontal, 8).padding(.vertical, 3)
-        .background(Capsule().fill(Dungeon.deep))
-        .overlay(Capsule().strokeBorder(Dungeon.cardEdge))
+        .mapSurface(Capsule(), edge: Dungeon.cardEdge, material: .regularMaterial)
         .accessibilityHidden(true)
     }
 
     private func nodeView(_ node: DeviceMap.Node) -> some View {
-        let here = node.imps.compactMap { id in imps.first { $0.id == id } }
+        let here = map.residents(of: node.id)
         return VStack(spacing: 4) {
             HStack(spacing: 6) {
                 Image(systemName: node.symbol).font(.system(size: 13, weight: .semibold))
@@ -215,7 +246,7 @@ private struct DeviceMapView: View {
             if !here.isEmpty {
                 HStack(spacing: 3) {
                     ForEach(here.prefix(6)) { imp in
-                        Circle().fill(Color.imp(imp.hue)).frame(width: 9, height: 9)
+                        Circle().fill(Color.imp(imp.hue)).frame(width: 9, height: 9).help(imp.name)
                     }
                     if here.count > 6 { Text(verbatim: "+\(here.count - 6)").font(.system(size: 9)).foregroundStyle(Dungeon.muted) }
                 }
@@ -223,9 +254,8 @@ private struct DeviceMapView: View {
         }
         .padding(.horizontal, 8).padding(.vertical, 7)
         .frame(width: Self.nodeSize.width, height: Self.nodeSize.height)
-        .background(RoundedRectangle(cornerRadius: Radius.small + 2, style: .continuous).fill(Dungeon.deep))
-        .overlay(RoundedRectangle(cornerRadius: Radius.small + 2, style: .continuous)
-            .strokeBorder(node.kind == .thisMac ? Dungeon.ember.opacity(0.7) : Dungeon.cardEdge, lineWidth: node.kind == .thisMac ? 1.5 : 1))
+        .mapSurface(RoundedRectangle(cornerRadius: Radius.small + 2, style: .continuous),
+                    edge: node.kind == .thisMac ? Dungeon.ember.opacity(0.7) : Dungeon.cardEdge, width: node.kind == .thisMac ? 1.5 : 1)
         .opacity(node.state == .offline && node.kind != .server ? 0.7 : 1)
     }
 
@@ -256,7 +286,7 @@ private struct DeviceMapView: View {
     private func summary(of imp: DeviceMap.ImpEntry) -> String {
         let place = map.node(imp.location)?.name ?? ""
         let tools = ListFormatter.localizedString(byJoining: imp.tools.map(\.title))
-        let others = ListFormatter.localizedString(byJoining: imp.talksTo.compactMap { map.imp($0)?.name })
+        let others = ListFormatter.localizedString(byJoining: imp.talksTo.map(\.name))
         return String(localized: "\(imp.name), on \(place). Tools: \(tools.isEmpty ? String(localized: "none") : tools). Talks to: \(others.isEmpty ? String(localized: "nobody") : others).")
     }
 }
@@ -299,11 +329,7 @@ private struct ImpsCard: View {
                             ForEach(imp.tools) { tool in chip(tool) }
                         }
                     }
-                    HStack(alignment: .firstTextBaseline, spacing: 5) {
-                        Image(systemName: "bubble.left.and.bubble.right").font(.system(size: 10.5)).accessibilityHidden(true)
-                        Text(verbatim: talk(imp))
-                    }
-                    .font(.system(size: 11.5)).foregroundStyle(Dungeon.muted)
+                    talk(imp)
                 }
                 .accessibilityElement(children: .combine)
             }
@@ -315,10 +341,41 @@ private struct ImpsCard: View {
             : String(localized: "On \(map.node(imp.location)?.name ?? "")")
     }
 
-    private func talk(_ imp: DeviceMap.ImpEntry) -> String {
-        let names = imp.talksTo.compactMap { map.imp($0)?.name }
-        if names.isEmpty {
-            return map.imps.count > 1 ? String(localized: "Doesn't talk to other Imps") : String(localized: "No other Imps to talk to")
+    /// Who it can message, each with its colour and, when it is on another device, where.
+    @ViewBuilder
+    private func talk(_ imp: DeviceMap.ImpEntry) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Image(systemName: "bubble.left.and.bubble.right").font(.system(size: 10.5)).accessibilityHidden(true)
+            if imp.talksTo.isEmpty {
+                Text(map.imps.count + map.others.count > 1 ? "Doesn't talk to other Imps" : "No other Imps to talk to")
+            } else {
+                Text("Can talk to")
+                FlowLayout(spacing: 5, lineSpacing: 5) {
+                    ForEach(imp.talksTo) { contact in contactChip(contact, from: imp) }
+                }
+                .accessibilityLabel(Text(verbatim: talkSummary(imp)))
+            }
+        }
+        .font(.system(size: 11.5)).foregroundStyle(Dungeon.muted)
+    }
+
+    private func contactChip(_ contact: DeviceMap.Contact, from imp: DeviceMap.ImpEntry) -> some View {
+        HStack(spacing: 4) {
+            Circle().fill(Color.imp(contact.hue)).frame(width: 7, height: 7)
+            Text(verbatim: contact.name).foregroundStyle(Dungeon.cream)
+            if contact.location != DeviceMap.thisMacID, let device = map.node(contact.location)?.name {
+                Text(verbatim: device).foregroundStyle(Dungeon.muted).lineLimit(1)
+            }
+        }
+        .font(.system(size: 11, weight: .medium))
+        .padding(.horizontal, 7).padding(.vertical, 2)
+        .background(Capsule().fill(Color.white.opacity(0.08)))
+    }
+
+    private func talkSummary(_ imp: DeviceMap.ImpEntry) -> String {
+        let names = imp.talksTo.map { contact in
+            contact.location == DeviceMap.thisMacID ? contact.name
+                : String(localized: "\(contact.name) on \(map.node(contact.location)?.name ?? "")")
         }
         return String(localized: "Can talk to \(ListFormatter.localizedString(byJoining: names))")
     }
@@ -329,5 +386,18 @@ private struct ImpsCard: View {
             .foregroundStyle(Dungeon.cream)
             .padding(.horizontal, 8).padding(.vertical, 4)
             .background(Capsule().fill(tool.source == .mcp ? Dungeon.ember.opacity(0.18) : Color.white.opacity(0.08)))
+    }
+}
+
+private extension View {
+    /// A see-through surface on the wall: the wall shows through, softened, instead of a dark box.
+    /// The material is kept dark, since the wall is dark in Light mode too.
+    /// A label that sits on a line takes a stronger `material`, so the line doesn't run through its words.
+    func mapSurface<S: InsettableShape>(_ shape: S, edge: Color, width: CGFloat = 1, material: Material = .ultraThinMaterial) -> some View {
+        background {
+            shape.fill(material).environment(\.colorScheme, .dark)
+                .overlay(shape.fill(Dungeon.card))
+        }
+        .overlay(shape.strokeBorder(edge, lineWidth: width))
     }
 }

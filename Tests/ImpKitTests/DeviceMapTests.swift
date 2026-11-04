@@ -59,6 +59,34 @@ import Testing
         #expect(map.node(DeviceMap.thisMacID)?.imps.count == 2)
     }
 
+    /// Dot is out on the iPhone, where Cinder and Noodle live. It can message Bumble at home and
+    /// every Imp on the phone's screen. Bumble, at home with no visitors, can message Dot only.
+    @Test func anImpAwayTalksToTheImpsOnTheScreenItIsOn() {
+        var dot = imp("Dot")
+        dot.awayOn = phone.id
+        let bumble = imp("Bumble")
+        let cinder = LinkImp(id: UUID(), name: "Cinder", hue: 0.1, scale: 1, traits: .plain)
+        let noodle = LinkImp(id: UUID(), name: "Noodle", hue: 0.6, scale: 1, traits: .plain)
+        var onPhone = phone
+        onPhone.stage = [LinkStaged(imp: cinder, home: phone.id), LinkStaged(imp: noodle, home: phone.id),
+                         LinkStaged(imp: LinkImp(dot), home: UUID())]
+        let map = DeviceMap.build(thisMac: "Mac", peers: [onPhone], server: "", imps: [dot, bumble], mcpServers: [])
+        #expect(map.imp(dot.id)?.talksTo.map(\.name) == ["Bumble", "Cinder", "Noodle"])
+        #expect(map.imp(dot.id)?.talksTo.last?.location == phone.id.uuidString)
+        #expect(map.imp(bumble.id)?.talksTo.map(\.name) == ["Dot"])
+        #expect(map.residents(of: phone.id.uuidString).map(\.name) == ["Dot", "Cinder", "Noodle"])
+    }
+
+    /// A visitor on this Mac's desktop is on the same screen as the Mac's Imps at home.
+    @Test func anImpAtHomeTalksToTheVisitorsHere() {
+        let bumble = imp("Bumble")
+        let cinder = LinkImp(id: UUID(), name: "Cinder", hue: 0.1, scale: 1, traits: .plain)
+        let map = DeviceMap.build(thisMac: "Mac", peers: [phone], server: "", imps: [bumble], mcpServers: [],
+                                  visitors: [LinkStaged(imp: cinder, home: phone.id)])
+        #expect(map.imp(bumble.id)?.talksTo.map(\.name) == ["Cinder"])
+        #expect(map.residents(of: DeviceMap.thisMacID).map(\.name) == ["Bumble", "Cinder"])
+    }
+
     @Test func toolsAndTalk() {
         let files = MCPServerConfig(name: "Files", transport: .stdio, command: "x")
         let off = MCPServerConfig(name: "Off", transport: .stdio, command: "x")
@@ -73,8 +101,21 @@ import Testing
         #expect(tools.contains { $0.id == "own.body" })
         #expect(!tools.contains { $0.id == "own.computer" })
         #expect(tools.filter { $0.source == .mcp }.map(\.title) == ["Files"])
-        #expect(map.imp(a.id)?.talksTo == [b.id])
+        #expect(map.imp(a.id)?.talksTo.map(\.id) == [b.id])
         #expect(map.imp(b.id)?.talksTo.isEmpty == true)
         #expect(map.imp(b.id)?.tools.contains { $0.id == "own.troupe" } == false)
+    }
+
+    /// A line between two see-through tiles is drawn only where it crosses neither, nor a label.
+    @Test func linesStopAtTilesAndLabels() {
+        let left = CGRect(x: 0, y: 0, width: 10, height: 10), label = CGRect(x: 45, y: 0, width: 10, height: 10)
+        let right = CGRect(x: 90, y: 0, width: 10, height: 10)
+        let pieces = DeviceMap.pieces(from: CGPoint(x: 5, y: 5), to: CGPoint(x: 95, y: 5), outside: [left, label, right])
+        #expect(pieces.map { [$0.0.x, $0.1.x] } == [[10, 45], [55, 90]])
+        // A box the line misses changes nothing, and overlapping boxes make one gap.
+        let away = CGRect(x: 40, y: 50, width: 10, height: 10)
+        #expect(DeviceMap.pieces(from: CGPoint(x: 0, y: 0), to: CGPoint(x: 100, y: 0), outside: [away]).count == 1)
+        let overlapping = [CGRect(x: 20, y: -5, width: 20, height: 10), CGRect(x: 30, y: -5, width: 20, height: 10)]
+        #expect(DeviceMap.pieces(from: CGPoint(x: 0, y: 0), to: CGPoint(x: 100, y: 0), outside: overlapping).map { [$0.0.x, $0.1.x] } == [[0, 20], [50, 100]])
     }
 }

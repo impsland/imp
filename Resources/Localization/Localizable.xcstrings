@@ -4930,6 +4930,22 @@
         }
       }
     },
+    "Can talk to" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puede hablar con"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可交谈"
+          }
+        }
+      }
+    },
     "Can talk to %@" : {
       "localizations" : {
         "es" : {

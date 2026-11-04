@@ -189,8 +189,18 @@ enum IconRenderer {
             router.generalTab = GeneralTab(rawValue: String(s.dropFirst(8))) ?? .services
             if router.generalTab == .devices {
                 model.prefs.server = "imp.example.org"
+                // Dot is out on the iPhone, where Cinder and Noodle live, and Bumble is at home.
+                let phone = UUID()
+                func look(_ name: String, _ hue: Double) -> LinkImp { LinkImp(id: UUID(), name: name, hue: hue, scale: 1, traits: .plain) }
+                var stage = [LinkStaged(imp: look("Cinder", 0.08), home: phone), LinkStaged(imp: look("Noodle", 0.55), home: phone)]
+                if model.prefs.imps.count >= 2 {
+                    model.prefs.imps[0].name = "Dot"
+                    model.prefs.imps[1].name = "Bumble"
+                    model.prefs.imps[0].awayOn = phone
+                    stage.append(LinkStaged(imp: LinkImp(model.prefs.imps[0]), home: UUID()))
+                }
                 model.link.showSample([
-                    .init(id: UUID(), name: "Anna's iPhone", kind: .phone, reach: .direct, imps: [], isTrusted: true),
+                    .init(id: phone, name: "Anna's iPhone", kind: .phone, reach: .direct, imps: [], isTrusted: true, stage: stage),
                     .init(id: UUID(), name: "Studio Mac", kind: .mac, reach: .viaServer, imps: [], isTrusted: true),
                     .init(id: UUID(), name: "Old iPad phone", kind: .phone, reach: .away, imps: []),
                 ])

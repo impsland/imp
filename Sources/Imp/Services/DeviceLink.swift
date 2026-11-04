@@ -24,6 +24,8 @@ final class DeviceLink {
         var imps: [UUID]
         /// One of the owner's own devices: Imps that visit it may use their tools on this Mac.
         var isTrusted = false
+        /// The Imps on its screen, as it last said (empty while it isn't connected).
+        var stage: [LinkStaged] = []
 
         var isConnected: Bool { reach != .away }
     }
@@ -258,7 +260,7 @@ final class DeviceLink {
             let id = link.device.id
             let reach: Peer.Reach = !node.isConnected(id) ? .away : node.isThroughHop(id) ? .viaServer : .direct
             return Peer(id: id, name: link.device.name, kind: link.device.kind, reach: reach, imps: node.away.held(by: id),
-                        isTrusted: node.isTrusted(id))
+                        isTrusted: node.isTrusted(id), stage: reach == .away ? [] : node.stage(of: id))
         }
         if now != peers { peers = now }
         // Visitors sleep while their homes are away, and wear the looks their homes gave them.
@@ -323,8 +325,8 @@ final class DeviceLink {
         case .answer(let id, let text, let failed):
             let words = String(text.prefix(LinkProtocol.maxText))
             settle(id, failed ? .failure(ToolArgumentError(words)) : .success(words))
-        case .look:
-            refresh()                                          // the node has its new looks
+        case .look, .stage:
+            refresh()                                          // the node has its new looks, or a screen's Imps
         case .chat(let imp, let turns): app.visitor(imp)?.heard(chat: turns)
         case .work(let imp, let work): app.visitor(imp)?.heard(work: work)
         case .mood(let imp, let mood): app.visitor(imp)?.heard(mood: mood)
@@ -636,7 +638,7 @@ final class DeviceLink {
     }
 
     /// The Imps visiting this desktop, as the other devices are told.
-    private var visitorsStaged: [LinkStaged] {
+    var visitorsStaged: [LinkStaged] {
         app.visitors.compactMap { model in model.visit.map { LinkStaged(imp: $0.look, home: $0.homeID) } }
     }
 
