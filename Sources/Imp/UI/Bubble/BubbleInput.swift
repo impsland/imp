@@ -40,7 +40,8 @@ struct TypingField: View {
     private func field(empty: Bool) -> some View {
         HStack(alignment: .bottom, spacing: 2) {
             // Measured with what's typed (`bubble.text`), so the bubble is as tall as the lines in it.
-            TextField(chat ? String(localized: "Message \(model.profile.name)…") : bubble.prompt ?? String(localized: "Ask Imp anything…"),
+            TextField(asleep ? String(localized: "\(model.profile.name) is asleep")
+                      : chat ? String(localized: "Message \(model.profile.name)…") : bubble.prompt ?? String(localized: "Ask Imp anything…"),
                       text: measuring ? .constant(bubble.text) : $text, axis: .vertical)
                 .textFieldStyle(.plain)
                 .font(.system(size: 14))
@@ -85,8 +86,8 @@ struct TypingField: View {
     /// stop it).
     private var busy: Bool { chat && model.work != nil || asleep }
 
-    /// A visitor whose home is away can't be asked anything.
-    private var asleep: Bool { model.visit?.isAwake == false }
+    /// An Imp that can't think (no usable brain, or its home is away) can't be asked anything.
+    private var asleep: Bool { !model.wakefulness.isAwake }
 
     private func send() {
         guard !busy else { return }

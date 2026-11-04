@@ -35,7 +35,7 @@ public enum LinkAccess {
             return standing == .peer
         case .look(let imp):
             return visits.visit(of: imp.id)?.home.id == device
-        case .chat(let imp, _), .work(let imp, _), .mood(let imp, _), .animate(let imp, _),
+        case .chat(let imp, _), .work(let imp, _), .mood(let imp, _), .brain(let imp, _), .animate(let imp, _),
              .speech(let imp, _), .talkLines(let imp, _):
             return visits.visit(of: imp)?.home.id == device
         case .filePart, .fileFailed:

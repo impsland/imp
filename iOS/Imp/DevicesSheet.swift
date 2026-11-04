@@ -98,16 +98,16 @@ struct DevicesSheet: View {
                 Spacer(minLength: 0)
             }
             limitRow("Wait up to", info: String(localized: "A request that hasn't finished after this long ends with a message instead of waiting on."),
-                     value: limit(\.timeoutSeconds), range: 5...600, step: 15) { "\(Int($0)) s" }
+                     value: limit(\.timeoutSeconds), range: RequestLimits.timeoutControlRange, step: RequestLimits.timeoutStep) { "\(Int($0)) s" }
             CardDivider()
             limitRow("Retries", info: String(localized: "How many times a request is tried again after the network drops or the service is busy. Wrong keys and bad requests are never retried."),
-                     value: limit(\.retries, as: Double.self), range: 0...10, step: 1) { "\(Int($0))" }
+                     value: limit(\.retries, as: Double.self), range: Double(RequestLimits.retriesRange.lowerBound)...Double(RequestLimits.retriesRange.upperBound), step: 1) { "\(Int($0))" }
             CardDivider()
             limitRow("First wait", info: String(localized: "The pause before the first retry."),
-                     value: limit(\.retryDelaySeconds), range: 0...60, step: 0.5) { "\($0.formatted()) s" }
+                     value: limit(\.retryDelaySeconds), range: RequestLimits.delayRange, step: RequestLimits.delayStep) { "\($0.formatted()) s" }
             CardDivider()
             limitRow("Longer each time", info: String(localized: "Each pause is this many times longer than the one before."),
-                     value: limit(\.backoff), range: 1...10, step: 0.5) { "× \($0.formatted())" }
+                     value: limit(\.backoff), range: RequestLimits.backoffRange, step: RequestLimits.backoffStep) { "× \($0.formatted())" }
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)

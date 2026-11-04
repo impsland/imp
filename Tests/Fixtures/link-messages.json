@@ -360,6 +360,15 @@
    }
   },
   {
+   "name": "brain",
+   "json": {
+    "brain": {
+     "imp": "00000000-0000-0000-0000-000000000001",
+     "ready": false
+    }
+   }
+  },
+  {
    "name": "animate",
    "json": {
     "animate": {

@@ -6,8 +6,17 @@ enum ChatAvailability {
     case ready
     /// Its brain is on a device that isn't connected: a visiting Imp sleeps until its home is back.
     case offline
-    /// A pocket Imp with no service and model to think with.
+    /// No service and model to think with at its home (a pocket Imp here, or a visitor's home says so).
     case noBrain
+
+    /// The shared rule (`Wakefulness`), as the chat sheet shows it.
+    init(_ wakefulness: Wakefulness) {
+        switch wakefulness {
+        case .awake: self = .ready
+        case .homeAway: self = .offline
+        case .noBrain: self = .noBrain
+        }
+    }
 }
 
 /// Where a chat lives: the Imp's home (visiting Imps think there) or this iPhone (pocket Imps). The chat sheet
@@ -36,7 +45,7 @@ extension LinkHub: ChatSource {
     func turns(_ id: UUID) -> [LinkTurn] { chats[id] ?? [] }
     func working(_ id: UUID) -> LinkWork? { work[id] }
     func mood(_ id: UUID) -> Mood? { moods[id] }
-    func availability(_ id: UUID) -> ChatAvailability { isAwake(id) ? .ready : .offline }
+    func availability(_ id: UUID) -> ChatAvailability { ChatAvailability(wakefulness(id)) }
 
     /// Everyone this visiting Imp can message: the Imps on this screen and on its home's.
     func peers(_ id: UUID) -> [LinkImp] {
@@ -48,8 +57,14 @@ extension LinkHub: ChatSource {
 
     func intro(_ imp: LinkImp, _ availability: ChatAvailability) -> (title: String, text: String) {
         let home = visit(imp.id)?.home.device.name ?? String(localized: "its home")
-        if availability == .offline {
+        switch availability {
+        case .offline:
             return (String(localized: "\(imp.name) is asleep"), String(localized: "\(home) is away. It wakes when \(home) is back."))
+        case .noBrain:
+            return (String(localized: "\(imp.name) is asleep"),
+                    String(localized: "\(imp.name) has no brain yet, so it can't think. Give it one in its settings on \(home)."))
+        case .ready:
+            break
         }
         return (String(localized: "Ask \(imp.name) anything"),
                 String(localized: "It works on \(home), with its tools, and can message the Imps there too. Pictures, voices and files it makes show up right here."))

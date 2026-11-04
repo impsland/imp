@@ -17,13 +17,28 @@ public struct RequestLimits: Codable, Hashable, Sendable {
 
     public static let standard = RequestLimits()
 
+    /// What each limit may be (`Tests/Fixtures/retry-policy.json`), and the step its control moves
+    /// by. `clamped` keeps every value inside these, and the Mac's and the iPhone's Requests cards
+    /// use them too. Their timeout control stops at `timeoutControlMax`: a longer wait comes only
+    /// from a hand-edited setting, and is still kept within `timeoutRange`.
+    public static let timeoutRange: ClosedRange<Double> = 5...3600
+    public static let timeoutControlMax = 600.0
+    public static var timeoutControlRange: ClosedRange<Double> { timeoutRange.lowerBound...timeoutControlMax }
+    public static let timeoutStep = 15.0
+    public static let retriesRange: ClosedRange<Int> = 0...10
+    public static let delayRange: ClosedRange<Double> = 0...60
+    public static let delayStep = 0.5
+    public static let backoffRange: ClosedRange<Double> = 1...10
+    public static let backoffStep = 0.5
+
     /// Safe ranges, so a hand-edited or broken value can't switch the limits off or make them absurd.
     public var clamped: RequestLimits {
+        func fit(_ v: Double, _ r: ClosedRange<Double>, _ fallback: Double) -> Double { min(max(v.isFinite ? v : fallback, r.lowerBound), r.upperBound) }
         var l = self
-        l.timeoutSeconds = min(max(timeoutSeconds.isFinite ? timeoutSeconds : Self.standard.timeoutSeconds, 5), 3600)
-        l.retries = min(max(retries, 0), 10)
-        l.retryDelaySeconds = min(max(retryDelaySeconds.isFinite ? retryDelaySeconds : Self.standard.retryDelaySeconds, 0), 60)
-        l.backoff = min(max(backoff.isFinite ? backoff : Self.standard.backoff, 1), 10)
+        l.timeoutSeconds = fit(timeoutSeconds, Self.timeoutRange, Self.standard.timeoutSeconds)
+        l.retries = min(max(retries, Self.retriesRange.lowerBound), Self.retriesRange.upperBound)
+        l.retryDelaySeconds = fit(retryDelaySeconds, Self.delayRange, Self.standard.retryDelaySeconds)
+        l.backoff = fit(backoff, Self.backoffRange, Self.standard.backoff)
         return l
     }
 
@@ -48,6 +63,17 @@ public struct RequestLimits: Codable, Hashable, Sendable {
         if defaults.object(forKey: Key.delay) != nil { l.retryDelaySeconds = defaults.double(forKey: Key.delay) }
         if defaults.object(forKey: Key.backoff) != nil { l.backoff = defaults.double(forKey: Key.backoff) }
         return l.clamped
+    }
+
+    /// Saves the limits, clamped, where `stored(in:)` reads them. Returns what was saved.
+    @discardableResult
+    public func store(in defaults: UserDefaults = .standard) -> RequestLimits {
+        let l = clamped
+        defaults.set(l.timeoutSeconds, forKey: Key.timeout)
+        defaults.set(l.retries, forKey: Key.retries)
+        defaults.set(l.retryDelaySeconds, forKey: Key.delay)
+        defaults.set(l.backoff, forKey: Key.backoff)
+        return l
     }
 }
 

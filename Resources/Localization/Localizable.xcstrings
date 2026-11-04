@@ -370,6 +370,22 @@
         }
       }
     },
+    "%@ has no brain yet, so it can't think. Give it one in its settings on %@." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ aún no tiene cerebro, así que no puede pensar. Dale uno en sus ajustes en %2$@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 还没有大脑，所以无法思考。请在 %2$@ 上的设置里给它一个。"
+          }
+        }
+      }
+    },
     "%@ has no brain yet. Open its settings, choose the Brain tab and pick an AI service and a model." : {
       "localizations" : {
         "es" : {
@@ -474,6 +490,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 睡着了"
+          }
+        }
+      }
+    },
+    "%@ is asleep. %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ está dormido. %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 睡着了。%2$@"
           }
         }
       }
@@ -24064,6 +24096,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沉重的眼睑"
+          }
+        }
+      }
+    },
+    "its home" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "su casa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它的家"
           }
         }
       }

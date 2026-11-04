@@ -286,6 +286,10 @@ func testImp(_ n: Int) -> LinkImp {
         #expect(!LinkAccess.allows(.mood(imp: testImp(2).id, mood: "happy"), from: home.id, standing: .peer, ledger: ledger, visits: visits))
         #expect(LinkAccess.allows(.look(imp: testImp(1)), from: home.id, standing: .peer, ledger: ledger, visits: visits))
         #expect(!LinkAccess.allows(.look(imp: testImp(1)), from: other.id, standing: .peer, ledger: ledger, visits: visits))
+        // Only its home says whether it has a brain (a stranger can't put it to sleep or wake it).
+        let brain: LinkMessage = .brain(imp: testImp(1).id, ready: false)
+        #expect(LinkAccess.allows(brain, from: home.id, standing: .visitor, ledger: ledger, visits: visits))
+        #expect(!LinkAccess.allows(brain, from: other.id, standing: .peer, ledger: ledger, visits: visits))
         let part: LinkMessage = .filePart(id: UUID(), part: LinkFilePart(name: "a", size: 1, offset: 0, data: Data([1])))
         #expect(LinkAccess.allows(part, from: home.id, standing: .visitor, ledger: ledger, visits: visits))
         #expect(!LinkAccess.allows(part, from: other.id, standing: .visitor, ledger: ledger, visits: visits))

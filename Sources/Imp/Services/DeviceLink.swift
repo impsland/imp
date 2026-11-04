@@ -40,6 +40,8 @@ final class DeviceLink {
     @ObservationIgnored private var node: LinkNode?
     /// What each device was last told about each of its Imps (only changes are sent).
     @ObservationIgnored private var sent: [UUID: Snapshot] = [:]
+    /// Visitors whose homes said they have no brain to think with (`LinkMessage.brain`): they sleep here.
+    @ObservationIgnored private var brainless: Set<UUID> = []
     @ObservationIgnored private var flushing: Set<UUID> = []
     /// Questions Imps here asked Imps on other devices, waiting for the answer.
     @ObservationIgnored private var asks: [UUID: CheckedContinuation<String, Error>] = [:]
@@ -54,6 +56,8 @@ final class DeviceLink {
     private struct Snapshot: Equatable {
         var look: LinkImp
         var mood: String
+        /// It has a brain it can think with here.
+        var ready: Bool
         var work: LinkWork?
         var chat: [LinkTurn]
         var speech: LinkSpeech?
@@ -144,6 +148,7 @@ final class DeviceLink {
     /// Sends a visiting Imp home from here. False if it isn't one.
     func sendHome(visitor imp: UUID) -> Bool {
         guard node?.sendHome(imp) == true else { return false }
+        brainless.remove(imp)
         refresh()
         return true
     }
@@ -160,10 +165,12 @@ final class DeviceLink {
         node?.send(message, to: home)
     }
 
-    /// A visit as the desktop draws it: asleep while its home isn't connected.
+    /// A visit as the desktop draws it: asleep while its home isn't connected, or has no brain for it.
     private func visiting(_ visit: Visits.Visit) -> Visiting {
         Visiting(look: visit.imp, homeID: visit.home.id, homeName: visit.home.device.name,
-                 isAwake: node?.isConnected(visit.home.id) == true, side: visit.side, from: visit.from)
+                 wakefulness: .visiting(homeConnected: node?.isConnected(visit.home.id) == true,
+                                        homeSaysReady: !brainless.contains(visit.id)),
+                 side: visit.side, from: visit.from)
     }
 
     /// An Imp that came home or was deleted needs nothing more said about it.
@@ -321,9 +328,13 @@ final class DeviceLink {
         case .chat(let imp, let turns): app.visitor(imp)?.heard(chat: turns)
         case .work(let imp, let work): app.visitor(imp)?.heard(work: work)
         case .mood(let imp, let mood): app.visitor(imp)?.heard(mood: mood)
+        case .brain(let imp, let ready):
+            if ready { brainless.remove(imp) } else { brainless.insert(imp) }
+            refresh()
         case .speech(let imp, let speech): app.visitor(imp)?.heard(speech: speech)
         case .animate(let imp, let beats): app.visitor(imp)?.acted(beats)
         case .gone(let imp):
+            brainless.remove(imp)
             app.farewell(visitor: imp)
             refresh()
         default:
@@ -422,6 +433,7 @@ final class DeviceLink {
         var updates: [LinkMessage] = []
         if before?.look != now.look { updates.append(.look(imp: now.look)) }
         if before?.mood != now.mood { updates.append(.mood(imp: id, mood: now.mood)) }
+        if before?.ready != now.ready { updates.append(.brain(imp: id, ready: now.ready)) }
         if before?.chat != now.chat { updates.append(.chat(imp: id, turns: now.chat)) }
         if before == nil || before?.work != now.work { updates.append(.work(imp: id, work: now.work)) }
         if before == nil || before?.speech != now.speech { updates.append(.speech(imp: id, speech: now.speech)) }
@@ -446,7 +458,7 @@ final class DeviceLink {
         }
         // Talks with other Imps show as its speech bubble there, not in your chat.
         let chat = imp.history.current.turns.filter { $0.sender == nil }.suffix(Self.chatPage).map(LinkTurn.init)
-        return Snapshot(look: LinkImp(profile), mood: (imp.activity?.mood ?? .idle).rawValue, work: work,
+        return Snapshot(look: LinkImp(profile), mood: (imp.activity?.mood ?? .idle).rawValue, ready: imp.isReady, work: work,
                         chat: chat, speech: Self.speech(imp.bubble))
     }
 

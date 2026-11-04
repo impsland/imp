@@ -120,7 +120,7 @@ The home keeps, for every Imp that is away, its holder, a hash of its current ti
   soon as it can. The home is always the source of truth.
 
 The home answers `ask`, `stop`, `newChat`, `felt`, `file` and `talks` for an Imp only from its current
-holder, and sends that Imp's looks, chat, work, mood, speech, animations and files only to it. From anyone
+holder, and sends that Imp's looks, chat, work, mood, brain, speech, animations and files only to it. From anyone
 else it answers `gone` for the Imp (and `fileFailed` for a `file`): it isn't theirs any more. Making a new
 ticket for an Imp whose holder is another device tells that device `gone`.
 
@@ -253,6 +253,7 @@ message depends on who sent it.
 | `chat` | `imp`, `turns`: list of `{ id, date, request, from?, reply, failed, steps }` | home, holder |
 | `work` | `imp`, `work`: `{ request, status?, partial, from? }` or null | home, holder |
 | `mood` | `imp`, `mood` (a mood name) | home, holder |
+| `brain` | `imp`, `ready`: whether it has a brain it can think with at home. False: it sleeps on the holder too, and asking it is refused there | home, holder |
 | `animate` | `imp`, `beats` (see `KITS.md`) | home, holder |
 | `speech` | `imp`, `speech`: `{ id, role` (`asked`, `reply`, `asking`), `peer`, `hue`, `question`, `text }` or null | home, holder |
 | `talkLines` | `imp`, `lines`: who asked whom, with question and reply | home, holder |

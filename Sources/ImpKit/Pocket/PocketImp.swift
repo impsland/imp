@@ -19,8 +19,8 @@ public struct PocketService: Codable, Equatable, Sendable {
         self.baseURL = baseURL; self.model = model; self.name = name
     }
 
-    /// No address and no model: the Imp has no brain yet (it sleeps on the phone, and on the Mac
-    /// it thinks with the Mac's default service).
+    /// No address and no model: the Imp has no brain yet. It sleeps on the phone, and on a Mac it
+    /// visits or moves to, until it gets one.
     public var isEmpty: Bool {
         baseURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
@@ -143,7 +143,7 @@ public struct PocketImp: Codable, Equatable, Sendable, Identifiable {
     }
 
     /// What moving home needs: `validate` without insisting on a brain. One with no address at all
-    /// moves without one and thinks with the Mac's default service there.
+    /// moves without one and sleeps on the Mac until it gets one there (`Brain.notChosen`).
     func validateAsMove() throws {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, trimmed.count <= Self.maxName else { throw PocketError.badName }

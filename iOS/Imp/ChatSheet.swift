@@ -263,8 +263,14 @@ struct ChatSheet: View {
                 Label(source.intro(imp, availability).text, systemImage: "moon.zzz")
                     .font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
             case .noBrain:
-                Button { edit?() } label: { Label("Give it a brain", systemImage: "sparkles") }
-                    .buttonStyle(.quiet)
+                if let edit {
+                    Button(action: edit) { Label("Give it a brain", systemImage: "sparkles") }
+                        .buttonStyle(.quiet)
+                } else {
+                    // A visitor: its brain is set up on its home.
+                    Label(source.intro(imp, availability).text, systemImage: "moon.zzz")
+                        .font(.system(.footnote, design: .rounded)).foregroundStyle(Dungeon.muted)
+                }
             case .ready:
                 EmptyView()
             }

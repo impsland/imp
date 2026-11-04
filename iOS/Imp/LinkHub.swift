@@ -69,6 +69,8 @@ final class LinkHub {
     private(set) var chats: [UUID: [LinkTurn]] = [:]
     private(set) var work: [UUID: LinkWork] = [:]
     private(set) var moods: [UUID: Mood] = [:]
+    /// Visiting Imps whose homes said they have no brain to think with (`LinkMessage.brain`): they sleep here.
+    private(set) var brainless: Set<UUID> = []
     /// What each visiting Imp is saying to another Imp (a bubble above it on the stage).
     private(set) var speeches: [UUID: LinkSpeech] = [:]
     /// What the home's chats say each visiting Imp talked about with other Imps (`requestTalks`).
@@ -352,8 +354,14 @@ final class LinkHub {
     /// The Imps visiting here, with the device they think on.
     var visitors: [LinkStaged] { visits.map { LinkStaged(imp: $0.imp, home: $0.home.id) } }
 
-    /// Whether a visiting Imp's home is connected. A visit whose home isn't sleeps.
-    func isAwake(_ imp: UUID) -> Bool { visit(imp).map { online.contains($0.home.id) } ?? false }
+    /// Whether a visiting Imp can think: its home is connected and has a brain for it (the same rule
+    /// as on the Mac). One that can't sleeps.
+    func wakefulness(_ imp: UUID) -> Wakefulness {
+        guard let visit = visit(imp) else { return .homeAway }
+        return .visiting(homeConnected: online.contains(visit.home.id), homeSaysReady: !brainless.contains(imp))
+    }
+
+    func isAwake(_ imp: UUID) -> Bool { wakefulness(imp).isAwake }
 
     /// Sends a visiting Imp home from here: its body goes now and its home hears when it can be reached.
     func sendHome(_ imp: UUID) {
@@ -552,6 +560,7 @@ final class LinkHub {
         case .chat(let imp, let turns): chats[imp] = turns
         case .work(let imp, let w): work[imp] = w
         case .mood(let imp, let name): moods[imp] = Mood(link: name)
+        case .brain(let imp, let ready): if ready { brainless.remove(imp) } else { brainless.insert(imp) }
         case .animate(let imp, let beats): onEvent?(.animate(imp, beats))
         case .speech(let imp, let speech): heard(speech, from: imp)
         case .filePart(let id, let part): files.received(part, for: id, from: from)
@@ -664,7 +673,7 @@ final class LinkHub {
 
     /// Forgets what was known of a visiting Imp that left.
     private func clear(_ imp: UUID) {
-        chats[imp] = nil; work[imp] = nil; moods[imp] = nil; talkLines[imp] = nil
+        chats[imp] = nil; work[imp] = nil; moods[imp] = nil; talkLines[imp] = nil; brainless.remove(imp)
         if let speech = speeches[imp] { drop(speech, for: imp) }
     }
 }

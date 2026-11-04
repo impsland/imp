@@ -311,11 +311,21 @@ pub struct FilePart {
     pub data: Bytes,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
 pub struct Secrets {
     #[serde(default, rename = "apiKey", skip_serializing_if = "Option::is_none")]
     pub api_key: Option<String>,
     pub headers: BTreeMap<String, BTreeMap<String, String>>,
+}
+
+impl std::fmt::Debug for Secrets {
+    /// Keys and header values are never shown.
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Secrets")
+            .field("api_key", &self.api_key.as_ref().map(|_| "<hidden>"))
+            .field("headers", &self.headers.keys().collect::<Vec<_>>())
+            .finish()
+    }
 }
 
 /// One step of an animation.
@@ -468,6 +478,11 @@ pub enum LinkMessage {
         imp: Uuid,
         mood: String,
     },
+    /// Whether it has a brain it can think with at its home. False: it sleeps on the holder too.
+    Brain {
+        imp: Uuid,
+        ready: bool,
+    },
     Animate {
         imp: Uuid,
         beats: Vec<Beat>,
@@ -541,6 +556,7 @@ const KNOWN: &[&str] = &[
     "chat",
     "work",
     "mood",
+    "brain",
     "animate",
     "speech",
     "filePart",
@@ -648,6 +664,7 @@ impl LinkMessage {
             | Self::Felt { .. }
             | Self::Talks { .. }
             | Self::Work { .. }
+            | Self::Brain { .. }
             | Self::Speech { .. }
             | Self::Took { .. }
             | Self::Declined { .. }
@@ -711,6 +728,22 @@ impl FrameReader {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn secrets_debug_hides_keys_and_header_values() {
+        let secrets = Secrets {
+            api_key: Some("sk-secret-value".into()),
+            headers: BTreeMap::from([(
+                "files".into(),
+                BTreeMap::from([("Authorization".into(), "token-value".into())]),
+            )]),
+        };
+        let shown = format!("{secrets:?}");
+        assert!(
+            !shown.contains("sk-secret-value") && !shown.contains("token-value"),
+            "{shown}"
+        );
+    }
+
     use super::*;
 
     #[test]

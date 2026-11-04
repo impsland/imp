@@ -228,6 +228,22 @@ private actor Notices {
         #expect(l.retries == 2 && l.timeoutSeconds == 30 && l.backoff == 2)
     }
 
+    /// What the iPhone's Requests card saves is clamped once, here, and read back the same way.
+    @Test func theIPhoneSavesClampedLimitsAndReadsThemBack() throws {
+        let defaults = try #require(UserDefaults(suiteName: "RetryPolicyTests-\(UUID().uuidString)"))
+        var wild = RequestLimits()
+        wild.timeoutSeconds = 99_999
+        wild.retries = -3
+        wild.retryDelaySeconds = .nan
+        wild.backoff = 0.2
+        let saved = wild.store(in: defaults)
+        #expect(saved.timeoutSeconds == RequestLimits.timeoutRange.upperBound)
+        #expect(saved.retries == RequestLimits.retriesRange.lowerBound)
+        #expect(saved.retryDelaySeconds == RequestLimits.standard.retryDelaySeconds)
+        #expect(saved.backoff == RequestLimits.backoffRange.lowerBound)
+        #expect(RequestLimits.stored(in: defaults) == saved)
+    }
+
     // MARK: The agent, end to end
 
     private func agent(_ outcomes: [OutcomeProtocol.Outcome], limits: RequestLimits = .standard) throws -> Agent {

@@ -27,7 +27,7 @@ extension PocketImp {
     func handover(_ store: PocketSecrets) -> (kit: String, secrets: LinkSecrets) {
         var kit = Kit()
         // No service yet: no brain goes (a model means nothing without its service), and on the Mac
-        // it follows the default service and its model.
+        // it has none either (`Brain.notChosen`) and sleeps until one is picked.
         let address = brain.baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
         let kitBrain: KitBrain? = address.isEmpty ? nil
             : KitBrain(model: brain.model.trimmingCharacters(in: .whitespacesAndNewlines), serviceName: brain.label, baseURL: address)
@@ -114,7 +114,7 @@ extension ImpPreferences {
     }
 
     /// Takes in the Imp of a pocket Imp's kit, as a new Imp that keeps `id`, waiting at home (not
-    /// activated). Whatever the kit says beyond what a pocket Imp has (tools, triggers, animations,
+    /// activated). One without a brain gets `Brain.notChosen`, so it sleeps here as it did on the phone. Whatever the kit says beyond what a pocket Imp has (tools, triggers, animations,
     /// programs to run) is ignored or refused: the Imp gets what a freshly hatched one has. Its
     /// service is found by address or added, and so are its servers, which only reuse one already
     /// in the library when it has the same address. Throws if `id` is already an Imp here.
@@ -143,6 +143,8 @@ extension ImpPreferences {
         let added = add(kit, imps: [source.id], triggers: [], servers: [], for: nil)
         guard var imported = added.imps.first, let i = imps.firstIndex(where: { $0.id == imported.id }) else { throw PocketError.notOnePocketImp }
         imps[i].id = id
+        // It had no brain on the phone: the Mac's default service isn't its brain either.
+        if source.brain == nil { imps[i].brain = Brain.notChosen }
         imported.id = id
         let key = secrets.apiKey?.trimmingCharacters(in: .whitespacesAndNewlines)
         return Adoption(imp: imported, service: imps[i].brain?.service, apiKey: key?.isEmpty == false ? key : nil)

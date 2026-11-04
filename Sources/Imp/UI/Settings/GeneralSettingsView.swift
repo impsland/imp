@@ -77,25 +77,25 @@ private struct ServicesPane: View {
             }
             Card("Requests", icon: "arrow.clockwise", info: "How long an Imp waits for a model, and what it does when the network drops for a moment.") {
                 Row("Wait up to", info: "A request that hasn't finished after this long ends with a message instead of waiting on.") {
-                    ImpStepper(value: $model.prefs.requests.timeoutSeconds, in: 5...600, step: 15) {
+                    ImpStepper(value: $model.prefs.requests.timeoutSeconds, in: RequestLimits.timeoutControlRange, step: RequestLimits.timeoutStep) {
                         Text("\(Int(model.prefs.requests.timeoutSeconds)) s")
                     }
                 }
                 CardDivider()
                 Row("Retries", info: "How many times a request is tried again after the network drops or the service is busy. Wrong keys and bad requests are never retried.") {
-                    ImpStepper(value: $model.prefs.requests.retries, in: 0...10) {
+                    ImpStepper(value: $model.prefs.requests.retries, in: RequestLimits.retriesRange) {
                         Text("\(model.prefs.requests.retries)")
                     }
                 }
                 CardDivider()
                 Row("First wait", info: "The pause before the first retry.") {
-                    ImpStepper(value: $model.prefs.requests.retryDelaySeconds, in: 0...60, step: 0.5) {
+                    ImpStepper(value: $model.prefs.requests.retryDelaySeconds, in: RequestLimits.delayRange, step: RequestLimits.delayStep) {
                         Text("\(model.prefs.requests.retryDelaySeconds.formatted()) s")
                     }
                 }
                 CardDivider()
                 Row("Longer each time", info: "Each pause is this many times longer than the one before.") {
-                    ImpStepper(value: $model.prefs.requests.backoff, in: 1...10, step: 0.5) {
+                    ImpStepper(value: $model.prefs.requests.backoff, in: RequestLimits.backoffRange, step: RequestLimits.backoffStep) {
                         Text("× \(model.prefs.requests.backoff.formatted())")
                     }
                 }

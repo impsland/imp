@@ -42,11 +42,23 @@ public struct Brain: Codable, Hashable, Sendable {
     public var service: UUID?
     /// Empty: the service's model (`Service.model`).
     public var model: String
+    /// No brain on purpose, not even the default's (see `notChosen`). Optional, so saved brains load.
+    private var unchosen: Bool?
 
     public init(service: UUID? = nil, model: String = "") {
         self.service = service
         self.model = model
     }
+
+    /// No service and no model, and it doesn't follow the default: an Imp that moved here from an
+    /// iPhone where it had no brain. It sleeps until one is picked on its Brain tab.
+    public static var notChosen: Brain {
+        var brain = Brain()
+        brain.unchosen = true
+        return brain
+    }
+
+    public var isNotChosen: Bool { unchosen == true }
 }
 
 /// The user's services (shared by every Imp, each with its model) and the default brain: its
@@ -69,13 +81,14 @@ public struct AIConfig: Codable, Hashable, Sendable {
     /// The service a brain uses (the default brain unless one is given, and a brain without a
     /// service of its own uses the default's).
     public func service(in brain: Brain? = nil) -> Service? {
-        guard let id = brain?.service ?? self.brain.service else { return nil }
+        guard brain?.isNotChosen != true, let id = brain?.service ?? self.brain.service else { return nil }
         return services.first { $0.id == id }
     }
 
     /// The model a brain thinks with: its own, else its service's, else (from an older version)
     /// the default brain's.
     public func model(in brain: Brain? = nil) -> String {
+        guard brain?.isNotChosen != true else { return "" }
         for name in [brain?.model, service(in: brain)?.model, self.brain.model] {
             let trimmed = name?.trimmingCharacters(in: .whitespaces) ?? ""
             if !trimmed.isEmpty { return trimmed }
@@ -110,8 +123,9 @@ extension Brain {
     /// The brain after service `old` is gone: one that used it follows the default brain again, its
     /// service and that service's model (a model named for `old` would only fail somewhere else).
     /// Nil when it used `old`, and so does one that followed the default with a model of its own when
-    /// `old` was the default. Unchanged otherwise.
+    /// `old` was the default. Unchanged otherwise, and so is `notChosen`, which never followed the default.
     public func without(service old: UUID, wasDefault: Bool) -> Brain? {
+        if isNotChosen { return self }
         if service == old { return nil }
         if service == nil, wasDefault { return nil }
         return self

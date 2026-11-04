@@ -284,6 +284,10 @@ public enum LinkMessage: Codable, Sendable, Equatable {
     case work(imp: UUID, work: LinkWork?)
     /// Its mood changed (a `Mood` raw value).
     case mood(imp: UUID, mood: String)
+    /// Whether it has a brain it can think with at home (a service, a model and, where one is
+    /// needed, a key). Sent with everything else to a new holder and whenever it changes. Without
+    /// one it sleeps wherever its body is (`Wakefulness`), and asking it is refused there at once.
+    case brain(imp: UUID, ready: Bool)
     /// Plays an animation, beat by beat.
     case animate(imp: UUID, beats: [AnimationBeat])
     /// What it's saying to another Imp right now (nil: nothing).
@@ -344,7 +348,7 @@ extension LinkMessage {
         case .message(_, let from, _, _, let t, _): return imp(from) && text(t)
         case .answer(_, let t, _): return text(t)
         case .adopt(_, _, let kit, _, _): return kit.utf8.count <= LinkProtocol.maxFrame
-        case .ping, .pong, .gone, .stop, .newChat, .felt, .talks, .work, .speech, .took, .declined, .adopted: return true
+        case .ping, .pong, .gone, .stop, .newChat, .felt, .talks, .work, .brain, .speech, .took, .declined, .adopted: return true
         }
     }
 }

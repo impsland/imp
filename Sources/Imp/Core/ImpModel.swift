@@ -189,13 +189,16 @@ final class ImpModel {
 
     // MARK: Mood
 
+    /// Whether it can think: at home, its own brain decides; a visitor's home tells (`Wakefulness`).
+    var wakefulness: Wakefulness { visit?.wakefulness ?? .atHome(brainReady: isReady) }
+
     func mood(at date: Date) -> Mood {
-        if visit?.isAwake == false { return .sleepy }
+        // It can't think (no usable brain, or its home is away): asleep, whatever it is doing, as on
+        // the iPhone. Asking it says why (`refuseAsleep`).
+        if !wakefulness.isAwake { return .sleepy }
         if let flash, flash.until > date { return flash.mood }
         if let activity { return activity.mood }
         if let m = life.step?.mood { return m }
-        // No brain to think with: asleep, as on the iPhone (asking it says what is missing).
-        if visit == nil, !isReady { return .sleepy }
         if asleep { return .sleepy }
         return .idle
     }
@@ -210,7 +213,7 @@ final class ImpModel {
 
     /// Nothing going on: no job, no bubble, no reaction, not asleep.
     func isFree(at date: Date) -> Bool {
-        (flash.map { $0.until <= date } ?? true) && !isBusy && bubble == nil && !asleep
+        (flash.map { $0.until <= date } ?? true) && !isBusy && bubble == nil && !asleep && wakefulness.isAwake
     }
 
     /// 0…1 "energy" for the current mood (mic loudness).
@@ -482,6 +485,7 @@ final class ImpModel {
 
     /// Opens a text box in the bubble: type to this Imp instead of talking.
     func startTyping(prefill: String = "", prompt: String? = nil) {
+        guard wakefulness.isAwake else { return refuseAsleep() }
         touch()
         if visit == nil { app.focus(self) }
         cancel()
@@ -582,15 +586,15 @@ final class ImpModel {
 
     /// Falls asleep, playing `ref` on the way if there is one.
     func fallAsleep(playing ref: AnimationRef?) {
-        guard !asleep, visit?.isAwake != false else { return }
+        guard !asleep, wakefulness.isAwake else { return }
         asleep = true
         if let ref { life.perform(ref) }
     }
 
-    /// Wakes up with `ref`, or its built-in wake-up. Does nothing for an Imp that is awake, or
-    /// asleep because its home is away.
+    /// Wakes up with `ref`, or its built-in wake-up. Does nothing for an Imp that is awake, or one
+    /// that can't think (no usable brain, or its home is away): it sleeps until that changes.
     func wakeUp(playing ref: AnimationRef?) {
-        guard visit?.isAwake != false, asleep || (visit == nil && !isReady) else { return }
+        guard wakefulness.isAwake, asleep else { return }
         touch()
         if let ref { life.perform(ref) } else { life.wake() }
     }
@@ -704,6 +708,12 @@ final class ImpModel {
 
     private func start(_ source: Source, limitedTo device: String? = nil) {
         if visit != nil { return askHome(source) }
+        // Asked by you while it can't think: refused at once, with what to do. (Another Imp's
+        // message and a trigger still run, and fail with the same sentence in their own way.)
+        switch source {
+        case .typed, .spoken: guard wakefulness.isAwake else { return refuseAsleep() }
+        case .shortcut, .message: break
+        }
         touch()
         app.focus(self)
         cancel()
@@ -1146,7 +1156,6 @@ extension ImpModel {
         touch()
         if [.thinking, .tools].contains(activity) { cancel(); react(.surprised, for: 0.6); return }
         if bubble?.phase == .typing { return dismissBubble() }
-        guard visit?.isAwake == true else { return sleeping() }
         startTyping()
     }
 
@@ -1157,7 +1166,7 @@ extension ImpModel {
         let text = words.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
         touch()
-        guard visit?.isAwake == true else { return sleeping() }
+        guard wakefulness.isAwake else { return refuseAsleep() }
         work = nil
         dropWork()
         app.link.ask(id, text)
@@ -1166,12 +1175,29 @@ extension ImpModel {
         thinking(heading, captions: Captions.thinking)
     }
 
-    /// Its home is away: it says so, and why it can't answer. (The chat says it in its own header.)
-    private func sleeping() {
-        react(.sad, for: 1.2)
-        guard !isChatting, let visit else { return }
-        show(Bubble(title: String(localized: "\(visit.look.name) is asleep"),
-                    text: String(localized: "\(visit.homeName) is away, so \(visit.look.name) can't think right now. It wakes up when \(visit.homeName) is back."),
-                    phase: .hint))
+    /// Why it is asleep and can't answer, in words that say what to do. Nil while it is awake.
+    var sleepReason: String? {
+        switch wakefulness {
+        case .awake:
+            return nil
+        case .homeAway:
+            let home = visit?.homeName ?? String(localized: "its home")
+            return String(localized: "\(home) is away, so \(profile.name) can't think right now. It wakes up when \(home) is back.")
+        case .noBrain:
+            if let visit {
+                return String(localized: "\(profile.name) has no brain yet, so it can't think. Give it one in its settings on \(visit.homeName).")
+            }
+            return app.assistant.problem(with: profile.brain, imp: profile.name)?.errorDescription
+                ?? APIError.needsBrain(imp: profile.name).errorDescription
+        }
+    }
+
+    /// Asked while it can't think: it stays asleep and says why, at once. (The chat says it in its
+    /// own header, and its text box is off.)
+    func refuseAsleep() {
+        guard let reason = sleepReason else { return }
+        guard !isChatting else { return }
+        show(Bubble(title: String(localized: "\(profile.name) is asleep"), text: reason, phase: .hint,
+                    link: visit == nil ? .settings : nil))
     }
 }

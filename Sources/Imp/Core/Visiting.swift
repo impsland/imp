@@ -8,8 +8,9 @@ struct Visiting: Equatable {
     var homeID: UUID
     /// The home's name, as it is shown ("Mac mini is away").
     var homeName: String
-    /// The home is connected. A visit whose home isn't sleeps.
-    var isAwake: Bool
+    /// Whether it can think: its home is connected and has a brain for it (`Wakefulness.visiting`).
+    var wakefulness: Wakefulness
+    var isAwake: Bool { wakefulness.isAwake }
     /// The side of the desktop it came in by (it leaves by it when it goes home).
     var side: LinkSide
     /// The device that threw it here: the door on `side` leads back to it.

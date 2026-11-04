@@ -73,7 +73,12 @@ A **service** is an OpenAI compatible endpoint. A **brain** picks a service and 
 ```
 
 - `Service.model` is the default model of the service (optional). `Brain.service` is the service id,
-  `Brain.model` the model name. An Imp without a brain uses the default brain of the app.
+  `Brain.model` the model name. An Imp without a brain uses the default brain of the app, except a
+  brain saved with `"unchosen": true` (`Brain.notChosen`): a pocket Imp that moved to a Mac with no
+  brain. It has no service at all and sleeps until one is picked.
+- Whether an Imp can think is one rule on every device (`Wakefulness`): at home its own brain decides,
+  and a visitor is awake only while its home is connected and says it has a brain (`brain` in
+  `docs/LINK.md`). An Imp that can't think sleeps whatever it is doing, and asking it is refused at once.
 - API keys and header values live in the platform's secure storage (Keychain on Apple systems), never
   in these objects and never in a kit. When a pocket Imp moves to a Mac they travel apart as
   `LinkSecrets` inside `adopt`.

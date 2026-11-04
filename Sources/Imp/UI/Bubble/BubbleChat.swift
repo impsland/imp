@@ -26,8 +26,8 @@ struct ChatView: View {
         VStack(alignment: .leading, spacing: 10) {
             header
             Divider().opacity(0.6)
-            if let visit = model.visit, !visit.isAwake {
-                Label("\(model.profile.name) is asleep: \(visit.homeName) is away", systemImage: "moon.zzz.fill")
+            if let reason = model.sleepReason {
+                Label("\(model.profile.name) is asleep. \(reason)", systemImage: "moon.zzz.fill")
                     .font(.system(size: 12)).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }

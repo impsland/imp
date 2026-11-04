@@ -150,7 +150,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         #expect(!(try JSONEncoder().encode(prefs.ai)).contains(Data("sk-very".utf8)))
     }
 
-    @Test func anImpWithNoBrainMovesAndFollowsTheMacsDefault() throws {
+    @Test func anImpWithNoBrainMovesAndStaysWithoutOne() throws {
         var (imp, store) = pocketImp()
         imp.brain = PocketService()
         #expect(throws: PocketError.noBrain) { try imp.validate() }
@@ -164,7 +164,9 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         #expect(prefs.ai.services == [mine])
         #expect(adoption.service == nil && adoption.apiKey == nil)
         let profile = try #require(prefs.imps.first { $0.id == imp.id })
-        #expect(prefs.ai.service(in: profile.brain)?.id == mine.id)
+        // The Mac's default service is not its brain: it sleeps there as it did on the phone.
+        #expect(prefs.ai.service(in: profile.brain) == nil)
+        #expect(prefs.ai.model(in: profile.brain).isEmpty)
     }
 
     @Test func aModelWithoutAnAddressDoesNotMove() throws {

@@ -30,7 +30,7 @@ import Testing
         let names = Set(try Self.list(Self.load("link-messages.json"), "valid").compactMap { ($0["json"] as? [String: Any])?.keys.first })
         let cases: Set<String> = ["hello", "welcome", "ping", "pong", "bye", "routes", "stage", "pass", "took", "declined",
                                   "claim", "claimed", "gone", "release", "ask", "stop", "newChat", "felt", "file", "talks",
-                                  "look", "chat", "work", "mood", "animate", "speech", "filePart", "fileFailed", "talkLines",
+                                  "look", "chat", "work", "mood", "brain", "animate", "speech", "filePart", "fileFailed", "talkLines",
                                   "message", "answer", "adopt", "adopted"]
         #expect(names == cases)
     }

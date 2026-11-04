@@ -301,7 +301,8 @@ triggers or read the Mac's senses. Throw it off a side of the phone to another i
 there. Choose **Move to <Mac>…** in its menu while a Mac is connected and it moves home for good: a full Mac Imp with its chats, looks, personality, service and tool servers, flying
 in from the opposite side. Its service joins the Mac's services under its own name (or is the one
 already there with the same address), and its key comes along unless that service already has one.
-One with no brain yet moves too, and thinks with the Mac's starred service. An Imp that's busy
+One with no brain yet moves too, and sleeps on the Mac until you pick a service on its Brain tab. Thrown
+to a Mac or another phone as a visitor, it sleeps there too, and asking it says why. An Imp that's busy
 thinking stays until it's done. The phone drops its copy once the Mac confirms, and it never becomes
 a pocket Imp again. Nothing is kept in step between the two. Hatching one, pick its size, and a
 service in one tap: OpenRouter, or OmniRoute running on your Mac, reached by the Mac's name on your
@@ -446,6 +447,21 @@ make install   # builds Imp.app and copies it to /Applications
 The iPhone app: `make ios` (needs [XcodeGen](https://github.com/yonaskolb/XcodeGen)) generates
 `iOS/ImpPhone.xcodeproj` and builds it for the Simulator. Open the project and set your team to
 install it on your phone. It shares `ImpKit` and the Imp renderer with the Mac.
+
+**What's where.**
+
+- `Sources/ImpKit`: the shared Swift core for the Mac and the iPhone (settings, the model client and
+  agent loop, tools, MCP, the device link). `Sources/ImpDesign`: the shared look and controls.
+  `Sources/Imp`: the Mac app. `Sources/Imp/Character` draws the Imp in both apps.
+- `iOS/`: the iPhone app. `Extensions/Browser/`: the browser extension.
+- `Tests/`: the Swift tests, and `Tests/Fixtures`, the JSON vectors every client reads (protocol
+  messages, tool filtering, retry policy, workspace paths) and the sample kits.
+- `Resources/`: the app's icon, `Info.plist` and the String Catalogs. `docs/`: design notes and the link
+  protocol. `scripts/`: build, disk image, iPhone install and string scripts.
+- `server/`: one Rust workspace. `imp-den` (the `den` command) and `imp-hop` (the `hop` command) are the
+  two services, each a library next to its binary. `imp-shared` is what they have in common.
+  `imp-core` is the portable Imp logic, and `imp-cli` is the `imp` terminal app, which can run both
+  services too (`imp serve`).
 
 After changing any text in the app, run `make strings` to add it to the String Catalog
 (`Resources/Localization/Localizable.xcstrings`), then translate the new entries (in Xcode or any

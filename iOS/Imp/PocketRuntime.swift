@@ -57,12 +57,7 @@ final class PocketRuntime {
     func setLimits(_ new: RequestLimits) {
         let clamped = new.clamped
         guard clamped != limits else { return }
-        limits = clamped
-        let defaults = UserDefaults.standard
-        defaults.set(clamped.timeoutSeconds, forKey: RequestLimits.Key.timeout)
-        defaults.set(clamped.retries, forKey: RequestLimits.Key.retries)
-        defaults.set(clamped.retryDelaySeconds, forKey: RequestLimits.Key.delay)
-        defaults.set(clamped.backoff, forKey: RequestLimits.Key.backoff)
+        limits = clamped.store()
         brain = PocketBrain(secrets: store.secrets, limits: clamped)
     }
 
@@ -98,6 +93,7 @@ final class PocketRuntime {
     func edit(_ id: UUID, _ change: (inout PocketImp) -> Void) {
         store.update(id, change)
         if let look = store.imp(id)?.look { tell(id, .look(imp: look)) }
+        tellBrain(id)
     }
 
     /// Deletes an Imp. If another device holds it, it is called home first so that device lets go.
@@ -398,10 +394,17 @@ final class PocketRuntime {
         tell(id, .mood(imp: id, mood: (mood(id) ?? .idle).rawValue))
     }
 
-    /// A new holder hears how the Imp looks and what it's doing.
+    /// Whether it has a brain to think with: without one it sleeps on the holder too.
+    private func tellBrain(_ id: UUID) {
+        guard store.contains(id) else { return }
+        tell(id, .brain(imp: id, ready: hasBrain(id)))
+    }
+
+    /// A new holder hears how the Imp looks, whether it can think and what it's doing.
     private func pushAll(_ id: UUID) {
         guard let look = store.imp(id)?.look else { return }
         tell(id, .look(imp: look))
+        tellBrain(id)
         pushChat(id)
         pushWork(id)
         tell(id, .speech(imp: id, speech: speeches[id]))
@@ -456,7 +459,7 @@ extension PocketRuntime: ChatSource {
     func turns(_ id: UUID) -> [LinkTurn] { store.imp(id)?.turns() ?? [] }
     func working(_ id: UUID) -> LinkWork? { work[id] }
     func mood(_ id: UUID) -> Mood? { work[id].map { $0.status == nil ? .thinking : .working } }
-    func availability(_ id: UUID) -> ChatAvailability { hasBrain(id) ? .ready : .noBrain }
+    func availability(_ id: UUID) -> ChatAvailability { ChatAvailability(.atHome(brainReady: hasBrain(id))) }
 
     func peers(_ id: UUID) -> [LinkImp] {
         var seen: Set<String> = [store.imp(id)?.name.lowercased() ?? ""]

@@ -159,3 +159,36 @@ private actor EventLog {
     private(set) var all: [AgentEvent] = []
     func add(_ e: AgentEvent) { all.append(e) }
 }
+
+/// The one rule both apps use to decide whether an Imp sleeps.
+@Suite struct WakefulnessTests {
+    @Test func atHomeTheBrainDecides() {
+        #expect(Wakefulness.atHome(brainReady: true) == .awake)
+        #expect(Wakefulness.atHome(brainReady: false) == .noBrain)
+    }
+
+    @Test func aVisitSleepsWhenItsHomeIsAwayOrHasNoBrain() {
+        #expect(Wakefulness.visiting(homeConnected: true, homeSaysReady: true).isAwake)
+        #expect(Wakefulness.visiting(homeConnected: true, homeSaysReady: false) == .noBrain)
+        #expect(Wakefulness.visiting(homeConnected: false, homeSaysReady: true) == .homeAway)
+        #expect(Wakefulness.visiting(homeConnected: false, homeSaysReady: false) == .homeAway)
+    }
+
+    /// A brain not chosen never follows the default service, not even after a service is removed,
+    /// and keeps that through a save.
+    @Test func aBrainNotChosenNeverFollowsTheDefault() throws {
+        var ai = AIConfig()
+        let a = Service(name: "A", baseURL: "https://a.example/v1", model: "m")
+        let b = Service(name: "B", baseURL: "https://b.example/v1", model: "n")
+        ai.add(a)
+        ai.add(b)
+        let brain = Brain.notChosen
+        #expect(ai.service(in: brain) == nil && ai.model(in: brain).isEmpty)
+        #expect(ai.service(in: nil)?.id == a.id)
+        #expect(brain.without(service: a.id, wasDefault: true) == brain)
+        let saved = try JSONDecoder().decode(Brain.self, from: JSONEncoder().encode(brain))
+        #expect(saved.isNotChosen)
+        let plain = try JSONDecoder().decode(Brain.self, from: Data(#"{"model":""}"#.utf8))
+        #expect(!plain.isNotChosen && ai.service(in: plain)?.id == a.id)
+    }
+}
