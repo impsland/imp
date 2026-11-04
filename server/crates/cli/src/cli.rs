@@ -14,6 +14,15 @@ imp chat                            Chat with it\n\n\
 Your API key is never stored in the settings file. Put it in an environment variable\n\
 (IMP_API_KEY by default) or save it in the system keychain with `imp config set-key`.";
 
+const SERVE_LONG_ABOUT: &str = "Run The Den, The Hop or both on this computer, so your devices can use it as their server. Press Ctrl-C to stop.\n\n\
+By default both run. The Den holds accounts, shared kits and the web gallery, and keeps its data in a folder on this computer. \
+The Hop relays links between devices and keeps nothing. The Hop does not need The Den, so each can run alone. \
+Options for a service you did not choose are not allowed.\n\n\
+Examples:\n  \
+imp serve                  Run both\n  \
+imp serve --den-only       Run only The Den\n  \
+imp serve --hop-only       Run only The Hop";
+
 #[derive(Debug, Parser, PartialEq)]
 #[command(name = "imp", version, about = ABOUT, long_about = LONG_ABOUT, after_help = AFTER_HELP, arg_required_else_help = true)]
 pub struct Cli {
@@ -46,22 +55,34 @@ pub enum Command {
         #[arg(long)]
         plain: bool,
     },
-    /// Run a Den and a Hop on this computer, so your devices can use it as their server. Press Ctrl-C to stop
+    /// Run The Den, The Hop or both on this computer, so your devices can use it as their server. Press Ctrl-C to stop
+    #[command(long_about = SERVE_LONG_ABOUT)]
     Serve {
+        /// Run only The Den (accounts, shared kits and the web gallery)
+        #[arg(long, conflicts_with = "hop_only")]
+        den_only: bool,
+        /// Run only The Hop (the relay between devices). It does not need The Den
+        #[arg(long, conflicts_with_all = ["den_only", "den_port", "public_url"])]
+        hop_only: bool,
         /// The address to listen on (127.0.0.1 keeps it on this computer, 0.0.0.0 opens it to your network)
         #[arg(long, default_value = "127.0.0.1", value_name = "ADDRESS")]
         host: std::net::IpAddr,
-        /// The port of the Den, which holds accounts and shared kits
-        #[arg(long, default_value_t = crate::serve::DEFAULT_DEN_PORT, value_name = "PORT")]
+        /// The port of The Den
+        #[arg(long, default_value_t = crate::serve::DEFAULT_DEN_PORT, value_name = "PORT", conflicts_with = "hop_only")]
         den_port: u16,
-        /// The port of the Hop, which relays links between devices
-        #[arg(long, default_value_t = crate::serve::DEFAULT_HOP_PORT, value_name = "PORT")]
+        /// The port of The Hop
+        #[arg(long, default_value_t = crate::serve::DEFAULT_HOP_PORT, value_name = "PORT", conflicts_with = "den_only")]
         hop_port: u16,
-        /// The address people use to reach the Den, if it is not http://localhost:PORT
-        #[arg(long, value_name = "URL")]
+        /// The address people use to reach The Den, if it is not http://localhost:PORT
+        #[arg(long, value_name = "URL", conflicts_with = "hop_only")]
         public_url: Option<String>,
-        /// Keep the Den's data here instead of in the usual data folder
-        #[arg(long, env = "IMP_DATA_DIR", value_name = "DIR")]
+        /// Keep The Den's data here instead of in the usual data folder
+        #[arg(
+            long,
+            env = "IMP_DATA_DIR",
+            value_name = "DIR",
+            conflicts_with = "hop_only"
+        )]
         data_dir: Option<PathBuf>,
     },
     /// Draw a QR code in the terminal. With no text it explains what the apps can scan today
@@ -259,6 +280,58 @@ mod tests {
                 plain: false
             }
         );
+    }
+
+    fn serve_flags(args: &[&str]) -> (bool, bool) {
+        let mut full = vec!["serve"];
+        full.extend_from_slice(args);
+        match parse(&full).unwrap().command {
+            Command::Serve {
+                den_only, hop_only, ..
+            } => (den_only, hop_only),
+            other => panic!("not serve: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn serve_runs_both_by_default_or_one_on_request() {
+        assert_eq!(serve_flags(&[]), (false, false));
+        assert_eq!(serve_flags(&["--den-only"]), (true, false));
+        assert_eq!(serve_flags(&["--hop-only"]), (false, true));
+        assert_eq!(
+            serve_flags(&[
+                "--den-only",
+                "--den-port",
+                "9000",
+                "--public-url",
+                "https://a.b"
+            ]),
+            (true, false)
+        );
+        assert_eq!(
+            serve_flags(&["--hop-only", "--hop-port", "9001"]),
+            (false, true)
+        );
+        assert_eq!(
+            serve_flags(&["--den-port", "1", "--hop-port", "2", "--host", "0.0.0.0"]),
+            (false, false)
+        );
+    }
+
+    #[test]
+    fn serve_refuses_options_of_a_service_that_is_not_running() {
+        for args in [
+            &["serve", "--den-only", "--hop-only"][..],
+            &["serve", "--hop-only", "--den-port", "9000"],
+            &["serve", "--hop-only", "--public-url", "https://a.b"],
+            &["serve", "--den-only", "--hop-port", "9001"],
+        ] {
+            assert_eq!(
+                parse(args).unwrap_err().kind(),
+                ErrorKind::ArgumentConflict,
+                "{args:?}"
+            );
+        }
     }
 
     #[test]

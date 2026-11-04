@@ -34,8 +34,15 @@ cargo run -p imp-den
 cargo run -p imp-hop
 ```
 
-On a computer that just wants to be its own server, `imp serve` (from `crates/cli`) runs the Den and the Hop
-in one process, on the same ports (8080 and 4677), with data and a generated secret in its own data folder.
+On a computer that just wants to be its own server, `imp serve` (from `crates/cli`) can run the services in
+three ways. Data and a generated secret stay in its own data folder.
+
+- `imp serve` runs The Den and The Hop together, on ports 8080 and 4677.
+- `imp serve --den-only` runs only The Den (accounts, shared kits, the web gallery).
+- `imp serve --hop-only` runs only The Hop (the relay between devices). The Hop keeps no data and does not
+  need The Den, so it can run on its own, on another computer, or beside any Den.
+
+Options for a service that is not running are refused, for example `--hop-only --den-port 9000`.
 The Docker image and the `den` and `hop` programs are not affected.
 
 Check with `cargo fmt --all`, `cargo clippy --workspace --all-targets --locked -- -D warnings` and

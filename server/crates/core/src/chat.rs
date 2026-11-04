@@ -273,13 +273,23 @@ pub fn parse_chunk(payload: &str) -> Result<Vec<StreamEvent>, ChatError> {
     Ok(events)
 }
 
-/// A client for one service.
-#[derive(Debug, Clone)]
+/// A client for one service. `Debug` hides the key.
+#[derive(Clone)]
 pub struct OpenAiClient {
     base_url: String,
     api_key: Option<String>,
     http: reqwest::Client,
     retry: RetryPolicy,
+}
+
+impl std::fmt::Debug for OpenAiClient {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("OpenAiClient")
+            .field("base_url", &self.base_url)
+            .field("api_key", &self.api_key.as_ref().map(|_| "<hidden>"))
+            .field("retry", &self.retry)
+            .finish_non_exhaustive()
+    }
 }
 
 impl OpenAiClient {
@@ -377,6 +387,19 @@ impl OpenAiClient {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn debug_hides_the_key() {
+        let client = OpenAiClient::new(
+            "http://localhost:1/v1",
+            Some("sk-secret-value".into()),
+            RetryPolicy::default(),
+        )
+        .unwrap();
+        let shown = format!("{client:?}");
+        assert!(!shown.contains("sk-secret-value"), "{shown}");
+        assert!(shown.contains("<hidden>"));
+    }
+
     use super::*;
 
     #[test]

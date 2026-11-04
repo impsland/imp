@@ -148,3 +148,23 @@ fn chatting_without_an_imp_explains_what_to_do() {
     assert!(!out.status.success());
     assert!(text(&out.stderr).contains("imp imp new"));
 }
+
+#[test]
+fn serve_help_explains_the_choices_and_a_wrong_mix_is_refused() {
+    let out = Command::new(env!("CARGO_BIN_EXE_imp"))
+        .args(["serve", "--help"])
+        .output()
+        .unwrap();
+    assert!(out.status.success());
+    let help = text(&out.stdout);
+    for word in ["--den-only", "--hop-only", "does not need The Den"] {
+        assert!(help.contains(word), "{word} missing in {help}");
+    }
+    let out = Command::new(env!("CARGO_BIN_EXE_imp"))
+        .args(["serve", "--hop-only", "--den-port", "9000"])
+        .env_remove("IMP_DATA_DIR")
+        .output()
+        .unwrap();
+    assert!(!out.status.success());
+    assert!(text(&out.stderr).contains("cannot be used with"));
+}

@@ -6,6 +6,7 @@ use crate::config::{
     Config, DEFAULT_PERSONALITY, DEFAULT_URL, ImpConfig, valid_env_name, valid_imp_name,
 };
 use crate::keys;
+use crate::serve::Services;
 use crate::troupe::ImpMessageHost;
 use crate::{CliError, Result};
 use imp_core::{
@@ -57,17 +58,26 @@ pub async fn run(cli: Cli, io: &mut Io<'_>) -> Result<()> {
         Command::Imp { action } => imp_command(&path, action, io),
         Command::Chat { imp, plain } => chat_command(&path, imp.as_deref(), plain, io).await,
         Command::Serve {
+            den_only,
+            hop_only,
             host,
             den_port,
             hop_port,
             public_url,
             data_dir,
         } => {
+            let services = match (den_only, hop_only) {
+                (true, _) => Services::DenOnly,
+                (_, true) => Services::HopOnly,
+                _ => Services::Both,
+            };
             let data_dir = match data_dir {
                 Some(dir) => dir,
-                None => crate::serve::default_data_dir()?,
+                None if services.den() => crate::serve::default_data_dir()?,
+                None => PathBuf::new(),
             };
             let options = crate::serve::ServeOptions {
+                services,
                 data_dir,
                 host,
                 den_port,
@@ -92,19 +102,29 @@ pub async fn run(cli: Cli, io: &mut Io<'_>) -> Result<()> {
 
 async fn serve_command(options: &crate::serve::ServeOptions, io: &mut Io<'_>) -> Result<()> {
     let bound = crate::serve::bind(options).await?;
-    writeln!(io.err, "The Den is listening on {}", bound.den_addr)?;
-    writeln!(io.err, "The Hop is listening on {}", bound.hop_addr)?;
-    writeln!(
-        io.err,
-        "Data is kept in {}. The secret stays in the file den-secret there.",
-        options.data_dir.display()
-    )?;
+    if let (Some(addr), Some(url)) = (bound.den_addr, &bound.public_url) {
+        writeln!(io.err, "The Den is listening on {addr}")?;
+        writeln!(
+            io.err,
+            "  Its data is kept in {}. The secret stays in the file den-secret there.",
+            options.data_dir.display()
+        )?;
+        writeln!(io.err, "  Its public address is {url}")?;
+    }
+    if let Some(addr) = bound.hop_addr {
+        writeln!(io.err, "The Hop is listening on {addr}")?;
+        writeln!(io.err, "  It keeps no data and does not need The Den.")?;
+    }
     writeln!(
         io.err,
         "\nTo use it, open the Imp settings on a Mac or the Imp app on an iPhone and set:"
     )?;
-    writeln!(io.err, "  Server  {}", bound.public_url)?;
-    writeln!(io.err, "  Hop     {}", hop_name(options, &bound))?;
+    if let Some(url) = &bound.public_url {
+        writeln!(io.err, "  Server  {url}")?;
+    }
+    if bound.hop_addr.is_some() {
+        writeln!(io.err, "  Hop     {}", hop_name(options, &bound))?;
+    }
     if options.host.is_loopback() {
         writeln!(
             io.err,
@@ -127,7 +147,8 @@ fn hop_name(options: &crate::serve::ServeOptions, bound: &crate::serve::Bound) -
         std::net::IpAddr::V4(a) => a.to_string(),
         std::net::IpAddr::V6(a) => format!("[{a}]"),
     };
-    format!("{name}:{}", bound.hop_addr.port())
+    let port = bound.hop_addr.map_or(0, |a| a.port());
+    format!("{name}:{port}")
 }
 
 fn config_command(path: &Path, action: ConfigAction, io: &mut Io<'_>) -> Result<()> {
