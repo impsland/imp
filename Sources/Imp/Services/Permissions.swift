@@ -35,7 +35,9 @@ enum Permission: String, CaseIterable, Identifiable, Hashable {
         }
     }
 
-    @MainActor var isGranted: Bool {
+    /// Each check is a call to another process (10 to 20 ms each): `SystemStatus` makes them off
+    /// the main thread, and views read its cached answer.
+    nonisolated var isGranted: Bool {
         switch self {
         case .microphone: AVCaptureDevice.authorizationStatus(for: .audio) == .authorized
         case .speech: SFSpeechRecognizer.authorizationStatus() == .authorized
@@ -84,7 +86,8 @@ enum Permission: String, CaseIterable, Identifiable, Hashable {
 
 @MainActor
 enum LoginItem {
-    static var isEnabled: Bool { SMAppService.mainApp.status == .enabled }
+    /// A call to another process: `SystemStatus` reads it off the main thread.
+    nonisolated static var isEnabled: Bool { SMAppService.mainApp.status == .enabled }
     static func set(_ on: Bool) throws {
         if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
     }
