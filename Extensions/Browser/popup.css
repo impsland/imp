@@ -1,4 +1,4 @@
-/* The popup wears the apps' dungeon: the brick wall, the Imps on a floor, calm cards below.
+/* The popup wears the apps' dungeon: the brick wall, the Imps along the top, calm cards below.
    Design tokens: the block between the markers is the same, word for word, as in the Den's site.css.
    Change both together. */
 /* TOKENS BEGIN */
@@ -55,18 +55,12 @@ body {
 svg use { pointer-events: none; }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
-/* The stage: the wall, a warm glow, the Imps on a floor. Only opacity and transforms move. */
+/* The stage: the Imps on the popup's own wall, with no background of its own. Only opacity and
+   transforms move. */
 .stage {
   position: relative;
   height: 158px;
   overflow: hidden;
-  background:
-    radial-gradient(120% 90% at 50% 105%, rgba(255, 158, 66, 0.28), transparent 60%),
-    var(--bricks), linear-gradient(#2b1426, #4a1a21);
-}
-.floor {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 28px;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.3));
 }
 /* While Imp is away the room dims. */
 .dim { position: absolute; inset: 0; background: #1f0f1c; opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
