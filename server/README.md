@@ -10,7 +10,7 @@ One Rust workspace, one Docker image, two services. The wire contract is in [PRO
 ## Run from GitHub Packages
 
 The image is published as `ghcr.io/impsland/imp` for amd64 and arm64: `latest` follows `main`,
-and a tag such as `server-v1.1.0` publishes `1.1.0` and `1.1`. To try it on one computer:
+and a tag such as `server-v1.2.0` publishes `1.2.0` and `1.2`. To try it on one computer:
 
 ```sh
 docker run -d --name den -p 8080:8080 -v den-data:/data \

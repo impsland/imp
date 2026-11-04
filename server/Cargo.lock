@@ -1654,7 +1654,7 @@ dependencies = [
 
 [[package]]
 name = "imp-cli"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "clap",
  "directories",
@@ -1676,7 +1676,7 @@ dependencies = [
 
 [[package]]
 name = "imp-core"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "base64 0.23.1",
  "futures-util",
@@ -1692,7 +1692,7 @@ dependencies = [
 
 [[package]]
 name = "imp-den"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "altcha",
  "axum",
@@ -1719,7 +1719,7 @@ dependencies = [
 
 [[package]]
 name = "imp-hop"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "ed25519-dalek",
  "imp-shared",
@@ -1733,7 +1733,7 @@ dependencies = [
 
 [[package]]
 name = "imp-shared"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "governor",
  "hex",
