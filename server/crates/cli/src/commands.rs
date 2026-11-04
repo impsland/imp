@@ -254,6 +254,12 @@ fn imp_command(path: &Path, action: ImpAction, io: &mut Io<'_>) -> Result<()> {
             api_key_env,
             default,
         } => {
+            let name = match name {
+                Some(n) => n,
+                None => io
+                    .ask("Name", None)?
+                    .ok_or_else(|| CliError("A name is needed. Use imp imp new NAME.".into()))?,
+            };
             if !valid_imp_name(&name) {
                 return Err(CliError(
                     "An Imp's name can have 1 to 32 letters, digits, dashes and underscores."

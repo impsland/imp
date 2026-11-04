@@ -107,8 +107,8 @@ pub enum ImpAction {
     List,
     /// Make a new Imp. Anything you leave out is asked for
     New {
-        /// Its name: letters, digits, dash and underscore
-        name: String,
+        /// Its name: letters, digits, dash and underscore (asked for if left out)
+        name: Option<String>,
         /// How it behaves, in a sentence or two
         #[arg(long)]
         personality: Option<String>,
@@ -205,7 +205,7 @@ mod tests {
             new.command,
             Command::Imp {
                 action: ImpAction::New {
-                    name: "pip".into(),
+                    name: Some("pip".into()),
                     personality: None,
                     url: Some("http://localhost:11434/v1".into()),
                     model: Some("m".into()),
@@ -214,7 +214,31 @@ mod tests {
                 }
             }
         );
-        assert!(parse(&["imp", "new"]).is_err());
+        // The name may be left out: it is asked for, like the other values.
+        let unnamed = parse(&[
+            "imp",
+            "new",
+            "--url",
+            "https://openrouter.ai/api/v1",
+            "--model",
+            "gpt-6-luna",
+            "--api-key-env",
+            "OPENAI_API_KEY",
+        ])
+        .unwrap();
+        assert_eq!(
+            unnamed.command,
+            Command::Imp {
+                action: ImpAction::New {
+                    name: None,
+                    personality: None,
+                    url: Some("https://openrouter.ai/api/v1".into()),
+                    model: Some("gpt-6-luna".into()),
+                    api_key_env: Some("OPENAI_API_KEY".into()),
+                    default: false,
+                }
+            }
+        );
     }
 
     #[test]
