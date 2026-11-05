@@ -116,7 +116,7 @@ struct PhoneStage: View {
 
     // MARK: Shake to send
 
-    /// A deliberate shake: sends the Imp moved last to the device nearby (see `docs/TRANSFER.md`), or
+    /// A deliberate shake: sends the Imp moved last to the device nearby (see `docs/concepts/transfer.md`), or
     /// the Imps get dizzy as they always did when there is nothing to send or nowhere to send it.
     private func shaken(from side: LinkSide?) {
         engine.pacer.wake()

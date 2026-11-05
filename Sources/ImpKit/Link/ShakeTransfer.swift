@@ -58,7 +58,7 @@ public struct ShakeSettings: Sendable, Equatable {
 }
 
 /// Which Imp a shake sends and where, decided from what the phone knows. Pure: no clock, no network,
-/// everything is passed in. The reasons are in `docs/TRANSFER.md`.
+/// everything is passed in. The reasons are in `docs/concepts/transfer.md`.
 public enum ShakeTransfer {
     /// An Imp that is on the phone's screen and free to go.
     public struct Imp: Sendable, Equatable {

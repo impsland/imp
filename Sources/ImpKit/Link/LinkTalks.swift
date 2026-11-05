@@ -1,6 +1,6 @@
 import Foundation
 
-/// Who can message whom, and where a `message` goes (see "Imps talking" in `docs/LINK.md`). An Imp
+/// Who can message whom, and where a `message` goes (see "Imps talking" in `docs/connecting/link.md`). An Imp
 /// can message the other Imps of its home and the Imps on the screen its body is on. The home sends
 /// the question to the device that can answer: the target's home, or the holder of the asking Imp,
 /// which answers for its own Imps and forwards once to the target's home. The answer goes back the

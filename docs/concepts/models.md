@@ -2,10 +2,10 @@
 
 What a new client (Android, Windows, Linux, a server) needs to read and write to work with Imp and
 with other Imps. The Swift types in `Sources/ImpKit` are the reference. This page names the shapes
-and gives JSON examples. The wire protocols are in [`LINK.md`](LINK.md) (devices) and
-[`../server/PROTOCOL.md`](../server/PROTOCOL.md) (Den and Hop). The kit file format is in
-[`KITS.md`](KITS.md). Tests that pin the shapes are listed in
-[`../Tests/Fixtures/README.md`](../Tests/Fixtures/README.md).
+and gives JSON examples. The wire protocols are in [Imp Link 2](/connecting/link) (devices) and
+`server/PROTOCOL.md` (Den and Hop). The kit file format is in
+[Kit format](/sharing/kits). Tests that pin the shapes are listed in
+`Tests/Fixtures/README.md`.
 
 General rules for every JSON in Imp:
 
@@ -78,7 +78,7 @@ A **service** is an OpenAI compatible endpoint. A **brain** picks a service and 
   brain. It has no service at all and sleeps until one is picked.
 - Whether an Imp can think is one rule on every device (`Wakefulness`): at home its own brain decides,
   and a visitor is awake only while its home is connected and says it has a brain (`brain` in
-  `docs/LINK.md`). An Imp that can't think sleeps whatever it is doing, and asking it is refused at once.
+  [Imp Link 2](/connecting/link)). An Imp that can't think sleeps whatever it is doing, and asking it is refused at once.
 - API keys and header values live in the platform's secure storage (Keychain on Apple systems), never
   in these objects and never in a kit. When a pocket Imp moves to a Mac they travel apart as
   `LinkSecrets` inside `adopt`.
@@ -156,7 +156,7 @@ imp-file://<owner-imp-uuid>/<percent-encoded path>?size=<bytes>&sha256=<64 lower
 ```
 
 Rules (what is accepted, what is rejected, how checksums apply) are in the File references section of
-[`LINK.md`](LINK.md). Vectors for paths, references and checksums: `Tests/Fixtures/workspace-refs.json`.
+[Imp Link 2](/connecting/link). Vectors for paths, references and checksums: `Tests/Fixtures/workspace-refs.json`.
 
 ## Link message envelope
 
@@ -178,7 +178,7 @@ big-endian length followed by that JSON, at most 4 MiB.
 - Fields that are optional in the Swift enum (`join`, `home`, `ticket`, `work`, `speech`, `from`) are
   absent or `null`.
 - Messages with a size or count over a limit decode but are dropped (`LinkMessage.isSound`). Every
-  limit is in `LINK.md` and `LinkProtocol`.
+  limit is in [Imp Link 2](/connecting/link) and `LinkProtocol`.
 - One vector for every message, a few that must be rejected: `Tests/Fixtures/link-messages.json`.
 
 ## Browser bridge

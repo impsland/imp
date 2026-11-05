@@ -8,7 +8,7 @@ public enum LinkTravel: Codable, Sendable, Equatable {
     case visit(side: LinkSide, from: UUID)
 }
 
-/// Where a thrown Imp goes (see "Doors" in `docs/LINK.md`). Pure: the screen asks with what is
+/// Where a thrown Imp goes (see "Doors" in `docs/connecting/link.md`). Pure: the screen asks with what is
 /// connected right now and gets a device, or the reason it bounces.
 public enum LinkDoors {
     /// Why an Imp bounces back instead of leaving.

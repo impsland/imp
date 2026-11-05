@@ -152,7 +152,7 @@ A path in a reply is relative to one Imp's Workspace, so it means nothing once a
 Every text that crosses from one Imp to another (the question, the answer, on this device or through a
 `talk`) therefore names the files it mentions as
 
-    imp-file://<owner-imp-uuid>/<percent-encoded path>?size=<bytes>&sha256=<64 lowercase hex>&type=<mime>#<fragment>
+    imp-file://`<owner-imp-uuid>`/`<percent-encoded path>`?size=`<bytes>`&sha256=<64 lowercase hex>&type=`<mime>`#`<fragment>`
 
 `size`, `sha256`, `type` and the fragment (`#autoplay`) are optional (a checksum is only made for files up
 to 32 MiB). The sender rewrites only what is a regular file inside its own Workspace, and leaves web
@@ -254,7 +254,7 @@ message depends on who sent it.
 | `work` | `imp`, `work`: `{ request, status?, partial, from? }` or null | home, holder |
 | `mood` | `imp`, `mood` (a mood name) | home, holder |
 | `brain` | `imp`, `ready`: whether it has a brain it can think with at home. False: it sleeps on the holder too, and asking it is refused there | home, holder |
-| `animate` | `imp`, `beats` (see `KITS.md`) | home, holder |
+| `animate` | `imp`, `beats` (see [Kit format](/sharing/kits)) | home, holder |
 | `speech` | `imp`, `speech`: `{ id, role` (`asked`, `reply`, `asking`), `peer`, `hue`, `question`, `text }` or null | home, holder |
 | `talkLines` | `imp`, `lines`: who asked whom, with question and reply | home, holder |
 | `message` | `id`, `from` (a looks object), `to`, `toHome`, `text`, `forwarded` | any device towards the target's home |
@@ -269,7 +269,7 @@ steps, 256 beats, 300 talk lines, file parts up to 1 MiB and files up to 512 MiB
 is ignored.
 
 Test vectors for every message, and for ones that must be rejected: `Tests/Fixtures/link-messages.json`.
-The core models are described in `docs/MODELS.md`.
+The core models are described in [Core models](/concepts/models).
 
 ## Limits
 

@@ -7,7 +7,7 @@ public struct LinkRecord: Codable, Sendable, Equatable, Identifiable {
     public var door: Data?
     public var routes: LinkRoutes
     public var since: Date
-    /// One of the owner's own devices (see "Trust" in `docs/LINK.md`). Never by default.
+    /// One of the owner's own devices (see "Trust" in `docs/connecting/link.md`). Never by default.
     public var trusted = false
 
     public var id: UUID { device.id }

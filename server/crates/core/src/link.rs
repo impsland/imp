@@ -1,4 +1,4 @@
-//! The device link messages and frames (`docs/LINK.md`), as Rust types.
+//! The device link messages and frames (`docs/connecting/link.md`), as Rust types.
 //!
 //! This is the base a program needs to take part in a link: every `LinkMessage` case with the same
 //! JSON the Swift `LinkMessage` writes, the length-prefixed frame codec, and the soundness limits.

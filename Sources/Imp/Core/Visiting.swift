@@ -2,7 +2,7 @@ import Foundation
 import ImpKit
 
 /// What a visiting Imp is here: its body is on this Mac's desktop, its brain at its home (see "Visit"
-/// in `docs/LINK.md`). Its looks, chat, work and mood come from there, and what you ask it goes there.
+/// in `docs/connecting/link.md`). Its looks, chat, work and mood come from there, and what you ask it goes there.
 struct Visiting: Equatable {
     var look: LinkImp
     var homeID: UUID

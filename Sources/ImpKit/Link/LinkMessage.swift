@@ -1,6 +1,6 @@
 import Foundation
 
-// Imp Link 2: how devices talk (see `docs/LINK.md`). Every Imp thinks at its home; its body can be on
+// Imp Link 2: how devices talk (see `docs/connecting/link.md`). Every Imp thinks at its home; its body can be on
 // any linked device. Messages are JSON, one per frame (`LinkFrame`), over TLS (`LinkChannel`),
 // whether the bytes came over Wi-Fi or through the Hop.
 

@@ -1,6 +1,6 @@
 import Foundation
 
-/// What one device may have an Imp here work on for it at a time (see `docs/LINK.md`, "Trust"): one
+/// What one device may have an Imp here work on for it at a time (see `docs/connecting/link.md`, "Trust"): one
 /// answer runs, a few wait, and the rest are told it is busy, so another device can't pile work up.
 public struct LinkLane<Job> {
     public enum Admission: Equatable, Sendable {

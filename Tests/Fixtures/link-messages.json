@@ -1,5 +1,5 @@
 {
- "about": "Device link messages (docs/LINK.md). Each valid vector is one frame body exactly as the Swift encoder writes it (keys sorted here, dates in seconds since 1970, binary values base64). A client decodes every vector, encodes it again and gets an equal JSON value (compare parsed values, not text: key order and number spelling are not part of the contract). Unknown: well formed JSON this version does not understand, a receiver ignores it. Malformed: not a valid message, a receiver ignores it too. (Before the handshake is done a receiver closes the connection instead.) Unsound: decodes, but its sizes break the limits in isSound, so the node drops it.",
+ "about": "Device link messages (docs/connecting/link.md). Each valid vector is one frame body exactly as the Swift encoder writes it (keys sorted here, dates in seconds since 1970, binary values base64). A client decodes every vector, encodes it again and gets an equal JSON value (compare parsed values, not text: key order and number spelling are not part of the contract). Unknown: well formed JSON this version does not understand, a receiver ignores it. Malformed: not a valid message, a receiver ignores it too. (Before the handshake is done a receiver closes the connection instead.) Unsound: decodes, but its sizes break the limits in isSound, so the node drops it.",
  "version": 2,
  "valid": [
   {

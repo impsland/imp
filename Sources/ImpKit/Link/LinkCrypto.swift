@@ -3,7 +3,7 @@ import Foundation
 import Network
 import Security
 
-/// Everything cryptographic in Imp Link 2 (see `docs/LINK.md`): the keys derived from a door key,
+/// Everything cryptographic in Imp Link 2 (see `docs/connecting/link.md`): the keys derived from a door key,
 /// the TLS settings, the proofs that tie a handshake to its own connection, and tickets.
 public enum LinkCrypto {
     public static let keyBytes = 32

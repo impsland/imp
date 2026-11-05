@@ -43,7 +43,7 @@ enum PocketEvent {
     case lost(UUID)
 }
 
-/// The phone's side of Imp Link 2 (see `docs/LINK.md`): one `LinkNode` for this iPhone, and what
+/// The phone's side of Imp Link 2 (see `docs/connecting/link.md`): one `LinkNode` for this iPhone, and what
 /// its devices say about the Imps visiting here (their looks, chats, work, moods, speeches, talks and
 /// files). The Imps hatched here are `PocketRuntime`'s; the hub routes what the node hears to it.
 @MainActor @Observable

@@ -3,7 +3,7 @@ import ImpKit
 import Observation
 import os
 
-/// The Mac's part in Imp Link 2 (see `docs/LINK.md`): one `LinkNode` that finds, links with and
+/// The Mac's part in Imp Link 2 (see `docs/connecting/link.md`): one `LinkNode` that finds, links with and
 /// talks to the other devices, and everything the app does with what it hears.
 ///
 /// An Imp of this Mac is still this Mac's wherever its body is: its brain, keys, tools and chats stay

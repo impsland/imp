@@ -2,8 +2,8 @@
 
 Language neutral JSON files that pin behaviour every Imp client must share. The Swift tests read them
 now. A client in another language (Rust, Kotlin, C++) reads the same files in its own tests and must
-get the same answers. The written contract is in `server/PROTOCOL.md`, `docs/LINK.md` and
-`docs/MODELS.md`. These files are its examples and its test.
+get the same answers. The written contract is in `server/PROTOCOL.md`, `docs/connecting/link.md` and
+`docs/concepts/models.md`. These files are its examples and its test.
 
 | file | what it holds | Swift test | a new client does |
 |------|---------------|------------|-------------------|

@@ -2,7 +2,7 @@ import Foundation
 import Network
 import os
 
-/// A device's whole part in Imp Link 2 (see `docs/LINK.md`): it listens and advertises, dials the
+/// A device's whole part in Imp Link 2 (see `docs/connecting/link.md`): it listens and advertises, dials the
 /// devices it is linked to and the homes of the Imps it holds, runs the handshake, and keeps the
 /// book, the away ledger and the visits. The app above it decides what an Imp does; the node decides
 /// who may talk to whom, and tells the app what happened.

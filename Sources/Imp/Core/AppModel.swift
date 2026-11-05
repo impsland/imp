@@ -40,7 +40,7 @@ final class AppModel {
     @ObservationIgnored private weak var listener: ImpModel?
     @ObservationIgnored private(set) lazy var reactions = Reactions(app: self)
     @ObservationIgnored private(set) lazy var stage = Stage(app: self)
-    /// The devices Imps can be thrown to (see `docs/LINK.md`).
+    /// The devices Imps can be thrown to (see `docs/connecting/link.md`).
     @ObservationIgnored private(set) lazy var link = DeviceLink(app: self)
     /// Called after Imps appear or disappear, or hide or show. The panels follow.
     @ObservationIgnored var onTroupeChange: (() -> Void)?

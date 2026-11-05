@@ -1,5 +1,5 @@
 {
- "about": "Browser bridge messages (WebSocket between the Mac app and the browser extension, one JSON object per message, see the Browser bridge section of docs/MODELS.md). outbound: app to extension, the client builds the message and its JSON must equal the vector. inbound: extension to app, the client decodes the vector and gets `expect` (defaults fill what is missing). invalid inbound messages are rejected. Compare parsed values, not text.",
+ "about": "Browser bridge messages (WebSocket between the Mac app and the browser extension, one JSON object per message, see the Browser bridge section of docs/concepts/models.md). outbound: app to extension, the client builds the message and its JSON must equal the vector. inbound: extension to app, the client decodes the vector and gets `expect` (defaults fill what is missing). invalid inbound messages are rejected. Compare parsed values, not text.",
  "outbound": [
   {
    "name": "troupe",

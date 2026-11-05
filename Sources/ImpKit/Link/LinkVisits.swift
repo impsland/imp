@@ -1,6 +1,6 @@
 import Foundation
 
-/// The Imps visiting this device (see "Visit" in `docs/LINK.md`): for each one, how it came in, its
+/// The Imps visiting this device (see "Visit" in `docs/connecting/link.md`): for each one, how it came in, its
 /// home's card and the ticket that lets this device act for it at its home. Plus the releases that
 /// couldn't be delivered yet. Pure, so it can be tested without a network; the book keeps it.
 public struct Visits: Codable, Sendable, Equatable {

@@ -1,6 +1,6 @@
 # Imp for iPhone
 
-The phone's side of Imp, built on Imp Link 2 (`docs/LINK.md`). An iPhone links with Macs and other
+The phone's side of Imp, built on Imp Link 2 (`docs/connecting/link.md`). An iPhone links with Macs and other
 iPhones: any device can show an invite code and any can scan it, and one device can have many links.
 Imps you toss off the side of a screen land on another: drag them around with a finger, tap one to
 chat, shake the phone to make them dizzy, and throw them on. An Imp keeps thinking at its **home**,

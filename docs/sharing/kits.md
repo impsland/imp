@@ -1,8 +1,8 @@
 # Kit format reference
 
-A kit is one JSON file, the same format Imp exports (see [Share setups as kits](../README.md#share-setups-as-kits)).
+A kit is one JSON file, the same format Imp exports (see `Share setups as kits`).
 The Den checks every kit it receives against the same limits and rules (see
-[`server/PROTOCOL.md`](../server/PROTOCOL.md)). This page lists the fields for animations and an Imp's
+`server/PROTOCOL.md`). This page lists the fields for animations and an Imp's
 character, for anyone who writes a kit by hand.
 
 ## Versions
@@ -32,4 +32,4 @@ An Imp may also have `traits`: `lids` 0 to 0.6, `slant` -1 to 1 (negative worrie
 
 The Den checks the limits: 1 to 24 beats per animation, at most 20 s in total, known moods and
 glyphs, and at most 50 animations per kit. An example with animations is
-[`Tests/Fixtures/kits/moody-moves.json`](../Tests/Fixtures/kits/moody-moves.json).
+`Tests/Fixtures/kits/moody-moves.json`.

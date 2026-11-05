@@ -1,6 +1,6 @@
 import Foundation
 
-/// The home's record of its Imps that are away (see "Tickets" in `docs/LINK.md`): who holds each
+/// The home's record of its Imps that are away (see "Tickets" in `docs/connecting/link.md`): who holds each
 /// one and a hash of its current ticket. The home is the source of truth: a holder is only a holder
 /// while this says so. Pure, so the races can be tested without a network.
 public struct AwayLedger: Codable, Sendable, Equatable {

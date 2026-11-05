@@ -46,7 +46,7 @@ public struct PocketBrain: Sendable {
     /// goes and, at the end, nil. A service that fails gives a failed turn. Cancelling the task (the
     /// stop button) throws `CancellationError`, and nothing is kept. Without `tools` it is a plain
     /// conversation: no tool server is called and the Imp has no tools of its own (for a request that
-    /// doesn't come from the owner's own device, see `docs/LINK.md`).
+    /// doesn't come from the owner's own device, see `docs/connecting/link.md`).
     public func ask(_ text: String, of imp: PocketImp, from sender: ChatTurn.Sender? = nil, talk: PocketTalk = PocketTalk(), tools allowed: Bool = true,
                     onWork: @escaping @Sendable (LinkWork?) async -> Void = { _ in }) async throws -> PocketAnswer {
         let hub = MCPHub()

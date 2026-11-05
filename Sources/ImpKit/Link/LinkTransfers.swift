@@ -1,6 +1,6 @@
 import Foundation
 
-/// Bookkeeping for Imps in flight (see "Passing" in `docs/LINK.md`). A throw is answered `took` or
+/// Bookkeeping for Imps in flight (see "Passing" in `docs/connecting/link.md`). A throw is answered `took` or
 /// `declined`; no answer in time is a decline. A transfer id that comes again is answered again and
 /// never taken twice. Pure: time is passed in.
 public struct Transfers: Sendable {

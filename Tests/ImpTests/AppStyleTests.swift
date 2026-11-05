@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-/// The whole app wears the design system (docs/DESIGN.md). These system styles would bring the
+/// The whole app wears the design system (docs/design/index.md). These system styles would bring the
 /// default look back, so no Mac UI file and no iPhone file may use them. Alerts, confirmation
 /// dialogs, share sheets, file panels, context menu items and the navigation bar stay system on
 /// purpose, and none of those needs a banned style.

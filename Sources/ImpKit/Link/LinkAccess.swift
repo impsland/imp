@@ -1,6 +1,6 @@
 import Foundation
 
-/// How much a connected device is trusted (see "Handshake" in `docs/LINK.md`).
+/// How much a connected device is trusted (see "Handshake" in `docs/connecting/link.md`).
 public enum LinkStanding: String, Codable, Sendable, Equatable {
     /// A device this one has a link with: both pinned each other's key.
     case peer

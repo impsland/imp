@@ -1,5 +1,5 @@
 {
-  "about": "Language-neutral vectors for Imp workspace file references (docs/LINK.md, 'File references'). A client passes when every case gives the stated result. null means rejected.",
+  "about": "Language-neutral vectors for Imp workspace file references (docs/connecting/link.md, 'File references'). A client passes when every case gives the stated result. null means rejected.",
   "version": 1,
   "owner": "11111111-2222-3333-4444-555555555555",
   "root": "/ws/imp",

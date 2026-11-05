@@ -9,7 +9,7 @@ screen and lands on the other device. The rules live in `Sources/ImpKit/Link/Sha
 
 - A sideways throw of an Imp off the screen edge (`Toss`, `StageEngine.toss`) and a sideways jolt of the
   whole phone (`JoltDetector.thrown`) already send the focused Imp through a "door" to a device.
-- The menu send ("Send to <device>" on the iPhone, "Send <Imp> to <device>…" on the Mac) already uses
+- The menu send ("Send to `<device>`" on the iPhone, "Send `<Imp>` to `<device>`…" on the Mac) already uses
   `LinkNode.pass`, which is a visit: the Imp stays that device's own and a visitor lives on the other.
 - A shake used to make the Imps dizzy. It still does when there is nothing to send or nowhere to send it.
 - Shake detection is the `JoltDetector` on the shared `TiltSource`. There is still one motion manager.
@@ -107,5 +107,5 @@ A real "device in that direction" is not possible without knowing where the devi
 ## The Mac
 
 A Mac has no motion sensor, so it does not start a shake. The transfer starts from the Imp's context
-menu, which already has "Send <Imp> to <device>…" for each connected device, and from throwing the Imp
+menu, which already has "Send `<Imp>` to `<device>`…" for each connected device, and from throwing the Imp
 at the side of the screen. It also receives: an Imp shaken toward a Mac lands as a visitor as usual.

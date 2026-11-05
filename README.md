@@ -1,6 +1,6 @@
 # Imp
 
-<p align="center"><img src="docs/screenshot.png" width="760" alt="Imp, a tiny red desk imp, floating above your windows"></p>
+<p align="center"><img src="docs/assets/screenshot.png" width="760" alt="Imp, a tiny red desk imp, floating above your windows"></p>
 
 <p align="center">
   <b>A tiny desk imp for your Mac that does what you ask.</b><br>
@@ -33,7 +33,7 @@ xattr -r -d com.apple.quarantine /Applications/Imp.app
 
 or allow it in System Settings:
 
-<p align="center"><img src="docs/how-to-open-an-unsigned-app-on-macos.svg" width="760" alt="Open an unsigned app on macOS"></p>
+<p align="center"><img src="docs/assets/how-to-open-an-unsigned-app-on-macos.svg" width="760" alt="Open an unsigned app on macOS"></p>
 </details>
 
 ## Meet Imp
@@ -257,9 +257,9 @@ Adding a field is not a new version (readers ignore keys they don't know, and gi
 default); only a change an older Imp would misread bumps it, and then Imp upgrades what older
 versions wrote as it reads. `"app"` is the version of Imp that wrote the file, for information only.
 
-Ready-made kits to borrow are in [the Den](#the-den). The fields for animations and an Imp's character are in [`docs/KITS.md`](docs/KITS.md).
+Ready-made kits to borrow are in [the Den](#the-den). The fields for animations and an Imp's character are in [`docs/sharing/kits.md`](docs/sharing/kits.md).
 
-<p align="center"><img src="docs/moods.png" width="760" alt="Imp's moods"></p>
+<p align="center"><img src="docs/assets/moods.png" width="760" alt="Imp's moods"></p>
 
 ## Imps on other devices
 
@@ -456,8 +456,8 @@ install it on your phone. It shares `ImpKit` and the Imp renderer with the Mac.
 - `iOS/`: the iPhone app. `Extensions/Browser/`: the browser extension.
 - `Tests/`: the Swift tests, and `Tests/Fixtures`, the JSON vectors every client reads (protocol
   messages, tool filtering, retry policy, workspace paths) and the sample kits.
-- `Resources/`: the app's icon, `Info.plist` and the String Catalogs. `docs/`: design notes and the link
-  protocol. `scripts/`: build, disk image, iPhone install and string scripts.
+- `Resources/`: the app's icon, `Info.plist` and the String Catalogs. `docs/`: the documentation site
+  (VitePress), with the concepts, the link protocol, kits and design. `scripts/`: build, disk image, iPhone install and string scripts.
 - `server/`: one Rust workspace. `imp-den` (the `den` command) and `imp-hop` (the `hop` command) are the
   two services, each a library next to its binary. `imp-shared` is what they have in common.
   `imp-core` is the portable Imp logic, and `imp-cli` is the `imp` terminal app, which can run both
