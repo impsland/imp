@@ -1,0 +1,241 @@
+/* generated from design/components.json, do not edit. Run: node design/generate.mjs */
+/* One class per component. Load imp-colors-dark.css or imp-colors-light.css first. */
+
+/* A group: a soft fill with big corners. Never an outline, never a divider inside, never a gradient or a shadow. */
+.imp-pebble {
+  background-color: @imp_card;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: none;
+  border: none;
+}
+.imp-pebble:hover { background-color: @imp_card_hover; }
+
+/* The one background of every window, screen and sheet. A sheet has exactly the same background as the app. */
+.imp-surface {
+  background-color: @imp_surface;
+  color: @imp_text;
+  border: none;
+}
+
+/* One setting: a picture, one to three plain words and a control. A help question mark only when the title cannot be understood without it. */
+.imp-row {
+  min-height: 32px;
+  border: none;
+}
+
+/* A round bead behind an icon. */
+.imp-icon-tile {
+  background-color: @imp_card;
+  border-radius: 999px;
+  border: none;
+}
+
+/* The one main action of a screen. Filled with the accent (the Imp's colour inside an Imp's context). */
+.imp-button-primary {
+  background-color: @imp_accent;
+  color: @imp_on_accent;
+  border-radius: 999px;
+  padding: 8px 16px;
+  min-height: 32px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: none;
+}
+.imp-button-primary:hover { background-color: @imp_accent_bright; }
+.imp-button-primary:disabled { opacity: 0.45; }
+
+/* A second action next to the primary one. */
+.imp-button-secondary {
+  background-color: @imp_card;
+  color: @imp_text;
+  border-radius: 999px;
+  padding: 8px 16px;
+  min-height: 32px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: none;
+}
+.imp-button-secondary:hover { background-color: @imp_card_hover; }
+.imp-button-secondary:disabled { opacity: 0.45; }
+
+/* A text or icon button without a fill until hovered. */
+.imp-button-quiet {
+  background: none;
+  color: @imp_muted;
+  border-radius: 999px;
+  padding: 8px 12px;
+  min-height: 32px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: none;
+}
+.imp-button-quiet:hover { background-color: @imp_card_hover; }
+.imp-button-quiet:hover { color: @imp_text; }
+.imp-button-quiet:disabled { opacity: 0.45; }
+
+/* An action that removes something. */
+.imp-button-destructive {
+  background-color: @imp_error_background;
+  color: @imp_danger;
+  border-radius: 999px;
+  padding: 8px 16px;
+  min-height: 32px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: none;
+}
+.imp-button-destructive:disabled { opacity: 0.45; }
+
+/* A choice of two to five exclusive options in one pebble. */
+.imp-segmented {
+  color: @imp_muted;
+  border-radius: 999px;
+  padding: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: none;
+}
+
+/* An on/off control. */
+.imp-switch {
+  border: none;
+}
+
+/* A text field. */
+.imp-field {
+  background-color: @imp_well;
+  color: @imp_text;
+  border-radius: 10px;
+  padding: 0px 10px;
+  min-height: 34px;
+  font-size: 13px;
+  font-weight: 400;
+  border: none;
+}
+
+/* An action inside a field: a quiet glyph at the field's trailing edge. */
+.imp-field-action {
+  color: @imp_muted;
+  border-radius: 10px;
+  border: none;
+}
+.imp-field-action:hover { background-color: @imp_card_hover; }
+.imp-field-action:hover { color: @imp_text; }
+
+/* The help question mark and the popover it opens. One or two short sentences for a child. */
+.imp-info-tip {
+  background-color: @imp_raised;
+  color: @imp_text;
+  border-radius: 16px;
+  padding: 10px;
+  max-width: 280px;
+  font-size: 12.5px;
+  font-weight: 500;
+  box-shadow: 0 10px 30px @imp_shadow_card;
+  border: none;
+}
+
+/* The fill of a coloured control (a filled button, the selected segment, a switch that is on, a badge on an Imp's colour). */
+.imp-tint-fill {
+  border: none;
+}
+
+/* Text, an icon or a switch knob on a 'tintFill'. */
+.imp-on-tint {
+  border: none;
+}
+
+/* An Imp's colour used as a foreground (text, an icon, a link) on the surface or a raised surface. */
+.imp-legible-tint {
+  border: none;
+}
+
+/* The top bar of every modal flow and sheet: Back leading, a centred title or step indicator, Close trailing. */
+.imp-sheet-bar {
+  min-height: 32px;
+  border: none;
+}
+
+/* Round marks for the steps of a flow, the current one filled with the Imp's colour. */
+.imp-step-indicator {
+  border: none;
+}
+
+/* The sections of a settings screen, always one tap away. */
+.imp-section-rail {
+  font-size: 13px;
+  font-weight: 400;
+  border: none;
+}
+
+/* Evenly sized choices (the service choices, Remote and Local) as tiles in a grid, each with a link to the provider's page. */
+.imp-preset-grid {
+  background-color: @imp_card;
+  border-radius: 12px;
+  min-height: 32px;
+  border: none;
+}
+
+/* The Imp's speech bubble on the desktop. */
+.imp-bubble {
+  background-color: @imp_raised;
+  color: @imp_text;
+  border-radius: 24px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 400;
+  box-shadow: 0 10px 30px @imp_shadow_card;
+  border: none;
+}
+
+/* A small floating panel with a list or a small form. */
+.imp-popover {
+  background-color: @imp_raised;
+  border-radius: 16px;
+  padding: 12px;
+  min-width: 360px;
+  box-shadow: 0 10px 30px @imp_shadow_card;
+  border: none;
+}
+
+/* The menu of the menu bar or tray icon: the Imps that are out and a few actions. */
+.imp-bar-menu {
+  background-color: @imp_raised;
+  border-radius: 16px;
+  padding: 8px;
+  min-width: 360px;
+  font-size: 13px;
+  font-weight: 400;
+  border: none;
+}
+
+/* A bar that floats at the bottom after something was removed. */
+.imp-undo-bar {
+  background-color: @imp_raised;
+  color: @imp_text;
+  border-radius: 999px;
+  padding: 12px;
+  box-shadow: 0 10px 30px @imp_shadow_card;
+  border: none;
+}
+
+/* A tiny status label or count. */
+.imp-badge {
+  background-color: @imp_card;
+  color: @imp_muted;
+  border-radius: 999px;
+  padding: 4px 6px;
+  font-size: 11.5px;
+  font-weight: 400;
+  border: none;
+}
+
+/* The keyboard focus ring of every control. */
+.imp-focus {
+  min-width: 2px;
+  border: none;
+}
+
+/* The focus ring of every control: keyboard focus only. */
+*:focus-visible { outline: 2px solid @imp_focus; outline-offset: 2px; }

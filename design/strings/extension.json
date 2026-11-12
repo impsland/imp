@@ -1,0 +1,308 @@
+{
+  "extension.description": {
+    "note": "The extension description in the browser store and extension list.",
+    "en": "Lets Imp know which page you are on and where things are on it. Talks only to Imp on this computer.",
+    "es": "Permite que Imp sepa en qué página estás y dónde está cada cosa. Habla solo con Imp en este equipo.",
+    "zh-Hans": "让 Imp 知道你在看哪个页面，以及页面上的东西在哪里。只和这台电脑上的 Imp 通信。"
+  },
+  "extension.action_title": {
+    "note": "The tooltip of the toolbar button.",
+    "en": "Imp",
+    "es": "Imp",
+    "zh-Hans": "Imp"
+  },
+  "extension.status.checking": {
+    "note": "Connection status while the extension looks for Imp.",
+    "en": "Checking…",
+    "es": "Comprobando…",
+    "zh-Hans": "正在检查…"
+  },
+  "extension.status.connecting": {
+    "note": "Connection status while a connection attempt runs.",
+    "en": "Connecting…",
+    "es": "Conectando…",
+    "zh-Hans": "正在连接…"
+  },
+  "extension.status.connected": {
+    "note": "Connection status when Imp is reachable.",
+    "en": "Connected",
+    "es": "Conectado",
+    "zh-Hans": "已连接"
+  },
+  "extension.status.connected_browser": {
+    "note": "Connection status when Imp is reachable, with the name of the browser.",
+    "args": {
+      "browser": "string"
+    },
+    "en": "Connected · {browser}",
+    "es": "Conectado · {browser}",
+    "zh-Hans": "已连接 · {browser}"
+  },
+  "extension.status.not_connected": {
+    "note": "Connection status when Imp cannot be reached.",
+    "en": "Not connected",
+    "es": "Sin conexión",
+    "zh-Hans": "未连接"
+  },
+  "extension.reconnect": {
+    "note": "Button that tries to reach Imp again.",
+    "en": "Try again",
+    "es": "Reintentar",
+    "zh-Hans": "重试"
+  },
+  "extension.reconnect.help": {
+    "note": "Help for the button that tries to reach Imp again.",
+    "en": "Looks for Imp again. Use it after you start Imp.",
+    "es": "Vuelve a buscar a Imp. Úsalo después de abrir Imp.",
+    "zh-Hans": "重新寻找 Imp。启动 Imp 之后用它。"
+  },
+  "extension.back": {
+    "note": "Button that goes back to the first screen of the popup.",
+    "en": "Back",
+    "es": "Atrás",
+    "zh-Hans": "返回"
+  },
+  "extension.help": {
+    "note": "Label of the small question mark button that opens a help tip.",
+    "en": "What is this?",
+    "es": "¿Qué es esto?",
+    "zh-Hans": "这是什么？"
+  },
+  "extension.tab.untitled": {
+    "note": "Name of a page that has no title.",
+    "en": "Untitled page",
+    "es": "Página sin título",
+    "zh-Hans": "无标题页面"
+  },
+  "extension.tab.label": {
+    "note": "Accessible name of the box that shows the page you are on.",
+    "en": "The page Imp knows",
+    "es": "La página que Imp conoce",
+    "zh-Hans": "Imp 知道的页面"
+  },
+  "extension.tab.sees": {
+    "note": "Help for the page box when Imp can look inside the page.",
+    "en": "Imp can read this page and find things on it when it needs to.",
+    "es": "Imp puede leer esta página y encontrar cosas en ella cuando lo necesita.",
+    "zh-Hans": "Imp 需要时可以读这个页面，也能在上面找东西。"
+  },
+  "extension.tab.blind": {
+    "note": "Help for the page box when the browser keeps the page private.",
+    "en": "The browser keeps this page to itself. Imp only knows its address.",
+    "es": "El navegador se guarda esta página. Imp solo conoce su dirección.",
+    "zh-Hans": "浏览器不让别人看这个页面。Imp 只知道它的地址。"
+  },
+  "extension.activity.title": {
+    "note": "Title of the list of what Imp just did in the browser.",
+    "en": "Lately",
+    "es": "Reciente",
+    "zh-Hans": "最近"
+  },
+  "extension.activity.help": {
+    "note": "Help for the list of what Imp just did.",
+    "en": "When Imp reads a page or looks for something on one, it shows up here.",
+    "es": "Cuando Imp lee una página o busca algo en ella, aparece aquí.",
+    "zh-Hans": "Imp 读页面或在页面上找东西时，会显示在这里。"
+  },
+  "extension.activity.empty": {
+    "note": "Shown when Imp has done nothing yet.",
+    "en": "Nothing yet.",
+    "es": "Todavía nada.",
+    "zh-Hans": "还没有。"
+  },
+  "extension.activity.see_all": {
+    "note": "Button that opens the whole list. The number is how many entries there are.",
+    "args": {
+      "count": "int"
+    },
+    "en": "See all {count}",
+    "es": "Ver los {count}",
+    "zh-Hans": "查看全部 {count} 条"
+  },
+  "extension.activity.list_label": {
+    "note": "Accessible name of the full list.",
+    "en": "Everything Imp did lately",
+    "es": "Todo lo que Imp hizo hace poco",
+    "zh-Hans": "Imp 最近做过的所有事"
+  },
+  "extension.activity.search": {
+    "note": "Placeholder of the search box over the full list.",
+    "en": "Search",
+    "es": "Buscar",
+    "zh-Hans": "搜索"
+  },
+  "extension.activity.search_label": {
+    "note": "Accessible name of the search box over the full list.",
+    "en": "Search what Imp did",
+    "es": "Buscar lo que Imp hizo",
+    "zh-Hans": "搜索 Imp 做过的事"
+  },
+  "extension.activity.no_match": {
+    "note": "Shown when the search finds nothing.",
+    "en": "Nothing matches that.",
+    "es": "Nada coincide.",
+    "zh-Hans": "没有匹配的内容。"
+  },
+  "extension.activity.count_some": {
+    "note": "Count of the entries that match the search.",
+    "args": {
+      "shown": "int",
+      "total": "int"
+    },
+    "en": "{shown} of {total}",
+    "es": "{shown} de {total}",
+    "zh-Hans": "{total} 条中的 {shown} 条"
+  },
+  "extension.activity.count_all": {
+    "note": "Count of all the entries.",
+    "args": {
+      "total": "int"
+    },
+    "en": "{total} in all",
+    "es": "{total} en total",
+    "zh-Hans": "共 {total} 条"
+  },
+  "extension.activity.found": {
+    "note": "Start of a line: Imp found something on a page. The searched words follow.",
+    "en": "Found",
+    "es": "Encontró",
+    "zh-Hans": "找到了"
+  },
+  "extension.activity.looked_for": {
+    "note": "Start of a line: Imp looked for something on a page and did not find it. The searched words follow.",
+    "en": "Looked for",
+    "es": "Buscó",
+    "zh-Hans": "找过"
+  },
+  "extension.activity.read": {
+    "note": "A line: Imp read a page.",
+    "en": "Read the page",
+    "es": "Leyó la página",
+    "zh-Hans": "读了页面"
+  },
+  "extension.activity.read_failed": {
+    "note": "A line: Imp could not read a page.",
+    "en": "Could not read the page",
+    "es": "No pudo leer la página",
+    "zh-Hans": "没能读页面"
+  },
+  "extension.ago.now": {
+    "note": "How long ago something happened: just now.",
+    "en": "now",
+    "es": "ahora",
+    "zh-Hans": "刚刚"
+  },
+  "extension.ago.seconds": {
+    "note": "How long ago: a number of seconds, as short as possible.",
+    "args": {
+      "n": "int"
+    },
+    "en": "{n}s",
+    "es": "{n} s",
+    "zh-Hans": "{n}秒"
+  },
+  "extension.ago.minutes": {
+    "note": "How long ago: a number of minutes, as short as possible.",
+    "args": {
+      "n": "int"
+    },
+    "en": "{n}m",
+    "es": "{n} min",
+    "zh-Hans": "{n}分"
+  },
+  "extension.ago.hours": {
+    "note": "How long ago: a number of hours, as short as possible.",
+    "args": {
+      "n": "int"
+    },
+    "en": "{n}h",
+    "es": "{n} h",
+    "zh-Hans": "{n}时"
+  },
+  "extension.offline.title": {
+    "note": "Title shown when Imp is not running.",
+    "en": "Imp is asleep.",
+    "es": "Imp está dormido.",
+    "zh-Hans": "Imp 在睡觉。"
+  },
+  "extension.offline.body": {
+    "note": "Shown when Imp is not running: what to do.",
+    "en": "Start Imp on this computer and this connects by itself.",
+    "es": "Abre Imp en este equipo y esto se conecta solo.",
+    "zh-Hans": "在这台电脑上启动 Imp，这里会自动连上。"
+  },
+  "extension.offline.get": {
+    "note": "Link to download Imp.",
+    "en": "Get Imp",
+    "es": "Descargar Imp",
+    "zh-Hans": "获取 Imp"
+  },
+  "extension.private": {
+    "note": "Note that nothing leaves the computer.",
+    "en": "Stays on this computer",
+    "es": "Se queda en este equipo",
+    "zh-Hans": "只留在这台电脑上"
+  },
+  "extension.open": {
+    "note": "Button that opens the Imp app.",
+    "en": "Open Imp",
+    "es": "Abrir Imp",
+    "zh-Hans": "打开 Imp"
+  },
+  "extension.open.help": {
+    "note": "Help for the button that opens the Imp app.",
+    "en": "Opens the Imp app. It starts Imp if it is not running.",
+    "es": "Abre la app de Imp. La inicia si no está abierta.",
+    "zh-Hans": "打开 Imp 应用。如果它没在运行，就先启动它。"
+  },
+  "extension.imp.fallback": {
+    "note": "Accessible name of an Imp that has no name.",
+    "en": "Imp",
+    "es": "Imp",
+    "zh-Hans": "Imp"
+  },
+  "extension.imp.device_default": {
+    "note": "Name of the phone an Imp is on when it did not say which.",
+    "en": "your iPhone",
+    "es": "tu iPhone",
+    "zh-Hans": "你的 iPhone"
+  },
+  "extension.imp.working": {
+    "note": "Accessible name of an Imp that is working.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} is working",
+    "es": "{name} está trabajando",
+    "zh-Hans": "{name} 正在工作"
+  },
+  "extension.imp.working_away": {
+    "note": "Accessible name of an Imp that is working on another device.",
+    "args": {
+      "name": "string",
+      "device": "string"
+    },
+    "en": "{name} is working on {device}",
+    "es": "{name} está trabajando en {device}",
+    "zh-Hans": "{name} 正在 {device} 上工作"
+  },
+  "extension.imp.asleep": {
+    "note": "Accessible name of an Imp that is asleep.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} is asleep",
+    "es": "{name} está dormido",
+    "zh-Hans": "{name} 在睡觉"
+  },
+  "extension.imp.away": {
+    "note": "Accessible name of an Imp that is on another device.",
+    "args": {
+      "name": "string",
+      "device": "string"
+    },
+    "en": "{name} is on {device}",
+    "es": "{name} está en {device}",
+    "zh-Hans": "{name} 在 {device} 上"
+  }
+}

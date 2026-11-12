@@ -1,0 +1,424 @@
+{
+  "_note": "The Pebble components as specs every platform implements the same way. A value is a token reference (color.card, spacing.large, radius.medium, size.hit, icon.small, type.body, motion.hover, shadow.card, opacity.disabled, stroke.focus) or a plain number or word. 'rules' are the behaviour a platform must keep.",
+  "pebble": {
+    "doc": "A group: a soft fill with big corners. Never an outline, never a divider inside, never a gradient or a shadow.",
+    "props": {
+      "fill": "color.card",
+      "fillHover": "color.cardHover",
+      "radius": "radius.medium",
+      "padding": "spacing.large",
+      "gap": "spacing.snug",
+      "border": "none",
+      "shadow": "none"
+    },
+    "rules": [
+      "Items inside a pebble are separated by spacing only. A list of things is a stack of pebbles with the 'gap' between them.",
+      "A pebble inside a pebble uses radius.tile.",
+      "The fill is the only thing that shows the group. On the surface colour it must be visible in light and dark."
+    ]
+  },
+  "surface": {
+    "doc": "The one background of every window, screen and sheet. A sheet has exactly the same background as the app.",
+    "props": {
+      "fill": "color.surface",
+      "text": "color.text",
+      "border": "none",
+      "gradient": "none"
+    },
+    "rules": [
+      "Only things that float for a moment (popover, menu, bubble, undo bar) use color.raised."
+    ]
+  },
+  "row": {
+    "doc": "One setting: a picture, one to three plain words and a control. A help question mark only when the title cannot be understood without it.",
+    "props": {
+      "minHeight": "size.hit",
+      "iconTile": "size.iconTile",
+      "iconSize": "icon.small",
+      "gap": "spacing.cozy",
+      "title": "type.body",
+      "titleColor": "color.text",
+      "helpColor": "color.muted",
+      "divider": "none"
+    },
+    "rules": [
+      "Every row has an icon. It has its own info tip only when its one-to-three-word title cannot be understood without it, and never a second tip for the same thing (a label tip and a field tip, a section tip and its only row's tip). Help is one tip per card or section header.",
+      "The icon sits in an icon tile and never touches the tile's edge: padding on every side is at least spacing.snug.",
+      "When the control does not fit beside the title, it moves under the title. Nothing overlaps or clips (R13).",
+      "There is no line between rows."
+    ]
+  },
+  "iconTile": {
+    "doc": "A round bead behind an icon.",
+    "props": {
+      "size": "size.iconTile",
+      "radius": "radius.full",
+      "fill": "color.card",
+      "iconColor": "color.text",
+      "iconSize": "icon.small"
+    },
+    "rules": [
+      "Inside an Imp's context the fill is the Imp's own colour and the icon uses 'on tint' (ink or paper by contrast)."
+    ]
+  },
+  "button.primary": {
+    "doc": "The one main action of a screen. Filled with the accent (the Imp's colour inside an Imp's context).",
+    "props": {
+      "fill": "color.accent",
+      "text": "color.onAccent",
+      "radius": "radius.full",
+      "paddingX": "spacing.large",
+      "paddingY": "spacing.small",
+      "minHeight": "size.hit",
+      "type": "type.label",
+      "motionHover": "motion.hover",
+      "motionPress": "motion.press"
+    },
+    "rules": [
+      "The label has padding on every side and never touches the edge.",
+      "A label that does not fit becomes an icon (FitLabel), it is never scaled down or cut.",
+      "Disabled uses opacity.disabled."
+    ]
+  },
+  "button.secondary": {
+    "doc": "A second action next to the primary one.",
+    "props": {
+      "fill": "color.card",
+      "fillHover": "color.cardHover",
+      "text": "color.text",
+      "radius": "radius.full",
+      "paddingX": "spacing.large",
+      "paddingY": "spacing.small",
+      "minHeight": "size.hit",
+      "type": "type.label",
+      "border": "none"
+    },
+    "rules": [
+      "No outline."
+    ]
+  },
+  "button.quiet": {
+    "doc": "A text or icon button without a fill until hovered.",
+    "props": {
+      "fill": "none",
+      "fillHover": "color.cardHover",
+      "text": "color.muted",
+      "textHover": "color.text",
+      "radius": "radius.full",
+      "paddingX": "spacing.medium",
+      "paddingY": "spacing.small",
+      "minHeight": "size.hit",
+      "type": "type.label"
+    },
+    "rules": [
+      "An icon-only quiet button is a round glyph: size.glyph visible, size.hit as the hit area."
+    ]
+  },
+  "button.destructive": {
+    "doc": "An action that removes something.",
+    "props": {
+      "fill": "color.errorBackground",
+      "text": "color.danger",
+      "radius": "radius.full",
+      "paddingX": "spacing.large",
+      "paddingY": "spacing.small",
+      "minHeight": "size.hit",
+      "type": "type.label",
+      "border": "none"
+    },
+    "rules": [
+      "Always asks again or offers an undo bar."
+    ]
+  },
+  "segmented": {
+    "doc": "A choice of two to five exclusive options in one pebble.",
+    "props": {
+      "track": "color.card",
+      "selectedFill": "color.accent",
+      "selectedText": "color.onAccent",
+      "text": "color.muted",
+      "radius": "radius.full",
+      "padding": "spacing.tight",
+      "segmentMinHeight": "size.control",
+      "type": "type.label"
+    },
+    "rules": [
+      "Falls back in this order when the width is too small: words, then icons (every option has an icon), then a menu button. It never reports a width smaller than its columns need, so the fallback is never skipped and nothing overlaps or clips at any text size.",
+      "The segments are equal columns. The bar fills the width it is given, except beside its title on a wide row, where it is only as wide as its words.",
+      "Three long sentence-like options are a picker or a list of selectable cards, not a segmented bar.",
+      "The selected segment is filled, the others have no fill and no outline."
+    ]
+  },
+  "switch": {
+    "doc": "An on/off control.",
+    "props": {
+      "trackWidth": "size.switchTrack",
+      "trackOff": "color.card",
+      "trackOn": "color.accent",
+      "knob": "color.onAccent",
+      "hit": "size.hit",
+      "motion": "motion.quick"
+    },
+    "rules": [
+      "The whole row can be tapped as well. The knob animates with motion.quick (no animation under Reduce Motion)."
+    ]
+  },
+  "field": {
+    "doc": "A text field.",
+    "props": {
+      "fill": "color.well",
+      "radius": "radius.small",
+      "paddingX": "spacing.cozy",
+      "height": "size.control",
+      "text": "color.text",
+      "placeholder": "color.faint",
+      "type": "type.body",
+      "border": "none",
+      "focusRing": "stroke.focus"
+    },
+    "rules": [
+      "The only outline is the focus ring (color.focus) while the field has focus.",
+      "The label sits in a column size.fieldLabel wide, or above the field on narrow widths.",
+      "An action that works on the field's value (choose from a list, show, paste or remove a key, clear a search) sits inside the field, at its trailing edge, as a 'fieldAction'. It is never a separate button beside the field: a capsule next to the field's corners clashes.",
+      "An action of the page (New, Add, Import) is never on the field's line. It goes in the header of the card or list the field belongs to.",
+      "A search field shows its magnifying glass inside the field, on the leading edge."
+    ]
+  },
+  "fieldAction": {
+    "doc": "An action inside a field: a quiet glyph at the field's trailing edge.",
+    "props": {
+      "inset": "spacing.tight",
+      "radius": "radius.small",
+      "icon": "icon.medium",
+      "text": "color.muted",
+      "textHover": "color.text",
+      "fillHover": "color.cardHover",
+      "fillPressed": "color.line",
+      "border": "none"
+    },
+    "rules": [
+      "As tall as the field less 'inset' above and below, and square.",
+      "Its corner is the field's 'radius' less 'inset', so the corners stay concentric.",
+      "No fill until hovered or pressed. It always has a help text, which is also its spoken label.",
+      "Several actions sit side by side in the order they are used (show, paste, remove)."
+    ]
+  },
+  "infoTip": {
+    "doc": "The help question mark and the popover it opens. One or two short sentences for a child.",
+    "props": {
+      "button": "size.hit",
+      "glyph": "icon.tiny",
+      "glyphColor": "color.muted",
+      "maxWidth": "size.tipWidth",
+      "fill": "color.raised",
+      "radius": "radius.medium",
+      "padding": "spacing.cozy",
+      "text": "color.text",
+      "type": "type.caption",
+      "shadow": "shadow.card"
+    },
+    "rules": [
+      "The popover is exactly as wide as its words, at most maxWidth. Never a full-width block.",
+      "The popover is one surface: its body and its arrow share one fill, and the arrow points at the glyph itself, not at a larger target around it. Where the platform draws the arrow itself and offers no colour for it (macOS, iOS), the whole popover keeps the platform's own popover background. Never a custom fill under a system arrow. Elsewhere the fill is color.raised.",
+      "Opens on click or tap only, closes on Escape or a click outside. There is no hover tooltip: it is the only help mechanism.",
+      "One per card or section header. A row has its own only when its title cannot be understood without it. In all three languages."
+    ]
+  },
+  "tintFill": {
+    "doc": "The fill of a coloured control (a filled button, the selected segment, a switch that is on, a badge on an Imp's colour).",
+    "props": {
+      "ink": "color.ink",
+      "paper": "color.paper",
+      "least": 4.5
+    },
+    "rules": [
+      "What sits on a coloured control is white (paper) or black (ink). The person chooses it once for the whole app, and white is the default.",
+      "A fill with a hue (an Imp's colour) is used as it is when the chosen white or black has at least 4.5 to 1 on it (WCAG relative luminance). Otherwise the fill moves toward black (under white) or toward white (under black) by the least amount that reaches 4.5, keeping its hue. A yellow or green Imp under white shows a deeper yellow or green.",
+      "A fill with no hue (the monochrome accent, a grey) is used as it is, and carries ink or paper, whichever has the higher ratio.",
+      "The fill and what sits on it come from this one rule on every control, on every screen and platform."
+    ]
+  },
+  "onTint": {
+    "doc": "Text, an icon or a switch knob on a 'tintFill'.",
+    "props": {
+      "ink": "color.ink",
+      "paper": "color.paper",
+      "least": 4.5
+    },
+    "rules": [
+      "On a fill with a hue it is the white or black the person chose. Never the colour the fill is made of.",
+      "It always sits on a 'tintFill' of the same colour, never on the raw colour, so it has at least 4.5 to 1."
+    ]
+  },
+  "legibleTint": {
+    "doc": "An Imp's colour used as a foreground (text, an icon, a link) on the surface or a raised surface.",
+    "props": {
+      "least": 4.5,
+      "ground": "color.surface",
+      "raisedGround": "color.raised"
+    },
+    "rules": [
+      "The colour is used as it is when its contrast ratio on its ground is at least 4.5. Otherwise it moves toward white (dark appearance) or black (light appearance) by the least amount that reaches 4.5, keeping its hue as far as it can.",
+      "The raw colour is never a foreground. As the fill of a control it goes through 'tintFill', with 'onTint' on top."
+    ]
+  },
+  "sheetBar": {
+    "doc": "The top bar of every modal flow and sheet: Back leading, a centred title or step indicator, Close trailing.",
+    "props": {
+      "height": "size.hit",
+      "gap": "spacing.cozy",
+      "glyph": "icon.small",
+      "glyphColor": "color.muted",
+      "title": "type.cardTitle",
+      "background": "none"
+    },
+    "rules": [
+      "Back (leading) returns to the previous step or the hub and never closes the flow. Close (trailing, modal flows only) dismisses the flow and carries Escape. Leave out the one that does not apply.",
+      "Both are plain icon glyphs with no background until hover or press, and each keeps a target of size.hit.",
+      "A sheet's main action is one primary button at the bottom of the content, not a text button in the bar."
+    ]
+  },
+  "stepIndicator": {
+    "doc": "Round marks for the steps of a flow, the current one filled with the Imp's colour.",
+    "props": {
+      "mark": "icon.tiny",
+      "gap": "spacing.small",
+      "done": "color.muted",
+      "todo": "color.faint",
+      "current": "color.accent",
+      "hit": "size.hit"
+    },
+    "rules": [
+      "Tappable when the steps can be revisited, each with a target of size.hit. Spoken as 'Step 2 of 3, name'.",
+      "It sits in the sheet bar, centred."
+    ]
+  },
+  "sectionRail": {
+    "doc": "The sections of a settings screen, always one tap away.",
+    "props": {
+      "itemMinHeight": "size.hit",
+      "itemRadius": "radius.tile",
+      "selectedFill": "color.card",
+      "hover": "color.cardHover",
+      "icon": "icon.small",
+      "gap": "spacing.tight",
+      "type": "type.body"
+    },
+    "rules": [
+      "A vertical rail beside the content on a desktop window. A horizontal scrolling bar above the content on a phone or a narrow window.",
+      "Each item is an icon and one to three words. The selected one is a pebble. An item that needs attention shows a small dot, and the state is also spoken.",
+      "On a phone the section's panel replaces the hub, with Back in the sheet bar. Beside the hub when there is room."
+    ]
+  },
+  "presetGrid": {
+    "doc": "Evenly sized choices (the service choices, Remote and Local) as tiles in a grid, each with a link to the provider's page.",
+    "props": {
+      "minColumn": "size.menuTitle",
+      "gap": "spacing.small",
+      "radius": "radius.tile",
+      "fill": "color.card",
+      "selectedFill": "color.accent",
+      "selectedText": "color.onAccent",
+      "minHeight": "size.hit"
+    },
+    "rules": [
+      "Every cell is exactly as wide as the others. The column count is the most that fit at the minimum width, and the last row is balanced rather than leaving one orphan.",
+      "A tile shows its symbol, its title (Remote, Local) and a detail (the service it fills in). The chosen one is filled with the accent.",
+      "Choosing one fills the address and the name when untouched, and the address stays freely editable, so any compatible service works. There is no separate 'Other'.",
+      "A tile's link opens the provider's key or model page without choosing the tile.",
+      "The service choices come from data (spec/presets/services.json), not from code."
+    ]
+  },
+  "bubble": {
+    "doc": "The Imp's speech bubble on the desktop.",
+    "props": {
+      "fill": "color.raised",
+      "text": "color.text",
+      "radius": "radius.bubble",
+      "padding": "spacing.medium",
+      "shadow": "shadow.card",
+      "type": "type.body"
+    },
+    "rules": [
+      "A shadow is allowed because it floats over other content.",
+      "Desktop only. The phone's bubble sits over the app's own stage, so it has no appearance setting.",
+      "Appearance is a style, solid (default) or translucent, and an opacity between opacity.bubbleMin and 1 (default opacity.bubbleDefault). Solid is color.raised as is.",
+      "Translucent is color.raised at that opacity over a blur of whatever is behind the bubble, so text never sits on raw pixels. The blur and the fill cover the bubble and its tail as one shape, with a hairline edge (stroke.hairline) so the shape reads on a background of its own colour.",
+      "Only the fill is translucent: text, icons and controls stay at full opacity, and an Imp's colour as a foreground is legible on color.raised.",
+      "Reduce Transparency or Increase Contrast in the system makes the bubble solid. On a platform with no background blur, translucent falls back to solid."
+    ]
+  },
+  "popover": {
+    "doc": "A small floating panel with a list or a small form.",
+    "props": {
+      "fill": "color.raised",
+      "radius": "radius.medium",
+      "padding": "spacing.medium",
+      "width": "size.popoverWidth",
+      "shadow": "shadow.card",
+      "border": "none"
+    },
+    "rules": [
+      "Items inside are pebbles or plain rows, never separated by lines.",
+      "A popover with a system-drawn arrow (macOS, iOS) keeps the platform's own popover background for body and arrow alike. See 'infoTip'."
+    ]
+  },
+  "barMenu": {
+    "doc": "The menu of the menu bar or tray icon: the Imps that are out and a few actions.",
+    "props": {
+      "fill": "color.raised",
+      "radius": "radius.medium",
+      "padding": "spacing.small",
+      "rowMinHeight": "size.hit",
+      "rowRadius": "radius.tile",
+      "rowHover": "color.cardHover",
+      "iconSize": "icon.small",
+      "gap": "spacing.cozy",
+      "type": "type.body",
+      "width": "size.popoverWidth"
+    },
+    "rules": [
+      "Rows are icon first, one to three words, no separators. Groups are separated by spacing.",
+      "The Imp's colour is the only colour."
+    ]
+  },
+  "undoBar": {
+    "doc": "A bar that floats at the bottom after something was removed.",
+    "props": {
+      "fill": "color.raised",
+      "text": "color.text",
+      "radius": "radius.full",
+      "padding": "spacing.medium",
+      "shadow": "shadow.card",
+      "motion": "motion.expand"
+    },
+    "rules": [
+      "Disappears by itself after a few seconds. Under Reduce Motion it fades."
+    ]
+  },
+  "badge": {
+    "doc": "A tiny status label or count.",
+    "props": {
+      "fill": "color.card",
+      "text": "color.muted",
+      "radius": "radius.full",
+      "paddingX": "spacing.snug",
+      "paddingY": "spacing.tight",
+      "type": "type.small"
+    },
+    "rules": [
+      "Status colours (good, danger, warn) are the only coloured badges."
+    ]
+  },
+  "focus": {
+    "doc": "The keyboard focus ring of every control.",
+    "props": {
+      "color": "color.focus",
+      "width": "stroke.focus",
+      "offset": "spacing.hairline"
+    },
+    "rules": [
+      "Drawn only for keyboard focus, on every interactive element."
+    ]
+  }
+}

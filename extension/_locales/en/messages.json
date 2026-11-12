@@ -1,0 +1,182 @@
+{
+  "extension_action_title": {
+    "message": "Imp",
+    "description": "The tooltip of the toolbar button."
+  },
+  "extension_activity_count_all": {
+    "message": "$1 in all",
+    "description": "Count of all the entries."
+  },
+  "extension_activity_count_some": {
+    "message": "$1 of $2",
+    "description": "Count of the entries that match the search."
+  },
+  "extension_activity_empty": {
+    "message": "Nothing yet.",
+    "description": "Shown when Imp has done nothing yet."
+  },
+  "extension_activity_found": {
+    "message": "Found",
+    "description": "Start of a line: Imp found something on a page. The searched words follow."
+  },
+  "extension_activity_help": {
+    "message": "When Imp reads a page or looks for something on one, it shows up here.",
+    "description": "Help for the list of what Imp just did."
+  },
+  "extension_activity_list_label": {
+    "message": "Everything Imp did lately",
+    "description": "Accessible name of the full list."
+  },
+  "extension_activity_looked_for": {
+    "message": "Looked for",
+    "description": "Start of a line: Imp looked for something on a page and did not find it. The searched words follow."
+  },
+  "extension_activity_no_match": {
+    "message": "Nothing matches that.",
+    "description": "Shown when the search finds nothing."
+  },
+  "extension_activity_read": {
+    "message": "Read the page",
+    "description": "A line: Imp read a page."
+  },
+  "extension_activity_read_failed": {
+    "message": "Could not read the page",
+    "description": "A line: Imp could not read a page."
+  },
+  "extension_activity_search": {
+    "message": "Search",
+    "description": "Placeholder of the search box over the full list."
+  },
+  "extension_activity_search_label": {
+    "message": "Search what Imp did",
+    "description": "Accessible name of the search box over the full list."
+  },
+  "extension_activity_see_all": {
+    "message": "See all $1",
+    "description": "Button that opens the whole list. The number is how many entries there are."
+  },
+  "extension_activity_title": {
+    "message": "Lately",
+    "description": "Title of the list of what Imp just did in the browser."
+  },
+  "extension_ago_hours": {
+    "message": "$1h",
+    "description": "How long ago: a number of hours, as short as possible."
+  },
+  "extension_ago_minutes": {
+    "message": "$1m",
+    "description": "How long ago: a number of minutes, as short as possible."
+  },
+  "extension_ago_now": {
+    "message": "now",
+    "description": "How long ago something happened: just now."
+  },
+  "extension_ago_seconds": {
+    "message": "$1s",
+    "description": "How long ago: a number of seconds, as short as possible."
+  },
+  "extension_back": {
+    "message": "Back",
+    "description": "Button that goes back to the first screen of the popup."
+  },
+  "extension_description": {
+    "message": "Lets Imp know which page you are on and where things are on it. Talks only to Imp on this computer.",
+    "description": "The extension description in the browser store and extension list."
+  },
+  "extension_help": {
+    "message": "What is this?",
+    "description": "Label of the small question mark button that opens a help tip."
+  },
+  "extension_imp_asleep": {
+    "message": "$1 is asleep",
+    "description": "Accessible name of an Imp that is asleep."
+  },
+  "extension_imp_away": {
+    "message": "$1 is on $2",
+    "description": "Accessible name of an Imp that is on another device."
+  },
+  "extension_imp_device_default": {
+    "message": "your iPhone",
+    "description": "Name of the phone an Imp is on when it did not say which."
+  },
+  "extension_imp_fallback": {
+    "message": "Imp",
+    "description": "Accessible name of an Imp that has no name."
+  },
+  "extension_imp_working": {
+    "message": "$1 is working",
+    "description": "Accessible name of an Imp that is working."
+  },
+  "extension_imp_working_away": {
+    "message": "$1 is working on $2",
+    "description": "Accessible name of an Imp that is working on another device."
+  },
+  "extension_offline_body": {
+    "message": "Start Imp on this computer and this connects by itself.",
+    "description": "Shown when Imp is not running: what to do."
+  },
+  "extension_offline_get": {
+    "message": "Get Imp",
+    "description": "Link to download Imp."
+  },
+  "extension_offline_title": {
+    "message": "Imp is asleep.",
+    "description": "Title shown when Imp is not running."
+  },
+  "extension_open": {
+    "message": "Open Imp",
+    "description": "Button that opens the Imp app."
+  },
+  "extension_open_help": {
+    "message": "Opens the Imp app. It starts Imp if it is not running.",
+    "description": "Help for the button that opens the Imp app."
+  },
+  "extension_private": {
+    "message": "Stays on this computer",
+    "description": "Note that nothing leaves the computer."
+  },
+  "extension_reconnect": {
+    "message": "Try again",
+    "description": "Button that tries to reach Imp again."
+  },
+  "extension_reconnect_help": {
+    "message": "Looks for Imp again. Use it after you start Imp.",
+    "description": "Help for the button that tries to reach Imp again."
+  },
+  "extension_status_checking": {
+    "message": "Checking…",
+    "description": "Connection status while the extension looks for Imp."
+  },
+  "extension_status_connected": {
+    "message": "Connected",
+    "description": "Connection status when Imp is reachable."
+  },
+  "extension_status_connected_browser": {
+    "message": "Connected · $1",
+    "description": "Connection status when Imp is reachable, with the name of the browser."
+  },
+  "extension_status_connecting": {
+    "message": "Connecting…",
+    "description": "Connection status while a connection attempt runs."
+  },
+  "extension_status_not_connected": {
+    "message": "Not connected",
+    "description": "Connection status when Imp cannot be reached."
+  },
+  "extension_tab_blind": {
+    "message": "The browser keeps this page to itself. Imp only knows its address.",
+    "description": "Help for the page box when the browser keeps the page private."
+  },
+  "extension_tab_label": {
+    "message": "The page Imp knows",
+    "description": "Accessible name of the box that shows the page you are on."
+  },
+  "extension_tab_sees": {
+    "message": "Imp can read this page and find things on it when it needs to.",
+    "description": "Help for the page box when Imp can look inside the page."
+  },
+  "extension_tab_untitled": {
+    "message": "Untitled page",
+    "description": "Name of a page that has no title."
+  }
+}

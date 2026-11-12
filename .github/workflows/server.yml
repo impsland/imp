@@ -1,16 +1,16 @@
 name: Server
 
-# Checks the Rust workspace, then builds the server image (the Den and the Hop) for amd64 and arm64.
+# Checks the Rust workspace (core, cli, server), then builds the server image (the Den and the Hop) for amd64 and arm64.
 # A push to main publishes it to GitHub Packages as ghcr.io/impsland/imp. A tag such as
-# server-v1.1.0 (matching `version` in server/Cargo.toml) publishes 1.1.0 and 1.1. Pull requests only build.
+# server-v1.1.0 (matching `version` in Cargo.toml) publishes 1.1.0 and 1.1. Pull requests only build.
 
 on:
   push:
     branches: [main]
     tags: ["server-v*.*.*"]
-    paths: [server/**, .github/workflows/server.yml]
+    paths: [core/**, cli/**, server/**, spec/**, Cargo.toml, Cargo.lock, rust-toolchain.toml, .dockerignore, .github/workflows/server.yml]
   pull_request:
-    paths: [server/**, .github/workflows/server.yml]
+    paths: [core/**, cli/**, server/**, spec/**, Cargo.toml, Cargo.lock, rust-toolchain.toml, .dockerignore, .github/workflows/server.yml]
   workflow_dispatch:
 
 permissions:
@@ -27,19 +27,22 @@ env:
 jobs:
   check:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: server
     steps:
       - uses: actions/checkout@v7
+      # rustup installs the toolchain that rust-toolchain.toml names, with its components.
       - name: Toolchain
-        run: rustup toolchain install 1.99.1 --profile minimal -c clippy,rustfmt && rustup default 1.99.1
+        run: rustup show active-toolchain || rustup toolchain install
       - name: Format
         run: cargo fmt --all --check
       - name: Lint
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Test
         run: cargo test --workspace --locked
+      # The apps' build of the core: no network or process code in it.
+      - name: Core without I/O
+        run: |
+          cargo clippy -p imp-core -p imp-ffi --no-default-features --all-targets --locked -- -D warnings
+          cargo test -p imp-core --no-default-features --locked
 
   # Each architecture builds on its own kind of runner (no emulation), and is pushed by digest only.
   image:
@@ -73,7 +76,8 @@ jobs:
         id: build
         uses: docker/build-push-action@v7
         with:
-          context: server
+          context: .
+          file: server/Dockerfile
           platforms: ${{ matrix.platform }}
           labels: |
             org.opencontainers.image.title=Imp server
@@ -111,8 +115,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/server-v')
         run: |
           want="${GITHUB_REF_NAME#server-v}"
-          have="$(sed -n 's/^version = "\(.*\)"$/\1/p' server/Cargo.toml | head -1)"
-          [[ "$want" == "$have" ]] || { echo "::error::The tag is $GITHUB_REF_NAME but server/Cargo.toml says $have"; exit 1; }
+          have="$(sed -n 's/^version = "\(.*\)"$/\1/p' Cargo.toml | head -1)"
+          [[ "$want" == "$have" ]] || { echo "::error::The tag is $GITHUB_REF_NAME but Cargo.toml says $have"; exit 1; }
       - uses: actions/download-artifact@v8
         with:
           path: /tmp/digests

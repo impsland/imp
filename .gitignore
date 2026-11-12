@@ -1,6 +1,9 @@
 .build/
 build/
+target/
 .swiftpm/
 .env
 **/xcuserdata/
 .DS_Store
+apple/Frameworks/
+apple/Sources/ImpCore/

@@ -43,6 +43,7 @@ jobs:
           security unlock-keychain -p "$KC_PASSWORD" "$KC"
           security import "$RUNNER_TEMP/imp.p12" -k "$KC" -P "$P12_PASSWORD" -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple: -s -k "$KC_PASSWORD" "$KC" > /dev/null
+          # shellcheck disable=SC2046 # the list is split into one argument per keychain on purpose
           security list-keychains -d user -s "$KC" $(security list-keychains -d user | tr -d '"')
           rm "$RUNNER_TEMP/imp.p12"
           echo "IMP_SIGN_IDENTITY=Imp Release Signing" >> "$GITHUB_ENV"
@@ -73,7 +74,7 @@ jobs:
 
       - name: Update cask
         run: |
-          scripts/cask.sh "$VERSION" "$(shasum -a 256 build/Imp.dmg | cut -d' ' -f1)" > tap/Casks/imp.rb
+          apple/scripts/cask.sh "$VERSION" "$(shasum -a 256 build/Imp.dmg | cut -d' ' -f1)" > tap/Casks/imp.rb
           cd tap
           git add Casks/imp.rb
           git diff --cached --quiet && exit 0

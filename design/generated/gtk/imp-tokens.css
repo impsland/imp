@@ -1,0 +1,112 @@
+/* generated from design/tokens.json, do not edit. Run: node design/generate.mjs */
+/* The numbers, as CSS custom properties (GTK 4.16 or newer). Colours are in imp-colors-dark.css and imp-colors-light.css. */
+:root {
+  --imp-space-hairline: 2px;
+  --imp-space-tight: 4px;
+  --imp-space-snug: 6px;
+  --imp-space-small: 8px;
+  --imp-space-cozy: 10px;
+  --imp-space-medium: 12px;
+  --imp-space-roomy: 14px;
+  --imp-space-large: 16px;
+  --imp-space-page: 20px;
+  --imp-space-wide: 24px;
+  --imp-space-huge: 28px;
+  --imp-space-vast: 40px;
+  --imp-radius-tiny: 6px;
+  --imp-radius-small: 10px;
+  --imp-radius-tile: 12px;
+  --imp-radius-medium: 16px;
+  --imp-radius-large: 20px;
+  --imp-radius-bubble: 24px;
+  --imp-radius-full: 999px;
+  --imp-stroke-hairline: 1px;
+  --imp-stroke-focus: 2px;
+  --imp-opacity-disabled: 0.45;
+  --imp-opacity-dimmed: 0.6;
+  --imp-opacity-tint-fill: 0.16;
+  --imp-opacity-tint-fill-strong: 0.34;
+  --imp-opacity-glow: 0.45;
+  --imp-opacity-hover-fill: 0.85;
+  --imp-opacity-bubble-min: 0.4;
+  --imp-opacity-bubble-default: 0.75;
+  --imp-size-receipt-lift: 84px;
+  --imp-size-hit: 32px;
+  --imp-size-control: 34px;
+  --imp-size-glyph: 28px;
+  --imp-size-icon-tile: 28px;
+  --imp-size-menu-width: 300px;
+  --imp-size-toast-top: 48px;
+  --imp-size-sheet-icon: 32px;
+  --imp-size-tip-width: 280px;
+  --imp-size-popover-width: 360px;
+  --imp-size-popup-width: 380px;
+  --imp-size-popup-list-height: 300px;
+  --imp-size-panel-width: 400px;
+  --imp-size-column: 720px;
+  --imp-size-sheet-width: 560px;
+  --imp-size-marker: 44px;
+  --imp-size-imp-portrait: 40px;
+  --imp-size-field-label: 96px;
+  --imp-size-mark: 20px;
+  --imp-size-menu-title: 160px;
+  --imp-size-hero-face: 68px;
+  --imp-size-dot: 6px;
+  --imp-size-editor-width: 780px;
+  --imp-size-stage-width: 268px;
+  --imp-size-editor-top: 256px;
+  --imp-size-switch-track: 46px;
+  --imp-size-code-side: 188px;
+  --imp-size-viewfinder-height: 220px;
+  --imp-size-viewfinder-aim: 150px;
+  --imp-size-hero-imp: 120px;
+  --imp-size-game-button: 48px;
+  --imp-size-coach-badge: 34px;
+  --imp-size-game-icon: 26px;
+  --imp-size-game-ring: 16px;
+  --imp-size-echo-pad: 128px;
+  --imp-size-game-card: 320px;
+  --imp-size-game-stat: 84px;
+  --imp-size-meter: 110px;
+  --imp-size-door-label: 150px;
+  --imp-size-bubble-header: 220px;
+  --imp-size-thumb-height: 110px;
+  --imp-size-thumb-wait-width: 80px;
+  --imp-size-thumb-wait-height: 60px;
+  --imp-size-hidden-strip: 28px;
+  --imp-icon-tiny: 8px;
+  --imp-icon-small: 10px;
+  --imp-icon-medium: 12px;
+  --imp-icon-large: 14px;
+  --imp-icon-big: 18px;
+  --imp-icon-huge: 30px;
+  --imp-type-title-size: 17px;
+  --imp-type-title-weight: 700;
+  --imp-type-card-title-size: 14px;
+  --imp-type-card-title-weight: 600;
+  --imp-type-body-size: 13px;
+  --imp-type-body-weight: 400;
+  --imp-type-label-size: 12.5px;
+  --imp-type-label-weight: 600;
+  --imp-type-caption-size: 12.5px;
+  --imp-type-caption-weight: 500;
+  --imp-type-small-size: 11.5px;
+  --imp-type-small-weight: 400;
+  --imp-type-display-size: 40px;
+  --imp-type-display-weight: 700;
+  --imp-type-mono-size: 12.5px;
+  --imp-type-mono-weight: 400;
+}
+
+/* One class per animation: duration and curve. With Reduce Motion (gtk-enable-animations off) GTK skips transitions. */
+.imp-motion-quick { transition-duration: 120ms; transition-timing-function: cubic-bezier(0, 0, 0.58, 1); }
+.imp-motion-hover { transition-duration: 150ms; transition-timing-function: cubic-bezier(0, 0, 0.58, 1); }
+.imp-motion-press { transition-duration: 150ms; transition-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1); }
+.imp-motion-expand { transition-duration: 200ms; transition-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1); }
+.imp-motion-smooth { transition-duration: 250ms; transition-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1); }
+.imp-motion-scene { transition-duration: 350ms; transition-timing-function: cubic-bezier(0.42, 0, 0.58, 1); }
+.imp-motion-settle { transition-duration: 350ms; transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+.imp-motion-spring { transition-duration: 400ms; transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+.imp-motion-pop { transition-duration: 400ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+.imp-motion-fade { transition-duration: 400ms; transition-timing-function: cubic-bezier(0, 0, 0.58, 1); }
+.imp-motion-peek { transition-duration: 500ms; transition-timing-function: cubic-bezier(0.42, 0, 0.58, 1); }

@@ -1,0 +1,3359 @@
+# generated from design/strings, do not edit. Run: node design/generate.mjs
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Help of the move description.
+msgctxt "anim.help.about"
+msgid "One sentence about what it does."
+msgstr ""
+
+#. Help of the beats track.
+msgctxt "anim.help.beats"
+msgid "Each chip is one moment of the move. Drag to move it or stretch it."
+msgstr ""
+
+#. Help of the hop setting.
+msgctxt "anim.help.hop"
+msgid "How high the Imp jumps in this beat."
+msgstr ""
+
+#. Help of the move icon.
+msgctxt "anim.help.icon"
+msgid "The picture shown for this move in lists."
+msgstr ""
+
+#. Help of the move length.
+msgctxt "anim.help.length"
+msgid "How long the move lasts."
+msgstr ""
+
+#. Help of the move name.
+msgctxt "anim.help.name"
+msgid "A name so you can find it again."
+msgstr ""
+
+#. Help of when a move plays.
+msgctxt "anim.help.plays"
+msgid "When this move happens."
+msgstr ""
+
+#. Help of the shape setting.
+msgctxt "anim.help.shape"
+msgid "Squash or stretch the body, like a ball."
+msgstr ""
+
+#. Help of the symbol setting.
+msgctxt "anim.help.symbol"
+msgid "A small picture that pops up beside the Imp."
+msgstr ""
+
+#. Help of the tilt setting.
+msgctxt "anim.help.tilt"
+msgid "How far the Imp leans to the side."
+msgstr ""
+
+#. Heading of the five bundled animations.
+msgctxt "animations.built_in"
+msgid "Built in"
+msgstr ""
+
+#. Button.
+msgctxt "animations.find"
+msgid "Find more in The Den"
+msgstr ""
+
+#. Heading of animations that came from The Den.
+msgctxt "animations.from_den"
+msgid "From The Den"
+msgstr ""
+
+#. Shown when The Den is not set up.
+msgctxt "animations.needs_den"
+msgid "Set up The Den to find more."
+msgstr ""
+
+#. Button and sheet title: make a new animation of your own.
+msgctxt "animations.new"
+msgid "New animation"
+msgstr ""
+
+#. Button.
+msgctxt "animations.restore"
+msgid "Restore defaults"
+msgstr ""
+
+#. Placeholder of the search field on the Animations page.
+msgctxt "animations.search"
+msgid "Find an animation"
+msgstr ""
+
+#. Group title.
+msgctxt "animations.title"
+msgid "Animations"
+msgstr ""
+
+#. Card title: double click, login, language.
+msgctxt "app.behaviour"
+msgid "Behaviour"
+msgstr ""
+
+#. Row.
+msgctxt "app.language"
+msgid "Language"
+msgstr ""
+
+#. Switch (desktop).
+msgctxt "app.login"
+msgid "Start at login"
+msgstr ""
+
+#. Note under the switch.
+msgctxt "app.login_note"
+msgid "Open Imp when you sign in."
+msgstr ""
+
+#. Card title: appearance, background, embers.
+msgctxt "app.look"
+msgid "Look"
+msgstr ""
+
+#. Button.
+msgctxt "app.reset"
+msgid "Reset Imp"
+msgstr ""
+
+#. Group title.
+msgctxt "app.title"
+msgid "App"
+msgstr ""
+
+#. Help for the Window card.
+msgctxt "app.window.info"
+msgid "The smallest the window can be made. Everything in it fits any size above this."
+msgstr ""
+
+#. Row: the smallest height of the app's window.
+msgctxt "app.window.min_height"
+msgid "Smallest height"
+msgstr ""
+
+#. Row: the smallest width of the app's window.
+msgctxt "app.window.min_width"
+msgid "Smallest width"
+msgstr ""
+
+#. A size in points beside a slider, like 660 pt.
+msgctxt "app.window.points"
+msgid "{value} pt"
+msgstr ""
+
+#. Card on the App page: the smallest size of the app's window.
+msgctxt "app.window.title"
+msgid "Window"
+msgstr ""
+
+#. Opens the colour chooser.
+msgctxt "background.choose_colour"
+msgid "Choose a colour…"
+msgstr ""
+
+#. Opens a file chooser for a picture or a tile.
+msgctxt "background.choose_picture"
+msgid "Choose a picture…"
+msgstr ""
+
+#. Background choice: one colour.
+msgctxt "background.colour"
+msgid "Colour"
+msgstr ""
+
+#. Background choice: one picture that fills the window.
+msgctxt "background.picture"
+msgid "Picture"
+msgstr ""
+
+#. Error when the chosen file is not a usable picture.
+msgctxt "background.picture_failed"
+msgid "That picture could not be used. Pick another one."
+msgstr ""
+
+#. Background choice: the wall of the dungeon, the default.
+msgctxt "background.theme"
+msgid "Theme"
+msgstr ""
+
+#. Background choice: a seamless pattern that repeats.
+msgctxt "background.tile"
+msgid "Tile"
+msgstr ""
+
+#. Hint under the Tile choice.
+msgctxt "background.tile_hint"
+msgid "A tile repeats to fill the window. Pick a seamless pattern."
+msgstr ""
+
+#. Button that adds a Brain service.
+msgctxt "brain.add_service"
+msgid "Add a service"
+msgstr ""
+
+#. Result of a successful Brain check.
+msgctxt "brain.check_ok"
+msgid "{name} is awake."
+msgstr ""
+
+#. Shown while a Brain is checked.
+msgctxt "brain.checking"
+msgid "Checking…"
+msgstr ""
+
+#. Primary button of a sleeping Imp's Brain panel when services exist but none is chosen.
+msgctxt "brain.choose"
+msgid "Choose a service"
+msgstr ""
+
+#. Help of the list button inside the model field: pick from the service's models.
+msgctxt "brain.choose_model"
+msgid "Pick from the service's models"
+msgstr ""
+
+#. Tooltip of the add service button.
+msgctxt "brain.help.add_service"
+msgid "Add a service"
+msgstr ""
+
+#. Help of the key field.
+msgctxt "brain.help.key"
+msgid "A secret password that lets the Imp use this service. It stays on this Mac."
+msgstr ""
+
+#. Help of the model picker.
+msgctxt "brain.help.model"
+msgid "The exact brain of the service. Bigger ones think better but are slower."
+msgstr ""
+
+#. Help of the service list.
+msgctxt "brain.help.service"
+msgid "Pick who does the thinking for this Imp."
+msgstr ""
+
+#. Help of the Brain source switch.
+msgctxt "brain.help.source"
+msgid "Use the Brain every Imp shares, or pick a different one just for this Imp."
+msgstr ""
+
+#. Hint at the top of the Brain panel.
+msgctxt "brain.hint"
+msgid "A Brain is a service and a model. {name} thinks with it."
+msgstr ""
+
+#. Section: the secret key.
+msgctxt "brain.key"
+msgid "Key"
+msgstr ""
+
+#. Section: the model.
+msgctxt "brain.model"
+msgid "Model"
+msgstr ""
+
+#. Placeholder of the model field: the exact name of a model.
+msgctxt "brain.model_placeholder"
+msgid "Model name"
+msgstr ""
+
+#. Status in the Brain panel.
+msgctxt "brain.none"
+msgid "No Brain yet"
+msgstr ""
+
+#. Field label.
+msgctxt "brain.service"
+msgid "Service"
+msgstr ""
+
+#. Row: whose Brain the Imp uses.
+msgctxt "brain.source"
+msgid "Brain from"
+msgstr ""
+
+#. Panel title.
+msgctxt "brain.title"
+msgid "Brain"
+msgstr ""
+
+#. A service with no name yet.
+msgctxt "brain.unnamed"
+msgid "Unnamed"
+msgstr ""
+
+#. Choice: use the app's default Brain.
+msgctxt "brain.use_app"
+msgid "Same as the other Imps"
+msgstr ""
+
+#. Choice: this Imp has its own service and model.
+msgctxt "brain.use_own"
+msgid "Its own Brain"
+msgstr ""
+
+#. Screen reader description of the sleeping animation.
+msgctxt "brain.zzz"
+msgid "Zzz, {name} is asleep"
+msgstr ""
+
+#. Button.
+msgctxt "brains.add"
+msgid "Add a Brain"
+msgstr ""
+
+#. Label of the default Brain.
+msgctxt "brains.default"
+msgid "Default for new Imps"
+msgstr ""
+
+#. Empty state of the Brains list.
+msgctxt "brains.empty"
+msgid "No Brains yet. Add a model on this computer or a service with your key."
+msgstr ""
+
+#. Choice when adding a Brain.
+msgctxt "brains.local"
+msgid "A model on this computer"
+msgstr ""
+
+#. Under a Brain: how many Imps use it.
+msgctxt "brains.used_by"
+msgid "Used by {count} Imp"
+msgid_plural "Used by {count} Imps"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Choice when adding a Brain.
+msgctxt "brains.with_key"
+msgid "A service with your key"
+msgstr ""
+
+#. Button that adds an item.
+msgctxt "common.add"
+msgid "Add"
+msgstr ""
+
+#. Button that goes one step back.
+msgctxt "common.back"
+msgid "Back"
+msgstr ""
+
+#. Button that closes a dialog without doing anything.
+msgctxt "common.cancel"
+msgid "Cancel"
+msgstr ""
+
+#. Button that tests a setting, such as a Brain or a server.
+msgctxt "common.check"
+msgid "Check"
+msgstr ""
+
+#. Button that opens a chooser.
+msgctxt "common.choose"
+msgid "Choose…"
+msgstr ""
+
+#. Button or label that closes a window or panel.
+msgctxt "common.close"
+msgid "Close"
+msgstr ""
+
+#. Button that goes to the next step.
+msgctxt "common.continue"
+msgid "Continue"
+msgstr ""
+
+#. Button that closes a sheet or panel after changes.
+msgctxt "common.done"
+msgid "Done"
+msgstr ""
+
+#. Spoken name of a small help icon that explains the control beside it.
+msgctxt "common.help"
+msgid "Help"
+msgstr ""
+
+#. Shown while something loads.
+msgctxt "common.loading"
+msgid "Loading…"
+msgstr ""
+
+#. Label of a name field.
+msgctxt "common.name"
+msgid "Name"
+msgstr ""
+
+#. Screen reader value of a settings section that has something to fix.
+msgctxt "common.needs_attention"
+msgid "Needs attention"
+msgstr ""
+
+#. State of a switch.
+msgctxt "common.off"
+msgid "Off"
+msgstr ""
+
+#. State of a switch.
+msgctxt "common.on"
+msgid "On"
+msgstr ""
+
+#. Button that opens something.
+msgctxt "common.open"
+msgid "Open"
+msgstr ""
+
+#. Button that removes an item.
+msgctxt "common.remove"
+msgid "Remove"
+msgstr ""
+
+#. Button that starts setting something up.
+msgctxt "common.set_up"
+msgid "Set up"
+msgstr ""
+
+#. The app-wide settings, in menus and on buttons.
+msgctxt "common.settings"
+msgid "Settings"
+msgstr ""
+
+#. Screen reader name of one step of a short flow. The name is the step's own title.
+msgctxt "common.step"
+msgid "Step {number} of {total}, {name}"
+msgstr ""
+
+#. Button that repeats something that failed.
+msgctxt "common.try_again"
+msgid "Try again"
+msgstr ""
+
+#. Button on a bar that undoes what just happened.
+msgctxt "common.undo"
+msgid "Undo"
+msgstr ""
+
+#. Help of the Den kind.
+msgctxt "den.help.kind"
+msgid "Pick what kind of thing to look for."
+msgstr ""
+
+#. Help of the Den public note.
+msgctxt "den.help.public"
+msgid "Anyone can add it. Chats, memory and keys are never included."
+msgstr ""
+
+#. Help of the Den search.
+msgctxt "den.help.search"
+msgid "Type a word to find things."
+msgstr ""
+
+#. Help of the Den server.
+msgctxt "den.help.server"
+msgid "Where people share Imps, animations, triggers and tools."
+msgstr ""
+
+#. Help of the Den name.
+msgctxt "den.help.slug"
+msgid "A short name for the web address. Use small letters and dashes."
+msgstr ""
+
+#. Help of the Den sort.
+msgctxt "den.help.sort"
+msgid "Show the most loved first, or the newest first."
+msgstr ""
+
+#. Help of the Den summary.
+msgctxt "den.help.summary"
+msgid "One sentence so people know what it is."
+msgstr ""
+
+#. Help of the Den tags.
+msgctxt "den.help.tags"
+msgid "Words that help people find it. Separate them with commas."
+msgstr ""
+
+#. Help of Copy Link in Link a device.
+msgctxt "devices.copy_link.help"
+msgid "For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while."
+msgstr ""
+
+#. Under a linked device: the Imps that are on it now.
+msgctxt "devices.has"
+msgid "Has {imps}"
+msgstr ""
+
+#. In the devices card when nothing is linked yet.
+msgctxt "devices.none"
+msgid "No devices yet. Link your iPhone or another Mac and your Imps can visit it."
+msgstr ""
+
+#. Button and tab: read another device's code with this Mac's camera, or paste its link.
+msgctxt "devices.scan"
+msgid "Scan code"
+msgstr ""
+
+#. Button and tab: show this Mac's code for another device to scan.
+msgctxt "devices.show"
+msgid "Show code"
+msgstr ""
+
+#. The key was refused.
+msgctxt "error.brain.key"
+msgid "{service} did not accept the key. Check it and try again."
+msgstr ""
+
+#. The local model server did not answer.
+msgctxt "error.brain.local"
+msgid "No model answered. Make sure it is running, then try again."
+msgstr ""
+
+#. The model does not exist.
+msgctxt "error.brain.model"
+msgid "{service} does not have the model {model}. Pick another one."
+msgstr ""
+
+#. Shown when someone talks to an Imp that sleeps.
+msgctxt "error.brain.none"
+msgid "{name} has no Brain yet, so it cannot answer."
+msgstr ""
+
+#. The device has no network while a Brain is checked.
+msgctxt "error.brain.offline"
+msgid "No network. Check your connection, then try again."
+msgstr ""
+
+#. The service was too slow.
+msgctxt "error.brain.timeout"
+msgid "{service} did not answer in time. Check its address, or try again later."
+msgstr ""
+
+#. The service did not answer at all.
+msgctxt "error.brain.unreachable"
+msgid "Cannot reach {service}. Check the address and your connection."
+msgstr ""
+
+#. The only error with no detail. Used when nothing more is known.
+msgctxt "error.generic"
+msgid "Something went wrong. Try again."
+msgstr ""
+
+#. Saving to disk failed.
+msgctxt "error.save"
+msgid "Could not save that. Check the free space and try again."
+msgstr ""
+
+#. Sharing failed.
+msgctxt "error.share"
+msgid "Could not share {name}. Try again in a moment."
+msgstr ""
+
+#. A tool server did not start.
+msgctxt "error.tool_failed"
+msgid "{tool} could not start. Check its settings."
+msgstr ""
+
+#. The tooltip of the toolbar button.
+msgctxt "extension.action_title"
+msgid "Imp"
+msgstr ""
+
+#. Count of all the entries.
+msgctxt "extension.activity.count_all"
+msgid "{total} in all"
+msgstr ""
+
+#. Count of the entries that match the search.
+msgctxt "extension.activity.count_some"
+msgid "{shown} of {total}"
+msgstr ""
+
+#. Shown when Imp has done nothing yet.
+msgctxt "extension.activity.empty"
+msgid "Nothing yet."
+msgstr ""
+
+#. Start of a line: Imp found something on a page. The searched words follow.
+msgctxt "extension.activity.found"
+msgid "Found"
+msgstr ""
+
+#. Help for the list of what Imp just did.
+msgctxt "extension.activity.help"
+msgid "When Imp reads a page or looks for something on one, it shows up here."
+msgstr ""
+
+#. Accessible name of the full list.
+msgctxt "extension.activity.list_label"
+msgid "Everything Imp did lately"
+msgstr ""
+
+#. Start of a line: Imp looked for something on a page and did not find it. The searched words follow.
+msgctxt "extension.activity.looked_for"
+msgid "Looked for"
+msgstr ""
+
+#. Shown when the search finds nothing.
+msgctxt "extension.activity.no_match"
+msgid "Nothing matches that."
+msgstr ""
+
+#. A line: Imp read a page.
+msgctxt "extension.activity.read"
+msgid "Read the page"
+msgstr ""
+
+#. A line: Imp could not read a page.
+msgctxt "extension.activity.read_failed"
+msgid "Could not read the page"
+msgstr ""
+
+#. Placeholder of the search box over the full list.
+msgctxt "extension.activity.search"
+msgid "Search"
+msgstr ""
+
+#. Accessible name of the search box over the full list.
+msgctxt "extension.activity.search_label"
+msgid "Search what Imp did"
+msgstr ""
+
+#. Button that opens the whole list. The number is how many entries there are.
+msgctxt "extension.activity.see_all"
+msgid "See all {count}"
+msgstr ""
+
+#. Title of the list of what Imp just did in the browser.
+msgctxt "extension.activity.title"
+msgid "Lately"
+msgstr ""
+
+#. How long ago: a number of hours, as short as possible.
+msgctxt "extension.ago.hours"
+msgid "{n}h"
+msgstr ""
+
+#. How long ago: a number of minutes, as short as possible.
+msgctxt "extension.ago.minutes"
+msgid "{n}m"
+msgstr ""
+
+#. How long ago something happened: just now.
+msgctxt "extension.ago.now"
+msgid "now"
+msgstr ""
+
+#. How long ago: a number of seconds, as short as possible.
+msgctxt "extension.ago.seconds"
+msgid "{n}s"
+msgstr ""
+
+#. Button that goes back to the first screen of the popup.
+msgctxt "extension.back"
+msgid "Back"
+msgstr ""
+
+#. The extension description in the browser store and extension list.
+msgctxt "extension.description"
+msgid "Lets Imp know which page you are on and where things are on it. Talks only to Imp on this computer."
+msgstr ""
+
+#. Label of the small question mark button that opens a help tip.
+msgctxt "extension.help"
+msgid "What is this?"
+msgstr ""
+
+#. Accessible name of an Imp that is asleep.
+msgctxt "extension.imp.asleep"
+msgid "{name} is asleep"
+msgstr ""
+
+#. Accessible name of an Imp that is on another device.
+msgctxt "extension.imp.away"
+msgid "{name} is on {device}"
+msgstr ""
+
+#. Name of the phone an Imp is on when it did not say which.
+msgctxt "extension.imp.device_default"
+msgid "your iPhone"
+msgstr ""
+
+#. Accessible name of an Imp that has no name.
+msgctxt "extension.imp.fallback"
+msgid "Imp"
+msgstr ""
+
+#. Accessible name of an Imp that is working.
+msgctxt "extension.imp.working"
+msgid "{name} is working"
+msgstr ""
+
+#. Accessible name of an Imp that is working on another device.
+msgctxt "extension.imp.working_away"
+msgid "{name} is working on {device}"
+msgstr ""
+
+#. Shown when Imp is not running: what to do.
+msgctxt "extension.offline.body"
+msgid "Start Imp on this computer and this connects by itself."
+msgstr ""
+
+#. Link to download Imp.
+msgctxt "extension.offline.get"
+msgid "Get Imp"
+msgstr ""
+
+#. Title shown when Imp is not running.
+msgctxt "extension.offline.title"
+msgid "Imp is asleep."
+msgstr ""
+
+#. Button that opens the Imp app.
+msgctxt "extension.open"
+msgid "Open Imp"
+msgstr ""
+
+#. Help for the button that opens the Imp app.
+msgctxt "extension.open.help"
+msgid "Opens the Imp app. It starts Imp if it is not running."
+msgstr ""
+
+#. Note that nothing leaves the computer.
+msgctxt "extension.private"
+msgid "Stays on this computer"
+msgstr ""
+
+#. Button that tries to reach Imp again.
+msgctxt "extension.reconnect"
+msgid "Try again"
+msgstr ""
+
+#. Help for the button that tries to reach Imp again.
+msgctxt "extension.reconnect.help"
+msgid "Looks for Imp again. Use it after you start Imp."
+msgstr ""
+
+#. Connection status while the extension looks for Imp.
+msgctxt "extension.status.checking"
+msgid "Checking…"
+msgstr ""
+
+#. Connection status when Imp is reachable.
+msgctxt "extension.status.connected"
+msgid "Connected"
+msgstr ""
+
+#. Connection status when Imp is reachable, with the name of the browser.
+msgctxt "extension.status.connected_browser"
+msgid "Connected · {browser}"
+msgstr ""
+
+#. Connection status while a connection attempt runs.
+msgctxt "extension.status.connecting"
+msgid "Connecting…"
+msgstr ""
+
+#. Connection status when Imp cannot be reached.
+msgctxt "extension.status.not_connected"
+msgid "Not connected"
+msgstr ""
+
+#. Help for the page box when the browser keeps the page private.
+msgctxt "extension.tab.blind"
+msgid "The browser keeps this page to itself. Imp only knows its address."
+msgstr ""
+
+#. Accessible name of the box that shows the page you are on.
+msgctxt "extension.tab.label"
+msgid "The page Imp knows"
+msgstr ""
+
+#. Help for the page box when Imp can look inside the page.
+msgctxt "extension.tab.sees"
+msgid "Imp can read this page and find things on it when it needs to."
+msgstr ""
+
+#. Name of a page that has no title.
+msgctxt "extension.tab.untitled"
+msgid "Untitled page"
+msgstr ""
+
+#. The bubble of the first Imp when the app opens for the first time.
+msgctxt "firstrun.asleep_bubble"
+msgid "{name} is asleep. Give it a Brain to wake it up."
+msgstr ""
+
+#. The check worked. The Imp wakes up.
+msgctxt "firstrun.check.ok"
+msgid "{name} is awake."
+msgstr ""
+
+#. Shown while the Brain is checked. The Imp stirs.
+msgctxt "firstrun.check.running"
+msgid "Waking {name} up…"
+msgstr ""
+
+#. The typed service address is not an http or https address.
+msgctxt "firstrun.error.address"
+msgid "That address does not look right. It starts with https:// or http://."
+msgstr ""
+
+#. Error when the key field is empty.
+msgctxt "firstrun.error.empty_key"
+msgid "Paste your key to continue."
+msgstr ""
+
+#. The check worked, but the key could not be stored.
+msgctxt "firstrun.error.key_not_saved"
+msgid "Imp could not save the key. Try again."
+msgstr ""
+
+#. No model is picked yet.
+msgctxt "firstrun.error.no_model"
+msgid "Pick a model to continue."
+msgstr ""
+
+#. Placeholder of the model field. It filters the list, or takes a name typed by hand.
+msgctxt "firstrun.model.search"
+msgid "Search or type a model"
+msgstr ""
+
+#. Field label of the service address.
+msgctxt "firstrun.service.address"
+msgid "Address"
+msgstr ""
+
+#. Marks a local preset that answers on this computer.
+msgctxt "firstrun.service.found"
+msgid "Found here"
+msgstr ""
+
+#. Quiet line on the phone under a local preset: the address is the computer's.
+msgctxt "firstrun.service.host_note"
+msgid "Use the address of your computer on this network."
+msgstr ""
+
+#. Field label.
+msgctxt "firstrun.service.key"
+msgid "Your key"
+msgstr ""
+
+#. Shown while the models of the service are loaded.
+msgctxt "firstrun.service.loading"
+msgid "Loading models…"
+msgstr ""
+
+#. The service choice for a model server on your own computer.
+msgctxt "firstrun.service.local"
+msgid "Local"
+msgstr ""
+
+#. The one quiet line under the service fields.
+msgctxt "firstrun.service.note"
+msgid "Any OpenAI-compatible API. Your key stays on this device."
+msgstr ""
+
+#. The service choice for a model in the cloud, used with a key.
+msgctxt "firstrun.service.remote"
+msgid "Remote"
+msgstr ""
+
+#. Name of step 2 in the first-run step indicator.
+msgctxt "firstrun.step.model"
+msgid "Model"
+msgstr ""
+
+#. Name of step 1 in the first-run step indicator.
+msgctxt "firstrun.step.service"
+msgid "Service"
+msgstr ""
+
+#. Button that starts the path.
+msgctxt "firstrun.wake"
+msgid "Wake {name} up"
+msgstr ""
+
+#. Results card: the main button that starts another round.
+msgctxt "games.again"
+msgid "Again"
+msgstr ""
+
+#. Results card: the best score, under the score.
+msgctxt "games.best"
+msgid "Best {count}"
+msgstr ""
+
+#. Name of the Echo game, the title of its results card.
+msgctxt "games.echo"
+msgid "Echo"
+msgstr ""
+
+#. Name of the Embers game, the title of its results card.
+msgctxt "games.embers"
+msgid "Embers"
+msgstr ""
+
+#. Results card: quiet button that shows the rules again.
+msgctxt "games.how_to"
+msgid "How to play"
+msgstr ""
+
+#. Badge on the results card when the score beats the best.
+msgctxt "games.new_best"
+msgid "New best!"
+msgstr ""
+
+#. VoiceOver label of the rune button that starts Echo.
+msgctxt "games.play_echo"
+msgid "Play Echo"
+msgstr ""
+
+#. VoiceOver label of the flame button that starts Embers.
+msgctxt "games.play_embers"
+msgid "Play Embers"
+msgstr ""
+
+#. Prize badge: no smoke was hit in the round.
+msgctxt "games.prize.clean"
+msgid "Clean burn"
+msgstr ""
+
+#. Prize badge: no ember got away in the round.
+msgctxt "games.prize.flawless"
+msgid "Nothing got away"
+msgstr ""
+
+#. Under a prize badge: how many rounds in a row earned it.
+msgctxt "games.prize.in_a_row"
+msgid "{count} in a row"
+msgid_plural "{count} in a row"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Prize badge: Echo was played all the way to the end.
+msgctxt "games.prize.perfect_echo"
+msgid "Perfect echo!"
+msgstr ""
+
+#. Under a prize badge: how many rounds earned it.
+msgctxt "games.prize.times"
+msgid "{count} time"
+msgid_plural "{count} times"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Quiet button that skips the lesson of a game.
+msgctxt "games.skip"
+msgid "Skip"
+msgstr ""
+
+#. Results stat: the most embers taken in one flight.
+msgctxt "games.stat.combo"
+msgid "Best combo"
+msgstr ""
+
+#. Results stat: embers that rose out of the screen uncaught.
+msgctxt "games.stat.escaped"
+msgid "Got away"
+msgstr ""
+
+#. Results stat: the longest sequence of Echo repeated.
+msgctxt "games.stat.longest"
+msgid "Longest echo"
+msgstr ""
+
+#. Results stat: mistakes made in Echo.
+msgctxt "games.stat.slips"
+msgid "Slips"
+msgstr ""
+
+#. Results stat: waves of embers caught whole, out of all waves.
+msgctxt "games.stat.waves"
+msgid "Perfect waves"
+msgstr ""
+
+#. Safe button of the goodbye dialog.
+msgctxt "goodbye.cancel"
+msgid "Keep {name}"
+msgstr ""
+
+#. Destructive button of the goodbye dialog.
+msgctxt "goodbye.confirm"
+msgid "Say goodbye"
+msgstr ""
+
+#. Message of the goodbye dialog.
+msgctxt "goodbye.message"
+msgid "Its look, Brain settings, tools, triggers and chats go with it. This can't be undone."
+msgstr ""
+
+#. Title of the dialog that asks before an Imp is deleted.
+msgctxt "goodbye.title"
+msgid "Say goodbye to {name}?"
+msgstr ""
+
+#. Screen reader hint for the main canvas.
+msgctxt "home.canvas.hint"
+msgid "Imps move around here. Press Tab to go from one Imp to the next."
+msgstr ""
+
+#. Screen reader name of the main canvas.
+msgctxt "home.canvas.label"
+msgid "The Imps' home"
+msgstr ""
+
+#. Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.
+msgctxt "home.corner.show_hidden"
+msgid "Show hidden Imps"
+msgstr ""
+
+#. Empty main screen, one line under the title.
+msgctxt "home.empty.hint"
+msgid "Hatch your first Imp to get started."
+msgstr ""
+
+#. The one prompt in the middle of an empty main screen.
+msgctxt "home.empty.new_imp"
+msgid "New Imp"
+msgstr ""
+
+#. Empty main screen, title.
+msgctxt "home.empty.title"
+msgid "No Imps yet"
+msgstr ""
+
+#. Action that brings a hidden Imp back.
+msgctxt "home.hidden.bring_back"
+msgid "Bring back {name}"
+msgstr ""
+
+#. Shown in the hidden Imps list when it is empty.
+msgctxt "home.hidden.empty"
+msgid "No hidden Imps"
+msgstr ""
+
+#. Screen reader hint for the hidden Imps element.
+msgctxt "home.hidden.hint"
+msgid "Hidden Imps peek out now and then. Click one to bring it back."
+msgstr ""
+
+#. Announced to screen readers when a hidden Imp peeks.
+msgctxt "home.hidden.peek"
+msgid "{name} is peeking out from the floor."
+msgstr ""
+
+#. The element on the floor that holds hidden Imps. The number is how many.
+msgctxt "home.hidden.title"
+msgid "Hidden Imps ({count})"
+msgstr ""
+
+#. Status icon menu item that quits the app.
+msgctxt "home.tray.quit"
+msgid "Quit Imp"
+msgstr ""
+
+#. Status icon menu item that shows the window.
+msgctxt "home.tray.show"
+msgid "Open Imp"
+msgstr ""
+
+#. Screen reader action.
+msgctxt "imp.a11y.hide"
+msgid "Hide {name}"
+msgstr ""
+
+#. Screen reader label of an Imp: its name and its state.
+msgctxt "imp.a11y.label"
+msgid "{name}, {state}"
+msgstr ""
+
+#. Screen reader action.
+msgctxt "imp.a11y.let_out"
+msgid "Let {name} out"
+msgstr ""
+
+#. Screen reader action.
+msgctxt "imp.a11y.send_home"
+msgid "Send {name} home"
+msgstr ""
+
+#. Screen reader action.
+msgctxt "imp.a11y.settings"
+msgid "Open {name}'s settings"
+msgstr ""
+
+#. Screen reader action.
+msgctxt "imp.a11y.talk"
+msgid "Talk to {name}"
+msgstr ""
+
+#. Screen reader hint on an Imp.
+msgctxt "imp.drag.hint"
+msgid "Drag to move it."
+msgstr ""
+
+#. Screen reader hint on an Imp on desktop.
+msgctxt "imp.drag.out_hint"
+msgid "Drag it out of the window to let it out."
+msgstr ""
+
+#. Undo bar after an Imp is hidden.
+msgctxt "imp.hide.undo"
+msgid "{name} is hidden."
+msgstr ""
+
+#. Undo bar after a free Imp is sent home into the window.
+msgctxt "imp.home.undo"
+msgid "{name} is back home."
+msgstr ""
+
+#. Shown instead of Let out on desktops that cannot place windows (Wayland).
+msgctxt "imp.let_out.unavailable"
+msgid "This desktop does not let apps place free windows, so Imps stay in the window."
+msgstr ""
+
+#. Undo bar after an Imp is let out.
+msgctxt "imp.out.undo"
+msgid "{name} is out on the desktop."
+msgstr ""
+
+#. Tooltip and screen reader label of the small phone icon after an Imp's name.
+msgctxt "imp.phone.label"
+msgid "On {device}"
+msgstr ""
+
+#. Undo bar after an Imp was sent to another device.
+msgctxt "imp.sent.undo"
+msgid "{name} is on {device}."
+msgstr ""
+
+#. State of an Imp that has no Brain or cannot reach it.
+msgctxt "imp.state.asleep"
+msgid "Asleep"
+msgstr ""
+
+#. State of an Imp that can think.
+msgctxt "imp.state.awake"
+msgid "Awake"
+msgstr ""
+
+#. State of an Imp that went to visit another device.
+msgctxt "imp.state.away"
+msgid "Away on {device}"
+msgstr ""
+
+#. State of a hidden Imp.
+msgctxt "imp.state.hidden"
+msgid "Hidden"
+msgstr ""
+
+#. State of an Imp let out of the window.
+msgctxt "imp.state.out"
+msgid "Out on the desktop"
+msgstr ""
+
+#. State of an Imp whose home is another device.
+msgctxt "imp.state.visiting"
+msgid "Visiting from {device}"
+msgstr ""
+
+#. State of an Imp being checked after a Brain was chosen.
+msgctxt "imp.state.waking"
+msgid "Waking up"
+msgstr ""
+
+#. Message when an Imp could not go to another device.
+msgctxt "imp.transfer.failed"
+msgid "{device} did not take {name}. It stays here."
+msgstr ""
+
+#. Screen reader label of the unlit Brain marker.
+msgctxt "imp_settings.brain_marker.asleep"
+msgid "{name} is asleep. Give it a Brain."
+msgstr ""
+
+#. Screen reader label of the lit Brain marker.
+msgctxt "imp_settings.brain_marker.awake"
+msgid "Brain: {service}, {model}"
+msgstr ""
+
+#. Icon button label in the top corner.
+msgctxt "imp_settings.goodbye"
+msgid "Goodbye"
+msgstr ""
+
+#. Screen reader label of the goodbye button.
+msgctxt "imp_settings.goodbye.a11y"
+msgid "Say goodbye to {name}"
+msgstr ""
+
+#. Screen reader name of the plain list of settings.
+msgctxt "imp_settings.list.label"
+msgid "All settings for {name}"
+msgstr ""
+
+#. Marker above the Imp's head and panel title.
+msgctxt "imp_settings.marker.brain"
+msgid "Brain"
+msgstr ""
+
+#. Marker left of the Imp: colour, size and character.
+msgctxt "imp_settings.marker.look"
+msgid "Look"
+msgstr ""
+
+#. Marker below the Imp: its animations.
+msgctxt "imp_settings.marker.moves"
+msgid "Moves"
+msgstr ""
+
+#. Marker right of the Imp: name, persona and voice.
+msgctxt "imp_settings.marker.personality"
+msgid "Personality"
+msgstr ""
+
+#. Marker for the tools panel.
+msgctxt "imp_settings.marker.tools"
+msgid "Tools"
+msgstr ""
+
+#. Marker for the triggers panel.
+msgctxt "imp_settings.marker.triggers"
+msgid "Triggers"
+msgstr ""
+
+#. Icon button label in the top corner.
+msgctxt "imp_settings.share"
+msgid "Share"
+msgstr ""
+
+#. Screen reader label of the share button.
+msgctxt "imp_settings.share.a11y"
+msgid "Share {name}"
+msgstr ""
+
+#. Summary line of the Brain row when the Imp has no Brain.
+msgctxt "imp_settings.summary.brain_none"
+msgid "Asleep"
+msgstr ""
+
+#. Summary line of the Brain row: service and model.
+msgctxt "imp_settings.summary.brain_set"
+msgid "{service}, {model}"
+msgstr ""
+
+#. Summary line of the Look row.
+msgctxt "imp_settings.summary.look"
+msgid "Colour and size"
+msgstr ""
+
+#. Summary line of the Moves row.
+msgctxt "imp_settings.summary.moves"
+msgid "Animations"
+msgstr ""
+
+#. Summary line of the Personality row.
+msgctxt "imp_settings.summary.personality"
+msgid "Name and voice"
+msgstr ""
+
+#. Summary line of the Tools row.
+msgctxt "imp_settings.summary.tools"
+msgid "{on} of {total} on"
+msgstr ""
+
+#. Summary line of the Triggers row.
+msgctxt "imp_settings.summary.triggers"
+msgid "{count} trigger"
+msgid_plural "{count} triggers"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Stands in for the Imp's name while its name is empty.
+msgctxt "imp_settings.this_imp"
+msgid "this Imp"
+msgstr ""
+
+#. Short value in the settings list when the Imp has no Brain.
+msgctxt "imp_settings.value.asleep"
+msgid "Asleep"
+msgstr ""
+
+#. Short value in the settings list: tools on out of all, like 17/26.
+msgctxt "imp_settings.value.tools"
+msgid "{on}/{total}"
+msgstr ""
+
+#. Help of bringing chats along.
+msgctxt "kit.help.chats"
+msgid "Also copy what this Imp talked about."
+msgstr ""
+
+#. Help of the kit paste field.
+msgctxt "kit.help.paste"
+msgid "Paste a kit, a web address or an imp:// link, or drop a file. You look at it first."
+msgstr ""
+
+#. Help of skipped items.
+msgctxt "kit.help.skipped"
+msgid "Things in the kit this Mac cannot use, so they are left out."
+msgstr ""
+
+#. Help of the kit tools.
+msgctxt "kit.help.tools"
+msgid "Tools can run things on your Mac. Read them first."
+msgstr ""
+
+#. Where a kit in the kit review came from: the starter kit that ships with Imp.
+msgctxt "kit.origin.starter"
+msgid "Imp's starter kit"
+msgstr ""
+
+#. Section: colour and size.
+msgctxt "look.body"
+msgid "Body"
+msgstr ""
+
+#. Label of a character slider.
+msgctxt "look.brows"
+msgid "Brows"
+msgstr ""
+
+#. Slider group label: small traits of how the Imp moves and looks around.
+msgctxt "look.character"
+msgid "Character"
+msgstr ""
+
+#. Hint under the character sliders.
+msgctxt "look.character_hint"
+msgid "Small traits that change how {name} moves and looks around."
+msgstr ""
+
+#. Label of a character slider.
+msgctxt "look.cheeks"
+msgid "Cheeks"
+msgstr ""
+
+#. Slider label.
+msgctxt "look.colour"
+msgid "Colour"
+msgstr ""
+
+#. Label of a character slider.
+msgctxt "look.eyes"
+msgid "Eyes"
+msgstr ""
+
+#. Tooltip of the favourite colour button.
+msgctxt "look.favourite"
+msgid "Favourite colour"
+msgstr ""
+
+#. Label of a character slider.
+msgctxt "look.head"
+msgid "Head"
+msgstr ""
+
+#. Help of the body section.
+msgctxt "look.help.body"
+msgid "Pick the colour and the size of this Imp."
+msgstr ""
+
+#. Help of the eyebrows slider.
+msgctxt "look.help.brows"
+msgid "Tilt the eyebrows. One way looks cross, the other looks sad."
+msgstr ""
+
+#. Help of the character section.
+msgctxt "look.help.character"
+msgid "Small touches that change the face and the way it moves."
+msgstr ""
+
+#. Help of the cheeks slider.
+msgctxt "look.help.cheeks"
+msgid "How rosy the cheeks are."
+msgstr ""
+
+#. Help of the colour.
+msgctxt "look.help.colour"
+msgid "The colour of this Imp. Drag along the strip to change it."
+msgstr ""
+
+#. Help of the eye size slider.
+msgctxt "look.help.eyes"
+msgid "Make the eyes smaller or bigger."
+msgstr ""
+
+#. Help of the head tilt slider.
+msgctxt "look.help.head"
+msgid "Tilt the head to one side or the other."
+msgstr ""
+
+#. Help of the horns slider.
+msgctxt "look.help.horns"
+msgid "Turn the horns up or down."
+msgstr ""
+
+#. Help of the eyelids slider.
+msgctxt "look.help.lids"
+msgid "How closed the eyelids are. More makes it look sleepy."
+msgstr ""
+
+#. Help of the pace slider.
+msgctxt "look.help.pace"
+msgid "How quickly it does everything. 1.0 is normal."
+msgstr ""
+
+#. Help of the size.
+msgctxt "look.help.size"
+msgid "How big this Imp is on your screen."
+msgstr ""
+
+#. Help of the squint slider.
+msgctxt "look.help.squint"
+msgid "Squeeze the eyes tight, or open them wide."
+msgstr ""
+
+#. Label of a character slider.
+msgctxt "look.horns"
+msgid "Horns"
+msgstr ""
+
+#. Label of a character slider.
+msgctxt "look.lids"
+msgid "Lids"
+msgstr ""
+
+#. Label of a character slider.
+msgctxt "look.pace"
+msgid "Pace"
+msgstr ""
+
+#. Label of the live Imp above the sliders.
+msgctxt "look.preview"
+msgid "Preview"
+msgstr ""
+
+#. Button that restores the default look.
+msgctxt "look.reset"
+msgid "Reset look"
+msgstr ""
+
+#. Slider label.
+msgctxt "look.size"
+msgid "Size"
+msgstr ""
+
+#. Label of a character slider.
+msgctxt "look.squint"
+msgid "Squint"
+msgstr ""
+
+#. Panel title.
+msgctxt "look.title"
+msgid "Look"
+msgstr ""
+
+#. Menu bar button that hides every Imp on the desktop.
+msgctxt "menu.bar.hide"
+msgid "Hide"
+msgstr ""
+
+#. Tooltip of the Hide button.
+msgctxt "menu.bar.hide_help"
+msgid "Hide the Imps on your desktop"
+msgstr ""
+
+#. Menu bar button that opens the Imps' home window.
+msgctxt "menu.bar.imps"
+msgid "Imps"
+msgstr ""
+
+#. Tooltip of the Imps button in the menu bar.
+msgctxt "menu.bar.imps_help"
+msgid "Open the Imps' home"
+msgstr ""
+
+#. Tooltip of the Hide button when no Imp is on the desktop.
+msgctxt "menu.bar.none_out_help"
+msgid "No Imps are out on the desktop"
+msgstr ""
+
+#. Menu bar button that quits the app.
+msgctxt "menu.bar.quit"
+msgid "Quit"
+msgstr ""
+
+#. Tooltip of the Quit button.
+msgctxt "menu.bar.quit_help"
+msgid "Quit Imp"
+msgstr ""
+
+#. Menu bar button that opens the settings for all Imps.
+msgctxt "menu.bar.settings"
+msgid "Settings"
+msgstr ""
+
+#. Tooltip of the Settings button in the menu bar.
+msgctxt "menu.bar.settings_help"
+msgid "Settings for all Imps"
+msgstr ""
+
+#. Menu bar button that shows the hidden Imps again.
+msgctxt "menu.bar.show"
+msgid "Show"
+msgstr ""
+
+#. Tooltip of the Show button.
+msgctxt "menu.bar.show_help"
+msgid "Show the Imps again"
+msgstr ""
+
+#. State of an Imp that is hidden for now.
+msgctxt "menu.bar.state.hidden"
+msgid "Hidden"
+msgstr ""
+
+#. State of an Imp that is waiting in the app window.
+msgctxt "menu.bar.state.home"
+msgid "At home"
+msgstr ""
+
+#. State of an Imp that is on the desktop.
+msgctxt "menu.bar.state.out"
+msgid "Out"
+msgstr ""
+
+#. Menu with the background choices.
+msgctxt "menu.canvas.background"
+msgid "Background"
+msgstr ""
+
+#. Menu item that opens Devices.
+msgctxt "menu.canvas.devices"
+msgid "Devices"
+msgstr ""
+
+#. Menu item that hatches a new Imp.
+msgctxt "menu.canvas.new_imp"
+msgid "New Imp"
+msgstr ""
+
+#. Menu item that opens the app-wide settings.
+msgctxt "menu.canvas.settings"
+msgid "Settings"
+msgstr ""
+
+#. Menu item that brings every hidden Imp back.
+msgctxt "menu.canvas.show_hidden"
+msgid "Show hidden Imps ({count})"
+msgstr ""
+
+#. Menu item that copies an Imp as a kit.
+msgctxt "menu.imp.copy_kit"
+msgid "Copy kit"
+msgstr ""
+
+#. Menu item that copies a link to an Imp's kit.
+msgctxt "menu.imp.copy_link"
+msgid "Copy link"
+msgstr ""
+
+#. Menu item that says goodbye to an Imp for good. A dialog asks first.
+msgctxt "menu.imp.goodbye"
+msgid "Goodbye"
+msgstr ""
+
+#. Menu item that hides an Imp. It then peeks out now and then.
+msgctxt "menu.imp.hide"
+msgid "Hide"
+msgstr ""
+
+#. Menu item (desktop only) that lets an Imp out onto the desktop.
+msgctxt "menu.imp.let_out"
+msgid "Let out"
+msgstr ""
+
+#. Imp menu item that moves the Imp to a Mac for good.
+msgctxt "menu.imp.move_to"
+msgid "Move to {name}"
+msgstr ""
+
+#. Imp menu item that starts a fresh chat.
+msgctxt "menu.imp.new_chat"
+msgid "New chat"
+msgstr ""
+
+#. Menu item (desktop only) that puts a free Imp back in the window.
+msgctxt "menu.imp.send_home"
+msgid "Send home"
+msgstr ""
+
+#. Imp menu item that sends the Imp to a device.
+msgctxt "menu.imp.send_to"
+msgid "Send to {name}"
+msgstr ""
+
+#. Menu item that opens the settings of one Imp.
+msgctxt "menu.imp.settings"
+msgid "Imp Settings"
+msgstr ""
+
+#. Menu item that shares an Imp.
+msgctxt "menu.imp.share"
+msgid "Share"
+msgstr ""
+
+#. Menu item that opens the Imp's message bubble.
+msgctxt "menu.imp.talk"
+msgid "Talk"
+msgstr ""
+
+#. Tooltip of the Talk button in an Imp's menu.
+msgctxt "menu.imp.talk_help"
+msgid "Talk to {name}"
+msgstr ""
+
+#. Imp menu item that opens what the Imp said with other Imps.
+msgctxt "menu.imp.talks"
+msgid "Talks"
+msgstr ""
+
+#. Button in an Imp's menu that opens the typing box.
+msgctxt "menu.imp.type"
+msgid "Type"
+msgstr ""
+
+#. Tooltip of the Type button in an Imp's menu.
+msgctxt "menu.imp.type_help"
+msgid "Type to {name}"
+msgstr ""
+
+#. Row: change a built-in move.
+msgctxt "moves.builtin"
+msgid "Built-in moves"
+msgstr ""
+
+#. Button: change a built-in move.
+msgctxt "moves.change"
+msgid "Change"
+msgstr ""
+
+#. Empty state of the moves panel.
+msgctxt "moves.empty"
+msgid "No special moves yet."
+msgstr ""
+
+#. Row: how it follows the cursor.
+msgctxt "moves.follow_how"
+msgid "Follows by"
+msgstr ""
+
+#. Help of the built-in moves row.
+msgctxt "moves.help.builtin"
+msgid "Pick one of the moves every Imp has and make a version only for this Imp."
+msgstr ""
+
+#. Help of the follow section.
+msgctxt "moves.help.follow"
+msgid "Choose what this Imp does when you move your mouse pointer: stay still, look at it, or run after it."
+msgstr ""
+
+#. Help of the follow mode picker.
+msgctxt "moves.help.follow_how"
+msgid "Off: it stays still. Eyes: only its eyes look at the pointer. Hop: it jumps after the pointer. Glide: it slides after the pointer."
+msgstr ""
+
+#. Help of the own animations list.
+msgctxt "moves.help.own"
+msgid "Moves made for only this Imp. They play instead of the shared ones."
+msgstr ""
+
+#. Help of the follow speed slider.
+msgctxt "moves.help.speed"
+msgid "How fast it goes after the pointer. Only for Hop and Glide."
+msgstr ""
+
+#. Panel title.
+msgctxt "moves.title"
+msgid "Moves"
+msgstr ""
+
+#. Help of the name field.
+msgctxt "personality.help.name"
+msgid "What you call this Imp. Say its name and it answers."
+msgstr ""
+
+#. Help of the persona field.
+msgctxt "personality.help.persona"
+msgid "Tell it who to be, like a kind pirate or a quiet helper. It will talk that way."
+msgstr ""
+
+#. Help of the reply rules switch.
+msgctxt "personality.help.rules"
+msgid "The hidden rules that tell it how to answer. Most people never change them."
+msgstr ""
+
+#. Help of the voice section.
+msgctxt "personality.help.voice"
+msgid "What shows on your screen while this Imp talks out loud."
+msgstr ""
+
+#. Help of the voice look picker.
+msgctxt "personality.help.voice_look"
+msgid "Pick the picture shown while it talks: Glow is a glowing edge, Smoke is a puff of smoke, Both shows the two, Players is a small player with play and pause."
+msgstr ""
+
+#. Field label.
+msgctxt "personality.name"
+msgid "Name"
+msgstr ""
+
+#. Error when the name is empty.
+msgctxt "personality.name_empty"
+msgid "Give your Imp a name."
+msgstr ""
+
+#. Hint under the name field.
+msgctxt "personality.name_hint"
+msgid "Part of who {name} is. You can change it any time."
+msgstr ""
+
+#. Field label for the text that tells the Imp who it is.
+msgctxt "personality.persona"
+msgid "Persona"
+msgstr ""
+
+#. Hint under the persona field.
+msgctxt "personality.persona_hint"
+msgid "Tell {name} who it is and how it talks."
+msgstr ""
+
+#. Panel title.
+msgctxt "personality.title"
+msgid "Personality"
+msgstr ""
+
+#. Field label.
+msgctxt "personality.voice"
+msgid "Voice"
+msgstr ""
+
+#. Row: how the voice shows.
+msgctxt "personality.voice_look"
+msgid "Voice shows as"
+msgstr ""
+
+#. Card title: about the app.
+msgctxt "phone.about.title"
+msgid "About"
+msgstr ""
+
+#. Appearance choice: follow the system.
+msgctxt "phone.appearance.auto"
+msgid "Auto"
+msgstr ""
+
+#. Appearance choice.
+msgctxt "phone.appearance.dark"
+msgid "Dark"
+msgstr ""
+
+#. Appearance choice.
+msgctxt "phone.appearance.light"
+msgid "Light"
+msgstr ""
+
+#. Button: bring an Imp back.
+msgctxt "phone.callhome"
+msgid "Call home"
+msgstr ""
+
+#. Spoken name of the call home button.
+msgctxt "phone.callhome.label"
+msgid "Call {name} home"
+msgstr ""
+
+#. iPhone: chat answering.
+msgctxt "phone.chat.answering"
+msgid "Answering {from}…"
+msgstr ""
+
+#. iPhone: chat ask again.
+msgctxt "phone.chat.ask_again"
+msgid "Ask Again"
+msgstr ""
+
+#. iPhone: chat ask to.
+msgctxt "phone.chat.ask_to"
+msgid "Ask {name} to "
+msgstr ""
+
+#. iPhone: chat ask to hint.
+msgctxt "phone.chat.ask_to.hint"
+msgid "Starts a message asking {name} to do something."
+msgstr ""
+
+#. iPhone: chat edit help.
+msgctxt "phone.chat.edit_help"
+msgid "Edit"
+msgstr ""
+
+#. iPhone: chat failed.
+msgctxt "phone.chat.failed"
+msgid "Couldn't answer"
+msgstr ""
+
+#. iPhone: chat jump latest.
+msgctxt "phone.chat.jump_latest"
+msgid "Jump to latest"
+msgstr ""
+
+#. iPhone: chat message.
+msgctxt "phone.chat.message"
+msgid "Message {name}"
+msgstr ""
+
+#. iPhone: chat new.
+msgctxt "phone.chat.new"
+msgid "New Chat"
+msgstr ""
+
+#. iPhone: chat no brain.
+msgctxt "phone.chat.no_brain"
+msgid "No brain yet"
+msgstr ""
+
+#. iPhone: chat ran tools.
+msgctxt "phone.chat.ran_tools"
+msgid "Ran {count} tools"
+msgstr ""
+
+#. One line under the QR code.
+msgctxt "phone.code.caption"
+msgid "Scan on the other device"
+msgstr ""
+
+#. Spoken name of the QR code.
+msgctxt "phone.code.label"
+msgid "Link code"
+msgstr ""
+
+#. State of a linked device that answers.
+msgctxt "phone.connected"
+msgid "Connected"
+msgstr ""
+
+#. State of a linked device reached through The Hop.
+msgctxt "phone.connected_hop"
+msgid "Through the server"
+msgstr ""
+
+#. Button: copy the link.
+msgctxt "phone.copy"
+msgid "Copy"
+msgstr ""
+
+#. Button that unlinks every device.
+msgctxt "phone.forget.everyone"
+msgid "Forget Everyone…"
+msgstr ""
+
+#. Alert button.
+msgctxt "phone.forget.everyone.title"
+msgid "Forget Everyone"
+msgstr ""
+
+#. What forgetting one device does.
+msgctxt "phone.forget.message"
+msgid "Its Imps come home. To link again, show a new code."
+msgstr ""
+
+#. Button that unlinks one device.
+msgctxt "phone.forget.one"
+msgid "Forget…"
+msgstr ""
+
+#. Alert button, with the device name.
+msgctxt "phone.forget.one.title"
+msgid "Forget {name}"
+msgstr ""
+
+#. Question above the forget button.
+msgctxt "phone.forget.title"
+msgid "Forget {name}?"
+msgstr ""
+
+#. What forgetting everyone does.
+msgctxt "phone.forget_all.message"
+msgid "Every Imp comes home. Link again with a new code."
+msgstr ""
+
+#. Question above the forget everyone button.
+msgctxt "phone.forget_all.title"
+msgid "Forget every device?"
+msgstr ""
+
+#. iPhone: game blaze.
+msgctxt "phone.game.blaze"
+msgid "Blaze. Points count double"
+msgstr ""
+
+#. iPhone: game clean burn.
+msgctxt "phone.game.clean_burn"
+msgid "Clean burn."
+msgstr ""
+
+#. iPhone: game flawless.
+msgctxt "phone.game.flawless"
+msgid "Nothing got away."
+msgstr ""
+
+#. iPhone: game time.
+msgctxt "phone.game.time"
+msgid "Time. {points} points"
+msgstr ""
+
+#. iPhone: game time best.
+msgctxt "phone.game.time_best"
+msgid "Time. {points} points. New best!"
+msgstr ""
+
+#. Help of the linked devices card.
+msgctxt "phone.linked.info"
+msgid "Devices linked with this iPhone. Imps can travel between you."
+msgstr ""
+
+#. One line on the iPhone when no other device is linked.
+msgctxt "phone.linked.none"
+msgid "Nobody is linked yet"
+msgstr ""
+
+#. Title of the linked devices card.
+msgctxt "phone.linked.title"
+msgid "Linked"
+msgstr ""
+
+#. Toggle: this linked device is mine.
+msgctxt "phone.mine"
+msgid "Mine"
+msgstr ""
+
+#. Spoken label of the main screen menu button.
+msgctxt "phone.more.label"
+msgid "More"
+msgstr ""
+
+#. Placeholder of the field with this device name.
+msgctxt "phone.name.field"
+msgid "Name"
+msgstr ""
+
+#. Title of the card with this device name.
+msgctxt "phone.name.title"
+msgid "This iPhone"
+msgstr ""
+
+#. iPhone: pair clipboard bad.
+msgctxt "phone.pair.clipboard_bad"
+msgid "The clipboard doesn't hold a link from Imp."
+msgstr ""
+
+#. iPhone: pair clipboard empty.
+msgctxt "phone.pair.clipboard_empty"
+msgid "Copy the link from the other device first, then paste it here."
+msgstr ""
+
+#. Spoken name of the QR code.
+msgctxt "phone.pair.code.a11y"
+msgid "Link code"
+msgstr ""
+
+#. iPhone: pair code bad.
+msgctxt "phone.pair.code_bad"
+msgid "That code isn't from Imp."
+msgstr ""
+
+#. Choice: hatch an Imp on this iPhone.
+msgctxt "phone.pair.hatch"
+msgid "Hatch an Imp"
+msgstr ""
+
+#. Detail under Hatch an Imp.
+msgctxt "phone.pair.hatch.detail"
+msgid "Make one right here"
+msgstr ""
+
+#. iPhone: pair link bad.
+msgctxt "phone.pair.link_bad"
+msgid "That isn't a link from Imp."
+msgstr ""
+
+#. Button: paste a link from the clipboard.
+msgctxt "phone.pair.paste"
+msgid "Paste Link"
+msgstr ""
+
+#. Choice: scan a code.
+msgctxt "phone.pair.scan"
+msgid "Scan a code"
+msgstr ""
+
+#. Detail under Scan a code.
+msgctxt "phone.pair.scan.detail"
+msgid "From Imp on another device"
+msgstr ""
+
+#. Hint above the camera.
+msgctxt "phone.pair.scan_other"
+msgid "Scan the code on the other device"
+msgstr ""
+
+#. Hint above the QR code.
+msgctxt "phone.pair.scan_this"
+msgid "Scan this with Imp on another device"
+msgstr ""
+
+#. Title of the field with this iPhone name.
+msgctxt "phone.pair.seen_as"
+msgid "Other devices see this iPhone as"
+msgstr ""
+
+#. Button: share the link.
+msgctxt "phone.pair.share"
+msgid "Share Link"
+msgstr ""
+
+#. Choice: show my link code.
+msgctxt "phone.pair.show_code"
+msgid "Show my code"
+msgstr ""
+
+#. Detail under Show my code.
+msgctxt "phone.pair.show_code.detail"
+msgid "Another device scans it"
+msgstr ""
+
+#. Help on the first screen.
+msgctxt "phone.pair.tip"
+msgid "Hatch an Imp here, or link another device with a code and throw Imps between them."
+msgstr ""
+
+#. Title of the first screen on the iPhone.
+msgctxt "phone.pair.title"
+msgid "Imp for iPhone"
+msgstr ""
+
+#. Button that links from a copied link.
+msgctxt "phone.paste.link"
+msgid "Paste Link"
+msgstr ""
+
+#. Help for pause growth.
+msgctxt "phone.requests.backoff.info"
+msgid "Each rest is this many times longer than the one before."
+msgstr ""
+
+#. Row title: pause growth.
+msgctxt "phone.requests.backoff.title"
+msgid "Longer each time"
+msgstr ""
+
+#. Help for the first pause.
+msgctxt "phone.requests.delay.info"
+msgid "How long the Imp rests before it asks again."
+msgstr ""
+
+#. Row title: first pause.
+msgctxt "phone.requests.delay.title"
+msgid "First pause"
+msgstr ""
+
+#. Help for the waiting card.
+msgctxt "phone.requests.info"
+msgid "How long an Imp waits for its Brain, and what it does when the internet drops."
+msgstr ""
+
+#. Help for retries.
+msgctxt "phone.requests.retries.info"
+msgid "How many times the Imp asks again when the internet drops. Wrong keys are never tried again."
+msgstr ""
+
+#. Row title: how many retries.
+msgctxt "phone.requests.retries.title"
+msgid "Tries again"
+msgstr ""
+
+#. Help for the longest wait.
+msgctxt "phone.requests.timeout.info"
+msgid "If the Brain takes longer than this, the Imp stops waiting and says so."
+msgstr ""
+
+#. Row title: longest wait.
+msgctxt "phone.requests.timeout.title"
+msgid "Wait up to"
+msgstr ""
+
+#. Card title on the iPhone settings page for brains.
+msgctxt "phone.requests.title"
+msgid "Waiting"
+msgstr ""
+
+#. Button that opens the camera to scan a link code.
+msgctxt "phone.scan.code"
+msgid "Scan a Code"
+msgstr ""
+
+#. Spoken name of the server choice.
+msgctxt "phone.server.choice"
+msgid "Server"
+msgstr ""
+
+#. Example address of a Den.
+msgctxt "phone.server.placeholder_den"
+msgid "den.example.com"
+msgstr ""
+
+#. Example address of a Hop.
+msgctxt "phone.server.placeholder_hop"
+msgid "hop.example.com:4677"
+msgstr ""
+
+#. Segment: any direction.
+msgctxt "phone.shake.dir.any"
+msgid "Any way"
+msgstr ""
+
+#. Segment: left or right.
+msgctxt "phone.shake.dir.sides"
+msgid "Left or right"
+msgstr ""
+
+#. Segment: firm shake.
+msgctxt "phone.shake.firm"
+msgid "Firm"
+msgstr ""
+
+#. Row title: ask before sending to a friend.
+msgctxt "phone.shake.friends.title"
+msgid "Ask first"
+msgstr ""
+
+#. Segment: gentle shake.
+msgctxt "phone.shake.gentle"
+msgid "Gentle"
+msgstr ""
+
+#. Row title: shake strength.
+msgctxt "phone.shake.hard.title"
+msgid "How hard"
+msgstr ""
+
+#. Help for shake to send.
+msgctxt "phone.shake.info"
+msgid "Shake the iPhone next to a linked device and the Imp you moved last goes there. You can undo it."
+msgstr ""
+
+#. Segment: normal shake.
+msgctxt "phone.shake.normal"
+msgid "Normal"
+msgstr ""
+
+#. Card title: shake to send.
+msgctxt "phone.shake.title"
+msgid "Shake"
+msgstr ""
+
+#. Row title: which device.
+msgctxt "phone.shake.which.title"
+msgid "Which device"
+msgstr ""
+
+#. Button: share the link.
+msgctxt "phone.share"
+msgid "Share"
+msgstr ""
+
+#. Short state under a sleeping Imp on the main screen.
+msgctxt "phone.stage.asleep"
+msgid "Asleep"
+msgstr ""
+
+#. Door label that sends an Imp back to the device it came from.
+msgctxt "phone.stage.back_to"
+msgid "Back to {name}"
+msgstr ""
+
+#. iPhone: stage delete body.
+msgctxt "phone.stage.delete.body"
+msgid "Its chats and keys are forgotten. This can't be undone."
+msgstr ""
+
+#. iPhone: stage delete title.
+msgctxt "phone.stage.delete.title"
+msgid "Delete {name}?"
+msgstr ""
+
+#. iPhone: stage move body.
+msgctxt "phone.stage.move.body"
+msgid "{imp} moves in on {mac} for good, and its key goes with it. {mac} asks you to look it over first."
+msgstr ""
+
+#. iPhone: stage move title.
+msgctxt "phone.stage.move.title"
+msgid "Move {imp} to {device}?"
+msgstr ""
+
+#. Door label when the edge leads to no device.
+msgctxt "phone.stage.nobody"
+msgid "Nobody here"
+msgstr ""
+
+#. iPhone: stage not around.
+msgctxt "phone.stage.not_around"
+msgid "{name} isn't around"
+msgstr ""
+
+#. Empty main screen while another device is nearby.
+msgctxt "phone.stage.throw_hint"
+msgid "Throw an Imp off the side of another screen. It lands here."
+msgstr ""
+
+#. Connection pill: no device linked.
+msgctxt "phone.status.alone"
+msgid "This iPhone"
+msgstr ""
+
+#. Connection pill: linked and connected to a device.
+msgctxt "phone.status.connected"
+msgid "{name}"
+msgstr ""
+
+#. Connection pill: several devices linked.
+msgctxt "phone.status.devices"
+msgid "{count} devices"
+msgstr ""
+
+#. Spoken hint of the connection pill.
+msgctxt "phone.status.hint"
+msgid "Opens Devices"
+msgstr ""
+
+#. Spoken label of the globe in the connection pill.
+msgctxt "phone.status.internet"
+msgid "Through the internet"
+msgstr ""
+
+#. Connection pill: a linked device is not reached yet.
+msgctxt "phone.status.looking"
+msgid "Looking…"
+msgstr ""
+
+#. Row title: the app version.
+msgctxt "phone.version"
+msgid "Version"
+msgstr ""
+
+#. Imps of another device that are here now.
+msgctxt "phone.visiting"
+msgid "Visiting: {names}"
+msgstr ""
+
+#. Under an Imp that another device holds.
+msgctxt "phone.with"
+msgid "With {name}"
+msgstr ""
+
+#. Choice for the double click.
+msgctxt "pref.double_click.none"
+msgid "Do nothing"
+msgstr ""
+
+#. Choice for the double click.
+msgctxt "pref.double_click.settings"
+msgid "Open its settings"
+msgstr ""
+
+#. Choice for the double click.
+msgctxt "pref.double_click.talk"
+msgid "Talk by voice"
+msgstr ""
+
+#. Preference title on desktop.
+msgctxt "pref.double_click.title"
+msgid "Double click on an Imp"
+msgstr ""
+
+#. Preference title on a phone.
+msgctxt "pref.double_click.title_touch"
+msgid "Double tap on an Imp"
+msgstr ""
+
+#. Switch.
+msgctxt "privacy.computer"
+msgid "Computer control"
+msgstr ""
+
+#. Note under the switch.
+msgctxt "privacy.computer_note"
+msgid "Lets an Imp run commands on this computer when you ask."
+msgstr ""
+
+#. Row.
+msgctxt "privacy.microphone"
+msgid "Microphone"
+msgstr ""
+
+#. Note under the row.
+msgctxt "privacy.microphone_note"
+msgid "Used only when you talk to an Imp by voice."
+msgstr ""
+
+#. Group title.
+msgctxt "privacy.title"
+msgid "Permissions"
+msgstr ""
+
+#. Switch.
+msgctxt "privacy.trust"
+msgid "Trust my other devices"
+msgstr ""
+
+#. Note under the switch.
+msgctxt "privacy.trust_note"
+msgid "Only for your own devices. Their Imps may use tools on this one."
+msgstr ""
+
+#. Under this Imp's own version of a shared trigger or animation. The other Imps keep the shared one.
+msgctxt "scope.changed"
+msgid "Changed for {name}"
+msgstr ""
+
+#. Under a trigger or animation shared by every Imp, and the choice that makes a change for every Imp.
+msgctxt "scope.every_imp"
+msgid "Every Imp"
+msgstr ""
+
+#. Under a trigger or animation only this Imp has.
+msgctxt "scope.only"
+msgid "Only {name}"
+msgstr ""
+
+#. Field label.
+msgctxt "servers.address"
+msgid "Address"
+msgstr ""
+
+#. Hint in the address field.
+msgctxt "servers.address_hint"
+msgid "Start with https://"
+msgstr ""
+
+#. Label of the menu that picks which server to use: Imp's servers, This computer, Custom or Off.
+msgctxt "servers.choice"
+msgid "Server"
+msgstr ""
+
+#. Short explanation of The Den.
+msgctxt "servers.den.about"
+msgid "Where Imps share animations, triggers and Imps. Shared items are public."
+msgstr ""
+
+#. Shows which Den is in use.
+msgctxt "servers.den.in_use"
+msgid "Using the Den at {address}"
+msgstr ""
+
+#. Shown on a screen that needs The Den when none is set.
+msgctxt "servers.den.needed"
+msgid "This needs a Den. Set one in Settings."
+msgstr ""
+
+#. Under Off on the Den card.
+msgctxt "servers.den.off_note"
+msgid "Sharing and finding in The Den are off."
+msgstr ""
+
+#. Section title.
+msgctxt "servers.den.title"
+msgid "The Den"
+msgstr ""
+
+#. Short explanation of The Hop.
+msgctxt "servers.hop.about"
+msgid "Lets your devices find each other. It only passes encrypted data."
+msgstr ""
+
+#. Shows which Hop is in use.
+msgctxt "servers.hop.in_use"
+msgid "Using the Hop at {address}"
+msgstr ""
+
+#. Shown on a screen that needs The Hop when none is set.
+msgctxt "servers.hop.needed"
+msgid "Linking from anywhere needs a Hop. Add one in Settings under Devices. Devices on the same network still find each other."
+msgstr ""
+
+#. Under Off on the Hop card.
+msgctxt "servers.hop.off_note"
+msgid "Only devices on the same network find each other."
+msgstr ""
+
+#. Section title.
+msgctxt "servers.hop.title"
+msgid "The Hop"
+msgstr ""
+
+#. Shown next to a server choice that is off.
+msgctxt "servers.off"
+msgid "Off"
+msgstr ""
+
+#. Server choice: an address the user types.
+msgctxt "servers.preset.custom"
+msgid "Custom"
+msgstr ""
+
+#. Server choice: the default servers.
+msgctxt "servers.preset.imp"
+msgid "Imp's servers"
+msgstr ""
+
+#. Note under the default servers choice.
+msgctxt "servers.preset.imp_note"
+msgid "The default, run by the Imp project."
+msgstr ""
+
+#. Server choice: a server on this computer.
+msgctxt "servers.preset.local"
+msgid "This computer"
+msgstr ""
+
+#. Server choice: no server.
+msgctxt "servers.preset.off"
+msgid "Off"
+msgstr ""
+
+#. State while a server is checked.
+msgctxt "servers.state_checking"
+msgid "Checking…"
+msgstr ""
+
+#. State of a server that does not answer.
+msgctxt "servers.state_fail"
+msgid "Cannot reach it. Check the address."
+msgstr ""
+
+#. State of a server that answers.
+msgctxt "servers.state_ok"
+msgid "Reachable"
+msgstr ""
+
+#. Under the address of a server that is set but was not checked yet.
+msgctxt "servers.state_unchecked"
+msgid "Not checked yet"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.app.appearance.title"
+msgid "Appearance"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.app.behaviour.info"
+msgid "What the app does when you click it or start your Mac."
+msgstr ""
+
+#. Choice: black on coloured controls.
+msgctxt "settings.app.control_ink.black"
+msgid "Black"
+msgstr ""
+
+#. Help for the white or black choice.
+msgctxt "settings.app.control_ink.info"
+msgid "Text, icons and switches on coloured buttons are white or black. A colour too light or too dark for them is shown a shade deeper or lighter."
+msgstr ""
+
+#. Setting: white or black text, icons and switches on coloured buttons and controls.
+msgctxt "settings.app.control_ink.title"
+msgid "On colour"
+msgstr ""
+
+#. Choice: white on coloured controls.
+msgctxt "settings.app.control_ink.white"
+msgid "White"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.app.double_click.info"
+msgid "What happens when you double click an Imp."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.app.look.info"
+msgid "How the app looks."
+msgstr ""
+
+#. Item.
+msgctxt "settings.attention.den_off"
+msgid "The Den is not set up."
+msgstr ""
+
+#. Item: a linked device cannot be reached.
+msgctxt "settings.attention.device_offline"
+msgid "{device} is offline."
+msgstr ""
+
+#. Item.
+msgctxt "settings.attention.hop_off"
+msgid "The Hop is not set up."
+msgstr ""
+
+#. Item: an Imp sleeps.
+msgctxt "settings.attention.imp_no_brain"
+msgid "{name} has no Brain."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.backup.export.title"
+msgid "Save a copy"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.backup.import.title"
+msgid "Load a copy"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.backup.keep.info"
+msgid "Save your Imps and settings in a file, or load them back."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.backup.keep.title"
+msgid "Backups"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.backup.reset.info"
+msgid "Erase everything and begin again. This cannot be undone."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.backup.reset.title"
+msgid "Start over"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.first_wait.info"
+msgid "How long to wait before asking again."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.first_wait.title"
+msgid "First pause"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.keychain.info"
+msgid "Keep keys safe in your Mac's Keychain."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.keychain.title"
+msgid "Keychain"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.keys.info"
+msgid "Secret passwords for your brains."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.keys.title"
+msgid "Keys"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.longer.info"
+msgid "How much longer each pause gets."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.longer.title"
+msgid "Longer each time"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.requests.info"
+msgid "How patient an Imp is when a brain is slow."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.requests.title"
+msgid "Asking"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.retries.info"
+msgid "How many times to ask again if it fails."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.retries.title"
+msgid "Tries"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.services.info"
+msgid "The brains your Imps think with."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.brains.wait.title"
+msgid "Wait"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.amount.title"
+msgid "Amount"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.audio.title"
+msgid "While playing"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.autoplay.title"
+msgid "Play by itself"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.background.solid"
+msgid "Solid"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.background.title"
+msgid "Background"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.background.translucent"
+msgid "Translucent"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.hide.title"
+msgid "Hide after"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.lines.title"
+msgid "Lines"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.look.title"
+msgid "Look"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.media.info"
+msgid "What the bubble does with sound and video."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.media.title"
+msgid "Sound and video"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.preview.label"
+msgid "Preview of the bubble on a light, a dark and a busy background"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.showing.info"
+msgid "How the bubble shows answers."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.showing.title"
+msgid "Showing"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.bubble.size.title"
+msgid "Size"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.devices.forget_all.title"
+msgid "Forget all"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.devices.link.info"
+msgid "Link another device so your Imps can visit it."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.devices.link.title"
+msgid "Link"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.devices.mine.info"
+msgid "The devices linked with this one."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.devices.pair.title"
+msgid "Link a device"
+msgstr ""
+
+#. Group title.
+msgctxt "settings.group.animations"
+msgid "Animations"
+msgstr ""
+
+#. Group title.
+msgctxt "settings.group.app"
+msgid "App"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.group.backup"
+msgid "Backup"
+msgstr ""
+
+#. Group title.
+msgctxt "settings.group.brains"
+msgid "Brains"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.group.bubble"
+msgid "Bubble"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.group.devices"
+msgid "Devices"
+msgstr ""
+
+#. Group title.
+msgctxt "settings.group.privacy"
+msgid "Permissions"
+msgstr ""
+
+#. Group title.
+msgctxt "settings.group.servers"
+msgid "The Den and The Hop"
+msgstr ""
+
+#. Settings section: The Den, where Imps share things.
+msgctxt "settings.group.sharing"
+msgid "Sharing"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.group.talking"
+msgid "Talking"
+msgstr ""
+
+#. Group title. It was called Talking.
+msgctxt "settings.group.voice"
+msgid "Voice and chat"
+msgstr ""
+
+#. Node: the connected AI services.
+msgctxt "settings.map.brains"
+msgid "Brains"
+msgstr ""
+
+#. Node: The Den.
+msgctxt "settings.map.den"
+msgid "The Den"
+msgstr ""
+
+#. Node: The Hop.
+msgctxt "settings.map.hop"
+msgid "The Hop"
+msgstr ""
+
+#. Node: a Hop that runs on this computer.
+msgctxt "settings.map.hop_local"
+msgid "The Hop on this computer"
+msgstr ""
+
+#. Dashed line between two devices that cannot reach each other.
+msgctxt "settings.map.not_seen"
+msgid "Cannot see each other yet"
+msgstr ""
+
+#. Line between two devices that can reach each other.
+msgctxt "settings.map.seen"
+msgid "Can see each other"
+msgstr ""
+
+#. State of a node.
+msgctxt "settings.map.state_needs_setup"
+msgid "Needs setup"
+msgstr ""
+
+#. State of a node.
+msgctxt "settings.map.state_off"
+msgid "Off"
+msgstr ""
+
+#. State of a node that is set up but cannot be reached.
+msgctxt "settings.map.state_offline"
+msgid "Offline"
+msgstr ""
+
+#. State of a node.
+msgctxt "settings.map.state_ready"
+msgid "Ready"
+msgstr ""
+
+#. Badge on the node of the device the app runs on.
+msgctxt "settings.map.this_device"
+msgid "This device"
+msgstr ""
+
+#. Node: the connected tool servers (MCP).
+msgctxt "settings.map.tools"
+msgid "Tools"
+msgstr ""
+
+#. Line label: this device may use the other device's tools.
+msgctxt "settings.map.tools_here"
+msgid "Its tools can be used from here"
+msgstr ""
+
+#. Line label: the link goes through a server.
+msgctxt "settings.map.via"
+msgid "Through {server}"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.privacy.accessibility.info"
+msgid "So Imp can press keys and click for you."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.privacy.accessibility.title"
+msgid "Control"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.privacy.computer.title"
+msgid "This computer"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.privacy.core.info"
+msgid "What your Mac lets Imp do."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.privacy.core.title"
+msgid "Allowed"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.privacy.microphone.title"
+msgid "Microphone"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.privacy.screen.title"
+msgid "Screen"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.privacy.speech.title"
+msgid "Speech"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.service.address.info"
+msgid "The web address of the brain."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.service.cloud.info"
+msgid "A brain on the internet. It may ask for a key."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.service.key.info"
+msgid "A secret password the brain asks for."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.service.local.info"
+msgid "A brain that runs on this computer."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.service.model.info"
+msgid "Which model to ask."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.service.name.info"
+msgid "A name you pick for this brain."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.between.info"
+msgid "How Imps talk to each other."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.between.title"
+msgid "Between Imps"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.language.title"
+msgid "Language"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.listening.info"
+msgid "How Imps hear you."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.listening.title"
+msgid "Listening"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.long.info"
+msgid "What to do when a chat gets very long."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.long.title"
+msgid "Long chats"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.suggest.title"
+msgid "Suggest a new chat"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.talk_in.title"
+msgid "Talk in"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.threads.info"
+msgid "Whether Imps keep chatting in the same chat or start a new one."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.threads.title"
+msgid "Chats"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.window.info"
+msgid "How many minutes a chat stays the same chat."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.window.title"
+msgid "Same chat for"
+msgstr ""
+
+#. Title of the app-wide settings.
+msgctxt "settings.title"
+msgid "Settings"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.tool.address.info"
+msgid "The web address of the tool."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.tool.command.info"
+msgid "The command that starts the tool."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.tool.headers.info"
+msgid "Extra lines sent with each request, like a password."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.tool.name.info"
+msgid "A name you pick for this tool."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.tool.variables.info"
+msgid "Secret values the tool needs to run."
+msgstr ""
+
+#. Share sheet choice: publish in The Den. What is shared there is public.
+msgctxt "share.den"
+msgid "Share in The Den"
+msgstr ""
+
+#. Shown when The Den is not set up.
+msgctxt "share.den_needs_setup"
+msgid "Set up The Den to share there."
+msgstr ""
+
+#. Share sheet choice: a kit file.
+msgctxt "share.file"
+msgid "Save as a file"
+msgstr ""
+
+#. Note on the share sheet about what travels.
+msgctxt "share.note"
+msgid "Its look, personality, tools and triggers are shared. Keys, memory and chats never are."
+msgstr ""
+
+#. Title of the share sheet.
+msgctxt "share.title"
+msgid "Share {name}"
+msgstr ""
+
+#. Button on the Sharing page: look through The Den.
+msgctxt "sharing.browse"
+msgid "Browse The Den"
+msgstr ""
+
+#. Shown in the animations list when you have made none.
+msgctxt "sheets.animations.nothing_yet"
+msgid "Nothing yet"
+msgstr ""
+
+#. A linked device disappeared.
+msgctxt "state.link_lost"
+msgid "The link to {device} dropped. It reconnects on its own."
+msgstr ""
+
+#. Shown for one Imp whose Brain is out of reach.
+msgctxt "state.offline.imp"
+msgid "{name} cannot reach its Brain. It wakes up when you are back online."
+msgstr ""
+
+#. Note in the offline state.
+msgctxt "state.offline.note"
+msgid "Imps that use a model on this device still work. The others wait until you are back online."
+msgstr ""
+
+#. Title of the offline state.
+msgctxt "state.offline.title"
+msgid "You are offline"
+msgstr ""
+
+#. Button.
+msgctxt "state.servers.set_up_den"
+msgid "Set up The Den"
+msgstr ""
+
+#. Button.
+msgctxt "state.servers.set_up_hop"
+msgid "Set up The Hop"
+msgstr ""
+
+#. Button in the sleeping state.
+msgctxt "state.sleeping.action"
+msgid "Give {name} a Brain"
+msgstr ""
+
+#. Note in the sleeping state.
+msgctxt "state.sleeping.note"
+msgid "With no Brain, it cannot think. Its triggers still work."
+msgstr ""
+
+#. Title of the sleeping state.
+msgctxt "state.sleeping.title"
+msgid "{name} is asleep"
+msgstr ""
+
+#. A visiting Imp sleeps while its home is out of reach.
+msgctxt "state.visiting_asleep"
+msgid "{name} is asleep because {home} is not connected."
+msgstr ""
+
+#. State while an Imp wakes.
+msgctxt "state.waking"
+msgid "Waking up…"
+msgstr ""
+
+#. Button that adds tools.
+msgctxt "tools.add"
+msgid "Add tools"
+msgstr ""
+
+#. Badge for a built-in tool group.
+msgctxt "tools.built_in"
+msgid "Built in"
+msgstr ""
+
+#. Screen reader action.
+msgctxt "tools.collapse"
+msgid "Hide the tools in {group}"
+msgstr ""
+
+#. Empty state of the tools list.
+msgctxt "tools.empty"
+msgid "No tools yet. Add some from a kit or an MCP server."
+msgstr ""
+
+#. Screen reader action.
+msgctxt "tools.expand"
+msgid "Show the tools in {group}"
+msgstr ""
+
+#. Under a tool group: how many of its tools are on.
+msgctxt "tools.group_count"
+msgid "{on} of {total} on"
+msgstr ""
+
+#. Under a tool group that is switched off.
+msgctxt "tools.group_off"
+msgid "Off"
+msgstr ""
+
+#. Screen reader name of a tool group switch.
+msgctxt "tools.group_switch"
+msgid "{group} tools"
+msgstr ""
+
+#. Help of the browser row.
+msgctxt "tools.help.browser"
+msgid "Lets the Imp look at pages and use the browser you opened for it."
+msgstr ""
+
+#. Help of the built-in tools list.
+msgctxt "tools.help.built_in"
+msgid "Things the Imp can already do, like look at your screen. Switch off any it should not use."
+msgstr ""
+
+#. Help of the extra tools list.
+msgctxt "tools.help.mcp"
+msgid "Extra tools added from outside. Each one gives the Imp new things to do."
+msgstr ""
+
+#. Help of a tool server badge.
+msgctxt "tools.help.server"
+msgid "A program or website that gives the Imp more tools."
+msgstr ""
+
+#. Badge for a tool group that comes from an MCP server.
+msgctxt "tools.mcp"
+msgid "MCP"
+msgstr ""
+
+#. Status of an MCP server.
+msgctxt "tools.mcp_connected"
+msgid "Connected"
+msgstr ""
+
+#. Status of an MCP server.
+msgctxt "tools.mcp_failed"
+msgid "Could not start"
+msgstr ""
+
+#. Status of an MCP server.
+msgctxt "tools.mcp_starting"
+msgid "Starting"
+msgstr ""
+
+#. In the extra tool editor: its setup is shared, while each Imp switches it on or off for itself.
+msgctxt "tools.shared_setup"
+msgid "Every Imp that uses this tool gets this setup. Each Imp switches it on or off for itself."
+msgstr ""
+
+#. Panel title.
+msgctxt "tools.title"
+msgid "Tools"
+msgstr ""
+
+#. Button that adds a trigger.
+msgctxt "triggers.add"
+msgid "Add a trigger"
+msgstr ""
+
+#. Action on a trigger.
+msgctxt "triggers.delete"
+msgid "Delete trigger"
+msgstr ""
+
+#. Destructive action on a shared trigger: delete it for every Imp.
+msgctxt "triggers.delete_every"
+msgid "Delete for every Imp"
+msgstr ""
+
+#. Confirmation before deleting a shared trigger for every Imp.
+msgctxt "triggers.delete_every.title"
+msgid "Delete “{name}” for every Imp?"
+msgstr ""
+
+#. Action on a trigger.
+msgctxt "triggers.edit"
+msgid "Edit trigger"
+msgstr ""
+
+#. Empty state of the triggers list.
+msgctxt "triggers.empty"
+msgid "No triggers yet. Add one and {name} acts on its own."
+msgstr ""
+
+#. Help of the trigger action.
+msgctxt "triggers.help.do"
+msgid "What the Imp does when it goes off."
+msgstr ""
+
+#. Help for the For choice in the trigger editor.
+msgctxt "triggers.help.for"
+msgid "Which Imp does the job. A change here is for this Imp alone unless you pick Every Imp."
+msgstr ""
+
+#. Help of the trigger input.
+msgctxt "triggers.help.input"
+msgid "What the Imp gets to look at when it goes off, like the clipboard."
+msgstr ""
+
+#. Help of the instruction field.
+msgctxt "triggers.help.instruction"
+msgid "Tell the Imp in your own words what to do."
+msgstr ""
+
+#. Help of the triggers list.
+msgctxt "triggers.help.list"
+msgid "A trigger wakes the Imp up by itself when something happens, like a time or a low battery."
+msgstr ""
+
+#. Help of the trigger name.
+msgctxt "triggers.help.name"
+msgid "A name so you can find it again."
+msgstr ""
+
+#. Help for the starter kit button.
+msgctxt "triggers.help.starter"
+msgid "The triggers Imp comes with: clicks, falling asleep and waking up. You see them before anything is added."
+msgstr ""
+
+#. Help of the trigger conditions.
+msgctxt "triggers.help.when"
+msgid "What has to happen to set it off, like a time, an app or a low battery."
+msgstr ""
+
+#. Field: the instruction.
+msgctxt "triggers.instruction"
+msgid "Task"
+msgstr ""
+
+#. Menu item on a shared trigger: make this Imp's own version. The other Imps keep the shared one.
+msgctxt "triggers.just_for"
+msgid "Just for {name}"
+msgstr ""
+
+#. Title of the sheet that adds a trigger.
+msgctxt "triggers.new"
+msgid "New trigger"
+msgstr ""
+
+#. Choice in the trigger editor: the change is for this Imp only.
+msgctxt "triggers.scope.just"
+msgid "Just {name}"
+msgstr ""
+
+#. Below the For choice when the change goes to every Imp.
+msgctxt "triggers.scope.note_every"
+msgid "Changes it for every Imp."
+msgstr ""
+
+#. Below the For choice when a shared trigger is saved for one Imp.
+msgctxt "triggers.scope.note_version"
+msgid "Saves a version for {name} only. The other Imps keep the shared one."
+msgstr ""
+
+#. One trigger as a sentence. The event and the action are short phrases.
+msgctxt "triggers.sentence"
+msgid "When {event}, {action}."
+msgstr ""
+
+#. Menu item on this Imp's trigger: share it with every Imp.
+msgctxt "triggers.share_every"
+msgid "Share with Every Imp"
+msgstr ""
+
+#. Button in the empty triggers list: review and add the starter kit.
+msgctxt "triggers.starter"
+msgid "Add the starter kit"
+msgstr ""
+
+#. Screen reader name of a trigger switch.
+msgctxt "triggers.switch"
+msgid "Trigger: {sentence}"
+msgstr ""
+
+#. Panel title.
+msgctxt "triggers.title"
+msgid "Triggers"
+msgstr ""
+
+#. Button that removes this Imp's version of a shared trigger, so the shared one applies again.
+msgctxt "triggers.use_shared"
+msgid "Use the shared one"
+msgstr ""
+
+#. Under the confirmation: the Imp's own version is removed.
+msgctxt "triggers.use_shared.message"
+msgid "The version only {name} has goes."
+msgstr ""
+
+#. Confirmation before removing this Imp's version of a shared trigger.
+msgctxt "triggers.use_shared.title"
+msgid "Use the shared “{name}” again?"
+msgstr ""
+
+#. Switch on the iPhone: voices in new replies.
+msgctxt "voice.autoplay"
+msgid "Play voices on their own"
+msgstr ""
+
+#. Note under the switch.
+msgctxt "voice.autoplay_note"
+msgid "A voice an Imp marks to play starts by itself in a new reply. Otherwise you tap it."
+msgstr ""
+
+#. Switch.
+msgctxt "voice.listen"
+msgid "Talk to Imps by voice"
+msgstr ""
+
+#. Switch.
+msgctxt "voice.speak"
+msgid "Speak answers aloud"
+msgstr ""
+
+#. Group title.
+msgctxt "voice.title"
+msgid "Voice and chat"
+msgstr ""
+

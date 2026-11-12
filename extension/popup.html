@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Imp</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Small icons, drawn once and used by name. All words come from _locales through popup.js. -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-found" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8" cy="8" r="1.9"/></symbol>
+    <symbol id="i-miss" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.4 10.4 14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-read" viewBox="0 0 16 16"><path d="M4 1.75h5.4L13 5.4v8.1a.75.75 0 0 1-.75.75h-8.5A.75.75 0 0 1 3 13.5v-11a.75.75 0 0 1 1-.75z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M5.5 8.5h5M5.5 11h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 16 16"><path d="M1.5 8S4 3.6 8 3.6 14.5 8 14.5 8 12 12.4 8 12.4 1.5 8 1.5 8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="8" cy="8" r="2"/></symbol>
+    <symbol id="i-blind" viewBox="0 0 16 16"><path d="M1.5 8S4 3.6 8 3.6 14.5 8 14.5 8 12 12.4 8 12.4 1.5 8 1.5 8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M3 13 13 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 8 12"><path d="M1.6 0h4.8C7.3 0 8 .7 8 1.6v8.8c0 .9-.7 1.6-1.6 1.6H1.6C.7 12 0 11.3 0 10.4V1.6C0 .7.7 0 1.6 0zM1.4 1.6v8.8h5.2V1.6z"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 16 16"><path d="M13.6 6.5A5.5 5.5 0 1 0 13 11l-1.4-.8A4 4 0 1 1 12 6.5H9.5V8H15V2.5h-1.5z"/></symbol>
+    <symbol id="i-back" viewBox="0 0 16 16"><path d="M9.5 3 4.5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-next" viewBox="0 0 16 16"><path d="m6.5 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 16 16"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5A1 1 0 0 1 13 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm1.5 0h4V5a2 2 0 0 0-4 0z"/></symbol>
+    <symbol id="i-help" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6.2 6.3a1.9 1.9 0 1 1 2.9 1.6c-.7.4-1.1.8-1.1 1.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11.6" r=".95"/></symbol>
+    <symbol id="i-open" viewBox="0 0 16 16"><path d="M9 2.5h4.5V7M13.5 2.5 7 9M11.5 9.5v3a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8a5.6 5.6 0 1 0 6.8 6.8z"/></symbol>
+    <symbol id="i-recent" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 4.6V8l2.3 1.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-page" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M1.8 8h12.4M8 1.8c2 1.8 2.8 4 2.8 6.2S10 12.4 8 14.2C6 12.4 5.2 10.2 5.2 8S6 3.6 8 1.8z" fill="none" stroke="currentColor" stroke-width="1.2"/></symbol>
+  </svg>
+
+  <header id="stage" class="stage">
+    <div class="bar">
+      <div id="status" class="pebble status" role="status">
+        <span class="dot" aria-hidden="true"></span>
+        <span id="status-text" class="status-text"></span>
+      </div>
+      <button id="reconnect" type="button" class="round"><svg aria-hidden="true"><use href="#i-refresh"/></svg></button>
+    </div>
+    <div id="imps" class="imps"></div>
+  </header>
+
+  <main id="main" hidden>
+    <section id="tab" class="pebble tab" data-label="extension.tab.label" hidden>
+      <div class="tile favicon"><img id="tab-icon" alt="" hidden><svg id="tab-fallback" aria-hidden="true"><use href="#i-page"/></svg></div>
+      <div class="tab-text">
+        <div id="tab-title" class="title"></div>
+        <div id="tab-host" class="host"></div>
+      </div>
+      <button id="tab-sight" type="button" class="help sight"><svg aria-hidden="true"><use id="tab-sight-icon" href="#i-eye"/></svg></button>
+    </section>
+
+    <section id="activity" class="pebble activity" aria-labelledby="activity-title" hidden>
+      <div class="head">
+        <span class="tile"><svg aria-hidden="true"><use href="#i-recent"/></svg></span>
+        <h2 id="activity-title" data-i18n="extension.activity.title"></h2>
+        <button type="button" class="help" data-help="extension.activity.help"><svg aria-hidden="true"><use href="#i-help"/></svg></button>
+      </div>
+      <ul id="activity-list" class="rows"></ul>
+      <p id="activity-empty" class="muted" data-i18n="extension.activity.empty" hidden></p>
+      <button id="activity-all" type="button" class="quiet" hidden><span id="activity-all-text"></span><svg aria-hidden="true"><use href="#i-next"/></svg></button>
+    </section>
+
+    <section id="full" class="pebble full" aria-labelledby="full-title" hidden>
+      <div class="head">
+        <button id="full-back" type="button" class="round" data-title="extension.back"><svg aria-hidden="true"><use href="#i-back"/></svg></button>
+        <h2 id="full-title" data-i18n="extension.activity.title"></h2>
+        <span id="full-count" class="count" aria-live="polite"></span>
+      </div>
+      <label class="sr-only" for="full-search" data-i18n="extension.activity.search_label"></label>
+      <input id="full-search" type="search" data-placeholder="extension.activity.search" autocomplete="off" spellcheck="false">
+      <ul id="full-list" class="rows scroll" tabindex="0" data-label="extension.activity.list_label"></ul>
+      <p id="full-empty" class="muted" hidden></p>
+    </section>
+
+    <section id="offline" class="pebble offline" hidden>
+      <div class="head">
+        <span class="tile"><svg aria-hidden="true"><use href="#i-moon"/></svg></span>
+        <h2 data-i18n="extension.offline.title"></h2>
+      </div>
+      <p class="muted" data-i18n="extension.offline.body"></p>
+      <a class="button secondary" href="https://github.com/impsland/imp" target="_blank" rel="noopener"><span data-i18n="extension.offline.get"></span></a>
+    </section>
+  </main>
+
+  <footer>
+    <button id="open" type="button" class="button primary">
+      <svg aria-hidden="true"><use href="#i-open"/></svg>
+      <span data-i18n="extension.open"></span>
+    </button>
+    <p class="private">
+      <svg aria-hidden="true"><use href="#i-lock"/></svg>
+      <span data-i18n="extension.private"></span>
+    </p>
+  </footer>
+
+  <!-- The one help tip: as wide as its words, closes on a click outside or Escape. -->
+  <div id="tip" class="tip" popover role="note"></div>
+
+  <template id="row">
+    <li>
+      <span class="glyph"><svg aria-hidden="true"><use href="#i-read"/></svg></span>
+      <span class="what"></span>
+      <span class="when"></span>
+    </li>
+  </template>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

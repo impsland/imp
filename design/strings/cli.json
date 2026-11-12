@@ -1,0 +1,207 @@
+{
+  "cli.chat.ready": {
+    "note": "The Imp is waiting for you to write.",
+    "en": "Ready",
+    "es": "Listo",
+    "zh-Hans": "就绪"
+  },
+  "cli.chat.thinking": {
+    "note": "What the Imp is doing before the first words of its answer arrive.",
+    "en": "Thinking",
+    "es": "Pensando",
+    "zh-Hans": "思考中"
+  },
+  "cli.chat.answering": {
+    "note": "What the Imp is doing while its answer arrives.",
+    "en": "Answering",
+    "es": "Respondiendo",
+    "zh-Hans": "回答中"
+  },
+  "cli.chat.using_tool": {
+    "note": "What the Imp is doing while it uses a tool.",
+    "en": "Using the tool {tool}",
+    "es": "Usando la herramienta {tool}",
+    "zh-Hans": "正在使用工具 {tool}",
+    "args": {
+      "tool": "string"
+    }
+  },
+  "cli.chat.input_hint": {
+    "note": "Faint hint in the empty message field.",
+    "en": "Write a message",
+    "es": "Escribe un mensaje",
+    "zh-Hans": "写点什么"
+  },
+  "cli.chat.input_wait": {
+    "note": "Faint hint in the message field while the Imp answers.",
+    "en": "Wait for the answer",
+    "es": "Espera la respuesta",
+    "zh-Hans": "请等待回答"
+  },
+  "cli.chat.help_hint": {
+    "note": "Short reminder at the right of the status line that the question mark opens help.",
+    "en": "? help",
+    "es": "? ayuda",
+    "zh-Hans": "? 帮助"
+  },
+  "cli.chat.tool_use": {
+    "note": "A line saying an Imp called a tool. {imp} is the Imp's name.",
+    "en": "{imp} uses the tool {tool}",
+    "es": "{imp} usa la herramienta {tool}",
+    "zh-Hans": "{imp} 使用工具 {tool}",
+    "args": {
+      "imp": "string",
+      "tool": "string"
+    }
+  },
+  "cli.chat.tool_result": {
+    "note": "The first line of what a tool returned.",
+    "en": "result: {text}",
+    "es": "resultado: {text}",
+    "zh-Hans": "结果:{text}",
+    "args": {
+      "text": "string"
+    }
+  },
+  "cli.chat.error": {
+    "note": "A problem during an answer. {error} is a plain sentence.",
+    "en": "Something went wrong: {error}",
+    "es": "Algo salió mal: {error}",
+    "zh-Hans": "出了点问题:{error}",
+    "args": {
+      "error": "string"
+    }
+  },
+  "cli.help.title": {
+    "note": "Title of the help card in the terminal chat.",
+    "en": "Keys",
+    "es": "Teclas",
+    "zh-Hans": "按键"
+  },
+  "cli.help.close": {
+    "note": "Last line of the help card.",
+    "en": "Press any key to close",
+    "es": "Pulsa cualquier tecla para cerrar",
+    "zh-Hans": "按任意键关闭"
+  },
+  "cli.help.send": {
+    "note": "Help for the Enter key.",
+    "en": "Send the message",
+    "es": "Envía el mensaje",
+    "zh-Hans": "发送消息"
+  },
+  "cli.help.newline": {
+    "note": "Help for Alt+Enter and Shift+Enter.",
+    "en": "Add a line",
+    "es": "Añade una línea",
+    "zh-Hans": "换行"
+  },
+  "cli.help.newline_ctrl": {
+    "note": "Help for Ctrl+J.",
+    "en": "Add a line",
+    "es": "Añade una línea",
+    "zh-Hans": "换行"
+  },
+  "cli.help.clear_input": {
+    "note": "Help for Ctrl+U.",
+    "en": "Clear what you wrote",
+    "es": "Borra lo que escribiste",
+    "zh-Hans": "清空输入"
+  },
+  "cli.help.erase": {
+    "note": "Help for Backspace.",
+    "en": "Erase a letter",
+    "es": "Borra una letra",
+    "zh-Hans": "删除一个字"
+  },
+  "cli.help.scroll_line": {
+    "note": "Help for the up and down arrows.",
+    "en": "Scroll a line",
+    "es": "Desplaza una línea",
+    "zh-Hans": "滚动一行"
+  },
+  "cli.help.scroll_page": {
+    "note": "Help for Page Up and Page Down.",
+    "en": "Scroll a page",
+    "es": "Desplaza una página",
+    "zh-Hans": "滚动一页"
+  },
+  "cli.help.scroll_end": {
+    "note": "Help for End.",
+    "en": "Jump to the newest",
+    "es": "Salta a lo más nuevo",
+    "zh-Hans": "跳到最新"
+  },
+  "cli.help.key_wheel": {
+    "note": "Name of the mouse wheel in the list of keys.",
+    "en": "Wheel",
+    "es": "Rueda",
+    "zh-Hans": "滚轮"
+  },
+  "cli.help.wheel": {
+    "note": "Help for the mouse wheel.",
+    "en": "Scroll",
+    "es": "Desplaza",
+    "zh-Hans": "滚动"
+  },
+  "cli.help.quit": {
+    "note": "Help for Esc and Ctrl+C.",
+    "en": "Leave the chat",
+    "es": "Sale del chat",
+    "zh-Hans": "离开聊天"
+  },
+  "cli.help.quit_empty": {
+    "note": "Help for Ctrl+D.",
+    "en": "Leave when nothing is written",
+    "es": "Sale si no hay nada escrito",
+    "zh-Hans": "没有输入时离开"
+  },
+  "cli.help.open": {
+    "note": "Help for the question mark key.",
+    "en": "Show this help when nothing is written",
+    "es": "Muestra esta ayuda si no hay nada escrito",
+    "zh-Hans": "没有输入时显示帮助"
+  },
+  "cli.help.open_any": {
+    "note": "Help for the F1 key.",
+    "en": "Show this help any time",
+    "es": "Muestra esta ayuda siempre",
+    "zh-Hans": "随时显示帮助"
+  },
+  "cli.help.new_chat": {
+    "note": "Help for the /clear command.",
+    "en": "Start a new chat",
+    "es": "Empieza un chat nuevo",
+    "zh-Hans": "开始新聊天"
+  },
+  "cli.help.leave": {
+    "note": "Help for the /quit command.",
+    "en": "Leave the chat",
+    "es": "Sale del chat",
+    "zh-Hans": "离开聊天"
+  },
+  "cli.help.key_status": {
+    "note": "Name of the status line in the list of what is on screen.",
+    "en": "Status",
+    "es": "Estado",
+    "zh-Hans": "状态"
+  },
+  "cli.help.imp": {
+    "note": "Help for the Imp's name and brain shown in the status line.",
+    "en": "The Imp you talk to and its brain",
+    "es": "El Imp con quien hablas y su cerebro",
+    "zh-Hans": "你在和哪个 Imp 说话,以及它的大脑"
+  },
+  "cli.help.you": {
+    "note": "Help for the arrow that starts what you wrote.",
+    "en": "What you wrote",
+    "es": "Lo que escribiste",
+    "zh-Hans": "你写的内容"
+  },
+  "cli.help.activity": {
+    "note": "Help for the activity word in the status line.",
+    "en": "What the Imp is doing now",
+    "es": "Lo que hace el Imp ahora",
+    "zh-Hans": "Imp 现在在做什么"
+  }
+}

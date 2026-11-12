@@ -1,0 +1,180 @@
+import AppKit
+import ImpKit
+import SwiftUI
+import ImpDesign
+
+/// The answer: its text, then a quiet footer.
+struct ResultView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.impTint) private var tint
+    let bubble: Bubble
+    let model: ImpModel
+    let layout: BubbleLayout
+    var measuring = false
+    /// Footer buttons are small: the answer is the point.
+    static let button: CGFloat = 22
+
+    var body: some View {
+        if let exchange = bubble.exchange { ExchangeHeader(exchange: exchange).padding(.bottom, Spacing.tight) }
+        if !bubble.text.isEmpty {
+            let blocks = model.replyBlocks(bubble.text)
+            let voice = VoiceReply.style(bubble, prefs: model.prefs) != nil
+            let reply = MarkdownView(blocks: blocks, base: Workspace.directory(for: model.id),
+                                     onImageLoad: measuring ? nil : { layout.onToggle?() },
+                                     onMedia: measuring ? { layout.mediaSpans = $0 } : nil,
+                                     mediaOwner: bubble.id.uuidString, autoplay: model.prefs.autoplaysMedia,
+                                     voice: voice, measuring: measuring)
+            if voice && Markdown.isOnlyVoice(blocks) {
+                // Nothing but a voice: the puff of smoke is the answer, in the middle of the card.
+                VoiceOrb(look: VoiceLook(hue: model.profile.hue), owner: bubble.id.uuidString, size: 56, measuring: measuring)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, Spacing.cozy)
+                    .background { reply }
+            } else {
+                answer(reply)
+            }
+        }
+        if layout.expanded && layout.showSteps { StepList(steps: bubble.steps, layout: layout, animated: false) }
+        if Self.hasFooter(bubble, layout) { footer }
+    }
+
+    @ViewBuilder private func answer(_ reply: MarkdownView) -> some View {
+        let text = reply
+            .textSelection(.enabled)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        if let limit = layout.textLimit {
+            if layout.expanded {
+                ReadingScroll(height: limit) { text.padding(.bottom, Spacing.roomy) }
+            } else if layout.mediaSpans.contains(where: { abs($0.bottom - limit) < 1 }) {
+                // Cut right below a picture: the picture shows whole, "Read all" waits under it.
+                VStack(spacing: Spacing.snug) {
+                    reply
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(height: limit, alignment: .top)
+                        .clipped()
+                    readAll
+                }
+            } else {
+                // A long reply, cut short, with a way to read the rest.
+                // (Not selectable here, so the text doesn't fight "Read all" for the cursor.)
+                reply
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(height: limit, alignment: .top)
+                    .clipped()
+                    .overlay(alignment: .bottom) { readAll }
+            }
+        } else {
+            text
+        }
+    }
+
+    private var readAll: some View {
+        Button { toggle() } label: {
+            Label("Read all", systemImage: "chevron.down")
+                .font(Typeface.small.weight(.semibold))
+                .padding(.horizontal, Spacing.medium).padding(.vertical, Spacing.snug)
+                // Opaque, so the cut line behind it does not show through.
+                .background(Capsule().fill(Tone.raisedHigh))
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(Tone.text)
+        .help("Show the whole reply")
+    }
+
+    private func toggle() {
+        withImpAnimation(ImpDesign.Motion.expand, reduceMotion: reduceMotion) { layout.expanded.toggle() }
+        if !layout.expanded { layout.customWidth = nil; layout.customTextHeight = nil; layout.showSteps = false }
+        if layout.expanded { model.keepBubble() }           // reading it in full: it waits for you
+        layout.onToggle?()
+    }
+
+    /// Only for what belongs to the answer itself: "Show less", a setup link, and (read in full)
+    /// its steps. A finished answer stays as small as it can, so pictures get the room: the tools
+    /// it used show in the full view and in the chat. Reply, copy and close sit on the card's corners.
+    static func hasFooter(_ bubble: Bubble, _ layout: BubbleLayout) -> Bool {
+        !bubble.isStreaming && (layout.expanded || bubble.link != nil)
+    }
+
+    private var footer: some View {
+        HStack(spacing: Spacing.hairline) {
+            if layout.expanded {
+                IconButton(icon: "chevron.up", help: "Show less", size: Self.button) { toggle() }
+            }
+            if layout.expanded && !bubble.steps.isEmpty {
+                // Re-measured, so the panel grows with the list (instead of cutting the card off).
+                // A count, not a step's title: a command line would never fit in a pill.
+                Button { layout.showSteps.toggle(); layout.onToggle?() } label: {
+                    Label(bubble.steps.count == 1 ? "1 step" : "\(bubble.steps.count) steps",
+                          systemImage: layout.showSteps ? "chevron.down" : "hammer")
+                }
+                .modifier(FooterPill())
+                .fixedSize()
+                .help(layout.showSteps ? "Hide what Imp did" : "What Imp did")
+            }
+            Spacer(minLength: Spacing.snug)
+            if let link = bubble.link {
+                Button(link.title(for: model.profile.callName)) { model.perform(link) }
+                    .buttonStyle(.plain)
+                    .font(Typeface.small.weight(.semibold))
+                    .foregroundStyle(LegibleTint(on: .raised))
+                    .padding(.trailing, Spacing.tight)
+            }
+        }
+    }
+}
+
+/// The footer's small capsule buttons: one line, one size.
+struct FooterPill: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .buttonStyle(.plain)
+            .labelStyle(.titleAndIcon)
+            .font(Typeface.small.weight(.medium))
+            .foregroundStyle(Tone.muted)
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .padding(.horizontal, Spacing.small).padding(.vertical, Spacing.hairline)
+            .background(Capsule().fill(Tone.card))
+    }
+}
+
+/// Errors and hints: an icon, the message, and the one thing to do about it.
+struct NoticeView: View {
+    @Environment(\.impTint) private var tint
+    let bubble: Bubble
+    let model: ImpModel
+
+    var body: some View {
+        let error = bubble.phase == .error
+        HStack(alignment: .top, spacing: Spacing.cozy) {
+            Image(systemName: error ? "exclamationmark.triangle.fill" : "lightbulb.fill")
+                .font(Typeface.label)
+                .foregroundStyle(error ? AnyShapeStyle(Tone.danger) : AnyShapeStyle(LegibleTint(on: .raised)))
+                .frame(width: BubbleMetrics.send, height: BubbleMetrics.send)
+                .background(Circle().fill((error ? Tone.danger : tint).opacity(Opacity.tintFill)))
+            VStack(alignment: .leading, spacing: Spacing.small) {
+                if !bubble.title.isEmpty {
+                    Text(bubble.title).font(Typeface.label).foregroundStyle(Tone.muted).lineLimit(1)
+                }
+                Text(bubble.text)
+                    .font(Typeface.body)
+                    .textSelection(.enabled)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let link = bubble.link {
+                    Button { model.perform(link) } label: {
+                        Text(link.title(for: model.profile.callName))
+                            .font(Typeface.label)
+                            .foregroundStyle(OnTint(tint))
+                            .padding(.horizontal, Spacing.medium).padding(.vertical, Spacing.snug)
+                            .background(Capsule().fill(TintFill(tint)))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}

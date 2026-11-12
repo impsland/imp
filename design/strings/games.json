@@ -1,0 +1,141 @@
+{
+  "games.embers": {
+    "note": "Name of the Embers game, the title of its results card.",
+    "en": "Embers",
+    "es": "Brasas",
+    "zh-Hans": "余烬"
+  },
+  "games.echo": {
+    "note": "Name of the Echo game, the title of its results card.",
+    "en": "Echo",
+    "es": "Eco",
+    "zh-Hans": "回响"
+  },
+  "games.play_embers": {
+    "note": "VoiceOver label of the flame button that starts Embers.",
+    "en": "Play Embers",
+    "es": "Jugar a Brasas",
+    "zh-Hans": "玩余烬"
+  },
+  "games.play_echo": {
+    "note": "VoiceOver label of the rune button that starts Echo.",
+    "en": "Play Echo",
+    "es": "Jugar a Eco",
+    "zh-Hans": "玩回响"
+  },
+  "games.again": {
+    "note": "Results card: the main button that starts another round.",
+    "en": "Again",
+    "es": "Otra vez",
+    "zh-Hans": "再来一次"
+  },
+  "games.how_to": {
+    "note": "Results card: quiet button that shows the rules again.",
+    "en": "How to play",
+    "es": "Cómo se juega",
+    "zh-Hans": "玩法"
+  },
+  "games.skip": {
+    "note": "Quiet button that skips the lesson of a game.",
+    "en": "Skip",
+    "es": "Omitir",
+    "zh-Hans": "跳过"
+  },
+  "games.new_best": {
+    "note": "Badge on the results card when the score beats the best.",
+    "en": "New best!",
+    "es": "¡Nuevo récord!",
+    "zh-Hans": "新纪录！"
+  },
+  "games.best": {
+    "note": "Results card: the best score, under the score.",
+    "args": {
+      "count": "int"
+    },
+    "en": "Best {count}",
+    "es": "Récord {count}",
+    "zh-Hans": "最高 {count}"
+  },
+  "games.prize.flawless": {
+    "note": "Prize badge: no ember got away in the round.",
+    "en": "Nothing got away",
+    "es": "Ninguna se escapó",
+    "zh-Hans": "一个没漏"
+  },
+  "games.prize.clean": {
+    "note": "Prize badge: no smoke was hit in the round.",
+    "en": "Clean burn",
+    "es": "Fuego limpio",
+    "zh-Hans": "无烟"
+  },
+  "games.prize.perfect_echo": {
+    "note": "Prize badge: Echo was played all the way to the end.",
+    "en": "Perfect echo!",
+    "es": "¡Eco perfecto!",
+    "zh-Hans": "完美回响！"
+  },
+  "games.prize.times": {
+    "note": "Under a prize badge: how many rounds earned it.",
+    "args": {
+      "count": "int"
+    },
+    "en": {
+      "one": "{count} time",
+      "other": "{count} times"
+    },
+    "es": {
+      "one": "{count} vez",
+      "other": "{count} veces"
+    },
+    "zh-Hans": {
+      "other": "{count} 次"
+    }
+  },
+  "games.prize.in_a_row": {
+    "note": "Under a prize badge: how many rounds in a row earned it.",
+    "args": {
+      "count": "int"
+    },
+    "en": {
+      "one": "{count} in a row",
+      "other": "{count} in a row"
+    },
+    "es": {
+      "one": "{count} seguida",
+      "other": "{count} seguidas"
+    },
+    "zh-Hans": {
+      "other": "连续 {count} 次"
+    }
+  },
+  "games.stat.combo": {
+    "note": "Results stat: the most embers taken in one flight.",
+    "en": "Best combo",
+    "es": "Mejor combo",
+    "zh-Hans": "最高连击"
+  },
+  "games.stat.waves": {
+    "note": "Results stat: waves of embers caught whole, out of all waves.",
+    "en": "Perfect waves",
+    "es": "Olas perfectas",
+    "zh-Hans": "完美波次"
+  },
+  "games.stat.escaped": {
+    "note": "Results stat: embers that rose out of the screen uncaught.",
+    "en": "Got away",
+    "es": "Escaparon",
+    "zh-Hans": "漏掉"
+  },
+  "games.stat.longest": {
+    "note": "Results stat: the longest sequence of Echo repeated.",
+    "en": "Longest echo",
+    "es": "Eco más largo",
+    "zh-Hans": "最长回响"
+  },
+  "games.stat.slips": {
+    "note": "Results stat: mistakes made in Echo.",
+    "en": "Slips",
+    "es": "Fallos",
+    "zh-Hans": "失误"
+  }
+}

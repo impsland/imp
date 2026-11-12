@@ -1,0 +1,1177 @@
+{
+  "imp_settings.marker.brain": {
+    "note": "Marker above the Imp's head and panel title.",
+    "en": "Brain",
+    "es": "Cerebro",
+    "zh-Hans": "大脑"
+  },
+  "imp_settings.marker.look": {
+    "note": "Marker left of the Imp: colour, size and character.",
+    "en": "Look",
+    "es": "Aspecto",
+    "zh-Hans": "外观"
+  },
+  "imp_settings.marker.personality": {
+    "note": "Marker right of the Imp: name, persona and voice.",
+    "en": "Personality",
+    "es": "Personalidad",
+    "zh-Hans": "个性"
+  },
+  "imp_settings.marker.tools": {
+    "note": "Marker for the tools panel.",
+    "en": "Tools",
+    "es": "Herramientas",
+    "zh-Hans": "工具"
+  },
+  "imp_settings.marker.triggers": {
+    "note": "Marker for the triggers panel.",
+    "en": "Triggers",
+    "es": "Disparadores",
+    "zh-Hans": "触发器"
+  },
+  "imp_settings.marker.moves": {
+    "note": "Marker below the Imp: its animations.",
+    "en": "Moves",
+    "es": "Movimientos",
+    "zh-Hans": "动作"
+  },
+  "imp_settings.list.label": {
+    "note": "Screen reader name of the plain list of settings.",
+    "args": {
+      "name": "string"
+    },
+    "en": "All settings for {name}",
+    "es": "Todos los ajustes de {name}",
+    "zh-Hans": "{name} 的全部设置"
+  },
+  "imp_settings.summary.brain_none": {
+    "note": "Summary line of the Brain row when the Imp has no Brain.",
+    "en": "Asleep",
+    "es": "Dormido",
+    "zh-Hans": "沉睡"
+  },
+  "imp_settings.summary.brain_set": {
+    "note": "Summary line of the Brain row: service and model.",
+    "args": {
+      "service": "string",
+      "model": "string"
+    },
+    "en": "{service}, {model}",
+    "es": "{service}, {model}",
+    "zh-Hans": "{service}，{model}"
+  },
+  "imp_settings.summary.look": {
+    "note": "Summary line of the Look row.",
+    "en": "Colour and size",
+    "es": "Color y tamaño",
+    "zh-Hans": "颜色和大小"
+  },
+  "imp_settings.summary.personality": {
+    "note": "Summary line of the Personality row.",
+    "en": "Name and voice",
+    "es": "Nombre y voz",
+    "zh-Hans": "名字和声音"
+  },
+  "imp_settings.summary.tools": {
+    "note": "Summary line of the Tools row.",
+    "args": {
+      "on": "int",
+      "total": "int"
+    },
+    "en": "{on} of {total} on",
+    "es": "{on} de {total} activas",
+    "zh-Hans": "{total} 个中开启 {on} 个"
+  },
+  "imp_settings.summary.triggers": {
+    "note": "Summary line of the Triggers row.",
+    "args": {
+      "count": "int"
+    },
+    "en": {
+      "one": "{count} trigger",
+      "other": "{count} triggers"
+    },
+    "es": {
+      "one": "{count} disparador",
+      "other": "{count} disparadores"
+    },
+    "zh-Hans": {
+      "other": "{count} 个触发器"
+    }
+  },
+  "imp_settings.value.asleep": {
+    "note": "Short value in the settings list when the Imp has no Brain.",
+    "en": "Asleep",
+    "es": "Dormido",
+    "zh-Hans": "睡着了"
+  },
+  "imp_settings.value.tools": {
+    "note": "Short value in the settings list: tools on out of all, like 17/26.",
+    "args": {
+      "on": "int",
+      "total": "int"
+    },
+    "en": "{on}/{total}",
+    "es": "{on}/{total}",
+    "zh-Hans": "{on}/{total}"
+  },
+  "imp_settings.summary.moves": {
+    "note": "Summary line of the Moves row.",
+    "en": "Animations",
+    "es": "Animaciones",
+    "zh-Hans": "动画"
+  },
+  "imp_settings.brain_marker.asleep": {
+    "note": "Screen reader label of the unlit Brain marker.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} is asleep. Give it a Brain.",
+    "es": "{name} está dormido. Dale un cerebro.",
+    "zh-Hans": "{name} 睡着了。给它一个大脑吧。"
+  },
+  "imp_settings.brain_marker.awake": {
+    "note": "Screen reader label of the lit Brain marker.",
+    "args": {
+      "service": "string",
+      "model": "string"
+    },
+    "en": "Brain: {service}, {model}",
+    "es": "Cerebro: {service}, {model}",
+    "zh-Hans": "大脑：{service}，{model}"
+  },
+  "imp_settings.share": {
+    "note": "Icon button label in the top corner.",
+    "en": "Share",
+    "es": "Compartir",
+    "zh-Hans": "共享"
+  },
+  "imp_settings.share.a11y": {
+    "note": "Screen reader label of the share button.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Share {name}",
+    "es": "Compartir a {name}",
+    "zh-Hans": "共享 {name}"
+  },
+  "imp_settings.goodbye": {
+    "note": "Icon button label in the top corner.",
+    "en": "Goodbye",
+    "es": "Adiós",
+    "zh-Hans": "再见"
+  },
+  "imp_settings.goodbye.a11y": {
+    "note": "Screen reader label of the goodbye button.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Say goodbye to {name}",
+    "es": "Decirle adiós a {name}",
+    "zh-Hans": "向 {name} 说再见"
+  },
+  "goodbye.title": {
+    "note": "Title of the dialog that asks before an Imp is deleted.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Say goodbye to {name}?",
+    "es": "¿Decirle adiós a {name}?",
+    "zh-Hans": "要向 {name} 说再见吗？"
+  },
+  "goodbye.message": {
+    "note": "Message of the goodbye dialog.",
+    "en": "Its look, Brain settings, tools, triggers and chats go with it. This can't be undone.",
+    "es": "Su aspecto, los ajustes de su cerebro, sus herramientas, disparadores y chats se van con él. No se puede deshacer.",
+    "zh-Hans": "它的外观、大脑设置、工具、触发器和聊天都会一起消失。此操作无法撤销。"
+  },
+  "goodbye.confirm": {
+    "note": "Destructive button of the goodbye dialog.",
+    "en": "Say goodbye",
+    "es": "Decir adiós",
+    "zh-Hans": "说再见"
+  },
+  "goodbye.cancel": {
+    "note": "Safe button of the goodbye dialog.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Keep {name}",
+    "es": "Quedarme con {name}",
+    "zh-Hans": "留下 {name}"
+  },
+  "share.title": {
+    "note": "Title of the share sheet.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Share {name}",
+    "es": "Compartir a {name}",
+    "zh-Hans": "共享 {name}"
+  },
+  "share.note": {
+    "note": "Note on the share sheet about what travels.",
+    "en": "Its look, personality, tools and triggers are shared. Keys, memory and chats never are.",
+    "es": "Se comparten su aspecto, personalidad, herramientas y disparadores. Las claves, la memoria y los chats nunca.",
+    "zh-Hans": "会共享它的外观、个性、工具和触发器。密钥、记忆和聊天永远不会共享。"
+  },
+  "share.den": {
+    "note": "Share sheet choice: publish in The Den. What is shared there is public.",
+    "en": "Share in The Den",
+    "es": "Compartir en Den",
+    "zh-Hans": "共享到 Den"
+  },
+  "share.file": {
+    "note": "Share sheet choice: a kit file.",
+    "en": "Save as a file",
+    "es": "Guardar como archivo",
+    "zh-Hans": "保存为文件"
+  },
+  "share.den_needs_setup": {
+    "note": "Shown when The Den is not set up.",
+    "en": "Set up The Den to share there.",
+    "es": "Configura Den para compartir allí.",
+    "zh-Hans": "先设置 Den，才能在那里共享。"
+  },
+  "look.title": {
+    "note": "Panel title.",
+    "en": "Look",
+    "es": "Aspecto",
+    "zh-Hans": "外观"
+  },
+  "look.colour": {
+    "note": "Slider label.",
+    "en": "Colour",
+    "es": "Color",
+    "zh-Hans": "颜色"
+  },
+  "look.size": {
+    "note": "Slider label.",
+    "en": "Size",
+    "es": "Tamaño",
+    "zh-Hans": "大小"
+  },
+  "look.character": {
+    "note": "Slider group label: small traits of how the Imp moves and looks around.",
+    "en": "Character",
+    "es": "Carácter",
+    "zh-Hans": "性格"
+  },
+  "look.character_hint": {
+    "note": "Hint under the character sliders.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Small traits that change how {name} moves and looks around.",
+    "es": "Pequeños rasgos que cambian cómo se mueve y mira {name}.",
+    "zh-Hans": "一些小特点，会改变 {name} 的动作和目光。"
+  },
+  "look.preview": {
+    "note": "Label of the live Imp above the sliders.",
+    "en": "Preview",
+    "es": "Vista previa",
+    "zh-Hans": "预览"
+  },
+  "look.reset": {
+    "note": "Button that restores the default look.",
+    "en": "Reset look",
+    "es": "Restablecer aspecto",
+    "zh-Hans": "重置外观"
+  },
+  "look.lids": {
+    "note": "Label of a character slider.",
+    "en": "Lids",
+    "es": "Párpados",
+    "zh-Hans": "眼睑"
+  },
+  "look.brows": {
+    "note": "Label of a character slider.",
+    "en": "Brows",
+    "es": "Cejas",
+    "zh-Hans": "眉毛"
+  },
+  "look.eyes": {
+    "note": "Label of a character slider.",
+    "en": "Eyes",
+    "es": "Ojos",
+    "zh-Hans": "眼睛"
+  },
+  "look.squint": {
+    "note": "Label of a character slider.",
+    "en": "Squint",
+    "es": "Entornar",
+    "zh-Hans": "眯眼"
+  },
+  "look.horns": {
+    "note": "Label of a character slider.",
+    "en": "Horns",
+    "es": "Cuernos",
+    "zh-Hans": "犄角"
+  },
+  "look.cheeks": {
+    "note": "Label of a character slider.",
+    "en": "Cheeks",
+    "es": "Mejillas",
+    "zh-Hans": "脸颊"
+  },
+  "look.head": {
+    "note": "Label of a character slider.",
+    "en": "Head",
+    "es": "Cabeza",
+    "zh-Hans": "头部"
+  },
+  "look.pace": {
+    "note": "Label of a character slider.",
+    "en": "Pace",
+    "es": "Ritmo",
+    "zh-Hans": "节奏"
+  },
+  "personality.title": {
+    "note": "Panel title.",
+    "en": "Personality",
+    "es": "Personalidad",
+    "zh-Hans": "个性"
+  },
+  "personality.name": {
+    "note": "Field label.",
+    "en": "Name",
+    "es": "Nombre",
+    "zh-Hans": "名称"
+  },
+  "personality.name_hint": {
+    "note": "Hint under the name field.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Part of who {name} is. You can change it any time.",
+    "es": "Parte de quién es {name}. Puedes cambiarlo cuando quieras.",
+    "zh-Hans": "这是 {name} 个性的一部分，随时可以修改。"
+  },
+  "personality.name_empty": {
+    "note": "Error when the name is empty.",
+    "en": "Give your Imp a name.",
+    "es": "Dale un nombre a tu Imp.",
+    "zh-Hans": "给你的 Imp 起个名字吧。"
+  },
+  "personality.persona": {
+    "note": "Field label for the text that tells the Imp who it is.",
+    "en": "Persona",
+    "es": "Personaje",
+    "zh-Hans": "角色设定"
+  },
+  "personality.persona_hint": {
+    "note": "Hint under the persona field.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Tell {name} who it is and how it talks.",
+    "es": "Cuéntale a {name} quién es y cómo habla.",
+    "zh-Hans": "告诉 {name} 它是谁，以及怎么说话。"
+  },
+  "personality.voice": {
+    "note": "Field label.",
+    "en": "Voice",
+    "es": "Voz",
+    "zh-Hans": "声音"
+  },
+  "brain.title": {
+    "note": "Panel title.",
+    "en": "Brain",
+    "es": "Cerebro",
+    "zh-Hans": "大脑"
+  },
+  "brain.hint": {
+    "note": "Hint at the top of the Brain panel.",
+    "args": {
+      "name": "string"
+    },
+    "en": "A Brain is a service and a model. {name} thinks with it.",
+    "es": "Un cerebro es un servicio y un modelo. {name} piensa con él.",
+    "zh-Hans": "大脑由一项服务和一个模型组成。{name} 用它来思考。"
+  },
+  "brain.use_app": {
+    "note": "Choice: use the app's default Brain.",
+    "en": "Same as the other Imps",
+    "es": "Igual que los otros Imps",
+    "zh-Hans": "与其他 Imp 相同"
+  },
+  "brain.use_own": {
+    "note": "Choice: this Imp has its own service and model.",
+    "en": "Its own Brain",
+    "es": "Su propio cerebro",
+    "zh-Hans": "专属大脑"
+  },
+  "brain.service": {
+    "note": "Field label.",
+    "en": "Service",
+    "es": "Servicio",
+    "zh-Hans": "服务"
+  },
+  "brain.model": {
+    "note": "Section: the model.",
+    "en": "Model",
+    "es": "Modelo",
+    "zh-Hans": "模型"
+  },
+  "brain.add_service": {
+    "note": "Button that adds a Brain service.",
+    "en": "Add a service",
+    "es": "Añadir un servicio",
+    "zh-Hans": "添加服务"
+  },
+  "brain.none": {
+    "note": "Status in the Brain panel.",
+    "en": "No Brain yet",
+    "es": "Aún sin cerebro",
+    "zh-Hans": "还没有大脑"
+  },
+  "brain.check_ok": {
+    "note": "Result of a successful Brain check.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} is awake.",
+    "es": "{name} está despierto.",
+    "zh-Hans": "{name} 醒了。"
+  },
+  "brain.checking": {
+    "note": "Shown while a Brain is checked.",
+    "en": "Checking…",
+    "es": "Comprobando…",
+    "zh-Hans": "正在检查…"
+  },
+  "brain.zzz": {
+    "note": "Screen reader description of the sleeping animation.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Zzz, {name} is asleep",
+    "es": "Zzz, {name} está dormido",
+    "zh-Hans": "Zzz，{name} 睡着了"
+  },
+  "tools.title": {
+    "note": "Panel title.",
+    "en": "Tools",
+    "es": "Herramientas",
+    "zh-Hans": "工具"
+  },
+  "tools.group_count": {
+    "note": "Under a tool group: how many of its tools are on.",
+    "args": {
+      "on": "int",
+      "total": "int"
+    },
+    "en": "{on} of {total} on",
+    "es": "{on} de {total} activas",
+    "zh-Hans": "{total} 个中开启 {on} 个"
+  },
+  "tools.group_off": {
+    "note": "Under a tool group that is switched off.",
+    "en": "Off",
+    "es": "Desactivado",
+    "zh-Hans": "已关闭"
+  },
+  "tools.group_switch": {
+    "note": "Screen reader name of a tool group switch.",
+    "args": {
+      "group": "string"
+    },
+    "en": "{group} tools",
+    "es": "Herramientas de {group}",
+    "zh-Hans": "{group} 的工具"
+  },
+  "tools.expand": {
+    "note": "Screen reader action.",
+    "args": {
+      "group": "string"
+    },
+    "en": "Show the tools in {group}",
+    "es": "Mostrar las herramientas de {group}",
+    "zh-Hans": "显示 {group} 中的工具"
+  },
+  "tools.collapse": {
+    "note": "Screen reader action.",
+    "args": {
+      "group": "string"
+    },
+    "en": "Hide the tools in {group}",
+    "es": "Ocultar las herramientas de {group}",
+    "zh-Hans": "隐藏 {group} 中的工具"
+  },
+  "tools.built_in": {
+    "note": "Badge for a built-in tool group.",
+    "en": "Built in",
+    "es": "Integradas",
+    "zh-Hans": "内置"
+  },
+  "tools.mcp": {
+    "note": "Badge for a tool group that comes from an MCP server.",
+    "en": "MCP",
+    "es": "MCP",
+    "zh-Hans": "MCP"
+  },
+  "tools.mcp_connected": {
+    "note": "Status of an MCP server.",
+    "en": "Connected",
+    "es": "Conectado",
+    "zh-Hans": "已连接"
+  },
+  "tools.mcp_starting": {
+    "note": "Status of an MCP server.",
+    "en": "Starting",
+    "es": "Iniciando",
+    "zh-Hans": "正在启动"
+  },
+  "tools.mcp_failed": {
+    "note": "Status of an MCP server.",
+    "en": "Could not start",
+    "es": "No se pudo iniciar",
+    "zh-Hans": "无法启动"
+  },
+  "tools.empty": {
+    "note": "Empty state of the tools list.",
+    "en": "No tools yet. Add some from a kit or an MCP server.",
+    "es": "Aún no hay herramientas. Añade algunas desde un kit o un servidor MCP.",
+    "zh-Hans": "还没有工具。可以从工具包或 MCP 服务器添加。"
+  },
+  "tools.add": {
+    "note": "Button that adds tools.",
+    "en": "Add tools",
+    "es": "Añadir herramientas",
+    "zh-Hans": "添加工具"
+  },
+  "triggers.title": {
+    "note": "Panel title.",
+    "en": "Triggers",
+    "es": "Disparadores",
+    "zh-Hans": "触发器"
+  },
+  "triggers.sentence": {
+    "note": "One trigger as a sentence. The event and the action are short phrases.",
+    "args": {
+      "event": "string",
+      "action": "string"
+    },
+    "en": "When {event}, {action}.",
+    "es": "Cuando {event}, {action}.",
+    "zh-Hans": "当{event}时，{action}。"
+  },
+  "triggers.switch": {
+    "note": "Screen reader name of a trigger switch.",
+    "args": {
+      "sentence": "string"
+    },
+    "en": "Trigger: {sentence}",
+    "es": "Disparador: {sentence}",
+    "zh-Hans": "触发器：{sentence}"
+  },
+  "triggers.add": {
+    "note": "Button that adds a trigger.",
+    "en": "Add a trigger",
+    "es": "Añadir un disparador",
+    "zh-Hans": "添加触发器"
+  },
+  "triggers.edit": {
+    "note": "Action on a trigger.",
+    "en": "Edit trigger",
+    "es": "Editar disparador",
+    "zh-Hans": "编辑触发器"
+  },
+  "triggers.delete": {
+    "note": "Action on a trigger.",
+    "en": "Delete trigger",
+    "es": "Eliminar disparador",
+    "zh-Hans": "删除触发器"
+  },
+  "triggers.empty": {
+    "note": "Empty state of the triggers list.",
+    "args": {
+      "name": "string"
+    },
+    "en": "No triggers yet. Add one and {name} acts on its own.",
+    "es": "Aún no hay disparadores. Añade uno y {name} actuará por su cuenta.",
+    "zh-Hans": "还没有触发器。添加一个，{name} 就会自己行动。"
+  },
+  "moves.title": {
+    "note": "Panel title.",
+    "en": "Moves",
+    "es": "Movimientos",
+    "zh-Hans": "动作"
+  },
+  "moves.empty": {
+    "note": "Empty state of the moves panel.",
+    "en": "No special moves yet.",
+    "es": "Aún no hay movimientos especiales.",
+    "zh-Hans": "还没有特别的动作。"
+  },
+  "imp_settings.this_imp": {
+    "note": "Stands in for the Imp's name while its name is empty.",
+    "en": "this Imp",
+    "es": "este Imp",
+    "zh-Hans": "此 Imp"
+  },
+  "brain.source": {
+    "note": "Row: whose Brain the Imp uses.",
+    "en": "Brain from",
+    "es": "Cerebro de",
+    "zh-Hans": "大脑来自"
+  },
+  "brain.help.source": {
+    "note": "Help of the Brain source switch.",
+    "en": "Use the Brain every Imp shares, or pick a different one just for this Imp.",
+    "es": "Usa el Cerebro que comparten todos los Imps, o elige otro solo para este Imp.",
+    "zh-Hans": "使用所有小鬼共用的大脑，或只为这个小鬼选另一个。"
+  },
+  "brain.help.service": {
+    "note": "Help of the service list.",
+    "en": "Pick who does the thinking for this Imp.",
+    "es": "Elige quién piensa por este Imp.",
+    "zh-Hans": "选择由谁来替这个小鬼思考。"
+  },
+  "brain.key": {
+    "note": "Section: the secret key.",
+    "en": "Key",
+    "es": "Clave",
+    "zh-Hans": "密钥"
+  },
+  "brain.help.key": {
+    "note": "Help of the key field.",
+    "en": "A secret password that lets the Imp use this service. It stays on this Mac.",
+    "es": "Una contraseña secreta que deja al Imp usar este servicio. Se queda en este Mac.",
+    "zh-Hans": "一个秘密口令，让小鬼可以使用这项服务。它只保存在这台 Mac 上。"
+  },
+  "brain.help.model": {
+    "note": "Help of the model picker.",
+    "en": "The exact brain of the service. Bigger ones think better but are slower.",
+    "es": "El cerebro concreto del servicio. Los grandes piensan mejor pero van más lentos.",
+    "zh-Hans": "服务里具体的大脑。大的想得更好，但更慢。"
+  },
+  "brain.help.add_service": {
+    "note": "Tooltip of the add service button.",
+    "en": "Add a service",
+    "es": "Añadir un servicio",
+    "zh-Hans": "添加服务"
+  },
+  "look.body": {
+    "note": "Section: colour and size.",
+    "en": "Body",
+    "es": "Cuerpo",
+    "zh-Hans": "身体"
+  },
+  "look.help.body": {
+    "note": "Help of the body section.",
+    "en": "Pick the colour and the size of this Imp.",
+    "es": "Elige el color y el tamaño de este Imp.",
+    "zh-Hans": "选择这个小鬼的颜色和大小。"
+  },
+  "look.favourite": {
+    "note": "Tooltip of the favourite colour button.",
+    "en": "Favourite colour",
+    "es": "Color favorito",
+    "zh-Hans": "最爱的颜色"
+  },
+  "look.help.colour": {
+    "note": "Help of the colour.",
+    "en": "The colour of this Imp. Drag along the strip to change it.",
+    "es": "El color de este Imp. Arrastra por la tira para cambiarlo.",
+    "zh-Hans": "这个小鬼的颜色。沿着色条拖动来改变。"
+  },
+  "look.help.size": {
+    "note": "Help of the size.",
+    "en": "How big this Imp is on your screen.",
+    "es": "Qué tan grande es este Imp en tu pantalla.",
+    "zh-Hans": "这个小鬼在屏幕上有多大。"
+  },
+  "look.help.character": {
+    "note": "Help of the character section.",
+    "en": "Small touches that change the face and the way it moves.",
+    "es": "Pequeños detalles que cambian la cara y su forma de moverse.",
+    "zh-Hans": "一些小细节，改变脸和动作的样子。"
+  },
+  "look.help.lids": {
+    "note": "Help of the eyelids slider.",
+    "en": "How closed the eyelids are. More makes it look sleepy.",
+    "es": "Cuánto se cierran los párpados. Cuanto más se cierran, más dormido parece.",
+    "zh-Hans": "眼皮合上多少。越多越像没睡醒。"
+  },
+  "look.help.brows": {
+    "note": "Help of the eyebrows slider.",
+    "en": "Tilt the eyebrows. One way looks cross, the other looks sad.",
+    "es": "Inclina las cejas. Un lado se ve enfadado, el otro triste.",
+    "zh-Hans": "让眉毛倾斜。一边看起来生气，另一边看起来难过。"
+  },
+  "look.help.eyes": {
+    "note": "Help of the eye size slider.",
+    "en": "Make the eyes smaller or bigger.",
+    "es": "Hace los ojos más pequeños o más grandes.",
+    "zh-Hans": "让眼睛变小或变大。"
+  },
+  "look.help.squint": {
+    "note": "Help of the squint slider.",
+    "en": "Squeeze the eyes tight, or open them wide.",
+    "es": "Aprieta los ojos, o los abre mucho.",
+    "zh-Hans": "把眼睛眯紧，或睁得很大。"
+  },
+  "look.help.horns": {
+    "note": "Help of the horns slider.",
+    "en": "Turn the horns up or down.",
+    "es": "Gira los cuernos hacia arriba o hacia abajo.",
+    "zh-Hans": "把角向上或向下转。"
+  },
+  "look.help.cheeks": {
+    "note": "Help of the cheeks slider.",
+    "en": "How rosy the cheeks are.",
+    "es": "Cuánto se sonrojan las mejillas.",
+    "zh-Hans": "脸颊有多红。"
+  },
+  "look.help.head": {
+    "note": "Help of the head tilt slider.",
+    "en": "Tilt the head to one side or the other.",
+    "es": "Inclina la cabeza hacia un lado o hacia el otro.",
+    "zh-Hans": "把头歪向一边或另一边。"
+  },
+  "look.help.pace": {
+    "note": "Help of the pace slider.",
+    "en": "How quickly it does everything. 1.0 is normal.",
+    "es": "Qué tan rápido hace todo. 1.0 es lo normal.",
+    "zh-Hans": "它做所有事的快慢。1.0 是正常。"
+  },
+  "personality.help.name": {
+    "note": "Help of the name field.",
+    "en": "What you call this Imp. Say its name and it answers.",
+    "es": "Cómo llamas a este Imp. Di su nombre y responde.",
+    "zh-Hans": "你怎么称呼这个小鬼。叫它的名字，它就会回答。"
+  },
+  "personality.help.persona": {
+    "note": "Help of the persona field.",
+    "en": "Tell it who to be, like a kind pirate or a quiet helper. It will talk that way.",
+    "es": "Dile quién ser, como un pirata amable o un ayudante callado. Hablará así.",
+    "zh-Hans": "告诉它要做谁，比如和气的海盗或安静的帮手。它就会那样说话。"
+  },
+  "personality.help.rules": {
+    "note": "Help of the reply rules switch.",
+    "en": "The hidden rules that tell it how to answer. Most people never change them.",
+    "es": "Las reglas ocultas que le dicen cómo responder. Casi nadie las cambia.",
+    "zh-Hans": "告诉它怎么回答的隐藏规则。大多数人从不修改。"
+  },
+  "personality.help.voice": {
+    "note": "Help of the voice section.",
+    "en": "What shows on your screen while this Imp talks out loud.",
+    "es": "Se ve en tu pantalla mientras este Imp habla en voz alta.",
+    "zh-Hans": "这个小鬼大声说话时，你的屏幕上会出现什么。"
+  },
+  "personality.voice_look": {
+    "note": "Row: how the voice shows.",
+    "en": "Voice shows as",
+    "es": "La voz se ve como",
+    "zh-Hans": "声音显示为"
+  },
+  "personality.help.voice_look": {
+    "note": "Help of the voice look picker.",
+    "en": "Pick the picture shown while it talks: Glow is a glowing edge, Smoke is a puff of smoke, Both shows the two, Players is a small player with play and pause.",
+    "es": "Elige el dibujo que sale mientras habla: Brillo es un borde que brilla, Humo es una nube de humo, Ambos muestra los dos y Reproductores es un reproductor pequeño con play y pausa.",
+    "zh-Hans": "选择它说话时显示的画面：发光是发亮的边，烟雾是一团烟，两者是两个都显示，播放器是带播放和暂停的小播放器。"
+  },
+  "moves.help.follow": {
+    "note": "Help of the follow section.",
+    "en": "Choose what this Imp does when you move your mouse pointer: stay still, look at it, or run after it.",
+    "es": "Elige qué hace este Imp cuando mueves el puntero del ratón: quedarse quieto, mirarlo o correr tras él.",
+    "zh-Hans": "选择你移动鼠标指针时这个小鬼做什么：不动、看着它，或跟着它跑。"
+  },
+  "moves.follow_how": {
+    "note": "Row: how it follows the cursor.",
+    "en": "Follows by",
+    "es": "Sigue con",
+    "zh-Hans": "跟随方式"
+  },
+  "moves.help.follow_how": {
+    "note": "Help of the follow mode picker.",
+    "en": "Off: it stays still. Eyes: only its eyes look at the pointer. Hop: it jumps after the pointer. Glide: it slides after the pointer.",
+    "es": "Desactivado: se queda quieto. Ojos: solo sus ojos miran el puntero. Saltito: salta tras el puntero. Deslizarse: se desliza tras el puntero.",
+    "zh-Hans": "关：它不动。眼睛：只有眼睛看着指针。蹦跳：它跳着追指针。滑行：它滑着追指针。"
+  },
+  "moves.help.speed": {
+    "note": "Help of the follow speed slider.",
+    "en": "How fast it goes after the pointer. Only for Hop and Glide.",
+    "es": "Qué tan rápido va tras el puntero. Solo para Saltito y Deslizarse.",
+    "zh-Hans": "它追指针有多快。只对蹦跳和滑行有用。"
+  },
+  "moves.help.own": {
+    "note": "Help of the own animations list.",
+    "en": "Moves made for only this Imp. They play instead of the shared ones.",
+    "es": "Movimientos hechos solo para este Imp. Se usan en lugar de los compartidos.",
+    "zh-Hans": "只为这个小鬼做的动作。它们会代替共用的动作。"
+  },
+  "moves.builtin": {
+    "note": "Row: change a built-in move.",
+    "en": "Built-in moves",
+    "es": "Movimientos incluidos",
+    "zh-Hans": "内置动作"
+  },
+  "moves.change": {
+    "note": "Button: change a built-in move.",
+    "en": "Change",
+    "es": "Cambiar",
+    "zh-Hans": "更改"
+  },
+  "moves.help.builtin": {
+    "note": "Help of the built-in moves row.",
+    "en": "Pick one of the moves every Imp has and make a version only for this Imp.",
+    "es": "Elige uno de los movimientos que tienen todos los Imps y haz una versión solo para este.",
+    "zh-Hans": "选一个所有小鬼都有的动作，为这个小鬼做一个专属版本。"
+  },
+  "tools.help.built_in": {
+    "note": "Help of the built-in tools list.",
+    "en": "Things the Imp can already do, like look at your screen. Switch off any it should not use.",
+    "es": "Cosas que el Imp ya sabe hacer, como mirar tu pantalla. Apaga las que no deba usar.",
+    "zh-Hans": "小鬼本来就会做的事，比如看你的屏幕。把不该用的关掉。"
+  },
+  "tools.help.mcp": {
+    "note": "Help of the extra tools list.",
+    "en": "Extra tools added from outside. Each one gives the Imp new things to do.",
+    "es": "Herramientas extra añadidas de fuera. Cada una da al Imp cosas nuevas que hacer.",
+    "zh-Hans": "从外面加进来的额外工具。每个都让小鬼多会一些事。"
+  },
+  "tools.help.server": {
+    "note": "Help of a tool server badge.",
+    "en": "A program or website that gives the Imp more tools.",
+    "es": "Un programa o sitio web que da más herramientas al Imp.",
+    "zh-Hans": "给小鬼提供更多工具的程序或网站。"
+  },
+  "tools.help.browser": {
+    "note": "Help of the browser row.",
+    "en": "Lets the Imp look at pages and use the browser you opened for it.",
+    "es": "Deja al Imp ver páginas y usar el navegador que le abriste.",
+    "zh-Hans": "让小鬼查看网页，并使用你为它打开的浏览器。"
+  },
+  "triggers.help.list": {
+    "note": "Help of the triggers list.",
+    "en": "A trigger wakes the Imp up by itself when something happens, like a time or a low battery.",
+    "es": "Un disparador despierta al Imp solo cuando pasa algo, como una hora o poca batería.",
+    "zh-Hans": "触发器会在发生某件事时自动叫醒小鬼，比如到了某个时间或电量低。"
+  },
+  "triggers.help.name": {
+    "note": "Help of the trigger name.",
+    "en": "A name so you can find it again.",
+    "es": "Un nombre para encontrarlo después.",
+    "zh-Hans": "一个名字，方便以后找到它。"
+  },
+  "triggers.help.when": {
+    "note": "Help of the trigger conditions.",
+    "en": "What has to happen to set it off, like a time, an app or a low battery.",
+    "es": "Lo que tiene que pasar para activarlo, como una hora, una app o poca batería.",
+    "zh-Hans": "要发生什么才会触发，比如时间、某个应用或电量低。"
+  },
+  "triggers.help.do": {
+    "note": "Help of the trigger action.",
+    "en": "What the Imp does when it goes off.",
+    "es": "Lo que hace el Imp cuando se activa.",
+    "zh-Hans": "触发时小鬼要做什么。"
+  },
+  "triggers.help.input": {
+    "note": "Help of the trigger input.",
+    "en": "What the Imp gets to look at when it goes off, like the clipboard.",
+    "es": "Lo que el Imp puede mirar cuando se activa, como el portapapeles.",
+    "zh-Hans": "触发时小鬼可以看到什么，比如剪贴板。"
+  },
+  "triggers.instruction": {
+    "note": "Field: the instruction.",
+    "en": "Task",
+    "es": "Tarea",
+    "zh-Hans": "指令"
+  },
+  "triggers.help.instruction": {
+    "note": "Help of the instruction field.",
+    "en": "Tell the Imp in your own words what to do.",
+    "es": "Dile al Imp con tus palabras qué hacer.",
+    "zh-Hans": "用你自己的话告诉小鬼要做什么。"
+  },
+  "triggers.help.for": {
+    "note": "Help for the For choice in the trigger editor.",
+    "en": "Which Imp does the job. A change here is for this Imp alone unless you pick Every Imp.",
+    "es": "Qué Imp hace el trabajo. Un cambio aquí es solo para este Imp, salvo que elijas Todos los Imps.",
+    "zh-Hans": "由哪个 Imp 来做。除非选择所有 Imp，这里的更改只对这个 Imp 生效。"
+  },
+  "anim.help.length": {
+    "note": "Help of the move length.",
+    "en": "How long the move lasts.",
+    "es": "Cuánto dura el movimiento.",
+    "zh-Hans": "动作持续多久。"
+  },
+  "anim.help.hop": {
+    "note": "Help of the hop setting.",
+    "en": "How high the Imp jumps in this beat.",
+    "es": "Qué tan alto salta el Imp en este tiempo.",
+    "zh-Hans": "小鬼在这一拍里跳多高。"
+  },
+  "anim.help.tilt": {
+    "note": "Help of the tilt setting.",
+    "en": "How far the Imp leans to the side.",
+    "es": "Cuánto se inclina el Imp hacia un lado.",
+    "zh-Hans": "小鬼向一侧倾斜多少。"
+  },
+  "anim.help.shape": {
+    "note": "Help of the shape setting.",
+    "en": "Squash or stretch the body, like a ball.",
+    "es": "Aplasta o estira el cuerpo, como una pelota.",
+    "zh-Hans": "把身体压扁或拉长，像一个球。"
+  },
+  "anim.help.symbol": {
+    "note": "Help of the symbol setting.",
+    "en": "A small picture that pops up beside the Imp.",
+    "es": "Un dibujo pequeño que aparece junto al Imp.",
+    "zh-Hans": "在小鬼旁边冒出来的小图案。"
+  },
+  "anim.help.beats": {
+    "note": "Help of the beats track.",
+    "en": "Each chip is one moment of the move. Drag to move it or stretch it.",
+    "es": "Cada ficha es un momento del movimiento. Arrastra para moverla o estirarla.",
+    "zh-Hans": "每个小块是动作中的一个瞬间。拖动来移动或拉长它。"
+  },
+  "anim.help.plays": {
+    "note": "Help of when a move plays.",
+    "en": "When this move happens.",
+    "es": "Cuándo ocurre este movimiento.",
+    "zh-Hans": "这个动作什么时候出现。"
+  },
+  "anim.help.name": {
+    "note": "Help of the move name.",
+    "en": "A name so you can find it again.",
+    "es": "Un nombre para encontrarlo después.",
+    "zh-Hans": "一个名字，方便以后找到它。"
+  },
+  "anim.help.about": {
+    "note": "Help of the move description.",
+    "en": "One sentence about what it does.",
+    "es": "Una frase sobre lo que hace.",
+    "zh-Hans": "用一句话说说它做什么。"
+  },
+  "anim.help.icon": {
+    "note": "Help of the move icon.",
+    "en": "The picture shown for this move in lists.",
+    "es": "El dibujo que se muestra para este movimiento en las listas.",
+    "zh-Hans": "这个动作在列表里显示的图案。"
+  },
+  "den.help.server": {
+    "note": "Help of the Den server.",
+    "en": "Where people share Imps, animations, triggers and tools.",
+    "es": "Donde la gente comparte Imps, animaciones, disparadores y herramientas.",
+    "zh-Hans": "大家分享小鬼、动画、触发器和工具的地方。"
+  },
+  "den.help.search": {
+    "note": "Help of the Den search.",
+    "en": "Type a word to find things.",
+    "es": "Escribe una palabra para buscar.",
+    "zh-Hans": "输入一个词来查找。"
+  },
+  "den.help.kind": {
+    "note": "Help of the Den kind.",
+    "en": "Pick what kind of thing to look for.",
+    "es": "Elige qué tipo de cosa buscar.",
+    "zh-Hans": "选择要找哪一类东西。"
+  },
+  "den.help.sort": {
+    "note": "Help of the Den sort.",
+    "en": "Show the most loved first, or the newest first.",
+    "es": "Muestra primero lo más querido, o lo más nuevo.",
+    "zh-Hans": "先显示最受欢迎的，或最新的。"
+  },
+  "den.help.slug": {
+    "note": "Help of the Den name.",
+    "en": "A short name for the web address. Use small letters and dashes.",
+    "es": "Un nombre corto para la dirección web. Usa minúsculas y guiones.",
+    "zh-Hans": "网址里用的短名字。用小写字母和短横线。"
+  },
+  "den.help.summary": {
+    "note": "Help of the Den summary.",
+    "en": "One sentence so people know what it is.",
+    "es": "Una frase para que la gente sepa qué es.",
+    "zh-Hans": "用一句话让大家知道这是什么。"
+  },
+  "den.help.tags": {
+    "note": "Help of the Den tags.",
+    "en": "Words that help people find it. Separate them with commas.",
+    "es": "Palabras que ayudan a encontrarlo. Sepáralas con comas.",
+    "zh-Hans": "帮助大家找到它的词。用逗号分开。"
+  },
+  "den.help.public": {
+    "note": "Help of the Den public note.",
+    "en": "Anyone can add it. Chats, memory and keys are never included.",
+    "es": "Cualquiera puede añadirlo. Los chats, la memoria y las claves nunca se incluyen.",
+    "zh-Hans": "任何人都可以添加。聊天、记忆和密钥永远不会包含在内。"
+  },
+  "kit.help.paste": {
+    "note": "Help of the kit paste field.",
+    "en": "Paste a kit, a web address or an imp:// link, or drop a file. You look at it first.",
+    "es": "Pega un kit, una dirección web o un enlace imp://, o suelta un archivo. Primero lo revisas.",
+    "zh-Hans": "粘贴一个套装、网址或 imp:// 链接，或放入文件。你会先查看。"
+  },
+  "kit.help.chats": {
+    "note": "Help of bringing chats along.",
+    "en": "Also copy what this Imp talked about.",
+    "es": "Copia también de lo que habló este Imp.",
+    "zh-Hans": "同时复制这个小鬼聊过的内容。"
+  },
+  "kit.help.tools": {
+    "note": "Help of the kit tools.",
+    "en": "Tools can run things on your Mac. Read them first.",
+    "es": "Las herramientas pueden ejecutar cosas en tu Mac. Léelas primero.",
+    "zh-Hans": "工具可以在你的 Mac 上运行东西。请先看一看。"
+  },
+  "kit.help.skipped": {
+    "note": "Help of skipped items.",
+    "en": "Things in the kit this Mac cannot use, so they are left out.",
+    "es": "Cosas del kit que este Mac no puede usar, por eso se dejan fuera.",
+    "zh-Hans": "套装里这台 Mac 用不了的东西，所以被略过。"
+  },
+  "brain.choose": {
+    "note": "Primary button of a sleeping Imp's Brain panel when services exist but none is chosen.",
+    "en": "Choose a service",
+    "es": "Elegir un servicio",
+    "zh-Hans": "选择服务"
+  },
+  "scope.every_imp": {
+    "note": "Under a trigger or animation shared by every Imp, and the choice that makes a change for every Imp.",
+    "en": "Every Imp",
+    "es": "Todos los Imps",
+    "zh-Hans": "所有 Imp"
+  },
+  "scope.only": {
+    "note": "Under a trigger or animation only this Imp has.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Only {name}",
+    "es": "Solo {name}",
+    "zh-Hans": "仅 {name}"
+  },
+  "scope.changed": {
+    "note": "Under this Imp's own version of a shared trigger or animation. The other Imps keep the shared one.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Changed for {name}",
+    "es": "Cambiado para {name}",
+    "zh-Hans": "为 {name} 修改"
+  },
+  "triggers.new": {
+    "note": "Title of the sheet that adds a trigger.",
+    "en": "New trigger",
+    "es": "Nuevo disparador",
+    "zh-Hans": "新触发器"
+  },
+  "triggers.scope.just": {
+    "note": "Choice in the trigger editor: the change is for this Imp only.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Just {name}",
+    "es": "Solo {name}",
+    "zh-Hans": "仅 {name}"
+  },
+  "triggers.scope.note_version": {
+    "note": "Below the For choice when a shared trigger is saved for one Imp.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Saves a version for {name} only. The other Imps keep the shared one.",
+    "es": "Guarda una versión solo para {name}. Los demás Imps conservan la compartida.",
+    "zh-Hans": "只为 {name} 保存一个版本。其他 Imp 保留共享的那个。"
+  },
+  "triggers.scope.note_every": {
+    "note": "Below the For choice when the change goes to every Imp.",
+    "en": "Changes it for every Imp.",
+    "es": "Lo cambia para todos los Imps.",
+    "zh-Hans": "为所有 Imp 更改。"
+  },
+  "triggers.just_for": {
+    "note": "Menu item on a shared trigger: make this Imp's own version. The other Imps keep the shared one.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Just for {name}",
+    "es": "Solo para {name}",
+    "zh-Hans": "仅限 {name}"
+  },
+  "triggers.share_every": {
+    "note": "Menu item on this Imp's trigger: share it with every Imp.",
+    "en": "Share with Every Imp",
+    "es": "Compartir con todos los Imps",
+    "zh-Hans": "与所有 Imp 共享"
+  },
+  "triggers.use_shared": {
+    "note": "Button that removes this Imp's version of a shared trigger, so the shared one applies again.",
+    "en": "Use the shared one",
+    "es": "Usar el compartido",
+    "zh-Hans": "使用共享的"
+  },
+  "triggers.use_shared.title": {
+    "note": "Confirmation before removing this Imp's version of a shared trigger.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Use the shared “{name}” again?",
+    "es": "¿Volver a usar “{name}” compartido?",
+    "zh-Hans": "重新使用共享的“{name}”？"
+  },
+  "triggers.use_shared.message": {
+    "note": "Under the confirmation: the Imp's own version is removed.",
+    "args": {
+      "name": "string"
+    },
+    "en": "The version only {name} has goes.",
+    "es": "Se quita la versión que solo tiene {name}.",
+    "zh-Hans": "只属于 {name} 的版本将被删除。"
+  },
+  "triggers.delete_every": {
+    "note": "Destructive action on a shared trigger: delete it for every Imp.",
+    "en": "Delete for every Imp",
+    "es": "Eliminar para todos los Imps",
+    "zh-Hans": "为所有 Imp 删除"
+  },
+  "triggers.delete_every.title": {
+    "note": "Confirmation before deleting a shared trigger for every Imp.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Delete “{name}” for every Imp?",
+    "es": "¿Eliminar “{name}” para todos los Imps?",
+    "zh-Hans": "为所有 Imp 删除“{name}”？"
+  },
+  "triggers.starter": {
+    "note": "Button in the empty triggers list: review and add the starter kit.",
+    "en": "Add the starter kit",
+    "es": "Añadir el kit inicial",
+    "zh-Hans": "添加入门套件"
+  },
+  "triggers.help.starter": {
+    "note": "Help for the starter kit button.",
+    "en": "The triggers Imp comes with: clicks, falling asleep and waking up. You see them before anything is added.",
+    "es": "Los disparadores que trae Imp: clics, dormirse y despertar. Los ves antes de añadir nada.",
+    "zh-Hans": "Imp 自带的触发器：点击、入睡和醒来。添加前你会先看到它们。"
+  },
+  "brain.model_placeholder": {
+    "note": "Placeholder of the model field: the exact name of a model.",
+    "en": "Model name",
+    "es": "Nombre del modelo",
+    "zh-Hans": "模型名称"
+  },
+  "brain.choose_model": {
+    "note": "Help of the list button inside the model field: pick from the service's models.",
+    "en": "Pick from the service's models",
+    "es": "Elegir entre los modelos del servicio",
+    "zh-Hans": "从服务的模型中选择"
+  },
+  "brain.unnamed": {
+    "note": "A service with no name yet.",
+    "en": "Unnamed",
+    "es": "Sin nombre",
+    "zh-Hans": "未命名"
+  },
+  "tools.shared_setup": {
+    "note": "In the extra tool editor: its setup is shared, while each Imp switches it on or off for itself.",
+    "en": "Every Imp that uses this tool gets this setup. Each Imp switches it on or off for itself.",
+    "es": "Todos los Imps que usan esta herramienta reciben esta configuración. Cada Imp la activa o desactiva por su cuenta.",
+    "zh-Hans": "使用这个工具的每个 Imp 都会得到这套设置。每个 Imp 各自开启或关闭它。"
+  }
+}

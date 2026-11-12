@@ -1,0 +1,38 @@
+// generated from design/strings, do not edit. Run: node design/generate.mjs
+#![cfg_attr(rustfmt, rustfmt::skip)]
+
+/// Every word of the terminal app: the key and its text in en, es, zh-Hans, sorted by key.
+pub static STRINGS: &[(&str, [&str; 3])] = &[
+    ("cli.chat.answering", ["Answering", "Respondiendo", "回答中"]),
+    ("cli.chat.error", ["Something went wrong: {error}", "Algo salió mal: {error}", "出了点问题:{error}"]),
+    ("cli.chat.help_hint", ["? help", "? ayuda", "? 帮助"]),
+    ("cli.chat.input_hint", ["Write a message", "Escribe un mensaje", "写点什么"]),
+    ("cli.chat.input_wait", ["Wait for the answer", "Espera la respuesta", "请等待回答"]),
+    ("cli.chat.ready", ["Ready", "Listo", "就绪"]),
+    ("cli.chat.thinking", ["Thinking", "Pensando", "思考中"]),
+    ("cli.chat.tool_result", ["result: {text}", "resultado: {text}", "结果:{text}"]),
+    ("cli.chat.tool_use", ["{imp} uses the tool {tool}", "{imp} usa la herramienta {tool}", "{imp} 使用工具 {tool}"]),
+    ("cli.chat.using_tool", ["Using the tool {tool}", "Usando la herramienta {tool}", "正在使用工具 {tool}"]),
+    ("cli.help.activity", ["What the Imp is doing now", "Lo que hace el Imp ahora", "Imp 现在在做什么"]),
+    ("cli.help.clear_input", ["Clear what you wrote", "Borra lo que escribiste", "清空输入"]),
+    ("cli.help.close", ["Press any key to close", "Pulsa cualquier tecla para cerrar", "按任意键关闭"]),
+    ("cli.help.erase", ["Erase a letter", "Borra una letra", "删除一个字"]),
+    ("cli.help.imp", ["The Imp you talk to and its brain", "El Imp con quien hablas y su cerebro", "你在和哪个 Imp 说话,以及它的大脑"]),
+    ("cli.help.key_status", ["Status", "Estado", "状态"]),
+    ("cli.help.key_wheel", ["Wheel", "Rueda", "滚轮"]),
+    ("cli.help.leave", ["Leave the chat", "Sale del chat", "离开聊天"]),
+    ("cli.help.new_chat", ["Start a new chat", "Empieza un chat nuevo", "开始新聊天"]),
+    ("cli.help.newline", ["Add a line", "Añade una línea", "换行"]),
+    ("cli.help.newline_ctrl", ["Add a line", "Añade una línea", "换行"]),
+    ("cli.help.open", ["Show this help when nothing is written", "Muestra esta ayuda si no hay nada escrito", "没有输入时显示帮助"]),
+    ("cli.help.open_any", ["Show this help any time", "Muestra esta ayuda siempre", "随时显示帮助"]),
+    ("cli.help.quit", ["Leave the chat", "Sale del chat", "离开聊天"]),
+    ("cli.help.quit_empty", ["Leave when nothing is written", "Sale si no hay nada escrito", "没有输入时离开"]),
+    ("cli.help.scroll_end", ["Jump to the newest", "Salta a lo más nuevo", "跳到最新"]),
+    ("cli.help.scroll_line", ["Scroll a line", "Desplaza una línea", "滚动一行"]),
+    ("cli.help.scroll_page", ["Scroll a page", "Desplaza una página", "滚动一页"]),
+    ("cli.help.send", ["Send the message", "Envía el mensaje", "发送消息"]),
+    ("cli.help.title", ["Keys", "Teclas", "按键"]),
+    ("cli.help.wheel", ["Scroll", "Desplaza", "滚动"]),
+    ("cli.help.you", ["What you wrote", "Lo que escribiste", "你写的内容"]),
+];

@@ -1,0 +1,209 @@
+{
+  "imp.state.awake": {
+    "note": "State of an Imp that can think.",
+    "en": "Awake",
+    "es": "Despierto",
+    "zh-Hans": "醒着"
+  },
+  "imp.state.asleep": {
+    "note": "State of an Imp that has no Brain or cannot reach it.",
+    "en": "Asleep",
+    "es": "Dormido",
+    "zh-Hans": "睡着了"
+  },
+  "imp.state.waking": {
+    "note": "State of an Imp being checked after a Brain was chosen.",
+    "en": "Waking up",
+    "es": "Despertando",
+    "zh-Hans": "正在醒来"
+  },
+  "imp.state.out": {
+    "note": "State of an Imp let out of the window.",
+    "en": "Out on the desktop",
+    "es": "Fuera, en el escritorio",
+    "zh-Hans": "在桌面上"
+  },
+  "imp.state.hidden": {
+    "note": "State of a hidden Imp.",
+    "en": "Hidden",
+    "es": "Oculto",
+    "zh-Hans": "已隐藏"
+  },
+  "imp.state.visiting": {
+    "note": "State of an Imp whose home is another device.",
+    "args": {
+      "device": "string"
+    },
+    "en": "Visiting from {device}",
+    "es": "De visita desde {device}",
+    "zh-Hans": "来自 {device} 的访客"
+  },
+  "imp.state.away": {
+    "note": "State of an Imp that went to visit another device.",
+    "args": {
+      "device": "string"
+    },
+    "en": "Away on {device}",
+    "es": "De viaje en {device}",
+    "zh-Hans": "在 {device} 上"
+  },
+  "imp.phone.label": {
+    "note": "Tooltip and screen reader label of the small phone icon after an Imp's name.",
+    "args": {
+      "device": "string"
+    },
+    "en": "On {device}",
+    "es": "En {device}",
+    "zh-Hans": "在 {device} 上"
+  },
+  "imp.out.undo": {
+    "note": "Undo bar after an Imp is let out.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} is out on the desktop.",
+    "es": "{name} está fuera, en el escritorio.",
+    "zh-Hans": "{name} 已来到桌面上。"
+  },
+  "imp.home.undo": {
+    "note": "Undo bar after a free Imp is sent home into the window.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} is back home.",
+    "es": "{name} ha vuelto a casa.",
+    "zh-Hans": "{name} 已回家。"
+  },
+  "imp.hide.undo": {
+    "note": "Undo bar after an Imp is hidden.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} is hidden.",
+    "es": "{name} está oculto.",
+    "zh-Hans": "{name} 已隐藏。"
+  },
+  "imp.sent.undo": {
+    "note": "Undo bar after an Imp was sent to another device.",
+    "args": {
+      "name": "string",
+      "device": "string"
+    },
+    "en": "{name} is on {device}.",
+    "es": "{name} está en {device}.",
+    "zh-Hans": "{name} 已到 {device}。"
+  },
+  "imp.transfer.failed": {
+    "note": "Message when an Imp could not go to another device.",
+    "args": {
+      "name": "string",
+      "device": "string"
+    },
+    "en": "{device} did not take {name}. It stays here.",
+    "es": "{device} no aceptó a {name}. Se queda aquí.",
+    "zh-Hans": "{device} 没有接收 {name}。它留在这里。"
+  },
+  "imp.drag.hint": {
+    "note": "Screen reader hint on an Imp.",
+    "en": "Drag to move it.",
+    "es": "Arrástralo para moverlo.",
+    "zh-Hans": "拖动即可移动。"
+  },
+  "imp.drag.out_hint": {
+    "note": "Screen reader hint on an Imp on desktop.",
+    "en": "Drag it out of the window to let it out.",
+    "es": "Arrástralo fuera de la ventana para dejarlo salir.",
+    "zh-Hans": "把它拖出窗口，就能放它出来。"
+  },
+  "imp.let_out.unavailable": {
+    "note": "Shown instead of Let out on desktops that cannot place windows (Wayland).",
+    "en": "This desktop does not let apps place free windows, so Imps stay in the window.",
+    "es": "Este escritorio no deja que las apps coloquen ventanas libres, así que los Imps se quedan en la ventana.",
+    "zh-Hans": "这个桌面不允许应用自由摆放窗口，所以 Imp 会留在窗口里。"
+  },
+  "imp.a11y.talk": {
+    "note": "Screen reader action.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Talk to {name}",
+    "es": "Hablar con {name}",
+    "zh-Hans": "和 {name} 说话"
+  },
+  "imp.a11y.settings": {
+    "note": "Screen reader action.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Open {name}'s settings",
+    "es": "Abrir los ajustes de {name}",
+    "zh-Hans": "打开 {name} 的设置"
+  },
+  "imp.a11y.hide": {
+    "note": "Screen reader action.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Hide {name}",
+    "es": "Ocultar a {name}",
+    "zh-Hans": "隐藏 {name}"
+  },
+  "imp.a11y.let_out": {
+    "note": "Screen reader action.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Let {name} out",
+    "es": "Dejar salir a {name}",
+    "zh-Hans": "放 {name} 出来"
+  },
+  "imp.a11y.send_home": {
+    "note": "Screen reader action.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Send {name} home",
+    "es": "Enviar a {name} a casa",
+    "zh-Hans": "送 {name} 回家"
+  },
+  "imp.a11y.label": {
+    "note": "Screen reader label of an Imp: its name and its state.",
+    "args": {
+      "name": "string",
+      "state": "string"
+    },
+    "en": "{name}, {state}",
+    "es": "{name}, {state}",
+    "zh-Hans": "{name}，{state}"
+  },
+  "pref.double_click.title": {
+    "note": "Preference title on desktop.",
+    "en": "Double click on an Imp",
+    "es": "Doble clic en un Imp",
+    "zh-Hans": "双击 Imp"
+  },
+  "pref.double_click.title_touch": {
+    "note": "Preference title on a phone.",
+    "en": "Double tap on an Imp",
+    "es": "Doble toque en un Imp",
+    "zh-Hans": "轻点两下 Imp"
+  },
+  "pref.double_click.settings": {
+    "note": "Choice for the double click.",
+    "en": "Open its settings",
+    "es": "Abrir sus ajustes",
+    "zh-Hans": "打开它的设置"
+  },
+  "pref.double_click.talk": {
+    "note": "Choice for the double click.",
+    "en": "Talk by voice",
+    "es": "Hablar por voz",
+    "zh-Hans": "用语音说话"
+  },
+  "pref.double_click.none": {
+    "note": "Choice for the double click.",
+    "en": "Do nothing",
+    "es": "No hacer nada",
+    "zh-Hans": "什么也不做"
+  }
+}

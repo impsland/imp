@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>Imp</string>
+	<key>CFBundleExecutable</key>
+	<string>Imp</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+	<key>CFBundleIdentifier</key>
+	<string>app.imp.Imp</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>es</string>
+		<string>zh-Hans</string>
+	</array>
+	<key>CFBundleName</key>
+	<string>Imp</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>2.2.1</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>app.imp.Imp</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>imp</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>15.0</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>Imps control other apps when you ask them to (they run AppleScript through their shell).</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_imp-link._tcp</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Imp scans the code another device shows, to link with it.</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Imp talks to your other devices over the local network, so you can throw Imps onto them and chat with them there.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Imp listens when you talk to it (click Imp or press its voice shortcut).</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Imp turns your voice into text with Apple's speech recognition.</string>
+</dict>
+</plist>

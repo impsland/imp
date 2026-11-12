@@ -1,0 +1,128 @@
+{
+  "firstrun.asleep_bubble": {
+    "note": "The bubble of the first Imp when the app opens for the first time.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} is asleep. Give it a Brain to wake it up.",
+    "es": "{name} está dormido. Dale un cerebro para despertarlo.",
+    "zh-Hans": "{name} 睡着了。给它一个大脑，就能叫醒它。"
+  },
+  "firstrun.check.ok": {
+    "note": "The check worked. The Imp wakes up.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} is awake.",
+    "es": "{name} está despierto.",
+    "zh-Hans": "{name} 醒了。"
+  },
+  "firstrun.check.running": {
+    "note": "Shown while the Brain is checked. The Imp stirs.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Waking {name} up…",
+    "es": "Despertando a {name}…",
+    "zh-Hans": "正在叫醒 {name}…"
+  },
+  "firstrun.error.address": {
+    "note": "The typed service address is not an http or https address.",
+    "en": "That address does not look right. It starts with https:// or http://.",
+    "es": "Esa dirección no parece correcta. Empieza con https:// o http://.",
+    "zh-Hans": "这个地址看起来不对。它应以 https:// 或 http:// 开头。"
+  },
+  "firstrun.error.empty_key": {
+    "note": "Error when the key field is empty.",
+    "en": "Paste your key to continue.",
+    "es": "Pega tu clave para continuar.",
+    "zh-Hans": "请粘贴你的密钥后再继续。"
+  },
+  "firstrun.error.key_not_saved": {
+    "note": "The check worked, but the key could not be stored.",
+    "en": "Imp could not save the key. Try again.",
+    "es": "Imp no pudo guardar la clave. Inténtalo de nuevo.",
+    "zh-Hans": "Imp 无法保存密钥。请再试一次。"
+  },
+  "firstrun.error.no_model": {
+    "note": "No model is picked yet.",
+    "en": "Pick a model to continue.",
+    "es": "Elige un modelo para continuar.",
+    "zh-Hans": "请选择一个模型再继续。"
+  },
+  "firstrun.model.search": {
+    "note": "Placeholder of the model field. It filters the list, or takes a name typed by hand.",
+    "en": "Search or type a model",
+    "es": "Busca o escribe un modelo",
+    "zh-Hans": "搜索或输入模型"
+  },
+  "firstrun.service.address": {
+    "note": "Field label of the service address.",
+    "en": "Address",
+    "es": "Dirección",
+    "zh-Hans": "地址"
+  },
+  "firstrun.service.found": {
+    "note": "Marks a local preset that answers on this computer.",
+    "en": "Found here",
+    "es": "Encontrado aquí",
+    "zh-Hans": "已找到"
+  },
+  "firstrun.service.host_note": {
+    "note": "Quiet line on the phone under a local preset: the address is the computer's.",
+    "en": "Use the address of your computer on this network.",
+    "es": "Usa la dirección de tu computadora en esta red.",
+    "zh-Hans": "请填写你电脑在这个网络里的地址。"
+  },
+  "firstrun.service.key": {
+    "note": "Field label.",
+    "en": "Your key",
+    "es": "Tu clave",
+    "zh-Hans": "你的密钥"
+  },
+  "firstrun.service.loading": {
+    "note": "Shown while the models of the service are loaded.",
+    "en": "Loading models…",
+    "es": "Cargando modelos…",
+    "zh-Hans": "正在加载模型…"
+  },
+  "firstrun.service.note": {
+    "note": "The one quiet line under the service fields.",
+    "en": "Any OpenAI-compatible API. Your key stays on this device.",
+    "es": "Cualquier API compatible con OpenAI. Tu clave se queda en este dispositivo.",
+    "zh-Hans": "任何兼容 OpenAI 的 API。密钥只保存在这台设备上。"
+  },
+  "firstrun.step.model": {
+    "note": "Name of step 2 in the first-run step indicator.",
+    "en": "Model",
+    "es": "Modelo",
+    "zh-Hans": "模型"
+  },
+  "firstrun.step.service": {
+    "note": "Name of step 1 in the first-run step indicator.",
+    "en": "Service",
+    "es": "Servicio",
+    "zh-Hans": "服务"
+  },
+  "firstrun.wake": {
+    "note": "Button that starts the path.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Wake {name} up",
+    "es": "Despertar a {name}",
+    "zh-Hans": "叫醒 {name}"
+  },
+  "firstrun.service.remote": {
+    "note": "The service choice for a model in the cloud, used with a key.",
+    "en": "Remote",
+    "es": "Remoto",
+    "zh-Hans": "远程"
+  },
+  "firstrun.service.local": {
+    "note": "The service choice for a model server on your own computer.",
+    "en": "Local",
+    "es": "Local",
+    "zh-Hans": "本地"
+  }
+}

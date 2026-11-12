@@ -1,0 +1,6 @@
+# The one Rust toolchain for the workspace and CI. The Docker image names the same version in its base
+# image tag (server/Dockerfile).
+[toolchain]
+channel = "1.99.1"
+components = ["clippy", "rustfmt"]
+profile = "minimal"

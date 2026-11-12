@@ -1,0 +1,172 @@
+{
+  "state.sleeping.title": {
+    "note": "Title of the sleeping state.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} is asleep",
+    "es": "{name} está dormido",
+    "zh-Hans": "{name} 睡着了"
+  },
+  "state.sleeping.note": {
+    "note": "Note in the sleeping state.",
+    "en": "With no Brain, it cannot think. Its triggers still work.",
+    "es": "Sin cerebro, no puede pensar. Sus disparadores siguen funcionando.",
+    "zh-Hans": "没有大脑就无法思考。它的触发器仍然有效。"
+  },
+  "state.sleeping.action": {
+    "note": "Button in the sleeping state.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Give {name} a Brain",
+    "es": "Dale un cerebro a {name}",
+    "zh-Hans": "给 {name} 一个大脑"
+  },
+  "state.waking": {
+    "note": "State while an Imp wakes.",
+    "en": "Waking up…",
+    "es": "Despertando…",
+    "zh-Hans": "正在醒来…"
+  },
+  "state.visiting_asleep": {
+    "note": "A visiting Imp sleeps while its home is out of reach.",
+    "args": {
+      "name": "string",
+      "home": "string"
+    },
+    "en": "{name} is asleep because {home} is not connected.",
+    "es": "{name} duerme porque {home} no está conectado.",
+    "zh-Hans": "{home} 未连接，所以 {name} 睡着了。"
+  },
+  "state.offline.title": {
+    "note": "Title of the offline state.",
+    "en": "You are offline",
+    "es": "No tienes conexión",
+    "zh-Hans": "你已离线"
+  },
+  "state.offline.note": {
+    "note": "Note in the offline state.",
+    "en": "Imps that use a model on this device still work. The others wait until you are back online.",
+    "es": "Los Imps que usan un modelo de este dispositivo siguen funcionando. Los demás esperan a que vuelvas a tener conexión.",
+    "zh-Hans": "使用本机模型的 Imp 仍然可以工作，其他的会等你重新联网。"
+  },
+  "state.offline.imp": {
+    "note": "Shown for one Imp whose Brain is out of reach.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} cannot reach its Brain. It wakes up when you are back online.",
+    "es": "{name} no puede llegar a su cerebro. Despertará cuando vuelvas a tener conexión.",
+    "zh-Hans": "{name} 连不上它的大脑。重新联网后它就会醒来。"
+  },
+  "state.link_lost": {
+    "note": "A linked device disappeared.",
+    "args": {
+      "device": "string"
+    },
+    "en": "The link to {device} dropped. It reconnects on its own.",
+    "es": "Se cortó el enlace con {device}. Se reconectará solo.",
+    "zh-Hans": "与 {device} 的连接断开了，会自动重新连接。"
+  },
+  "state.servers.set_up_den": {
+    "note": "Button.",
+    "en": "Set up The Den",
+    "es": "Configurar Den",
+    "zh-Hans": "设置 Den"
+  },
+  "state.servers.set_up_hop": {
+    "note": "Button.",
+    "en": "Set up The Hop",
+    "es": "Configurar Hop",
+    "zh-Hans": "设置 Hop"
+  },
+  "error.generic": {
+    "note": "The only error with no detail. Used when nothing more is known.",
+    "en": "Something went wrong. Try again.",
+    "es": "Algo salió mal. Inténtalo de nuevo.",
+    "zh-Hans": "出了点问题，请重试。"
+  },
+  "error.brain.none": {
+    "note": "Shown when someone talks to an Imp that sleeps.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} has no Brain yet, so it cannot answer.",
+    "es": "{name} aún no tiene cerebro, así que no puede responder.",
+    "zh-Hans": "{name} 还没有大脑，所以无法回答。"
+  },
+  "error.brain.timeout": {
+    "note": "The service was too slow.",
+    "args": {
+      "service": "string"
+    },
+    "en": "{service} did not answer in time. Check its address, or try again later.",
+    "es": "{service} no respondió a tiempo. Revisa su dirección o inténtalo más tarde.",
+    "zh-Hans": "{service} 没有及时回应。请检查它的地址，或稍后再试。"
+  },
+  "error.brain.key": {
+    "note": "The key was refused.",
+    "args": {
+      "service": "string"
+    },
+    "en": "{service} did not accept the key. Check it and try again.",
+    "es": "{service} no aceptó la clave. Revísala e inténtalo de nuevo.",
+    "zh-Hans": "{service} 不接受这个密钥。请检查后重试。"
+  },
+  "error.brain.model": {
+    "note": "The model does not exist.",
+    "args": {
+      "service": "string",
+      "model": "string"
+    },
+    "en": "{service} does not have the model {model}. Pick another one.",
+    "es": "{service} no tiene el modelo {model}. Elige otro.",
+    "zh-Hans": "{service} 没有模型 {model}。请换一个。"
+  },
+  "error.brain.unreachable": {
+    "note": "The service did not answer at all.",
+    "args": {
+      "service": "string"
+    },
+    "en": "Cannot reach {service}. Check the address and your connection.",
+    "es": "No se puede conectar con {service}. Revisa la dirección y tu conexión.",
+    "zh-Hans": "无法连接到 {service}。请检查地址和网络连接。"
+  },
+  "error.brain.local": {
+    "note": "The local model server did not answer.",
+    "en": "No model answered. Make sure it is running, then try again.",
+    "es": "Ningún modelo respondió. Comprueba que esté en marcha e inténtalo de nuevo.",
+    "zh-Hans": "没有模型回应。请确认它正在运行，然后重试。"
+  },
+  "error.save": {
+    "note": "Saving to disk failed.",
+    "en": "Could not save that. Check the free space and try again.",
+    "es": "No se pudo guardar. Revisa el espacio libre e inténtalo de nuevo.",
+    "zh-Hans": "无法保存。请检查可用空间后重试。"
+  },
+  "error.share": {
+    "note": "Sharing failed.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Could not share {name}. Try again in a moment.",
+    "es": "No se pudo compartir a {name}. Inténtalo de nuevo en un momento.",
+    "zh-Hans": "无法共享 {name}。请稍后再试。"
+  },
+  "error.tool_failed": {
+    "note": "A tool server did not start.",
+    "args": {
+      "tool": "string"
+    },
+    "en": "{tool} could not start. Check its settings.",
+    "es": "{tool} no se pudo iniciar. Revisa sus ajustes.",
+    "zh-Hans": "{tool} 无法启动。请检查它的设置。"
+  },
+  "error.brain.offline": {
+    "note": "The device has no network while a Brain is checked.",
+    "en": "No network. Check your connection, then try again.",
+    "es": "Sin red. Revisa tu conexión e inténtalo de nuevo.",
+    "zh-Hans": "没有网络。请检查连接后再试。"
+  }
+}

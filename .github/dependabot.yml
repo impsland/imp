@@ -1,0 +1,37 @@
+version: 2
+updates:
+  - package-ecosystem: swift
+    directory: /apple
+    schedule:
+      interval: weekly
+    groups:
+      swift-updates:
+        update-types: [minor, patch]
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      cargo-updates:
+        update-types: [minor, patch]
+  - package-ecosystem: npm
+    directory: /docs
+    schedule:
+      interval: weekly
+    groups:
+      npm-updates:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions-updates:
+        update-types: [minor, patch]
+  - package-ecosystem: docker
+    directory: /server
+    schedule:
+      interval: weekly
+    groups:
+      docker-updates:
+        update-types: [minor, patch]

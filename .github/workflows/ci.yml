@@ -12,6 +12,8 @@ jobs:
       - uses: actions/checkout@v7
       - name: Toolchain
         run: xcrun swift --version
+      - name: Design files are current
+        run: node design/generate.mjs --check
       - name: Build
         run: make build
       - name: Test
@@ -21,8 +23,8 @@ jobs:
       - name: Backtrace
         if: failure()
         run: |
-          bundle="$(find .build -maxdepth 4 -type d -path '*debug/*PackageTests.xctest' | head -1)"
-          [[ -n "$bundle" ]] || bundle="$(find .build -maxdepth 4 -type d -path '*debug/*Tests.xctest' | head -1)"
+          bundle="$(find apple/.build -maxdepth 4 -type d -path '*debug/*PackageTests.xctest' | head -1)"
+          [[ -n "$bundle" ]] || bundle="$(find apple/.build -maxdepth 4 -type d -path '*debug/*Tests.xctest' | head -1)"
           binary="$bundle/Contents/MacOS/$(basename "$bundle" .xctest)"
           helper="$(dirname "$(xcrun --find swift)")/../libexec/swift/pm/swiftpm-testing-helper"
           platform="$(xcrun --show-sdk-platform-path)/Developer"
@@ -37,7 +39,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Core for iPhone (Simulator)
+        run: apple/scripts/core.sh mac ios-sim
       - name: Build Imp for iPhone (Simulator)
         run: |
-          xcodebuild -project iOS/ImpPhone.xcodeproj -scheme ImpPhone -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath .build/ios CODE_SIGNING_ALLOWED=NO -quiet build
+          xcodebuild -project apple/iOS/ImpPhone.xcodeproj -scheme ImpPhone -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath apple/.build/ios CODE_SIGNING_ALLOWED=NO -quiet build

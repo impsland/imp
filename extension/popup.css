@@ -1,0 +1,158 @@
+/* The popup wears Pebble: one flat surface, soft pebbles with no outlines and no dividers, and monochrome chrome.
+   Only the Imps carry colour. Every colour, size, radius and timing comes from tokens.css, which is generated
+   from design/tokens.json. Do not edit tokens.css by hand. Run: node design/generate.mjs */
+
+:root {
+  --inset: var(--space-page);       /* the one horizontal (and vertical) inset of the popup */
+  --gap: var(--space-medium);       /* the gap between groups */
+  --pad: var(--space-large);        /* the padding inside a pebble */
+  --leading: 1.4;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--surface); }
+body {
+  width: var(--size-popup-width);
+  margin: 0;
+  padding: var(--inset);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--gap);
+  background: var(--surface);
+  color: var(--text);
+  font: var(--type-body-weight) var(--type-body-size)/var(--leading) ui-rounded, "SF Pro Rounded", "Segoe UI Variable", system-ui, sans-serif;
+  overflow-wrap: break-word;
+}
+[hidden] { display: none !important; }
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+svg { fill: currentColor; }
+svg use { pointer-events: none; }
+:focus-visible { outline: var(--stroke-focus) solid var(--focus); outline-offset: var(--space-hairline); }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+p, h2 { margin: 0; }
+.muted { color: var(--muted); font-size: var(--type-caption-size); }
+
+/* A pebble: a soft fill and a big corner. No outline, no shadow. */
+.pebble { display: grid; gap: var(--space-medium); min-width: 0; padding: var(--pad); border-radius: var(--radius-medium); background: var(--card); }
+
+/* Buttons. Icons and labels sit inside real padding, never against the edge. */
+button, .button { font: inherit; color: inherit; border: 0; background: none; padding: 0; cursor: pointer; text-decoration: none; }
+button svg, .button svg { flex: none; width: var(--icon-large); height: var(--icon-large); }
+.round, .help {
+  flex: none; display: grid; place-items: center; border-radius: var(--radius-full); color: var(--muted);
+  transition: background var(--motion-hover), color var(--motion-hover), opacity var(--motion-press);
+}
+.round { min-width: var(--size-hit); min-height: var(--size-hit); aspect-ratio: 1; background: var(--card); }
+.help { width: var(--size-hit); height: var(--size-hit); }
+.round:hover, .help:hover { background: var(--card-hover); color: var(--text); }
+.round.spin svg { animation: spin calc(var(--duration-medium) * 4) linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.button {
+  display: flex; align-items: center; justify-content: center; gap: var(--space-snug);
+  min-height: var(--size-control); padding: var(--space-snug) var(--space-large); border-radius: var(--radius-full);
+  font-size: var(--type-label-size); font-weight: var(--type-label-weight); text-align: center;
+  transition: background var(--motion-hover), opacity var(--motion-press);
+}
+.button.primary { background: var(--accent); color: var(--on-accent); }
+.button.primary:hover { opacity: var(--opacity-hover-fill); }
+.button.secondary { background: var(--card); color: var(--text); }
+.button.secondary:hover { background: var(--card-hover); }
+.quiet {
+  display: inline-flex; align-items: center; gap: var(--space-tight); justify-self: start;
+  min-height: var(--size-hit); padding: 0 var(--space-small); margin-left: calc(var(--space-small) * -1); border-radius: var(--radius-full);
+  color: var(--muted); font-size: var(--type-label-size); font-weight: var(--type-label-weight);
+  transition: background var(--motion-hover), color var(--motion-hover);
+}
+.quiet:hover { background: var(--card-hover); color: var(--text); }
+
+/* The icon tile: a round bead with the icon well inside. */
+.tile {
+  flex: none; display: grid; place-items: center; width: var(--size-hit); height: var(--size-hit); border-radius: var(--radius-full);
+  background: var(--card-hover); color: var(--text); overflow: hidden;
+}
+.tile svg { width: var(--icon-large); height: var(--icon-large); }
+
+/* The top: connection status and Try again, then the Imps standing on the surface. */
+.stage { display: grid; gap: var(--gap); }
+.bar { display: flex; align-items: stretch; gap: var(--space-small); }
+.status { flex: 1; display: flex; align-items: center; gap: var(--space-small); padding: var(--space-small) var(--pad); border-radius: var(--radius-full); }
+.status-text { flex: 1; min-width: 0; font-size: var(--type-label-size); font-weight: var(--type-label-weight); }
+.dot { flex: none; width: var(--size-dot); height: var(--size-dot); border-radius: var(--radius-full); background: var(--off); transition: background var(--motion-hover); }
+.status.on .dot { background: var(--good); }
+.status.connecting .dot { background: var(--muted); animation: pulse calc(var(--duration-medium) * 4) ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: var(--opacity-disabled); } }
+
+.imps { display: flex; align-items: flex-end; justify-content: center; gap: var(--space-small); min-height: var(--size-hero-imp); }
+.stage.asleep canvas { opacity: var(--opacity-dimmed); }
+.imp { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+.imp canvas { display: block; }
+.imp.away canvas { opacity: var(--opacity-dimmed); }
+.tag {
+  display: inline-flex; align-items: center; gap: var(--space-tight); max-width: var(--size-hero-imp); margin-top: calc(var(--space-tight) * -1);
+  padding: var(--space-hairline) var(--space-small); border-radius: var(--radius-full); background: var(--card); color: var(--muted);
+  font-size: var(--type-small-size); font-weight: var(--type-label-weight);
+}
+.tag .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tag .phone { flex: none; width: var(--icon-tiny); height: var(--icon-medium); }
+
+main { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap); }
+.head { display: flex; align-items: center; gap: var(--space-small); }
+.head h2 { flex: 1; min-width: 0; font-size: var(--type-card-title-size); font-weight: var(--type-card-title-weight); }
+.offline { justify-items: start; }
+.offline .head { justify-self: stretch; }
+.offline .button { justify-self: stretch; }
+
+/* The tab Imp knows. */
+.tab { display: flex; align-items: center; gap: var(--space-medium); }
+.favicon img { width: var(--icon-big); height: var(--icon-big); }
+.tab-text { min-width: 0; flex: 1; }
+.title { font-weight: var(--type-label-weight); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.host { color: var(--muted); font-size: var(--type-small-size); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sight.yes { color: var(--good); }
+.sight.no { color: var(--muted); }
+
+/* What Imp did. Each line has a bead, its words and its time; spacing alone separates them. */
+.rows { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-small); }
+.rows li { display: flex; align-items: center; gap: var(--space-small); font-size: var(--type-caption-size); min-width: 0; }
+.rows .what { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rows .what b { font-weight: var(--type-label-weight); }
+.rows .when { flex: none; color: var(--muted); font-size: var(--type-small-size); font-variant-numeric: tabular-nums; }
+.rows .glyph {
+  flex: none; display: grid; place-items: center; width: var(--size-icon-tile); height: var(--size-icon-tile); border-radius: var(--radius-full);
+  color: var(--text); background: var(--card-hover);
+}
+.rows .glyph svg { width: var(--icon-medium); height: var(--icon-medium); }
+.rows .missed .what { color: var(--muted); }
+
+/* The full list replaces the stage and the other pebbles, and scrolls inside the popup. */
+body.full .stage, body.full #tab, body.full #activity, body.full #offline { display: none !important; }
+.count { color: var(--muted); font-size: var(--type-small-size); font-variant-numeric: tabular-nums; }
+.full input[type="search"] {
+  width: 100%; min-height: var(--size-control); padding: 0 var(--space-medium); font: inherit; font-size: var(--type-caption-size);
+  color: var(--text); background: var(--well); border: 0; border-radius: var(--radius-full);
+}
+.full input[type="search"]::placeholder { color: var(--muted); }
+.full .scroll { max-height: var(--size-popup-list-height); overflow-y: auto; overscroll-behavior: contain; align-content: start; }
+.full .rows .what { white-space: normal; overflow-wrap: anywhere; }
+
+/* The foot: the one primary action, then a quiet line under it. */
+footer { display: grid; gap: var(--gap); }
+.private { display: flex; align-items: center; justify-content: center; gap: var(--space-snug); color: var(--muted); font-size: var(--type-small-size); }
+.private svg { flex: none; width: var(--icon-medium); height: var(--icon-medium); }
+
+/* The help tip: a compact popover exactly as wide as its words. */
+.tip {
+  position: fixed; inset: auto; margin: 0; width: max-content; max-width: min(var(--size-tip-width), calc(100vw - var(--inset) * 2));
+  padding: var(--space-cozy) var(--space-medium); border: 0; border-radius: var(--radius-medium);
+  background: var(--raised); color: var(--text); box-shadow: var(--shadow-card);
+  font-size: var(--type-caption-size); line-height: var(--leading); overflow-wrap: anywhere;
+  opacity: 1; transition: opacity var(--motion-quick), display var(--motion-quick) allow-discrete, overlay var(--motion-quick) allow-discrete;
+}
+@starting-style { .tip:popover-open { opacity: 0; } }
+.tip:not(:popover-open) { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .round.spin svg, .status.connecting .dot { animation: none; }
+}

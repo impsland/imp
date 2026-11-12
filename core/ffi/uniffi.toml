@@ -1,0 +1,5 @@
+[bindings.swift]
+module_name = "ImpCore"
+ffi_module_name = "ImpCoreFFI"
+ffi_module_filename = "ImpCoreFFI"
+generate_module_map = false

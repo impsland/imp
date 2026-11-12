@@ -1,0 +1,20 @@
+{
+  "about": "The two ways to give an Imp a Brain, offered when adding a service and on the first run. Remote is the default. Each pre-fills its address, which the person can change to any OpenAI-compatible service.",
+  "default": "remote",
+  "services": [
+    {
+      "id": "remote",
+      "local": false,
+      "symbol": "cloud.fill",
+      "baseURL": "https://openrouter.ai/api/v1",
+      "link": "https://openrouter.ai/workspaces/default/keys"
+    },
+    {
+      "id": "local",
+      "local": true,
+      "symbol": "desktopcomputer",
+      "baseURL": "http://localhost:11434/v1",
+      "link": "https://ollama.com/library/qwen3.8"
+    }
+  ]
+}

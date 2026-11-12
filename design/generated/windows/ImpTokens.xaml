@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- generated from design/tokens.json, do not edit. Run: node design/generate.mjs -->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Default">
+      <Color x:Key="ImpSurfaceColor">#FF141519</Color>
+      <SolidColorBrush x:Key="ImpSurfaceBrush" Color="#FF141519"/>
+      <Color x:Key="ImpRaisedColor">#FF1E2026</Color>
+      <SolidColorBrush x:Key="ImpRaisedBrush" Color="#FF1E2026"/>
+      <Color x:Key="ImpRaisedHighColor">#FF282A32</Color>
+      <SolidColorBrush x:Key="ImpRaisedHighBrush" Color="#FF282A32"/>
+      <Color x:Key="ImpDeepColor">#FF0D0E11</Color>
+      <SolidColorBrush x:Key="ImpDeepBrush" Color="#FF0D0E11"/>
+      <Color x:Key="ImpDoorwayColor">#FF070809</Color>
+      <SolidColorBrush x:Key="ImpDoorwayBrush" Color="#FF070809"/>
+      <Color x:Key="ImpInkColor">#FF17181C</Color>
+      <SolidColorBrush x:Key="ImpInkBrush" Color="#FF17181C"/>
+      <Color x:Key="ImpPaperColor">#FFF2F0EA</Color>
+      <SolidColorBrush x:Key="ImpPaperBrush" Color="#FFF2F0EA"/>
+      <Color x:Key="ImpTextColor">#FFF2F0EA</Color>
+      <SolidColorBrush x:Key="ImpTextBrush" Color="#FFF2F0EA"/>
+      <Color x:Key="ImpMutedColor">#B3F2F0EA</Color>
+      <SolidColorBrush x:Key="ImpMutedBrush" Color="#B3F2F0EA"/>
+      <Color x:Key="ImpFaintColor">#73F2F0EA</Color>
+      <SolidColorBrush x:Key="ImpFaintBrush" Color="#73F2F0EA"/>
+      <Color x:Key="ImpCardColor">#0FFFFFFF</Color>
+      <SolidColorBrush x:Key="ImpCardBrush" Color="#0FFFFFFF"/>
+      <Color x:Key="ImpCardHoverColor">#1AFFFFFF</Color>
+      <SolidColorBrush x:Key="ImpCardHoverBrush" Color="#1AFFFFFF"/>
+      <Color x:Key="ImpLineColor">#1FFFFFFF</Color>
+      <SolidColorBrush x:Key="ImpLineBrush" Color="#1FFFFFFF"/>
+      <Color x:Key="ImpWellColor">#47000000</Color>
+      <SolidColorBrush x:Key="ImpWellBrush" Color="#47000000"/>
+      <Color x:Key="ImpAccentColor">#FFF2F0EA</Color>
+      <SolidColorBrush x:Key="ImpAccentBrush" Color="#FFF2F0EA"/>
+      <Color x:Key="ImpAccentBrightColor">#FFFFFFFF</Color>
+      <SolidColorBrush x:Key="ImpAccentBrightBrush" Color="#FFFFFFFF"/>
+      <Color x:Key="ImpOnAccentColor">#FF17181C</Color>
+      <SolidColorBrush x:Key="ImpOnAccentBrush" Color="#FF17181C"/>
+      <Color x:Key="ImpHeartColor">#FFFF738C</Color>
+      <SolidColorBrush x:Key="ImpHeartBrush" Color="#FFFF738C"/>
+      <Color x:Key="ImpLinkColor">#FF9EC5FF</Color>
+      <SolidColorBrush x:Key="ImpLinkBrush" Color="#FF9EC5FF"/>
+      <Color x:Key="ImpWarnBackgroundColor">#24FFB447</Color>
+      <SolidColorBrush x:Key="ImpWarnBackgroundBrush" Color="#24FFB447"/>
+      <Color x:Key="ImpWarnTextColor">#FFFFCF8A</Color>
+      <SolidColorBrush x:Key="ImpWarnTextBrush" Color="#FFFFCF8A"/>
+      <Color x:Key="ImpWarnEdgeColor">#73FFB447</Color>
+      <SolidColorBrush x:Key="ImpWarnEdgeBrush" Color="#73FFB447"/>
+      <Color x:Key="ImpErrorBackgroundColor">#24FF5050</Color>
+      <SolidColorBrush x:Key="ImpErrorBackgroundBrush" Color="#24FF5050"/>
+      <Color x:Key="ImpErrorEdgeColor">#80FF6E6E</Color>
+      <SolidColorBrush x:Key="ImpErrorEdgeBrush" Color="#80FF6E6E"/>
+      <Color x:Key="ImpDangerColor">#FFFF7A70</Color>
+      <SolidColorBrush x:Key="ImpDangerBrush" Color="#FFFF7A70"/>
+      <Color x:Key="ImpOkBackgroundColor">#246ED28C</Color>
+      <SolidColorBrush x:Key="ImpOkBackgroundBrush" Color="#246ED28C"/>
+      <Color x:Key="ImpOkEdgeColor">#736ED28C</Color>
+      <SolidColorBrush x:Key="ImpOkEdgeBrush" Color="#736ED28C"/>
+      <Color x:Key="ImpFocusColor">#FFF2F0EA</Color>
+      <SolidColorBrush x:Key="ImpFocusBrush" Color="#FFF2F0EA"/>
+      <Color x:Key="ImpGoodColor">#FF6FDC8C</Color>
+      <SolidColorBrush x:Key="ImpGoodBrush" Color="#FF6FDC8C"/>
+      <Color x:Key="ImpOffColor">#FF8A8C93</Color>
+      <SolidColorBrush x:Key="ImpOffBrush" Color="#FF8A8C93"/>
+      <Color x:Key="ImpScrimColor">#66000000</Color>
+      <SolidColorBrush x:Key="ImpScrimBrush" Color="#66000000"/>
+      <Color x:Key="ImpVeilColor">#CC141519</Color>
+      <SolidColorBrush x:Key="ImpVeilBrush" Color="#CC141519"/>
+      <Color x:Key="ImpSparkEmberColor">#FFFF9E42</Color>
+      <SolidColorBrush x:Key="ImpSparkEmberBrush" Color="#FFFF9E42"/>
+      <Color x:Key="ImpSparkWispColor">#FF8CCFFF</Color>
+      <SolidColorBrush x:Key="ImpSparkWispBrush" Color="#FF8CCFFF"/>
+      <Color x:Key="ImpSparkHotColor">#FFFF803D</Color>
+      <SolidColorBrush x:Key="ImpSparkHotBrush" Color="#FFFF803D"/>
+      <Color x:Key="ImpSparkSmokeEdgeColor">#FF998ABD</Color>
+      <SolidColorBrush x:Key="ImpSparkSmokeEdgeBrush" Color="#FF998ABD"/>
+      <Color x:Key="ImpSparkSmokeCoreColor">#FF170F24</Color>
+      <SolidColorBrush x:Key="ImpSparkSmokeCoreBrush" Color="#FF170F24"/>
+      <Color x:Key="ImpSparkGoldColor">#FFFFD64D</Color>
+      <SolidColorBrush x:Key="ImpSparkGoldBrush" Color="#FFFFD64D"/>
+      <Color x:Key="ImpSparkGoldCoreColor">#FFFFF7CC</Color>
+      <SolidColorBrush x:Key="ImpSparkGoldCoreBrush" Color="#FFFFF7CC"/>
+      <Color x:Key="ImpSparkChainColor">#FFFF739E</Color>
+      <SolidColorBrush x:Key="ImpSparkChainBrush" Color="#FFFF739E"/>
+      <Color x:Key="ImpSparkChainCoreColor">#FFFFEDD9</Color>
+      <SolidColorBrush x:Key="ImpSparkChainCoreBrush" Color="#FFFFEDD9"/>
+      <Color x:Key="ImpSparkKindleCoreColor">#FFCCFFD1</Color>
+      <SolidColorBrush x:Key="ImpSparkKindleCoreBrush" Color="#FFCCFFD1"/>
+      <Color x:Key="ImpEchoAccentColor">#FFB899FF</Color>
+      <SolidColorBrush x:Key="ImpEchoAccentBrush" Color="#FFB899FF"/>
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="Light">
+      <Color x:Key="ImpSurfaceColor">#FFF3F1EC</Color>
+      <SolidColorBrush x:Key="ImpSurfaceBrush" Color="#FFF3F1EC"/>
+      <Color x:Key="ImpRaisedColor">#FFFFFFFF</Color>
+      <SolidColorBrush x:Key="ImpRaisedBrush" Color="#FFFFFFFF"/>
+      <Color x:Key="ImpRaisedHighColor">#FFF3F1EC</Color>
+      <SolidColorBrush x:Key="ImpRaisedHighBrush" Color="#FFF3F1EC"/>
+      <Color x:Key="ImpDeepColor">#FFE6E3DC</Color>
+      <SolidColorBrush x:Key="ImpDeepBrush" Color="#FFE6E3DC"/>
+      <Color x:Key="ImpDoorwayColor">#FF2A2C33</Color>
+      <SolidColorBrush x:Key="ImpDoorwayBrush" Color="#FF2A2C33"/>
+      <Color x:Key="ImpInkColor">#FF17181C</Color>
+      <SolidColorBrush x:Key="ImpInkBrush" Color="#FF17181C"/>
+      <Color x:Key="ImpPaperColor">#FFF2F0EA</Color>
+      <SolidColorBrush x:Key="ImpPaperBrush" Color="#FFF2F0EA"/>
+      <Color x:Key="ImpTextColor">#FF17181C</Color>
+      <SolidColorBrush x:Key="ImpTextBrush" Color="#FF17181C"/>
+      <Color x:Key="ImpMutedColor">#B317181C</Color>
+      <SolidColorBrush x:Key="ImpMutedBrush" Color="#B317181C"/>
+      <Color x:Key="ImpFaintColor">#8017181C</Color>
+      <SolidColorBrush x:Key="ImpFaintBrush" Color="#8017181C"/>
+      <Color x:Key="ImpCardColor">#0A17181C</Color>
+      <SolidColorBrush x:Key="ImpCardBrush" Color="#0A17181C"/>
+      <Color x:Key="ImpCardHoverColor">#1417181C</Color>
+      <SolidColorBrush x:Key="ImpCardHoverBrush" Color="#1417181C"/>
+      <Color x:Key="ImpLineColor">#1F17181C</Color>
+      <SolidColorBrush x:Key="ImpLineBrush" Color="#1F17181C"/>
+      <Color x:Key="ImpWellColor">#0F17181C</Color>
+      <SolidColorBrush x:Key="ImpWellBrush" Color="#0F17181C"/>
+      <Color x:Key="ImpAccentColor">#FF17181C</Color>
+      <SolidColorBrush x:Key="ImpAccentBrush" Color="#FF17181C"/>
+      <Color x:Key="ImpAccentBrightColor">#FF000000</Color>
+      <SolidColorBrush x:Key="ImpAccentBrightBrush" Color="#FF000000"/>
+      <Color x:Key="ImpOnAccentColor">#FFF2F0EA</Color>
+      <SolidColorBrush x:Key="ImpOnAccentBrush" Color="#FFF2F0EA"/>
+      <Color x:Key="ImpHeartColor">#FFFF738C</Color>
+      <SolidColorBrush x:Key="ImpHeartBrush" Color="#FFFF738C"/>
+      <Color x:Key="ImpLinkColor">#FF1F5FBF</Color>
+      <SolidColorBrush x:Key="ImpLinkBrush" Color="#FF1F5FBF"/>
+      <Color x:Key="ImpWarnBackgroundColor">#FFFFF0DC</Color>
+      <SolidColorBrush x:Key="ImpWarnBackgroundBrush" Color="#FFFFF0DC"/>
+      <Color x:Key="ImpWarnTextColor">#FF7A4300</Color>
+      <SolidColorBrush x:Key="ImpWarnTextBrush" Color="#FF7A4300"/>
+      <Color x:Key="ImpWarnEdgeColor">#FFEFC58F</Color>
+      <SolidColorBrush x:Key="ImpWarnEdgeBrush" Color="#FFEFC58F"/>
+      <Color x:Key="ImpErrorBackgroundColor">#FFFFE8E6</Color>
+      <SolidColorBrush x:Key="ImpErrorBackgroundBrush" Color="#FFFFE8E6"/>
+      <Color x:Key="ImpErrorEdgeColor">#FFE8A39D</Color>
+      <SolidColorBrush x:Key="ImpErrorEdgeBrush" Color="#FFE8A39D"/>
+      <Color x:Key="ImpDangerColor">#FFC62828</Color>
+      <SolidColorBrush x:Key="ImpDangerBrush" Color="#FFC62828"/>
+      <Color x:Key="ImpOkBackgroundColor">#FFE6F6EA</Color>
+      <SolidColorBrush x:Key="ImpOkBackgroundBrush" Color="#FFE6F6EA"/>
+      <Color x:Key="ImpOkEdgeColor">#FF9CCFA9</Color>
+      <SolidColorBrush x:Key="ImpOkEdgeBrush" Color="#FF9CCFA9"/>
+      <Color x:Key="ImpFocusColor">#FF17181C</Color>
+      <SolidColorBrush x:Key="ImpFocusBrush" Color="#FF17181C"/>
+      <Color x:Key="ImpGoodColor">#FF2C7A45</Color>
+      <SolidColorBrush x:Key="ImpGoodBrush" Color="#FF2C7A45"/>
+      <Color x:Key="ImpOffColor">#FF8A8C93</Color>
+      <SolidColorBrush x:Key="ImpOffBrush" Color="#FF8A8C93"/>
+      <Color x:Key="ImpScrimColor">#61000000</Color>
+      <SolidColorBrush x:Key="ImpScrimBrush" Color="#61000000"/>
+      <Color x:Key="ImpVeilColor">#CCF3F1EC</Color>
+      <SolidColorBrush x:Key="ImpVeilBrush" Color="#CCF3F1EC"/>
+      <Color x:Key="ImpSparkEmberColor">#FFFF9E42</Color>
+      <SolidColorBrush x:Key="ImpSparkEmberBrush" Color="#FFFF9E42"/>
+      <Color x:Key="ImpSparkWispColor">#FF8CCFFF</Color>
+      <SolidColorBrush x:Key="ImpSparkWispBrush" Color="#FF8CCFFF"/>
+      <Color x:Key="ImpSparkHotColor">#FFFF803D</Color>
+      <SolidColorBrush x:Key="ImpSparkHotBrush" Color="#FFFF803D"/>
+      <Color x:Key="ImpSparkSmokeEdgeColor">#FF998ABD</Color>
+      <SolidColorBrush x:Key="ImpSparkSmokeEdgeBrush" Color="#FF998ABD"/>
+      <Color x:Key="ImpSparkSmokeCoreColor">#FF170F24</Color>
+      <SolidColorBrush x:Key="ImpSparkSmokeCoreBrush" Color="#FF170F24"/>
+      <Color x:Key="ImpSparkGoldColor">#FFFFD64D</Color>
+      <SolidColorBrush x:Key="ImpSparkGoldBrush" Color="#FFFFD64D"/>
+      <Color x:Key="ImpSparkGoldCoreColor">#FFFFF7CC</Color>
+      <SolidColorBrush x:Key="ImpSparkGoldCoreBrush" Color="#FFFFF7CC"/>
+      <Color x:Key="ImpSparkChainColor">#FFFF739E</Color>
+      <SolidColorBrush x:Key="ImpSparkChainBrush" Color="#FFFF739E"/>
+      <Color x:Key="ImpSparkChainCoreColor">#FFFFEDD9</Color>
+      <SolidColorBrush x:Key="ImpSparkChainCoreBrush" Color="#FFFFEDD9"/>
+      <Color x:Key="ImpSparkKindleCoreColor">#FFCCFFD1</Color>
+      <SolidColorBrush x:Key="ImpSparkKindleCoreBrush" Color="#FFCCFFD1"/>
+      <Color x:Key="ImpEchoAccentColor">#FFB899FF</Color>
+      <SolidColorBrush x:Key="ImpEchoAccentBrush" Color="#FFB899FF"/>
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+
+  <x:Double x:Key="ImpSpaceHairline">2</x:Double>
+  <x:Double x:Key="ImpSpaceTight">4</x:Double>
+  <x:Double x:Key="ImpSpaceSnug">6</x:Double>
+  <x:Double x:Key="ImpSpaceSmall">8</x:Double>
+  <x:Double x:Key="ImpSpaceCozy">10</x:Double>
+  <x:Double x:Key="ImpSpaceMedium">12</x:Double>
+  <x:Double x:Key="ImpSpaceRoomy">14</x:Double>
+  <x:Double x:Key="ImpSpaceLarge">16</x:Double>
+  <x:Double x:Key="ImpSpacePage">20</x:Double>
+  <x:Double x:Key="ImpSpaceWide">24</x:Double>
+  <x:Double x:Key="ImpSpaceHuge">28</x:Double>
+  <x:Double x:Key="ImpSpaceVast">40</x:Double>
+  <CornerRadius x:Key="ImpRadiusTiny">6</CornerRadius>
+  <CornerRadius x:Key="ImpRadiusSmall">10</CornerRadius>
+  <CornerRadius x:Key="ImpRadiusTile">12</CornerRadius>
+  <CornerRadius x:Key="ImpRadiusMedium">16</CornerRadius>
+  <CornerRadius x:Key="ImpRadiusLarge">20</CornerRadius>
+  <CornerRadius x:Key="ImpRadiusBubble">24</CornerRadius>
+  <CornerRadius x:Key="ImpRadiusFull">999</CornerRadius>
+  <x:Double x:Key="ImpStrokeHairline">1</x:Double>
+  <x:Double x:Key="ImpStrokeFocus">2</x:Double>
+  <x:Double x:Key="ImpOpacityDisabled">0.45</x:Double>
+  <x:Double x:Key="ImpOpacityDimmed">0.6</x:Double>
+  <x:Double x:Key="ImpOpacityTintFill">0.16</x:Double>
+  <x:Double x:Key="ImpOpacityTintFillStrong">0.34</x:Double>
+  <x:Double x:Key="ImpOpacityGlow">0.45</x:Double>
+  <x:Double x:Key="ImpOpacityHoverFill">0.85</x:Double>
+  <x:Double x:Key="ImpOpacityBubbleMin">0.4</x:Double>
+  <x:Double x:Key="ImpOpacityBubbleDefault">0.75</x:Double>
+  <x:Double x:Key="ImpSizeReceiptLift">84</x:Double>
+  <x:Double x:Key="ImpSizeHit">32</x:Double>
+  <x:Double x:Key="ImpSizeControl">32</x:Double>
+  <x:Double x:Key="ImpSizeGlyph">28</x:Double>
+  <x:Double x:Key="ImpSizeIconTile">28</x:Double>
+  <x:Double x:Key="ImpSizeMenuWidth">300</x:Double>
+  <x:Double x:Key="ImpSizeToastTop">48</x:Double>
+  <x:Double x:Key="ImpSizeSheetIcon">32</x:Double>
+  <x:Double x:Key="ImpSizeTipWidth">280</x:Double>
+  <x:Double x:Key="ImpSizePopoverWidth">360</x:Double>
+  <x:Double x:Key="ImpSizePopupWidth">380</x:Double>
+  <x:Double x:Key="ImpSizePopupListHeight">300</x:Double>
+  <x:Double x:Key="ImpSizePanelWidth">400</x:Double>
+  <x:Double x:Key="ImpSizeColumn">760</x:Double>
+  <x:Double x:Key="ImpSizeSheetWidth">560</x:Double>
+  <x:Double x:Key="ImpSizeMarker">44</x:Double>
+  <x:Double x:Key="ImpSizeImpPortrait">40</x:Double>
+  <x:Double x:Key="ImpSizeFieldLabel">96</x:Double>
+  <x:Double x:Key="ImpSizeMark">20</x:Double>
+  <x:Double x:Key="ImpSizeMenuTitle">160</x:Double>
+  <x:Double x:Key="ImpSizeHeroFace">68</x:Double>
+  <x:Double x:Key="ImpSizeDot">6</x:Double>
+  <x:Double x:Key="ImpSizeEditorWidth">780</x:Double>
+  <x:Double x:Key="ImpSizeStageWidth">268</x:Double>
+  <x:Double x:Key="ImpSizeEditorTop">256</x:Double>
+  <x:Double x:Key="ImpSizeSwitchTrack">40</x:Double>
+  <x:Double x:Key="ImpSizeCodeSide">188</x:Double>
+  <x:Double x:Key="ImpSizeViewfinderHeight">220</x:Double>
+  <x:Double x:Key="ImpSizeViewfinderAim">150</x:Double>
+  <x:Double x:Key="ImpSizeHeroImp">120</x:Double>
+  <x:Double x:Key="ImpSizeGameButton">48</x:Double>
+  <x:Double x:Key="ImpSizeCoachBadge">34</x:Double>
+  <x:Double x:Key="ImpSizeGameIcon">26</x:Double>
+  <x:Double x:Key="ImpSizeGameRing">16</x:Double>
+  <x:Double x:Key="ImpSizeEchoPad">128</x:Double>
+  <x:Double x:Key="ImpSizeGameCard">320</x:Double>
+  <x:Double x:Key="ImpSizeGameStat">84</x:Double>
+  <x:Double x:Key="ImpSizeMeter">110</x:Double>
+  <x:Double x:Key="ImpSizeDoorLabel">150</x:Double>
+  <x:Double x:Key="ImpSizeBubbleHeader">220</x:Double>
+  <x:Double x:Key="ImpSizeThumbHeight">110</x:Double>
+  <x:Double x:Key="ImpSizeThumbWaitWidth">80</x:Double>
+  <x:Double x:Key="ImpSizeThumbWaitHeight">60</x:Double>
+  <x:Double x:Key="ImpSizeHiddenStrip">28</x:Double>
+  <x:Double x:Key="ImpIconTiny">8</x:Double>
+  <x:Double x:Key="ImpIconSmall">10</x:Double>
+  <x:Double x:Key="ImpIconMedium">12</x:Double>
+  <x:Double x:Key="ImpIconLarge">14</x:Double>
+  <x:Double x:Key="ImpIconBig">18</x:Double>
+  <x:Double x:Key="ImpIconHuge">30</x:Double>
+  <x:Double x:Key="ImpTypeTitleSize">17</x:Double>
+  <FontWeight x:Key="ImpTypeTitleWeight">Bold</FontWeight>
+  <x:Double x:Key="ImpTypeCardTitleSize">14</x:Double>
+  <FontWeight x:Key="ImpTypeCardTitleWeight">SemiBold</FontWeight>
+  <x:Double x:Key="ImpTypeBodySize">13</x:Double>
+  <FontWeight x:Key="ImpTypeBodyWeight">Normal</FontWeight>
+  <x:Double x:Key="ImpTypeLabelSize">12.5</x:Double>
+  <FontWeight x:Key="ImpTypeLabelWeight">SemiBold</FontWeight>
+  <x:Double x:Key="ImpTypeCaptionSize">12.5</x:Double>
+  <FontWeight x:Key="ImpTypeCaptionWeight">Medium</FontWeight>
+  <x:Double x:Key="ImpTypeSmallSize">11.5</x:Double>
+  <FontWeight x:Key="ImpTypeSmallWeight">Normal</FontWeight>
+  <x:Double x:Key="ImpTypeDisplaySize">40</x:Double>
+  <FontWeight x:Key="ImpTypeDisplayWeight">Bold</FontWeight>
+  <x:Double x:Key="ImpTypeMonoSize">12.5</x:Double>
+  <FontWeight x:Key="ImpTypeMonoWeight">Normal</FontWeight>
+  <Duration x:Key="ImpMotionQuickDuration">0:0:0.12</Duration>
+  <Duration x:Key="ImpMotionQuickReducedDuration">0:0:0</Duration>
+  <x:String x:Key="ImpMotionQuickEasing">0,0,0.58,1</x:String>
+  <Duration x:Key="ImpMotionHoverDuration">0:0:0.15</Duration>
+  <Duration x:Key="ImpMotionHoverReducedDuration">0:0:0</Duration>
+  <x:String x:Key="ImpMotionHoverEasing">0,0,0.58,1</x:String>
+  <Duration x:Key="ImpMotionPressDuration">0:0:0.15</Duration>
+  <Duration x:Key="ImpMotionPressReducedDuration">0:0:0</Duration>
+  <x:String x:Key="ImpMotionPressEasing">0.2,0.9,0.3,1</x:String>
+  <Duration x:Key="ImpMotionExpandDuration">0:0:0.2</Duration>
+  <Duration x:Key="ImpMotionExpandReducedDuration">0:0:0</Duration>
+  <x:String x:Key="ImpMotionExpandEasing">0.2,0.9,0.3,1</x:String>
+  <Duration x:Key="ImpMotionSmoothDuration">0:0:0.25</Duration>
+  <Duration x:Key="ImpMotionSmoothReducedDuration">0:0:0</Duration>
+  <x:String x:Key="ImpMotionSmoothEasing">0.2,0.9,0.3,1</x:String>
+  <Duration x:Key="ImpMotionSceneDuration">0:0:0.35</Duration>
+  <Duration x:Key="ImpMotionSceneReducedDuration">0:0:0.15</Duration>
+  <x:String x:Key="ImpMotionSceneEasing">0.42,0,0.58,1</x:String>
+  <Duration x:Key="ImpMotionSettleDuration">0:0:0.35</Duration>
+  <Duration x:Key="ImpMotionSettleReducedDuration">0:0:0.15</Duration>
+  <x:String x:Key="ImpMotionSettleEasing">0.2,0.8,0.2,1</x:String>
+  <Duration x:Key="ImpMotionSpringDuration">0:0:0.4</Duration>
+  <Duration x:Key="ImpMotionSpringReducedDuration">0:0:0.15</Duration>
+  <x:String x:Key="ImpMotionSpringEasing">0.2,0.8,0.2,1</x:String>
+  <Duration x:Key="ImpMotionPopDuration">0:0:0.4</Duration>
+  <Duration x:Key="ImpMotionPopReducedDuration">0:0:0.15</Duration>
+  <x:String x:Key="ImpMotionPopEasing">0.34,1.56,0.64,1</x:String>
+  <Duration x:Key="ImpMotionFadeDuration">0:0:0.4</Duration>
+  <Duration x:Key="ImpMotionFadeReducedDuration">0:0:0</Duration>
+  <x:String x:Key="ImpMotionFadeEasing">0,0,0.58,1</x:String>
+  <Duration x:Key="ImpMotionPeekDuration">0:0:0.5</Duration>
+  <Duration x:Key="ImpMotionPeekReducedDuration">0:0:0.15</Duration>
+  <x:String x:Key="ImpMotionPeekEasing">0.42,0,0.58,1</x:String>
+  <x:Double x:Key="ImpBehaviorToastSeconds">2.8</x:Double>
+  <x:Double x:Key="ImpBehaviorUndoBarSeconds">6</x:Double>
+  <x:Double x:Key="ImpBehaviorPeekIntervalMinSeconds">45</x:Double>
+  <x:Double x:Key="ImpBehaviorPeekIntervalMaxSeconds">90</x:Double>
+  <x:Double x:Key="ImpBehaviorPeekShowSeconds">1.5</x:Double>
+  <x:Double x:Key="ImpBehaviorPeekQuietSeconds">10</x:Double>
+  <x:Double x:Key="ImpBehaviorNarrowWindowPoints">520</x:Double>
+  <x:Double x:Key="ImpBehaviorDragStripPoints">28</x:Double>
+  <x:Double x:Key="ImpBehaviorLocalProbeTimeoutSeconds">2</x:Double>
+  <x:Double x:Key="ImpBehaviorBrainCheckTimeoutSeconds">20</x:Double>
+  <x:Double x:Key="ImpBehaviorCopiedTickSeconds">1.4</x:Double>
+  <x:Double x:Key="ImpBehaviorFramesPerSecond">60</x:Double>
+  <x:Double x:Key="ImpBehaviorFramesPerSecondSaving">30</x:Double>
+  <x:Double x:Key="ImpBehaviorCalmFramesPerSecond">30</x:Double>
+  <x:Double x:Key="ImpBehaviorCalmFramesPerSecondSaving">20</x:Double>
+  <x:Double x:Key="ImpBehaviorSensorHz">30</x:Double>
+  <x:Double x:Key="ImpBehaviorSensorHzSaving">20</x:Double>
+  <x:Double x:Key="ImpBehaviorSettleSeconds">1.2</x:Double>
+</ResourceDictionary>

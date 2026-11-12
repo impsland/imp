@@ -2,9 +2,11 @@ name: imp-server
 
 services:
   den:
-    # The published image. `docker compose up -d --build` builds it here from this folder instead.
+    # The published image. `docker compose up -d --build` builds it here from the repository instead.
     image: ${IMP_IMAGE:-ghcr.io/impsland/imp:latest}
-    build: .
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
     command: ["serve"]
     restart: unless-stopped
     environment:

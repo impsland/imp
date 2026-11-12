@@ -1,0 +1,29 @@
+[package]
+name = "imp-hop"
+description = "The Imp Hop: a blind relay between a guest and the host it joins"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+# The command stays `hop`, as the image and compose call it.
+[[bin]]
+name = "hop"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+mimalloc.workspace = true
+imp-core = { workspace = true, default-features = false }
+imp-shared.workspace = true
+rand.workspace = true
+socket2.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+ed25519-dalek.workspace = true

@@ -1,0 +1,110 @@
+name: ImpPhone
+options:
+  bundleIdPrefix: app.imp
+  deploymentTarget:
+    iOS: "18.0"
+  developmentLanguage: en
+packages:
+  Imp:
+    path: ..
+  SnapshotTesting:
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    from: 1.19.7
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "2.2.1"
+    CURRENT_PROJECT_VERSION: "5"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    # Xcode runs on Apple silicon only, so the Simulator is arm64 too, like the core built for it.
+    EXCLUDED_ARCHS[sdk=iphonesimulator*]: x86_64
+targets:
+  ImpPhone:
+    type: application
+    platform: iOS
+    sources:
+      - path: Imp
+      # The Mac's renderer, compiled as is: an Imp on the phone is drawn by the same code.
+      - path: ../Sources/Imp/Character
+        group: Shared
+        includes:
+          - Antics.swift
+          - Extras.swift
+          - Face.swift
+          - Geometry.swift
+          - Horn.swift
+          - ImpRenderer.swift
+          - Motion.swift
+          - Palette.swift
+          - Performance.swift
+          - Puppet.swift
+          - SoftLight.swift
+    dependencies:
+      - package: Imp
+        product: ImpKit
+      - package: Imp
+        product: ImpDesign
+    settings:
+      base:
+        PRODUCT_NAME: Imp
+        PRODUCT_MODULE_NAME: ImpPhone
+        PRODUCT_BUNDLE_IDENTIFIER: app.imp.ImpPhone
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: NO
+        ENABLE_USER_SCRIPT_SANDBOXING: YES
+        SWIFT_EMIT_LOC_STRINGS: YES
+    info:
+      path: Imp/Info.plist
+      properties:
+        CFBundleDisplayName: Imp
+        CFBundleName: Imp
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [en, es, zh-Hans]
+        NSLocalNetworkUsageDescription: Imp finds your other devices on your network, so the Imps you toss can land here.
+        NSCameraUsageDescription: Imp scans the code another device shows.
+        NSBonjourServices: ["_imp-link._tcp"]
+        # Pocket Imps may think with a model server on your own network, over http.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        CFBundleURLTypes:
+          - CFBundleURLName: app.imp.link
+            CFBundleURLSchemes: [implink]
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UIRequiresFullScreen: true
+        ITSAppUsesNonExemptEncryption: false
+  # Reference images of the iPhone's own screens. They need the Simulator to run, so they run on a
+  # developer machine (docs/apps/testing.md). `make ios-snapshots-build` only builds them.
+  ImpPhoneSnapshotTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: SnapshotTests
+    dependencies:
+      - target: ImpPhone
+      - package: SnapshotTesting
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.imp.ImpPhoneSnapshotTests
+        GENERATE_INFOPLIST_FILE: YES
+        # The app's product is named Imp, so its bundle is Imp.app.
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Imp.app/Imp
+        BUNDLE_LOADER: $(TEST_HOST)
+        SWIFT_EMIT_LOC_STRINGS: NO
+schemes:
+  ImpPhone:
+    build:
+      targets:
+        ImpPhone: all
+    run:
+      config: Debug
+    test:
+      targets:
+        - ImpPhoneSnapshotTests

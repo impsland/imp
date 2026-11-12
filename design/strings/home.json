@@ -1,0 +1,89 @@
+{
+  "home.canvas.label": {
+    "note": "Screen reader name of the main canvas.",
+    "en": "The Imps' home",
+    "es": "El hogar de los Imps",
+    "zh-Hans": "Imp 之家"
+  },
+  "home.canvas.hint": {
+    "note": "Screen reader hint for the main canvas.",
+    "en": "Imps move around here. Press Tab to go from one Imp to the next.",
+    "es": "Los Imps se mueven por aquí. Pulsa Tab para ir de un Imp al siguiente.",
+    "zh-Hans": "Imp 在这里走动。按 Tab 键可在各个 Imp 之间切换。"
+  },
+  "home.empty.title": {
+    "note": "Empty main screen, title.",
+    "en": "No Imps yet",
+    "es": "Aún no hay Imps",
+    "zh-Hans": "还没有 Imp"
+  },
+  "home.empty.hint": {
+    "note": "Empty main screen, one line under the title.",
+    "en": "Hatch your first Imp to get started.",
+    "es": "Haz nacer a tu primer Imp para empezar.",
+    "zh-Hans": "孵化你的第一个 Imp，就可以开始了。"
+  },
+  "home.empty.new_imp": {
+    "note": "The one prompt in the middle of an empty main screen.",
+    "en": "New Imp",
+    "es": "Nuevo Imp",
+    "zh-Hans": "新建 Imp"
+  },
+  "home.hidden.title": {
+    "note": "The element on the floor that holds hidden Imps. The number is how many.",
+    "args": {
+      "count": "int"
+    },
+    "en": "Hidden Imps ({count})",
+    "es": "Imps ocultos ({count})",
+    "zh-Hans": "隐藏的 Imp（{count}）"
+  },
+  "home.hidden.empty": {
+    "note": "Shown in the hidden Imps list when it is empty.",
+    "en": "No hidden Imps",
+    "es": "No hay Imps ocultos",
+    "zh-Hans": "没有隐藏的 Imp"
+  },
+  "home.hidden.bring_back": {
+    "note": "Action that brings a hidden Imp back.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Bring back {name}",
+    "es": "Traer de vuelta a {name}",
+    "zh-Hans": "让 {name} 回来"
+  },
+  "home.hidden.peek": {
+    "note": "Announced to screen readers when a hidden Imp peeks.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} is peeking out from the floor.",
+    "es": "{name} se asoma desde el suelo.",
+    "zh-Hans": "{name} 从地面探出头来。"
+  },
+  "home.hidden.hint": {
+    "note": "Screen reader hint for the hidden Imps element.",
+    "en": "Hidden Imps peek out now and then. Click one to bring it back.",
+    "es": "Los Imps ocultos se asoman de vez en cuando. Haz clic en uno para traerlo de vuelta.",
+    "zh-Hans": "隐藏的 Imp 会不时探出头来。点击它，它就会回来。"
+  },
+  "home.tray.show": {
+    "note": "Status icon menu item that shows the window.",
+    "en": "Open Imp",
+    "es": "Abrir Imp",
+    "zh-Hans": "打开 Imp"
+  },
+  "home.tray.quit": {
+    "note": "Status icon menu item that quits the app.",
+    "en": "Quit Imp",
+    "es": "Salir de Imp",
+    "zh-Hans": "退出 Imp"
+  },
+  "home.corner.show_hidden": {
+    "note": "Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.",
+    "en": "Show hidden Imps",
+    "es": "Mostrar Imps ocultos",
+    "zh-Hans": "显示隐藏的 Imp"
+  }
+}

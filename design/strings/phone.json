@@ -1,0 +1,685 @@
+{
+  "phone.linked.none": {
+    "note": "One line on the iPhone when no other device is linked.",
+    "en": "Nobody is linked yet",
+    "es": "Aún no hay nadie enlazado",
+    "zh-Hans": "还没有关联的设备"
+  },
+  "phone.requests.title": {
+    "note": "Card title on the iPhone settings page for brains.",
+    "en": "Waiting",
+    "es": "Esperas",
+    "zh-Hans": "等待"
+  },
+  "phone.requests.info": {
+    "note": "Help for the waiting card.",
+    "en": "How long an Imp waits for its Brain, and what it does when the internet drops.",
+    "es": "Cuánto espera un Imp a su cerebro y qué hace si se corta internet.",
+    "zh-Hans": "小妖等它的大脑多久，以及网络断了怎么办。"
+  },
+  "phone.requests.timeout.title": {
+    "note": "Row title: longest wait.",
+    "en": "Wait up to",
+    "es": "Esperar hasta",
+    "zh-Hans": "最多等"
+  },
+  "phone.requests.timeout.info": {
+    "note": "Help for the longest wait.",
+    "en": "If the Brain takes longer than this, the Imp stops waiting and says so.",
+    "es": "Si el cerebro tarda más que esto, el Imp deja de esperar y lo dice.",
+    "zh-Hans": "大脑超过这个时间还没好，小妖就不等了，并告诉你。"
+  },
+  "phone.requests.retries.title": {
+    "note": "Row title: how many retries.",
+    "en": "Tries again",
+    "es": "Reintentos",
+    "zh-Hans": "再试几次"
+  },
+  "phone.requests.retries.info": {
+    "note": "Help for retries.",
+    "en": "How many times the Imp asks again when the internet drops. Wrong keys are never tried again.",
+    "es": "Cuántas veces vuelve a preguntar el Imp si se corta internet. Las claves erróneas no se reintentan.",
+    "zh-Hans": "网络断了，小妖再问几次。密钥错了就不会再试。"
+  },
+  "phone.requests.delay.title": {
+    "note": "Row title: first pause.",
+    "en": "First pause",
+    "es": "Primera pausa",
+    "zh-Hans": "第一次停多久"
+  },
+  "phone.requests.delay.info": {
+    "note": "Help for the first pause.",
+    "en": "How long the Imp rests before it asks again.",
+    "es": "Cuánto descansa el Imp antes de volver a preguntar.",
+    "zh-Hans": "小妖再问之前先休息多久。"
+  },
+  "phone.requests.backoff.title": {
+    "note": "Row title: pause growth.",
+    "en": "Longer each time",
+    "es": "Más cada vez",
+    "zh-Hans": "每次更久"
+  },
+  "phone.requests.backoff.info": {
+    "note": "Help for pause growth.",
+    "en": "Each rest is this many times longer than the one before.",
+    "es": "Cada descanso dura este número de veces más que el anterior.",
+    "zh-Hans": "每次休息都比上一次长这么多倍。"
+  },
+  "phone.shake.title": {
+    "note": "Card title: shake to send.",
+    "en": "Shake",
+    "es": "Agitar",
+    "zh-Hans": "摇一摇"
+  },
+  "phone.shake.info": {
+    "note": "Help for shake to send.",
+    "en": "Shake the iPhone next to a linked device and the Imp you moved last goes there. You can undo it.",
+    "es": "Agita el iPhone junto a un dispositivo enlazado y el último Imp que moviste va allí. Puedes deshacerlo.",
+    "zh-Hans": "在已关联的设备旁摇一摇 iPhone，你刚动过的小妖就会过去。可以撤销。"
+  },
+  "phone.shake.hard.title": {
+    "note": "Row title: shake strength.",
+    "en": "How hard",
+    "es": "Fuerza",
+    "zh-Hans": "力度"
+  },
+  "phone.shake.gentle": {
+    "note": "Segment: gentle shake.",
+    "en": "Gentle",
+    "es": "Suave",
+    "zh-Hans": "轻"
+  },
+  "phone.shake.normal": {
+    "note": "Segment: normal shake.",
+    "en": "Normal",
+    "es": "Normal",
+    "zh-Hans": "中"
+  },
+  "phone.shake.firm": {
+    "note": "Segment: firm shake.",
+    "en": "Firm",
+    "es": "Fuerte",
+    "zh-Hans": "重"
+  },
+  "phone.shake.which.title": {
+    "note": "Row title: which device.",
+    "en": "Which device",
+    "es": "Qué dispositivo",
+    "zh-Hans": "哪台设备"
+  },
+  "phone.shake.dir.sides": {
+    "note": "Segment: left or right.",
+    "en": "Left or right",
+    "es": "Izquierda o derecha",
+    "zh-Hans": "左或右"
+  },
+  "phone.shake.dir.any": {
+    "note": "Segment: any direction.",
+    "en": "Any way",
+    "es": "Cualquiera",
+    "zh-Hans": "任意"
+  },
+  "phone.shake.friends.title": {
+    "note": "Row title: ask before sending to a friend.",
+    "en": "Ask first",
+    "es": "Preguntar antes",
+    "zh-Hans": "先问我"
+  },
+  "phone.linked.title": {
+    "note": "Title of the linked devices card.",
+    "en": "Linked",
+    "es": "Enlazados",
+    "zh-Hans": "已关联"
+  },
+  "phone.linked.info": {
+    "note": "Help of the linked devices card.",
+    "en": "Devices linked with this iPhone. Imps can travel between you.",
+    "es": "Dispositivos enlazados con este iPhone. Los Imps pueden viajar entre ustedes.",
+    "zh-Hans": "与这台 iPhone 关联的设备。小妖可以在你们之间旅行。"
+  },
+  "phone.forget.one": {
+    "note": "Button that unlinks one device.",
+    "en": "Forget…",
+    "es": "Olvidar…",
+    "zh-Hans": "忘记…"
+  },
+  "phone.forget.everyone": {
+    "note": "Button that unlinks every device.",
+    "en": "Forget Everyone…",
+    "es": "Olvidar a todos…",
+    "zh-Hans": "忘记所有设备…"
+  },
+  "phone.forget.one.title": {
+    "note": "Alert button, with the device name.",
+    "en": "Forget {name}",
+    "es": "Olvidar {name}",
+    "zh-Hans": "忘记 {name}",
+    "args": {
+      "name": "string"
+    }
+  },
+  "phone.forget.everyone.title": {
+    "note": "Alert button.",
+    "en": "Forget Everyone",
+    "es": "Olvidar a todos",
+    "zh-Hans": "忘记所有设备"
+  },
+  "phone.name.field": {
+    "note": "Placeholder of the field with this device name.",
+    "en": "Name",
+    "es": "Nombre",
+    "zh-Hans": "名称"
+  },
+  "phone.name.title": {
+    "note": "Title of the card with this device name.",
+    "en": "This iPhone",
+    "es": "Este iPhone",
+    "zh-Hans": "这台 iPhone"
+  },
+  "phone.scan.code": {
+    "note": "Button that opens the camera to scan a link code.",
+    "en": "Scan a Code",
+    "es": "Escanear un código",
+    "zh-Hans": "扫描二维码"
+  },
+  "phone.paste.link": {
+    "note": "Button that links from a copied link.",
+    "en": "Paste Link",
+    "es": "Pegar enlace",
+    "zh-Hans": "粘贴链接"
+  },
+  "phone.status.alone": {
+    "note": "Connection pill: no device linked.",
+    "en": "This iPhone",
+    "es": "Este iPhone",
+    "zh-Hans": "本机"
+  },
+  "phone.status.connected": {
+    "note": "Connection pill: linked and connected to a device.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name}",
+    "es": "{name}",
+    "zh-Hans": "{name}"
+  },
+  "phone.status.looking": {
+    "note": "Connection pill: a linked device is not reached yet.",
+    "en": "Looking…",
+    "es": "Buscando…",
+    "zh-Hans": "正在查找…"
+  },
+  "phone.status.devices": {
+    "note": "Connection pill: several devices linked.",
+    "args": {
+      "count": "int"
+    },
+    "en": "{count} devices",
+    "es": "{count} dispositivos",
+    "zh-Hans": "{count} 台设备"
+  },
+  "phone.status.internet": {
+    "note": "Spoken label of the globe in the connection pill.",
+    "en": "Through the internet",
+    "es": "Por internet",
+    "zh-Hans": "通过互联网"
+  },
+  "phone.status.hint": {
+    "note": "Spoken hint of the connection pill.",
+    "en": "Opens Devices",
+    "es": "Abre Dispositivos",
+    "zh-Hans": "打开设备"
+  },
+  "phone.more.label": {
+    "note": "Spoken label of the main screen menu button.",
+    "en": "More",
+    "es": "Más",
+    "zh-Hans": "更多"
+  },
+  "phone.stage.asleep": {
+    "note": "Short state under a sleeping Imp on the main screen.",
+    "en": "Asleep",
+    "es": "Dormido",
+    "zh-Hans": "睡着了"
+  },
+  "phone.stage.throw_hint": {
+    "note": "Empty main screen while another device is nearby.",
+    "en": "Throw an Imp off the side of another screen. It lands here.",
+    "es": "Lanza un Imp por el borde de otra pantalla. Aterriza aquí.",
+    "zh-Hans": "把小妖从另一块屏幕的边缘扔过来，它会落在这里。"
+  },
+  "phone.stage.nobody": {
+    "note": "Door label when the edge leads to no device.",
+    "en": "Nobody here",
+    "es": "Nadie aquí",
+    "zh-Hans": "这里没有人"
+  },
+  "phone.stage.back_to": {
+    "note": "Door label that sends an Imp back to the device it came from.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Back to {name}",
+    "es": "Volver a {name}",
+    "zh-Hans": "回到 {name}"
+  },
+  "phone.about.title": {
+    "note": "Card title: about the app.",
+    "en": "About",
+    "es": "Acerca de",
+    "zh-Hans": "关于"
+  },
+  "phone.version": {
+    "note": "Row title: the app version.",
+    "en": "Version",
+    "es": "Versión",
+    "zh-Hans": "版本"
+  },
+  "phone.appearance.auto": {
+    "note": "Appearance choice: follow the system.",
+    "en": "Auto",
+    "es": "Automático",
+    "zh-Hans": "自动"
+  },
+  "phone.appearance.light": {
+    "note": "Appearance choice.",
+    "en": "Light",
+    "es": "Claro",
+    "zh-Hans": "浅色"
+  },
+  "phone.appearance.dark": {
+    "note": "Appearance choice.",
+    "en": "Dark",
+    "es": "Oscuro",
+    "zh-Hans": "深色"
+  },
+  "phone.code.caption": {
+    "note": "One line under the QR code.",
+    "en": "Scan on the other device",
+    "es": "Escanea en el otro dispositivo",
+    "zh-Hans": "在另一台设备上扫描"
+  },
+  "phone.code.label": {
+    "note": "Spoken name of the QR code.",
+    "en": "Link code",
+    "es": "Código de enlace",
+    "zh-Hans": "关联二维码"
+  },
+  "phone.copy": {
+    "note": "Button: copy the link.",
+    "en": "Copy",
+    "es": "Copiar",
+    "zh-Hans": "拷贝"
+  },
+  "phone.share": {
+    "note": "Button: share the link.",
+    "en": "Share",
+    "es": "Compartir",
+    "zh-Hans": "分享"
+  },
+  "phone.connected": {
+    "note": "State of a linked device that answers.",
+    "en": "Connected",
+    "es": "Conectado",
+    "zh-Hans": "已连接"
+  },
+  "phone.connected_hop": {
+    "note": "State of a linked device reached through The Hop.",
+    "en": "Through the server",
+    "es": "Por el servidor",
+    "zh-Hans": "通过服务器"
+  },
+  "phone.mine": {
+    "note": "Toggle: this linked device is mine.",
+    "en": "Mine",
+    "es": "Mío",
+    "zh-Hans": "我的"
+  },
+  "phone.visiting": {
+    "note": "Imps of another device that are here now.",
+    "en": "Visiting: {names}",
+    "es": "De visita: {names}",
+    "zh-Hans": "来做客：{names}",
+    "args": {
+      "names": "string"
+    }
+  },
+  "phone.with": {
+    "note": "Under an Imp that another device holds.",
+    "en": "With {name}",
+    "es": "Con {name}",
+    "zh-Hans": "在 {name} 那里",
+    "args": {
+      "name": "string"
+    }
+  },
+  "phone.callhome": {
+    "note": "Button: bring an Imp back.",
+    "en": "Call home",
+    "es": "Llamar a casa",
+    "zh-Hans": "叫回家"
+  },
+  "phone.callhome.label": {
+    "note": "Spoken name of the call home button.",
+    "en": "Call {name} home",
+    "es": "Llamar a {name} a casa",
+    "zh-Hans": "把 {name} 叫回家",
+    "args": {
+      "name": "string"
+    }
+  },
+  "phone.forget.title": {
+    "note": "Question above the forget button.",
+    "en": "Forget {name}?",
+    "es": "¿Olvidar a {name}?",
+    "zh-Hans": "忘记 {name}？",
+    "args": {
+      "name": "string"
+    }
+  },
+  "phone.forget.message": {
+    "note": "What forgetting one device does.",
+    "en": "Its Imps come home. To link again, show a new code.",
+    "es": "Sus Imps vuelven a casa. Para enlazar otra vez, muestra un código nuevo.",
+    "zh-Hans": "它的小妖会回家。要再关联，请出示新的二维码。"
+  },
+  "phone.forget_all.title": {
+    "note": "Question above the forget everyone button.",
+    "en": "Forget every device?",
+    "es": "¿Olvidar todos los dispositivos?",
+    "zh-Hans": "忘记所有设备？"
+  },
+  "phone.forget_all.message": {
+    "note": "What forgetting everyone does.",
+    "en": "Every Imp comes home. Link again with a new code.",
+    "es": "Todos los Imps vuelven a casa. Enlaza otra vez con un código nuevo.",
+    "zh-Hans": "所有小妖都会回家。请用新的二维码重新关联。"
+  },
+  "phone.server.choice": {
+    "note": "Spoken name of the server choice.",
+    "en": "Server",
+    "es": "Servidor",
+    "zh-Hans": "服务器"
+  },
+  "phone.server.placeholder_den": {
+    "note": "Example address of a Den.",
+    "en": "den.example.com",
+    "es": "den.example.com",
+    "zh-Hans": "den.example.com"
+  },
+  "phone.server.placeholder_hop": {
+    "note": "Example address of a Hop.",
+    "en": "hop.example.com:4677",
+    "es": "hop.example.com:4677",
+    "zh-Hans": "hop.example.com:4677"
+  },
+  "phone.pair.title": {
+    "note": "Title of the first screen on the iPhone.",
+    "en": "Imp for iPhone",
+    "es": "Imp para iPhone",
+    "zh-Hans": "iPhone 版 Imp"
+  },
+  "phone.pair.tip": {
+    "note": "Help on the first screen.",
+    "en": "Hatch an Imp here, or link another device with a code and throw Imps between them.",
+    "es": "Cría un Imp aquí o enlaza otro dispositivo con un código y lánzense Imps entre ellos.",
+    "zh-Hans": "在这里孵化小妖，或用代码关联其他设备，在它们之间互相扔小妖。"
+  },
+  "phone.pair.show_code": {
+    "note": "Choice: show my link code.",
+    "en": "Show my code",
+    "es": "Mostrar mi código",
+    "zh-Hans": "显示我的代码"
+  },
+  "phone.pair.show_code.detail": {
+    "note": "Detail under Show my code.",
+    "en": "Another device scans it",
+    "es": "Otro dispositivo lo escanea",
+    "zh-Hans": "让另一台设备扫描"
+  },
+  "phone.pair.scan": {
+    "note": "Choice: scan a code.",
+    "en": "Scan a code",
+    "es": "Escanear un código",
+    "zh-Hans": "扫描代码"
+  },
+  "phone.pair.scan.detail": {
+    "note": "Detail under Scan a code.",
+    "en": "From Imp on another device",
+    "es": "De Imp en otro dispositivo",
+    "zh-Hans": "来自另一台设备上的 Imp"
+  },
+  "phone.pair.hatch": {
+    "note": "Choice: hatch an Imp on this iPhone.",
+    "en": "Hatch an Imp",
+    "es": "Criar un Imp",
+    "zh-Hans": "孵化小妖"
+  },
+  "phone.pair.hatch.detail": {
+    "note": "Detail under Hatch an Imp.",
+    "en": "Make one right here",
+    "es": "Haz uno aquí mismo",
+    "zh-Hans": "就在这里创建一个"
+  },
+  "phone.pair.paste": {
+    "note": "Button: paste a link from the clipboard.",
+    "en": "Paste Link",
+    "es": "Pegar enlace",
+    "zh-Hans": "粘贴链接"
+  },
+  "phone.pair.seen_as": {
+    "note": "Title of the field with this iPhone name.",
+    "en": "Other devices see this iPhone as",
+    "es": "Los otros dispositivos ven este iPhone como",
+    "zh-Hans": "其他设备看到这台 iPhone 的名字"
+  },
+  "phone.pair.code.a11y": {
+    "note": "Spoken name of the QR code.",
+    "en": "Link code",
+    "es": "Código de enlace",
+    "zh-Hans": "关联代码"
+  },
+  "phone.pair.share": {
+    "note": "Button: share the link.",
+    "en": "Share Link",
+    "es": "Compartir enlace",
+    "zh-Hans": "分享链接"
+  },
+  "phone.pair.scan_this": {
+    "note": "Hint above the QR code.",
+    "en": "Scan this with Imp on another device",
+    "es": "Escanea esto con Imp en otro dispositivo",
+    "zh-Hans": "用另一台设备上的 Imp 扫描这个"
+  },
+  "phone.pair.scan_other": {
+    "note": "Hint above the camera.",
+    "en": "Scan the code on the other device",
+    "es": "Escanea el código del otro dispositivo",
+    "zh-Hans": "扫描另一台设备上的代码"
+  },
+  "phone.chat.new": {
+    "note": "iPhone: chat new.",
+    "en": "New Chat",
+    "es": "Nuevo chat",
+    "zh-Hans": "新聊天"
+  },
+  "phone.chat.jump_latest": {
+    "note": "iPhone: chat jump latest.",
+    "en": "Jump to latest",
+    "es": "Ir a lo último",
+    "zh-Hans": "跳到最新"
+  },
+  "phone.chat.edit_help": {
+    "note": "iPhone: chat edit help.",
+    "en": "Edit",
+    "es": "Editar",
+    "zh-Hans": "编辑"
+  },
+  "phone.chat.ask_again": {
+    "note": "iPhone: chat ask again.",
+    "en": "Ask Again",
+    "es": "Volver a preguntar",
+    "zh-Hans": "再问一次"
+  },
+  "phone.chat.failed": {
+    "note": "iPhone: chat failed.",
+    "en": "Couldn't answer",
+    "es": "No pudo responder",
+    "zh-Hans": "没能回答"
+  },
+  "phone.chat.no_brain": {
+    "note": "iPhone: chat no brain.",
+    "en": "No brain yet",
+    "es": "Aún sin cerebro",
+    "zh-Hans": "还没有大脑"
+  },
+  "phone.chat.answering": {
+    "note": "iPhone: chat answering.",
+    "args": {
+      "from": "string"
+    },
+    "en": "Answering {from}…",
+    "es": "Respondiendo a {from}…",
+    "zh-Hans": "正在回复 {from}…"
+  },
+  "phone.chat.ask_to": {
+    "note": "iPhone: chat ask to.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Ask {name} to ",
+    "es": "Pídele a {name} que ",
+    "zh-Hans": "请 {name} "
+  },
+  "phone.chat.ask_to.hint": {
+    "note": "iPhone: chat ask to hint.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Starts a message asking {name} to do something.",
+    "es": "Empieza un mensaje pidiéndole algo a {name}.",
+    "zh-Hans": "开始一条请 {name} 做事的消息。"
+  },
+  "phone.chat.message": {
+    "note": "iPhone: chat message.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Message {name}",
+    "es": "Mensaje para {name}",
+    "zh-Hans": "给 {name} 发消息"
+  },
+  "phone.chat.ran_tools": {
+    "note": "iPhone: chat ran tools.",
+    "args": {
+      "count": "int"
+    },
+    "en": "Ran {count} tools",
+    "es": "Usó {count} herramientas",
+    "zh-Hans": "使用了 {count} 个工具"
+  },
+  "phone.stage.delete.title": {
+    "note": "iPhone: stage delete title.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Delete {name}?",
+    "es": "¿Eliminar {name}?",
+    "zh-Hans": "删除 {name}？"
+  },
+  "phone.stage.delete.body": {
+    "note": "iPhone: stage delete body.",
+    "en": "Its chats and keys are forgotten. This can't be undone.",
+    "es": "Se olvidan sus chats y claves. No se puede deshacer.",
+    "zh-Hans": "它的聊天和密钥都会被清除，此操作无法撤销。"
+  },
+  "phone.stage.move.title": {
+    "note": "iPhone: stage move title.",
+    "args": {
+      "imp": "string",
+      "device": "string"
+    },
+    "en": "Move {imp} to {device}?",
+    "es": "¿Mover {imp} a {device}?",
+    "zh-Hans": "把 {imp} 移到 {device}？"
+  },
+  "phone.stage.move.body": {
+    "note": "iPhone: stage move body.",
+    "args": {
+      "imp": "string",
+      "mac": "string"
+    },
+    "en": "{imp} moves in on {mac} for good, and its key goes with it. {mac} asks you to look it over first.",
+    "es": "{imp} se muda a {mac} para siempre y su llave se va con él. {mac} te pide que lo revises antes.",
+    "zh-Hans": "{imp} 将永久搬到 {mac}，它的密钥也会一起带走。{mac} 请你先过目。"
+  },
+  "phone.stage.not_around": {
+    "note": "iPhone: stage not around.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} isn't around",
+    "es": "{name} no está por aquí",
+    "zh-Hans": "{name} 不在附近"
+  },
+  "phone.pair.clipboard_empty": {
+    "note": "iPhone: pair clipboard empty.",
+    "en": "Copy the link from the other device first, then paste it here.",
+    "es": "Primero copia el enlace del otro dispositivo y luego pégalo aquí.",
+    "zh-Hans": "请先在另一台设备上复制链接，再粘贴到这里。"
+  },
+  "phone.pair.clipboard_bad": {
+    "note": "iPhone: pair clipboard bad.",
+    "en": "The clipboard doesn't hold a link from Imp.",
+    "es": "El portapapeles no contiene un enlace de Imp.",
+    "zh-Hans": "剪贴板里没有 Imp 的链接。"
+  },
+  "phone.pair.code_bad": {
+    "note": "iPhone: pair code bad.",
+    "en": "That code isn't from Imp.",
+    "es": "Ese código no es de Imp.",
+    "zh-Hans": "该二维码不是 Imp 的。"
+  },
+  "phone.pair.link_bad": {
+    "note": "iPhone: pair link bad.",
+    "en": "That isn't a link from Imp.",
+    "es": "Ese no es un enlace de Imp.",
+    "zh-Hans": "这不是 Imp 的链接。"
+  },
+  "phone.game.time": {
+    "note": "iPhone: game time.",
+    "args": {
+      "points": "int"
+    },
+    "en": "Time. {points} points",
+    "es": "Tiempo. {points} puntos",
+    "zh-Hans": "时间到。{points} 分"
+  },
+  "phone.game.time_best": {
+    "note": "iPhone: game time best.",
+    "args": {
+      "points": "int"
+    },
+    "en": "Time. {points} points. New best!",
+    "es": "Tiempo. {points} puntos. ¡Nuevo récord!",
+    "zh-Hans": "时间到。{points} 分。新纪录！"
+  },
+  "phone.game.flawless": {
+    "note": "iPhone: game flawless.",
+    "en": "Nothing got away.",
+    "es": "No se escapó ninguna.",
+    "zh-Hans": "一颗也没溜走。"
+  },
+  "phone.game.clean_burn": {
+    "note": "iPhone: game clean burn.",
+    "en": "Clean burn.",
+    "es": "Fuego limpio.",
+    "zh-Hans": "无烟烈焰。"
+  },
+  "phone.game.blaze": {
+    "note": "iPhone: game blaze.",
+    "en": "Blaze. Points count double",
+    "es": "Llamarada. Los puntos valen el doble.",
+    "zh-Hans": "烈焰时刻。得分翻倍。"
+  }
+}

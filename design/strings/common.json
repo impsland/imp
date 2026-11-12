@@ -1,0 +1,133 @@
+{
+  "common.cancel": {
+    "note": "Button that closes a dialog without doing anything.",
+    "en": "Cancel",
+    "es": "Cancelar",
+    "zh-Hans": "取消"
+  },
+  "common.done": {
+    "note": "Button that closes a sheet or panel after changes.",
+    "en": "Done",
+    "es": "Listo",
+    "zh-Hans": "完成"
+  },
+  "common.close": {
+    "note": "Button or label that closes a window or panel.",
+    "en": "Close",
+    "es": "Cerrar",
+    "zh-Hans": "关闭"
+  },
+  "common.back": {
+    "note": "Button that goes one step back.",
+    "en": "Back",
+    "es": "Atrás",
+    "zh-Hans": "返回"
+  },
+  "common.undo": {
+    "note": "Button on a bar that undoes what just happened.",
+    "en": "Undo",
+    "es": "Deshacer",
+    "zh-Hans": "撤销"
+  },
+  "common.try_again": {
+    "note": "Button that repeats something that failed.",
+    "en": "Try again",
+    "es": "Reintentar",
+    "zh-Hans": "重试"
+  },
+  "common.continue": {
+    "note": "Button that goes to the next step.",
+    "en": "Continue",
+    "es": "Continuar",
+    "zh-Hans": "继续"
+  },
+  "common.check": {
+    "note": "Button that tests a setting, such as a Brain or a server.",
+    "en": "Check",
+    "es": "Comprobar",
+    "zh-Hans": "检查"
+  },
+  "common.choose": {
+    "note": "Button that opens a chooser.",
+    "en": "Choose…",
+    "es": "Elegir…",
+    "zh-Hans": "选择…"
+  },
+  "common.on": {
+    "note": "State of a switch.",
+    "en": "On",
+    "es": "Activado",
+    "zh-Hans": "开"
+  },
+  "common.off": {
+    "note": "State of a switch.",
+    "en": "Off",
+    "es": "Desactivado",
+    "zh-Hans": "关"
+  },
+  "common.set_up": {
+    "note": "Button that starts setting something up.",
+    "en": "Set up",
+    "es": "Configurar",
+    "zh-Hans": "设置"
+  },
+  "common.open": {
+    "note": "Button that opens something.",
+    "en": "Open",
+    "es": "Abrir",
+    "zh-Hans": "打开"
+  },
+  "common.add": {
+    "note": "Button that adds an item.",
+    "en": "Add",
+    "es": "Añadir",
+    "zh-Hans": "添加"
+  },
+  "common.remove": {
+    "note": "Button that removes an item.",
+    "en": "Remove",
+    "es": "Quitar",
+    "zh-Hans": "移除"
+  },
+  "common.settings": {
+    "note": "The app-wide settings, in menus and on buttons.",
+    "en": "Settings",
+    "es": "Ajustes",
+    "zh-Hans": "设置"
+  },
+  "common.loading": {
+    "note": "Shown while something loads.",
+    "en": "Loading…",
+    "es": "Cargando…",
+    "zh-Hans": "正在加载…"
+  },
+  "common.help": {
+    "note": "Spoken name of a small help icon that explains the control beside it.",
+    "en": "Help",
+    "es": "Ayuda",
+    "zh-Hans": "帮助"
+  },
+  "common.needs_attention": {
+    "note": "Screen reader value of a settings section that has something to fix.",
+    "en": "Needs attention",
+    "es": "Necesita atención",
+    "zh-Hans": "需要注意"
+  },
+  "common.step": {
+    "note": "Screen reader name of one step of a short flow. The name is the step's own title.",
+    "args": {
+      "number": "int",
+      "total": "int",
+      "name": "string"
+    },
+    "en": "Step {number} of {total}, {name}",
+    "es": "Paso {number} de {total}, {name}",
+    "zh-Hans": "第 {number} 步，共 {total} 步，{name}"
+  },
+  "common.name": {
+    "note": "Label of a name field.",
+    "en": "Name",
+    "es": "Nombre",
+    "zh-Hans": "名称"
+  }
+}

@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- generated from design/components.json, do not edit. Run: node design/generate.mjs -->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Merge ImpTokens.xaml first. Every property of a component is a resource: ImpPebbleRadius, ImpRowMinHeight, ... A colour is the key of its brush. -->
+  <x:String x:Key="ImpPebbleFillBrush">ImpCardBrush</x:String>
+  <x:String x:Key="ImpPebbleFillHoverBrush">ImpCardHoverBrush</x:String>
+  <CornerRadius x:Key="ImpPebbleRadius">16</CornerRadius>
+  <x:Double x:Key="ImpPebblePadding">16</x:Double>
+  <x:Double x:Key="ImpPebbleGap">6</x:Double>
+  <x:String x:Key="ImpPebbleBorder">none</x:String>
+  <x:String x:Key="ImpPebbleShadow">none</x:String>
+  <x:String x:Key="ImpSurfaceFillBrush">ImpSurfaceBrush</x:String>
+  <x:String x:Key="ImpSurfaceTextBrush">ImpTextBrush</x:String>
+  <x:String x:Key="ImpSurfaceBorder">none</x:String>
+  <x:String x:Key="ImpSurfaceGradient">none</x:String>
+  <x:Double x:Key="ImpRowMinHeight">32</x:Double>
+  <x:Double x:Key="ImpRowIconTile">28</x:Double>
+  <x:Double x:Key="ImpRowIconSize">10</x:Double>
+  <x:Double x:Key="ImpRowGap">10</x:Double>
+  <x:Double x:Key="ImpRowTitleSize">13</x:Double>
+  <x:String x:Key="ImpRowTitleColorBrush">ImpTextBrush</x:String>
+  <x:String x:Key="ImpRowHelpColorBrush">ImpMutedBrush</x:String>
+  <x:String x:Key="ImpRowDivider">none</x:String>
+  <x:Double x:Key="ImpIconTileSize">28</x:Double>
+  <CornerRadius x:Key="ImpIconTileRadius">999</CornerRadius>
+  <x:String x:Key="ImpIconTileFillBrush">ImpCardBrush</x:String>
+  <x:String x:Key="ImpIconTileIconColorBrush">ImpTextBrush</x:String>
+  <x:Double x:Key="ImpIconTileIconSize">10</x:Double>
+  <x:String x:Key="ImpButtonPrimaryFillBrush">ImpAccentBrush</x:String>
+  <x:String x:Key="ImpButtonPrimaryTextBrush">ImpOnAccentBrush</x:String>
+  <CornerRadius x:Key="ImpButtonPrimaryRadius">999</CornerRadius>
+  <x:Double x:Key="ImpButtonPrimaryPaddingX">16</x:Double>
+  <x:Double x:Key="ImpButtonPrimaryPaddingY">8</x:Double>
+  <x:Double x:Key="ImpButtonPrimaryMinHeight">32</x:Double>
+  <x:Double x:Key="ImpButtonPrimaryTypeSize">12.5</x:Double>
+  <x:String x:Key="ImpButtonSecondaryFillBrush">ImpCardBrush</x:String>
+  <x:String x:Key="ImpButtonSecondaryFillHoverBrush">ImpCardHoverBrush</x:String>
+  <x:String x:Key="ImpButtonSecondaryTextBrush">ImpTextBrush</x:String>
+  <CornerRadius x:Key="ImpButtonSecondaryRadius">999</CornerRadius>
+  <x:Double x:Key="ImpButtonSecondaryPaddingX">16</x:Double>
+  <x:Double x:Key="ImpButtonSecondaryPaddingY">8</x:Double>
+  <x:Double x:Key="ImpButtonSecondaryMinHeight">32</x:Double>
+  <x:Double x:Key="ImpButtonSecondaryTypeSize">12.5</x:Double>
+  <x:String x:Key="ImpButtonSecondaryBorder">none</x:String>
+  <x:String x:Key="ImpButtonQuietFill">none</x:String>
+  <x:String x:Key="ImpButtonQuietFillHoverBrush">ImpCardHoverBrush</x:String>
+  <x:String x:Key="ImpButtonQuietTextBrush">ImpMutedBrush</x:String>
+  <x:String x:Key="ImpButtonQuietTextHoverBrush">ImpTextBrush</x:String>
+  <CornerRadius x:Key="ImpButtonQuietRadius">999</CornerRadius>
+  <x:Double x:Key="ImpButtonQuietPaddingX">12</x:Double>
+  <x:Double x:Key="ImpButtonQuietPaddingY">8</x:Double>
+  <x:Double x:Key="ImpButtonQuietMinHeight">32</x:Double>
+  <x:Double x:Key="ImpButtonQuietTypeSize">12.5</x:Double>
+  <x:String x:Key="ImpButtonDestructiveFillBrush">ImpErrorBackgroundBrush</x:String>
+  <x:String x:Key="ImpButtonDestructiveTextBrush">ImpDangerBrush</x:String>
+  <CornerRadius x:Key="ImpButtonDestructiveRadius">999</CornerRadius>
+  <x:Double x:Key="ImpButtonDestructivePaddingX">16</x:Double>
+  <x:Double x:Key="ImpButtonDestructivePaddingY">8</x:Double>
+  <x:Double x:Key="ImpButtonDestructiveMinHeight">32</x:Double>
+  <x:Double x:Key="ImpButtonDestructiveTypeSize">12.5</x:Double>
+  <x:String x:Key="ImpButtonDestructiveBorder">none</x:String>
+  <x:String x:Key="ImpSegmentedTrackBrush">ImpCardBrush</x:String>
+  <x:String x:Key="ImpSegmentedSelectedFillBrush">ImpAccentBrush</x:String>
+  <x:String x:Key="ImpSegmentedSelectedTextBrush">ImpOnAccentBrush</x:String>
+  <x:String x:Key="ImpSegmentedTextBrush">ImpMutedBrush</x:String>
+  <CornerRadius x:Key="ImpSegmentedRadius">999</CornerRadius>
+  <x:Double x:Key="ImpSegmentedPadding">4</x:Double>
+  <x:Double x:Key="ImpSegmentedSegmentMinHeight">32</x:Double>
+  <x:Double x:Key="ImpSegmentedTypeSize">12.5</x:Double>
+  <x:Double x:Key="ImpSwitchTrackWidth">40</x:Double>
+  <x:String x:Key="ImpSwitchTrackOffBrush">ImpCardBrush</x:String>
+  <x:String x:Key="ImpSwitchTrackOnBrush">ImpAccentBrush</x:String>
+  <x:String x:Key="ImpSwitchKnobBrush">ImpOnAccentBrush</x:String>
+  <x:Double x:Key="ImpSwitchHit">32</x:Double>
+  <x:String x:Key="ImpFieldFillBrush">ImpWellBrush</x:String>
+  <CornerRadius x:Key="ImpFieldRadius">10</CornerRadius>
+  <x:Double x:Key="ImpFieldPaddingX">10</x:Double>
+  <x:Double x:Key="ImpFieldHeight">32</x:Double>
+  <x:String x:Key="ImpFieldTextBrush">ImpTextBrush</x:String>
+  <x:String x:Key="ImpFieldPlaceholderBrush">ImpFaintBrush</x:String>
+  <x:Double x:Key="ImpFieldTypeSize">13</x:Double>
+  <x:String x:Key="ImpFieldBorder">none</x:String>
+  <x:Double x:Key="ImpFieldFocusRing">2</x:Double>
+  <x:Double x:Key="ImpFieldActionInset">4</x:Double>
+  <CornerRadius x:Key="ImpFieldActionRadius">10</CornerRadius>
+  <x:Double x:Key="ImpFieldActionIcon">12</x:Double>
+  <x:String x:Key="ImpFieldActionTextBrush">ImpMutedBrush</x:String>
+  <x:String x:Key="ImpFieldActionTextHoverBrush">ImpTextBrush</x:String>
+  <x:String x:Key="ImpFieldActionFillHoverBrush">ImpCardHoverBrush</x:String>
+  <x:String x:Key="ImpFieldActionFillPressedBrush">ImpLineBrush</x:String>
+  <x:String x:Key="ImpFieldActionBorder">none</x:String>
+  <x:Double x:Key="ImpInfoTipButton">32</x:Double>
+  <x:Double x:Key="ImpInfoTipGlyph">8</x:Double>
+  <x:String x:Key="ImpInfoTipGlyphColorBrush">ImpMutedBrush</x:String>
+  <x:Double x:Key="ImpInfoTipMaxWidth">280</x:Double>
+  <x:String x:Key="ImpInfoTipFillBrush">ImpRaisedBrush</x:String>
+  <CornerRadius x:Key="ImpInfoTipRadius">16</CornerRadius>
+  <x:Double x:Key="ImpInfoTipPadding">10</x:Double>
+  <x:String x:Key="ImpInfoTipTextBrush">ImpTextBrush</x:String>
+  <x:Double x:Key="ImpInfoTipTypeSize">12.5</x:Double>
+  <x:String x:Key="ImpTintFillInkBrush">ImpInkBrush</x:String>
+  <x:String x:Key="ImpTintFillPaperBrush">ImpPaperBrush</x:String>
+  <x:Double x:Key="ImpTintFillLeast">4.5</x:Double>
+  <x:String x:Key="ImpOnTintInkBrush">ImpInkBrush</x:String>
+  <x:String x:Key="ImpOnTintPaperBrush">ImpPaperBrush</x:String>
+  <x:Double x:Key="ImpOnTintLeast">4.5</x:Double>
+  <x:Double x:Key="ImpLegibleTintLeast">4.5</x:Double>
+  <x:String x:Key="ImpLegibleTintGroundBrush">ImpSurfaceBrush</x:String>
+  <x:String x:Key="ImpLegibleTintRaisedGroundBrush">ImpRaisedBrush</x:String>
+  <x:Double x:Key="ImpSheetBarHeight">32</x:Double>
+  <x:Double x:Key="ImpSheetBarGap">10</x:Double>
+  <x:Double x:Key="ImpSheetBarGlyph">10</x:Double>
+  <x:String x:Key="ImpSheetBarGlyphColorBrush">ImpMutedBrush</x:String>
+  <x:Double x:Key="ImpSheetBarTitleSize">14</x:Double>
+  <x:String x:Key="ImpSheetBarBackground">none</x:String>
+  <x:Double x:Key="ImpStepIndicatorMark">8</x:Double>
+  <x:Double x:Key="ImpStepIndicatorGap">8</x:Double>
+  <x:String x:Key="ImpStepIndicatorDoneBrush">ImpMutedBrush</x:String>
+  <x:String x:Key="ImpStepIndicatorTodoBrush">ImpFaintBrush</x:String>
+  <x:String x:Key="ImpStepIndicatorCurrentBrush">ImpAccentBrush</x:String>
+  <x:Double x:Key="ImpStepIndicatorHit">32</x:Double>
+  <x:Double x:Key="ImpSectionRailItemMinHeight">32</x:Double>
+  <CornerRadius x:Key="ImpSectionRailItemRadius">12</CornerRadius>
+  <x:String x:Key="ImpSectionRailSelectedFillBrush">ImpCardBrush</x:String>
+  <x:String x:Key="ImpSectionRailHoverBrush">ImpCardHoverBrush</x:String>
+  <x:Double x:Key="ImpSectionRailIcon">10</x:Double>
+  <x:Double x:Key="ImpSectionRailGap">4</x:Double>
+  <x:Double x:Key="ImpSectionRailTypeSize">13</x:Double>
+  <x:Double x:Key="ImpPresetGridMinColumn">160</x:Double>
+  <x:Double x:Key="ImpPresetGridGap">8</x:Double>
+  <CornerRadius x:Key="ImpPresetGridRadius">12</CornerRadius>
+  <x:String x:Key="ImpPresetGridFillBrush">ImpCardBrush</x:String>
+  <x:String x:Key="ImpPresetGridSelectedFillBrush">ImpAccentBrush</x:String>
+  <x:String x:Key="ImpPresetGridSelectedTextBrush">ImpOnAccentBrush</x:String>
+  <x:Double x:Key="ImpPresetGridMinHeight">32</x:Double>
+  <x:String x:Key="ImpBubbleFillBrush">ImpRaisedBrush</x:String>
+  <x:String x:Key="ImpBubbleTextBrush">ImpTextBrush</x:String>
+  <CornerRadius x:Key="ImpBubbleRadius">24</CornerRadius>
+  <x:Double x:Key="ImpBubblePadding">12</x:Double>
+  <x:Double x:Key="ImpBubbleTypeSize">13</x:Double>
+  <x:String x:Key="ImpPopoverFillBrush">ImpRaisedBrush</x:String>
+  <CornerRadius x:Key="ImpPopoverRadius">16</CornerRadius>
+  <x:Double x:Key="ImpPopoverPadding">12</x:Double>
+  <x:Double x:Key="ImpPopoverWidth">360</x:Double>
+  <x:String x:Key="ImpPopoverBorder">none</x:String>
+  <x:String x:Key="ImpBarMenuFillBrush">ImpRaisedBrush</x:String>
+  <CornerRadius x:Key="ImpBarMenuRadius">16</CornerRadius>
+  <x:Double x:Key="ImpBarMenuPadding">8</x:Double>
+  <x:Double x:Key="ImpBarMenuRowMinHeight">32</x:Double>
+  <CornerRadius x:Key="ImpBarMenuRowRadius">12</CornerRadius>
+  <x:String x:Key="ImpBarMenuRowHoverBrush">ImpCardHoverBrush</x:String>
+  <x:Double x:Key="ImpBarMenuIconSize">10</x:Double>
+  <x:Double x:Key="ImpBarMenuGap">10</x:Double>
+  <x:Double x:Key="ImpBarMenuTypeSize">13</x:Double>
+  <x:Double x:Key="ImpBarMenuWidth">360</x:Double>
+  <x:String x:Key="ImpUndoBarFillBrush">ImpRaisedBrush</x:String>
+  <x:String x:Key="ImpUndoBarTextBrush">ImpTextBrush</x:String>
+  <CornerRadius x:Key="ImpUndoBarRadius">999</CornerRadius>
+  <x:Double x:Key="ImpUndoBarPadding">12</x:Double>
+  <x:String x:Key="ImpBadgeFillBrush">ImpCardBrush</x:String>
+  <x:String x:Key="ImpBadgeTextBrush">ImpMutedBrush</x:String>
+  <CornerRadius x:Key="ImpBadgeRadius">999</CornerRadius>
+  <x:Double x:Key="ImpBadgePaddingX">6</x:Double>
+  <x:Double x:Key="ImpBadgePaddingY">4</x:Double>
+  <x:Double x:Key="ImpBadgeTypeSize">11.5</x:Double>
+  <x:String x:Key="ImpFocusColorBrush">ImpFocusBrush</x:String>
+  <x:Double x:Key="ImpFocusWidth">2</x:Double>
+  <x:Double x:Key="ImpFocusOffset">2</x:Double>
+
+  <!-- Styles for the components that are one element. The rest are built from the resources above. -->
+  <Style x:Key="ImpPebbleStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource ImpCardBrush}"/>
+    <Setter Property="CornerRadius" Value="16"/>
+    <Setter Property="Padding" Value="16"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style x:Key="ImpSurfaceStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource ImpSurfaceBrush}"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style x:Key="ImpPopoverStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource ImpRaisedBrush}"/>
+    <Setter Property="CornerRadius" Value="16"/>
+    <Setter Property="Padding" Value="12"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style x:Key="ImpBubbleStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource ImpRaisedBrush}"/>
+    <Setter Property="CornerRadius" Value="24"/>
+    <Setter Property="Padding" Value="12"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style x:Key="ImpBarMenuStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource ImpRaisedBrush}"/>
+    <Setter Property="CornerRadius" Value="16"/>
+    <Setter Property="Padding" Value="8"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style x:Key="ImpUndoBarStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource ImpRaisedBrush}"/>
+    <Setter Property="CornerRadius" Value="999"/>
+    <Setter Property="Padding" Value="12"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style x:Key="ImpBadgeStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource ImpCardBrush}"/>
+    <Setter Property="CornerRadius" Value="999"/>
+    <Setter Property="Padding" Value="6,4"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style x:Key="ImpInfoTipStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource ImpRaisedBrush}"/>
+    <Setter Property="CornerRadius" Value="16"/>
+    <Setter Property="Padding" Value="10"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="MaxWidth" Value="280"/>
+  </Style>
+  <Style x:Key="ImpButtonPrimaryStyle" TargetType="Button">
+    <Setter Property="Background" Value="{ThemeResource ImpAccentBrush}"/>
+    <Setter Property="Foreground" Value="{ThemeResource ImpOnAccentBrush}"/>
+    <Setter Property="CornerRadius" Value="999"/>
+    <Setter Property="Padding" Value="16,8"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="FontSize" Value="12.5"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Root" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
+            <ContentPresenter x:Name="Content" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal"/>
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Background" Value="{ThemeResource ImpAccentBrightBrush}"/>
+                    <Setter Target="Content.Foreground" Value="{ThemeResource ImpOnAccentBrush}"/>
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Background" Value="{ThemeResource ImpAccentBrightBrush}"/>
+                    <Setter Target="Root.Opacity" Value="0.6"/>
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Opacity" Value="0.45"/>
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="ImpButtonSecondaryStyle" TargetType="Button">
+    <Setter Property="Background" Value="{ThemeResource ImpCardBrush}"/>
+    <Setter Property="Foreground" Value="{ThemeResource ImpTextBrush}"/>
+    <Setter Property="CornerRadius" Value="999"/>
+    <Setter Property="Padding" Value="16,8"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="FontSize" Value="12.5"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Root" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
+            <ContentPresenter x:Name="Content" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal"/>
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Background" Value="{ThemeResource ImpCardHoverBrush}"/>
+                    <Setter Target="Content.Foreground" Value="{ThemeResource ImpTextBrush}"/>
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Background" Value="{ThemeResource ImpCardHoverBrush}"/>
+                    <Setter Target="Root.Opacity" Value="0.6"/>
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Opacity" Value="0.45"/>
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="ImpButtonQuietStyle" TargetType="Button">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{ThemeResource ImpMutedBrush}"/>
+    <Setter Property="CornerRadius" Value="999"/>
+    <Setter Property="Padding" Value="12,8"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="FontSize" Value="12.5"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Root" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
+            <ContentPresenter x:Name="Content" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal"/>
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Background" Value="{ThemeResource ImpCardHoverBrush}"/>
+                    <Setter Target="Content.Foreground" Value="{ThemeResource ImpTextBrush}"/>
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Background" Value="{ThemeResource ImpCardHoverBrush}"/>
+                    <Setter Target="Root.Opacity" Value="0.6"/>
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Opacity" Value="0.45"/>
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="ImpButtonDestructiveStyle" TargetType="Button">
+    <Setter Property="Background" Value="{ThemeResource ImpErrorBackgroundBrush}"/>
+    <Setter Property="Foreground" Value="{ThemeResource ImpDangerBrush}"/>
+    <Setter Property="CornerRadius" Value="999"/>
+    <Setter Property="Padding" Value="16,8"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="FontSize" Value="12.5"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Root" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
+            <ContentPresenter x:Name="Content" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal"/>
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Background" Value="{ThemeResource ImpErrorBackgroundBrush}"/>
+                    <Setter Target="Content.Foreground" Value="{ThemeResource ImpDangerBrush}"/>
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Background" Value="{ThemeResource ImpErrorBackgroundBrush}"/>
+                    <Setter Target="Root.Opacity" Value="0.6"/>
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Root.Opacity" Value="0.45"/>
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

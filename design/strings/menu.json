@@ -1,0 +1,275 @@
+{
+  "menu.canvas.new_imp": {
+    "note": "Menu item that hatches a new Imp.",
+    "en": "New Imp",
+    "es": "Nuevo Imp",
+    "zh-Hans": "新建 Imp"
+  },
+  "menu.canvas.show_hidden": {
+    "note": "Menu item that brings every hidden Imp back.",
+    "args": {
+      "count": "int"
+    },
+    "en": "Show hidden Imps ({count})",
+    "es": "Mostrar Imps ocultos ({count})",
+    "zh-Hans": "显示隐藏的 Imp（{count}）"
+  },
+  "menu.canvas.background": {
+    "note": "Menu with the background choices.",
+    "en": "Background",
+    "es": "Fondo",
+    "zh-Hans": "背景"
+  },
+  "menu.canvas.settings": {
+    "note": "Menu item that opens the app-wide settings.",
+    "en": "Settings",
+    "es": "Ajustes",
+    "zh-Hans": "设置"
+  },
+  "menu.imp.talk": {
+    "note": "Menu item that opens the Imp's message bubble.",
+    "en": "Talk",
+    "es": "Hablar",
+    "zh-Hans": "说话"
+  },
+  "menu.imp.settings": {
+    "note": "Menu item that opens the settings of one Imp.",
+    "en": "Imp Settings",
+    "es": "Ajustes del Imp",
+    "zh-Hans": "Imp 设置"
+  },
+  "menu.imp.let_out": {
+    "note": "Menu item (desktop only) that lets an Imp out onto the desktop.",
+    "en": "Let out",
+    "es": "Dejar salir",
+    "zh-Hans": "放出来"
+  },
+  "menu.imp.send_home": {
+    "note": "Menu item (desktop only) that puts a free Imp back in the window.",
+    "en": "Send home",
+    "es": "Enviar a casa",
+    "zh-Hans": "送回家"
+  },
+  "menu.imp.hide": {
+    "note": "Menu item that hides an Imp. It then peeks out now and then.",
+    "en": "Hide",
+    "es": "Ocultar",
+    "zh-Hans": "隐藏"
+  },
+  "menu.imp.copy_kit": {
+    "note": "Menu item that copies an Imp as a kit.",
+    "en": "Copy kit",
+    "es": "Copiar kit",
+    "zh-Hans": "复制套件"
+  },
+  "menu.imp.copy_link": {
+    "note": "Menu item that copies a link to an Imp's kit.",
+    "en": "Copy link",
+    "es": "Copiar enlace",
+    "zh-Hans": "复制链接"
+  },
+  "menu.imp.share": {
+    "note": "Menu item that shares an Imp.",
+    "en": "Share",
+    "es": "Compartir",
+    "zh-Hans": "共享"
+  },
+  "menu.imp.goodbye": {
+    "note": "Menu item that says goodbye to an Imp for good. A dialog asks first.",
+    "en": "Goodbye",
+    "es": "Adiós",
+    "zh-Hans": "再见"
+  },
+  "background.theme": {
+    "note": "Background choice: the wall of the dungeon, the default.",
+    "en": "Theme",
+    "es": "Tema",
+    "zh-Hans": "主题"
+  },
+  "background.colour": {
+    "note": "Background choice: one colour.",
+    "en": "Colour",
+    "es": "Color",
+    "zh-Hans": "颜色"
+  },
+  "background.picture": {
+    "note": "Background choice: one picture that fills the window.",
+    "en": "Picture",
+    "es": "Imagen",
+    "zh-Hans": "图片"
+  },
+  "background.tile": {
+    "note": "Background choice: a seamless pattern that repeats.",
+    "en": "Tile",
+    "es": "Mosaico",
+    "zh-Hans": "平铺"
+  },
+  "background.choose_picture": {
+    "note": "Opens a file chooser for a picture or a tile.",
+    "en": "Choose a picture…",
+    "es": "Elegir una imagen…",
+    "zh-Hans": "选择图片…"
+  },
+  "background.choose_colour": {
+    "note": "Opens the colour chooser.",
+    "en": "Choose a colour…",
+    "es": "Elegir un color…",
+    "zh-Hans": "选择颜色…"
+  },
+  "background.tile_hint": {
+    "note": "Hint under the Tile choice.",
+    "en": "A tile repeats to fill the window. Pick a seamless pattern.",
+    "es": "Un mosaico se repite para llenar la ventana. Elige un patrón continuo.",
+    "zh-Hans": "平铺会重复铺满窗口。请选择可无缝衔接的图案。"
+  },
+  "background.picture_failed": {
+    "note": "Error when the chosen file is not a usable picture.",
+    "en": "That picture could not be used. Pick another one.",
+    "es": "No se pudo usar esa imagen. Elige otra.",
+    "zh-Hans": "无法使用这张图片。请换一张。"
+  },
+  "menu.bar.imps": {
+    "note": "Menu bar button that opens the Imps' home window.",
+    "en": "Imps",
+    "es": "Imps",
+    "zh-Hans": "Imp"
+  },
+  "menu.bar.imps_help": {
+    "note": "Tooltip of the Imps button in the menu bar.",
+    "en": "Open the Imps' home",
+    "es": "Abrir la casa de los Imps",
+    "zh-Hans": "打开 Imp 的家"
+  },
+  "menu.bar.hide": {
+    "note": "Menu bar button that hides every Imp on the desktop.",
+    "en": "Hide",
+    "es": "Ocultar",
+    "zh-Hans": "隐藏"
+  },
+  "menu.bar.show": {
+    "note": "Menu bar button that shows the hidden Imps again.",
+    "en": "Show",
+    "es": "Mostrar",
+    "zh-Hans": "显示"
+  },
+  "menu.bar.hide_help": {
+    "note": "Tooltip of the Hide button.",
+    "en": "Hide the Imps on your desktop",
+    "es": "Ocultar los Imps del escritorio",
+    "zh-Hans": "隐藏桌面上的 Imp"
+  },
+  "menu.bar.show_help": {
+    "note": "Tooltip of the Show button.",
+    "en": "Show the Imps again",
+    "es": "Mostrar los Imps otra vez",
+    "zh-Hans": "重新显示 Imp"
+  },
+  "menu.bar.none_out_help": {
+    "note": "Tooltip of the Hide button when no Imp is on the desktop.",
+    "en": "No Imps are out on the desktop",
+    "es": "Ningún Imp está en el escritorio",
+    "zh-Hans": "桌面上没有 Imp"
+  },
+  "menu.bar.settings": {
+    "note": "Menu bar button that opens the settings for all Imps.",
+    "en": "Settings",
+    "es": "Ajustes",
+    "zh-Hans": "设置"
+  },
+  "menu.bar.settings_help": {
+    "note": "Tooltip of the Settings button in the menu bar.",
+    "en": "Settings for all Imps",
+    "es": "Ajustes de todos los Imps",
+    "zh-Hans": "所有 Imp 的设置"
+  },
+  "menu.bar.quit": {
+    "note": "Menu bar button that quits the app.",
+    "en": "Quit",
+    "es": "Salir",
+    "zh-Hans": "退出"
+  },
+  "menu.bar.quit_help": {
+    "note": "Tooltip of the Quit button.",
+    "en": "Quit Imp",
+    "es": "Salir de Imp",
+    "zh-Hans": "退出 Imp"
+  },
+  "menu.bar.state.out": {
+    "note": "State of an Imp that is on the desktop.",
+    "en": "Out",
+    "es": "Fuera",
+    "zh-Hans": "在外面"
+  },
+  "menu.bar.state.home": {
+    "note": "State of an Imp that is waiting in the app window.",
+    "en": "At home",
+    "es": "En casa",
+    "zh-Hans": "在家"
+  },
+  "menu.bar.state.hidden": {
+    "note": "State of an Imp that is hidden for now.",
+    "en": "Hidden",
+    "es": "Oculto",
+    "zh-Hans": "藏起来了"
+  },
+  "menu.imp.type": {
+    "note": "Button in an Imp's menu that opens the typing box.",
+    "en": "Type",
+    "es": "Escribir",
+    "zh-Hans": "输入"
+  },
+  "menu.imp.talk_help": {
+    "note": "Tooltip of the Talk button in an Imp's menu.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Talk to {name}",
+    "es": "Hablar con {name}",
+    "zh-Hans": "和{name}说话"
+  },
+  "menu.imp.type_help": {
+    "note": "Tooltip of the Type button in an Imp's menu.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Type to {name}",
+    "es": "Escribir a {name}",
+    "zh-Hans": "给{name}打字"
+  },
+  "menu.canvas.devices": {
+    "note": "Menu item that opens Devices.",
+    "en": "Devices",
+    "es": "Dispositivos",
+    "zh-Hans": "设备"
+  },
+  "menu.imp.new_chat": {
+    "note": "Imp menu item that starts a fresh chat.",
+    "en": "New chat",
+    "es": "Chat nuevo",
+    "zh-Hans": "新对话"
+  },
+  "menu.imp.talks": {
+    "note": "Imp menu item that opens what the Imp said with other Imps.",
+    "en": "Talks",
+    "es": "Charlas",
+    "zh-Hans": "对话记录"
+  },
+  "menu.imp.send_to": {
+    "note": "Imp menu item that sends the Imp to a device.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Send to {name}",
+    "es": "Enviar a {name}",
+    "zh-Hans": "发送到 {name}"
+  },
+  "menu.imp.move_to": {
+    "note": "Imp menu item that moves the Imp to a Mac for good.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Move to {name}",
+    "es": "Mover a {name}",
+    "zh-Hans": "移到 {name}"
+  }
+}

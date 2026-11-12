@@ -1,0 +1,273 @@
+import ImpDesign
+import ImpKit
+import SwiftUI
+
+/// An Imp talking with another Imp, above its head: who (a chip in the other Imp's colour), and
+/// what it says. The question shows once, in the bubble of the Imp that asks it: the one asked is a
+/// chip with thinking dots, and its answer a chip with the answer (and a muted line of the question,
+/// since the asking bubble is gone by then). The same talk the Mac shows; it stays out of your chat. An answer with sound is the Imp *speaking*: the bubble's rim glows in the
+/// speaker's colours and swells with the voice, and a small orb (tap it to pause or play) follows
+/// the loudness. Pictures show as thumbnails, videos as a small player.
+struct SpeechBubble: View {
+    var speech: LinkSpeech
+    /// The Imp saying it: its colours glow around a spoken reply, and its folder holds the files.
+    var speaker: LinkImp
+    var hub: LinkHub
+    /// A pocket Imp has no folder on the Mac: only what's on the web can load.
+    var isPocket = false
+    /// Where the tail points, from the bubble's middle (points).
+    var tailOffset: CGFloat = 0
+    var onDismiss: () -> Void
+
+    /// The reply's blocks, without the files this phone can't get.
+    private var blocks: [MarkdownBlock] {
+        guard speech.role == .reply else { return [] }
+        return SpeechBlocks.parse(speech.text).filter { block in
+            switch block {
+            case .image(let url, _, _), .media(let url, _, _, _): !isPocket || LinkFiles.isWeb(url.absoluteString)
+            default: true
+            }
+        }
+    }
+
+    /// About how big a bubble comes out, to keep bubbles from landing on each other (the tail's
+    /// reach included). The real size is up to the layout.
+    static func size(of speech: LinkSpeech) -> CGSize {
+        func lines(_ text: String, perLine: Int) -> Int {
+            text.split(separator: "\n", omittingEmptySubsequences: false).reduce(0) { $0 + max(1, ($1.count + perLine - 1) / perLine) }
+        }
+        let tail: CGFloat = 12
+        switch speech.role {
+        case .asked:
+            return CGSize(width: max(96, 40 + 7.5 * CGFloat(speech.peer.count + 6)), height: 54 + tail)
+        case .asking:
+            return CGSize(width: 250, height: 58 + 19 * CGFloat(min(5, lines(speech.question, perLine: 32))) + tail)
+        case .reply:
+            let body = min(speech.text.contains("![") ? 210 : 150, 20 * CGFloat(lines(speech.text, perLine: 34)))
+            return CGSize(width: 250, height: 62 + body + tail)
+        }
+    }
+
+    var body: some View {
+        let blocks = blocks
+        let speaks = !Markdown.voices(blocks).isEmpty && StageVoice.shared.speaking == speech.id.uuidString
+        let media = blocks.contains { SpeechBlocks.kind(of: $0) == .media }
+        VStack(alignment: .leading, spacing: Spacing.small) {
+            HStack(spacing: Spacing.snug) {
+                Circle().fill(Color.imp(speech.hue)).frame(width: Sizing.dot, height: Sizing.dot)
+                Text(header)
+                    .font(Typeface.small.weight(.bold))
+                    .foregroundStyle(LegibleTint(Color.imp(speech.hue), on: .raised))
+                    .lineLimit(1)
+                    .frame(maxWidth: Sizing.bubbleHeader, alignment: .leading)
+            }
+            if speech.role == .reply {
+                Text("“\(speech.question)”")
+                    .font(Typeface.small)
+                    .foregroundStyle(Tone.muted)
+                    .lineLimit(1)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: Spacing.snug) {
+                        ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in row(block) }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .scrollBounceBehavior(.basedOnSize)
+                .frame(maxHeight: media ? 210 : 150)
+                .fixedSize(horizontal: false, vertical: true)
+            } else {
+                // The one asked only thinks: the question is in the asker's bubble.
+                if speech.role == .asking {
+                    Text(speech.question)
+                        .font(Typeface.label)
+                        .foregroundStyle(Tone.text)
+                        .lineLimit(5)
+                }
+                Dots().padding(.top, Spacing.hairline)
+            }
+        }
+        .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.cozy)
+        // The stage proposes this bubble a 1 point wide anchor, so a bubble with no width of its own
+        // (the one asked) takes its ideal width instead of the proposal, or it wraps a letter per line.
+        .frame(width: speech.role == .asked ? nil : 250, alignment: .leading)
+        .fixedSize(horizontal: speech.role == .asked, vertical: false)
+        .background {
+            // A bubble floats over the stage: it is the one thing here that sits on `raised` and casts a shadow.
+            BubbleShape(tail: tailOffset)
+                .fill(Tone.raised)
+                .overlay {
+                    // Its Imp's colour washes the bubble only while the voice plays.
+                    if speaks { VoiceWash(hue: speaker.hue, owner: speech.id.uuidString, tail: tailOffset) }
+                }
+                .shadow(color: Elevation.cardColor, radius: Spacing.small, y: Spacing.tight)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture(perform: onDismiss)
+        .accessibilityElement(children: media ? .contain : .combine)
+        .accessibilityHint("Double-tap to dismiss.")
+    }
+
+    /// One block of a reply, compact.
+    @ViewBuilder private func row(_ block: MarkdownBlock) -> some View {
+        switch block {
+        case .paragraph(let s):
+            text(s)
+        case .heading(_, let s):
+            text(s).fontWeight(.bold)
+        case .listItem(let marker, let depth, let s):
+            HStack(alignment: .firstTextBaseline, spacing: Spacing.snug) {
+                Text(marker ?? "").foregroundStyle(Tone.accent)
+                text(s)
+            }
+            .font(Typeface.label)
+            .padding(.leading, CGFloat(depth) * 10)
+        case .quote(let s):
+            text(s).italic().foregroundStyle(Tone.muted)
+        case .code(let code):
+            Text(code).font(Typeface.mono).foregroundStyle(Tone.text).lineLimit(8)
+        case .table(let table):
+            Text(([table.header] + table.rows).map { $0.map { String($0.characters) }.joined(separator: "  ·  ") }.joined(separator: "\n"))
+                .font(Typeface.small).foregroundStyle(Tone.muted)
+        case .rule:
+            Capsule().fill(Tone.card).frame(height: Spacing.tight)
+        case .image(let url, let alt, _):
+            BubbleThumb(ref: url.absoluteString, alt: alt, imp: speaker.id, hub: hub)
+        case .media(let url, let title, let kind, let auto):
+            if kind == .audio {
+                BubbleVoice(ref: url.absoluteString, title: title, auto: auto, speech: speech.id, speaker: speaker, hub: hub)
+            } else {
+                BubbleVideo(ref: url.absoluteString, title: title, auto: auto, speech: speech.id, speaker: speaker, hub: hub)
+            }
+        }
+    }
+
+    private func text(_ s: AttributedString) -> some View {
+        Text(s)
+            .font(Typeface.label)
+            .foregroundStyle(Tone.text)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var header: String {
+        switch speech.role {
+        case .asked: String(localized: "\(speech.peer) asks")
+        case .reply: String(localized: "Reply to \(speech.peer)")
+        case .asking: String(localized: "Asking \(speech.peer)…")
+        }
+    }
+
+    private struct Dots: View {
+        var body: some View {
+            PacedTimeline(activity: .calm) { date in
+                let t = date.timeIntervalSinceReferenceDate
+                HStack(spacing: Spacing.tight) {
+                    ForEach(0..<3, id: \.self) { i in
+                        Circle().fill(Tone.muted).frame(width: Spacing.snug, height: Spacing.snug)
+                            .opacity(0.35 + 0.65 * max(0, sin(t * 5 - Double(i) * 0.8)))
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// The bubble's fill while its Imp speaks: one flat wash of the Imp's colour inside the bubble's
+/// shape (the Mac's look, `VoiceAura`), swelling a little with the voice. No outline, no glow. It
+/// only exists while a voice plays and is paced by the energy policy.
+private struct VoiceWash: View {
+    var hue: Double
+    var owner: String
+    var tail: CGFloat
+
+    var body: some View {
+        PacedTimeline(activity: .lively) { date in
+            let t = date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 3600)
+            let voice = StageVoice.shared.level(owner: owner, at: t)
+            let presence = voice.playing ? 0.5 + 0.5 * voice.level : 0.22
+            BubbleShape(tail: tail)
+                .fill(Palette.RGB(h: hue, s: 0.7, b: 1).color.opacity(Opacity.tintFill * presence))
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}
+
+/// A reply's Markdown parsed once, not on every frame the stage draws.
+@MainActor
+enum SpeechBlocks {
+    enum Kind { case text, media }
+    private static var cache: [String: [MarkdownBlock]] = [:]
+
+    static func parse(_ text: String) -> [MarkdownBlock] {
+        if let blocks = cache[text] { return blocks }
+        if cache.count > 12 { cache.removeAll() }
+        let blocks = Markdown.blocks(text)
+        cache[text] = blocks
+        return blocks
+    }
+
+    static func kind(of block: MarkdownBlock) -> Kind {
+        switch block {
+        case .image, .media: .media
+        default: .text
+        }
+    }
+}
+
+/// A rounded bubble with a tail at the bottom, `tail` points from the middle, drawn as one outline
+/// (so the border runs around the tail too, with no seam across its base). Held back from the
+/// corners, the tail leans the rest of the way toward whatever it points at.
+struct BubbleShape: Shape {
+    var tail: CGFloat
+    var radius: CGFloat = 16
+    /// Half the tail's base, and how far it reaches below the bubble.
+    var halfBase: CGFloat = 11
+    var length: CGFloat = 12
+
+    var animatableData: CGFloat {
+        get { tail }
+        set { tail = newValue }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        let r = min(radius, rect.width / 2, rect.height / 2)
+        let margin = r + halfBase + 2
+        let wanted = rect.midX + tail
+        // The base stays on the straight edge; the tip leans toward where it should point.
+        let x = rect.width > 2 * margin ? min(max(wanted, rect.minX + margin), rect.maxX - margin) : rect.midX
+        let lean = min(max(wanted - x, -halfBase * 0.9), halfBase * 0.9)
+        let tip = CGPoint(x: x + lean, y: rect.maxY + length)
+        let w = halfBase, bottom = rect.maxY
+
+        var p = Path()
+        p.move(to: CGPoint(x: rect.minX + r, y: rect.minY))
+        p.addLine(to: CGPoint(x: rect.maxX - r, y: rect.minY))
+        p.addArc(tangent1End: CGPoint(x: rect.maxX, y: rect.minY), tangent2End: CGPoint(x: rect.maxX, y: rect.minY + r), radius: r)
+        p.addLine(to: CGPoint(x: rect.maxX, y: bottom - r))
+        p.addArc(tangent1End: CGPoint(x: rect.maxX, y: bottom), tangent2End: CGPoint(x: rect.maxX - r, y: bottom), radius: r)
+        // The tail: it curves out of the edge and narrows to a soft point, and back.
+        p.addLine(to: CGPoint(x: x + w, y: bottom))
+        // Leaning, both sides sweep the same way (so neither folds back over the other).
+        let sweep = lean * 0.65
+        p.addCurve(to: tip,
+                   control1: CGPoint(x: x + w * 0.3 + sweep, y: bottom),
+                   control2: CGPoint(x: tip.x + w * 0.12, y: bottom + length * 0.5))
+        p.addCurve(to: CGPoint(x: x - w, y: bottom),
+                   control1: CGPoint(x: tip.x - w * 0.12, y: bottom + length * 0.5),
+                   control2: CGPoint(x: x - w * 0.3 + sweep, y: bottom))
+        p.addLine(to: CGPoint(x: rect.minX + r, y: bottom))
+        p.addArc(tangent1End: CGPoint(x: rect.minX, y: bottom), tangent2End: CGPoint(x: rect.minX, y: bottom - r), radius: r)
+        p.addLine(to: CGPoint(x: rect.minX, y: rect.minY + r))
+        p.addArc(tangent1End: CGPoint(x: rect.minX, y: rect.minY), tangent2End: CGPoint(x: rect.minX + r, y: rect.minY), radius: r)
+        p.closeSubpath()
+        return p
+    }
+}
+
+/// Inline Markdown (bold, italics, code, links) for short texts.
+enum Inline {
+    static func text(_ s: String) -> AttributedString {
+        let options = AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+        return (try? AttributedString(markdown: s, options: options)) ?? AttributedString(s)
+    }
+}

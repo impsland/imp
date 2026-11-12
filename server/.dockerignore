@@ -1,6 +1,0 @@
-target
-.env
-.git
-.agent-logs
-*.md
-!PROTOCOL.md
