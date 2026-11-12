@@ -1,9 +1,9 @@
 # Transfer by shaking
 
 Stand next to a linked device, shake the iPhone, and the Imp you were last playing with flies off the
-screen and lands on the other device. The rules live in `Sources/ImpKit/Link/ShakeTransfer.swift`
-(pure, tested in `Tests/ImpKitTests/ShakeTransferTests.swift`). The iPhone side is `iOS/Imp/PhoneStage.swift`
-(`shaken(from:)`) and `iOS/Imp/ShakeSend.swift`.
+screen and lands on the other device. The rules live in `apple/Sources/ImpKit/Link/ShakeTransfer.swift`
+(pure, tested in `apple/Tests/ImpKitTests/ShakeTransferTests.swift`). The iPhone side is `apple/iOS/Imp/Stage/PhoneStage.swift`
+(`shaken(from:)`) and `apple/iOS/Imp/Link/ShakeSend.swift`.
 
 ## What already existed, and what this reuses
 
@@ -11,7 +11,7 @@ screen and lands on the other device. The rules live in `Sources/ImpKit/Link/Sha
   whole phone (`JoltDetector.thrown`) already send the focused Imp through a "door" to a device.
 - The menu send ("Send to `<device>`" on the iPhone, "Send `<Imp>` to `<device>`…" on the Mac) already uses
   `LinkNode.pass`, which is a visit: the Imp stays that device's own and a visitor lives on the other.
-- A shake used to make the Imps dizzy. It still does when there is nothing to send or nowhere to send it.
+- A shake makes the Imps dizzy when there is nothing to send or nowhere to send it.
 - Shake detection is the `JoltDetector` on the shared `TiltSource`. There is still one motion manager.
 
 ## The interaction

@@ -1,17 +1,19 @@
-# Imp Link 2
+# Imp Link
 
 How Imps travel between devices. Any Mac or iPhone running Imp can show an invite code and any other
 can scan it. A device may have many links at once, some it was invited to and some it invited. Imps
 are thrown off the side of one screen and land on another, and an Imp keeps thinking at its **home**
 (the device it was hatched on) wherever its body is.
 
-The Hop (the relay on an Imp server, see `server/PROTOCOL.md`) is one of the ways to reach a device.
-It only ever carries the encrypted bytes described here.
+The Hop (the relay run by the Imp project or by you, see `spec/PROTOCOL.md`) is one of the ways to reach
+a device. It only ever carries the encrypted bytes described here. The Hop is its own setting, apart from
+the Den: linking uses only the Hop address, and a device with no Hop still links on the same network.
+Settings under Devices explains what a missing Hop, or a missing Den, leaves out.
 
 ## Words
 
 - **Device**: a Mac or an iPhone. It has an id (a UUID), a name people recognise, a kind (`mac` or
-  `phone`) and an Ed25519 signing key that never leaves it.
+  `phone`) and a secret seed that never leaves it. The seed makes the Noise key the link pins and the Ed25519 key that names its room at the Hop.
 - **Home**: the device an Imp's brain lives on: its models, keys, tools and chats. Mac Imps live on
   their Mac, Imps hatched on an iPhone on that iPhone.
 - **Holder**: the device an Imp's body is on right now. At home, holder and home are the same.
@@ -27,53 +29,54 @@ It only ever carries the encrypted bytes described here.
 The inviting device (the host) shows a QR code with:
 
 ```
-implink://join?v=2&d=<device id>&n=<name>&t=<mac|phone>&k=<host public key>&door=<door key>&inv=<invite key>
+implink://join?d=<device id>&n=<name>&t=<mac|phone>&k=<host public key>&r=<host room key>&door=<door key>&inv=<invite key>
               [&h=<host1,host2,…>][&p=<port>][&hop=<host:port>]
 ```
 
-Binary values are base64url without padding. `k` is the host's Ed25519 public key (32 bytes): the guest
-pins it from the code itself, so nobody can pretend to be the host later. `door` (32 random bytes) opens
-the host's TLS (below); it stays the same until the host forgets everyone. `inv` (32 random bytes) lets a
-device become a linked peer; the host makes a new one each time it shows a code, and accepts it for 15
-minutes after the code was last on screen. A code may be scanned by several devices in that time.
+Binary values are base64url without padding. `k` is the host's Noise static public key (32 bytes): the guest
+pins it from the code itself, so nobody can pretend to be the host later. `r` is the key that names the
+host's room at the Hop. `door` (32 random bytes) opens the host's sessions (below). It stays the same until
+the host forgets everyone. `inv` (32 random bytes) lets a device become a linked peer. The host makes a new
+one each time it shows a code, and accepts it for 15 minutes after the code was last on screen. A code may be
+scanned by several devices in that time. A repeated name, a missing key or a key of the wrong length makes
+the code invalid.
 
 ## Connections
 
 A device listens on TCP port 47824 (another port if that one is taken), advertises
-`_imp-link._tcp` with Bonjour (TXT `d=<device id>`), and, when an Imp server is set, waits at its Hop.
+`_imp-link._tcp` with Bonjour (TXT `d=<device id>`), and, when a Hop is set, waits there.
 The guest dials: Bonjour first, then the host names in the code or the latest `routes`, the Hop last.
 iPhones only take part while the app is in front.
 
-**At the Hop** the room is the host's own public key, so only the host can wait in it, and the gate is the
-public half of an Ed25519 key every guest derives from the door key (seed = HMAC-SHA256(key: door,
-"imp-hop gate v2")). The host forwards each spliced connection to its own listener on loopback, so TLS
-ends in the same place as on Wi-Fi.
+**At the Hop** the room is the host's own room key, so only the host can wait in it, and the gate is the
+public half of an Ed25519 key every guest derives from the door key. The Hop splices the two connections
+and the Noise session runs through it, end to end, exactly as it does on Wi-Fi. The Hop bytes are in
+`spec/PROTOCOL.md`.
 
-**TLS.** TLS 1.2 only, cipher suite `TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256` (0xCCAC): the pre-shared
-key keeps strangers out and the ephemeral ECDH gives forward secrecy, so even another invited device that
-knows the door key can't read a recorded session. PSK = HMAC-SHA256(key: door, "imp-link psk v2"),
-identity `imp-link/2`.
+**Session.** The core runs `Noise_IKpsk2_25519_ChaChaPoly_BLAKE2s`. The guest knows the host's static key.
+The pre-shared key is derived from the door key, so a device that does not know it cannot finish the
+handshake. The ephemeral keys give forward secrecy, so even another invited device that knows the door key
+can't read a recorded session. The prologue names the protocol, so a device that speaks something else fails
+the handshake. Why this construction: [Threat model](/architecture/threat-model).
 
-**Binding.** Both sides take a 32-byte TLS exporter value with the label `EXPORTER-imp-link/2`
-(`sec_protocol_metadata_create_secret`). Every proof below signs or MACs it, so a proof is only good on
-the connection it was made on and can't be relayed.
+On the wire every handshake message and every encrypted chunk is a 2-byte big-endian length and that many
+bytes. A frame of any size is cut into chunks.
 
-**Handshake.** The first frame each way:
+**Handshake.** Noise authenticates both static keys, so nothing else signs. After the two Noise messages:
 
-1. guest → host `hello`: device id, name, kind, public key, `proof` = Ed25519 signature of
-   `"imp-link/2 hello" ‖ binding ‖ host device id (16 bytes)`, and, only when joining with an invite,
-   `join` = HMAC-SHA256(key: inv, `"imp-link/2 join" ‖ binding`).
-2. The host checks the signature. A device it has a link with must use the pinned key (another key: the
+1. guest → host `hello`: device id, name, kind, room key and, only when joining with an invite,
+   `join` = HMAC-SHA256(key: inv, `"imp-link join" ‖ handshake hash`). The handshake hash belongs to this
+   session alone, so a proof is only good on the connection it was made on and can't be relayed.
+2. The host checks the static key. A device it has a link with must use the pinned key (another key: the
    connection closes). An unknown device with a valid `join` for a fresh invite becomes a linked peer and
    its key is pinned. Any other device is a **visitor**: it may only claim and use tickets, and is closed if
    it holds no valid ticket within 15 seconds.
-3. host → guest `welcome`: device id, name, kind, `linked` (true for a peer), `proof` = Ed25519 signature of
-   `"imp-link/2 welcome" ‖ binding ‖ guest device id`. The guest checks it with the key it pinned (from
-   the code, the link, or the Imp's home card) and closes on a mismatch. A guest that expected a link and
-   hears `linked: false` learns the host forgot it.
+3. host → guest `welcome`: device id, name, kind and `linked` (true for a peer). The guest already checked the
+   host's key against the one it pinned (from the code, the link, or the Imp's home card) and Noise closes on
+   a mismatch. A guest that expected a link and hears `linked: false` learns the host forgot it.
 
 Two devices keep one connection between them. If both dial, the one dialled by the device with the
-smaller id stays. Frames are a 4-byte big-endian length and that many bytes of JSON (at most 4 MiB).
+smaller id stays. Frames are a 4-byte big-endian length and that many bytes of JSON (at most 4 MiB), inside the encrypted stream.
 Either side pings every 20 seconds and a connection silent for 45 seconds is closed.
 
 ## Throwing
@@ -97,7 +100,7 @@ answered again, never taken twice. A receiver declines an Imp that is one of its
 already has a visit of from another device, and an Imp it is the home of unless the sender is its holder.
 A device has at most 8 throws from one sender waiting for its app (the rest are declined `full`), and a
 waiting throw is never forgotten to make room. A throw of an Imp of the thrower's own that no answer came
-for is called home (the receiver is told `gone`); it is remembered in the book, so after a restart the
+for is called home (the receiver is told `gone`). It is remembered in the book, so after a restart the
 same happens to any that were in the air. A `took` that arrives after that: for one of the thrower's Imps
 it answers `gone`, for a visit that was passed on the body leaves (the receiver has it). The thrower
 remembers its last 256 timed-out throws for 10 minutes for this.
@@ -136,7 +139,7 @@ The home of the target only lets an Imp ask if the asker is on the screen the ta
 target is here and the asker is on this device's stage, or the target is away and the asker is on the
 holder's stage. A forwarded message must also come from a device whose stage has the asker, or which is
 the asker's home according to a stage we know. Anything else is answered as failed, and the app never
-hears of it. A question id already in flight is refused; one device may have 16 questions in flight
+hears of it. A question id already in flight is refused. One device may have 16 questions in flight
 through another (more are answered `busy`).
 
 The tool `imp_message` has an optional `conversation` argument (`new` or `continue`) when the setting
@@ -177,13 +180,13 @@ received and drops the file if they differ. A reference whose owner Workspace is
 as "on another device" there. The Workspace stays with its home when an Imp visits, so a visitor's files
 are fetched from the home, not copied to the host.
 
-Shared test vectors (paths, references, checksums) are in `Tests/Fixtures/workspace-refs.json`.
+Shared test vectors (paths, references, checksums) are in `spec/fixtures/workspace-refs.json`.
 
 ## Trust
 
-A link may be marked **trusted**: one of the owner's own devices (`setTrusted`, off by default; visitors
+A link may be marked **trusted**: one of the owner's own devices (`setTrusted`, off by default. Visitors
 and unknown devices never are). The node only knows and tells (`isTrusted`, and `isTrusted(_:from:)` for a
-request or message); the apps decide what an Imp may do:
+request or message). The apps decide what an Imp may do:
 
 - An Imp asked (`ask`) from a holder that isn't trusted, and an Imp asked by an Imp whose home is neither
   this device nor a trusted one, answers without tools.
@@ -204,17 +207,14 @@ device's Imps home from it and sends its visiting Imps home. Forgetting everyone
 so every old code and link stops working. A device that hears it was forgotten (`bye`, or `linked: false`
 in the welcome) does the same on its side, and its app is told which Imps came home and which went home.
 
-## Versions
+## Compatibility
 
-| thing | now | notes |
-|-------|-----|-------|
-| Protocol | `2` | Each side says its own in `hello` and `welcome`. The invite carries `v=2` and a code with another `v` is refused. |
-| Hop handshake | `2` | Byte 7 of the Hop hello and the `imp-hop/2` proof tag (see `server/PROTOCOL.md`). |
-| TLS labels | `imp-link/2`, `imp-link psk v2` | Bumped together with the protocol. |
-
-A message type or a field a side does not know is ignored, so a newer peer may add messages without
-breaking an older one. A change an older peer would misread (the handshake, a field that means something
-else) is a new protocol version.
+Nothing on the wire carries a version number. A change an older device would misread (the handshake, a field
+that means something else) changes the Noise prologue and the protocol labels, so the older device fails the
+handshake cleanly and the app says to update both devices. A message type or a field a side does not know is
+ignored, so a newer peer may add messages without breaking an older one. The Hop and the apps are released
+together: an older Hop can't read a newer hello, and a newer Hop rejects an older one, so the app shows that
+the Hop can't be used.
 
 ## Messages
 
@@ -231,8 +231,8 @@ message depends on who sent it.
 
 | message | fields | from, to |
 |---------|--------|----------|
-| `hello` | `device`, `name`, `kind` (`mac` or `phone`), `key`, `version`, `proof`, optional `join` | guest, host, first frame |
-| `welcome` | `device`, `name`, `kind`, `version`, `linked`, `proof` | host, guest, first answer |
+| `hello` | `device`, `name`, `kind` (`mac` or `phone`), `room`, optional `join` | guest, host, first frame |
+| `welcome` | `device`, `name`, `kind`, `linked` | host, guest, first answer |
 | `ping`, `pong` | none | either |
 | `bye` | `reason` (for people, at most 200 characters) | either |
 | `routes` | `door`, `routes` (`hosts`, `port`, optional `hop`) | either, after the handshake and on change |
@@ -262,18 +262,18 @@ message depends on who sent it.
 | `adopt` | `transfer`, `imp`, `kit` (kit text), `secrets` (`apiKey?`, `headers`), `entry` | pocket device, Mac |
 | `adopted` | `transfer` | Mac, pocket device (a no is `declined`) |
 
-Optional fields are absent or `null`. Receiver limits (`isSound` in `LinkMessage.swift`): names up to 160
+Optional fields are absent or `null`. Receiver limits (`is_sound` in the core): names up to 160
 characters, texts up to 20 000, `bye` up to 200, a `reason` of `fileFailed` up to 500, a file `ref` up
-to 4096, keys, doors and tickets exactly 32 bytes, proofs 64, up to 64 staged Imps, 500 turns of 200
+to 4096, keys, doors and tickets exactly 32 bytes, up to 64 staged Imps, 500 turns of 200
 steps, 256 beats, 300 talk lines, file parts up to 1 MiB and files up to 512 MiB. A message over a limit
 is ignored.
 
-Test vectors for every message, and for ones that must be rejected: `Tests/Fixtures/link-messages.json`.
+Test vectors for every message, and for ones that must be rejected: `spec/fixtures/link-messages.json`.
 The core models are described in [Core models](/concepts/models).
 
 ## Limits
 
 16 links, 24 visiting Imps, 32 connections, 4 MiB frames, 20 000-character texts, 120-second answers. A
-connection may send 100 frames a second (a burst of 400); more closes it. A host splices at most 32
-guests at the Hop at once; its waiting connection has 10 seconds to get through the hello and gives up
+connection may send 100 frames a second (a burst of 400). More closes it. A host splices at most 32
+guests at the Hop at once. Its waiting connection has 10 seconds to get through the hello and gives up
 after the Hop's wait (5 minutes) and a minute.

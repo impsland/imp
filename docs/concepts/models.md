@@ -1,11 +1,11 @@
 # Core models
 
 What a new client (Android, Windows, Linux, a server) needs to read and write to work with Imp and
-with other Imps. The Swift types in `Sources/ImpKit` are the reference. This page names the shapes
-and gives JSON examples. The wire protocols are in [Imp Link 2](/connecting/link) (devices) and
-`server/PROTOCOL.md` (Den and Hop). The kit file format is in
+with other Imps. The Swift types in `apple/Sources/ImpKit` are the reference. This page names the shapes
+and gives JSON examples. The wire protocols are in [Imp Link](/connecting/link) (devices) and
+`spec/PROTOCOL.md` (Den and Hop). The kit file format is in
 [Kit format](/sharing/kits). Tests that pin the shapes are listed in
-`Tests/Fixtures/README.md`.
+`spec/fixtures/README.md`.
 
 General rules for every JSON in Imp:
 
@@ -19,13 +19,11 @@ General rules for every JSON in Imp:
 
 ## Versions
 
-| thing | version | where it lives | meaning |
-|-------|---------|----------------|---------|
-| Device link protocol | `2` | `LinkProtocol.version`, `hello` and `welcome`, the invite `v=2` | A side ignores message types it does not know, so a newer peer can add some. |
-| Hop handshake | `2` | byte 7 of the hello, `imp-hop/2` proof tag | Changes the handshake bytes. |
-| Kit format | `1` to `3` | `"imp"` in a kit | Oldest reader that understands the kit. Writers use the lowest that fits. |
-| Den API | `v1` | the `/v1/` path | Added fields are not a new version. |
-| Browser bridge | hello `version` (default 1) | extension `hello` | Informational. Unknown messages are ignored. |
+No file or message carries a version number. A kit is recognised by its shape: a JSON object with at
+least one of `imps`, `triggers`, `animations` or `mcpServers`. A chat file is an object with a `chat`
+inside. A change an older reader would misread changes the names it looks for, so the older reader
+refuses the file instead of half-reading it. The device link and the Hop work the same way (see
+[Imp Link](/connecting/link)).
 
 ## Imp profile (as shared in a kit, `KitImp`)
 
@@ -78,7 +76,7 @@ A **service** is an OpenAI compatible endpoint. A **brain** picks a service and 
   brain. It has no service at all and sleeps until one is picked.
 - Whether an Imp can think is one rule on every device (`Wakefulness`): at home its own brain decides,
   and a visitor is awake only while its home is connected and says it has a brain (`brain` in
-  [Imp Link 2](/connecting/link)). An Imp that can't think sleeps whatever it is doing, and asking it is refused at once.
+  [Imp Link](/connecting/link)). An Imp that can't think sleeps whatever it is doing, and asking it is refused at once.
 - API keys and header values live in the platform's secure storage (Keychain on Apple systems), never
   in these objects and never in a kit. When a pocket Imp moves to a Mac they travel apart as
   `LinkSecrets` inside `adopt`.
@@ -86,7 +84,7 @@ A **service** is an OpenAI compatible endpoint. A **brain** picks a service and 
   another device.
 - Request limits (`RequestLimits`): `timeoutSeconds` (5 to 3600, default 120), `retries` (0 to 10, 3),
   `retryDelaySeconds` (0 to 60, 1), `backoff` (1 to 10, 2). Retry delay and which errors are retried
-  are pinned by `Tests/Fixtures/retry-policy.json`.
+  are pinned by `spec/fixtures/retry-policy.json`.
 
 ## Tool entry ids
 
@@ -101,7 +99,7 @@ Every tool an Imp may call has an id, so a group or a single tool can be switche
 turned into an underscore (`My Speech!` becomes `My_Speech_`). The group id is the id without its last
 part. A tool is offered when neither its group id nor its own id is switched off. A tool without an id
 is never switched off. Calling a tool that is not offered is refused. Vectors:
-`Tests/Fixtures/tool-filtering.json`.
+`spec/fixtures/tool-filtering.json`.
 
 ## Trigger
 
@@ -156,7 +154,7 @@ imp-file://<owner-imp-uuid>/<percent-encoded path>?size=<bytes>&sha256=<64 lower
 ```
 
 Rules (what is accepted, what is rejected, how checksums apply) are in the File references section of
-[Imp Link 2](/connecting/link). Vectors for paths, references and checksums: `Tests/Fixtures/workspace-refs.json`.
+[Imp Link](/connecting/link). Vectors for paths, references and checksums: `spec/fixtures/workspace-refs.json`.
 
 ## Link message envelope
 
@@ -177,9 +175,9 @@ big-endian length followed by that JSON, at most 4 MiB.
   connection instead.
 - Fields that are optional in the Swift enum (`join`, `home`, `ticket`, `work`, `speech`, `from`) are
   absent or `null`.
-- Messages with a size or count over a limit decode but are dropped (`LinkMessage.isSound`). Every
-  limit is in [Imp Link 2](/connecting/link) and `LinkProtocol`.
-- One vector for every message, a few that must be rejected: `Tests/Fixtures/link-messages.json`.
+- Messages with a size or count over a limit decode but are dropped (`LinkMessage::is_sound` in the core). Every
+  limit is in [Imp Link](/connecting/link).
+- One vector for every message, a few that must be rejected: `spec/fixtures/link-messages.json`.
 
 ## Browser bridge
 
@@ -190,7 +188,7 @@ accepted. Each WebSocket text message is one JSON object with a `type`.
 Extension to app:
 
 ```json
-{ "type": "hello", "browser": "Chrome", "version": 3 }
+{ "type": "hello", "browser": "Chrome" }
 { "type": "page", "url": "https://example.com/", "title": "Example" }
 { "type": "located", "id": "q1", "rect": { "x": 10, "y": 20, "width": 100, "height": 30 } }
 { "type": "text", "id": "q2", "text": "Hello page" }
@@ -210,6 +208,6 @@ App to extension:
   `rect` means not found. `id` pairs an answer with its request.
 - `status` is `working`, `idle` or `asleep`. An Imp that is away is still run by this Mac, so being away
   never means asleep by itself.
-- Missing `browser` reads as `Browser`, missing `version` as `1`, missing `title` or `text` as an empty
+- Missing `browser` reads as `Browser`, missing `title` or `text` as an empty
   string. An unknown `type`, or a message without its required fields (`url`, `id`), is rejected.
-- Vectors: `Tests/Fixtures/bridge-messages.json`.
+- Vectors: `spec/fixtures/bridge-messages.json`.

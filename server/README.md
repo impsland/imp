@@ -1,11 +1,11 @@
 # Imp server
 
-One Rust workspace, one Docker image, two services. The wire contract is in [PROTOCOL.md](PROTOCOL.md).
+One Rust workspace, one Docker image, two services. The wire contract is in [PROTOCOL.md](../spec/PROTOCOL.md).
 
-- **imp-den** (`crates/den`, command `den`): accounts, shared kits, the web gallery and the MCP endpoint over HTTP.
-- **imp-hop** (`crates/hop`, command `hop`): the blind relay that lets a device reach the device that hosts it. Listens on TCP 4677.
-- **imp-shared** (`crates/shared`): configuration, client IP, rate limiting, logging and shutdown helpers.
-- **imp-core** (`crates/core`) and **imp-cli** (`crates/cli`, command `imp`): the terminal app and the logic it shares.
+- **imp-den** (`server/den`, command `den`): accounts, shared kits, the web gallery and the MCP endpoint over HTTP.
+- **imp-hop** (`server/hop`, command `hop`): the blind relay that lets a device reach the device that hosts it. Listens on TCP 4677.
+- **imp-shared** (`server/shared`): configuration, client IP, rate limiting, logging and shutdown helpers.
+- **imp-core** (`core`) and **imp-cli** (`cli`, command `imp`): the terminal app and the logic it shares.
 
 ## Run from GitHub Packages
 
@@ -19,7 +19,11 @@ docker run -d --name den -p 8080:8080 -v den-data:/data \
 docker run -d --name hop -p 4677:4677 -e HOP_ADDR=0.0.0.0:4677 --entrypoint hop ghcr.io/impsland/imp
 ```
 
-Then set the server in Imp's Devices tab to `http://<this computer>:8080`. Keep the `DEN_SECRET` you chose:
+Then, in Imp's settings under Devices, choose **Custom** for The Den and enter `http://<this computer>:8080`,
+and for The Hop enter `<this computer>:4677`. They are two settings: you can set only one of them, and
+they can point at different computers. **This computer** fills in `http://localhost:8080` and
+`localhost:4677` for a server running on the same computer. With only a Den you can browse and install
+but not link from anywhere. With only a Hop you can link devices but not use the Den. Keep the `DEN_SECRET` you chose:
 the Den needs the same one after a restart. For a public server with TLS, use Docker Compose below,
 which runs the same image.
 
@@ -34,7 +38,7 @@ cargo run -p imp-den
 cargo run -p imp-hop
 ```
 
-On a computer that just wants to be its own server, `imp serve` (from `crates/cli`) can run the services in
+On a computer that just wants to be its own server, `imp serve` (from `cli`) can run the services in
 three ways. Data and a generated secret stay in its own data folder.
 
 - `imp serve` runs The Den and The Hop together, on ports 8080 and 4677.
@@ -92,6 +96,12 @@ docker compose exec den /usr/local/bin/den admin remove-account <handle>
 
 Changes show once the 30 second caches turn over. An item reported from 5 different addresses is
 hidden until you look at it.
+
+## Database schema
+
+The Den creates its tables from one schema file, `den/migrations/0001_schema.sql`, the first time it opens a
+database. A database made by an earlier build has a different history and is not read: start the Den on a new
+database file and publish again. Change the schema by editing that file. Releases that change it say so.
 
 ## Backup
 

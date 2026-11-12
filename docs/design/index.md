@@ -1,43 +1,95 @@
 # Design
 
-Imp has one look on the Mac and the iPhone, kept in the `ImpDesign` library (`Sources/ImpDesign`). It is SwiftUI only, so both apps import it. Anything that needs AppKit or UIKit (the Mac's title bar and sheets, the phone's keyboard handling) stays in its own app.
+Imp has one look, called **Pebble**, on every platform. On the Mac and the iPhone it lives in the `ImpDesign` library (`apple/Sources/ImpDesign`, SwiftUI only). The browser extension, and later Android, Windows and Linux, read the same numbers from files generated out of `design/`. The Imp character is the only thing with a look of its own.
 
 ## The rule
 
-Custom look, standard behavior. Every control is a real SwiftUI control (`Button`, `Toggle`, `TextField`, `Slider`, `Picker`, `Menu`) wearing the app's style. Do not rebuild a control from gestures. Keep what the system gives for free: the keyboard focus ring, VoiceOver, Dynamic Type on the iPhone, Return and Esc, pressed, hover and disabled states. A control's hit area is at least 44 pt on the iPhone and 28 pt on the Mac.
+Custom look, standard behavior. Every control is a real control of its platform (`Button`, `Toggle`, `TextField`, `Slider`, `Picker`, `Menu`) wearing the app's style. Do not rebuild a control from gestures. Keep what the system gives for free: the keyboard focus ring, screen readers, Dynamic Type on the iPhone, Return and Esc, pressed, hover and disabled states. A control's hit area is at least 44 pt on the iPhone and 28 pt on the Mac (see `Sizing` in `design/tokens.json`).
+
+## The 11 principles
+
+1. **One surface.** Every window, screen and sheet sits on `Tone.surface` (`Backdrop()`), flat. A sheet has the same background as the app. Only things that float for a moment (popovers, menus, the desktop bubble, the undo bar) use `Tone.raised`.
+2. **Pebbles, not boxes.** A group is a soft fill (`Tone.card`, hover `Tone.cardHover`) with big continuous corners. No outlines on cards, rows, chips, buttons or fields. The only strokes are the keyboard focus ring, a focused field's ring and real drawings (timeline tracks, charts, the Imp).
+3. **No dividers** between list items or rows. Separate with spacing, grouping, or by making each item its own pebble.
+4. **Monochrome chrome, the colour belongs to the Imp.** `Tone.accent` is paper white in dark and ink in light. Inside an Imp's context the tint is the Imp's colour (`impTint`). Status colours stay: `good`, `danger`, `warnText` and `warnBackground`.
+5. **Flat.** No gradients and no shadows or glows on chrome. A shadow is allowed only under something that floats over other content (`Elevation.cardColor`).
+6. **Text on a fill** uses `OnTint(tint)` on a `TintFill(tint)`. On an Imp's colour it is white or black, as the person chose in Settings (white by default), and the fill is the colour itself or the nearest shade of it on which that choice has 4.5 to 1. The monochrome accent keeps ink or paper. Never `.white` on a raw tint. An Imp's colour used as a foreground (text, an icon, a link) goes through `LegibleTint`: it is adjusted to at least 4.5 to 1 on its ground, lighter in dark and darker in light. The raw colour is never drawn as it is.
+7. **Icons never touch the edge** of their background, and a filled button always pads its content. Use `IconTile`, `HoverIconButton` and the button styles.
+8. **Icon first, few words.** Every setting row has a picture and a title of one to three plain words, understandable by a child. No explanatory paragraphs on screen.
+9. **Help once per card.** A card or a section has at most one `InfoTip`, in its header: one or two short sentences. A row has its own only when its one-to-three-word title cannot be understood without it, and never two tips for the same thing. The tip is a compact popover exactly as wide as its words (at most `Sizing.tipWidth`), one surface including its arrow, opened by a click or a tap only (no hover tooltip).
+10. **Nothing overlaps or clips on a narrow width.** A `Row` moves its control under the title when they do not fit. `ImpSegmented` falls back from words to icons to a menu. A button never shrinks or cuts its label.
+11. **Feedback and motion.** Controls have hover, press and focus states. Animate only through the `Motion` presets, which honour Reduce Motion. Nothing repeats forever for decoration, and anything that animates continuously pauses when hidden, idle or under Reduce Motion.
 
 ## Tokens
 
+Every colour, space, corner, type size, touch target, animation and shared behavior number is in `design/tokens.json`. Nobody copies them by hand. `node design/generate.mjs` (or `make tokens`) writes what each platform reads.
+
+| Generated file | Read by |
+| --- | --- |
+| `apple/Sources/ImpDesign/Tokens.generated.swift` | The Mac and iPhone apps (`ImpDesign`). |
+| `extension/tokens.css` and `extension/_locales/*/messages.json` | The browser extension (`popup.css`, `chrome.i18n`). |
+| `design/generated/android/` (`ImpTheme.kt`, `ImpComponents.kt`, `values*/strings.xml`) | The Android app (Compose). |
+| `design/generated/windows/` (`ImpTokens.xaml`, `ImpComponents.xaml`, `ImpTokens.cs`, `*/Resources.resw`) | The Windows app (WinUI 3). |
+| `design/generated/gtk/` (`imp-colors-*.css`, `imp-tokens.css`, `imp-components.css`) and `design/generated/gettext/` | The Linux app (GTK 4 and libadwaita). |
+| `cli/src/theme.generated.rs` and `cli/src/strings.generated.rs` | The terminal app (`imp`). The `cli.*` words go only here. |
+| `docs/design/components.md` | The component specs, for people. |
+
+`node design/generate.mjs --check` (or `make tokens-check`) fails when a generated file is out of date. CI runs it, and the `ImpDesignTests` suite runs it, so `make test` covers it.
+
+In Swift the tokens are:
+
 | Token | What it is |
 | --- | --- |
-| `Dungeon` | The palette: `deep`, `wallTop`, `wallBottom`, `wall`, `stone`, `stoneLight`, `doorway`, `ember`, `flame`, `cream`, `muted`, `card`, `cardEdge`, `well`, `good`. Fixed colours for the dark wall, they do not follow Light and Dark. |
-| `Radius` | `small` 8, `medium` 14, `large` 18, `bubble` 22. |
-| `Spacing` | `hairline` 2, `tight` 4, `small` 8, `medium` 12, `large` 16, `page` 20, `huge` 28. |
-| `Sizing` | `hit` (44 iPhone, 28 Mac) and `control` (44 iPhone, 30 Mac). |
-| `Typeface` | `title`, `cardTitle`, `body`, `label`, `caption`, `small`, `mono`. Dynamic Type on the iPhone, fixed sizes on the Mac. |
-| `Timing` | `short` 0.12 s and `medium` 0.25 s, with `quick` and `smooth` animations. |
+| `Tone` | The adaptive palette, light and dark: `surface`, `raised`, `raisedHigh`, `deep`, `doorway`, `ink`, `paper` (fixed light, for text over pictures and scrims), `text`, `muted`, `faint`, `card`, `cardHover`, `line` (drawings only), `well`, `accent`, `accentBright`, `onAccent`, `heart`, `link`, `warnBackground`, `warnText`, `warnEdge`, `errorBackground`, `errorEdge`, `danger`, `okBackground`, `okEdge`, `focus`, `good`, `off`, `scrim`, `veil`, and the `spark` colours of the phone's game. Ordinary text is `Tone.text`. |
+| `Radius` | `tiny` 6, `small` 10, `tile` 12, `medium` 16, `large` 20, `bubble` 24, `full`. |
+| `Spacing` | `hairline` 2, `tight` 4, `snug` 6, `small` 8, `cozy` 10, `medium` 12, `roomy` 14, `large` 16, `page` 20, `wide` 24, `huge` 28, `vast` 40. |
+| `Stroke` and `Opacity` | Line widths and opacities (`disabled`, `dimmed`, `tintFill`, `tintFillStrong`, `hoverFill`, `glow`). |
+| `Sizing` | Per platform: `hit`, `control`, `iconTile`, `switchTrack`, `tipWidth`, `popoverWidth` and more. See [Accessibility](/ux/accessibility). |
+| `Typeface` | `title`, `cardTitle`, `body`, `label`, `caption`, `small`, `mono`, all rounded, built from `TypeScale`. Dynamic Type on the iPhone. |
+| `IconSize` | `tiny`, `small`, `medium`, `large`, `big`, `huge`, used as `.font(.icon(.medium))`. |
+| `Timing`, `Motion`, `Elevation`, `Behavior` | Animation lengths and presets (each says what it does with Reduce Motion), the one shadow of floating things, and shared numbers such as the Undo bar time. |
 | `impTint` | An environment value: the colour of the Imp being shown. Buttons, switches, fields and tabs follow it. |
 
-Motion honours Reduce Motion. Use `.impAnimation(value:)` instead of `.animation(_, value:)` and `withImpAnimation(reduceMotion:)` instead of `withAnimation`.
+Motion honours Reduce Motion. Use `.impAnimation(Motion.smooth, value:)` and `withImpAnimation(Motion.smooth, reduceMotion:)`. The presets are listed in [Motion](/ux/motion).
+
+When you need a number, a colour or a corner, look in the tokens first. If it is missing, add it to `design/tokens.json` and run `make tokens`. `AppStyleTests` fails on a literal font size, colour, corner, gap or animation in screen code.
+
+## Words
+
+Every user-facing word has a key in `design/strings/<area>.json` (`area.thing.detail`) with English, Spanish and Simplified Chinese. The generator writes the Apple String Catalog (as manual entries), Android `strings.xml`, Windows `.resw`, GTK `.po` files, the extension's `_locales` (`extension.*` keys) and the terminal app's Rust table (`cli.*` keys). `StringCatalogTests` checks each key against the output it is generated into. See [UX specification](/ux/) and [Glossary](/glossary).
 
 ## Components
 
-- Buttons: `.buttonStyle(.primary)`, `.secondary`, `.quiet`, `.destructive`, or `.imp(kind, small:)`. `.impPill(kind)` dresses a `Menu` label the same way. `EmberButtonStyle` is the phone's big full-width button.
-- Switch: `.toggleStyle(.impSwitch)`. It is a `Toggle` and reads as a switch to VoiceOver.
-- Fields: `.impField()` on a `TextField` or `SecureField`, `EditorWell` for a fixed-height editor, and `TextArea(title, text:, placeholder:, minLines:, maxLines:)` for a few lines that grow with the text and then scroll (same well, edge and radius as `.impField()`, muted placeholder at the text's inset).
-- Slider: `.impSlider()` on a `Slider`.
-- Stepper: `ImpStepper(value:in:step:label:)` (a label and a minus and plus pill, a real `Stepper` for VoiceOver).
-- Short choices: `ImpSegmented` for a few text options on one line. Toggle button: `.toggleStyle(.impButton)`. Time of day: `ImpTimeField`. A switch with no label of its own (the row has the title): `.toggleStyle(.impSwitchBare)`.
-- Icon-only: `HoverIconButton` and `HoverIconMenu` (a glyph with a hover circle, always give them a `help`).
-- Tabs: `SegmentedTabs`. Choices: `ChoiceChip`.
-- Menus: `CompactMenu` for a menu with your own items, `ImpPicker` for a `Picker` shown as a menu.
-- Containers: `Card`, `Row`, `FieldRow`, `CardDivider`, `SelectableCard`, `Badge`, `StatusText`, `InfoTip`, and the modifiers `.impCard()` and `.impListRow()`.
-- The wall: `DungeonWall` (gradient, bricks, floor). Each app lays its own embers on top.
+Public types of `ImpDesign`. Platform specs of each are in [Components](/design/components).
 
-## Using it
+- Surface: `Backdrop`, `Card(title, icon:, info:, accessory:)`, `.impCard(radius:)`, `.impListRow()`, `SelectableCard`, `SelectMark`.
+- Settings: `Row(title, icon:, info:)`, `FieldRow(label, info:)`, `IconTile`, `InfoTip`, `StatusText`, `Badge`.
+- Buttons: `.buttonStyle(.primary)`, `.secondary`, `.quiet`, `.destructive`, `.imp(kind, small:)`, `ImpButtonStyle`; `WideButtonStyle` is the phone's big full-width button. `FitLabel(title, systemImage:)` shows icon and title, or the icon alone when narrow. `OnTint` is the ink or paper ShapeStyle for text on a fill.
+- Controls: `.toggleStyle(.impSwitch)`, `.impSwitchBare`, `.impButton`; `ImpSegmented` (words, then icons, then a menu; always pass `symbol:`); `ImpStepper`, `ImpPicker`, `CompactMenu`, `ImpTimeField`, `SegmentedTabs`, `ChoiceChip`.
+- Fields: `.impField()`, `EditorWell`, `TextArea`, `.impSlider()`.
+- Icon-only: `HoverIconButton`, `HoverIconMenu`.
+- Floating: `.impPopover(isPresented:)`, `.impPopoverSurface()`, `PopoverHeader`, `UndoBar`.
+- Focus: `.focusRing(_:shown:)`, the only stroke on a control.
 
-Add `import ImpDesign`, then put `.impControls()` on the root of a screen to get the switch, the secondary buttons and the Imp's tint for everything below it. Pass `tint:` to colour the screen after an Imp. Single controls can still choose a different `.buttonStyle(...)`. Text fields and sliders opt in one by one with `.impField()` and `.impSlider()`. On the Mac, `SettingsPage`, `SheetFrame` and the model popover already apply `.impControls()`, so Settings never shows a system-styled button or switch. System file panels, native menu items and alerts stay system on purpose. `AppStyleTests` fails if any Mac UI file or iPhone file brings a system style back, and if an iPhone screen root drops `.impControls(`.
+Mac-only shared pieces (`SheetFrame`, `SheetScaffold`, `SettingsPage`) are in `apple/Sources/Imp/UI/Shared/DesignSystem.swift`.
 
-On the Mac the package target `Imp` depends on `ImpDesign`. On the iPhone `iOS/project.yml` lists the `ImpDesign` product next to `ImpKit`.
+Add `import ImpDesign`, then `.impControls()` on the root of a screen for the switch, the buttons and the Imp's tint below it. Pass `tint:` to colour the screen after an Imp. `AppStyleTests` fails when a Mac or iPhone UI file brings a system style back.
 
-When you need a number, a colour or a corner, look in the tokens first. If it is missing and two screens want it, add it there instead of writing it twice.
+## Help, choices and space
+
+- **Help is a small icon.** `InfoTip` sits after the title of a card or section header. A click or a tap opens a popover as wide as its words. Every platform does the same.
+- **One click.** A menu that only holds more buttons is not used. Actions are icon buttons (with a help text) or labelled buttons beside what they act on.
+- **Choices by content.** Two to four short options are `ImpSegmented`. It fills its container (equal columns) unless it is beside its title on a wide row. Three long sentence-like options are a picker or a list of selectable cards. A long or open list is a dropdown (`ImpPicker`). On and off is a switch.
+- **Narrow means icons, not small text.** A button never wraps, shrinks or cuts its label.
+- **Selection is the Imp's colour.** A chosen thing is filled or lit with the tint. No outline boxes.
+
+## Building a new platform
+
+A new native app (Android, Windows, Linux) shares four things and writes only its views.
+
+1. **Tokens.** Copy `design/generated/<platform>` into the app: Android `ImpTheme.kt` (palettes, `ImpSpacing`, `ImpRadius`, `ImpType`, `ImpMotions`, the `ImpTheme` composable), Windows `ImpTokens.xaml` (Light and Dark theme dictionaries) and `ImpTokens.cs`, Linux `imp-colors-light.css`, `imp-colors-dark.css` and `imp-tokens.css` (`@define-color`). Read a colour from the theme, never as a literal.
+2. **Component specs.** `design/components.json` says how each component is built from tokens: pebble, surface, row, icon tile, buttons, segmented, switch, field, info tip, sheet bar, step indicator, section rail, preset grid, on tint, legible tint, bubble, popover, undo bar, badge, focus. The generator writes them as typed values (`ImpComponents.kt`), styles (`ImpComponents.xaml`) and CSS classes (`imp-components.css`). Build each view from its spec and the rules above. Never add an outline, divider or gradient.
+3. **Words.** `values*/strings.xml` (Android), `*/Resources.resw` (Windows) and `gettext/*.po` (Linux) hold every word in all three languages. A key's dots become underscores on Android. Each platform README in `design/generated/<platform>` has the exact steps.
+4. **Logic.** The Rust core (`core/`, with the uniffi bindings in `core/ffi`) holds chats, Brains, Imps, triggers, the link between devices and storage. UniFFI writes the Swift bindings today and the same crate gives Kotlin bindings (and a C interface for C# and GTK) later, so the app only draws state and sends intents. See [Architecture](/architecture/).
+
+Then follow the [UX specification](/ux/) screen by screen, the [parity table](/ux/parity) for what each platform has, and [Accessibility](/ux/accessibility). Run `make tokens-check` in CI so the copies never drift from `design/`.

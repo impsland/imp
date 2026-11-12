@@ -1,12 +1,16 @@
 # The full bubble (chat)
 
-The full bubble is the expanded chat window over the Imp. It is a frosted card with a transparent margin for its shadow and the corner buttons.
+The full bubble is the expanded chat window over the Imp. It is one opaque fill in one rounded shape (`Radius.bubble`), with no outline and one soft shadow. The shadow sits in a transparent margin, which also holds the corner buttons. Its behaviour does not depend on the look.
+
+![The full bubble](../ux/images/bubble-chat.png)
 
 ## Layout, top to bottom
 
-1. Header (24 pt). The chat title as a menu of saved chats and talks, in primary text with a chevron. Then Recap, New chat and Delete, each a 24 pt target with a tooltip and a VoiceOver label. Recap, New chat and Delete ask first. A divider separates the header from the transcript.
+1. Header (24 pt). The chat title as a menu of saved chats and talks, in primary text with a chevron. Then Recap, New chat and Delete, each a 24 pt target with a tooltip and a VoiceOver label. Recap, New chat and Delete ask first.
 2. Transcript. Fills all the height the text box leaves, with a minimum of 80 pt, and scrolls. Newest turn at the bottom. Dates and labels are 11 pt secondary, replies 13 pt. Replies and requests have the same 14 pt padding on the left and the right.
 3. Input. A rounded well (`Radius.medium`) with the text field, the mic (outside a chat) and the send button. The field grows line by line up to the maximum and then scrolls inside. The send button stays on the bottom line. Return sends, Shift+Return adds a line, Escape closes.
+
+![A long answer read in full](../ux/images/bubble-read-all.png)
 
 The close button, chat button and copy or reply buttons sit on the card's corners. They stay visible in the chat.
 
@@ -19,7 +23,7 @@ The close button, chat button and copy or reply buttons sit on the card's corner
 
 ## Settings that affect it
 
-- Settings, General, Talking, Answers, "Text box lines" (`ImpPreferences.inputMaxLines`, default 6, from 2 to 12).
+- All Imps settings, Bubble, "Text box lines" (`ImpPreferences.inputMaxLines`, default 6, from 2 to 12).
 - "Chat size" shows the saved size, and "Reset size" returns to the default (`ImpPreferences.chatBubbleSize`).
 - Hide after, Autoplay media and Audio look change what replies show, not the layout.
 
