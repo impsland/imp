@@ -11,6 +11,10 @@ struct PhoneStage: View {
     let hidden: PhoneHidden
     /// A sheet is over the stage (chat, editor, devices): a shake there is not meant for the Imps.
     var covered = false
+    /// The share of the room's height the sheet covers, from the bottom. The room above it stays alive.
+    var cover: CGFloat = 0
+    /// The Imp the sheet is about: it comes up into the room left above the sheet and waits there.
+    var guest: UUID?
     var onChat: (UUID) -> Void
     /// Opens an Imp hatched here in the editor.
     var onEdit: (UUID) -> Void = { _ in }
@@ -34,6 +38,8 @@ struct PhoneStage: View {
     @State private var wired = false
     /// The Imp whose context menu was just asked for: its bubble is gone and its name tag hidden, so nothing stays behind the lifted preview.
     @State private var menuFor: UUID?
+    /// The Imp whose menu is open.
+    @State private var menuImp: UUID?
     @AppStorage(PhonePrefs.doubleTapKey) private var doubleTap: DoubleClickAction = .openSettings
 
     var body: some View {
@@ -49,6 +55,7 @@ struct PhoneStage: View {
                             .onEnded { _ in engine.touch = nil })
 
                     PacedTimeline(activity: activity) { date in
+                        let _ = call(in: geo.size, top: screen.safeAreaInsets.top)
                         let _ = engine.step(date, size: geo.size, insets: geo.safeAreaInsets)
                         ZStack {
                             EchoFloor(engine: engine, date: date, reduceMotion: engine.reduceMotion)
@@ -90,7 +97,8 @@ struct PhoneStage: View {
             }
             .ignoresSafeArea()
         }
-        .environment(\.covered, covered)
+        // Only a sheet over the whole screen hides the room: under a half sheet the Imps go on living.
+        .environment(\.covered, veiled)
         .onAppear { wire() }
         .overlay(alignment: .bottom) {
             PhoneHiddenFloor(imps: floor, watching: scenePhase == .active && !covered && !engine.isBlocking) { bringBack($0) }
@@ -104,6 +112,12 @@ struct PhoneStage: View {
             }
         } message: { Text($0.message) }
         .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in motion.configure() }
+        .confirmationDialog(menuImp.flatMap { engine.bodies[$0]?.imp.name } ?? "",
+                            isPresented: Binding(get: { menuImp != nil }, set: { if !$0 { menuImp = nil; menuFor = nil } }),
+                            titleVisibility: .visible, presenting: menuImp.flatMap { engine.bodies[$0] }) { body in
+            let source: any ChatSource = pocket.contains(body.imp.id) ? pocket : hub
+            menu(for: body, source: source, awake: source.availability(body.imp.id) == .ready)
+        }
         .confirmationDialog(deleting.map { words("phone.stage.delete.title", $0.name) } ?? "",
                             isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }),
                             titleVisibility: .visible, presenting: deleting) { imp in
@@ -127,13 +141,26 @@ struct PhoneStage: View {
             if let interval { motion.start(interval: interval) } else { motion.stop() }
         }
         // Back in front or uncovered: one lively frame to catch up, then the pace follows the Imps.
-        .onChange(of: scenePhase == .active && !covered) { _, shown in if shown { engine.pacer.wake() } }
+        .onChange(of: scenePhase == .active && !veiled) { _, shown in if shown { engine.pacer.wake() } }
+        .onChange(of: guest) { engine.pacer.wake() }
+        .onChange(of: cover) { engine.pacer.wake() }
         .onChange(of: scenePhase, initial: true) { _, phase in
             // A voice doesn't go on talking from a phone that's been put away.
             if phase == .background { StageVoice.shared.interrupt() }
             // Echo's sound and haptic engines run only while the app is in front.
             if phase == .active { engine.echo?.resume() } else { engine.echo?.rest() }
         }
+    }
+
+    // MARK: The sheet over the room
+
+    /// The sheet hides the whole room.
+    private var veiled: Bool { covered && cover >= 1 }
+
+    /// Calls the Imp the sheet is about into the room left above it, or lets it go when there is no sheet.
+    private func call(in size: CGSize, top: CGFloat) {
+        guard let guest, let side = engine.bodies[guest]?.size else { return engine.summon(nil, to: nil) }
+        engine.summon(guest, to: Summon.point(room: size, top: top, cover: cover, side: side, height: Behavior.summonHeight))
     }
 
     // MARK: Motion sensor
@@ -229,26 +256,11 @@ struct PhoneStage: View {
             .frame(width: side, height: side)
             .background {
                 // The Imp's own light around it.
-                Halo(color: Color.imp(b.imp.hue), opacity: awake ? Opacity.tintFill : 0)
+                Halo(color: Color.imp(b.imp.hue), opacity: !awake ? 0 : id == guest ? Opacity.glow : Opacity.tintFill)
                     .frame(width: side * 2.3, height: side * 2.3)
             }
             .overlay(alignment: .top) {
                 if working != nil, showsWords { ThinkingDots(date: date).offset(y: -side * 0.12).transition(.scale.combined(with: .opacity)) }
-            }
-            .overlay(alignment: .top) {
-                if pocket.contains(id), !awake, b.phase != .dragging, showsWords {
-                    Button { onBrain(id) } label: {
-                        Text("phone.stage.asleep")
-                            .font(Typeface.caption).foregroundStyle(Tone.text)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, Spacing.medium).padding(.vertical, Spacing.small)
-                            .frame(maxWidth: Sizing.tipWidth)
-                            .impCard()
-                    }
-                    .buttonStyle(.plain)
-                    .offset(y: -side * 0.55)
-                    .accessibilityHint(Text(words("firstrun.wake", b.imp.name)))
-                }
             }
             .overlay(alignment: .bottom) {
                 if showsWords {
@@ -258,8 +270,6 @@ struct PhoneStage: View {
             }
             .opacity(awake || engine.isBlocking ? 1 : Opacity.dimmed)
             .contentShape(Circle().inset(by: side * 0.08))
-            // The lifted preview is the Imp alone, in a round shape: no dark rectangle around a transparent Imp.
-            .contentShape(.contextMenuPreview, Circle().inset(by: side * 0.08))
             .gesture(TapGesture(count: 2).onEnded { if !engine.isBlocking { tapped(id, count: 2) } },
                      including: doubleTap == .nothing ? .subviews : .all)
             .onTapGesture { if !engine.isBlocking { menuFor = nil; tapped(id, count: 1) } }
@@ -271,7 +281,6 @@ struct PhoneStage: View {
             .gesture(DragGesture(minimumDistance: 3, coordinateSpace: .named("stage"))
                 .onChanged { menuFor = nil; engine.dragChanged(id, at: $0.location) }
                 .onEnded { engine.dragEnded(id, at: $0.location, predicted: $0.predictedEndLocation) })
-            .contextMenu { menu(for: b, source: source, awake: awake) }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(Text(b.imp.name))
             .accessibilityAddTraits(.isButton)
@@ -286,6 +295,10 @@ struct PhoneStage: View {
     private func lifted(_ id: UUID) {
         if pocket.contains(id) { pocket.dismissSpeech(id) } else { hub.dismissSpeech(id) }
         menuFor = id
+        // The menu is opened here, by the press itself. The system's own touch-and-hold menu never came
+        // up on an Imp, because the drag that carries the Imp took the touch first.
+        menuImp = id
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         Task {
             try? await Task.sleep(for: .seconds(Behavior.toastSeconds))
             if menuFor == id { menuFor = nil }
@@ -296,9 +309,6 @@ struct PhoneStage: View {
     @ViewBuilder private func menu(for b: StageEngine.Body, source: any ChatSource, awake: Bool) -> some View {
         let id = b.imp.id
         Button { onChat(id) } label: { Label("menu.imp.talk", systemImage: "bubble.left") }
-        if awake {
-            Button { source.newChat(id); onChat(id) } label: { Label("menu.imp.new_chat", systemImage: "square.and.pencil") }
-        }
         Button { onTalks(id) } label: { Label("menu.imp.talks", systemImage: "bubble.left.and.bubble.right") }
         if pocket.contains(id) {
             Button { onEdit(id) } label: { Label("menu.imp.settings", systemImage: "slider.horizontal.3") }

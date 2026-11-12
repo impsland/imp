@@ -40,6 +40,7 @@ struct DevicesSheet: View {
                 Text("settings.title").font(Typeface.cardTitle).foregroundStyle(Tone.text)
                     .accessibilityAddTraits(.isHeader)
             }
+            .sheetBarInsets()
             SectionRail("settings.title", items: items, selection: $section, axis: .horizontal)
             ScrollView {
                 VStack(spacing: Spacing.medium) {

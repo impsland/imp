@@ -294,6 +294,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `look.reset` | Reset look | Restablecer aspecto | 重置外观 |
 | `look.size` | Size | Tamaño | 大小 |
 | `look.squint` | Squint | Entornar | 眯眼 |
+| `look.swatch` | Colour {index} of {count} | Color {index} de {count} | 第 {index} 种颜色，共 {count} 种 |
 | `look.title` | Look | Aspecto | 外观 |
 | `menu.bar.hide` | Hide | Ocultar | 隐藏 |
 | `menu.bar.hide_help` | Hide the Imps on your desktop | Ocultar los Imps del escritorio | 隐藏桌面上的 Imp |
@@ -320,7 +321,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `menu.imp.hide` | Hide | Ocultar | 隐藏 |
 | `menu.imp.let_out` | Let out | Dejar salir | 放出来 |
 | `menu.imp.move_to` | Move to {name} | Mover a {name} | 移到 {name} |
-| `menu.imp.new_chat` | New chat | Chat nuevo | 新对话 |
 | `menu.imp.send_home` | Send home | Enviar a casa | 送回家 |
 | `menu.imp.send_to` | Send to {name} | Enviar a {name} | 发送到 {name} |
 | `menu.imp.settings` | Imp Settings | Ajustes del Imp | Imp 设置 |
@@ -357,6 +357,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.appearance.auto` | Auto | Automático | 自动 |
 | `phone.appearance.dark` | Dark | Oscuro | 深色 |
 | `phone.appearance.light` | Light | Claro | 浅色 |
+| `phone.brain.change` | Change Brain | Cambiar cerebro | 更换大脑 |
 | `phone.callhome` | Call home | Llamar a casa | 叫回家 |
 | `phone.callhome.label` | Call {name} home | Llamar a {name} a casa | 把 {name} 叫回家 |
 | `phone.chat.answering` | Answering {from}… | Respondiendo a {from}… | 正在回复 {from}… |
@@ -375,6 +376,10 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.connected` | Connected | Conectado | 已连接 |
 | `phone.connected_hop` | Through the server | Por el servidor | 通过服务器 |
 | `phone.copy` | Copy | Copiar | 拷贝 |
+| `phone.editor.hatch` | Hatch | Crear | 孵化 |
+| `phone.editor.save` | Save | Guardar | 保存 |
+| `phone.editor.save_failed` | The Imp couldn't be saved. {detail} | No se pudo guardar el Imp. {detail} | 无法保存小妖。{detail} |
+| `phone.editor.save_failed_title` | Couldn't save | No se pudo guardar | 无法保存 |
 | `phone.forget.everyone` | Forget Everyone… | Olvidar a todos… | 忘记所有设备… |
 | `phone.forget.everyone.title` | Forget Everyone | Olvidar a todos | 忘记所有设备 |
 | `phone.forget.message` | Its Imps come home. To link again, show a new code. | Sus Imps vuelven a casa. Para enlazar otra vez, muestra un código nuevo. | 它的小妖会回家。要再关联，请出示新的二维码。 |
@@ -397,23 +402,15 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.name.title` | This iPhone | Este iPhone | 这台 iPhone |
 | `phone.pair.clipboard_bad` | The clipboard doesn't hold a link from Imp. | El portapapeles no contiene un enlace de Imp. | 剪贴板里没有 Imp 的链接。 |
 | `phone.pair.clipboard_empty` | Copy the link from the other device first, then paste it here. | Primero copia el enlace del otro dispositivo y luego pégalo aquí. | 请先在另一台设备上复制链接，再粘贴到这里。 |
-| `phone.pair.code.a11y` | Link code | Código de enlace | 关联代码 |
 | `phone.pair.code_bad` | That code isn't from Imp. | Ese código no es de Imp. | 该二维码不是 Imp 的。 |
 | `phone.pair.hatch` | Hatch an Imp | Criar un Imp | 孵化小妖 |
-| `phone.pair.hatch.detail` | Make one right here | Haz uno aquí mismo | 就在这里创建一个 |
 | `phone.pair.link_bad` | That isn't a link from Imp. | Ese no es un enlace de Imp. | 这不是 Imp 的链接。 |
-| `phone.pair.paste` | Paste Link | Pegar enlace | 粘贴链接 |
-| `phone.pair.scan` | Scan a code | Escanear un código | 扫描代码 |
-| `phone.pair.scan.detail` | From Imp on another device | De Imp en otro dispositivo | 来自另一台设备上的 Imp |
 | `phone.pair.scan_other` | Scan the code on the other device | Escanea el código del otro dispositivo | 扫描另一台设备上的代码 |
-| `phone.pair.scan_this` | Scan this with Imp on another device | Escanea esto con Imp en otro dispositivo | 用另一台设备上的 Imp 扫描这个 |
-| `phone.pair.seen_as` | Other devices see this iPhone as | Los otros dispositivos ven este iPhone como | 其他设备看到这台 iPhone 的名字 |
-| `phone.pair.share` | Share Link | Compartir enlace | 分享链接 |
-| `phone.pair.show_code` | Show my code | Mostrar mi código | 显示我的代码 |
-| `phone.pair.show_code.detail` | Another device scans it | Otro dispositivo lo escanea | 让另一台设备扫描 |
-| `phone.pair.tip` | Hatch an Imp here, or link another device with a code and throw Imps between them. | Cría un Imp aquí o enlaza otro dispositivo con un código y lánzense Imps entre ellos. | 在这里孵化小妖，或用代码关联其他设备，在它们之间互相扔小妖。 |
+| `phone.pair.seen_as` | Other devices see this iPhone by this name. | Los otros dispositivos ven este iPhone con este nombre. | 其他设备会看到这个名字。 |
+| `phone.pair.tip` | Wake this Imp with a Brain, or link another device and throw an Imp over. | Despierta a este Imp con un cerebro, o enlaza otro dispositivo y lanza un Imp hacia aquí. | 给这只小妖一个大脑叫醒它，或者关联另一台设备，把小妖扔过来。 |
 | `phone.pair.title` | Imp for iPhone | Imp para iPhone | iPhone 版 Imp |
 | `phone.paste.link` | Paste Link | Pegar enlace | 粘贴链接 |
+| `phone.persona.placeholder` | Who is this Imp? How does it talk? | ¿Quién es este Imp? ¿Cómo habla? | 这只小妖是谁？它怎么说话？ |
 | `phone.requests.backoff.info` | Each rest is this many times longer than the one before. | Cada descanso dura este número de veces más que el anterior. | 每次休息都比上一次长这么多倍。 |
 | `phone.requests.backoff.title` | Longer each time | Más cada vez | 每次更久 |
 | `phone.requests.delay.info` | How long the Imp rests before it asks again. | Cuánto descansa el Imp antes de volver a preguntar. | 小妖再问之前先休息多久。 |
@@ -439,7 +436,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.shake.title` | Shake | Agitar | 摇一摇 |
 | `phone.shake.which.title` | Which device | Qué dispositivo | 哪台设备 |
 | `phone.share` | Share | Compartir | 分享 |
-| `phone.stage.asleep` | Asleep | Dormido | 睡着了 |
 | `phone.stage.back_to` | Back to {name} | Volver a {name} | 回到 {name} |
 | `phone.stage.delete.body` | Its chats and keys are forgotten. This can't be undone. | Se olvidan sus chats y claves. No se puede deshacer. | 它的聊天和密钥都会被清除，此操作无法撤销。 |
 | `phone.stage.delete.title` | Delete {name}? | ¿Eliminar {name}? | 删除 {name}？ |
@@ -454,6 +450,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.status.hint` | Opens Devices | Abre Dispositivos | 打开设备 |
 | `phone.status.internet` | Through the internet | Por internet | 通过互联网 |
 | `phone.status.looking` | Looking… | Buscando… | 正在查找… |
+| `phone.talks.empty` | No talks yet | Aún no hay charlas | 还没有对话 |
 | `phone.version` | Version | Versión | 版本 |
 | `phone.visiting` | Visiting: {names} | De visita: {names} | 来做客：{names} |
 | `phone.with` | With {name} | Con {name} | 在 {name} 那里 |
@@ -631,6 +628,11 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tools.group_count` | {on} of {total} on | {on} de {total} activas | {total} 个中开启 {on} 个 |
 | `tools.group_off` | Off | Desactivado | 已关闭 |
 | `tools.group_switch` | {group} tools | Herramientas de {group} | {group} 的工具 |
+| `tools.header_add` | Add header | Añadir cabecera | 添加请求头 |
+| `tools.header_name` | Header name | Nombre de la cabecera | 请求头名称 |
+| `tools.header_saved` | Saved | Guardado | 已保存 |
+| `tools.header_value` | Header value | Valor de la cabecera | 请求头的值 |
+| `tools.headers` | Headers | Cabeceras | 请求头 |
 | `tools.help.browser` | Lets the Imp look at pages and use the browser you opened for it. | Deja al Imp ver páginas y usar el navegador que le abriste. | 让小鬼查看网页，并使用你为它打开的浏览器。 |
 | `tools.help.built_in` | Things the Imp can already do, like look at your screen. Switch off any it should not use. | Cosas que el Imp ya sabe hacer, como mirar tu pantalla. Apaga las que no deba usar. | 小鬼本来就会做的事，比如看你的屏幕。把不该用的关掉。 |
 | `tools.help.mcp` | Extra tools added from outside. Each one gives the Imp new things to do. | Herramientas extra añadidas de fuera. Cada una da al Imp cosas nuevas que hacer. | 从外面加进来的额外工具。每个都让小鬼多会一些事。 |
@@ -639,6 +641,13 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tools.mcp_connected` | Connected | Conectado | 已连接 |
 | `tools.mcp_failed` | Could not start | No se pudo iniciar | 无法启动 |
 | `tools.mcp_starting` | Starting | Iniciando | 正在启动 |
+| `tools.new_server` | New server | Servidor nuevo | 新服务器 |
+| `tools.optional` | Optional | Opcional | 可选 |
+| `tools.problem.address` | Add the server's address. | Añade la dirección del servidor. | 请填写服务器地址。 |
+| `tools.remove_header` | Remove header | Quitar cabecera | 移除请求头 |
+| `tools.remove_server` | Remove server | Quitar servidor | 移除服务器 |
+| `tools.remove_server.message` | The Imp loses the tools of this server. | El Imp pierde las herramientas de este servidor. | 小妖会失去这台服务器的工具。 |
+| `tools.server_name` | Name | Nombre | 名称 |
 | `tools.shared_setup` | Every Imp that uses this tool gets this setup. Each Imp switches it on or off for itself. | Todos los Imps que usan esta herramienta reciben esta configuración. Cada Imp la activa o desactiva por su cuenta. | 使用这个工具的每个 Imp 都会得到这套设置。每个 Imp 各自开启或关闭它。 |
 | `tools.title` | Tools | Herramientas | 工具 |
 | `triggers.add` | Add a trigger | Añadir un disparador | 添加触发器 |

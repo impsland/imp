@@ -6,7 +6,7 @@ Imp has one look, called **Pebble**, on every platform. On the Mac and the iPhon
 
 Custom look, standard behavior. Every control is a real control of its platform (`Button`, `Toggle`, `TextField`, `Slider`, `Picker`, `Menu`) wearing the app's style. Do not rebuild a control from gestures. Keep what the system gives for free: the keyboard focus ring, screen readers, Dynamic Type on the iPhone, Return and Esc, pressed, hover and disabled states. A control's hit area is at least 44 pt on the iPhone and 28 pt on the Mac (see `Sizing` in `design/tokens.json`).
 
-## The 11 principles
+## The 12 principles
 
 1. **One surface.** Every window, screen and sheet sits on `Tone.surface` (`Backdrop()`), flat. A sheet has the same background as the app. Only things that float for a moment (popovers, menus, the desktop bubble, the undo bar) use `Tone.raised`.
 2. **Pebbles, not boxes.** A group is a soft fill (`Tone.card`, hover `Tone.cardHover`) with big continuous corners. No outlines on cards, rows, chips, buttons or fields. The only strokes are the keyboard focus ring, a focused field's ring and real drawings (timeline tracks, charts, the Imp).
@@ -19,6 +19,12 @@ Custom look, standard behavior. Every control is a real control of its platform 
 9. **Help once per card.** A card or a section has at most one `InfoTip`, in its header: one or two short sentences. A row has its own only when its one-to-three-word title cannot be understood without it, and never two tips for the same thing. The tip is a compact popover exactly as wide as its words (at most `Sizing.tipWidth`), one surface including its arrow, opened by a click or a tap only (no hover tooltip).
 10. **Nothing overlaps or clips on a narrow width.** A `Row` moves its control under the title when they do not fit. `ImpSegmented` falls back from words to icons to a menu. A button never shrinks or cuts its label.
 11. **Feedback and motion.** Controls have hover, press and focus states. Animate only through the `Motion` presets, which honour Reduce Motion. Nothing repeats forever for decoration, and anything that animates continuously pauses when hidden, idle or under Reduce Motion.
+12. **The room never leaves.** On a phone the app is one room where the Imps fly freely over the whole screen. Everything else is one sheet over it. A sheet about an Imp brings that Imp up into the room left above it and wears its colour. Every sheet has the same bar and the same way back. See [The room never leaves](/design/room).
+
+### What changed, and why
+
+- **Principle 12 is new** (the iPhone redesign). The room was already open and people like it, so it stays as it is. What changed is everything that covered it: a chat with a small portrait of the Imp in its header, a second sheet for talks on top of the chat, settings that closed into a chat nobody asked for, sheets in the app's grey whatever Imp they were about, and a first screen with five ways to begin. Now the Imp itself is in view while you talk to it, one sheet holds everything about an Imp, Close has one rule, and the first screen has one main button.
+- **Principle 4 is now kept on the phone.** "Inside an Imp's context the tint is the Imp's colour" was true on the Mac only. An Imp's sheets on the phone were monochrome.
 
 ## Tokens
 
@@ -88,7 +94,7 @@ Add `import ImpDesign`, then `.impControls()` on the root of a screen for the sw
 A new native app (Android, Windows, Linux) shares four things and writes only its views.
 
 1. **Tokens.** Copy `design/generated/<platform>` into the app: Android `ImpTheme.kt` (palettes, `ImpSpacing`, `ImpRadius`, `ImpType`, `ImpMotions`, the `ImpTheme` composable), Windows `ImpTokens.xaml` (Light and Dark theme dictionaries) and `ImpTokens.cs`, Linux `imp-colors-light.css`, `imp-colors-dark.css` and `imp-tokens.css` (`@define-color`). Read a colour from the theme, never as a literal.
-2. **Component specs.** `design/components.json` says how each component is built from tokens: pebble, surface, row, icon tile, buttons, segmented, switch, field, info tip, sheet bar, step indicator, section rail, preset grid, on tint, legible tint, bubble, popover, undo bar, badge, focus. The generator writes them as typed values (`ImpComponents.kt`), styles (`ImpComponents.xaml`) and CSS classes (`imp-components.css`). Build each view from its spec and the rules above. Never add an outline, divider or gradient.
+2. **Component specs.** `design/components.json` says how each component is built from tokens: pebble, surface, row, icon tile, buttons, segmented, switch, field, info tip, sheet, sheet bar, step indicator, section rail, preset grid, on tint, legible tint, bubble, popover, undo bar, badge, focus. The generator writes them as typed values (`ImpComponents.kt`), styles (`ImpComponents.xaml`) and CSS classes (`imp-components.css`). Build each view from its spec and the rules above. Never add an outline, divider or gradient.
 3. **Words.** `values*/strings.xml` (Android), `*/Resources.resw` (Windows) and `gettext/*.po` (Linux) hold every word in all three languages. A key's dots become underscores on Android. Each platform README in `design/generated/<platform>` has the exact steps.
 4. **Logic.** The Rust core (`core/`, with the uniffi bindings in `core/ffi`) holds chats, Brains, Imps, triggers, the link between devices and storage. UniFFI writes the Swift bindings today and the same crate gives Kotlin bindings (and a C interface for C# and GTK) later, so the app only draws state and sends intents. See [Architecture](/architecture/).
 

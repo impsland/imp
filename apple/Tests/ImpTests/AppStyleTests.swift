@@ -28,9 +28,9 @@ import Testing
     private static let iPhoneRoots: [String: String] = [
         "ImpPhoneApp.swift": "the app root (stage, games, status pill)",
         "DevicesSheet.swift": "DevicesSheet",
-        "PairingView.swift": "PairingView, InviteSheet and the scanner",
-        "ChatSheet.swift": "ChatSheet",
-        "Talks.swift": "TalksSheet",
+        "PairingView.swift": "the first screen, the link sheet and the scanner",
+        "ChatSheet.swift": "ImpSheet, an Imp's chat and talks",
+        "Talks.swift": "TalksPane, the talks side of an Imp's sheet",
         "ShakeSend.swift": "the Undo bar and the Shake to send card",
         "PocketEditor.swift": "Hatch and Edit an Imp",
         "FirstRunPhone.swift": "the first run, waking an Imp with a Brain",

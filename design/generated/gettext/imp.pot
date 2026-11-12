@@ -1457,6 +1457,11 @@ msgctxt "look.squint"
 msgid "Squint"
 msgstr ""
 
+#. Spoken label of a colour swatch in an Imp's look.
+msgctxt "look.swatch"
+msgid "Colour {index} of {count}"
+msgstr ""
+
 #. Panel title.
 msgctxt "look.title"
 msgid "Look"
@@ -1585,11 +1590,6 @@ msgstr ""
 #. Imp menu item that moves the Imp to a Mac for good.
 msgctxt "menu.imp.move_to"
 msgid "Move to {name}"
-msgstr ""
-
-#. Imp menu item that starts a fresh chat.
-msgctxt "menu.imp.new_chat"
-msgid "New chat"
 msgstr ""
 
 #. Menu item (desktop only) that puts a free Imp back in the window.
@@ -1772,6 +1772,11 @@ msgctxt "phone.appearance.light"
 msgid "Light"
 msgstr ""
 
+#. Button in an Imp's Brain panel on the iPhone that starts choosing another service or model.
+msgctxt "phone.brain.change"
+msgid "Change Brain"
+msgstr ""
+
 #. Button: bring an Imp back.
 msgctxt "phone.callhome"
 msgid "Call home"
@@ -1860,6 +1865,26 @@ msgstr ""
 #. Button: copy the link.
 msgctxt "phone.copy"
 msgid "Copy"
+msgstr ""
+
+#. Main button of the sheet that makes a new Imp on the iPhone.
+msgctxt "phone.editor.hatch"
+msgid "Hatch"
+msgstr ""
+
+#. Main button of an Imp's settings on the iPhone.
+msgctxt "phone.editor.save"
+msgid "Save"
+msgstr ""
+
+#. Message of that alert, with what went wrong.
+msgctxt "phone.editor.save_failed"
+msgid "The Imp couldn't be saved. {detail}"
+msgstr ""
+
+#. Title of the alert when an Imp's settings could not be saved.
+msgctxt "phone.editor.save_failed_title"
+msgid "Couldn't save"
 msgstr ""
 
 #. Button that unlinks every device.
@@ -1972,24 +1997,14 @@ msgctxt "phone.pair.clipboard_empty"
 msgid "Copy the link from the other device first, then paste it here."
 msgstr ""
 
-#. Spoken name of the QR code.
-msgctxt "phone.pair.code.a11y"
-msgid "Link code"
-msgstr ""
-
 #. iPhone: pair code bad.
 msgctxt "phone.pair.code_bad"
 msgid "That code isn't from Imp."
 msgstr ""
 
-#. Choice: hatch an Imp on this iPhone.
+#. Quiet button on the first screen: make an Imp of your own instead of waking the first one.
 msgctxt "phone.pair.hatch"
 msgid "Hatch an Imp"
-msgstr ""
-
-#. Detail under Hatch an Imp.
-msgctxt "phone.pair.hatch.detail"
-msgid "Make one right here"
 msgstr ""
 
 #. iPhone: pair link bad.
@@ -1997,54 +2012,19 @@ msgctxt "phone.pair.link_bad"
 msgid "That isn't a link from Imp."
 msgstr ""
 
-#. Button: paste a link from the clipboard.
-msgctxt "phone.pair.paste"
-msgid "Paste Link"
-msgstr ""
-
-#. Choice: scan a code.
-msgctxt "phone.pair.scan"
-msgid "Scan a code"
-msgstr ""
-
-#. Detail under Scan a code.
-msgctxt "phone.pair.scan.detail"
-msgid "From Imp on another device"
-msgstr ""
-
 #. Hint above the camera.
 msgctxt "phone.pair.scan_other"
 msgid "Scan the code on the other device"
 msgstr ""
 
-#. Hint above the QR code.
-msgctxt "phone.pair.scan_this"
-msgid "Scan this with Imp on another device"
-msgstr ""
-
-#. Title of the field with this iPhone name.
+#. Help on the name card of the link sheet: what the name is for.
 msgctxt "phone.pair.seen_as"
-msgid "Other devices see this iPhone as"
-msgstr ""
-
-#. Button: share the link.
-msgctxt "phone.pair.share"
-msgid "Share Link"
-msgstr ""
-
-#. Choice: show my link code.
-msgctxt "phone.pair.show_code"
-msgid "Show my code"
-msgstr ""
-
-#. Detail under Show my code.
-msgctxt "phone.pair.show_code.detail"
-msgid "Another device scans it"
+msgid "Other devices see this iPhone by this name."
 msgstr ""
 
 #. Help on the first screen.
 msgctxt "phone.pair.tip"
-msgid "Hatch an Imp here, or link another device with a code and throw Imps between them."
+msgid "Wake this Imp with a Brain, or link another device and throw an Imp over."
 msgstr ""
 
 #. Title of the first screen on the iPhone.
@@ -2055,6 +2035,11 @@ msgstr ""
 #. Button that links from a copied link.
 msgctxt "phone.paste.link"
 msgid "Paste Link"
+msgstr ""
+
+#. Placeholder of the personality field of an Imp on the iPhone.
+msgctxt "phone.persona.placeholder"
+msgid "Who is this Imp? How does it talk?"
 msgstr ""
 
 #. Help for pause growth.
@@ -2182,11 +2167,6 @@ msgctxt "phone.share"
 msgid "Share"
 msgstr ""
 
-#. Short state under a sleeping Imp on the main screen.
-msgctxt "phone.stage.asleep"
-msgid "Asleep"
-msgstr ""
-
 #. Door label that sends an Imp back to the device it came from.
 msgctxt "phone.stage.back_to"
 msgid "Back to {name}"
@@ -2255,6 +2235,11 @@ msgstr ""
 #. Connection pill: a linked device is not reached yet.
 msgctxt "phone.status.looking"
 msgid "Looking…"
+msgstr ""
+
+#. The talks side of an Imp's sheet when it has not talked with another Imp yet.
+msgctxt "phone.talks.empty"
+msgid "No talks yet"
 msgstr ""
 
 #. Row title: the app version.
@@ -3142,6 +3127,31 @@ msgctxt "tools.group_switch"
 msgid "{group} tools"
 msgstr ""
 
+#. Button that adds a header to a tool server.
+msgctxt "tools.header_add"
+msgid "Add header"
+msgstr ""
+
+#. Label of a header's name field.
+msgctxt "tools.header_name"
+msgid "Header name"
+msgstr ""
+
+#. Placeholder of a header value that is already kept safe.
+msgctxt "tools.header_saved"
+msgid "Saved"
+msgstr ""
+
+#. Label of a header's value field.
+msgctxt "tools.header_value"
+msgid "Header value"
+msgstr ""
+
+#. Small title over a tool server's HTTP headers.
+msgctxt "tools.headers"
+msgid "Headers"
+msgstr ""
+
 #. Help of the browser row.
 msgctxt "tools.help.browser"
 msgid "Lets the Imp look at pages and use the browser you opened for it."
@@ -3180,6 +3190,41 @@ msgstr ""
 #. Status of an MCP server.
 msgctxt "tools.mcp_starting"
 msgid "Starting"
+msgstr ""
+
+#. Title of a tool server that has no name or address yet.
+msgctxt "tools.new_server"
+msgid "New server"
+msgstr ""
+
+#. Placeholder of a field that may be left empty.
+msgctxt "tools.optional"
+msgid "Optional"
+msgstr ""
+
+#. Problem on a tool server with no address.
+msgctxt "tools.problem.address"
+msgid "Add the server's address."
+msgstr ""
+
+#. Spoken label of the button that removes a header.
+msgctxt "tools.remove_header"
+msgid "Remove header"
+msgstr ""
+
+#. Button and dialog title: remove a tool server from an Imp.
+msgctxt "tools.remove_server"
+msgid "Remove server"
+msgstr ""
+
+#. Message of the dialog that removes a tool server.
+msgctxt "tools.remove_server.message"
+msgid "The Imp loses the tools of this server."
+msgstr ""
+
+#. Label of a tool server's name field.
+msgctxt "tools.server_name"
+msgid "Name"
 msgstr ""
 
 #. In the extra tool editor: its setup is shared, while each Imp switches it on or off for itself.

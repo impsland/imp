@@ -10,6 +10,8 @@ struct FirstRunPhoneFlow: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.openURL) private var openURL
     @FocusState private var focus: Field?
+    /// What is typed to find a model. It is not the choice: the chosen model is the ticked row.
+    @State private var query = ""
 
     private enum Field: Hashable { case address, key, model }
 
@@ -55,7 +57,8 @@ struct FirstRunPhoneFlow: View {
                 Titled(title: "firstrun.service.key") {
                     SecureField("firstrun.service.key", text: $flow.key)
                         .impField(mono: true)
-                        .textContentType(.password)
+                        // Not a password: this stops the system from offering to save it in a password manager.
+                        .textContentType(.oneTimeCode)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                         .focused($focus, equals: .key)
                         .submitLabel(.go)
@@ -80,12 +83,15 @@ struct FirstRunPhoneFlow: View {
 
     private var modelStep: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            TextField("firstrun.model.search", text: $flow.model, prompt: Text("firstrun.model.search"))
+            // A service that lists its models is searched, and the choice is the ticked row. One that lists
+            // none takes the model's name as typed.
+            TextField("firstrun.model.search", text: flow.models.isEmpty ? $flow.model : $query, prompt: Text("firstrun.model.search"))
                 .impField(mono: true)
                 .textInputAutocapitalization(.never).autocorrectionDisabled()
                 .focused($focus, equals: .model)
-                .submitLabel(.go).onSubmit { flow.check() }
-            let shown = Array(flow.matchingModels.prefix(Self.listLimit))
+                .submitLabel(flow.models.isEmpty ? .go : .search)
+                .onSubmit { if flow.models.isEmpty { flow.check() } else { focus = nil } }
+            let shown = Array(flow.models(matching: query).prefix(Self.listLimit))
             if !shown.isEmpty {
                 LazyVStack(spacing: 0) {
                     ForEach(shown, id: \.self) { name in

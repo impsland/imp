@@ -77,6 +77,9 @@ final class StageEngine {
     private(set) var moved: [UUID: Date] = [:]
     private(set) var touched: [UUID: Date] = [:]
 
+    /// The Imp whose sheet is open and where it waits in the room left above the sheet (`Summon`).
+    private(set) var summoned: (id: UUID, point: CGPoint)?
+
     /// The round of Embers being played (or just finished, until its card is dismissed).
     private(set) var round: GameRound?
     var reduceMotion = false
@@ -147,6 +150,7 @@ final class StageEngine {
         bodies[id] = nil
         order.removeAll { $0 == id }
         if focus == id { focus = nil }
+        if summoned?.id == id { summoned = nil }
         moved[id] = nil
         touched[id] = nil
         if order.isEmpty { round = nil; endEcho() }
@@ -570,6 +574,25 @@ final class StageEngine {
         }
     }
 
+    // MARK: Summon
+
+    /// Calls an Imp to a place in the room (its sheet opened), or lets it go (nil). It flies there on a
+    /// spring and waits; it can still be carried and thrown, and comes back when let go. With Reduce
+    /// Motion nobody is moved: the Imp stays where it is.
+    func summon(_ id: UUID?, to point: CGPoint?) {
+        guard let id, let point, !reduceMotion, bodies[id] != nil else {
+            summoned = nil
+            return
+        }
+        if summoned?.id != id || summoned?.point != point {
+            summoned = (id, point)
+            focus = id
+            order.removeAll { $0 == id }
+            order.append(id)
+            pacer.wake()
+        }
+    }
+
     // MARK: Fingers
 
     func dragChanged(_ id: UUID, at p: CGPoint, now: Date = Date()) {
@@ -659,6 +682,23 @@ final class StageEngine {
                     b.fingerVelocity = CGVector(dx: b.fingerVelocity.dx * k, dy: b.fingerVelocity.dy * k)
                 }
                 b.lean += (Self.lean(b.fingerVelocity.dx) - b.lean) * min(1, dt * 10)
+            case .free where summoned?.id == id && b.enteringFrom == nil && !isPlaying:
+                // Called to its sheet: a spring to where it waits, instead of drifting.
+                guard let goal = summoned?.point else { break }
+                var x = Double(b.pos.x), y = Double(b.pos.y), vx = Double(b.vel.dx), vy = Double(b.vel.dy)
+                SpringStep.advance(&x, velocity: &vx, to: Double(goal.x), stiffness: Double(Behavior.summonStiffness),
+                                   damping: Double(Behavior.summonDamping), dt: dt)
+                SpringStep.advance(&y, velocity: &vy, to: Double(goal.y), stiffness: Double(Behavior.summonStiffness),
+                                   damping: Double(Behavior.summonDamping), dt: dt)
+                // Arrived: it rests exactly there, so the stage can go back to its calm pace.
+                if hypot(goal.x - x, goal.y - y) < 0.5, hypot(vx, vy) < 8 {
+                    b.pos = goal
+                    b.vel = .zero
+                } else {
+                    b.pos = CGPoint(x: x, y: y)
+                    b.vel = CGVector(dx: vx, dy: vy)
+                }
+                b.lean += (Self.lean(b.vel.dx) - b.lean) * min(1, dt * 8)
             case .free:
                 let k = exp(-(isPlaying && b.enteringFrom == nil ? Self.gameDrag : b.drag) * dt)
                 b.vel = CGVector(dx: b.vel.dx * k, dy: b.vel.dy * k)

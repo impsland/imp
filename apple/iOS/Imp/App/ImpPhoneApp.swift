@@ -34,28 +34,14 @@ struct ImpPhoneApp: App {
     }
 }
 
-/// Linking when there's nothing yet; the stage once there's a linked device or an Imp hatched on this iPhone.
+/// The room, and the one sheet that may be over it. With nothing linked and no Imp yet, the first screen.
 struct RootView: View {
-    /// What's in the sheet.
-    private enum Sheet: Hashable, Identifiable {
-        case chat(UUID)
-        case hatch
-        case edit(UUID)
-        /// The editor of a pocket Imp with its Brain panel open.
-        case brain(UUID)
-        case talks(UUID)
-        case devices
-        case settings
-        case firstRun(UUID)
-
-        var id: Self { self }
-        var isChat: Bool { if case .chat = self { true } else { false } }
-        var isSettings: Bool { switch self { case .settings, .devices: true; default: false } }
-    }
-
     let hub: LinkHub
     let pocket: PocketRuntime
-    @State private var sheet: Sheet?
+    /// Which sheet is over the room, and where Close leads (`PhoneRouter`).
+    @State private var router = PhoneRouter()
+    /// How high the sheet stands: half (the room is alive above it) or the whole screen.
+    @State private var detent = PresentationDetent.medium
     @State private var hidden = PhoneHidden()
     /// A round of Embers is on (see `EmbersPlaying`).
     @State private var playing = false
@@ -64,20 +50,39 @@ struct RootView: View {
 
     private var onStage: Bool { !hub.links.isEmpty || !hub.visits.isEmpty || !pocket.imps.isEmpty }
 
+    /// The share of the room the sheet covers, from the bottom.
+    private var cover: CGFloat {
+        guard let route = router.route else { return 0 }
+        return route.restsAtHalf && detent == .medium ? Behavior.sheetHalfCover : 1
+    }
+
+    /// How high the sheet stands, as SwiftUI needs it: always a height this sheet can have.
+    private var height: Binding<PresentationDetent> {
+        Binding(get: { router.route?.restsAtHalf == false ? .large : detent }, set: { detent = $0 })
+    }
+
+    /// The sheet as SwiftUI presents it. Swiping it away goes straight back to the room.
+    private var sheet: Binding<PhoneRoute?> {
+        Binding(get: { router.route }, set: { if $0 == nil { router.dismissed() } })
+    }
+
     var body: some View {
         ZStack {
             Backdrop()
             if !onStage {
-                PairingView(hub: hub, hatch: { sheet = .hatch }, wake: hatchFirstImp)
+                PairingView(hub: hub, hatch: { router.open(.hatch) }, wake: hatchFirstImp)
                     .transition(.opacity)
             } else {
-                PhoneStage(hub: hub, pocket: pocket, hidden: hidden, covered: sheet != nil, onChat: { sheet = .chat($0) }, onEdit: { sheet = .edit($0) }, onTalks: { sheet = .talks($0) }, onBrain: { sheet = .brain($0) })
+                PhoneStage(hub: hub, pocket: pocket, hidden: hidden, covered: router.route != nil, cover: cover, guest: router.route?.imp,
+                           onChat: { router.talk($0) }, onEdit: { router.open(.edit($0, brain: false)) },
+                           onTalks: { router.talks($0) }, onBrain: { router.open(.edit($0, brain: true)) })
                     .transition(.opacity)
                     .onPreferenceChange(EmbersPlaying.self) { playing = $0 }
                 VStack {
                     StatusPill(hub: hub, hiddenCount: hidden.set.onFloor(in: PhoneStage.everyone(hub, pocket).map(\.imp.id)).count,
-                               devices: { sheet = .devices }, hatch: { sheet = .hatch },
-                               showHidden: { withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { hidden.bringBackAll() } }, settings: { sheet = .settings })
+                               devices: { router.open(.settings(devices: true)) }, hatch: { router.open(.hatch) },
+                               showHidden: { withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { hidden.bringBackAll() } },
+                               settings: { router.open(.settings(devices: false)) })
                     Spacer()
                 }
                 .opacity(playing ? 0 : 1)
@@ -98,27 +103,38 @@ struct RootView: View {
                 if toast == text { toast = nil }
             }
         }
-        .sheet(item: $sheet) { route in
-            content(route)
-                .presentationDetents(route.isChat || route.isSettings ? [.medium, .large] : [.large])
+        // A new sheet starts at half height when it can rest there, so the room and its Imp stay in view.
+        .onChange(of: router.route) { old, new in
+            if new == nil || old == nil || (old?.restsAtHalf == false && new?.restsAtHalf == true) { detent = .medium }
+        }
+        // An Imp that went home, moved away or said goodbye takes its sheet with it.
+        .onChange(of: PhoneStage.everyone(hub, pocket).map(\.imp.id)) { old, new in
+            for id in old where !new.contains(id) && !pocket.contains(id) { router.left(id) }
+        }
+        .sheet(item: sheet) { route in
+            // Read live: an Imp's sheet stays up while it goes from one Imp to another.
+            content(router.route ?? route)
+                .presentationDetents(route.restsAtHalf ? [.medium, .large] : [.large], selection: height)
+                // The room above a half sheet stays alive: the Imps can be touched, carried and thrown.
+                .presentationBackgroundInteraction(route.restsAtHalf ? .enabled(upThrough: .medium) : .disabled)
                 .presentationDragIndicator(.visible)
                 .presentationBackground(Tone.surface)
         }
         #if DEBUG
         .task {
-            if CommandLine.arguments.contains("-hatch") { sheet = .hatch }
+            if CommandLine.arguments.contains("-hatch") { router.open(.hatch) }
             if CommandLine.arguments.contains("-openChat") {
                 // Waits for the Imps (from the demo, or from a Mac it's connecting to).
                 for _ in 0..<120 where hub.visits.isEmpty { try? await Task.sleep(for: .milliseconds(250)) }
                 try? await Task.sleep(for: .seconds(1.5))
-                if let first = hub.visits.first { sheet = .chat(first.id) }
+                if let first = hub.visits.first { router.talk(first.id) }
             }
             // `-ask <text>`: once a visiting Imp is awake, asks the first one and opens its chat (end-to-end checks).
             if let i = CommandLine.arguments.firstIndex(of: "-ask"), CommandLine.arguments.indices.contains(i + 1) {
                 for _ in 0..<120 where !(hub.visits.first.map { hub.isAwake($0.id) } ?? false) { try? await Task.sleep(for: .milliseconds(250)) }
                 guard let first = hub.visits.first else { return }
                 hub.ask(first.id, CommandLine.arguments[i + 1])
-                sheet = .chat(first.id)
+                router.talk(first.id)
             }
         }
         #endif
@@ -128,40 +144,30 @@ struct RootView: View {
     private func hatchFirstImp() {
         let imp = PocketImp(name: PairingView.firstName)
         pocket.hatch(imp)
-        sheet = .firstRun(imp.id)
+        router.open(.firstRun(imp.id))
     }
 
-    /// A short message at the bottom that goes by itself.
-    private func say(_ text: String) {
-        toast = text
-        Task {
-            try? await Task.sleep(for: .seconds(Behavior.toastSeconds))
-            if toast == text { toast = nil }
-        }
-    }
+    /// Close, in every sheet: back to the Imp's sheet a step was taken from, otherwise to the room.
+    private func close() { router.close(exists: { pocket.contains($0) || hub.visit($0) != nil }) }
 
-    @ViewBuilder private func content(_ route: Sheet) -> some View {
+    @ViewBuilder private func content(_ route: PhoneRoute) -> some View {
         switch route {
-        case .chat(let id):
-            if pocket.contains(id) {
-                ChatSheet(hub: hub, source: pocket, pocket: pocket, impID: id, edit: { sheet = .edit(id) }, giveBrain: { sheet = .brain(id) })
-            } else {
-                ChatSheet(hub: hub, source: hub, pocket: pocket, impID: id)
-            }
-        case .talks(let id):
-            TalksSheet(hub: hub, pocket: pocket, impID: id)
+        case .imp(let id):
+            let own = pocket.contains(id)
+            ImpSheet(hub: hub, source: own ? pocket : hub, pocket: pocket, impID: id, pane: $router.pane,
+                     roomInView: detent == .medium,
+                     edit: own ? { router.open(.edit(id, brain: false)) } : nil,
+                     giveBrain: own ? { router.open(.edit(id, brain: true)) } : nil, close: close)
+                // Another Imp is another chat: what was being typed and where it was scrolled do not carry over.
+                .id(id)
         case .hatch:
-            PocketEditor(pocket: pocket, editing: nil, done: { sheet = nil })
-        case .edit(let id):
-            PocketEditor(pocket: pocket, editing: id, done: { sheet = pocket.contains(id) ? .chat(id) : nil })
-        case .brain(let id):
-            PocketEditor(pocket: pocket, editing: id, opening: .brain, done: { sheet = pocket.contains(id) ? .chat(id) : nil })
+            PocketEditor(pocket: pocket, editing: nil, done: close)
+        case .edit(let id, let brain):
+            PocketEditor(pocket: pocket, editing: id, opening: brain ? .brain : nil, done: close)
         case .firstRun(let id):
-            FirstRunPhone(pocket: pocket, id: id, close: { sheet = nil }, awake: { sheet = .chat(id) })
-        case .devices:
-            DevicesSheet(hub: hub, pocket: pocket, start: .devices)
-        case .settings:
-            DevicesSheet(hub: hub, pocket: pocket)
+            FirstRunPhone(pocket: pocket, id: id, close: close, awake: { router.woke(id) })
+        case .settings(let devices):
+            DevicesSheet(hub: hub, pocket: pocket, start: devices ? .devices : .brains)
         }
     }
 }

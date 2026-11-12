@@ -70,7 +70,10 @@ export default defineConfig({
       },
       {
         text: 'Design',
-        items: [{ text: 'Design', link: '/design/' }],
+        items: [
+          { text: 'Design', link: '/design/' },
+          { text: 'The room never leaves', link: '/design/room' },
+        ],
       },
       {
         text: 'UX specification',

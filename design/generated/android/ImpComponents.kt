@@ -179,6 +179,23 @@ object ImpComponents {
         val raisedGround: (ImpPalette) -> Color = { it.raised }
     }
 
+    /** The one sheet over the room on a phone. The room stays under it, and alive above it while the sheet rests at half height. */
+    object Sheet {
+        val fill: (ImpPalette) -> Color = { it.surface }
+        val barInsetX: Dp = ImpSpacing.medium
+        val barInsetTop: Dp = ImpSpacing.medium
+        val contentInsetX: Dp = ImpSpacing.page
+        val gap: Dp = ImpSpacing.medium
+        val portrait: Dp = ImpSizing.impPortrait
+        val name: ImpTextStyle = ImpType.cardTitle
+        val state: ImpTextStyle = ImpType.small
+        val stateColor: (ImpPalette) -> Color = { it.muted }
+        const val glow: Float = ImpOpacity.glow
+        val motion: ImpMotion = ImpMotions.spring
+        const val border: String = "none"
+        const val shadow: String = "none"
+    }
+
     /** The top bar of every modal flow and sheet: Back leading, a centred title or step indicator, Close trailing. */
     object SheetBar {
         val height: Dp = ImpSizing.hit

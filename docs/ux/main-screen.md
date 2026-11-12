@@ -78,9 +78,10 @@ The items are the same on every platform. Each platform shows them in its own me
 ### On the iPhone
 
 - **One top bar.** Safe-area aware, `Spacing.page` on both sides. On the leading side the connection pill: dots, one or two words (`phone.status.*`), cut in the middle when long, never clipped. On the trailing side ONE plain `ellipsis` icon button with a 44 pt target and no background. It opens a native menu with icons first: New Imp, Devices, Show hidden Imps (only when some are hidden), Settings. A tap on the pill also opens Devices.
-- **Names and bubbles.** Name tags are a `Tone.scrim` capsule with `Tone.paper` text, one line, cut in the middle. Bubbles stay inside the safe area with `Spacing.page` margins and never sit on another bubble. A sleeping Imp shows one word (`phone.stage.asleep`), not a sentence.
+- **Names and bubbles.** Name tags are a `Tone.scrim` capsule with `Tone.paper` text, one line, cut in the middle. Bubbles stay inside the safe area with `Spacing.page` margins and never sit on another bubble. A sleeping Imp is dimmed and has no words over it.
 - **During a game** the top bar, speech bubbles, thinking dots and name tags are all hidden, and they come back when the game ends. A bubble that arrives meanwhile is held by the hub and shows afterwards, unless its own timer ran out.
-- **Touch and hold on an Imp.** Its bubble and name tag go away the moment the press is recognised, then the system menu lifts the Imp alone (a round preview, no dark shape behind it). Moving the finger drags the Imp instead. The items are icon first and short: Talk, New chat, Talks, Imp Settings, Hide, Send to a device, Move to a Mac, then Send home or Goodbye last with the destructive style. Every item is also a VoiceOver action on the Imp.
+- **A sheet over the room.** A tap on an Imp opens its sheet at half height. The room stays alive above it: the Imp flies up into the free room and waits there in its glow, and every Imp can still be touched, carried and thrown. A tap on another Imp turns the sheet into that Imp's. Pulled up, the sheet covers the room and the room rests. With Reduce Motion the Imp is not moved. See [The room never leaves](/design/room).
+- **Touch and hold on an Imp.** Its bubble and name tag go away the moment the press is recognised, the phone gives one tick, and the Imp's menu comes up from the bottom under its name. Moving the finger drags the Imp instead. The items are icon first and short: Talk, Talks, Imp Settings, Hide, Send to a device, Move to a Mac, then Send home or Goodbye last with the destructive style. Every item is also a VoiceOver action on the Imp.
 
 ### The bar menu
 
@@ -149,7 +150,6 @@ The menu bar extra opens a compact panel on the app surface. At the top are four
 | `menu.imp.hide` | Hide |
 | `menu.imp.let_out` | Let out |
 | `menu.imp.move_to` | Move to {name} |
-| `menu.imp.new_chat` | New chat |
 | `menu.imp.send_home` | Send home |
 | `menu.imp.send_to` | Send to {name} |
 | `menu.imp.settings` | Imp Settings |

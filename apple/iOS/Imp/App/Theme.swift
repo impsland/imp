@@ -16,6 +16,12 @@ extension View {
             }
     }
 
+    /// Where the bar of every sheet sits (Back, title, Close): the same distance from the sheet's top
+    /// and sides everywhere, so Close is always under the same thumb.
+    func sheetBarInsets() -> some View {
+        padding(.horizontal, Spacing.medium).padding(.top, Spacing.medium)
+    }
+
     /// On a form: the field being typed in rests `gap` above the keyboard, not right on it. While the
     /// keyboard is up, the safe area ends that much higher, and SwiftUI scrolls the focused field
     /// inside the safe area as usual.

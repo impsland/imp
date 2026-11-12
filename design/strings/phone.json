@@ -236,12 +236,6 @@
     "es": "Más",
     "zh-Hans": "更多"
   },
-  "phone.stage.asleep": {
-    "note": "Short state under a sleeping Imp on the main screen.",
-    "en": "Asleep",
-    "es": "Dormido",
-    "zh-Hans": "睡着了"
-  },
   "phone.stage.throw_hint": {
     "note": "Empty main screen while another device is nearby.",
     "en": "Throw an Imp off the side of another screen. It lands here.",
@@ -421,75 +415,21 @@
   },
   "phone.pair.tip": {
     "note": "Help on the first screen.",
-    "en": "Hatch an Imp here, or link another device with a code and throw Imps between them.",
-    "es": "Cría un Imp aquí o enlaza otro dispositivo con un código y lánzense Imps entre ellos.",
-    "zh-Hans": "在这里孵化小妖，或用代码关联其他设备，在它们之间互相扔小妖。"
-  },
-  "phone.pair.show_code": {
-    "note": "Choice: show my link code.",
-    "en": "Show my code",
-    "es": "Mostrar mi código",
-    "zh-Hans": "显示我的代码"
-  },
-  "phone.pair.show_code.detail": {
-    "note": "Detail under Show my code.",
-    "en": "Another device scans it",
-    "es": "Otro dispositivo lo escanea",
-    "zh-Hans": "让另一台设备扫描"
-  },
-  "phone.pair.scan": {
-    "note": "Choice: scan a code.",
-    "en": "Scan a code",
-    "es": "Escanear un código",
-    "zh-Hans": "扫描代码"
-  },
-  "phone.pair.scan.detail": {
-    "note": "Detail under Scan a code.",
-    "en": "From Imp on another device",
-    "es": "De Imp en otro dispositivo",
-    "zh-Hans": "来自另一台设备上的 Imp"
+    "en": "Wake this Imp with a Brain, or link another device and throw an Imp over.",
+    "es": "Despierta a este Imp con un cerebro, o enlaza otro dispositivo y lanza un Imp hacia aquí.",
+    "zh-Hans": "给这只小妖一个大脑叫醒它，或者关联另一台设备，把小妖扔过来。"
   },
   "phone.pair.hatch": {
-    "note": "Choice: hatch an Imp on this iPhone.",
+    "note": "Quiet button on the first screen: make an Imp of your own instead of waking the first one.",
     "en": "Hatch an Imp",
     "es": "Criar un Imp",
     "zh-Hans": "孵化小妖"
   },
-  "phone.pair.hatch.detail": {
-    "note": "Detail under Hatch an Imp.",
-    "en": "Make one right here",
-    "es": "Haz uno aquí mismo",
-    "zh-Hans": "就在这里创建一个"
-  },
-  "phone.pair.paste": {
-    "note": "Button: paste a link from the clipboard.",
-    "en": "Paste Link",
-    "es": "Pegar enlace",
-    "zh-Hans": "粘贴链接"
-  },
   "phone.pair.seen_as": {
-    "note": "Title of the field with this iPhone name.",
-    "en": "Other devices see this iPhone as",
-    "es": "Los otros dispositivos ven este iPhone como",
-    "zh-Hans": "其他设备看到这台 iPhone 的名字"
-  },
-  "phone.pair.code.a11y": {
-    "note": "Spoken name of the QR code.",
-    "en": "Link code",
-    "es": "Código de enlace",
-    "zh-Hans": "关联代码"
-  },
-  "phone.pair.share": {
-    "note": "Button: share the link.",
-    "en": "Share Link",
-    "es": "Compartir enlace",
-    "zh-Hans": "分享链接"
-  },
-  "phone.pair.scan_this": {
-    "note": "Hint above the QR code.",
-    "en": "Scan this with Imp on another device",
-    "es": "Escanea esto con Imp en otro dispositivo",
-    "zh-Hans": "用另一台设备上的 Imp 扫描这个"
+    "note": "Help on the name card of the link sheet: what the name is for.",
+    "en": "Other devices see this iPhone by this name.",
+    "es": "Los otros dispositivos ven este iPhone con este nombre.",
+    "zh-Hans": "其他设备会看到这个名字。"
   },
   "phone.pair.scan_other": {
     "note": "Hint above the camera.",
@@ -502,6 +442,12 @@
     "en": "New Chat",
     "es": "Nuevo chat",
     "zh-Hans": "新聊天"
+  },
+  "phone.talks.empty": {
+    "note": "The talks side of an Imp's sheet when it has not talked with another Imp yet.",
+    "en": "No talks yet",
+    "es": "Aún no hay charlas",
+    "zh-Hans": "还没有对话"
   },
   "phone.chat.jump_latest": {
     "note": "iPhone: chat jump latest.",
@@ -681,5 +627,44 @@
     "en": "Blaze. Points count double",
     "es": "Llamarada. Los puntos valen el doble.",
     "zh-Hans": "烈焰时刻。得分翻倍。"
+  },
+  "phone.editor.hatch": {
+    "note": "Main button of the sheet that makes a new Imp on the iPhone.",
+    "en": "Hatch",
+    "es": "Crear",
+    "zh-Hans": "孵化"
+  },
+  "phone.editor.save": {
+    "note": "Main button of an Imp's settings on the iPhone.",
+    "en": "Save",
+    "es": "Guardar",
+    "zh-Hans": "保存"
+  },
+  "phone.editor.save_failed_title": {
+    "note": "Title of the alert when an Imp's settings could not be saved.",
+    "en": "Couldn't save",
+    "es": "No se pudo guardar",
+    "zh-Hans": "无法保存"
+  },
+  "phone.editor.save_failed": {
+    "note": "Message of that alert, with what went wrong.",
+    "args": {
+      "detail": "string"
+    },
+    "en": "The Imp couldn't be saved. {detail}",
+    "es": "No se pudo guardar el Imp. {detail}",
+    "zh-Hans": "无法保存小妖。{detail}"
+  },
+  "phone.persona.placeholder": {
+    "note": "Placeholder of the personality field of an Imp on the iPhone.",
+    "en": "Who is this Imp? How does it talk?",
+    "es": "¿Quién es este Imp? ¿Cómo habla?",
+    "zh-Hans": "这只小妖是谁？它怎么说话？"
+  },
+  "phone.brain.change": {
+    "note": "Button in an Imp's Brain panel on the iPhone that starts choosing another service or model.",
+    "en": "Change Brain",
+    "es": "Cambiar cerebro",
+    "zh-Hans": "更换大脑"
   }
 }

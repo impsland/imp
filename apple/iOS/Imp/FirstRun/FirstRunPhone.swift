@@ -45,7 +45,7 @@ struct FirstRunPhoneSheet: View {
     var body: some View {
         VStack(spacing: 0) {
             SheetBar(back: flow.path.canGoBack ? { flow.back() } : nil, close: close) { FirstRunPhoneSteps(flow: flow) }
-                .padding(.horizontal, Spacing.medium)
+                .sheetBarInsets()
             GeometryReader { geo in
                 ScrollView {
                     VStack(spacing: Spacing.large) {
@@ -61,7 +61,8 @@ struct FirstRunPhoneSheet: View {
             FirstRunPhoneButton(flow: flow)
                 .padding(.horizontal, Spacing.page).padding(.bottom, Spacing.medium).padding(.top, Spacing.small)
         }
-        .impControls(tint: Tone.accent)
+        // Waking an Imp is that Imp's sheet: it wears its colour.
+        .impControls(tint: imp.map { Color.imp($0.hue) } ?? Tone.accent)
         .background(Tone.surface)
         .onChange(of: flow.path.step) { _, step in if step == .done { awake() } }
     }

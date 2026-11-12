@@ -58,6 +58,13 @@ Keyboard focus is shown apart, with the focus ring (`focusRing`), and only when 
 
 ## On the iPhone
 
+Everything about one Imp is one sheet (see [The room never leaves](/design/room)).
+
+- **The bar.** The Imp's name and one line of state on the leading side. Then New Chat, Imp Settings (only for an Imp hatched on this iPhone) and Close. The Imp's small portrait is in the bar only when the sheet covers the room. At half height the Imp itself is in the room above.
+- **Talks are a side room.** The sheet is the chat with you. What the Imp said with other Imps is rarely needed, so it has no button here: Talks in the Imp's touch and hold menu opens it in the same sheet, with Back in the bar to return to the chat. It lists the Imps it talked with, and a tap opens one conversation in place. An Imp with no talks shows `phone.talks.empty`.
+- **Colour.** The sheet wears the Imp's colour: what you said, the send button, the switch and the selected side. Text on the colour follows the white or black choice in Settings.
+- **Close.** Returns to the room. Imp Settings opened from here returns here.
+
 An Imp on the iPhone is one VoiceOver element named after the Imp, with the same actions as its touch and hold menu. While its menu is opening, its bubble and name tag are dismissed so nothing stays behind the lifted preview. See [Main screen](/ux/main-screen).
 
 ## The phone icon

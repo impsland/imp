@@ -151,6 +151,13 @@
   border: none;
 }
 
+/* The one sheet over the room on a phone. The room stays under it, and alive above it while the sheet rests at half height. */
+.imp-sheet {
+  background-color: @imp_surface;
+  box-shadow: none;
+  border: none;
+}
+
 /* The top bar of every modal flow and sheet: Back leading, a centred title or step indicator, Close trailing. */
 .imp-sheet-bar {
   min-height: 32px;

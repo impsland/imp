@@ -16,14 +16,7 @@ struct PhoneDevicesSection: View {
         VStack(spacing: Spacing.medium) {
             Card("phone.name.title", icon: "iphone") { NameField(hub: hub) }
             LinkCodeCard(hub: hub)
-            Card("settings.devices.pair.title", icon: "qrcode.viewfinder", info: "phone.linked.info") {
-                if let problem { IssueBadge(text: problem, opensAtOnce: true) }
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: Spacing.small) { scanButton; pasteButton }
-                    VStack(spacing: Spacing.small) { scanButton; pasteButton }
-                }
-            }
-            .impAnimation(ImpDesign.Motion.smooth, value: problem)
+            LinkJoinCard(hub: hub, problem: $problem, scan: scan)
             ServerCard(hub: hub, kind: .hop)
             ForEach(hub.links) { link in deviceCard(link.device) }
             if !elsewhere.isEmpty {
@@ -37,18 +30,6 @@ struct PhoneDevicesSection: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
-    }
-
-    @ViewBuilder private var scanButton: some View {
-        if CodeScanner.isAvailable {
-            Button { problem = nil; scan() } label: { FitLabel("phone.scan.code", systemImage: "qrcode.viewfinder") }
-                .buttonStyle(.imp(.primary))
-        }
-    }
-
-    private var pasteButton: some View {
-        Button { problem = LinkClipboard.join(hub) } label: { FitLabel("phone.paste.link", systemImage: "doc.on.clipboard") }
-            .buttonStyle(.secondary)
     }
 
     /// Imps of this iPhone held by a device it isn't linked with (one it passed them on to).

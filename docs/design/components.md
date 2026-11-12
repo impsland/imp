@@ -283,6 +283,33 @@ An Imp's colour used as a foreground (text, an icon, a link) on the surface or a
 - The colour is used as it is when its contrast ratio on its ground is at least 4.5. Otherwise it moves toward white (dark appearance) or black (light appearance) by the least amount that reaches 4.5, keeping its hue as far as it can.
 - The raw colour is never a foreground. As the fill of a control it goes through 'tintFill', with 'onTint' on top.
 
+## sheet
+
+The one sheet over the room on a phone. The room stays under it, and alive above it while the sheet rests at half height.
+
+| Property | Value |
+| --- | --- |
+| `fill` | `color.surface` (dark #141519, light #f3f1ec) |
+| `barInsetX` | `spacing.medium` (12 px) |
+| `barInsetTop` | `spacing.medium` (12 px) |
+| `contentInsetX` | `spacing.page` (20 px) |
+| `gap` | `spacing.medium` (12 px) |
+| `portrait` | `size.impPortrait` (36 px) |
+| `name` | `type.cardTitle` (14 px, weight 600, rounded) |
+| `state` | `type.small` (11.5 px, weight 400, rounded) |
+| `stateColor` | `color.muted` (dark rgba(242, 240, 234, 0.702), light rgba(23, 24, 28, 0.702)) |
+| `glow` | `opacity.glow` (0.45) |
+| `motion` | `motion.spring` (0.4 s) |
+| `border` | `none` |
+| `shadow` | `none` |
+
+- There is only ever one sheet. Close returns to the room, except that an Imp's settings opened from that Imp's sheet return to it. Shared code decides (PhoneRouter).
+- A sheet about an Imp wears the Imp's colour (tintFill, onTint, legibleTint). The app's own sheets stay monochrome.
+- A sheet about an Imp calls it into the room left above the sheet (Summon), where it waits with the glow. With Reduce Motion or too little free room it is not moved.
+- An Imp's sheet shows the Imp's portrait in its bar only when it covers the room.
+- Siblings inside a sheet (an Imp's chat and talks, the sections of Settings) are a segmented control or a rail under the bar, never a second sheet.
+- At most one main action, a wide button pinned at the bottom.
+
 ## sheetBar
 
 The top bar of every modal flow and sheet: Back leading, a centred title or step indicator, Close trailing.

@@ -376,4 +376,8 @@ object ImpBehavior {
     val sensorHz = 30
     val sensorHzSaving = 20
     val settleSeconds = 1.2f
+    val summonStiffness = 40
+    val summonDamping = 11
+    val summonHeight = 0.6f
+    val sheetHalfCover = 0.5f
 }

@@ -242,12 +242,6 @@
     "es": "Dispositivos",
     "zh-Hans": "设备"
   },
-  "menu.imp.new_chat": {
-    "note": "Imp menu item that starts a fresh chat.",
-    "en": "New chat",
-    "es": "Chat nuevo",
-    "zh-Hans": "新对话"
-  },
   "menu.imp.talks": {
     "note": "Imp menu item that opens what the Imp said with other Imps.",
     "en": "Talks",

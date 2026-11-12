@@ -270,6 +270,7 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `look.reset` | Reset look |
 | `look.size` | Size |
 | `look.squint` | Squint |
+| `look.swatch` | Colour {index} of {count} |
 | `look.title` | Look |
 | `moves.builtin` | Built-in moves |
 | `moves.change` | Change |
@@ -310,6 +311,11 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `tools.group_count` | {on} of {total} on |
 | `tools.group_off` | Off |
 | `tools.group_switch` | {group} tools |
+| `tools.header_add` | Add header |
+| `tools.header_name` | Header name |
+| `tools.header_saved` | Saved |
+| `tools.header_value` | Header value |
+| `tools.headers` | Headers |
 | `tools.help.browser` | Lets the Imp look at pages and use the browser you opened for it. |
 | `tools.help.built_in` | Things the Imp can already do, like look at your screen. Switch off any it should not use. |
 | `tools.help.mcp` | Extra tools added from outside. Each one gives the Imp new things to do. |
@@ -318,6 +324,13 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `tools.mcp_connected` | Connected |
 | `tools.mcp_failed` | Could not start |
 | `tools.mcp_starting` | Starting |
+| `tools.new_server` | New server |
+| `tools.optional` | Optional |
+| `tools.problem.address` | Add the server's address. |
+| `tools.remove_header` | Remove header |
+| `tools.remove_server` | Remove server |
+| `tools.remove_server.message` | The Imp loses the tools of this server. |
+| `tools.server_name` | Name |
 | `tools.shared_setup` | Every Imp that uses this tool gets this setup. Each Imp switches it on or off for itself. |
 | `tools.title` | Tools |
 | `triggers.add` | Add a trigger |

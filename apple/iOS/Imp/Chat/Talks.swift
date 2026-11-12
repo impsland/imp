@@ -11,45 +11,72 @@ enum Talks {
     }
 }
 
-/// An Imp's talks, read-only: one row per Imp it talked with, and a tap opens the whole conversation.
-/// What's on this phone shows at once; the Mac's join when it answers (an older Mac never does).
-struct TalksSheet: View {
+/// An Imp's talks, read-only, as the second side of its sheet: one row per Imp it talked with, and a
+/// tap opens the whole conversation in place, with one way back. What's on this phone shows at once;
+/// the Mac's join when it answers (an older Mac never does).
+struct TalksPane: View {
     let hub: LinkHub
     let pocket: PocketRuntime
     let impID: UUID
+    /// The Imp whose conversation is open, or nil for the list.
+    @State private var peer: UUID?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var threads: [TalkThread] { Talks.threads(of: impID, hub: hub, pocket: pocket) }
-    private var name: String { pocket.imp(impID)?.name ?? hub.imp(impID)?.name ?? "" }
 
     var body: some View {
-        NavigationStack {
-            let threads = threads
-            ScrollView {
-                if threads.isEmpty {
-                    ContentUnavailableView("No talks yet", systemImage: "bubble.left.and.bubble.right")
-                        .foregroundStyle(Tone.muted)
-                        .padding(.top, Spacing.vast)
-                } else {
-                    LazyVStack(spacing: Spacing.small) {
-                        ForEach(threads) { thread in
-                            NavigationLink(value: thread.peer.id) { TalkRow(thread: thread) }
-                                .buttonStyle(.plain)
+        let threads = threads
+        Group {
+            if let thread = threads.first(where: { $0.peer.id == peer }) {
+                VStack(spacing: 0) {
+                    Button { show(nil) } label: {
+                        HStack(spacing: Spacing.snug) {
+                            Image(systemName: "chevron.left").font(.icon(.small, weight: .bold)).foregroundStyle(Tone.muted)
+                            Circle().fill(Color.imp(thread.peer.hue)).frame(width: Spacing.small, height: Spacing.small)
+                            Text(thread.peer.name).font(Typeface.label).foregroundStyle(Tone.text).lineLimit(1)
                         }
+                        .frame(minHeight: Sizing.hit)
+                        .contentShape(Rectangle())
                     }
-                    .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.medium)
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(Text("common.back"))
+                    .accessibilityValue(Text(thread.peer.name))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, Spacing.page)
+                    TalkConversation(thread: thread, hub: hub)
                 }
-            }
-            .scrollBounceBehavior(.basedOnSize)
-            .containerBackground(Tone.surface, for: .navigation)
-            .navigationTitle(name.isEmpty ? String(localized: "Talks") : String(localized: "\(name)'s talks"))
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationDestination(for: UUID.self) { peer in
-                TalkConversation(hub: hub, pocket: pocket, impID: impID, peerID: peer)
+                .transition(.opacity)
+            } else {
+                ScrollView {
+                    if threads.isEmpty {
+                        VStack(spacing: Spacing.cozy) {
+                            Image(systemName: "bubble.left.and.bubble.right")
+                                .font(.icon(.huge, weight: .light)).foregroundStyle(LegibleTint())
+                            Text("phone.talks.empty").font(Typeface.cardTitle).foregroundStyle(Tone.text)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, Spacing.vast).padding(.horizontal, Spacing.page)
+                    } else {
+                        LazyVStack(spacing: Spacing.small) {
+                            ForEach(threads) { thread in
+                                Button { show(thread.peer.id) } label: { TalkRow(thread: thread) }
+                                    .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.medium)
+                    }
+                }
+                .scrollBounceBehavior(.basedOnSize)
+                .transition(.opacity)
             }
         }
-        .impControls(tint: Tone.accent)
-        .presentationBackground(Tone.surface)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .impControls()
         .task { hub.requestTalks(impID) }
+    }
+
+    private func show(_ peer: UUID?) {
+        withImpAnimation(ImpDesign.Motion.scene, reduceMotion: reduceMotion) { self.peer = peer }
     }
 }
 
@@ -87,15 +114,11 @@ private struct TalkRow: View {
 
 /// One talk, read like a messenger: the question from the one who asked, the answer from the other.
 private struct TalkConversation: View {
+    let thread: TalkThread
     let hub: LinkHub
-    let pocket: PocketRuntime
-    let impID: UUID
-    let peerID: UUID
-
-    private var thread: TalkThread? { Talks.threads(of: impID, hub: hub, pocket: pocket).first { $0.peer.id == peerID } }
 
     var body: some View {
-        let lines = thread?.lines ?? []
+        let lines = thread.lines
         ScrollView {
             LazyVStack(spacing: Spacing.roomy) {
                 ForEach(Array(lines.enumerated()), id: \.element.id) { i, line in
@@ -114,9 +137,6 @@ private struct TalkConversation: View {
         }
         .scrollBounceBehavior(.basedOnSize)
         .defaultScrollAnchor(.bottom)
-        .containerBackground(Tone.surface, for: .navigation)
-        .navigationTitle(thread?.peer.name ?? "")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     private static func day(_ date: Date) -> String {

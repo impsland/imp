@@ -1173,5 +1173,87 @@
     "en": "Every Imp that uses this tool gets this setup. Each Imp switches it on or off for itself.",
     "es": "Todos los Imps que usan esta herramienta reciben esta configuración. Cada Imp la activa o desactiva por su cuenta.",
     "zh-Hans": "使用这个工具的每个 Imp 都会得到这套设置。每个 Imp 各自开启或关闭它。"
+  },
+  "look.swatch": {
+    "note": "Spoken label of a colour swatch in an Imp's look.",
+    "args": {
+      "index": "int",
+      "count": "int"
+    },
+    "en": "Colour {index} of {count}",
+    "es": "Color {index} de {count}",
+    "zh-Hans": "第 {index} 种颜色，共 {count} 种"
+  },
+  "tools.new_server": {
+    "note": "Title of a tool server that has no name or address yet.",
+    "en": "New server",
+    "es": "Servidor nuevo",
+    "zh-Hans": "新服务器"
+  },
+  "tools.server_name": {
+    "note": "Label of a tool server's name field.",
+    "en": "Name",
+    "es": "Nombre",
+    "zh-Hans": "名称"
+  },
+  "tools.optional": {
+    "note": "Placeholder of a field that may be left empty.",
+    "en": "Optional",
+    "es": "Opcional",
+    "zh-Hans": "可选"
+  },
+  "tools.headers": {
+    "note": "Small title over a tool server's HTTP headers.",
+    "en": "Headers",
+    "es": "Cabeceras",
+    "zh-Hans": "请求头"
+  },
+  "tools.header_name": {
+    "note": "Label of a header's name field.",
+    "en": "Header name",
+    "es": "Nombre de la cabecera",
+    "zh-Hans": "请求头名称"
+  },
+  "tools.header_value": {
+    "note": "Label of a header's value field.",
+    "en": "Header value",
+    "es": "Valor de la cabecera",
+    "zh-Hans": "请求头的值"
+  },
+  "tools.header_saved": {
+    "note": "Placeholder of a header value that is already kept safe.",
+    "en": "Saved",
+    "es": "Guardado",
+    "zh-Hans": "已保存"
+  },
+  "tools.header_add": {
+    "note": "Button that adds a header to a tool server.",
+    "en": "Add header",
+    "es": "Añadir cabecera",
+    "zh-Hans": "添加请求头"
+  },
+  "tools.remove_header": {
+    "note": "Spoken label of the button that removes a header.",
+    "en": "Remove header",
+    "es": "Quitar cabecera",
+    "zh-Hans": "移除请求头"
+  },
+  "tools.remove_server": {
+    "note": "Button and dialog title: remove a tool server from an Imp.",
+    "en": "Remove server",
+    "es": "Quitar servidor",
+    "zh-Hans": "移除服务器"
+  },
+  "tools.remove_server.message": {
+    "note": "Message of the dialog that removes a tool server.",
+    "en": "The Imp loses the tools of this server.",
+    "es": "El Imp pierde las herramientas de este servidor.",
+    "zh-Hans": "小妖会失去这台服务器的工具。"
+  },
+  "tools.problem.address": {
+    "note": "Problem on a tool server with no address.",
+    "en": "Add the server's address.",
+    "es": "Añade la dirección del servidor.",
+    "zh-Hans": "请填写服务器地址。"
   }
 }

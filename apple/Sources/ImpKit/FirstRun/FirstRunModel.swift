@@ -92,7 +92,7 @@ public final class FirstRunModel {
     public private(set) var searching = false
     public private(set) var found: [LocalServer] = []
     /// The models the service listed.
-    public private(set) var models: [String] = []
+    public internal(set) var models: [String] = []
 
     /// The picked choice: Remote until the user picks Local (`ServicePreset.standard`).
     public private(set) var choice: ServicePreset?
@@ -297,6 +297,15 @@ public final class FirstRunModel {
         let typed = model.trimmingCharacters(in: .whitespaces).lowercased()
         guard !typed.isEmpty, !models.contains(model) else { return models }
         return models.filter { $0.lowercased().contains(typed) }
+    }
+
+    /// The listed models for a search field that is separate from the choice: the chosen model first, so
+    /// it is always in view, then the ones that contain what was typed. An empty search lists them all.
+    public func models(matching query: String) -> [String] {
+        let typed = query.trimmingCharacters(in: .whitespaces).lowercased()
+        let found = typed.isEmpty ? models : models.filter { $0.lowercased().contains(typed) }
+        guard typed.isEmpty, let at = found.firstIndex(of: model) else { return found }
+        return [model] + found[..<at] + found[(at + 1)...]
     }
 
     // MARK: Step 2: the check

@@ -262,6 +262,32 @@
       "The raw colour is never a foreground. As the fill of a control it goes through 'tintFill', with 'onTint' on top."
     ]
   },
+  "sheet": {
+    "doc": "The one sheet over the room on a phone. The room stays under it, and alive above it while the sheet rests at half height.",
+    "props": {
+      "fill": "color.surface",
+      "barInsetX": "spacing.medium",
+      "barInsetTop": "spacing.medium",
+      "contentInsetX": "spacing.page",
+      "gap": "spacing.medium",
+      "portrait": "size.impPortrait",
+      "name": "type.cardTitle",
+      "state": "type.small",
+      "stateColor": "color.muted",
+      "glow": "opacity.glow",
+      "motion": "motion.spring",
+      "border": "none",
+      "shadow": "none"
+    },
+    "rules": [
+      "There is only ever one sheet. Close returns to the room, except that an Imp's settings opened from that Imp's sheet return to it. Shared code decides (PhoneRouter).",
+      "A sheet about an Imp wears the Imp's colour (tintFill, onTint, legibleTint). The app's own sheets stay monochrome.",
+      "A sheet about an Imp calls it into the room left above the sheet (Summon), where it waits with the glow. With Reduce Motion or too little free room it is not moved.",
+      "An Imp's sheet shows the Imp's portrait in its bar only when it covers the room.",
+      "Siblings inside a sheet (an Imp's chat and talks, the sections of Settings) are a segmented control or a rail under the bar, never a second sheet.",
+      "At most one main action, a wide button pinned at the bottom."
+    ]
+  },
   "sheetBar": {
     "doc": "The top bar of every modal flow and sheet: Back leading, a centred title or step indicator, Close trailing.",
     "props": {

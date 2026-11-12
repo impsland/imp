@@ -49,13 +49,13 @@ struct PocketEditor: View {
                     .font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1)
                     .accessibilityAddTraits(.isHeader)
             }
-            .padding(.horizontal, Spacing.medium)
+            .sheetBarInsets()
             if let open { panel(open) } else { hub }
         }
-        .impControls(tint: Tone.accent)
+        // An Imp's settings wear its colour, live as it is being chosen.
+        .impControls(tint: Color.imp(draft.hue))
         .background(Tone.surface)
         .presentationBackground(Tone.surface)
-        .presentationDetents([.large])
         .confirmationDialog(words("goodbye.title", callName), isPresented: $confirmingGoodbye, titleVisibility: .visible) {
             Button("goodbye.confirm", role: .destructive) {
                 if let editing { pocket.delete(editing) }
@@ -96,16 +96,20 @@ struct PocketEditor: View {
             Group {
                 if listed { listHub } else { markerHub }
             }
-            .overlay(alignment: .topLeading) {
+            VStack(spacing: Spacing.tight) {
+                Button(draft.isNew ? "phone.editor.hatch" : "phone.editor.save", action: save)
+                    .buttonStyle(WideButtonStyle())
+                    .disabled(!draft.canSave)
+                // Goodbye is last and apart: centred under the main button, in the destructive style.
                 if editing != nil {
-                    HoverIconButton(systemName: "hand.wave.fill", help: LocalizedStringKey(words("imp_settings.goodbye.a11y", callName))) { confirmingGoodbye = true }
-                        .padding(.leading, Spacing.medium)
+                    Button(role: .destructive) { confirmingGoodbye = true } label: {
+                        Label(words("imp_settings.goodbye.a11y", callName), systemImage: "hand.wave")
+                    }
+                    .buttonStyle(.destructive)
+                    .frame(minHeight: Sizing.hit)
                 }
             }
-            Button(draft.isNew ? "phone.editor.hatch" : "phone.editor.save", action: save)
-                .buttonStyle(WideButtonStyle())
-                .disabled(!draft.canSave)
-                .padding(.horizontal, Spacing.page).padding(.vertical, Spacing.medium)
+            .padding(.horizontal, Spacing.page).padding(.vertical, Spacing.medium)
         }
     }
 
@@ -247,7 +251,12 @@ struct PocketEditor: View {
         let services = FirstRunServices.live(persona: draft.personality.trimmed.isEmpty ? Persona.pocket(named: draft.name.trimmed) : draft.personality,
                                              probeSeconds: Double(Behavior.localProbeTimeoutSeconds),
                                              checkSeconds: Double(Behavior.brainCheckTimeoutSeconds))
-        let flow = FirstRunModel(impName: callName, onThisComputer: false, services: services) { [draft] brain in draft.adopt(brain) }
+        let flow = FirstRunModel(impName: callName, onThisComputer: false, services: services) { [draft, pocket, editing] brain in
+            // An Imp that already lives here keeps its Brain the moment it wakes, whatever happens to the
+            // rest of the sheet. A new one keeps it when it is hatched.
+            if let editing { try pocket.adoptFirstRunBrain(brain, for: editing) }
+            draft.adopt(brain)
+        }
         if draft.hasBrain {
             if let service = draft.service ?? (ServicePreset.isOwnComputer(draft.brain.baseURL) ? ServicePreset.local : ServicePreset.remote) {
                 flow.choose(service)

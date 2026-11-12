@@ -36,7 +36,8 @@ Reduce Motion also:
 - stops Zzz and other repeating loops, and shows a still picture,
 - replaces the peek with a fade at the edge of the floor,
 - makes the flight of an Imp between windows or devices a fade and a jump,
-- keeps the Imp's own idle behavior (blinking, looking) calm and small.
+- keeps the Imp's own idle behavior (blinking, looking) calm and small,
+- leaves an Imp where it is when its sheet opens on a phone, instead of flying it up into the free room.
 
 Animation must never be the only way to learn something. A state also has a word or a shape.
 
@@ -65,6 +66,10 @@ These numbers are shared by every platform.
 | `sensorHz` | 30 | Motion-sensor readings a second while an Imp follows the tilt. Each frame eases towards the last reading. |
 | `sensorHzSaving` | 20 | The same, in Low Power Mode. |
 | `settleSeconds` | 1.2 | How long frames stay at the moving rate after the last movement, so a head turning back or a mood fading is drawn to its end. |
+| `summonStiffness` | 40 | The spring that brings an Imp up into the free room when its sheet opens: how hard it pulls. |
+| `summonDamping` | 11 | The spring that brings an Imp up into the free room when its sheet opens: how fast it calms. A little under critical, so the Imp arrives with a small overshoot. |
+| `summonHeight` | 0.6 | How far down the free room above a sheet the Imp waits (0 top, 1 bottom), so its speech bubble has room above it. |
+| `sheetHalfCover` | 0.5 | The share of the screen a sheet resting at half height covers. |
 <!-- /tokens -->
 
 ## Frame rate

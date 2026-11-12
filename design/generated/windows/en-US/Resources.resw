@@ -298,6 +298,7 @@
   <data name="look.reset" xml:space="preserve"><value>Reset look</value><comment>Button that restores the default look.</comment></data>
   <data name="look.size" xml:space="preserve"><value>Size</value><comment>Slider label.</comment></data>
   <data name="look.squint" xml:space="preserve"><value>Squint</value><comment>Label of a character slider.</comment></data>
+  <data name="look.swatch" xml:space="preserve"><value>Colour {index} of {count}</value><comment>Spoken label of a colour swatch in an Imp's look.</comment></data>
   <data name="look.title" xml:space="preserve"><value>Look</value><comment>Panel title.</comment></data>
   <data name="menu.bar.hide" xml:space="preserve"><value>Hide</value><comment>Menu bar button that hides every Imp on the desktop.</comment></data>
   <data name="menu.bar.hide_help" xml:space="preserve"><value>Hide the Imps on your desktop</value><comment>Tooltip of the Hide button.</comment></data>
@@ -324,7 +325,6 @@
   <data name="menu.imp.hide" xml:space="preserve"><value>Hide</value><comment>Menu item that hides an Imp. It then peeks out now and then.</comment></data>
   <data name="menu.imp.let_out" xml:space="preserve"><value>Let out</value><comment>Menu item (desktop only) that lets an Imp out onto the desktop.</comment></data>
   <data name="menu.imp.move_to" xml:space="preserve"><value>Move to {name}</value><comment>Imp menu item that moves the Imp to a Mac for good.</comment></data>
-  <data name="menu.imp.new_chat" xml:space="preserve"><value>New chat</value><comment>Imp menu item that starts a fresh chat.</comment></data>
   <data name="menu.imp.send_home" xml:space="preserve"><value>Send home</value><comment>Menu item (desktop only) that puts a free Imp back in the window.</comment></data>
   <data name="menu.imp.send_to" xml:space="preserve"><value>Send to {name}</value><comment>Imp menu item that sends the Imp to a device.</comment></data>
   <data name="menu.imp.settings" xml:space="preserve"><value>Imp Settings</value><comment>Menu item that opens the settings of one Imp.</comment></data>
@@ -361,6 +361,7 @@
   <data name="phone.appearance.auto" xml:space="preserve"><value>Auto</value><comment>Appearance choice: follow the system.</comment></data>
   <data name="phone.appearance.dark" xml:space="preserve"><value>Dark</value><comment>Appearance choice.</comment></data>
   <data name="phone.appearance.light" xml:space="preserve"><value>Light</value><comment>Appearance choice.</comment></data>
+  <data name="phone.brain.change" xml:space="preserve"><value>Change Brain</value><comment>Button in an Imp's Brain panel on the iPhone that starts choosing another service or model.</comment></data>
   <data name="phone.callhome" xml:space="preserve"><value>Call home</value><comment>Button: bring an Imp back.</comment></data>
   <data name="phone.callhome.label" xml:space="preserve"><value>Call {name} home</value><comment>Spoken name of the call home button.</comment></data>
   <data name="phone.chat.answering" xml:space="preserve"><value>Answering {from}…</value><comment>iPhone: chat answering.</comment></data>
@@ -379,6 +380,10 @@
   <data name="phone.connected" xml:space="preserve"><value>Connected</value><comment>State of a linked device that answers.</comment></data>
   <data name="phone.connected_hop" xml:space="preserve"><value>Through the server</value><comment>State of a linked device reached through The Hop.</comment></data>
   <data name="phone.copy" xml:space="preserve"><value>Copy</value><comment>Button: copy the link.</comment></data>
+  <data name="phone.editor.hatch" xml:space="preserve"><value>Hatch</value><comment>Main button of the sheet that makes a new Imp on the iPhone.</comment></data>
+  <data name="phone.editor.save" xml:space="preserve"><value>Save</value><comment>Main button of an Imp's settings on the iPhone.</comment></data>
+  <data name="phone.editor.save_failed" xml:space="preserve"><value>The Imp couldn't be saved. {detail}</value><comment>Message of that alert, with what went wrong.</comment></data>
+  <data name="phone.editor.save_failed_title" xml:space="preserve"><value>Couldn't save</value><comment>Title of the alert when an Imp's settings could not be saved.</comment></data>
   <data name="phone.forget.everyone" xml:space="preserve"><value>Forget Everyone…</value><comment>Button that unlinks every device.</comment></data>
   <data name="phone.forget.everyone.title" xml:space="preserve"><value>Forget Everyone</value><comment>Alert button.</comment></data>
   <data name="phone.forget.message" xml:space="preserve"><value>Its Imps come home. To link again, show a new code.</value><comment>What forgetting one device does.</comment></data>
@@ -401,23 +406,15 @@
   <data name="phone.name.title" xml:space="preserve"><value>This iPhone</value><comment>Title of the card with this device name.</comment></data>
   <data name="phone.pair.clipboard_bad" xml:space="preserve"><value>The clipboard doesn't hold a link from Imp.</value><comment>iPhone: pair clipboard bad.</comment></data>
   <data name="phone.pair.clipboard_empty" xml:space="preserve"><value>Copy the link from the other device first, then paste it here.</value><comment>iPhone: pair clipboard empty.</comment></data>
-  <data name="phone.pair.code.a11y" xml:space="preserve"><value>Link code</value><comment>Spoken name of the QR code.</comment></data>
   <data name="phone.pair.code_bad" xml:space="preserve"><value>That code isn't from Imp.</value><comment>iPhone: pair code bad.</comment></data>
-  <data name="phone.pair.hatch" xml:space="preserve"><value>Hatch an Imp</value><comment>Choice: hatch an Imp on this iPhone.</comment></data>
-  <data name="phone.pair.hatch.detail" xml:space="preserve"><value>Make one right here</value><comment>Detail under Hatch an Imp.</comment></data>
+  <data name="phone.pair.hatch" xml:space="preserve"><value>Hatch an Imp</value><comment>Quiet button on the first screen: make an Imp of your own instead of waking the first one.</comment></data>
   <data name="phone.pair.link_bad" xml:space="preserve"><value>That isn't a link from Imp.</value><comment>iPhone: pair link bad.</comment></data>
-  <data name="phone.pair.paste" xml:space="preserve"><value>Paste Link</value><comment>Button: paste a link from the clipboard.</comment></data>
-  <data name="phone.pair.scan" xml:space="preserve"><value>Scan a code</value><comment>Choice: scan a code.</comment></data>
-  <data name="phone.pair.scan.detail" xml:space="preserve"><value>From Imp on another device</value><comment>Detail under Scan a code.</comment></data>
   <data name="phone.pair.scan_other" xml:space="preserve"><value>Scan the code on the other device</value><comment>Hint above the camera.</comment></data>
-  <data name="phone.pair.scan_this" xml:space="preserve"><value>Scan this with Imp on another device</value><comment>Hint above the QR code.</comment></data>
-  <data name="phone.pair.seen_as" xml:space="preserve"><value>Other devices see this iPhone as</value><comment>Title of the field with this iPhone name.</comment></data>
-  <data name="phone.pair.share" xml:space="preserve"><value>Share Link</value><comment>Button: share the link.</comment></data>
-  <data name="phone.pair.show_code" xml:space="preserve"><value>Show my code</value><comment>Choice: show my link code.</comment></data>
-  <data name="phone.pair.show_code.detail" xml:space="preserve"><value>Another device scans it</value><comment>Detail under Show my code.</comment></data>
-  <data name="phone.pair.tip" xml:space="preserve"><value>Hatch an Imp here, or link another device with a code and throw Imps between them.</value><comment>Help on the first screen.</comment></data>
+  <data name="phone.pair.seen_as" xml:space="preserve"><value>Other devices see this iPhone by this name.</value><comment>Help on the name card of the link sheet: what the name is for.</comment></data>
+  <data name="phone.pair.tip" xml:space="preserve"><value>Wake this Imp with a Brain, or link another device and throw an Imp over.</value><comment>Help on the first screen.</comment></data>
   <data name="phone.pair.title" xml:space="preserve"><value>Imp for iPhone</value><comment>Title of the first screen on the iPhone.</comment></data>
   <data name="phone.paste.link" xml:space="preserve"><value>Paste Link</value><comment>Button that links from a copied link.</comment></data>
+  <data name="phone.persona.placeholder" xml:space="preserve"><value>Who is this Imp? How does it talk?</value><comment>Placeholder of the personality field of an Imp on the iPhone.</comment></data>
   <data name="phone.requests.backoff.info" xml:space="preserve"><value>Each rest is this many times longer than the one before.</value><comment>Help for pause growth.</comment></data>
   <data name="phone.requests.backoff.title" xml:space="preserve"><value>Longer each time</value><comment>Row title: pause growth.</comment></data>
   <data name="phone.requests.delay.info" xml:space="preserve"><value>How long the Imp rests before it asks again.</value><comment>Help for the first pause.</comment></data>
@@ -443,7 +440,6 @@
   <data name="phone.shake.title" xml:space="preserve"><value>Shake</value><comment>Card title: shake to send.</comment></data>
   <data name="phone.shake.which.title" xml:space="preserve"><value>Which device</value><comment>Row title: which device.</comment></data>
   <data name="phone.share" xml:space="preserve"><value>Share</value><comment>Button: share the link.</comment></data>
-  <data name="phone.stage.asleep" xml:space="preserve"><value>Asleep</value><comment>Short state under a sleeping Imp on the main screen.</comment></data>
   <data name="phone.stage.back_to" xml:space="preserve"><value>Back to {name}</value><comment>Door label that sends an Imp back to the device it came from.</comment></data>
   <data name="phone.stage.delete.body" xml:space="preserve"><value>Its chats and keys are forgotten. This can't be undone.</value><comment>iPhone: stage delete body.</comment></data>
   <data name="phone.stage.delete.title" xml:space="preserve"><value>Delete {name}?</value><comment>iPhone: stage delete title.</comment></data>
@@ -458,6 +454,7 @@
   <data name="phone.status.hint" xml:space="preserve"><value>Opens Devices</value><comment>Spoken hint of the connection pill.</comment></data>
   <data name="phone.status.internet" xml:space="preserve"><value>Through the internet</value><comment>Spoken label of the globe in the connection pill.</comment></data>
   <data name="phone.status.looking" xml:space="preserve"><value>Looking…</value><comment>Connection pill: a linked device is not reached yet.</comment></data>
+  <data name="phone.talks.empty" xml:space="preserve"><value>No talks yet</value><comment>The talks side of an Imp's sheet when it has not talked with another Imp yet.</comment></data>
   <data name="phone.version" xml:space="preserve"><value>Version</value><comment>Row title: the app version.</comment></data>
   <data name="phone.visiting" xml:space="preserve"><value>Visiting: {names}</value><comment>Imps of another device that are here now.</comment></data>
   <data name="phone.with" xml:space="preserve"><value>With {name}</value><comment>Under an Imp that another device holds.</comment></data>
@@ -635,6 +632,11 @@
   <data name="tools.group_count" xml:space="preserve"><value>{on} of {total} on</value><comment>Under a tool group: how many of its tools are on.</comment></data>
   <data name="tools.group_off" xml:space="preserve"><value>Off</value><comment>Under a tool group that is switched off.</comment></data>
   <data name="tools.group_switch" xml:space="preserve"><value>{group} tools</value><comment>Screen reader name of a tool group switch.</comment></data>
+  <data name="tools.header_add" xml:space="preserve"><value>Add header</value><comment>Button that adds a header to a tool server.</comment></data>
+  <data name="tools.header_name" xml:space="preserve"><value>Header name</value><comment>Label of a header's name field.</comment></data>
+  <data name="tools.header_saved" xml:space="preserve"><value>Saved</value><comment>Placeholder of a header value that is already kept safe.</comment></data>
+  <data name="tools.header_value" xml:space="preserve"><value>Header value</value><comment>Label of a header's value field.</comment></data>
+  <data name="tools.headers" xml:space="preserve"><value>Headers</value><comment>Small title over a tool server's HTTP headers.</comment></data>
   <data name="tools.help.browser" xml:space="preserve"><value>Lets the Imp look at pages and use the browser you opened for it.</value><comment>Help of the browser row.</comment></data>
   <data name="tools.help.built_in" xml:space="preserve"><value>Things the Imp can already do, like look at your screen. Switch off any it should not use.</value><comment>Help of the built-in tools list.</comment></data>
   <data name="tools.help.mcp" xml:space="preserve"><value>Extra tools added from outside. Each one gives the Imp new things to do.</value><comment>Help of the extra tools list.</comment></data>
@@ -643,6 +645,13 @@
   <data name="tools.mcp_connected" xml:space="preserve"><value>Connected</value><comment>Status of an MCP server.</comment></data>
   <data name="tools.mcp_failed" xml:space="preserve"><value>Could not start</value><comment>Status of an MCP server.</comment></data>
   <data name="tools.mcp_starting" xml:space="preserve"><value>Starting</value><comment>Status of an MCP server.</comment></data>
+  <data name="tools.new_server" xml:space="preserve"><value>New server</value><comment>Title of a tool server that has no name or address yet.</comment></data>
+  <data name="tools.optional" xml:space="preserve"><value>Optional</value><comment>Placeholder of a field that may be left empty.</comment></data>
+  <data name="tools.problem.address" xml:space="preserve"><value>Add the server's address.</value><comment>Problem on a tool server with no address.</comment></data>
+  <data name="tools.remove_header" xml:space="preserve"><value>Remove header</value><comment>Spoken label of the button that removes a header.</comment></data>
+  <data name="tools.remove_server" xml:space="preserve"><value>Remove server</value><comment>Button and dialog title: remove a tool server from an Imp.</comment></data>
+  <data name="tools.remove_server.message" xml:space="preserve"><value>The Imp loses the tools of this server.</value><comment>Message of the dialog that removes a tool server.</comment></data>
+  <data name="tools.server_name" xml:space="preserve"><value>Name</value><comment>Label of a tool server's name field.</comment></data>
   <data name="tools.shared_setup" xml:space="preserve"><value>Every Imp that uses this tool gets this setup. Each Imp switches it on or off for itself.</value><comment>In the extra tool editor: its setup is shared, while each Imp switches it on or off for itself.</comment></data>
   <data name="tools.title" xml:space="preserve"><value>Tools</value><comment>Panel title.</comment></data>
   <data name="triggers.add" xml:space="preserve"><value>Add a trigger</value><comment>Button that adds a trigger.</comment></data>

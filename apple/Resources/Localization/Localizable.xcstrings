@@ -25628,6 +25628,30 @@
         }
       }
     },
+    "look.swatch" : {
+      "comment" : "Spoken label of a colour swatch in an Imp's look.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Colour %1$lld of %2$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color %1$lld de %2$lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第 %1$lld 种颜色，共 %2$lld 种"
+          }
+        }
+      }
+    },
     "look.title" : {
       "comment" : "Panel title.",
       "extractionState" : "manual",
@@ -26248,30 +26272,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "移到 %1$@"
-          }
-        }
-      }
-    },
-    "menu.imp.new_chat" : {
-      "comment" : "Imp menu item that starts a fresh chat.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "New chat"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chat nuevo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新对话"
           }
         }
       }
@@ -27140,6 +27140,30 @@
         }
       }
     },
+    "phone.brain.change" : {
+      "comment" : "Button in an Imp's Brain panel on the iPhone that starts choosing another service or model.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change Brain"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar cerebro"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更换大脑"
+          }
+        }
+      }
+    },
     "phone.callhome" : {
       "comment" : "Button: bring an Imp back.",
       "extractionState" : "manual",
@@ -27568,6 +27592,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "拷贝"
+          }
+        }
+      }
+    },
+    "phone.editor.hatch" : {
+      "comment" : "Main button of the sheet that makes a new Imp on the iPhone.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hatch"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "孵化"
+          }
+        }
+      }
+    },
+    "phone.editor.save" : {
+      "comment" : "Main button of an Imp's settings on the iPhone.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存"
+          }
+        }
+      }
+    },
+    "phone.editor.save_failed" : {
+      "comment" : "Message of that alert, with what went wrong.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Imp couldn't be saved. %1$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo guardar el Imp. %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法保存小妖。%1$@"
+          }
+        }
+      }
+    },
+    "phone.editor.save_failed_title" : {
+      "comment" : "Title of the alert when an Imp's settings could not be saved.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't save"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo guardar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法保存"
           }
         }
       }
@@ -28100,30 +28220,6 @@
         }
       }
     },
-    "phone.pair.code.a11y" : {
-      "comment" : "Spoken name of the QR code.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Link code"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Código de enlace"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关联代码"
-          }
-        }
-      }
-    },
     "phone.pair.code_bad" : {
       "comment" : "iPhone: pair code bad.",
       "extractionState" : "manual",
@@ -28149,7 +28245,7 @@
       }
     },
     "phone.pair.hatch" : {
-      "comment" : "Choice: hatch an Imp on this iPhone.",
+      "comment" : "Quiet button on the first screen: make an Imp of your own instead of waking the first one.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -28168,30 +28264,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "孵化小妖"
-          }
-        }
-      }
-    },
-    "phone.pair.hatch.detail" : {
-      "comment" : "Detail under Hatch an Imp.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Make one right here"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Haz uno aquí mismo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "就在这里创建一个"
           }
         }
       }
@@ -28220,78 +28292,6 @@
         }
       }
     },
-    "phone.pair.paste" : {
-      "comment" : "Button: paste a link from the clipboard.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Paste Link"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pegar enlace"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "粘贴链接"
-          }
-        }
-      }
-    },
-    "phone.pair.scan" : {
-      "comment" : "Choice: scan a code.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scan a code"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escanear un código"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "扫描代码"
-          }
-        }
-      }
-    },
-    "phone.pair.scan.detail" : {
-      "comment" : "Detail under Scan a code.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "From Imp on another device"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De Imp en otro dispositivo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "来自另一台设备上的 Imp"
-          }
-        }
-      }
-    },
     "phone.pair.scan_other" : {
       "comment" : "Hint above the camera.",
       "extractionState" : "manual",
@@ -28316,122 +28316,26 @@
         }
       }
     },
-    "phone.pair.scan_this" : {
-      "comment" : "Hint above the QR code.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scan this with Imp on another device"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escanea esto con Imp en otro dispositivo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用另一台设备上的 Imp 扫描这个"
-          }
-        }
-      }
-    },
     "phone.pair.seen_as" : {
-      "comment" : "Title of the field with this iPhone name.",
+      "comment" : "Help on the name card of the link sheet: what the name is for.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Other devices see this iPhone as"
+            "value" : "Other devices see this iPhone by this name."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los otros dispositivos ven este iPhone como"
+            "value" : "Los otros dispositivos ven este iPhone con este nombre."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "其他设备看到这台 iPhone 的名字"
-          }
-        }
-      }
-    },
-    "phone.pair.share" : {
-      "comment" : "Button: share the link.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Share Link"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compartir enlace"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "分享链接"
-          }
-        }
-      }
-    },
-    "phone.pair.show_code" : {
-      "comment" : "Choice: show my link code.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show my code"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar mi código"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示我的代码"
-          }
-        }
-      }
-    },
-    "phone.pair.show_code.detail" : {
-      "comment" : "Detail under Show my code.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Another device scans it"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Otro dispositivo lo escanea"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "让另一台设备扫描"
+            "value" : "其他设备会看到这个名字。"
           }
         }
       }
@@ -28443,19 +28347,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hatch an Imp here, or link another device with a code and throw Imps between them."
+            "value" : "Wake this Imp with a Brain, or link another device and throw an Imp over."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cría un Imp aquí o enlaza otro dispositivo con un código y lánzense Imps entre ellos."
+            "value" : "Despierta a este Imp con un cerebro, o enlaza otro dispositivo y lanza un Imp hacia aquí."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在这里孵化小妖，或用代码关联其他设备，在它们之间互相扔小妖。"
+            "value" : "给这只小妖一个大脑叫醒它，或者关联另一台设备，把小妖扔过来。"
           }
         }
       }
@@ -28504,6 +28408,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "粘贴链接"
+          }
+        }
+      }
+    },
+    "phone.persona.placeholder" : {
+      "comment" : "Placeholder of the personality field of an Imp on the iPhone.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Who is this Imp? How does it talk?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Quién es este Imp? ¿Cómo habla?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这只小妖是谁？它怎么说话？"
           }
         }
       }
@@ -29108,30 +29036,6 @@
         }
       }
     },
-    "phone.stage.asleep" : {
-      "comment" : "Short state under a sleeping Imp on the main screen.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Asleep"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dormido"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "睡着了"
-          }
-        }
-      }
-    },
     "phone.stage.back_to" : {
       "comment" : "Door label that sends an Imp back to the device it came from.",
       "extractionState" : "manual",
@@ -29464,6 +29368,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在查找…"
+          }
+        }
+      }
+    },
+    "phone.talks.empty" : {
+      "comment" : "The talks side of an Imp's sheet when it has not talked with another Imp yet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No talks yet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay charlas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有对话"
           }
         }
       }
@@ -33716,6 +33644,126 @@
         }
       }
     },
+    "tools.header_add" : {
+      "comment" : "Button that adds a header to a tool server.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add header"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir cabecera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加请求头"
+          }
+        }
+      }
+    },
+    "tools.header_name" : {
+      "comment" : "Label of a header's name field.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Header name"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre de la cabecera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求头名称"
+          }
+        }
+      }
+    },
+    "tools.header_saved" : {
+      "comment" : "Placeholder of a header value that is already kept safe.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已保存"
+          }
+        }
+      }
+    },
+    "tools.header_value" : {
+      "comment" : "Label of a header's value field.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Header value"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valor de la cabecera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求头的值"
+          }
+        }
+      }
+    },
+    "tools.headers" : {
+      "comment" : "Small title over a tool server's HTTP headers.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Headers"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cabeceras"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求头"
+          }
+        }
+      }
+    },
     "tools.help.browser" : {
       "comment" : "Help of the browser row.",
       "extractionState" : "manual",
@@ -33904,6 +33952,174 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在启动"
+          }
+        }
+      }
+    },
+    "tools.new_server" : {
+      "comment" : "Title of a tool server that has no name or address yet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New server"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidor nuevo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新服务器"
+          }
+        }
+      }
+    },
+    "tools.optional" : {
+      "comment" : "Placeholder of a field that may be left empty.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opcional"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可选"
+          }
+        }
+      }
+    },
+    "tools.problem.address" : {
+      "comment" : "Problem on a tool server with no address.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add the server's address."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade la dirección del servidor."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请填写服务器地址。"
+          }
+        }
+      }
+    },
+    "tools.remove_header" : {
+      "comment" : "Spoken label of the button that removes a header.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove header"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar cabecera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除请求头"
+          }
+        }
+      }
+    },
+    "tools.remove_server" : {
+      "comment" : "Button and dialog title: remove a tool server from an Imp.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove server"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar servidor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除服务器"
+          }
+        }
+      }
+    },
+    "tools.remove_server.message" : {
+      "comment" : "Message of the dialog that removes a tool server.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Imp loses the tools of this server."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El Imp pierde las herramientas de este servidor."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小妖会失去这台服务器的工具。"
+          }
+        }
+      }
+    },
+    "tools.server_name" : {
+      "comment" : "Label of a tool server's name field.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名称"
           }
         }
       }

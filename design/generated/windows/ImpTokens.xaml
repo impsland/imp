@@ -329,4 +329,8 @@
   <x:Double x:Key="ImpBehaviorSensorHz">30</x:Double>
   <x:Double x:Key="ImpBehaviorSensorHzSaving">20</x:Double>
   <x:Double x:Key="ImpBehaviorSettleSeconds">1.2</x:Double>
+  <x:Double x:Key="ImpBehaviorSummonStiffness">40</x:Double>
+  <x:Double x:Key="ImpBehaviorSummonDamping">11</x:Double>
+  <x:Double x:Key="ImpBehaviorSummonHeight">0.6</x:Double>
+  <x:Double x:Key="ImpBehaviorSheetHalfCover">0.5</x:Double>
 </ResourceDictionary>

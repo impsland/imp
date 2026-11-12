@@ -171,6 +171,10 @@
   --behavior-sensor-hz: 30;
   --behavior-sensor-hz-saving: 20;
   --behavior-settle-seconds: 1.2;
+  --behavior-summon-stiffness: 40;
+  --behavior-summon-damping: 11;
+  --behavior-summon-height: 0.6;
+  --behavior-sheet-half-cover: 0.5;
 }
 @media (prefers-color-scheme: light) {
   :root {

@@ -3,26 +3,35 @@ import ImpKit
 import QuickLook
 import SwiftUI
 
-/// An Imp's chat. It shows the turns its source has and sends what you type: the Mac does the
+/// An Imp's sheet: everything about one Imp in one place. Its chat with you and its talks with other
+/// Imps are two sides of it (`ImpPane`), its settings are one tap away, and it wears the Imp's colour.
+/// While it rests at half height the Imp itself waits in the room above it.
+///
+/// The chat shows the turns its source has and sends what you type: the Mac does the
 /// thinking for its Imps, this iPhone for the pocket ones.
 /// Replies are drawn from their Markdown like the Mac's bubble: text, lists, code and tables, and
 /// the pictures, voices, videos and files they show, fetched from the Mac (`LinkFileStore`).
-struct ChatSheet: View {
+struct ImpSheet: View {
     /// Where files in replies come from (the Mac).
     let hub: LinkHub
     let source: any ChatSource
     /// The Imps hatched here: their chats hold half of every talk.
     let pocket: PocketRuntime
     let impID: UUID
+    /// The side that is shown: the chat with you, or the talks with other Imps.
+    @Binding var pane: ImpPane
+    /// The room is in view above the sheet, and the Imp itself is up there.
+    var roomInView = false
     /// Opens the Imp's settings. Only the Imps hatched on this iPhone have any.
     var edit: (() -> Void)?
     /// Starts waking an Imp that has no Brain (the first run). Only the Imps hatched here have it.
     /// Opens the Brain panel of this pocket Imp's editor.
     var giveBrain: (() -> Void)?
+    /// Close: back to where the sheet was opened from.
+    var close: () -> Void = {}
     @State private var text = ""
     @FocusState private var focused: Bool
     @State private var confirmingNewChat = false
-    @State private var showingTalks = false
     /// A file to look at full screen (Quick Look).
     @State private var preview: URL?
     @State private var problem: String?
@@ -43,8 +52,13 @@ struct ChatSheet: View {
         VStack(spacing: 0) {
             if let imp {
                 header(imp)
-                transcript(imp)
-                composer(imp)
+                switch pane {
+                case .chat:
+                    transcript(imp)
+                    composer(imp)
+                case .talks:
+                    TalksPane(hub: hub, pocket: pocket, impID: impID)
+                }
             } else {
                 // The Imp went home while the chat was open.
                 ContentUnavailableView("This Imp has gone home", systemImage: "house")
@@ -52,14 +66,11 @@ struct ChatSheet: View {
             }
         }
         .presentationBackground(Tone.surface)
-        .impControls(tint: Tone.accent)
+        // An Imp's sheet wears the Imp's colour (principle 4): its buttons, its switch and what you said.
+        .impControls(tint: imp.map { Color.imp($0.hue) } ?? Tone.accent)
         .environment(\.openURL, OpenURLAction { url in open(url) })
         .quickLookPreview($preview)
-        .sheet(isPresented: $showingTalks) {
-            TalksSheet(hub: hub, pocket: pocket, impID: impID)
-                .presentationDragIndicator(.visible)
-                .presentationBackground(Tone.surface)
-        }
+        .impAnimation(ImpDesign.Motion.smooth, value: pane)
         .overlay(alignment: .top) {
             if let problem {
                 Label(problem, systemImage: "exclamationmark.triangle.fill")
@@ -89,14 +100,24 @@ struct ChatSheet: View {
 
     // MARK: Header
 
+    /// The same bar in every sheet: who or what it is about on the leading side, Close on the trailing side.
+    /// While the room is in view the Imp itself is up there, so the bar shows no second one.
     private func header(_ imp: LinkImp) -> some View {
         HStack(spacing: Spacing.medium) {
-            LiveImp(imp: imp, mood: mood).frame(width: Sizing.impPortrait, height: Sizing.impPortrait)
+            // The talks are a side room, opened from the Imp's menu: one way back to the chat.
+            if pane == .talks {
+                HoverIconButton(systemName: "chevron.left", help: "common.back", tint: Tone.text) { pane = .chat }
+                    .padding(.leading, -Spacing.small)
+            } else if !roomInView {
+                LiveImp(imp: imp, mood: mood).frame(width: Sizing.impPortrait, height: Sizing.impPortrait)
+                    .transition(.scale.combined(with: .opacity))
+            }
             VStack(alignment: .leading, spacing: Spacing.hairline) {
-                Text(imp.name).font(Typeface.cardTitle).foregroundStyle(Tone.text)
+                Text(imp.name).font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1)
+                    .accessibilityAddTraits(.isHeader)
                 HStack(spacing: Spacing.snug) {
-                    Circle().fill(statusColor).frame(width: Spacing.snug, height: Spacing.snug)
-                    Text(status)
+                    if pane == .chat { Circle().fill(statusColor).frame(width: Spacing.snug, height: Spacing.snug) }
+                    Text(pane == .talks ? String(localized: "menu.imp.talks") : status)
                         .font(Typeface.small)
                         .foregroundStyle(Tone.muted)
                         .lineLimit(1)
@@ -105,15 +126,18 @@ struct ChatSheet: View {
             }
             Spacer(minLength: Spacing.small)
             // Each action is one tap away.
+            if pane == .chat {
+                HoverIconButton(systemName: "square.and.pencil", help: "phone.chat.new", tint: Tone.text) { confirmingNewChat = true }
+                    .disabled(!canStartOver)
+            }
             if let edit {
                 HoverIconButton(systemName: "slider.horizontal.3", help: "phone.chat.edit_help", tint: Tone.text, action: edit)
             }
-            HoverIconButton(systemName: "square.and.pencil", help: "New Chat", tint: Tone.text) { confirmingNewChat = true }
-                .disabled(!canStartOver)
-            HoverIconButton(systemName: "bubble.left.and.bubble.right", help: "Talks", tint: Tone.text) { showingTalks = true }
+            HoverIconButton(systemName: "xmark", help: "common.close", tint: Tone.text, action: close)
         }
-        .padding(.horizontal, Spacing.page).padding(.top, Spacing.page).padding(.bottom, Spacing.medium)
+        .padding(.leading, Spacing.page).padding(.trailing, Spacing.medium).padding(.top, Spacing.medium).padding(.bottom, Spacing.small)
         .impAnimation(ImpDesign.Motion.quick, value: status)
+        .impAnimation(ImpDesign.Motion.smooth, value: roomInView)
     }
 
     private var mood: Mood {
@@ -206,7 +230,7 @@ struct ChatSheet: View {
         let intro = source.intro(imp, availability)
         return VStack(spacing: Spacing.cozy) {
             Image(systemName: availability != .ready ? "moon.zzz" : "bubble.left.and.text.bubble.right")
-                .font(.icon(.huge, weight: .light)).foregroundStyle(Tone.accent)
+                .font(.icon(.huge, weight: .light)).foregroundStyle(LegibleTint())
             HStack(spacing: 0) {
                 Text(intro.title)
                     .font(Typeface.cardTitle).foregroundStyle(Tone.text)
@@ -305,9 +329,9 @@ struct ChatSheet: View {
     private func glyph(_ name: String) -> some View {
         Image(systemName: name)
             .font(.icon(.big, weight: .bold))
-            .foregroundStyle(Tone.onAccent)
+            .foregroundStyle(OnTint())
             .frame(width: Sizing.hit, height: Sizing.hit)
-            .background(Circle().fill(Tone.accent))
+            .background(Circle().fill(TintFill()))
     }
 
     private func send() {
@@ -345,7 +369,7 @@ private struct DaySeparator: View {
     }
 }
 
-/// What you asked: on the right, in ember.
+/// What you asked: on the right, on the Imp's colour.
 private struct AskBubble: View {
     var text: String
     var retry: (() -> Void)?
@@ -353,10 +377,10 @@ private struct AskBubble: View {
     var body: some View {
         Text(Inline.text(text))
             .font(Typeface.body)
-            .foregroundStyle(Tone.onAccent)
-            .tint(Tone.onAccent)
+            .foregroundStyle(OnTint())
+            .tint(OnTint())
             .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.cozy)
-            .background(Tone.accent,
+            .background(TintFill(),
                         in: RoundedRectangle(cornerRadius: Radius.bubble, style: .continuous))
             .contextMenu {
                 Button { UIPasteboard.general.string = text } label: { Label("Copy", systemImage: "doc.on.doc") }
@@ -448,7 +472,7 @@ private struct ReplyCard: View {
                     if !text.isEmpty { IssueBadge(text: text) }
                     Spacer(minLength: Spacing.small)
                     if let retry {
-                        HoverIconButton(systemName: "arrow.clockwise", help: "Try Again", tint: Tone.accentBright, action: retry)
+                        HoverIconButton(systemName: "arrow.clockwise", help: "common.try_again", tint: Tone.text, action: retry)
                     }
                 }
             } else {

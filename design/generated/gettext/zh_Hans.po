@@ -1454,6 +1454,11 @@ msgctxt "look.squint"
 msgid "Squint"
 msgstr "眯眼"
 
+#. Spoken label of a colour swatch in an Imp's look.
+msgctxt "look.swatch"
+msgid "Colour {index} of {count}"
+msgstr "第 {index} 种颜色，共 {count} 种"
+
 #. Panel title.
 msgctxt "look.title"
 msgid "Look"
@@ -1583,11 +1588,6 @@ msgstr "放出来"
 msgctxt "menu.imp.move_to"
 msgid "Move to {name}"
 msgstr "移到 {name}"
-
-#. Imp menu item that starts a fresh chat.
-msgctxt "menu.imp.new_chat"
-msgid "New chat"
-msgstr "新对话"
 
 #. Menu item (desktop only) that puts a free Imp back in the window.
 msgctxt "menu.imp.send_home"
@@ -1769,6 +1769,11 @@ msgctxt "phone.appearance.light"
 msgid "Light"
 msgstr "浅色"
 
+#. Button in an Imp's Brain panel on the iPhone that starts choosing another service or model.
+msgctxt "phone.brain.change"
+msgid "Change Brain"
+msgstr "更换大脑"
+
 #. Button: bring an Imp back.
 msgctxt "phone.callhome"
 msgid "Call home"
@@ -1858,6 +1863,26 @@ msgstr "通过服务器"
 msgctxt "phone.copy"
 msgid "Copy"
 msgstr "拷贝"
+
+#. Main button of the sheet that makes a new Imp on the iPhone.
+msgctxt "phone.editor.hatch"
+msgid "Hatch"
+msgstr "孵化"
+
+#. Main button of an Imp's settings on the iPhone.
+msgctxt "phone.editor.save"
+msgid "Save"
+msgstr "保存"
+
+#. Message of that alert, with what went wrong.
+msgctxt "phone.editor.save_failed"
+msgid "The Imp couldn't be saved. {detail}"
+msgstr "无法保存小妖。{detail}"
+
+#. Title of the alert when an Imp's settings could not be saved.
+msgctxt "phone.editor.save_failed_title"
+msgid "Couldn't save"
+msgstr "无法保存"
 
 #. Button that unlinks every device.
 msgctxt "phone.forget.everyone"
@@ -1969,80 +1994,35 @@ msgctxt "phone.pair.clipboard_empty"
 msgid "Copy the link from the other device first, then paste it here."
 msgstr "请先在另一台设备上复制链接，再粘贴到这里。"
 
-#. Spoken name of the QR code.
-msgctxt "phone.pair.code.a11y"
-msgid "Link code"
-msgstr "关联代码"
-
 #. iPhone: pair code bad.
 msgctxt "phone.pair.code_bad"
 msgid "That code isn't from Imp."
 msgstr "该二维码不是 Imp 的。"
 
-#. Choice: hatch an Imp on this iPhone.
+#. Quiet button on the first screen: make an Imp of your own instead of waking the first one.
 msgctxt "phone.pair.hatch"
 msgid "Hatch an Imp"
 msgstr "孵化小妖"
-
-#. Detail under Hatch an Imp.
-msgctxt "phone.pair.hatch.detail"
-msgid "Make one right here"
-msgstr "就在这里创建一个"
 
 #. iPhone: pair link bad.
 msgctxt "phone.pair.link_bad"
 msgid "That isn't a link from Imp."
 msgstr "这不是 Imp 的链接。"
 
-#. Button: paste a link from the clipboard.
-msgctxt "phone.pair.paste"
-msgid "Paste Link"
-msgstr "粘贴链接"
-
-#. Choice: scan a code.
-msgctxt "phone.pair.scan"
-msgid "Scan a code"
-msgstr "扫描代码"
-
-#. Detail under Scan a code.
-msgctxt "phone.pair.scan.detail"
-msgid "From Imp on another device"
-msgstr "来自另一台设备上的 Imp"
-
 #. Hint above the camera.
 msgctxt "phone.pair.scan_other"
 msgid "Scan the code on the other device"
 msgstr "扫描另一台设备上的代码"
 
-#. Hint above the QR code.
-msgctxt "phone.pair.scan_this"
-msgid "Scan this with Imp on another device"
-msgstr "用另一台设备上的 Imp 扫描这个"
-
-#. Title of the field with this iPhone name.
+#. Help on the name card of the link sheet: what the name is for.
 msgctxt "phone.pair.seen_as"
-msgid "Other devices see this iPhone as"
-msgstr "其他设备看到这台 iPhone 的名字"
-
-#. Button: share the link.
-msgctxt "phone.pair.share"
-msgid "Share Link"
-msgstr "分享链接"
-
-#. Choice: show my link code.
-msgctxt "phone.pair.show_code"
-msgid "Show my code"
-msgstr "显示我的代码"
-
-#. Detail under Show my code.
-msgctxt "phone.pair.show_code.detail"
-msgid "Another device scans it"
-msgstr "让另一台设备扫描"
+msgid "Other devices see this iPhone by this name."
+msgstr "其他设备会看到这个名字。"
 
 #. Help on the first screen.
 msgctxt "phone.pair.tip"
-msgid "Hatch an Imp here, or link another device with a code and throw Imps between them."
-msgstr "在这里孵化小妖，或用代码关联其他设备，在它们之间互相扔小妖。"
+msgid "Wake this Imp with a Brain, or link another device and throw an Imp over."
+msgstr "给这只小妖一个大脑叫醒它，或者关联另一台设备，把小妖扔过来。"
 
 #. Title of the first screen on the iPhone.
 msgctxt "phone.pair.title"
@@ -2053,6 +2033,11 @@ msgstr "iPhone 版 Imp"
 msgctxt "phone.paste.link"
 msgid "Paste Link"
 msgstr "粘贴链接"
+
+#. Placeholder of the personality field of an Imp on the iPhone.
+msgctxt "phone.persona.placeholder"
+msgid "Who is this Imp? How does it talk?"
+msgstr "这只小妖是谁？它怎么说话？"
 
 #. Help for pause growth.
 msgctxt "phone.requests.backoff.info"
@@ -2179,11 +2164,6 @@ msgctxt "phone.share"
 msgid "Share"
 msgstr "分享"
 
-#. Short state under a sleeping Imp on the main screen.
-msgctxt "phone.stage.asleep"
-msgid "Asleep"
-msgstr "睡着了"
-
 #. Door label that sends an Imp back to the device it came from.
 msgctxt "phone.stage.back_to"
 msgid "Back to {name}"
@@ -2253,6 +2233,11 @@ msgstr "通过互联网"
 msgctxt "phone.status.looking"
 msgid "Looking…"
 msgstr "正在查找…"
+
+#. The talks side of an Imp's sheet when it has not talked with another Imp yet.
+msgctxt "phone.talks.empty"
+msgid "No talks yet"
+msgstr "还没有对话"
 
 #. Row title: the app version.
 msgctxt "phone.version"
@@ -3139,6 +3124,31 @@ msgctxt "tools.group_switch"
 msgid "{group} tools"
 msgstr "{group} 的工具"
 
+#. Button that adds a header to a tool server.
+msgctxt "tools.header_add"
+msgid "Add header"
+msgstr "添加请求头"
+
+#. Label of a header's name field.
+msgctxt "tools.header_name"
+msgid "Header name"
+msgstr "请求头名称"
+
+#. Placeholder of a header value that is already kept safe.
+msgctxt "tools.header_saved"
+msgid "Saved"
+msgstr "已保存"
+
+#. Label of a header's value field.
+msgctxt "tools.header_value"
+msgid "Header value"
+msgstr "请求头的值"
+
+#. Small title over a tool server's HTTP headers.
+msgctxt "tools.headers"
+msgid "Headers"
+msgstr "请求头"
+
 #. Help of the browser row.
 msgctxt "tools.help.browser"
 msgid "Lets the Imp look at pages and use the browser you opened for it."
@@ -3178,6 +3188,41 @@ msgstr "无法启动"
 msgctxt "tools.mcp_starting"
 msgid "Starting"
 msgstr "正在启动"
+
+#. Title of a tool server that has no name or address yet.
+msgctxt "tools.new_server"
+msgid "New server"
+msgstr "新服务器"
+
+#. Placeholder of a field that may be left empty.
+msgctxt "tools.optional"
+msgid "Optional"
+msgstr "可选"
+
+#. Problem on a tool server with no address.
+msgctxt "tools.problem.address"
+msgid "Add the server's address."
+msgstr "请填写服务器地址。"
+
+#. Spoken label of the button that removes a header.
+msgctxt "tools.remove_header"
+msgid "Remove header"
+msgstr "移除请求头"
+
+#. Button and dialog title: remove a tool server from an Imp.
+msgctxt "tools.remove_server"
+msgid "Remove server"
+msgstr "移除服务器"
+
+#. Message of the dialog that removes a tool server.
+msgctxt "tools.remove_server.message"
+msgid "The Imp loses the tools of this server."
+msgstr "小妖会失去这台服务器的工具。"
+
+#. Label of a tool server's name field.
+msgctxt "tools.server_name"
+msgid "Name"
+msgstr "名称"
 
 #. In the extra tool editor: its setup is shared, while each Imp switches it on or off for itself.
 msgctxt "tools.shared_setup"

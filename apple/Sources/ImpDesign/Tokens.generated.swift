@@ -729,4 +729,12 @@ public enum Behavior {
     public static let sensorHzSaving = 20
     /// How long frames stay at the moving rate after the last movement, so a head turning back or a mood fading is drawn to its end.
     public static let settleSeconds = 1.2
+    /// The spring that brings an Imp up into the free room when its sheet opens: how hard it pulls.
+    public static let summonStiffness = 40
+    /// The spring that brings an Imp up into the free room when its sheet opens: how fast it calms. A little under critical, so the Imp arrives with a small overshoot.
+    public static let summonDamping = 11
+    /// How far down the free room above a sheet the Imp waits (0 top, 1 bottom), so its speech bubble has room above it.
+    public static let summonHeight = 0.6
+    /// The share of the screen a sheet resting at half height covers.
+    public static let sheetHalfCover = 0.5
 }
