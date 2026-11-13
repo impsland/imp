@@ -39,8 +39,7 @@ struct AnimationsPane: View {
             searchBar(searching: searching)
             madeCard(prefs: prefs, owners: owners, live: live, searching: searching)
             builtInCard(prefs: prefs, owners: owners, live: live, searching: searching)
-            findMore
-            restoreRow(prefs: prefs)
+            if !denReady { needsDen }
         }
         .sheet(item: $editing) { draft in AnimationEditor(model: model, draft: draft) }
     }
@@ -56,14 +55,12 @@ struct AnimationsPane: View {
         }
     }
 
-    private func restoreRow(prefs: ImpPreferences) -> some View {
-        HStack {
-            Spacer()
-            Button { withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { model.prefs.resetAnimations() } } label: { Text("animations.restore") }
-                .buttonStyle(.imp(.quiet, small: true))
-                .disabled(prefs.animations.isEmpty)
-                .help("Turns every built-in animation on, with its original starts. What you made or changed stays.")
+    /// Restores the built-in animations: an action on their card, so an icon in its header.
+    private func restoreButton(prefs: ImpPreferences) -> some View {
+        HoverIconButton(systemName: "arrow.counterclockwise", help: "animations.restore") {
+            withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { model.prefs.resetAnimations() }
         }
+        .disabled(prefs.animations.isEmpty)
     }
 
     // MARK: Groups
@@ -92,6 +89,9 @@ struct AnimationsPane: View {
                 if !made.isEmpty {
                     let kit = Kit(name: String(localized: "Animations"), animations: made.map(\.0))
                     ShareKitButton(kit: kit, help: "Share these animations as a kit")
+                }
+                if denReady {
+                    HoverIconButton(systemName: "books.vertical", help: "animations.find") { findMore() }
                 }
                 Button { editing = .new(owner: nil, model: model, previewImp: imp) } label: { FitLabel("animations.new", systemImage: "plus") }
                     .buttonStyle(.imp(.secondary, small: true))
@@ -147,6 +147,8 @@ struct AnimationsPane: View {
         let members = Reaction.allCases.filter { matches($0.title, $0.summary) }
         if !searching || !members.isEmpty {
             Card(LocalizedStringKey("animations.built_in"), icon: "sparkles") {
+                restoreButton(prefs: prefs)
+            } content: {
                 VStack(spacing: 0) {
                     ForEach(Array(members.enumerated()), id: \.element) { i, reaction in
                         presetRow(reaction, prefs: prefs, owners: owners, live: live)
@@ -157,25 +159,26 @@ struct AnimationsPane: View {
         }
     }
 
-    /// The way to more: the Den's catalog, or a line that says the Den is not set up.
-    private var findMore: some View {
+    /// The Den is set up, so more animations can be found there (from the made card's header).
+    private var denReady: Bool {
+        !model.prefs.den.trimmingCharacters(in: .whitespaces).isEmpty && DenServer(model.prefs.den) != nil
+    }
+
+    private func findMore() {
+        let flow = KitFlow(imp: nil)
+        flow.browsing = true
+        flow.browseKind = "animation"
+        HomeWindow.shared.router.kitFlow = flow
+    }
+
+    /// Without a Den there is nowhere to find more: a line that says so, with the way to set one up beside it.
+    private var needsDen: some View {
         HStack(spacing: Spacing.cozy) {
-            if model.prefs.den.trimmingCharacters(in: .whitespaces).isEmpty || DenServer(model.prefs.den) == nil {
-                Text("animations.needs_den").font(Typeface.body).foregroundStyle(Tone.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-                Spacer(minLength: Spacing.small)
-                Button("state.servers.set_up_den") { HomeWindow.shared.router.open(group: .sharing) }
-                    .buttonStyle(.imp(.secondary, small: true))
-            } else {
-                Spacer(minLength: 0)
-                Button {
-                    let flow = KitFlow(imp: nil)
-                    flow.browsing = true
-                    flow.browseKind = "animation"
-                    HomeWindow.shared.router.kitFlow = flow
-                } label: { Label("animations.find", systemImage: "books.vertical") }
-                    .buttonStyle(.imp(.secondary, small: true))
-            }
+            Text("animations.needs_den").font(Typeface.body).foregroundStyle(Tone.muted)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: Spacing.small)
+            Button("state.servers.set_up_den") { HomeWindow.shared.router.open(group: .sharing) }
+                .buttonStyle(.imp(.secondary, small: true))
         }
     }
 

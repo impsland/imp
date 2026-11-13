@@ -252,7 +252,6 @@ struct AddServiceSheet: View {
                 return String(localized: "Works. \(count) models")
             })
             .disabled(!isValid)
-            Spacer()
             NoticePoster { post in
                 Button("common.add") {
                     var p = draft

@@ -49,13 +49,15 @@ struct LiveImp: View {
     var mood: Mood = .idle
     var performance: Performance?
     var gaze: CGPoint?
+    /// All ears, horns perked (watching something it cares about).
+    var attentive = false
     @State private var pacer = StagePacer()
     @State private var activity = FramePolicy.Activity.lively
 
     var body: some View {
         PacedTimeline(activity: activity) { date in
             let _ = frame(date)
-            ImpFigure(imp: imp, mood: mood, performance: performance, gaze: gaze, date: date)
+            ImpFigure(imp: imp, mood: mood, performance: performance, gaze: gaze, attentive: attentive, date: date)
         }
         .onAppear { pacer.onChange = { activity = $0 } }
     }

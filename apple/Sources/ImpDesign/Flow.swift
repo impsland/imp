@@ -5,23 +5,30 @@ import SwiftUI
 
 /// The top bar of a modal or a sheet: a Back icon button on the leading edge, an optional centred
 /// title or progress (a `StepIndicator`, say), and a Close icon button on the trailing edge. A button
-/// that is not wanted is left out and the centre stays centred. The icon buttons have no background
+/// that is not wanted is left out and the centre stays centred. Where there is no Back, the leading
+/// corner may hold one action of the whole sheet. The icon buttons have no background
 /// until they are pointed at or pressed. Esc closes (the Close button carries the cancel shortcut).
-public struct SheetBar<Center: View>: View {
+public struct SheetBar<Center: View, Leading: View>: View {
     let back: (() -> Void)?
     let close: (() -> Void)?
     let center: Center
+    let leading: Leading
 
-    public init(back: (() -> Void)? = nil, close: (() -> Void)? = nil, @ViewBuilder center: () -> Center) {
+    /// `leading`: an action of the whole sheet (an icon button) in the corner Back leaves free. It
+    /// gives way to Back, so the leading corner always holds one thing and mirrors Close.
+    public init(back: (() -> Void)? = nil, close: (() -> Void)? = nil, @ViewBuilder center: () -> Center,
+                @ViewBuilder leading: () -> Leading) {
         self.back = back
         self.close = close
         self.center = center()
+        self.leading = leading()
     }
 
     public var body: some View {
         HStack(spacing: Spacing.small) {
             HStack(spacing: 0) {
                 if let back { HoverIconButton(systemName: "chevron.left", help: "common.back", tint: Tone.text, action: back) }
+                else { leading }
                 Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity)
@@ -39,7 +46,22 @@ public struct SheetBar<Center: View>: View {
     }
 }
 
-extension SheetBar where Center == EmptyView {
+extension View {
+    /// Where the bar of every sheet sits (Back, title, Close), on every platform: the same distance from
+    /// the sheet's top and sides, so a corner button's circle is as far from the side as from the top
+    /// and Close is always in the same place.
+    public func sheetBarInsets() -> some View {
+        padding(.horizontal, Spacing.medium).padding(.top, Spacing.medium)
+    }
+}
+
+extension SheetBar where Leading == EmptyView {
+    public init(back: (() -> Void)? = nil, close: (() -> Void)? = nil, @ViewBuilder center: () -> Center) {
+        self.init(back: back, close: close, center: center) { EmptyView() }
+    }
+}
+
+extension SheetBar where Center == EmptyView, Leading == EmptyView {
     public init(back: (() -> Void)? = nil, close: (() -> Void)? = nil) {
         self.init(back: back, close: close) { EmptyView() }
     }

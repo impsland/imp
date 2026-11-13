@@ -22,6 +22,10 @@ struct PocketLookPanel: View {
                     .frame(minHeight: Sizing.hit)
             }
             PocketCard(title: "look.character", tip: String(localized: "look.help.character")) {
+                // As on the Mac: Reset is an action on the character, so an icon in its card's header.
+                HoverIconButton(systemName: "arrow.counterclockwise", help: "look.reset") { draft.resetLook() }
+                    .disabled(draft.isPlainLook)
+            } content: {
                 Wrap(spacing: Spacing.small) {
                     ForEach(ImpTraits.presets) { p in
                         ChoiceChip(verbatim: "\(p.emoji) \(p.name)", picked: draft.traits.preset?.id == p.id) { draft.traits = p.traits }
@@ -37,9 +41,6 @@ struct PocketLookPanel: View {
                 TraitSlider(label: "look.head", value: t.tilt, range: -12...12, shown: "\(Int(draft.traits.tilt.rounded()))°")
                 TraitSlider(label: "look.pace", value: t.tempo, range: 0.6...1.6, shown: String(format: "%.1f×", draft.traits.tempo))
             }
-            Button("look.reset") { draft.resetLook() }
-                .buttonStyle(.quiet)
-                .disabled(draft.isPlainLook)
         }
     }
 
@@ -96,12 +97,13 @@ struct PocketBrainPanel: View {
             }
         } else {
             PocketCard(title: "brain.title", tip: words("brain.hint", draft.name.trimmed.isEmpty ? String(localized: "imp_settings.this_imp") : draft.name.trimmed)) {
+                Button("phone.brain.change", action: change).buttonStyle(.imp(.secondary, small: true))
+            } content: {
                 VStack(alignment: .leading, spacing: Spacing.hairline) {
                     Text(verbatim: draft.serviceName).font(Typeface.cardTitle).foregroundStyle(Tone.text)
                     Text(verbatim: draft.brain.model).font(Typeface.mono).foregroundStyle(Tone.muted).lineLimit(2)
                 }
                 .accessibilityElement(children: .combine)
-                Button("phone.brain.change", action: change).buttonStyle(.secondary)
             }
         }
     }

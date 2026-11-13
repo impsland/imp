@@ -16,7 +16,7 @@ struct PhoneSnapshotTests {
 
     /// The notice at the top of a settings section, for the section's own items.
     private func attention(_ nodes: [SettingsNode], in group: SettingsGroup) -> some View {
-        ScrollView { AttentionNotice(SettingsMap.attention(nodes, in: group).map(\.text)).padding(16) }
+        ScrollView { AttentionNotice(SettingsMap.attention(nodes, in: group).map { AttentionNotice.Line($0) }).padding(16) }
             .background(Tone.surface).impControls(tint: Tone.accent)
     }
 
@@ -37,7 +37,7 @@ struct PhoneSnapshotTests {
     }
 
     @Test func brainsNeedAttention() {
-        let nodes = [SettingsNode(id: "me", kind: .thisDevice, name: "Anna's iPhone", state: .ready, imps: ["Dot", "Bumble"], sleeping: ["Dot", "Bumble"]),
+        let nodes = [SettingsNode(id: "me", kind: .thisDevice, name: "Anna's iPhone", state: .ready, imps: ["Dot", "Bumble"], sleeping: [Sleeper(id: UUID(), name: "Dot"), Sleeper(id: UUID(), name: "Bumble")]),
                      SettingsNode(id: "brains", kind: .brains, name: "", state: .needsSetup)]
         check(attention(nodes, in: .brains), "settings-attention-brains")
     }

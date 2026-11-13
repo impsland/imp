@@ -257,13 +257,11 @@ struct LinkDeviceSheet: View {
                     .impActionState($copied)
                     .disabled(invite == nil)
                     .help(Text("devices.copy_link.help"))
-                Spacer()
             case .scan:
                 Button { paste() } label: { FitLabel("Paste", systemImage: "doc.on.clipboard") }
                     .buttonStyle(.imp(.secondary))
                     .disabled(join.isLocked)
                     .help("Pastes a link, or a picture of a code")
-                Spacer()
                 if join.linked == nil {
                     Button { join.invite.map(link) } label: { FitLabel("Link", systemImage: "link") }
                         .buttonStyle(.primary).keyboardShortcut(.defaultAction)

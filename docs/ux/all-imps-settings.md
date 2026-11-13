@@ -14,7 +14,7 @@ In a narrow window the Mac's rail shows icons only (the titles are tooltips and 
 
 ### Needs attention
 
-What is left to set up is said where it is fixed. A section that has something to fix carries a small mark in the rail, and its page starts with a notice (`AttentionNotice`) of one short line for each thing.
+What is left to set up is said where it is fixed. A section that has something to fix carries a small mark in the rail, and its page starts with a notice (`AttentionNotice`): one calm pebble for each thing, with a picture of what it is about, one short line and, when the fix is elsewhere (an Imp's Brain on the iPhone), a button that opens it.
 
 | What | Section |
 | --- | --- |
@@ -36,7 +36,7 @@ Nine sections, each with a one-word name and a few cards of icon rows. A card ha
 | Brains | Services: the list of Brains and the default for new Imps. Keys: the keychain. Requests: wait, retries, first wait, longer waits. |
 | Devices | This Mac with Link, the linked devices (Forget all in the header) and The Hop in the compact server card. |
 | Sharing | The Gallery (Browse, Import) and The Den in the compact server card. |
-| Animations | The search, made ones (shared, or the selected Imp's own) with New animation, the built-in ones, and restore defaults. |
+| Animations | The search, made ones (shared, or the selected Imp's own) with New animation and Find more in their header, the built-in ones with Restore in their header. |
 | Permissions | Listening: microphone and speech. Computer control: screen recording and accessibility. |
 | Backup | Keep: export and import. Reset: start again. Reset is last and asks first. |
 
@@ -102,7 +102,7 @@ A Brain service is one generic list entry: a name, an address, a key and a model
 
 Five animations are built in, so offline users and users with local models work without a download. A larger set is in The Den. They come from the same catalog, so the two lists cannot drift apart. The Den seeds the catalog when it starts. ![Animations](./images/all-imps-animations.png)
 
-The page is simple: the search, the made ones with New animation in their card's header, the built-in ones, a button to find more and a button to restore defaults. The animation editor sheet stays. Made animations are shared by every Imp unless they are one Imp's own: the page shows the shared ones and the selected Imp's own, each own one tagged with its Imp. Saving a shared animation for one Imp makes that Imp's version and leaves the shared one (see [Scope](/ux/imp-settings#scope-this-imp-or-every-imp)). A switch on an Imp's own version of a built-in animation is for that Imp alone. Each row shows what starts the animation as small symbols, not words: lit when that trigger is live, dim when it is off (the words are the hover help and the VoiceOver label). A bolt button opens the list of what starts it, a long multi-select list.
+The page is simple: the search, the made ones with New animation and Find more (when a Den is set up) in their card's header, and the built-in ones with Restore as an icon in their card's header. Without a Den, a last line says so beside the button that sets one up. The animation editor sheet stays. Made animations are shared by every Imp unless they are one Imp's own: the page shows the shared ones and the selected Imp's own, each own one tagged with its Imp. Saving a shared animation for one Imp makes that Imp's version and leaves the shared one (see [Scope](/ux/imp-settings#scope-this-imp-or-every-imp)). A switch on an Imp's own version of a built-in animation is for that Imp alone. Each row shows what starts the animation as small symbols, not words: lit when that trigger is live, dim when it is off (the words are the hover help and the VoiceOver label). A bolt button opens the list of what starts it, a long multi-select list.
 
 Every gesture has a built-in animation out of the box, so an offline Imp is never still. Pokes, swishes, rushes, shakes, drops, dangling and circling start Wow. Strokes, tickles, holding, carrying, the favourite colour and coming back start Smile. Resting the cursor beside or on its face starts Nod hello. A quiet moment starts Smile. These defaults are the `defaults` of the catalog. An animation from The Den or one you make for a gesture takes it over, and a gesture has one animation at a time. Remove that animation and the built-in one comes back.
 

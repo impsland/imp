@@ -3,7 +3,10 @@ import Testing
 @testable import ImpKit
 
 @Suite struct SettingsMapTests {
-    private func node(_ kind: SettingsNode.Kind, _ state: SettingsNode.State, name: String = "x", sleeping: [String] = []) -> SettingsNode {
+    private let pip = Sleeper(id: UUID(), name: "Pip")
+    private let moss = Sleeper(id: UUID(), name: "Moss")
+
+    private func node(_ kind: SettingsNode.Kind, _ state: SettingsNode.State, name: String = "x", sleeping: [Sleeper] = []) -> SettingsNode {
         SettingsNode(id: "\(kind)-\(name)", kind: kind, name: name, state: state, sleeping: sleeping)
     }
 
@@ -14,10 +17,10 @@ import Testing
     }
 
     @Test func eachProblemBecomesOneItemThatOpensItsGroup() {
-        let nodes = [node(.thisDevice, .ready, sleeping: ["Pip", "Moss"]), node(.brains, .needsSetup),
+        let nodes = [node(.thisDevice, .ready, sleeping: [pip, moss]), node(.brains, .needsSetup),
                      node(.den, .off), node(.hop, .needsSetup), node(.phone, .offline, name: "Anna's iPhone")]
         let items = SettingsMap.attention(nodes)
-        #expect(items.map(\.reason) == [.noBrains, .noBrain("Pip"), .noBrain("Moss"), .denNotSet, .hopNotSet, .deviceOffline("Anna's iPhone")])
+        #expect(items.map(\.reason) == [.noBrains, .noBrain(pip), .noBrain(moss), .denNotSet, .hopNotSet, .deviceOffline("Anna's iPhone")])
         #expect(items.map(\.group) == [.brains, .brains, .brains, .sharing, .devices, .devices])
     }
 
@@ -77,9 +80,9 @@ import Testing
     }
 
     @Test func eachSectionShowsOnlyWhatIsFixedThere() {
-        let nodes = [node(.thisDevice, .ready, sleeping: ["Pip"]), node(.brains, .ready), node(.den, .off),
+        let nodes = [node(.thisDevice, .ready, sleeping: [pip]), node(.brains, .ready), node(.den, .off),
                      node(.hop, .needsSetup), node(.phone, .offline, name: "Anna's iPhone")]
-        #expect(SettingsMap.attention(nodes, in: .brains).map(\.reason) == [.noBrain("Pip")])
+        #expect(SettingsMap.attention(nodes, in: .brains).map(\.reason) == [.noBrain(pip)])
         #expect(SettingsMap.attention(nodes, in: .sharing).map(\.reason) == [.denNotSet])
         #expect(SettingsMap.attention(nodes, in: .devices).map(\.reason) == [.hopNotSet, .deviceOffline("Anna's iPhone")])
         for group in SettingsGroup.allCases where ![.brains, .sharing, .devices].contains(group) {
@@ -90,7 +93,7 @@ import Testing
     }
 
     @Test func aSectionIsMarkedOnlyWhenSomethingInItNeedsAFix() {
-        let nodes = [node(.thisDevice, .ready, sleeping: ["Pip"]), node(.brains, .ready), node(.den, .off), node(.hop, .ready)]
+        let nodes = [node(.thisDevice, .ready, sleeping: [pip]), node(.brains, .ready), node(.den, .off), node(.hop, .ready)]
         let marked = SettingsMap.attentionGroups(SettingsMap.attention(nodes))
         #expect(marked == [.brains, .sharing])
         #expect(SettingsMap.attentionGroups([]).isEmpty)

@@ -83,17 +83,21 @@ struct PhoneListRow: View {
     }
 }
 
-/// A soft card of a panel: one header (title, at most one help tip, an optional value) and rows inside.
-struct PocketCard<Content: View>: View {
+/// A soft card of a panel: one header (title, then on the trailing side an optional value or action and at
+/// most one help tip) and rows inside. An action on the whole card (Reset, Add, Change) sits in the header,
+/// never alone under the rows.
+struct PocketCard<Accessory: View, Content: View>: View {
     let title: LocalizedStringKey
     var tip: String?
     var value: String?
+    @ViewBuilder var accessory: Accessory
     @ViewBuilder var content: Content
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.cozy) {
             SectionHeader(info: nil, verbatimInfo: tip, minHeight: nil, accessory: {
                 if let value { Text(verbatim: value).font(Typeface.small.monospacedDigit()).foregroundStyle(Tone.muted) }
+                accessory
             }, leading: {
                 Text(title).font(Typeface.label).foregroundStyle(Tone.text).accessibilityAddTraits(.isHeader)
             })
@@ -102,6 +106,12 @@ struct PocketCard<Content: View>: View {
         .padding(Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(RoundedRectangle(cornerRadius: Radius.small, style: .continuous).fill(Tone.card))
+    }
+}
+
+extension PocketCard where Accessory == EmptyView {
+    init(title: LocalizedStringKey, tip: String? = nil, value: String? = nil, @ViewBuilder content: () -> Content) {
+        self.init(title: title, tip: tip, value: value, accessory: { EmptyView() }, content: content)
     }
 }
 

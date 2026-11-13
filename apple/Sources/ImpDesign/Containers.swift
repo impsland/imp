@@ -374,32 +374,69 @@ public struct SelectableCard<Content: View>: View {
     }
 }
 
-/// What needs fixing on the page it heads, one short line each. It sits at the top of the settings
-/// section that fixes it, so the person reads it where they act on it. Nothing shows when the list
+/// What needs fixing on the page it heads (spec `attention`). It sits at the top of the settings
+/// section that fixes it, so the person reads it where they act on it. Each problem is one calm pebble,
+/// not a coloured block: a picture of what it is about, lit in the warning colour, one short line, and the
+/// way to fix it as a button on the trailing side when the fix is elsewhere. Nothing shows when the list
 /// is empty.
 public struct AttentionNotice: View {
-    let lines: [String]
+    /// One problem: what it is about (a symbol), what is wrong, and the way to fix it, if any.
+    public struct Line: Identifiable {
+        public var id: String
+        public var symbol: String
+        public var text: String
+        public var fix: Fix?
 
-    public init(_ lines: [String]) { self.lines = lines }
+        public init(id: String, symbol: String, text: String, fix: Fix? = nil) {
+            self.id = id; self.symbol = symbol; self.text = text; self.fix = fix
+        }
+    }
+
+    /// The button that fixes a problem: a word or two and its picture.
+    public struct Fix {
+        public var title: LocalizedStringKey
+        public var symbol: String
+        public var action: () -> Void
+
+        public init(_ title: LocalizedStringKey, symbol: String, action: @escaping () -> Void) {
+            self.title = title; self.symbol = symbol; self.action = action
+        }
+    }
+
+    let lines: [Line]
+
+    public init(_ lines: [Line]) { self.lines = lines }
 
     public var body: some View {
         if !lines.isEmpty {
-            VStack(alignment: .leading, spacing: Spacing.tight) {
-                ForEach(lines, id: \.self) { line in
-                    HStack(alignment: .firstTextBaseline, spacing: Spacing.snug) {
-                        Image(systemName: "exclamationmark.triangle.fill").font(.icon(.small)).accessibilityHidden(true)
-                        Text(verbatim: line).font(Typeface.label).multilineTextAlignment(.leading)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
+            VStack(spacing: Spacing.snug) {
+                ForEach(lines) { line in row(line) }
             }
-            .foregroundStyle(Tone.warnText)
-            .padding(Spacing.medium)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Tone.warnBackground))
-            .accessibilityElement(children: .combine)
+            .accessibilityElement(children: .contain)
             .accessibilityLabel(Text("common.needs_attention"))
-            .accessibilityValue(Text(verbatim: lines.joined(separator: " ")))
         }
+    }
+
+    private func row(_ line: Line) -> some View {
+        HStack(spacing: Spacing.cozy) {
+            Image(systemName: line.symbol)
+                .font(.icon(.medium, weight: .semibold))
+                .foregroundStyle(Tone.warnText)
+                .frame(width: Sizing.iconTile, height: Sizing.iconTile)
+                .background(RoundedRectangle(cornerRadius: Radius.small, style: .continuous).fill(Tone.warnBackground))
+                .accessibilityHidden(true)
+            Text(verbatim: line.text).font(Typeface.label).foregroundStyle(Tone.text)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            if let fix = line.fix {
+                Button(action: fix.action) { FitLabel(fix.title, systemImage: fix.symbol) }
+                    .buttonStyle(.imp(.secondary, small: true))
+            }
+        }
+        .padding(Spacing.cozy)
+        .frame(minHeight: Sizing.hit)
+        .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous).fill(Tone.card))
+        .accessibilityElement(children: line.fix == nil ? .combine : .contain)
     }
 }

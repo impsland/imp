@@ -105,7 +105,7 @@ Each item has one of three scopes, and its row says which under its title, with 
 
 ![Look](./images/imp-look.png)
 
-One panel for Colour, Size and Character. They are sliders, with the live Imp as the preview. A "Reset look" button restores the defaults.
+One panel for Colour, Size and Character. They are sliders, with the live Imp as the preview. Reset, an icon in the Character card's header, restores the defaults.
 
 Decision: only the whole Imp is shared in The Den. There is no separate Character to share. The Imp kit already carries the look, so one thing to understand is enough. Keys, memory and chats never travel.
 
@@ -168,7 +168,7 @@ The animations the Imp plays: how it follows the cursor, and its own animations.
 
 ## Share and Goodbye
 
-Share and Goodbye are actions, not settings. They are two small icon buttons in the top trailing corner, apart from each other. Goodbye is the one at the far edge, away from the other buttons.
+Share and Goodbye are actions, not settings. They are two small icon buttons in the top trailing corner, apart from each other. Goodbye is the one at the far edge, away from the other buttons. On the iPhone, where Close holds the trailing corner, Goodbye is the icon button in the leading corner of the sheet's bar while no panel is open (a panel puts Back there). It is never a big button at the bottom of the page.
 
 Goodbye asks first. A destructive dialog names the Imp: `goodbye.title`. The safe button is `goodbye.cancel` and it is the default. The destructive one is `goodbye.confirm`.
 

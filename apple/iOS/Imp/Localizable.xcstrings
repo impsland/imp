@@ -14961,6 +14961,30 @@
         }
       }
     },
+    "phone.brains.set_up" : {
+      "comment" : "Button beside an Imp without a Brain (iPhone settings): opens its Brain to set one up.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set up"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置"
+          }
+        }
+      }
+    },
     "phone.callhome" : {
       "comment" : "Button: bring an Imp back.",
       "extractionState" : "manual",

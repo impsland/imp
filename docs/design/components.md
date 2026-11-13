@@ -85,6 +85,8 @@ How an icon button sits in a corner (a close button, a back button, a settings g
 - The inset is measured to the visible circle (size.glyph), not to the hit area (size.hit). The two edges a control is near have the same inset: top equals trailing, bottom equals leading.
 - A bar's height is its content plus its inset on both sides, so the control is centred and its trailing inset equals its top inset.
 - A footer button sits as far from the bottom of a sheet as from its left.
+- A corner item that is not an icon button (a version) is as far from the side as from the top of its bar, measured to its own line (cornerLabel), not to an icon button's circle.
+- A button centred on a taller row (a sheet header's icon tile) is as far from the side as its circle is from the top.
 
 ## notice
 
@@ -102,7 +104,52 @@ How a result is shown without moving anything. Never a line inserted into the pa
 - The button that starts an action carries its own state: its icon becomes a progress wheel, then a tick or a cross, in the same space, so nothing moves.
 - The details of a failure appear in a floating notice over the bottom of the window or sheet. It goes away by itself (behavior.noticeSeconds) and is announced to VoiceOver.
 - A line that says what is going on (Waiting for your other device) lives in a status slot: a line of fixed height that is always there and swaps its words in place.
-- A problem that stays until it is fixed is an attention notice at the top of the settings page that fixes it.
+- A problem that stays until it is fixed is an attention notice at the top of the settings page that fixes it (spec attention).
+
+## attention
+
+A problem that stays until it is fixed, at the top of the settings page that fixes it. Calm, never a coloured block of text.
+
+| Property | Value |
+| --- | --- |
+| `fill` | `color.card` (dark rgba(255, 255, 255, 0.059), light rgba(23, 24, 28, 0.039)) |
+| `radius` | `radius.tile` (12 px) |
+| `padding` | `spacing.cozy` (10 px) |
+| `gap` | `spacing.snug` (6 px) |
+| `icon` | `size.iconTile` (24 px) |
+| `iconFill` | `color.warnBackground` (dark rgba(255, 180, 71, 0.141), light #fff0dc) |
+| `iconColor` | `color.warnText` (dark #ffcf8a, light #7a4300) |
+| `text` | `color.text` (dark #f2f0ea, light #17181c) |
+| `minHeight` | `size.hit` (28 px) |
+
+- Each problem is its own pebble: a picture of what it is about (the missing Brain, the Den, the Hop, a device that is away) on a small warning tile, then one short line.
+- Only the tile carries the warning colour. The pebble and the words stay the page's own.
+- When the fix is somewhere else (an Imp's Brain), the way there is a small button on the trailing side. A problem never comes without a way to fix it within one tap.
+
+## actionRow
+
+A row of actions (a sheet's footer, a card's last row) that is always balanced.
+
+| Property | Value |
+| --- | --- |
+| `gap` | `spacing.small` (8 px) |
+
+- A lone action is centred, or spans the row when it is a wide button. It is never left at one side with empty room on the other.
+- With more than one, the main action (the last) holds the trailing edge and the others start at the leading edge: Test, then Save.
+- An action on a card or a section (Add, Reset, Restore, Find more, Change) is not a row of its own: it sits in that card's header, on the trailing side before the help tip, as an icon button or a small labelled button.
+- An action on the whole sheet (Goodbye) is an icon button in a corner of the sheet's bar, never a big button at the bottom.
+
+## stateMark
+
+A state of an Imp (at home, out, hidden, asleep, no Brain, on this phone) as a picture, the same on every platform.
+
+| Property | Value |
+| --- | --- |
+| `glyph` | `icon.small` (10 px) |
+| `color` | `color.muted` (dark rgba(242, 240, 234, 0.702), light rgba(23, 24, 28, 0.702)) |
+
+- A state is said with its picture (ImpStateSymbol), not with a word alone. The word is the help and what the screen reader says.
+- Where the word helps (a row's value), it follows the picture. Where the place is small (a list of Imps), the picture is enough.
 
 ## iconTile
 
@@ -354,7 +401,8 @@ The one sheet over the room on a phone. The room stays under it, and alive above
 - There is only ever one sheet. Close returns to the room, except that an Imp's settings opened from that Imp's sheet return to it. Shared code decides (PhoneRouter).
 - A sheet about an Imp wears the Imp's colour (tintFill, onTint, legibleTint). The app's own sheets stay monochrome.
 - A sheet about an Imp calls it into the room left above the sheet (Summon), where it waits with the glow. With Reduce Motion or too little free room it is not moved.
-- An Imp's sheet shows the Imp's portrait in its bar only when it covers the room.
+- An Imp's sheet shows the Imp's portrait in its bar whenever the room is not in view: at full height, or while the keyboard lifts it. One answer (roomInView) decides both this and where the stage summons the Imp.
+- The portrait is the Imp as the room shows it: its mood, the animations its home plays (the same performance as on the stage) and it watches what you type.
 - Siblings inside a sheet (an Imp's chat and talks, the sections of Settings) are a segmented control or a rail under the bar, never a second sheet.
 - At most one main action, a wide button pinned at the bottom.
 
@@ -372,6 +420,7 @@ The top bar of every modal flow and sheet: Back leading, a centred title or step
 | `background` | `none` |
 
 - Back (leading) returns to the previous step or the hub and never closes the flow. Close (trailing, modal flows only) dismisses the flow and carries Escape. Leave out the one that does not apply.
+- Where there is no Back, the leading corner may hold one action of the whole sheet as an icon button (Goodbye on an Imp's settings), so the bar stays balanced.
 - Both are plain icon glyphs with no background until hover or press, and each keeps a target of size.hit.
 - A sheet's main action is one primary button at the bottom of the content, not a text button in the bar.
 
@@ -425,6 +474,7 @@ Evenly sized choices (the service choices, Remote and Local) as tiles in a grid,
 
 - Every cell is exactly as wide as the others. The column count is the most that fit at the minimum width, and the last row is balanced rather than leaving one orphan.
 - A tile shows its symbol, its title (Remote, Local) and a detail (the service it fills in). The chosen one is filled with the accent.
+- The symbol stands bare on the tile: no circle or second fill behind it, since the tile is already the shape.
 - Choosing one fills the address and the name when untouched, and the address stays freely editable, so any compatible service works. There is no separate 'Other'.
 - A tile's link opens the provider's key or model page without choosing the tile.
 - The service choices come from data (spec/presets/services.json), not from code.

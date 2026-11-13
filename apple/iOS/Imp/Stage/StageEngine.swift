@@ -60,6 +60,9 @@ final class StageEngine {
     nonisolated static let gameDrag = 0.8
     nonisolated static let gameBounce = 0.85
     nonisolated static let maxCarry = 3_200.0
+    /// How far the drawn body reaches below an Imp's centre, as a share of half its frame (the body's base
+    /// in `ImpRenderer`'s 100-point box). The floor stops the body itself, not its frame or the name under it.
+    nonisolated static let reachBelow = (ImpRenderer.size.bottom - 50) / 50
 
     private(set) var bodies: [UUID: Body] = [:]
     /// Back to front: whoever was touched last is on top.
@@ -211,10 +214,10 @@ final class StageEngine {
         bodies[id] = b
     }
 
-    func animate(_ id: UUID, _ beats: [AnimationBeat]) {
-        guard bodies[id] != nil, !beats.isEmpty else { return }
+    func animate(_ id: UUID, _ act: Performance) {
+        guard bodies[id] != nil, !act.steps.isEmpty else { return }
         pacer.wake()
-        bodies[id]?.performance = Performance(key: "mac", steps: beats.map(AnticStep.init))
+        bodies[id]?.performance = act
     }
 
     /// Back in from the side it left by.
@@ -628,7 +631,7 @@ final class StageEngine {
         b.lastSample = (p, now)
         let r = b.size / 2
         b.pos = CGPoint(x: min(max(p.x + b.grab.width, -r), size.width + r),
-                        y: min(max(p.y + b.grab.height, field.minY), field.maxY))
+                        y: min(max(p.y + b.grab.height, field.minY), floor(r)))
         bodies[id] = b
         light(b)
         if let out = Toss.phoneExit(point: p, velocity: b.fingerVelocity, bounds: size) {
@@ -759,8 +762,12 @@ final class StageEngine {
             b.enteringFrom = nil
         }
         if b.pos.y < f.minY + r * 0.2 { b.pos.y = f.minY + r * 0.2; b.vel.dy = abs(b.vel.dy) * bounce }
-        if b.pos.y > f.maxY - r * 0.7 { b.pos.y = f.maxY - r * 0.7; b.vel.dy = -abs(b.vel.dy) * bounce }
+        if b.pos.y > floor(r) { b.pos.y = floor(r); b.vel.dy = -abs(b.vel.dy) * bounce }
     }
+
+    /// The lowest an Imp's centre goes: its body on the bottom edge of the screen, as its sides meet the
+    /// side edges. The name under it may pass the edge for a moment.
+    private func floor(_ r: CGFloat) -> CGFloat { size.height - r * Self.reachBelow }
 
     /// Imps are soft, not ghosts: two that overlap drift apart.
     private func separate(_ dt: Double) {

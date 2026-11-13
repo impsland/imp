@@ -389,7 +389,7 @@ struct PhoneStage: View {
             case .arrived(let imp, let entry): engine.arrive(imp, entry)
             case .left(let id): engine.leave(id)
             case .refused(let id, let why): engine.refused(id, why)
-            case .animate(let id, let beats): engine.animate(id, beats)
+            case .animate(let id, let act): engine.animate(id, act)
             }
         }
         hub.onEvent = hear

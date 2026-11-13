@@ -391,6 +391,7 @@
   <string name="phone_appearance_dark">深色</string>
   <string name="phone_appearance_light">浅色</string>
   <string name="phone_brain_change">更改</string>
+  <string name="phone_brains_set_up">设置</string>
   <string name="phone_callhome">叫回家</string>
   <string name="phone_callhome_label">把 %1$s 叫回家</string>
   <string name="phone_chat_answering">正在回复 %1$s…</string>

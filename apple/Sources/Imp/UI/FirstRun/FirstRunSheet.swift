@@ -21,7 +21,6 @@ struct FirstRunSheet: View {
         } content: {
             FirstRunFlow(flow: flow)
         } footer: {
-            FirstRunStatus(flow: flow)
             FirstRunPrimaryButton(flow: flow)
         }
         .impAnimation(ImpDesign.Motion.scene, value: flow.path.imp)
@@ -33,7 +32,7 @@ struct FirstRunSheet: View {
     private var header: some View {
         VStack(spacing: Spacing.small) {
             SheetBar(close: close)
-            .padding(.horizontal, Spacing.medium)
+                .sheetBarInsets()
             StageImp(hue: hue, mood: mood, traits: traits, clock: clock)
                 .environment(\.stageAwake, !(flow.path.imp == .asleep && reduceMotion))
                 .frame(width: Sizing.heroImp, height: Sizing.heroImp)

@@ -34,6 +34,36 @@ private enum Keychain {
     static func delete(_ service: String, _ account: String) {
         SecItemDelete(query(service, account) as CFDictionary)
     }
+
+    /// Deletes every item of `service`. True when none is left (or there was none); false when the
+    /// Keychain can't be changed now (before the first unlock).
+    static func deleteAll(_ service: String) -> Bool {
+        let status = SecItemDelete([kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service] as CFDictionary)
+        return status == errSecSuccess || status == errSecItemNotFound
+    }
+}
+
+/// iOS deletes an app's files and preferences with the app, but keeps its Keychain items. Without care a
+/// new install would find the old link book (and the keys of Imps that are gone): it would believe a
+/// device is linked, bring the network up at launch and so ask for the Local Network permission before
+/// anyone asked to link. A new install starts clean instead.
+enum InstallRecord {
+    private static let key = "installRecorded"
+
+    /// Run once at launch, before anything reads the Keychain. An install that has run before keeps
+    /// everything: its preferences or its files show it (an update keeps both). Only a container with no
+    /// trace of an earlier run has its leftovers removed.
+    static func clearLeftovers(defaults: UserDefaults = .standard, bundle: Bundle = .main,
+                               files: URL = .applicationSupportDirectory) {
+        guard !defaults.bool(forKey: key) else { return }
+        let preferences = bundle.bundleIdentifier.flatMap { defaults.persistentDomain(forName: $0) } ?? [:]
+        let saved = (try? FileManager.default.contentsOfDirectory(atPath: files.path(percentEncoded: false))) ?? []
+        if preferences.isEmpty && saved.isEmpty {
+            // Before the first unlock nothing can be told or removed: the next launch tries again.
+            guard Keychain.deleteAll(KeychainLinkStorage.service), Keychain.deleteAll(PocketKeychain.service) else { return }
+        }
+        defaults.set(true, forKey: key)
+    }
 }
 
 /// What went wrong with the Keychain, as its status code.
@@ -45,7 +75,7 @@ struct KeychainFailure: LocalizedError {
 /// The link book holds this iPhone's signing key and the secrets that open its links, so it lives in
 /// the Keychain, not in preferences.
 struct KeychainLinkStorage: LinkStorage {
-    private static let service = "app.imp.ImpPhone.link"
+    static let service = "app.imp.ImpPhone.link"
     private static let account = "book"
 
     func load() throws -> Data? {
@@ -69,7 +99,7 @@ struct KeychainLinkStorage: LinkStorage {
 
 /// The keys and header values of the Imps hatched on this iPhone. Nothing else holds them.
 struct PocketKeychain: PocketSecrets {
-    private static let service = "app.imp.ImpPhone.pocket"
+    static let service = "app.imp.ImpPhone.pocket"
 
     func get(_ slot: PocketSlot, imp: UUID) -> String? {
         Keychain.read(Self.service, slot.account(imp: imp)).flatMap { String(data: $0, encoding: .utf8) }

@@ -68,13 +68,15 @@ Every user-facing word has a key in `design/strings/<area>.json` (`area.thing.de
 
 Public types of `ImpDesign`. Platform specs of each are in [Components](/design/components).
 
+- Rows of actions: `ActionRow` (a `Layout`: a lone action centred, otherwise the last one trailing).
+- States: `ImpStateSymbol`, `StateMark(word, symbol:)`.
 - Surface: `Backdrop`, `Card(title, icon:, info:, accessory:)`, `SectionHeader(title, icon:, info:, accessory:)` (icon tile and title leading; accessory then the tip trailing), `.impCard(radius:)`, `.impListRow()`, `SelectableCard`, `SelectMark`.
 - Settings: `Row(title, icon:, info:)`, `FieldRow(label, info:)`, `IconTile`, `InfoTip`, `StatusText`, `Badge`.
 - Buttons: `.buttonStyle(.primary)`, `.secondary`, `.quiet`, `.destructive`, `.imp(kind, small:)`, `ImpButtonStyle`; `WideButtonStyle` is the phone's big full-width button. `FitLabel(title, systemImage:)` shows icon and title, or the icon alone when narrow. `OnTint` is the ink or paper ShapeStyle for text on a fill.
 - Controls: `.toggleStyle(.impSwitch)`, `.impSwitchBare`, `.impButton`; `ImpSegmented` (words, then icons, then a menu; always pass `symbol:`); `ImpStepper`, `ImpPicker`, `CompactMenu`, `ImpTimeField`, `SegmentedTabs`, `ChoiceChip`.
 - Fields: `.impField()`, `EditorWell`, `TextArea`, `.impSlider()`.
 - Icon-only: `HoverIconButton`, `HoverIconMenu`.
-- Notice (spec `notice`): `ActionState` with `StatefulLabel(title, symbol:, state:)` and `.impActionState($state)` (a button carries its own state: wheel, then tick or cross, in a fixed frame; idle again after `Behavior.noticeSeconds`), `.impNotice($notice)` with `ImpNotice.info/success/warning/error` (a floating capsule over the bottom, self-dismissing, tappable, announced), `StatusSlot(text, symbol:, color:)` (a fixed-height line that swaps its words in place). `AttentionNotice` stays for problems that persist.
+- Notice (spec `notice`): `ActionState` with `StatefulLabel(title, symbol:, state:)` and `.impActionState($state)` (a button carries its own state: wheel, then tick or cross, in a fixed frame; idle again after `Behavior.noticeSeconds`), `.impNotice($notice)` with `ImpNotice.info/success/warning/error` (a floating capsule over the bottom, self-dismissing, tappable, announced), `StatusSlot(text, symbol:, color:)` (a fixed-height line that swaps its words in place). `AttentionNotice([Line])` (spec `attention`) is for problems that persist: each `Line` has a symbol, its words and an optional `Fix` button.
 - Floating: `.impPopover(isPresented:)`, `.impPopoverSurface()`, `PopoverHeader`, `UndoBar`.
 - Focus: `.focusRing(_:shown:)`, the only stroke on a control.
 
@@ -89,6 +91,10 @@ Add `import ImpDesign`, then `.impControls()` on the root of a screen for the sw
 - **One click.** A menu that only holds more buttons is not used. Actions are icon buttons (with a help text) or labelled buttons beside what they act on.
 - **Choices by content.** Buttons over dropdowns. Up to five short options are `ImpSegmented` with a symbol on each (words, then icons, then a menu when narrow). A button that would open a small menu of actions shows those actions as icon buttons instead (`HoverIconButton` with help). A menu stays only for a long or open list (languages, models, voices, devices, counts, Imps) and for right-click context menus. It fills its container (equal columns) unless it is beside its title on a wide row. On and off is a switch.
 - **Narrow means icons, not small text.** A button never wraps, shrinks or cuts its label.
+- **Balanced, never lopsided.** Nothing sits alone at one side with empty room on the other. A row of actions is an `ActionRow` (every sheet footer is one): a lone action is centred or spans the row, and with more the main one holds the trailing edge. An action on a card or section (Add, Reset, Restore, Find more, Change) goes in that header's accessory, never as a row of its own under the content. An action on the whole sheet (Goodbye) is an icon button in a corner of the sheet's bar.
+- **Equal insets in a corner.** A corner control is as far from the side as from the top, measured to what you see: `CornerInset.bar` and `CornerInset.row` for icon buttons, `.cornerLabel(_:bar:)` for a label such as the version, `.sheetBarInsets()` for every sheet's bar on both platforms.
+- **States are pictures.** A state of an Imp (at home, out, hidden, asleep, no Brain, on this phone) is its `ImpStateSymbol`, shown as a `StateMark` (the word is the help and the screen-reader label) or before its word in a `StatusText`. Never a bare word.
+- **Problems come with their fix.** A lasting problem is an `AttentionNotice`: one calm pebble per problem with a picture on a small warning tile, one short line, and a button to the fix when it is elsewhere. Never a yellow block of text.
 - **Selection is the Imp's colour.** A chosen thing is filled or lit with the tint. No outline boxes.
 
 ## Building a new platform

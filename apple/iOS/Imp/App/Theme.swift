@@ -16,17 +16,18 @@ extension View {
             }
     }
 
-    /// Where the bar of every sheet sits (Back, title, Close): the same distance from the sheet's top
-    /// and sides everywhere, so Close is always under the same thumb.
-    func sheetBarInsets() -> some View {
-        padding(.horizontal, Spacing.medium).padding(.top, Spacing.medium)
-    }
-
     /// On a form: the field being typed in rests `gap` above the keyboard, not right on it. While the
     /// keyboard is up, the safe area ends that much higher, and SwiftUI scrolls the focused field
     /// inside the safe area as usual.
     func keyboardGap(_ gap: CGFloat = Spacing.huge) -> some View {
         modifier(KeyboardGap(gap: gap))
+    }
+
+    /// Tells `up` whether the keyboard is on screen, as it starts to come up or go away (so a change
+    /// made here moves with it). The one way the app follows the keyboard.
+    func onKeyboard(_ up: @escaping (Bool) -> Void) -> some View {
+        onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in up(true) }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in up(false) }
     }
 }
 
@@ -37,8 +38,7 @@ private struct KeyboardGap: ViewModifier {
     func body(content: Content) -> some View {
         content
             .safeAreaPadding(.bottom, keyboardUp ? gap : 0)
-            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardUp = true }
-            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardUp = false }
+            .onKeyboard { keyboardUp = $0 }
     }
 }
 
@@ -58,5 +58,12 @@ struct Titled<Content: View>: View {
             }
             content
         }
+    }
+}
+
+extension AttentionNotice.Line {
+    /// A problem from the settings map, with the button that fixes it when the fix is somewhere else.
+    init(_ item: AttentionItem, fix: AttentionNotice.Fix? = nil) {
+        self.init(id: item.id, symbol: item.symbol, text: item.text, fix: fix)
     }
 }

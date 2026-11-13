@@ -387,6 +387,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.appearance.dark` | Dark | Oscuro | 深色 |
 | `phone.appearance.light` | Light | Claro | 浅色 |
 | `phone.brain.change` | Change | Cambiar | 更改 |
+| `phone.brains.set_up` | Set up | Configurar | 设置 |
 | `phone.callhome` | Call home | Llamar a casa | 叫回家 |
 | `phone.callhome.label` | Call {name} home | Llamar a {name} a casa | 把 {name} 叫回家 |
 | `phone.chat.answering` | Answering {from}… | Respondiendo a {from}… | 正在回复 {from}… |

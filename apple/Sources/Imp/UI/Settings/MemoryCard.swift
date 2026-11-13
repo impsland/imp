@@ -81,7 +81,7 @@ struct MemoryCard: View {
                 CurrentChat(imp: live, profile: imp)
             } else {
                 Row("Current chat", icon: "bubble.left.and.text.bubble.right", info: "Let \(name) out to chat or recap.") {
-                    StatusText(text: "At home")
+                    StatusText(text: "At home", symbol: ImpStateSymbol.home)
                 }
                 .settingAnchor(.brainCurrentChat)
             }

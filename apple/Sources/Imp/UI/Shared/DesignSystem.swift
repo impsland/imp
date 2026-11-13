@@ -139,7 +139,8 @@ struct SheetFrame<Header: View, Content: View, Footer: View>: View {
             .scrollBounceBehavior(.basedOnSize)
             .scrollIndicators(.automatic)
             .frame(height: bodyHeight)
-            HStack(spacing: Spacing.small) { footer }
+            // Balanced: a lone button is centred; otherwise the main one (last) is at the trailing edge.
+            ActionRow { footer }
                 // A button in the footer sits as far from the bottom as from the left.
                 .padding(.horizontal, Spacing.page)
                 .padding(.top, Spacing.medium)
@@ -194,7 +195,10 @@ struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
                 HoverIconButton(systemName: "xmark", help: "common.close") { dismiss() }
                     .keyboardShortcut(.cancelAction)
             }
-            .padding(.horizontal, Spacing.page)
+            // The icon tile sits `page` from the top and the left; Close, centred on the tile, as far from the
+            // right as from the top.
+            .padding(.leading, Spacing.page)
+            .padding(.trailing, CornerInset.row(height: Sizing.sheetIcon, top: Spacing.page))
             .padding(.top, Spacing.page)
             .padding(.bottom, Spacing.hairline)
         } content: {
@@ -281,3 +285,10 @@ struct IssueTip: View {
     }
 }
 
+
+extension AttentionNotice.Line {
+    /// A problem from the settings map, with the button that fixes it when the fix is somewhere else.
+    init(_ item: AttentionItem, fix: AttentionNotice.Fix? = nil) {
+        self.init(id: item.id, symbol: item.symbol, text: item.text, fix: fix)
+    }
+}

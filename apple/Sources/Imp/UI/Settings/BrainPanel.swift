@@ -166,10 +166,7 @@ private struct BrainSetup: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.roomy) {
             FirstRunFlow(flow: flow)
-            HStack {
-                FirstRunStatus(flow: flow)
-                FirstRunPrimaryButton(flow: flow)
-            }
+            FirstRunPrimaryButton(flow: flow)
         }
         .onChange(of: flow.path.step) { _, step in if step == .done { finished() } }
     }

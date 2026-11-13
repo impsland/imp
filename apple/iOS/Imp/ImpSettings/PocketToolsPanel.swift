@@ -2,8 +2,8 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The Tools panel: the MCP servers this Imp can use. "Add tools" is a section-level secondary button; inside a
-/// server, "Add a header" is a small quiet button at the end of its headers.
+/// The Tools panel: the MCP servers this Imp can use. "Add tools" sits in the section's header; inside a
+/// server, "Add a header" is a plus in the header of its headers. No action is left alone under a list.
 struct PocketToolsPanel: View {
     @Bindable var draft: PocketDraft
     let proxy: ScrollViewProxy
@@ -15,13 +15,15 @@ struct PocketToolsPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
-            SectionHeader("tools.mcp", info: "tools.help.mcp", font: Typeface.label, minHeight: nil)
+            // Add is an action on the list, so it sits in the list's header, as on the Mac.
+            SectionHeader("tools.mcp", info: "tools.help.mcp", font: Typeface.label, minHeight: nil) {
+                Button { addServer() } label: { FitLabel("tools.add", systemImage: "plus") }
+                    .buttonStyle(.imp(.secondary, small: true))
+                    .disabled(draft.servers.count >= PocketImp.maxServers)
+            }
             ForEach($draft.servers) { $server in
                 serverCard($server)
             }
-            Button { addServer() } label: { Label("tools.add", systemImage: "plus") }
-                .buttonStyle(.secondary)
-                .disabled(draft.servers.count >= PocketImp.maxServers)
         }
     }
 
@@ -97,8 +99,10 @@ struct PocketToolsPanel: View {
                         if let problem { IssueBadge(text: problem) }
                     }
                 }
-                if !value.headers.isEmpty {
-                    Text("tools.headers").font(Typeface.caption).foregroundStyle(Tone.muted)
+                // The headers' own small header: their title, and Add on the trailing side.
+                SectionHeader("tools.headers", font: Typeface.caption, color: Tone.muted, minHeight: nil) {
+                    HoverIconButton(systemName: "plus", help: "tools.header_add") { addHeader(server) }
+                        .disabled(value.headers.count >= PocketServer.maxHeaders)
                 }
                 ForEach(server.headers) { $header in
                     let kept = value.hostKept && header.savedName != nil
@@ -117,9 +121,6 @@ struct PocketToolsPanel: View {
                     }
                     .id(header.id)
                 }
-                Button { addHeader(server) } label: { Label("tools.header_add", systemImage: "plus") }
-                    .buttonStyle(.imp(.quiet, small: true))
-                    .disabled(value.headers.count >= PocketServer.maxHeaders)
             }
         }
         .padding(Spacing.medium)

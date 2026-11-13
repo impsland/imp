@@ -126,7 +126,6 @@ struct AnimationEditor: View {
                 .buttonStyle(.imp(.destructive, small: true))
                 .help(animation.replaces == nil ? "Removes this animation" : "Removes your version: the built-in one plays again")
             }
-            Spacer()
             if draft.isNew {
                 Button("Save…") { withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { page = .details } }
                     .buttonStyle(.primary).keyboardShortcut(.defaultAction)
@@ -140,7 +139,6 @@ struct AnimationEditor: View {
         case .details:
             Button { withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { page = .edit } } label: { Label("Back to Editing", systemImage: "chevron.left") }
                 .buttonStyle(.quiet)
-            Spacer()
             Button("Save") { save() }
                 .buttonStyle(.primary).keyboardShortcut(.defaultAction)
                 .disabled(!canSave)

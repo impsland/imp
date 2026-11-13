@@ -9,6 +9,8 @@ struct ImpPhoneApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        // Before the hub reads its links: a reinstall must not come back linked (and ask for the network).
+        InstallRecord.clearLeftovers()
         let hub = LinkHub()
         #if DEBUG
         // End-to-end checks against a real Mac in the Simulator: `-join <implink://…>` links at launch.
@@ -42,6 +44,8 @@ struct RootView: View {
     @State private var router = PhoneRouter()
     /// How high the sheet stands: half (the room is alive above it) or the whole screen.
     @State private var detent = PresentationDetent.medium
+    /// The keyboard is up. It lifts a half sheet over the room, as if the sheet stood at full height.
+    @State private var keyboardUp = false
     @State private var hidden = PhoneHidden()
     /// A round of Embers is on (see `EmbersPlaying`).
     @State private var playing = false
@@ -50,10 +54,14 @@ struct RootView: View {
 
     private var onStage: Bool { !hub.links.isEmpty || !hub.visits.isEmpty || !pocket.imps.isEmpty }
 
+    /// The room is in view above the sheet: it rests at half height and no keyboard lifts it.
+    /// The one answer the stage (where the Imp waits) and the sheet (whether its bar shows the Imp) share.
+    private var roomInView: Bool { router.route?.restsAtHalf == true && detent == .medium && !keyboardUp }
+
     /// The share of the room the sheet covers, from the bottom.
     private var cover: CGFloat {
-        guard let route = router.route else { return 0 }
-        return route.restsAtHalf && detent == .medium ? Behavior.sheetHalfCover : 1
+        guard router.route != nil else { return 0 }
+        return roomInView ? Behavior.sheetHalfCover : 1
     }
 
     /// How high the sheet stands, as SwiftUI needs it: always a height this sheet can have.
@@ -92,6 +100,7 @@ struct RootView: View {
             }
         }
         .impAnimation(ImpDesign.Motion.scene, value: onStage)
+        .onKeyboard { keyboardUp = $0 }
         .impControls(tint: Tone.accent)
         .overlay(alignment: .bottom) { ToastView(text: toast).padding(.bottom, Spacing.huge) }
         .onChange(of: hub.toast) { _, text in
@@ -155,7 +164,7 @@ struct RootView: View {
         case .imp(let id):
             let own = pocket.contains(id)
             ImpSheet(hub: hub, source: own ? pocket : hub, pocket: pocket, impID: id, pane: $router.pane,
-                     roomInView: detent == .medium,
+                     roomInView: roomInView,
                      edit: own ? { router.open(.edit(id, brain: false)) } : nil,
                      giveBrain: own ? { router.open(.edit(id, brain: true)) } : nil, close: close)
                 // Another Imp is another chat: what was being typed and where it was scrolled do not carry over.
@@ -167,7 +176,8 @@ struct RootView: View {
         case .firstRun(let id):
             FirstRunPhone(pocket: pocket, id: id, close: close, awake: { router.woke(id) })
         case .settings(let devices):
-            DevicesSheet(hub: hub, pocket: pocket, start: devices ? .devices : .brains)
+            DevicesSheet(hub: hub, pocket: pocket, start: devices ? .devices : .brains,
+                         openBrain: { router.open(.edit($0, brain: true)) })
         }
     }
 }

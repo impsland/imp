@@ -45,6 +45,26 @@
   border: none;
 }
 
+/* A problem that stays until it is fixed, at the top of the settings page that fixes it. Calm, never a coloured block of text. */
+.imp-attention {
+  background-color: @imp_card;
+  color: @imp_text;
+  border-radius: 12px;
+  padding: 10px;
+  min-height: 32px;
+  border: none;
+}
+
+/* A row of actions (a sheet's footer, a card's last row) that is always balanced. */
+.imp-action-row {
+  border: none;
+}
+
+/* A state of an Imp (at home, out, hidden, asleep, no Brain, on this phone) as a picture, the same on every platform. */
+.imp-state-mark {
+  border: none;
+}
+
 /* A round bead behind an icon. */
 .imp-icon-tile {
   background-color: @imp_card;

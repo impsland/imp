@@ -95,8 +95,8 @@ public struct PresetTile: View {
             HStack(spacing: Spacing.cozy) {
                 Image(systemName: symbol)
                     .font(.icon(.large, weight: .semibold))
+                    // A bare symbol on the tile's own fill: the tile is already the shape, a second one inside it is noise.
                     .frame(width: Sizing.iconTile, height: Sizing.iconTile)
-                    .background(Circle().fill(picked ? AnyShapeStyle(OnTint(tint).opacity(Opacity.tintFill)) : AnyShapeStyle(Tone.well)))
                 VStack(alignment: .leading, spacing: Spacing.hairline) {
                     HStack(spacing: Spacing.snug) {
                         Text(verbatim: title).font(Typeface.cardTitle).lineLimit(1)

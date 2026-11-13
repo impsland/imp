@@ -399,6 +399,7 @@
   <string name="phone_appearance_dark">Oscuro</string>
   <string name="phone_appearance_light">Claro</string>
   <string name="phone_brain_change">Cambiar</string>
+  <string name="phone_brains_set_up">Configurar</string>
   <string name="phone_callhome">Llamar a casa</string>
   <string name="phone_callhome_label">Llamar a %1$s a casa</string>
   <string name="phone_chat_answering">Respondiendo a %1$s…</string>

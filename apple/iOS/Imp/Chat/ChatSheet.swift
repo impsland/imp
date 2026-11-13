@@ -101,7 +101,9 @@ struct ImpSheet: View {
     // MARK: Header
 
     /// The same bar in every sheet: who or what it is about on the leading side, Close on the trailing side.
-    /// While the room is in view the Imp itself is up there, so the bar shows no second one.
+    /// While the room is in view the Imp itself is up there, so the bar shows no second one. Otherwise
+    /// (the sheet stands at full height, or the keyboard lifted it) the bar shows the Imp as the room
+    /// does: its mood, what it acts out (`ChatSource.act`), and it watches what you type.
     private func header(_ imp: LinkImp) -> some View {
         HStack(spacing: Spacing.medium) {
             // The talks are a side room, opened from the bar of the chat: one way back to the chat.
@@ -109,14 +111,24 @@ struct ImpSheet: View {
                 HoverIconButton(systemName: "chevron.left", help: "common.back", tint: Tone.text) { pane = .chat }
                     .padding(.leading, -Spacing.small)
             } else if !roomInView {
-                LiveImp(imp: imp, mood: mood).frame(width: Sizing.impPortrait, height: Sizing.impPortrait)
+                LiveImp(imp: imp, mood: mood, performance: source.act(impID),
+                        gaze: focused ? Self.lookAtComposer : nil, attentive: focused)
+                    .frame(width: Sizing.impPortrait, height: Sizing.impPortrait)
                     .transition(.scale.combined(with: .opacity))
             }
             VStack(alignment: .leading, spacing: Spacing.hairline) {
                 Text(imp.name).font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1)
                     .accessibilityAddTraits(.isHeader)
                 HStack(spacing: Spacing.snug) {
-                    if pane == .chat { Circle().fill(statusColor).frame(width: Spacing.snug, height: Spacing.snug) }
+                    if pane == .chat {
+                        // A state that has a picture shows it; otherwise the dot says ready or busy.
+                        if let symbol = statusSymbol {
+                            Image(systemName: symbol).font(.icon(.small)).foregroundStyle(statusColor)
+                                .accessibilityHidden(true)
+                        } else {
+                            Circle().fill(statusColor).frame(width: Spacing.snug, height: Spacing.snug)
+                        }
+                    }
                     Text(pane == .talks ? String(localized: "menu.imp.talks") : status)
                         .font(Typeface.small)
                         .foregroundStyle(Tone.muted)
@@ -144,6 +156,9 @@ struct ImpSheet: View {
         .impAnimation(ImpDesign.Motion.smooth, value: roomInView)
     }
 
+    /// From the bar's leading corner, the field you type in is below and to the right.
+    private static let lookAtComposer = CGPoint(x: 0.35, y: 0.9)
+
     private var mood: Mood {
         if availability != .ready { return .sleepy }
         if let m = source.mood(impID) { return m }
@@ -159,6 +174,14 @@ struct ImpSheet: View {
         if let work { return work.status ?? (work.partial.isEmpty ? String(localized: "Thinking…") : String(localized: "Answering…")) }
         if let w = source.working(impID), let from = w.from { return words("phone.chat.answering", from) }
         return source.restingStatus
+    }
+
+    private var statusSymbol: String? {
+        switch availability {
+        case .offline: return ImpStateSymbol.asleep
+        case .noBrain: return ImpStateSymbol.noBrain
+        case .ready: return source.working(impID) == nil ? source.restingSymbol : nil
+        }
     }
 
     private var statusColor: Color {

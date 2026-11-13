@@ -61,7 +61,6 @@ struct KitEntrySheet: View {
                            mono: true, height: Self.editorHeight)
             }
         } footer: {
-            Spacer()
             Button("Review") { Task { await flow.read(model: model) } }
                 .buttonStyle(.primary).keyboardShortcut(.defaultAction)
                 .disabled(flow.isLoading || isEmpty)

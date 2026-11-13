@@ -22,6 +22,7 @@ struct GeneralSettingsView: View {
             } trailing: {
                 Text(verbatim: "v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev")")
                     .font(Typeface.small).foregroundStyle(Tone.faint)
+                    .cornerLabel(.trailing, bar: Metrics.barHeight)
             }
             GeometryReader { proxy in
                 HStack(alignment: .top, spacing: 0) {
@@ -29,7 +30,7 @@ struct GeneralSettingsView: View {
                          marked: SettingsMap.attentionGroups(attention))
                     ZStack {
                         SettingsPage {
-                            AttentionNotice(attention.filter { $0.group == section }.map(\.text))
+                            AttentionNotice(attention.filter { $0.group == section }.map { AttentionNotice.Line($0) })
                             page
                         }
                         .id(section)

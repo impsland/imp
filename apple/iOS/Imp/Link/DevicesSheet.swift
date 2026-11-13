@@ -9,6 +9,8 @@ import SwiftUI
 struct DevicesSheet: View {
     let hub: LinkHub
     let pocket: PocketRuntime
+    /// Opens the Brain of one of this iPhone's Imps (its settings, at the Brain).
+    var openBrain: (UUID) -> Void = { _ in }
     @Environment(\.dismiss) private var dismiss
     @State private var section: PhoneSection
     @State private var forgetting: LinkDevice?
@@ -17,9 +19,10 @@ struct DevicesSheet: View {
     @State private var problem: String?
 
     /// `start` is the section to open on.
-    init(hub: LinkHub, pocket: PocketRuntime, start: PhoneSection = .brains) {
+    init(hub: LinkHub, pocket: PocketRuntime, start: PhoneSection = .brains, openBrain: @escaping (UUID) -> Void = { _ in }) {
         self.hub = hub
         self.pocket = pocket
+        self.openBrain = openBrain
         _section = State(initialValue: start)
     }
 
@@ -44,7 +47,7 @@ struct DevicesSheet: View {
             SectionRail("settings.title", items: items, selection: $section, axis: .horizontal)
             ScrollView {
                 VStack(spacing: Spacing.medium) {
-                    AttentionNotice(attention.filter { $0.group == section.group }.map(\.text))
+                    AttentionNotice(attention.filter { $0.group == section.group }.map(line))
                     content
                 }
                 .padding(.horizontal, Spacing.page).padding(.top, Spacing.small).padding(.bottom, Spacing.wide)
@@ -72,9 +75,15 @@ struct DevicesSheet: View {
         }
     }
 
+    /// A problem, with its fix when the fix is elsewhere: an Imp without a Brain opens its Brain.
+    private func line(_ item: AttentionItem) -> AttentionNotice.Line {
+        guard case .noBrain(let imp) = item.reason, pocket.contains(imp.id) else { return AttentionNotice.Line(item) }
+        return AttentionNotice.Line(item, fix: AttentionNotice.Fix("phone.brains.set_up", symbol: ImpSetting.brain.symbol) { openBrain(imp.id) })
+    }
+
     @ViewBuilder private var content: some View {
         switch section {
-        case .brains: PhoneBrainsSection(pocket: pocket)
+        case .brains: PhoneBrainsSection(pocket: pocket, openBrain: openBrain)
         case .devices:
             PhoneDevicesSection(hub: hub, pocket: pocket, scan: { scanning = true },
                                 forget: { forgetting = $0 }, forgetAll: { forgettingEveryone = true })
@@ -87,7 +96,7 @@ struct DevicesSheet: View {
 /// What the attention marks are worked out from: this iPhone and its Imps, the Brains they use, the servers and the linked devices.
 enum PhoneNodes {
     @MainActor static func nodes(hub: LinkHub, pocket: PocketRuntime) -> [SettingsNode] {
-        let asleep = pocket.imps.filter { !pocket.hasBrain($0.id) }.map(\.look.name)
+        let asleep = pocket.imps.filter { !pocket.hasBrain($0.id) }.map { Sleeper(id: $0.id, name: $0.look.name) }
         var result = [SettingsNode(id: "me", kind: .thisDevice, name: hub.name, state: .ready,
                                    imps: pocket.looks.map(\.name), sleeping: asleep),
                       SettingsNode(id: "brains", kind: .brains, name: "",

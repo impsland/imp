@@ -43,10 +43,10 @@ struct StatusPanel: View {
         .containerBackground(Tone.raised, for: .window)
     }
 
-    private func state(of profile: ImpProfile) -> LocalizedStringKey {
-        guard let imp = model.imps.first(where: { $0.id == profile.id }) else { return "menu.bar.state.home" }
-        if model.isHidden || model.hiddenImps.contains(profile.id) { return "menu.bar.state.hidden" }
-        return imp.isReady ? "menu.bar.state.out" : "imp.state.asleep"
+    private func state(of profile: ImpProfile) -> ImpPebble.State {
+        guard let imp = model.imps.first(where: { $0.id == profile.id }) else { return .init(word: "menu.bar.state.home", symbol: ImpStateSymbol.home) }
+        if model.isHidden || model.hiddenImps.contains(profile.id) { return .init(word: "menu.bar.state.hidden", symbol: ImpStateSymbol.hidden) }
+        return imp.isReady ? .init(word: "menu.bar.state.out", symbol: ImpStateSymbol.out) : .init(word: "imp.state.asleep", symbol: ImpStateSymbol.asleep)
     }
 
     /// An Imp that is out is hidden or shown again; one at home opens in the app's window.
@@ -67,8 +67,14 @@ struct StatusPanel: View {
 
 /// One Imp in the panel: its face, its name and what it is doing, as a pebble.
 struct ImpPebble: View {
+    /// What it is doing, as a picture with its word for help and the screen reader.
+    struct State {
+        var word: LocalizedStringKey
+        var symbol: String
+    }
+
     let profile: ImpProfile
-    let state: LocalizedStringKey
+    let state: State
     let action: () -> Void
 
     var body: some View {
@@ -78,7 +84,7 @@ struct ImpPebble: View {
                     .frame(width: Sizing.sheetIcon, height: Sizing.sheetIcon)
                 Text(profile.name).font(Typeface.label).foregroundStyle(Tone.text).lineLimit(1)
                 Spacer(minLength: Spacing.small)
-                Text(state).font(Typeface.small).foregroundStyle(Tone.muted).lineLimit(1).fixedSize()
+                StateMark(state.word, symbol: state.symbol)
             }
             .padding(Spacing.snug)
             .frame(maxWidth: .infinity, alignment: .leading)

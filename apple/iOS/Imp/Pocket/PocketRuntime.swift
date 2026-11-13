@@ -31,6 +31,8 @@ final class PocketRuntime {
     /// What each pocket Imp is saying to another Imp (a bubble above it on the stage), like the
     /// visiting Imps' in `LinkHub.speeches`.
     private(set) var speeches: [UUID: LinkSpeech] = [:]
+    /// What each pocket Imp acted out last (`StageEvent.animate`).
+    private(set) var acts: [UUID: Performance] = [:]
 
     @ObservationIgnored var onEvent: ((StageEvent) -> Void)?
     @ObservationIgnored private let hub: LinkHub
@@ -127,6 +129,7 @@ final class PocketRuntime {
         for job in dropped { release(job) }
         running[id]?.cancel()
         work[id] = nil
+        acts[id] = nil
         if let speech = speeches[id] { dismiss(speech, for: id) }
         for job in dropped { job.abort() }
     }
@@ -329,7 +332,10 @@ final class PocketRuntime {
 
     private func play(_ names: [String], for id: UUID) {
         let beats = names.compactMap(Reaction.init(rawValue:)).flatMap { $0.beats }
-        if !beats.isEmpty { onEvent?(.animate(id, beats)) }
+        guard !beats.isEmpty else { return }
+        let act = Performance(key: "mac", steps: beats.map(AnticStep.init))
+        acts[id] = act
+        onEvent?(.animate(id, act))
     }
 
     // MARK: Hearing other devices
@@ -468,10 +474,11 @@ final class PocketRuntime {
 // MARK: - Chatting
 
 extension PocketRuntime: ChatSource {
-    var restingStatus: String { String(localized: "Lives on this iPhone") }
+    var restingStatus: String { String(localized: "Ready") }
     func imp(_ id: UUID) -> LinkImp? { store.imp(id)?.look }
     func turns(_ id: UUID) -> [LinkTurn] { store.imp(id)?.turns() ?? [] }
     func working(_ id: UUID) -> LinkWork? { work[id] }
+    func act(_ id: UUID) -> Performance? { acts[id] }
     func mood(_ id: UUID) -> Mood? { work[id].map { $0.status == nil ? .thinking : .working } }
     func availability(_ id: UUID) -> ChatAvailability { ChatAvailability(.atHome(brainReady: hasBrain(id))) }
 

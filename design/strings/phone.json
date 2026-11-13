@@ -643,6 +643,12 @@
     "es": "¿Quién es este Imp? ¿Cómo habla?",
     "zh-Hans": "这只小妖是谁？它怎么说话？"
   },
+  "phone.brains.set_up": {
+    "note": "Button beside an Imp without a Brain (iPhone settings): opens its Brain to set one up.",
+    "en": "Set up",
+    "es": "Configurar",
+    "zh-Hans": "设置"
+  },
   "phone.brain.change": {
     "note": "Button in an Imp's Brain panel on the iPhone that starts choosing another service or model.",
     "en": "Change",

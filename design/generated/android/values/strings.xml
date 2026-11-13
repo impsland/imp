@@ -395,6 +395,7 @@
   <string name="phone_appearance_dark">Dark</string>
   <string name="phone_appearance_light">Light</string>
   <string name="phone_brain_change">Change</string>
+  <string name="phone_brains_set_up">Set up</string>
   <string name="phone_callhome">Call home</string>
   <string name="phone_callhome_label">Call %1$s home</string>
   <string name="phone_chat_answering">Answering %1$s…</string>

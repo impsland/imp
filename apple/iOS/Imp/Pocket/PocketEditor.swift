@@ -48,6 +48,12 @@ struct PocketEditor: View {
                 Text(open.map { String(localized: $0.title) } ?? draft.name.trimmed)
                     .font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1)
                     .accessibilityAddTraits(.isHeader)
+            } leading: {
+                // Goodbye is an action on the whole Imp, not a setting: an icon in the corner Back leaves free.
+                if editing != nil {
+                    HoverIconButton(systemName: "hand.wave.fill", help: "imp_settings.goodbye", tint: Tone.muted) { confirmingGoodbye = true }
+                        .accessibilityLabel(words("imp_settings.goodbye.a11y", callName))
+                }
             }
             .sheetBarInsets()
             if let open { panel(open) } else { hub }
@@ -96,20 +102,10 @@ struct PocketEditor: View {
             Group {
                 if listed { listHub } else { markerHub }
             }
-            VStack(spacing: Spacing.tight) {
-                Button(draft.isNew ? "phone.editor.hatch" : "phone.editor.save", action: save)
-                    .buttonStyle(WideButtonStyle())
-                    .disabled(!draft.canSave)
-                // Goodbye is last and apart: centred under the main button, in the destructive style.
-                if editing != nil {
-                    Button(role: .destructive) { confirmingGoodbye = true } label: {
-                        Label(words("imp_settings.goodbye.a11y", callName), systemImage: "hand.wave")
-                    }
-                    .buttonStyle(.destructive)
-                    .frame(minHeight: Sizing.hit)
-                }
-            }
-            .padding(.horizontal, Spacing.page).padding(.vertical, Spacing.medium)
+            Button(draft.isNew ? "phone.editor.hatch" : "phone.editor.save", action: save)
+                .buttonStyle(WideButtonStyle())
+                .disabled(!draft.canSave)
+                .padding(.horizontal, Spacing.page).padding(.vertical, Spacing.medium)
         }
     }
 

@@ -1923,6 +1923,11 @@ msgctxt "phone.brain.change"
 msgid "Change"
 msgstr "Cambiar"
 
+#. Button beside an Imp without a Brain (iPhone settings): opens its Brain to set one up.
+msgctxt "phone.brains.set_up"
+msgid "Set up"
+msgstr "Configurar"
+
 #. Button: bring an Imp back.
 msgctxt "phone.callhome"
 msgid "Call home"

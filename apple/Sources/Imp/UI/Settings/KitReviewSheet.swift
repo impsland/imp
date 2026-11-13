@@ -51,7 +51,6 @@ struct KitReviewSheet: View {
                 }
                 InfoTip("Who gets the triggers, tools and animations that aren't an Imp's own.")
             }
-            Spacer()
             Button { add() } label: { Label(addTitle, systemImage: "plus") }
                 .buttonStyle(.primary).keyboardShortcut(.defaultAction)
                 .disabled(review.count == 0)

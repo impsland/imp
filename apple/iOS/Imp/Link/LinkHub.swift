@@ -11,7 +11,9 @@ enum StageEvent {
     case arrived(LinkImp, LinkEntry)
     case left(UUID)
     case refused(UUID, String)
-    case animate(UUID, [AnimationBeat])
+    /// An Imp acts something out (a reaction its home chose). The same performance plays on the stage
+    /// and in the header of the Imp's sheet (`ChatSource.act`).
+    case animate(UUID, Performance)
 }
 
 /// What other devices ask of the Imps hatched on this iPhone, which think here wherever they are.
@@ -70,6 +72,8 @@ final class LinkHub {
     private(set) var chats: [UUID: [LinkTurn]] = [:]
     private(set) var work: [UUID: LinkWork] = [:]
     private(set) var moods: [UUID: Mood] = [:]
+    /// What each visiting Imp acted out last (`StageEvent.animate`).
+    private(set) var acts: [UUID: Performance] = [:]
     /// Visiting Imps whose homes said they have no brain to think with (`LinkMessage.brain`): they sleep here.
     private(set) var brainless: Set<UUID> = []
     /// What each visiting Imp is saying to another Imp (a bubble above it on the stage).
@@ -572,7 +576,10 @@ final class LinkHub {
         case .work(let imp, let w): work[imp] = w
         case .mood(let imp, let name): moods[imp] = Mood(link: name)
         case .brain(let imp, let ready): if ready { brainless.remove(imp) } else { brainless.insert(imp) }
-        case .animate(let imp, let beats): onEvent?(.animate(imp, beats))
+        case .animate(let imp, let beats):
+            let act = Performance(key: "mac", steps: beats.map(AnticStep.init))
+            acts[imp] = act
+            onEvent?(.animate(imp, act))
         case .speech(let imp, let speech): heard(speech, from: imp)
         case .filePart(let id, let part): files.received(part, for: id, from: from)
         case .fileFailed(let id, let reason): files.failed(id, reason: reason, from: from)
@@ -684,7 +691,7 @@ final class LinkHub {
 
     /// Forgets what was known of a visiting Imp that left.
     private func clear(_ imp: UUID) {
-        chats[imp] = nil; work[imp] = nil; moods[imp] = nil; talkLines[imp] = nil; brainless.remove(imp)
+        chats[imp] = nil; work[imp] = nil; moods[imp] = nil; acts[imp] = nil; talkLines[imp] = nil; brainless.remove(imp)
         if let speech = speeches[imp] { drop(speech, for: imp) }
     }
 }

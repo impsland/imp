@@ -6,10 +6,20 @@ extension AttentionItem {
         func said(_ key: String.LocalizationValue, _ arg: String) -> String { String(format: String(localized: key), arg) }
         switch reason {
         case .noBrains: return String(localized: "brains.empty")
-        case .noBrain(let name): return said("settings.attention.imp_no_brain", name)
+        case .noBrain(let imp): return said("settings.attention.imp_no_brain", imp.name)
         case .denNotSet: return String(localized: "settings.attention.den_off")
         case .hopNotSet: return String(localized: "settings.attention.hop_off")
         case .deviceOffline(let name): return said("settings.attention.device_offline", name)
+        }
+    }
+
+    /// What the problem is about, as a picture: the thing that is missing or away.
+    public var symbol: String {
+        switch reason {
+        case .noBrains, .noBrain: "lightbulb.slash"
+        case .denNotSet: "tray.full"
+        case .hopNotSet: "arrow.triangle.swap"
+        case .deviceOffline: "wifi.slash"
         }
     }
 }

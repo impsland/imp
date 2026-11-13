@@ -111,7 +111,6 @@ struct ServerEditor: View {
             Button { Task { await test() } } label: { StatefulLabel("Test", symbol: "checkmark.circle", state: testState) }
                 .buttonStyle(.secondary).disabled(testState == .working || !isValid)
                 .impActionState($testState)
-            Spacer()
             Button(isNew ? "Add" : "Save") { save(applied); dismiss() }
                 .buttonStyle(.primary)
                 .keyboardShortcut(.defaultAction)

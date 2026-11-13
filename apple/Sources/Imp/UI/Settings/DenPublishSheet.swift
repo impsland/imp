@@ -57,7 +57,6 @@ struct DenPublishSheet: View {
                 }
             }
         } footer: {
-            Spacer()
             Button { Task { await publish() } } label: { StatefulLabel("Publish", symbol: "arrow.up.circle", state: state) }
                 .buttonStyle(.primary).keyboardShortcut(.defaultAction).disabled(!canPublish)
                 .impActionState($state)

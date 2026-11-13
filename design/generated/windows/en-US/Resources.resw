@@ -391,6 +391,7 @@
   <data name="phone.appearance.dark" xml:space="preserve"><value>Dark</value><comment>Appearance choice.</comment></data>
   <data name="phone.appearance.light" xml:space="preserve"><value>Light</value><comment>Appearance choice.</comment></data>
   <data name="phone.brain.change" xml:space="preserve"><value>Change</value><comment>Button in an Imp's Brain panel on the iPhone that starts choosing another service or model.</comment></data>
+  <data name="phone.brains.set_up" xml:space="preserve"><value>Set up</value><comment>Button beside an Imp without a Brain (iPhone settings): opens its Brain to set one up.</comment></data>
   <data name="phone.callhome" xml:space="preserve"><value>Call home</value><comment>Button: bring an Imp back.</comment></data>
   <data name="phone.callhome.label" xml:space="preserve"><value>Call {name} home</value><comment>Spoken name of the call home button.</comment></data>
   <data name="phone.chat.answering" xml:space="preserve"><value>Answering {from}…</value><comment>iPhone: chat answering.</comment></data>

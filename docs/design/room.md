@@ -31,7 +31,7 @@ A sheet that rests at half height opens there (`behavior.sheetHalfCover`), and t
 | --- | --- | --- |
 | Surface | The app surface, flat. | `color.surface` |
 | Bar | Back on the leading side (only inside a step), who or what the sheet is about, Close on the trailing side. Always the same distance from the top and the sides. | `size.hit`, `spacing.medium`, `type.cardTitle` |
-| Imp bar | For an Imp's sheet the bar shows the name and one line of state on the leading side. It shows the Imp's small portrait only when the room is covered, because otherwise the Imp itself is in view. | `size.impPortrait`, `type.small`, `color.muted` |
+| Imp bar | For an Imp's sheet the bar shows the name and one line of state on the leading side. It shows the Imp's small portrait whenever the room is not in view (the sheet at full height, or lifted by the keyboard), because otherwise the Imp itself is in view. The portrait plays what the Imp in the room plays (its mood and the animations its home sends) and watches what you type. | `size.impPortrait`, `type.small`, `color.muted` |
 | Content | Pebbles in one scrolling column. | `spacing.page` at the sides, `spacing.medium` between |
 | Main action | At most one wide button, pinned at the bottom. | `button.primary`, wide |
 

@@ -22,7 +22,7 @@ public struct SettingsNode: Equatable, Identifiable, Sendable {
     /// The Imps whose body is on this node.
     public var imps: [String] = []
     /// For this device: the Imps that have no Brain.
-    public var sleeping: [String] = []
+    public var sleeping: [Sleeper] = []
     /// For the Hop: it runs on this computer.
     public var isLocal = false
     /// For another device: this device can see it, and its tools can be used from here.
@@ -31,7 +31,7 @@ public struct SettingsNode: Equatable, Identifiable, Sendable {
     /// For another device: the server its link goes through.
     public var via: String?
 
-    public init(id: String, kind: Kind, name: String, state: State, imps: [String] = [], sleeping: [String] = [],
+    public init(id: String, kind: Kind, name: String, state: State, imps: [String] = [], sleeping: [Sleeper] = [],
                 isLocal: Bool = false, seen: Bool = false, toolsHere: Bool = false, via: String? = nil) {
         self.id = id; self.kind = kind; self.name = name; self.state = state; self.imps = imps
         self.sleeping = sleeping; self.isLocal = isLocal; self.seen = seen; self.toolsHere = toolsHere; self.via = via
@@ -48,9 +48,17 @@ public struct SettingsNode: Equatable, Identifiable, Sendable {
 }
 
 /// Something to fix, with the group that fixes it.
+/// An Imp that has no Brain: which one (so its Brain can be opened) and its name.
+public struct Sleeper: Equatable, Sendable {
+    public var id: UUID
+    public var name: String
+
+    public init(id: UUID, name: String) { self.id = id; self.name = name }
+}
+
 public struct AttentionItem: Equatable, Identifiable, Sendable {
     public enum Reason: Equatable, Sendable {
-        case noBrains, noBrain(String), denNotSet, hopNotSet, deviceOffline(String)
+        case noBrains, noBrain(Sleeper), denNotSet, hopNotSet, deviceOffline(String)
     }
     public var reason: Reason
     public var group: SettingsGroup
@@ -61,7 +69,7 @@ public struct AttentionItem: Equatable, Identifiable, Sendable {
 public enum SettingsMap {
     /// The map's nodes from the preferences and the core's device map.
     public static func nodes(prefs: ImpPreferences, map: DeviceMap) -> [SettingsNode] {
-        let sleeping = prefs.imps.filter { prefs.ai.service(in: $0.brain) == nil }.map(\.name)
+        let sleeping = prefs.imps.filter { prefs.ai.service(in: $0.brain) == nil }.map { Sleeper(id: $0.id, name: $0.name) }
         func imps(on id: String) -> [String] { map.residents(of: id).map(\.name) }
 
         var result: [SettingsNode] = []
@@ -105,8 +113,8 @@ public enum SettingsMap {
         if nodes.contains(where: { $0.kind == .brains && $0.state == .needsSetup }) {
             items.append(AttentionItem(reason: .noBrains, group: .brains))
         }
-        for name in nodes.filter({ $0.kind == .thisDevice }).flatMap(\.sleeping) {
-            items.append(AttentionItem(reason: .noBrain(name), group: .brains))
+        for imp in nodes.filter({ $0.kind == .thisDevice }).flatMap(\.sleeping) {
+            items.append(AttentionItem(reason: .noBrain(imp), group: .brains))
         }
         for kind in [SettingsNode.Kind.den, .hop] {
             if nodes.contains(where: { $0.kind == kind && ($0.state == .off || $0.state == .needsSetup) }) {

@@ -125,7 +125,6 @@ struct ShortcutSheet: View {
                 HoverIconButton(systemName: scope == .changed ? "arrow.uturn.backward" : "trash", help: deleteLabel, tint: Tone.danger) { confirmingDelete = true }
                 HoverIconButton(systemName: "plus.square.on.square", help: "Duplicate") { duplicate(shortcut) }
             }
-            Spacer()
             Button(isNew ? "Add" : "Save") { save(shortcut, target) }
                 .buttonStyle(.primary)
                 .keyboardShortcut(.defaultAction)

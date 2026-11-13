@@ -63,6 +63,30 @@ object ImpComponents {
         val motion: ImpMotion = ImpMotions.expand
     }
 
+    /** A problem that stays until it is fixed, at the top of the settings page that fixes it. Calm, never a coloured block of text. */
+    object Attention {
+        val fill: (ImpPalette) -> Color = { it.card }
+        val radius: Dp = ImpRadius.tile
+        val padding: Dp = ImpSpacing.cozy
+        val gap: Dp = ImpSpacing.snug
+        val icon: Dp = ImpSizing.iconTile
+        val iconFill: (ImpPalette) -> Color = { it.warnBackground }
+        val iconColor: (ImpPalette) -> Color = { it.warnText }
+        val text: (ImpPalette) -> Color = { it.text }
+        val minHeight: Dp = ImpSizing.hit
+    }
+
+    /** A row of actions (a sheet's footer, a card's last row) that is always balanced. */
+    object ActionRow {
+        val gap: Dp = ImpSpacing.small
+    }
+
+    /** A state of an Imp (at home, out, hidden, asleep, no Brain, on this phone) as a picture, the same on every platform. */
+    object StateMark {
+        val glyph: Dp = ImpIcon.small
+        val color: (ImpPalette) -> Color = { it.muted }
+    }
+
     /** A round bead behind an icon. */
     object IconTile {
         val size: Dp = ImpSizing.iconTile

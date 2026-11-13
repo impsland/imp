@@ -1,3 +1,4 @@
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -25,10 +26,14 @@ enum ChatAvailability {
 protocol ChatSource {
     /// What an idle, available Imp says about itself under its name.
     var restingStatus: String { get }
+    /// The picture beside it, when it says more than the ready dot (an Imp that lives on this phone).
+    var restingSymbol: String? { get }
     func imp(_ id: UUID) -> LinkImp?
     func turns(_ id: UUID) -> [LinkTurn]
     func working(_ id: UUID) -> LinkWork?
     func mood(_ id: UUID) -> Mood?
+    /// What the Imp acted out last, as the stage plays it (over once its time is up).
+    func act(_ id: UUID) -> Performance?
     func availability(_ id: UUID) -> ChatAvailability
     /// The other Imps it can be asked to message.
     func peers(_ id: UUID) -> [LinkImp]
@@ -41,10 +46,12 @@ protocol ChatSource {
 
 extension LinkHub: ChatSource {
     var restingStatus: String { String(localized: "Ready") }
+    var restingSymbol: String? { nil }
     func imp(_ id: UUID) -> LinkImp? { visit(id)?.imp }
     func turns(_ id: UUID) -> [LinkTurn] { chats[id] ?? [] }
     func working(_ id: UUID) -> LinkWork? { work[id] }
     func mood(_ id: UUID) -> Mood? { moods[id] }
+    func act(_ id: UUID) -> Performance? { acts[id] }
     func availability(_ id: UUID) -> ChatAvailability { ChatAvailability(wakefulness(id)) }
 
     /// Everyone this visiting Imp can message: the Imps on this screen and on its home's.
@@ -76,4 +83,9 @@ extension LinkHub: ChatSource {
             ? String(localized: "This chat leaves your phone, but \(home.name) keeps it: it's in \(imp.name)'s Brain › Memory › Chats. \(imp.name) starts fresh.")
             : String(localized: "This chat leaves your phone, but \(home.name) keeps it. \(imp.name) starts fresh.")
     }
+}
+
+extension PocketRuntime {
+    /// Where a pocket Imp lives says itself as a picture, not as words.
+    var restingSymbol: String? { ImpStateSymbol.phone }
 }

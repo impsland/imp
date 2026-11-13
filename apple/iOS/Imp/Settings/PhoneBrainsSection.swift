@@ -6,23 +6,36 @@ import SwiftUI
 /// Each Imp has its own service and model, set in its own settings.
 struct PhoneBrainsSection: View {
     let pocket: PocketRuntime
+    /// Opens an Imp's Brain, to set one up or change it.
+    var openBrain: (UUID) -> Void = { _ in }
 
     var body: some View {
         VStack(spacing: Spacing.medium) {
             Card("settings.group.brains", icon: "lightbulb", info: "settings.brains.services.info") {
                 VStack(alignment: .leading, spacing: 0) {
+                    // Each Imp is a way to its Brain: one without asks to set one up, one with shows it is ready.
                     ForEach(pocket.imps, id: \.id) { imp in
                         let ready = pocket.hasBrain(imp.id)
-                        HStack(spacing: Spacing.cozy) {
-                            Circle().fill(Color.imp(imp.look.hue)).frame(width: Spacing.small, height: Spacing.small).accessibilityHidden(true)
-                            Text(verbatim: imp.look.name).font(Typeface.body).foregroundStyle(Tone.text)
-                            Spacer(minLength: Spacing.small)
-                            StatusText(text: ready ? "settings.map.state_ready" : "settings.map.state_needs_setup",
-                                       symbol: ready ? "checkmark.circle.fill" : "exclamationmark.triangle.fill",
-                                       color: ready ? Tone.good : Tone.warnText)
+                        Button { openBrain(imp.id) } label: {
+                            HStack(spacing: Spacing.cozy) {
+                                Circle().fill(Color.imp(imp.look.hue)).frame(width: Spacing.small, height: Spacing.small).accessibilityHidden(true)
+                                Text(verbatim: imp.look.name).font(Typeface.body).foregroundStyle(Tone.text)
+                                Spacer(minLength: Spacing.small)
+                                if ready {
+                                    StateMark("settings.map.state_ready", symbol: "checkmark.circle.fill", color: Tone.good)
+                                    Image(systemName: "chevron.right").font(.icon(.small, weight: .semibold)).foregroundStyle(Tone.faint)
+                                        .accessibilityHidden(true)
+                                } else {
+                                    FitLabel("phone.brains.set_up", systemImage: ImpSetting.brain.symbol)
+                                        .impPill(.secondary, small: true)
+                                }
+                            }
+                            .frame(minHeight: Sizing.hit)
+                            .contentShape(Rectangle())
                         }
-                        .frame(minHeight: Sizing.hit)
+                        .buttonStyle(.plain)
                         .accessibilityElement(children: .combine)
+                        .accessibilityHint(Text(ready ? "phone.brain.change" : "phone.brains.set_up"))
                     }
                 }
             }
