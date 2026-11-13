@@ -220,9 +220,10 @@ final class PocketRuntime {
     }
 
     /// One ask, from you or from another Imp: thinks, files the turn in its chat.
-    private func answer(_ text: String, of id: UUID, from sender: ChatTurn.Sender? = nil, tools: Bool = true) async throws -> PocketAnswer {
+    /// `limitedTo` names the device asking when this iPhone doesn't count it as the owner's: no tools then.
+    private func answer(_ text: String, of id: UUID, from sender: ChatTurn.Sender? = nil, limitedTo device: String? = nil) async throws -> PocketAnswer {
         guard let imp = store.imp(id) else { throw Failure(String(localized: "That Imp isn't on this iPhone.")) }
-        let result = try await brain.ask(text, of: imp, from: sender, talk: talk(for: imp), tools: tools) { [weak self] work in
+        let result = try await brain.ask(text, of: imp, from: sender, talk: talk(for: imp), limitedTo: device.map { ($0, hub.name) }) { [weak self] work in
             await self?.report(work, for: id)
         }
         store.update(id) { $0.record(result) }
@@ -251,9 +252,10 @@ final class PocketRuntime {
         })
     }
 
-    /// The Imps `id` can message: those of this iPhone and the ones on the screen its body is on.
+    /// The Imps `id` can message: those of this iPhone, the ones on the screen its body is on, and the
+    /// ones out on the owner's other devices (marked Mine).
     private func targets(of id: UUID, here: [LinkStaged]) -> [LinkStaged] {
-        let stage = hub.node.holder(of: id).map { hub.node.stage(of: $0) } ?? hub.staged
+        let stage = (hub.node.holder(of: id).map { hub.node.stage(of: $0) } ?? hub.staged) + hub.node.onMyOtherDevices
         return LinkTalks.targets(of: id, mine: here, stage: stage)
     }
 
@@ -276,7 +278,7 @@ final class PocketRuntime {
                 continuation.resume(throwing: Failure(String(localized: "\(other.name) isn't around")))
             }) { [self] in
                 // Another Imp of this iPhone asks: it is the owner's own, so tools are allowed.
-                let (reply, failed) = await respond(to: text, of: other.id, from: sender, tools: true)
+                let (reply, failed) = await respond(to: text, of: other.id, from: sender, limitedTo: nil)
                 continuation.resume(with: failed ? .failure(Failure(reply)) : .success(reply))
             }
             if !queued { continuation.resume(throwing: Failure(String(localized: "\(other.name) is busy"))) }
@@ -286,14 +288,14 @@ final class PocketRuntime {
     /// One question from another Imp, here: it shows on the stage while the Imp thinks, and so does
     /// the answer (or why there is none). The text goes straight back to the asker; only the
     /// bubble waits for a voice (see `StageVoice`).
-    private func respond(to text: String, of id: UUID, from sender: ChatTurn.Sender, tools: Bool) async -> (reply: String, failed: Bool) {
+    private func respond(to text: String, of id: UUID, from sender: ChatTurn.Sender, limitedTo device: String?) async -> (reply: String, failed: Bool) {
         guard let imp = store.imp(id) else { return (String(localized: "That Imp isn't on this iPhone."), true) }
         let said = say(.asked, to: sender.name, hue: sender.hue, text, for: id)
         var reply = ""
         var failed = false
         do {
             guard hasBrain(id) else { throw Failure(String(localized: "\(imp.name) has no brain yet.")) }
-            let answer = try await answer(text, of: id, from: sender, tools: tools)
+            let answer = try await answer(text, of: id, from: sender, limitedTo: device)
             (reply, failed) = (answer.turn.reply, answer.turn.failed)
         } catch is CancellationError {
             (reply, failed) = (String(localized: "Stopped."), true)
@@ -352,6 +354,8 @@ final class PocketRuntime {
             settle(id, by: device, sure: sure)
         case .connected:
             break
+        case .trust(let device):
+            for imp in store.imps where hub.node.holder(of: imp.id) == device { tellBrain(imp.id) }
         case .stage(let device):
             decide(movesTo: device)
         case .lost(let device):
@@ -368,7 +372,8 @@ final class PocketRuntime {
                 return
             }
             let queued = enqueue(to, from: by, abort: { [self] in hub.node.send(gone, to: by) }) { [self] in
-                let (reply, failed) = await respond(to: text, of: to, from: ChatTurn.Sender(id: from.id, name: from.name, hue: from.hue), tools: trusted)
+                let (reply, failed) = await respond(to: text, of: to, from: ChatTurn.Sender(id: from.id, name: from.name, hue: from.hue),
+                                                    limitedTo: trusted ? nil : hub.deviceName(by))
                 hub.node.send(.answer(id: id, text: reply, failed: failed), to: by)
             }
             if !queued {
@@ -378,7 +383,8 @@ final class PocketRuntime {
         case .claimed(let id):
             pushAll(id)
         case .ask(let id, let text, let trusted):
-            ask(id, text, from: hub.node.holder(of: id), tools: trusted)
+            let holder = hub.node.holder(of: id)
+            ask(id, text, from: holder, limitedTo: trusted ? nil : holder.map(hub.deviceName) ?? String(localized: "another device"))
         case .stop(let id):
             stop(id)
         case .newChat(let id):
@@ -417,7 +423,7 @@ final class PocketRuntime {
     /// Whether it has a brain to think with: without one it sleeps on the holder too.
     private func tellBrain(_ id: UUID) {
         guard store.contains(id) else { return }
-        tell(id, .brain(imp: id, ready: hasBrain(id)))
+        tell(id, .brain(imp: id, ready: hasBrain(id), tools: hub.node.holder(of: id).map(hub.isTrusted) ?? true))
     }
 
     /// A new holder hears how the Imp looks, whether it can think and what it's doing.
@@ -475,6 +481,8 @@ final class PocketRuntime {
 
 extension PocketRuntime: ChatSource {
     var restingStatus: String { String(localized: "Ready") }
+    /// A pocket Imp thinks here, for its owner: it always has its tools in its own chat.
+    func toolsWithheld(_ id: UUID) -> (title: String, text: String)? { nil }
     func imp(_ id: UUID) -> LinkImp? { store.imp(id)?.look }
     func turns(_ id: UUID) -> [LinkTurn] { store.imp(id)?.turns() ?? [] }
     func working(_ id: UUID) -> LinkWork? { work[id] }
@@ -499,13 +507,13 @@ extension PocketRuntime: ChatSource {
         String(localized: "\(imp.name) starts fresh and won't remember this chat.")
     }
 
-    func ask(_ id: UUID, _ text: String) { ask(id, text, from: nil, tools: true) }
+    func ask(_ id: UUID, _ text: String) { ask(id, text, from: nil, limitedTo: nil) }
 
     /// `device`: another device asking (its share of the queue is capped); a full queue drops the ask.
-    private func ask(_ id: UUID, _ text: String, from device: UUID?, tools: Bool) {
+    private func ask(_ id: UUID, _ text: String, from device: UUID?, limitedTo stranger: String?) {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, hasBrain(id) else { return }
-        enqueue(id, from: device) { [self] in _ = try? await answer(text, of: id, tools: tools) }
+        enqueue(id, from: device) { [self] in _ = try? await answer(text, of: id, limitedTo: stranger) }
     }
 
     func stop(_ id: UUID) { running[id]?.cancel() }

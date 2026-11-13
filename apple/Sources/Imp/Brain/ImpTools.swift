@@ -193,8 +193,14 @@ final class OwnToolHost {
         guard let found = candidates.first(where: { $0.title.caseInsensitiveCompare(name) == .orderedSame || $0.replaces?.rawValue == name }) else {
             throw ToolArgumentError("No made animation called \(name) (built-in ones can be switched off in Settings, not removed).")
         }
+        let users = found.replaces == nil ? app.prefs.shortcuts.filter { $0.animation == .custom(found.id) } : []
         app.prefs.removeAnimation(found.id)
-        return "Removed “\(found.title)”." + (found.replaces.map { " The built-in \($0.rawValue) plays again." } ?? "")
+        var reply = "Removed “\(found.title)”." + (found.replaces.map { " The built-in \($0.rawValue) plays again." } ?? "")
+        if !users.isEmpty {
+            reply += " These triggers played it and now play nothing: \(users.map { "“\($0.name)” (\($0.id.uuidString))" }.joined(separator: ", ")). "
+                + "Change or remove them, or tell the user."
+        }
+        return reply
     }
 
     private func setTraits(_ args: JSONValue) -> String {
@@ -293,16 +299,31 @@ final class OwnToolHost {
     private func listTriggers() -> String {
         let all = reachable
         guard !all.isEmpty else { return "No triggers yet." }
-        return all.map(\.toolDescription).joined(separator: "\n")
+        return all.map(describe).joined(separator: "\n")
+    }
+
+    /// A trigger as the model reads it, naming the animation it plays the way the tools do.
+    private func describe(_ s: Shortcut) -> String {
+        s.toolDescription(animationName: s.animation.flatMap { app?.prefs.animationName($0, imp: id) })
     }
 
     private func addTrigger(_ args: JSONValue) throws -> String {
         guard let app else { return "" }
         let old = args["id"]?.string == nil ? nil : try find(args)
-        var s = try Shortcut(tool: args, imp: id, replacing: old)
-        s.id = app.prefs.saveTrigger(s, for: args["every_imp"]?.bool == true ? .everyImp : .imp(id))
+        // Names as imp_play_animations lists them (switched-off and locked ones too: a trigger may wait for them).
+        var s = try Shortcut(tool: args, imp: id, replacing: old) { [prefs = app.prefs, id] in prefs.ref(named: $0, imp: id) }
+        if s.command == .play && s.animation == nil { throw ToolArgumentError("`do` play needs the `animation` to play.") }
+        let everyImp = args["every_imp"]?.bool == true
+        s.id = app.prefs.saveTrigger(s, for: everyImp ? .everyImp : .imp(id))
         s = app.prefs.shortcuts.first { $0.id == s.id } ?? s
-        var reply = "\(old == nil ? "Added" : "Changed") \(s.toolDescription)"
+        var reply = "\(old == nil ? "Added" : "Changed") \(describe(s))"
+        if s.command.usesAnimation, case .custom(let made)? = s.animation {
+            if everyImp, app.prefs.owner(ofAnimation: made) == .some(id) {
+                reply += "\nNote: that animation is yours alone, so the other Imps play nothing: make it `for` everyone if they should."
+            } else if app.prefs.customAnimation(made, imp: id)?.isEnabled == false {
+                reply += "\nNote: that animation is switched off, so nothing plays until the user switches it on (Animations in settings)."
+            }
+        }
         if let keys = s.keys {
             if app.failedHotkeys.contains(keys) {
                 reply += "\nBut \(keys.displayString) is already taken by macOS or another app: pick other keys."

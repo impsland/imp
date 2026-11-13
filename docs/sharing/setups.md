@@ -49,6 +49,10 @@ Animations and an Imp's `traits` are described, with every field and range, in t
 Imp's `imp_add_trigger` tool, and `mcpServers` uses the shape Claude Desktop and Cursor use. A plain MCP snippet, or a
 single trigger (or a list of them), also works as a kit.
 
+A trigger that plays a made animation names it in `animation` by its name. The animation travels in the same kit
+(sharing one trigger takes its animation along), and the trigger plays the copy that lands. If the animation is left
+out, the trigger plays one with that name already there, or nothing.
+
 ## What a kit contains
 
 **Imps.** An Imp in a kit (with its character and its own animations) is written field by field, not as Imp stores

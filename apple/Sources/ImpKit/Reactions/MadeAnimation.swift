@@ -490,13 +490,31 @@ extension ImpPreferences {
     }
 
     /// A made animation by name (or a built-in one by its id or title), as the Imp's tools take them.
+    /// A model may write a name the way it writes ids ("hn_delight" for "HN Delight"): an exact match
+    /// first, then one that differs only in case, spaces, dashes and underscores.
     public func ref(named name: String, imp: UUID?) -> AnimationRef? {
         let n = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let a = originals(for: imp).first(where: { $0.title.caseInsensitiveCompare(n) == .orderedSame }) { return .custom(a.id) }
-        if let r = Reaction.allCases.first(where: { $0.rawValue.caseInsensitiveCompare(n) == .orderedSame || $0.title.caseInsensitiveCompare(n) == .orderedSame }) {
-            return .preset(r)
+        guard !n.isEmpty else { return nil }
+        if n.hasPrefix("custom-"), let ref = AnimationRef(key: n) { return ref }
+        let made = originals(for: imp)
+        for same in [{ (a: String) in a.caseInsensitiveCompare(n) == .orderedSame }, { Self.looseName($0) == Self.looseName(n) }] {
+            if let a = made.first(where: { same($0.title) }) { return .custom(a.id) }
+            if let r = Reaction.allCases.first(where: { same($0.rawValue) || same($0.title) }) { return .preset(r) }
         }
         return nil
+    }
+
+    /// A name without case, spaces, dashes and underscores ("HN Delight", "hn_delight" and "hn-delight" are one).
+    static func looseName(_ name: String) -> String {
+        String(name.lowercased().unicodeScalars.filter { CharacterSet.alphanumerics.contains($0) }.map(Character.init))
+    }
+
+    /// What the Imp's tools call `ref` on `imp` (a made animation's name, a built-in one's id). Nil: it's gone.
+    public func animationName(_ ref: AnimationRef, imp: UUID?) -> String? {
+        switch ref {
+        case .preset(let r): r.rawValue
+        case .custom(let id): customAnimation(id, imp: imp)?.title
+        }
     }
 
     /// A name for a new animation nobody of `imp` (or the shared list) uses yet.
@@ -605,6 +623,19 @@ extension MadeAnimation {
                                symbol: json["symbol"]?.string ?? Self.defaultSymbol, replaces: replaces, triggers: triggers,
                                isEnabled: json["enabled"]?.bool ?? true,
                                favoriteColorOnly: json["favoriteColor"]?.bool ?? false, beats: beats).normalized
+    }
+}
+
+extension MadeAnimation {
+    /// How a kit's trigger finds what it plays: a key, else the name of one of the kit's `animations`
+    /// (the kit writes them so), else a built-in one's id or title.
+    static func resolver(_ animations: [MadeAnimation]) -> (String) -> AnimationRef? {
+        { name in
+            if let ref = AnimationRef(key: name) { return ref }
+            if let a = animations.first(where: { $0.replaces == nil && $0.title.caseInsensitiveCompare(name) == .orderedSame }) { return .custom(a.id) }
+            return Reaction.allCases.first { $0.rawValue.caseInsensitiveCompare(name) == .orderedSame || $0.title.caseInsensitiveCompare(name) == .orderedSame }
+                .map { .preset($0) }
+        }
     }
 }
 

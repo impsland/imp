@@ -71,6 +71,8 @@ struct ImpSheet: View {
         .environment(\.openURL, OpenURLAction { url in open(url) })
         .quickLookPreview($preview)
         .impAnimation(ImpDesign.Motion.smooth, value: pane)
+        // The Talks button shows once there are talks: the homes that keep them are asked as the sheet opens.
+        .task(id: impID) { Talks.refresh(impID, hub: hub) }
         .overlay(alignment: .top) {
             if let problem {
                 Label(problem, systemImage: "exclamationmark.triangle.fill")
@@ -205,13 +207,20 @@ struct ImpSheet: View {
                     }
                     if let work { LiveTurn(work: work, imp: imp, hub: hub) }
                     Color.clear.frame(height: Stroke.hairline).id("end")
-                        .onAppear { atEnd = true }
-                        .onDisappear { atEnd = false }
                 }
                 .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.large)
             }
             .scrollBounceBehavior(.basedOnSize)
-            .defaultScrollAnchor(.bottom)
+            // Opens at the latest, and stays there as it grows only while you are there. Whether you are is
+            // read from where the scroll is, not from a row appearing: a row that grows at the bottom (Ran 3
+            // tools, opened) made that flip on and off with the anchor pulling back, and the app hung.
+            .defaultScrollAnchor(.bottom, for: .initialOffset)
+            .defaultScrollAnchor(atEnd ? .bottom : .top, for: .sizeChanges)
+            .onScrollGeometryChange(for: Bool.self) { geometry in
+                geometry.contentSize.height - geometry.visibleRect.maxY < Spacing.huge
+            } action: { _, isAtEnd in
+                if atEnd != isAtEnd { atEnd = isAtEnd }
+            }
             .overlay(alignment: .bottomTrailing) {
                 if !atEnd && !(turns.isEmpty && work == nil) {
                     Button {
@@ -310,7 +319,11 @@ struct ImpSheet: View {
                     asleepLine(imp)
                 }
             case .ready:
-                EmptyView()
+                if let withheld = source.toolsWithheld(impID) {
+                    SectionHeader(verbatimInfo: withheld.text, minHeight: nil) {
+                        Label(withheld.title, systemImage: "lock").font(Typeface.caption).foregroundStyle(Tone.muted)
+                    }
+                }
             }
             HStack(alignment: .bottom, spacing: Spacing.cozy) {
                 TextField(words("phone.chat.message", imp.name), text: $text, axis: .vertical)
@@ -469,7 +482,7 @@ private struct StepsLine: View {
                 .font(Typeface.small)
                 .foregroundStyle(Tone.muted)
                 .padding(.leading, Spacing.large)
-                .transition(.opacity.combined(with: .move(edge: .top)))
+                .transition(.opacity)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

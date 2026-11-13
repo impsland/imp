@@ -82,7 +82,7 @@ struct DenTools {
             guard let trigger = app.prefs.triggers(for: imp).first(where: { $0.displayName.caseInsensitiveCompare(name) == .orderedSame }) else {
                 throw ToolArgumentError("No trigger called \(name) that you can share.")
             }
-            kit = Kit(name: trigger.displayName, triggers: [trigger])
+            kit = app.prefs.kit(sharing: trigger, named: trigger.displayName, imp: imp)
         case "me":
             // Public, so no chats, no memory, no keys, and nothing about which service or tools it uses.
             var own = ImpExport.kit([imp], model: app, name: profile.name)

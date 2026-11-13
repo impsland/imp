@@ -183,6 +183,38 @@
         }
       }
     },
+    "%@ only talks here" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ solo habla aquí"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 在这里只能聊天"
+          }
+        }
+      }
+    },
+    "%@ doesn't count this iPhone as yours, so %@ can't use its tools or message other Imps for it. On %@, turn on Mine for this iPhone in Devices." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ no considera este iPhone tuyo, así que %2$@ no puede usar sus herramientas ni escribir a otros Imps desde aquí. En %3$@, activa Mío para este iPhone en Dispositivos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 不认为这台 iPhone 是你的，所以 %2$@ 无法在这里使用工具或给其他 Imp 发消息。请在 %3$@ 的“设备”中为这台 iPhone 打开“我的”。"
+          }
+        }
+      }
+    },
     "%@ is asleep" : {
       "localizations" : {
         "es" : {

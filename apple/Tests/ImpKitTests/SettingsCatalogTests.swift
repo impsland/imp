@@ -69,7 +69,7 @@ import Testing
         #expect(settings == SettingID.allCases.map(\.rawValue))
         #expect(pages == SettingsPlace.allCases.map(\.rawValue))
         #expect(properties["tool"] != nil && properties["imp"] != nil)
-        #expect(spec.description.contains("cannot change settings yourself"))
+        #expect(spec.description.contains("Any other setting is the user's to change"))
         for page in SettingsPlace.allCases { #expect(spec.description.contains(page.rawValue + ":")) }
     }
 

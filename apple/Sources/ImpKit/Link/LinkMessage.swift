@@ -237,7 +237,9 @@ public enum LinkMessage: Codable, Sendable, Equatable {
     /// Whether it has a brain it can think with at home (a service, a model and, where one is
     /// needed, a key). Sent with everything else to a new holder and whenever it changes. Without
     /// one it sleeps wherever its body is (`Wakefulness`), and asking it is refused there at once.
-    case brain(imp: UUID, ready: Bool)
+    /// `tools`: whether the home lets it use its tools for what this holder asks (the holder is one of
+    /// the owner's devices there). Nil from older homes, read as yes.
+    case brain(imp: UUID, ready: Bool, tools: Bool? = nil)
     /// Plays an animation, beat by beat.
     case animate(imp: UUID, beats: [AnimationBeat])
     /// What it's saying to another Imp right now (nil: nothing).

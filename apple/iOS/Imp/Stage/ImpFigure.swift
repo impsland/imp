@@ -25,6 +25,9 @@ struct ImpFigure: View {
     var attentive = false
     var hopSince: Double?
     var date: Date
+    /// Room to draw around its square, as fractions of its size: a tilted head's glyph and a made
+    /// animation's tilts and stretches reach out of it (`ImpBoundsTests` measures how far).
+    var bleed = EdgeInsets()
     @State private var puppet = Puppet()
 
     var body: some View {
@@ -35,10 +38,36 @@ struct ImpFigure: View {
                              stepElapsed: beat?.elapsed, traits: imp.traits)
         cue.breathing = true
         let (face, motion) = puppet.frame(cue, at: clock.time(date))
-        return Canvas { ctx, size in
-            ImpRenderer.draw(&ctx, size: size, face: face, motion: motion, glyph: beat?.glyph?.glyph,
-                             glyphAge: beat?.glyph?.age ?? 0, glyphFade: (beat?.glyph?.remaining ?? 0) / 0.5)
+        let bleed = bleed
+        return Bleed(fraction: bleed) {
+            Canvas { ctx, size in
+                let inner = CGSize(width: size.width / (1 + bleed.leading + bleed.trailing), height: size.height / (1 + bleed.top + bleed.bottom))
+                ctx.translateBy(x: inner.width * bleed.leading, y: inner.height * bleed.top)
+                ImpRenderer.draw(&ctx, size: inner, face: face, motion: motion, glyph: beat?.glyph?.glyph,
+                                 glyphAge: beat?.glyph?.age ?? 0, glyphFade: (beat?.glyph?.remaining ?? 0) / 0.5)
+            }
         }
+    }
+
+    /// What the stage gives an Imp: the worst a made animation can do (a full tilt with a glyph, a hop,
+    /// a stretch, perky horns) reaches this far past its square, most of all above it and to the right.
+    static let stageBleed = EdgeInsets(top: 0.45, leading: 0.3, bottom: 0.1, trailing: 0.45)
+}
+
+/// Lays its content out as big as offered and `fraction` of that more on each side: the content draws
+/// past the frame without the frame (layout, touches, position) changing.
+private struct Bleed: Layout {
+    var fraction: EdgeInsets
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        proposal.replacingUnspecifiedDimensions()
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let size = ProposedViewSize(width: bounds.width * (1 + fraction.leading + fraction.trailing),
+                                    height: bounds.height * (1 + fraction.top + fraction.bottom))
+        let origin = CGPoint(x: bounds.minX - bounds.width * fraction.leading, y: bounds.minY - bounds.height * fraction.top)
+        for view in subviews { view.place(at: origin, anchor: .topLeading, proposal: size) }
     }
 }
 

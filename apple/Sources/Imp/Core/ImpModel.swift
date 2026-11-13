@@ -836,16 +836,9 @@ final class ImpModel {
         let p = profile
         try? FileManager.default.createDirectory(at: p.workspace, withIntermediateDirectories: true)
         let memory = peer.map { continuing ? history.memory(withPeer: $0.id) : ChatMemory() } ?? history.current.memory
-        let note = device.map { Self.limitNote(for: $0) } ?? ""
+        let note = device.map { "\n\n" + Briefing.untrusted(device: $0, home: DeviceLink.deviceName) } ?? ""
         return memory.context(system: p.systemPrompt + note, turn: turn,
                                               exchanges: p.memoryExchanges, tools: p.remembersToolCalls)
-    }
-
-    /// Said to the model when it has no tools because of who asks, so it doesn't pretend otherwise.
-    static func limitNote(for device: String) -> String {
-        "\n\nThis request comes from \(device), which is not one of your owner's own devices, so you have no tools for it: "
-            + "no commands, no control of the computer, nothing that acts. Just talk. If it asks you to do something that needs "
-            + "them, say plainly: \"I can't use my tools for \(device).\""
     }
 
     /// A picture you handed over, saved in its workspace so its commands can use it. The path.

@@ -6,8 +6,17 @@ import SwiftUI
 /// here hold, and the ones the Mac's chats hold. They overlap, and `TalkLog` counts each once.
 @MainActor
 enum Talks {
+    /// An exchange is kept by the Imp that answered it, so what an Imp here asked a visitor is in the
+    /// visitor's home: every visitor's lines count, not only this Imp's own.
     static func threads(of id: UUID, hub: LinkHub, pocket: PocketRuntime) -> [TalkThread] {
-        TalkLog.threads(of: id, from: pocket.talkLines + (hub.talkLines[id] ?? []))
+        TalkLog.threads(of: id, from: pocket.talkLines + hub.talkLines.values.joined())
+    }
+
+    /// Asks the homes that may hold `id`'s talks for them: its own home when it visits, else the homes
+    /// of the Imps visiting here (they answered what it asked them).
+    static func refresh(_ id: UUID, hub: LinkHub) {
+        if hub.visit(id) != nil { return hub.requestTalks(id) }
+        for visitor in hub.visitors { hub.requestTalks(visitor.id) }
     }
 }
 
@@ -72,7 +81,7 @@ struct TalksPane: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .impControls()
-        .task { hub.requestTalks(impID) }
+        .task { Talks.refresh(impID, hub: hub) }
     }
 
     private func show(_ peer: UUID?) {

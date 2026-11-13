@@ -46,9 +46,12 @@ public struct PocketBrain: Sendable {
     /// goes and, at the end, nil. A service that fails gives a failed turn. Cancelling the task (the
     /// stop button) throws `CancellationError`, and nothing is kept. Without `tools` it is a plain
     /// conversation: no tool server is called and the Imp has no tools of its own (for a request that
-    /// doesn't come from the owner's own device, see `docs/connecting/link.md`).
-    public func ask(_ text: String, of imp: PocketImp, from sender: ChatTurn.Sender? = nil, talk: PocketTalk = PocketTalk(), tools allowed: Bool = true,
+    /// doesn't come from the owner's own device, see `docs/connecting/link.md`). `limitedTo` is that
+    /// case with names: the device asking and this one; the Imp has no tools and is told why.
+    public func ask(_ text: String, of imp: PocketImp, from sender: ChatTurn.Sender? = nil, talk: PocketTalk = PocketTalk(), tools: Bool = true,
+                    limitedTo stranger: (device: String, home: String)? = nil,
                     onWork: @escaping @Sendable (LinkWork?) async -> Void = { _ in }) async throws -> PocketAnswer {
+        let allowed = tools && stranger == nil
         let hub = MCPHub()
         let run = Run(request: text, from: sender?.name, onWork: onWork)
         let outcome: Result<(reply: String, memory: ChatMemory), Error>
@@ -68,7 +71,7 @@ public struct PocketBrain: Sendable {
             let agent = Agent(client: client, model: imp.brain.model, tools: ToolSet(tools, selection: ToolSelection(toolsOff: Set(imp.toolsOff ?? []))), limits: limits)
             let turn = sender.map { Briefing.message(from: $0.name, text, place: "in the user's troupe") } ?? .user(text)
             let memory = imp.memory(with: sender?.id)
-            let system = [imp.personality, Briefing.pocket].map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            let system = [imp.personality, Briefing.pocket, stranger.map { Briefing.untrusted(device: $0.device, home: $0.home) } ?? ""].map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }.joined(separator: "\n\n")
             let context = memory.context(system: system, turn: turn, exchanges: PocketImp.exchangesSent)
             await run.start()

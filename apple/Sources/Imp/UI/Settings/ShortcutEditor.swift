@@ -137,6 +137,13 @@ struct ShortcutSheet: View {
 
     // MARK: Parts
 
+    /// The condition at `i`, safe to read after it was removed: SwiftUI reads a row's binding once more
+    /// while the row animates away, and a plain `$shortcut.conditions[i]` is then out of range (a crash).
+    private func condition(at i: Int) -> Binding<Trigger> {
+        Binding(get: { shortcut.conditions.indices.contains(i) ? shortcut.conditions[i] : .starter(.battery) },
+                set: { if shortcut.conditions.indices.contains(i) { shortcut.conditions[i] = $0 } })
+    }
+
     /// "Only if…": conditions that must hold when it goes off.
     @ViewBuilder private var conditions: some View {
         let kinds = Trigger.Kind.allCases.filter(\.isCondition)
@@ -145,12 +152,14 @@ struct ShortcutSheet: View {
                 ForEach(shortcut.conditions.indices, id: \.self) { i in
                     HStack(spacing: Spacing.small) {
                         kindMenu(selection: shortcut.conditions[i].kind, kinds: kinds, condition: true) { kind in
-                            shortcut.conditions[i] = .starter(kind)
+                            if shortcut.conditions.indices.contains(i) { shortcut.conditions[i] = .starter(kind) }
                         }
-                        TriggerFields(trigger: $shortcut.conditions[i], hotkey: .constant(nil), asCondition: true)
+                        TriggerFields(trigger: condition(at: i), hotkey: .constant(nil), asCondition: true)
                         Spacer(minLength: 0)
                         HoverIconButton(systemName: "minus.circle", help: "Remove this condition") {
-                            withImpAnimation(ImpDesign.Motion.expand, reduceMotion: reduceMotion) { _ = shortcut.conditions.remove(at: i) }
+                            withImpAnimation(ImpDesign.Motion.expand, reduceMotion: reduceMotion) {
+                                if shortcut.conditions.indices.contains(i) { shortcut.conditions.remove(at: i) }
+                            }
                         }
                     }
                 }

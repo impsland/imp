@@ -43,6 +43,8 @@ enum PocketEvent {
     case stage(UUID)
     /// A device is no longer linked.
     case lost(UUID)
+    /// The owner marked a device as theirs (Mine), or not.
+    case trust(UUID)
 }
 
 /// The phone's side of Imp Link (see `docs/connecting/link.md`): one `LinkNode` for this iPhone, and what
@@ -76,6 +78,8 @@ final class LinkHub {
     private(set) var acts: [UUID: Performance] = [:]
     /// Visiting Imps whose homes said they have no brain to think with (`LinkMessage.brain`): they sleep here.
     private(set) var brainless: Set<UUID> = []
+    /// Visiting Imps whose home doesn't let them use their tools for this iPhone (it isn't marked Mine there).
+    private(set) var toolless: Set<UUID> = []
     /// What each visiting Imp is saying to another Imp (a bubble above it on the stage).
     private(set) var speeches: [UUID: LinkSpeech] = [:]
     /// What the home's chats say each visiting Imp talked about with other Imps (`requestTalks`).
@@ -328,6 +332,7 @@ final class LinkHub {
     func setTrusted(_ device: UUID, _ on: Bool) {
         node.setTrusted(device, on)
         refresh()
+        onPocket?(.trust(device))
     }
 
     func isTrusted(_ device: UUID) -> Bool { node.isTrusted(device) }
@@ -575,7 +580,9 @@ final class LinkHub {
         case .chat(let imp, let turns): chats[imp] = turns
         case .work(let imp, let w): work[imp] = w
         case .mood(let imp, let name): moods[imp] = Mood(link: name)
-        case .brain(let imp, let ready): if ready { brainless.remove(imp) } else { brainless.insert(imp) }
+        case .brain(let imp, let ready, let tools):
+            if ready { brainless.remove(imp) } else { brainless.insert(imp) }
+            if tools == false { toolless.insert(imp) } else { toolless.remove(imp) }
         case .animate(let imp, let beats):
             let act = Performance(key: "mac", steps: beats.map(AnticStep.init))
             acts[imp] = act
@@ -691,7 +698,7 @@ final class LinkHub {
 
     /// Forgets what was known of a visiting Imp that left.
     private func clear(_ imp: UUID) {
-        chats[imp] = nil; work[imp] = nil; moods[imp] = nil; acts[imp] = nil; talkLines[imp] = nil; brainless.remove(imp)
+        chats[imp] = nil; work[imp] = nil; moods[imp] = nil; acts[imp] = nil; talkLines[imp] = nil; brainless.remove(imp); toolless.remove(imp)
         if let speech = speeches[imp] { drop(speech, for: imp) }
     }
 }

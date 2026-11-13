@@ -150,7 +150,8 @@ ticket for an Imp whose holder is another device tells that device `gone`.
 ## Imps talking
 
 Every device tells every connected device which Imps are on its screen (`stage`). An Imp can message
-(`imp_message`) the other Imps of its home and the Imps on the screen its body is on. The home sends
+(`imp_message`) the other Imps of its home, the Imps on the screen its body is on, and the Imps out at home
+on the screen of every connected device its home marks as the owner's (Mine). The home sends
 `message` to the device that can answer: the target's home, or the holder of the asking Imp, which answers
 for its own Imps and forwards once to the target's home. The `answer` goes back the same way. Messages time
 out after 120 seconds and are at most 20 000 characters.
@@ -158,8 +159,10 @@ out after 120 seconds and are at most 20 000 characters.
 The home of the target only lets an Imp ask if the asker is on the screen the target's body is on: the
 target is here and the asker is on this device's stage, or the target is away and the asker is on the
 holder's stage. A forwarded message must also come from a device whose stage has the asker, or which is
-the asker's home according to a stage we know. Anything else is answered as failed, and the app never
-hears of it. A question id already in flight is refused. One device may have 16 questions in flight
+the asker's home according to a stage we know. A message that isn't forwarded, from a device marked Mine
+here whose own stage has the asker, may ask any Imp of this device. Anything else is answered as failed,
+and the app never hears of it: a message that only lacked Mine says so (turn on Mine for that device here).
+Whether the Imp that answers uses its tools is the trust rule above, as for any message. A question id already in flight is refused. One device may have 16 questions in flight
 through another (more are answered `busy`).
 
 The tool `imp_message` has an optional `conversation` argument (`new` or `continue`) when the setting
@@ -273,7 +276,7 @@ message depends on who sent it.
 | `chat` | `imp`, `turns`: list of `{ id, date, request, from?, reply, failed, steps }` | home, holder |
 | `work` | `imp`, `work`: `{ request, status?, partial, from? }` or null | home, holder |
 | `mood` | `imp`, `mood` (a mood name) | home, holder |
-| `brain` | `imp`, `ready`: whether it has a brain it can think with at home. False: it sleeps on the holder too, and asking it is refused there | home, holder |
+| `brain` | `imp`, `ready`: whether it has a brain it can think with at home. False: it sleeps on the holder too, and asking it is refused there. `tools` (optional): false when the home doesn't count the holder as the owner's, so the Imp only talks for it; absent means yes. Sent again when that changes | home, holder |
 | `animate` | `imp`, `beats` (see [Kit format](/sharing/kits)) | home, holder |
 | `speech` | `imp`, `speech`: `{ id, role` (`asked`, `reply`, `asking`), `peer`, `hue`, `question`, `text }` or null | home, holder |
 | `talkLines` | `imp`, `lines`: who asked whom, with question and reply | home, holder |

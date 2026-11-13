@@ -196,7 +196,7 @@ public enum OwnTools {
         var about = "Send a message to another Imp out on the desktop and get its answer (it shows its own bubble). "
             + "Keep it short and friendly. Files in the answer come as imp-file:// links: show them with those links exactly as they are. "
             + "To send a file of yours, put it in your folder and link or embed it in the text."
-        if !pocket.isEmpty { about += " \(pocket.joined(separator: ", ")) live on the user's iPhone and answer there." }
+        if !pocket.isEmpty { about += " \(pocket.joined(separator: ", ")) are on the user's other devices and answer there." }
         return ToolSpec(name: message, description: about,
                         inputSchema: ["type": "object", "properties": .object(properties), "required": ["to", "text"]])
     }
@@ -259,7 +259,7 @@ public enum OwnTools {
                     + "(the cursor comes close to you / moves away). `only_if`: conditions that must "
                     + "hold too, same shape (battery, charger, app, website, busy, hot, offline, or hours with text \"22:00-07:00\"). "
                     + "`do` is ask (default: you get the prompt) or opens something: type (text box), talk (listen), chat, settings, or acts on your body with no thinking: sleep, wakeUp, play "
-                    + "(these take `animation`, a built-in animation's id or a custom one's, optional). "
+                    + "(these take `animation`: a name imp_play_animations takes, e.g. one you made). "
                     + "Afterwards tell the user how to use it.",
                 inputSchema: ["type": "object",
                               "properties": [
@@ -269,7 +269,7 @@ public enum OwnTools {
                                 "only_if": ["type": "array", "items": condition(events: false)],
                                 "do": ["type": "string", "enum": .array(Shortcut.Command.allCases.map { .string($0.rawValue) })],
                                 "prompt": ["type": "string", "description": "What you should do when it goes off, in plain words to yourself."],
-                                "animation": ["type": "string", "description": "For do sleep, wakeUp or play: the animation to play."],
+                                "animation": ["type": "string", "description": "For do sleep, wakeUp or play: the animation's name."],
                                 "with_clipboard": ["type": "boolean", "description": "Hand over what the user copied (text or a picture)."],
                                 "every_imp": ["type": "boolean", "description": "For every Imp instead of just you. Without it, changing a shared trigger makes your own version and the other Imps keep theirs."],
                               ],
@@ -302,8 +302,8 @@ public enum OwnTools {
                               "required": ["id"]]))
             specs.append(ToolSpec(
                 name: openSettings,
-                description: "You cannot change settings yourself. When the user wants a setting changed, open the exact place "
-                    + "with this tool and tell them what to set. Give `setting` (the exact setting) or `page`. With `tool`: an extra "
+                description: "Your other tools change your triggers, animations, character and extra tools. Any other setting "
+                    + "is the user's to change: open the exact place with this tool and tell them what to set. Give `setting` (the exact setting) or `page`. With `tool`: an extra "
                     + "tool's id, to edit it (e.g. to fill in an API key). `imp` is another Imp's name for its pages (default: you). "
                     + "Pages and their settings: " + SettingsPlace.overview + ".",
                 inputSchema: ["type": "object",
@@ -422,8 +422,10 @@ extension Trigger {
 
 extension Shortcut {
     /// A trigger from `imp_add_trigger`'s arguments, for `imp` (or every Imp), keeping the id of
-    /// the one it changes.
-    public init(tool json: JSONValue, imp: UUID, replacing old: Shortcut? = nil) throws {
+    /// the one it changes. `animation` finds what `animation` names: the model knows animations by
+    /// name (as `imp_play_animations` lists them), kits by key or name. Without it, keys only.
+    public init(tool json: JSONValue, imp: UUID, replacing old: Shortcut? = nil,
+                animation resolve: (String) -> AnimationRef? = { AnimationRef(key: $0) }) throws {
         guard let when = json["when"] else { throw ToolArgumentError("Say when it goes off (`when`).") }
         let trigger = try Trigger(tool: when)
         let conditions = try (json["only_if"]?.array ?? []).map { try Trigger(tool: $0, asCondition: true) }
@@ -446,16 +448,19 @@ extension Shortcut {
                   usesClipboard: json["with_clipboard"]?.bool ?? false, trigger: trigger, conditions: conditions, command: command)
         if let old { id = old.id; isEnabled = old.isEnabled; animation = old.animation; overrides = old.overrides }
         if let key = json["animation"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines), !key.isEmpty {
-            guard let ref = AnimationRef(key: key) else { throw ToolArgumentError("Unknown animation \(key).") }
+            guard let ref = AnimationRef(key: key) ?? resolve(key) else {
+                throw ToolArgumentError("Unknown animation \(key): give one of the names imp_play_animations takes.")
+            }
             animation = ref
         }
         guard isRunnable else { throw ToolArgumentError("Give it a `prompt` (or `do` something, or hand over the clipboard).") }
     }
 
-    /// One line for the model: id, name, when, what.
-    public var toolDescription: String {
+    /// One line for the model: id, name, when, what. `animationName` names what it plays (nil: the key).
+    public func toolDescription(animationName: String? = nil) -> String {
         var line = "\(id.uuidString): “\(name)”: \(triggerSummary)"
         line += command == .ask ? " → ask: \(prompt.isEmpty ? "(respond to it)" : prompt)" : " → \(command.title.lowercased())"
+        if command.usesAnimation, let animation { line += " “\(animationName ?? animation.key)”" }
         if usesClipboard { line += " (with the clipboard)" }
         if performer == nil { line += " [every Imp]" }
         if !isEnabled { line += " [off]" }

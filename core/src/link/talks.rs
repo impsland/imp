@@ -1,5 +1,6 @@
 //! Who can message whom, and where a `message` goes (`docs/connecting/link.md`, "Imps talking"). An Imp
-//! can message the other Imps of its home and the Imps on the screen its body is on. The home sends the
+//! can message the other Imps of its home, the Imps on the screen its body is on, and the Imps of the
+//! owner's other devices (marked Mine both ways), out on their own screens. The home sends the
 //! question to the device that can answer: the target's home, or the holder of the asking Imp, which
 //! answers for its own Imps and forwards once to the target's home. The answer goes back the same way.
 
@@ -81,6 +82,9 @@ pub fn received(
 /// target's body is on (`screen`: our own stage if the target is here, the holder's stage if it is away).
 /// A forwarded one must also come from a device whose stage (`sender_stage`) holds the asker, or which is
 /// the asker's home according to some stage we know (`known`).
+///
+/// Or the owner's devices talk among themselves: `sender_is_mine` (this device counts the sender as the
+/// owner's) lets an Imp on the sender's own screen ask straight from there, wherever the target is.
 pub fn may_ask(
     asker: Uuid,
     screen: &[LinkStaged],
@@ -88,7 +92,11 @@ pub fn may_ask(
     sender: Uuid,
     sender_stage: &[LinkStaged],
     known: &[LinkStaged],
+    sender_is_mine: bool,
 ) -> bool {
+    if sender_is_mine && !forwarded && sender_stage.iter().any(|s| s.imp.id == asker) {
+        return true;
+    }
     if !screen.iter().any(|s| s.imp.id == asker) {
         return false;
     }
@@ -229,18 +237,71 @@ mod tests {
     #[test]
     fn only_an_imp_on_the_same_screen_may_ask_and_a_forward_must_be_vouched_for() {
         let screen = [staged(5, 10)];
-        assert!(!may_ask(id(6), &screen, false, id(10), &[], &[]));
-        assert!(may_ask(id(5), &screen, false, id(10), &[], &[]));
-        assert!(!may_ask(id(5), &screen, true, id(10), &[], &[]));
-        assert!(may_ask(id(5), &screen, true, id(10), &[staged(5, 10)], &[]));
-        assert!(may_ask(id(5), &screen, true, id(10), &[], &[staged(5, 10)]));
+        assert!(!may_ask(id(6), &screen, false, id(10), &[], &[], false));
+        assert!(may_ask(id(5), &screen, false, id(10), &[], &[], false));
+        assert!(!may_ask(id(5), &screen, true, id(10), &[], &[], false));
+        assert!(may_ask(
+            id(5),
+            &screen,
+            true,
+            id(10),
+            &[staged(5, 10)],
+            &[],
+            false
+        ));
+        assert!(may_ask(
+            id(5),
+            &screen,
+            true,
+            id(10),
+            &[],
+            &[staged(5, 10)],
+            false
+        ));
         assert!(!may_ask(
             id(5),
             &screen,
             true,
             id(11),
             &[],
-            &[staged(5, 10)]
+            &[staged(5, 10)],
+            false
+        ));
+    }
+
+    #[test]
+    fn the_owners_devices_reach_each_others_imps_from_their_own_screens() {
+        let screen = [staged(5, 10)];
+        // An Imp on another of the owner's devices, on that device's screen: not on the target's screen.
+        assert!(may_ask(
+            id(7),
+            &screen,
+            false,
+            id(11),
+            &[staged(7, 11)],
+            &[],
+            true
+        ));
+        // Not Mine: the screens rule as before.
+        assert!(!may_ask(
+            id(7),
+            &screen,
+            false,
+            id(11),
+            &[staged(7, 11)],
+            &[],
+            false
+        ));
+        // Mine, but the asker isn't on the sender's screen, or it was passed on: no.
+        assert!(!may_ask(id(7), &screen, false, id(11), &[], &[], true));
+        assert!(!may_ask(
+            id(7),
+            &screen,
+            true,
+            id(11),
+            &[staged(7, 11)],
+            &[],
+            true
         ));
     }
 

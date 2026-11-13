@@ -179,6 +179,11 @@ public final class LinkNode {
     public func isConnected(_ device: UUID) -> Bool { (try? core.isConnected(device: device.uuidString)) ?? false }
     public func isThroughHop(_ device: UUID) -> Bool { (try? core.isThroughHop(device: device.uuidString)) ?? false }
     public func stage(of device: UUID) -> [LinkStaged] { (try? core.stageOf(device: device.uuidString)).flatMap(decode) ?? [] }
+    /// The Imps out on the screens of the owner's other devices (connected, marked Mine here), each at its
+    /// own home there. An Imp may message them from wherever it is: those devices let it (`talks::may_ask`).
+    public var onMyOtherDevices: [LinkStaged] {
+        connected.filter(isTrusted).flatMap { device in stage(of: device).filter { $0.home == device } }
+    }
     public func travel(of imp: UUID) -> LinkTravel { (try? core.travelOf(imp: imp.uuidString)).flatMap(decode) ?? .home }
     public func holder(of imp: UUID) -> UUID? { (try? core.holderOf(imp: imp.uuidString)).flatMap { $0 }.flatMap(UUID.init(uuidString:)) }
     public func held(by device: UUID) -> [UUID] { ((try? core.heldBy(device: device.uuidString)) ?? []).compactMap(UUID.init(uuidString:)) }

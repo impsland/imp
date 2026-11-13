@@ -62,6 +62,8 @@ final class DeviceLink {
         var mood: String
         /// It has a brain it can think with here.
         var ready: Bool
+        /// It may use its tools for what its holder asks (the holder is marked Mine here).
+        var tools: Bool
         var work: LinkWork?
         var chat: [LinkTurn]
         var speech: LinkSpeech?
@@ -126,6 +128,8 @@ final class DeviceLink {
     func setTrusted(_ device: UUID, _ on: Bool) {
         node?.setTrusted(device, on)
         refresh()
+        // The Imps that device holds: it hears whether they may use their tools for it now.
+        for imp in app.imps where node?.holder(of: imp.id) == device { watch(imp.id) }
     }
 
     func name(of device: UUID) -> String? { peers.first { $0.id == device }?.name }
@@ -333,7 +337,7 @@ final class DeviceLink {
         case .chat(let imp, let turns): app.visitor(imp)?.heard(chat: turns)
         case .work(let imp, let work): app.visitor(imp)?.heard(work: work)
         case .mood(let imp, let mood): app.visitor(imp)?.heard(mood: mood)
-        case .brain(let imp, let ready):
+        case .brain(let imp, let ready, _):
             if ready { brainless.remove(imp) } else { brainless.insert(imp) }
             refresh()
         case .speech(let imp, let speech): app.visitor(imp)?.heard(speech: speech)
@@ -438,7 +442,7 @@ final class DeviceLink {
         var updates: [LinkMessage] = []
         if before?.look != now.look { updates.append(.look(imp: now.look)) }
         if before?.mood != now.mood { updates.append(.mood(imp: id, mood: now.mood)) }
-        if before?.ready != now.ready { updates.append(.brain(imp: id, ready: now.ready)) }
+        if before?.ready != now.ready || before?.tools != now.tools { updates.append(.brain(imp: id, ready: now.ready, tools: now.tools)) }
         if before?.chat != now.chat { updates.append(.chat(imp: id, turns: now.chat)) }
         if before == nil || before?.work != now.work { updates.append(.work(imp: id, work: now.work)) }
         if before == nil || before?.speech != now.speech { updates.append(.speech(imp: id, speech: now.speech)) }
@@ -463,7 +467,9 @@ final class DeviceLink {
         }
         // Talks with other Imps show as its speech bubble there, not in your chat.
         let chat = imp.history.current.turns.filter { $0.sender == nil }.suffix(Self.chatPage).map(LinkTurn.init)
-        return Snapshot(look: LinkImp(profile), mood: (imp.activity?.mood ?? .idle).rawValue, ready: imp.isReady, work: work,
+        let holder = node?.holder(of: id)
+        return Snapshot(look: LinkImp(profile), mood: (imp.activity?.mood ?? .idle).rawValue, ready: imp.isReady,
+                        tools: holder.map { node?.isTrusted($0) ?? false } ?? true, work: work,
                         chat: chat, speech: Self.speech(imp.bubble))
     }
 
@@ -555,7 +561,7 @@ final class DeviceLink {
         guard let node else { return [] }
         let me = node.device.id
         let mine = app.prefs.imps.filter(\.isActive).map { LinkStaged(imp: LinkImp($0), home: me) }
-        let stage = node.holder(of: imp).map(node.stage(of:)) ?? visitorsStaged
+        let stage = (node.holder(of: imp).map(node.stage(of:)) ?? visitorsStaged) + node.onMyOtherDevices
         return LinkTalks.targets(of: imp, mine: mine, stage: stage).filter { $0.home != me }
     }
 

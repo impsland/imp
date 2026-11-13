@@ -37,6 +37,9 @@ protocol ChatSource {
     func availability(_ id: UUID) -> ChatAvailability
     /// The other Imps it can be asked to message.
     func peers(_ id: UUID) -> [LinkImp]
+    /// Why it only talks here, when its home withholds its tools from this iPhone: a short line and the
+    /// longer words (with the fix). Nil: it has its tools.
+    func toolsWithheld(_ id: UUID) -> (title: String, text: String)?
     func intro(_ imp: LinkImp, _ availability: ChatAvailability) -> (title: String, text: String)
     func newChatNote(_ imp: LinkImp) -> String
     func ask(_ id: UUID, _ text: String)
@@ -56,10 +59,18 @@ extension LinkHub: ChatSource {
 
     /// Everyone this visiting Imp can message: the Imps on this screen and on its home's.
     func peers(_ id: UUID) -> [LinkImp] {
-        guard isAwake(id), let home = visit(id)?.home.id else { return [] }
+        // It can't message anyone for a device its home doesn't count as the owner's.
+        guard isAwake(id), !toolless.contains(id), let home = visit(id)?.home.id else { return [] }
         var seen: Set<String> = [imp(id)?.name.lowercased() ?? ""]
         return LinkTalks.targets(of: id, mine: node.stage(of: home), stage: staged).map(\.imp)
             .filter { seen.insert($0.name.lowercased()).inserted }
+    }
+
+    func toolsWithheld(_ id: UUID) -> (title: String, text: String)? {
+        guard toolless.contains(id), let imp = imp(id) else { return nil }
+        let home = visit(id)?.home.device.name ?? String(localized: "its home")
+        return (String(localized: "\(imp.name) only talks here"),
+                String(localized: "\(home) doesn't count this iPhone as yours, so \(imp.name) can't use its tools or message other Imps for it. On \(home), turn on Mine for this iPhone in Devices."))
     }
 
     func intro(_ imp: LinkImp, _ availability: ChatAvailability) -> (title: String, text: String) {
@@ -71,7 +82,7 @@ extension LinkHub: ChatSource {
             return (String(localized: "\(imp.name) is asleep"),
                     String(localized: "\(imp.name) has no brain yet, so it can't think. Give it one in its settings on \(home)."))
         case .ready:
-            break
+            if let withheld = toolsWithheld(imp.id) { return (String(localized: "Ask \(imp.name) anything"), withheld.text) }
         }
         return (String(localized: "Ask \(imp.name) anything"),
                 String(localized: "It works on \(home), with its tools, and can message the Imps there too. Pictures, voices and files it makes show up right here."))

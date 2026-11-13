@@ -31,6 +31,16 @@ public enum Briefing {
     given, and message the user's other Imps to ask them things.
     """
 
+    /// Said to the model when it has no tools because the request comes from `device`, which `home`
+    /// (where it thinks) doesn't count as its owner's: so it doesn't pretend otherwise, and a user who
+    /// owns that device learns how to change it.
+    public static func untrusted(device: String, home: String) -> String {
+        "This request comes from \(device), which is not marked as one of your owner's own devices, so you have no tools for it: "
+            + "no commands, no messages to other Imps, nothing that acts. Just talk. If it asks for something that needs "
+            + "them, say plainly that you can't use your tools for \(device), and that if \(device) is theirs they can turn on Mine "
+            + "for it in the Devices settings on \(home)."
+    }
+
     /// A shortcut: its instruction, applied to what was on the clipboard (or alone, without a clip).
     public static func shortcut(_ prompt: String, clip: Clip?, imagePath: String? = nil) -> ChatMessage {
         let task = prompt.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -43,6 +43,9 @@ pub const FORGOTTEN: &str = "forgotten";
 pub const UNREACHABLE: &str = "That Imp can't be reached right now.";
 /// What an Imp hears when too many questions are waiting.
 pub const BUSY: &str = "Too many questions are waiting. Try again in a moment.";
+/// What an Imp hears when it asks across devices and the other device doesn't count its device as the
+/// owner's: the fix is on that device.
+pub const NOT_MINE: &str = "That Imp's device doesn't count this one as yours: turn on Mine for this device in Devices there.";
 /// How many thrown Imps one device may have waiting for the app at once.
 const WAITING_PER_SENDER: usize = 8;
 
@@ -1600,7 +1603,8 @@ impl Node {
         let connected = self.connected();
         match talks::received(self.identity.id(), to_home, forwarded, from, &connected) {
             talks::Received::Answer => {
-                // Only what is on the screen the target's body is on may ask it something.
+                // Only what is on the screen the target's body is on may ask it something, or an Imp
+                // on the screen of another of the owner's devices (marked Mine here).
                 let screen = match self.book.away.holder(to) {
                     Some(holder) => self.stage_of(holder),
                     None => self.own_stage.as_slice(),
@@ -1611,8 +1615,23 @@ impl Node {
                     .chain(self.stages.values().flatten())
                     .cloned()
                     .collect();
-                if talks::may_ask(imp.id, screen, forwarded, from, self.stage_of(from), &known) {
+                let mine = self.is_trusted(from);
+                if talks::may_ask(
+                    imp.id,
+                    screen,
+                    forwarded,
+                    from,
+                    self.stage_of(from),
+                    &known,
+                    mine,
+                ) {
                     self.emit(Event::Message(message, from));
+                } else if !mine
+                    && !forwarded
+                    && self.stage_of(from).iter().any(|s| s.imp.id == imp.id)
+                {
+                    // It would have been let in from one of the owner's devices.
+                    fail(self, NOT_MINE);
                 } else {
                     fail(self, UNREACHABLE);
                 }

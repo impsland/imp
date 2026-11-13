@@ -101,6 +101,14 @@ public struct Kit: Equatable, Sendable {
         var kit = Kit(name: json["name"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
                       about: json["about"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
                       app: json["app"]?.string)
+        // Animations first: the triggers name the ones they play.
+        if let list = json["animations"] {
+            if let array = list.array {
+                kit.animations = MadeAnimation.read(array, problems: &kit.problems)
+            } else {
+                kit.problems.append(String(localized: "“animations” should be a list."))
+            }
+        }
         if let list = json["triggers"] {
             if let array = list.array { kit.read(triggers: array) } else { kit.problems.append(String(localized: "“triggers” should be a list.")) }
         }
@@ -109,13 +117,6 @@ public struct Kit: Equatable, Sendable {
         }
         if let list = json["imps"] {
             if let array = list.array { kit.read(imps: array) } else { kit.problems.append(String(localized: "“imps” should be a list.")) }
-        }
-        if let list = json["animations"] {
-            if let array = list.array {
-                kit.animations = MadeAnimation.read(array, problems: &kit.problems)
-            } else {
-                kit.problems.append(String(localized: "“animations” should be a list."))
-            }
         }
         return kit
     }
@@ -130,7 +131,7 @@ public struct Kit: Equatable, Sendable {
     private mutating func read(triggers list: [JSONValue]) {
         for (i, item) in list.enumerated() {
             do {
-                var shortcut = try Shortcut(tool: item, imp: UUID())
+                var shortcut = try Shortcut(tool: item, imp: UUID(), animation: MadeAnimation.resolver(animations))
                 shortcut.performer = nil          // whose it is gets decided when it's added
                 triggers.append(shortcut)
             } catch {
@@ -216,7 +217,7 @@ public struct Kit: Equatable, Sendable {
         if !about.isEmpty { top["about"] = .string(about) }
         let keys = serverKeys
         if !imps.isEmpty { top["imps"] = .array(imps.map { $0.kitJSON(serverKeys: keys) }) }
-        if !triggers.isEmpty { top["triggers"] = .array(triggers.map(\.kitJSON)) }
+        if !triggers.isEmpty { top["triggers"] = .array(triggers.map { $0.kitJSON(with: animations) }) }
         if !servers.isEmpty {
             var map: [String: JSONValue] = [:]
             for s in servers { map[keys[s.id]!] = s.kitJSON }
@@ -403,14 +404,19 @@ extension Trigger {
 
 extension Shortcut {
     /// The object `imp_add_trigger` takes. Whose it is isn't part of it: whoever adds it decides.
-    var kitJSON: JSONValue {
+    /// An animation of `animations` (the kit's, which get new ids wherever they land) is written by
+    /// its name, which the kit's reader finds again.
+    func kitJSON(with animations: [MadeAnimation] = []) -> JSONValue {
         var when = trigger.kitJSON
         if case .object(var o) = when, let keys { o["keys"] = .string(keys.kitText); when = .object(o) }
         var o: [String: JSONValue] = ["name": .string(name), "when": when, "with_clipboard": .bool(usesClipboard)]
         if !conditions.isEmpty { o["only_if"] = .array(conditions.map(\.kitJSON)) }
         if command != .ask { o["do"] = .string(command.rawValue) }
         if !prompt.isEmpty { o["prompt"] = .string(prompt) }
-        if let animation { o["animation"] = .string(animation.key) }
+        if let animation {
+            let made = animations.first { a in animation == .custom(a.id) }
+            o["animation"] = .string(made?.title ?? animation.key)
+        }
         return .object(o)
     }
 
@@ -518,12 +524,14 @@ extension ImpPreferences {
     public mutating func add(_ kit: Kit, imps chosenImps: Set<UUID> = [], triggers chosenTriggers: Set<UUID>, servers chosenServers: Set<UUID>,
                              animations chosenAnimations: Set<UUID> = [], for imp: UUID?, withChats: Bool = true) -> KitAdded {
         var added = KitAdded()
+        var adopted: [UUID: UUID] = [:]                         // the kit's animation id -> the new one
         for animation in kit.animations where chosenAnimations.contains(animation.id) {
-            adopt(animation, for: imp)
+            adopted[animation.id] = adopt(animation, for: imp)
             added.animations += 1
         }
         for var trigger in kit.triggers where chosenTriggers.contains(trigger.id) {
             trigger.performer = imp
+            trigger.animation = relink(trigger.animation, adopted: adopted, from: kit.animations, imp: imp)
             shortcuts.append(trigger)
             added.triggers += 1
         }
@@ -549,12 +557,35 @@ extension ImpPreferences {
 }
 
 extension ImpPreferences {
+    /// One trigger as a kit, named `name`, with the made animation it plays (as `imp` plays it): without
+    /// it, the trigger would play nothing wherever the kit lands.
+    public func kit(sharing trigger: Shortcut, named name: String, imp: UUID?) -> Kit {
+        var kit = Kit(name: name, triggers: [trigger])
+        if case .custom(let id)? = trigger.animation, var made = customAnimation(id, imp: imp ?? trigger.performer) {
+            made.id = id                     // an Imp's own version stands in under the id the trigger knows
+            kit.animations = [made.normalized]
+        }
+        return kit
+    }
+}
+
+extension ImpPreferences {
     /// An animation from a kit, as a new one for `imp` (nil: every Imp): a fresh id, and a name
     /// nobody there has. A replacement takes the place of the one already there.
-    mutating func adopt(_ animation: MadeAnimation, for imp: UUID?) {
+    @discardableResult
+    mutating func adopt(_ animation: MadeAnimation, for imp: UUID?) -> UUID {
         var a = animation
         a.id = UUID()
         if a.replaces == nil { a.name = uniqueAnimationName(a.name, imp: imp) }
-        save(a, for: imp)
+        return save(a, for: imp)
+    }
+
+    /// What a kit's trigger plays, once the kit's animations have landed: the adopted one, else one
+    /// here with its name (an animation left out of the kit, or not chosen), else nothing.
+    func relink(_ ref: AnimationRef?, adopted: [UUID: UUID], from animations: [MadeAnimation], imp: UUID?) -> AnimationRef? {
+        guard case .custom(let id)? = ref else { return ref }
+        if let new = adopted[id] { return .custom(new) }
+        if let a = animations.first(where: { $0.id == id }) { return self.ref(named: a.title, imp: imp) }
+        return customAnimation(id, imp: imp) == nil ? nil : ref
     }
 }

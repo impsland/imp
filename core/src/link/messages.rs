@@ -384,9 +384,13 @@ pub enum LinkMessage {
         mood: String,
     },
     /// Whether it has a brain it can think with at its home. False: it sleeps on the holder too.
+    /// `tools`: whether its home lets it use its tools for what the holder asks (the holder is one of
+    /// the owner's devices there). Absent from older homes, which is read as yes.
     Brain {
         imp: Uuid,
         ready: bool,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        tools: Option<bool>,
     },
     Animate {
         imp: Uuid,

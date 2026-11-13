@@ -69,6 +69,11 @@ Hatch one from the status menu, or **Hatch an Imp** on the first screen. It live
 ## Messages and talks
 
 Every Imp messages the others the same way, whether it's on the phone, a pocket Imp or on the desktop (`imp_message`).
+
+- An Imp reaches the Imps of its own device, the Imps on the screen it is on, and the Imps out on your other
+  devices.
+- For your other devices, each device must mark the other **Mine**, on both sides. Until then the Imps meet only
+  when one is thrown onto the other's screen. An Imp asked across devices before that says which device to fix.
 The talk shows in bubbles over their heads: the question over the Imp asking, a small "thinking" bubble over the one
 asked, then the answer.
 
@@ -100,7 +105,10 @@ linked devices (connected, via the server, or away), the Imps each holds, and **
 Mark your own devices **Mine** in the Devices card or sheet.
 
 - An Imp visiting a device that isn't yours, or asked by an Imp whose home isn't one of your devices, talks but
-  doesn't use its tools: no commands, no computer control, no tool servers.
+  doesn't use its tools: no commands, no computer control, no tool servers, no messages to other Imps.
+  - The Imp knows why. Asked for something that needs its tools, it says so and points to **Mine** on its home.
+  - The iPhone's chat shows "only talks here", with the same fix behind its help icon. It doesn't offer the
+    "Ask … to" suggestions there.
 - Such a device only gets files from the Imp's own folder.
 - A visiting Imp still thinks with its home's model and keys, so whoever you pass it to chats on your service.
 - You can call an Imp home at any time, from anywhere. Its home always decides where it is.

@@ -75,7 +75,7 @@ struct TriggersPanel: View {
 
     /// One trigger as a sentence with its switch, an edit button and a delete button.
     @ViewBuilder private func row(_ shortcut: Shortcut) -> some View {
-        if let i = model.prefs.shortcuts.firstIndex(where: { $0.id == shortcut.id }) {
+        if model.prefs.shortcuts.contains(where: { $0.id == shortcut.id }) {
             let sentence = shortcut.sentence
             HStack(spacing: Spacing.small) {
                 IconTile(systemName: shortcut.trigger.kind.symbol).opacity(shortcut.isEnabled ? 1 : Opacity.dimmed)
@@ -96,7 +96,9 @@ struct TriggersPanel: View {
                 case .changed: HoverIconButton(systemName: "arrow.uturn.backward", help: "triggers.use_shared", tint: Tone.muted) { deleting = shortcut }
                 case .everyImp: EmptyView()
                 }
-                Toggle(isOn: Binding(get: { model.prefs.shortcuts[i].isEnabled },
+                // Looked up by id on every read: an index goes stale the moment a trigger is deleted, and
+                // SwiftUI reads the binding once more before the row goes (that crashed).
+                Toggle(isOn: Binding(get: { model.prefs.shortcuts.first { $0.id == shortcut.id }?.isEnabled ?? false },
                                      set: { model.prefs.setTrigger(shortcut.id, enabled: $0, for: id) })) { Text(verbatim: sentence) }
                     .labelsHidden().toggleStyle(.impSwitchBare)
                     .accessibilityLabel(words("triggers.switch", sentence))
@@ -160,7 +162,7 @@ struct TriggersPanel: View {
         withImpAnimation(ImpDesign.Motion.expand, reduceMotion: reduceMotion) { _ = model.prefs.saveTrigger(shortcut, for: target) }
     }
 
-    private func kit(of shortcut: Shortcut) -> Kit { Kit(name: shortcut.displayName, triggers: [shortcut]) }
+    private func kit(of shortcut: Shortcut) -> Kit { model.prefs.kit(sharing: shortcut, named: shortcut.displayName, imp: id) }
 
     private func share(_ shortcut: Shortcut, link: Bool = false) {
         if link { KitSharing.copyLink(kit(of: shortcut)) } else { KitSharing.copy(kit(of: shortcut)) }

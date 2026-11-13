@@ -124,10 +124,12 @@ public struct KitImp: Equatable, Sendable, Identifiable {
                 else { problems.append(String(localized: "Uses the tool “\(key)”, which isn't in the kit.")) }
             }
         }
+        // Animations first: its triggers name the ones they play.
+        if let list = json["animations"]?.array { imp.animations = MadeAnimation.read(list, problems: &problems) }
         if let list = json["triggers"]?.array {
             for (i, item) in list.enumerated() {
                 do {
-                    var shortcut = try Shortcut(tool: item, imp: UUID())
+                    var shortcut = try Shortcut(tool: item, imp: UUID(), animation: MadeAnimation.resolver(imp.animations))
                     shortcut.performer = nil
                     imp.triggers.append(shortcut)
                 } catch {
@@ -139,7 +141,6 @@ public struct KitImp: Equatable, Sendable, Identifiable {
             imp.chats = list.compactMap { Chat(kit: $0) }
         }
         if let traits = json["traits"], case .object = traits { imp.traits = ImpTraits(kit: traits) }
-        if let list = json["animations"]?.array { imp.animations = MadeAnimation.read(list, problems: &problems) }
         return imp
     }
 
@@ -159,7 +160,7 @@ public struct KitImp: Equatable, Sendable, Identifiable {
         if let brain { o["brain"] = brain.kitJSON }
         let used = servers.compactMap { keys[$0] }
         if !used.isEmpty { o["mcpServers"] = .array(used.map { .string($0) }) }
-        if !triggers.isEmpty { o["triggers"] = .array(triggers.map(\.kitJSON)) }
+        if !triggers.isEmpty { o["triggers"] = .array(triggers.map { $0.kitJSON(with: animations) }) }
         if !chats.isEmpty { o["chats"] = .array(chats.map(\.kitJSON)) }
         if !traits.isPlain { o["traits"] = traits.kitJSON }
         if !animations.isEmpty { o["animations"] = .array(animations.map(\.kitJSON)) }
@@ -340,7 +341,8 @@ extension ImpPreferences {
                            favoriteHue: source.favoriteHue, scale: source.scale, personality: source.personality)
         p.isActive = false
         p.traits = source.traits
-        p.animations = source.animations.map { var a = $0; a.id = UUID(); return a }
+        var adopted: [UUID: UUID] = [:]                       // the kit's animation id -> its own
+        p.animations = source.animations.map { var a = $0; a.id = UUID(); adopted[$0.id] = a.id; return a }
         p.instructions = source.instructions
         p.usesShell = source.usesShell
         for group in ImpToolGroup.allCases { p.setUses(group, source.uses(group)) }
@@ -363,6 +365,7 @@ extension ImpPreferences {
         for var trigger in source.triggers {
             trigger.id = UUID()
             trigger.performer = p.id
+            if case .custom(let old)? = trigger.animation { trigger.animation = adopted[old].map { .custom($0) } ?? trigger.animation }
             shortcuts.append(trigger)
         }
         let chats = withChats ? source.chats.sorted { $0.updated < $1.updated } : []

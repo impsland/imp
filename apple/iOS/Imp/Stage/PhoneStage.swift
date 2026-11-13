@@ -55,16 +55,16 @@ struct PhoneStage: View {
                     PacedTimeline(activity: activity) { date in
                         let _ = call(in: geo.size, top: screen.safeAreaInsets.top)
                         let _ = engine.step(date, size: geo.size, insets: geo.safeAreaInsets)
+                        // Talks with other Imps, above the talker's head, kept on screen.
+                        // None while a game is on: the bubbles that arrive meanwhile are held by the hub and show when it ends.
+                        let places = engine.isPlaying ? [:] : bubbles(size: geo.size, date: date)
                         ZStack {
                             EchoFloor(engine: engine, date: date, reduceMotion: engine.reduceMotion)
                             ForEach(engine.order, id: \.self) { id in
                                 if let body = engine.bodies[id] {
-                                    figure(body, date: date)
+                                    figure(body, date: date, talking: places[id] != nil)
                                 }
                             }
-                            // Talks with other Imps, above the talker's head, kept on screen.
-                            // None while a game is on: the bubbles that arrive meanwhile are held by the hub and show when it ends.
-                            let places = engine.isPlaying ? [:] : bubbles(size: geo.size, date: date)
                             ForEach(engine.order, id: \.self) { id in
                                 if let b = engine.bodies[id], let place = places[id] {
                                     Color.clear.frame(width: Stroke.hairline, height: Stroke.hairline)
@@ -231,7 +231,9 @@ struct PhoneStage: View {
 
     // MARK: One Imp
 
-    private func figure(_ b: StageEngine.Body, date: Date) -> some View {
+    /// `talking`: its talk bubble is up, and it already shows that the Imp is thinking or waiting, so the
+    /// dots over its head stay away (two sets of dots, one under the other).
+    private func figure(_ b: StageEngine.Body, date: Date, talking: Bool = false) -> some View {
         let id = b.imp.id
         let source: any ChatSource = pocket.contains(id) ? pocket : hub
         let awake = source.availability(id) == .ready
@@ -250,7 +252,8 @@ struct PhoneStage: View {
         engine.pacer.note(mood: mood, of: id, awake: awake, at: date)
         let gaze = engine.gaze(for: b)
         return ImpFigure(imp: b.imp, mood: mood, performance: b.performance, lean: b.lean,
-                         gaze: gaze.map { Gaze.toward($0.point, from: b.pos) }, attentive: gaze?.attentive ?? false, date: date)
+                         gaze: gaze.map { Gaze.toward($0.point, from: b.pos) }, attentive: gaze?.attentive ?? false, date: date,
+                         bleed: ImpFigure.stageBleed)
             .frame(width: side, height: side)
             .background {
                 // The Imp's own light around it.
@@ -258,7 +261,7 @@ struct PhoneStage: View {
                     .frame(width: side * 2.3, height: side * 2.3)
             }
             .overlay(alignment: .top) {
-                if working != nil, showsWords { ThinkingDots(date: date).offset(y: -side * 0.12).transition(.scale.combined(with: .opacity)) }
+                if working != nil, showsWords, !talking { ThinkingDots(date: date).offset(y: -side * 0.12).transition(.scale.combined(with: .opacity)) }
             }
             .overlay(alignment: .bottom) {
                 if showsWords {

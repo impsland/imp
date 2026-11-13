@@ -62,6 +62,48 @@ final class Watcher {
         #expect(await onMac.wait { onMac.heard("Pip") })
     }
 
+    /// An Imp at home on the phone messages one at home on the Mac: the Mac lets it once it counts the
+    /// phone as the owner's (Mine), and says what to do until then. Neither Imp travels.
+    @Test func theOwnersDevicesReachEachOthersImps() async throws {
+        let mac = try node("Studio", kind: .mac)
+        let phone = try node("Pocket", kind: .phone)
+        let onMac = Watcher(), onPhone = Watcher()
+        onMac.attach(to: mac)
+        onPhone.attach(to: phone)
+        await mac.start()
+        await phone.start()
+        defer { mac.stop(); phone.stop() }
+        _ = try await phone.join(try #require(mac.invite()))
+        #expect(await onMac.wait { mac.isConnected(phone.device.id) && phone.isConnected(mac.device.id) })
+
+        let pip = LinkImp(id: UUID(), name: "Pip", hue: 0.3, scale: 1, traits: .plain)
+        let bo = LinkImp(id: UUID(), name: "Bo", hue: 0.6, scale: 1, traits: .plain)
+        phone.setStage([LinkStaged(imp: pip, home: phone.device.id)])
+        mac.setStage([LinkStaged(imp: bo, home: mac.device.id)])
+        #expect(await onPhone.wait { onPhone.heard("Bo") })
+        #expect(await onMac.wait { onMac.heard("Pip") })
+        #expect(phone.onMyOtherDevices.isEmpty, "not Mine yet: the phone doesn't list Bo")
+
+        // Asked anyway (an older phone would): the Mac says why not.
+        let first = UUID()
+        #expect(phone.talk(id: first, from: pip, to: bo.id, toHome: mac.device.id, text: "Hi?", holder: phone.device.id) == .via(mac.device.id))
+        #expect(await onPhone.wait {
+            onPhone.events.contains { if case .message(.answer(first, let text, true), _) = $0 { text.contains("Mine") } else { false } }
+        })
+
+        mac.setTrusted(phone.device.id, true)
+        phone.setTrusted(mac.device.id, true)
+        #expect(phone.onMyOtherDevices.map(\.imp.name) == ["Bo"])
+        let second = UUID()
+        #expect(phone.talk(id: second, from: pip, to: bo.id, toHome: mac.device.id, text: "What time is it?", holder: phone.device.id) == .via(mac.device.id))
+        #expect(await onMac.wait {
+            onMac.events.contains { event in
+                guard case .message(let m, let from) = event, case .message(second, _, bo.id, _, _, false) = m else { return false }
+                return mac.isTrusted(m, from: from)              // and it may use its tools for it
+            }
+        })
+    }
+
     @Test func aCodeForTheDeviceItselfIsRefused() async throws {
         let mac = try node("Studio", kind: .mac)
         await mac.start()
