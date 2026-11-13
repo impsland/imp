@@ -97,7 +97,7 @@ private struct CanvasImp: View {
                 .onChanged { follow($0, centre: centre, side: side) }
                 .onEnded { _ in drop(side: side) })
             .gesture(TapGesture(count: 2).onEnded { actions.click(id, count: 2) },
-                     including: model.prefs.doubleClick == .nothing ? .subviews : .all)
+                     including: model.prefs.waitsForMoreClicks(on: id) ? .all : .subviews)
             .onTapGesture { viaKeyboard = false; actions.click(id, count: 1) }
             .contextMenu { ImpContextMenu(model: model, router: router, id: id) }
             .focusable()

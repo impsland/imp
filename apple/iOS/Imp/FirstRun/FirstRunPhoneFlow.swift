@@ -21,10 +21,7 @@ struct FirstRunPhoneFlow: View {
             case 2: modelStep
             default: serviceStep
             }
-            if let text = flow.problemText {
-                StatusText(verbatim: text, symbol: "exclamationmark.circle", color: Tone.warnText)
-                    .accessibilityLabel(Text(verbatim: text))
-            }
+            StatusSlot(flow.problemText, symbol: "exclamationmark.circle", color: Tone.warnText)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .impAnimation(ImpDesign.Motion.scene, value: flow.path.number)

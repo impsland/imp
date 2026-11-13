@@ -12,10 +12,10 @@ struct PhoneRouterTests {
         #expect(PhoneRouter().route == nil)
     }
 
-    @Test("Talk opens the Imp's sheet on its chat, Talks on its talks")
+    @Test("Talk opens the Imp's sheet on its chat; the talks side is chosen from inside it")
     func talkAndTalks() {
         var router = PhoneRouter()
-        router.talks(a)
+        router.talk(a); router.pane = .talks
         #expect(router.route == .imp(a))
         #expect(router.pane == .talks)
         router.talk(a)
@@ -26,7 +26,7 @@ struct PhoneRouterTests {
     @Test("Another Imp's sheet always opens on its chat")
     func anotherImpStartsOnChat() {
         var router = PhoneRouter()
-        router.talks(a)
+        router.talk(a); router.pane = .talks
         router.open(.imp(b))
         #expect(router.route == .imp(b))
         #expect(router.pane == .chat)
@@ -35,7 +35,7 @@ struct PhoneRouterTests {
     @Test("Close on settings opened from the Imp's sheet goes back to that sheet, on the side it was")
     func closeReturnsToTheImp() {
         var router = PhoneRouter()
-        router.talks(a)
+        router.talk(a); router.pane = .talks
         router.open(.edit(a, brain: false))
         #expect(router.route == .edit(a, brain: false))
         router.close(exists: here)

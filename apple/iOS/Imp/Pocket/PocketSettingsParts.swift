@@ -92,12 +92,11 @@ struct PocketCard<Content: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.cozy) {
-            HStack(spacing: 0) {
-                Text(title).font(Typeface.label).foregroundStyle(Tone.text).accessibilityAddTraits(.isHeader)
-                if let tip { InfoTip(verbatim: tip) }
-                Spacer(minLength: Spacing.small)
+            SectionHeader(info: nil, verbatimInfo: tip, minHeight: nil, accessory: {
                 if let value { Text(verbatim: value).font(Typeface.small.monospacedDigit()).foregroundStyle(Tone.muted) }
-            }
+            }, leading: {
+                Text(title).font(Typeface.label).foregroundStyle(Tone.text).accessibilityAddTraits(.isHeader)
+            })
             content
         }
         .padding(Spacing.medium)

@@ -321,7 +321,7 @@ private struct ConfirmButton: View {
 }
 
 /// A quiet suggestion, once per chat, when the chat has grown long enough to be slow and costly
-/// (`ImpPreferences.contextNoticeTokens`). It never blocks anything: recap, start a new chat, or wave it away.
+/// (`ImpProfile.newChatAt`). It never blocks anything: recap, start a new chat, or wave it away.
 private struct ContextNotice: View {
     let model: ImpModel
     let changed: () -> Void

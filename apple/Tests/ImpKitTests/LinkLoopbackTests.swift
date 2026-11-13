@@ -70,3 +70,74 @@ final class Watcher {
         await #expect(throws: LinkNode.JoinError.self) { try await mac.join(own) }
     }
 }
+
+@MainActor
+@Suite(.serialized) struct LinkRoutesTests {
+    func node() throws -> LinkNode {
+        var options = LinkNode.Options()
+        options.port = nil
+        options.bonjour = false
+        options.watchesNetwork = false
+        options.hosts = ["127.0.0.1"]
+        options.tick = 0.1
+        return try LinkNode(name: "Studio", kind: .mac, storage: LinkMemoryStorage(), options: options)
+    }
+
+    @Test func aCodeMadeAfterStartHasHostsAndAPort() async throws {
+        let mac = try node()
+        #expect(!mac.status.isReady)
+        await mac.start()
+        defer { mac.stop() }
+        #expect(mac.status.isReady)
+        let url = try #require(mac.invite()).url.absoluteString
+        #expect(url.contains("h=127.0.0.1"))
+        #expect(url.contains("p=\(try #require(mac.port))"))
+    }
+
+    @Test func aSecondStartWaitsForTheFirst() async throws {
+        let mac = try node()
+        async let first: Void = mac.start()
+        async let second: Void = mac.start()
+        _ = await (first, second)
+        defer { mac.stop() }
+        #expect(mac.status.isReady)
+        // A start that comes while one is under way returns only when the node is ready.
+        let other = try node()
+        Task { await other.start() }
+        await other.start()
+        defer { other.stop() }
+        #expect(other.status.routes.port != nil)
+    }
+
+    @Test func theHopComesAndGoesWithTheServer() async throws {
+        let mac = try node()
+        await mac.start()
+        defer { mac.stop() }
+        #expect(mac.status.routes.hop == nil)
+        #expect(try #require(mac.invite()).url.absoluteString.contains("hop=") == false)
+        mac.setServer("hop.example.com:4677")
+        #expect(mac.status.routes.hop == "hop.example.com:4677")
+        #expect(try #require(mac.invite()).url.absoluteString.contains("hop=hop.example.com"))
+        mac.setServer(nil)
+        #expect(mac.status.routes.hop == nil)
+        #expect(try #require(mac.invite()).url.absoluteString.contains("hop=") == false)
+    }
+
+    @Test func aLocalNetworkDenialIsDetected() {
+        #expect(LinkNode.isPolicyDenied(.dns(-65570)))
+        #expect(!LinkNode.isPolicyDenied(.dns(-65537)))
+    }
+
+    @Test func anUnreadableBookIsErasedButAnUnavailableOneIsKept() throws {
+        let bad = LinkMemoryStorage(Data("{ not json".utf8))
+        let opened = try LinkNode.open(name: "Mac", kind: .mac, storage: bad)
+        #expect(opened.reset)
+        #expect(try bad.load() != Data("{ not json".utf8))
+
+        struct Closed: LinkStorage {
+            func load() throws -> Data? { throw CocoaError(.fileReadNoPermission) }
+            func save(_ book: Data) throws {}
+        }
+        #expect(throws: LinkNode.OpenError.self) { try LinkNode.open(name: "Mac", kind: .mac, storage: Closed()) }
+    }
+}

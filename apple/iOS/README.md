@@ -47,7 +47,7 @@ and `-join <implink://…>` with `-ask <text>` for end-to-end checks against a r
    back with the reason.
 
 Visits: an Imp away from its home keeps thinking there. While its home is out of reach it sleeps, and its
-chat says so and waits. A visiting Imp's menu has Chat, Talks and Send Home. The **Devices** sheet
+chat says so and waits. A visiting Imp's menu has Hide and Send Home. The **Devices** sheet
 (`DevicesSheet`) shows, per linked device, whether it is connected, reached through the server, or away,
 and which of this phone's Imps it holds, with **Call Home**. A visiting Imp can be passed on to a third
 device with its **ticket**, which lets that device act for the Imp at its home.

@@ -8,7 +8,6 @@ struct ServiceRow: View {
     @Bindable var model: AppModel
     @Binding var service: Service
     let remove: () -> Void
-    @State private var result: (ok: Bool, text: String)?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// How many Imps think with this service.
@@ -16,11 +15,8 @@ struct ServiceRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.cozy) {
-            HStack(spacing: Spacing.cozy) {
-                IconTile(systemName: service.isLocal ? "desktopcomputer" : "cloud.fill")
-                Text(verbatim: service.label).font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1)
-                InfoTip(service.isLocal ? "settings.service.local.info" : "settings.service.cloud.info")
-                Spacer(minLength: Spacing.small)
+            SectionHeader(verbatim: service.label, icon: service.isLocal ? "desktopcomputer" : "cloud.fill",
+                          info: service.isLocal ? "settings.service.local.info" : "settings.service.cloud.info") {
                 DefaultServiceButton(name: service.label, isDefault: model.prefs.ai.defaultService == service.id) {
                     withImpAnimation(ImpDesign.Motion.quick, reduceMotion: reduceMotion) { model.prefs.ai.defaultService = service.id }
                 }
@@ -44,16 +40,10 @@ struct ServiceRow: View {
                 Text(verbatim: String.localizedStringWithFormat(NSLocalizedString("brains.used_by", comment: ""), usedBy))
                     .font(Typeface.small).foregroundStyle(Tone.muted).lineLimit(1)
                 Spacer(minLength: Spacing.small)
-                if let result {
-                    StatusText(verbatim: result.text, symbol: result.ok ? "checkmark.circle.fill" : "xmark.octagon.fill",
-                               color: result.ok ? Tone.good : Tone.danger)
-                        .help(result.text)
-                        .transition(.opacity)
-                }
                 TestButton(title: "Test", action: {
                     let count = try await model.assistant.client(for: service).models().count
                     return String(localized: "Works. \(count) models")
-                }) { ok, text in withImpAnimation(ImpDesign.Motion.fade, reduceMotion: reduceMotion) { result = (ok, text) } }
+                })
             }
         }
         .padding(Spacing.large)
@@ -106,14 +96,14 @@ struct KeyField: View {
     let service: Service
     @State private var show = false
     @State private var draft = ""
-    @State private var problem: String?
+    @Environment(\.postNotice) private var postNotice
 
     private var saved: Bool { model.assistant.hasKey(service.id) }
     private var key: Binding<String> {
         Binding(get: { draft }, set: {
             draft = $0
             if !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                problem = model.assistant.setKey($0, for: service.id) ? nil : String(localized: "firstrun.error.key_not_saved")
+                if !model.assistant.setKey($0, for: service.id) { postNotice(.error(String(localized: "firstrun.error.key_not_saved"))) }
             }
         })
     }
@@ -137,9 +127,6 @@ struct KeyField: View {
                     FieldAction(systemName: "trash", help: "Remove key", action: remove)
                 }
             }
-            if let problem {
-                StatusText(verbatim: problem, symbol: "xmark.octagon.fill", color: Tone.danger)
-            }
         }
     }
 
@@ -149,7 +136,6 @@ struct KeyField: View {
 
     private func remove() {
         draft = ""
-        problem = nil
         model.assistant.setKey("", for: service.id)
     }
 }
@@ -239,9 +225,6 @@ struct AddServiceSheet: View {
     @State private var baseURL = ServicePreset.standard?.baseURL ?? ""
     @State private var key = ""
     @State private var modelName = ""
-    @State private var check: (ok: Bool, text: String)?
-    @State private var checking = false
-
     private var draft: Service {
         Service(name: name.trimmingCharacters(in: .whitespaces), baseURL: baseURL.trimmingCharacters(in: .whitespaces),
                 model: modelName.trimmingCharacters(in: .whitespaces))
@@ -264,46 +247,33 @@ struct AddServiceSheet: View {
             .padding(Spacing.roomy)
             .impCard(radius: Radius.medium)
         } footer: {
-            Button("Test") { Task { await test() } }
-                .buttonStyle(.imp(.secondary)).disabled(!isValid || checking)
-            if checking { ProgressView().controlSize(.small) }
-            if let check {
-                StatusText(verbatim: check.text, symbol: check.ok ? "checkmark.circle.fill" : "xmark.octagon.fill",
-                           color: check.ok ? Tone.good : Tone.danger)
-                    .help(check.text)
-            }
+            TestButton(title: "Test", action: { [draft, key] in
+                let count = try await OpenAIClient(baseURL: draft.baseURL, apiKey: key).models().count
+                return String(localized: "Works. \(count) models")
+            })
+            .disabled(!isValid)
             Spacer()
-            Button("common.add") {
-                var p = draft
-                p.name = p.label
-                guard model.assistant.setKey(key, for: p.id) else {
-                    check = (false, String(localized: "firstrun.error.key_not_saved"))
-                    return
+            NoticePoster { post in
+                Button("common.add") {
+                    var p = draft
+                    p.name = p.label
+                    guard model.assistant.setKey(key, for: p.id) else {
+                        post(.error(String(localized: "firstrun.error.key_not_saved")))
+                        return
+                    }
+                    model.prefs.ai.add(p)
+                    added(p)
+                    dismiss()
                 }
-                model.prefs.ai.add(p)
-                added(p)
-                dismiss()
+                .buttonStyle(.primary).keyboardShortcut(.defaultAction).disabled(!isValid)
             }
-            .buttonStyle(.primary).keyboardShortcut(.defaultAction).disabled(!isValid)
         }
     }
 
     /// A choice fills the address and, when the name is untouched, the name.
     private func pick(_ picked: ServicePreset) {
         choice = picked
-        check = nil
         baseURL = picked.baseURL
-    }
-
-    private func test() async {
-        checking = true
-        defer { checking = false }
-        do {
-            let count = try await OpenAIClient(baseURL: draft.baseURL, apiKey: key).models().count
-            check = (true, String(localized: "Works. \(count) models"))
-        } catch {
-            check = (false, error.localizedDescription)
-        }
     }
 }
 

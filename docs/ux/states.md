@@ -108,8 +108,8 @@ An error is a plain sentence. It says what happened and what to do next. It name
 | `state.offline.imp` | {name} cannot reach its Brain. It wakes up when you are back online. |
 | `state.offline.note` | Imps that use a model on this device still work. The others wait until you are back online. |
 | `state.offline.title` | You are offline |
-| `state.servers.set_up_den` | Set up The Den |
-| `state.servers.set_up_hop` | Set up The Hop |
+| `state.servers.set_up_den` | Set up Den |
+| `state.servers.set_up_hop` | Set up Hop |
 | `state.sleeping.action` | Give {name} a Brain |
 | `state.sleeping.note` | With no Brain, it cannot think. Its triggers still work. |
 | `state.sleeping.title` | {name} is asleep |

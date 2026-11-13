@@ -266,8 +266,8 @@ private struct FoldCard<Accessory: View, Content: View>: View {
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityValue(open ? Text("Open") : Text("Folded"))
                 .accessibilityHint(Text("Shows or hides these animations"))
-                if let info { InfoTip(info) }
                 accessory
+                if let info { InfoTip(info) }
             }
             .frame(minHeight: Sizing.glyph)
             if open { content.transition(.opacity) }
@@ -335,14 +335,23 @@ struct AnimationRow: View, Equatable {
     }
 
     var body: some View {
-        // Beside the preview when there is room. Else the name and the controls on one line, and what
-        // starts it below, so the name never gives way to the controls and no chip wraps inside itself.
+        // One line when there is room: preview, name, the marks for what starts it, controls. Else the marks
+        // go under the name (they are icons, so they stay on one line) and the name never gives way to the controls.
         ViewThatFits(in: .horizontal) {
             HStack(alignment: .center, spacing: Spacing.medium) {
                 preview
                 VStack(alignment: .leading, spacing: Spacing.snug) {
                     HStack(spacing: Spacing.tight) { name; badges }
-                    chips
+                }
+                Spacer(minLength: Spacing.small)
+                marks
+                controls
+            }
+            HStack(alignment: .center, spacing: Spacing.medium) {
+                preview
+                VStack(alignment: .leading, spacing: Spacing.snug) {
+                    HStack(spacing: Spacing.tight) { name; badges }
+                    marks
                 }
                 Spacer(minLength: Spacing.small)
                 controls
@@ -354,8 +363,7 @@ struct AnimationRow: View, Equatable {
                     Spacer(minLength: Spacing.tight)
                     controls
                 }
-                FlowLayout(spacing: Spacing.snug, lineSpacing: Spacing.snug) { badgeItems; chipItems }
-                    .opacity(item.rule.isEnabled ? 1 : Opacity.dimmed)
+                HStack(spacing: Spacing.snug) { badgeItems; marks }
             }
         }
         .padding(.vertical, Spacing.snug)
@@ -386,21 +394,20 @@ struct AnimationRow: View, Equatable {
         }
     }
 
-    private var chips: some View {
-        FlowLayout(spacing: Spacing.snug, lineSpacing: Spacing.snug) { chipItems }
-            .opacity(item.rule.isEnabled ? 1 : Opacity.dimmed)
-    }
-
-    @ViewBuilder private var chipItems: some View {
+    /// What starts it, as small symbols: lit when live, dim when off. The words are the help and the VoiceOver label.
+    private var marks: some View {
         let rule = item.rule
-        if rule.triggers.isEmpty {
-            Chip(title: "Only when tried", symbol: "hand.tap", live: false)
+        return HStack(spacing: Spacing.snug) {
+            if rule.triggers.isEmpty {
+                Mark(title: String(localized: "Only when tried"), symbol: "hand.tap", live: false)
+            }
+            ForEach(AnimationTrigger.allCases.filter(rule.triggers.contains)) { t in
+                let on = live.isLive(t)
+                Mark(title: on ? t.title : String(localized: "\(t.title) is off"), symbol: t.symbol, live: rule.isEnabled && on)
+            }
         }
-        ForEach(AnimationTrigger.allCases.filter(rule.triggers.contains)) { t in
-            let on = live.isLive(t)
-            Chip(title: LocalizedStringKey(t.title), symbol: t.symbol, live: rule.isEnabled && on)
-                .help(on ? Text(verbatim: t.title) : Text("\(t.title) is off"))
-        }
+        .fixedSize()
+        .opacity(rule.isEnabled ? 1 : Opacity.dimmed)
     }
 
     private var controls: some View {
@@ -451,11 +458,9 @@ struct AnimationRow: View, Equatable {
     private func triggerMenu(_ setTrigger: @escaping @MainActor (AnimationTrigger, Bool) -> Void) -> some View {
         let rule = item.rule
         return HoverIconMenu(systemName: "bolt.badge.clock", help: "What starts \(item.title)") {
-            Section("Starts when…") {
-                ForEach(AnimationTrigger.allCases) { t in
-                    Toggle(isOn: Binding(get: { rule.triggers.contains(t) }, set: { setTrigger(t, $0) })) {
-                        Label(menuTitle(t), systemImage: t.symbol)
-                    }
+            ForEach(AnimationTrigger.allCases) { t in
+                Toggle(isOn: Binding(get: { rule.triggers.contains(t) }, set: { setTrigger(t, $0) })) {
+                    Label(menuTitle(t), systemImage: t.symbol)
                 }
             }
             if let restore {
@@ -488,21 +493,19 @@ private struct Tag: View {
     }
 }
 
-/// What starts an animation, as a small tag.
-private struct Chip: View {
-    let title: LocalizedStringKey
+/// One thing that starts an animation, as a symbol: lit with the tint when live, muted when off.
+private struct Mark: View {
+    let title: String
     let symbol: String
     var live = true
     @Environment(\.impTint) private var tint
 
     var body: some View {
-        Label(title, systemImage: symbol)
-            .font(Typeface.small.weight(.medium))
-            .labelStyle(.titleAndIcon)
-            .lineLimit(1).fixedSize()
-            .foregroundStyle(live ? Tone.text : Tone.muted)
-            .padding(.horizontal, Spacing.small).padding(.vertical, Spacing.hairline)
-            .background(Capsule().fill(live ? tint.opacity(Opacity.tintFill) : Tone.card))
-            .strikethrough(!live, color: Tone.muted)
+        Image(systemName: symbol)
+            .font(.icon(.small, weight: .semibold))
+            .foregroundStyle(live ? AnyShapeStyle(LegibleTint(tint)) : AnyShapeStyle(Tone.muted))
+            .opacity(live ? 1 : Opacity.dimmed)
+            .help(title)
+            .accessibilityLabel(title)
     }
 }

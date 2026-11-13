@@ -30,10 +30,8 @@ struct TriggersPanel: View {
     var body: some View {
         PanelList("triggers.title", icon: "bolt.fill", info: "triggers.help.list", accessory: {
             HStack(spacing: Spacing.small) {
-                HoverIconMenu(systemName: "shippingbox", help: "Import kit…") {
-                    Button("Import kit…") { HomeWindow.shared.router.kitFlow = KitFlow(imp: id) }
-                    Button("triggers.starter") { HomeWindow.shared.router.kitFlow = .starter(imp: id) }
-                }
+                HoverIconButton(systemName: "square.and.arrow.down", help: "Import kit…") { HomeWindow.shared.router.kitFlow = KitFlow(imp: id) }
+                HoverIconButton(systemName: "shippingbox", help: "triggers.starter") { HomeWindow.shared.router.kitFlow = .starter(imp: id) }
                 Button { start(.keys, .ask) } label: { FitLabel("triggers.add", systemImage: "plus") }
                     .buttonStyle(.imp(.secondary, small: true))
             }

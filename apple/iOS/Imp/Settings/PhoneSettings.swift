@@ -4,8 +4,6 @@ import SwiftUI
 
 /// What a person sets on this phone, kept on this phone.
 enum PhonePrefs {
-    /// What a double tap on an Imp does.
-    static let doubleTapKey = "doubleTap"
     /// Voices an Imp marked to play on their own do so in a new reply.
     static let autoplayKey = "autoplayVoices"
     /// Auto, light or dark.
@@ -64,24 +62,6 @@ extension ControlInk {
         switch self {
         case .white: "a.circle.fill"
         case .black: "a.circle"
-        }
-    }
-}
-
-extension DoubleClickAction {
-    var title: LocalizedStringResource {
-        switch self {
-        case .openSettings: "pref.double_click.settings"
-        case .talk: "pref.double_click.talk"
-        case .nothing: "pref.double_click.none"
-        }
-    }
-
-    var phoneSymbol: String {
-        switch self {
-        case .openSettings: "slider.horizontal.3"
-        case .talk: "bubble.left.and.bubble.right"
-        case .nothing: "nosign"
         }
     }
 }

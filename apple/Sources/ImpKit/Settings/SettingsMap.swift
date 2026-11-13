@@ -72,7 +72,7 @@ public enum SettingsMap {
         result.append(SettingsNode(id: "tools", kind: .tools, name: "", state: prefs.mcpServers.contains { $0.isEnabled } ? .ready : .off))
         result.append(SettingsNode(id: "den", kind: .den, name: "", state: serverState(prefs.den, .den)))
         result.append(SettingsNode(id: "hop", kind: .hop, name: "", state: serverState(prefs.hop, .hop),
-                                   isLocal: ServerChoice.of(prefs.hop, .hop) == .thisComputer))
+                                   isLocal: ServerKind.isOnThisDevice(prefs.hop)))
         for node in map.nodes where node.kind == .mac || node.kind == .phone {
             let channel = map.channels.first { $0.to == node.id }
             let seen = node.state == .connected

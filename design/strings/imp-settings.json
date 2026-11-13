@@ -217,15 +217,15 @@
   },
   "share.den": {
     "note": "Share sheet choice: publish in The Den. What is shared there is public.",
-    "en": "Share in The Den",
-    "es": "Compartir en Den",
-    "zh-Hans": "共享到 Den"
+    "en": "Den",
+    "es": "Den",
+    "zh-Hans": "Den"
   },
   "share.file": {
     "note": "Share sheet choice: a kit file.",
-    "en": "Save as a file",
-    "es": "Guardar como archivo",
-    "zh-Hans": "保存为文件"
+    "en": "File",
+    "es": "Archivo",
+    "zh-Hans": "文件"
   },
   "share.den_needs_setup": {
     "note": "Shown when The Den is not set up.",
@@ -274,9 +274,9 @@
   },
   "look.reset": {
     "note": "Button that restores the default look.",
-    "en": "Reset look",
-    "es": "Restablecer aspecto",
-    "zh-Hans": "重置外观"
+    "en": "Reset",
+    "es": "Restablecer",
+    "zh-Hans": "重置"
   },
   "look.lids": {
     "note": "Label of a character slider.",
@@ -391,15 +391,15 @@
   },
   "brain.use_app": {
     "note": "Choice: use the app's default Brain.",
-    "en": "Same as the other Imps",
-    "es": "Igual que los otros Imps",
-    "zh-Hans": "与其他 Imp 相同"
+    "en": "Shared",
+    "es": "Compartido",
+    "zh-Hans": "共用"
   },
   "brain.use_own": {
     "note": "Choice: this Imp has its own service and model.",
-    "en": "Its own Brain",
-    "es": "Su propio cerebro",
-    "zh-Hans": "专属大脑"
+    "en": "Own",
+    "es": "Propio",
+    "zh-Hans": "独立"
   },
   "brain.service": {
     "note": "Field label.",
@@ -415,9 +415,9 @@
   },
   "brain.add_service": {
     "note": "Button that adds a Brain service.",
-    "en": "Add a service",
-    "es": "Añadir un servicio",
-    "zh-Hans": "添加服务"
+    "en": "Add",
+    "es": "Añadir",
+    "zh-Hans": "添加"
   },
   "brain.none": {
     "note": "Status in the Brain panel.",
@@ -536,9 +536,9 @@
   },
   "tools.add": {
     "note": "Button that adds tools.",
-    "en": "Add tools",
-    "es": "Añadir herramientas",
-    "zh-Hans": "添加工具"
+    "en": "Add",
+    "es": "Añadir",
+    "zh-Hans": "添加"
   },
   "triggers.title": {
     "note": "Panel title.",
@@ -567,9 +567,9 @@
   },
   "triggers.add": {
     "note": "Button that adds a trigger.",
-    "en": "Add a trigger",
-    "es": "Añadir un disparador",
-    "zh-Hans": "添加触发器"
+    "en": "Add",
+    "es": "Añadir",
+    "zh-Hans": "添加"
   },
   "triggers.edit": {
     "note": "Action on a trigger.",
@@ -612,9 +612,9 @@
   },
   "brain.source": {
     "note": "Row: whose Brain the Imp uses.",
-    "en": "Brain from",
-    "es": "Cerebro de",
-    "zh-Hans": "大脑来自"
+    "en": "Source",
+    "es": "Origen",
+    "zh-Hans": "来源"
   },
   "brain.help.source": {
     "note": "Help of the Brain source switch.",
@@ -666,9 +666,9 @@
   },
   "look.favourite": {
     "note": "Tooltip of the favourite colour button.",
-    "en": "Favourite colour",
-    "es": "Color favorito",
-    "zh-Hans": "最爱的颜色"
+    "en": "Favourite",
+    "es": "Favorito",
+    "zh-Hans": "常用"
   },
   "look.help.colour": {
     "note": "Help of the colour.",
@@ -762,9 +762,9 @@
   },
   "personality.voice_look": {
     "note": "Row: how the voice shows.",
-    "en": "Voice shows as",
-    "es": "La voz se ve como",
-    "zh-Hans": "声音显示为"
+    "en": "Shows as",
+    "es": "Se muestra",
+    "zh-Hans": "显示为"
   },
   "personality.help.voice_look": {
     "note": "Help of the voice look picker.",
@@ -780,9 +780,9 @@
   },
   "moves.follow_how": {
     "note": "Row: how it follows the cursor.",
-    "en": "Follows by",
-    "es": "Sigue con",
-    "zh-Hans": "跟随方式"
+    "en": "Follow",
+    "es": "Seguir",
+    "zh-Hans": "跟随"
   },
   "moves.help.follow_how": {
     "note": "Help of the follow mode picker.",
@@ -804,9 +804,9 @@
   },
   "moves.builtin": {
     "note": "Row: change a built-in move.",
-    "en": "Built-in moves",
-    "es": "Movimientos incluidos",
-    "zh-Hans": "内置动作"
+    "en": "Moves",
+    "es": "Movimientos",
+    "zh-Hans": "动作"
   },
   "moves.change": {
     "note": "Button: change a built-in move.",
@@ -1056,9 +1056,9 @@
   },
   "triggers.new": {
     "note": "Title of the sheet that adds a trigger.",
-    "en": "New trigger",
-    "es": "Nuevo disparador",
-    "zh-Hans": "新触发器"
+    "en": "New",
+    "es": "Nuevo",
+    "zh-Hans": "新建"
   },
   "triggers.scope.just": {
     "note": "Choice in the trigger editor: the change is for this Imp only.",
@@ -1095,15 +1095,15 @@
   },
   "triggers.share_every": {
     "note": "Menu item on this Imp's trigger: share it with every Imp.",
-    "en": "Share with Every Imp",
-    "es": "Compartir con todos los Imps",
-    "zh-Hans": "与所有 Imp 共享"
+    "en": "Share to all",
+    "es": "Compartir con todos",
+    "zh-Hans": "共享给所有"
   },
   "triggers.use_shared": {
     "note": "Button that removes this Imp's version of a shared trigger, so the shared one applies again.",
-    "en": "Use the shared one",
+    "en": "Use shared",
     "es": "Usar el compartido",
-    "zh-Hans": "使用共享的"
+    "zh-Hans": "使用共享"
   },
   "triggers.use_shared.title": {
     "note": "Confirmation before removing this Imp's version of a shared trigger.",
@@ -1140,9 +1140,9 @@
   },
   "triggers.starter": {
     "note": "Button in the empty triggers list: review and add the starter kit.",
-    "en": "Add the starter kit",
-    "es": "Añadir el kit inicial",
-    "zh-Hans": "添加入门套件"
+    "en": "Starter kit",
+    "es": "Kit inicial",
+    "zh-Hans": "入门套件"
   },
   "triggers.help.starter": {
     "note": "Help for the starter kit button.",
@@ -1186,9 +1186,9 @@
   },
   "tools.new_server": {
     "note": "Title of a tool server that has no name or address yet.",
-    "en": "New server",
-    "es": "Servidor nuevo",
-    "zh-Hans": "新服务器"
+    "en": "New",
+    "es": "Nuevo",
+    "zh-Hans": "新建"
   },
   "tools.server_name": {
     "note": "Label of a tool server's name field.",
@@ -1210,15 +1210,15 @@
   },
   "tools.header_name": {
     "note": "Label of a header's name field.",
-    "en": "Header name",
-    "es": "Nombre de la cabecera",
-    "zh-Hans": "请求头名称"
+    "en": "Name",
+    "es": "Nombre",
+    "zh-Hans": "名称"
   },
   "tools.header_value": {
     "note": "Label of a header's value field.",
-    "en": "Header value",
-    "es": "Valor de la cabecera",
-    "zh-Hans": "请求头的值"
+    "en": "Value",
+    "es": "Valor",
+    "zh-Hans": "值"
   },
   "tools.header_saved": {
     "note": "Placeholder of a header value that is already kept safe.",
@@ -1228,9 +1228,9 @@
   },
   "tools.header_add": {
     "note": "Button that adds a header to a tool server.",
-    "en": "Add header",
-    "es": "Añadir cabecera",
-    "zh-Hans": "添加请求头"
+    "en": "Add",
+    "es": "Añadir",
+    "zh-Hans": "添加"
   },
   "tools.remove_header": {
     "note": "Spoken label of the button that removes a header.",
@@ -1255,5 +1255,74 @@
     "en": "Add the server's address.",
     "es": "Añade la dirección del servidor.",
     "zh-Hans": "请填写服务器地址。"
+  },
+  "memory.sends.title": {
+    "note": "Row in the Imp's Memory card.",
+    "en": "Sends",
+    "es": "Envía",
+    "zh-Hans": "发送"
+  },
+  "memory.sends.info": {
+    "note": "Info for Sends.",
+    "en": "How many of the latest messages go to the Brain with each one. Fewer is faster and cheaper.",
+    "es": "Cuántos de los últimos mensajes van al cerebro con cada uno. Menos es más rápido y barato.",
+    "zh-Hans": "每条消息一起发给大脑的最近消息数。越少越快越省。"
+  },
+  "memory.last": {
+    "note": "Choice for Sends: the last N messages.",
+    "args": {
+      "count": "int"
+    },
+    "en": "Last {count}",
+    "es": "Últimos {count}",
+    "zh-Hans": "最近 {count} 条"
+  },
+  "memory.no_limit": {
+    "note": "Choice for Sends: every message.",
+    "en": "All",
+    "es": "Todos",
+    "zh-Hans": "全部"
+  },
+  "memory.tools.title": {
+    "note": "Row in the Imp's Memory card.",
+    "en": "Tool results",
+    "es": "Resultados de herramientas",
+    "zh-Hans": "工具结果"
+  },
+  "memory.tools.info": {
+    "note": "Info for Tool results.",
+    "en": "Also sends what the tools did and returned. Off is smaller and cheaper.",
+    "es": "También envía lo que hicieron y devolvieron las herramientas. Apagado es más pequeño y barato.",
+    "zh-Hans": "同时发送工具的操作和返回内容。关闭后更小更省。"
+  },
+  "memory.new_chat.title": {
+    "note": "Row in the Imp's Memory card.",
+    "en": "New chat at",
+    "es": "Chat nuevo en",
+    "zh-Hans": "新聊天于"
+  },
+  "memory.new_chat.info": {
+    "note": "Info for New chat at.",
+    "en": "How big a chat gets before the Imp suggests a recap or a new chat.",
+    "es": "Cuánto crece un chat antes de que el Imp sugiera un resumen o un chat nuevo.",
+    "zh-Hans": "聊天达到多大时 Imp 会建议总结或开始新聊天。"
+  },
+  "memory.size.k": {
+    "note": "A chat size in thousands of tokens.",
+    "args": {
+      "count": "int"
+    },
+    "en": "{count}k",
+    "es": "{count}k",
+    "zh-Hans": "{count}k"
+  },
+  "memory.size.m": {
+    "note": "A chat size in millions of tokens.",
+    "args": {
+      "count": "int"
+    },
+    "en": "{count}M",
+    "es": "{count}M",
+    "zh-Hans": "{count}M"
   }
 }

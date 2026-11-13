@@ -194,6 +194,12 @@ public struct LinkInvite: Equatable, Sendable {
 public protocol LinkStorage: Sendable {
     func load() throws -> Data?
     func save(_ book: Data) throws
+    /// Deletes the saved book (one the core can't read), so a fresh one can start.
+    func erase() throws
+}
+
+public extension LinkStorage {
+    func erase() throws {}
 }
 
 /// The book in a file only this user can read.
@@ -205,6 +211,10 @@ public struct LinkFileStorage: LinkStorage {
     public func load() throws -> Data? {
         guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         return try Data(contentsOf: url)
+    }
+
+    public func erase() throws {
+        if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
     }
 
     public func save(_ data: Data) throws {
@@ -245,4 +255,5 @@ public final class LinkMemoryStorage: LinkStorage, @unchecked Sendable {   // `b
 
     public func load() throws -> Data? { lock.withLock { book } }
     public func save(_ book: Data) throws { lock.withLock { self.book = book } }
+    public func erase() throws { lock.withLock { book = nil } }
 }

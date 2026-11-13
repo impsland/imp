@@ -312,6 +312,7 @@
   <Duration x:Key="ImpMotionPeekReducedDuration">0:0:0.15</Duration>
   <x:String x:Key="ImpMotionPeekEasing">0.42,0,0.58,1</x:String>
   <x:Double x:Key="ImpBehaviorToastSeconds">2.8</x:Double>
+  <x:Double x:Key="ImpBehaviorNoticeSeconds">5</x:Double>
   <x:Double x:Key="ImpBehaviorUndoBarSeconds">6</x:Double>
   <x:Double x:Key="ImpBehaviorPeekIntervalMinSeconds">45</x:Double>
   <x:Double x:Key="ImpBehaviorPeekIntervalMaxSeconds">90</x:Double>

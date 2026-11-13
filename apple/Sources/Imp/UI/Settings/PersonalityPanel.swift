@@ -9,7 +9,11 @@ struct PersonalityPanel: View {
     @Binding var imp: ImpProfile
     @State private var name = ""
     @State private var loaded = false
+    /// The switch itself: flips the moment it is tapped.
     @State private var showsInstructions = false
+    /// The text editor under it. It follows the switch a moment later (see `instructions`).
+    @State private var instructionsShown = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.impTint) private var tint
 
     private var nameIsEmpty: Bool { name.trimmingCharacters(in: .whitespaces).isEmpty }
@@ -24,9 +28,8 @@ struct PersonalityPanel: View {
                     // An empty name is not saved: the Imp keeps the one it had.
                     if !new.trimmingCharacters(in: .whitespaces).isEmpty { imp.name = new }
                 }
-            if nameIsEmpty {
-                StatusText(text: "personality.name_empty", symbol: "exclamationmark.circle.fill", color: Tone.danger)
-            }
+            StatusSlot(nameIsEmpty ? String(localized: "personality.name_empty") : nil,
+                       symbol: "exclamationmark.circle.fill", color: Tone.danger)
         }
         .settingAnchor(.personalityName)
         .onAppear { if !loaded { name = imp.name; loaded = true } }
@@ -79,13 +82,24 @@ struct PersonalityPanel: View {
                 }
             }
             .settingAnchor(.personalityRules)
-            if showsInstructions {
+            if instructionsShown {
                 EditorWell(text: Binding(get: { imp.effectiveInstructions },
                                          set: { imp.instructions = $0 == Briefing.display ? nil : $0 }),
                            placeholder: "Empty. Only the personality is sent.",
                            height: Self.wellHeight)
             }
         }
-        .impAnimation(ImpDesign.Motion.expand, value: showsInstructions)
+        // The editor is a text view holding the whole built-in prompt: making or removing it takes the main
+        // thread for most of a second. Done in the same frame as the flip, it froze the switch's knob, so
+        // the knob is drawn first and the editor follows once it has settled.
+        .task(id: showsInstructions) {
+            guard showsInstructions != instructionsShown else { return }
+            try? await Task.sleep(for: Self.switchSettle)
+            guard !Task.isCancelled else { return }
+            withImpAnimation(ImpDesign.Motion.expand, reduceMotion: reduceMotion) { instructionsShown = showsInstructions }
+        }
     }
+
+    /// Long enough for the switch's knob to finish moving before the editor is built or removed.
+    private static let switchSettle = Duration.milliseconds(150)
 }

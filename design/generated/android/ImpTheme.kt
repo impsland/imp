@@ -359,6 +359,7 @@ object ImpMotions {
 
 object ImpBehavior {
     val toastSeconds = 2.8f
+    val noticeSeconds = 5
     val undoBarSeconds = 6
     val peekIntervalMinSeconds = 45
     val peekIntervalMaxSeconds = 90

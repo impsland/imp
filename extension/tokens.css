@@ -154,6 +154,7 @@
   --motion-fade: 0.4s cubic-bezier(0, 0, 0.58, 1);
   --motion-peek: 0.5s cubic-bezier(0.42, 0, 0.58, 1);
   --behavior-toast-seconds: 2.8;
+  --behavior-notice-seconds: 5;
   --behavior-undo-bar-seconds: 6;
   --behavior-peek-interval-min-seconds: 45;
   --behavior-peek-interval-max-seconds: 90;

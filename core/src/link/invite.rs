@@ -458,4 +458,23 @@ mod tests {
         let many: Vec<String> = (0..20).map(|n| format!("h{n}.local")).collect();
         assert_eq!(LinkRoutes::lenient(&many, 1, None).hosts.len(), 8);
     }
+
+    #[test]
+    fn a_hop_on_this_device_is_given_out_under_its_own_host() {
+        let s = |v: &[&str]| v.iter().map(|x| x.to_string()).collect::<Vec<_>>();
+        let hosts = s(&["127.0.0.1", "studio.local", "10.0.0.2"]);
+        // On the device that reads the code, `localhost` would be that device itself.
+        let local = LinkRoutes::lenient(&hosts, 1, Some("localhost:4677"));
+        assert_eq!(local.hop.as_deref(), Some("studio.local:4677"));
+        let looped = LinkRoutes::lenient(&hosts, 1, Some("127.0.0.1:5000"));
+        assert_eq!(looped.hop.as_deref(), Some("studio.local:5000"));
+        // A Hop elsewhere is given out as it is.
+        let away = LinkRoutes::lenient(&hosts, 1, Some("hop.example.com:4677"));
+        assert_eq!(away.hop.as_deref(), Some("hop.example.com:4677"));
+        // With no host of its own to give, a loopback Hop is left out.
+        assert_eq!(
+            LinkRoutes::lenient(&s(&["localhost"]), 1, Some("localhost:4677")).hop,
+            None
+        );
+    }
 }

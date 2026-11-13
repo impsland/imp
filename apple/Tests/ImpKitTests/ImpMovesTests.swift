@@ -94,31 +94,24 @@ import Testing
 
     // MARK: Clicks
 
-    @Test func oneClickOpensTheBubbleAndTwoDoWhatThePreferenceSays() {
-        #expect(ClickAction.resolve(count: 1, doubleClick: .openSettings) == .openBubble)
-        #expect(ClickAction.resolve(count: 2, doubleClick: .openSettings) == .openSettings)
-        #expect(ClickAction.resolve(count: 2, doubleClick: .talk) == .talk)
-        #expect(ClickAction.resolve(count: 2, doubleClick: .nothing) == .nothing)
-        #expect(ClickAction.resolve(count: 3, doubleClick: .talk) == .triggers)
+    @Test func aSecondClickIsOnlyWaitedForWhenATriggerNeedsIt() {
+        var p = ImpPreferences()
+        let imp = p.imps[0].id
+        #expect(!p.waitsForMoreClicks(on: imp), "no triggers: a click opens the bubble at once")
+        p.shortcuts = [Shortcut(name: "Chat", prompt: "", usesClipboard: false, trigger: .clicks(1), command: .chat)]
+        #expect(!p.waitsForMoreClicks(on: imp), "one click alone needs no second")
+        p.shortcuts[0].trigger = .clicks(2)
+        #expect(p.waitsForMoreClicks(on: imp))
+        p.shortcuts[0].isEnabled = false
+        #expect(!p.waitsForMoreClicks(on: imp), "a switched-off trigger waits for nothing")
     }
 
-    @Test func aSecondClickIsOnlyWaitedForWhenItDoesSomething() {
-        #expect(ClickAction.waitsForSecondClick(.openSettings))
-        #expect(ClickAction.waitsForSecondClick(.talk))
-        #expect(!ClickAction.waitsForSecondClick(.nothing))
-    }
-
-    @Test func theDoubleClickChoiceIsSavedAndDefaultsToSettings() throws {
-        var prefs = ImpPreferences()
-        #expect(prefs.doubleClick == .openSettings)
-        prefs.doubleClick = .talk
-        let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(prefs))
-        #expect(back.doubleClick == .talk)
-        let saved = try JSONEncoder().encode(ImpPreferences())
-        var object = try #require(JSONSerialization.jsonObject(with: saved) as? [String: Any])
-        object.removeValue(forKey: "doubleClickChoice")
-        let loaded = try JSONDecoder().decode(ImpPreferences.self, from: JSONSerialization.data(withJSONObject: object))
-        #expect(loaded.doubleClick == .openSettings)
+    @Test func aFreshInstallAnswersToTwoClicksWithTheSettingsAndNewImpsShareIt() {
+        var p = ImpPreferences.firstLaunch
+        #expect(p.waitsForMoreClicks(on: p.imps[0].id))
+        let newcomer = ImpProfile(name: "Newcomer", hue: 0.3, favoriteHue: 0.3, personality: "")
+        p.imps.append(newcomer)
+        #expect(p.clickShortcut(2, on: newcomer.id, in: nil)?.command == .settings)
     }
 
     // MARK: Hidden on the phone

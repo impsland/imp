@@ -2,10 +2,9 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The App section: how the app looks, what a double tap does, the voices, the shake and the version.
+/// The App section: how the app looks, the voices, the shake and the version.
 struct PhoneAppSection: View {
     @AppStorage(PhonePrefs.appearanceKey) private var appearance: Appearance = .system
-    @AppStorage(PhonePrefs.doubleTapKey) private var doubleTap: DoubleClickAction = .openSettings
     @AppStorage(PhonePrefs.autoplayKey) private var autoplay = true
     @AppStorage(PhonePrefs.controlInkKey) private var controlInk: ControlInk = .white
     @Environment(\.openURL) private var openURL
@@ -24,14 +23,12 @@ struct PhoneAppSection: View {
                                  title: { $0.title }, symbol: { $0.symbol })
                 }
             }
-            Card("app.behaviour", icon: "slider.horizontal.3", info: "settings.app.behaviour.info") {
-                Row("pref.double_click.title_touch", icon: "cursorarrow.click.2") {
-                    ImpPicker("pref.double_click.title_touch", selection: $doubleTap, options: DoubleClickAction.allCases,
-                              title: { String(localized: $0.title) })
-                }
+            Card("settings.bubble.media.title", icon: "play.rectangle.fill") {
                 Row("voice.autoplay", icon: "play.circle.fill") {
                     Toggle("voice.autoplay", isOn: $autoplay).toggleStyle(.impSwitchBare)
                 }
+            }
+            Card("app.system", icon: "gearshape.fill", info: "settings.app.system.info") {
                 Row("app.language", icon: "globe") {
                     Button {
                         if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }

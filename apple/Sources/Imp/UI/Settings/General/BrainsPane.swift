@@ -33,7 +33,7 @@ struct BrainsPane: View {
                 .settingAnchor(.brainsKeychain)
             }
             Card("settings.brains.requests.title", icon: "arrow.clockwise", info: "settings.brains.requests.info") {
-                Row("settings.brains.wait.title", icon: "hourglass") {
+                Row("settings.brains.wait.title", icon: "hourglass", info: "settings.brains.wait.info") {
                     ImpStepper(value: $model.prefs.requests.timeoutSeconds, in: RequestLimits.timeoutControlRange, step: RequestLimits.timeoutStep) {
                         Text("\(Int(model.prefs.requests.timeoutSeconds)) s")
                     }

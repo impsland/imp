@@ -37,6 +37,32 @@ object ImpComponents {
         const val divider: String = "none"
     }
 
+    /** The header of a card, a section or a sheet: the picture and the title on the leading edge, an optional control and then the help question mark on the trailing edge. The help is always the last thing on the right, so the header is balanced and the question mark is in the same place on every card. */
+    object SectionHeader {
+        val minHeight: Dp = ImpSizing.iconTile
+        val iconTile: Dp = ImpSizing.iconTile
+        val gap: Dp = ImpSpacing.small
+        val title: ImpTextStyle = ImpType.cardTitle
+        val titleColor: (ImpPalette) -> Color = { it.text }
+        val helpColor: (ImpPalette) -> Color = { it.muted }
+    }
+
+    /** How an icon button sits in a corner (a close button, a back button, a settings gear). */
+    object CornerInset {
+        val hit: Dp = ImpSizing.hit
+        val glyph: Dp = ImpSizing.glyph
+    }
+
+    /** How a result is shown without moving anything. Never a line inserted into the page. */
+    object Notice {
+        val fill: (ImpPalette) -> Color = { it.raised }
+        val text: (ImpPalette) -> Color = { it.text }
+        val radius: Dp = ImpRadius.full
+        val padding: Dp = ImpSpacing.large
+        val shadow: ImpShadow = ImpShadows.card
+        val motion: ImpMotion = ImpMotions.expand
+    }
+
     /** A round bead behind an icon. */
     object IconTile {
         val size: Dp = ImpSizing.iconTile

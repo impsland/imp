@@ -41,6 +41,26 @@ one each time it shows a code, and accepts it for 15 minutes after the code was 
 scanned by several devices in that time. A repeated name, a missing key or a key of the wrong length makes
 the code invalid.
 
+A code is only worth showing when it says how to reach the device: `h` and `p` once the listener is up, or
+`hop`. A device that is still starting shows progress instead, and makes a new code whenever its routes change
+(the listener came up, the Wi-Fi changed, the Hop was set or cleared). `LinkNode.status` exposes the routes.
+
+## Local Network and the saved book
+
+**When the permission is asked.** Only when the person is linking: on the iPhone when they tap **Show code**
+in Devices (the sheet opened just to link shows the code at once), or when they scan, paste or open a code. Opening
+the app, or opening Devices to look at the list, never asks. On later launches the node comes up by itself only
+once a device is linked, since that device has to be able to reach this one.
+
+iOS and macOS ask the person before an app uses the local network. When they say no, Network.framework keeps the
+listener and the browser `waiting` with a policy-denied DNS error (-65570). The node shows that as
+`status.localNetworkBlocked`, cleared when it becomes ready, and the apps say so with a button to Settings
+(iPhone: the app's page; Mac: System Settings › Privacy & Security › Local Network).
+
+The book is saved in the Keychain (iPhone) or a private file (Mac). A book that can't be read now (the Keychain is
+closed before the first unlock) is kept and tried again later. A book that is there but can't be decoded is
+deleted, a fresh node starts and the person is told the links were reset.
+
 ## Connections
 
 A device listens on TCP port 47824 (another port if that one is taken), advertises

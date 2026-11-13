@@ -30,15 +30,17 @@ import Testing
         for kind in [ServerKind.den, .hop] {
             #expect(ServerChoice.of("", kind) == .off)
             #expect(ServerChoice.of(kind.defaultAddress, kind) == .imps)
-            #expect(ServerChoice.of(kind.localAddress, kind) == .thisComputer)
+            #expect(ServerChoice.of(kind.localAddress, kind) == .custom, "a server run here is a custom one")
             #expect(ServerChoice.of("other.example.com", kind) == .custom)
             #expect(ServerChoice.imps.address(kind) == kind.defaultAddress)
-            #expect(ServerChoice.thisComputer.address(kind) == kind.localAddress)
             #expect(ServerChoice.off.address(kind) == "")
             #expect(ServerChoice.custom.address(kind) == nil)
         }
         #expect(DenServer(ServerKind.den.defaultAddress) != nil && DenServer(ServerKind.den.localAddress) != nil)
         #expect(HopServer(ServerKind.hop.defaultAddress) != nil && HopServer(ServerKind.hop.localAddress) != nil)
+        #expect(ServerKind.isOnThisDevice(ServerKind.hop.localAddress) && ServerKind.isOnThisDevice(ServerKind.den.localAddress))
+        #expect(ServerKind.isOnThisDevice("127.0.0.1:4677") && ServerKind.isOnThisDevice("http://LOCALHOST:8080/"))
+        #expect(!ServerKind.isOnThisDevice(ServerKind.hop.defaultAddress) && !ServerKind.isOnThisDevice("localhostess.com"))
     }
 
     @Test func eachSetupIsItsOwn() {

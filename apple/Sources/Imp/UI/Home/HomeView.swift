@@ -120,7 +120,9 @@ private struct CornerButtons: View {
             }
             HoverIconButton(systemName: "gearshape", help: "menu.canvas.settings", tint: Tone.muted) { actions.openSettings() }
         }
-        .padding(.trailing, Spacing.small)
+        // Centred in a bar's height, so the gear is as far from the right as from the top.
+        .padding(.trailing, CornerInset.bar(height: Metrics.barHeight))
+        .frame(height: Metrics.barHeight)
         .impAnimation(ImpDesign.Motion.fade, value: model.hiddenCount > 0)
     }
 }

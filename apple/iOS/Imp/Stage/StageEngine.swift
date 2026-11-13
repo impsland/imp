@@ -178,9 +178,9 @@ final class StageEngine {
 
     /// Surprised by the flight, then happy to have landed.
     private static let arrivalSteps = [
-        AnticStep(duration: 0.9, mood: .surprised, glyph: .exclaim),
-        AnticStep(duration: Motion.hopLength, mood: .happy, hop: true),
-        AnticStep(duration: 0.9, mood: .happy),
+        AnticStep(duration: 0.3, mood: .surprised, glyph: .exclaim),
+        AnticStep(duration: 0.45, mood: .happy, hop: true),
+        AnticStep(duration: 0.15, mood: .happy),
     ]
 
     func leave(_ id: UUID) {
@@ -203,8 +203,8 @@ final class StageEngine {
             b.drag = 4.5
             b.vel = CGVector(dx: -b.vel.dx * 0.3, dy: b.vel.dy * 0.3)
             b.enteringFrom = nil
-            b.performance = Performance(key: "bounce", steps: [AnticStep(duration: 0.8, mood: .sad, glyph: .sweat),
-                                                               AnticStep(duration: 0.6, mood: .content)])
+            b.performance = Performance(key: "bounce", steps: [AnticStep(duration: 0.5, mood: .sad, glyph: .sweat),
+                                                               AnticStep(duration: 0.4, mood: .content)])
         default:
             break
         }
@@ -227,8 +227,8 @@ final class StageEngine {
         b.drag = 4.5
         b.enteringFrom = side
         b.phase = .free
-        b.performance = Performance(key: "bounce", steps: [AnticStep(duration: 0.8, mood: .sad, glyph: .sweat),
-                                                           AnticStep(duration: 0.6, mood: .content)])
+        b.performance = Performance(key: "bounce", steps: [AnticStep(duration: 0.5, mood: .sad, glyph: .sweat),
+                                                           AnticStep(duration: 0.4, mood: .content)])
     }
 
     // MARK: Throwing
@@ -242,7 +242,7 @@ final class StageEngine {
         b.vel = CGVector(dx: side == .left ? -v : v, dy: vy * 0.5)
         b.exit = Exit(side: side, height: min(max(Double(b.pos.y / max(1, size.height)), 0), 1), speed: device == nil ? 0 : speed,
                       to: device, moves: moves)
-        b.performance = Performance(key: "thrown", steps: [AnticStep(duration: 1.5, mood: .excited, move: nil)])
+        b.performance = Performance(key: "thrown", steps: [AnticStep(duration: 0.9, mood: .excited, move: nil)])
     }
 
     /// The height of an Imp on the screen: 0 the top, 1 the bottom.
@@ -443,8 +443,8 @@ final class StageEngine {
             case .smoked(let id):
                 bodies[id]?.dizzyUntil = date.addingTimeInterval(1.1)
                 bodies[id]?.performance = Performance(key: "smoke", steps: [
-                    AnticStep(duration: 0.9, mood: .dizzy, glyph: .sweat),
-                    AnticStep(duration: 0.7, mood: .annoyed)])
+                    AnticStep(duration: 0.5, mood: .dizzy, glyph: .sweat),
+                    AnticStep(duration: 0.4, mood: .annoyed)])
                 haptics.smoked()
             case .cheered(let id):
                 bodies[id]?.performance = Performance(key: "catch", steps: [AnticStep(duration: 0.9, mood: .excited, glyph: .heart, hop: true)])
@@ -467,7 +467,7 @@ final class StageEngine {
                 haptics.ring()
                 if let id {
                     bodies[id]?.performance = Performance(key: "catch", steps: [
-                        AnticStep(duration: 1.1, mood: .excited, glyph: .sparkles, hop: true, move: BodyMove(kind: .spin))])
+                        AnticStep(duration: 0.9, mood: .excited, glyph: .sparkles, hop: true, move: BodyMove(kind: .spin))])
                 }
             case .special(let kind):
                 haptics.phase()
@@ -495,8 +495,8 @@ final class StageEngine {
         for (i, id) in order.enumerated() where bodies[id]?.phase == .free {
             bodies[id]?.performance = Performance(key: "catch", steps: [
                 AnticStep(duration: 0.12 * Double(i) + 0.05, mood: .happy),
-                AnticStep(duration: 1.2, mood: .excited, glyph: glyph, hop: true, move: move),
-                AnticStep(duration: 0.6, mood: .happy)], at: date)
+                AnticStep(duration: 0.7, mood: .excited, glyph: glyph, hop: true, move: move),
+                AnticStep(duration: 0.2, mood: .happy)], at: date)
         }
     }
 

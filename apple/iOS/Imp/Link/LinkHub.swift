@@ -49,9 +49,10 @@ enum PocketEvent {
 @MainActor @Observable
 final class LinkHub {
     nonisolated static let nameKey = "yourName"
-    /// Set once the person has used linking (showed or scanned a code, or linked a device). Until
-    /// then the node stays down, so iOS doesn't ask for the Local Network before it's needed.
-    nonisolated static let networkKey = "usedLocalNetwork"
+    /// The person asked for linking in this run of the app (showed or scanned a code). Not saved: a
+    /// launch never brings the node up for a code shown in an earlier run, so iOS asks for the Local
+    /// Network only when the person is linking, never just because the app opened.
+    @ObservationIgnored private var linkingAsked = false
 
     private let servers = ServerStore()
     /// The devices this iPhone is linked with.
@@ -109,8 +110,9 @@ final class LinkHub {
     init() {
         let name = UserDefaults.standard.string(forKey: Self.nameKey) ?? UIDevice.current.name
         self.name = name
-        if let real = try? LinkNode(name: name, kind: .phone, storage: KeychainLinkStorage()) {
+        if let (real, reset) = try? LinkNode.open(name: name, kind: .phone, storage: KeychainLinkStorage()) {
             node = real
+            if reset { toast = String(localized: "link.reset") }
         } else {
             // The saved links can't be read: carry on without them, offline (nothing is written over them).
             node = try! LinkNode(name: name, kind: .phone, storage: LinkMemoryStorage())
@@ -137,7 +139,8 @@ final class LinkHub {
     @discardableResult
     private func unlock() -> Bool {
         guard isLocked else { return true }
-        guard let real = try? LinkNode(name: name, kind: .phone, storage: KeychainLinkStorage()) else { return false }
+        guard let (real, reset) = try? LinkNode.open(name: name, kind: .phone, storage: KeychainLinkStorage()) else { return false }
+        if reset { toast = String(localized: "link.reset") }
         node.onEvent = nil
         node = real
         isLocked = false
@@ -151,8 +154,9 @@ final class LinkHub {
         return true
     }
 
-    /// Whether linking has been used: a device is linked, or a code was shown or scanned before.
-    private var wantsNetwork: Bool { UserDefaults.standard.bool(forKey: Self.networkKey) || !node.links.isEmpty }
+    /// Whether the node should be up: a device is linked (it has to be reachable), or the person is
+    /// linking right now.
+    private var wantsNetwork: Bool { linkingAsked || !node.links.isEmpty }
 
     private func start() {
         guard !isLocked, wantsNetwork else { return }
@@ -165,12 +169,13 @@ final class LinkHub {
     }
 
     /// Brings the node up for something that needs the local network (showing a code, linking). This
-    /// is what makes iOS ask for the Local Network permission, and it is remembered so the node comes
-    /// up by itself on later launches.
+    /// is what makes iOS ask for the Local Network permission. Once a device is linked, the node comes up
+    /// by itself on later launches.
     func useNetwork() async {
-        UserDefaults.standard.set(true, forKey: Self.networkKey)
+        linkingAsked = true
         if isLocked { unlock() }
-        guard !isLocked, !node.isRunning else { return }
+        guard !isLocked else { return }
+        // Waits for a start that is already under way, too: the node is ready when this returns.
         await node.start()
         refresh()
     }
@@ -261,13 +266,13 @@ final class LinkHub {
     /// Links with the device that showed `invite`, from a code that was scanned or opened. A failure
     /// is a toast; a success is announced when the node reports the link.
     func join(_ invite: LinkInvite) async {
-        UserDefaults.standard.set(true, forKey: Self.networkKey)
+        linkingAsked = true
         if isLocked { unlock() }
         guard !isLocked else {
             toast = String(localized: "Imp can't open its links until your iPhone has been unlocked.")
             return
         }
-        if !node.isRunning { await node.start() }
+        await node.start()
         // Only the foreground keeps the node running: started while inactive, it must not outlive that.
         defer {
             if !foreground, node.isRunning { node.stop() }

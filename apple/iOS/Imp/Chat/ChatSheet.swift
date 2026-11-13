@@ -104,7 +104,7 @@ struct ImpSheet: View {
     /// While the room is in view the Imp itself is up there, so the bar shows no second one.
     private func header(_ imp: LinkImp) -> some View {
         HStack(spacing: Spacing.medium) {
-            // The talks are a side room, opened from the Imp's menu: one way back to the chat.
+            // The talks are a side room, opened from the bar of the chat: one way back to the chat.
             if pane == .talks {
                 HoverIconButton(systemName: "chevron.left", help: "common.back", tint: Tone.text) { pane = .chat }
                     .padding(.leading, -Spacing.small)
@@ -127,6 +127,10 @@ struct ImpSheet: View {
             Spacer(minLength: Spacing.small)
             // Each action is one tap away.
             if pane == .chat {
+                // Only when this Imp has talked with other Imps.
+                if !Talks.threads(of: impID, hub: hub, pocket: pocket).isEmpty {
+                    HoverIconButton(systemName: "bubble.left.and.bubble.right", help: "menu.imp.talks", tint: Tone.text) { pane = .talks }
+                }
                 HoverIconButton(systemName: "square.and.pencil", help: "phone.chat.new", tint: Tone.text) { confirmingNewChat = true }
                     .disabled(!canStartOver)
             }
@@ -318,9 +322,8 @@ struct ImpSheet: View {
     /// An Imp that cannot answer: one line, with the longer words behind the help icon.
     private func asleepLine(_ imp: LinkImp) -> some View {
         let intro = source.intro(imp, availability)
-        return HStack(spacing: 0) {
+        return SectionHeader(verbatimInfo: intro.text, minHeight: nil) {
             Label(intro.title, systemImage: "moon.zzz").font(Typeface.caption).foregroundStyle(Tone.muted)
-            InfoTip(verbatim: intro.text)
         }
     }
 

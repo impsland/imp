@@ -56,6 +56,7 @@ struct DevicesSheet: View {
         .impControls(tint: Tone.accent)
         .background(Tone.surface)
         .presentationBackground(Tone.surface)
+        .impNoticeHost()
         .fullScreenCover(isPresented: $scanning) { LinkScanner(hub: hub, problem: $problem, scanning: $scanning) }
         .confirmationDialog(forgetting.map { words("phone.forget.title", $0.name) } ?? "",
                             isPresented: Binding(get: { forgetting != nil }, set: { if !$0 { forgetting = nil } }),
@@ -93,7 +94,7 @@ enum PhoneNodes {
                                    state: pocket.imps.contains { pocket.hasBrain($0.id) } ? .ready : .needsSetup),
                       SettingsNode(id: "den", kind: .den, name: "", state: SettingsMap.serverState(hub.den, .den)),
                       SettingsNode(id: "hop", kind: .hop, name: "", state: SettingsMap.serverState(hub.hop, .hop),
-                                   isLocal: ServerChoice.of(hub.hop, .hop) == .thisComputer)]
+                                   isLocal: ServerKind.isOnThisDevice(hub.hop))]
         for link in hub.links {
             let device = link.device
             let seen = hub.isConnected(device.id)

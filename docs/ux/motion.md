@@ -41,6 +41,10 @@ Reduce Motion also:
 
 Animation must never be the only way to learn something. A state also has a word or a shape.
 
+## Imp animations
+
+Every animation the Imp plays, bundled or from the Den (`spec/animations/catalog.json`), lasts under 1 s in total, and so does every built-in gesture reaction on the iPhone. People expect a quick answer from the Imp. A test (`AnimationTests`) fails when a catalog animation reaches one second.
+
 ## Behavior timings
 
 These numbers are shared by every platform.
@@ -49,6 +53,7 @@ These numbers are shared by every platform.
 | Name | Value | What it is |
 | --- | --- | --- |
 | `toastSeconds` | 2.8 | How long a short message at the bottom of the screen stays. |
+| `noticeSeconds` | 5 | How long a floating notice (a failure's details) stays before it goes away by itself. |
 | `undoBarSeconds` | 6 | How long the Undo bar stays after an Imp is let out, sent home or sent to another device. |
 | `peekIntervalMinSeconds` | 45 | The shortest wait before a hidden Imp peeks out. |
 | `peekIntervalMaxSeconds` | 90 | The longest wait before a hidden Imp peeks out. |

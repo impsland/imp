@@ -84,7 +84,9 @@ Either device shows a code and the other scans it. On the iPhone, use **Show my 
 **Paste Link**. On the Mac, use the Devices card in Imp's settings, and **Scan Code…** there.
 
 - A code works for **15 minutes** after it was last on screen, and several devices can scan it.
-- Devices find each other with Bonjour on your Wi-Fi.
+- Devices find each other with Bonjour on your Wi-Fi. This needs **Local Network** for Imp (iPhone Settings › Imp).
+  When it is off, the card says so and has a button to open Settings.
+- The code appears once the iPhone is ready to be reached, and is made again if the Wi-Fi or the server changes.
 - The iPhone's name, which other devices see, can be changed on its first screen.
 
 The status pill on the iPhone shows how many devices are connected and opens the **Devices** sheet. It lists the

@@ -27,22 +27,22 @@ struct PhoneBrainsSection: View {
                 }
             }
             Card("phone.requests.title", icon: "arrow.clockwise", info: "phone.requests.info") {
-                limitRow("phone.requests.timeout.title", icon: "hourglass",
+                limitRow("phone.requests.timeout.title", icon: "hourglass", info: "phone.requests.timeout.info",
                          value: limit(\.timeoutSeconds), range: RequestLimits.timeoutControlRange, step: RequestLimits.timeoutStep) { "\(Int($0)) s" }
-                limitRow("phone.requests.retries.title", icon: "arrow.triangle.2.circlepath",
+                limitRow("phone.requests.retries.title", icon: "arrow.triangle.2.circlepath", info: "phone.requests.retries.info",
                          value: limit(\.retries, as: Double.self),
                          range: Double(RequestLimits.retriesRange.lowerBound)...Double(RequestLimits.retriesRange.upperBound), step: 1) { "\(Int($0))" }
-                limitRow("phone.requests.delay.title", icon: "pause.circle",
+                limitRow("phone.requests.delay.title", icon: "pause.circle", info: "phone.requests.delay.info",
                          value: limit(\.retryDelaySeconds), range: RequestLimits.delayRange, step: RequestLimits.delayStep) { "\($0.formatted()) s" }
-                limitRow("phone.requests.backoff.title", icon: "chart.line.uptrend.xyaxis",
+                limitRow("phone.requests.backoff.title", icon: "chart.line.uptrend.xyaxis", info: "phone.requests.backoff.info",
                          value: limit(\.backoff), range: RequestLimits.backoffRange, step: RequestLimits.backoffStep) { "× \($0.formatted())" }
             }
         }
     }
 
-    private func limitRow(_ title: LocalizedStringKey, icon: String, value: Binding<Double>, range: ClosedRange<Double>, step: Double,
+    private func limitRow(_ title: LocalizedStringKey, icon: String, info: LocalizedStringKey, value: Binding<Double>, range: ClosedRange<Double>, step: Double,
                           text: @escaping (Double) -> String) -> some View {
-        Row(title, icon: icon) {
+        Row(title, icon: icon, info: info) {
             ImpStepper(value: value, in: range, step: step) { Text(verbatim: text(value.wrappedValue)) }
                 .accessibilityLabel(title)
         }

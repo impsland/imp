@@ -72,10 +72,11 @@ struct KitReviewSheet: View {
     private var permissionsCard: some View {
         let permissions = kit.permissions
         return VStack(alignment: .leading, spacing: Spacing.snug) {
-            HStack(spacing: Spacing.snug) {
-                Image(systemName: "checklist").foregroundStyle(permissions.hasCautions ? Tone.warnText : Tone.muted)
-                Text("What this can do").font(Typeface.cardTitle).foregroundStyle(Tone.text)
-                InfoTip("This is read from the kit itself, not from what its author says about it.")
+            SectionHeader(info: "This is read from the kit itself, not from what its author says about it.", minHeight: nil) {
+                HStack(spacing: Spacing.snug) {
+                    Image(systemName: "checklist").foregroundStyle(permissions.hasCautions ? Tone.warnText : Tone.muted)
+                    Text("What this can do").font(Typeface.cardTitle).foregroundStyle(Tone.text)
+                }
             }
             ForEach(permissions.lines) { line in
                 Label {
@@ -104,10 +105,11 @@ struct KitReviewSheet: View {
     /// Code that would run on this Mac, said plainly.
     private var caution: some View {
         VStack(alignment: .leading, spacing: Spacing.snug) {
-            HStack(spacing: Spacing.snug) {
-                Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Tone.warnText)
-                Text("Runs commands on this Mac").font(Typeface.cardTitle).foregroundStyle(Tone.text)
-                InfoTip("Only add it if you trust whoever sent it.")
+            SectionHeader(info: "Only add it if you trust whoever sent it.", minHeight: nil) {
+                HStack(spacing: Spacing.snug) {
+                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Tone.warnText)
+                    Text("Runs commands on this Mac").font(Typeface.cardTitle).foregroundStyle(Tone.text)
+                }
             }
             ForEach(review.cautions) { warning in
                 Text(warning.text).font(Typeface.mono).foregroundStyle(Tone.text)

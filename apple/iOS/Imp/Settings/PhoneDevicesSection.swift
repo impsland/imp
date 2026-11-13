@@ -2,8 +2,8 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The Devices section: the name and the code to link another device, The Hop that lets devices find
-/// each other, and the devices already linked with their Imps.
+/// The Devices section: This iPhone (its name and the code to link another device), the linked devices
+/// (each its own row, Forget all in the header) and The Hop that lets devices find each other.
 struct PhoneDevicesSection: View {
     let hub: LinkHub
     let pocket: PocketRuntime
@@ -14,20 +14,36 @@ struct PhoneDevicesSection: View {
 
     var body: some View {
         VStack(spacing: Spacing.medium) {
-            Card("phone.name.title", icon: "iphone") { NameField(hub: hub) }
-            LinkCodeCard(hub: hub)
-            LinkJoinCard(hub: hub, problem: $problem, scan: scan)
-            ServerCard(hub: hub, kind: .hop)
-            ForEach(hub.links) { link in deviceCard(link.device) }
+            Card("phone.name.title", icon: "iphone", info: "devices.this.info") { NameField(hub: hub) }
+            LinkCodeCard(hub: hub, problem: $problem, scan: scan)
+            devices
             if !elsewhere.isEmpty {
                 Card("imp.state.away", icon: "arrow.up.right.circle") {
                     ForEach(elsewhere, id: \.id) { imp in held(imp, by: hub.holders[imp.id].map(hub.deviceName)) }
                 }
             }
+            ServerCard(hub: hub, kind: .hop)
+        }
+    }
+
+    /// The linked devices, one pebble each; with none, a short empty state.
+    private var devices: some View {
+        Card("devices.title", icon: "laptopcomputer.and.iphone", info: "devices.list.info") {
             if !hub.links.isEmpty {
-                Button(action: forgetAll) { FitLabel("phone.forget.everyone", systemImage: "xmark.circle") }
-                    .buttonStyle(.destructive)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                HoverIconButton(systemName: "xmark.circle", help: "settings.devices.forget_all.title", tint: Tone.danger, action: forgetAll)
+            }
+        } content: {
+            if hub.node.status.localNetworkBlocked { LocalNetworkNotice(blocked: true) }
+            if hub.links.isEmpty {
+                VStack(spacing: Spacing.small) {
+                    Image(systemName: "laptopcomputer.and.iphone").font(.icon(.large)).foregroundStyle(Tone.muted)
+                    Text("devices.empty").font(Typeface.body).foregroundStyle(Tone.muted)
+                        .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, Spacing.large)
+            } else {
+                ForEach(hub.links) { link in deviceRow(link.device) }
             }
         }
     }
@@ -39,22 +55,27 @@ struct PhoneDevicesSection: View {
         }
     }
 
-    private func deviceCard(_ device: LinkDevice) -> some View {
+    /// One linked device as a pebble: icon, name, how it is reached (an icon, hover or VoiceOver for the words),
+    /// Forget, then Mine and the Imps it holds.
+    private func deviceRow(_ device: LinkDevice) -> some View {
         let holding = pocket.looks.filter { hub.holders[$0.id] == device.id }
         let visiting = hub.visits.filter { $0.home.id == device.id }.map(\.imp.name)
-        return Card {
-            HStack(spacing: Spacing.medium) {
-                IconTile(systemName: device.kind == .mac ? "macbook" : "iphone", filled: true)
-                VStack(alignment: .leading, spacing: Spacing.hairline) {
-                    Text(verbatim: device.name).font(Typeface.cardTitle).foregroundStyle(Tone.text)
-                        .accessibilityAddTraits(.isHeader)
-                    status(of: device)
-                }
+        let connected = hub.isConnected(device.id)
+        let reach = !connected ? String(localized: "devices.reach.away")
+            : hub.viaHop.contains(device.id) ? String(localized: "devices.reach.server") : String(localized: "devices.reach.direct")
+        let reachSymbol = !connected ? "moon.zzz.fill" : hub.viaHop.contains(device.id) ? "arrow.triangle.swap" : "wifi"
+        return VStack(spacing: Spacing.small) {
+            HStack(spacing: Spacing.cozy) {
+                IconTile(systemName: device.kind == .mac ? "macbook" : "iphone").opacity(connected ? 1 : Opacity.dimmed)
+                Text(verbatim: device.name).font(Typeface.label).foregroundStyle(Tone.text).lineLimit(1)
+                    .accessibilityAddTraits(.isHeader)
                 Spacer(minLength: Spacing.small)
-                Button { forget(device) } label: { FitLabel("phone.forget.one", systemImage: "xmark.circle") }
-                    .buttonStyle(.quiet)
+                Image(systemName: reachSymbol).font(.icon(.small)).foregroundStyle(connected ? Tone.good : Tone.muted)
+                    .frame(width: Sizing.mark)
+                    .accessibilityElement().accessibilityLabel(Text(verbatim: reach))
+                HoverIconButton(systemName: "xmark.circle", help: "phone.forget.one", tint: Tone.danger) { forget(device) }
             }
-            Row("phone.mine", icon: "person.fill.checkmark", info: "privacy.trust_note") {
+            Row("phone.mine", info: "privacy.trust_note") {
                 Toggle("phone.mine", isOn: Binding(get: { hub.isTrusted(device.id) }, set: { hub.setTrusted(device.id, $0) }))
                     .toggleStyle(.impSwitchBare)
             }
@@ -63,14 +84,10 @@ struct PhoneDevicesSection: View {
                 StatusText(verbatim: words("phone.visiting", visiting.formatted()), symbol: "arrow.down.right.circle")
             }
         }
+        .padding(Spacing.cozy)
+        .frame(maxWidth: .infinity)
+        .background(Tone.well, in: RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
         .accessibilityElement(children: .contain)
-    }
-
-    private func status(of device: LinkDevice) -> some View {
-        let connected = hub.isConnected(device.id)
-        let text = !connected ? String(localized: "imp.state.away")
-            : hub.viaHop.contains(device.id) ? String(localized: "phone.connected_hop") : String(localized: "phone.connected")
-        return StatusText(verbatim: text, symbol: connected ? "circle.fill" : "circle", color: connected ? Tone.good : Tone.muted)
     }
 
     /// An Imp of this iPhone that another device holds, with the way to call it home.

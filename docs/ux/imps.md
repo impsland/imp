@@ -38,12 +38,12 @@ A confirmation dialog on every drop. It would remove the feeling of picking the 
 
 | Action | Result |
 | --- | --- |
-| One click, or one tap | Opens the Imp's message bubble. |
-| Double click, or double tap | Does what the preference says. The default is to open Imp Settings. |
+| One click, or one tap | Opens the Imp's message bubble (on the phone, its chat) at once. |
+| Two clicks (Mac) | Run the Imp's triggers for two clicks. The starter kit's "Settings" trigger opens the Imp's settings. |
 | Right click, or touch and hold | Opens the Imp's context menu. |
 | Drag | Moves the Imp. |
 
-The double click can be changed in All Imps settings, App (`pref.double_click.title`). The choices are to open its settings, to talk by voice, or to do nothing. The same actions are in the context menu. There is no settings button on the Imp.
+There is no double click setting. Two or more clicks are Triggers ("2 clicks on the Imp"), so they can open the settings, talk, run a prompt or anything else, per Imp or for every Imp. A first click waits for a second only when some trigger of that Imp answers to two or more clicks. Without one, a click opens the bubble with no delay. The phone has no double tap: a tap opens the chat at once, and the touch-and-hold menu has Settings. There is no settings button on the Imp.
 
 Clicks behave the same whether the Imp is free or in the window.
 
@@ -60,10 +60,10 @@ Keyboard focus is shown apart, with the focus ring (`focusRing`), and only when 
 
 Everything about one Imp is one sheet (see [The room never leaves](/design/room)).
 
-- **The bar.** The Imp's name and one line of state on the leading side. Then New Chat, Imp Settings (only for an Imp hatched on this iPhone) and Close. The Imp's small portrait is in the bar only when the sheet covers the room. At half height the Imp itself is in the room above.
-- **Talks are a side room.** The sheet is the chat with you. What the Imp said with other Imps is rarely needed, so it has no button here: Talks in the Imp's touch and hold menu opens it in the same sheet, with Back in the bar to return to the chat. It lists the Imps it talked with, and a tap opens one conversation in place. An Imp with no talks shows `phone.talks.empty`.
+- **The bar.** The Imp's name and one line of state on the leading side. Then Talks with other Imps (only when there are some), New Chat, Settings (only for an Imp hatched on this iPhone) and Close. The Imp's small portrait is in the bar only when the sheet covers the room. At half height the Imp itself is in the room above.
+- **Talks are a side room.** The sheet is the chat with you. What the Imp said with other Imps is rarely needed, so its button shows in the bar only when the Imp has talks: it opens them in the same sheet, with Back in the bar to return to the chat. It lists the Imps it talked with, and a tap opens one conversation in place. An Imp with no talks shows `phone.talks.empty`.
 - **Colour.** The sheet wears the Imp's colour: what you said, the send button, the switch and the selected side. Text on the colour follows the white or black choice in Settings.
-- **Close.** Returns to the room. Imp Settings opened from here returns here.
+- **Close.** Returns to the room. Settings opened from here returns here.
 
 An Imp on the iPhone is one VoiceOver element named after the Imp, with the same actions as its touch and hold menu. While its menu is opening, its bubble and name tag are dismissed so nothing stays behind the lifted preview. See [Main screen](/ux/main-screen).
 
@@ -124,7 +124,7 @@ A screen reader reads an Imp as its name and state (`imp.a11y.label`) and offers
 
 ## Words
 
-<!-- strings: imp pref.double_click -->
+<!-- strings: imp -->
 | Key | English |
 | --- | --- |
 | `imp.a11y.hide` | Hide {name} |
@@ -149,9 +149,4 @@ A screen reader reads an Imp as its name and state (`imp.a11y.label`) and offers
 | `imp.state.visiting` | Visiting from {device} |
 | `imp.state.waking` | Waking up |
 | `imp.transfer.failed` | {device} did not take {name}. It stays here. |
-| `pref.double_click.none` | Do nothing |
-| `pref.double_click.settings` | Open its settings |
-| `pref.double_click.talk` | Talk by voice |
-| `pref.double_click.title` | Double click on an Imp |
-| `pref.double_click.title_touch` | Double tap on an Imp |
 <!-- /strings -->

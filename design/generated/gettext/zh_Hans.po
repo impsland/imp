@@ -62,13 +62,13 @@ msgstr "内置"
 
 #. Button.
 msgctxt "animations.find"
-msgid "Find more in The Den"
-msgstr "到 Den 找更多"
+msgid "Browse"
+msgstr "浏览"
 
 #. Heading of animations that came from The Den.
 msgctxt "animations.from_den"
-msgid "From The Den"
-msgstr "来自 Den"
+msgid "Den"
+msgstr "Den"
 
 #. Shown when The Den is not set up.
 msgctxt "animations.needs_den"
@@ -77,28 +77,23 @@ msgstr "设置 Den 后可以找到更多。"
 
 #. Button and sheet title: make a new animation of your own.
 msgctxt "animations.new"
-msgid "New animation"
-msgstr "新动画"
+msgid "New"
+msgstr "新建"
 
 #. Button.
 msgctxt "animations.restore"
-msgid "Restore defaults"
-msgstr "恢复默认"
+msgid "Restore"
+msgstr "恢复"
 
 #. Placeholder of the search field on the Animations page.
 msgctxt "animations.search"
-msgid "Find an animation"
-msgstr "查找动画"
+msgid "Search"
+msgstr "搜索"
 
 #. Group title.
 msgctxt "animations.title"
 msgid "Animations"
 msgstr "动画"
-
-#. Card title: double click, login, language.
-msgctxt "app.behaviour"
-msgid "Behaviour"
-msgstr "行为"
 
 #. Row.
 msgctxt "app.language"
@@ -107,8 +102,8 @@ msgstr "语言"
 
 #. Switch (desktop).
 msgctxt "app.login"
-msgid "Start at login"
-msgstr "登录时启动"
+msgid "Autostart"
+msgstr "自动启动"
 
 #. Note under the switch.
 msgctxt "app.login_note"
@@ -122,33 +117,48 @@ msgstr "外观"
 
 #. Button.
 msgctxt "app.reset"
-msgid "Reset Imp"
-msgstr "重置 Imp"
+msgid "Reset"
+msgstr "重置"
+
+#. Card title on the App page: login and language.
+msgctxt "app.system"
+msgid "System"
+msgstr "系统"
 
 #. Group title.
 msgctxt "app.title"
 msgid "App"
 msgstr "App"
 
+#. Window size: as large as the screen.
+msgctxt "app.window.full"
+msgid "Full"
+msgstr "全屏"
+
 #. Help for the Window card.
 msgctxt "app.window.info"
-msgid "The smallest the window can be made. Everything in it fits any size above this."
-msgstr "窗口可以缩到的最小尺寸。窗口里的内容会适应比它更大的任何尺寸。"
+msgid "How big the window is. You can still drag its edges."
+msgstr "窗口有多大。你仍然可以拖动它的边缘。"
 
-#. Row: the smallest height of the app's window.
-msgctxt "app.window.min_height"
-msgid "Smallest height"
-msgstr "最小高度"
+#. Window size: large.
+msgctxt "app.window.large"
+msgid "Large"
+msgstr "大"
 
-#. Row: the smallest width of the app's window.
-msgctxt "app.window.min_width"
-msgid "Smallest width"
-msgstr "最小宽度"
+#. Window size: medium.
+msgctxt "app.window.medium"
+msgid "Medium"
+msgstr "中"
 
-#. A size in points beside a slider, like 660 pt.
-msgctxt "app.window.points"
-msgid "{value} pt"
-msgstr "{value} pt"
+#. Row: the size of the app's window.
+msgctxt "app.window.size"
+msgid "Size"
+msgstr "尺寸"
+
+#. Window size: small.
+msgctxt "app.window.small"
+msgid "Small"
+msgstr "小"
 
 #. Card on the App page: the smallest size of the app's window.
 msgctxt "app.window.title"
@@ -197,8 +207,8 @@ msgstr "平铺会重复铺满窗口。请选择可无缝衔接的图案。"
 
 #. Button that adds a Brain service.
 msgctxt "brain.add_service"
-msgid "Add a service"
-msgstr "添加服务"
+msgid "Add"
+msgstr "添加"
 
 #. Result of a successful Brain check.
 msgctxt "brain.check_ok"
@@ -277,8 +287,8 @@ msgstr "服务"
 
 #. Row: whose Brain the Imp uses.
 msgctxt "brain.source"
-msgid "Brain from"
-msgstr "大脑来自"
+msgid "Source"
+msgstr "来源"
 
 #. Panel title.
 msgctxt "brain.title"
@@ -292,13 +302,13 @@ msgstr "未命名"
 
 #. Choice: use the app's default Brain.
 msgctxt "brain.use_app"
-msgid "Same as the other Imps"
-msgstr "与其他 Imp 相同"
+msgid "Shared"
+msgstr "共用"
 
 #. Choice: this Imp has its own service and model.
 msgctxt "brain.use_own"
-msgid "Its own Brain"
-msgstr "专属大脑"
+msgid "Own"
+msgstr "独立"
 
 #. Screen reader description of the sleeping animation.
 msgctxt "brain.zzz"
@@ -307,13 +317,13 @@ msgstr "Zzz，{name} 睡着了"
 
 #. Button.
 msgctxt "brains.add"
-msgid "Add a Brain"
-msgstr "添加大脑"
+msgid "Add"
+msgstr "添加"
 
 #. Label of the default Brain.
 msgctxt "brains.default"
-msgid "Default for new Imps"
-msgstr "新 Imp 的默认大脑"
+msgid "Default"
+msgstr "默认"
 
 #. Empty state of the Brains list.
 msgctxt "brains.empty"
@@ -335,6 +345,21 @@ msgstr[0] "{count} 个 Imp 在使用"
 msgctxt "brains.with_key"
 msgid "A service with your key"
 msgstr "使用你密钥的服务"
+
+#. Screen reader value of a button whose action just succeeded.
+msgctxt "common.action_done"
+msgid "Done"
+msgstr "完成"
+
+#. Screen reader value of a button whose action just failed.
+msgctxt "common.action_failed"
+msgid "Failed"
+msgstr "失败"
+
+#. Screen reader value of a button whose action is running.
+msgctxt "common.action_working"
+msgid "Working"
+msgstr "进行中"
 
 #. Button that adds an item.
 msgctxt "common.add"
@@ -486,15 +511,30 @@ msgctxt "devices.copy_link.help"
 msgid "For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while."
 msgstr "适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。"
 
-#. Under a linked device: the Imps that are on it now.
-msgctxt "devices.has"
-msgid "Has {imps}"
-msgstr "上面有 {imps}"
+#. Empty state of the devices card.
+msgctxt "devices.empty"
+msgid "No devices yet. Link an iPhone or another Mac and your Imps can visit it."
+msgstr "还没有设备。连接一台 iPhone 或另一台 Mac,你的 Imp 就能去做客。"
 
-#. In the devices card when nothing is linked yet.
-msgctxt "devices.none"
-msgid "No devices yet. Link your iPhone or another Mac and your Imps can visit it."
-msgstr "还没有设备。关联你的 iPhone 或另一台 Mac，你的 Imp 就能去拜访。"
+#. Help on the Devices card.
+msgctxt "devices.list.info"
+msgid "Devices linked with this one. Mine lets a device act for you."
+msgstr "与这台设备连接的设备。“我的”让设备可以代表你行事。"
+
+#. Help on a linked device: not reachable now.
+msgctxt "devices.reach.away"
+msgid "Away"
+msgstr "不在线"
+
+#. Help on a linked device: reached on the local network.
+msgctxt "devices.reach.direct"
+msgid "Direct, on the local network"
+msgstr "直连,在本地网络"
+
+#. Help on a linked device: reached through the server.
+msgctxt "devices.reach.server"
+msgid "Through the server"
+msgstr "通过服务器"
 
 #. Button and tab: read another device's code with this Mac's camera, or paste its link.
 msgctxt "devices.scan"
@@ -505,6 +545,21 @@ msgstr "扫描代码"
 msgctxt "devices.show"
 msgid "Show code"
 msgstr "显示代码"
+
+#. Help on the This Mac card: the dot is The Hop.
+msgctxt "devices.this.info"
+msgid "Link another device here. The dot shows whether The Hop lets devices find each other from anywhere."
+msgstr "在这里连接另一台设备。圆点表示 The Hop 是否让设备能从任何地方互相找到。"
+
+#. Title of the card for this Mac on the Devices page.
+msgctxt "devices.this_mac"
+msgid "This Mac"
+msgstr "这台 Mac"
+
+#. Title of the card listing the linked devices.
+msgctxt "devices.title"
+msgid "Devices"
+msgstr "设备"
 
 #. The key was refused.
 msgctxt "error.brain.key"
@@ -1010,8 +1065,8 @@ msgstr "Imp 之家"
 
 #. Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.
 msgctxt "home.corner.show_hidden"
-msgid "Show hidden Imps"
-msgstr "显示隐藏的 Imp"
+msgid "Hidden"
+msgstr "已隐藏"
 
 #. Empty main screen, one line under the title.
 msgctxt "home.empty.hint"
@@ -1020,8 +1075,8 @@ msgstr "孵化你的第一个 Imp，就可以开始了。"
 
 #. The one prompt in the middle of an empty main screen.
 msgctxt "home.empty.new_imp"
-msgid "New Imp"
-msgstr "新建 Imp"
+msgid "New"
+msgstr "新建"
 
 #. Empty main screen, title.
 msgctxt "home.empty.title"
@@ -1050,18 +1105,18 @@ msgstr "{name} 从地面探出头来。"
 
 #. The element on the floor that holds hidden Imps. The number is how many.
 msgctxt "home.hidden.title"
-msgid "Hidden Imps ({count})"
-msgstr "隐藏的 Imp（{count}）"
+msgid "Hidden ({count})"
+msgstr "已隐藏（{count}）"
 
 #. Status icon menu item that quits the app.
 msgctxt "home.tray.quit"
-msgid "Quit Imp"
-msgstr "退出 Imp"
+msgid "Quit"
+msgstr "退出"
 
 #. Status icon menu item that shows the window.
 msgctxt "home.tray.show"
-msgid "Open Imp"
-msgstr "打开 Imp"
+msgid "Open"
+msgstr "打开"
 
 #. Screen reader action.
 msgctxt "imp.a11y.hide"
@@ -1314,6 +1369,31 @@ msgctxt "kit.origin.starter"
 msgid "Imp's starter kit"
 msgstr "Imp 入门套件"
 
+#. Status line when Local Network access is off for Imp.
+msgctxt "link.localnet.off"
+msgid "Local Network is off for Imp"
+msgstr "Imp 的本地网络已关闭"
+
+#. Button on the iPhone that opens the app's page in Settings.
+msgctxt "link.localnet.open"
+msgid "Open Settings"
+msgstr "打开设置"
+
+#. Button on the Mac that opens System Settings, Local Network.
+msgctxt "link.localnet.open_mac"
+msgid "Open System Settings"
+msgstr "打开系统设置"
+
+#. Status line while the link is coming up and a code cannot be made yet.
+msgctxt "link.preparing"
+msgid "Getting ready to link…"
+msgstr "正在准备连接…"
+
+#. Toast once when the saved links could not be read and were reset.
+msgctxt "link.reset"
+msgid "Imp couldn't read its saved links, so it started fresh. Link your devices again."
+msgstr "Imp 无法读取已保存的连接，已重新开始。请重新连接你的设备。"
+
 #. Section: colour and size.
 msgctxt "look.body"
 msgid "Body"
@@ -1351,8 +1431,8 @@ msgstr "眼睛"
 
 #. Tooltip of the favourite colour button.
 msgctxt "look.favourite"
-msgid "Favourite colour"
-msgstr "最爱的颜色"
+msgid "Favourite"
+msgstr "常用"
 
 #. Label of a character slider.
 msgctxt "look.head"
@@ -1441,8 +1521,8 @@ msgstr "预览"
 
 #. Button that restores the default look.
 msgctxt "look.reset"
-msgid "Reset look"
-msgstr "重置外观"
+msgid "Reset"
+msgstr "重置"
 
 #. Slider label.
 msgctxt "look.size"
@@ -1463,6 +1543,56 @@ msgstr "第 {index} 种颜色，共 {count} 种"
 msgctxt "look.title"
 msgid "Look"
 msgstr "外观"
+
+#. Choice for Sends: the last N messages.
+msgctxt "memory.last"
+msgid "Last {count}"
+msgstr "最近 {count} 条"
+
+#. Info for New chat at.
+msgctxt "memory.new_chat.info"
+msgid "How big a chat gets before the Imp suggests a recap or a new chat."
+msgstr "聊天达到多大时 Imp 会建议总结或开始新聊天。"
+
+#. Row in the Imp's Memory card.
+msgctxt "memory.new_chat.title"
+msgid "New chat at"
+msgstr "新聊天于"
+
+#. Choice for Sends: every message.
+msgctxt "memory.no_limit"
+msgid "All"
+msgstr "全部"
+
+#. Info for Sends.
+msgctxt "memory.sends.info"
+msgid "How many of the latest messages go to the Brain with each one. Fewer is faster and cheaper."
+msgstr "每条消息一起发给大脑的最近消息数。越少越快越省。"
+
+#. Row in the Imp's Memory card.
+msgctxt "memory.sends.title"
+msgid "Sends"
+msgstr "发送"
+
+#. A chat size in thousands of tokens.
+msgctxt "memory.size.k"
+msgid "{count}k"
+msgstr "{count}k"
+
+#. A chat size in millions of tokens.
+msgctxt "memory.size.m"
+msgid "{count}M"
+msgstr "{count}M"
+
+#. Info for Tool results.
+msgctxt "memory.tools.info"
+msgid "Also sends what the tools did and returned. Off is smaller and cheaper."
+msgstr "同时发送工具的操作和返回内容。关闭后更小更省。"
+
+#. Row in the Imp's Memory card.
+msgctxt "memory.tools.title"
+msgid "Tool results"
+msgstr "工具结果"
 
 #. Menu bar button that hides every Imp on the desktop.
 msgctxt "menu.bar.hide"
@@ -1556,8 +1686,8 @@ msgstr "设置"
 
 #. Menu item that brings every hidden Imp back.
 msgctxt "menu.canvas.show_hidden"
-msgid "Show hidden Imps ({count})"
-msgstr "显示隐藏的 Imp（{count}）"
+msgid "Hidden ({count})"
+msgstr "已隐藏（{count}）"
 
 #. Menu item that copies an Imp as a kit.
 msgctxt "menu.imp.copy_kit"
@@ -1584,25 +1714,30 @@ msgctxt "menu.imp.let_out"
 msgid "Let out"
 msgstr "放出来"
 
+#. Tip on the Imp menu item that moves it to a Mac for good.
+msgctxt "menu.imp.move_tip"
+msgid "{name} lives on {device} from now on."
+msgstr "{name} 从此住在 {device}。"
+
 #. Imp menu item that moves the Imp to a Mac for good.
 msgctxt "menu.imp.move_to"
 msgid "Move to {name}"
-msgstr "移到 {name}"
+msgstr "搬到 {name}"
 
 #. Menu item (desktop only) that puts a free Imp back in the window.
 msgctxt "menu.imp.send_home"
 msgid "Send home"
 msgstr "送回家"
 
-#. Imp menu item that sends the Imp to a device.
+#. Imp menu item that sends the Imp to visit a device. It comes back.
 msgctxt "menu.imp.send_to"
-msgid "Send to {name}"
-msgstr "发送到 {name}"
+msgid "Visit {name}"
+msgstr "去 {name} 做客"
 
 #. Menu item that opens the settings of one Imp.
 msgctxt "menu.imp.settings"
-msgid "Imp Settings"
-msgstr "Imp 设置"
+msgid "Settings"
+msgstr "设置"
 
 #. Menu item that shares an Imp.
 msgctxt "menu.imp.share"
@@ -1619,10 +1754,10 @@ msgctxt "menu.imp.talk_help"
 msgid "Talk to {name}"
 msgstr "和{name}说话"
 
-#. Imp menu item that opens what the Imp said with other Imps.
+#. Tip and title of the button in an Imp's chat that opens what it said with other Imps.
 msgctxt "menu.imp.talks"
 msgid "Talks"
-msgstr "对话记录"
+msgstr "对话"
 
 #. Button in an Imp's menu that opens the typing box.
 msgctxt "menu.imp.type"
@@ -1634,10 +1769,20 @@ msgctxt "menu.imp.type_help"
 msgid "Type to {name}"
 msgstr "给{name}打字"
 
+#. Greyed Imp menu item when no other device is around.
+msgctxt "menu.imp.visit_none"
+msgid "Visit another device"
+msgstr "去别的设备做客"
+
+#. Tip on the Imp menu item that sends it to visit a device.
+msgctxt "menu.imp.visit_tip"
+msgid "{name} visits {device} and can come back."
+msgstr "{name} 去 {device} 做客，还可以回来。"
+
 #. Row: change a built-in move.
 msgctxt "moves.builtin"
-msgid "Built-in moves"
-msgstr "内置动作"
+msgid "Moves"
+msgstr "动作"
 
 #. Button: change a built-in move.
 msgctxt "moves.change"
@@ -1651,8 +1796,8 @@ msgstr "还没有特别的动作。"
 
 #. Row: how it follows the cursor.
 msgctxt "moves.follow_how"
-msgid "Follows by"
-msgstr "跟随方式"
+msgid "Follow"
+msgstr "跟随"
 
 #. Help of the built-in moves row.
 msgctxt "moves.help.builtin"
@@ -1746,8 +1891,8 @@ msgstr "声音"
 
 #. Row: how the voice shows.
 msgctxt "personality.voice_look"
-msgid "Voice shows as"
-msgstr "声音显示为"
+msgid "Shows as"
+msgstr "显示为"
 
 #. Card title: about the app.
 msgctxt "phone.about.title"
@@ -1771,8 +1916,8 @@ msgstr "浅色"
 
 #. Button in an Imp's Brain panel on the iPhone that starts choosing another service or model.
 msgctxt "phone.brain.change"
-msgid "Change Brain"
-msgstr "更换大脑"
+msgid "Change"
+msgstr "更改"
 
 #. Button: bring an Imp back.
 msgctxt "phone.callhome"
@@ -1791,8 +1936,8 @@ msgstr "正在回复 {from}…"
 
 #. iPhone: chat ask again.
 msgctxt "phone.chat.ask_again"
-msgid "Ask Again"
-msgstr "再问一次"
+msgid "Retry"
+msgstr "重试"
 
 #. iPhone: chat ask to.
 msgctxt "phone.chat.ask_to"
@@ -1816,8 +1961,8 @@ msgstr "没能回答"
 
 #. iPhone: chat jump latest.
 msgctxt "phone.chat.jump_latest"
-msgid "Jump to latest"
-msgstr "跳到最新"
+msgid "Latest"
+msgstr "最新"
 
 #. iPhone: chat message.
 msgctxt "phone.chat.message"
@@ -1826,8 +1971,8 @@ msgstr "给 {name} 发消息"
 
 #. iPhone: chat new.
 msgctxt "phone.chat.new"
-msgid "New Chat"
-msgstr "新聊天"
+msgid "New"
+msgstr "新建"
 
 #. iPhone: chat no brain.
 msgctxt "phone.chat.no_brain"
@@ -1884,15 +2029,10 @@ msgctxt "phone.editor.save_failed_title"
 msgid "Couldn't save"
 msgstr "无法保存"
 
-#. Button that unlinks every device.
-msgctxt "phone.forget.everyone"
-msgid "Forget Everyone…"
-msgstr "忘记所有设备…"
-
 #. Alert button.
 msgctxt "phone.forget.everyone.title"
-msgid "Forget Everyone"
-msgstr "忘记所有设备"
+msgid "Forget all"
+msgstr "全部忘记"
 
 #. What forgetting one device does.
 msgctxt "phone.forget.message"
@@ -1969,11 +2109,6 @@ msgctxt "phone.mine"
 msgid "Mine"
 msgstr "我的"
 
-#. Spoken label of the main screen menu button.
-msgctxt "phone.more.label"
-msgid "More"
-msgstr "更多"
-
 #. Placeholder of the field with this device name.
 msgctxt "phone.name.field"
 msgid "Name"
@@ -2001,8 +2136,8 @@ msgstr "该二维码不是 Imp 的。"
 
 #. Quiet button on the first screen: make an Imp of your own instead of waking the first one.
 msgctxt "phone.pair.hatch"
-msgid "Hatch an Imp"
-msgstr "孵化小妖"
+msgid "Hatch"
+msgstr "孵化"
 
 #. iPhone: pair link bad.
 msgctxt "phone.pair.link_bad"
@@ -2031,8 +2166,8 @@ msgstr "iPhone 版 Imp"
 
 #. Button that links from a copied link.
 msgctxt "phone.paste.link"
-msgid "Paste Link"
-msgstr "粘贴链接"
+msgid "Paste"
+msgstr "粘贴"
 
 #. Placeholder of the personality field of an Imp on the iPhone.
 msgctxt "phone.persona.placeholder"
@@ -2046,8 +2181,8 @@ msgstr "每次休息都比上一次长这么多倍。"
 
 #. Row title: pause growth.
 msgctxt "phone.requests.backoff.title"
-msgid "Longer each time"
-msgstr "每次更久"
+msgid "Growth"
+msgstr "递增"
 
 #. Help for the first pause.
 msgctxt "phone.requests.delay.info"
@@ -2091,13 +2226,8 @@ msgstr "等待"
 
 #. Button that opens the camera to scan a link code.
 msgctxt "phone.scan.code"
-msgid "Scan a Code"
-msgstr "扫描二维码"
-
-#. Spoken name of the server choice.
-msgctxt "phone.server.choice"
-msgid "Server"
-msgstr "服务器"
+msgid "Scan"
+msgstr "扫描"
 
 #. Example address of a Den.
 msgctxt "phone.server.placeholder_den"
@@ -2111,7 +2241,7 @@ msgstr "hop.example.com:4677"
 
 #. Segment: any direction.
 msgctxt "phone.shake.dir.any"
-msgid "Any way"
+msgid "Any"
 msgstr "任意"
 
 #. Segment: left or right.
@@ -2136,7 +2266,7 @@ msgstr "轻"
 
 #. Row title: shake strength.
 msgctxt "phone.shake.hard.title"
-msgid "How hard"
+msgid "Strength"
 msgstr "力度"
 
 #. Help for shake to send.
@@ -2156,8 +2286,8 @@ msgstr "摇一摇"
 
 #. Row title: which device.
 msgctxt "phone.shake.which.title"
-msgid "Which device"
-msgstr "哪台设备"
+msgid "Device"
+msgstr "设备"
 
 #. Button: share the link.
 msgctxt "phone.share"
@@ -2254,35 +2384,10 @@ msgctxt "phone.with"
 msgid "With {name}"
 msgstr "在 {name} 那里"
 
-#. Choice for the double click.
-msgctxt "pref.double_click.none"
-msgid "Do nothing"
-msgstr "什么也不做"
-
-#. Choice for the double click.
-msgctxt "pref.double_click.settings"
-msgid "Open its settings"
-msgstr "打开它的设置"
-
-#. Choice for the double click.
-msgctxt "pref.double_click.talk"
-msgid "Talk by voice"
-msgstr "用语音说话"
-
-#. Preference title on desktop.
-msgctxt "pref.double_click.title"
-msgid "Double click on an Imp"
-msgstr "双击 Imp"
-
-#. Preference title on a phone.
-msgctxt "pref.double_click.title_touch"
-msgid "Double tap on an Imp"
-msgstr "轻点两下 Imp"
-
 #. Switch.
 msgctxt "privacy.computer"
-msgid "Computer control"
-msgstr "控制电脑"
+msgid "Control"
+msgstr "控制"
 
 #. Note under the switch.
 msgctxt "privacy.computer_note"
@@ -2306,8 +2411,8 @@ msgstr "权限"
 
 #. Switch.
 msgctxt "privacy.trust"
-msgid "Trust my other devices"
-msgstr "信任我的其他设备"
+msgid "Trust devices"
+msgstr "信任设备"
 
 #. Note under the switch.
 msgctxt "privacy.trust_note"
@@ -2339,11 +2444,6 @@ msgctxt "servers.address_hint"
 msgid "Start with https://"
 msgstr "以 https:// 开头"
 
-#. Label of the menu that picks which server to use: Imp's servers, This computer, Custom or Off.
-msgctxt "servers.choice"
-msgid "Server"
-msgstr "服务器"
-
 #. Short explanation of The Den.
 msgctxt "servers.den.about"
 msgid "Where Imps share animations, triggers and Imps. Shared items are public."
@@ -2366,7 +2466,7 @@ msgstr "在 Den 中分享和查找已关闭。"
 
 #. Section title.
 msgctxt "servers.den.title"
-msgid "The Den"
+msgid "Den"
 msgstr "Den"
 
 #. Short explanation of The Hop.
@@ -2391,7 +2491,7 @@ msgstr "只有同一网络中的设备能互相找到。"
 
 #. Section title.
 msgctxt "servers.hop.title"
-msgid "The Hop"
+msgid "Hop"
 msgstr "Hop"
 
 #. Shown next to a server choice that is off.
@@ -2414,11 +2514,6 @@ msgctxt "servers.preset.imp_note"
 msgid "The default, run by the Imp project."
 msgstr "默认选项，由 Imp 项目运营。"
 
-#. Server choice: a server on this computer.
-msgctxt "servers.preset.local"
-msgid "This computer"
-msgstr "这台电脑"
-
 #. Server choice: no server.
 msgctxt "servers.preset.off"
 msgid "Off"
@@ -2434,6 +2529,16 @@ msgctxt "servers.state_fail"
 msgid "Cannot reach it. Check the address."
 msgstr "无法连接。请检查地址。"
 
+#. A check of a server set to This computer found nothing answering there. {server} is The Den or The Hop.
+msgctxt "servers.state_fail_local"
+msgid "{server} isn't running on this computer. Start it first."
+msgstr "此电脑上没有运行 {server}。请先启动它。"
+
+#. Help of the status dot of a server: its address and state.
+msgctxt "servers.state_help"
+msgid "{address}: {state}"
+msgstr "{address}:{state}"
+
 #. State of a server that answers.
 msgctxt "servers.state_ok"
 msgid "Reachable"
@@ -2448,11 +2553,6 @@ msgstr "尚未检查"
 msgctxt "settings.app.appearance.title"
 msgid "Appearance"
 msgstr "外观"
-
-#. Settings text.
-msgctxt "settings.app.behaviour.info"
-msgid "What the app does when you click it or start your Mac."
-msgstr "点按应用或启动 Mac 时应用的行为。"
 
 #. Choice: black on coloured controls.
 msgctxt "settings.app.control_ink.black"
@@ -2475,14 +2575,14 @@ msgid "White"
 msgstr "白色"
 
 #. Settings text.
-msgctxt "settings.app.double_click.info"
-msgid "What happens when you double click an Imp."
-msgstr "双击 Imp 时会发生什么。"
-
-#. Settings text.
 msgctxt "settings.app.look.info"
 msgid "How the app looks."
 msgstr "应用的外观。"
+
+#. Settings text.
+msgctxt "settings.app.system.info"
+msgid "How the app starts and which language it speaks."
+msgstr "应用如何启动以及使用的语言。"
 
 #. Item.
 msgctxt "settings.attention.den_off"
@@ -2506,13 +2606,13 @@ msgstr "{name} 还没有大脑。"
 
 #. Settings text.
 msgctxt "settings.backup.export.title"
-msgid "Save a copy"
-msgstr "保存副本"
+msgid "Export"
+msgstr "导出"
 
 #. Settings text.
 msgctxt "settings.backup.import.title"
-msgid "Load a copy"
-msgstr "载入副本"
+msgid "Import"
+msgstr "导入"
 
 #. Settings text.
 msgctxt "settings.backup.keep.info"
@@ -2531,8 +2631,8 @@ msgstr "清除一切重新开始。无法撤销。"
 
 #. Settings text.
 msgctxt "settings.backup.reset.title"
-msgid "Start over"
-msgstr "重新开始"
+msgid "Reset"
+msgstr "重置"
 
 #. Settings text.
 msgctxt "settings.brains.first_wait.info"
@@ -2571,8 +2671,8 @@ msgstr "每次间隔变长多少。"
 
 #. Settings text.
 msgctxt "settings.brains.longer.title"
-msgid "Longer each time"
-msgstr "越来越久"
+msgid "Growth"
+msgstr "递增"
 
 #. Settings text.
 msgctxt "settings.brains.requests.info"
@@ -2599,25 +2699,50 @@ msgctxt "settings.brains.services.info"
 msgid "The brains your Imps think with."
 msgstr "你的 Imp 用来思考的大脑。"
 
+#. Tooltip of a settings row.
+msgctxt "settings.brains.wait.info"
+msgid "How long to wait for an answer before giving up."
+msgstr "等待回答多久后放弃。"
+
 #. Settings text.
 msgctxt "settings.brains.wait.title"
 msgid "Wait"
 msgstr "等待"
+
+#. Tooltip of a settings row.
+msgctxt "settings.bubble.amount.info"
+msgid "How much of the desktop shows through the bubble."
+msgstr "透过气泡能看到多少桌面。"
 
 #. Settings text.
 msgctxt "settings.bubble.amount.title"
 msgid "Amount"
 msgstr "程度"
 
+#. Tooltip of a settings row.
+msgctxt "settings.bubble.audio.info"
+msgid "What shows while a voice or sound plays."
+msgstr "播放声音时显示什么。"
+
 #. Settings text.
 msgctxt "settings.bubble.audio.title"
 msgid "While playing"
 msgstr "播放时"
 
+#. Tooltip of a settings row.
+msgctxt "settings.bubble.autoplay.info"
+msgid "Plays a picture, video or sound in a reply as soon as it arrives."
+msgstr "回复中的图片、视频或声音一到就自动播放。"
+
 #. Settings text.
 msgctxt "settings.bubble.autoplay.title"
-msgid "Play by itself"
+msgid "Autoplay"
 msgstr "自动播放"
+
+#. Tooltip of a settings row.
+msgctxt "settings.bubble.background.info"
+msgid "Whether the bubble is solid or lets what is behind it show through."
+msgstr "气泡是不透明的，还是能透出后面的内容。"
 
 #. Settings text.
 msgctxt "settings.bubble.background.solid"
@@ -2634,10 +2759,20 @@ msgctxt "settings.bubble.background.translucent"
 msgid "Translucent"
 msgstr "半透明"
 
+#. Tooltip of a settings row.
+msgctxt "settings.bubble.hide.info"
+msgid "How long a bubble stays after the Imp stops talking."
+msgstr "小妖说完后气泡停留多久。"
+
 #. Settings text.
 msgctxt "settings.bubble.hide.title"
 msgid "Hide after"
 msgstr "隐藏时间"
+
+#. Tooltip of a settings row.
+msgctxt "settings.bubble.lines.info"
+msgid "How many lines the text box grows to before it scrolls."
+msgstr "输入框增长到多少行后开始滚动。"
 
 #. Settings text.
 msgctxt "settings.bubble.lines.title"
@@ -2656,8 +2791,8 @@ msgstr "气泡如何处理声音和视频。"
 
 #. Settings text.
 msgctxt "settings.bubble.media.title"
-msgid "Sound and video"
-msgstr "声音和视频"
+msgid "Media"
+msgstr "媒体"
 
 #. Settings text.
 msgctxt "settings.bubble.preview.label"
@@ -2673,6 +2808,11 @@ msgstr "气泡如何显示回答。"
 msgctxt "settings.bubble.showing.title"
 msgid "Showing"
 msgstr "显示"
+
+#. Tooltip of a settings row.
+msgctxt "settings.bubble.size.info"
+msgid "The size of the chat bubble. Drag its corner to change it."
+msgstr "聊天气泡的大小。拖动它的角即可调整。"
 
 #. Settings text.
 msgctxt "settings.bubble.size.title"
@@ -2701,8 +2841,8 @@ msgstr "与这台设备连接的设备。"
 
 #. Settings text.
 msgctxt "settings.devices.pair.title"
-msgid "Link a device"
-msgstr "连接设备"
+msgid "Link"
+msgstr "连接"
 
 #. Group title.
 msgctxt "settings.group.animations"
@@ -2741,8 +2881,8 @@ msgstr "权限"
 
 #. Group title.
 msgctxt "settings.group.servers"
-msgid "The Den and The Hop"
-msgstr "Den 和 Hop"
+msgid "Servers"
+msgstr "服务器"
 
 #. Settings section: The Den, where Imps share things.
 msgctxt "settings.group.sharing"
@@ -2756,8 +2896,8 @@ msgstr "对话"
 
 #. Group title. It was called Talking.
 msgctxt "settings.group.voice"
-msgid "Voice and chat"
-msgstr "语音和聊天"
+msgid "Voice"
+msgstr "语音"
 
 #. Node: the connected AI services.
 msgctxt "settings.map.brains"
@@ -2766,12 +2906,12 @@ msgstr "大脑"
 
 #. Node: The Den.
 msgctxt "settings.map.den"
-msgid "The Den"
+msgid "Den"
 msgstr "Den"
 
 #. Node: The Hop.
 msgctxt "settings.map.hop"
-msgid "The Hop"
+msgid "Hop"
 msgstr "Hop"
 
 #. Node: a Hop that runs on this computer.
@@ -2909,6 +3049,11 @@ msgctxt "settings.talking.between.title"
 msgid "Between Imps"
 msgstr "Imp 之间"
 
+#. Tooltip of a settings row.
+msgctxt "settings.talking.language.info"
+msgid "The language you speak to it. It listens in this one."
+msgstr "你对它说话用的语言，它按此语言聆听。"
+
 #. Settings text.
 msgctxt "settings.talking.language.title"
 msgid "Language"
@@ -2924,20 +3069,10 @@ msgctxt "settings.talking.listening.title"
 msgid "Listening"
 msgstr "聆听"
 
-#. Settings text.
-msgctxt "settings.talking.long.info"
-msgid "What to do when a chat gets very long."
-msgstr "聊天变得很长时怎么办。"
-
-#. Settings text.
-msgctxt "settings.talking.long.title"
-msgid "Long chats"
-msgstr "长聊天"
-
-#. Settings text.
-msgctxt "settings.talking.suggest.title"
-msgid "Suggest a new chat"
-msgstr "建议新聊天"
+#. Tooltip of a settings row.
+msgctxt "settings.talking.talk_in.info"
+msgid "Which chat a message from one Imp to another lands in."
+msgstr "一只小妖发给另一只的消息落在哪个聊天里。"
 
 #. Settings text.
 msgctxt "settings.talking.talk_in.title"
@@ -2996,8 +3131,8 @@ msgstr "工具运行所需的秘密值。"
 
 #. Share sheet choice: publish in The Den. What is shared there is public.
 msgctxt "share.den"
-msgid "Share in The Den"
-msgstr "共享到 Den"
+msgid "Den"
+msgstr "Den"
 
 #. Shown when The Den is not set up.
 msgctxt "share.den_needs_setup"
@@ -3006,8 +3141,8 @@ msgstr "先设置 Den，才能在那里共享。"
 
 #. Share sheet choice: a kit file.
 msgctxt "share.file"
-msgid "Save as a file"
-msgstr "保存为文件"
+msgid "File"
+msgstr "文件"
 
 #. Note on the share sheet about what travels.
 msgctxt "share.note"
@@ -3021,8 +3156,23 @@ msgstr "共享 {name}"
 
 #. Button on the Sharing page: look through The Den.
 msgctxt "sharing.browse"
-msgid "Browse The Den"
-msgstr "浏览 Den"
+msgid "Browse"
+msgstr "浏览"
+
+#. Title of the card on Sharing with Browse and Import.
+msgctxt "sharing.gallery"
+msgid "Gallery"
+msgstr "图库"
+
+#. Help on the Gallery card.
+msgctxt "sharing.gallery.info"
+msgid "Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp."
+msgstr "查找他人分享的动画、触发器和 Imp,或导入你的套件。要分享你的,请使用 Imp 上的分享按钮。"
+
+#. Button on the Sharing page: bring in a kit from a link or file.
+msgctxt "sharing.import"
+msgid "Import"
+msgstr "导入"
 
 #. Shown in the animations list when you have made none.
 msgctxt "sheets.animations.nothing_yet"
@@ -3051,12 +3201,12 @@ msgstr "你已离线"
 
 #. Button.
 msgctxt "state.servers.set_up_den"
-msgid "Set up The Den"
+msgid "Set up Den"
 msgstr "设置 Den"
 
 #. Button.
 msgctxt "state.servers.set_up_hop"
-msgid "Set up The Hop"
+msgid "Set up Hop"
 msgstr "设置 Hop"
 
 #. Button in the sleeping state.
@@ -3086,8 +3236,8 @@ msgstr "正在醒来…"
 
 #. Button that adds tools.
 msgctxt "tools.add"
-msgid "Add tools"
-msgstr "添加工具"
+msgid "Add"
+msgstr "添加"
 
 #. Badge for a built-in tool group.
 msgctxt "tools.built_in"
@@ -3126,13 +3276,13 @@ msgstr "{group} 的工具"
 
 #. Button that adds a header to a tool server.
 msgctxt "tools.header_add"
-msgid "Add header"
-msgstr "添加请求头"
+msgid "Add"
+msgstr "添加"
 
 #. Label of a header's name field.
 msgctxt "tools.header_name"
-msgid "Header name"
-msgstr "请求头名称"
+msgid "Name"
+msgstr "名称"
 
 #. Placeholder of a header value that is already kept safe.
 msgctxt "tools.header_saved"
@@ -3141,8 +3291,8 @@ msgstr "已保存"
 
 #. Label of a header's value field.
 msgctxt "tools.header_value"
-msgid "Header value"
-msgstr "请求头的值"
+msgid "Value"
+msgstr "值"
 
 #. Small title over a tool server's HTTP headers.
 msgctxt "tools.headers"
@@ -3191,8 +3341,8 @@ msgstr "正在启动"
 
 #. Title of a tool server that has no name or address yet.
 msgctxt "tools.new_server"
-msgid "New server"
-msgstr "新服务器"
+msgid "New"
+msgstr "新建"
 
 #. Placeholder of a field that may be left empty.
 msgctxt "tools.optional"
@@ -3236,8 +3386,8 @@ msgstr "工具"
 
 #. Button that adds a trigger.
 msgctxt "triggers.add"
-msgid "Add a trigger"
-msgstr "添加触发器"
+msgid "Add"
+msgstr "添加"
 
 #. Action on a trigger.
 msgctxt "triggers.delete"
@@ -3316,8 +3466,8 @@ msgstr "仅限 {name}"
 
 #. Title of the sheet that adds a trigger.
 msgctxt "triggers.new"
-msgid "New trigger"
-msgstr "新触发器"
+msgid "New"
+msgstr "新建"
 
 #. Choice in the trigger editor: the change is for this Imp only.
 msgctxt "triggers.scope.just"
@@ -3341,13 +3491,13 @@ msgstr "当{event}时，{action}。"
 
 #. Menu item on this Imp's trigger: share it with every Imp.
 msgctxt "triggers.share_every"
-msgid "Share with Every Imp"
-msgstr "与所有 Imp 共享"
+msgid "Share to all"
+msgstr "共享给所有"
 
 #. Button in the empty triggers list: review and add the starter kit.
 msgctxt "triggers.starter"
-msgid "Add the starter kit"
-msgstr "添加入门套件"
+msgid "Starter kit"
+msgstr "入门套件"
 
 #. Screen reader name of a trigger switch.
 msgctxt "triggers.switch"
@@ -3361,8 +3511,8 @@ msgstr "触发器"
 
 #. Button that removes this Imp's version of a shared trigger, so the shared one applies again.
 msgctxt "triggers.use_shared"
-msgid "Use the shared one"
-msgstr "使用共享的"
+msgid "Use shared"
+msgstr "使用共享"
 
 #. Under the confirmation: the Imp's own version is removed.
 msgctxt "triggers.use_shared.message"
@@ -3376,8 +3526,8 @@ msgstr "重新使用共享的“{name}”？"
 
 #. Switch on the iPhone: voices in new replies.
 msgctxt "voice.autoplay"
-msgid "Play voices on their own"
-msgstr "自动播放语音"
+msgid "Autoplay"
+msgstr "自动播放"
 
 #. Note under the switch.
 msgctxt "voice.autoplay_note"
@@ -3386,16 +3536,16 @@ msgstr "Imp 标记为自动播放的语音会在新回复中自动开始。关�
 
 #. Switch.
 msgctxt "voice.listen"
-msgid "Talk to Imps by voice"
-msgstr "用语音和 Imp 交谈"
+msgid "Listen"
+msgstr "聆听"
 
 #. Switch.
 msgctxt "voice.speak"
-msgid "Speak answers aloud"
-msgstr "朗读回答"
+msgid "Speak"
+msgstr "朗读"
 
 #. Group title.
 msgctxt "voice.title"
-msgid "Voice and chat"
-msgstr "语音和聊天"
+msgid "Voice"
+msgstr "语音"
 

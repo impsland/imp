@@ -15,11 +15,7 @@ struct PocketToolsPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
-            HStack(spacing: 0) {
-                Text("tools.mcp").font(Typeface.label).foregroundStyle(Tone.text).accessibilityAddTraits(.isHeader)
-                InfoTip("tools.help.mcp")
-                Spacer(minLength: 0)
-            }
+            SectionHeader("tools.mcp", info: "tools.help.mcp", font: Typeface.label, minHeight: nil)
             ForEach($draft.servers) { $server in
                 serverCard($server)
             }

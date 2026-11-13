@@ -50,6 +50,8 @@ struct DenBrowserSheet: View {
         _browser = State(initialValue: browser)
     }
 
+    @State private var notice: ImpNotice?
+
     private var server: DenServer? { DenServer(model.prefs.den) }
 
     var body: some View {
@@ -60,11 +62,12 @@ struct DenBrowserSheet: View {
                 searchRow
                 results
             }
-            if let error = browser.error { StatusText(text: LocalizedStringKey(error), symbol: "exclamationmark.triangle.fill", color: Tone.danger) }
         } footer: {
             Button("Back") { flow.browsing = false }.buttonStyle(.quiet)
         }
         .task(id: model.prefs.den) { if server != nil { await browser.search(model.prefs) } }
+        .onChange(of: browser.error) { _, error in if let error { notice = .error(error) } }
+        .impNotice($notice)
     }
 
     /// The Den in the same card as on the Sharing page, and why browsing waits for it.

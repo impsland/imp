@@ -21,8 +21,9 @@ docker run -d --name hop -p 4677:4677 -e HOP_ADDR=0.0.0.0:4677 --entrypoint hop 
 
 Then, in Imp's settings under Devices, choose **Custom** for The Den and enter `http://<this computer>:8080`,
 and for The Hop enter `<this computer>:4677`. They are two settings: you can set only one of them, and
-they can point at different computers. **This computer** fills in `http://localhost:8080` and
-`localhost:4677` for a server running on the same computer. With only a Den you can browse and install
+they can point at different computers. For a server running on the same computer, enter
+`http://localhost:8080` and `localhost:4677` (a linking code then gives the Hop out under the computer's own
+network name, since `localhost` on the other device would be that device). With only a Den you can browse and install
 but not link from anywhere. With only a Hop you can link devices but not use the Den. Keep the `DEN_SECRET` you chose:
 the Den needs the same one after a restart. For a public server with TLS, use Docker Compose below,
 which runs the same image.

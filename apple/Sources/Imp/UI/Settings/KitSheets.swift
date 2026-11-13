@@ -34,6 +34,7 @@ struct KitEntrySheet: View {
     @Bindable var router: HomeRouter
     @Environment(\.impTint) private var tint
     @State private var dropping = false
+    @State private var notice: ImpNotice?
 
     private var isEmpty: Bool { flow.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 
@@ -53,21 +54,20 @@ struct KitEntrySheet: View {
                 loading
             } else {
                 dropZone
-                HStack(spacing: Spacing.hairline) {
-                    Text("Or paste a kit or a web address").font(Typeface.caption).foregroundStyle(Tone.muted)
-                    InfoTip("kit.help.paste")
-                }
+                SectionHeader("Or paste a kit or a web address", info: "kit.help.paste",
+                              font: Typeface.caption, color: Tone.muted, minHeight: nil)
                 .padding(.bottom, -Spacing.snug)
                 EditorWell(text: $flow.text, codePlaceholder: "{ \"imps\": […] }   or   https://example.com/kit.json",
                            mono: true, height: Self.editorHeight)
             }
-            if let error = flow.error { ErrorBanner(text: error) }
         } footer: {
             Spacer()
             Button("Review") { Task { await flow.read(model: model) } }
                 .buttonStyle(.primary).keyboardShortcut(.defaultAction)
                 .disabled(flow.isLoading || isEmpty)
         }
+        .onChange(of: flow.error) { _, error in if let error { notice = .warning(error) } }
+        .impNotice($notice)
     }
 
     private var loading: some View {
@@ -111,23 +111,6 @@ struct KitEntrySheet: View {
         panel.message = String(localized: "Choose a kit (.json)")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         Task { await flow.read(file: url, model: model) }
-    }
-}
-
-/// Something went wrong, said in one orange box.
-struct ErrorBanner: View {
-    let text: String
-
-    var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
-            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Tone.warnText)
-            Text(text).fixedSize(horizontal: false, vertical: true).textSelection(.enabled)
-        }
-        .font(Typeface.body).foregroundStyle(Tone.warnText)
-        .padding(Spacing.medium)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Tone.warnBackground))
-        .accessibilityElement(children: .combine)
     }
 }
 
@@ -197,10 +180,11 @@ struct KitSection<Content: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            HStack(spacing: Spacing.snug) {
-                Image(systemName: icon).font(.icon(.medium, weight: .semibold)).foregroundStyle(LegibleTint())
-                Text(title).font(Typeface.cardTitle).foregroundStyle(Tone.text)
-                InfoTip(info)
+            SectionHeader(info: info, minHeight: nil) {
+                HStack(spacing: Spacing.snug) {
+                    Image(systemName: icon).font(.icon(.medium, weight: .semibold)).foregroundStyle(LegibleTint())
+                    Text(title).font(Typeface.cardTitle).foregroundStyle(Tone.text)
+                }
             }
             .accessibilityElement(children: .combine)
             .accessibilityAddTraits(.isHeader)

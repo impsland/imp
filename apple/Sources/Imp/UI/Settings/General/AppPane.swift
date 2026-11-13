@@ -3,11 +3,11 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// How the app looks and behaves.
+/// How the app looks and starts.
 struct AppPane: View {
     @Bindable var model: AppModel
     let router: HomeRouter
-    @State private var loginError: String?
+    @Environment(\.postNotice) private var postNotice
     private var actions: HomeActions { HomeActions(model: model, router: router) }
     private var status: SystemStatus { .shared }
     private var kind: CanvasBackground.Kind { model.prefs.background.kind }
@@ -40,41 +40,28 @@ struct AppPane: View {
                 background
             }
 
-            Card("app.behaviour", icon: "slider.horizontal.3", info: "settings.app.behaviour.info") {
-                Row("pref.double_click.title", icon: "cursorarrow.click.2") {
-                    ImpPicker("pref.double_click.title", selection: $model.prefs.doubleClick,
-                              options: DoubleClickAction.allCases, symbol: model.prefs.doubleClick.symbol) { $0.title }
-                }
-                .settingAnchor(.appDoubleClick)
+            Card("app.system", icon: "gearshape.fill", info: "settings.app.system.info") {
                 Row("app.login", icon: "power") {
                     Toggle(String(""), isOn: Binding(
                         get: { status.launchesAtLogin },
                         set: { on in
-                            do { try LoginItem.set(on); loginError = nil } catch { loginError = error.localizedDescription }
+                            do { try LoginItem.set(on) } catch { postNotice(.error(error.localizedDescription)) }
                             status.refresh()
                         })).labelsHidden().toggleStyle(.impSwitchBare)
                 }
                 .settingAnchor(.appLogin)
-                if let loginError { StatusText(verbatim: loginError, symbol: "exclamationmark.triangle.fill", color: Tone.danger).help(loginError) }
                 LanguageRow(model: model)
             }
 
             Card("app.window.title", icon: "macwindow", info: "app.window.info") {
-                Row("app.window.min_width", icon: "arrow.left.and.right") { windowSlider(\.width, in: WindowSizing.widths, label: "app.window.min_width") }
-                    .settingAnchor(.appWindowWidth)
-                Row("app.window.min_height", icon: "arrow.up.and.down") { windowSlider(\.height, in: WindowSizing.heights, label: "app.window.min_height") }
-                    .settingAnchor(.appWindowHeight)
+                Row("app.window.size", icon: "macwindow") {
+                    ImpSegmented("app.window.size", selection: $model.prefs.windowPreset,
+                                 options: WindowPreset.allCases, title: { String(localized: $0.title) }, symbol: { $0.symbol })
+                }
+                .settingAnchor(.appWindowSize)
             }
         }
         .impAnimation(ImpDesign.Motion.expand, value: kind)
-    }
-
-    /// One side of the smallest window, in points (a double click goes back to the default).
-    private func windowSlider(_ side: WritableKeyPath<CGSize, CGFloat>, in range: ClosedRange<Double>, label: LocalizedStringKey) -> some View {
-        let value = Binding<Double>(get: { Double(model.prefs.windowMinimum[keyPath: side]) },
-                                    set: { var size = model.prefs.windowMinimum; size[keyPath: side] = CGFloat($0); model.prefs.windowMinimum = size })
-        return RowSlider(value: value, range: range, step: WindowSizing.step, label: label,
-                         shown: words("app.window.points", Int(value.wrappedValue)), resets: Double(WindowSizing.defaultMinimum[keyPath: side]))
     }
 
     /// The choice on one row; below it, only when the kind needs it, the action that finishes it.
@@ -155,5 +142,25 @@ struct LanguageRow: View {
 
     private static func read() -> String? {
         AppLanguage.chosen(in: Bundle.main.bundleIdentifier.flatMap { UserDefaults.standard.persistentDomain(forName: $0) })
+    }
+}
+
+extension WindowPreset {
+    var title: LocalizedStringResource {
+        switch self {
+        case .small: "app.window.small"
+        case .medium: "app.window.medium"
+        case .large: "app.window.large"
+        case .full: "app.window.full"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .small: "rectangle.compress.vertical"
+        case .medium: "rectangle"
+        case .large: "rectangle.expand.vertical"
+        case .full: "arrow.up.left.and.arrow.down.right"
+        }
     }
 }

@@ -62,9 +62,6 @@ public struct PhoneRouter: Equatable, Sendable {
     /// Opens an Imp's sheet on its chat.
     public mutating func talk(_ id: UUID) { show(id, .chat) }
 
-    /// Opens an Imp's sheet on its talks with other Imps.
-    public mutating func talks(_ id: UUID) { show(id, .talks) }
-
     private mutating func show(_ id: UUID, _ pane: ImpPane) {
         route = .imp(id)
         self.pane = pane

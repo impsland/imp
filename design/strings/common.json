@@ -129,5 +129,23 @@
     "en": "Name",
     "es": "Nombre",
     "zh-Hans": "名称"
+  },
+  "common.action_working": {
+    "note": "Screen reader value of a button whose action is running.",
+    "en": "Working",
+    "es": "En curso",
+    "zh-Hans": "进行中"
+  },
+  "common.action_done": {
+    "note": "Screen reader value of a button whose action just succeeded.",
+    "en": "Done",
+    "es": "Hecho",
+    "zh-Hans": "完成"
+  },
+  "common.action_failed": {
+    "note": "Screen reader value of a button whose action just failed.",
+    "en": "Failed",
+    "es": "Falló",
+    "zh-Hans": "失败"
   }
 }

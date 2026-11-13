@@ -14,7 +14,7 @@ struct MemoryCard: View {
     @State private var showsAll = false
     @State private var deleting: ChatSummary?
     @State private var deletingTalk: TalkThread?
-    @State private var notice: (text: String, ok: Bool)?
+    @Environment(\.postNotice) private var postNotice
     /// New Chat asks first: a second click within a few seconds does it.
     @State private var asking = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -55,22 +55,28 @@ struct MemoryCard: View {
         Card("Memory", icon: "brain",
              info: "Every chat is saved. Carry on in an older one, save it or bring one in.",
              accessory: { newChatButton }) {
-            Row("Tool calls", icon: "wrench.and.screwdriver",
-                info: "Also sends the tools \(name) used and their results. Off is smaller and cheaper.") {
+            Row("memory.sends.title", icon: "clock.arrow.circlepath", info: "memory.sends.info") {
+                ImpPicker("memory.sends.title", selection: Binding(get: { imp.memoryExchanges },
+                                                                   set: { imp.exchangesSent = $0 == ChatMemory.noLimit ? nil : $0 }),
+                          options: [ChatMemory.noLimit] + ChatMemory.choices
+                            + (ChatMemory.choices.contains(imp.memoryExchanges) || imp.memoryExchanges == ChatMemory.noLimit ? [] : [imp.memoryExchanges])) {
+                    $0 == ChatMemory.noLimit ? String(localized: "memory.no_limit") : words("memory.last", $0)
+                }
+            }
+            .settingAnchor(.brainSends)
+            Row("memory.tools.title", icon: "wrench.and.screwdriver", info: "memory.tools.info") {
                 Toggle(String(""), isOn: Binding(get: { imp.remembersToolCalls }, set: { imp.sendsToolCalls = $0 ? nil : false }))
                     .labelsHidden().toggleStyle(.impSwitchBare)
             }
-            .settingAnchor(.brainToolCalls)
-            Row("Remembers", icon: "clock.arrow.circlepath",
-                info: "How many recent exchanges go with each message. Fewer is faster and cheaper.") {
-                ImpPicker("Messages sent", selection: Binding(get: { imp.memoryExchanges },
-                                                              set: { imp.exchangesSent = $0 == ChatMemory.noLimit ? nil : $0 }),
-                          options: [ChatMemory.noLimit] + ChatMemory.choices
-                            + (ChatMemory.choices.contains(imp.memoryExchanges) || imp.memoryExchanges == ChatMemory.noLimit ? [] : [imp.memoryExchanges])) {
-                    $0 == ChatMemory.noLimit ? String(localized: "No limit") : String(localized: "Last \($0)")
+            .settingAnchor(.brainTools)
+            Row("memory.new_chat.title", icon: "plus.bubble", info: "memory.new_chat.info") {
+                ImpPicker("memory.new_chat.title", selection: Binding(get: { imp.newChatAt },
+                                                                      set: { imp.newChatAtTokens = $0 == ImpProfile.newChatDefault ? nil : $0 }),
+                          options: ImpProfile.newChatChoices) {
+                    $0 >= 1_000_000 ? words("memory.size.m", $0 / 1_000_000) : words("memory.size.k", $0 / 1000)
                 }
             }
-            .settingAnchor(.brainRemembers)
+            .settingAnchor(.brainNewChat)
             if let live {
                 CurrentChat(imp: live, profile: imp)
             } else {
@@ -109,11 +115,7 @@ struct MemoryCard: View {
                   info: "Every chat with \(name), newest first. Continue one to pick up where you left off.",
                   accessory: {
             HStack(spacing: Spacing.small) {
-                if let notice {
-                    StatusText(verbatim: notice.text, symbol: notice.ok ? "checkmark.circle.fill" : "exclamationmark.triangle.fill",
-                               color: notice.ok ? Tone.good : Tone.danger)
-                        .help(notice.text)
-                } else if !chats.isEmpty {
+                if !chats.isEmpty {
                     Text(verbatim: "\(chats.count)").font(Typeface.small.weight(.semibold)).foregroundStyle(Tone.muted)
                 }
                 Button { importChat() } label: { FitLabel("Import…", systemImage: "square.and.arrow.down") }
@@ -180,8 +182,7 @@ struct MemoryCard: View {
     }
 
     private func say(_ text: String, ok: Bool) {
-        withImpAnimation(ImpDesign.Motion.quick, reduceMotion: reduceMotion) { notice = (text, ok) }
-        Task { try? await Task.sleep(for: .seconds(4)); withImpAnimation(ImpDesign.Motion.quick, reduceMotion: reduceMotion) { if notice?.text == text { notice = nil } } }
+        postNotice(ok ? .success(text) : .error(text))
     }
 
     private func export(_ summary: ChatSummary) {
@@ -341,6 +342,7 @@ private struct CurrentChat: View {
     let profile: ImpProfile
     /// Recap asks first: a second click within a few seconds does it.
     @State private var asking = false
+    @Environment(\.postNotice) private var postNotice
 
     var body: some View {
         let chat = imp.history.current
@@ -352,22 +354,20 @@ private struct CurrentChat: View {
                         (chat.title.isEmpty ? Text("New chat") : Text(verbatim: chat.title))
                             .font(Typeface.body.weight(.semibold)).foregroundStyle(Tone.text)
                             .lineLimit(2).fixedSize(horizontal: false, vertical: true)
-                        InfoTip("\(profile.callName) keeps a short recap and the last exchange. The whole chat stays to read.")
                     }
                     Text(details(memory)).font(Typeface.small).foregroundStyle(Tone.muted)
                         .lineLimit(2).fixedSize(horizontal: false, vertical: true)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                if imp.isRecapping { ProgressView().controlSize(.small) }
                 Button { confirmRecap() } label: {
-                    FitLabel(asking ? "Recap now?" : "Recap", systemImage: "rectangle.compress.vertical")
+                    StatefulLabel(asking ? "Recap now?" : "Recap", symbol: "rectangle.compress.vertical",
+                                  state: imp.isRecapping ? .working : .idle)
                 }
                 .buttonStyle(.imp(.secondary, small: true))
                 .disabled(!imp.canRecap)
+                .onChange(of: imp.recapError) { _, error in if let error { postNotice(.error(String(localized: "Couldn't recap: \(error)"))) } }
                 HoverIconButton(systemName: "bubble.left.and.bubble.right.fill", help: "Open the chat beside \(profile.callName)") { imp.openChat() }
-            }
-            if let error = imp.recapError {
-                StatusText(text: "Couldn't recap: \(error)", color: Tone.danger).help(error)
+                InfoTip("\(profile.callName) keeps a short recap and the last exchange. The whole chat stays to read.")
             }
         }
     }

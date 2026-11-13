@@ -24,7 +24,7 @@ import Testing
 
     @Test func aBookTheCoreCantReadIsAnErrorNotAFreshStart() throws {
         let storage = LinkMemoryStorage(Data("{ not json".utf8))
-        #expect(throws: (any Error).self) { try LinkNode(name: "Mac", kind: .mac, storage: storage) }
+        #expect(throws: LinkNode.OpenError.unreadable) { try LinkNode(name: "Mac", kind: .mac, storage: storage) }
     }
 
     @Test func aSavedBookBringsBackTheSameDevice() throws {

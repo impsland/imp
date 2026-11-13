@@ -1,4 +1,5 @@
 import AppKit
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -64,13 +65,13 @@ final class ImpMenu: NSObject, NSMenuDelegate {
         if app.link.isLinked {
             let around = app.link.connectedPeers
             for peer in around {
-                let item = add(menu, String(localized: "Send \(name) to \(peer.name)…"),
+                let item = add(menu, words("menu.imp.send_to", peer.name),
                                symbol: peer.kind == .mac ? "desktopcomputer" : "iphone.gen3", action: #selector(sendToDevice(_:)))
                 item.representedObject = peer.id
-                item.toolTip = String(localized: "\(name) flies off the screen onto \(peer.name). Or throw it hard at the side of the screen.")
+                item.toolTip = words("menu.imp.visit_tip", name, peer.name)
             }
             if around.isEmpty {
-                let item = add(menu, String(localized: "Send \(name) to Another Device…"), symbol: "iphone.gen3", action: #selector(sendToDevice(_:)))
+                let item = add(menu, String(localized: "menu.imp.visit_none"), symbol: "iphone.gen3", action: #selector(sendToDevice(_:)))
                 item.toolTip = String(localized: "Open Imp on a linked device first (same network as this Mac, or the same server).")
                 item.action = nil                                  // greyed out until a device is around
             }
@@ -98,12 +99,12 @@ final class ImpMenu: NSObject, NSMenuDelegate {
         // Only the devices its doors lead to: back where it came from, or on to the others.
         let doors = Set([LinkSide.left, .right].flatMap { app.link.bands(of: imp.id, side: $0).map(\.device) })
         for peer in app.link.connectedPeers where doors.contains(peer.id) {
-            let item = add(menu, String(localized: "Send \(name) to \(peer.name)…"),
+            let item = add(menu, words("menu.imp.send_to", peer.name),
                            symbol: peer.kind == .mac ? "desktopcomputer" : "iphone.gen3", action: #selector(sendToDevice(_:)))
             item.representedObject = peer.id
-            item.toolTip = String(localized: "\(name) flies off the screen onto \(peer.name). Or throw it hard at the side of the screen.")
+            item.toolTip = words("menu.imp.visit_tip", name, peer.name)
         }
-        add(menu, String(localized: "Send \(name) Home"), symbol: "house", action: #selector(sendVisitorHome))
+        add(menu, String(localized: "menu.imp.send_home"), symbol: "house", action: #selector(sendVisitorHome))
             .toolTip = String(localized: "\(name) flies back to \(visit.homeName). If it is away, \(name) goes now and \(visit.homeName) hears when it is back.")
         return menu
     }

@@ -215,15 +215,7 @@ struct PanelList<Content: View, Accessory: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.snug) {
-            HStack(spacing: Spacing.small) {
-                IconTile(systemName: icon)
-                Text(title).font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1)
-                    .accessibilityAddTraits(.isHeader)
-                InfoTip(info)
-                Spacer(minLength: Spacing.small)
-                accessory
-            }
-            .frame(minHeight: Sizing.iconTile)
+            SectionHeader(title, icon: icon, info: info) { accessory }
             .padding(.horizontal, Spacing.small)
             .padding(.bottom, Spacing.tight)
             content

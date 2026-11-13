@@ -56,6 +56,54 @@ One setting: a picture, one to three plain words and a control. A help question 
 - When the control does not fit beside the title, it moves under the title. Nothing overlaps or clips (R13).
 - There is no line between rows.
 
+## sectionHeader
+
+The header of a card, a section or a sheet: the picture and the title on the leading edge, an optional control and then the help question mark on the trailing edge. The help is always the last thing on the right, so the header is balanced and the question mark is in the same place on every card.
+
+| Property | Value |
+| --- | --- |
+| `minHeight` | `size.iconTile` (24 px) |
+| `iconTile` | `size.iconTile` (24 px) |
+| `gap` | `spacing.small` (8 px) |
+| `title` | `type.cardTitle` (14 px, weight 600, rounded) |
+| `titleColor` | `color.text` (dark #f2f0ea, light #17181c) |
+| `helpColor` | `color.muted` (dark rgba(242, 240, 234, 0.702), light rgba(23, 24, 28, 0.702)) |
+
+- Leading edge: icon tile, then the title. Trailing edge: the optional control, then the help tip. Never the tip beside the title with empty space on the right.
+- At most one help tip per header. A row (a setting with its own control) is not a header: its tip stays beside its title.
+- A header's controls sit in a row of their own height, so the header is as tall with them as without.
+
+## cornerInset
+
+How an icon button sits in a corner (a close button, a back button, a settings gear).
+
+| Property | Value |
+| --- | --- |
+| `hit` | `size.hit` (28 px) |
+| `glyph` | `size.glyph` (26 px) |
+
+- The inset is measured to the visible circle (size.glyph), not to the hit area (size.hit). The two edges a control is near have the same inset: top equals trailing, bottom equals leading.
+- A bar's height is its content plus its inset on both sides, so the control is centred and its trailing inset equals its top inset.
+- A footer button sits as far from the bottom of a sheet as from its left.
+
+## notice
+
+How a result is shown without moving anything. Never a line inserted into the page.
+
+| Property | Value |
+| --- | --- |
+| `fill` | `color.raised` (dark #1e2026, light #ffffff) |
+| `text` | `color.text` (dark #f2f0ea, light #17181c) |
+| `radius` | `radius.full` (999 px) |
+| `padding` | `spacing.large` (16 px) |
+| `shadow` | `shadow.card` (y 10, blur 30) |
+| `motion` | `motion.expand` (0.2 s) |
+
+- The button that starts an action carries its own state: its icon becomes a progress wheel, then a tick or a cross, in the same space, so nothing moves.
+- The details of a failure appear in a floating notice over the bottom of the window or sheet. It goes away by itself (behavior.noticeSeconds) and is announced to VoiceOver.
+- A line that says what is going on (Waiting for your other device) lives in a status slot: a line of fixed height that is always there and swaps its words in place.
+- A problem that stays until it is fixed is an attention notice at the top of the settings page that fixes it.
+
 ## iconTile
 
 A round bead behind an icon.

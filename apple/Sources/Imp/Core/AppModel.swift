@@ -157,12 +157,15 @@ final class AppModel {
     static let rest: TimeInterval = 60
 
     private func apply(_ p: ImpPreferences, previous old: ImpPreferences) {
-        if !erased { store?.save(p) }
+        scheduleSave()
         if p.liveShortcuts.map(\.keys) != old.liveShortcuts.map(\.keys) { registerHotkeys() }
         if p.appearance != old.appearance { Self.applyAppearance(p.appearance) }
-        if p.windowMinimum != old.windowMinimum { HomeWindow.shared.applyMinimum(p.windowMinimum) }
+        if p.windowPreset != old.windowPreset { HomeWindow.shared.apply(p.windowPreset) }
         if p.watchesCursor != old.watchesCursor { reactions.apply(p) }
-        assistant.configure(ai: p.ai, servers: p.liveServers, keychain: p.keysInKeychain, limits: p.requests)
+        // Configuring asks the Keychain about every service: only when what it reads has changed.
+        if p.ai != old.ai || p.liveServers != old.liveServers || p.keysInKeychain != old.keysInKeychain || p.requests != old.requests {
+            assistant.configure(ai: p.ai, servers: p.liveServers, keychain: p.keysInKeychain, limits: p.requests)
+        }
         if p.imps != old.imps {
             noticeFavoriteColors(p.imps, before: old.imps)
             syncTroupe()
@@ -171,6 +174,24 @@ final class AppModel {
                 if before?.scale != imp.profile.scale { imp.onScaleChange?() }
             }
         }
+    }
+
+    /// A burst of changes (a switch, a slider being dragged) is written once, after the frame that shows it,
+    /// so encoding every setting never holds a control back. `flushSave()` writes at once (quitting).
+    @ObservationIgnored private var pendingSave: Task<Void, Never>?
+
+    private func scheduleSave() {
+        guard store != nil, pendingSave == nil else { return }
+        pendingSave = Task { @MainActor [weak self] in
+            await Task.yield()
+            self?.flushSave()
+        }
+    }
+
+    func flushSave() {
+        pendingSave?.cancel()
+        pendingSave = nil
+        if !erased { store?.save(prefs) }
     }
 
     /// Light, dark or follow the system: applies to every window, bubble and menu.

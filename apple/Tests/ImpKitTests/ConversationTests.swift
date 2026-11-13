@@ -13,15 +13,16 @@ import Testing
     @Test func defaultsLiveInPreferences() {
         let p = ImpPreferences()
         #expect(p.talkThreading == .decides && p.talkWindowMinutes == 60)
-        #expect(p.contextNoticeTokens == 250_000)
-        #expect(ImpPreferences.contextNoticeChoices == [50_000, 100_000, 250_000, 500_000, 750_000, 1_000_000])
+        #expect(ImpProfile.newChatChoices == [50_000, 100_000, 250_000, 500_000, 750_000, 1_000_000])
         var q = p
         q.talkWindowMinutes = 0
         #expect(q.talkWindowMinutes == 1)
-        q.contextNoticeTokens = 1_000_000
-        #expect(q.contextNoticeTokens == 1_000_000)
-        q.contextNoticeTokens = 60_000                                    // not a choice: the default
-        #expect(q.contextNoticeTokens == 250_000)
+        var imp = q.imps[0]
+        #expect(imp.newChatAt == 250_000, "each Imp suggests a new chat at the old default")
+        imp.newChatAtTokens = 1_000_000
+        #expect(imp.newChatAt == 1_000_000)
+        imp.newChatAtTokens = 60_000                                      // not a choice: the default
+        #expect(imp.newChatAt == 250_000)
     }
 
     @Test func theRuleContinuesWhenRecentElseStartsNew() {

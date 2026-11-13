@@ -145,15 +145,34 @@ impl LinkRoutes {
         }
         kept.truncate(MOST_HOSTS);
         Self {
-            hosts: kept,
             port: if port > 0 { port } else { crate::link::PORT },
-            hop: hop.and_then(HopAddress::parse).map(|a| a.text()),
+            hop: hop
+                .and_then(HopAddress::parse)
+                .and_then(|a| Self::reachable(a, &kept))
+                .map(|a| a.text()),
+            hosts: kept,
         }
+    }
+
+    /// A Hop on this device's own loopback (`localhost:4677`, a Hop the person runs here) means nothing
+    /// to the device that reads the card: there it is that device itself. So it is given out under this
+    /// device's own first host instead, and left out when this device has no host to give.
+    fn reachable(hop: HopAddress, hosts: &[String]) -> Option<HopAddress> {
+        if !is_loopback(&hop.host) {
+            return Some(hop);
+        }
+        let host = hosts.iter().find(|h| !is_loopback(h))?;
+        HopAddress::new(host, hop.port)
     }
 
     pub fn hop_address(&self) -> Option<HopAddress> {
         self.hop.as_deref().and_then(HopAddress::parse)
     }
+}
+
+/// Whether `host` only ever means the device it is written on.
+fn is_loopback(host: &str) -> bool {
+    host == "localhost" || host.ends_with(".localhost") || host.starts_with("127.")
 }
 
 /// A device's visiting card: who it is and how to reach it. An Imp carries its home's card when it

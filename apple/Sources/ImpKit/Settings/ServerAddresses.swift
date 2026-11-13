@@ -44,21 +44,29 @@ public enum ServerKind: Sendable {
         }
     }
 
-    /// The address Imp's own server has, and the one `imp serve` has on this computer.
+    /// The address Imp's own server has, and the one `imp serve` has on this computer (typed under Custom).
     public var defaultAddress: String { self == .den ? serversDefaults().den : serversDefaults().hop }
     public var localAddress: String { self == .den ? serversDefaults().localDen : serversDefaults().localHop }
+
+    /// Whether `text` is a server on this very device (`localhost`, `127.x`): one the person runs here.
+    public static func isOnThisDevice(_ text: String) -> Bool {
+        var host = text.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        if let scheme = host.range(of: "://") { host = String(host[scheme.upperBound...]) }
+        host = String(host.prefix { $0 != ":" && $0 != "/" })
+        return host == "localhost" || host.hasSuffix(".localhost") || host.hasPrefix("127.")
+    }
 }
 
-/// The choices next to an address field. `custom` is any other address, and `off` is empty.
+/// The choices next to an address field. `custom` is any other address (a server of one's own, on this
+/// computer too), and `off` is empty.
 public enum ServerChoice: CaseIterable, Sendable {
-    case imps, thisComputer, custom, off
+    case imps, custom, off
 
     /// The choice that an address stands for.
     public static func of(_ text: String, _ kind: ServerKind) -> ServerChoice {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         if text.isEmpty { return .off }
         if text == kind.defaultAddress { return .imps }
-        if text == kind.localAddress { return .thisComputer }
         return .custom
     }
 
@@ -66,7 +74,6 @@ public enum ServerChoice: CaseIterable, Sendable {
     public func address(_ kind: ServerKind) -> String? {
         switch self {
         case .imps: kind.defaultAddress
-        case .thisComputer: kind.localAddress
         case .off: ""
         case .custom: nil
         }

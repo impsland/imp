@@ -52,7 +52,7 @@ extension AnimationCatalog {
           ]
         },
         {
-          "duration": 1,
+          "duration": 0.3,
           "look": [
             0,
             0.1
@@ -71,7 +71,7 @@ extension AnimationCatalog {
       ],
       "beats": [
         {
-          "duration": 1.8,
+          "duration": 0.9,
           "look": [
             0,
             0.1
@@ -88,7 +88,7 @@ extension AnimationCatalog {
       "starts": [],
       "beats": [
         {
-          "duration": 2.2,
+          "duration": 0.9,
           "look": [
             -0.2,
             0.5
@@ -105,7 +105,7 @@ extension AnimationCatalog {
       "starts": [],
       "beats": [
         {
-          "duration": 1.6,
+          "duration": 0.9,
           "glyph": "exclaim",
           "look": [
             0,
@@ -123,7 +123,7 @@ extension AnimationCatalog {
       "starts": [],
       "beats": [
         {
-          "duration": 2.8,
+          "duration": 0.9,
           "look": [
             0,
             0.35

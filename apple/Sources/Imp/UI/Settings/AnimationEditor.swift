@@ -346,7 +346,6 @@ struct AnimationEditor: View {
         VStack(alignment: .leading, spacing: Spacing.tight) {
             HStack(spacing: Spacing.tight) {
                 Text("Beats").font(Typeface.cardTitle)
-                InfoTip("anim.help.beats")
                 Text(verbatim: "\(beats.count)/\(MadeAnimation.maxBeats)").font(Typeface.small.weight(.medium)).foregroundStyle(Tone.muted)
                 Spacer()
                 HoverIconButton(systemName: "minus.magnifyingglass", help: "Zoom out") { withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { zoom = max(0.5, zoom / 1.4) } }
@@ -362,6 +361,7 @@ struct AnimationEditor: View {
                     .buttonStyle(.imp(.secondary, small: true))
                     .disabled(beats.count >= MadeAnimation.maxBeats)
                     .help("Add a beat after this one")
+                InfoTip("anim.help.beats")
             }
             BeatTrack(beats: $draft.made.beats, selected: $selected, hue: hue, zoom: zoom, playing: playing, tempo: traits.tempo,
                       copied: copied != nil,
@@ -453,10 +453,11 @@ struct AnimationEditor: View {
                     TextField("What it looks like, in a few words", text: $draft.made.about).impField()
                 }
                 FieldRow("For", info: "One made for a single Imp plays only for it, in place of a shared one.") {
-                    ImpPicker("For", selection: $draft.owner, options: [UUID?.none] + [draft.previewImp].compactMap { $0 }.map { Optional($0) }) { owner in
+                    ImpSegmented("For", selection: $draft.owner, options: [UUID?.none] + [draft.previewImp].compactMap { $0 }.map { Optional($0) },
+                                 title: { owner in
                         guard let owner, let imp = model.prefs.imps.first(where: { $0.id == owner }) else { return String(localized: "Every Imp") }
                         return String(localized: "\(imp.callName) only")
-                    }
+                    }, symbol: { $0 == nil ? "person.3.fill" : "person.fill" })
                 }
                 FieldRow("Icon", info: "anim.help.icon") { IconPicker(symbol: $draft.made.symbol, extra: animation.replaces?.symbol) }
             }

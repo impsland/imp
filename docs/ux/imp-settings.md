@@ -121,7 +121,7 @@ The name moves here, with the persona and the voice. The name is part of who the
 
 ![Brain](./images/imp-brain-open.png)
 
-The Brain panel shows the status with Check (or Wake) at the trailing edge, then two choices: the same Brain as the other Imps, or its own. Its own means one service, picked from the services the app has or added with “Add a service”. The service's address, key and model are the ones the Imp uses; the panel shows no key or model fields. Memory lists chats with a readable title (two lines), date and count, and Recap, Open and New Chat as clear buttons.
+The Brain panel shows the status with Check (or Wake) at the trailing edge, then two choices: the same Brain as the other Imps, or its own. Its own means one service, picked from the services the app has or added with “Add a service”. The service's address, key and model are the ones the Imp uses; the panel shows no key or model fields. Memory is one card with three choices that decide how much of the chat goes to the Brain: **Sends** (the last 5 to 1,000 messages, or all), **Tool results** (on or off) and **New chat at** (the size, 50k to 1M, at which a gentle suggestion to recap or start a new chat appears). Each has a "?" help. All three belong to the Imp: there is no app-wide setting for them (the Long chats card on Talking is gone). The phone has no Memory settings: a pocket Imp sends a fixed number of messages and never suggests a new chat. Memory lists chats with a readable title (two lines), date and count, and Recap, Open and New Chat as clear buttons.
 
 An Imp with no Brain sleeps. The Brain marker above its head is an unlit lantern. The Imp shows Zzz. The marker says `imp_settings.summary.brain_none`. It is not red and has no warning icon. Sleeping is a calm state, not a failure.
 
@@ -190,10 +190,10 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 
 ## Words
 
-<!-- strings: imp_settings look personality brain tools triggers moves goodbye share scope -->
+<!-- strings: imp_settings memory look personality brain tools triggers moves goodbye share scope -->
 | Key | English |
 | --- | --- |
-| `brain.add_service` | Add a service |
+| `brain.add_service` | Add |
 | `brain.check_ok` | {name} is awake. |
 | `brain.checking` | Checking… |
 | `brain.choose` | Choose a service |
@@ -209,11 +209,11 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `brain.model_placeholder` | Model name |
 | `brain.none` | No Brain yet |
 | `brain.service` | Service |
-| `brain.source` | Brain from |
+| `brain.source` | Source |
 | `brain.title` | Brain |
 | `brain.unnamed` | Unnamed |
-| `brain.use_app` | Same as the other Imps |
-| `brain.use_own` | Its own Brain |
+| `brain.use_app` | Shared |
+| `brain.use_own` | Own |
 | `brain.zzz` | Zzz, {name} is asleep |
 | `goodbye.cancel` | Keep {name} |
 | `goodbye.confirm` | Say goodbye |
@@ -249,7 +249,7 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `look.cheeks` | Cheeks |
 | `look.colour` | Colour |
 | `look.eyes` | Eyes |
-| `look.favourite` | Favourite colour |
+| `look.favourite` | Favourite |
 | `look.head` | Head |
 | `look.help.body` | Pick the colour and the size of this Imp. |
 | `look.help.brows` | Tilt the eyebrows. One way looks cross, the other looks sad. |
@@ -267,15 +267,25 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `look.lids` | Lids |
 | `look.pace` | Pace |
 | `look.preview` | Preview |
-| `look.reset` | Reset look |
+| `look.reset` | Reset |
 | `look.size` | Size |
 | `look.squint` | Squint |
 | `look.swatch` | Colour {index} of {count} |
 | `look.title` | Look |
-| `moves.builtin` | Built-in moves |
+| `memory.last` | Last {count} |
+| `memory.new_chat.info` | How big a chat gets before the Imp suggests a recap or a new chat. |
+| `memory.new_chat.title` | New chat at |
+| `memory.no_limit` | All |
+| `memory.sends.info` | How many of the latest messages go to the Brain with each one. Fewer is faster and cheaper. |
+| `memory.sends.title` | Sends |
+| `memory.size.k` | {count}k |
+| `memory.size.m` | {count}M |
+| `memory.tools.info` | Also sends what the tools did and returned. Off is smaller and cheaper. |
+| `memory.tools.title` | Tool results |
+| `moves.builtin` | Moves |
 | `moves.change` | Change |
 | `moves.empty` | No special moves yet. |
-| `moves.follow_how` | Follows by |
+| `moves.follow_how` | Follow |
 | `moves.help.builtin` | Pick one of the moves every Imp has and make a version only for this Imp. |
 | `moves.help.follow` | Choose what this Imp does when you move your mouse pointer: stay still, look at it, or run after it. |
 | `moves.help.follow_how` | Off: it stays still. Eyes: only its eyes look at the pointer. Hop: it jumps after the pointer. Glide: it slides after the pointer. |
@@ -294,16 +304,16 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `personality.persona_hint` | Tell {name} who it is and how it talks. |
 | `personality.title` | Personality |
 | `personality.voice` | Voice |
-| `personality.voice_look` | Voice shows as |
+| `personality.voice_look` | Shows as |
 | `scope.changed` | Changed for {name} |
 | `scope.every_imp` | Every Imp |
 | `scope.only` | Only {name} |
-| `share.den` | Share in The Den |
+| `share.den` | Den |
 | `share.den_needs_setup` | Set up The Den to share there. |
-| `share.file` | Save as a file |
+| `share.file` | File |
 | `share.note` | Its look, personality, tools and triggers are shared. Keys, memory and chats never are. |
 | `share.title` | Share {name} |
-| `tools.add` | Add tools |
+| `tools.add` | Add |
 | `tools.built_in` | Built in |
 | `tools.collapse` | Hide the tools in {group} |
 | `tools.empty` | No tools yet. Add some from a kit or an MCP server. |
@@ -311,10 +321,10 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `tools.group_count` | {on} of {total} on |
 | `tools.group_off` | Off |
 | `tools.group_switch` | {group} tools |
-| `tools.header_add` | Add header |
-| `tools.header_name` | Header name |
+| `tools.header_add` | Add |
+| `tools.header_name` | Name |
 | `tools.header_saved` | Saved |
-| `tools.header_value` | Header value |
+| `tools.header_value` | Value |
 | `tools.headers` | Headers |
 | `tools.help.browser` | Lets the Imp look at pages and use the browser you opened for it. |
 | `tools.help.built_in` | Things the Imp can already do, like look at your screen. Switch off any it should not use. |
@@ -324,7 +334,7 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `tools.mcp_connected` | Connected |
 | `tools.mcp_failed` | Could not start |
 | `tools.mcp_starting` | Starting |
-| `tools.new_server` | New server |
+| `tools.new_server` | New |
 | `tools.optional` | Optional |
 | `tools.problem.address` | Add the server's address. |
 | `tools.remove_header` | Remove header |
@@ -333,7 +343,7 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `tools.server_name` | Name |
 | `tools.shared_setup` | Every Imp that uses this tool gets this setup. Each Imp switches it on or off for itself. |
 | `tools.title` | Tools |
-| `triggers.add` | Add a trigger |
+| `triggers.add` | Add |
 | `triggers.delete` | Delete trigger |
 | `triggers.delete_every` | Delete for every Imp |
 | `triggers.delete_every.title` | Delete “{name}” for every Imp? |
@@ -349,16 +359,16 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `triggers.help.when` | What has to happen to set it off, like a time, an app or a low battery. |
 | `triggers.instruction` | Task |
 | `triggers.just_for` | Just for {name} |
-| `triggers.new` | New trigger |
+| `triggers.new` | New |
 | `triggers.scope.just` | Just {name} |
 | `triggers.scope.note_every` | Changes it for every Imp. |
 | `triggers.scope.note_version` | Saves a version for {name} only. The other Imps keep the shared one. |
 | `triggers.sentence` | When {event}, {action}. |
-| `triggers.share_every` | Share with Every Imp |
-| `triggers.starter` | Add the starter kit |
+| `triggers.share_every` | Share to all |
+| `triggers.starter` | Starter kit |
 | `triggers.switch` | Trigger: {sentence} |
 | `triggers.title` | Triggers |
-| `triggers.use_shared` | Use the shared one |
+| `triggers.use_shared` | Use shared |
 | `triggers.use_shared.message` | The version only {name} has goes. |
 | `triggers.use_shared.title` | Use the shared “{name}” again? |
 <!-- /strings -->

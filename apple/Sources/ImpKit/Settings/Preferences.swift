@@ -118,18 +118,12 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     }
     private var chatWidth: Double?
     private var chatHeight: Double?
-    /// The smallest the home window can be made (see `WindowSizing`). `WindowSizing.defaultMinimum` until changed.
-    public var windowMinimum: CGSize {
-        get { WindowSizing.clamped(CGSize(width: windowMinWidth ?? Double(WindowSizing.defaultMinimum.width),
-                                          height: windowMinHeight ?? Double(WindowSizing.defaultMinimum.height))) }
-        set {
-            let size = WindowSizing.clamped(newValue)
-            windowMinWidth = size.width == WindowSizing.defaultMinimum.width ? nil : Double(size.width)
-            windowMinHeight = size.height == WindowSizing.defaultMinimum.height ? nil : Double(size.height)
-        }
+    /// The size of the home window the person chose in Settings (the last one chosen: resizing by hand does not change it).
+    public var windowPreset: WindowPreset {
+        get { window ?? WindowSizing.standard }
+        set { window = newValue }
     }
-    private var windowMinWidth: Double?
-    private var windowMinHeight: Double?
+    private var window: WindowPreset?
     /// Where Imps talk to each other. Optional storage, so older settings load.
     public var impTalk: ImpTalk {
         get { talk ?? .own }
@@ -150,15 +144,6 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { windowMinutes = min(max(newValue, 1), TalkThreading.maxWindowMinutes) }
     }
     private var windowMinutes: Int?
-    /// A chat that would send the model this many tokens (estimated, about four characters each)
-    /// gets a gentle suggestion to recap it or start a new chat. One of `contextNoticeChoices`.
-    public var contextNoticeTokens: Int {
-        get { noticeTokens.flatMap { Self.contextNoticeChoices.contains($0) ? $0 : nil } ?? Self.contextNoticeDefault }
-        set { noticeTokens = Self.contextNoticeChoices.contains(newValue) ? newValue : nil }
-    }
-    public static let contextNoticeChoices = [50_000, 100_000, 250_000, 500_000, 750_000, 1_000_000]
-    public static let contextNoticeDefault = 250_000
-    private var noticeTokens: Int?
     /// Keeps API keys in the login Keychain instead of a private file. Off unless the user turns it
     /// on: macOS may ask for their password when Imp reads a key from there (after an update, say).
     public var keysInKeychain: Bool {
@@ -186,13 +171,6 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { canvasBackground = newValue }
     }
     private var canvasBackground: CanvasBackground?
-    /// What a double click on an Imp does, in the window and on the desktop. It opens the Imp's settings
-    /// unless the user chooses otherwise.
-    public var doubleClick: DoubleClickAction {
-        get { doubleClickChoice ?? .openSettings }
-        set { doubleClickChoice = newValue }
-    }
-    private var doubleClickChoice: DoubleClickAction?
     /// BCP-47 identifier for dictation. Empty = system language.
     public var dictationLocale = ""
     /// The troupe. Always at least one: the little red Imp, waiting in the app's window.

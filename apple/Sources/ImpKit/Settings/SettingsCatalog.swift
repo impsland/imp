@@ -49,15 +49,15 @@ public enum SettingsPlace: String, CaseIterable, Sendable {
 /// Every setting on a settings screen. The raw value is its stable name for tools and links.
 public enum SettingID: String, CaseIterable, Sendable {
     // App
-    case appAppearance = "app_appearance", appControlInk = "app_control_ink", appBackground = "app_background", appDoubleClick = "app_double_click"
-    case appLogin = "app_login", appLanguage = "app_language", appWindowWidth = "app_window_width", appWindowHeight = "app_window_height"
+    case appAppearance = "app_appearance", appControlInk = "app_control_ink", appBackground = "app_background"
+    case appLogin = "app_login", appLanguage = "app_language", appWindowSize = "app_window_size"
     // Bubble
     case bubbleHideAfter = "bubble_hide_after", bubbleLines = "bubble_lines", bubbleSize = "bubble_size"
     case bubbleAutoplay = "bubble_autoplay", bubbleAudio = "bubble_audio"
     case bubbleBackground = "bubble_background", bubbleAmount = "bubble_amount"
     // Talking
     case talkingListeningLanguage = "talking_listening_language", talkingTalkIn = "talking_talk_in"
-    case talkingThreads = "talking_threads", talkingWindow = "talking_window", talkingSuggest = "talking_suggest"
+    case talkingThreads = "talking_threads", talkingWindow = "talking_window"
     // Brains
     case brainsServices = "brains_services", brainsKeychain = "brains_keychain", brainsWait = "brains_wait"
     case brainsRetries = "brains_retries", brainsFirstWait = "brains_first_wait", brainsLonger = "brains_longer"
@@ -74,7 +74,7 @@ public enum SettingID: String, CaseIterable, Sendable {
     case backupExport = "backup_export", backupImport = "backup_import", backupReset = "backup_reset"
     // Per Imp: brain
     case brainSource = "brain_source"
-    case brainToolCalls = "brain_tool_calls", brainRemembers = "brain_remembers", brainCurrentChat = "brain_current_chat"
+    case brainSends = "brain_sends", brainTools = "brain_tools", brainNewChat = "brain_new_chat", brainCurrentChat = "brain_current_chat"
     // Per Imp: personality
     case personalityName = "personality_name", personalityPersona = "personality_persona"
     case personalityVoice = "personality_voice", personalityVoiceLook = "personality_voice_look"
@@ -98,11 +98,9 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .appAppearance: Entry(page: .app, title: "settings.app.appearance.title", hint: "light or dark mode, theme, colours of the app")
         case .appControlInk: Entry(page: .app, title: "settings.app.control_ink.title", hint: "white or black text, icons and switches on coloured buttons and controls")
         case .appBackground: Entry(page: .app, title: "menu.canvas.background", hint: "the desktop home's backdrop picture or colour")
-        case .appDoubleClick: Entry(page: .app, title: "pref.double_click.title", hint: "what double-clicking an Imp does")
         case .appLogin: Entry(page: .app, title: "app.login", hint: "start Imp when the Mac starts, launch at login")
         case .appLanguage: Entry(page: .app, title: "app.language", hint: "the language the app is shown in")
-        case .appWindowWidth: Entry(page: .app, title: "app.window.min_width", hint: "the smallest width of the app's window, minimum size")
-        case .appWindowHeight: Entry(page: .app, title: "app.window.min_height", hint: "the smallest height of the app's window, minimum size")
+        case .appWindowSize: Entry(page: .app, title: "app.window.size", hint: "the size of the app's window, small, medium, large, full screen")
         case .bubbleHideAfter: Entry(page: .bubble, title: "settings.bubble.hide.title", hint: "how long a speech bubble stays before it hides")
         case .bubbleLines: Entry(page: .bubble, title: "settings.bubble.lines.title", hint: "how many lines of a reply the bubble shows")
         case .bubbleSize: Entry(page: .bubble, title: "settings.bubble.size.title", hint: "text size and width of the speech bubble")
@@ -114,7 +112,6 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .talkingTalkIn: Entry(page: .talking, title: "settings.talking.talk_in.title", hint: "where Imps talk to each other, in the bubble or in their own chat")
         case .talkingThreads: Entry(page: .talking, title: "settings.talking.threads.title", hint: "separate chats or one running conversation")
         case .talkingWindow: Entry(page: .talking, title: "settings.talking.window.title", hint: "how long before a chat starts over")
-        case .talkingSuggest: Entry(page: .talking, title: "settings.talking.suggest.title", hint: "follow-up suggestions after a long reply")
         case .brainsServices: Entry(page: .brains, title: "settings.group.brains", hint: "AI services the Imps can use, add an API, address, model, OpenAI, Claude, Ollama")
         case .brainsKeychain: Entry(page: .brains, title: "settings.brains.keychain.title", hint: "where API keys are stored, the Keychain")
         case .brainsWait: Entry(page: .brains, title: "settings.brains.wait.title", hint: "how long to wait for an AI answer, timeout")
@@ -134,8 +131,9 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .backupImport: Entry(page: .backup, title: "settings.backup.import.title", hint: "restore Imps and settings from a file")
         case .backupReset: Entry(page: .backup, title: "app.reset", hint: "erase everything and start over, factory reset")
         case .brainSource: Entry(page: .brain, title: "brain.source", hint: "use the shared Brain or its own one")
-        case .brainToolCalls: Entry(page: .brain, title: "Tool calls", hint: "how many tool steps the Imp may take in one answer")
-        case .brainRemembers: Entry(page: .brain, title: "Remembers", hint: "how much of the past conversation the Imp keeps, memory")
+        case .brainSends: Entry(page: .brain, title: "memory.sends.title", hint: "how many of the latest messages go to the Brain with each one, memory, remembers")
+        case .brainTools: Entry(page: .brain, title: "memory.tools.title", hint: "whether what the tools did and returned is sent back to the Brain, tool calls")
+        case .brainNewChat: Entry(page: .brain, title: "memory.new_chat.title", hint: "the size at which a long chat gets a suggestion to recap or start a new chat")
         case .brainCurrentChat: Entry(page: .brain, title: "Current chat", hint: "let the Imp see the chat it is in")
         case .personalityName: Entry(page: .personality, title: "personality.name", hint: "the Imp's name and what it calls you")
         case .personalityPersona: Entry(page: .personality, title: "personality.persona", hint: "who the Imp is, its character description and instructions")

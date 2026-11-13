@@ -24,6 +24,27 @@
   border: none;
 }
 
+/* The header of a card, a section or a sheet: the picture and the title on the leading edge, an optional control and then the help question mark on the trailing edge. The help is always the last thing on the right, so the header is balanced and the question mark is in the same place on every card. */
+.imp-section-header {
+  min-height: 28px;
+  border: none;
+}
+
+/* How an icon button sits in a corner (a close button, a back button, a settings gear). */
+.imp-corner-inset {
+  border: none;
+}
+
+/* How a result is shown without moving anything. Never a line inserted into the page. */
+.imp-notice {
+  background-color: @imp_raised;
+  color: @imp_text;
+  border-radius: 999px;
+  padding: 16px;
+  box-shadow: 0 10px 30px @imp_shadow_card;
+  border: none;
+}
+
 /* A round bead behind an icon. */
 .imp-icon-tile {
   background-color: @imp_card;

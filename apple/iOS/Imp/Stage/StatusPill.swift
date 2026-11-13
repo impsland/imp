@@ -3,7 +3,8 @@ import ImpKit
 import SwiftUI
 
 /// The top of the main screen, one calm bar: the connection as a compact pill on the leading side
-/// (a tap opens Devices) and one plain icon button on the trailing side that opens the menu.
+/// (a tap opens Devices) and, as on the Mac, the room's actions as icon buttons on the trailing side:
+/// New Imp, Hidden (only while some are hidden, with how many) and Settings. One tap each, no menu.
 struct StatusPill: View {
     let hub: LinkHub
     var hiddenCount = 0
@@ -16,23 +17,35 @@ struct StatusPill: View {
         HStack(spacing: Spacing.medium) {
             pill
             Spacer(minLength: Spacing.medium)
-            Menu {
-                Button(action: hatch) { Label("menu.canvas.new_imp", systemImage: "plus") }
-                Button(action: devices) { Label("menu.canvas.devices", systemImage: "macbook.and.iphone") }
-                if hiddenCount > 0 {
-                    Button(action: showHidden) { Label(words("menu.canvas.show_hidden", hiddenCount), systemImage: "eye") }
-                }
-                Button(action: settings) { Label("menu.canvas.settings", systemImage: "gearshape") }
-            } label: {
-                // No container of its own: the glyph is `Tone.text`, which reads on the surface in both appearances.
-                HoverGlyph(systemName: "ellipsis", tint: Tone.text)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(Text("phone.more.label"))
+            corner
         }
-        .padding(.horizontal, Spacing.page)
+        // The pill sits `page` from the left; the last button's circle sits as far from the right.
+        .padding(.leading, Spacing.page)
+        .padding(.trailing, CornerInset.padding(visible: Spacing.page))
         .frame(minHeight: Sizing.hit)
         .impAnimation(ImpDesign.Motion.smooth, value: hub.connectedPeers)
+    }
+
+    private var corner: some View {
+        HStack(spacing: Spacing.tight) {
+            HoverIconButton(systemName: "plus", help: "menu.canvas.new_imp", tint: Tone.muted, action: hatch)
+            if hiddenCount > 0 {
+                HoverIconButton(systemName: "eye", help: "home.corner.show_hidden", tint: Tone.muted, action: showHidden)
+                    .overlay(alignment: .topTrailing) {
+                        Text(hiddenCount, format: .number)
+                            .font(Typeface.small)
+                            .foregroundStyle(OnTint(Color.imp))
+                            .padding(.horizontal, Spacing.snug)
+                            .background(Capsule().fill(TintFill(Color.imp)))
+                            .allowsHitTesting(false)
+                            .accessibilityHidden(true)
+                    }
+                    .accessibilityValue(Text(hiddenCount, format: .number))
+                    .transition(.opacity)
+            }
+            HoverIconButton(systemName: "gearshape", help: "menu.canvas.settings", tint: Tone.muted, action: settings)
+        }
+        .impAnimation(ImpDesign.Motion.fade, value: hiddenCount > 0)
     }
 
     private var pill: some View {

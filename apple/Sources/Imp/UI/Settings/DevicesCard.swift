@@ -3,49 +3,68 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The devices this Mac is linked with, in one card: Link a device (one sheet that shows this Mac's code
-/// or reads another device's), then each linked device with how it is reached and what it may do, and
-/// Forget all at the end.
-struct DevicesCard: View {
+/// This Mac in one card: its name, how it is reached (the dot is The Hop: lit when devices can find each
+/// other from anywhere) and Link, which opens the sheet that shows this Mac's code or reads another device's.
+struct ThisDeviceCard: View {
     let model: AppModel
     @State private var linking: LinkDeviceSheet.Mode?
+
+    var body: some View {
+        let hop = HopServer(model.prefs.hop)
+        Card("devices.this_mac", icon: "macbook", info: "devices.this.info") {
+            HStack(spacing: Spacing.cozy) {
+                Image(systemName: hop == nil ? "circle" : "circle.fill").font(.icon(.small))
+                    .foregroundStyle(hop == nil ? Tone.muted : Tone.good)
+                    .frame(width: Sizing.mark)
+                    .help(hop.map { words("servers.state_help", $0.address, String(localized: "servers.hop.title")) }
+                          ?? String(localized: "servers.hop.off_note"))
+                    .accessibilityElement()
+                    .accessibilityLabel(Text(hop == nil ? "servers.hop.off_note" : "servers.hop.title"))
+                Button { linking = .show } label: { FitLabel("settings.devices.link.title", systemImage: "link") }
+                    .buttonStyle(.imp(.primary, small: true))
+                    .settingAnchor(.devicesPair)
+            }
+        } content: {
+            EmptyView()
+        }
+        .settingAnchor(.devicesLink)
+        .sheet(item: $linking) { mode in LinkDeviceSheet(model: model, mode: mode) }
+    }
+}
+
+/// The devices linked with this Mac, each its own pebble: what it is, how it is reached, which Imps are on
+/// it, whether it is Mine (trusted) and the way to forget it. Forget all is an icon in the header.
+struct DevicesCard: View {
+    let model: AppModel
     @State private var forgetting: DeviceLink.Peer?
     @State private var forgettingEveryone = false
+    @Environment(\.postNotice) private var postNotice
     private var link: DeviceLink { model.link }
 
     var body: some View {
-        Card("settings.devices.link.title", icon: "iphone.gen3", info: "settings.devices.link.info") {
-            Row("settings.devices.pair.title", icon: "qrcode") {
-                HStack(spacing: Spacing.small) {
-                    Button { linking = .scan } label: { FitLabel("devices.scan", systemImage: "qrcode.viewfinder") }
-                        .buttonStyle(.imp(.secondary, small: true))
-                    Button { linking = .show } label: { FitLabel("devices.show", systemImage: "qrcode") }
-                        .buttonStyle(.imp(link.isLinked ? .secondary : .primary, small: true))
-                }
+        let peers = LinkedDevices.sorted(link.peers)
+        Card("devices.title", icon: "laptopcomputer.and.iphone", info: "devices.list.info") {
+            if !peers.isEmpty {
+                HoverIconButton(systemName: "xmark.circle", help: "settings.devices.forget_all.title", tint: Tone.danger) { forgettingEveryone = true }
+                    .settingAnchor(.devicesForgetAll)
             }
-            .settingAnchor(.devicesPair)
-            if let problem = link.problem {
-                StatusText(verbatim: problem, symbol: "exclamationmark.triangle.fill", color: Tone.warnText).help(problem)
-            }
-            let peers = LinkedDevices.sorted(link.peers)
+        } content: {
+            if link.status?.localNetworkBlocked == true { LocalNetworkNotice() }
             if peers.isEmpty {
-                Text("devices.none").font(Typeface.body).foregroundStyle(Tone.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, Spacing.snug)
+                VStack(spacing: Spacing.small) {
+                    Image(systemName: "laptopcomputer.and.iphone").font(.icon(.large)).foregroundStyle(Tone.muted)
+                    Text("devices.empty").font(Typeface.body).foregroundStyle(Tone.muted)
+                        .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, Spacing.large)
             } else {
                 VStack(spacing: Spacing.snug) {
                     ForEach(peers) { peer in peerRow(peer) }
                 }
-                Row("settings.devices.forget_all.title", icon: "xmark.circle.fill") {
-                    Button(role: .destructive) { forgettingEveryone = true } label: { FitLabel("Forget Everyone…", systemImage: "xmark.circle") }
-                        .buttonStyle(.imp(.destructive, small: true))
-                }
-                .settingAnchor(.devicesForgetAll)
             }
         }
-        .settingAnchor(.devicesLink)
-        .sheet(item: $linking) { mode in LinkDeviceSheet(model: model, mode: mode) }
+        .onChange(of: link.problem, initial: true) { _, problem in if let problem { postNotice(.warning(problem)) } }
         .confirmationDialog(forgetting.map { String(localized: "Forget \($0.name)?") } ?? "",
                             isPresented: Binding(get: { forgetting != nil }, set: { if !$0 { forgetting = nil } }),
                             titleVisibility: .visible, presenting: forgetting) { peer in
@@ -60,38 +79,34 @@ struct DevicesCard: View {
         }
     }
 
-    /// One linked device as a pebble: what it is, how it is reached and which Imps are on it, then its
-    /// controls (beside them when there is room, under them when there is not).
+    /// One linked device as a pebble: its icon, name and the Imps on it (coloured dots) on the leading edge;
+    /// how it is reached, Mine and Forget on the trailing edge.
     private func peerRow(_ peer: DeviceLink.Peer) -> some View {
         let reach = LinkedDevices.reach(peer, hop: HopServer(model.prefs.hop))
-        let imps = model.prefs.imps.filter { peer.imps.contains($0.id) }.map(\.name)
-        let who = HStack(spacing: Spacing.cozy) {
+        let hosted = model.prefs.imps.filter { peer.imps.contains($0.id) }
+        return HStack(spacing: Spacing.cozy) {
             IconTile(systemName: LinkedDevices.symbol(peer.kind)).opacity(peer.isConnected ? 1 : Opacity.dimmed)
-            VStack(alignment: .leading, spacing: Spacing.hairline) {
+            VStack(alignment: .leading, spacing: Spacing.tight) {
                 Text(verbatim: peer.name).font(Typeface.label).foregroundStyle(Tone.text).lineLimit(1)
-                StatusText(verbatim: reach.text, symbol: "circle.fill", color: reach.connected ? Tone.good : Tone.muted)
-                if !imps.isEmpty {
-                    Text(words("devices.has", ListFormatter.localizedString(byJoining: imps)))
-                        .font(Typeface.small).foregroundStyle(Tone.muted).lineLimit(2)
+                if !hosted.isEmpty {
+                    HStack(spacing: Spacing.snug) {
+                        ForEach(hosted, id: \.id) { imp in
+                            Circle().fill(Color.imp(imp.hue)).frame(width: Spacing.small, height: Spacing.small)
+                                .help(imp.name).accessibilityLabel(Text(verbatim: imp.name))
+                        }
+                    }
                 }
             }
-        }
-        let controls = HStack(spacing: Spacing.small) {
+            Spacer(minLength: Spacing.small)
+            Image(systemName: LinkedDevices.reachSymbol(peer.reach)).font(.icon(.small))
+                .foregroundStyle(reach.connected ? Tone.good : Tone.muted)
+                .frame(width: Sizing.mark)
+                .help(reach.text)
+                .accessibilityElement().accessibilityLabel(Text(verbatim: reach.text))
             Toggle("Mine", isOn: Binding(get: { peer.isTrusted }, set: { link.setTrusted(peer.id, $0) }))
                 .toggleStyle(.impSwitch).fixedSize()
             InfoTip("settings.devices.mine.info")
             HoverIconButton(systemName: "xmark.circle", help: "Forget…", tint: Tone.danger) { forgetting = peer }
-        }
-        return ViewThatFits(in: .horizontal) {
-            HStack(spacing: Spacing.cozy) {
-                who
-                Spacer(minLength: Spacing.small)
-                controls
-            }
-            VStack(alignment: .leading, spacing: Spacing.small) {
-                who
-                controls
-            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .pebble()
@@ -106,6 +121,15 @@ enum LinkedDevices {
     }
 
     static func symbol(_ kind: LinkKind) -> String { kind == .mac ? "desktopcomputer" : "iphone.gen3" }
+
+    /// The compact picture for how a device is reached: on the network, through the server, or away.
+    static func reachSymbol(_ reach: DeviceLink.Peer.Reach) -> String {
+        switch reach {
+        case .direct: "wifi"
+        case .viaServer: "arrow.triangle.swap"
+        case .away: "moon.zzz.fill"
+        }
+    }
 
     /// How a device is reached, in words, and whether it is connected at all.
     static func reach(_ peer: DeviceLink.Peer, hop: HopServer?) -> (text: String, connected: Bool) {
@@ -192,7 +216,7 @@ struct LinkDeviceSheet: View {
     /// Shown instead of this Mac's own code (design renders: nothing is listened for).
     var preview: LinkInvite?
     @State private var invite: LinkInvite?
-    @State private var copied = false
+    @State private var copied: ActionState = .idle
     @State private var before: Set<UUID> = []
     @State private var scanner = CodeScanner()
     @State private var join = LinkJoin()
@@ -201,6 +225,11 @@ struct LinkDeviceSheet: View {
         self.model = model
         _mode = State(initialValue: mode)
         self.preview = preview
+    }
+
+    private var routesKey: [AnyHashable] {
+        guard let status = model.link.status else { return [] }
+        return [status.routes, status.running]
     }
 
     private var newcomer: String? { LinkedDevices.newcomer(model.link.peers, before: before) }
@@ -223,8 +252,9 @@ struct LinkDeviceSheet: View {
         } footer: {
             switch mode {
             case .show:
-                Button { copyLink() } label: { FitLabel(copied ? "Copied" : "Copy Link", systemImage: copied ? "checkmark" : "link") }
+                Button { copyLink() } label: { StatefulLabel("Copy Link", symbol: "link", state: copied) }
                     .buttonStyle(.imp(.secondary))
+                    .impActionState($copied)
                     .disabled(invite == nil)
                     .help(Text("devices.copy_link.help"))
                 Spacer()
@@ -241,10 +271,10 @@ struct LinkDeviceSheet: View {
                 }
             }
         }
-        .onAppear {
-            before = Set(model.link.peers.map(\.id))
-            invite = preview ?? model.link.invite()
-        }
+        .onAppear { before = Set(model.link.peers.map(\.id)) }
+        // A new code whenever its routes change (started, Wi-Fi changed, Hop set or cleared); none
+        // while this Mac has no way to be reached.
+        .task(id: routesKey) { invite = preview ?? model.link.invite() }
         .onDisappear {
             scanner.stop()
             if preview == nil { model.link.inviteHidden() }
@@ -282,19 +312,18 @@ struct LinkDeviceSheet: View {
                 step(3, icon: "hand.draw.fill", "**Throw** an Imp off your screen")
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            Group {
-                if let newcomer {
-                    StatusText(verbatim: String(localized: "\(newcomer) is linked."), symbol: "checkmark.circle.fill", color: Tone.good)
-                        .transition(.opacity.combined(with: .scale(scale: 0.9, anchor: .leading)))
-                } else {
-                    HStack(spacing: Spacing.snug) {
-                        ProgressView().controlSize(.small)
-                        Text("Waiting for your other device…").font(Typeface.small).foregroundStyle(Tone.muted)
-                    }
-                }
+            if let newcomer {
+                StatusSlot(String(localized: "\(newcomer) is linked."), symbol: "checkmark.circle.fill", color: Tone.good)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            } else if model.link.status?.localNetworkBlocked == true {
+                LocalNetworkNotice()
+            } else if invite == nil {
+                StatusSlot(String(localized: "link.preparing"), symbol: "hourglass")
+                    .frame(maxWidth: .infinity, alignment: .center)
+            } else {
+                StatusSlot(String(localized: "Waiting for your other device…"), symbol: "dot.radiowaves.left.and.right")
+                    .frame(maxWidth: .infinity, alignment: .center)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .impAnimation(ImpDesign.Motion.smooth, value: newcomer)
         }
     }
 
@@ -317,7 +346,7 @@ struct LinkDeviceSheet: View {
         guard let invite else { return }
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(invite.url.absoluteString, forType: .string)
-        copied = true
+        copied = .done
     }
 
     // MARK: Read another device's code
@@ -328,20 +357,23 @@ struct LinkDeviceSheet: View {
             TextField(String("implink://join?…"), text: $join.text)
                 .impField(mono: true).autocorrectionDisabled()
                 .disabled(join.isLocked)
-            switch join.status {
-            case .empty, .ready: EmptyView()
-            case .linked(let name):
-                StatusText(verbatim: String(localized: "Linked with \(name)."), symbol: "checkmark.circle.fill", color: Tone.good)
-            case .failed(let message):
-                StatusText(verbatim: message, symbol: "exclamationmark.triangle.fill", color: Tone.warnText)
-            case .notALink:
-                StatusText(text: "That isn't a link from Imp.", symbol: "exclamationmark.triangle.fill", color: Tone.warnText)
-            case .joining:
-                HStack(spacing: Spacing.snug) {
-                    ProgressView().controlSize(.small)
-                    Text("Linking…").font(Typeface.small).foregroundStyle(Tone.muted)
-                }
-            }
+            scanStatus
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+    }
+
+    /// One line, always there, that says how the link is going.
+    @ViewBuilder private var scanStatus: some View {
+        switch join.status {
+        case .empty, .ready: StatusSlot(nil)
+        case .linked(let name):
+            StatusSlot(String(localized: "Linked with \(name)."), symbol: "checkmark.circle.fill", color: Tone.good)
+        case .failed(let message):
+            StatusSlot(message, symbol: "exclamationmark.triangle.fill", color: Tone.warnText)
+        case .notALink:
+            StatusSlot(String(localized: "That isn't a link from Imp."), symbol: "exclamationmark.triangle.fill", color: Tone.warnText)
+        case .joining:
+            StatusSlot(String(localized: "Linking…"), symbol: "hourglass")
         }
     }
 
@@ -392,4 +424,18 @@ struct LinkDeviceSheet: View {
             do { join.finish(linked: try await model.link.join(invite).name) } catch { join.finish(failed: DeviceLink.message(error)) }
         }
     }
+}
+
+/// Local Network is off for Imp on this Mac: says so, with a button to System Settings › Privacy & Security › Local Network.
+struct LocalNetworkNotice: View {
+    var body: some View {
+        VStack(spacing: Spacing.small) {
+            StatusSlot(String(localized: "link.localnet.off"), symbol: "exclamationmark.triangle.fill", color: Tone.warnText)
+            Button { NSWorkspace.shared.open(Self.settings) } label: { FitLabel("link.localnet.open_mac", systemImage: "gear") }
+                .buttonStyle(.imp(.secondary, small: true))
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    static let settings = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_LocalNetwork")!
 }

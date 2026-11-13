@@ -1,6 +1,7 @@
 import ImpCore
 import Foundation
 import Network
+import Observation
 import os
 
 /// A device's part in Imp Link (see `docs/connecting/link.md`). The rules live in `imp-core`'s node. This
@@ -60,6 +61,21 @@ public final class LinkNode {
         case problem(Problem)
     }
 
+    /// Why the book could not be opened.
+    public enum OpenError: Error, Equatable, LocalizedError {
+        /// The storage can't be read right now (the Keychain is closed before the first unlock): try again later.
+        case unavailable(String)
+        /// A book is saved but the core can't decode it.
+        case unreadable
+
+        public var errorDescription: String? {
+            switch self {
+            case .unavailable(let reason): reason
+            case .unreadable: "The saved links can't be read."
+            }
+        }
+    }
+
     public enum JoinError: Error, Equatable {
         case notRunning
         case itsOwnCode
@@ -85,7 +101,13 @@ public final class LinkNode {
     public let options: Options
     let core: LinkCore
     let storage: LinkStorage
-    var running = false
+    var running = false { didSet { status.running = running } }
+    /// What the app watches: the routes codes carry, whether the node is reachable, whether iOS or macOS
+    /// is keeping it off the local network.
+    public let status = LinkStatus()
+    /// Set while `start()` is under way, so a second caller waits for the same start.
+    var starting: Once<Void>?
+    var hosts: [String] = []
     var sockets: [UInt64: LinkSocket] = [:]
     var joins: [UUID: CheckedContinuation<Result<LinkDevice, JoinError>, Never>] = [:]
     var dials: [UUID: Task<Void, Never>] = [:]
@@ -94,7 +116,7 @@ public final class LinkNode {
     var listenerGeneration = 0
     var triedFixedPort = false
     var listening: Once<UInt16?>?
-    public internal(set) var port: UInt16?
+    public internal(set) var port: UInt16? { didSet { status.routes.port = port } }
     var browser: NWBrowser?
     var found: [UUID: NWEndpoint] = [:]
     var monitor: NWPathMonitor?
@@ -108,13 +130,28 @@ public final class LinkNode {
         self.options = options
         var core = options.core
         core.port = options.port ?? 0
+        let saved: Data?
+        do { saved = try storage.load() } catch { throw OpenError.unavailable(error.localizedDescription) }
         do {
-            self.core = try LinkCore(saved: storage.load(), name: name, kind: kind.rawValue, id: (id ?? UUID()).uuidString, options: core)
+            self.core = try LinkCore(saved: saved, name: name, kind: kind.rawValue, id: (id ?? UUID()).uuidString, options: core)
         } catch {
-            throw CocoaError(.fileReadCorruptFile)
+            throw OpenError.unreadable
         }
-        if let hosts = options.hosts { apply(self.core.setHosts(hosts: hosts)) }
+        if let hosts = options.hosts { setHosts(hosts) }
         apply(self.core.steps())
+    }
+
+    /// Opens the node. A saved book the core can't decode is erased and a fresh node made (`reset` is
+    /// true then: the links are gone). A storage that can't be read right now throws `OpenError.unavailable`
+    /// and nothing is touched.
+    public static func open(name: String, kind: LinkKind, id: UUID? = nil, storage: LinkStorage, options: Options = Options()) throws -> (node: LinkNode, reset: Bool) {
+        do {
+            return (try LinkNode(name: name, kind: kind, id: id, storage: storage, options: options), false)
+        } catch OpenError.unreadable {
+            Logger(subsystem: "app.imp.Imp", category: "link").error("the link book can't be decoded: erased, starting fresh")
+            try storage.erase()
+            return (try LinkNode(name: name, kind: kind, id: id, storage: storage, options: options), true)
+        }
     }
 
     // MARK: What the app can ask
@@ -204,6 +241,8 @@ public final class LinkNode {
     public func inviteHidden() { core.inviteHidden(now: now) }
 
     public func join(_ invite: LinkInvite) async throws -> LinkDevice {
+        // A node that isn't up (or is still coming up) is started and waited for first.
+        await start()
         let id = invite.device.id
         let result = await withCheckedContinuation { (done: CheckedContinuation<Result<LinkDevice, JoinError>, Never>) in
             joins[id]?.resume(returning: .failure(.refused))
@@ -224,6 +263,7 @@ public final class LinkNode {
     public func forgetEveryone() -> Forgotten { apply(core.forgetEveryone(now: now)) }
 
     public func setServer(_ address: String?) {
+        status.routes.hop = address
         apply(core.setServer(address: address).steps)
     }
 
@@ -417,4 +457,27 @@ final class Once<Value: Sendable> {
         if let value { return value }
         return await withCheckedContinuation { waiters.append($0) }
     }
+}
+
+/// What a `LinkNode` lets the app watch (observable).
+@MainActor @Observable
+public final class LinkStatus {
+    /// Where other devices can reach this one: what a code carries.
+    public struct Routes: Equatable, Hashable, Sendable {
+        public var hosts: [String] = []
+        public var port: UInt16?
+        /// The Hop (Imp server) this device waits at.
+        public var hop: String?
+
+        /// A code made from these has a way to the device: local addresses and a port, or a Hop.
+        public var canBeReached: Bool { (port != nil && !hosts.isEmpty) || hop != nil }
+    }
+
+    public internal(set) var routes = Routes()
+    public internal(set) var running = false
+    /// Local Network access is off for the app: nothing on the local network can find or reach it.
+    public internal(set) var localNetworkBlocked = false
+
+    /// Up, with a way to reach it: only then is a code worth showing.
+    public var isReady: Bool { running && routes.canBeReached }
 }

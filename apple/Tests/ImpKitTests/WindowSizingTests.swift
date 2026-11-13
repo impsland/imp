@@ -3,36 +3,48 @@ import Foundation
 import Testing
 @testable import ImpKit
 
-/// The home window's smallest size is a setting; the narrow layout's breakpoint is a design token.
+/// The home window has a fixed smallest size and a few standard sizes to choose from.
 @Suite struct WindowSizingTests {
-    @Test func theDefaultIsDocumentedAndStoredAsNothing() throws {
+    private let screen = CGSize(width: 1440, height: 900)
+
+    @Test func theChosenSizeIsStoredAndTheDefaultIsNot() throws {
         var prefs = ImpPreferences()
-        #expect(prefs.windowMinimum == WindowSizing.defaultMinimum)
-        prefs.windowMinimum = CGSize(width: 500, height: 460)
+        #expect(prefs.windowPreset == WindowSizing.standard)
+        prefs.windowPreset = .large
         let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(prefs))
-        #expect(back.windowMinimum == CGSize(width: 500, height: 460))
-        prefs.windowMinimum = WindowSizing.defaultMinimum
-        let json = String(decoding: try JSONEncoder().encode(prefs), as: UTF8.self)
-        #expect(!json.contains("windowMinWidth"), "the default is not written")
+        #expect(back.windowPreset == .large)
     }
 
-    @Test func theSettingStaysWithinItsBounds() {
-        var prefs = ImpPreferences()
-        prefs.windowMinimum = CGSize(width: 10, height: 10_000)
-        #expect(prefs.windowMinimum == CGSize(width: WindowSizing.widths.lowerBound, height: WindowSizing.heights.upperBound))
-        #expect(WindowSizing.clamped(CGSize(width: CGFloat.nan, height: .infinity)).width == WindowSizing.defaultMinimum.width)
-        #expect(WindowSizing.widths.contains(Double(WindowSizing.defaultMinimum.width)))
-        #expect(WindowSizing.heights.contains(Double(WindowSizing.defaultMinimum.height)))
+    @Test func presetsGrowInOrderAndFullIsTheScreen() {
+        let small = WindowSizing.size(of: .small, in: screen)
+        let medium = WindowSizing.size(of: .medium, in: screen)
+        let large = WindowSizing.size(of: .large, in: screen)
+        #expect(small.width < medium.width && medium.width < large.width)
+        #expect(small.height < medium.height && medium.height < large.height)
+        #expect(WindowSizing.size(of: .full, in: screen) == screen)
     }
 
-    @Test func theWindowFirstOpensAtLeastAsLargeAsTheMinimum() {
-        #expect(WindowSizing.opening(minimum: WindowSizing.defaultMinimum) == WindowSizing.firstOpen)
-        #expect(WindowSizing.opening(minimum: CGSize(width: 1000, height: 500)) == CGSize(width: 1000, height: WindowSizing.firstOpen.height))
+    @Test func everyPresetFitsTheScreenAndStaysAboveTheMinimum() {
+        let tiny = CGSize(width: 900, height: 600)
+        for preset in WindowPreset.allCases {
+            for visible in [screen, tiny] {
+                let size = WindowSizing.size(of: preset, in: visible)
+                #expect(size.width <= visible.width && size.height <= visible.height)
+                #expect(size.width >= WindowSizing.minimum.width && size.height >= WindowSizing.minimum.height)
+            }
+        }
+        #expect(WindowSizing.size(of: .large, in: tiny) == tiny)
     }
 
-    @Test func aLargerMinimumGrowsTheWindowAndASmallerOneLeavesIt() {
-        let current = CGSize(width: 700, height: 500)
-        #expect(WindowSizing.fitted(current, minimum: CGSize(width: 800, height: 450)) == CGSize(width: 800, height: 500))
-        #expect(WindowSizing.fitted(current, minimum: CGSize(width: 400, height: 420)) == current)
+    @Test func theNewFrameKeepsTheTopLeftAndStaysOnTheScreen() {
+        let visible = CGRect(x: 0, y: 25, width: 1440, height: 875)
+        let current = CGRect(x: 100, y: 300, width: 560, height: 520)
+        let grown = WindowSizing.frame(for: .medium, from: current, in: visible)
+        #expect(grown.minX == 100 && grown.maxY == 820)
+        // Too near the right and bottom edges: it moves in, never off the screen.
+        let edge = WindowSizing.frame(for: .large, from: CGRect(x: 1300, y: 30, width: 560, height: 200), in: visible)
+        #expect(visible.contains(edge))
+        #expect(visible.contains(WindowSizing.frame(for: .full, from: current, in: visible)))
+        #expect(WindowSizing.frame(for: .full, from: current, in: visible) == visible)
     }
 }

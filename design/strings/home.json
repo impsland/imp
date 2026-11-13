@@ -25,18 +25,18 @@
   },
   "home.empty.new_imp": {
     "note": "The one prompt in the middle of an empty main screen.",
-    "en": "New Imp",
-    "es": "Nuevo Imp",
-    "zh-Hans": "新建 Imp"
+    "en": "New",
+    "es": "Nuevo",
+    "zh-Hans": "新建"
   },
   "home.hidden.title": {
     "note": "The element on the floor that holds hidden Imps. The number is how many.",
     "args": {
       "count": "int"
     },
-    "en": "Hidden Imps ({count})",
-    "es": "Imps ocultos ({count})",
-    "zh-Hans": "隐藏的 Imp（{count}）"
+    "en": "Hidden ({count})",
+    "es": "Ocultos ({count})",
+    "zh-Hans": "已隐藏（{count}）"
   },
   "home.hidden.empty": {
     "note": "Shown in the hidden Imps list when it is empty.",
@@ -70,20 +70,20 @@
   },
   "home.tray.show": {
     "note": "Status icon menu item that shows the window.",
-    "en": "Open Imp",
-    "es": "Abrir Imp",
-    "zh-Hans": "打开 Imp"
+    "en": "Open",
+    "es": "Abrir",
+    "zh-Hans": "打开"
   },
   "home.tray.quit": {
     "note": "Status icon menu item that quits the app.",
-    "en": "Quit Imp",
-    "es": "Salir de Imp",
-    "zh-Hans": "退出 Imp"
+    "en": "Quit",
+    "es": "Salir",
+    "zh-Hans": "退出"
   },
   "home.corner.show_hidden": {
     "note": "Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.",
-    "en": "Show hidden Imps",
-    "es": "Mostrar Imps ocultos",
-    "zh-Hans": "显示隐藏的 Imp"
+    "en": "Hidden",
+    "es": "Ocultos",
+    "zh-Hans": "已隐藏"
   }
 }

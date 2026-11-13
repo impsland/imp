@@ -28,21 +28,89 @@ public struct Card<Content: View, Accessory: View>: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             if let title {
-                HStack(spacing: Spacing.small) {
-                    if let icon { IconTile(systemName: icon) }
-                    Text(title).font(Typeface.cardTitle).lineLimit(1)
-                        .accessibilityAddTraits(.isHeader)
-                    if let info { InfoTip(info) }
-                    Spacer(minLength: Spacing.small)
-                    accessory
-                }
-                .frame(minHeight: Sizing.iconTile)
+                SectionHeader(title, icon: icon, info: info) { accessory }
             }
             content
         }
         .padding(Spacing.large)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(RoundedRectangle(cornerRadius: Radius.large, style: .continuous).fill(Tone.card))
+    }
+}
+
+/// The header of a card, a section or a sheet: the leading edge holds the picture and the title, the
+/// trailing edge holds an optional control and then the help tip, always last, so the header is balanced
+/// and the question mark is in the same place everywhere. A row with its own control is not a header.
+public struct SectionHeader<Leading: View, Accessory: View>: View {
+    var tip: InfoTip?
+    var minHeight: CGFloat?
+    var leading: Leading
+    var accessory: Accessory
+
+    /// A header with any leading content (a disclosure button, a tinted glyph).
+    public init(info: LocalizedStringKey? = nil, verbatimInfo: String? = nil, minHeight: CGFloat? = Sizing.iconTile,
+                @ViewBuilder accessory: () -> Accessory, @ViewBuilder leading: () -> Leading) {
+        self.tip = info.map { InfoTip($0) } ?? verbatimInfo.map { InfoTip(verbatim: $0) }
+        self.minHeight = minHeight
+        self.leading = leading()
+        self.accessory = accessory()
+    }
+
+    public var body: some View {
+        HStack(spacing: Spacing.small) {
+            leading
+            Spacer(minLength: Spacing.small)
+            accessory
+            if let tip { tip }
+        }
+        .frame(minHeight: minHeight)
+    }
+}
+
+/// The icon tile and the title of a `SectionHeader`.
+public struct HeaderTitle: View {
+    var title: Text
+    var icon: String?
+    var font: Font
+    var color: Color
+
+    public var body: some View {
+        HStack(spacing: Spacing.small) {
+            if let icon { IconTile(systemName: icon) }
+            title.font(font).foregroundStyle(color).lineLimit(1).accessibilityAddTraits(.isHeader)
+        }
+    }
+}
+
+extension SectionHeader where Leading == HeaderTitle {
+    public init(_ title: LocalizedStringKey, icon: String? = nil, info: LocalizedStringKey? = nil,
+                font: Font = Typeface.cardTitle, color: Color = Tone.text, minHeight: CGFloat? = Sizing.iconTile,
+                @ViewBuilder accessory: () -> Accessory) {
+        self.init(info: info, minHeight: minHeight, accessory: accessory) {
+            HeaderTitle(title: Text(title), icon: icon, font: font, color: color)
+        }
+    }
+
+    public init(verbatim title: String, icon: String? = nil, info: LocalizedStringKey? = nil,
+                font: Font = Typeface.cardTitle, color: Color = Tone.text, minHeight: CGFloat? = Sizing.iconTile,
+                @ViewBuilder accessory: () -> Accessory) {
+        self.init(info: info, minHeight: minHeight, accessory: accessory) {
+            HeaderTitle(title: Text(verbatim: title), icon: icon, font: font, color: color)
+        }
+    }
+}
+
+extension SectionHeader where Accessory == EmptyView {
+    public init(info: LocalizedStringKey? = nil, verbatimInfo: String? = nil, minHeight: CGFloat? = Sizing.iconTile,
+                @ViewBuilder leading: () -> Leading) {
+        self.init(info: info, verbatimInfo: verbatimInfo, minHeight: minHeight, accessory: { EmptyView() }, leading: leading)
+    }
+}
+
+extension SectionHeader where Leading == HeaderTitle, Accessory == EmptyView {
+    public init(_ title: LocalizedStringKey, icon: String? = nil, info: LocalizedStringKey? = nil,
+                font: Font = Typeface.cardTitle, color: Color = Tone.text, minHeight: CGFloat? = Sizing.iconTile) {
+        self.init(title, icon: icon, info: info, font: font, color: color, minHeight: minHeight) { EmptyView() }
     }
 }
 

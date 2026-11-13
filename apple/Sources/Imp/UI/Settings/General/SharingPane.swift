@@ -2,37 +2,41 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The Den: the server where Imps share and find animations, triggers and Imps, in the same card as The Hop
-/// on Devices (`ServerCard`), then the way into it: Browse The Den, or why it can't be browsed yet.
+/// Sharing: the Gallery (Browse what others shared in The Den, Import a kit you have), then The Den's
+/// server, the same card as The Hop on Devices (`ServerCard`). Publishing starts from the share button of
+/// whatever you want to share, so it is explained here and not duplicated.
 struct SharingPane: View {
     let model: AppModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
+            gallery
             ServerCard(kind: .den, text: Binding(get: { model.prefs.den }, set: { model.prefs.den = $0 }))
                 .settingAnchor(.sharingDen)
-            browse
         }
     }
 
-    /// One row: Browse The Den (only with a Den set up). What The Den holds, or why it can't be
-    /// browsed yet, is behind the (?).
-    private var browse: some View {
+    /// Browse is offered with a Den set up; without one the button is off and its tooltip says why.
+    private var gallery: some View {
         let ready = DenServer(model.prefs.den) != nil
-        return HStack(spacing: Spacing.cozy) {
-            IconTile(systemName: "books.vertical.fill")
-            Text("sharing.browse").font(Typeface.body).foregroundStyle(ready ? Tone.text : Tone.muted).lineLimit(1)
-            InfoTip(ready ? "servers.den.about" : "servers.den.needed")
-            Spacer(minLength: Spacing.small)
-            if ready {
-                HoverIconButton(systemName: "arrow.up.right", help: "sharing.browse") {
-                    let flow = KitFlow(imp: nil, forEveryImp: true)
-                    flow.browsing = true
-                    HomeWindow.shared.router.kitFlow = flow
+        return Card("sharing.gallery", icon: "books.vertical.fill", info: "sharing.gallery.info") {
+            HStack(spacing: Spacing.small) {
+                Button { open(browsing: true) } label: {
+                    FitLabel("sharing.browse", systemImage: "books.vertical").frame(maxWidth: .infinity)
                 }
+                .buttonStyle(.imp(.primary)).disabled(!ready)
+                .help(ready ? Text("servers.den.about") : Text("servers.den.needed"))
+                Button { open(browsing: false) } label: {
+                    FitLabel("sharing.import", systemImage: "square.and.arrow.down").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.imp(.secondary))
             }
         }
-        .frame(maxWidth: .infinity, minHeight: Sizing.hit, alignment: .leading)
-        .pebble()
+    }
+
+    private func open(browsing: Bool) {
+        let flow = KitFlow(imp: nil, forEveryImp: true)
+        flow.browsing = browsing
+        HomeWindow.shared.router.kitFlow = flow
     }
 }

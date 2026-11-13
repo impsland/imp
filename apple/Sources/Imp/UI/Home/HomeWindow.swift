@@ -89,13 +89,10 @@ final class HomeWindow {
         router.talk = TalkRequest(imp: imp, peer: imp, chat: chat)
     }
 
-    /// The smallest size changed in Settings: the window takes it, and grows if it is now smaller.
-    func applyMinimum(_ minimum: CGSize) {
-        guard let window else { return }
-        window.contentMinSize = minimum
-        let current = window.contentLayoutRect.size
-        let fitted = WindowSizing.fitted(current, minimum: minimum)
-        if fitted != current { window.setContentSize(fitted) }
+    /// A size was chosen in Settings: the window takes it at once (animated), kept on the screen.
+    func apply(_ preset: WindowPreset) {
+        guard let window, let visible = (window.screen ?? NSScreen.main)?.visibleFrame else { return }
+        window.setFrame(WindowSizing.frame(for: preset, from: window.frame, in: visible), display: true, animate: !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
     }
 
     private func open(_ model: AppModel) {
@@ -114,9 +111,9 @@ final class HomeWindow {
             w.isMovableByWindowBackground = false
             w.titlebarSeparatorStyle = .none
             w.backgroundColor = NSColor(Tone.surface)           // the window follows the Appearance preference
-            // The smallest size is the person's setting; after the first opening it keeps the size it was given.
-            w.contentMinSize = model.prefs.windowMinimum
-            w.setContentSize(WindowSizing.opening(minimum: model.prefs.windowMinimum))
+            // The smallest size is a design value; the first opening uses the chosen size, then it keeps the size it was given.
+            w.contentMinSize = WindowSizing.minimum
+            w.setContentSize(WindowSizing.size(of: model.prefs.windowPreset, in: (NSScreen.main?.visibleFrame.size ?? CGSize(width: 1280, height: 800))))
             w.isReleasedWhenClosed = false
             w.setFrameAutosaveName("ImpHome")
             if !w.setFrameUsingName("ImpHome") { w.center() }

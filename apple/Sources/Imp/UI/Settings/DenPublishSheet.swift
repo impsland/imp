@@ -21,9 +21,8 @@ struct DenPublishSheet: View {
     @State private var slug: String
     @State private var summary = ""
     @State private var tags = ""
-    @State private var isWorking = false
-    @State private var error: String?
-    @State private var published: URL?
+    @State private var state: ActionState = .idle
+    @State private var notice: ImpNotice?
 
     init(context: PublishContext, kit: Kit) {
         self.context = context
@@ -33,7 +32,7 @@ struct DenPublishSheet: View {
 
     private var server: DenServer? { DenServer(context.model.prefs.den) }
     private var canPublish: Bool {
-        server != nil && !isWorking && !DenName.slug(slug).isEmpty && !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        server != nil && state != .working && !DenName.slug(slug).isEmpty && !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     var body: some View {
@@ -46,10 +45,8 @@ struct DenPublishSheet: View {
             field("What is it, in a sentence", info: "den.help.summary", text: $summary, prompt: "A short wave hello")
             field("Tags (separated by commas)", info: "den.help.tags", text: $tags, prompt: "friendly, desk")
             VStack(alignment: .leading, spacing: Spacing.snug) {
-                HStack(spacing: Spacing.hairline) {
-                    Text("What people will see it can do").font(Typeface.caption).foregroundStyle(Tone.muted)
-                    InfoTip("den.help.public")
-                }
+                SectionHeader("What people will see it can do", info: "den.help.public",
+                              font: Typeface.caption, color: Tone.muted, minHeight: nil)
                 let lines = DenPublish.publicKit(kit).permissions.lines
                 if lines.isEmpty {
                     Text("Only looks and text. No tools or commands.").font(Typeface.body).foregroundStyle(Tone.text)
@@ -59,32 +56,25 @@ struct DenPublishSheet: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            if let published {
-                StatusText(text: "Published: \(published.absoluteString)", symbol: "checkmark.circle.fill", color: Tone.good)
-            }
-            if let error { StatusText(text: LocalizedStringKey(error), symbol: "exclamationmark.triangle.fill", color: Tone.danger) }
         } footer: {
             Spacer()
-            Button { Task { await publish() } } label: { FitLabel("Publish", systemImage: "arrow.up.circle") }
+            Button { Task { await publish() } } label: { StatefulLabel("Publish", symbol: "arrow.up.circle", state: state) }
                 .buttonStyle(.primary).keyboardShortcut(.defaultAction).disabled(!canPublish)
+                .impActionState($state)
         }
+        .impNotice($notice)
     }
 
     private func field(_ title: LocalizedStringKey, info: LocalizedStringKey, text: Binding<String>, prompt: String, mono: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: Spacing.snug) {
-            HStack(spacing: Spacing.hairline) {
-                Text(title).font(Typeface.caption).foregroundStyle(Tone.muted)
-                InfoTip(info)
-            }
+            SectionHeader(title, info: info, font: Typeface.caption, color: Tone.muted, minHeight: nil)
             TextField(String(prompt), text: text).impField(mono: mono).autocorrectionDisabled()
         }
     }
 
     private func publish() async {
         guard let server, let profile = context.model.profile(context.imp) else { return }
-        isWorking = true
-        error = nil
-        defer { isWorking = false }
+        state = .working
         do {
             var shared = kit
             if shared.app == nil { shared.app = AppInfo.version }
@@ -96,9 +86,11 @@ struct DenPublishSheet: View {
             let words = DenPublish.tags(tags.split(separator: ",").map(String.init))
             _ = try await client.put(id, summary: String(summary.trimmingCharacters(in: .whitespacesAndNewlines).prefix(DenPublish.maxSummary)),
                                      tags: words, kit: text, token: login.token)
-            published = client.page(of: id)
+            state = .done
+            notice = .success(String(localized: "Published: \(client.page(of: id).absoluteString)"))
         } catch {
-            self.error = error.localizedDescription
+            state = .failed
+            notice = .error(error.localizedDescription)
         }
     }
 }

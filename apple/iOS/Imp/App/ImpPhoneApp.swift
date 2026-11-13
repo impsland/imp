@@ -75,7 +75,7 @@ struct RootView: View {
             } else {
                 PhoneStage(hub: hub, pocket: pocket, hidden: hidden, covered: router.route != nil, cover: cover, guest: router.route?.imp,
                            onChat: { router.talk($0) }, onEdit: { router.open(.edit($0, brain: false)) },
-                           onTalks: { router.talks($0) }, onBrain: { router.open(.edit($0, brain: true)) })
+                           onBrain: { router.open(.edit($0, brain: true)) })
                     .transition(.opacity)
                     .onPreferenceChange(EmbersPlaying.self) { playing = $0 }
                 VStack {

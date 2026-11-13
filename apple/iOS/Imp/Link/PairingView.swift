@@ -57,8 +57,8 @@ struct PairingView: View {
     }
 }
 
-/// Linking another device, from the first screen: this iPhone's code to scan, the two ways to take the
-/// other device's code, and the name the other device will see. The same cards as the Devices section.
+/// Linking another device, from the first screen: this iPhone's code to scan with Copy, Share, Scan and
+/// Paste under it, and the name the other device will see. The same cards as the Devices section.
 private struct LinkSheet: View {
     let hub: LinkHub
     @Environment(\.dismiss) private var dismiss
@@ -74,8 +74,7 @@ private struct LinkSheet: View {
             .sheetBarInsets()
             ScrollView {
                 VStack(spacing: Spacing.medium) {
-                    LinkCodeCard(hub: hub)
-                    LinkJoinCard(hub: hub, problem: $problem) { scanning = true }
+                    LinkCodeCard(hub: hub, problem: $problem, scan: { scanning = true }, showsAtOnce: true)
                     Card("phone.name.title", icon: "iphone", info: "phone.pair.seen_as") { NameField(hub: hub) }
                 }
                 .padding(.horizontal, Spacing.page).padding(.top, Spacing.small).padding(.bottom, Spacing.wide)
@@ -89,6 +88,7 @@ private struct LinkSheet: View {
         .presentationBackground(Tone.surface)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
+        .impNoticeHost()
         .fullScreenCover(isPresented: $scanning) { LinkScanner(hub: hub, problem: $problem, scanning: $scanning) }
     }
 }

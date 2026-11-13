@@ -34,14 +34,14 @@ import ImpKit
 
     @Test func newAnimationFitsTheWindowAsItFirstOpens() {
         let ideal = idealHeight { .new(owner: nil, model: $0) }
-        let got = room(contentHeight: WindowSizing.opening(minimum: WindowSizing.defaultMinimum).height)
+        let got = room(contentHeight: WindowSizing.size(of: WindowSizing.standard, in: CGSize(width: 1440, height: 900)).height)
         #expect(ideal <= got)
     }
 
-    /// At the smallest window the setting allows the sheet scrolls on purpose (header and buttons stay put).
+    /// At the smallest window can be the sheet scrolls on purpose (header and buttons stay put).
     /// It must still never be asked to squeeze its form below the least the sheet allows.
     @Test func theSmallestWindowStillLeavesRoomToScroll() {
-        let room = room(contentHeight: WindowSizing.heights.lowerBound)
+        let room = room(contentHeight: WindowSizing.minimum.height)
         #expect(room >= SheetRoom.minimumForm + 200)
     }
 }

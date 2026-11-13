@@ -409,7 +409,7 @@ final class ImpModel {
         if isChatting && !failed { freshTurns.insert(turn.id) }
         history.append(turn, remembering: exchange)
         if visit == nil, !failed {
-            history.checkContext(threshold: app.prefs.contextNoticeTokens, exchanges: profile.memoryExchanges, tools: profile.remembersToolCalls)
+            history.checkContext(threshold: profile.newChatAt, exchanges: profile.memoryExchanges, tools: profile.remembersToolCalls)
         }
     }
 
@@ -462,23 +462,18 @@ final class ImpModel {
         setActivity(nil)
     }
 
-    /// Clicks on this Imp (`count` in a row): stops whatever it's doing, else one click opens the bubble,
-    /// two do what the "Double-click an Imp" preference says, and more run the Imp's own click triggers.
+    /// Clicks on this Imp (`count` in a row): stops whatever it's doing, else one click opens the bubble
+    /// and two or more run the Imp's click triggers (the starter kit's two clicks open its settings).
     func clicked(_ count: Int) {
         if visit != nil { return clickedVisitor() }
         touch()
         app.focus(self)
         if app.finishListening(for: self) { return }
         if [.thinking, .tools].contains(activity) { cancel(); react(.surprised, for: 0.6); return }
-        switch ClickAction.resolve(count: count, doubleClick: app.prefs.doubleClick) {
-        case .openBubble: bubble?.phase == .typing ? dismissBubble() : startTyping()
-        case .openSettings: openSettings()
-        case .talk: talk()
-        case .nothing: break
-        case .triggers:
-            guard let shortcut = prefs.clickShortcut(count, on: id, in: app.senses.state) else { return }
-            perform(shortcut)
-        }
+        // One click opens the bubble at once; two or more run what the Imp's triggers say.
+        guard count > 1 else { return bubble?.phase == .typing ? dismissBubble() : startTyping() }
+        guard let shortcut = prefs.clickShortcut(count, on: id, in: app.senses.state) else { return }
+        perform(shortcut)
     }
 
     /// Opens this Imp's settings in the app's window.
@@ -487,8 +482,8 @@ final class ImpModel {
         HomeWindow.shared.show(app, settingsFor: id, panel: isReady ? nil : .brain)
     }
 
-    /// Whether clicks wait to see if more follow: when a double click does something, or a triggers needs more.
-    var waitsForMoreClicks: Bool { ClickAction.waitsForSecondClick(app.prefs.doubleClick) || prefs.mostClicks(on: id) > 2 }
+    /// Whether a first click waits to see if more follow: only when a trigger needs two or more.
+    var waitsForMoreClicks: Bool { prefs.waitsForMoreClicks(on: id) }
 
     /// Talk to this Imp (voice), or stop talking.
     func talk() {

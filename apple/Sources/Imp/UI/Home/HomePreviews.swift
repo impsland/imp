@@ -18,7 +18,7 @@ private enum PreviewHome {
 
     static func window(_ model: AppModel) -> some View {
         HomeView(model: model, router: HomeRouter())
-            .frame(width: WindowSizing.defaultMinimum.width, height: WindowSizing.defaultMinimum.height)
+            .frame(width: WindowSizing.minimum.width, height: WindowSizing.minimum.height)
     }
 
     /// A picture in the app's own folder: stripes, so a fill and a tile can be told apart.
@@ -46,7 +46,7 @@ private enum PreviewHome {
         CanvasBackdrop(background: CanvasBackground())
         EmptyCanvas(action: {})
     }
-    .frame(width: WindowSizing.defaultMinimum.width, height: WindowSizing.defaultMinimum.height)
+    .frame(width: WindowSizing.minimum.width, height: WindowSizing.minimum.height)
 }
 
 #Preview("A few Imps") {

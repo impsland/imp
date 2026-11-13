@@ -24,6 +24,18 @@ private func catalogData() throws -> Data {
         #expect(AnimationTrigger.stroke.watchesCursor && AnimationTrigger.stare.watchesCursor)
     }
 
+    /// The Imp answers quickly: no animation of the catalog lasts a second (docs/ux/motion.md).
+    @Test func everyAnimationIsShorterThanASecond() throws {
+        let root = try JSONDecoder().decode(JSONValue.self, from: try catalogData())
+        let list = try #require(root["animations"]?.array)
+        #expect(list.count > 50)
+        for item in list {
+            let beats = item["beats"]?.array ?? []
+            let total = beats.reduce(0.0) { $0 + ($1["duration"]?.double ?? 0) }
+            #expect(total > 0 && total < 1, "\(item["id"]?.string ?? "?") lasts \(total) s")
+        }
+    }
+
     @Test func everyAnimationPlaysSomehow() {
         #expect(Reaction.allCases.count == 5 && Set(AnimationCatalog.bundled.map(\.id)) == Set(Reaction.allCases.map(\.rawValue)))
         for r in Reaction.allCases {

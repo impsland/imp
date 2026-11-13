@@ -19,7 +19,6 @@ struct PhoneStage: View {
     /// Opens an Imp hatched here in the editor.
     var onEdit: (UUID) -> Void = { _ in }
     /// Opens what the Imp said with other Imps.
-    var onTalks: (UUID) -> Void = { _ in }
     /// Starts waking an Imp hatched here that has no Brain.
     var onBrain: (UUID) -> Void = { _ in }
     /// An Imp hatched here, waiting for "Delete" to be confirmed.
@@ -40,7 +39,6 @@ struct PhoneStage: View {
     @State private var menuFor: UUID?
     /// The Imp whose menu is open.
     @State private var menuImp: UUID?
-    @AppStorage(PhonePrefs.doubleTapKey) private var doubleTap: DoubleClickAction = .openSettings
 
     var body: some View {
         // The stage runs edge to edge, so the screen's safe area (notch, Dynamic Island, home
@@ -270,14 +268,14 @@ struct PhoneStage: View {
             }
             .opacity(awake || engine.isBlocking ? 1 : Opacity.dimmed)
             .contentShape(Circle().inset(by: side * 0.08))
-            .gesture(TapGesture(count: 2).onEnded { if !engine.isBlocking { tapped(id, count: 2) } },
-                     including: doubleTap == .nothing ? .subviews : .all)
-            .onTapGesture { if !engine.isBlocking { menuFor = nil; tapped(id, count: 1) } }
             // A press that holds still starts before the menu does: the bubble goes first. Movement
-            // cancels it and the drag takes over, as before.
-            .simultaneousGesture(LongPressGesture(minimumDuration: 0.25, maximumDistance: 10).onEnded { _ in
-                if !engine.isBlocking { lifted(id) }
-            })
+            // cancels it and the drag takes over, as before. The tap comes after the press in an
+            // exclusive pair: the touch that opened the menu never also counts as a tap (a tap has no
+            // longest duration, and its end would open the chat over the menu).
+            .simultaneousGesture(
+                LongPressGesture(minimumDuration: 0.25, maximumDistance: 10)
+                    .onEnded { _ in if !engine.isBlocking { lifted(id) } }
+                    .exclusively(before: TapGesture().onEnded { if !engine.isBlocking, menuImp == nil { menuFor = nil; onChat(id) } }))
             .gesture(DragGesture(minimumDistance: 3, coordinateSpace: .named("stage"))
                 .onChanged { menuFor = nil; engine.dragChanged(id, at: $0.location) }
                 .onEnded { engine.dragEnded(id, at: $0.location, predicted: $0.predictedEndLocation) })
@@ -308,8 +306,6 @@ struct PhoneStage: View {
     /// The Imp's menu, also its VoiceOver actions: icon first, short titles, the destructive one last.
     @ViewBuilder private func menu(for b: StageEngine.Body, source: any ChatSource, awake: Bool) -> some View {
         let id = b.imp.id
-        Button { onChat(id) } label: { Label("menu.imp.talk", systemImage: "bubble.left") }
-        Button { onTalks(id) } label: { Label("menu.imp.talks", systemImage: "bubble.left.and.bubble.right") }
         if pocket.contains(id) {
             Button { onEdit(id) } label: { Label("menu.imp.settings", systemImage: "slider.horizontal.3") }
         }
@@ -352,15 +348,6 @@ struct PhoneStage: View {
 
     private static func staged(_ hub: LinkHub, _ pocket: PocketRuntime, _ hidden: PhoneHidden) -> [LinkStaged] {
         everyone(hub, pocket).filter { !hidden.set.contains($0.imp.id) }
-    }
-
-    /// One tap opens the Imp's bubble, which on the phone is its chat. Two do what the preference says.
-    private func tapped(_ id: UUID, count: Int) {
-        switch ClickAction.resolve(count: count, doubleClick: doubleTap) {
-        case .openBubble, .talk: onChat(id)
-        case .openSettings: if pocket.contains(id) { onEdit(id) } else { onChat(id) }
-        case .nothing, .triggers: break
-        }
     }
 
     private func hide(_ imp: LinkImp) {

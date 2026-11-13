@@ -269,20 +269,20 @@ struct TriggerFields: View {
         case .keys:
             HotkeyField(hotkey: $hotkey)
         case .clicks:
-            CompactMenu(title: "\(trigger.clicks) clicks") {
-                ForEach(1...Trigger.maxClicks, id: \.self) { n in Button("\(n) clicks") { trigger.number = n } }
-            }
+            ImpSegmented("Clicks", selection: Binding(get: { trigger.clicks }, set: { trigger.number = $0 }),
+                         options: Array(1...Trigger.maxClicks), title: { String(localized: "\($0) clicks") },
+                         symbol: { "\($0).circle" }, fills: false)
         case .battery, .busy:
             ImpStepper(value: number(trigger.kind == .battery ? 20 : 85), in: 5...95, step: 5) {
                 (trigger.kind == .battery ? Text("below \(trigger.percent) %") : Text("above \(trigger.percent) %")).monospacedDigit()
             }
             .fixedSize()
         case .charger:
-            choice(on: asCondition ? "On the charger" : "Plugged in",
-                   off: asCondition ? "On battery" : "Unplugged")
+            choice(on: asCondition ? "On the charger" : "Plugged in", onSymbol: "powerplug.fill",
+                   off: asCondition ? "On battery" : "Unplugged", offSymbol: "battery.50")
         case .offline:
-            choice(on: asCondition ? "Offline" : "Goes away",
-                   off: asCondition ? "Online" : "Comes back")
+            choice(on: asCondition ? "Offline" : "Goes away", onSymbol: "wifi.slash",
+                   off: asCondition ? "Online" : "Comes back", offSymbol: "wifi")
         case .app:
             HStack(spacing: Spacing.tight) {
                 TextField("Any app", text: text).impField().frame(width: Sizing.menuTitle)
@@ -325,11 +325,9 @@ struct TriggerFields: View {
     private var idleStep: Int { trigger.idleSeconds < 60 ? 5 : trigger.idleSeconds < 600 ? 30 : 60 }
 
     /// One of two values (plugged in or not, offline or not).
-    private func choice(on: LocalizedStringKey, off: LocalizedStringKey) -> some View {
-        CompactMenu(title: trigger.isOn ? on : off) {
-            Button(on) { trigger.flag = true }
-            Button(off) { trigger.flag = false }
-        }
+    private func choice(on: LocalizedStringResource, onSymbol: String, off: LocalizedStringResource, offSymbol: String) -> some View {
+        ImpSegmented("Choice", selection: Binding(get: { trigger.isOn }, set: { trigger.flag = $0 }), options: [true, false],
+                     title: { String(localized: $0 ? on : off) }, symbol: { $0 ? onSymbol : offSymbol }, fills: false)
     }
 
     private func number(_ fallback: Int) -> Binding<Int> {

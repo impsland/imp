@@ -16,7 +16,7 @@ Custom look, standard behavior. Every control is a real control of its platform 
 6. **Text on a fill** uses `OnTint(tint)` on a `TintFill(tint)`. On an Imp's colour it is white or black, as the person chose in Settings (white by default), and the fill is the colour itself or the nearest shade of it on which that choice has 4.5 to 1. The monochrome accent keeps ink or paper. Never `.white` on a raw tint. An Imp's colour used as a foreground (text, an icon, a link) goes through `LegibleTint`: it is adjusted to at least 4.5 to 1 on its ground, lighter in dark and darker in light. The raw colour is never drawn as it is.
 7. **Icons never touch the edge** of their background, and a filled button always pads its content. Use `IconTile`, `HoverIconButton` and the button styles.
 8. **Icon first, few words.** Every setting row has a picture and a title of one to three plain words, understandable by a child. No explanatory paragraphs on screen.
-9. **Help once per card.** A card or a section has at most one `InfoTip`, in its header: one or two short sentences. A row has its own only when its one-to-three-word title cannot be understood without it, and never two tips for the same thing. The tip is a compact popover exactly as wide as its words (at most `Sizing.tipWidth`), one surface including its arrow, opened by a click or a tap only (no hover tooltip).
+9. **Help once per card.** A card or a section has at most one `InfoTip`, at the trailing end of its header (after any control, never beside the title with empty space on the right): one or two short sentences. A row has its own only when its one-to-three-word title cannot be understood without it, and never two tips for the same thing. The tip is a compact popover exactly as wide as its words (at most `Sizing.tipWidth`), one surface including its arrow, opened by a click or a tap only (no hover tooltip).
 10. **Nothing overlaps or clips on a narrow width.** A `Row` moves its control under the title when they do not fit. `ImpSegmented` falls back from words to icons to a menu. A button never shrinks or cuts its label.
 11. **Feedback and motion.** Controls have hover, press and focus states. Animate only through the `Motion` presets, which honour Reduce Motion. Nothing repeats forever for decoration, and anything that animates continuously pauses when hidden, idle or under Reduce Motion.
 12. **The room never leaves.** On a phone the app is one room where the Imps fly freely over the whole screen. Everything else is one sheet over it. A sheet about an Imp brings that Imp up into the room left above it and wears its colour. Every sheet has the same bar and the same way back. See [The room never leaves](/design/room).
@@ -68,12 +68,13 @@ Every user-facing word has a key in `design/strings/<area>.json` (`area.thing.de
 
 Public types of `ImpDesign`. Platform specs of each are in [Components](/design/components).
 
-- Surface: `Backdrop`, `Card(title, icon:, info:, accessory:)`, `.impCard(radius:)`, `.impListRow()`, `SelectableCard`, `SelectMark`.
+- Surface: `Backdrop`, `Card(title, icon:, info:, accessory:)`, `SectionHeader(title, icon:, info:, accessory:)` (icon tile and title leading; accessory then the tip trailing), `.impCard(radius:)`, `.impListRow()`, `SelectableCard`, `SelectMark`.
 - Settings: `Row(title, icon:, info:)`, `FieldRow(label, info:)`, `IconTile`, `InfoTip`, `StatusText`, `Badge`.
 - Buttons: `.buttonStyle(.primary)`, `.secondary`, `.quiet`, `.destructive`, `.imp(kind, small:)`, `ImpButtonStyle`; `WideButtonStyle` is the phone's big full-width button. `FitLabel(title, systemImage:)` shows icon and title, or the icon alone when narrow. `OnTint` is the ink or paper ShapeStyle for text on a fill.
 - Controls: `.toggleStyle(.impSwitch)`, `.impSwitchBare`, `.impButton`; `ImpSegmented` (words, then icons, then a menu; always pass `symbol:`); `ImpStepper`, `ImpPicker`, `CompactMenu`, `ImpTimeField`, `SegmentedTabs`, `ChoiceChip`.
 - Fields: `.impField()`, `EditorWell`, `TextArea`, `.impSlider()`.
 - Icon-only: `HoverIconButton`, `HoverIconMenu`.
+- Notice (spec `notice`): `ActionState` with `StatefulLabel(title, symbol:, state:)` and `.impActionState($state)` (a button carries its own state: wheel, then tick or cross, in a fixed frame; idle again after `Behavior.noticeSeconds`), `.impNotice($notice)` with `ImpNotice.info/success/warning/error` (a floating capsule over the bottom, self-dismissing, tappable, announced), `StatusSlot(text, symbol:, color:)` (a fixed-height line that swaps its words in place). `AttentionNotice` stays for problems that persist.
 - Floating: `.impPopover(isPresented:)`, `.impPopoverSurface()`, `PopoverHeader`, `UndoBar`.
 - Focus: `.focusRing(_:shown:)`, the only stroke on a control.
 
@@ -83,9 +84,10 @@ Add `import ImpDesign`, then `.impControls()` on the root of a screen for the sw
 
 ## Help, choices and space
 
+- **Feedback never moves the layout.** An error, a warning, progress or an info line is never inserted between things. A button that takes a moment carries its own state (`StatefulLabel` with `ActionState`: wheel, then tick or cross, at a fixed size). A result that is about the page floats over its bottom (`ImpNotice`, `.impNotice`, or `postNotice` from a screen inside `.impNoticeHost()`). A line that explains a field is a `StatusSlot`: always there, same height, words swap in place.
 - **Help is a small icon.** `InfoTip` sits after the title of a card or section header. A click or a tap opens a popover as wide as its words. Every platform does the same.
 - **One click.** A menu that only holds more buttons is not used. Actions are icon buttons (with a help text) or labelled buttons beside what they act on.
-- **Choices by content.** Two to four short options are `ImpSegmented`. It fills its container (equal columns) unless it is beside its title on a wide row. Three long sentence-like options are a picker or a list of selectable cards. A long or open list is a dropdown (`ImpPicker`). On and off is a switch.
+- **Choices by content.** Buttons over dropdowns. Up to five short options are `ImpSegmented` with a symbol on each (words, then icons, then a menu when narrow). A button that would open a small menu of actions shows those actions as icon buttons instead (`HoverIconButton` with help). A menu stays only for a long or open list (languages, models, voices, devices, counts, Imps) and for right-click context menus. It fills its container (equal columns) unless it is beside its title on a wide row. On and off is a switch.
 - **Narrow means icons, not small text.** A button never wraps, shrinks or cuts its label.
 - **Selection is the Imp's colour.** A chosen thing is filled or lit with the tint. No outline boxes.
 

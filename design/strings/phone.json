@@ -55,9 +55,9 @@
   },
   "phone.requests.backoff.title": {
     "note": "Row title: pause growth.",
-    "en": "Longer each time",
-    "es": "Más cada vez",
-    "zh-Hans": "每次更久"
+    "en": "Growth",
+    "es": "Aumento",
+    "zh-Hans": "递增"
   },
   "phone.requests.backoff.info": {
     "note": "Help for pause growth.",
@@ -79,7 +79,7 @@
   },
   "phone.shake.hard.title": {
     "note": "Row title: shake strength.",
-    "en": "How hard",
+    "en": "Strength",
     "es": "Fuerza",
     "zh-Hans": "力度"
   },
@@ -103,9 +103,9 @@
   },
   "phone.shake.which.title": {
     "note": "Row title: which device.",
-    "en": "Which device",
-    "es": "Qué dispositivo",
-    "zh-Hans": "哪台设备"
+    "en": "Device",
+    "es": "Dispositivo",
+    "zh-Hans": "设备"
   },
   "phone.shake.dir.sides": {
     "note": "Segment: left or right.",
@@ -115,7 +115,7 @@
   },
   "phone.shake.dir.any": {
     "note": "Segment: any direction.",
-    "en": "Any way",
+    "en": "Any",
     "es": "Cualquiera",
     "zh-Hans": "任意"
   },
@@ -143,12 +143,6 @@
     "es": "Olvidar…",
     "zh-Hans": "忘记…"
   },
-  "phone.forget.everyone": {
-    "note": "Button that unlinks every device.",
-    "en": "Forget Everyone…",
-    "es": "Olvidar a todos…",
-    "zh-Hans": "忘记所有设备…"
-  },
   "phone.forget.one.title": {
     "note": "Alert button, with the device name.",
     "en": "Forget {name}",
@@ -160,9 +154,9 @@
   },
   "phone.forget.everyone.title": {
     "note": "Alert button.",
-    "en": "Forget Everyone",
-    "es": "Olvidar a todos",
-    "zh-Hans": "忘记所有设备"
+    "en": "Forget all",
+    "es": "Olvidar todos",
+    "zh-Hans": "全部忘记"
   },
   "phone.name.field": {
     "note": "Placeholder of the field with this device name.",
@@ -178,15 +172,15 @@
   },
   "phone.scan.code": {
     "note": "Button that opens the camera to scan a link code.",
-    "en": "Scan a Code",
-    "es": "Escanear un código",
-    "zh-Hans": "扫描二维码"
+    "en": "Scan",
+    "es": "Escanear",
+    "zh-Hans": "扫描"
   },
   "phone.paste.link": {
     "note": "Button that links from a copied link.",
-    "en": "Paste Link",
-    "es": "Pegar enlace",
-    "zh-Hans": "粘贴链接"
+    "en": "Paste",
+    "es": "Pegar",
+    "zh-Hans": "粘贴"
   },
   "phone.status.alone": {
     "note": "Connection pill: no device linked.",
@@ -229,12 +223,6 @@
     "en": "Opens Devices",
     "es": "Abre Dispositivos",
     "zh-Hans": "打开设备"
-  },
-  "phone.more.label": {
-    "note": "Spoken label of the main screen menu button.",
-    "en": "More",
-    "es": "Más",
-    "zh-Hans": "更多"
   },
   "phone.stage.throw_hint": {
     "note": "Empty main screen while another device is nearby.",
@@ -389,12 +377,6 @@
     "es": "Todos los Imps vuelven a casa. Enlaza otra vez con un código nuevo.",
     "zh-Hans": "所有小妖都会回家。请用新的二维码重新关联。"
   },
-  "phone.server.choice": {
-    "note": "Spoken name of the server choice.",
-    "en": "Server",
-    "es": "Servidor",
-    "zh-Hans": "服务器"
-  },
   "phone.server.placeholder_den": {
     "note": "Example address of a Den.",
     "en": "den.example.com",
@@ -421,9 +403,9 @@
   },
   "phone.pair.hatch": {
     "note": "Quiet button on the first screen: make an Imp of your own instead of waking the first one.",
-    "en": "Hatch an Imp",
-    "es": "Criar un Imp",
-    "zh-Hans": "孵化小妖"
+    "en": "Hatch",
+    "es": "Crear",
+    "zh-Hans": "孵化"
   },
   "phone.pair.seen_as": {
     "note": "Help on the name card of the link sheet: what the name is for.",
@@ -439,9 +421,9 @@
   },
   "phone.chat.new": {
     "note": "iPhone: chat new.",
-    "en": "New Chat",
-    "es": "Nuevo chat",
-    "zh-Hans": "新聊天"
+    "en": "New",
+    "es": "Nuevo",
+    "zh-Hans": "新建"
   },
   "phone.talks.empty": {
     "note": "The talks side of an Imp's sheet when it has not talked with another Imp yet.",
@@ -451,9 +433,9 @@
   },
   "phone.chat.jump_latest": {
     "note": "iPhone: chat jump latest.",
-    "en": "Jump to latest",
-    "es": "Ir a lo último",
-    "zh-Hans": "跳到最新"
+    "en": "Latest",
+    "es": "Último",
+    "zh-Hans": "最新"
   },
   "phone.chat.edit_help": {
     "note": "iPhone: chat edit help.",
@@ -463,9 +445,9 @@
   },
   "phone.chat.ask_again": {
     "note": "iPhone: chat ask again.",
-    "en": "Ask Again",
-    "es": "Volver a preguntar",
-    "zh-Hans": "再问一次"
+    "en": "Retry",
+    "es": "Reintentar",
+    "zh-Hans": "重试"
   },
   "phone.chat.failed": {
     "note": "iPhone: chat failed.",
@@ -663,8 +645,38 @@
   },
   "phone.brain.change": {
     "note": "Button in an Imp's Brain panel on the iPhone that starts choosing another service or model.",
-    "en": "Change Brain",
-    "es": "Cambiar cerebro",
-    "zh-Hans": "更换大脑"
+    "en": "Change",
+    "es": "Cambiar",
+    "zh-Hans": "更改"
+  },
+  "link.reset": {
+    "note": "Toast once when the saved links could not be read and were reset.",
+    "en": "Imp couldn't read its saved links, so it started fresh. Link your devices again.",
+    "es": "Imp no pudo leer sus vínculos guardados y empezó de nuevo. Vuelve a vincular tus dispositivos.",
+    "zh-Hans": "Imp 无法读取已保存的连接，已重新开始。请重新连接你的设备。"
+  },
+  "link.localnet.off": {
+    "note": "Status line when Local Network access is off for Imp.",
+    "en": "Local Network is off for Imp",
+    "es": "La red local está desactivada para Imp",
+    "zh-Hans": "Imp 的本地网络已关闭"
+  },
+  "link.localnet.open": {
+    "note": "Button on the iPhone that opens the app's page in Settings.",
+    "en": "Open Settings",
+    "es": "Abrir Ajustes",
+    "zh-Hans": "打开设置"
+  },
+  "link.localnet.open_mac": {
+    "note": "Button on the Mac that opens System Settings, Local Network.",
+    "en": "Open System Settings",
+    "es": "Abrir Ajustes del Sistema",
+    "zh-Hans": "打开系统设置"
+  },
+  "link.preparing": {
+    "note": "Status line while the link is coming up and a code cannot be made yet.",
+    "en": "Getting ready to link…",
+    "es": "Preparando el vínculo…",
+    "zh-Hans": "正在准备连接…"
   }
 }

@@ -92,51 +92,6 @@ public struct PeekPlan: Equatable, Sendable {
     }
 }
 
-/// What a click on an Imp does, by how many came in a row.
-public enum DoubleClickAction: String, Codable, CaseIterable, Sendable {
-    case openSettings, talk, nothing
-}
-
-extension DoubleClickAction {
-    public var title: String {
-        switch self {
-        case .openSettings: String(localized: "pref.double_click.settings")
-        case .talk: String(localized: "pref.double_click.talk")
-        case .nothing: String(localized: "pref.double_click.none")
-        }
-    }
-
-    public var symbol: String {
-        switch self {
-        case .openSettings: "gearshape.fill"
-        case .talk: "bubble.left.fill"
-        case .nothing: "nosign"
-        }
-    }
-}
-
-public enum ClickAction: Equatable, Sendable {
-    case openBubble, openSettings, talk, nothing
-    /// Three or more in a row: whatever the Imp's own triggers say.
-    case triggers
-
-    public static func resolve(count: Int, doubleClick: DoubleClickAction) -> ClickAction {
-        switch count {
-        case ...1: .openBubble
-        case 2:
-            switch doubleClick {
-            case .openSettings: .openSettings
-            case .talk: .talk
-            case .nothing: .nothing
-            }
-        default: .triggers
-        }
-    }
-
-    /// A first click waits to see whether a second follows only when a second would do something.
-    public static func waitsForSecondClick(_ doubleClick: DoubleClickAction) -> Bool { doubleClick != .nothing }
-}
-
 /// The Imps a person hid on a screen that has no profile flag for it (the phone). They keep their
 /// order, they are not on the stage, and they peek from the floor until one is brought back.
 public struct HiddenImps: Codable, Equatable, Sendable {

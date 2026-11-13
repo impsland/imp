@@ -26,6 +26,9 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     public var sendsToolCalls: Bool?
     /// How many recent exchanges of the chat it's sent. `nil`: no limit (`ChatMemory.noLimit`).
     public var exchangesSent: Int?
+    /// The size of a chat, in tokens (estimated, about four characters each), at which a new chat or a
+    /// recap is suggested. `nil`: `newChatDefault`. One of `newChatChoices`.
+    public var newChatAtTokens: Int?
     /// Its models. `nil` uses the template brain (`AIConfig.brain`).
     public var brain: Brain?
     /// Where it sits on screen (bottom-left of its panel). `nil` until placed.
@@ -110,6 +113,10 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     public var effectiveInstructions: String { instructions ?? Briefing.display }
 
     public var remembersToolCalls: Bool { sendsToolCalls ?? true }
+    /// The size at which a long chat gets a gentle suggestion to recap it or start a new one.
+    public var newChatAt: Int { newChatAtTokens.flatMap { Self.newChatChoices.contains($0) ? $0 : nil } ?? Self.newChatDefault }
+    public static let newChatChoices = [50_000, 100_000, 250_000, 500_000, 750_000, 1_000_000]
+    public static let newChatDefault = 250_000
     public var memoryExchanges: Int { exchangesSent.map { max($0, 1) } ?? ChatMemory.noLimit }
 
     /// Its own folder (see `Workspace`).

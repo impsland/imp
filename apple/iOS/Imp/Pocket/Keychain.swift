@@ -59,6 +59,8 @@ struct KeychainLinkStorage: LinkStorage {
         return data
     }
 
+    func erase() throws { Keychain.delete(Self.service, Self.account) }
+
     func save(_ book: Data) throws {
         let status = Keychain.write(book, Self.service, Self.account)
         guard status == errSecSuccess else { throw KeychainFailure(status: status) }

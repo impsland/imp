@@ -57,6 +57,7 @@ struct SettingsPage<Content: View>: View {
             .scrollIndicators(.automatic)
             .impControls()
         }
+        .impNoticeHost()
     }
 }
 
@@ -93,7 +94,7 @@ struct TopBar<Center: View, Trailing: View>: View {
             .frame(maxWidth: .infinity)
         }
         .padding(.leading, Metrics.trafficLights)
-        .padding(.trailing, Spacing.medium)
+        .padding(.trailing, CornerInset.bar(height: Metrics.barHeight))
         .frame(height: Metrics.barHeight)
     }
 }
@@ -139,8 +140,10 @@ struct SheetFrame<Header: View, Content: View, Footer: View>: View {
             .scrollIndicators(.automatic)
             .frame(height: bodyHeight)
             HStack(spacing: Spacing.small) { footer }
+                // A button in the footer sits as far from the bottom as from the left.
                 .padding(.horizontal, Spacing.page)
-                .padding(.vertical, Spacing.medium)
+                .padding(.top, Spacing.medium)
+                .padding(.bottom, Spacing.page)
                 .frame(maxWidth: .infinity)
                 .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { footerHeight = $0 }
         }
@@ -149,6 +152,7 @@ struct SheetFrame<Header: View, Content: View, Footer: View>: View {
         // The sheet's own window is the same surface, so no system background shows at its edge.
         .presentationBackground(Tone.surface)
         .impControls()
+        .impNoticeHost()
         .focusSection()
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didResizeNotification)) { note in
             guard let window = note.object as? NSWindow, window === HomeWindow.shared.window else { return }
@@ -183,9 +187,9 @@ struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
                     .contentTransition(.symbolEffect(.replace))
                 Text(title).font(Typeface.title).foregroundStyle(Tone.text).lineLimit(1)
                     .accessibilityAddTraits(.isHeader)
-                if let info { InfoTip(info) }
                 Spacer(minLength: Spacing.small)
                 accessory
+                if let info { InfoTip(info) }
                 // The one way to close a sheet: a close button in the corner (Escape works too).
                 HoverIconButton(systemName: "xmark", help: "common.close") { dismiss() }
                     .keyboardShortcut(.cancelAction)

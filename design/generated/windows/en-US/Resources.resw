@@ -16,24 +16,26 @@
   <data name="anim.help.symbol" xml:space="preserve"><value>A small picture that pops up beside the Imp.</value><comment>Help of the symbol setting.</comment></data>
   <data name="anim.help.tilt" xml:space="preserve"><value>How far the Imp leans to the side.</value><comment>Help of the tilt setting.</comment></data>
   <data name="animations.built_in" xml:space="preserve"><value>Built in</value><comment>Heading of the five bundled animations.</comment></data>
-  <data name="animations.find" xml:space="preserve"><value>Find more in The Den</value><comment>Button.</comment></data>
-  <data name="animations.from_den" xml:space="preserve"><value>From The Den</value><comment>Heading of animations that came from The Den.</comment></data>
+  <data name="animations.find" xml:space="preserve"><value>Browse</value><comment>Button.</comment></data>
+  <data name="animations.from_den" xml:space="preserve"><value>Den</value><comment>Heading of animations that came from The Den.</comment></data>
   <data name="animations.needs_den" xml:space="preserve"><value>Set up The Den to find more.</value><comment>Shown when The Den is not set up.</comment></data>
-  <data name="animations.new" xml:space="preserve"><value>New animation</value><comment>Button and sheet title: make a new animation of your own.</comment></data>
-  <data name="animations.restore" xml:space="preserve"><value>Restore defaults</value><comment>Button.</comment></data>
-  <data name="animations.search" xml:space="preserve"><value>Find an animation</value><comment>Placeholder of the search field on the Animations page.</comment></data>
+  <data name="animations.new" xml:space="preserve"><value>New</value><comment>Button and sheet title: make a new animation of your own.</comment></data>
+  <data name="animations.restore" xml:space="preserve"><value>Restore</value><comment>Button.</comment></data>
+  <data name="animations.search" xml:space="preserve"><value>Search</value><comment>Placeholder of the search field on the Animations page.</comment></data>
   <data name="animations.title" xml:space="preserve"><value>Animations</value><comment>Group title.</comment></data>
-  <data name="app.behaviour" xml:space="preserve"><value>Behaviour</value><comment>Card title: double click, login, language.</comment></data>
   <data name="app.language" xml:space="preserve"><value>Language</value><comment>Row.</comment></data>
-  <data name="app.login" xml:space="preserve"><value>Start at login</value><comment>Switch (desktop).</comment></data>
+  <data name="app.login" xml:space="preserve"><value>Autostart</value><comment>Switch (desktop).</comment></data>
   <data name="app.login_note" xml:space="preserve"><value>Open Imp when you sign in.</value><comment>Note under the switch.</comment></data>
   <data name="app.look" xml:space="preserve"><value>Look</value><comment>Card title: appearance, background, embers.</comment></data>
-  <data name="app.reset" xml:space="preserve"><value>Reset Imp</value><comment>Button.</comment></data>
+  <data name="app.reset" xml:space="preserve"><value>Reset</value><comment>Button.</comment></data>
+  <data name="app.system" xml:space="preserve"><value>System</value><comment>Card title on the App page: login and language.</comment></data>
   <data name="app.title" xml:space="preserve"><value>App</value><comment>Group title.</comment></data>
-  <data name="app.window.info" xml:space="preserve"><value>The smallest the window can be made. Everything in it fits any size above this.</value><comment>Help for the Window card.</comment></data>
-  <data name="app.window.min_height" xml:space="preserve"><value>Smallest height</value><comment>Row: the smallest height of the app's window.</comment></data>
-  <data name="app.window.min_width" xml:space="preserve"><value>Smallest width</value><comment>Row: the smallest width of the app's window.</comment></data>
-  <data name="app.window.points" xml:space="preserve"><value>{value} pt</value><comment>A size in points beside a slider, like 660 pt.</comment></data>
+  <data name="app.window.full" xml:space="preserve"><value>Full</value><comment>Window size: as large as the screen.</comment></data>
+  <data name="app.window.info" xml:space="preserve"><value>How big the window is. You can still drag its edges.</value><comment>Help for the Window card.</comment></data>
+  <data name="app.window.large" xml:space="preserve"><value>Large</value><comment>Window size: large.</comment></data>
+  <data name="app.window.medium" xml:space="preserve"><value>Medium</value><comment>Window size: medium.</comment></data>
+  <data name="app.window.size" xml:space="preserve"><value>Size</value><comment>Row: the size of the app's window.</comment></data>
+  <data name="app.window.small" xml:space="preserve"><value>Small</value><comment>Window size: small.</comment></data>
   <data name="app.window.title" xml:space="preserve"><value>Window</value><comment>Card on the App page: the smallest size of the app's window.</comment></data>
   <data name="background.choose_colour" xml:space="preserve"><value>Choose a colour…</value><comment>Opens the colour chooser.</comment></data>
   <data name="background.choose_picture" xml:space="preserve"><value>Choose a picture…</value><comment>Opens a file chooser for a picture or a tile.</comment></data>
@@ -43,7 +45,7 @@
   <data name="background.theme" xml:space="preserve"><value>Theme</value><comment>Background choice: the wall of the dungeon, the default.</comment></data>
   <data name="background.tile" xml:space="preserve"><value>Tile</value><comment>Background choice: a seamless pattern that repeats.</comment></data>
   <data name="background.tile_hint" xml:space="preserve"><value>A tile repeats to fill the window. Pick a seamless pattern.</value><comment>Hint under the Tile choice.</comment></data>
-  <data name="brain.add_service" xml:space="preserve"><value>Add a service</value><comment>Button that adds a Brain service.</comment></data>
+  <data name="brain.add_service" xml:space="preserve"><value>Add</value><comment>Button that adds a Brain service.</comment></data>
   <data name="brain.check_ok" xml:space="preserve"><value>{name} is awake.</value><comment>Result of a successful Brain check.</comment></data>
   <data name="brain.checking" xml:space="preserve"><value>Checking…</value><comment>Shown while a Brain is checked.</comment></data>
   <data name="brain.choose" xml:space="preserve"><value>Choose a service</value><comment>Primary button of a sleeping Imp's Brain panel when services exist but none is chosen.</comment></data>
@@ -59,19 +61,22 @@
   <data name="brain.model_placeholder" xml:space="preserve"><value>Model name</value><comment>Placeholder of the model field: the exact name of a model.</comment></data>
   <data name="brain.none" xml:space="preserve"><value>No Brain yet</value><comment>Status in the Brain panel.</comment></data>
   <data name="brain.service" xml:space="preserve"><value>Service</value><comment>Field label.</comment></data>
-  <data name="brain.source" xml:space="preserve"><value>Brain from</value><comment>Row: whose Brain the Imp uses.</comment></data>
+  <data name="brain.source" xml:space="preserve"><value>Source</value><comment>Row: whose Brain the Imp uses.</comment></data>
   <data name="brain.title" xml:space="preserve"><value>Brain</value><comment>Panel title.</comment></data>
   <data name="brain.unnamed" xml:space="preserve"><value>Unnamed</value><comment>A service with no name yet.</comment></data>
-  <data name="brain.use_app" xml:space="preserve"><value>Same as the other Imps</value><comment>Choice: use the app's default Brain.</comment></data>
-  <data name="brain.use_own" xml:space="preserve"><value>Its own Brain</value><comment>Choice: this Imp has its own service and model.</comment></data>
+  <data name="brain.use_app" xml:space="preserve"><value>Shared</value><comment>Choice: use the app's default Brain.</comment></data>
+  <data name="brain.use_own" xml:space="preserve"><value>Own</value><comment>Choice: this Imp has its own service and model.</comment></data>
   <data name="brain.zzz" xml:space="preserve"><value>Zzz, {name} is asleep</value><comment>Screen reader description of the sleeping animation.</comment></data>
-  <data name="brains.add" xml:space="preserve"><value>Add a Brain</value><comment>Button.</comment></data>
-  <data name="brains.default" xml:space="preserve"><value>Default for new Imps</value><comment>Label of the default Brain.</comment></data>
+  <data name="brains.add" xml:space="preserve"><value>Add</value><comment>Button.</comment></data>
+  <data name="brains.default" xml:space="preserve"><value>Default</value><comment>Label of the default Brain.</comment></data>
   <data name="brains.empty" xml:space="preserve"><value>No Brains yet. Add a model on this computer or a service with your key.</value><comment>Empty state of the Brains list.</comment></data>
   <data name="brains.local" xml:space="preserve"><value>A model on this computer</value><comment>Choice when adding a Brain.</comment></data>
   <data name="brains.used_by.one" xml:space="preserve"><value>Used by {count} Imp</value><comment>Under a Brain: how many Imps use it.</comment></data>
   <data name="brains.used_by.other" xml:space="preserve"><value>Used by {count} Imps</value><comment>Under a Brain: how many Imps use it.</comment></data>
   <data name="brains.with_key" xml:space="preserve"><value>A service with your key</value><comment>Choice when adding a Brain.</comment></data>
+  <data name="common.action_done" xml:space="preserve"><value>Done</value><comment>Screen reader value of a button whose action just succeeded.</comment></data>
+  <data name="common.action_failed" xml:space="preserve"><value>Failed</value><comment>Screen reader value of a button whose action just failed.</comment></data>
+  <data name="common.action_working" xml:space="preserve"><value>Working</value><comment>Screen reader value of a button whose action is running.</comment></data>
   <data name="common.add" xml:space="preserve"><value>Add</value><comment>Button that adds an item.</comment></data>
   <data name="common.back" xml:space="preserve"><value>Back</value><comment>Button that goes one step back.</comment></data>
   <data name="common.cancel" xml:space="preserve"><value>Cancel</value><comment>Button that closes a dialog without doing anything.</comment></data>
@@ -102,10 +107,16 @@
   <data name="den.help.summary" xml:space="preserve"><value>One sentence so people know what it is.</value><comment>Help of the Den summary.</comment></data>
   <data name="den.help.tags" xml:space="preserve"><value>Words that help people find it. Separate them with commas.</value><comment>Help of the Den tags.</comment></data>
   <data name="devices.copy_link.help" xml:space="preserve"><value>For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while.</value><comment>Help of Copy Link in Link a device.</comment></data>
-  <data name="devices.has" xml:space="preserve"><value>Has {imps}</value><comment>Under a linked device: the Imps that are on it now.</comment></data>
-  <data name="devices.none" xml:space="preserve"><value>No devices yet. Link your iPhone or another Mac and your Imps can visit it.</value><comment>In the devices card when nothing is linked yet.</comment></data>
+  <data name="devices.empty" xml:space="preserve"><value>No devices yet. Link an iPhone or another Mac and your Imps can visit it.</value><comment>Empty state of the devices card.</comment></data>
+  <data name="devices.list.info" xml:space="preserve"><value>Devices linked with this one. Mine lets a device act for you.</value><comment>Help on the Devices card.</comment></data>
+  <data name="devices.reach.away" xml:space="preserve"><value>Away</value><comment>Help on a linked device: not reachable now.</comment></data>
+  <data name="devices.reach.direct" xml:space="preserve"><value>Direct, on the local network</value><comment>Help on a linked device: reached on the local network.</comment></data>
+  <data name="devices.reach.server" xml:space="preserve"><value>Through the server</value><comment>Help on a linked device: reached through the server.</comment></data>
   <data name="devices.scan" xml:space="preserve"><value>Scan code</value><comment>Button and tab: read another device's code with this Mac's camera, or paste its link.</comment></data>
   <data name="devices.show" xml:space="preserve"><value>Show code</value><comment>Button and tab: show this Mac's code for another device to scan.</comment></data>
+  <data name="devices.this.info" xml:space="preserve"><value>Link another device here. The dot shows whether The Hop lets devices find each other from anywhere.</value><comment>Help on the This Mac card: the dot is The Hop.</comment></data>
+  <data name="devices.this_mac" xml:space="preserve"><value>This Mac</value><comment>Title of the card for this Mac on the Devices page.</comment></data>
+  <data name="devices.title" xml:space="preserve"><value>Devices</value><comment>Title of the card listing the linked devices.</comment></data>
   <data name="error.brain.key" xml:space="preserve"><value>{service} did not accept the key. Check it and try again.</value><comment>The key was refused.</comment></data>
   <data name="error.brain.local" xml:space="preserve"><value>No model answered. Make sure it is running, then try again.</value><comment>The local model server did not answer.</comment></data>
   <data name="error.brain.model" xml:space="preserve"><value>{service} does not have the model {model}. Pick another one.</value><comment>The model does not exist.</comment></data>
@@ -208,17 +219,17 @@
   <data name="goodbye.title" xml:space="preserve"><value>Say goodbye to {name}?</value><comment>Title of the dialog that asks before an Imp is deleted.</comment></data>
   <data name="home.canvas.hint" xml:space="preserve"><value>Imps move around here. Press Tab to go from one Imp to the next.</value><comment>Screen reader hint for the main canvas.</comment></data>
   <data name="home.canvas.label" xml:space="preserve"><value>The Imps' home</value><comment>Screen reader name of the main canvas.</comment></data>
-  <data name="home.corner.show_hidden" xml:space="preserve"><value>Show hidden Imps</value><comment>Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.</comment></data>
+  <data name="home.corner.show_hidden" xml:space="preserve"><value>Hidden</value><comment>Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.</comment></data>
   <data name="home.empty.hint" xml:space="preserve"><value>Hatch your first Imp to get started.</value><comment>Empty main screen, one line under the title.</comment></data>
-  <data name="home.empty.new_imp" xml:space="preserve"><value>New Imp</value><comment>The one prompt in the middle of an empty main screen.</comment></data>
+  <data name="home.empty.new_imp" xml:space="preserve"><value>New</value><comment>The one prompt in the middle of an empty main screen.</comment></data>
   <data name="home.empty.title" xml:space="preserve"><value>No Imps yet</value><comment>Empty main screen, title.</comment></data>
   <data name="home.hidden.bring_back" xml:space="preserve"><value>Bring back {name}</value><comment>Action that brings a hidden Imp back.</comment></data>
   <data name="home.hidden.empty" xml:space="preserve"><value>No hidden Imps</value><comment>Shown in the hidden Imps list when it is empty.</comment></data>
   <data name="home.hidden.hint" xml:space="preserve"><value>Hidden Imps peek out now and then. Click one to bring it back.</value><comment>Screen reader hint for the hidden Imps element.</comment></data>
   <data name="home.hidden.peek" xml:space="preserve"><value>{name} is peeking out from the floor.</value><comment>Announced to screen readers when a hidden Imp peeks.</comment></data>
-  <data name="home.hidden.title" xml:space="preserve"><value>Hidden Imps ({count})</value><comment>The element on the floor that holds hidden Imps. The number is how many.</comment></data>
-  <data name="home.tray.quit" xml:space="preserve"><value>Quit Imp</value><comment>Status icon menu item that quits the app.</comment></data>
-  <data name="home.tray.show" xml:space="preserve"><value>Open Imp</value><comment>Status icon menu item that shows the window.</comment></data>
+  <data name="home.hidden.title" xml:space="preserve"><value>Hidden ({count})</value><comment>The element on the floor that holds hidden Imps. The number is how many.</comment></data>
+  <data name="home.tray.quit" xml:space="preserve"><value>Quit</value><comment>Status icon menu item that quits the app.</comment></data>
+  <data name="home.tray.show" xml:space="preserve"><value>Open</value><comment>Status icon menu item that shows the window.</comment></data>
   <data name="imp.a11y.hide" xml:space="preserve"><value>Hide {name}</value><comment>Screen reader action.</comment></data>
   <data name="imp.a11y.label" xml:space="preserve"><value>{name}, {state}</value><comment>Screen reader label of an Imp: its name and its state.</comment></data>
   <data name="imp.a11y.let_out" xml:space="preserve"><value>Let {name} out</value><comment>Screen reader action.</comment></data>
@@ -270,6 +281,11 @@
   <data name="kit.help.skipped" xml:space="preserve"><value>Things in the kit this Mac cannot use, so they are left out.</value><comment>Help of skipped items.</comment></data>
   <data name="kit.help.tools" xml:space="preserve"><value>Tools can run things on your Mac. Read them first.</value><comment>Help of the kit tools.</comment></data>
   <data name="kit.origin.starter" xml:space="preserve"><value>Imp's starter kit</value><comment>Where a kit in the kit review came from: the starter kit that ships with Imp.</comment></data>
+  <data name="link.localnet.off" xml:space="preserve"><value>Local Network is off for Imp</value><comment>Status line when Local Network access is off for Imp.</comment></data>
+  <data name="link.localnet.open" xml:space="preserve"><value>Open Settings</value><comment>Button on the iPhone that opens the app's page in Settings.</comment></data>
+  <data name="link.localnet.open_mac" xml:space="preserve"><value>Open System Settings</value><comment>Button on the Mac that opens System Settings, Local Network.</comment></data>
+  <data name="link.preparing" xml:space="preserve"><value>Getting ready to link…</value><comment>Status line while the link is coming up and a code cannot be made yet.</comment></data>
+  <data name="link.reset" xml:space="preserve"><value>Imp couldn't read its saved links, so it started fresh. Link your devices again.</value><comment>Toast once when the saved links could not be read and were reset.</comment></data>
   <data name="look.body" xml:space="preserve"><value>Body</value><comment>Section: colour and size.</comment></data>
   <data name="look.brows" xml:space="preserve"><value>Brows</value><comment>Label of a character slider.</comment></data>
   <data name="look.character" xml:space="preserve"><value>Character</value><comment>Slider group label: small traits of how the Imp moves and looks around.</comment></data>
@@ -277,7 +293,7 @@
   <data name="look.cheeks" xml:space="preserve"><value>Cheeks</value><comment>Label of a character slider.</comment></data>
   <data name="look.colour" xml:space="preserve"><value>Colour</value><comment>Slider label.</comment></data>
   <data name="look.eyes" xml:space="preserve"><value>Eyes</value><comment>Label of a character slider.</comment></data>
-  <data name="look.favourite" xml:space="preserve"><value>Favourite colour</value><comment>Tooltip of the favourite colour button.</comment></data>
+  <data name="look.favourite" xml:space="preserve"><value>Favourite</value><comment>Tooltip of the favourite colour button.</comment></data>
   <data name="look.head" xml:space="preserve"><value>Head</value><comment>Label of a character slider.</comment></data>
   <data name="look.help.body" xml:space="preserve"><value>Pick the colour and the size of this Imp.</value><comment>Help of the body section.</comment></data>
   <data name="look.help.brows" xml:space="preserve"><value>Tilt the eyebrows. One way looks cross, the other looks sad.</value><comment>Help of the eyebrows slider.</comment></data>
@@ -295,11 +311,21 @@
   <data name="look.lids" xml:space="preserve"><value>Lids</value><comment>Label of a character slider.</comment></data>
   <data name="look.pace" xml:space="preserve"><value>Pace</value><comment>Label of a character slider.</comment></data>
   <data name="look.preview" xml:space="preserve"><value>Preview</value><comment>Label of the live Imp above the sliders.</comment></data>
-  <data name="look.reset" xml:space="preserve"><value>Reset look</value><comment>Button that restores the default look.</comment></data>
+  <data name="look.reset" xml:space="preserve"><value>Reset</value><comment>Button that restores the default look.</comment></data>
   <data name="look.size" xml:space="preserve"><value>Size</value><comment>Slider label.</comment></data>
   <data name="look.squint" xml:space="preserve"><value>Squint</value><comment>Label of a character slider.</comment></data>
   <data name="look.swatch" xml:space="preserve"><value>Colour {index} of {count}</value><comment>Spoken label of a colour swatch in an Imp's look.</comment></data>
   <data name="look.title" xml:space="preserve"><value>Look</value><comment>Panel title.</comment></data>
+  <data name="memory.last" xml:space="preserve"><value>Last {count}</value><comment>Choice for Sends: the last N messages.</comment></data>
+  <data name="memory.new_chat.info" xml:space="preserve"><value>How big a chat gets before the Imp suggests a recap or a new chat.</value><comment>Info for New chat at.</comment></data>
+  <data name="memory.new_chat.title" xml:space="preserve"><value>New chat at</value><comment>Row in the Imp's Memory card.</comment></data>
+  <data name="memory.no_limit" xml:space="preserve"><value>All</value><comment>Choice for Sends: every message.</comment></data>
+  <data name="memory.sends.info" xml:space="preserve"><value>How many of the latest messages go to the Brain with each one. Fewer is faster and cheaper.</value><comment>Info for Sends.</comment></data>
+  <data name="memory.sends.title" xml:space="preserve"><value>Sends</value><comment>Row in the Imp's Memory card.</comment></data>
+  <data name="memory.size.k" xml:space="preserve"><value>{count}k</value><comment>A chat size in thousands of tokens.</comment></data>
+  <data name="memory.size.m" xml:space="preserve"><value>{count}M</value><comment>A chat size in millions of tokens.</comment></data>
+  <data name="memory.tools.info" xml:space="preserve"><value>Also sends what the tools did and returned. Off is smaller and cheaper.</value><comment>Info for Tool results.</comment></data>
+  <data name="memory.tools.title" xml:space="preserve"><value>Tool results</value><comment>Row in the Imp's Memory card.</comment></data>
   <data name="menu.bar.hide" xml:space="preserve"><value>Hide</value><comment>Menu bar button that hides every Imp on the desktop.</comment></data>
   <data name="menu.bar.hide_help" xml:space="preserve"><value>Hide the Imps on your desktop</value><comment>Tooltip of the Hide button.</comment></data>
   <data name="menu.bar.imps" xml:space="preserve"><value>Imps</value><comment>Menu bar button that opens the Imps' home window.</comment></data>
@@ -318,26 +344,29 @@
   <data name="menu.canvas.devices" xml:space="preserve"><value>Devices</value><comment>Menu item that opens Devices.</comment></data>
   <data name="menu.canvas.new_imp" xml:space="preserve"><value>New Imp</value><comment>Menu item that hatches a new Imp.</comment></data>
   <data name="menu.canvas.settings" xml:space="preserve"><value>Settings</value><comment>Menu item that opens the app-wide settings.</comment></data>
-  <data name="menu.canvas.show_hidden" xml:space="preserve"><value>Show hidden Imps ({count})</value><comment>Menu item that brings every hidden Imp back.</comment></data>
+  <data name="menu.canvas.show_hidden" xml:space="preserve"><value>Hidden ({count})</value><comment>Menu item that brings every hidden Imp back.</comment></data>
   <data name="menu.imp.copy_kit" xml:space="preserve"><value>Copy kit</value><comment>Menu item that copies an Imp as a kit.</comment></data>
   <data name="menu.imp.copy_link" xml:space="preserve"><value>Copy link</value><comment>Menu item that copies a link to an Imp's kit.</comment></data>
   <data name="menu.imp.goodbye" xml:space="preserve"><value>Goodbye</value><comment>Menu item that says goodbye to an Imp for good. A dialog asks first.</comment></data>
   <data name="menu.imp.hide" xml:space="preserve"><value>Hide</value><comment>Menu item that hides an Imp. It then peeks out now and then.</comment></data>
   <data name="menu.imp.let_out" xml:space="preserve"><value>Let out</value><comment>Menu item (desktop only) that lets an Imp out onto the desktop.</comment></data>
+  <data name="menu.imp.move_tip" xml:space="preserve"><value>{name} lives on {device} from now on.</value><comment>Tip on the Imp menu item that moves it to a Mac for good.</comment></data>
   <data name="menu.imp.move_to" xml:space="preserve"><value>Move to {name}</value><comment>Imp menu item that moves the Imp to a Mac for good.</comment></data>
   <data name="menu.imp.send_home" xml:space="preserve"><value>Send home</value><comment>Menu item (desktop only) that puts a free Imp back in the window.</comment></data>
-  <data name="menu.imp.send_to" xml:space="preserve"><value>Send to {name}</value><comment>Imp menu item that sends the Imp to a device.</comment></data>
-  <data name="menu.imp.settings" xml:space="preserve"><value>Imp Settings</value><comment>Menu item that opens the settings of one Imp.</comment></data>
+  <data name="menu.imp.send_to" xml:space="preserve"><value>Visit {name}</value><comment>Imp menu item that sends the Imp to visit a device. It comes back.</comment></data>
+  <data name="menu.imp.settings" xml:space="preserve"><value>Settings</value><comment>Menu item that opens the settings of one Imp.</comment></data>
   <data name="menu.imp.share" xml:space="preserve"><value>Share</value><comment>Menu item that shares an Imp.</comment></data>
   <data name="menu.imp.talk" xml:space="preserve"><value>Talk</value><comment>Menu item that opens the Imp's message bubble.</comment></data>
   <data name="menu.imp.talk_help" xml:space="preserve"><value>Talk to {name}</value><comment>Tooltip of the Talk button in an Imp's menu.</comment></data>
-  <data name="menu.imp.talks" xml:space="preserve"><value>Talks</value><comment>Imp menu item that opens what the Imp said with other Imps.</comment></data>
+  <data name="menu.imp.talks" xml:space="preserve"><value>Talks</value><comment>Tip and title of the button in an Imp's chat that opens what it said with other Imps.</comment></data>
   <data name="menu.imp.type" xml:space="preserve"><value>Type</value><comment>Button in an Imp's menu that opens the typing box.</comment></data>
   <data name="menu.imp.type_help" xml:space="preserve"><value>Type to {name}</value><comment>Tooltip of the Type button in an Imp's menu.</comment></data>
-  <data name="moves.builtin" xml:space="preserve"><value>Built-in moves</value><comment>Row: change a built-in move.</comment></data>
+  <data name="menu.imp.visit_none" xml:space="preserve"><value>Visit another device</value><comment>Greyed Imp menu item when no other device is around.</comment></data>
+  <data name="menu.imp.visit_tip" xml:space="preserve"><value>{name} visits {device} and can come back.</value><comment>Tip on the Imp menu item that sends it to visit a device.</comment></data>
+  <data name="moves.builtin" xml:space="preserve"><value>Moves</value><comment>Row: change a built-in move.</comment></data>
   <data name="moves.change" xml:space="preserve"><value>Change</value><comment>Button: change a built-in move.</comment></data>
   <data name="moves.empty" xml:space="preserve"><value>No special moves yet.</value><comment>Empty state of the moves panel.</comment></data>
-  <data name="moves.follow_how" xml:space="preserve"><value>Follows by</value><comment>Row: how it follows the cursor.</comment></data>
+  <data name="moves.follow_how" xml:space="preserve"><value>Follow</value><comment>Row: how it follows the cursor.</comment></data>
   <data name="moves.help.builtin" xml:space="preserve"><value>Pick one of the moves every Imp has and make a version only for this Imp.</value><comment>Help of the built-in moves row.</comment></data>
   <data name="moves.help.follow" xml:space="preserve"><value>Choose what this Imp does when you move your mouse pointer: stay still, look at it, or run after it.</value><comment>Help of the follow section.</comment></data>
   <data name="moves.help.follow_how" xml:space="preserve"><value>Off: it stays still. Eyes: only its eyes look at the pointer. Hop: it jumps after the pointer. Glide: it slides after the pointer.</value><comment>Help of the follow mode picker.</comment></data>
@@ -356,23 +385,23 @@
   <data name="personality.persona_hint" xml:space="preserve"><value>Tell {name} who it is and how it talks.</value><comment>Hint under the persona field.</comment></data>
   <data name="personality.title" xml:space="preserve"><value>Personality</value><comment>Panel title.</comment></data>
   <data name="personality.voice" xml:space="preserve"><value>Voice</value><comment>Field label.</comment></data>
-  <data name="personality.voice_look" xml:space="preserve"><value>Voice shows as</value><comment>Row: how the voice shows.</comment></data>
+  <data name="personality.voice_look" xml:space="preserve"><value>Shows as</value><comment>Row: how the voice shows.</comment></data>
   <data name="phone.about.title" xml:space="preserve"><value>About</value><comment>Card title: about the app.</comment></data>
   <data name="phone.appearance.auto" xml:space="preserve"><value>Auto</value><comment>Appearance choice: follow the system.</comment></data>
   <data name="phone.appearance.dark" xml:space="preserve"><value>Dark</value><comment>Appearance choice.</comment></data>
   <data name="phone.appearance.light" xml:space="preserve"><value>Light</value><comment>Appearance choice.</comment></data>
-  <data name="phone.brain.change" xml:space="preserve"><value>Change Brain</value><comment>Button in an Imp's Brain panel on the iPhone that starts choosing another service or model.</comment></data>
+  <data name="phone.brain.change" xml:space="preserve"><value>Change</value><comment>Button in an Imp's Brain panel on the iPhone that starts choosing another service or model.</comment></data>
   <data name="phone.callhome" xml:space="preserve"><value>Call home</value><comment>Button: bring an Imp back.</comment></data>
   <data name="phone.callhome.label" xml:space="preserve"><value>Call {name} home</value><comment>Spoken name of the call home button.</comment></data>
   <data name="phone.chat.answering" xml:space="preserve"><value>Answering {from}…</value><comment>iPhone: chat answering.</comment></data>
-  <data name="phone.chat.ask_again" xml:space="preserve"><value>Ask Again</value><comment>iPhone: chat ask again.</comment></data>
+  <data name="phone.chat.ask_again" xml:space="preserve"><value>Retry</value><comment>iPhone: chat ask again.</comment></data>
   <data name="phone.chat.ask_to" xml:space="preserve"><value>Ask {name} to </value><comment>iPhone: chat ask to.</comment></data>
   <data name="phone.chat.ask_to.hint" xml:space="preserve"><value>Starts a message asking {name} to do something.</value><comment>iPhone: chat ask to hint.</comment></data>
   <data name="phone.chat.edit_help" xml:space="preserve"><value>Edit</value><comment>iPhone: chat edit help.</comment></data>
   <data name="phone.chat.failed" xml:space="preserve"><value>Couldn't answer</value><comment>iPhone: chat failed.</comment></data>
-  <data name="phone.chat.jump_latest" xml:space="preserve"><value>Jump to latest</value><comment>iPhone: chat jump latest.</comment></data>
+  <data name="phone.chat.jump_latest" xml:space="preserve"><value>Latest</value><comment>iPhone: chat jump latest.</comment></data>
   <data name="phone.chat.message" xml:space="preserve"><value>Message {name}</value><comment>iPhone: chat message.</comment></data>
-  <data name="phone.chat.new" xml:space="preserve"><value>New Chat</value><comment>iPhone: chat new.</comment></data>
+  <data name="phone.chat.new" xml:space="preserve"><value>New</value><comment>iPhone: chat new.</comment></data>
   <data name="phone.chat.no_brain" xml:space="preserve"><value>No brain yet</value><comment>iPhone: chat no brain.</comment></data>
   <data name="phone.chat.ran_tools" xml:space="preserve"><value>Ran {count} tools</value><comment>iPhone: chat ran tools.</comment></data>
   <data name="phone.code.caption" xml:space="preserve"><value>Scan on the other device</value><comment>One line under the QR code.</comment></data>
@@ -384,8 +413,7 @@
   <data name="phone.editor.save" xml:space="preserve"><value>Save</value><comment>Main button of an Imp's settings on the iPhone.</comment></data>
   <data name="phone.editor.save_failed" xml:space="preserve"><value>The Imp couldn't be saved. {detail}</value><comment>Message of that alert, with what went wrong.</comment></data>
   <data name="phone.editor.save_failed_title" xml:space="preserve"><value>Couldn't save</value><comment>Title of the alert when an Imp's settings could not be saved.</comment></data>
-  <data name="phone.forget.everyone" xml:space="preserve"><value>Forget Everyone…</value><comment>Button that unlinks every device.</comment></data>
-  <data name="phone.forget.everyone.title" xml:space="preserve"><value>Forget Everyone</value><comment>Alert button.</comment></data>
+  <data name="phone.forget.everyone.title" xml:space="preserve"><value>Forget all</value><comment>Alert button.</comment></data>
   <data name="phone.forget.message" xml:space="preserve"><value>Its Imps come home. To link again, show a new code.</value><comment>What forgetting one device does.</comment></data>
   <data name="phone.forget.one" xml:space="preserve"><value>Forget…</value><comment>Button that unlinks one device.</comment></data>
   <data name="phone.forget.one.title" xml:space="preserve"><value>Forget {name}</value><comment>Alert button, with the device name.</comment></data>
@@ -401,22 +429,21 @@
   <data name="phone.linked.none" xml:space="preserve"><value>Nobody is linked yet</value><comment>One line on the iPhone when no other device is linked.</comment></data>
   <data name="phone.linked.title" xml:space="preserve"><value>Linked</value><comment>Title of the linked devices card.</comment></data>
   <data name="phone.mine" xml:space="preserve"><value>Mine</value><comment>Toggle: this linked device is mine.</comment></data>
-  <data name="phone.more.label" xml:space="preserve"><value>More</value><comment>Spoken label of the main screen menu button.</comment></data>
   <data name="phone.name.field" xml:space="preserve"><value>Name</value><comment>Placeholder of the field with this device name.</comment></data>
   <data name="phone.name.title" xml:space="preserve"><value>This iPhone</value><comment>Title of the card with this device name.</comment></data>
   <data name="phone.pair.clipboard_bad" xml:space="preserve"><value>The clipboard doesn't hold a link from Imp.</value><comment>iPhone: pair clipboard bad.</comment></data>
   <data name="phone.pair.clipboard_empty" xml:space="preserve"><value>Copy the link from the other device first, then paste it here.</value><comment>iPhone: pair clipboard empty.</comment></data>
   <data name="phone.pair.code_bad" xml:space="preserve"><value>That code isn't from Imp.</value><comment>iPhone: pair code bad.</comment></data>
-  <data name="phone.pair.hatch" xml:space="preserve"><value>Hatch an Imp</value><comment>Quiet button on the first screen: make an Imp of your own instead of waking the first one.</comment></data>
+  <data name="phone.pair.hatch" xml:space="preserve"><value>Hatch</value><comment>Quiet button on the first screen: make an Imp of your own instead of waking the first one.</comment></data>
   <data name="phone.pair.link_bad" xml:space="preserve"><value>That isn't a link from Imp.</value><comment>iPhone: pair link bad.</comment></data>
   <data name="phone.pair.scan_other" xml:space="preserve"><value>Scan the code on the other device</value><comment>Hint above the camera.</comment></data>
   <data name="phone.pair.seen_as" xml:space="preserve"><value>Other devices see this iPhone by this name.</value><comment>Help on the name card of the link sheet: what the name is for.</comment></data>
   <data name="phone.pair.tip" xml:space="preserve"><value>Wake this Imp with a Brain, or link another device and throw an Imp over.</value><comment>Help on the first screen.</comment></data>
   <data name="phone.pair.title" xml:space="preserve"><value>Imp for iPhone</value><comment>Title of the first screen on the iPhone.</comment></data>
-  <data name="phone.paste.link" xml:space="preserve"><value>Paste Link</value><comment>Button that links from a copied link.</comment></data>
+  <data name="phone.paste.link" xml:space="preserve"><value>Paste</value><comment>Button that links from a copied link.</comment></data>
   <data name="phone.persona.placeholder" xml:space="preserve"><value>Who is this Imp? How does it talk?</value><comment>Placeholder of the personality field of an Imp on the iPhone.</comment></data>
   <data name="phone.requests.backoff.info" xml:space="preserve"><value>Each rest is this many times longer than the one before.</value><comment>Help for pause growth.</comment></data>
-  <data name="phone.requests.backoff.title" xml:space="preserve"><value>Longer each time</value><comment>Row title: pause growth.</comment></data>
+  <data name="phone.requests.backoff.title" xml:space="preserve"><value>Growth</value><comment>Row title: pause growth.</comment></data>
   <data name="phone.requests.delay.info" xml:space="preserve"><value>How long the Imp rests before it asks again.</value><comment>Help for the first pause.</comment></data>
   <data name="phone.requests.delay.title" xml:space="preserve"><value>First pause</value><comment>Row title: first pause.</comment></data>
   <data name="phone.requests.info" xml:space="preserve"><value>How long an Imp waits for its Brain, and what it does when the internet drops.</value><comment>Help for the waiting card.</comment></data>
@@ -425,20 +452,19 @@
   <data name="phone.requests.timeout.info" xml:space="preserve"><value>If the Brain takes longer than this, the Imp stops waiting and says so.</value><comment>Help for the longest wait.</comment></data>
   <data name="phone.requests.timeout.title" xml:space="preserve"><value>Wait up to</value><comment>Row title: longest wait.</comment></data>
   <data name="phone.requests.title" xml:space="preserve"><value>Waiting</value><comment>Card title on the iPhone settings page for brains.</comment></data>
-  <data name="phone.scan.code" xml:space="preserve"><value>Scan a Code</value><comment>Button that opens the camera to scan a link code.</comment></data>
-  <data name="phone.server.choice" xml:space="preserve"><value>Server</value><comment>Spoken name of the server choice.</comment></data>
+  <data name="phone.scan.code" xml:space="preserve"><value>Scan</value><comment>Button that opens the camera to scan a link code.</comment></data>
   <data name="phone.server.placeholder_den" xml:space="preserve"><value>den.example.com</value><comment>Example address of a Den.</comment></data>
   <data name="phone.server.placeholder_hop" xml:space="preserve"><value>hop.example.com:4677</value><comment>Example address of a Hop.</comment></data>
-  <data name="phone.shake.dir.any" xml:space="preserve"><value>Any way</value><comment>Segment: any direction.</comment></data>
+  <data name="phone.shake.dir.any" xml:space="preserve"><value>Any</value><comment>Segment: any direction.</comment></data>
   <data name="phone.shake.dir.sides" xml:space="preserve"><value>Left or right</value><comment>Segment: left or right.</comment></data>
   <data name="phone.shake.firm" xml:space="preserve"><value>Firm</value><comment>Segment: firm shake.</comment></data>
   <data name="phone.shake.friends.title" xml:space="preserve"><value>Ask first</value><comment>Row title: ask before sending to a friend.</comment></data>
   <data name="phone.shake.gentle" xml:space="preserve"><value>Gentle</value><comment>Segment: gentle shake.</comment></data>
-  <data name="phone.shake.hard.title" xml:space="preserve"><value>How hard</value><comment>Row title: shake strength.</comment></data>
+  <data name="phone.shake.hard.title" xml:space="preserve"><value>Strength</value><comment>Row title: shake strength.</comment></data>
   <data name="phone.shake.info" xml:space="preserve"><value>Shake the iPhone next to a linked device and the Imp you moved last goes there. You can undo it.</value><comment>Help for shake to send.</comment></data>
   <data name="phone.shake.normal" xml:space="preserve"><value>Normal</value><comment>Segment: normal shake.</comment></data>
   <data name="phone.shake.title" xml:space="preserve"><value>Shake</value><comment>Card title: shake to send.</comment></data>
-  <data name="phone.shake.which.title" xml:space="preserve"><value>Which device</value><comment>Row title: which device.</comment></data>
+  <data name="phone.shake.which.title" xml:space="preserve"><value>Device</value><comment>Row title: which device.</comment></data>
   <data name="phone.share" xml:space="preserve"><value>Share</value><comment>Button: share the link.</comment></data>
   <data name="phone.stage.back_to" xml:space="preserve"><value>Back to {name}</value><comment>Door label that sends an Imp back to the device it came from.</comment></data>
   <data name="phone.stage.delete.body" xml:space="preserve"><value>Its chats and keys are forgotten. This can't be undone.</value><comment>iPhone: stage delete body.</comment></data>
@@ -458,62 +484,56 @@
   <data name="phone.version" xml:space="preserve"><value>Version</value><comment>Row title: the app version.</comment></data>
   <data name="phone.visiting" xml:space="preserve"><value>Visiting: {names}</value><comment>Imps of another device that are here now.</comment></data>
   <data name="phone.with" xml:space="preserve"><value>With {name}</value><comment>Under an Imp that another device holds.</comment></data>
-  <data name="pref.double_click.none" xml:space="preserve"><value>Do nothing</value><comment>Choice for the double click.</comment></data>
-  <data name="pref.double_click.settings" xml:space="preserve"><value>Open its settings</value><comment>Choice for the double click.</comment></data>
-  <data name="pref.double_click.talk" xml:space="preserve"><value>Talk by voice</value><comment>Choice for the double click.</comment></data>
-  <data name="pref.double_click.title" xml:space="preserve"><value>Double click on an Imp</value><comment>Preference title on desktop.</comment></data>
-  <data name="pref.double_click.title_touch" xml:space="preserve"><value>Double tap on an Imp</value><comment>Preference title on a phone.</comment></data>
-  <data name="privacy.computer" xml:space="preserve"><value>Computer control</value><comment>Switch.</comment></data>
+  <data name="privacy.computer" xml:space="preserve"><value>Control</value><comment>Switch.</comment></data>
   <data name="privacy.computer_note" xml:space="preserve"><value>Lets an Imp run commands on this computer when you ask.</value><comment>Note under the switch.</comment></data>
   <data name="privacy.microphone" xml:space="preserve"><value>Microphone</value><comment>Row.</comment></data>
   <data name="privacy.microphone_note" xml:space="preserve"><value>Used only when you talk to an Imp by voice.</value><comment>Note under the row.</comment></data>
   <data name="privacy.title" xml:space="preserve"><value>Permissions</value><comment>Group title.</comment></data>
-  <data name="privacy.trust" xml:space="preserve"><value>Trust my other devices</value><comment>Switch.</comment></data>
+  <data name="privacy.trust" xml:space="preserve"><value>Trust devices</value><comment>Switch.</comment></data>
   <data name="privacy.trust_note" xml:space="preserve"><value>Only for your own devices. Their Imps may use tools on this one.</value><comment>Note under the switch.</comment></data>
   <data name="scope.changed" xml:space="preserve"><value>Changed for {name}</value><comment>Under this Imp's own version of a shared trigger or animation. The other Imps keep the shared one.</comment></data>
   <data name="scope.every_imp" xml:space="preserve"><value>Every Imp</value><comment>Under a trigger or animation shared by every Imp, and the choice that makes a change for every Imp.</comment></data>
   <data name="scope.only" xml:space="preserve"><value>Only {name}</value><comment>Under a trigger or animation only this Imp has.</comment></data>
   <data name="servers.address" xml:space="preserve"><value>Address</value><comment>Field label.</comment></data>
   <data name="servers.address_hint" xml:space="preserve"><value>Start with https://</value><comment>Hint in the address field.</comment></data>
-  <data name="servers.choice" xml:space="preserve"><value>Server</value><comment>Label of the menu that picks which server to use: Imp's servers, This computer, Custom or Off.</comment></data>
   <data name="servers.den.about" xml:space="preserve"><value>Where Imps share animations, triggers and Imps. Shared items are public.</value><comment>Short explanation of The Den.</comment></data>
   <data name="servers.den.in_use" xml:space="preserve"><value>Using the Den at {address}</value><comment>Shows which Den is in use.</comment></data>
   <data name="servers.den.needed" xml:space="preserve"><value>This needs a Den. Set one in Settings.</value><comment>Shown on a screen that needs The Den when none is set.</comment></data>
   <data name="servers.den.off_note" xml:space="preserve"><value>Sharing and finding in The Den are off.</value><comment>Under Off on the Den card.</comment></data>
-  <data name="servers.den.title" xml:space="preserve"><value>The Den</value><comment>Section title.</comment></data>
+  <data name="servers.den.title" xml:space="preserve"><value>Den</value><comment>Section title.</comment></data>
   <data name="servers.hop.about" xml:space="preserve"><value>Lets your devices find each other. It only passes encrypted data.</value><comment>Short explanation of The Hop.</comment></data>
   <data name="servers.hop.in_use" xml:space="preserve"><value>Using the Hop at {address}</value><comment>Shows which Hop is in use.</comment></data>
   <data name="servers.hop.needed" xml:space="preserve"><value>Linking from anywhere needs a Hop. Add one in Settings under Devices. Devices on the same network still find each other.</value><comment>Shown on a screen that needs The Hop when none is set.</comment></data>
   <data name="servers.hop.off_note" xml:space="preserve"><value>Only devices on the same network find each other.</value><comment>Under Off on the Hop card.</comment></data>
-  <data name="servers.hop.title" xml:space="preserve"><value>The Hop</value><comment>Section title.</comment></data>
+  <data name="servers.hop.title" xml:space="preserve"><value>Hop</value><comment>Section title.</comment></data>
   <data name="servers.off" xml:space="preserve"><value>Off</value><comment>Shown next to a server choice that is off.</comment></data>
   <data name="servers.preset.custom" xml:space="preserve"><value>Custom</value><comment>Server choice: an address the user types.</comment></data>
   <data name="servers.preset.imp" xml:space="preserve"><value>Imp's servers</value><comment>Server choice: the default servers.</comment></data>
   <data name="servers.preset.imp_note" xml:space="preserve"><value>The default, run by the Imp project.</value><comment>Note under the default servers choice.</comment></data>
-  <data name="servers.preset.local" xml:space="preserve"><value>This computer</value><comment>Server choice: a server on this computer.</comment></data>
   <data name="servers.preset.off" xml:space="preserve"><value>Off</value><comment>Server choice: no server.</comment></data>
   <data name="servers.state_checking" xml:space="preserve"><value>Checking…</value><comment>State while a server is checked.</comment></data>
   <data name="servers.state_fail" xml:space="preserve"><value>Cannot reach it. Check the address.</value><comment>State of a server that does not answer.</comment></data>
+  <data name="servers.state_fail_local" xml:space="preserve"><value>{server} isn't running on this computer. Start it first.</value><comment>A check of a server set to This computer found nothing answering there. {server} is The Den or The Hop.</comment></data>
+  <data name="servers.state_help" xml:space="preserve"><value>{address}: {state}</value><comment>Help of the status dot of a server: its address and state.</comment></data>
   <data name="servers.state_ok" xml:space="preserve"><value>Reachable</value><comment>State of a server that answers.</comment></data>
   <data name="servers.state_unchecked" xml:space="preserve"><value>Not checked yet</value><comment>Under the address of a server that is set but was not checked yet.</comment></data>
   <data name="settings.app.appearance.title" xml:space="preserve"><value>Appearance</value><comment>Settings text.</comment></data>
-  <data name="settings.app.behaviour.info" xml:space="preserve"><value>What the app does when you click it or start your Mac.</value><comment>Settings text.</comment></data>
   <data name="settings.app.control_ink.black" xml:space="preserve"><value>Black</value><comment>Choice: black on coloured controls.</comment></data>
   <data name="settings.app.control_ink.info" xml:space="preserve"><value>Text, icons and switches on coloured buttons are white or black. A colour too light or too dark for them is shown a shade deeper or lighter.</value><comment>Help for the white or black choice.</comment></data>
   <data name="settings.app.control_ink.title" xml:space="preserve"><value>On colour</value><comment>Setting: white or black text, icons and switches on coloured buttons and controls.</comment></data>
   <data name="settings.app.control_ink.white" xml:space="preserve"><value>White</value><comment>Choice: white on coloured controls.</comment></data>
-  <data name="settings.app.double_click.info" xml:space="preserve"><value>What happens when you double click an Imp.</value><comment>Settings text.</comment></data>
   <data name="settings.app.look.info" xml:space="preserve"><value>How the app looks.</value><comment>Settings text.</comment></data>
+  <data name="settings.app.system.info" xml:space="preserve"><value>How the app starts and which language it speaks.</value><comment>Settings text.</comment></data>
   <data name="settings.attention.den_off" xml:space="preserve"><value>The Den is not set up.</value><comment>Item.</comment></data>
   <data name="settings.attention.device_offline" xml:space="preserve"><value>{device} is offline.</value><comment>Item: a linked device cannot be reached.</comment></data>
   <data name="settings.attention.hop_off" xml:space="preserve"><value>The Hop is not set up.</value><comment>Item.</comment></data>
   <data name="settings.attention.imp_no_brain" xml:space="preserve"><value>{name} has no Brain.</value><comment>Item: an Imp sleeps.</comment></data>
-  <data name="settings.backup.export.title" xml:space="preserve"><value>Save a copy</value><comment>Settings text.</comment></data>
-  <data name="settings.backup.import.title" xml:space="preserve"><value>Load a copy</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.export.title" xml:space="preserve"><value>Export</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.import.title" xml:space="preserve"><value>Import</value><comment>Settings text.</comment></data>
   <data name="settings.backup.keep.info" xml:space="preserve"><value>Save your Imps and settings in a file, or load them back.</value><comment>Settings text.</comment></data>
   <data name="settings.backup.keep.title" xml:space="preserve"><value>Backups</value><comment>Settings text.</comment></data>
   <data name="settings.backup.reset.info" xml:space="preserve"><value>Erase everything and begin again. This cannot be undone.</value><comment>Settings text.</comment></data>
-  <data name="settings.backup.reset.title" xml:space="preserve"><value>Start over</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.reset.title" xml:space="preserve"><value>Reset</value><comment>Settings text.</comment></data>
   <data name="settings.brains.first_wait.info" xml:space="preserve"><value>How long to wait before asking again.</value><comment>Settings text.</comment></data>
   <data name="settings.brains.first_wait.title" xml:space="preserve"><value>First pause</value><comment>Settings text.</comment></data>
   <data name="settings.brains.keychain.info" xml:space="preserve"><value>Keep keys safe in your Mac's Keychain.</value><comment>Settings text.</comment></data>
@@ -521,33 +541,41 @@
   <data name="settings.brains.keys.info" xml:space="preserve"><value>Secret passwords for your brains.</value><comment>Settings text.</comment></data>
   <data name="settings.brains.keys.title" xml:space="preserve"><value>Keys</value><comment>Settings text.</comment></data>
   <data name="settings.brains.longer.info" xml:space="preserve"><value>How much longer each pause gets.</value><comment>Settings text.</comment></data>
-  <data name="settings.brains.longer.title" xml:space="preserve"><value>Longer each time</value><comment>Settings text.</comment></data>
+  <data name="settings.brains.longer.title" xml:space="preserve"><value>Growth</value><comment>Settings text.</comment></data>
   <data name="settings.brains.requests.info" xml:space="preserve"><value>How patient an Imp is when a brain is slow.</value><comment>Settings text.</comment></data>
   <data name="settings.brains.requests.title" xml:space="preserve"><value>Asking</value><comment>Settings text.</comment></data>
   <data name="settings.brains.retries.info" xml:space="preserve"><value>How many times to ask again if it fails.</value><comment>Settings text.</comment></data>
   <data name="settings.brains.retries.title" xml:space="preserve"><value>Tries</value><comment>Settings text.</comment></data>
   <data name="settings.brains.services.info" xml:space="preserve"><value>The brains your Imps think with.</value><comment>Settings text.</comment></data>
+  <data name="settings.brains.wait.info" xml:space="preserve"><value>How long to wait for an answer before giving up.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.brains.wait.title" xml:space="preserve"><value>Wait</value><comment>Settings text.</comment></data>
+  <data name="settings.bubble.amount.info" xml:space="preserve"><value>How much of the desktop shows through the bubble.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.bubble.amount.title" xml:space="preserve"><value>Amount</value><comment>Settings text.</comment></data>
+  <data name="settings.bubble.audio.info" xml:space="preserve"><value>What shows while a voice or sound plays.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.bubble.audio.title" xml:space="preserve"><value>While playing</value><comment>Settings text.</comment></data>
-  <data name="settings.bubble.autoplay.title" xml:space="preserve"><value>Play by itself</value><comment>Settings text.</comment></data>
+  <data name="settings.bubble.autoplay.info" xml:space="preserve"><value>Plays a picture, video or sound in a reply as soon as it arrives.</value><comment>Tooltip of a settings row.</comment></data>
+  <data name="settings.bubble.autoplay.title" xml:space="preserve"><value>Autoplay</value><comment>Settings text.</comment></data>
+  <data name="settings.bubble.background.info" xml:space="preserve"><value>Whether the bubble is solid or lets what is behind it show through.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.bubble.background.solid" xml:space="preserve"><value>Solid</value><comment>Settings text.</comment></data>
   <data name="settings.bubble.background.title" xml:space="preserve"><value>Background</value><comment>Settings text.</comment></data>
   <data name="settings.bubble.background.translucent" xml:space="preserve"><value>Translucent</value><comment>Settings text.</comment></data>
+  <data name="settings.bubble.hide.info" xml:space="preserve"><value>How long a bubble stays after the Imp stops talking.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.bubble.hide.title" xml:space="preserve"><value>Hide after</value><comment>Settings text.</comment></data>
+  <data name="settings.bubble.lines.info" xml:space="preserve"><value>How many lines the text box grows to before it scrolls.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.bubble.lines.title" xml:space="preserve"><value>Lines</value><comment>Settings text.</comment></data>
   <data name="settings.bubble.look.title" xml:space="preserve"><value>Look</value><comment>Settings text.</comment></data>
   <data name="settings.bubble.media.info" xml:space="preserve"><value>What the bubble does with sound and video.</value><comment>Settings text.</comment></data>
-  <data name="settings.bubble.media.title" xml:space="preserve"><value>Sound and video</value><comment>Settings text.</comment></data>
+  <data name="settings.bubble.media.title" xml:space="preserve"><value>Media</value><comment>Settings text.</comment></data>
   <data name="settings.bubble.preview.label" xml:space="preserve"><value>Preview of the bubble on a light, a dark and a busy background</value><comment>Settings text.</comment></data>
   <data name="settings.bubble.showing.info" xml:space="preserve"><value>How the bubble shows answers.</value><comment>Settings text.</comment></data>
   <data name="settings.bubble.showing.title" xml:space="preserve"><value>Showing</value><comment>Settings text.</comment></data>
+  <data name="settings.bubble.size.info" xml:space="preserve"><value>The size of the chat bubble. Drag its corner to change it.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.bubble.size.title" xml:space="preserve"><value>Size</value><comment>Settings text.</comment></data>
   <data name="settings.devices.forget_all.title" xml:space="preserve"><value>Forget all</value><comment>Settings text.</comment></data>
   <data name="settings.devices.link.info" xml:space="preserve"><value>Link another device so your Imps can visit it.</value><comment>Settings text.</comment></data>
   <data name="settings.devices.link.title" xml:space="preserve"><value>Link</value><comment>Settings text.</comment></data>
   <data name="settings.devices.mine.info" xml:space="preserve"><value>The devices linked with this one.</value><comment>Settings text.</comment></data>
-  <data name="settings.devices.pair.title" xml:space="preserve"><value>Link a device</value><comment>Settings text.</comment></data>
+  <data name="settings.devices.pair.title" xml:space="preserve"><value>Link</value><comment>Settings text.</comment></data>
   <data name="settings.group.animations" xml:space="preserve"><value>Animations</value><comment>Group title.</comment></data>
   <data name="settings.group.app" xml:space="preserve"><value>App</value><comment>Group title.</comment></data>
   <data name="settings.group.backup" xml:space="preserve"><value>Backup</value><comment>Settings text.</comment></data>
@@ -555,13 +583,13 @@
   <data name="settings.group.bubble" xml:space="preserve"><value>Bubble</value><comment>Settings text.</comment></data>
   <data name="settings.group.devices" xml:space="preserve"><value>Devices</value><comment>Settings text.</comment></data>
   <data name="settings.group.privacy" xml:space="preserve"><value>Permissions</value><comment>Group title.</comment></data>
-  <data name="settings.group.servers" xml:space="preserve"><value>The Den and The Hop</value><comment>Group title.</comment></data>
+  <data name="settings.group.servers" xml:space="preserve"><value>Servers</value><comment>Group title.</comment></data>
   <data name="settings.group.sharing" xml:space="preserve"><value>Sharing</value><comment>Settings section: The Den, where Imps share things.</comment></data>
   <data name="settings.group.talking" xml:space="preserve"><value>Talking</value><comment>Settings text.</comment></data>
-  <data name="settings.group.voice" xml:space="preserve"><value>Voice and chat</value><comment>Group title. It was called Talking.</comment></data>
+  <data name="settings.group.voice" xml:space="preserve"><value>Voice</value><comment>Group title. It was called Talking.</comment></data>
   <data name="settings.map.brains" xml:space="preserve"><value>Brains</value><comment>Node: the connected AI services.</comment></data>
-  <data name="settings.map.den" xml:space="preserve"><value>The Den</value><comment>Node: The Den.</comment></data>
-  <data name="settings.map.hop" xml:space="preserve"><value>The Hop</value><comment>Node: The Hop.</comment></data>
+  <data name="settings.map.den" xml:space="preserve"><value>Den</value><comment>Node: The Den.</comment></data>
+  <data name="settings.map.hop" xml:space="preserve"><value>Hop</value><comment>Node: The Hop.</comment></data>
   <data name="settings.map.hop_local" xml:space="preserve"><value>The Hop on this computer</value><comment>Node: a Hop that runs on this computer.</comment></data>
   <data name="settings.map.not_seen" xml:space="preserve"><value>Cannot see each other yet</value><comment>Dashed line between two devices that cannot reach each other.</comment></data>
   <data name="settings.map.seen" xml:space="preserve"><value>Can see each other</value><comment>Line between two devices that can reach each other.</comment></data>
@@ -589,12 +617,11 @@
   <data name="settings.service.name.info" xml:space="preserve"><value>A name you pick for this brain.</value><comment>Settings text.</comment></data>
   <data name="settings.talking.between.info" xml:space="preserve"><value>How Imps talk to each other.</value><comment>Settings text.</comment></data>
   <data name="settings.talking.between.title" xml:space="preserve"><value>Between Imps</value><comment>Settings text.</comment></data>
+  <data name="settings.talking.language.info" xml:space="preserve"><value>The language you speak to it. It listens in this one.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.talking.language.title" xml:space="preserve"><value>Language</value><comment>Settings text.</comment></data>
   <data name="settings.talking.listening.info" xml:space="preserve"><value>How Imps hear you.</value><comment>Settings text.</comment></data>
   <data name="settings.talking.listening.title" xml:space="preserve"><value>Listening</value><comment>Settings text.</comment></data>
-  <data name="settings.talking.long.info" xml:space="preserve"><value>What to do when a chat gets very long.</value><comment>Settings text.</comment></data>
-  <data name="settings.talking.long.title" xml:space="preserve"><value>Long chats</value><comment>Settings text.</comment></data>
-  <data name="settings.talking.suggest.title" xml:space="preserve"><value>Suggest a new chat</value><comment>Settings text.</comment></data>
+  <data name="settings.talking.talk_in.info" xml:space="preserve"><value>Which chat a message from one Imp to another lands in.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.talking.talk_in.title" xml:space="preserve"><value>Talk in</value><comment>Settings text.</comment></data>
   <data name="settings.talking.threads.info" xml:space="preserve"><value>Whether Imps keep chatting in the same chat or start a new one.</value><comment>Settings text.</comment></data>
   <data name="settings.talking.threads.title" xml:space="preserve"><value>Chats</value><comment>Settings text.</comment></data>
@@ -606,25 +633,28 @@
   <data name="settings.tool.headers.info" xml:space="preserve"><value>Extra lines sent with each request, like a password.</value><comment>Settings text.</comment></data>
   <data name="settings.tool.name.info" xml:space="preserve"><value>A name you pick for this tool.</value><comment>Settings text.</comment></data>
   <data name="settings.tool.variables.info" xml:space="preserve"><value>Secret values the tool needs to run.</value><comment>Settings text.</comment></data>
-  <data name="share.den" xml:space="preserve"><value>Share in The Den</value><comment>Share sheet choice: publish in The Den. What is shared there is public.</comment></data>
+  <data name="share.den" xml:space="preserve"><value>Den</value><comment>Share sheet choice: publish in The Den. What is shared there is public.</comment></data>
   <data name="share.den_needs_setup" xml:space="preserve"><value>Set up The Den to share there.</value><comment>Shown when The Den is not set up.</comment></data>
-  <data name="share.file" xml:space="preserve"><value>Save as a file</value><comment>Share sheet choice: a kit file.</comment></data>
+  <data name="share.file" xml:space="preserve"><value>File</value><comment>Share sheet choice: a kit file.</comment></data>
   <data name="share.note" xml:space="preserve"><value>Its look, personality, tools and triggers are shared. Keys, memory and chats never are.</value><comment>Note on the share sheet about what travels.</comment></data>
   <data name="share.title" xml:space="preserve"><value>Share {name}</value><comment>Title of the share sheet.</comment></data>
-  <data name="sharing.browse" xml:space="preserve"><value>Browse The Den</value><comment>Button on the Sharing page: look through The Den.</comment></data>
+  <data name="sharing.browse" xml:space="preserve"><value>Browse</value><comment>Button on the Sharing page: look through The Den.</comment></data>
+  <data name="sharing.gallery" xml:space="preserve"><value>Gallery</value><comment>Title of the card on Sharing with Browse and Import.</comment></data>
+  <data name="sharing.gallery.info" xml:space="preserve"><value>Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp.</value><comment>Help on the Gallery card.</comment></data>
+  <data name="sharing.import" xml:space="preserve"><value>Import</value><comment>Button on the Sharing page: bring in a kit from a link or file.</comment></data>
   <data name="sheets.animations.nothing_yet" xml:space="preserve"><value>Nothing yet</value><comment>Shown in the animations list when you have made none.</comment></data>
   <data name="state.link_lost" xml:space="preserve"><value>The link to {device} dropped. It reconnects on its own.</value><comment>A linked device disappeared.</comment></data>
   <data name="state.offline.imp" xml:space="preserve"><value>{name} cannot reach its Brain. It wakes up when you are back online.</value><comment>Shown for one Imp whose Brain is out of reach.</comment></data>
   <data name="state.offline.note" xml:space="preserve"><value>Imps that use a model on this device still work. The others wait until you are back online.</value><comment>Note in the offline state.</comment></data>
   <data name="state.offline.title" xml:space="preserve"><value>You are offline</value><comment>Title of the offline state.</comment></data>
-  <data name="state.servers.set_up_den" xml:space="preserve"><value>Set up The Den</value><comment>Button.</comment></data>
-  <data name="state.servers.set_up_hop" xml:space="preserve"><value>Set up The Hop</value><comment>Button.</comment></data>
+  <data name="state.servers.set_up_den" xml:space="preserve"><value>Set up Den</value><comment>Button.</comment></data>
+  <data name="state.servers.set_up_hop" xml:space="preserve"><value>Set up Hop</value><comment>Button.</comment></data>
   <data name="state.sleeping.action" xml:space="preserve"><value>Give {name} a Brain</value><comment>Button in the sleeping state.</comment></data>
   <data name="state.sleeping.note" xml:space="preserve"><value>With no Brain, it cannot think. Its triggers still work.</value><comment>Note in the sleeping state.</comment></data>
   <data name="state.sleeping.title" xml:space="preserve"><value>{name} is asleep</value><comment>Title of the sleeping state.</comment></data>
   <data name="state.visiting_asleep" xml:space="preserve"><value>{name} is asleep because {home} is not connected.</value><comment>A visiting Imp sleeps while its home is out of reach.</comment></data>
   <data name="state.waking" xml:space="preserve"><value>Waking up…</value><comment>State while an Imp wakes.</comment></data>
-  <data name="tools.add" xml:space="preserve"><value>Add tools</value><comment>Button that adds tools.</comment></data>
+  <data name="tools.add" xml:space="preserve"><value>Add</value><comment>Button that adds tools.</comment></data>
   <data name="tools.built_in" xml:space="preserve"><value>Built in</value><comment>Badge for a built-in tool group.</comment></data>
   <data name="tools.collapse" xml:space="preserve"><value>Hide the tools in {group}</value><comment>Screen reader action.</comment></data>
   <data name="tools.empty" xml:space="preserve"><value>No tools yet. Add some from a kit or an MCP server.</value><comment>Empty state of the tools list.</comment></data>
@@ -632,10 +662,10 @@
   <data name="tools.group_count" xml:space="preserve"><value>{on} of {total} on</value><comment>Under a tool group: how many of its tools are on.</comment></data>
   <data name="tools.group_off" xml:space="preserve"><value>Off</value><comment>Under a tool group that is switched off.</comment></data>
   <data name="tools.group_switch" xml:space="preserve"><value>{group} tools</value><comment>Screen reader name of a tool group switch.</comment></data>
-  <data name="tools.header_add" xml:space="preserve"><value>Add header</value><comment>Button that adds a header to a tool server.</comment></data>
-  <data name="tools.header_name" xml:space="preserve"><value>Header name</value><comment>Label of a header's name field.</comment></data>
+  <data name="tools.header_add" xml:space="preserve"><value>Add</value><comment>Button that adds a header to a tool server.</comment></data>
+  <data name="tools.header_name" xml:space="preserve"><value>Name</value><comment>Label of a header's name field.</comment></data>
   <data name="tools.header_saved" xml:space="preserve"><value>Saved</value><comment>Placeholder of a header value that is already kept safe.</comment></data>
-  <data name="tools.header_value" xml:space="preserve"><value>Header value</value><comment>Label of a header's value field.</comment></data>
+  <data name="tools.header_value" xml:space="preserve"><value>Value</value><comment>Label of a header's value field.</comment></data>
   <data name="tools.headers" xml:space="preserve"><value>Headers</value><comment>Small title over a tool server's HTTP headers.</comment></data>
   <data name="tools.help.browser" xml:space="preserve"><value>Lets the Imp look at pages and use the browser you opened for it.</value><comment>Help of the browser row.</comment></data>
   <data name="tools.help.built_in" xml:space="preserve"><value>Things the Imp can already do, like look at your screen. Switch off any it should not use.</value><comment>Help of the built-in tools list.</comment></data>
@@ -645,7 +675,7 @@
   <data name="tools.mcp_connected" xml:space="preserve"><value>Connected</value><comment>Status of an MCP server.</comment></data>
   <data name="tools.mcp_failed" xml:space="preserve"><value>Could not start</value><comment>Status of an MCP server.</comment></data>
   <data name="tools.mcp_starting" xml:space="preserve"><value>Starting</value><comment>Status of an MCP server.</comment></data>
-  <data name="tools.new_server" xml:space="preserve"><value>New server</value><comment>Title of a tool server that has no name or address yet.</comment></data>
+  <data name="tools.new_server" xml:space="preserve"><value>New</value><comment>Title of a tool server that has no name or address yet.</comment></data>
   <data name="tools.optional" xml:space="preserve"><value>Optional</value><comment>Placeholder of a field that may be left empty.</comment></data>
   <data name="tools.problem.address" xml:space="preserve"><value>Add the server's address.</value><comment>Problem on a tool server with no address.</comment></data>
   <data name="tools.remove_header" xml:space="preserve"><value>Remove header</value><comment>Spoken label of the button that removes a header.</comment></data>
@@ -654,7 +684,7 @@
   <data name="tools.server_name" xml:space="preserve"><value>Name</value><comment>Label of a tool server's name field.</comment></data>
   <data name="tools.shared_setup" xml:space="preserve"><value>Every Imp that uses this tool gets this setup. Each Imp switches it on or off for itself.</value><comment>In the extra tool editor: its setup is shared, while each Imp switches it on or off for itself.</comment></data>
   <data name="tools.title" xml:space="preserve"><value>Tools</value><comment>Panel title.</comment></data>
-  <data name="triggers.add" xml:space="preserve"><value>Add a trigger</value><comment>Button that adds a trigger.</comment></data>
+  <data name="triggers.add" xml:space="preserve"><value>Add</value><comment>Button that adds a trigger.</comment></data>
   <data name="triggers.delete" xml:space="preserve"><value>Delete trigger</value><comment>Action on a trigger.</comment></data>
   <data name="triggers.delete_every" xml:space="preserve"><value>Delete for every Imp</value><comment>Destructive action on a shared trigger: delete it for every Imp.</comment></data>
   <data name="triggers.delete_every.title" xml:space="preserve"><value>Delete “{name}” for every Imp?</value><comment>Confirmation before deleting a shared trigger for every Imp.</comment></data>
@@ -670,21 +700,21 @@
   <data name="triggers.help.when" xml:space="preserve"><value>What has to happen to set it off, like a time, an app or a low battery.</value><comment>Help of the trigger conditions.</comment></data>
   <data name="triggers.instruction" xml:space="preserve"><value>Task</value><comment>Field: the instruction.</comment></data>
   <data name="triggers.just_for" xml:space="preserve"><value>Just for {name}</value><comment>Menu item on a shared trigger: make this Imp's own version. The other Imps keep the shared one.</comment></data>
-  <data name="triggers.new" xml:space="preserve"><value>New trigger</value><comment>Title of the sheet that adds a trigger.</comment></data>
+  <data name="triggers.new" xml:space="preserve"><value>New</value><comment>Title of the sheet that adds a trigger.</comment></data>
   <data name="triggers.scope.just" xml:space="preserve"><value>Just {name}</value><comment>Choice in the trigger editor: the change is for this Imp only.</comment></data>
   <data name="triggers.scope.note_every" xml:space="preserve"><value>Changes it for every Imp.</value><comment>Below the For choice when the change goes to every Imp.</comment></data>
   <data name="triggers.scope.note_version" xml:space="preserve"><value>Saves a version for {name} only. The other Imps keep the shared one.</value><comment>Below the For choice when a shared trigger is saved for one Imp.</comment></data>
   <data name="triggers.sentence" xml:space="preserve"><value>When {event}, {action}.</value><comment>One trigger as a sentence. The event and the action are short phrases.</comment></data>
-  <data name="triggers.share_every" xml:space="preserve"><value>Share with Every Imp</value><comment>Menu item on this Imp's trigger: share it with every Imp.</comment></data>
-  <data name="triggers.starter" xml:space="preserve"><value>Add the starter kit</value><comment>Button in the empty triggers list: review and add the starter kit.</comment></data>
+  <data name="triggers.share_every" xml:space="preserve"><value>Share to all</value><comment>Menu item on this Imp's trigger: share it with every Imp.</comment></data>
+  <data name="triggers.starter" xml:space="preserve"><value>Starter kit</value><comment>Button in the empty triggers list: review and add the starter kit.</comment></data>
   <data name="triggers.switch" xml:space="preserve"><value>Trigger: {sentence}</value><comment>Screen reader name of a trigger switch.</comment></data>
   <data name="triggers.title" xml:space="preserve"><value>Triggers</value><comment>Panel title.</comment></data>
-  <data name="triggers.use_shared" xml:space="preserve"><value>Use the shared one</value><comment>Button that removes this Imp's version of a shared trigger, so the shared one applies again.</comment></data>
+  <data name="triggers.use_shared" xml:space="preserve"><value>Use shared</value><comment>Button that removes this Imp's version of a shared trigger, so the shared one applies again.</comment></data>
   <data name="triggers.use_shared.message" xml:space="preserve"><value>The version only {name} has goes.</value><comment>Under the confirmation: the Imp's own version is removed.</comment></data>
   <data name="triggers.use_shared.title" xml:space="preserve"><value>Use the shared “{name}” again?</value><comment>Confirmation before removing this Imp's version of a shared trigger.</comment></data>
-  <data name="voice.autoplay" xml:space="preserve"><value>Play voices on their own</value><comment>Switch on the iPhone: voices in new replies.</comment></data>
+  <data name="voice.autoplay" xml:space="preserve"><value>Autoplay</value><comment>Switch on the iPhone: voices in new replies.</comment></data>
   <data name="voice.autoplay_note" xml:space="preserve"><value>A voice an Imp marks to play starts by itself in a new reply. Otherwise you tap it.</value><comment>Note under the switch.</comment></data>
-  <data name="voice.listen" xml:space="preserve"><value>Talk to Imps by voice</value><comment>Switch.</comment></data>
-  <data name="voice.speak" xml:space="preserve"><value>Speak answers aloud</value><comment>Switch.</comment></data>
-  <data name="voice.title" xml:space="preserve"><value>Voice and chat</value><comment>Group title.</comment></data>
+  <data name="voice.listen" xml:space="preserve"><value>Listen</value><comment>Switch.</comment></data>
+  <data name="voice.speak" xml:space="preserve"><value>Speak</value><comment>Switch.</comment></data>
+  <data name="voice.title" xml:space="preserve"><value>Voice</value><comment>Group title.</comment></data>
 </root>

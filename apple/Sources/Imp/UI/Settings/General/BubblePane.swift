@@ -9,7 +9,7 @@ struct BubblePane: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             Card("settings.bubble.look.title", icon: "paintbrush.fill") {
-                Row("settings.bubble.background.title", icon: "circle.lefthalf.filled") {
+                Row("settings.bubble.background.title", icon: "circle.lefthalf.filled", info: "settings.bubble.background.info") {
                     ImpSegmented("settings.bubble.background.title", selection: $model.prefs.bubbleAppearance.style,
                                  options: BubbleAppearance.Style.allCases, title: { style in
                         switch style {
@@ -25,7 +25,7 @@ struct BubblePane: View {
                 }
                 .settingAnchor(.bubbleBackground)
                 if model.prefs.bubbleAppearance.style == .translucent {
-                    Row("settings.bubble.amount.title", icon: "slider.horizontal.3") {
+                    Row("settings.bubble.amount.title", icon: "slider.horizontal.3", info: "settings.bubble.amount.info") {
                         RowSlider(value: $model.prefs.bubbleAppearance.opacity,
                                   range: BubbleAppearance.minimumOpacity...1, step: 0.05,
                                   label: "settings.bubble.amount.title",
@@ -37,7 +37,7 @@ struct BubblePane: View {
                 BubblePreview(appearance: model.prefs.bubbleAppearance)
             }
             Card("settings.bubble.showing.title", icon: "text.bubble.fill", info: "settings.bubble.showing.info") {
-                Row("settings.bubble.hide.title", icon: "timer") {
+                Row("settings.bubble.hide.title", icon: "timer", info: "settings.bubble.hide.info") {
                     ImpSegmented("settings.bubble.hide.title", selection: $model.prefs.bubbleAutoHideSeconds,
                                  options: [15.0, 30.0, 60.0, 300.0, 0.0], title: { seconds in
                         switch seconds {
@@ -58,13 +58,13 @@ struct BubblePane: View {
                     })
                 }
                 .settingAnchor(.bubbleHideAfter)
-                Row("settings.bubble.lines.title", icon: "text.alignleft") {
+                Row("settings.bubble.lines.title", icon: "text.alignleft", info: "settings.bubble.lines.info") {
                     ImpStepper(value: $model.prefs.inputMaxLines, in: BubbleSizing.inputLines) {
                         Text("\(model.prefs.inputMaxLines)")
                     }
                 }
                 .settingAnchor(.bubbleLines)
-                Row("settings.bubble.size.title", icon: "arrow.up.left.and.arrow.down.right") {
+                Row("settings.bubble.size.title", icon: "arrow.up.left.and.arrow.down.right", info: "settings.bubble.size.info") {
                     HStack(spacing: Spacing.small) {
                         if let size = model.prefs.chatBubbleSize {
                             Text(verbatim: "\(Int(size.width)) × \(Int(size.height))").foregroundStyle(Tone.muted)
@@ -79,11 +79,11 @@ struct BubblePane: View {
                 .settingAnchor(.bubbleSize)
             }
             Card("settings.bubble.media.title", icon: "play.rectangle.fill", info: "settings.bubble.media.info") {
-                Row("settings.bubble.autoplay.title", icon: "play.circle.fill") {
+                Row("settings.bubble.autoplay.title", icon: "play.circle.fill", info: "settings.bubble.autoplay.info") {
                     Toggle(String(""), isOn: $model.prefs.autoplaysMedia).labelsHidden().toggleStyle(.impSwitchBare)
                 }
                 .settingAnchor(.bubbleAutoplay)
-                Row("settings.bubble.audio.title", icon: "waveform") {
+                Row("settings.bubble.audio.title", icon: "waveform", info: "settings.bubble.audio.info") {
                     ImpSegmented("settings.bubble.audio.title", selection: $model.prefs.voiceStyle,
                                  options: [VoiceStyle.both, .glow, .orb, .players], title: { style in
                         switch style {

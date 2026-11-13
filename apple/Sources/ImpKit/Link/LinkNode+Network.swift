@@ -7,7 +7,11 @@ extension LinkNode {
 
     /// Starts listening and dialling. Returns once the listener is up (or failed, or five seconds passed).
     public func start() async {
+        // Started, or being started: wait for the same start (listener up or failed, hosts set).
+        if let starting { return await starting.wait() }
         guard !running else { return }
+        let finished = Once<Void>()
+        starting = finished
         running = true
         apply(core.start(now: now))
         let ready = Once<UInt16?>()
@@ -28,12 +32,33 @@ extension LinkNode {
         }
         await refreshHosts()
         _ = await ready.wait()
+        starting = nil
+        finished.fulfil(())
     }
 
     func refreshHosts() async {
         guard options.hosts == nil else { return }
         let hosts = await Task.detached { Self.localHosts() }.value
-        if running { apply(core.setHosts(hosts: hosts)) }
+        if running { setHosts(hosts) }
+    }
+
+    func setHosts(_ new: [String]) {
+        hosts = new
+        status.routes.hosts = new
+        apply(core.setHosts(hosts: new))
+    }
+
+    /// Network.framework reports a Local Network denial as a waiting state with a policy-denied DNS error.
+    nonisolated static func isPolicyDenied(_ error: NWError) -> Bool {
+        if case .dns(let code) = error { return code == -65570 }   // kDNSServiceErr_PolicyDenied
+        return false
+    }
+
+    func networkWaiting(_ error: NWError) {
+        guard running, Self.isPolicyDenied(error) else { return }
+        status.localNetworkBlocked = true
+        // No point waiting out the five seconds: it will not come up until the person allows it.
+        listening?.fulfil(nil)
     }
 
     public func stop() {
@@ -56,6 +81,7 @@ extension LinkNode {
         sockets = [:]
         listening?.fulfil(nil)
         listening = nil
+        status.localNetworkBlocked = false
         port = nil
         found = [:]
         apply(core.setPort(port: nil))
@@ -85,6 +111,8 @@ extension LinkNode {
                     Task { @MainActor in self?.listenerReady(generation, number) }
                 case .failed(let error):
                     Task { @MainActor in self?.listenerFailed(generation, error.localizedDescription) }
+                case .waiting(let error):
+                    Task { @MainActor in if generation == self?.listenerGeneration { self?.networkWaiting(error) } }
                 default: break
                 }
             }
@@ -98,6 +126,7 @@ extension LinkNode {
 
     private func listenerReady(_ generation: Int, _ number: UInt16) {
         guard running, generation == listenerGeneration else { return }
+        status.localNetworkBlocked = false
         port = number
         listening?.fulfil(number)
         apply(core.setPort(port: number))
@@ -123,6 +152,9 @@ extension LinkNode {
                 if case .bonjour(let txt) = result.metadata, let d = txt["d"], let id = UUID(uuidString: d), id != me { map[id] = result.endpoint }
             }
             Task { @MainActor in self?.foundDevices(map) }
+        }
+        b.stateUpdateHandler = { [weak self] state in
+            if case .waiting(let error) = state { Task { @MainActor in self?.networkWaiting(error) } }
         }
         b.start(queue: LinkSocket.queue)
         browser = b

@@ -10,9 +10,9 @@
     "args": {
       "count": "int"
     },
-    "en": "Show hidden Imps ({count})",
-    "es": "Mostrar Imps ocultos ({count})",
-    "zh-Hans": "显示隐藏的 Imp（{count}）"
+    "en": "Hidden ({count})",
+    "es": "Ocultos ({count})",
+    "zh-Hans": "已隐藏（{count}）"
   },
   "menu.canvas.background": {
     "note": "Menu with the background choices.",
@@ -34,9 +34,9 @@
   },
   "menu.imp.settings": {
     "note": "Menu item that opens the settings of one Imp.",
-    "en": "Imp Settings",
-    "es": "Ajustes del Imp",
-    "zh-Hans": "Imp 设置"
+    "en": "Settings",
+    "es": "Ajustes",
+    "zh-Hans": "设置"
   },
   "menu.imp.let_out": {
     "note": "Menu item (desktop only) that lets an Imp out onto the desktop.",
@@ -243,19 +243,19 @@
     "zh-Hans": "设备"
   },
   "menu.imp.talks": {
-    "note": "Imp menu item that opens what the Imp said with other Imps.",
+    "note": "Tip and title of the button in an Imp's chat that opens what it said with other Imps.",
     "en": "Talks",
     "es": "Charlas",
-    "zh-Hans": "对话记录"
+    "zh-Hans": "对话"
   },
   "menu.imp.send_to": {
-    "note": "Imp menu item that sends the Imp to a device.",
+    "note": "Imp menu item that sends the Imp to visit a device. It comes back.",
     "args": {
       "name": "string"
     },
-    "en": "Send to {name}",
-    "es": "Enviar a {name}",
-    "zh-Hans": "发送到 {name}"
+    "en": "Visit {name}",
+    "es": "Visitar {name}",
+    "zh-Hans": "去 {name} 做客"
   },
   "menu.imp.move_to": {
     "note": "Imp menu item that moves the Imp to a Mac for good.",
@@ -263,7 +263,33 @@
       "name": "string"
     },
     "en": "Move to {name}",
-    "es": "Mover a {name}",
-    "zh-Hans": "移到 {name}"
+    "es": "Mudar a {name}",
+    "zh-Hans": "搬到 {name}"
+  },
+  "menu.imp.visit_tip": {
+    "note": "Tip on the Imp menu item that sends it to visit a device.",
+    "args": {
+      "name": "string",
+      "device": "string"
+    },
+    "en": "{name} visits {device} and can come back.",
+    "es": "{name} visita {device} y puede volver.",
+    "zh-Hans": "{name} 去 {device} 做客，还可以回来。"
+  },
+  "menu.imp.move_tip": {
+    "note": "Tip on the Imp menu item that moves it to a Mac for good.",
+    "args": {
+      "name": "string",
+      "device": "string"
+    },
+    "en": "{name} lives on {device} from now on.",
+    "es": "{name} vive en {device} desde ahora.",
+    "zh-Hans": "{name} 从此住在 {device}。"
+  },
+  "menu.imp.visit_none": {
+    "note": "Greyed Imp menu item when no other device is around.",
+    "en": "Visit another device",
+    "es": "Visitar otro dispositivo",
+    "zh-Hans": "去别的设备做客"
   }
 }

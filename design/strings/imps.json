@@ -175,35 +175,5 @@
     "en": "{name}, {state}",
     "es": "{name}, {state}",
     "zh-Hans": "{name}，{state}"
-  },
-  "pref.double_click.title": {
-    "note": "Preference title on desktop.",
-    "en": "Double click on an Imp",
-    "es": "Doble clic en un Imp",
-    "zh-Hans": "双击 Imp"
-  },
-  "pref.double_click.title_touch": {
-    "note": "Preference title on a phone.",
-    "en": "Double tap on an Imp",
-    "es": "Doble toque en un Imp",
-    "zh-Hans": "轻点两下 Imp"
-  },
-  "pref.double_click.settings": {
-    "note": "Choice for the double click.",
-    "en": "Open its settings",
-    "es": "Abrir sus ajustes",
-    "zh-Hans": "打开它的设置"
-  },
-  "pref.double_click.talk": {
-    "note": "Choice for the double click.",
-    "en": "Talk by voice",
-    "es": "Hablar por voz",
-    "zh-Hans": "用语音说话"
-  },
-  "pref.double_click.none": {
-    "note": "Choice for the double click.",
-    "en": "Do nothing",
-    "es": "No hacer nada",
-    "zh-Hans": "什么也不做"
   }
 }

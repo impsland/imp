@@ -40,6 +40,8 @@ final class DeviceLink {
 
     @ObservationIgnored private unowned let app: AppModel
     @ObservationIgnored private var node: LinkNode?
+    /// The node's routes and whether the local network is blocked (nil before it is open).
+    private(set) var status: LinkStatus?
     /// What each device was last told about each of its Imps (only changes are sent).
     @ObservationIgnored private var sent: [UUID: Snapshot] = [:]
     /// Visitors whose homes said they have no brain to think with (`LinkMessage.brain`): they sleep here.
@@ -90,14 +92,18 @@ final class DeviceLink {
     func start() {
         guard app.persists, node == nil else { return }
         let node: LinkNode
-        do { node = try LinkNode(name: Self.deviceName, kind: .mac, storage: LinkFileStorage(url: Self.file)) }
-        catch {
+        do {
+            let opened = try LinkNode.open(name: Self.deviceName, kind: .mac, storage: LinkFileStorage(url: Self.file))
+            node = opened.node
+            if opened.reset { problem = String(localized: "link.reset") }
+        } catch {
             log.error("couldn't open the link book: \(error.localizedDescription, privacy: .public)")
             problem = String(localized: "Imp can't read its list of linked devices.")
             return
         }
         node.onEvent = { [weak self] event in self?.handle(event) }
         self.node = node
+        status = node.status
         // The ledger is the truth about where our Imps are.
         app.reconcileAway(Dictionary(node.away.entries.map { ($0.imp, $0.holder) }, uniquingKeysWith: { $1 }))
         // The Imps visiting before the app closed are back, asleep until their homes connect.
@@ -180,7 +186,7 @@ final class DeviceLink {
     }
 
     /// A new code to show. The previous one stops working. Nil when the link isn't running.
-    func invite() -> LinkInvite? { node?.invite() }
+    func invite() -> LinkInvite? { node?.status.isReady == true ? node?.invite() : nil }
     func inviteHidden() { node?.inviteHidden() }
 
     /// Links with the device that showed `invite`.

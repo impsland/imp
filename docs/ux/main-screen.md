@@ -65,13 +65,15 @@ The background choices are not in this menu. They are one click away in Settings
 
 Right click on an Imp (or touch and hold on a phone), also one level:
 
-1. Talk (`menu.imp.talk`)
-2. Imp Settings (`menu.imp.settings`)
-3. Let out or Send home (`menu.imp.let_out`, `menu.imp.send_home`), desktop only
-4. Hide (`menu.imp.hide`)
-5. Copy kit (`menu.imp.copy_kit`)
-6. Copy link (`menu.imp.copy_link`), off when the kit is too long for a link
-7. Goodbye (`menu.imp.goodbye`), last and apart, and it asks first
+1. Settings (`menu.imp.settings`)
+2. Hide (`menu.imp.hide`)
+3. Visit {device} (`menu.imp.send_to`): the Imp goes and comes back. One item for each linked device its doors lead to
+4. Move to {Mac} (`menu.imp.move_to`), phone only, for an Imp hatched on the phone: it lives on that Mac from now on
+5. Copy kit (`menu.imp.copy_kit`) and Copy link (`menu.imp.copy_link`), desktop only; the link is off when the kit is too long for one
+6. Let out or Send home (`menu.imp.let_out`, `menu.imp.send_home`), desktop and visitors
+7. Goodbye (`menu.imp.goodbye`), phone and desktop for an Imp that lives here, last and apart, and it asks first
+
+There is no Talk in this menu: a click or tap already opens the chat. The Imp's talks with other Imps are an icon in its chat's bar (`menu.imp.talks`), shown only when there are some.
 
 The items are the same on every platform. Each platform shows them in its own menu style and with its own shortcuts. See [Platforms](/ux/platforms).
 
@@ -114,17 +116,17 @@ The menu bar extra opens a compact panel on the app surface. At the top are four
 | `background.tile_hint` | A tile repeats to fill the window. Pick a seamless pattern. |
 | `home.canvas.hint` | Imps move around here. Press Tab to go from one Imp to the next. |
 | `home.canvas.label` | The Imps' home |
-| `home.corner.show_hidden` | Show hidden Imps |
+| `home.corner.show_hidden` | Hidden |
 | `home.empty.hint` | Hatch your first Imp to get started. |
-| `home.empty.new_imp` | New Imp |
+| `home.empty.new_imp` | New |
 | `home.empty.title` | No Imps yet |
 | `home.hidden.bring_back` | Bring back {name} |
 | `home.hidden.empty` | No hidden Imps |
 | `home.hidden.hint` | Hidden Imps peek out now and then. Click one to bring it back. |
 | `home.hidden.peek` | {name} is peeking out from the floor. |
-| `home.hidden.title` | Hidden Imps ({count}) |
-| `home.tray.quit` | Quit Imp |
-| `home.tray.show` | Open Imp |
+| `home.hidden.title` | Hidden ({count}) |
+| `home.tray.quit` | Quit |
+| `home.tray.show` | Open |
 | `menu.bar.hide` | Hide |
 | `menu.bar.hide_help` | Hide the Imps on your desktop |
 | `menu.bar.imps` | Imps |
@@ -143,20 +145,23 @@ The menu bar extra opens a compact panel on the app surface. At the top are four
 | `menu.canvas.devices` | Devices |
 | `menu.canvas.new_imp` | New Imp |
 | `menu.canvas.settings` | Settings |
-| `menu.canvas.show_hidden` | Show hidden Imps ({count}) |
+| `menu.canvas.show_hidden` | Hidden ({count}) |
 | `menu.imp.copy_kit` | Copy kit |
 | `menu.imp.copy_link` | Copy link |
 | `menu.imp.goodbye` | Goodbye |
 | `menu.imp.hide` | Hide |
 | `menu.imp.let_out` | Let out |
+| `menu.imp.move_tip` | {name} lives on {device} from now on. |
 | `menu.imp.move_to` | Move to {name} |
 | `menu.imp.send_home` | Send home |
-| `menu.imp.send_to` | Send to {name} |
-| `menu.imp.settings` | Imp Settings |
+| `menu.imp.send_to` | Visit {name} |
+| `menu.imp.settings` | Settings |
 | `menu.imp.share` | Share |
 | `menu.imp.talk` | Talk |
 | `menu.imp.talk_help` | Talk to {name} |
 | `menu.imp.talks` | Talks |
 | `menu.imp.type` | Type |
 | `menu.imp.type_help` | Type to {name} |
+| `menu.imp.visit_none` | Visit another device |
+| `menu.imp.visit_tip` | {name} visits {device} and can come back. |
 <!-- /strings -->

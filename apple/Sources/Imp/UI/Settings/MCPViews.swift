@@ -42,25 +42,6 @@ enum MCPExamples {
     static var all: [MCPServerConfig] { examples.map(\.server) }
 }
 
-struct ServerStatus: View {
-    let enabled: Bool
-    let status: MCPStatus?
-
-    var body: some View {
-        let (icon, color, text): (String, Color, String) = switch (enabled, status) {
-        case (false, _): ("moon.zzz", Tone.muted, String(localized: "Starts when an Imp that's out needs it"))
-        case (true, .ready(let count, let names)?):
-            ("checkmark.circle.fill", Tone.good, names.isEmpty
-                ? String(localized: "\(count) tools")
-                : String(localized: "\(count) tools: \(names.prefix(6).joined(separator: ", "))"))
-        case (true, .failed(let message)?): ("exclamationmark.triangle.fill", Tone.warnText, message)
-        case (true, _): ("ellipsis.circle", Tone.muted, String(localized: "Starting…"))
-        }
-        StatusText(verbatim: text, symbol: icon, color: color)
-            .help(text)
-    }
-}
-
 /// Edits a copy of an extra tool. Nothing reconnects until Save. Paste fills it from a setup
 /// snippet (JSON config, command or URL) on the clipboard.
 struct ServerEditor: View {
@@ -72,9 +53,8 @@ struct ServerEditor: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var commandLine = ""
     @State private var pairs = ""
-    @State private var testing = false
-    @State private var result: MCPStatus?
-    @State private var pasteFailed = false
+    @State private var testState: ActionState = .idle
+    @State private var notice: ImpNotice?
 
     init(draft: MCPServerConfig, isNew: Bool, hub: MCPHub, save: @escaping (MCPServerConfig) -> Void) {
         _draft = State(initialValue: draft)
@@ -94,10 +74,6 @@ struct ServerEditor: View {
                 .buttonStyle(.imp(.secondary, small: true))
                 .help("Fill in from a JSON config, command or address you copied")
         } content: {
-            if pasteFailed {
-                StatusText(text: "Nothing to paste. Copy the tool's setup first.",
-                           symbol: "exclamationmark.triangle.fill", color: Tone.warnText)
-            }
             // A tool's setup is the app's, not one Imp's: say so where it is changed.
             Label("tools.shared_setup", systemImage: SettingScope.everyImp.symbol)
                 .font(Typeface.small).foregroundStyle(Tone.muted)
@@ -108,7 +84,7 @@ struct ServerEditor: View {
                                    icon: kind == .stdio ? "terminal.fill" : "globe", picked: draft.transport == kind) {
                             draft.transport = kind
                             pairs = Self.pairs(of: draft)
-                            result = nil
+                            testState = .idle
                         }
                     }
                 }
@@ -132,21 +108,22 @@ struct ServerEditor: View {
             .padding(Spacing.roomy)
             .impCard(radius: Radius.medium)
         } footer: {
-            Button("Test") { Task { await test() } }.buttonStyle(.secondary).disabled(testing || !isValid)
-            if testing { ProgressView().controlSize(.small) }
-            if let result, !testing { ServerStatus(enabled: true, status: result) }
+            Button { Task { await test() } } label: { StatefulLabel("Test", symbol: "checkmark.circle", state: testState) }
+                .buttonStyle(.secondary).disabled(testState == .working || !isValid)
+                .impActionState($testState)
             Spacer()
             Button(isNew ? "Add" : "Save") { save(applied); dismiss() }
                 .buttonStyle(.primary)
                 .keyboardShortcut(.defaultAction)
                 .disabled(!isValid)
         }
+        .impNotice($notice)
     }
 
     /// Takes the first server in the clipboard's setup, keeping this one's identity.
     private func paste() {
         guard let found = MCPServerConfig.parse(setup: NSPasteboard.general.string(forType: .string) ?? "").first else {
-            withImpAnimation(ImpDesign.Motion.fade, reduceMotion: reduceMotion) { pasteFailed = true }
+            notice = .warning(String(localized: "Nothing to paste. Copy the tool's setup first."))
             return
         }
         var next = found
@@ -154,8 +131,7 @@ struct ServerEditor: View {
         draft = next
         commandLine = next.commandLine
         pairs = Self.pairs(of: next)
-        result = nil
-        withImpAnimation(ImpDesign.Motion.fade, reduceMotion: reduceMotion) { pasteFailed = false }
+        testState = .idle
     }
 
     private static func pairs(of server: MCPServerConfig) -> String {
@@ -182,10 +158,18 @@ struct ServerEditor: View {
     }
 
     private func test() async {
-        testing = true
-        result = .connecting
-        result = await hub.test(applied)
-        testing = false
+        testState = .working
+        switch await hub.test(applied) {
+        case .ready(let count, let names):
+            testState = .done
+            notice = .success(names.isEmpty ? String(localized: "\(count) tools")
+                              : String(localized: "\(count) tools: \(names.prefix(6).joined(separator: ", "))"))
+        case .failed(let message):
+            testState = .failed
+            notice = .error(message)
+        case .connecting:
+            testState = .idle
+        }
     }
 
     static func lines(_ dict: [String: String], separator: String) -> String {

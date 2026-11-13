@@ -82,14 +82,18 @@ struct HomeActions {
     }
 
     /// A click or a tap (`count` in a row) on an Imp in the window. One opens its bubble, which lives
-    /// beside an Imp on the desktop, so an Imp at home steps out first. Two do what the preference says.
+    /// beside an Imp on the desktop, so an Imp at home steps out first. Two or more run the Imp's triggers.
     func click(_ id: UUID, count: Int) {
         router.select(id)
-        switch ClickAction.resolve(count: count, doubleClick: model.prefs.doubleClick) {
-        case .openBubble: openBubble(id)
-        case .openSettings: openImpSettings(id)
+        guard count > 1 else { return openBubble(id) }
+        guard let shortcut = model.prefs.clickShortcut(count, on: id, in: model.senses.state) else { return }
+        switch shortcut.command {
+        case .settings: openImpSettings(id)
         case .talk: talk(id)
-        case .nothing, .triggers: break
+        default:
+            guard let imp = model.profile(id), imp.awayOn == nil else { return }
+            if !imp.isActive { model.setActive(id, true, at: slot(of: imp)?.origin) }
+            model.imp(id)?.perform(shortcut)
         }
     }
 

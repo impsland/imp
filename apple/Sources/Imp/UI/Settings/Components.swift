@@ -76,31 +76,27 @@ struct Keycaps: View {
 struct TestButton: View {
     let title: LocalizedStringKey
     let action: () async throws -> String
-    var onResult: ((Bool, String) -> Void)?
-    @State private var state: (ok: Bool, text: String)?
-    @State private var busy = false
+    @State private var state: ActionState = .idle
+    @Environment(\.postNotice) private var postNotice
 
     var body: some View {
-        HStack(spacing: Spacing.small) {
-            if busy {
-                ProgressView().controlSize(.small)
-            } else if let state {
-                Image(systemName: state.ok ? "checkmark.circle.fill" : "xmark.octagon.fill")
-                    .foregroundStyle(state.ok ? Tone.good : Tone.danger)
-                    .help(state.text)
-            }
-            Button {
-                busy = true; state = nil
-                Task {
-                    do { state = (true, try await action()) } catch { state = (false, error.localizedDescription) }
-                    busy = false
-                    if let state { onResult?(state.ok, state.text) }
+        Button {
+            state = .working
+            Task {
+                do {
+                    let text = try await action()
+                    state = .done
+                    postNotice(.success(text))
+                } catch {
+                    state = .failed
+                    postNotice(.error(error.localizedDescription))
                 }
-            } label: { FitLabel(title, systemImage: "checkmark.circle") }
-                .buttonStyle(.imp(.secondary, small: true))
-                .disabled(busy)
-        }
-        .fixedSize()
+            }
+        } label: { StatefulLabel(title, symbol: "checkmark.circle", state: state) }
+            .buttonStyle(.imp(.secondary, small: true))
+            .disabled(state == .working)
+            .impActionState($state)
+            .fixedSize()
     }
 }
 

@@ -32,16 +32,14 @@ struct ImpContextMenu: View {
     private var actions: HomeActions { HomeActions(model: model, router: router) }
 
     var body: some View {
-        Button { if let id { actions.talk(id) } } label: { Text("menu.imp.talk") }
-            .disabled(id.flatMap(model.profile)?.awayOn != nil)
         Button { if let id { actions.openImpSettings(id) } } label: { Text("menu.imp.settings") }
             .keyboardShortcut("i", modifiers: .command)
-        Button { if let id { actions.toggleActive(id) } } label: { Text(id.map(actions.releaseTitle) ?? String(localized: "menu.imp.let_out")) }
-            .disabled(!(id.map(actions.canRelease) ?? false))
         Button { if let id { actions.hide(id) } } label: { Text("menu.imp.hide") }
         Button { if let id { actions.copyKit(id) } } label: { Text("menu.imp.copy_kit") }
         Button { if let id { actions.copyLink(id) } } label: { Text("menu.imp.copy_link") }
             .disabled(!(id.map(actions.canShareLink) ?? false))
+        Button { if let id { actions.toggleActive(id) } } label: { Text(id.map(actions.releaseTitle) ?? String(localized: "menu.imp.let_out")) }
+            .disabled(!(id.map(actions.canRelease) ?? false))
         Divider()
         Button(role: .destructive) { if let id { actions.askGoodbye(id) } } label: { Text("menu.imp.goodbye") }
             .disabled(!actions.canSayGoodbye)

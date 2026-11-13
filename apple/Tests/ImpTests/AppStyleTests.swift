@@ -201,6 +201,7 @@ import Testing
         Rule(pattern: #"repeatForever"#, what: "an endless animation"),
         Rule(pattern: #"\bDungeon|EmberButtonStyle|CardDivider|buttonText"#, what: "a name of the old language"),
         Rule(pattern: #"\.shadow\("#, what: "a shadow (only things that float over content)", allowed: [
+            "Notice.swift": "the floating notice sits over content",
             "BubbleChrome.swift": "the desktop bubble and its tail float",
             "VoicePresence.swift": "the voice orb",
             "MediaPlayer.swift": "the voice smoke orb",

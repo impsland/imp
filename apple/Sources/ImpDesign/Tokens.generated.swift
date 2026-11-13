@@ -695,6 +695,8 @@ public enum Motion {
 public enum Behavior {
     /// How long a short message at the bottom of the screen stays.
     public static let toastSeconds = 2.8
+    /// How long a floating notice (a failure's details) stays before it goes away by itself.
+    public static let noticeSeconds = 5
     /// How long the Undo bar stays after an Imp is let out, sent home or sent to another device.
     public static let undoBarSeconds = 6
     /// The shortest wait before a hidden Imp peeks out.

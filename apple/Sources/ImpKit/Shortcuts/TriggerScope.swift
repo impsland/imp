@@ -62,6 +62,9 @@ extension ImpPreferences {
         triggers(for: imp).filter { $0.isEnabled && $0.trigger.kind == .clicks }.map(\.trigger.clicks).max() ?? 0
     }
 
+    /// Whether a first click on `imp` waits to see if more follow: only when a trigger answers to two or more.
+    public func waitsForMoreClicks(on imp: UUID) -> Bool { mostClicks(on: imp) >= 2 }
+
     // MARK: Changes
 
     /// Keeps a trigger that was edited or added, for `target`.

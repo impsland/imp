@@ -9,7 +9,8 @@ import SwiftUI
 struct BrainPanel: View {
     @Bindable var model: AppModel
     @Binding var imp: ImpProfile
-    @State private var check: BrainCheck = .idle
+    @State private var check: ActionState = .idle
+    @Environment(\.postNotice) private var postNotice
     @State private var adding = false
     /// The setup is shown in place while the Imp has no service at all, and stays until its last step is over
     /// (the Brain works once the second step's check is done).
@@ -52,7 +53,7 @@ struct BrainPanel: View {
 
     // MARK: Status
 
-    /// The lantern, what the Imp thinks with (or that it sleeps) and the check result, with the one
+    /// The lantern, what the Imp thinks with (or that it sleeps) with the one
     /// button at the trailing edge: Check when there is a Brain, Wake when there is none.
     private var status: some View {
         HStack(spacing: Spacing.medium) {
@@ -67,13 +68,13 @@ struct BrainPanel: View {
                         Text("brain.none").font(Typeface.body).foregroundStyle(Tone.text)
                     }
                 }
-                checkResult
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             if ready {
-                Button { runCheck() } label: { FitLabel("common.check", systemImage: "checkmark.seal") }
+                Button { runCheck() } label: { StatefulLabel("common.check", symbol: "checkmark.seal", state: check) }
                     .buttonStyle(.imp(.secondary, small: true))
-                    .disabled(check == .checking)
+                    .disabled(check == .working)
+                    .impActionState($check)
             } else {
                 Button(action: chooseOrAdd) {
                     FitLabel(usesOwn ? "brain.add_service" : "brain.choose", systemImage: usesOwn ? "plus" : "lightbulb.fill")
@@ -82,22 +83,6 @@ struct BrainPanel: View {
             }
         }
         .accessibilityElement(children: .contain)
-    }
-
-    @ViewBuilder private var checkResult: some View {
-        switch check {
-        case .idle: EmptyView()
-        case .checking:
-            HStack(spacing: Spacing.snug) {
-                ProgressView().controlSize(.small)
-                Text("brain.checking").font(Typeface.small).foregroundStyle(Tone.muted)
-            }
-        case .ok:
-            StatusText(verbatim: words("brain.check_ok", imp.callName), symbol: "checkmark.circle.fill", color: Tone.good)
-        case .failed(let text):
-            Text(verbatim: text).font(Typeface.small).foregroundStyle(Tone.danger)
-                .fixedSize(horizontal: false, vertical: true)
-        }
     }
 
     // MARK: Services
@@ -120,7 +105,7 @@ struct BrainPanel: View {
     // MARK: Check
 
     private func runCheck() {
-        check = .checking
+        check = .working
         let brain = imp.brain
         let name = imp.callName
         let service = ai.service(in: brain)
@@ -131,9 +116,11 @@ struct BrainPanel: View {
                 let client = try model.assistant.client(brain: brain)
                 guard !modelName.isEmpty else { throw APIError.noModel }
                 _ = try await client.chat(model: modelName, messages: [.system(prompt), .user("Say hi to me in one short sentence.")]).text
-                check = .ok
+                check = .done
+                postNotice(.success(words("brain.check_ok", name)))
             } catch {
-                check = .failed(BrainCheck.message(for: error, service: service, model: modelName, imp: name))
+                check = .failed
+                postNotice(.error(BrainCheck.message(for: error, service: service, model: modelName, imp: name)))
             }
         }
     }
@@ -188,11 +175,8 @@ private struct BrainSetup: View {
     }
 }
 
-/// Where a Brain check stands.
-enum BrainCheck: Equatable {
-    case idle, checking, ok
-    case failed(String)
-
+/// What a failed Brain check says.
+enum BrainCheck {
     /// A plain sentence for what went wrong: it names the service and says what to do next.
     static func message(for error: Error, service: Service?, model: String, imp: String) -> String {
         let name = service?.label ?? ""

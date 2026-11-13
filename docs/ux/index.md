@@ -60,6 +60,9 @@ Views are written by hand with each platform's own tools. Only tokens and string
 <!-- strings: common -->
 | Key | English |
 | --- | --- |
+| `common.action_done` | Done |
+| `common.action_failed` | Failed |
+| `common.action_working` | Working |
 | `common.add` | Add |
 | `common.back` | Back |
 | `common.cancel` | Cancel |
