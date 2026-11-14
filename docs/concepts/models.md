@@ -37,7 +37,7 @@ Secrets are never in it (a service is named and given a base URL, the key stays 
   "favoriteHue": 0.62,
   "scale": 1.0,
   "personality": "You are Dawn, a tiny, cheerful morning Imp…",
-  "brain": { "model": "gpt-4o-mini", "service": { "name": "OpenAI", "baseURL": "https://api.openai.com/v1" } },
+  "brain": { "model": "openai/gpt-6-luna", "service": { "name": "OpenAI", "baseURL": "https://openrouter.ai/api/v1" } },
   "shell": false,
   "tools": { "body": true, "senses": true, "setup": false, "troupe": false, "computer": false },
   "toolsOff": ["own.den.den_search"],
@@ -63,11 +63,11 @@ Secrets are never in it (a service is named and given a base URL, the key stays 
 A **service** is an OpenAI compatible endpoint. A **brain** picks a service and a model.
 
 ```json
-{ "id": "6F1C2E7A-0B52-4C58-9C6B-3C1E8A5D2F10", "name": "OpenAI", "baseURL": "https://api.openai.com/v1", "model": "gpt-4o-mini" }
+{ "id": "6F1C2E7A-0B52-4C58-9C6B-3C1E8A5D2F10", "name": "OpenAI", "baseURL": "https://openrouter.ai/api/v1", "model": "openai/gpt-6-luna" }
 ```
 
 ```json
-{ "service": "6F1C2E7A-0B52-4C58-9C6B-3C1E8A5D2F10", "model": "gpt-4o-mini" }
+{ "service": "6F1C2E7A-0B52-4C58-9C6B-3C1E8A5D2F10", "model": "openai/gpt-6-luna" }
 ```
 
 - `Service.model` is the default model of the service (optional). `Brain.service` is the service id,

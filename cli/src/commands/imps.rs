@@ -44,6 +44,16 @@ pub fn run(path: &Path, action: ImpAction, io: &mut Io<'_>) -> Result<()> {
             make(&mut config, path, given, io)
         }
         ImpAction::Remove { name } => remove(&mut config, path, &name, io),
+        ImpAction::Set { name, key, value } => {
+            let imp = config
+                .imps
+                .get_mut(&name)
+                .ok_or_else(|| CliError(format!("There is no Imp called {name}.")))?;
+            imp.set(&key, &value)?;
+            config.save(path)?;
+            writeln!(io.out, "Saved {key} for {name}.")?;
+            Ok(())
+        }
     }
 }
 

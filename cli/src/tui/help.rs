@@ -42,6 +42,8 @@ pub const GROUPS: &[&[Binding]] = &[
         key("Ctrl+J", "cli.help.newline_ctrl"),
         key("Ctrl+U", "cli.help.clear_input"),
         key("Backspace", "cli.help.erase"),
+        key("Ctrl+P Ctrl+N", "cli.help.recall"),
+        key("Tab", "cli.help.complete"),
     ],
     &[
         key("Up Down", "cli.help.scroll_line"),
@@ -50,9 +52,10 @@ pub const GROUPS: &[&[Binding]] = &[
         word("cli.help.key_wheel", "cli.help.wheel"),
     ],
     &[
-        key("Esc", "cli.help.quit"),
+        key("Esc", "cli.help.stop_or_quit"),
         key("Ctrl+C", "cli.help.quit"),
         key("Ctrl+D", "cli.help.quit_empty"),
+        key("/help", "cli.help.commands"),
         key("/quit", "cli.help.leave"),
         key("/clear", "cli.help.new_chat"),
         key("?", "cli.help.open"),
@@ -61,6 +64,7 @@ pub const GROUPS: &[&[Binding]] = &[
     &[
         key("●", "cli.help.imp"),
         key("›", "cli.help.you"),
+        key("⏺ ⇢", "cli.help.tool"),
         word("cli.help.key_status", "cli.help.activity"),
     ],
 ];
@@ -76,7 +80,7 @@ impl Binding {
 }
 
 /// The lines of the card for an inner width: a title, the groups, and how to close it.
-fn lines(app: &App, inner: usize) -> Vec<Line<'static>> {
+fn lines(app: &App, inner: usize, compact: bool) -> Vec<Line<'static>> {
     let (lang, theme) = (app.lang, &app.theme);
     let all = || GROUPS.iter().flat_map(|g| g.iter());
     let key_width = all().map(|b| text_width(b.label(lang))).max().unwrap_or(0);
@@ -85,7 +89,9 @@ fn lines(app: &App, inner: usize) -> Vec<Line<'static>> {
         theme.text().add_modifier(Modifier::BOLD),
     )];
     for group in GROUPS {
-        out.push(Line::raw(""));
+        if !compact {
+            out.push(Line::raw(""));
+        }
         for b in *group {
             let (label, said) = (b.label(lang), strings::text(lang, b.text));
             if key_width + 2 + text_width(said) <= inner {
@@ -133,7 +139,11 @@ pub fn render(app: &App, frame: &mut Frame, area: Rect) {
     let inner = (key_width + 2 + widest_text)
         .min((area.width as usize).saturating_sub(pad * 2))
         .max(1);
-    let content = lines(app, inner);
+    let mut content = lines(app, inner, false);
+    if content.len() + 2 > area.height as usize {
+        // Without the blank lines between the groups, so every key still shows on a short screen.
+        content = lines(app, inner, true);
+    }
     let width = (inner + pad * 2).min(area.width as usize) as u16;
     let height = (content.len() + 2).min(area.height as usize) as u16;
     let card = Rect::new(

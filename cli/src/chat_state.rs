@@ -17,6 +17,23 @@ impl ChatState {
         }
     }
 
+    /// A conversation that goes on from `messages` (without a system text of their own).
+    pub fn from_messages(system: impl Into<String>, messages: Vec<ChatMessage>) -> Self {
+        Self {
+            system: Some(system.into()),
+            history: messages
+                .into_iter()
+                .filter(|m| m.role != Role::System)
+                .collect(),
+            pending: None,
+        }
+    }
+
+    /// Replaces the system text, keeping the conversation. For a model or personality that changed.
+    pub fn set_system(&mut self, system: impl Into<String>) {
+        self.system = Some(system.into());
+    }
+
     /// Adds what the person said. Ignored while a reply is still arriving.
     pub fn push_user(&mut self, text: &str) -> bool {
         if self.pending.is_some() || text.trim().is_empty() {
@@ -113,6 +130,14 @@ impl ChatState {
         if let Some(system) = &self.system {
             all.push(ChatMessage::system(system.clone()));
         }
+        all.extend(self.history.iter().cloned());
+        all
+    }
+
+    /// Everything to send to the model with `system` as the system text, then the history.
+    pub fn request_messages_with(&self, system: &str) -> Vec<ChatMessage> {
+        let mut all = Vec::with_capacity(self.history.len() + 1);
+        all.push(ChatMessage::system(system));
         all.extend(self.history.iter().cloned());
         all
     }

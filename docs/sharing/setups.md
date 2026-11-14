@@ -27,7 +27,7 @@ When the kit is short enough, Imp copies an `imp://add?kit=…` link instead of 
   "imps": [
     { "name": "Pip", "hue": 0.57, "favoriteHue": 0.9, "scale": 1.0,
       "personality": "A dry-witted morning companion.",
-      "brain": { "model": "gpt-4o", "service": { "name": "OpenAI", "baseURL": "https://api.openai.com/v1" } },
+      "brain": { "model": "openai/gpt-6-luna", "service": { "name": "OpenAI", "baseURL": "https://openrouter.ai/api/v1" } },
       "shell": true,
       "tools": { "body": true, "senses": true, "setup": false, "troupe": true, "computer": false },
       "exchangesSent": 20, "sendsToolCalls": true,

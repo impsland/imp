@@ -12,7 +12,8 @@ Settings under Devices explains what a missing Hop, or a missing Den, leaves out
 
 ## Words
 
-- **Device**: a Mac or an iPhone. It has an id (a UUID), a name people recognise, a kind (`mac` or
+- **Device**: a Mac or an iPhone, or a computer running the terminal app (`imp`, which links as a `mac`:
+  see [The terminal app](/apps/cli)). It has an id (a UUID), a name people recognise, a kind (`mac` or
   `phone`) and a secret seed that never leaves it. The seed makes the Noise key the link pins and the Ed25519 key that names its room at the Hop.
 - **Home**: the device an Imp's brain lives on: its models, keys, tools and chats. Mac Imps live on
   their Mac, Imps hatched on an iPhone on that iPhone.

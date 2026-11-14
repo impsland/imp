@@ -1,16 +1,13 @@
-//! The link adapter: sockets for a `Node` from `imp-core`. The core decides everything (the handshake, who may
-//! talk, the book). This file only moves bytes: it listens, dials a device's addresses and its Hop, waits at
-//! the Hop for guests and writes what the node asks to be written. The Bonjour lookup the apps do is not here,
-//! so a guest finds this device by the host names in its code or through the Hop.
+//! Sockets for a `Node` from `imp-core`. The core decides everything (the handshake, who may talk, the
+//! book). This file only moves bytes: it listens, dials a device's addresses and its Hop, waits at the Hop
+//! for guests and writes what the node asks to be written. The Bonjour lookup the apps do is not here, so a
+//! guest finds this device by the host names in its code or through the Hop.
 
-use crate::{CliError, Result};
+use crate::Result;
 use imp_core::link::LinkCard;
 use imp_core::link::hop::{HopAddress, HopClient, HopCredentials, HopStatus};
 use imp_core::link::node::{ConnId, DialRequest, Event, Node, Output, Time};
 use std::collections::HashMap;
-use std::net::{IpAddr, Ipv4Addr};
-use std::path::{Path, PathBuf};
-use std::sync::Arc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
@@ -27,148 +24,11 @@ const HOST_WAIT: Duration = Duration::from_secs(6 * 60);
 const RETRY_FIRST: Duration = Duration::from_secs(2);
 const RETRY_LONGEST: Duration = Duration::from_secs(60);
 
-const BOOK_FILE: &str = "link-book";
-
 /// The current time in seconds since 1970, which is what the node's book keeps.
 pub fn now() -> Time {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0.0, |d| d.as_secs_f64())
-}
-
-/// Where the device's secret seed is kept. The real one is the platform's key store.
-pub trait SeedStore: Send + Sync {
-    /// The saved seed, or None the first time. The error is a plain sentence for the user.
-    fn get(&self) -> std::result::Result<Option<String>, String>;
-    fn set(&self, seed: &str) -> std::result::Result<(), String>;
-}
-
-const SEED_SERVICE: &str = "imp";
-const SEED_ACCOUNT: &str = "link-identity";
-
-/// The key store of the system: the Keychain, the Credential Manager or the Secret Service.
-pub struct SystemSeedStore;
-
-impl SystemSeedStore {
-    fn entry() -> std::result::Result<keyring::Entry, String> {
-        keyring::Entry::new(SEED_SERVICE, SEED_ACCOUNT).map_err(|_| no_key_store())
-    }
-}
-
-fn no_key_store() -> String {
-    "Imp keeps this device's secret in the system key store, and none is available. On Linux, start a Secret Service such as GNOME Keyring or KWallet (it needs a logged-in desktop session), then run the command again.".into()
-}
-
-impl SeedStore for SystemSeedStore {
-    fn get(&self) -> std::result::Result<Option<String>, String> {
-        match Self::entry()?.get_password() {
-            Ok(seed) => Ok(Some(seed)),
-            Err(keyring::Error::NoEntry) => Ok(None),
-            Err(_) => Err(no_key_store()),
-        }
-    }
-
-    fn set(&self, seed: &str) -> std::result::Result<(), String> {
-        Self::entry()?
-            .set_password(seed)
-            .map_err(|_| no_key_store())
-    }
-}
-
-/// Where the node's book is kept: a file in the data folder that only the owner can read, without the
-/// device's secret seed. The seed lives in the key store and is joined to the book when it is read. It is
-/// never printed and never written to a file. With no key store the book cannot be used at all.
-pub struct BookFile {
-    path: PathBuf,
-    seeds: Arc<dyn SeedStore>,
-}
-
-impl BookFile {
-    pub fn in_dir(dir: &Path, seeds: Arc<dyn SeedStore>) -> Self {
-        Self {
-            path: dir.join(BOOK_FILE),
-            seeds,
-        }
-    }
-
-    /// The saved book with its seed put back, or None the first time.
-    pub fn load(&self) -> Result<Option<Vec<u8>>> {
-        let seed = self.seeds.get().map_err(CliError)?;
-        let bytes = match std::fs::read(&self.path) {
-            Ok(bytes) => bytes,
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-            Err(e) => {
-                return Err(CliError(format!(
-                    "Could not read {}: {e}",
-                    self.path.display()
-                )));
-            }
-        };
-        let damaged = || {
-            CliError(format!(
-                "The link book in {} cannot be used. Remove the file to start again.",
-                self.path.display()
-            ))
-        };
-        let mut book: serde_json::Map<String, serde_json::Value> =
-            serde_json::from_slice(&bytes).map_err(|_| damaged())?;
-        if book.contains_key("seed") {
-            return Err(damaged());
-        }
-        let seed = seed.ok_or_else(|| {
-            CliError(format!(
-                "This device's secret is not in the system key store, so the link book in {} cannot be used. Remove the file to start again.",
-                self.path.display()
-            ))
-        })?;
-        book.insert(
-            "seed".into(),
-            serde_json::from_str(&seed).map_err(|_| damaged())?,
-        );
-        serde_json::to_vec(&book).map(Some).map_err(|_| damaged())
-    }
-
-    /// Writes the book whole: the seed to the key store, then the rest to a private temporary file and a
-    /// rename, so a crash never leaves half.
-    pub fn save(&self, bytes: &[u8]) -> Result<()> {
-        use std::io::Write;
-        let mut book: serde_json::Map<String, serde_json::Value> = serde_json::from_slice(bytes)
-            .map_err(|_| CliError("The link book could not be saved.".into()))?;
-        let seed = book
-            .remove("seed")
-            .and_then(|s| serde_json::to_string(&s).ok())
-            .ok_or_else(|| CliError("The link book could not be saved.".into()))?;
-        if self.seeds.get().map_err(CliError)?.as_deref() != Some(seed.as_str()) {
-            self.seeds.set(&seed).map_err(CliError)?;
-        }
-        let rest = serde_json::to_vec(&book)
-            .map_err(|_| CliError("The link book could not be saved.".into()))?;
-        if let Some(dir) = self.path.parent() {
-            std::fs::create_dir_all(dir)?;
-        }
-        let temporary = self.path.with_extension("new");
-        let mut options = std::fs::OpenOptions::new();
-        options.write(true).create(true).truncate(true);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            options.mode(0o600);
-        }
-        let mut file = options.open(&temporary)?;
-        file.write_all(&rest)?;
-        file.sync_all()?;
-        std::fs::rename(&temporary, &self.path)?;
-        Ok(())
-    }
-
-    pub fn path(&self) -> &Path {
-        &self.path
-    }
-}
-
-/// A new device id for a first run.
-pub fn new_device_id() -> Uuid {
-    Uuid::from_bytes(rand::random())
 }
 
 /// What a connection task tells the loop.
@@ -232,12 +92,14 @@ impl Runner {
         &self,
         job: impl FnOnce(&mut Node, Time) -> T + Send + 'static,
     ) -> Option<T> {
-        let (answer, reply) = oneshot::channel();
-        let job: Job = Box::new(move |node, now| {
-            let _ = answer.send(job(node, now));
-        });
-        self.jobs.send(job).ok()?;
-        reply.await.ok()
+        self.handle().with(job).await
+    }
+
+    /// A handle that runs jobs on the node, for code that does not own the runner.
+    pub fn handle(&self) -> NodeHandle {
+        NodeHandle {
+            jobs: self.jobs.clone(),
+        }
     }
 
     /// Stops the node (every connection closes) and waits for it.
@@ -246,6 +108,32 @@ impl Runner {
             let _ = stop.send(());
         }
         let _ = self.task.await;
+    }
+}
+
+/// Runs jobs on a running node. Cheap to clone. Jobs sent after the runner stopped are dropped.
+#[derive(Clone)]
+pub struct NodeHandle {
+    jobs: mpsc::UnboundedSender<Job>,
+}
+
+impl NodeHandle {
+    /// Runs `job` on the node and gives back what it returns. None when the runner has stopped.
+    pub async fn with<T: Send + 'static>(
+        &self,
+        job: impl FnOnce(&mut Node, Time) -> T + Send + 'static,
+    ) -> Option<T> {
+        let (answer, reply) = oneshot::channel();
+        let job: Job = Box::new(move |node, now| {
+            let _ = answer.send(job(node, now));
+        });
+        self.jobs.send(job).ok()?;
+        reply.await.ok()
+    }
+
+    /// Runs `job` on the node without waiting for it.
+    pub fn post(&self, job: impl FnOnce(&mut Node, Time) + Send + 'static) {
+        let _ = self.jobs.send(Box::new(job));
     }
 }
 
@@ -583,188 +471,10 @@ async fn wait_at_hop(
     }
 }
 
-/// One IPv4 address of one network interface of this computer.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct NetworkAddress {
-    /// The interface's name, such as en0, wlan0, utun3 or docker0.
-    pub interface: String,
-    pub address: Ipv4Addr,
-    /// A point-to-point link, which is what VPN tunnels are.
-    pub point_to_point: bool,
-}
-
-/// How likely a device on the same Wi-Fi is to reach an address. The best comes first.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-enum Reach {
-    /// Wi-Fi or Ethernet with a private address (192.168.x.x, 10.x.x.x, 172.16-31.x.x): the home or office network.
-    LocalNetwork,
-    /// Wi-Fi or Ethernet with a public address.
-    Public,
-    /// A VPN tunnel. Only devices on the same VPN reach it.
-    Tunnel,
-    /// A bridge for containers or virtual machines. Only they reach it.
-    Virtual,
-}
-
-/// Interface names that VPNs use (macOS utun and ipsec, Linux tun and wg, Tailscale, ZeroTier, and others).
-const TUNNEL_INTERFACES: &[&str] = &[
-    "utun",
-    "tun",
-    "tap",
-    "wg",
-    "ppp",
-    "ipsec",
-    "gif",
-    "stf",
-    "tailscale",
-    "zt",
-    "nordlynx",
-];
-/// Interface names of bridges for containers and virtual machines.
-const VIRTUAL_INTERFACES: &[&str] = &[
-    "docker",
-    "br-",
-    "veth",
-    "virbr",
-    "vmnet",
-    "vboxnet",
-    "bridge",
-    "vnic",
-    "lxc",
-    "lxd",
-    "cni",
-    "flannel",
-    "podman",
-    "vethernet",
-];
-
-impl NetworkAddress {
-    /// None for an address no other device can use: loopback, link-local (169.254.x.x) and the like.
-    fn reach(&self) -> Option<Reach> {
-        let a = self.address;
-        if a.is_loopback()
-            || a.is_unspecified()
-            || a.is_link_local()
-            || a.is_multicast()
-            || a.is_broadcast()
-        {
-            return None;
-        }
-        let name = self.interface.to_ascii_lowercase();
-        let named = |prefixes: &[&str]| prefixes.iter().any(|p| name.starts_with(p));
-        Some(if self.point_to_point || named(TUNNEL_INTERFACES) {
-            Reach::Tunnel
-        } else if named(VIRTUAL_INTERFACES) {
-            Reach::Virtual
-        } else if a.is_private() {
-            Reach::LocalNetwork
-        } else {
-            Reach::Public
-        })
-    }
-}
-
-/// The addresses other devices can use to reach this computer, best first, for a linking code.
-///
-/// A phone on the same Wi-Fi needs the address this computer has on that network. So Wi-Fi and Ethernet
-/// come first, then VPN tunnels, then bridges for containers and virtual machines. The address the
-/// system would use to go out to the internet leads its group. On its own it is not enough: with a VPN
-/// that carries all traffic it is the tunnel's address, which a phone on the Wi-Fi cannot reach.
-pub fn local_hosts() -> Vec<String> {
-    let addresses = if_addrs::get_if_addrs()
-        .unwrap_or_default()
-        .into_iter()
-        .filter(|i| i.oper_status != if_addrs::IfOperStatus::Down)
-        .filter_map(|i| match i.ip() {
-            IpAddr::V4(address) => Some(NetworkAddress {
-                point_to_point: i.is_p2p(),
-                interface: i.name,
-                address,
-            }),
-            IpAddr::V6(_) => None,
-        })
-        .collect::<Vec<_>>();
-    order_hosts(&addresses, outgoing_address())
-}
-
-/// Orders the addresses for a linking code, as `local_hosts` describes, without repeats and at most as
-/// many as a code holds. `outgoing` is the address the system uses to go out. It is added when no
-/// interface lists it, which happens where interfaces cannot be read.
-pub fn order_hosts(addresses: &[NetworkAddress], outgoing: Option<Ipv4Addr>) -> Vec<String> {
-    let mut all = addresses.to_vec();
-    if let Some(address) = outgoing.filter(|a| !all.iter().any(|n| n.address == *a)) {
-        all.push(NetworkAddress {
-            interface: String::new(),
-            address,
-            point_to_point: false,
-        });
-    }
-    let mut ranked = all
-        .iter()
-        .filter_map(|n| {
-            n.reach()
-                .map(|reach| (reach, Some(n.address) != outgoing, n.address))
-        })
-        .collect::<Vec<_>>();
-    // A stable sort, so addresses of the same kind keep the order the system lists them in.
-    ranked.sort_by_key(|&(reach, not_outgoing, _)| (reach, not_outgoing));
-    let mut hosts = Vec::<String>::new();
-    for (_, _, address) in ranked {
-        let host = address.to_string();
-        if !hosts.contains(&host) {
-            hosts.push(host);
-        }
-    }
-    hosts.truncate(imp_core::link::card::MOST_HOSTS);
-    hosts
-}
-
-/// The address the system would use to go out to the internet. Nothing is sent: connecting a UDP
-/// socket only picks the route.
-fn outgoing_address() -> Option<Ipv4Addr> {
-    let socket = std::net::UdpSocket::bind("0.0.0.0:0").ok()?;
-    socket.connect("192.0.2.1:9").ok()?;
-    match socket.local_addr().ok()?.ip() {
-        IpAddr::V4(address) => Some(address),
-        IpAddr::V6(_) => None,
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use imp_core::link::book::LinkBook;
-    use std::sync::Mutex;
-
-    #[derive(Default)]
-    struct Memory(Mutex<Option<String>>);
-
-    impl SeedStore for Memory {
-        fn get(&self) -> std::result::Result<Option<String>, String> {
-            Ok(self.0.lock().unwrap().clone())
-        }
-        fn set(&self, seed: &str) -> std::result::Result<(), String> {
-            *self.0.lock().unwrap() = Some(seed.to_string());
-            Ok(())
-        }
-    }
-
-    struct Missing;
-
-    impl SeedStore for Missing {
-        fn get(&self) -> std::result::Result<Option<String>, String> {
-            Err(no_key_store())
-        }
-        fn set(&self, _: &str) -> std::result::Result<(), String> {
-            Err(no_key_store())
-        }
-    }
-
-    fn folder(name: &str) -> PathBuf {
-        let dir = std::env::temp_dir().join(format!("imp-book-{name}-{}", std::process::id()));
-        let _ = std::fs::remove_dir_all(&dir);
-        dir
-    }
+    use std::sync::{Arc, Mutex};
 
     /// A Hop that follows the handshake and answers each connection with the next scripted status. A
     /// connection with no status left stays open and silent. It records the role of every hello.
@@ -883,136 +593,5 @@ mod tests {
         assert!(via_hop);
         assert_eq!(leftover, vec![42]);
         waiting.abort();
-    }
-
-    #[test]
-    fn the_seed_goes_to_the_key_store_and_never_into_the_file() {
-        let dir = folder("seed");
-        let store = Arc::new(Memory::default());
-        let file = BookFile::in_dir(&dir, store.clone());
-        assert!(file.load().unwrap().is_none());
-        let book = LinkBook::new(Uuid::from_u128(5), [0x5a; 32], [7; 32]);
-        let whole = book.write();
-        file.save(&whole).unwrap();
-        let on_disk = std::fs::read_to_string(file.path()).unwrap();
-        assert!(!on_disk.contains("seed"), "{on_disk}");
-        assert!(
-            store
-                .0
-                .lock()
-                .unwrap()
-                .as_deref()
-                .is_some_and(|s| !s.is_empty())
-        );
-        let seed_text = store.0.lock().unwrap().clone().unwrap();
-        assert!(!on_disk.contains(seed_text.trim_matches('"')));
-        let back = LinkBook::read(&file.load().unwrap().unwrap()).unwrap();
-        assert_eq!(back, book);
-        let _ = std::fs::remove_dir_all(&dir);
-    }
-
-    #[test]
-    fn with_no_key_store_it_says_what_to_do_and_writes_nothing() {
-        let dir = folder("missing");
-        let file = BookFile::in_dir(&dir, Arc::new(Missing));
-        let said = file.load().unwrap_err().0;
-        assert!(said.contains("system key store"), "{said}");
-        assert!(said.contains("Secret Service"), "{said}");
-        let book = LinkBook::new(Uuid::from_u128(5), [1; 32], [2; 32]).write();
-        assert!(file.save(&book).is_err());
-        assert!(!file.path().exists());
-        let _ = std::fs::remove_dir_all(&dir);
-    }
-
-    #[test]
-    fn a_book_whose_secret_is_gone_is_not_used() {
-        let dir = folder("gone");
-        let file = BookFile::in_dir(&dir, Arc::new(Memory::default()));
-        std::fs::create_dir_all(&dir).unwrap();
-        std::fs::write(file.path(), b"{\"device\":\"x\"}").unwrap();
-        assert!(
-            file.load()
-                .unwrap_err()
-                .0
-                .contains("not in the system key store")
-        );
-        std::fs::write(file.path(), b"{\"seed\":\"AAAA\"}").unwrap();
-        assert!(file.load().unwrap_err().0.contains("cannot be used"));
-        let _ = std::fs::remove_dir_all(&dir);
-    }
-
-    fn at(interface: &str, address: &str, point_to_point: bool) -> NetworkAddress {
-        NetworkAddress {
-            interface: interface.into(),
-            address: address.parse().unwrap(),
-            point_to_point,
-        }
-    }
-
-    #[test]
-    fn wifi_comes_before_a_vpn_that_carries_all_traffic() {
-        // The VPN tunnel is the way out, but a phone on the Wi-Fi can only use the Wi-Fi address.
-        let addresses = [
-            at("en0", "192.168.68.53", false),
-            at("utun6", "10.2.0.2", true),
-        ];
-        let outgoing = Some("10.2.0.2".parse().unwrap());
-        assert_eq!(
-            order_hosts(&addresses, outgoing),
-            ["192.168.68.53", "10.2.0.2"]
-        );
-    }
-
-    #[test]
-    fn tunnels_are_known_by_name_too_and_bridges_come_last() {
-        let addresses = [
-            at("docker0", "172.17.0.1", false),
-            at("tailscale0", "100.101.102.103", false),
-            at("lo", "127.0.0.1", false),
-            at("en0", "169.254.10.20", false),
-            at("wlan0", "10.0.0.7", false),
-        ];
-        assert_eq!(
-            order_hosts(&addresses, None),
-            ["10.0.0.7", "100.101.102.103", "172.17.0.1"]
-        );
-    }
-
-    #[test]
-    fn the_way_out_leads_its_group_and_nothing_repeats() {
-        let addresses = [
-            at("en0", "192.168.1.5", false),
-            at("en1", "10.0.0.7", false),
-            at("en1", "10.0.0.7", false),
-            at("en2", "203.0.113.9", false),
-        ];
-        let outgoing = Some("10.0.0.7".parse().unwrap());
-        assert_eq!(
-            order_hosts(&addresses, outgoing),
-            ["10.0.0.7", "192.168.1.5", "203.0.113.9"]
-        );
-    }
-
-    #[test]
-    fn without_interfaces_the_way_out_is_used() {
-        assert_eq!(
-            order_hosts(&[], Some("192.168.1.9".parse().unwrap())),
-            ["192.168.1.9"]
-        );
-        assert_eq!(
-            order_hosts(&[], Some("127.0.0.1".parse().unwrap())),
-            Vec::<String>::new()
-        );
-        assert!(order_hosts(&[], None).is_empty());
-    }
-
-    #[test]
-    fn a_code_holds_only_so_many_hosts() {
-        let many = (1..=20)
-            .map(|n| at("en0", &format!("192.168.1.{n}"), false))
-            .collect::<Vec<_>>();
-        let hosts = order_hosts(&many, None);
-        assert_eq!(hosts.len(), imp_core::link::card::MOST_HOSTS);
-        assert_eq!(hosts[0], "192.168.1.1");
     }
 }

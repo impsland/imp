@@ -1,32 +1,15 @@
 //! `imp qr`: a pairing code in the terminal. With no text it makes an invite (`implink://join...`) from the
 //! core, shows it as a QR code and stays running as a linked device, so a phone or a Mac that scans the code
 //! can join. With text it draws that text instead, for example a kit address to open on a phone.
+//!
+//! `imp link` is the same device without a code: it stays online for the devices linked already.
 
-use crate::link::{BookFile, Runner, SeedStore, local_hosts, new_device_id};
+use crate::link::SeedStore;
+use crate::link::device::{Device, DeviceOptions, Update, reach_note};
 use crate::{CliError, Result};
-use imp_core::link::PORT;
-use imp_core::link::card::{LinkKind, LinkRoutes};
-use imp_core::link::hop::HopAddress;
-use imp_core::link::node::{Event, JoinError, Node, Options, Problem};
 use qrcode::{Color, QrCode};
 use std::io::Write;
-use std::path::PathBuf;
 use std::sync::Arc;
-use tokio::net::TcpListener;
-use tokio::sync::mpsc;
-
-/// What `imp qr` with no text needs to know.
-#[derive(Debug, Clone, Default)]
-pub struct PairOptions {
-    /// The name other devices see. The computer's name if left out.
-    pub name: Option<String>,
-    /// Host names or addresses to put in the code. The address on the local network if left out.
-    pub hosts: Vec<String>,
-    /// The Imp server to wait at, as `host:port`, for devices that are not on the same network.
-    pub hop: Option<String>,
-    /// Where the device's book is kept.
-    pub data_dir: PathBuf,
-}
 
 /// Light modules around the code on every side, in modules. The QR standard asks for four.
 pub const QUIET_ZONE: usize = 4;
@@ -69,104 +52,32 @@ pub fn render(text: &str) -> Result<String> {
     Ok(out)
 }
 
-/// The node for this computer: its book from the data folder (made the first time), its name and where to
-/// reach it.
-pub fn make_node(options: &PairOptions, seeds: Arc<dyn SeedStore>) -> Result<(Node, BookFile)> {
-    let book = BookFile::in_dir(&options.data_dir, seeds);
-    let saved = book.load()?;
-    let name = options
-        .name
-        .clone()
-        .or_else(computer_name)
-        .unwrap_or_else(|| "Imp CLI".into());
-    let mut node = Node::new(
-        saved.as_deref(),
-        &name,
-        LinkKind::Mac,
-        new_device_id(),
-        Options::default(),
-    )
-    .map_err(|_| {
-        CliError(format!(
-            "The link book in {} cannot be read. Remove the file to start again.",
-            book.path().display()
-        ))
-    })?;
-    let hosts = if options.hosts.is_empty() {
-        local_hosts()
-    } else {
-        options.hosts.clone()
-    };
-    node.set_hosts(hosts);
-    if let Some(hop) = &options.hop {
-        let address = HopAddress::parse(hop).ok_or_else(|| {
-            CliError("The Hop must be written host:port, such as hop.example.org:4677.".into())
-        })?;
-        node.set_server(Some(address));
-    }
-    Ok((node, book))
+/// The rows of the code in half blocks, without colours, for a screen that sets them itself (black on white).
+pub fn rows(text: &str) -> Result<Vec<String>> {
+    let drawn = render(text)?;
+    Ok(drawn
+        .lines()
+        .map(|l| {
+            l.trim_start_matches(COLORS)
+                .trim_end_matches(RESET)
+                .to_string()
+        })
+        .collect())
 }
 
-fn computer_name() -> Option<String> {
-    ["HOSTNAME", "COMPUTERNAME", "HOST"]
-        .iter()
-        .find_map(|v| std::env::var(v).ok())
-        .map(|n| n.split('.').next().unwrap_or_default().to_string())
-        .filter(|n| !n.is_empty())
-}
-
-/// What a person should read about something the node reported.
-fn describe(event: &Event) -> Option<String> {
-    Some(match event {
-        Event::Linked(device) => format!("Linked with {}.", device.name),
-        Event::Connected(device, _) => format!("{} is connected.", device.name),
-        Event::Disconnected(_) => "A device disconnected.".into(),
-        Event::Problem(Problem::Hop) => {
-            "The Hop turned this device away. Check that it is the same server the apps use and that it runs the same release as the apps.".into()
-        }
-        Event::Problem(Problem::Refused(_)) => {
-            "A device answered but would not talk. It may run a different release of Imp. Update both devices.".into()
-        }
-        Event::Problem(Problem::InviteRefused(_)) => "A device used a code that has expired.".into(),
-        Event::Problem(Problem::Listener(why)) => format!("Cannot listen: {why}"),
-        Event::Problem(Problem::Storage(why)) => format!("Could not save the link book: {why}"),
-        Event::Joined { result: Err(JoinError::Unreachable), .. } => {
-            "That device could not be reached.".into()
-        }
-        _ => return None,
-    })
-}
-
-/// Says where a device that scans the code will look for this computer.
-fn reach_note(routes: &LinkRoutes) -> String {
-    match (routes.hosts.first(), &routes.hop) {
-        (Some(host), _) => format!("On the same Wi-Fi, a device finds this computer at {host}."),
-        (None, Some(hop)) => format!("This computer has no network address, so devices come in through the Hop at {hop}."),
-        (None, None) => "This computer has no network address. Connect it to the Wi-Fi, or pass --host or --hop.".into(),
-    }
-}
-
-/// Shows an invite as a QR code, stays linked and tells what happens, until `stop` completes.
+/// Shows an invite as a QR code, then stays online as this computer until `stop` completes: devices that
+/// scan it link, Imps sent here visit, and Imps of this computer that are away think here.
 pub async fn pair(
-    options: &PairOptions,
+    options: &DeviceOptions,
     seeds: Arc<dyn SeedStore>,
     out: &mut dyn Write,
     err: &mut dyn Write,
     stop: impl std::future::Future<Output = ()>,
 ) -> Result<()> {
-    let (node, book) = make_node(options, seeds)?;
-    let listener = match TcpListener::bind(("0.0.0.0", PORT)).await {
-        Ok(listener) => listener,
-        Err(_) => TcpListener::bind(("0.0.0.0", 0)).await?,
-    };
-    let (events, mut heard) = mpsc::unbounded_channel();
-    let runner = Runner::start(node, listener, events, move |bytes| {
-        book.save(bytes).map_err(|e| e.0)
-    })?;
-    let invite = runner
-        .with(|node, now| node.invite(now))
+    let device = Device::start(options, seeds)
         .await
-        .ok_or_else(|| CliError("The link stopped before it started.".into()))?;
+        .map_err(|e| CliError(e.to_string()))?;
+    let invite = device.invite().await?;
     write!(out, "{}", render(&invite.url())?)?;
     writeln!(out)?;
     writeln!(
@@ -174,22 +85,46 @@ pub async fn pair(
         "Scan this code with Imp on a Mac or an iPhone. It works for 15 minutes after it was last on screen."
     )?;
     writeln!(err, "{}", reach_note(&invite.routes))?;
+    stay_online(device, err, stop, true).await
+}
+
+/// Keeps this computer online as a device and tells what happens, until `stop` completes.
+pub async fn stay_online(
+    mut device: Device,
+    err: &mut dyn Write,
+    stop: impl std::future::Future<Output = ()>,
+    code_shown: bool,
+) -> Result<()> {
     writeln!(err, "Press Ctrl-C to stop.")?;
     tokio::pin!(stop);
     loop {
         tokio::select! {
             () = &mut stop => break,
-            event = heard.recv() => {
-                let Some(event) = event else { break };
-                if let Some(text) = describe(&event) {
+            update = device.next() => {
+                if let Some(text) = describe(&update) {
                     writeln!(err, "{text}")?;
                 }
             }
         }
     }
-    runner.with(|node, now| node.invite_hidden(now)).await;
-    runner.stop().await;
+    if code_shown {
+        device.invite_hidden().await;
+    }
+    device.stop().await;
     Ok(())
+}
+
+/// A line about something that happened on the link, for a terminal with no chat.
+fn describe(update: &Update) -> Option<String> {
+    Some(match update {
+        Update::Note(text) | Update::Problem(text) => text.clone(),
+        Update::Away { imp, device } => {
+            format!("{imp} is on {device} now. It thinks here while this keeps running.")
+        }
+        Update::CameHome { imp, .. } => format!("{imp} is back on this computer."),
+        Update::Asked { line, .. } => line.clone(),
+        Update::Visitor(_) | Update::Left(_) => return None,
+    })
 }
 
 #[cfg(test)]

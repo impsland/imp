@@ -32,7 +32,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
 
 @Suite struct PocketImpTests {
     @Test func httpsAnywhereAndHttpOnlyOnYourNetwork() throws {
-        for ok in ["https://api.openai.com/v1", "http://localhost:11434/v1", "http://mac.local:8080", "http://10.1.2.3/mcp",
+        for ok in ["https://openrouter.ai/api/v1", "http://localhost:11434/v1", "http://mac.local:8080", "http://10.1.2.3/mcp",
                    "http://172.16.0.9/x", "http://172.31.255.1", "http://192.168.1.20:1234/v1", "http://127.0.0.1:9"] {
             try PocketImp.check(url: ok)
         }

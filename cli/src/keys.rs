@@ -25,6 +25,8 @@ impl std::fmt::Debug for FoundKey {
 pub enum KeySource {
     Environment(String),
     Keychain,
+    /// Typed into the chat with `/api_key`, kept in memory until the chat ends.
+    Chat,
 }
 
 impl KeySource {
@@ -32,6 +34,7 @@ impl KeySource {
         match self {
             Self::Environment(var) => format!("the environment variable {var}"),
             Self::Keychain => "the system keychain".to_string(),
+            Self::Chat => "this chat (it is forgotten when the chat ends)".to_string(),
         }
     }
 }

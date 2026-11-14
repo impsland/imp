@@ -284,7 +284,7 @@ enum IconRenderer {
           "imps": [
             { "name": "Pip", "hue": 0.57, "favoriteHue": 0.9, "scale": 1,
               "personality": "A dry-witted morning companion. Short answers, one gentle joke, never before coffee.",
-              "brain": { "model": "gpt-4o", "service": { "name": "OpenAI", "baseURL": "https://api.openai.com/v1" } },
+              "brain": { "model": "openai/gpt-6-luna", "service": { "name": "OpenAI", "baseURL": "https://openrouter.ai/api/v1" } },
               "shell": true, "tools": { "body": true, "senses": true, "setup": false, "troupe": true, "computer": true },
               "mcpServers": ["Notes"],
               "triggers": [ { "name": "Good morning", "when": {"kind": "start"}, "prompt": "Greet me and say what's on today." } ],

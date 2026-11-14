@@ -50,6 +50,24 @@ impl Theme {
         }
     }
 
+    /// The mark of another Imp, in its own colour (a hue from 0 to 1, as the apps keep it).
+    pub fn hue(&self, hue: f64) -> Style {
+        match &self.colors {
+            Some(_) => {
+                let (r, g, b) = hsv(hue, 0.55, 0.95);
+                Style::default().fg(Color::Rgb(r, g, b))
+            }
+            None => Style::default().add_modifier(Modifier::BOLD),
+        }
+    }
+
+    /// A QR code: black on white whatever the terminal's colours are, so a camera can read it.
+    pub fn code(&self) -> Style {
+        Style::default()
+            .fg(Color::Rgb(0, 0, 0))
+            .bg(Color::Rgb(255, 255, 255))
+    }
+
     /// Problems.
     pub fn danger(&self) -> Style {
         match &self.colors {
@@ -73,6 +91,24 @@ impl Theme {
             None => Style::default(),
         }
     }
+}
+
+/// A colour from hue, saturation and value, each from 0 to 1.
+fn hsv(h: f64, s: f64, v: f64) -> (u8, u8, u8) {
+    let h = h.rem_euclid(1.0) * 6.0;
+    let sector = h.floor();
+    let f = h - sector;
+    let (p, q, t) = (v * (1.0 - s), v * (1.0 - s * f), v * (1.0 - s * (1.0 - f)));
+    let (r, g, b) = match sector as u8 {
+        0 => (v, t, p),
+        1 => (q, v, p),
+        2 => (p, v, t),
+        3 => (p, q, v),
+        4 => (t, p, v),
+        _ => (v, p, q),
+    };
+    let byte = |x: f64| (x * 255.0).round().clamp(0.0, 255.0) as u8;
+    (byte(r), byte(g), byte(b))
 }
 
 fn color(c: Rgba) -> Color {

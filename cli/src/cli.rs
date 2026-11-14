@@ -9,10 +9,24 @@ const LONG_ABOUT: &str = "Talk to your Imps from a terminal\n\nImp is a little c
 This is its terminal version. Make an Imp, then chat with it.";
 
 const AFTER_HELP: &str = "Getting started:\n  \
-imp imp new pip --model gpt-5       Make an Imp called pip\n  \
-imp chat                            Chat with it\n\n\
+imp imp new pip --model openai/gpt-6-luna      Make an Imp called pip\n  \
+imp mcp add files -- npx -y @modelcontextprotocol/server-filesystem .\n                                               \
+Let it work with the files of the folder you chat in\n  \
+imp chat                                       Chat with it (type /help inside)\n  \
+imp qr                                         Link a Mac or an iPhone, then /send it there\n\n\
 Your API key is never stored in the settings file. Put it in an environment variable\n\
 (IMP_API_KEY by default) or save it in the system keychain with `imp config set-key`.";
+
+const MCP_ADD_LONG_ABOUT: &str = "Give an Imp the tools of an MCP server. A server is a program this computer starts (a command and \
+its arguments, after --) or a service at an address. In the arguments, ${workspaceFolder} (or a plain .) is the folder \
+the chat is started in.\n\n\
+Examples:\n  \
+imp mcp add files -- npx -y @modelcontextprotocol/server-filesystem .\n  \
+imp mcp add search --header Authorization https://mcp.example.org/mcp";
+
+const LINK_LONG_ABOUT: &str = "Stay online as one of your devices, without a chat. Imps of this computer that are on a Mac or \
+an iPhone think here while it runs, Imps sent here visit, and Imps message each other across devices. Link a device \
+first with `imp qr`. A full-screen chat does the same while it is open. Press Ctrl-C to stop.";
 
 const SERVE_LONG_ABOUT: &str = "Run The Den, The Hop or both on this computer, so your devices can use it as their server. Press Ctrl-C to stop.\n\n\
 By default both run. The Den holds accounts, shared kits and the web gallery, and keeps its data in a folder on this computer. \
@@ -46,7 +60,7 @@ pub enum Command {
         #[command(subcommand)]
         action: ImpAction,
     },
-    /// Chat with an Imp in a full-screen chat. Press Esc to leave
+    /// Chat with an Imp in a full-screen chat. Type /help inside, press Esc to leave
     Chat {
         /// Which Imp to talk to (the default Imp if left out)
         #[arg(long, value_name = "NAME")]
@@ -54,6 +68,27 @@ pub enum Command {
         /// Use the simple line chat even in a terminal
         #[arg(long)]
         plain: bool,
+        /// Don't go online for your linked devices while chatting
+        #[arg(long)]
+        offline: bool,
+    },
+    /// Give an Imp tools from MCP servers, list them or take them away
+    Mcp {
+        #[command(subcommand)]
+        action: McpAction,
+    },
+    /// Stay online for your linked devices without a chat. Press Ctrl-C to stop
+    #[command(long_about = LINK_LONG_ABOUT)]
+    Link {
+        /// The name other devices see (the computer's name if left out)
+        #[arg(long, value_name = "NAME")]
+        name: Option<String>,
+        /// The Imp server to wait at, as host:port, for devices on another network
+        #[arg(long, env = "IMP_HOP", value_name = "HOST:PORT")]
+        hop: Option<String>,
+        /// Keep the link book here instead of in the usual data folder
+        #[arg(long, env = "IMP_DATA_DIR", value_name = "DIR")]
+        data_dir: Option<PathBuf>,
     },
     /// Run The Den, The Hop or both on this computer, so your devices can use it as their server. Press Ctrl-C to stop
     #[command(long_about = SERVE_LONG_ABOUT)]
@@ -120,7 +155,7 @@ pub enum ConfigAction {
     Show,
     /// Print the path of the settings file
     Path,
-    /// Change a setting: default_imp, api_key_env or retries
+    /// Change a setting: default_imp, api_key_env, retries or max_steps
     Set {
         /// The setting
         key: String,
@@ -176,6 +211,51 @@ pub enum ImpAction {
     Remove {
         /// Its name
         name: String,
+    },
+    /// Change one of an Imp's settings: model, base_url, personality, api_key_env or hue
+    Set {
+        /// The Imp
+        name: String,
+        /// The setting
+        key: String,
+        /// Its new value
+        value: String,
+    },
+}
+
+#[derive(Debug, Subcommand, PartialEq)]
+pub enum McpAction {
+    /// List an Imp's MCP servers
+    List {
+        /// The Imp (the default Imp if left out)
+        #[arg(long, value_name = "NAME")]
+        imp: Option<String>,
+    },
+    /// Add an MCP server: a command after --, or an address
+    #[command(long_about = MCP_ADD_LONG_ABOUT)]
+    Add {
+        /// A name for the server: letters, digits, dash and underscore
+        name: String,
+        /// The Imp that gets it (the default Imp if left out)
+        #[arg(long, value_name = "NAME")]
+        imp: Option<String>,
+        /// An environment variable to pass on to the command, by NAME. Repeat for several
+        #[arg(long = "env", value_name = "VAR")]
+        env: Vec<String>,
+        /// A header to send to the address, by NAME (its value is read from IMP_MCP_SERVER_HEADER or the keychain)
+        #[arg(long = "header", value_name = "NAME")]
+        headers: Vec<String>,
+        /// The address (https://...), or the command and its arguments after --
+        #[arg(required = true, num_args = 1.., allow_hyphen_values = true, value_name = "COMMAND_OR_URL")]
+        target: Vec<String>,
+    },
+    /// Remove an MCP server from an Imp
+    Remove {
+        /// The server's name
+        name: String,
+        /// The Imp (the default Imp if left out)
+        #[arg(long, value_name = "NAME")]
+        imp: Option<String>,
     },
 }
 
@@ -268,7 +348,7 @@ mod tests {
             "--url",
             "https://openrouter.ai/api/v1",
             "--model",
-            "gpt-6-luna",
+            "openai/gpt-6-luna",
             "--api-key-env",
             "OPENAI_API_KEY",
         ])
@@ -280,7 +360,7 @@ mod tests {
                     name: None,
                     personality: None,
                     url: Some("https://openrouter.ai/api/v1".into()),
-                    model: Some("gpt-6-luna".into()),
+                    model: Some("openai/gpt-6-luna".into()),
                     api_key_env: Some("OPENAI_API_KEY".into()),
                     default: false,
                 }
@@ -295,7 +375,8 @@ mod tests {
             cli.command,
             Command::Chat {
                 imp: Some("pip".into()),
-                plain: false
+                plain: false,
+                offline: false
             }
         );
         assert_eq!(cli.config, Some(PathBuf::from("/tmp/x.toml")));
@@ -303,7 +384,59 @@ mod tests {
             parse(&["chat"]).unwrap().command,
             Command::Chat {
                 imp: None,
-                plain: false
+                plain: false,
+                offline: false
+            }
+        );
+    }
+
+    #[test]
+    fn mcp_and_link_commands() {
+        let add = parse(&[
+            "mcp",
+            "add",
+            "files",
+            "--imp",
+            "pip",
+            "--",
+            "npx",
+            "-y",
+            "@modelcontextprotocol/server-filesystem",
+            ".",
+        ])
+        .unwrap();
+        assert_eq!(
+            add.command,
+            Command::Mcp {
+                action: McpAction::Add {
+                    name: "files".into(),
+                    imp: Some("pip".into()),
+                    env: vec![],
+                    headers: vec![],
+                    target: vec![
+                        "npx".into(),
+                        "-y".into(),
+                        "@modelcontextprotocol/server-filesystem".into(),
+                        ".".into()
+                    ],
+                }
+            }
+        );
+        assert!(parse(&["mcp", "add", "files"]).is_err());
+        assert!(matches!(
+            parse(&["link"]).unwrap().command,
+            Command::Link { .. }
+        ));
+        assert_eq!(
+            parse(&["imp", "set", "pip", "model", "x/y"])
+                .unwrap()
+                .command,
+            Command::Imp {
+                action: ImpAction::Set {
+                    name: "pip".into(),
+                    key: "model".into(),
+                    value: "x/y".into()
+                }
             }
         );
     }

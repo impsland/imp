@@ -1,8 +1,12 @@
 //! The Imp command line app. The binary is called `imp`.
 //!
-//! The pieces are split so a terminal UI can reuse them later: `cli` is the command line grammar,
-//! `config` the settings file, `keys` where API keys come from, `chat_state` the conversation
-//! (no input or output in it) and `commands` what each command does.
+//! - `cli` is the command line grammar and `commands` what each command does.
+//! - `config` is the settings file and `keys` where API keys come from.
+//! - `session` is an Imp ready to chat: its model client, MCP servers and tools.
+//! - `chat_state` is the conversation (no input or output in it), `transcript` how tool calls read,
+//!   `slash` the `/` commands of a chat, `tui` the full-screen chat.
+//! - `troupe` is Imps messaging each other, `link` this computer as one of the person's devices.
+//! - `qr` draws codes and pairs, `serve` runs The Den and The Hop.
 
 pub mod chat_state;
 pub mod cli;
@@ -12,8 +16,11 @@ pub mod keys;
 pub mod link;
 pub mod qr;
 pub mod serve;
+pub mod session;
+pub mod slash;
 pub mod strings;
 pub mod theme;
+pub mod transcript;
 pub mod troupe;
 pub mod tui;
 

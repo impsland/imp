@@ -1881,6 +1881,7 @@ version = "1.2.0"
 dependencies = [
  "clap",
  "directories",
+ "futures-util",
  "hex",
  "if-addrs",
  "imp-core",

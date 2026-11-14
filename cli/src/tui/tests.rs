@@ -181,7 +181,8 @@ fn the_screen_shows_transcript_input_and_status() {
     assert!(text.contains("● Well hi, this"), "{text}");
     assert!(text.contains('▌'));
     assert!(rows[9].contains("› draft"), "{text}");
-    assert!(rows[11].starts_with("● pip · gpt-5"), "{text}");
+    // At 24 columns a long model is cut short, so the activity still shows.
+    assert!(rows[11].starts_with("● pip · open"), "{text}");
     assert!(rows[11].contains("Answering"), "{text}");
 }
 
@@ -212,15 +213,18 @@ fn status_shows_retries_and_tools() {
         name: "files__read".into(),
         arguments: "{}".into(),
     }));
-    assert_eq!(app.activity(), "Using the tool files__read");
+    assert_eq!(app.activity(), "Using the tool read");
+    let text = screen(&app, 60, 10).join("\n");
+    assert!(text.contains("⏺ read()"), "{text}");
+    assert!(text.contains("⎿ running…"), "{text}");
     app.on_agent(&AgentEvent::ToolResult {
         call_id: "c".into(),
         name: "files__read".into(),
         content: "contents\nsecond line".into(),
     });
     let text = screen(&app, 60, 10).join("\n");
-    assert!(text.contains("pip uses the tool files__read"), "{text}");
-    assert!(text.contains("result: contents"), "{text}");
+    assert!(text.contains("⏺ read()"), "{text}");
+    assert!(text.contains("⎿ contents (+1 lines)"), "{text}");
     assert!(!text.contains("second line"));
 }
 
@@ -260,7 +264,7 @@ fn app(imp: &str, model: &str) -> App {
 
 /// A chat in the middle of an answer, with a long Imp reply.
 fn chatty() -> App {
-    let mut app = app("pip", "gpt-5");
+    let mut app = app("pip", "openai/gpt-6-luna");
     type_text(&mut app, "Hello there, little friend");
     app.on_key(key(KeyCode::Enter));
     app.on_agent(&AgentEvent::StepStart);
@@ -274,7 +278,7 @@ const BOXES: &str = "─│┌┐└┘├┤┬┴┼═║╔╗╚╝╠╣�
 
 /// Every main screen: waiting for words, mid-answer with a draft, a problem, and the help card.
 fn main_screens() -> Vec<(&'static str, App)> {
-    let mut empty = app("pip", "gpt-5");
+    let mut empty = app("pip", "openai/gpt-6-luna");
     let mut failed = chatty();
     failed.on_done(Err("the service answered 500: oops".into()));
     let mut helped = chatty();
@@ -454,7 +458,7 @@ fn the_words_follow_the_language() {
 /// Prints the main screen at 60 columns when run with `--nocapture`.
 #[test]
 fn the_main_screen_at_sixty_columns() {
-    let mut app = app("pip", "gpt-5");
+    let mut app = app("pip", "openai/gpt-6-luna");
     type_text(&mut app, "What can you do?");
     app.on_key(key(KeyCode::Enter));
     answer(&mut app, "I can chat, remember things and use tools.");
@@ -462,4 +466,179 @@ fn the_main_screen_at_sixty_columns() {
     let rows = screen(&app, 60, 10);
     println!("{}", rows.join("\n"));
     assert!(rows[0].starts_with("› What can you do?"));
+}
+
+#[test]
+fn a_slash_command_runs_and_shows_without_joining_the_conversation() {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "/model gpt-x");
+    assert_eq!(
+        app.on_key(key(KeyCode::Enter)),
+        Action::Command("/model gpt-x".into())
+    );
+    assert!(app.chat.messages().is_empty(), "commands are not messages");
+    app.notes_from(vec![crate::slash::Note::info(
+        "Saved. pip's model is gpt-x now.",
+    )]);
+    let text = screen(&app, 60, 10).join("\n");
+    assert!(text.contains("› /model gpt-x"), "{text}");
+    assert!(text.contains("Saved. pip's model is gpt-x now."), "{text}");
+    // A key typed to /api_key never shows.
+    type_text(&mut app, "/api_key sk-very-secret");
+    assert!(matches!(
+        app.on_key(key(KeyCode::Enter)),
+        Action::Command(_)
+    ));
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(!text.contains("sk-very-secret"), "{text}");
+    // `//` sends a message that starts with a slash.
+    type_text(&mut app, "//etc/hosts is a file");
+    assert_eq!(
+        app.on_key(key(KeyCode::Enter)),
+        Action::Send("/etc/hosts is a file".into())
+    );
+}
+
+#[test]
+fn commands_are_suggested_and_tab_completes_them() {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "/mc");
+    assert_eq!(app.suggestions()[0].name, "/mcp");
+    let text = screen(&app, 80, 12).join("\n");
+    assert!(text.contains("List, add or remove MCP servers"), "{text}");
+    app.on_key(key(KeyCode::Tab));
+    assert_eq!(app.input(), "/mcp ");
+    assert!(
+        app.suggestions().is_empty(),
+        "nothing to suggest once arguments start"
+    );
+    app.on_key(with(KeyCode::Char('u'), KeyModifiers::CONTROL));
+    type_text(&mut app, "/");
+    assert!(app.suggestions().len() > 3);
+}
+
+#[test]
+fn what_was_sent_comes_back_with_ctrl_p() {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "first");
+    app.on_key(key(KeyCode::Enter));
+    answer(&mut app, "ok");
+    type_text(&mut app, "second");
+    app.on_key(key(KeyCode::Enter));
+    answer(&mut app, "ok");
+    let ctrl = |c| with(KeyCode::Char(c), KeyModifiers::CONTROL);
+    app.on_key(ctrl('p'));
+    assert_eq!(app.input(), "second");
+    app.on_key(ctrl('p'));
+    assert_eq!(app.input(), "first");
+    app.on_key(ctrl('n'));
+    assert_eq!(app.input(), "second");
+    app.on_key(ctrl('n'));
+    assert_eq!(app.input(), "");
+}
+
+#[test]
+fn esc_stops_an_answer_and_leaves_otherwise() {
+    let mut app = chatty();
+    assert_eq!(app.on_key(key(KeyCode::Esc)), Action::Stop);
+    app.on_done(Ok(()));
+    assert_eq!(app.on_key(key(KeyCode::Esc)), Action::Quit);
+}
+
+#[test]
+fn a_message_to_another_imp_reads_as_one() {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "ask zed");
+    app.on_key(key(KeyCode::Enter));
+    let call = ToolCall {
+        id: "t".into(),
+        name: "imp_message".into(),
+        arguments: r#"{"to":"zed","text":"How is the weather?"}"#.into(),
+    };
+    app.on_agent(&AgentEvent::StepStart);
+    app.on_agent(&AgentEvent::Stream(StreamEvent::ToolCallDelta {
+        index: 0,
+        id: Some(call.id.clone()),
+        name: Some(call.name.clone()),
+        arguments: call.arguments.clone(),
+    }));
+    app.on_agent(&AgentEvent::StepEnd);
+    app.on_agent(&AgentEvent::ToolStart(call));
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(text.contains("⇢ zed: How is the weather?"), "{text}");
+    assert!(text.contains("⇠ waiting for zed…"), "{text}");
+    app.on_agent(&AgentEvent::ToolResult {
+        call_id: "t".into(),
+        name: "imp_message".into(),
+        content: "Sunny all day.".into(),
+    });
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(text.contains("⇠ Sunny all day."), "{text}");
+}
+
+#[test]
+fn an_imp_that_is_away_answers_there_and_the_empty_chat_says_where_it_works() {
+    let mut app = app("pip", "m").in_folder("/home/me/project");
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(text.contains("/home/me/project"), "{text}");
+    assert!(text.contains("/model"), "{text}");
+    app.set_away(Some("iPhone".into()));
+    assert_eq!(app.activity(), "On iPhone");
+    type_text(&mut app, "hello?");
+    assert_eq!(app.on_key(key(KeyCode::Enter)), Action::None);
+    assert!(app.notes().any(|n| n.text.contains("/call")));
+    assert!(app.chat.messages().is_empty());
+}
+
+#[test]
+fn a_visitor_shows_its_homes_chat_and_what_it_is_writing() {
+    use crate::link::device::Visitor;
+    use imp_core::link::{LinkImp, LinkTraits, LinkTurn, LinkWork};
+    let mut visitor = Visitor {
+        look: LinkImp {
+            id: uuid::Uuid::from_u128(3),
+            name: "Pebble".into(),
+            hue: 0.3,
+            scale: 1.0,
+            traits: LinkTraits::default(),
+        },
+        home: uuid::Uuid::from_u128(4),
+        home_name: "iPhone".into(),
+        from: uuid::Uuid::from_u128(4),
+        awake: true,
+        turns: vec![LinkTurn {
+            id: uuid::Uuid::from_u128(5),
+            date: 0.0,
+            request: "Hi".into(),
+            from: None,
+            reply: "Hello from the pocket".into(),
+            failed: false,
+            steps: vec![],
+        }],
+        work: None,
+    };
+    let mut app = app("pip", "m");
+    app.show_visitor(&visitor);
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(text.contains("Hello from the pocket"), "{text}");
+    assert!(text.contains("Pebble · visiting from iPhone"), "{text}");
+    type_text(&mut app, "More?");
+    assert_eq!(
+        app.on_key(key(KeyCode::Enter)),
+        Action::Send("More?".into())
+    );
+    visitor.work = Some(LinkWork {
+        request: "More?".into(),
+        status: None,
+        partial: "Sure, here".into(),
+        from: None,
+    });
+    app.show_visitor(&visitor);
+    assert!(app.is_waiting());
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(text.contains("Sure, here▌"), "{text}");
+    visitor.awake = false;
+    visitor.work = None;
+    app.show_visitor(&visitor);
+    assert_eq!(app.activity(), "Asleep");
 }

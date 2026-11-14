@@ -5,14 +5,21 @@ use crate::{CliError, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
+use uuid::Uuid;
 
 pub const DEFAULT_KEY_ENV: &str = "IMP_API_KEY";
-pub const DEFAULT_URL: &str = "https://api.openai.com/v1";
+pub const DEFAULT_URL: &str = "https://openrouter.ai/api/v1";
 pub const DEFAULT_PERSONALITY: &str =
     "Friendly, curious and a little mischievous. Keeps answers short.";
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ImpConfig {
+    /// The Imp's id on the link, the same on every device it visits. Made the first time it is needed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<Uuid>,
+    /// Its colour on other devices' screens, from 0 to 1 around the colour wheel. Taken from the name if left out.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hue: Option<f64>,
     pub personality: String,
     /// The base address of an OpenAI-compatible service.
     pub base_url: String,
@@ -80,9 +87,59 @@ pub fn valid_header_name(name: &str) -> bool {
 }
 
 impl ImpConfig {
+    /// Its colour: the one set, or one that stays the same for the same name.
+    pub fn hue_for(&self, name: &str) -> f64 {
+        self.hue
+            .map_or_else(|| name_hue(name), |h| h.clamp(0.0, 1.0))
+    }
+
+    /// Changes one of its settings by name: model, base_url, personality, api_key_env or hue.
+    /// Errors never repeat the value, in case it was a key by mistake.
+    pub fn set(&mut self, key: &str, value: &str) -> Result<()> {
+        let value = value.trim();
+        match key {
+            "model" if !value.is_empty() => self.model = value.to_string(),
+            "model" => return Err(CliError("The model needs a name.".into())),
+            "base_url" | "url" => {
+                if !(value.starts_with("http://") || value.starts_with("https://")) {
+                    return Err(CliError(
+                        "The brain address must start with http:// or https://.".into(),
+                    ));
+                }
+                self.base_url = value.trim_end_matches('/').to_string();
+            }
+            "personality" if !value.is_empty() => self.personality = value.to_string(),
+            "personality" => return Err(CliError("Say in a sentence how it behaves.".into())),
+            "api_key_env" if value.is_empty() || value == "-" => self.api_key_env = None,
+            "api_key_env" if valid_env_name(value) => self.api_key_env = Some(value.to_string()),
+            "api_key_env" => {
+                return Err(CliError(
+                    "api_key_env is the NAME of an environment variable, such as OPENROUTER_API_KEY, not the key itself.".into(),
+                ));
+            }
+            "hue" => {
+                self.hue = Some(
+                    value
+                        .parse::<f64>()
+                        .ok()
+                        .filter(|h| (0.0..=1.0).contains(h))
+                        .ok_or_else(|| CliError("hue is a number from 0 to 1.".into()))?,
+                );
+            }
+            _ => {
+                return Err(CliError(format!(
+                    "Unknown setting {key}. An Imp has model, base_url, personality, api_key_env and hue."
+                )));
+            }
+        }
+        Ok(())
+    }
+
     /// An Imp with no MCP servers and every tool on.
     pub fn new(personality: String, base_url: String, model: String) -> Self {
         Self {
+            id: Some(crate::link::new_device_id()),
+            hue: None,
             personality,
             base_url,
             model,
@@ -93,7 +150,7 @@ impl ImpConfig {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -145,6 +202,14 @@ impl Default for Config {
             talk_threading: imp_core::Threading::default(),
         }
     }
+}
+
+/// A colour from a name, the same every time: FNV-1a folded onto the colour wheel.
+fn name_hue(name: &str) -> f64 {
+    let hash = name.bytes().fold(0xcbf2_9ce4_8422_2325_u64, |h, b| {
+        (h ^ u64::from(b)).wrapping_mul(0x0100_0000_01b3)
+    });
+    (hash % 1000) as f64 / 1000.0
 }
 
 /// Whether `name` can be used as an Imp name: 1 to 32 letters, digits, `-` or `_`.
@@ -211,6 +276,35 @@ impl Config {
             .map_err(|e| CliError(format!("Could not write {}: {e}", path.display())))
     }
 
+    /// Gives every Imp an id it keeps. True if one was missing, so the file should be saved.
+    pub fn ensure_ids(&mut self) -> bool {
+        let mut changed = false;
+        for imp in self.imps.values_mut() {
+            if imp.id.is_none() {
+                imp.id = Some(crate::link::new_device_id());
+                changed = true;
+            }
+        }
+        changed
+    }
+
+    /// Reads the file and gives every Imp an id, saving the file if one was missing.
+    pub fn load_with_ids(path: &Path) -> Result<Self> {
+        let mut config = Self::load(path)?;
+        if config.ensure_ids() {
+            config.save(path)?;
+        }
+        Ok(config)
+    }
+
+    /// The Imp with this link id.
+    pub fn imp_by_id(&self, id: Uuid) -> Option<(&str, &ImpConfig)> {
+        self.imps
+            .iter()
+            .find(|(_, imp)| imp.id == Some(id))
+            .map(|(name, imp)| (name.as_str(), imp))
+    }
+
     /// The Imp named `name`, or the default one, or the only one there is.
     pub fn pick_imp<'a>(&'a self, name: Option<&str>) -> Result<(&'a str, &'a ImpConfig)> {
         let found = match name {
@@ -266,9 +360,16 @@ impl Config {
                     .filter(|n| *n <= 10)
                     .ok_or_else(|| CliError("retries must be a number from 0 to 10.".into()))?;
             }
+            "max_steps" => {
+                self.max_steps = value
+                    .parse()
+                    .ok()
+                    .filter(|n| (1..=50).contains(n))
+                    .ok_or_else(|| CliError("max_steps must be a number from 1 to 50.".into()))?;
+            }
             _ => {
                 return Err(CliError(format!(
-                    "Unknown setting {key}. The settings are default_imp, api_key_env and retries."
+                    "Unknown setting {key}. The settings are default_imp, api_key_env, retries and max_steps."
                 )));
             }
         }
@@ -301,7 +402,7 @@ mod tests {
             ImpConfig {
                 personality: DEFAULT_PERSONALITY.into(),
                 base_url: DEFAULT_URL.into(),
-                model: "gpt-5".into(),
+                model: "openai/gpt-6-luna".into(),
                 api_key_env: Some("ZED_KEY".into()),
                 ..ImpConfig::new(String::new(), String::new(), String::new())
             },

@@ -203,5 +203,71 @@
     "en": "What the Imp is doing now",
     "es": "Lo que hace el Imp ahora",
     "zh-Hans": "Imp 此刻在做什么"
+  },
+  "cli.chat.welcome_hint": {
+    "note": "Shown under the Imp's name on an empty chat.",
+    "en": "Write a message, or type / for commands such as /model, /mcp and /send.",
+    "es": "Escribe un mensaje, o / para comandos como /model, /mcp y /send.",
+    "zh-Hans": "输入消息，或输入 / 使用 /model、/mcp、/send 等命令。"
+  },
+  "cli.chat.running": {
+    "note": "Under a tool call whose result has not come yet.",
+    "en": "running…",
+    "es": "en curso…",
+    "zh-Hans": "运行中…"
+  },
+  "cli.chat.waiting_for": {
+    "note": "Under a message to another Imp, before it answers. {imp} is its name.",
+    "en": "waiting for {imp}…",
+    "es": "esperando a {imp}…",
+    "zh-Hans": "等待 {imp}…",
+    "args": {
+      "imp": "string"
+    }
+  },
+  "cli.chat.away": {
+    "note": "Status line while the Imp is on another device. {device} is its name.",
+    "en": "On {device}",
+    "es": "En {device}",
+    "zh-Hans": "在 {device} 上",
+    "args": {
+      "device": "string"
+    }
+  },
+  "cli.chat.asleep": {
+    "note": "Status line while a visiting Imp's home device is not connected.",
+    "en": "Asleep",
+    "es": "Dormido",
+    "zh-Hans": "睡着了"
+  },
+  "cli.help.stop_or_quit": {
+    "note": "What Esc does.",
+    "en": "Stop the answer, or leave",
+    "es": "Detener la respuesta, o salir",
+    "zh-Hans": "停止回答，或离开"
+  },
+  "cli.help.complete": {
+    "note": "What Tab does.",
+    "en": "Complete a / command",
+    "es": "Completar un comando /",
+    "zh-Hans": "补全 / 命令"
+  },
+  "cli.help.recall": {
+    "note": "What Ctrl+P and Ctrl+N do.",
+    "en": "Bring back what you sent",
+    "es": "Recuperar lo que enviaste",
+    "zh-Hans": "找回已发送的内容"
+  },
+  "cli.help.commands": {
+    "note": "What /help does.",
+    "en": "List the commands",
+    "es": "Ver los comandos",
+    "zh-Hans": "列出命令"
+  },
+  "cli.help.tool": {
+    "note": "The marks of a tool call and of a message to another Imp in the chat.",
+    "en": "A tool the Imp used, or a message to another Imp",
+    "es": "Una herramienta que usó el Imp, o un mensaje a otro Imp",
+    "zh-Hans": "Imp 使用的工具，或发给另一个 Imp 的消息"
   }
 }

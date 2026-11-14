@@ -1,8 +1,8 @@
 //! A device that `imp qr` runs and a second node from the core join each other over real loopback sockets,
 //! directly and through a Hop, with the adapter the command line app uses on both ends.
 
+use imp_cli::link::device::{DeviceOptions, make_node};
 use imp_cli::link::{Runner, SeedStore, local_hosts};
-use imp_cli::qr::{PairOptions, make_node};
 use imp_core::link::LinkInvite;
 use imp_core::link::card::LinkKind;
 use imp_core::link::hop::HopAddress;
@@ -62,12 +62,13 @@ fn dir(name: &str) -> std::path::PathBuf {
     dir
 }
 
-fn options(name: &str) -> PairOptions {
-    PairOptions {
+fn options(name: &str) -> DeviceOptions {
+    DeviceOptions {
         name: Some(name.into()),
         hosts: vec!["127.0.0.1".into()],
         hop: None,
         data_dir: dir(name),
+        ..DeviceOptions::default()
     }
 }
 

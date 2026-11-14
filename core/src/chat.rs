@@ -557,7 +557,7 @@ impl std::fmt::Debug for OpenAiClient {
 
 #[cfg(feature = "io")]
 impl OpenAiClient {
-    /// `base_url` is the service root such as `https://api.openai.com/v1`. The key is sent as a
+    /// `base_url` is the service root such as `https://openrouter.ai/api/v1`. The key is sent as a
     /// bearer token and never logged or shown by this type.
     pub fn new(
         base_url: &str,
