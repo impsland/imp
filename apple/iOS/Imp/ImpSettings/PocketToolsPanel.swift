@@ -95,7 +95,7 @@ struct PocketToolsPanel: View {
                     HStack(spacing: Spacing.tight) {
                         TextField("firstrun.service.address", text: server.url, prompt: Text(verbatim: "https://example.com/mcp"))
                             .impField(mono: true)
-                            .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
+                            .codeEntry(.address)
                         if let problem { IssueBadge(text: problem) }
                     }
                 }
@@ -110,14 +110,14 @@ struct PocketToolsPanel: View {
                         HStack(spacing: Spacing.small) {
                             TextField("tools.header_name", text: $header.name, prompt: Text(verbatim: "Authorization"))
                                 .impField(mono: true)
-                                .textInputAutocapitalization(.never).autocorrectionDisabled()
+                                .codeEntry()
                             Button { removeHeader(header.id, from: server) } label: { Image(systemName: "minus.circle") }
                                 .buttonStyle(.quiet)
                                 .accessibilityLabel(Text("tools.remove_header"))
                         }
-                        SecureField("tools.header_value", text: $header.value, prompt: kept ? Text("tools.header_saved") : Text(verbatim: "Bearer …"))
+                        // The same keyboard as the header's name above it (see `SecretField`).
+                        SecretField(title: "tools.header_value", text: $header.value, prompt: kept ? Text("tools.header_saved") : Text(verbatim: "Bearer …"))
                             .impField(mono: true)
-                            .textInputAutocapitalization(.never).autocorrectionDisabled()
                     }
                     .id(header.id)
                 }

@@ -50,6 +50,18 @@
     "es": "Enviar a casa",
     "zh-Hans": "送回家"
   },
+  "menu.imp.call_home": {
+    "note": "Button: take back one of our Imps from the device that holds it.",
+    "en": "Call Home",
+    "es": "Llamar a casa",
+    "zh-Hans": "叫回家"
+  },
+  "menu.imp.call_home_ask": {
+    "note": "Menu item for an Imp away on another device: asks before calling it home.",
+    "en": "Call Home…",
+    "es": "Llamar a casa…",
+    "zh-Hans": "叫回家…"
+  },
   "menu.imp.hide": {
     "note": "Menu item that hides an Imp. It then peeks out now and then.",
     "en": "Hide",

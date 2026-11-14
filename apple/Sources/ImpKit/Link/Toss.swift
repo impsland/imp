@@ -75,9 +75,12 @@ public struct JoltDetector: Sendable {
     /// The way the last shake began (its first push).
     public var shakeStart: LinkSide? { core.shakeStart().flatMap(LinkSide.init) }
 
-    /// One sample. Returns a throw once the movement is over (no shake followed), or a shake.
-    public mutating func feed(x: Double, at t: TimeInterval) -> Event? {
-        switch core.feed(x: x, at: t) {
+    /// One sample: sideways acceleration (g) and, when known, the turn in the screen's plane (rad/s, + counterclockwise
+    /// as you look at the screen). Returns a throw once the movement is over (no shake followed), or a shake. Which
+    /// way a throw goes is read from the whole movement (see the core's `JoltDetector::feed_motion`), so a wind-up
+    /// the other way before a flick doesn't send it the wrong way.
+    public mutating func feed(x: Double, spin: Double = 0, at t: TimeInterval) -> Event? {
+        switch core.feedMotion(x: x, spin: spin, at: t) {
         case .thrown(let side): LinkSide(rawValue: side).map(Event.thrown)
         case .shaken: .shaken
         case nil: nil

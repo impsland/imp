@@ -113,6 +113,9 @@ final class TiltSource {
     static let shared = TiltSource()
 
     private(set) var gravity = (x: 0.0, y: -1.0, z: 0.0)
+    /// The latest turn in the screen's plane (rad/s, + counterclockwise as you look at the screen), set before
+    /// each sample goes to the listeners.
+    private(set) var spin = 0.0
     /// How the phone is usually held (slowly follows the hand), so "level" is however you hold it.
     private(set) var rest: (y: Double, z: Double)?
     private let manager = CMMotionManager()
@@ -128,10 +131,11 @@ final class TiltSource {
         guard manager.isDeviceMotionAvailable, !manager.isDeviceMotionActive else { return }
         manager.startDeviceMotionUpdates(to: .main) { [weak self] data, _ in
             guard let data else { return }
-            let g = data.gravity, a = data.userAcceleration, t = data.timestamp
+            let g = data.gravity, a = data.userAcceleration, t = data.timestamp, r = data.rotationRate
             MainActor.assumeIsolated {
                 guard let self else { return }
                 self.gravity = (g.x, g.y, g.z)
+                self.spin = r.z
                 if let r = self.rest {
                     // Follows the way you hold it over a few seconds.
                     self.rest = (r.y + (g.y - r.y) * 0.008, r.z + (g.z - r.z) * 0.008)

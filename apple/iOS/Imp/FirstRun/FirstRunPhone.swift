@@ -46,20 +46,17 @@ struct FirstRunPhoneSheet: View {
         VStack(spacing: 0) {
             SheetBar(back: flow.path.canGoBack ? { flow.back() } : nil, close: close) { FirstRunPhoneSteps(flow: flow) }
                 .sheetBarInsets()
-            GeometryReader { geo in
-                ScrollView {
-                    VStack(spacing: Spacing.large) {
-                        hero(height: geo.size.height)
-                        FirstRunPhoneFlow(flow: flow)
-                    }
-                    .padding(.horizontal, Spacing.page).padding(.top, Spacing.medium).padding(.bottom, Spacing.medium)
+            // The hero is sized by the page without the keyboard, so the keyboard coming up only lifts Continue.
+            FormPage { page in
+                VStack(spacing: Spacing.large) {
+                    hero(height: page.height)
+                    FirstRunPhoneFlow(flow: flow)
                 }
-                .scrollBounceBehavior(.basedOnSize)
-                .dismissesKeyboard()
-                .keyboardGap()
+                .padding(.horizontal, Spacing.page).padding(.top, Spacing.medium).padding(.bottom, Spacing.medium)
+            } footer: {
+                FirstRunPhoneButton(flow: flow)
+                    .padding(.horizontal, Spacing.page).padding(.bottom, Spacing.medium).padding(.top, Spacing.small)
             }
-            FirstRunPhoneButton(flow: flow)
-                .padding(.horizontal, Spacing.page).padding(.bottom, Spacing.medium).padding(.top, Spacing.small)
         }
         // Waking an Imp is that Imp's sheet: it wears its colour.
         .impControls(tint: imp.map { Color.imp($0.hue) } ?? Tone.accent)

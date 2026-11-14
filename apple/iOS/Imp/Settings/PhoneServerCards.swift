@@ -37,7 +37,7 @@ struct ServerCard: View {
                 TextField(kind == .den ? "phone.server.placeholder_den" : "phone.server.placeholder_hop", text: $text)
                     .impField(mono: true)
                     .focused($focused)
-                    .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
+                    .codeEntry(.address)
                     .submitLabel(.done)
                     .onSubmit { commit() }
                     .onChange(of: focused) { _, now in if !now { commit() } }

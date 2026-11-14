@@ -754,6 +754,24 @@
     "es": "Las reglas ocultas que le dicen cómo responder. Casi nadie las cambia.",
     "zh-Hans": "告诉它怎么回答的隐藏规则。大多数人从不修改。"
   },
+  "personality.rules.builtin": {
+    "note": "State of the reply rules when they are the built-in ones.",
+    "en": "Built-in",
+    "es": "Integradas",
+    "zh-Hans": "内置"
+  },
+  "personality.rules.own": {
+    "note": "State of the reply rules when the user changed them.",
+    "en": "Your own",
+    "es": "Propias",
+    "zh-Hans": "自定义"
+  },
+  "personality.rules.edit": {
+    "note": "Button that opens the reply rules in a sheet.",
+    "en": "Edit…",
+    "es": "Editar…",
+    "zh-Hans": "编辑…"
+  },
   "personality.help.voice": {
     "note": "Help of the voice section.",
     "en": "What shows on your screen while this Imp talks out loud.",

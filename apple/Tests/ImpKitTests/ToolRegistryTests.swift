@@ -43,7 +43,7 @@ import ImpCore
         let swiftNames = Set([
             OwnTools.play, OwnTools.move, OwnTools.speak, OwnTools.status, OwnTools.page, OwnTools.listTriggers,
             OwnTools.addTrigger, OwnTools.removeTrigger, OwnTools.listTools, OwnTools.addTool, OwnTools.removeTool,
-            OwnTools.openSettings, OwnTools.message, OwnTools.makeAnimation, OwnTools.showAnimation, OwnTools.removeAnimation,
+            OwnTools.openSettings, OwnTools.message, OwnTools.openFile, OwnTools.makeAnimation, OwnTools.showAnimation, OwnTools.removeAnimation,
             OwnTools.setTraits, OwnTools.denSearch, OwnTools.denGet, OwnTools.denAdd, OwnTools.denShare, OwnTools.denUnshare,
             OwnTools.denAccount,
         ]).union(ComputerTools.all)

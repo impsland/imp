@@ -488,6 +488,18 @@
     "es": "Empieza un mensaje pidiéndole algo a {name}.",
     "zh-Hans": "开始一条请 {name} 做事的消息。"
   },
+  "phone.chat.peers": {
+    "note": "iPhone: button beside the chat field that lists the other Imps to message.",
+    "en": "Message another Imp",
+    "es": "Escribir a otro Imp",
+    "zh-Hans": "给其他 Imp 发消息"
+  },
+  "phone.secret.hidden": {
+    "note": "iPhone: what VoiceOver says for a key field while its value is hidden.",
+    "en": "Entered, hidden",
+    "es": "Introducida, oculta",
+    "zh-Hans": "已输入，已隐藏"
+  },
   "phone.chat.message": {
     "note": "iPhone: chat message.",
     "args": {

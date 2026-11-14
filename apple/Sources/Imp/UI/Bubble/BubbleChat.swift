@@ -12,6 +12,7 @@ struct ChatView: View {
     let model: ImpModel
     let bubble: Bubble
     let layout: BubbleLayout
+    @State private var moving = false
     var measuring = false
     @State private var confirmingDelete = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -118,11 +119,17 @@ struct ChatView: View {
     /// The chat you're in (a menu of the saved ones), then recap, new chat and delete.
     private var header: some View {
         HStack(spacing: Spacing.cozy) {
-            // The move handle: drag the card by any part of it that isn't text or a button.
+            // The move handle: drag the card by it, or by any part of the card that isn't text or a button.
+            // It takes the drag itself: being in front of the card, it would otherwise swallow the mouse-down.
             Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
                 .font(Typeface.small.weight(.semibold))
                 .foregroundStyle(Tone.faint)
-                .pointerStyle(.grabIdle)
+                .frame(width: Spacing.huge, height: Spacing.huge)
+                .contentShape(Rectangle())
+                .pointerStyle(moving ? .grabActive : .grabIdle)
+                .gesture(DragGesture(minimumDistance: 1, coordinateSpace: .global)
+                    .onChanged { _ in moving = true; layout.onDrag?(false) }
+                    .onEnded { _ in moving = false; layout.onDrag?(true) })
                 .help("Drag to move")
                 .accessibilityLabel(Text("Drag to move"))
             // The title gives way (one line, cut at the end) so the buttons always keep their room.

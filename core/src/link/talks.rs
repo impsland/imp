@@ -105,6 +105,22 @@ pub fn may_ask(
         || known.iter().any(|s| s.imp.id == asker && s.home == sender)
 }
 
+/// Or the device that holds the target asks for one of its own Imps, wherever that Imp is (`known` says
+/// the sender is its home). The holder may already ask the target anything as the Imp's holder, so this
+/// lets in nothing new: it is what keeps two Imps that swapped devices in touch (an Imp of the phone out
+/// on the Mac, an Imp of the Mac out on the phone).
+pub fn holder_may_ask(
+    asker: Uuid,
+    forwarded: bool,
+    sender: Uuid,
+    holder: Option<Uuid>,
+    known: &[LinkStaged],
+) -> bool {
+    !forwarded
+        && holder == Some(sender)
+        && known.iter().any(|s| s.imp.id == asker && s.home == sender)
+}
+
 /// A question in flight.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Question {
@@ -303,6 +319,26 @@ mod tests {
             &[],
             true
         ));
+    }
+
+    #[test]
+    fn the_holder_of_the_target_reaches_it_for_its_own_imps_anywhere() {
+        // Imp 7 of device 11 is out on another screen; device 11 holds the target.
+        let known = [staged(7, 11)];
+        assert!(holder_may_ask(id(7), false, id(11), Some(id(11)), &known));
+        // The target is at home, or held by someone else: the screens rule decides.
+        assert!(!holder_may_ask(id(7), false, id(11), None, &known));
+        assert!(!holder_may_ask(id(7), false, id(11), Some(id(12)), &known));
+        // Not the sender's own Imp, nowhere known, or passed on: no.
+        assert!(!holder_may_ask(
+            id(7),
+            false,
+            id(11),
+            Some(id(11)),
+            &[staged(7, 12)]
+        ));
+        assert!(!holder_may_ask(id(7), false, id(11), Some(id(11)), &[]));
+        assert!(!holder_may_ask(id(7), true, id(11), Some(id(11)), &known));
     }
 
     #[test]

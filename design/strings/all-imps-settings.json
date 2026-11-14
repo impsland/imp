@@ -784,6 +784,12 @@
     "es": "Los dispositivos vinculados con este.",
     "zh-Hans": "与这台设备连接的设备。"
   },
+  "settings.devices.call_home": {
+    "note": "Help of the button on a linked device that takes back the Imps it holds.",
+    "en": "Call its Imps home",
+    "es": "Llamar a sus Imps a casa",
+    "zh-Hans": "把它上面的 Imp 叫回家"
+  },
   "settings.devices.forget_all.title": {
     "note": "Settings text.",
     "en": "Forget all",

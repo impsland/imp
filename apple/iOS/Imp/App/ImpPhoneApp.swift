@@ -85,6 +85,8 @@ struct RootView: View {
                            onChat: { router.talk($0) }, onEdit: { router.open(.edit($0, brain: false)) },
                            onBrain: { router.open(.edit($0, brain: true)) })
                     .transition(.opacity)
+                    // A keyboard in a sheet is not the room's business: it would lay the stage out again as it came.
+                    .keyboardIgnored()
                     .onPreferenceChange(EmbersPlaying.self) { playing = $0 }
                 VStack {
                     StatusPill(hub: hub, hiddenCount: hidden.set.onFloor(in: PhoneStage.everyone(hub, pocket).map(\.imp.id)).count,
@@ -93,6 +95,7 @@ struct RootView: View {
                                settings: { router.open(.settings(devices: false)) })
                     Spacer()
                 }
+                .keyboardIgnored()
                 .opacity(playing ? 0 : 1)
                 .offset(y: playing ? -Spacing.medium : 0)
                 .allowsHitTesting(!playing)
@@ -100,7 +103,12 @@ struct RootView: View {
             }
         }
         .impAnimation(ImpDesign.Motion.scene, value: onStage)
-        .onKeyboard { keyboardUp = $0 }
+        // Only a half sheet over the room cares: every other sheet is full height and nothing around it
+        // changes. Telling the whole room about each keyboard made it redo its work as the keyboard came.
+        .onKeyboard { up in
+            let lifts = up && router.route?.restsAtHalf == true
+            if keyboardUp != lifts { keyboardUp = lifts }
+        }
         .impControls(tint: Tone.accent)
         .overlay(alignment: .bottom) { ToastView(text: toast).padding(.bottom, Spacing.huge) }
         .onChange(of: hub.toast) { _, text in

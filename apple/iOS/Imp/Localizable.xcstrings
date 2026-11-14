@@ -3487,6 +3487,22 @@
         }
       }
     },
+    "Open a shared file" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir un archivo compartido"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开共享的文件"
+          }
+        }
+      }
+    },
     "Opens your devices" : {
       "localizations" : {
         "es" : {
@@ -11123,6 +11139,30 @@
         }
       }
     },
+    "imp.a11y.call_home" : {
+      "comment" : "Screen reader action for an Imp away on another device.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call %1$@ home"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llamar a %1$@ a casa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "叫 %1$@ 回家"
+          }
+        }
+      }
+    },
     "imp.a11y.hide" : {
       "comment" : "Screen reader action.",
       "extractionState" : "manual",
@@ -11263,6 +11303,78 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "和 %1$@ 说话"
+          }
+        }
+      }
+    },
+    "imp.call_home.message" : {
+      "comment" : "Under the call home question.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It comes back here now, even if %1$@ is gone for good. If %1$@ connects again, it learns the Imp left."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vuelve aquí ahora, aunque %1$@ ya no esté. Si %1$@ se conecta de nuevo, sabrá que el Imp se fue."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它现在就回到这里，即使 %1$@ 再也不会出现。如果 %1$@ 再次连接，它会知道 Imp 已经离开。"
+          }
+        }
+      }
+    },
+    "imp.call_home.other_device" : {
+      "comment" : "Stands for the device holding an Imp when its name is not known (it was never linked).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the other device"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "el otro dispositivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "另一台设备"
+          }
+        }
+      }
+    },
+    "imp.call_home.title" : {
+      "comment" : "Asks before taking back an Imp from the device that holds it.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bring %1$@ back from %2$@?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Traer a %1$@ de vuelta desde %2$@?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把 %1$@ 从 %2$@ 叫回来？"
           }
         }
       }
@@ -13889,6 +14001,54 @@
         }
       }
     },
+    "menu.imp.call_home" : {
+      "comment" : "Button: take back one of our Imps from the device that holds it.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call Home"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llamar a casa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "叫回家"
+          }
+        }
+      }
+    },
+    "menu.imp.call_home_ask" : {
+      "comment" : "Menu item for an Imp away on another device: asks before calling it home.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call Home…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llamar a casa…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "叫回家…"
+          }
+        }
+      }
+    },
     "menu.imp.copy_kit" : {
       "comment" : "Menu item that copies an Imp as a kit.",
       "extractionState" : "manual",
@@ -14801,6 +14961,78 @@
         }
       }
     },
+    "personality.rules.builtin" : {
+      "comment" : "State of the reply rules when they are the built-in ones.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Built-in"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Integradas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内置"
+          }
+        }
+      }
+    },
+    "personality.rules.edit" : {
+      "comment" : "Button that opens the reply rules in a sheet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编辑…"
+          }
+        }
+      }
+    },
+    "personality.rules.own" : {
+      "comment" : "State of the reply rules when the user changed them.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your own"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Propias"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自定义"
+          }
+        }
+      }
+    },
     "personality.title" : {
       "comment" : "Panel title.",
       "extractionState" : "manual",
@@ -15301,6 +15533,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "还没有大脑"
+          }
+        }
+      }
+    },
+    "phone.chat.peers" : {
+      "comment" : "iPhone: button beside the chat field that lists the other Imps to message.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message another Imp"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escribir a otro Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "给其他 Imp 发消息"
           }
         }
       }
@@ -16501,6 +16757,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "扫描"
+          }
+        }
+      }
+    },
+    "phone.secret.hidden" : {
+      "comment" : "iPhone: what VoiceOver says for a key field while its value is hidden.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entered, hidden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Introducida, oculta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已输入，已隐藏"
           }
         }
       }
@@ -19333,6 +19613,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "大小"
+          }
+        }
+      }
+    },
+    "settings.devices.call_home" : {
+      "comment" : "Help of the button on a linked device that takes back the Imps it holds.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call its Imps home"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llamar a sus Imps a casa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把它上面的 Imp 叫回家"
           }
         }
       }

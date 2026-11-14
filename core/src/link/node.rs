@@ -1616,15 +1616,18 @@ impl Node {
                     .cloned()
                     .collect();
                 let mine = self.is_trusted(from);
-                if talks::may_ask(
-                    imp.id,
-                    screen,
-                    forwarded,
-                    from,
-                    self.stage_of(from),
-                    &known,
-                    mine,
-                ) {
+                let holder = self.book.away.holder(to);
+                if talks::holder_may_ask(imp.id, forwarded, from, holder, &known)
+                    || talks::may_ask(
+                        imp.id,
+                        screen,
+                        forwarded,
+                        from,
+                        self.stage_of(from),
+                        &known,
+                        mine,
+                    )
+                {
                     self.emit(Event::Message(message, from));
                 } else if !mine
                     && !forwarded

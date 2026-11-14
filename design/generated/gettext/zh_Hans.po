@@ -1118,6 +1118,11 @@ msgctxt "home.tray.show"
 msgid "Open"
 msgstr "打开"
 
+#. Screen reader action for an Imp away on another device.
+msgctxt "imp.a11y.call_home"
+msgid "Call {name} home"
+msgstr "叫 {name} 回家"
+
 #. Screen reader action.
 msgctxt "imp.a11y.hide"
 msgid "Hide {name}"
@@ -1147,6 +1152,21 @@ msgstr "打开 {name} 的设置"
 msgctxt "imp.a11y.talk"
 msgid "Talk to {name}"
 msgstr "和 {name} 说话"
+
+#. Under the call home question.
+msgctxt "imp.call_home.message"
+msgid "It comes back here now, even if {device} is gone for good. If {device} connects again, it learns the Imp left."
+msgstr "它现在就回到这里，即使 {device} 再也不会出现。如果 {device} 再次连接，它会知道 Imp 已经离开。"
+
+#. Stands for the device holding an Imp when its name is not known (it was never linked).
+msgctxt "imp.call_home.other_device"
+msgid "the other device"
+msgstr "另一台设备"
+
+#. Asks before taking back an Imp from the device that holds it.
+msgctxt "imp.call_home.title"
+msgid "Bring {name} back from {device}?"
+msgstr "把 {name} 从 {device} 叫回来？"
 
 #. Screen reader hint on an Imp.
 msgctxt "imp.drag.hint"
@@ -1689,6 +1709,16 @@ msgctxt "menu.canvas.show_hidden"
 msgid "Hidden ({count})"
 msgstr "已隐藏（{count}）"
 
+#. Button: take back one of our Imps from the device that holds it.
+msgctxt "menu.imp.call_home"
+msgid "Call Home"
+msgstr "叫回家"
+
+#. Menu item for an Imp away on another device: asks before calling it home.
+msgctxt "menu.imp.call_home_ask"
+msgid "Call Home…"
+msgstr "叫回家…"
+
 #. Menu item that copies an Imp as a kit.
 msgctxt "menu.imp.copy_kit"
 msgid "Copy kit"
@@ -1879,6 +1909,21 @@ msgctxt "personality.persona_hint"
 msgid "Tell {name} who it is and how it talks."
 msgstr "告诉 {name} 它是谁，以及怎么说话。"
 
+#. State of the reply rules when they are the built-in ones.
+msgctxt "personality.rules.builtin"
+msgid "Built-in"
+msgstr "内置"
+
+#. Button that opens the reply rules in a sheet.
+msgctxt "personality.rules.edit"
+msgid "Edit…"
+msgstr "编辑…"
+
+#. State of the reply rules when the user changed them.
+msgctxt "personality.rules.own"
+msgid "Your own"
+msgstr "自定义"
+
 #. Panel title.
 msgctxt "personality.title"
 msgid "Personality"
@@ -1983,6 +2028,11 @@ msgstr "新建"
 msgctxt "phone.chat.no_brain"
 msgid "No brain yet"
 msgstr "还没有大脑"
+
+#. iPhone: button beside the chat field that lists the other Imps to message.
+msgctxt "phone.chat.peers"
+msgid "Message another Imp"
+msgstr "给其他 Imp 发消息"
 
 #. iPhone: chat ran tools.
 msgctxt "phone.chat.ran_tools"
@@ -2233,6 +2283,11 @@ msgstr "等待"
 msgctxt "phone.scan.code"
 msgid "Scan"
 msgstr "扫描"
+
+#. iPhone: what VoiceOver says for a key field while its value is hidden.
+msgctxt "phone.secret.hidden"
+msgid "Entered, hidden"
+msgstr "已输入，已隐藏"
 
 #. Example address of a Den.
 msgctxt "phone.server.placeholder_den"
@@ -2823,6 +2878,11 @@ msgstr "聊天气泡的大小。拖动它的角即可调整。"
 msgctxt "settings.bubble.size.title"
 msgid "Size"
 msgstr "大小"
+
+#. Help of the button on a linked device that takes back the Imps it holds.
+msgctxt "settings.devices.call_home"
+msgid "Call its Imps home"
+msgstr "把它上面的 Imp 叫回家"
 
 #. Settings text.
 msgctxt "settings.devices.forget_all.title"

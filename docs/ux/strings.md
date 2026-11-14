@@ -227,12 +227,16 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `home.hidden.title` | Hidden ({count}) | Ocultos ({count}) | 已隐藏（{count}） |
 | `home.tray.quit` | Quit | Salir | 退出 |
 | `home.tray.show` | Open | Abrir | 打开 |
+| `imp.a11y.call_home` | Call {name} home | Llamar a {name} a casa | 叫 {name} 回家 |
 | `imp.a11y.hide` | Hide {name} | Ocultar a {name} | 隐藏 {name} |
 | `imp.a11y.label` | {name}, {state} | {name}, {state} | {name}，{state} |
 | `imp.a11y.let_out` | Let {name} out | Dejar salir a {name} | 放 {name} 出来 |
 | `imp.a11y.send_home` | Send {name} home | Enviar a {name} a casa | 送 {name} 回家 |
 | `imp.a11y.settings` | Open {name}'s settings | Abrir los ajustes de {name} | 打开 {name} 的设置 |
 | `imp.a11y.talk` | Talk to {name} | Hablar con {name} | 和 {name} 说话 |
+| `imp.call_home.message` | It comes back here now, even if {device} is gone for good. If {device} connects again, it learns the Imp left. | Vuelve aquí ahora, aunque {device} ya no esté. Si {device} se conecta de nuevo, sabrá que el Imp se fue. | 它现在就回到这里，即使 {device} 再也不会出现。如果 {device} 再次连接，它会知道 Imp 已经离开。 |
+| `imp.call_home.other_device` | the other device | el otro dispositivo | 另一台设备 |
+| `imp.call_home.title` | Bring {name} back from {device}? | ¿Traer a {name} de vuelta desde {device}? | 把 {name} 从 {device} 叫回来？ |
 | `imp.drag.hint` | Drag to move it. | Arrástralo para moverlo. | 拖动即可移动。 |
 | `imp.drag.out_hint` | Drag it out of the window to let it out. | Arrástralo fuera de la ventana para dejarlo salir. | 把它拖出窗口，就能放它出来。 |
 | `imp.hide.undo` | {name} is hidden. | {name} está oculto. | {name} 已隐藏。 |
@@ -341,6 +345,8 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `menu.canvas.new_imp` | New Imp | Nuevo Imp | 新建 Imp |
 | `menu.canvas.settings` | Settings | Ajustes | 设置 |
 | `menu.canvas.show_hidden` | Hidden ({count}) | Ocultos ({count}) | 已隐藏（{count}） |
+| `menu.imp.call_home` | Call Home | Llamar a casa | 叫回家 |
+| `menu.imp.call_home_ask` | Call Home… | Llamar a casa… | 叫回家… |
 | `menu.imp.copy_kit` | Copy kit | Copiar kit | 复制套件 |
 | `menu.imp.copy_link` | Copy link | Copiar enlace | 复制链接 |
 | `menu.imp.goodbye` | Goodbye | Adiós | 再见 |
@@ -379,6 +385,9 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `personality.name_hint` | Part of who {name} is. You can change it any time. | Parte de quién es {name}. Puedes cambiarlo cuando quieras. | 这是 {name} 个性的一部分，随时可以修改。 |
 | `personality.persona` | Persona | Personaje | 角色设定 |
 | `personality.persona_hint` | Tell {name} who it is and how it talks. | Cuéntale a {name} quién es y cómo habla. | 告诉 {name} 它是谁，以及怎么说话。 |
+| `personality.rules.builtin` | Built-in | Integradas | 内置 |
+| `personality.rules.edit` | Edit… | Editar… | 编辑… |
+| `personality.rules.own` | Your own | Propias | 自定义 |
 | `personality.title` | Personality | Personalidad | 个性 |
 | `personality.voice` | Voice | Voz | 声音 |
 | `personality.voice_look` | Shows as | Se muestra | 显示为 |
@@ -400,6 +409,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.chat.message` | Message {name} | Mensaje para {name} | 给 {name} 发消息 |
 | `phone.chat.new` | New | Nuevo | 新建 |
 | `phone.chat.no_brain` | No brain yet | Aún sin cerebro | 还没有大脑 |
+| `phone.chat.peers` | Message another Imp | Escribir a otro Imp | 给其他 Imp 发消息 |
 | `phone.chat.ran_tools` | Ran {count} tools | Usó {count} herramientas | 使用了 {count} 个工具 |
 | `phone.code.caption` | Scan on the other device | Escanea en el otro dispositivo | 在另一台设备上扫描 |
 | `phone.code.label` | Link code | Código de enlace | 关联二维码 |
@@ -450,6 +460,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.requests.timeout.title` | Wait up to | Esperar hasta | 最多等 |
 | `phone.requests.title` | Waiting | Esperas | 等待 |
 | `phone.scan.code` | Scan | Escanear | 扫描 |
+| `phone.secret.hidden` | Entered, hidden | Introducida, oculta | 已输入，已隐藏 |
 | `phone.server.placeholder_den` | den.example.com | den.example.com | den.example.com |
 | `phone.server.placeholder_hop` | hop.example.com:4677 | hop.example.com:4677 | hop.example.com:4677 |
 | `phone.shake.dir.any` | Any | Cualquiera | 任意 |
@@ -568,6 +579,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.bubble.showing.title` | Showing | Mostrar | 显示 |
 | `settings.bubble.size.info` | The size of the chat bubble. Drag its corner to change it. | El tamaño de la burbuja del chat. Arrastra su esquina para cambiarlo. | 聊天气泡的大小。拖动它的角即可调整。 |
 | `settings.bubble.size.title` | Size | Tamaño | 大小 |
+| `settings.devices.call_home` | Call its Imps home | Llamar a sus Imps a casa | 把它上面的 Imp 叫回家 |
 | `settings.devices.forget_all.title` | Forget all | Olvidar todo | 全部忘记 |
 | `settings.devices.link.info` | Link another device so your Imps can visit it. | Vincula otro dispositivo para que tus Imps puedan visitarlo. | 连接另一台设备,让你的 Imp 去做客。 |
 | `settings.devices.link.title` | Link | Vincular | 连接 |

@@ -1121,6 +1121,11 @@ msgctxt "home.tray.show"
 msgid "Open"
 msgstr "Abrir"
 
+#. Screen reader action for an Imp away on another device.
+msgctxt "imp.a11y.call_home"
+msgid "Call {name} home"
+msgstr "Llamar a {name} a casa"
+
 #. Screen reader action.
 msgctxt "imp.a11y.hide"
 msgid "Hide {name}"
@@ -1150,6 +1155,21 @@ msgstr "Abrir los ajustes de {name}"
 msgctxt "imp.a11y.talk"
 msgid "Talk to {name}"
 msgstr "Hablar con {name}"
+
+#. Under the call home question.
+msgctxt "imp.call_home.message"
+msgid "It comes back here now, even if {device} is gone for good. If {device} connects again, it learns the Imp left."
+msgstr "Vuelve aquí ahora, aunque {device} ya no esté. Si {device} se conecta de nuevo, sabrá que el Imp se fue."
+
+#. Stands for the device holding an Imp when its name is not known (it was never linked).
+msgctxt "imp.call_home.other_device"
+msgid "the other device"
+msgstr "el otro dispositivo"
+
+#. Asks before taking back an Imp from the device that holds it.
+msgctxt "imp.call_home.title"
+msgid "Bring {name} back from {device}?"
+msgstr "¿Traer a {name} de vuelta desde {device}?"
 
 #. Screen reader hint on an Imp.
 msgctxt "imp.drag.hint"
@@ -1693,6 +1713,16 @@ msgctxt "menu.canvas.show_hidden"
 msgid "Hidden ({count})"
 msgstr "Ocultos ({count})"
 
+#. Button: take back one of our Imps from the device that holds it.
+msgctxt "menu.imp.call_home"
+msgid "Call Home"
+msgstr "Llamar a casa"
+
+#. Menu item for an Imp away on another device: asks before calling it home.
+msgctxt "menu.imp.call_home_ask"
+msgid "Call Home…"
+msgstr "Llamar a casa…"
+
 #. Menu item that copies an Imp as a kit.
 msgctxt "menu.imp.copy_kit"
 msgid "Copy kit"
@@ -1883,6 +1913,21 @@ msgctxt "personality.persona_hint"
 msgid "Tell {name} who it is and how it talks."
 msgstr "Cuéntale a {name} quién es y cómo habla."
 
+#. State of the reply rules when they are the built-in ones.
+msgctxt "personality.rules.builtin"
+msgid "Built-in"
+msgstr "Integradas"
+
+#. Button that opens the reply rules in a sheet.
+msgctxt "personality.rules.edit"
+msgid "Edit…"
+msgstr "Editar…"
+
+#. State of the reply rules when the user changed them.
+msgctxt "personality.rules.own"
+msgid "Your own"
+msgstr "Propias"
+
 #. Panel title.
 msgctxt "personality.title"
 msgid "Personality"
@@ -1987,6 +2032,11 @@ msgstr "Nuevo"
 msgctxt "phone.chat.no_brain"
 msgid "No brain yet"
 msgstr "Aún sin cerebro"
+
+#. iPhone: button beside the chat field that lists the other Imps to message.
+msgctxt "phone.chat.peers"
+msgid "Message another Imp"
+msgstr "Escribir a otro Imp"
 
 #. iPhone: chat ran tools.
 msgctxt "phone.chat.ran_tools"
@@ -2237,6 +2287,11 @@ msgstr "Esperas"
 msgctxt "phone.scan.code"
 msgid "Scan"
 msgstr "Escanear"
+
+#. iPhone: what VoiceOver says for a key field while its value is hidden.
+msgctxt "phone.secret.hidden"
+msgid "Entered, hidden"
+msgstr "Introducida, oculta"
 
 #. Example address of a Den.
 msgctxt "phone.server.placeholder_den"
@@ -2827,6 +2882,11 @@ msgstr "El tamaño de la burbuja del chat. Arrastra su esquina para cambiarlo."
 msgctxt "settings.bubble.size.title"
 msgid "Size"
 msgstr "Tamaño"
+
+#. Help of the button on a linked device that takes back the Imps it holds.
+msgctxt "settings.devices.call_home"
+msgid "Call its Imps home"
+msgstr "Llamar a sus Imps a casa"
 
 #. Settings text.
 msgctxt "settings.devices.forget_all.title"

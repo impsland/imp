@@ -94,6 +94,11 @@ struct DevicesCard: View {
                             Circle().fill(Color.imp(imp.hue)).frame(width: Spacing.small, height: Spacing.small)
                                 .help(imp.name).accessibilityLabel(Text(verbatim: imp.name))
                         }
+                        // Works whether or not the device is around: it may never be again (its app deleted).
+                        HoverIconButton(systemName: "house", help: "settings.devices.call_home") {
+                            hosted.forEach { model.callHome($0.id) }
+                        }
+                        .padding(.vertical, -Spacing.small)
                     }
                 }
             }

@@ -45,18 +45,16 @@ struct FirstRunPhoneFlow: View {
             Titled(title: "firstrun.service.address") {
                 TextField("firstrun.service.address", text: $flow.address, prompt: Text(verbatim: "https://…/v1"))
                     .impField(mono: true)
-                    .textInputAutocapitalization(.never).autocorrectionDisabled().keyboardType(.URL)
+                    .codeEntry(.address)
                     .focused($focus, equals: .address)
                     .submitLabel(flow.showsKey ? .next : .go)
                     .onSubmit { if flow.showsKey { focus = .key } else { flow.continueFromService() } }
             }
             if flow.showsKey {
                 Titled(title: "firstrun.service.key") {
-                    SecureField("firstrun.service.key", text: $flow.key)
+                    // On the address's keyboard, so going from one to the other changes nothing (see `SecretField`).
+                    SecretField(title: "firstrun.service.key", text: $flow.key)
                         .impField(mono: true)
-                        // Not a password: this stops the system from offering to save it in a password manager.
-                        .textContentType(.oneTimeCode)
-                        .textInputAutocapitalization(.never).autocorrectionDisabled()
                         .focused($focus, equals: .key)
                         .submitLabel(.go)
                         .onSubmit { flow.continueFromService() }
@@ -84,7 +82,7 @@ struct FirstRunPhoneFlow: View {
             // none takes the model's name as typed.
             TextField("firstrun.model.search", text: flow.models.isEmpty ? $flow.model : $query, prompt: Text("firstrun.model.search"))
                 .impField(mono: true)
-                .textInputAutocapitalization(.never).autocorrectionDisabled()
+                .codeEntry()
                 .focused($focus, equals: .model)
                 .submitLabel(flow.models.isEmpty ? .go : .search)
                 .onSubmit { if flow.models.isEmpty { flow.check() } else { focus = nil } }

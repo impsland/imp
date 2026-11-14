@@ -140,6 +140,7 @@ built_in_tools! {
     ImpRemoveTool = ("setup", "imp_remove_tool"),
     ImpOpenSettings = ("setup", "imp_open_settings"),
     ImpMessage = ("troupe", "imp_message"),
+    ImpOpenFile = ("troupe", "imp_open_file"),
     ComputerObserve = ("computer", "computer_observe"),
     ComputerAct = ("computer", "computer_act"),
     ComputerVerify = ("computer", "computer_verify"),

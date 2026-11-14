@@ -232,12 +232,16 @@
   <string name="home_hidden_title">Hidden (%1$d)</string>
   <string name="home_tray_quit">Quit</string>
   <string name="home_tray_show">Open</string>
+  <string name="imp_a11y_call_home">Call %1$s home</string>
   <string name="imp_a11y_hide">Hide %1$s</string>
   <string name="imp_a11y_label">%1$s, %2$s</string>
   <string name="imp_a11y_let_out">Let %1$s out</string>
   <string name="imp_a11y_send_home">Send %1$s home</string>
   <string name="imp_a11y_settings">Open %1$s\'s settings</string>
   <string name="imp_a11y_talk">Talk to %1$s</string>
+  <string name="imp_call_home_message">It comes back here now, even if %1$s is gone for good. If %1$s connects again, it learns the Imp left.</string>
+  <string name="imp_call_home_other_device">the other device</string>
+  <string name="imp_call_home_title">Bring %1$s back from %2$s?</string>
   <string name="imp_drag_hint">Drag to move it.</string>
   <string name="imp_drag_out_hint">Drag it out of the window to let it out.</string>
   <string name="imp_hide_undo">%1$s is hidden.</string>
@@ -349,6 +353,8 @@
   <string name="menu_canvas_new_imp">New Imp</string>
   <string name="menu_canvas_settings">Settings</string>
   <string name="menu_canvas_show_hidden">Hidden (%1$d)</string>
+  <string name="menu_imp_call_home">Call Home</string>
+  <string name="menu_imp_call_home_ask">Call Home…</string>
   <string name="menu_imp_copy_kit">Copy kit</string>
   <string name="menu_imp_copy_link">Copy link</string>
   <string name="menu_imp_goodbye">Goodbye</string>
@@ -387,6 +393,9 @@
   <string name="personality_name_hint">Part of who %1$s is. You can change it any time.</string>
   <string name="personality_persona">Persona</string>
   <string name="personality_persona_hint">Tell %1$s who it is and how it talks.</string>
+  <string name="personality_rules_builtin">Built-in</string>
+  <string name="personality_rules_edit">Edit…</string>
+  <string name="personality_rules_own">Your own</string>
   <string name="personality_title">Personality</string>
   <string name="personality_voice">Voice</string>
   <string name="personality_voice_look">Shows as</string>
@@ -408,6 +417,7 @@
   <string name="phone_chat_message">Message %1$s</string>
   <string name="phone_chat_new">New</string>
   <string name="phone_chat_no_brain">No brain yet</string>
+  <string name="phone_chat_peers">Message another Imp</string>
   <string name="phone_chat_ran_tools">Ran %1$d tools</string>
   <string name="phone_code_caption">Scan on the other device</string>
   <string name="phone_code_label">Link code</string>
@@ -458,6 +468,7 @@
   <string name="phone_requests_timeout_title">Wait up to</string>
   <string name="phone_requests_title">Waiting</string>
   <string name="phone_scan_code">Scan</string>
+  <string name="phone_secret_hidden">Entered, hidden</string>
   <string name="phone_server_placeholder_den">den.example.com</string>
   <string name="phone_server_placeholder_hop">hop.example.com:4677</string>
   <string name="phone_shake_dir_any">Any</string>
@@ -576,6 +587,7 @@
   <string name="settings_bubble_showing_title">Showing</string>
   <string name="settings_bubble_size_info">The size of the chat bubble. Drag its corner to change it.</string>
   <string name="settings_bubble_size_title">Size</string>
+  <string name="settings_devices_call_home">Call its Imps home</string>
   <string name="settings_devices_forget_all_title">Forget all</string>
   <string name="settings_devices_link_info">Link another device so your Imps can visit it.</string>
   <string name="settings_devices_link_title">Link</string>

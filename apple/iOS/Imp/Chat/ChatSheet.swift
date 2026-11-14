@@ -29,8 +29,9 @@ struct ImpSheet: View {
     var giveBrain: (() -> Void)?
     /// Close: back to where the sheet was opened from.
     var close: () -> Void = {}
-    @State private var text = ""
-    @FocusState private var focused: Bool
+    /// Whether you are typing, for the Imp in the bar. Held apart from the sheet: the sheet (and so the whole
+    /// transcript) must not be drawn again each time the field gains focus.
+    @State private var typing = TypingState()
     @State private var confirmingNewChat = false
     /// A file to look at full screen (Quick Look).
     @State private var preview: URL?
@@ -39,6 +40,9 @@ struct ImpSheet: View {
     @State private var openedAt = Date()
     /// The bottom of the transcript is on screen (otherwise a jump-to-latest button shows).
     @State private var atEnd = true
+    /// Whether the transcript is being scrolled (a finger, a fling, a scroll to the latest). Not observed:
+    /// it only decides how the next change of where the transcript is gets read.
+    @State private var scrolling = ScrollMotion()
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var imp: LinkImp? { source.imp(impID) }
@@ -55,7 +59,7 @@ struct ImpSheet: View {
                 switch pane {
                 case .chat:
                     transcript(imp)
-                    composer(imp)
+                    Composer(source: source, impID: impID, imp: imp, typing: typing, giveBrain: giveBrain)
                 case .talks:
                     TalksPane(hub: hub, pocket: pocket, impID: impID)
                 }
@@ -112,11 +116,15 @@ struct ImpSheet: View {
             if pane == .talks {
                 HoverIconButton(systemName: "chevron.left", help: "common.back", tint: Tone.text) { pane = .chat }
                     .padding(.leading, -Spacing.small)
-            } else if !roomInView {
-                LiveImp(imp: imp, mood: mood, performance: source.act(impID),
-                        gaze: focused ? Self.lookAtComposer : nil, attentive: focused)
-                    .frame(width: Sizing.impPortrait, height: Sizing.impPortrait)
-                    .transition(.scale.combined(with: .opacity))
+            } else {
+                // Always in the bar, so the keyboard lifting the sheet only fades it in: nothing is built or
+                // laid out then. It is not drawn at all while the room above shows the Imp.
+                HeaderPortrait(imp: imp, mood: mood, performance: source.act(impID), typing: typing)
+                    .frame(width: roomInView ? 0 : Sizing.impPortrait, height: Sizing.impPortrait)
+                    .opacity(roomInView ? 0 : 1)
+                    .environment(\.covered, roomInView)
+                    .padding(.trailing, roomInView ? -Spacing.medium : 0)
+                    .accessibilityHidden(roomInView)
             }
             VStack(alignment: .leading, spacing: Spacing.hairline) {
                 Text(imp.name).font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1)
@@ -153,13 +161,13 @@ struct ImpSheet: View {
             }
             HoverIconButton(systemName: "xmark", help: "common.close", tint: Tone.text, action: close)
         }
+        // The portrait comes and goes as the keyboard lifts the sheet; the bar keeps its height, so the chat
+        // under it is not pushed around while the keyboard moves.
+        .frame(minHeight: Sizing.impPortrait)
         .padding(.leading, Spacing.page).padding(.trailing, Spacing.medium).padding(.top, Spacing.medium).padding(.bottom, Spacing.small)
         .impAnimation(ImpDesign.Motion.quick, value: status)
         .impAnimation(ImpDesign.Motion.smooth, value: roomInView)
     }
-
-    /// From the bar's leading corner, the field you type in is below and to the right.
-    private static let lookAtComposer = CGPoint(x: 0.35, y: 0.9)
 
     private var mood: Mood {
         if availability != .ready { return .sleepy }
@@ -202,8 +210,10 @@ struct ImpSheet: View {
                         if let label = Self.separator(turn.date, after: i > 0 ? turns[i - 1].date : nil) {
                             DaySeparator(text: label)
                         }
+                        // Equatable: a row is built again only when it changed, not each time the sheet is drawn.
                         TurnView(turn: turn, imp: imp, hub: hub, fresh: turn.date > openedAt,
-                                 retry: availability == .ready ? { source.ask(impID, turn.request) } : nil)
+                                 canRetry: availability == .ready, ask: { [source, impID] in source.ask(impID, $0) })
+                            .equatable()
                     }
                     if let work { LiveTurn(work: work, imp: imp, hub: hub) }
                     Color.clear.frame(height: Stroke.hairline).id("end")
@@ -216,9 +226,15 @@ struct ImpSheet: View {
             // tools, opened) made that flip on and off with the anchor pulling back, and the app hung.
             .defaultScrollAnchor(.bottom, for: .initialOffset)
             .defaultScrollAnchor(atEnd ? .bottom : .top, for: .sizeChanges)
-            .onScrollGeometryChange(for: Bool.self) { geometry in
-                geometry.contentSize.height - geometry.visibleRect.maxY < Spacing.huge
-            } action: { _, isAtEnd in
+            // Leaving the latest counts only while the transcript is scrolled. The keyboard coming or going
+            // changes the visible height, and for a moment the bottom looks out of reach: read then, the anchor
+            // let go of the bottom, the latest slid behind the keyboard and the jump button flickered.
+            .onScrollGeometryChange(for: Bool.self) { Self.isAtEnd($0) } action: { _, isAtEnd in
+                if atEnd != isAtEnd, isAtEnd || scrolling.on { atEnd = isAtEnd }
+            }
+            .onScrollPhaseChange { _, phase, context in
+                scrolling.on = phase != .idle
+                let isAtEnd = Self.isAtEnd(context.geometry)
                 if atEnd != isAtEnd { atEnd = isAtEnd }
             }
             .overlay(alignment: .bottomTrailing) {
@@ -240,6 +256,7 @@ struct ImpSheet: View {
             }
             .impAnimation(ImpDesign.Motion.settle, value: atEnd)
             .dismissesKeyboard()
+            .tapClosesKeyboard()
             .onChange(of: turns.last?.id) { _, _ in
                 withImpAnimation(ImpDesign.Motion.spring, reduceMotion: reduceMotion) { proxy.scrollTo("end", anchor: .bottom) }
                 if turns.last?.date ?? .distantPast > openedAt {
@@ -248,8 +265,12 @@ struct ImpSheet: View {
             }
             .onChange(of: work?.partial) { proxy.scrollTo("end", anchor: .bottom) }
             .onChange(of: work == nil) { withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { proxy.scrollTo("end", anchor: .bottom) } }
-            .onChange(of: focused) { _, on in if on { withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { proxy.scrollTo("end", anchor: .bottom) } } }
         }
+    }
+
+    /// The bottom of the transcript is in view, give or take a little.
+    private static func isAtEnd(_ geometry: ScrollGeometry) -> Bool {
+        geometry.contentSize.height - geometry.visibleRect.maxY < Spacing.huge
     }
 
     /// "Today 14:05" when a new day starts, or after a long pause.
@@ -267,73 +288,171 @@ struct ImpSheet: View {
         return VStack(spacing: Spacing.cozy) {
             Image(systemName: availability != .ready ? "moon.zzz" : "bubble.left.and.text.bubble.right")
                 .font(.icon(.huge, weight: .light)).foregroundStyle(LegibleTint())
-            HStack(spacing: 0) {
-                Text(intro.title)
-                    .font(Typeface.cardTitle).foregroundStyle(Tone.text)
-                InfoTip(verbatim: intro.text)
+                .accessibilityHidden(true)
+            // An Imp that can't answer is explained once, in the card above the field: not here as well.
+            if availability == .ready {
+                HStack(spacing: 0) {
+                    Text(intro.title)
+                        .font(Typeface.cardTitle).foregroundStyle(Tone.text)
+                    InfoTip(verbatim: intro.text)
+                }
             }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, Spacing.vast).padding(.horizontal, Spacing.page)
     }
 
-    // MARK: Composer
+    // MARK: Links
 
-    private func composer(_ imp: LinkImp) -> some View {
+    /// Web links open in Safari; a file on the Mac comes over and opens in Quick Look.
+    private func open(_ url: URL) -> OpenURLAction.Result {
+        if let scheme = url.scheme?.lowercased(), scheme != "file" { return .systemAction }
+        let ref = url.absoluteString
+        Task {
+            do { preview = try await hub.files.file(imp: impID, ref: ref) }
+            catch { problem = error.localizedDescription }
+        }
+        return .handled
+    }
+}
+
+// MARK: - Composer
+
+/// See `ImpSheet.scrolling`.
+private final class ScrollMotion {
+    var on = false
+}
+
+/// What stands between you and asking the Imp, above the field: it is asleep, has no brain yet, or can only
+/// talk here. One look for all of them: a card as wide as the field's row (the caller gives the row's
+/// inset), the symbol, a short title and the reason under it, and what can be done: an action under the
+/// words, a close button in the corner. The same room on every side, whatever it holds.
+struct ComposerNotice<Action: View>: View {
+    var symbol: String
+    var title: String
+    var text: String
+    var close: (() -> Void)?
+    @ViewBuilder var action: Action
+
+    init(symbol: String, title: String, text: String, close: (() -> Void)? = nil, @ViewBuilder action: () -> Action) {
+        self.symbol = symbol; self.title = title; self.text = text; self.close = close; self.action = action()
+    }
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
+            Image(systemName: symbol)
+                .font(.icon(.small))
+                .foregroundStyle(Tone.muted)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: Spacing.small) {
+                VStack(alignment: .leading, spacing: Spacing.hairline) {
+                    Text(verbatim: title).font(Typeface.caption.weight(.semibold)).foregroundStyle(Tone.text)
+                    Text(verbatim: text).font(Typeface.small).foregroundStyle(Tone.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .accessibilityElement(children: .combine)
+                action
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            if let close {
+                // The close button keeps its finger-sized target, but not its size in the card's layout.
+                HoverIconButton(systemName: "xmark", help: "common.close", tint: Tone.muted, action: close)
+                    .padding(-Spacing.small)
+            }
+        }
+        .padding(Spacing.medium)
+        .background(Tone.card, in: RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
+    }
+}
+
+extension ComposerNotice where Action == EmptyView {
+    init(symbol: String, title: String, text: String, close: (() -> Void)? = nil) {
+        self.init(symbol: symbol, title: title, text: text, close: close) { EmptyView() }
+    }
+}
+
+/// A set of Imp ids kept as one line of text (for `@AppStorage`).
+struct DismissedNotices {
+    private var ids: Set<UUID>
+
+    init(raw: String) { ids = Set(raw.split(separator: ",").compactMap { UUID(uuidString: String($0)) }) }
+
+    var raw: String { ids.map(\.uuidString).sorted().joined(separator: ",") }
+    func contains(_ id: UUID) -> Bool { ids.contains(id) }
+    mutating func insert(_ id: UUID) { ids.insert(id) }
+    mutating func remove(_ id: UUID) { ids.remove(id) }
+}
+
+/// What the bar's Imp needs to know of the composer, kept out of the sheet's own state.
+@MainActor @Observable
+final class TypingState {
+    var on = false
+}
+
+/// The Imp in the sheet's bar: it watches the field while you type.
+private struct HeaderPortrait: View {
+    var imp: LinkImp
+    var mood: Mood
+    var performance: Performance?
+    var typing: TypingState
+
+    /// From the bar's leading corner, the field you type in is below and to the right.
+    private static let lookAtComposer = CGPoint(x: 0.35, y: 0.9)
+
+    var body: some View {
+        LiveImp(imp: imp, mood: mood, performance: performance,
+                gaze: typing.on ? Self.lookAtComposer : nil, attentive: typing.on)
+    }
+}
+
+/// The field you write in, with its send button, the other Imps to ask, and what stands in for them when the
+/// Imp cannot answer. It owns what is typed and the focus, so typing draws this and nothing else.
+private struct Composer: View {
+    let source: any ChatSource
+    let impID: UUID
+    let imp: LinkImp
+    let typing: TypingState
+    var giveBrain: (() -> Void)?
+    @State private var text = ""
+    @FocusState private var focused: Bool
+    @AppStorage(PhonePrefs.dismissedWithheldKey) private var dismissedRaw = ""
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var availability: ChatAvailability { source.availability(impID) }
+    private var working: Bool { source.working(impID).flatMap { $0.from == nil ? $0 : nil } != nil }
+    private var trimmed: String { text.trimmingCharacters(in: .whitespacesAndNewlines) }
+
+    var body: some View {
         VStack(spacing: Spacing.small) {
-            let peers = availability == .ready ? source.peers(impID) : []
-            if !peers.isEmpty && text.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: Spacing.small) {
-                        ForEach(peers) { other in
-                            Button {
-                                text = words("phone.chat.ask_to", other.name)
-                                focused = true
-                            } label: {
-                                HStack(spacing: Spacing.snug) {
-                                    Circle().fill(Color.imp(other.hue)).frame(width: Spacing.small, height: Spacing.small)
-                                    Text(other.name).font(Typeface.label)
-                                }
-                                .padding(.horizontal, Spacing.medium).padding(.vertical, Spacing.snug)
-                                .frame(minHeight: Sizing.hit)
-                                .background(Tone.card, in: Capsule())
-                            }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(Tone.text)
-                            .accessibilityHint(Text(words("phone.chat.ask_to.hint", other.name)))
+            // Whatever stands in the way of asking, said the same way: one card, as wide as the row under it.
+            Group {
+                switch availability {
+                case .offline:
+                    asleepNotice
+                case .noBrain:
+                    // One hatched here is woken from here; a visitor's brain is set up on its home.
+                    if let giveBrain {
+                        ComposerNotice(symbol: "moon.zzz", title: source.intro(imp, availability).title,
+                                       text: source.intro(imp, availability).text) {
+                            Button(action: giveBrain) { Label(words("firstrun.wake", imp.name), systemImage: "sparkles") }
+                                .buttonStyle(.imp(.primary, small: true))
                         }
+                    } else {
+                        asleepNotice
                     }
-                    .padding(.horizontal, Spacing.large)
-                }
-                .scrollBounceBehavior(.basedOnSize)
-            }
-            switch availability {
-            case .offline:
-                asleepLine(imp)
-            case .noBrain:
-                if let giveBrain {
-                    Button(action: giveBrain) { Label(words("firstrun.wake", imp.name), systemImage: "sparkles") }
-                        .buttonStyle(.quiet)
-                } else {
-                    // A visitor: its brain is set up on its home.
-                    asleepLine(imp)
-                }
-            case .ready:
-                if let withheld = source.toolsWithheld(impID) {
-                    SectionHeader(verbatimInfo: withheld.text, minHeight: nil) {
-                        Label(withheld.title, systemImage: "lock").font(Typeface.caption).foregroundStyle(Tone.muted)
+                case .ready:
+                    if let withheld = source.toolsWithheld(impID), !dismissed.contains(impID) {
+                        ComposerNotice(symbol: "lock.fill", title: withheld.title, text: withheld.text, close: {
+                            withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { dismissed.insert(impID) }
+                        })
                     }
                 }
             }
+            .padding(.horizontal, Spacing.roomy)
+            .transition(.opacity.combined(with: .move(edge: .bottom)))
             HStack(alignment: .bottom, spacing: Spacing.cozy) {
-                TextField(words("phone.chat.message", imp.name), text: $text, axis: .vertical)
-                    .font(Typeface.body)
-                    .lineLimit(1...6)
-                    .focused($focused)
-                    .foregroundStyle(Tone.text)
-                    .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.cozy)
-                    .background(Tone.card, in: RoundedRectangle(cornerRadius: Radius.bubble, style: .continuous))
-                if work != nil && trimmed.isEmpty {
+                field
+                if working && trimmed.isEmpty {
                     Button { source.stop(impID); UIImpactFeedbackGenerator(style: .medium).impactOccurred() } label: { glyph("stop.fill") }
                         .buttonStyle(.plain)
                         .accessibilityLabel("Stop")
@@ -347,23 +466,94 @@ struct ImpSheet: View {
                         .transition(.scale.combined(with: .opacity))
                 }
             }
-            .impAnimation(ImpDesign.Motion.settle, value: work == nil)
+            .impAnimation(ImpDesign.Motion.settle, value: working)
             .padding(.horizontal, Spacing.roomy)
             .disabled(availability != .ready)
             .opacity(availability == .ready ? 1 : Opacity.disabled)
         }
         .padding(.vertical, Spacing.cozy)
-    }
-
-    /// An Imp that cannot answer: one line, with the longer words behind the help icon.
-    private func asleepLine(_ imp: LinkImp) -> some View {
-        let intro = source.intro(imp, availability)
-        return SectionHeader(verbatimInfo: intro.text, minHeight: nil) {
-            Label(intro.title, systemImage: "moon.zzz").font(Typeface.caption).foregroundStyle(Tone.muted)
+        .onChange(of: focused) { _, on in typing.on = on }
+        // Put away once, the notice stays away until the Imp may use its tools again and then loses them anew.
+        .onChange(of: source.toolsWithheld(impID) == nil, initial: true) { _, allowed in
+            if allowed, dismissed.contains(impID) { dismissed.remove(impID) }
         }
     }
 
-    private var trimmed: String { text.trimmingCharacters(in: .whitespacesAndNewlines) }
+    /// The Imps whose "only talks here" notice was put away, kept across launches.
+    private var dismissed: DismissedNotices {
+        get { DismissedNotices(raw: dismissedRaw) }
+        nonmutating set { dismissedRaw = newValue.raw }
+    }
+
+    /// The text field in its rounded well. The other Imps you can ask are one small button at its leading
+    /// edge, inside the well, so the bar is no taller or wider for them.
+    ///
+    /// How it lines up, by construction rather than by nudging:
+    /// - The `@` is one line of text in the field's own font, with the field's own padding above and below,
+    ///   so its box is exactly the box of one line of the field. The row aligns their bottoms: the `@` sits on
+    ///   the field's last line however many lines there are. (Aligned by text baseline, it drifted: a `Menu`
+    ///   doesn't pass its label's baseline on, so its bottom edge stood in for it.)
+    /// - The well is at least as tall as the send button, with what is in it centred, so a single line is
+    ///   centred on the button too.
+    /// - The placeholder is the field's own prompt, in the field's font: it lies exactly where typing starts.
+    private var field: some View {
+        let peers = availability == .ready ? source.peers(impID) : []
+        return HStack(alignment: .bottom, spacing: Spacing.tight) {
+            if !peers.isEmpty { peerMenu(peers) }
+            TextField(text: $text, prompt: Text(words("phone.chat.message", imp.name)).foregroundStyle(Tone.muted), axis: .vertical) {
+                Text(words("phone.chat.message", imp.name))
+            }
+            .lineLimit(1...6)
+            .focused($focused)
+            .foregroundStyle(Tone.text)
+            .padding(.vertical, Self.linePadding)
+        }
+        .font(Typeface.body)
+        .frame(minHeight: Sizing.hit)
+        .padding(.leading, peers.isEmpty ? Spacing.roomy : Spacing.cozy).padding(.trailing, Spacing.roomy)
+        .background(Tone.card, in: RoundedRectangle(cornerRadius: Radius.bubble, style: .continuous))
+    }
+
+    /// Above and below a line in the well: the field's and the `@`'s, the same, so their boxes match.
+    private static let linePadding = Spacing.small
+
+    /// The Imps this one can be asked to message: picking one starts the message ("Ask Pip to ") and
+    /// brings the keyboard up. Each wears its colour in the menu. The button is a bare grey glyph on the
+    /// text's line, so the field keeps its room for words.
+    private func peerMenu(_ peers: [LinkImp]) -> some View {
+        Menu {
+            ForEach(peers) { other in
+                Button { mention(other) } label: {
+                    Label { Text(verbatim: other.name) } icon: { ImpSwatch.image(hue: other.hue) }
+                }
+                .accessibilityHint(Text(words("phone.chat.ask_to.hint", other.name)))
+            }
+        } label: {
+            // One line of the field's text (its font comes from the well, its padding is the field's): see `field`.
+            // Grey like the prompt.
+            Text(Image(systemName: "at"))
+                .foregroundStyle(Tone.muted)
+                .padding(.vertical, Self.linePadding)
+                .frame(minWidth: Spacing.page)
+                .contentShape(Rectangle())
+        }
+        .menuStyle(.button)
+        .buttonStyle(.plain)
+        .menuIndicator(.hidden)
+        .accessibilityLabel("phone.chat.peers")
+    }
+
+    private func mention(_ other: LinkImp) {
+        if trimmed.isEmpty { text = words("phone.chat.ask_to", other.name) }
+        else { text += (text.last?.isWhitespace == true ? "" : " ") + other.name + " " }
+        focused = true
+    }
+
+    /// An Imp that cannot answer now (its home is away, or has no brain for it): why, and what to do.
+    private var asleepNotice: some View {
+        let intro = source.intro(imp, availability)
+        return ComposerNotice(symbol: "moon.zzz", title: intro.title, text: intro.text)
+    }
 
     private func glyph(_ name: String) -> some View {
         Image(systemName: name)
@@ -378,19 +568,6 @@ struct ImpSheet: View {
         source.ask(impID, trimmed)
         text = ""
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
-    }
-
-    // MARK: Links
-
-    /// Web links open in Safari; a file on the Mac comes over and opens in Quick Look.
-    private func open(_ url: URL) -> OpenURLAction.Result {
-        if let scheme = url.scheme?.lowercased(), scheme != "file" { return .systemAction }
-        let ref = url.absoluteString
-        Task {
-            do { preview = try await hub.files.file(imp: impID, ref: ref) }
-            catch { problem = error.localizedDescription }
-        }
-        return .handled
     }
 }
 
@@ -431,16 +608,23 @@ private struct AskBubble: View {
     }
 }
 
-private struct TurnView: View {
+private struct TurnView: View, Equatable {
     var turn: LinkTurn
     var imp: LinkImp
     var hub: LinkHub
     /// Arrived while the chat was open (its voice may play on its own).
     var fresh: Bool
-    var retry: (() -> Void)?
+    /// Ask again is offered (the Imp can answer). `ask` is what it does, and is left out of the comparison.
+    var canRetry: Bool
+    var ask: (String) -> Void
     @AppStorage(PhonePrefs.autoplayKey) private var autoplayVoices = true
 
+    nonisolated static func == (a: TurnView, b: TurnView) -> Bool {
+        a.turn == b.turn && a.imp == b.imp && a.fresh == b.fresh && a.canRetry == b.canRetry && a.hub === b.hub
+    }
+
     var body: some View {
+        let retry: (() -> Void)? = canRetry ? { ask(turn.request) } : nil
         VStack(spacing: Spacing.small) {
             AskBubble(text: turn.request, retry: retry)
             if !turn.steps.isEmpty { StepsLine(steps: turn.steps) }

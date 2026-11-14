@@ -104,6 +104,9 @@ final class ImpMenu: NSObject, NSMenuDelegate {
             item.representedObject = peer.id
             item.toolTip = words("menu.imp.visit_tip", name, peer.name)
         }
+        // Out of sight here, still visiting: it comes back with Show (the menu bar, or the Imps' window).
+        add(menu, String(localized: "Hide \(name)"), symbol: "eye.slash", action: #selector(hide))
+            .toolTip = String(localized: "\(name) hides until you show it again from the menu bar (Show). It keeps visiting meanwhile.")
         add(menu, String(localized: "menu.imp.send_home"), symbol: "house", action: #selector(sendVisitorHome))
             .toolTip = String(localized: "\(name) flies back to \(visit.homeName). If it is away, \(name) goes now and \(visit.homeName) hears when it is back.")
         return menu

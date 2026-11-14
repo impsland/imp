@@ -9,6 +9,7 @@ struct ImpTools: ToolProvider {
 
     func tools() async -> [ToolSpec] { await host.specs() }
     func call(_ name: String, arguments: String) async throws -> String { try await host.call(name, arguments: arguments) }
+    func run(_ name: String, arguments: String) async throws -> ToolOutput { try await host.run(name, arguments: arguments) }
 }
 
 /// Runs an Imp's own tools for one request.
@@ -61,6 +62,18 @@ final class OwnToolHost {
                        conversation: app?.prefs.talkThreading == .decides)
     }
 
+    /// Like `call`, but a tool can hand pictures back too (`imp_open_file`).
+    func run(_ name: String, arguments: String) async throws -> ToolOutput {
+        guard name == OwnTools.openFile else { return ToolOutput(try await call(name, arguments: arguments)) }
+        guard let group = OwnTools.group(of: name), groups.contains(group) else { throw ToolArgumentError("Unknown tool \(name).") }
+        let args = (try? JSONValue(jsonString: arguments.isEmpty ? "{}" : arguments)) ?? [:]
+        do {
+            return try OpenFile.open(args["file"]?.string ?? "", imp: id)
+        } catch let error as ToolArgumentError {
+            return ToolOutput("Error: \(error.message)")
+        }
+    }
+
     func call(_ name: String, arguments: String) async throws -> String {
         guard let group = OwnTools.group(of: name), groups.contains(group) else { throw ToolArgumentError("Unknown tool \(name).") }
         let args = (try? JSONValue(jsonString: arguments.isEmpty ? "{}" : arguments)) ?? [:]
@@ -79,6 +92,7 @@ final class OwnToolHost {
             case OwnTools.removeTool: return try removeTool(args)
             case OwnTools.openSettings: return try openSettings(args)
             case OwnTools.message: return try await message(args)
+            case OwnTools.openFile: return try OpenFile.open(args["file"]?.string ?? "", imp: id).text
             case OwnTools.makeAnimation: return try makeAnimation(args)
             case OwnTools.showAnimation: return try showAnimation(args)
             case OwnTools.removeAnimation: return try removeAnimation(args)

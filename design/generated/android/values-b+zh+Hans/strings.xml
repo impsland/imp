@@ -229,12 +229,16 @@
   <string name="home_hidden_title">已隐藏（%1$d）</string>
   <string name="home_tray_quit">退出</string>
   <string name="home_tray_show">打开</string>
+  <string name="imp_a11y_call_home">叫 %1$s 回家</string>
   <string name="imp_a11y_hide">隐藏 %1$s</string>
   <string name="imp_a11y_label">%1$s，%2$s</string>
   <string name="imp_a11y_let_out">放 %1$s 出来</string>
   <string name="imp_a11y_send_home">送 %1$s 回家</string>
   <string name="imp_a11y_settings">打开 %1$s 的设置</string>
   <string name="imp_a11y_talk">和 %1$s 说话</string>
+  <string name="imp_call_home_message">它现在就回到这里，即使 %1$s 再也不会出现。如果 %1$s 再次连接，它会知道 Imp 已经离开。</string>
+  <string name="imp_call_home_other_device">另一台设备</string>
+  <string name="imp_call_home_title">把 %1$s 从 %2$s 叫回来？</string>
   <string name="imp_drag_hint">拖动即可移动。</string>
   <string name="imp_drag_out_hint">把它拖出窗口，就能放它出来。</string>
   <string name="imp_hide_undo">%1$s 已隐藏。</string>
@@ -345,6 +349,8 @@
   <string name="menu_canvas_new_imp">新建 Imp</string>
   <string name="menu_canvas_settings">设置</string>
   <string name="menu_canvas_show_hidden">已隐藏（%1$d）</string>
+  <string name="menu_imp_call_home">叫回家</string>
+  <string name="menu_imp_call_home_ask">叫回家…</string>
   <string name="menu_imp_copy_kit">复制套件</string>
   <string name="menu_imp_copy_link">复制链接</string>
   <string name="menu_imp_goodbye">再见</string>
@@ -383,6 +389,9 @@
   <string name="personality_name_hint">这是 %1$s 个性的一部分，随时可以修改。</string>
   <string name="personality_persona">角色设定</string>
   <string name="personality_persona_hint">告诉 %1$s 它是谁，以及怎么说话。</string>
+  <string name="personality_rules_builtin">内置</string>
+  <string name="personality_rules_edit">编辑…</string>
+  <string name="personality_rules_own">自定义</string>
   <string name="personality_title">个性</string>
   <string name="personality_voice">声音</string>
   <string name="personality_voice_look">显示为</string>
@@ -404,6 +413,7 @@
   <string name="phone_chat_message">给 %1$s 发消息</string>
   <string name="phone_chat_new">新建</string>
   <string name="phone_chat_no_brain">还没有大脑</string>
+  <string name="phone_chat_peers">给其他 Imp 发消息</string>
   <string name="phone_chat_ran_tools">使用了 %1$d 个工具</string>
   <string name="phone_code_caption">在另一台设备上扫描</string>
   <string name="phone_code_label">关联二维码</string>
@@ -454,6 +464,7 @@
   <string name="phone_requests_timeout_title">最多等</string>
   <string name="phone_requests_title">等待</string>
   <string name="phone_scan_code">扫描</string>
+  <string name="phone_secret_hidden">已输入，已隐藏</string>
   <string name="phone_server_placeholder_den">den.example.com</string>
   <string name="phone_server_placeholder_hop">hop.example.com:4677</string>
   <string name="phone_shake_dir_any">任意</string>
@@ -572,6 +583,7 @@
   <string name="settings_bubble_showing_title">显示</string>
   <string name="settings_bubble_size_info">聊天气泡的大小。拖动它的角即可调整。</string>
   <string name="settings_bubble_size_title">大小</string>
+  <string name="settings_devices_call_home">把它上面的 Imp 叫回家</string>
   <string name="settings_devices_forget_all_title">全部忘记</string>
   <string name="settings_devices_link_info">连接另一台设备,让你的 Imp 去做客。</string>
   <string name="settings_devices_link_title">连接</string>

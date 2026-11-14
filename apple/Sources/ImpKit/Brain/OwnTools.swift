@@ -73,6 +73,7 @@ public enum OwnTools {
     public static let removeTool = toolBuiltInName(tool: .impRemoveTool)
     public static let openSettings = toolBuiltInName(tool: .impOpenSettings)
     public static let message = toolBuiltInName(tool: .impMessage)
+    public static let openFile = toolBuiltInName(tool: .impOpenFile)
     public static let makeAnimation = toolBuiltInName(tool: .impMakeAnimation)
     public static let showAnimation = toolBuiltInName(tool: .impShowAnimation)
     public static let removeAnimation = toolBuiltInName(tool: .impRemoveAnimation)
@@ -194,11 +195,21 @@ public enum OwnTools {
             properties["conversation"] = ["type": "string", "enum": ["new", "continue"], "description": .string(which)]
         }
         var about = "Send a message to another Imp out on the desktop and get its answer (it shows its own bubble). "
-            + "Keep it short and friendly. Files in the answer come as imp-file:// links: show them with those links exactly as they are. "
-            + "To send a file of yours, put it in your folder and link or embed it in the text."
+            + "Keep it short and friendly. Files in the answer come as imp-file:// links: show them with those links exactly as they are "
+            + "(\(openFile) opens one to look at or read). To send a file of yours, put it in your folder and link or embed it in the text."
         if !pocket.isEmpty { about += " \(pocket.joined(separator: ", ")) are on the user's other devices and answer there." }
         return ToolSpec(name: message, description: about,
                         inputSchema: ["type": "object", "properties": .object(properties), "required": ["to", "text"]])
+    }
+
+    public static var openFileSpec: ToolSpec {
+        ToolSpec(name: openFile,
+                 description: "Open a file another Imp shared with you (an imp-file:// link) or one in your own folder: see a picture, "
+                     + "read a text file, or get its path for the shell.",
+                 inputSchema: ["type": "object",
+                               "properties": ["file": ["type": "string",
+                                                       "description": "An imp-file:// link exactly as you received it, or a path inside your own folder."]],
+                               "required": ["file"]])
     }
 
     /// The tools for `groups`. `animations`: names it may play right now; `imps`: the others it can message.
@@ -315,6 +326,7 @@ public enum OwnTools {
         }
         if groups.contains(.troupe), !imps.isEmpty || !pocket.isEmpty {
             specs.append(messageSpec(imps: imps, pocket: pocket, talk: talk, conversation: conversation))
+            specs.append(openFileSpec)
         }
         if groups.contains(.den) { specs += denSpecs }
         return specs

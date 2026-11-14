@@ -52,7 +52,7 @@ struct TalksPane: View {
                     .accessibilityValue(Text(thread.peer.name))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, Spacing.page)
-                    TalkConversation(thread: thread, hub: hub)
+                    TalkConversation(thread: thread, hub: hub, impID: impID)
                 }
                 .transition(.opacity)
             } else {
@@ -125,6 +125,8 @@ private struct TalkRow: View {
 private struct TalkConversation: View {
     let thread: TalkThread
     let hub: LinkHub
+    /// The Imp whose sheet this is.
+    let impID: UUID
 
     var body: some View {
         let lines = thread.lines
@@ -139,7 +141,7 @@ private struct TalkConversation: View {
                             .background(Tone.card, in: Capsule())
                             .padding(.top, Spacing.tight)
                     }
-                    Exchange(line: line, hub: hub)
+                    Exchange(line: line, hub: hub, impID: impID)
                 }
             }
             .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.large)
@@ -159,6 +161,15 @@ private struct TalkConversation: View {
 private struct Exchange: View {
     var line: TalkLine
     var hub: LinkHub
+    /// The Imp whose sheet this is.
+    var impID: UUID
+
+    /// Who the files in the answer are fetched through: an Imp this phone holds, as only its holder may ask
+    /// its home for them. The sheet's own Imp first, else either of the two talking. Its home sends what the
+    /// talk mentions: the links in it say whose file each is (see `DeviceLink.talkLinesForLink`).
+    private var via: UUID {
+        [impID, line.answerer.id, line.asker.id].first { hub.visit($0) != nil } ?? line.answerer.id
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.cozy) {
@@ -184,7 +195,7 @@ private struct Exchange: View {
                     .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.snug)
                     .background(Tone.errorBackground, in: RoundedRectangle(cornerRadius: Radius.large, style: .continuous))
                 } else {
-                    ReplyBlocks(text: line.reply, imp: LinkImp(id: line.answerer.id, name: line.answerer.name, hue: line.answerer.hue, scale: 1, traits: .plain),
+                    ReplyBlocks(text: line.reply, imp: LinkImp(id: via, name: line.answerer.name, hue: line.answerer.hue, scale: 1, traits: .plain),
                                 hub: hub)
                         .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.medium)
                         .impCard(radius: Radius.large)

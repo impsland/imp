@@ -302,6 +302,9 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `personality.name_hint` | Part of who {name} is. You can change it any time. |
 | `personality.persona` | Persona |
 | `personality.persona_hint` | Tell {name} who it is and how it talks. |
+| `personality.rules.builtin` | Built-in |
+| `personality.rules.edit` | Edit… |
+| `personality.rules.own` | Your own |
 | `personality.title` | Personality |
 | `personality.voice` | Voice |
 | `personality.voice_look` | Shows as |

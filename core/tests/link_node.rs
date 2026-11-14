@@ -1234,3 +1234,79 @@ fn an_imp_of_the_holder_asks_the_visitor_it_holds_even_when_only_visiting_its_ho
         |(m, from)| matches!(m, LinkMessage::Message { id, .. } if *id == q) && *from == id(3)
     ));
 }
+
+#[test]
+fn two_imps_that_swapped_devices_still_reach_each_other() {
+    let mut net = Net::new(2);
+    net.link(0, 1);
+    // A is device 1's, B is device 2's. A goes to device 2 and B to device 1.
+    let (a, b) = (imp(10, "A"), imp(20, "B"));
+    let t = throw(&mut net, 0, 1, &a);
+    assert!(accept(&mut net, 1, t));
+    let t = throw(&mut net, 1, 0, &b);
+    assert!(accept(&mut net, 0, t));
+    net.nodes[0].set_stage(vec![staged(20, "B", id(2))]);
+    net.nodes[1].set_stage(vec![staged(10, "A", id(1))]);
+    net.pump();
+    net.take(0);
+    net.take(1);
+    let now = net.now;
+    // A (thinking at device 1, out on device 2) asks B, which device 1 holds: B's home lets its holder in.
+    let first = net.nodes[0].talk(
+        Ask {
+            id: Uuid::from_u128(1),
+            from: a.clone(),
+            to: b.id,
+            to_home: id(2),
+            text: "hi B",
+            holder: id(2),
+        },
+        now,
+    );
+    assert_eq!(first, First::Via(id(2)));
+    net.pump();
+    assert!(
+        net.messages(1)
+            .iter()
+            .any(|(m, from)| matches!(m, LinkMessage::Message { .. }) && *from == id(1))
+    );
+    // And the other way round.
+    let first = net.nodes[1].talk(
+        Ask {
+            id: Uuid::from_u128(2),
+            from: b,
+            to: a.id,
+            to_home: id(1),
+            text: "hi A",
+            holder: id(1),
+        },
+        now,
+    );
+    assert_eq!(first, First::Via(id(1)));
+    net.pump();
+    assert!(
+        net.messages(0)
+            .iter()
+            .any(|(m, from)| matches!(m, LinkMessage::Message { .. }) && *from == id(2))
+    );
+}
+
+#[test]
+fn forgetting_a_device_after_a_swap_brings_ours_home_and_sends_its_visitor_home() {
+    let mut net = Net::new(2);
+    net.link(0, 1);
+    let (a, b) = (imp(10, "Imp"), imp(20, "Pip"));
+    let t = throw(&mut net, 0, 1, &a);
+    assert!(accept(&mut net, 1, t));
+    let t = throw(&mut net, 1, 0, &b);
+    assert!(accept(&mut net, 0, t));
+    // The other device is gone for good (its app deleted): it never says anything again.
+    let now = net.now;
+    net.nodes[1].stop(now);
+    net.pump();
+    let forgotten = net.nodes[0].forget(id(2), now);
+    assert_eq!(forgotten.called_home, vec![a.id]);
+    assert_eq!(forgotten.sent_home, vec![b.id]);
+    assert!(net.nodes[0].away().entry(a.id).is_none());
+    assert!(net.nodes[0].visits().visits().is_empty());
+}

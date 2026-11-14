@@ -13,6 +13,11 @@ screen and lands on the other device. The rules live in `apple/Sources/ImpKit/Li
   `LinkNode.pass`, which is a visit: the Imp stays that device's own and a visitor lives on the other.
 - A shake makes the Imps dizzy when there is nothing to send or nowhere to send it.
 - Shake detection is the `JoltDetector` on the shared `TiltSource`. There is still one motion manager.
+- Which way a jolt or a shake went is read from the whole movement, not its first instant: people flick,
+  with a small wind-up the other way first. The detector gets the sideways acceleration and the turn in
+  the screen's plane (`rotationRate.z`). A flick of the wrist is one big turn, so the biggest turn decides;
+  a movement with no real turn is read from its first push that is at least 60 % of the strongest, so a
+  slight wind-up doesn't count and the stop comes after the move (`core/src/link/toss.rs`).
 
 ## The interaction
 

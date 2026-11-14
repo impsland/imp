@@ -240,10 +240,11 @@ final class AppModel {
     func isHiding(_ id: UUID) -> Bool { isHidden || hiddenImps.contains(id) }
 
     /// Some Imp that's out is hidden (the menu bar then offers Show).
-    var anyHiding: Bool { !imps.isEmpty && (isHidden || bodies.contains { hiddenImps.contains($0.id) }) }
+    var anyHiding: Bool { !bodies.isEmpty && (isHidden || bodies.contains { hiddenImps.contains($0.id) }) }
 
     /// How many Imps are hidden: the ones the user hid, and every Imp out on the desktop while all of them are.
-    var hiddenCount: Int { hiddenIDs.count }
+    /// Visitors from other devices count too, so Show is offered for them.
+    var hiddenCount: Int { hiddenIDs.count + visitors.filter { isHiding($0.id) }.count }
 
     /// The Imps that are hidden, in the troupe's order.
     var hiddenIDs: [UUID] { prefs.imps.filter { hiddenImps.contains($0.id) || (isHidden && $0.isActive) }.map(\.id) }
@@ -418,6 +419,16 @@ final class AppModel {
         link.watch(id)
     }
 
+    /// Takes one of our Imps back from the device that holds it, whether or not that device will ever be
+    /// heard from again (its app deleted, the link forgotten, the Imp passed on to a device never linked):
+    /// the Imp is here at once, its ticket dies, and the holder is told when it next connects. The one way
+    /// back that never depends on the other device, so an Imp away is never stuck there.
+    func callHome(_ id: UUID) {
+        guard isAway(id) || isThrowing(id) else { return }
+        link.callHome(id)
+        cameHome(id)
+    }
+
     /// At start, the link's ledger says where each Imp is: that is the truth, whatever was saved.
     func reconcileAway(_ holders: [UUID: UUID]) {
         var p = prefs
@@ -508,6 +519,7 @@ final class AppModel {
         let gone: @MainActor () -> Void = { [weak self] in
             guard let self, leaving.remove(id) != nil else { return }
             visitors.removeAll { $0.id == id }
+            hiddenImps.remove(id)
             refreshTroupe()
         }
         guard let flyAway else { return gone() }

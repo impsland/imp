@@ -207,7 +207,7 @@ pub enum LinkJolt {
     Shaken,
 }
 
-/// Spots a throw or a shake from the phone's sideways acceleration.
+/// Spots a throw or a shake from the phone's sideways acceleration and its turn.
 #[derive(uniffi::Object)]
 pub struct LinkJoltDetector {
     inner: Mutex<JoltDetector>,
@@ -233,8 +233,14 @@ impl LinkJoltDetector {
     }
 
     pub fn feed(&self, x: f64, at: f64) -> Option<LinkJolt> {
+        self.feed_motion(x, 0.0, at)
+    }
+
+    /// A sample with the turn in the screen's plane too (rad/s, + counterclockwise as you look at the screen),
+    /// which tells a flick's direction best.
+    pub fn feed_motion(&self, x: f64, spin: f64, at: f64) -> Option<LinkJolt> {
         let mut inner = lock(&self.inner);
-        inner.feed(x, at).map(|j| match j {
+        inner.feed_motion(x, spin, at).map(|j| match j {
             Jolt::Thrown(side) => LinkJolt::Thrown {
                 side: side_text(side),
             },

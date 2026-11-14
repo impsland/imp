@@ -236,7 +236,7 @@ private struct MemoryRow<Actions: View>: View {
     var label: LocalizedStringKey?
     let date: Date
     let count: LocalizedStringKey
-    /// A click on the row reads it.
+    /// A click anywhere on the row reads it.
     let read: () -> Void
     @ViewBuilder var actions: Actions
     @State private var hover = false
@@ -273,6 +273,9 @@ private struct MemoryRow<Actions: View>: View {
             .padding(.leading, Sizing.iconTile + Spacing.cozy)
         }
         .pebble(hover: hover)
+        // A click anywhere on the row reads it, not only on its title: the buttons in it take their own clicks first.
+        .contentShape(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous))
+        .onTapGesture(perform: read)
         .onHover { hover = $0 }
         .impAnimation(ImpDesign.Motion.hover, value: hover)
         .accessibilityElement(children: .contain)

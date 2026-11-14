@@ -126,6 +126,7 @@ pub enum BuiltInTool {
     ImpRemoveTool,
     ImpOpenSettings,
     ImpMessage,
+    ImpOpenFile,
     ComputerObserve,
     ComputerAct,
     ComputerVerify,

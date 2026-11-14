@@ -127,7 +127,7 @@ private struct CanvasImp: View {
             .accessibilityAction(named: Text(words("imp.a11y.talk", imp.name))) { actions.talk(id) }
             .accessibilityAction(named: Text(words("imp.a11y.settings", imp.name))) { actions.openImpSettings(id) }
             .accessibilityAction(named: Text(words("imp.a11y.hide", imp.name))) { actions.hide(id) }
-            .accessibilityAction(named: Text(words(imp.isActive ? "imp.a11y.send_home" : "imp.a11y.let_out", imp.name))) {
+            .accessibilityAction(named: Text(words(imp.awayOn != nil ? "imp.a11y.call_home" : imp.isActive ? "imp.a11y.send_home" : "imp.a11y.let_out", imp.name))) {
                 actions.toggleActive(id)
             }
         }

@@ -245,8 +245,28 @@ pub struct JoltDetector {
     pushes: Vec<(f64, i32)>,
     last_sign: i32,
     quiet_until: f64,
-    pending: Option<(f64, LinkSide)>,
+    /// When the movement being watched began.
+    pending: Option<f64>,
     shake_start: Option<LinkSide>,
+    /// The latest samples (the movement, and a little before it), to tell which way it went once it is over.
+    recent: Vec<Sample>,
+}
+
+/// One reading: sideways acceleration (g, + toward the right edge) and the turn in the screen's plane
+/// (rad/s, + counterclockwise as you look at the screen: the top goes left).
+#[derive(Debug, Clone, Copy)]
+struct Sample {
+    t: f64,
+    x: f64,
+    spin: f64,
+}
+
+/// A run of readings on one side of zero: which side, its peak, and how much of it there was (area).
+#[derive(Debug, Clone, Copy)]
+struct Lobe {
+    sign: i32,
+    peak: f64,
+    area: f64,
 }
 
 impl Default for JoltDetector {
@@ -256,6 +276,15 @@ impl Default for JoltDetector {
 }
 
 impl JoltDetector {
+    /// A turn this fast (rad/s per g of `threshold`) is a flick of the wrist.
+    const SPIN_PER_G: f64 = 2.0;
+    /// Below this the phone isn't turning (rad/s): hand tremor.
+    const SPIN_FLOOR: f64 = 0.6;
+    /// A push counts toward the direction only if it is at least this share of the movement's strongest.
+    const DOMINANT: f64 = 0.6;
+    /// How far before the first strong push the movement is looked at (seconds): the start of the flick.
+    const LEAD_IN: f64 = 0.25;
+
     pub fn new(threshold: f64, window: f64, shake_count: usize, cooldown: f64) -> Self {
         Self {
             threshold,
@@ -267,19 +296,35 @@ impl JoltDetector {
             quiet_until: f64::NEG_INFINITY,
             pending: None,
             shake_start: None,
+            recent: Vec::new(),
         }
     }
 
-    /// The way the last shake began (its first push), for rules that care which side it went.
+    /// The way the last shake began (its first strong push), for rules that care which side it went.
     pub fn shake_start(&self) -> Option<LinkSide> {
         self.shake_start
     }
 
-    /// One sample. Returns a throw once the movement is over (no shake followed), or a shake.
+    /// One sample of sideways acceleration only.
     pub fn feed(&mut self, x: f64, t: f64) -> Option<Jolt> {
-        if !x.is_finite() || !t.is_finite() || t < self.quiet_until {
+        self.feed_motion(x, 0.0, t)
+    }
+
+    /// One sample: sideways acceleration (g) and the turn in the screen's plane (rad/s). Returns a throw once
+    /// the movement is over (no shake followed), or a shake.
+    ///
+    /// Which way a throw goes is read from the whole movement, not its first instant. People flick: a small
+    /// wind-up the other way, the sharp move, and a stop. The turn tells it best (the flick is one big turn;
+    /// the wind-up and the settling back are small ones the other way), so the biggest turn decides. A movement
+    /// with no real turn (the phone slid) is read from its acceleration: the first push that is a large share
+    /// of the strongest, so a slight wind-up doesn't count and the stop comes after the flick.
+    pub fn feed_motion(&mut self, x: f64, spin: f64, t: f64) -> Option<Jolt> {
+        if !x.is_finite() || !spin.is_finite() || !t.is_finite() || t < self.quiet_until {
             return None;
         }
+        let keep = self.window + Self::LEAD_IN;
+        self.recent.retain(|s| t - s.t <= keep);
+        self.recent.push(Sample { t, x, spin });
         let window = self.window;
         self.pushes.retain(|p| t - p.0 <= window);
         let sign = if x.abs() >= self.threshold {
@@ -289,34 +334,95 @@ impl JoltDetector {
         };
         if sign != 0 && sign != self.last_sign {
             self.pushes.push((t, sign));
-            if self.pending.is_none() && self.pushes.len() == 1 {
-                self.pending = Some((
-                    t,
-                    if sign > 0 {
-                        LinkSide::Right
-                    } else {
-                        LinkSide::Left
-                    },
-                ));
+            if self.pending.is_none() {
+                self.pending = Some(t);
             }
             if self.pushes.len() >= self.shake_count {
-                self.shake_start = self.pending.map(|p| p.1);
+                self.shake_start = self.side();
                 self.reset(t + self.cooldown);
                 return Some(Jolt::Shaken);
             }
+        }
+        // A sharp turn starts a movement too, even with little sideways push.
+        if self.pending.is_none() && spin.abs() >= self.spin_threshold() {
+            self.pending = Some(t);
         }
         if sign != 0 || x.abs() < self.threshold * 0.5 {
             self.last_sign = sign;
         }
         // The movement settled without turning into a shake: it was a throw.
-        if let Some((started, side)) = self.pending
+        if let Some(started) = self.pending
             && t - started > self.window
             && self.pushes.len() < self.shake_count
         {
+            let side = self.side();
             self.reset(t + self.cooldown);
-            return Some(Jolt::Thrown(side));
+            return side.map(Jolt::Thrown);
         }
         None
+    }
+
+    fn spin_threshold(&self) -> f64 {
+        self.threshold * Self::SPIN_PER_G
+    }
+
+    /// Which way the movement in `recent` went: by its biggest turn if it turned, else by its first dominant push.
+    fn side(&self) -> Option<LinkSide> {
+        let turns = Self::lobes(self.recent.iter().map(|s| (s.t, s.spin)), Self::SPIN_FLOOR);
+        if let Some(turn) = turns.iter().max_by(|a, b| a.area.total_cmp(&b.area))
+            && turn.peak >= self.spin_threshold()
+        {
+            // Counterclockwise as you look at the screen: its top goes left.
+            return Some(if turn.sign > 0 {
+                LinkSide::Left
+            } else {
+                LinkSide::Right
+            });
+        }
+        let pushes = Self::lobes(self.recent.iter().map(|s| (s.t, s.x)), self.threshold * 0.5);
+        let strongest = pushes.iter().map(|l| l.peak).fold(0.0, f64::max);
+        if strongest < self.threshold {
+            return None;
+        }
+        pushes
+            .iter()
+            .find(|l| l.peak >= strongest * Self::DOMINANT)
+            .map(|l| {
+                if l.sign > 0 {
+                    LinkSide::Right
+                } else {
+                    LinkSide::Left
+                }
+            })
+    }
+
+    /// The runs of readings beyond `floor` on one side of zero, in order.
+    fn lobes(readings: impl Iterator<Item = (f64, f64)>, floor: f64) -> Vec<Lobe> {
+        let mut lobes: Vec<Lobe> = Vec::new();
+        let mut last_t: Option<f64> = None;
+        let mut open = false;
+        for (t, v) in readings {
+            let dt = last_t.map_or(0.0, |p| (t - p).clamp(0.0, 0.1));
+            last_t = Some(t);
+            if v.abs() < floor {
+                open = false;
+                continue;
+            }
+            let sign = if v > 0.0 { 1 } else { -1 };
+            match lobes.last_mut() {
+                Some(lobe) if open && lobe.sign == sign => {
+                    lobe.peak = lobe.peak.max(v.abs());
+                    lobe.area += v.abs() * dt;
+                }
+                _ => lobes.push(Lobe {
+                    sign,
+                    peak: v.abs(),
+                    area: v.abs() * dt.max(0.01),
+                }),
+            }
+            open = true;
+        }
+        lobes
     }
 
     fn reset(&mut self, until: f64) {
@@ -324,6 +430,7 @@ impl JoltDetector {
         self.pending = None;
         self.last_sign = 0;
         self.quiet_until = until;
+        self.recent.clear();
     }
 }
 
@@ -530,6 +637,78 @@ mod tests {
         let events: Vec<_> = samples.iter().filter_map(|(t, x)| d.feed(*x, *t)).collect();
         assert_eq!(events, vec![Jolt::Shaken]);
         assert_eq!(d.shake_start(), Some(LinkSide::Right));
+    }
+
+    /// Samples every 20 ms (the rate the phone reads motion at while it watches): (x in g, spin in rad/s).
+    fn motion(steps: &[(f64, f64)]) -> (Vec<Jolt>, JoltDetector) {
+        let mut d = JoltDetector::default();
+        let mut events = Vec::new();
+        let quiet = std::iter::repeat_n((0.0, 0.0), 60);
+        for (n, (x, spin)) in steps.iter().copied().chain(quiet).enumerate() {
+            events.extend(d.feed_motion(x, spin, n as f64 * 0.02));
+        }
+        (events, d)
+    }
+
+    #[test]
+    fn a_wind_up_the_other_way_does_not_decide_a_flick() {
+        // A small push right (strong enough to count on its own), then the sharp move left and its stop.
+        let steps = [
+            (0.0, 0.0),
+            (2.2, 0.0),
+            (0.6, 0.0),
+            (-1.0, 0.0),
+            (-4.5, 0.0),
+            (-5.0, 0.0),
+            (0.0, 0.0),
+            (3.8, 0.0),
+            (1.0, 0.0),
+        ];
+        assert_eq!(motion(&steps).0, vec![Jolt::Thrown(LinkSide::Left)]);
+        // And the other way round.
+        let mirrored: Vec<_> = steps.iter().map(|(x, s)| (-x, -s)).collect();
+        assert_eq!(motion(&mirrored).0, vec![Jolt::Thrown(LinkSide::Right)]);
+    }
+
+    #[test]
+    fn a_flick_of_the_wrist_goes_the_way_it_turns() {
+        // Tilted a little right first (clockwise), then turned hard left (counterclockwise), and settled back.
+        // The sideways push is weak and even starts the wrong way: the turn decides.
+        let steps = [
+            (0.3, -1.2),
+            (0.8, -1.8),
+            (0.5, -0.9),
+            (-0.6, 3.5),
+            (-1.4, 7.5),
+            (-0.9, 8.0),
+            (1.2, 4.0),
+            (0.9, -1.5),
+            (0.2, -0.7),
+        ];
+        assert_eq!(motion(&steps).0, vec![Jolt::Thrown(LinkSide::Left)]);
+        let mirrored: Vec<_> = steps.iter().map(|(x, s)| (-x, -s)).collect();
+        assert_eq!(motion(&mirrored).0, vec![Jolt::Thrown(LinkSide::Right)]);
+    }
+
+    #[test]
+    fn a_slow_tilt_is_no_throw() {
+        let steps: Vec<_> = (0..30)
+            .map(|n| (0.2, if n < 15 { 1.5 } else { -1.5 }))
+            .collect();
+        assert!(motion(&steps).0.is_empty());
+    }
+
+    #[test]
+    fn a_shake_starts_with_its_first_strong_push_not_a_wind_up() {
+        let mut steps = vec![(1.6, 0.0), (0.0, 0.0)];
+        for n in 0..8 {
+            steps.push((if n % 2 == 0 { -3.0 } else { 3.0 }, 0.0));
+            steps.push((0.0, 0.0));
+            steps.push((0.0, 0.0));
+        }
+        let (events, d) = motion(&steps);
+        assert_eq!(events, vec![Jolt::Shaken]);
+        assert_eq!(d.shake_start(), Some(LinkSide::Left));
     }
 
     #[test]

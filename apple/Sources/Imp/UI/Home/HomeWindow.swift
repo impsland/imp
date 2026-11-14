@@ -202,6 +202,8 @@ final class HomeRouter {
     private(set) var arriving: Set<UUID> = []
     /// An Imp the user chose Goodbye for: the window asks before it goes.
     var saying: UUID?
+    /// An Imp of ours away on another device that the user wants back: the window asks first.
+    var callingHome: UUID?
     /// A borrowed tool whose form should open (an Imp asked the user to fill in its keys).
     var serverToEdit: UUID?
     /// A kit being added (the text box, then the review). Nothing is applied until its Add.

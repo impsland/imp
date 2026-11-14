@@ -10,6 +10,7 @@ import SwiftUI
 private struct FieldChrome: ViewModifier {
     var mono = false
     var large = false
+    var problem: String?
     @FocusState private var focused: Bool
     @Environment(\.impTint) private var tint
 
@@ -18,19 +19,38 @@ private struct FieldChrome: ViewModifier {
             .textFieldStyle(.plain)
             .font(mono ? Typeface.mono : (large ? Typeface.cardTitle.weight(.regular) : Typeface.body))
             .focused($focused)
-            .padding(.horizontal, Spacing.cozy)
+            .padding(.leading, Spacing.cozy)
+            .padding(.trailing, problem == nil ? Spacing.cozy : Sizing.iconTile)
             .frame(minHeight: large ? Sizing.control + Spacing.tight : Sizing.control)
             .background(RoundedRectangle(cornerRadius: Radius.small, style: .continuous).fill(Tone.well))
             .overlay(RoundedRectangle(cornerRadius: Radius.small, style: .continuous)
-                .strokeBorder(tint, lineWidth: Stroke.focus).opacity(focused ? 1 : 0))
+                .strokeBorder(problem == nil ? tint : Tone.danger, lineWidth: Stroke.focus).opacity(focused || problem != nil ? 1 : 0))
+            // What is wrong sits inside the well, at its trailing edge: the field is no taller for it, and
+            // nothing under the field is held free in case it comes.
+            .overlay(alignment: .trailing) {
+                if let problem {
+                    Image(systemName: "exclamationmark.circle.fill")
+                        .font(.icon(.medium))
+                        .foregroundStyle(Tone.danger)
+                        .frame(width: Sizing.iconTile)
+                        .help(problem)
+                        .accessibilityHidden(true)
+                        .transition(.opacity)
+                }
+            }
+            .accessibilityHint(problem.map { Text(verbatim: $0) } ?? Text(verbatim: ""))
             .impAnimation(value: focused)
+            .impAnimation(value: problem)
     }
 }
 
 extension View {
     /// Dresses a `TextField` or `SecureField` in the app's field look. Use it on the field itself.
-    public func impField(mono: Bool = false, large: Bool = false) -> some View {
-        modifier(FieldChrome(mono: mono, large: large))
+    /// `problem`: what is wrong with the value, shown in the field itself (a red ring and a mark that says
+    /// it on hover) instead of in a line under it. Give the field a prompt that says it too, so it reads
+    /// without the pointer.
+    public func impField(mono: Bool = false, large: Bool = false, problem: String? = nil) -> some View {
+        modifier(FieldChrome(mono: mono, large: large, problem: problem))
     }
 }
 

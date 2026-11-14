@@ -227,12 +227,16 @@
   <data name="home.hidden.title" xml:space="preserve"><value>已隐藏（{count}）</value><comment>The element on the floor that holds hidden Imps. The number is how many.</comment></data>
   <data name="home.tray.quit" xml:space="preserve"><value>退出</value><comment>Status icon menu item that quits the app.</comment></data>
   <data name="home.tray.show" xml:space="preserve"><value>打开</value><comment>Status icon menu item that shows the window.</comment></data>
+  <data name="imp.a11y.call_home" xml:space="preserve"><value>叫 {name} 回家</value><comment>Screen reader action for an Imp away on another device.</comment></data>
   <data name="imp.a11y.hide" xml:space="preserve"><value>隐藏 {name}</value><comment>Screen reader action.</comment></data>
   <data name="imp.a11y.label" xml:space="preserve"><value>{name}，{state}</value><comment>Screen reader label of an Imp: its name and its state.</comment></data>
   <data name="imp.a11y.let_out" xml:space="preserve"><value>放 {name} 出来</value><comment>Screen reader action.</comment></data>
   <data name="imp.a11y.send_home" xml:space="preserve"><value>送 {name} 回家</value><comment>Screen reader action.</comment></data>
   <data name="imp.a11y.settings" xml:space="preserve"><value>打开 {name} 的设置</value><comment>Screen reader action.</comment></data>
   <data name="imp.a11y.talk" xml:space="preserve"><value>和 {name} 说话</value><comment>Screen reader action.</comment></data>
+  <data name="imp.call_home.message" xml:space="preserve"><value>它现在就回到这里，即使 {device} 再也不会出现。如果 {device} 再次连接，它会知道 Imp 已经离开。</value><comment>Under the call home question.</comment></data>
+  <data name="imp.call_home.other_device" xml:space="preserve"><value>另一台设备</value><comment>Stands for the device holding an Imp when its name is not known (it was never linked).</comment></data>
+  <data name="imp.call_home.title" xml:space="preserve"><value>把 {name} 从 {device} 叫回来？</value><comment>Asks before taking back an Imp from the device that holds it.</comment></data>
   <data name="imp.drag.hint" xml:space="preserve"><value>拖动即可移动。</value><comment>Screen reader hint on an Imp.</comment></data>
   <data name="imp.drag.out_hint" xml:space="preserve"><value>把它拖出窗口，就能放它出来。</value><comment>Screen reader hint on an Imp on desktop.</comment></data>
   <data name="imp.hide.undo" xml:space="preserve"><value>{name} 已隐藏。</value><comment>Undo bar after an Imp is hidden.</comment></data>
@@ -341,6 +345,8 @@
   <data name="menu.canvas.new_imp" xml:space="preserve"><value>新建 Imp</value><comment>Menu item that hatches a new Imp.</comment></data>
   <data name="menu.canvas.settings" xml:space="preserve"><value>设置</value><comment>Menu item that opens the app-wide settings.</comment></data>
   <data name="menu.canvas.show_hidden" xml:space="preserve"><value>已隐藏（{count}）</value><comment>Menu item that brings every hidden Imp back.</comment></data>
+  <data name="menu.imp.call_home" xml:space="preserve"><value>叫回家</value><comment>Button: take back one of our Imps from the device that holds it.</comment></data>
+  <data name="menu.imp.call_home_ask" xml:space="preserve"><value>叫回家…</value><comment>Menu item for an Imp away on another device: asks before calling it home.</comment></data>
   <data name="menu.imp.copy_kit" xml:space="preserve"><value>复制套件</value><comment>Menu item that copies an Imp as a kit.</comment></data>
   <data name="menu.imp.copy_link" xml:space="preserve"><value>复制链接</value><comment>Menu item that copies a link to an Imp's kit.</comment></data>
   <data name="menu.imp.goodbye" xml:space="preserve"><value>再见</value><comment>Menu item that says goodbye to an Imp for good. A dialog asks first.</comment></data>
@@ -379,6 +385,9 @@
   <data name="personality.name_hint" xml:space="preserve"><value>这是 {name} 个性的一部分，随时可以修改。</value><comment>Hint under the name field.</comment></data>
   <data name="personality.persona" xml:space="preserve"><value>角色设定</value><comment>Field label for the text that tells the Imp who it is.</comment></data>
   <data name="personality.persona_hint" xml:space="preserve"><value>告诉 {name} 它是谁，以及怎么说话。</value><comment>Hint under the persona field.</comment></data>
+  <data name="personality.rules.builtin" xml:space="preserve"><value>内置</value><comment>State of the reply rules when they are the built-in ones.</comment></data>
+  <data name="personality.rules.edit" xml:space="preserve"><value>编辑…</value><comment>Button that opens the reply rules in a sheet.</comment></data>
+  <data name="personality.rules.own" xml:space="preserve"><value>自定义</value><comment>State of the reply rules when the user changed them.</comment></data>
   <data name="personality.title" xml:space="preserve"><value>个性</value><comment>Panel title.</comment></data>
   <data name="personality.voice" xml:space="preserve"><value>声音</value><comment>Field label.</comment></data>
   <data name="personality.voice_look" xml:space="preserve"><value>显示为</value><comment>Row: how the voice shows.</comment></data>
@@ -400,6 +409,7 @@
   <data name="phone.chat.message" xml:space="preserve"><value>给 {name} 发消息</value><comment>iPhone: chat message.</comment></data>
   <data name="phone.chat.new" xml:space="preserve"><value>新建</value><comment>iPhone: chat new.</comment></data>
   <data name="phone.chat.no_brain" xml:space="preserve"><value>还没有大脑</value><comment>iPhone: chat no brain.</comment></data>
+  <data name="phone.chat.peers" xml:space="preserve"><value>给其他 Imp 发消息</value><comment>iPhone: button beside the chat field that lists the other Imps to message.</comment></data>
   <data name="phone.chat.ran_tools" xml:space="preserve"><value>使用了 {count} 个工具</value><comment>iPhone: chat ran tools.</comment></data>
   <data name="phone.code.caption" xml:space="preserve"><value>在另一台设备上扫描</value><comment>One line under the QR code.</comment></data>
   <data name="phone.code.label" xml:space="preserve"><value>关联二维码</value><comment>Spoken name of the QR code.</comment></data>
@@ -450,6 +460,7 @@
   <data name="phone.requests.timeout.title" xml:space="preserve"><value>最多等</value><comment>Row title: longest wait.</comment></data>
   <data name="phone.requests.title" xml:space="preserve"><value>等待</value><comment>Card title on the iPhone settings page for brains.</comment></data>
   <data name="phone.scan.code" xml:space="preserve"><value>扫描</value><comment>Button that opens the camera to scan a link code.</comment></data>
+  <data name="phone.secret.hidden" xml:space="preserve"><value>已输入，已隐藏</value><comment>iPhone: what VoiceOver says for a key field while its value is hidden.</comment></data>
   <data name="phone.server.placeholder_den" xml:space="preserve"><value>den.example.com</value><comment>Example address of a Den.</comment></data>
   <data name="phone.server.placeholder_hop" xml:space="preserve"><value>hop.example.com:4677</value><comment>Example address of a Hop.</comment></data>
   <data name="phone.shake.dir.any" xml:space="preserve"><value>任意</value><comment>Segment: any direction.</comment></data>
@@ -568,6 +579,7 @@
   <data name="settings.bubble.showing.title" xml:space="preserve"><value>显示</value><comment>Settings text.</comment></data>
   <data name="settings.bubble.size.info" xml:space="preserve"><value>聊天气泡的大小。拖动它的角即可调整。</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.bubble.size.title" xml:space="preserve"><value>大小</value><comment>Settings text.</comment></data>
+  <data name="settings.devices.call_home" xml:space="preserve"><value>把它上面的 Imp 叫回家</value><comment>Help of the button on a linked device that takes back the Imps it holds.</comment></data>
   <data name="settings.devices.forget_all.title" xml:space="preserve"><value>全部忘记</value><comment>Settings text.</comment></data>
   <data name="settings.devices.link.info" xml:space="preserve"><value>连接另一台设备,让你的 Imp 去做客。</value><comment>Settings text.</comment></data>
   <data name="settings.devices.link.title" xml:space="preserve"><value>连接</value><comment>Settings text.</comment></data>

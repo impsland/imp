@@ -230,12 +230,16 @@
   <data name="home.hidden.title" xml:space="preserve"><value>Hidden ({count})</value><comment>The element on the floor that holds hidden Imps. The number is how many.</comment></data>
   <data name="home.tray.quit" xml:space="preserve"><value>Quit</value><comment>Status icon menu item that quits the app.</comment></data>
   <data name="home.tray.show" xml:space="preserve"><value>Open</value><comment>Status icon menu item that shows the window.</comment></data>
+  <data name="imp.a11y.call_home" xml:space="preserve"><value>Call {name} home</value><comment>Screen reader action for an Imp away on another device.</comment></data>
   <data name="imp.a11y.hide" xml:space="preserve"><value>Hide {name}</value><comment>Screen reader action.</comment></data>
   <data name="imp.a11y.label" xml:space="preserve"><value>{name}, {state}</value><comment>Screen reader label of an Imp: its name and its state.</comment></data>
   <data name="imp.a11y.let_out" xml:space="preserve"><value>Let {name} out</value><comment>Screen reader action.</comment></data>
   <data name="imp.a11y.send_home" xml:space="preserve"><value>Send {name} home</value><comment>Screen reader action.</comment></data>
   <data name="imp.a11y.settings" xml:space="preserve"><value>Open {name}'s settings</value><comment>Screen reader action.</comment></data>
   <data name="imp.a11y.talk" xml:space="preserve"><value>Talk to {name}</value><comment>Screen reader action.</comment></data>
+  <data name="imp.call_home.message" xml:space="preserve"><value>It comes back here now, even if {device} is gone for good. If {device} connects again, it learns the Imp left.</value><comment>Under the call home question.</comment></data>
+  <data name="imp.call_home.other_device" xml:space="preserve"><value>the other device</value><comment>Stands for the device holding an Imp when its name is not known (it was never linked).</comment></data>
+  <data name="imp.call_home.title" xml:space="preserve"><value>Bring {name} back from {device}?</value><comment>Asks before taking back an Imp from the device that holds it.</comment></data>
   <data name="imp.drag.hint" xml:space="preserve"><value>Drag to move it.</value><comment>Screen reader hint on an Imp.</comment></data>
   <data name="imp.drag.out_hint" xml:space="preserve"><value>Drag it out of the window to let it out.</value><comment>Screen reader hint on an Imp on desktop.</comment></data>
   <data name="imp.hide.undo" xml:space="preserve"><value>{name} is hidden.</value><comment>Undo bar after an Imp is hidden.</comment></data>
@@ -345,6 +349,8 @@
   <data name="menu.canvas.new_imp" xml:space="preserve"><value>New Imp</value><comment>Menu item that hatches a new Imp.</comment></data>
   <data name="menu.canvas.settings" xml:space="preserve"><value>Settings</value><comment>Menu item that opens the app-wide settings.</comment></data>
   <data name="menu.canvas.show_hidden" xml:space="preserve"><value>Hidden ({count})</value><comment>Menu item that brings every hidden Imp back.</comment></data>
+  <data name="menu.imp.call_home" xml:space="preserve"><value>Call Home</value><comment>Button: take back one of our Imps from the device that holds it.</comment></data>
+  <data name="menu.imp.call_home_ask" xml:space="preserve"><value>Call Home…</value><comment>Menu item for an Imp away on another device: asks before calling it home.</comment></data>
   <data name="menu.imp.copy_kit" xml:space="preserve"><value>Copy kit</value><comment>Menu item that copies an Imp as a kit.</comment></data>
   <data name="menu.imp.copy_link" xml:space="preserve"><value>Copy link</value><comment>Menu item that copies a link to an Imp's kit.</comment></data>
   <data name="menu.imp.goodbye" xml:space="preserve"><value>Goodbye</value><comment>Menu item that says goodbye to an Imp for good. A dialog asks first.</comment></data>
@@ -383,6 +389,9 @@
   <data name="personality.name_hint" xml:space="preserve"><value>Part of who {name} is. You can change it any time.</value><comment>Hint under the name field.</comment></data>
   <data name="personality.persona" xml:space="preserve"><value>Persona</value><comment>Field label for the text that tells the Imp who it is.</comment></data>
   <data name="personality.persona_hint" xml:space="preserve"><value>Tell {name} who it is and how it talks.</value><comment>Hint under the persona field.</comment></data>
+  <data name="personality.rules.builtin" xml:space="preserve"><value>Built-in</value><comment>State of the reply rules when they are the built-in ones.</comment></data>
+  <data name="personality.rules.edit" xml:space="preserve"><value>Edit…</value><comment>Button that opens the reply rules in a sheet.</comment></data>
+  <data name="personality.rules.own" xml:space="preserve"><value>Your own</value><comment>State of the reply rules when the user changed them.</comment></data>
   <data name="personality.title" xml:space="preserve"><value>Personality</value><comment>Panel title.</comment></data>
   <data name="personality.voice" xml:space="preserve"><value>Voice</value><comment>Field label.</comment></data>
   <data name="personality.voice_look" xml:space="preserve"><value>Shows as</value><comment>Row: how the voice shows.</comment></data>
@@ -404,6 +413,7 @@
   <data name="phone.chat.message" xml:space="preserve"><value>Message {name}</value><comment>iPhone: chat message.</comment></data>
   <data name="phone.chat.new" xml:space="preserve"><value>New</value><comment>iPhone: chat new.</comment></data>
   <data name="phone.chat.no_brain" xml:space="preserve"><value>No brain yet</value><comment>iPhone: chat no brain.</comment></data>
+  <data name="phone.chat.peers" xml:space="preserve"><value>Message another Imp</value><comment>iPhone: button beside the chat field that lists the other Imps to message.</comment></data>
   <data name="phone.chat.ran_tools" xml:space="preserve"><value>Ran {count} tools</value><comment>iPhone: chat ran tools.</comment></data>
   <data name="phone.code.caption" xml:space="preserve"><value>Scan on the other device</value><comment>One line under the QR code.</comment></data>
   <data name="phone.code.label" xml:space="preserve"><value>Link code</value><comment>Spoken name of the QR code.</comment></data>
@@ -454,6 +464,7 @@
   <data name="phone.requests.timeout.title" xml:space="preserve"><value>Wait up to</value><comment>Row title: longest wait.</comment></data>
   <data name="phone.requests.title" xml:space="preserve"><value>Waiting</value><comment>Card title on the iPhone settings page for brains.</comment></data>
   <data name="phone.scan.code" xml:space="preserve"><value>Scan</value><comment>Button that opens the camera to scan a link code.</comment></data>
+  <data name="phone.secret.hidden" xml:space="preserve"><value>Entered, hidden</value><comment>iPhone: what VoiceOver says for a key field while its value is hidden.</comment></data>
   <data name="phone.server.placeholder_den" xml:space="preserve"><value>den.example.com</value><comment>Example address of a Den.</comment></data>
   <data name="phone.server.placeholder_hop" xml:space="preserve"><value>hop.example.com:4677</value><comment>Example address of a Hop.</comment></data>
   <data name="phone.shake.dir.any" xml:space="preserve"><value>Any</value><comment>Segment: any direction.</comment></data>
@@ -572,6 +583,7 @@
   <data name="settings.bubble.showing.title" xml:space="preserve"><value>Showing</value><comment>Settings text.</comment></data>
   <data name="settings.bubble.size.info" xml:space="preserve"><value>The size of the chat bubble. Drag its corner to change it.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.bubble.size.title" xml:space="preserve"><value>Size</value><comment>Settings text.</comment></data>
+  <data name="settings.devices.call_home" xml:space="preserve"><value>Call its Imps home</value><comment>Help of the button on a linked device that takes back the Imps it holds.</comment></data>
   <data name="settings.devices.forget_all.title" xml:space="preserve"><value>Forget all</value><comment>Settings text.</comment></data>
   <data name="settings.devices.link.info" xml:space="preserve"><value>Link another device so your Imps can visit it.</value><comment>Settings text.</comment></data>
   <data name="settings.devices.link.title" xml:space="preserve"><value>Link</value><comment>Settings text.</comment></data>

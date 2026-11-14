@@ -51,6 +51,7 @@ struct DevicesSheet: View {
                     content
                 }
                 .padding(.horizontal, Spacing.page).padding(.top, Spacing.small).padding(.bottom, Spacing.wide)
+                .tapAwayClosesKeyboard()
             }
             .scrollBounceBehavior(.basedOnSize)
             .dismissesKeyboard()

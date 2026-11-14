@@ -76,6 +76,16 @@ struct HomeView: View {
         } message: {
             Text("goodbye.message")
         }
+        // An Imp away on another device is never out of reach: a click on it, or Call Home in its menu, asks this.
+        .confirmationDialog(callHomeTitle, isPresented: Binding(get: { router.callingHome != nil }, set: { if !$0 { router.callingHome = nil } }),
+                            titleVisibility: .visible) {
+            Button { if let id = router.callingHome { HomeActions(model: model, router: router).callHome(id) } } label: {
+                Text("menu.imp.call_home")
+            }
+            Button("common.cancel", role: .cancel) { router.callingHome = nil }
+        } message: {
+            Text(words("imp.call_home.message", callHomeDevice))
+        }
         .alert(Text("background.picture_failed"), isPresented: $router.pictureFailed) {}
         .environment(\.stageAwake, router.isAwake)
         .environment(\.tintInk, model.prefs.controlInk.tintInk)
@@ -87,6 +97,15 @@ struct HomeView: View {
             Button(String("")) { router.goHome() }
                 .keyboardShortcut("[", modifiers: .command).opacity(0)
         }
+    }
+
+    private var callHomeTitle: String {
+        words("imp.call_home.title", router.callingHome.flatMap(model.profile)?.name ?? "", callHomeDevice)
+    }
+
+    /// The device that holds the Imp being called home, by name (it may be a device no longer linked).
+    private var callHomeDevice: String {
+        router.callingHome.flatMap(model.profile)?.awayOn.flatMap { model.link.name(of: $0) } ?? String(localized: "imp.call_home.other_device")
     }
 
     private var goodbyeTitle: String {

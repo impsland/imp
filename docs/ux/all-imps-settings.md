@@ -299,6 +299,7 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `settings.bubble.showing.title` | Showing |
 | `settings.bubble.size.info` | The size of the chat bubble. Drag its corner to change it. |
 | `settings.bubble.size.title` | Size |
+| `settings.devices.call_home` | Call its Imps home |
 | `settings.devices.forget_all.title` | Forget all |
 | `settings.devices.link.info` | Link another device so your Imps can visit it. |
 | `settings.devices.link.title` | Link |

@@ -127,12 +127,16 @@ A screen reader reads an Imp as its name and state (`imp.a11y.label`) and offers
 <!-- strings: imp -->
 | Key | English |
 | --- | --- |
+| `imp.a11y.call_home` | Call {name} home |
 | `imp.a11y.hide` | Hide {name} |
 | `imp.a11y.label` | {name}, {state} |
 | `imp.a11y.let_out` | Let {name} out |
 | `imp.a11y.send_home` | Send {name} home |
 | `imp.a11y.settings` | Open {name}'s settings |
 | `imp.a11y.talk` | Talk to {name} |
+| `imp.call_home.message` | It comes back here now, even if {device} is gone for good. If {device} connects again, it learns the Imp left. |
+| `imp.call_home.other_device` | the other device |
+| `imp.call_home.title` | Bring {name} back from {device}? |
 | `imp.drag.hint` | Drag to move it. |
 | `imp.drag.out_hint` | Drag it out of the window to let it out. |
 | `imp.hide.undo` | {name} is hidden. |

@@ -70,7 +70,7 @@ struct HomeActions {
     // MARK: An Imp
 
     func talk(_ id: UUID) {
-        guard let imp = model.profile(id), imp.awayOn == nil else { return }
+        guard let imp = model.profile(id), imp.awayOn == nil else { return askCallHome(id) }
         // The bubble lives beside an Imp on the desktop: one at home steps out first, right where it stands.
         if !imp.isActive { model.setActive(id, true, at: slot(of: imp)?.origin) }
         model.imp(id)?.talk()
@@ -98,14 +98,16 @@ struct HomeActions {
     }
 
     func openBubble(_ id: UUID) {
-        guard let imp = model.profile(id), imp.awayOn == nil else { return }
+        guard let imp = model.profile(id), imp.awayOn == nil else { return askCallHome(id) }
         if !imp.isActive { model.setActive(id, true, at: slot(of: imp)?.origin) }
         model.imp(id)?.clicked(1)
     }
 
     /// Lets an Imp out right where it stands, or flies it home to the same place. Either can be undone.
+    /// One away on another device is asked back instead (Call Home).
     func toggleActive(_ id: UUID) {
-        guard let imp = model.profile(id), imp.awayOn == nil else { return }
+        guard let imp = model.profile(id) else { return }
+        guard imp.awayOn == nil else { return askCallHome(id) }
         let slot = slot(of: imp)
         if !imp.isActive {
             model.setActive(id, true, at: slot?.origin)
@@ -164,6 +166,19 @@ struct HomeActions {
     /// Goodbye asks first: the window shows the question (see `HomeView`).
     func askGoodbye(_ id: UUID) { router.saying = id }
 
+    /// An Imp away on another device: the window asks whether to take it back.
+    func askCallHome(_ id: UUID) {
+        guard model.isAway(id) else { return }
+        router.select(id)
+        router.callingHome = id
+    }
+
+    /// Takes it back from the device that holds it, even one that is gone for good.
+    func callHome(_ id: UUID) {
+        router.callingHome = nil
+        model.callHome(id)
+    }
+
     /// Say goodbye for good. Another Imp takes the keyboard.
     func sayGoodbye(_ id: UUID) {
         router.saying = nil
@@ -174,12 +189,15 @@ struct HomeActions {
 
     var canSayGoodbye: Bool { model.prefs.imps.count > 1 }
 
-    /// "Let out" while it is at home, "Send home" once it is out.
+    /// "Let out" while it is at home, "Send home" once it is out, "Call Home…" while it is on another device.
     func releaseTitle(_ id: UUID) -> String {
-        String(localized: model.profile(id)?.isActive == true ? "menu.imp.send_home" : "menu.imp.let_out")
+        guard let imp = model.profile(id) else { return String(localized: "menu.imp.let_out") }
+        if imp.awayOn != nil { return String(localized: "menu.imp.call_home_ask") }
+        return String(localized: imp.isActive ? "menu.imp.send_home" : "menu.imp.let_out")
     }
 
-    func canRelease(_ id: UUID) -> Bool { model.profile(id).map { $0.awayOn == nil } ?? false }
+    /// Always: an Imp away on another device can be called home from here, whatever became of that device.
+    func canRelease(_ id: UUID) -> Bool { model.profile(id) != nil }
 
     func label(_ id: UUID) -> String {
         guard let imp = model.profile(id) else { return "" }

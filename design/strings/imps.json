@@ -166,6 +166,40 @@
     "es": "Enviar a {name} a casa",
     "zh-Hans": "送 {name} 回家"
   },
+  "imp.a11y.call_home": {
+    "note": "Screen reader action for an Imp away on another device.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Call {name} home",
+    "es": "Llamar a {name} a casa",
+    "zh-Hans": "叫 {name} 回家"
+  },
+  "imp.call_home.title": {
+    "note": "Asks before taking back an Imp from the device that holds it.",
+    "args": {
+      "name": "string",
+      "device": "string"
+    },
+    "en": "Bring {name} back from {device}?",
+    "es": "¿Traer a {name} de vuelta desde {device}?",
+    "zh-Hans": "把 {name} 从 {device} 叫回来？"
+  },
+  "imp.call_home.message": {
+    "note": "Under the call home question.",
+    "args": {
+      "device": "string"
+    },
+    "en": "It comes back here now, even if {device} is gone for good. If {device} connects again, it learns the Imp left.",
+    "es": "Vuelve aquí ahora, aunque {device} ya no esté. Si {device} se conecta de nuevo, sabrá que el Imp se fue.",
+    "zh-Hans": "它现在就回到这里，即使 {device} 再也不会出现。如果 {device} 再次连接，它会知道 Imp 已经离开。"
+  },
+  "imp.call_home.other_device": {
+    "note": "Stands for the device holding an Imp when its name is not known (it was never linked).",
+    "en": "the other device",
+    "es": "el otro dispositivo",
+    "zh-Hans": "另一台设备"
+  },
   "imp.a11y.label": {
     "note": "Screen reader label of an Imp: its name and its state.",
     "args": {

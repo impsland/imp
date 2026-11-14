@@ -2,6 +2,7 @@ import AVKit
 import ImpDesign
 import ImpKit
 import QuickLook
+import ImageIO
 import SwiftUI
 
 /// A reply's Markdown, block by block (ImpKit's parser, the same the Mac's bubble uses): text,
@@ -101,9 +102,11 @@ final class ReplyFile {
     let ref: String
     let isWeb: Bool
 
-    init(ref: String) {
+    /// `here`: the file is already on this phone (fetched before), so it is ready from the start.
+    init(ref: String, here: URL? = nil) {
         self.ref = ref
         isWeb = LinkFiles.isWeb(ref)
+        if let here { state = .ready(here) }
     }
 
     func load(imp: UUID, hub: LinkHub) async {
@@ -154,6 +157,12 @@ private struct FileStatus: View {
 
 // MARK: - Pictures
 
+/// A picture in a reply, in a box of its final size from the first frame. The chat is a lazy list: rows that
+/// scroll away are dropped and built again when they come back. A picture that started as a short "getting
+/// it" line and grew once decoded changed the height of what was above you, and the chat jumped. Now the
+/// box keeps the picture's proportions (read from the file's header, which needs no decoding) or, before
+/// the file is here at all, a usual photo's; and a decoded picture is kept in memory, so a row built again
+/// shows it at once.
 private struct PictureBlock: View {
     var ref: String
     var alt: String
@@ -163,53 +172,109 @@ private struct PictureBlock: View {
 
     init(ref: String, alt: String, link: URL?, imp: LinkImp, hub: LinkHub) {
         self.ref = ref; self.alt = alt; self.link = link; self.imp = imp; self.hub = hub
-        _file = State(initialValue: ReplyFile(ref: ref))
+        // Already on the phone: ready, its proportions now, and the picture too if it was shown before.
+        let here = LinkFiles.isWeb(ref) ? nil : hub.files.cached(imp: imp.id, ref: ref)
+        _file = State(initialValue: ReplyFile(ref: ref, here: here))
+        _image = State(initialValue: here.flatMap(PictureMemory.shared.image(at:)))
+        _aspect = State(initialValue: here.flatMap(PictureMemory.shared.aspect(at:)))
     }
     @State private var file: ReplyFile
     @State private var image: UIImage?
-    @State private var preview: URL?
+    /// Width over height, once known. Until then the box has a usual photo's.
+    @State private var aspect: CGFloat?
     @Environment(\.openURL) private var openURL
 
+    /// A box no taller than half a column, the shape of the picture.
+    private static let maxHeight = Sizing.column / 2
+    private static let usualAspect: CGFloat = 4 / 3
+
     var body: some View {
-        Group {
-            if let image {
-                Image(uiImage: image).resizable().scaledToFit()
-                    .frame(maxWidth: .infinity, maxHeight: Sizing.column / 2)
-                    .clipShape(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
-                    .contentShape(Rectangle())
-                    .onTapGesture { tapped() }
-                    .contextMenu {
-                        Button { UIPasteboard.general.image = image } label: { Label("Copy", systemImage: "doc.on.doc") }
-                        if case .ready(let url) = file.state, url.isFileURL {
-                            ShareLink(item: url) { Label("Share…", systemImage: "square.and.arrow.up") }
+        let shape = RoundedRectangle(cornerRadius: Radius.medium, style: .continuous)
+        Color.clear
+            .aspectRatio(aspect ?? Self.usualAspect, contentMode: .fit)
+            .frame(maxWidth: .infinity, maxHeight: Self.maxHeight)
+            .overlay {
+                if let image {
+                    // A UIKit view: the source the full-screen picture zooms out of and back into (`PictureViewer`).
+                    ChatPicture(image: image, label: alt.isEmpty ? String(localized: "Picture") : alt, share: shareURL,
+                                opens: link.map { url in { openURL(url) } })
+                        .contentShape(shape)
+                        .contextMenu {
+                            Button { UIPasteboard.general.image = image } label: { Label("Copy", systemImage: "doc.on.doc") }
+                            if case .ready(let url) = file.state, url.isFileURL {
+                                ShareLink(item: url) { Label("Share…", systemImage: "square.and.arrow.up") }
+                            }
                         }
-                    }
-                    .accessibilityLabel(alt.isEmpty ? String(localized: "Picture") : alt)
-            } else {
-                FileStatus(file: file, progress: hub.files.progress[LinkFileStore.key(imp: imp.id, ref: ref)],
-                           icon: "photo", label: alt.isEmpty ? String(localized: "Picture") : alt) { Task { await load() } }
+                } else {
+                    FileStatus(file: file, progress: hub.files.progress[LinkFileStore.key(imp: imp.id, ref: ref)],
+                               icon: "photo", label: alt.isEmpty ? String(localized: "Picture") : alt) { Task { await load() } }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Tone.well, in: shape)
+                }
             }
-        }
-        .task(id: ref) { await load() }
-        .quickLookPreview($preview)
+            .task(id: ref) { if image == nil { await load() } }
     }
 
     private func load() async {
         let f = file
         await f.load(imp: imp.id, hub: hub)
         guard case .ready(let url) = f.state else { return }
+        let loaded: UIImage?
         if url.isFileURL {
-            image = await Task.detached { UIImage(contentsOfFile: url.path)?.preparingForDisplay() }.value
+            loaded = await PictureMemory.shared.load(url)
         } else if let (data, _) = try? await URLSession.shared.data(from: url) {
-            image = UIImage(data: data)
+            loaded = UIImage(data: data)?.preparingForDisplay()
+        } else {
+            loaded = nil
         }
+        guard let loaded else { return }
+        // Only a picture whose shape wasn't known yet changes the box: once, the first time it comes.
+        if aspect == nil, loaded.size.height > 0 { aspect = loaded.size.width / loaded.size.height }
+        image = loaded
     }
 
-    private func tapped() {
-        if let link { openURL(link); return }
-        if case .ready(let url) = file.state {
-            if url.isFileURL { preview = url } else { openURL(url) }
-        }
+    /// What Share hands on: the file on this phone, or the picture's address on the web.
+    private var shareURL: URL? {
+        if case .ready(let url) = file.state { return url }
+        return nil
+    }
+}
+
+/// Pictures from replies, decoded once and kept while there is memory for them, and their proportions,
+/// read from a file's header alone (no decoding), so a picture's box has its size before the picture does.
+@MainActor
+final class PictureMemory {
+    static let shared = PictureMemory()
+
+    private let images: NSCache<NSURL, UIImage> = {
+        let cache = NSCache<NSURL, UIImage>()
+        cache.countLimit = 60
+        return cache
+    }()
+    private var aspects: [URL: CGFloat] = [:]
+
+    /// The picture, if it was decoded before.
+    func image(at url: URL) -> UIImage? { images.object(forKey: url as NSURL) }
+
+    /// Width over height, from the file's header. Nil for a file that isn't a picture.
+    func aspect(at url: URL) -> CGFloat? {
+        if let known = aspects[url] { return known }
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let info = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+              var width = info[kCGImagePropertyPixelWidth] as? CGFloat,
+              var height = info[kCGImagePropertyPixelHeight] as? CGFloat, width > 0, height > 0 else { return nil }
+        // Orientations 5 to 8 are turned a quarter: the picture shows as tall as the file is wide.
+        if let orientation = info[kCGImagePropertyOrientation] as? Int, (5...8).contains(orientation) { swap(&width, &height) }
+        aspects[url] = width / height
+        return width / height
+    }
+
+    /// Decodes the picture off the main thread (once), ready to draw.
+    func load(_ url: URL) async -> UIImage? {
+        if let known = image(at: url) { return known }
+        let decoded = await Task.detached(priority: .userInitiated) { UIImage(contentsOfFile: url.path)?.preparingForDisplay() }.value
+        if let decoded { images.setObject(decoded, forKey: url as NSURL) }
+        return decoded
     }
 }
 
@@ -399,11 +464,20 @@ private struct VideoBlock: View {
     @State private var clip: StageClip?
 
     var body: some View {
+        // One 16:9 box whether the video is here yet or not, so the row never changes height (see `PictureBlock`).
+        Color.clear
+            .aspectRatio(16 / 9, contentMode: .fit)
+            .frame(maxWidth: .infinity)
+            .overlay { video }
+        .task(id: ref) { await load() }
+        .onDisappear { clip?.pause() }
+    }
+
+    @ViewBuilder private var video: some View {
         Group {
             if let clip {
                 // Playing it (its own controls) pauses whatever else talks.
                 PlayerSurface(player: clip.player)
-                    .aspectRatio(16 / 9, contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
                     .contextMenu {
                         if case .ready(let url) = file.state, url.isFileURL {
@@ -414,10 +488,10 @@ private struct VideoBlock: View {
             } else {
                 FileStatus(file: file, progress: hub.files.progress[LinkFileStore.key(imp: imp.id, ref: ref)],
                            icon: "film", label: title.isEmpty ? String(localized: "Video") : title) { Task { await load() } }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Tone.well, in: RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
             }
         }
-        .task(id: ref) { await load() }
-        .onDisappear { clip?.pause() }
     }
 
     private func load() async {

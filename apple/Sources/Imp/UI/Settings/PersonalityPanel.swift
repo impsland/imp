@@ -9,12 +9,8 @@ struct PersonalityPanel: View {
     @Binding var imp: ImpProfile
     @State private var name = ""
     @State private var loaded = false
-    /// The switch itself: flips the moment it is tapped.
-    @State private var showsInstructions = false
-    /// The text editor under it. It follows the switch a moment later (see `instructions`).
-    @State private var instructionsShown = false
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.impTint) private var tint
+    /// The reply rules are open in their sheet.
+    @State private var editingRules = false
 
     private var nameIsEmpty: Bool { name.trimmingCharacters(in: .whitespaces).isEmpty }
 
@@ -22,14 +18,15 @@ struct PersonalityPanel: View {
 
     var body: some View {
         PanelSection("personality.name", icon: "signature", info: "personality.help.name") {
-            TextField("personality.name", text: $name).impField()
+            // An empty field says what it needs in its own prompt, with a red ring and mark: no line under
+            // the field is held free for a message that is rarely there.
+            TextField("personality.name", text: $name, prompt: nameIsEmpty ? Text("personality.name_empty") : nil)
+                .impField(problem: nameIsEmpty ? String(localized: "personality.name_empty") : nil)
                 .accessibilityLabel(Text("personality.name"))
                 .onChange(of: name) { _, new in
                     // An empty name is not saved: the Imp keeps the one it had.
                     if !new.trimmingCharacters(in: .whitespaces).isEmpty { imp.name = new }
                 }
-            StatusSlot(nameIsEmpty ? String(localized: "personality.name_empty") : nil,
-                       symbol: "exclamationmark.circle.fill", color: Tone.danger)
         }
         .settingAnchor(.personalityName)
         .onAppear { if !loaded { name = imp.name; loaded = true } }
@@ -67,39 +64,44 @@ struct PersonalityPanel: View {
         .settingAnchor(.personalityVoice)
     }
 
-    /// The rest of the system prompt, folded away: most people never need it, but it is all theirs to change.
+    /// The rest of the system prompt: most people never need it, but it is all theirs to change. One row
+    /// says whether it is the built-in one and opens it in a sheet. The panel never grows a whole prompt
+    /// in place (a switch did, and building the editor stalled the switch and moved the page).
     private var instructions: some View {
-        VStack(alignment: .leading, spacing: Spacing.small) {
-            Row("Reply rules", icon: "list.bullet.rectangle", info: "personality.help.rules") {
-                HStack(spacing: Spacing.small) {
-                    if showsInstructions {
-                        Button { imp.instructions = nil } label: { FitLabel("Restore Default", systemImage: "arrow.counterclockwise") }
-                            .buttonStyle(.imp(.quiet, small: true))
-                            .disabled(imp.instructions == nil)
-                    }
-                    Toggle("Reply rules", isOn: $showsInstructions)
-                        .labelsHidden().toggleStyle(.impSwitchBare)
-                }
-            }
-            .settingAnchor(.personalityRules)
-            if instructionsShown {
-                EditorWell(text: Binding(get: { imp.effectiveInstructions },
-                                         set: { imp.instructions = $0 == Briefing.display ? nil : $0 }),
-                           placeholder: "Empty. Only the personality is sent.",
-                           height: Self.wellHeight)
+        Row("Reply rules", icon: "list.bullet.rectangle", info: "personality.help.rules") {
+            HStack(spacing: Spacing.small) {
+                Text(imp.instructions == nil ? "personality.rules.builtin" : "personality.rules.own")
+                    .font(Typeface.small).foregroundStyle(Tone.muted)
+                Button { editingRules = true } label: { FitLabel("personality.rules.edit", systemImage: "pencil") }
+                    .buttonStyle(.imp(.secondary, small: true))
             }
         }
-        // The editor is a text view holding the whole built-in prompt: making or removing it takes the main
-        // thread for most of a second. Done in the same frame as the flip, it froze the switch's knob, so
-        // the knob is drawn first and the editor follows once it has settled.
-        .task(id: showsInstructions) {
-            guard showsInstructions != instructionsShown else { return }
-            try? await Task.sleep(for: Self.switchSettle)
-            guard !Task.isCancelled else { return }
-            withImpAnimation(ImpDesign.Motion.expand, reduceMotion: reduceMotion) { instructionsShown = showsInstructions }
-        }
+        .settingAnchor(.personalityRules)
+        .sheet(isPresented: $editingRules) { ReplyRulesSheet(imp: $imp) }
     }
 
-    /// Long enough for the switch's knob to finish moving before the editor is built or removed.
-    private static let switchSettle = Duration.milliseconds(150)
+    fileprivate static var editorHeight: CGFloat { wellHeight * 2.5 }
+}
+
+/// The reply rules in a sheet of their own: the whole built-in prompt to change, and the way back to it.
+/// Changes apply as they are typed, like the rest of the panel.
+private struct ReplyRulesSheet: View {
+    @Binding var imp: ImpProfile
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        SheetScaffold(icon: "list.bullet.rectangle", title: "Reply rules", info: "personality.help.rules",
+                      width: Sizing.sheetWidth + Spacing.vast) {
+            EditorWell(text: Binding(get: { imp.effectiveInstructions },
+                                     set: { imp.instructions = $0 == Briefing.display ? nil : $0 }),
+                       placeholder: "Empty. Only the personality is sent.",
+                       height: PersonalityPanel.editorHeight)
+        } footer: {
+            Button { imp.instructions = nil } label: { FitLabel("Restore Default", systemImage: "arrow.counterclockwise") }
+                .buttonStyle(.quiet)
+                .disabled(imp.instructions == nil)
+            Button("common.done") { dismiss() }
+                .buttonStyle(.primary).keyboardShortcut(.defaultAction)
+        }
+    }
 }

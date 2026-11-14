@@ -97,11 +97,11 @@ struct PocketEditor: View {
 
     // MARK: Hub
 
+    /// The one button (Hatch or Save) stands under the hub, above the keyboard while the name is typed.
     private var hub: some View {
-        VStack(spacing: 0) {
-            Group {
-                if listed { listHub } else { markerHub }
-            }
+        FormPage { page in
+            if listed { listHub } else { markerHub(page) }
+        } footer: {
             Button(draft.isNew ? "phone.editor.hatch" : "phone.editor.save", action: save)
                 .buttonStyle(WideButtonStyle())
                 .disabled(!draft.canSave)
@@ -109,54 +109,43 @@ struct PocketEditor: View {
         }
     }
 
-    /// The Imp with its four markers on an even arrangement, then its name. Centred in the room there is.
-    private var markerHub: some View {
-        GeometryReader { geo in
-            let imp = ImpSettingsGeometry.phoneImp(width: geo.size.width)
-            let stage = ImpSettingsGeometry.phoneStageHeight(imp: imp)
-            ScrollView {
-                VStack(spacing: Spacing.large) {
-                    ZStack {
-                        preview.frame(width: imp, height: imp)
-                        ForEach(PocketDraft.settings) { setting in
-                            if let slot = ImpSettingsGeometry.phoneSlot(setting) {
-                                PhoneMarker(setting: setting, value: value(setting), lit: lit(setting),
-                                            asleepNote: words("imp_settings.brain_marker.asleep", callName)) { pick(setting) }
-                                    .offset(ImpSettingsGeometry.phoneOffset(slot, imp: imp))
-                            }
-                        }
+    /// The Imp with its four markers on an even arrangement, then its name. Centred in the room there is
+    /// without the keyboard, so the keyboard coming up only scrolls it.
+    private func markerHub(_ page: CGSize) -> some View {
+        let imp = ImpSettingsGeometry.phoneImp(width: page.width)
+        let stage = ImpSettingsGeometry.phoneStageHeight(imp: imp)
+        return VStack(spacing: Spacing.large) {
+            ZStack {
+                preview.frame(width: imp, height: imp)
+                ForEach(PocketDraft.settings) { setting in
+                    if let slot = ImpSettingsGeometry.phoneSlot(setting) {
+                        PhoneMarker(setting: setting, value: value(setting), lit: lit(setting),
+                                    asleepNote: words("imp_settings.brain_marker.asleep", callName)) { pick(setting) }
+                            .offset(ImpSettingsGeometry.phoneOffset(slot, imp: imp))
                     }
-                    .frame(width: geo.size.width, height: stage)
-                    nameField.padding(.horizontal, Spacing.page)
                 }
-                .frame(maxWidth: .infinity, minHeight: geo.size.height)
             }
-            .scrollBounceBehavior(.basedOnSize)
-            .dismissesKeyboard()
-            .keyboardGap()
+            .frame(width: page.width, height: stage)
+            nameField.padding(.horizontal, Spacing.page)
         }
+        .frame(maxWidth: .infinity, minHeight: page.height)
     }
 
     private var listHub: some View {
-        ScrollView {
-            VStack(spacing: Spacing.medium) {
-                preview.frame(width: ImpSettingsGeometry.listImp, height: ImpSettingsGeometry.listImp)
-                    .accessibilityHidden(true)
-                nameField
-                VStack(spacing: 0) {
-                    ForEach(ImpSetting.listOrder.filter(PocketDraft.settings.contains)) { setting in
-                        PhoneListRow(setting: setting, value: value(setting), lit: lit(setting),
-                                     asleepNote: words("imp_settings.brain_marker.asleep", callName)) { pick(setting) }
-                    }
+        VStack(spacing: Spacing.medium) {
+            preview.frame(width: ImpSettingsGeometry.listImp, height: ImpSettingsGeometry.listImp)
+                .accessibilityHidden(true)
+            nameField
+            VStack(spacing: 0) {
+                ForEach(ImpSetting.listOrder.filter(PocketDraft.settings.contains)) { setting in
+                    PhoneListRow(setting: setting, value: value(setting), lit: lit(setting),
+                                 asleepNote: words("imp_settings.brain_marker.asleep", callName)) { pick(setting) }
                 }
-                .accessibilityElement(children: .contain)
-                .accessibilityLabel(words("imp_settings.list.label", callName))
             }
-            .padding(.horizontal, Spacing.page)
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(words("imp_settings.list.label", callName))
         }
-        .scrollBounceBehavior(.basedOnSize)
-        .dismissesKeyboard()
-        .keyboardGap()
+        .padding(.horizontal, Spacing.page)
     }
 
     /// The Imp's name as the title-like field under it.
@@ -208,7 +197,8 @@ struct PocketEditor: View {
             preview.frame(width: ImpSettingsGeometry.listImp * 0.7, height: ImpSettingsGeometry.listImp * 0.7)
                 .padding(.vertical, Spacing.small)
             ScrollViewReader { proxy in
-                ScrollView {
+                // The Brain's Continue stands under the panel, above the keyboard while an address or a key is typed.
+                FormPage { _ in
                     Group {
                         switch setting {
                         case .brain: PocketBrainPanel(draft: draft, flow: brainFlow, change: { startFlow() })
@@ -220,14 +210,12 @@ struct PocketEditor: View {
                     }
                     .padding(.horizontal, Spacing.page).padding(.bottom, Spacing.large)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                } footer: {
+                    if setting == .brain, let brainFlow {
+                        FirstRunPhoneButton(flow: brainFlow)
+                            .padding(.horizontal, Spacing.page).padding(.vertical, Spacing.medium)
+                    }
                 }
-                .scrollBounceBehavior(.basedOnSize)
-                .dismissesKeyboard()
-                .keyboardGap()
-            }
-            if setting == .brain, let brainFlow {
-                FirstRunPhoneButton(flow: brainFlow)
-                    .padding(.horizontal, Spacing.page).padding(.vertical, Spacing.medium)
             }
         }
     }

@@ -80,6 +80,7 @@ public enum ToolRegistry {
         OwnTools.removeTool: String(localized: "Remove an extra tool"),
         OwnTools.openSettings: String(localized: "Open Settings"),
         OwnTools.message: String(localized: "Message another Imp"),
+        OwnTools.openFile: String(localized: "Open a shared file"),
         ComputerTools.observe: String(localized: "Look at the screen"),
         ComputerTools.act: String(localized: "Click, type and scroll"),
         ComputerTools.verify: String(localized: "Check what happened"),

@@ -2,7 +2,7 @@ import Foundation
 import Network
 
 /// One plain TCP connection. The core does the handshake and the encryption, so this only moves bytes.
-public final class LinkSocket: @unchecked Sendable {   // NWConnection is thread safe
+public final class LinkSocket: @unchecked Sendable {   // NWConnection is thread safe; the rest is under `lock`
     let connection: NWConnection
     static let queue = DispatchQueue(label: "app.imp.link.socket")
 
@@ -55,19 +55,47 @@ public final class LinkSocket: @unchecked Sendable {   // NWConnection is thread
     }
 
     public func send(_ data: Data) {
-        connection.send(content: data, completion: .contentProcessed { [weak self] error in
-            if error != nil { self?.cancel() }
+        lock.withLock { sending += 1 }
+        // Holds the socket until the bytes are processed, so whoever waits in `drained` is always answered.
+        connection.send(content: data, completion: .contentProcessed { error in
+            if error != nil { self.cancel() }
+            self.sent(ok: error == nil)
         })
     }
 
-    /// Waits until everything sent so far has left. False if the connection is gone.
+    /// Waits until everything sent so far has left. False if the connection is gone (or a send failed).
+    ///
+    /// Counted from the completions of the sends themselves. (It used to send an empty message and wait for
+    /// that, which Network refuses with "invalid argument": every wait failed, and a file never went.)
     public func drained() async -> Bool {
         await withCheckedContinuation { (finished: CheckedContinuation<Bool, Never>) in
-            connection.send(content: nil, contentContext: .defaultMessage, isComplete: false, completion: .contentProcessed { error in
-                finished.resume(returning: error == nil)
-            })
+            let now: Bool? = lock.withLock {
+                if broken { return false }
+                if sending == 0 { return true }
+                waiting.append(finished)
+                return nil
+            }
+            if let now { finished.resume(returning: now) }
         }
     }
+
+    /// One send is done: once none is left (or one failed), whoever waits is told.
+    private func sent(ok: Bool) {
+        let (answer, ready): (Bool, [CheckedContinuation<Bool, Never>]) = lock.withLock {
+            sending -= 1
+            if !ok { broken = true }
+            guard sending == 0 || broken else { return (true, []) }
+            defer { waiting = [] }
+            return (!broken, waiting)
+        }
+        ready.forEach { $0.resume(returning: answer) }
+    }
+
+    // Sends not yet processed, whether one failed, and who waits for them: only touched under `lock`.
+    private let lock = NSLock()
+    private var sending = 0
+    private var broken = false
+    private var waiting: [CheckedContinuation<Bool, Never>] = []
 
     public func cancel() {
         connection.cancel()

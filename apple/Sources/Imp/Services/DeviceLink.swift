@@ -217,6 +217,29 @@ final class DeviceLink {
     private func returned(_ forgotten: LinkNode.Forgotten) {
         forgotten.calledHome.forEach { app.cameHome($0) }
         forgotten.sentHome.forEach { app.farewell(visitor: $0) }
+        settleAway()
+    }
+
+    @ObservationIgnored private var settling = false
+
+    /// Keeps what the app shows of our Imps' whereabouts to the ledger, the truth: an Imp the app shows away
+    /// that no device holds any more comes home, and one another device holds now shows there. Cheap, and
+    /// a no-op while the two agree, so it runs whenever the link changes: whatever path was missed, an Imp
+    /// is never left shown on a device that doesn't have it.
+    private func settleAway() {
+        guard let node, !settling else { return }
+        // Coming home refreshes the link again: once is enough.
+        settling = true
+        defer { settling = false }
+        let holders = Dictionary(node.away.entries.map { ($0.imp, $0.holder) }, uniquingKeysWith: { $1 })
+        for imp in app.prefs.imps {
+            guard let shown = imp.awayOn else { continue }
+            if let holder = holders[imp.id] {
+                if holder != shown { app.held(imp.id, by: holder) }
+            } else {
+                app.cameHome(imp.id)
+            }
+        }
     }
 
     // MARK: Events
@@ -263,6 +286,7 @@ final class DeviceLink {
     /// Settings follows who is linked, who is connected and what each device holds.
     private func refresh() {
         guard let node else { return peers = [] }
+        settleAway()
         let now = node.links.map { link -> Peer in
             let id = link.device.id
             let reach: Peer.Reach = !node.isConnected(id) ? .away : node.isThroughHop(id) ? .viaServer : .direct
@@ -317,14 +341,18 @@ final class DeviceLink {
             guard let model = own(imp) else {
                 return fail(file: transfer, String(localized: "That Imp isn't on this device."), to: device)
             }
-            sendFile(ref, of: model, transfer: transfer, to: device)
+            // Its talks with other Imps were shown to that device too: a file they mention may be fetched as well.
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                let talks = await talkLinesForLink(of: imp).flatMap { [$0.question, $0.reply] }
+                sendFile(ref, of: model, talks: talks, transfer: transfer, to: device)
+            }
         case .talks(let imp):
             guard listing.insert(device).inserted else { return }   // one list at a time per device
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 defer { listing.remove(device) }
-                let mine = await app.talkLines().filter { $0.asker.id == imp || $0.answerer.id == imp }
-                node.send(.talkLines(imp: imp, lines: TalkLog.forLink(mine)), to: device)
+                node.send(.talkLines(imp: imp, lines: await talkLinesForLink(of: imp)), to: device)
             }
         case .message(let id, let sender, let to, _, let text, _):
             let limit = node.isTrusted(message, from: device) ? nil : name(of: device) ?? String(localized: "that device")
@@ -491,11 +519,30 @@ final class DeviceLink {
         node?.send(.fileFailed(id: transfer, reason: reason), to: device)
     }
 
+    /// An Imp's talks with other Imps as the device that holds it gets them: the latest, cut to size, and each
+    /// file they mention as an `imp-file` link of the Imp that wrote it (the question's for the asker, the
+    /// reply's for the one who answered). A bare `todo-done.png` means a file in the answerer's folder; as a
+    /// link it says whose it is, with its size and checksum, so the phone can fetch it through any Imp it
+    /// holds, and the file is the one that was shared.
+    private func talkLinesForLink(of imp: UUID) async -> [TalkLine] {
+        let mine = await app.talkLines().filter { $0.asker.id == imp || $0.answerer.id == imp }
+        let lines = TalkLog.forLink(mine)
+        // Checksums read the files: off the main thread.
+        return await Task.detached(priority: .userInitiated) {
+            lines.map { line in
+                var line = line
+                line.question = WorkspaceReference.canonicalize(line.question, owner: line.asker.id)
+                line.reply = WorkspaceReference.canonicalize(line.reply, owner: line.answerer.id)
+                return line
+            }
+        }.value
+    }
+
     /// Sends a file one of the Imp's replies shows or links to, in parts, at the network's pace.
     /// Only files a reply mentions (see `LinkFiles`), only regular files, never too big.
-    private func sendFile(_ ref: String, of imp: ImpModel, transfer: UUID, to device: UUID) {
+    private func sendFile(_ ref: String, of imp: ImpModel, talks: [String], transfer: UUID, to device: UUID) {
         guard let node else { return }
-        var texts = imp.history.current.turns.map(\.reply)
+        var texts = imp.history.current.turns.map(\.reply) + talks
         if let b = imp.bubble { texts.append(b.text) }
         if let w = imp.work { texts.append(w.text) }
         let folder = Workspace.directory(for: imp.id)
@@ -536,7 +583,10 @@ final class DeviceLink {
                 // Still the one that holds the Imp? Else the rest isn't sent.
                 guard await node.holder(of: id) == device else { return await fail(String(localized: "That Imp isn't on this device.")) }
                 let part = LinkFilePart(name: url.lastPathComponent, size: size, offset: offset, data: data)
-                guard await node.sendAndWait(.filePart(id: transfer, part: part), to: device) else { return }
+                // A part that couldn't go: say so (if the device is still there to hear it) rather than leave it waiting.
+                guard await node.sendAndWait(.filePart(id: transfer, part: part), to: device) else {
+                    return await fail(String(localized: "The file couldn't be sent. Try again."))
+                }
                 offset += data.count
                 if data.isEmpty { break }
             } while offset < size
@@ -555,13 +605,15 @@ final class DeviceLink {
 
     // MARK: Imps talking
 
-    /// The Imps on other devices one of ours can message: those on the screen its body is on (the
-    /// Imps of this Mac are reached directly, wherever they are).
+    /// The Imps on other devices one of ours can message: those on the screen its body is on, and the
+    /// visitors on this Mac's screen while it is away (their homes let this Mac, their holder, ask for its
+    /// own Imps). The Imps of this Mac are reached directly, wherever they are.
     func targets(of imp: UUID) -> [LinkStaged] {
         guard let node else { return [] }
         let me = node.device.id
         let mine = app.prefs.imps.filter(\.isActive).map { LinkStaged(imp: LinkImp($0), home: me) }
-        let stage = (node.holder(of: imp).map(node.stage(of:)) ?? visitorsStaged) + node.onMyOtherDevices
+        let body = node.holder(of: imp).map { node.stage(of: $0) + visitorsStaged } ?? visitorsStaged
+        let stage = body + node.onMyOtherDevices
         return LinkTalks.targets(of: imp, mine: mine, stage: stage).filter { $0.home != me }
     }
 

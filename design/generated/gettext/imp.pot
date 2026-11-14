@@ -1120,6 +1120,11 @@ msgctxt "home.tray.show"
 msgid "Open"
 msgstr ""
 
+#. Screen reader action for an Imp away on another device.
+msgctxt "imp.a11y.call_home"
+msgid "Call {name} home"
+msgstr ""
+
 #. Screen reader action.
 msgctxt "imp.a11y.hide"
 msgid "Hide {name}"
@@ -1148,6 +1153,21 @@ msgstr ""
 #. Screen reader action.
 msgctxt "imp.a11y.talk"
 msgid "Talk to {name}"
+msgstr ""
+
+#. Under the call home question.
+msgctxt "imp.call_home.message"
+msgid "It comes back here now, even if {device} is gone for good. If {device} connects again, it learns the Imp left."
+msgstr ""
+
+#. Stands for the device holding an Imp when its name is not known (it was never linked).
+msgctxt "imp.call_home.other_device"
+msgid "the other device"
+msgstr ""
+
+#. Asks before taking back an Imp from the device that holds it.
+msgctxt "imp.call_home.title"
+msgid "Bring {name} back from {device}?"
 msgstr ""
 
 #. Screen reader hint on an Imp.
@@ -1692,6 +1712,16 @@ msgctxt "menu.canvas.show_hidden"
 msgid "Hidden ({count})"
 msgstr ""
 
+#. Button: take back one of our Imps from the device that holds it.
+msgctxt "menu.imp.call_home"
+msgid "Call Home"
+msgstr ""
+
+#. Menu item for an Imp away on another device: asks before calling it home.
+msgctxt "menu.imp.call_home_ask"
+msgid "Call Home…"
+msgstr ""
+
 #. Menu item that copies an Imp as a kit.
 msgctxt "menu.imp.copy_kit"
 msgid "Copy kit"
@@ -1882,6 +1912,21 @@ msgctxt "personality.persona_hint"
 msgid "Tell {name} who it is and how it talks."
 msgstr ""
 
+#. State of the reply rules when they are the built-in ones.
+msgctxt "personality.rules.builtin"
+msgid "Built-in"
+msgstr ""
+
+#. Button that opens the reply rules in a sheet.
+msgctxt "personality.rules.edit"
+msgid "Edit…"
+msgstr ""
+
+#. State of the reply rules when the user changed them.
+msgctxt "personality.rules.own"
+msgid "Your own"
+msgstr ""
+
 #. Panel title.
 msgctxt "personality.title"
 msgid "Personality"
@@ -1985,6 +2030,11 @@ msgstr ""
 #. iPhone: chat no brain.
 msgctxt "phone.chat.no_brain"
 msgid "No brain yet"
+msgstr ""
+
+#. iPhone: button beside the chat field that lists the other Imps to message.
+msgctxt "phone.chat.peers"
+msgid "Message another Imp"
 msgstr ""
 
 #. iPhone: chat ran tools.
@@ -2235,6 +2285,11 @@ msgstr ""
 #. Button that opens the camera to scan a link code.
 msgctxt "phone.scan.code"
 msgid "Scan"
+msgstr ""
+
+#. iPhone: what VoiceOver says for a key field while its value is hidden.
+msgctxt "phone.secret.hidden"
+msgid "Entered, hidden"
 msgstr ""
 
 #. Example address of a Den.
@@ -2825,6 +2880,11 @@ msgstr ""
 #. Settings text.
 msgctxt "settings.bubble.size.title"
 msgid "Size"
+msgstr ""
+
+#. Help of the button on a linked device that takes back the Imps it holds.
+msgctxt "settings.devices.call_home"
+msgid "Call its Imps home"
 msgstr ""
 
 #. Settings text.

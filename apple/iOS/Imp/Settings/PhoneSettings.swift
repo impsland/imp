@@ -10,6 +10,8 @@ enum PhonePrefs {
     static let appearanceKey = "appearance"
     /// White or black on coloured controls.
     static let controlInkKey = "controlInk"
+    /// The visiting Imps whose "only talks here" notice was put away.
+    static let dismissedWithheldKey = "dismissedWithheldNotices"
 }
 
 /// The sections of the phone's settings, always one tap away, each one of the Mac's sections. Animations

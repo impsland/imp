@@ -503,7 +503,8 @@ final class MotionWatcher {
     func start(interval: TimeInterval) {
         configure()
         TiltSource.shared.attach(self, interval: interval) { [weak self] a, t in
-            guard let self, let event = jolts.feed(x: a.x, at: t) else { return }
+            // The turn too: a flick of the wrist is told by it far better than by the push alone.
+            guard let self, let event = jolts.feed(x: a.x, spin: TiltSource.shared.spin, at: t) else { return }
             onEvent?(event)
         }
     }

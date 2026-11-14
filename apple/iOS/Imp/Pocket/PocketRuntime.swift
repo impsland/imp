@@ -252,10 +252,12 @@ final class PocketRuntime {
         })
     }
 
-    /// The Imps `id` can message: those of this iPhone, the ones on the screen its body is on, and the
-    /// ones out on the owner's other devices (marked Mine).
+    /// The Imps `id` can message: those of this iPhone, the ones on the screen its body is on, the ones
+    /// out on the owner's other devices (marked Mine), and the visitors on this iPhone's screen while it is
+    /// away (their homes let this iPhone, their holder, ask for its own Imps).
     private func targets(of id: UUID, here: [LinkStaged]) -> [LinkStaged] {
-        let stage = (hub.node.holder(of: id).map { hub.node.stage(of: $0) } ?? hub.staged) + hub.node.onMyOtherDevices
+        let body = hub.node.holder(of: id).map { hub.node.stage(of: $0) + hub.staged } ?? hub.staged
+        let stage = body + hub.node.onMyOtherDevices
         return LinkTalks.targets(of: id, mine: here, stage: stage)
     }
 

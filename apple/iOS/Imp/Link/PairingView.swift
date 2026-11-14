@@ -78,6 +78,7 @@ private struct LinkSheet: View {
                     Card("phone.name.title", icon: "iphone", info: "phone.pair.seen_as") { NameField(hub: hub) }
                 }
                 .padding(.horizontal, Spacing.page).padding(.top, Spacing.small).padding(.bottom, Spacing.wide)
+                .tapAwayClosesKeyboard()
             }
             .scrollBounceBehavior(.basedOnSize)
             .dismissesKeyboard()

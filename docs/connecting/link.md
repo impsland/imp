@@ -150,8 +150,9 @@ ticket for an Imp whose holder is another device tells that device `gone`.
 ## Imps talking
 
 Every device tells every connected device which Imps are on its screen (`stage`). An Imp can message
-(`imp_message`) the other Imps of its home, the Imps on the screen its body is on, and the Imps out at home
-on the screen of every connected device its home marks as the owner's (Mine). The home sends
+(`imp_message`) the other Imps of its home, the Imps on the screen its body is on, the Imps out at home
+on the screen of every connected device its home marks as the owner's (Mine), and, while it is away, the
+visitors on its home's screen (so two Imps that swapped devices stay in touch). The home sends
 `message` to the device that can answer: the target's home, or the holder of the asking Imp, which answers
 for its own Imps and forwards once to the target's home. The `answer` goes back the same way. Messages time
 out after 120 seconds and are at most 20 000 characters.
@@ -160,7 +161,9 @@ The home of the target only lets an Imp ask if the asker is on the screen the ta
 target is here and the asker is on this device's stage, or the target is away and the asker is on the
 holder's stage. A forwarded message must also come from a device whose stage has the asker, or which is
 the asker's home according to a stage we know. A message that isn't forwarded, from a device marked Mine
-here whose own stage has the asker, may ask any Imp of this device. Anything else is answered as failed,
+here whose own stage has the asker, may ask any Imp of this device. A message that isn't forwarded, from
+the holder of the target, may ask for any Imp whose home is that holder (by a stage we know): the holder can
+already ask the target anything. Anything else is answered as failed,
 and the app never hears of it: a message that only lacked Mine says so (turn on Mine for that device here).
 Whether the Imp that answers uses its tools is the trust rule above, as for any message. A question id already in flight is refused. One device may have 16 questions in flight
 through another (more are answered `busy`).
@@ -202,6 +205,14 @@ file of another Imp is served to trusted devices alone. The phone checks size an
 received and drops the file if they differ. A reference whose owner Workspace is on another device shows
 as "on another device" there. The Workspace stays with its home when an Imp visits, so a visitor's files
 are fetched from the home, not copied to the host.
+
+An Imp that gets such a reference (in an answer to `imp_message`) opens it with the tool `imp_open_file`
+(same group as `imp_message`, Other Imps). It takes `file`: the reference exactly as received, or a path
+inside the Imp's own Workspace. The checks above run first, size and checksum included, and nothing else
+can be opened: no other absolute path, no web address. A picture is attached for the model to see, a text
+is returned as text (cut after 100 000 characters, with a note), a PDF gives its text, and any other file
+gives its name, type, size and local path so the Imp can work on it with its shell. The tool runs on the Mac
+only; pocket Imps on a phone don't have it, because the files are on the Mac.
 
 Shared test vectors (paths, references, checksums) are in `spec/fixtures/workspace-refs.json`.
 

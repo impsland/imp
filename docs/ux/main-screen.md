@@ -147,6 +147,8 @@ The menu bar extra opens a compact panel on the app surface. At the top are four
 | `menu.canvas.new_imp` | New Imp |
 | `menu.canvas.settings` | Settings |
 | `menu.canvas.show_hidden` | Hidden ({count}) |
+| `menu.imp.call_home` | Call Home |
+| `menu.imp.call_home_ask` | Call Home… |
 | `menu.imp.copy_kit` | Copy kit |
 | `menu.imp.copy_link` | Copy link |
 | `menu.imp.goodbye` | Goodbye |

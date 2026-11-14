@@ -31,6 +31,7 @@
 		382B17A3F1E52658D989B0C2 /* PlayerSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E29CECC0BD71424D59AA182 /* PlayerSurface.swift */; };
 		3DEB2BEE904FC2E55AD6181E /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7D2F37C84A4B750CDB3F71 /* Palette.swift */; };
 		401E957F0FF4D3D31A403FC9 /* StagePacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A7FF0B0CDB79AF719CC786 /* StagePacer.swift */; };
+		43541250E04B4F18ED1C986F /* PictureViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3856A773F8D4ACD748706AE0 /* PictureViewer.swift */; };
 		484F41A6AA42E13F3CFFFB92 /* BubbleSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10193FB32C2FF1FBBDF36113 /* BubbleSizes.swift */; };
 		4E2B4FFD77A5689883746397 /* TiltImp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A57348BC46B25FBF58AE48 /* TiltImp.swift */; };
 		5160526D57D45232F430B758 /* ImpRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E56E2B80612481500C8FE /* ImpRenderer.swift */; };
@@ -107,6 +108,7 @@
 		33FE507BB816F7A06BE83F02 /* PairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingView.swift; sourceTree = "<group>"; };
 		36FEA41920F321795578FD56 /* PocketSettingsParts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketSettingsParts.swift; sourceTree = "<group>"; };
 		37A695264BBAD32A874A57EB /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		3856A773F8D4ACD748706AE0 /* PictureViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureViewer.swift; sourceTree = "<group>"; };
 		496385172A5237326FD3A24B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4FF0727F25D8F0BDCEA2A99B /* Energy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Energy.swift; sourceTree = "<group>"; };
 		5051E3D1AB49B80B5BE06CC1 /* ImpFigure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpFigure.swift; sourceTree = "<group>"; };
@@ -319,6 +321,7 @@
 			children = (
 				58A85E5C1FDD8C554EB50819 /* ChatSheet.swift */,
 				560FD7E7B4D4DC3F750A6B4F /* ChatSource.swift */,
+				3856A773F8D4ACD748706AE0 /* PictureViewer.swift */,
 				2DC6DAEC6034DB822FEE38DF /* ReplyBlocks.swift */,
 				7240F8717F287F52695EE995 /* Talks.swift */,
 			);
@@ -523,6 +526,7 @@
 				FB78B470E4BB7E1DBF1498D8 /* PhoneServerCards.swift in Sources */,
 				06F103700CE173EDD57B0E3E /* PhoneSettings.swift in Sources */,
 				FF17C834FCFD996C1DF2C98F /* PhoneStage.swift in Sources */,
+				43541250E04B4F18ED1C986F /* PictureViewer.swift in Sources */,
 				382B17A3F1E52658D989B0C2 /* PlayerSurface.swift in Sources */,
 				D0C4765E1BF5338C3C911B88 /* PocketDraft.swift in Sources */,
 				7111C93069366E5EC047E1EE /* PocketEditor.swift in Sources */,
@@ -601,7 +605,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -616,7 +620,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 2.6.1;
+				MARKETING_VERSION = 2.7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -701,7 +705,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -722,7 +726,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 2.6.1;
+				MARKETING_VERSION = 2.7.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
