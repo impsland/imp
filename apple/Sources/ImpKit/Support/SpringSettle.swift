@@ -23,7 +23,7 @@ public enum SpringSettle {
 /// integration stable however long a frame took, and the result within a hair of the same at 30, 60
 /// or 120 frames a second.
 public enum SpringStep {
-    /// The longest gap that still counts as time passing; a longer one is a pause in drawing.
+    /// The longest gap that still counts as time passing. A longer one is a pause in drawing.
     public static let longestGap: TimeInterval = 0.1
     public static let substep: TimeInterval = 1.0 / 120
 

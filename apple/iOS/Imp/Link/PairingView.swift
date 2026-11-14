@@ -125,7 +125,7 @@ struct NameField: View {
 /// Links with the code on the clipboard.
 @MainActor
 enum LinkClipboard {
-    /// Joins from the clipboard; what went wrong, if anything.
+    /// Joins from the clipboard. What went wrong, if anything.
     static func join(_ hub: LinkHub) -> String? {
         guard let string = UIPasteboard.general.string, !string.isEmpty else {
             return String(localized: "phone.pair.clipboard_empty")

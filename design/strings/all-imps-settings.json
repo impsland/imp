@@ -3,12 +3,12 @@
     "note": "Title of the app-wide settings.",
     "en": "Settings",
     "es": "Ajustes",
-    "zh-Hans": "设置"
+    "zh-Hans": "应用设置"
   },
   "settings.map.this_device": {
     "note": "Badge on the node of the device the app runs on.",
     "en": "This device",
-    "es": "Este dispositivo",
+    "es": "Este equipo",
     "zh-Hans": "这台设备"
   },
   "settings.map.brains": {
@@ -50,7 +50,7 @@
   "settings.map.state_needs_setup": {
     "note": "State of a node.",
     "en": "Needs setup",
-    "es": "Necesita configuración",
+    "es": "Sin configurar",
     "zh-Hans": "需要设置"
   },
   "settings.map.state_off": {
@@ -69,19 +69,19 @@
     "note": "Line between two devices that can reach each other.",
     "en": "Can see each other",
     "es": "Se ven entre sí",
-    "zh-Hans": "可以互相看到"
+    "zh-Hans": "彼此可以看到"
   },
   "settings.map.not_seen": {
     "note": "Dashed line between two devices that cannot reach each other.",
     "en": "Cannot see each other yet",
     "es": "Aún no se ven entre sí",
-    "zh-Hans": "暂时看不到对方"
+    "zh-Hans": "彼此暂时看不到"
   },
   "settings.map.tools_here": {
     "note": "Line label: this device may use the other device's tools.",
     "en": "Its tools can be used from here",
-    "es": "Sus herramientas se pueden usar desde aquí",
-    "zh-Hans": "可以从这里使用它的工具"
+    "es": "Sus herramientas, desde aquí",
+    "zh-Hans": "能从这里用它的工具"
   },
   "settings.map.via": {
     "note": "Line label: the link goes through a server.",
@@ -105,13 +105,13 @@
     "note": "Item.",
     "en": "The Den is not set up.",
     "es": "Den no está configurado.",
-    "zh-Hans": "Den 还没有设置。"
+    "zh-Hans": "Den 尚未设置。"
   },
   "settings.attention.hop_off": {
     "note": "Item.",
     "en": "The Hop is not set up.",
     "es": "Hop no está configurado.",
-    "zh-Hans": "Hop 还没有设置。"
+    "zh-Hans": "Hop 尚未设置。"
   },
   "settings.attention.device_offline": {
     "note": "Item: a linked device cannot be reached.",
@@ -119,7 +119,7 @@
       "device": "string"
     },
     "en": "{device} is offline.",
-    "es": "{device} no tiene conexión.",
+    "es": "{device} sin conexión.",
     "zh-Hans": "{device} 已离线。"
   },
   "settings.group.brains": {
@@ -138,7 +138,7 @@
     "note": "Group title.",
     "en": "Animations",
     "es": "Animaciones",
-    "zh-Hans": "动画"
+    "zh-Hans": "动画效果"
   },
   "settings.group.voice": {
     "note": "Group title. It was called Talking.",
@@ -150,7 +150,7 @@
     "note": "Group title.",
     "en": "Permissions",
     "es": "Permisos",
-    "zh-Hans": "权限"
+    "zh-Hans": "隐私权限"
   },
   "settings.group.app": {
     "note": "Group title.",
@@ -167,7 +167,7 @@
   "brains.default": {
     "note": "Label of the default Brain.",
     "en": "Default",
-    "es": "Por defecto",
+    "es": "Normal",
     "zh-Hans": "默认"
   },
   "brains.empty": {
@@ -180,13 +180,13 @@
     "note": "Choice when adding a Brain.",
     "en": "A model on this computer",
     "es": "Un modelo en este ordenador",
-    "zh-Hans": "这台电脑上的模型"
+    "zh-Hans": "这台电脑上的一个模型"
   },
   "brains.with_key": {
     "note": "Choice when adding a Brain.",
     "en": "A service with your key",
     "es": "Un servicio con tu clave",
-    "zh-Hans": "使用你密钥的服务"
+    "zh-Hans": "需要你自己密钥的服务"
   },
   "brains.used_by": {
     "note": "Under a Brain: how many Imps use it.",
@@ -227,24 +227,24 @@
     "note": "Short explanation of The Hop.",
     "en": "Lets your devices find each other. It only passes encrypted data.",
     "es": "Permite que tus dispositivos se encuentren. Solo transmite datos cifrados.",
-    "zh-Hans": "让你的设备找到彼此。它只转发加密数据。"
+    "zh-Hans": "让你的设备能够找到彼此，只转发加密数据。"
   },
   "servers.preset.imp": {
     "note": "Server choice: the default servers.",
     "en": "Imp's servers",
-    "es": "Servidores de Imp",
+    "es": "Servidores Imp",
     "zh-Hans": "Imp 的服务器"
   },
   "servers.preset.imp_note": {
     "note": "Note under the default servers choice.",
     "en": "The default, run by the Imp project.",
-    "es": "La opción por defecto, a cargo del proyecto Imp.",
+    "es": "El predeterminado, del proyecto Imp.",
     "zh-Hans": "默认选项，由 Imp 项目运营。"
   },
   "servers.preset.custom": {
     "note": "Server choice: an address the user types.",
     "en": "Custom",
-    "es": "Personalizado",
+    "es": "Propio",
     "zh-Hans": "自定义"
   },
   "servers.preset.off": {
@@ -290,7 +290,7 @@
     "note": "State of a server that does not answer.",
     "en": "Cannot reach it. Check the address.",
     "es": "No se puede conectar. Revisa la dirección.",
-    "zh-Hans": "无法连接。请检查地址。"
+    "zh-Hans": "无法连接上，请检查地址。"
   },
   "servers.den.in_use": {
     "note": "Shows which Den is in use.",
@@ -314,7 +314,7 @@
     "note": "Shown on a screen that needs The Den when none is set.",
     "en": "This needs a Den. Set one in Settings.",
     "es": "Esto necesita un Den. Configura uno en Ajustes.",
-    "zh-Hans": "这需要 Den。请在设置中添加。"
+    "zh-Hans": "这需要有 Den。请到设置里添加。"
   },
   "servers.hop.needed": {
     "note": "Shown on a screen that needs The Hop when none is set.",
@@ -332,13 +332,13 @@
     "note": "Group title.",
     "en": "Animations",
     "es": "Animaciones",
-    "zh-Hans": "动画"
+    "zh-Hans": "动画效果"
   },
   "animations.built_in": {
     "note": "Heading of the five bundled animations.",
     "en": "Built in",
     "es": "Integradas",
-    "zh-Hans": "内置"
+    "zh-Hans": "内置项"
   },
   "animations.from_den": {
     "note": "Heading of animations that came from The Den.",
@@ -373,7 +373,7 @@
   "voice.autoplay": {
     "note": "Switch on the iPhone: voices in new replies.",
     "en": "Autoplay",
-    "es": "Auto",
+    "es": "Autoplay",
     "zh-Hans": "自动播放"
   },
   "voice.autoplay_note": {
@@ -398,7 +398,7 @@
     "note": "Group title.",
     "en": "Permissions",
     "es": "Permisos",
-    "zh-Hans": "权限"
+    "zh-Hans": "隐私权限"
   },
   "privacy.computer": {
     "note": "Switch.",
@@ -416,7 +416,7 @@
     "note": "Row.",
     "en": "Microphone",
     "es": "Micrófono",
-    "zh-Hans": "麦克风"
+    "zh-Hans": "麦克风权限"
   },
   "privacy.microphone_note": {
     "note": "Note under the row.",
@@ -427,8 +427,8 @@
   "privacy.trust": {
     "note": "Switch.",
     "en": "Trust devices",
-    "es": "Confiar",
-    "zh-Hans": "信任设备"
+    "es": "Confiar en equipos",
+    "zh-Hans": "信任这些设备"
   },
   "privacy.trust_note": {
     "note": "Note under the switch.",
@@ -446,7 +446,7 @@
     "note": "Row.",
     "en": "Language",
     "es": "Idioma",
-    "zh-Hans": "语言"
+    "zh-Hans": "界面语言"
   },
   "app.login": {
     "note": "Switch (desktop).",
@@ -463,7 +463,7 @@
   "app.reset": {
     "note": "Button.",
     "en": "Reset",
-    "es": "Restablecer",
+    "es": "Reiniciar",
     "zh-Hans": "重置"
   },
   "app.look": {
@@ -512,13 +512,13 @@
     "note": "Settings text.",
     "en": "How the app looks.",
     "es": "Cómo se ve la app.",
-    "zh-Hans": "应用的外观。"
+    "zh-Hans": "应用看起来的样子。"
   },
   "settings.app.appearance.title": {
     "note": "Settings text.",
     "en": "Appearance",
     "es": "Apariencia",
-    "zh-Hans": "外观"
+    "zh-Hans": "外观样式"
   },
   "settings.app.control_ink.title": {
     "note": "Setting: white or black text, icons and switches on coloured buttons and controls.",
@@ -548,7 +548,7 @@
     "note": "Settings text.",
     "en": "How the app starts and which language it speaks.",
     "es": "Cómo arranca la app y en qué idioma habla.",
-    "zh-Hans": "应用如何启动以及使用的语言。"
+    "zh-Hans": "应用如何启动，以及使用哪种语言。"
   },
   "settings.backup.export.title": {
     "note": "Settings text.",
@@ -572,24 +572,24 @@
     "note": "Settings text.",
     "en": "Save your Imps and settings in a file, or load them back.",
     "es": "Guarda tus Imps y ajustes en un archivo, o cárgalos de nuevo.",
-    "zh-Hans": "把 Imp 和设置存进文件,或再载入。"
+    "zh-Hans": "把 Imp 和设置存进文件，或再次载入。"
   },
   "settings.backup.reset.title": {
     "note": "Settings text.",
     "en": "Reset",
-    "es": "Restablecer",
+    "es": "Reiniciar",
     "zh-Hans": "重置"
   },
   "settings.backup.reset.info": {
     "note": "Settings text.",
     "en": "Erase everything and begin again. This cannot be undone.",
     "es": "Borra todo y empieza de nuevo. No se puede deshacer.",
-    "zh-Hans": "清除一切重新开始。无法撤销。"
+    "zh-Hans": "清除一切并重新开始，此操作无法撤销。"
   },
   "settings.brains.services.info": {
     "note": "Settings text.",
     "en": "The brains your Imps think with.",
-    "es": "Los cerebros con los que piensan tus Imps.",
+    "es": "Los cerebros de tus Imps.",
     "zh-Hans": "你的 Imp 用来思考的大脑。"
   },
   "settings.brains.keys.title": {
@@ -602,7 +602,7 @@
     "note": "Settings text.",
     "en": "Secret passwords for your brains.",
     "es": "Contraseñas secretas de tus cerebros.",
-    "zh-Hans": "大脑的秘密口令。"
+    "zh-Hans": "你的各个大脑所用的密钥口令。"
   },
   "settings.brains.keychain.title": {
     "note": "Settings text.",
@@ -626,7 +626,7 @@
     "note": "Settings text.",
     "en": "How patient an Imp is when a brain is slow.",
     "es": "Qué tan paciente es un Imp cuando un cerebro tarda.",
-    "zh-Hans": "大脑很慢时 Imp 有多耐心。"
+    "zh-Hans": "大脑很慢时，Imp 有多大耐心。"
   },
   "settings.brains.wait.title": {
     "note": "Settings text.",
@@ -656,7 +656,7 @@
     "note": "Settings text.",
     "en": "How long to wait before asking again.",
     "es": "Cuánto esperar antes de preguntar otra vez.",
-    "zh-Hans": "再次提问前等多久。"
+    "zh-Hans": "再次提问之前要等多长时间。"
   },
   "settings.brains.longer.title": {
     "note": "Settings text.",
@@ -668,7 +668,7 @@
     "note": "Settings text.",
     "en": "How much longer each pause gets.",
     "es": "Cuánto más larga es cada pausa.",
-    "zh-Hans": "每次间隔变长多少。"
+    "zh-Hans": "每次间隔会变长多少。"
   },
   "settings.bubble.look.title": {
     "note": "Settings text.",
@@ -680,7 +680,7 @@
     "note": "Settings text.",
     "en": "Background",
     "es": "Fondo",
-    "zh-Hans": "背景"
+    "zh-Hans": "气泡背景"
   },
   "settings.bubble.background.solid": {
     "note": "Settings text.",
@@ -692,7 +692,7 @@
     "note": "Settings text.",
     "en": "Translucent",
     "es": "Translúcido",
-    "zh-Hans": "半透明"
+    "zh-Hans": "半透明的"
   },
   "settings.bubble.amount.title": {
     "note": "Settings text.",
@@ -716,7 +716,7 @@
     "note": "Settings text.",
     "en": "How the bubble shows answers.",
     "es": "Cómo muestra respuestas la burbuja.",
-    "zh-Hans": "气泡如何显示回答。"
+    "zh-Hans": "气泡显示回答的方式。"
   },
   "settings.bubble.hide.title": {
     "note": "Settings text.",
@@ -751,14 +751,14 @@
   "settings.bubble.autoplay.title": {
     "note": "Settings text.",
     "en": "Autoplay",
-    "es": "Auto",
+    "es": "Autoplay",
     "zh-Hans": "自动播放"
   },
   "settings.bubble.audio.title": {
     "note": "Settings text.",
     "en": "While playing",
     "es": "Al reproducir",
-    "zh-Hans": "播放时"
+    "zh-Hans": "播放声音时"
   },
   "settings.devices.link.title": {
     "note": "Settings text.",
@@ -782,12 +782,12 @@
     "note": "Settings text.",
     "en": "The devices linked with this one.",
     "es": "Los dispositivos vinculados con este.",
-    "zh-Hans": "与这台设备连接的设备。"
+    "zh-Hans": "与这台设备已连接的设备。"
   },
   "settings.devices.call_home": {
     "note": "Help of the button on a linked device that takes back the Imps it holds.",
     "en": "Call its Imps home",
-    "es": "Llamar a sus Imps a casa",
+    "es": "Traer sus Imps",
     "zh-Hans": "把它上面的 Imp 叫回家"
   },
   "settings.devices.forget_all.title": {
@@ -812,13 +812,13 @@
     "note": "Settings text.",
     "en": "This computer",
     "es": "Este ordenador",
-    "zh-Hans": "这台电脑"
+    "zh-Hans": "这台电脑上"
   },
   "settings.privacy.microphone.title": {
     "note": "Settings text.",
     "en": "Microphone",
     "es": "Micrófono",
-    "zh-Hans": "麦克风"
+    "zh-Hans": "麦克风权限"
   },
   "settings.privacy.speech.title": {
     "note": "Settings text.",
@@ -836,7 +836,7 @@
     "note": "Settings text.",
     "en": "So Imp can press keys and click for you.",
     "es": "Para que Imp pulse teclas y haga clic por ti.",
-    "zh-Hans": "让 Imp 替你按键和点击。"
+    "zh-Hans": "让 Imp 能替你按键和点击。"
   },
   "settings.privacy.screen.title": {
     "note": "Settings text.",
@@ -847,14 +847,14 @@
   "settings.service.name.info": {
     "note": "Settings text.",
     "en": "A name you pick for this brain.",
-    "es": "Un nombre que eliges para este cerebro.",
-    "zh-Hans": "你给这个大脑起的名字。"
+    "es": "Un nombre a tu gusto",
+    "zh-Hans": "你给这个大脑取的名字。"
   },
   "settings.service.address.info": {
     "note": "Settings text.",
     "en": "The web address of the brain.",
     "es": "La dirección web del cerebro.",
-    "zh-Hans": "大脑的网址。"
+    "zh-Hans": "这个大脑的网络地址。"
   },
   "settings.service.model.info": {
     "note": "Settings text.",
@@ -866,7 +866,7 @@
     "note": "Settings text.",
     "en": "A secret password the brain asks for.",
     "es": "Una contraseña secreta que pide el cerebro.",
-    "zh-Hans": "大脑要求的秘密口令。"
+    "zh-Hans": "这个大脑要求提供的密钥口令。"
   },
   "settings.service.cloud.info": {
     "note": "Settings text.",
@@ -878,25 +878,25 @@
     "note": "Settings text.",
     "en": "A brain that runs on this computer.",
     "es": "Un cerebro que funciona en este ordenador.",
-    "zh-Hans": "在这台电脑上运行的大脑。"
+    "zh-Hans": "一个在这台电脑上运行的大脑。"
   },
   "settings.tool.name.info": {
     "note": "Settings text.",
     "en": "A name you pick for this tool.",
-    "es": "Un nombre que eliges para esta herramienta.",
-    "zh-Hans": "你给这个工具起的名字。"
+    "es": "Un nombre a tu gusto",
+    "zh-Hans": "你给这个工具取的名字。"
   },
   "settings.tool.address.info": {
     "note": "Settings text.",
     "en": "The web address of the tool.",
     "es": "La dirección web de la herramienta.",
-    "zh-Hans": "工具的网址。"
+    "zh-Hans": "这个工具的网络地址。"
   },
   "settings.tool.command.info": {
     "note": "Settings text.",
     "en": "The command that starts the tool.",
     "es": "El comando que inicia la herramienta.",
-    "zh-Hans": "启动工具的命令。"
+    "zh-Hans": "用来启动这个工具的命令。"
   },
   "settings.tool.headers.info": {
     "note": "Settings text.",
@@ -908,13 +908,13 @@
     "note": "Settings text.",
     "en": "Secret values the tool needs to run.",
     "es": "Valores secretos que la herramienta necesita.",
-    "zh-Hans": "工具运行所需的秘密值。"
+    "zh-Hans": "这个工具运行时需要的秘密值。"
   },
   "settings.talking.listening.title": {
     "note": "Settings text.",
     "en": "Listening",
     "es": "Escuchar",
-    "zh-Hans": "聆听"
+    "zh-Hans": "聆听方式"
   },
   "settings.talking.listening.info": {
     "note": "Settings text.",
@@ -926,19 +926,19 @@
     "note": "Settings text.",
     "en": "Language",
     "es": "Idioma",
-    "zh-Hans": "语言"
+    "zh-Hans": "使用语言"
   },
   "settings.talking.between.title": {
     "note": "Settings text.",
     "en": "Between Imps",
     "es": "Entre Imps",
-    "zh-Hans": "Imp 之间"
+    "zh-Hans": "Imp 彼此之间"
   },
   "settings.talking.between.info": {
     "note": "Settings text.",
     "en": "How Imps talk to each other.",
     "es": "Cómo hablan los Imps entre sí.",
-    "zh-Hans": "Imp 之间如何交谈。"
+    "zh-Hans": "Imp 彼此之间如何交谈。"
   },
   "settings.talking.talk_in.title": {
     "note": "Settings text.",
@@ -956,19 +956,19 @@
     "note": "Settings text.",
     "en": "Whether Imps keep chatting in the same chat or start a new one.",
     "es": "Si los Imps siguen en el mismo chat o empiezan uno nuevo.",
-    "zh-Hans": "Imp 是继续同一个聊天还是开新聊天。"
+    "zh-Hans": "Imp 是继续同一个聊天，还是开新聊天。"
   },
   "settings.talking.window.title": {
     "note": "Settings text.",
     "en": "Same chat for",
-    "es": "Mismo chat durante",
+    "es": "Mismo chat",
     "zh-Hans": "同一聊天时长"
   },
   "settings.talking.window.info": {
     "note": "Settings text.",
     "en": "How many minutes a chat stays the same chat.",
     "es": "Cuántos minutos sigue siendo el mismo chat.",
-    "zh-Hans": "一个聊天保持不变的分钟数。"
+    "zh-Hans": "一个聊天保持为同一个聊天的分钟数。"
   },
   "app.window.title": {
     "note": "Card on the App page: the smallest size of the app's window.",
@@ -998,7 +998,7 @@
     "note": "Window size: medium.",
     "en": "Medium",
     "es": "Mediana",
-    "zh-Hans": "中"
+    "zh-Hans": "中等大"
   },
   "app.window.large": {
     "note": "Window size: large.",
@@ -1028,13 +1028,13 @@
     "note": "Under the address of a server that is set but was not checked yet.",
     "en": "Not checked yet",
     "es": "Sin comprobar",
-    "zh-Hans": "尚未检查"
+    "zh-Hans": "还没有检查过"
   },
   "servers.den.off_note": {
     "note": "Under Off on the Den card.",
     "en": "Sharing and finding in The Den are off.",
     "es": "Compartir y buscar en Den está desactivado.",
-    "zh-Hans": "在 Den 中分享和查找已关闭。"
+    "zh-Hans": "在 Den 中的分享和查找已关闭。"
   },
   "servers.hop.off_note": {
     "note": "Under Off on the Hop card.",
@@ -1045,7 +1045,7 @@
   "devices.show": {
     "note": "Button and tab: show this Mac's code for another device to scan.",
     "en": "Show code",
-    "es": "Mostrar código",
+    "es": "Ver código",
     "zh-Hans": "显示代码"
   },
   "devices.scan": {
@@ -1070,7 +1070,7 @@
     "note": "Tooltip of a settings row.",
     "en": "How long to wait for an answer before giving up.",
     "es": "Cuánto esperar una respuesta antes de rendirse.",
-    "zh-Hans": "等待回答多久后放弃。"
+    "zh-Hans": "放弃之前，最多等待回答多久。"
   },
   "settings.bubble.background.info": {
     "note": "Tooltip of a settings row.",
@@ -1088,7 +1088,7 @@
     "note": "Tooltip of a settings row.",
     "en": "How long a bubble stays after the Imp stops talking.",
     "es": "Cuánto se queda una burbuja después de que el Imp deja de hablar.",
-    "zh-Hans": "小妖说完后气泡停留多久。"
+    "zh-Hans": "小妖说完话后，气泡会停留多久。"
   },
   "settings.bubble.lines.info": {
     "note": "Tooltip of a settings row.",
@@ -1112,7 +1112,7 @@
     "note": "Tooltip of a settings row.",
     "en": "What shows while a voice or sound plays.",
     "es": "Qué se muestra mientras suena una voz o un sonido.",
-    "zh-Hans": "播放声音时显示什么。"
+    "zh-Hans": "播放声音时气泡里显示什么。"
   },
   "settings.talking.language.info": {
     "note": "Tooltip of a settings row.",
@@ -1160,13 +1160,13 @@
     "note": "Help on a linked device: reached on the local network.",
     "en": "Direct, on the local network",
     "es": "Directo, en la red local",
-    "zh-Hans": "直连,在本地网络"
+    "zh-Hans": "直连，走本地网络"
   },
   "devices.reach.server": {
     "note": "Help on a linked device: reached through the server.",
     "en": "Through the server",
     "es": "A través del servidor",
-    "zh-Hans": "通过服务器"
+    "zh-Hans": "经由服务器中转"
   },
   "devices.reach.away": {
     "note": "Help on a linked device: not reachable now.",

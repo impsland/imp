@@ -15,7 +15,7 @@
     "note": "Marker right of the Imp: name, persona and voice.",
     "en": "Personality",
     "es": "Personalidad",
-    "zh-Hans": "个性"
+    "zh-Hans": "个性设置"
   },
   "imp_settings.marker.tools": {
     "note": "Marker for the tools panel.",
@@ -42,7 +42,7 @@
     },
     "en": "All settings for {name}",
     "es": "Todos los ajustes de {name}",
-    "zh-Hans": "{name} 的全部设置"
+    "zh-Hans": "{name} 的所有设置"
   },
   "imp_settings.summary.brain_none": {
     "note": "Summary line of the Brain row when the Imp has no Brain.",
@@ -64,13 +64,13 @@
     "note": "Summary line of the Look row.",
     "en": "Colour and size",
     "es": "Color y tamaño",
-    "zh-Hans": "颜色和大小"
+    "zh-Hans": "颜色与大小"
   },
   "imp_settings.summary.personality": {
     "note": "Summary line of the Personality row.",
     "en": "Name and voice",
     "es": "Nombre y voz",
-    "zh-Hans": "名字和声音"
+    "zh-Hans": "名字与声音"
   },
   "imp_settings.summary.tools": {
     "note": "Summary line of the Tools row.",
@@ -79,8 +79,8 @@
       "total": "int"
     },
     "en": "{on} of {total} on",
-    "es": "{on} de {total} activas",
-    "zh-Hans": "{total} 个中开启 {on} 个"
+    "es": "{on} de {total}",
+    "zh-Hans": "已开启 {on}/{total}"
   },
   "imp_settings.summary.triggers": {
     "note": "Summary line of the Triggers row.",
@@ -119,7 +119,7 @@
     "note": "Summary line of the Moves row.",
     "en": "Animations",
     "es": "Animaciones",
-    "zh-Hans": "动画"
+    "zh-Hans": "动画效果"
   },
   "imp_settings.brain_marker.asleep": {
     "note": "Screen reader label of the unlit Brain marker.",
@@ -152,7 +152,7 @@
       "name": "string"
     },
     "en": "Share {name}",
-    "es": "Compartir a {name}",
+    "es": "Compartir {name}",
     "zh-Hans": "共享 {name}"
   },
   "imp_settings.goodbye": {
@@ -189,7 +189,7 @@
     "note": "Destructive button of the goodbye dialog.",
     "en": "Say goodbye",
     "es": "Decir adiós",
-    "zh-Hans": "说再见"
+    "zh-Hans": "告别吧"
   },
   "goodbye.cancel": {
     "note": "Safe button of the goodbye dialog.",
@@ -197,7 +197,7 @@
       "name": "string"
     },
     "en": "Keep {name}",
-    "es": "Quedarme con {name}",
+    "es": "Conservar {name}",
     "zh-Hans": "留下 {name}"
   },
   "share.title": {
@@ -206,7 +206,7 @@
       "name": "string"
     },
     "en": "Share {name}",
-    "es": "Compartir a {name}",
+    "es": "Compartir {name}",
     "zh-Hans": "共享 {name}"
   },
   "share.note": {
@@ -255,7 +255,7 @@
     "note": "Slider group label: small traits of how the Imp moves and looks around.",
     "en": "Character",
     "es": "Carácter",
-    "zh-Hans": "性格"
+    "zh-Hans": "角色性格"
   },
   "look.character_hint": {
     "note": "Hint under the character sliders.",
@@ -275,7 +275,7 @@
   "look.reset": {
     "note": "Button that restores the default look.",
     "en": "Reset",
-    "es": "Restablecer",
+    "es": "Reiniciar",
     "zh-Hans": "重置"
   },
   "look.lids": {
@@ -330,7 +330,7 @@
     "note": "Panel title.",
     "en": "Personality",
     "es": "Personalidad",
-    "zh-Hans": "个性"
+    "zh-Hans": "个性设置"
   },
   "personality.name": {
     "note": "Field label.",
@@ -431,7 +431,7 @@
       "name": "string"
     },
     "en": "{name} is awake.",
-    "es": "{name} está despierto.",
+    "es": "{name} despertó.",
     "zh-Hans": "{name} 醒了。"
   },
   "brain.checking": {
@@ -462,8 +462,8 @@
       "total": "int"
     },
     "en": "{on} of {total} on",
-    "es": "{on} de {total} activas",
-    "zh-Hans": "{total} 个中开启 {on} 个"
+    "es": "{on} de {total}",
+    "zh-Hans": "已开启 {on}/{total}"
   },
   "tools.group_off": {
     "note": "Under a tool group that is switched off.",
@@ -486,7 +486,7 @@
       "group": "string"
     },
     "en": "Show the tools in {group}",
-    "es": "Mostrar las herramientas de {group}",
+    "es": "Ver herramientas de {group}",
     "zh-Hans": "显示 {group} 中的工具"
   },
   "tools.collapse": {
@@ -495,14 +495,14 @@
       "group": "string"
     },
     "en": "Hide the tools in {group}",
-    "es": "Ocultar las herramientas de {group}",
+    "es": "Ocultar herramientas de {group}",
     "zh-Hans": "隐藏 {group} 中的工具"
   },
   "tools.built_in": {
     "note": "Badge for a built-in tool group.",
     "en": "Built in",
     "es": "Integradas",
-    "zh-Hans": "内置"
+    "zh-Hans": "内置项"
   },
   "tools.mcp": {
     "note": "Badge for a tool group that comes from an MCP server.",
@@ -526,7 +526,7 @@
     "note": "Status of an MCP server.",
     "en": "Could not start",
     "es": "No se pudo iniciar",
-    "zh-Hans": "无法启动"
+    "zh-Hans": "启动没有成功"
   },
   "tools.empty": {
     "note": "Empty state of the tools list.",
@@ -581,7 +581,7 @@
     "note": "Action on a trigger.",
     "en": "Delete trigger",
     "es": "Eliminar disparador",
-    "zh-Hans": "删除触发器"
+    "zh-Hans": "删除这个触发器"
   },
   "triggers.empty": {
     "note": "Empty state of the triggers list.",
@@ -626,7 +626,7 @@
     "note": "Help of the service list.",
     "en": "Pick who does the thinking for this Imp.",
     "es": "Elige quién piensa por este Imp.",
-    "zh-Hans": "选择由谁来替这个小鬼思考。"
+    "zh-Hans": "选择由谁来为这个小鬼思考。"
   },
   "brain.key": {
     "note": "Section: the secret key.",
@@ -644,13 +644,13 @@
     "note": "Help of the model picker.",
     "en": "The exact brain of the service. Bigger ones think better but are slower.",
     "es": "El cerebro concreto del servicio. Los grandes piensan mejor pero van más lentos.",
-    "zh-Hans": "服务里具体的大脑。大的想得更好，但更慢。"
+    "zh-Hans": "服务里具体用哪个大脑。大的想得更好，但更慢。"
   },
   "brain.help.add_service": {
     "note": "Tooltip of the add service button.",
     "en": "Add a service",
-    "es": "Añadir un servicio",
-    "zh-Hans": "添加服务"
+    "es": "Añadir servicio",
+    "zh-Hans": "添加一项服务"
   },
   "look.body": {
     "note": "Section: colour and size.",
@@ -668,7 +668,7 @@
     "note": "Tooltip of the favourite colour button.",
     "en": "Favourite",
     "es": "Favorito",
-    "zh-Hans": "常用"
+    "zh-Hans": "最爱款"
   },
   "look.help.colour": {
     "note": "Help of the colour.",
@@ -686,13 +686,13 @@
     "note": "Help of the character section.",
     "en": "Small touches that change the face and the way it moves.",
     "es": "Pequeños detalles que cambian la cara y su forma de moverse.",
-    "zh-Hans": "一些小细节，改变脸和动作的样子。"
+    "zh-Hans": "一些改变脸和动作样子的小细节。"
   },
   "look.help.lids": {
     "note": "Help of the eyelids slider.",
     "en": "How closed the eyelids are. More makes it look sleepy.",
     "es": "Cuánto se cierran los párpados. Cuanto más se cierran, más dormido parece.",
-    "zh-Hans": "眼皮合上多少。越多越像没睡醒。"
+    "zh-Hans": "眼皮合上的程度。越多越像没睡醒。"
   },
   "look.help.brows": {
     "note": "Help of the eyebrows slider.",
@@ -703,32 +703,32 @@
   "look.help.eyes": {
     "note": "Help of the eye size slider.",
     "en": "Make the eyes smaller or bigger.",
-    "es": "Hace los ojos más pequeños o más grandes.",
-    "zh-Hans": "让眼睛变小或变大。"
+    "es": "Hace los ojos más grandes o pequeños.",
+    "zh-Hans": "让眼睛变得更小或更大。"
   },
   "look.help.squint": {
     "note": "Help of the squint slider.",
     "en": "Squeeze the eyes tight, or open them wide.",
     "es": "Aprieta los ojos, o los abre mucho.",
-    "zh-Hans": "把眼睛眯紧，或睁得很大。"
+    "zh-Hans": "把眼睛眯紧，或者睁得很大。"
   },
   "look.help.horns": {
     "note": "Help of the horns slider.",
     "en": "Turn the horns up or down.",
-    "es": "Gira los cuernos hacia arriba o hacia abajo.",
-    "zh-Hans": "把角向上或向下转。"
+    "es": "Gira los cuernos arriba o abajo.",
+    "zh-Hans": "把角朝上或朝下转动。"
   },
   "look.help.cheeks": {
     "note": "Help of the cheeks slider.",
     "en": "How rosy the cheeks are.",
-    "es": "Cuánto se sonrojan las mejillas.",
-    "zh-Hans": "脸颊有多红。"
+    "es": "Cuánto se sonrojan.",
+    "zh-Hans": "脸颊红润的程度。"
   },
   "look.help.head": {
     "note": "Help of the head tilt slider.",
     "en": "Tilt the head to one side or the other.",
     "es": "Inclina la cabeza hacia un lado o hacia el otro.",
-    "zh-Hans": "把头歪向一边或另一边。"
+    "zh-Hans": "把头歪向左边或右边。"
   },
   "look.help.pace": {
     "note": "Help of the pace slider.",
@@ -758,7 +758,7 @@
     "note": "State of the reply rules when they are the built-in ones.",
     "en": "Built-in",
     "es": "Integradas",
-    "zh-Hans": "内置"
+    "zh-Hans": "内置规则"
   },
   "personality.rules.own": {
     "note": "State of the reply rules when the user changed them.",
@@ -890,7 +890,7 @@
     "note": "Help of the trigger input.",
     "en": "What the Imp gets to look at when it goes off, like the clipboard.",
     "es": "Lo que el Imp puede mirar cuando se activa, como el portapapeles.",
-    "zh-Hans": "触发时小鬼可以看到什么，比如剪贴板。"
+    "zh-Hans": "触发时小鬼能看到什么，比如剪贴板。"
   },
   "triggers.instruction": {
     "note": "Field: the instruction.",
@@ -914,7 +914,7 @@
     "note": "Help of the move length.",
     "en": "How long the move lasts.",
     "es": "Cuánto dura el movimiento.",
-    "zh-Hans": "动作持续多久。"
+    "zh-Hans": "这个动作会持续多久。"
   },
   "anim.help.hop": {
     "note": "Help of the hop setting.",
@@ -932,7 +932,7 @@
     "note": "Help of the shape setting.",
     "en": "Squash or stretch the body, like a ball.",
     "es": "Aplasta o estira el cuerpo, como una pelota.",
-    "zh-Hans": "把身体压扁或拉长，像一个球。"
+    "zh-Hans": "把身体压扁或拉长，像个球。"
   },
   "anim.help.symbol": {
     "note": "Help of the symbol setting.",
@@ -949,7 +949,7 @@
   "anim.help.plays": {
     "note": "Help of when a move plays.",
     "en": "When this move happens.",
-    "es": "Cuándo ocurre este movimiento.",
+    "es": "Cuándo ocurre.",
     "zh-Hans": "这个动作什么时候出现。"
   },
   "anim.help.name": {
@@ -962,12 +962,12 @@
     "note": "Help of the move description.",
     "en": "One sentence about what it does.",
     "es": "Una frase sobre lo que hace.",
-    "zh-Hans": "用一句话说说它做什么。"
+    "zh-Hans": "用一句话说明它的作用。"
   },
   "anim.help.icon": {
     "note": "Help of the move icon.",
     "en": "The picture shown for this move in lists.",
-    "es": "El dibujo que se muestra para este movimiento en las listas.",
+    "es": "El dibujo de este movimiento en las listas.",
     "zh-Hans": "这个动作在列表里显示的图案。"
   },
   "den.help.server": {
@@ -980,7 +980,7 @@
     "note": "Help of the Den search.",
     "en": "Type a word to find things.",
     "es": "Escribe una palabra para buscar.",
-    "zh-Hans": "输入一个词来查找。"
+    "zh-Hans": "输入一个词来查找内容。"
   },
   "den.help.kind": {
     "note": "Help of the Den kind.",
@@ -1010,7 +1010,7 @@
     "note": "Help of the Den tags.",
     "en": "Words that help people find it. Separate them with commas.",
     "es": "Palabras que ayudan a encontrarlo. Sepáralas con comas.",
-    "zh-Hans": "帮助大家找到它的词。用逗号分开。"
+    "zh-Hans": "帮大家找到它的词，用逗号分开。"
   },
   "den.help.public": {
     "note": "Help of the Den public note.",
@@ -1046,7 +1046,7 @@
     "note": "Primary button of a sleeping Imp's Brain panel when services exist but none is chosen.",
     "en": "Choose a service",
     "es": "Elegir un servicio",
-    "zh-Hans": "选择服务"
+    "zh-Hans": "选择一项服务"
   },
   "scope.every_imp": {
     "note": "Under a trigger or animation shared by every Imp, and the choice that makes a change for every Imp.",
@@ -1100,7 +1100,7 @@
     "note": "Below the For choice when the change goes to every Imp.",
     "en": "Changes it for every Imp.",
     "es": "Lo cambia para todos los Imps.",
-    "zh-Hans": "为所有 Imp 更改。"
+    "zh-Hans": "会对所有 Imp 生效。"
   },
   "triggers.just_for": {
     "note": "Menu item on a shared trigger: make this Imp's own version. The other Imps keep the shared one.",
@@ -1109,18 +1109,18 @@
     },
     "en": "Just for {name}",
     "es": "Solo para {name}",
-    "zh-Hans": "仅限 {name}"
+    "zh-Hans": "只给 {name} 用"
   },
   "triggers.share_every": {
     "note": "Menu item on this Imp's trigger: share it with every Imp.",
     "en": "Share to all",
-    "es": "Compartir con todos",
+    "es": "Para todos",
     "zh-Hans": "共享给所有"
   },
   "triggers.use_shared": {
     "note": "Button that removes this Imp's version of a shared trigger, so the shared one applies again.",
     "en": "Use shared",
-    "es": "Usar el compartido",
+    "es": "Usar común",
     "zh-Hans": "使用共享"
   },
   "triggers.use_shared.title": {
@@ -1138,13 +1138,13 @@
       "name": "string"
     },
     "en": "The version only {name} has goes.",
-    "es": "Se quita la versión que solo tiene {name}.",
+    "es": "Se quita la versión de {name}.",
     "zh-Hans": "只属于 {name} 的版本将被删除。"
   },
   "triggers.delete_every": {
     "note": "Destructive action on a shared trigger: delete it for every Imp.",
     "en": "Delete for every Imp",
-    "es": "Eliminar para todos los Imps",
+    "es": "Borrar para todos",
     "zh-Hans": "为所有 Imp 删除"
   },
   "triggers.delete_every.title": {
@@ -1153,7 +1153,7 @@
       "name": "string"
     },
     "en": "Delete “{name}” for every Imp?",
-    "es": "¿Eliminar “{name}” para todos los Imps?",
+    "es": "¿Borrar “{name}” para todos?",
     "zh-Hans": "为所有 Imp 删除“{name}”？"
   },
   "triggers.starter": {
@@ -1166,7 +1166,7 @@
     "note": "Help for the starter kit button.",
     "en": "The triggers Imp comes with: clicks, falling asleep and waking up. You see them before anything is added.",
     "es": "Los disparadores que trae Imp: clics, dormirse y despertar. Los ves antes de añadir nada.",
-    "zh-Hans": "Imp 自带的触发器：点击、入睡和醒来。添加前你会先看到它们。"
+    "zh-Hans": "Imp 自带的触发器：点击、入睡和醒来。添加之前你会先看到它们。"
   },
   "brain.model_placeholder": {
     "note": "Placeholder of the model field: the exact name of a model.",
@@ -1178,7 +1178,7 @@
     "note": "Help of the list button inside the model field: pick from the service's models.",
     "en": "Pick from the service's models",
     "es": "Elegir entre los modelos del servicio",
-    "zh-Hans": "从服务的模型中选择"
+    "zh-Hans": "从服务提供的模型中选择"
   },
   "brain.unnamed": {
     "note": "A service with no name yet.",
@@ -1218,7 +1218,7 @@
     "note": "Placeholder of a field that may be left empty.",
     "en": "Optional",
     "es": "Opcional",
-    "zh-Hans": "可选"
+    "zh-Hans": "可选项"
   },
   "tools.headers": {
     "note": "Small title over a tool server's HTTP headers.",
@@ -1266,13 +1266,13 @@
     "note": "Message of the dialog that removes a tool server.",
     "en": "The Imp loses the tools of this server.",
     "es": "El Imp pierde las herramientas de este servidor.",
-    "zh-Hans": "小妖会失去这台服务器的工具。"
+    "zh-Hans": "小妖将不能再用这台服务器的工具。"
   },
   "tools.problem.address": {
     "note": "Problem on a tool server with no address.",
     "en": "Add the server's address.",
-    "es": "Añade la dirección del servidor.",
-    "zh-Hans": "请填写服务器地址。"
+    "es": "Falta la dirección.",
+    "zh-Hans": "请填写服务器的地址。"
   },
   "memory.sends.title": {
     "note": "Row in the Imp's Memory card.",
@@ -1284,7 +1284,7 @@
     "note": "Info for Sends.",
     "en": "How many of the latest messages go to the Brain with each one. Fewer is faster and cheaper.",
     "es": "Cuántos de los últimos mensajes van al cerebro con cada uno. Menos es más rápido y barato.",
-    "zh-Hans": "每条消息一起发给大脑的最近消息数。越少越快越省。"
+    "zh-Hans": "每次随消息一起发给大脑的最近消息数。越少越快也越省。"
   },
   "memory.last": {
     "note": "Choice for Sends: the last N messages.",
@@ -1304,8 +1304,8 @@
   "memory.tools.title": {
     "note": "Row in the Imp's Memory card.",
     "en": "Tool results",
-    "es": "Resultados de herramientas",
-    "zh-Hans": "工具结果"
+    "es": "Resultados",
+    "zh-Hans": "工具的结果"
   },
   "memory.tools.info": {
     "note": "Info for Tool results.",

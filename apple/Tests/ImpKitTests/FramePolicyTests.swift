@@ -221,7 +221,7 @@ import Testing
     }
 
     @Test func aSpringFedAStairCaseOfReadingsMovesInSmallStepsEveryFrame() {
-        // The sensor reads 30 times a second and the target jumps with each reading; drawn at 60 fps the
+        // The sensor reads 30 times a second and the target jumps with each reading. Drawn at 60 fps the
         // value must still move a little each frame, never in the sensor's steps.
         var x = 0.0, v = 0.0
         var worst = 0.0, last = 0.0

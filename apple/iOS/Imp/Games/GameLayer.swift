@@ -135,7 +135,7 @@ struct EmbersPlaying: PreferenceKey {
 
 /// The score, with a thin ring running down the round. It runs hotter in the Blaze and flashes green
 /// when kindling refills it. Two small badges show what is still within reach: a round with no smoke
-/// hit, and one where nothing got away; each dims for good when it is lost.
+/// hit, and one where nothing got away. Each dims for good when it is lost.
 private struct Scoreboard: View {
     var score: Int
     var ring: Double

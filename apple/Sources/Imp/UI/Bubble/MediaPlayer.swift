@@ -66,7 +66,7 @@ private struct LoadedMedia: View {
         }
         .onDisappear {
             // The answer's player stops once no view shows it any more (the bubble closed or
-            // moved on); a history player stops with its view.
+            // moved on). A history player stops with its view.
             if let media, let slot = media.slot { Playback.shared.release(slot.id) } else { media?.stop(); media = nil }
         }
     }
@@ -524,7 +524,7 @@ final class Playback {
         current = media
     }
 
-    /// `media` can't play: if it was the one going, its turn passes on; if it was waiting, it no longer does.
+    /// `media` can't play: if it was the one going, its turn passes on. If it was waiting, it no longer does.
     func failed(_ media: Media) {
         if current === media { finished(media) } else if let slot = media.slot { queue.remove(slot.id) }
     }

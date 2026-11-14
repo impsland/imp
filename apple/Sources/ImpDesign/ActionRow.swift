@@ -24,7 +24,7 @@ public struct ActionRow: Layout {
         }
         let mainSize = main.sizeThatFits(.unspecified)
         main.place(at: CGPoint(x: bounds.maxX, y: bounds.midY), anchor: .trailing, proposal: ProposedViewSize(mainSize))
-        // The others share what the main action leaves; one that stretches (a status line) takes the rest.
+        // The others share what the main action leaves. One that stretches (a status line) takes the rest.
         let end = bounds.maxX - mainSize.width - spacing
         var x = bounds.minX
         for view in subviews.dropLast() {

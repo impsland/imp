@@ -14,7 +14,7 @@
       "name": "string"
     },
     "en": "{name} is awake.",
-    "es": "{name} está despierto.",
+    "es": "{name} despertó.",
     "zh-Hans": "{name} 醒了。"
   },
   "firstrun.check.running": {
@@ -41,7 +41,7 @@
   "firstrun.error.key_not_saved": {
     "note": "The check worked, but the key could not be stored.",
     "en": "Imp could not save the key. Try again.",
-    "es": "Imp no pudo guardar la clave. Inténtalo de nuevo.",
+    "es": "Imp no pudo guardar la clave.",
     "zh-Hans": "Imp 无法保存密钥。请再试一次。"
   },
   "firstrun.error.no_model": {
@@ -54,7 +54,7 @@
     "note": "Placeholder of the model field. It filters the list, or takes a name typed by hand.",
     "en": "Search or type a model",
     "es": "Busca o escribe un modelo",
-    "zh-Hans": "搜索或输入模型"
+    "zh-Hans": "搜索或输入模型名"
   },
   "firstrun.service.address": {
     "note": "Field label of the service address.",
@@ -65,8 +65,8 @@
   "firstrun.service.found": {
     "note": "Marks a local preset that answers on this computer.",
     "en": "Found here",
-    "es": "Encontrado aquí",
-    "zh-Hans": "已找到"
+    "es": "Hallado aquí",
+    "zh-Hans": "在这里找到"
   },
   "firstrun.service.host_note": {
     "note": "Quiet line on the phone under a local preset: the address is the computer's.",
@@ -110,7 +110,7 @@
       "name": "string"
     },
     "en": "Wake {name} up",
-    "es": "Despertar a {name}",
+    "es": "Despertar {name}",
     "zh-Hans": "叫醒 {name}"
   },
   "firstrun.service.remote": {

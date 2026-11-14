@@ -66,7 +66,7 @@ public struct MouseGestures {
             ?? waving(p, at: t, inFront: abs(dx) < r * 3 && dy > -r && dy < r * 1.6, r: r)
             ?? dangling(p, at: t, above: abs(dx) < r * 1.6 && dy > r * 0.9 && dy < r * 4, r: r)
             ?? onHead(p, at: t, r: r, inside: d < r * 1.05 && dy > -r * 0.5)
-        // One-off gestures start over; petting goes on for as long as the strokes do.
+        // One-off gestures start over. Petting goes on for as long as the strokes do.
         if let gesture, gesture != .stroke { reset() }
         return gesture
     }

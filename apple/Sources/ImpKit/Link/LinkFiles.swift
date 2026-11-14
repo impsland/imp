@@ -2,8 +2,8 @@ import ImpCore
 import Foundation
 
 /// Which files a phone may fetch from the Mac, and where they are. A reply on the phone shows a
-/// picture or plays a voice that lives on the Mac (`![](voice.mp3)`, a path in the Imp's folder);
-/// the phone asks for it by the reference as written. The Mac only sends what one of that Imp's
+/// picture or plays a voice that lives on the Mac (`![](voice.mp3)`, a path in the Imp's folder).
+/// The phone asks for it by the reference as written. The Mac only sends what one of that Imp's
 /// replies actually mentions, so a paired phone can't read anything else on the Mac.
 public enum LinkFiles {
     /// The file a reference means, on this Mac: relative to the Imp's folder (`base`), absolute,
@@ -46,7 +46,7 @@ public enum LinkFiles {
 
     /// Where a file really is: standardised, symlinks resolved.
     public static func real(_ url: URL) -> URL {
-        // The deepest part that exists is resolved by the system; the rest is only standardised.
+        // The deepest part that exists is resolved by the system. The rest is only standardised.
         var head = url.standardizedFileURL
         var tail: [String] = []
         var buffer = [CChar](repeating: 0, count: Int(PATH_MAX))

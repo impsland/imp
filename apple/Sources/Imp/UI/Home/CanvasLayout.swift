@@ -23,7 +23,7 @@ enum CanvasLayout {
 
     // MARK: Canvas and screen
     //
-    // The canvas runs top-down from its top-left corner; the screen runs bottom-up. `canvas` is the
+    // The canvas runs top-down from its top-left corner. The screen runs bottom-up. `canvas` is the
     // canvas's rectangle on screen (points, the same unit on both sides, so the backing scale does not matter).
 
     /// A point of the canvas, on screen.

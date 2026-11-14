@@ -61,7 +61,7 @@ A list of pages that opens each page and needs Back to reach the next (Settings,
 
 ## The Devices page
 
-Three symmetric cards. **This Mac** (`devices.this_mac`) is a header only: its icon and name on the leading edge, then a dot for The Hop (lit when devices can find each other from anywhere; its words are in the tooltip, never a line of its own), the primary **Link** button (`settings.devices.link.title`) and the help tip. Link opens the sheet below. **Devices** (`devices.title`) lists each linked device as its own pebble: its symbol (dimmed while away), its name and the Imps on it as small coloured dots, how it is reached as one icon (direct, through The Hop, away; the words are its tooltip), the "Mine" switch with its tip and a Forget icon. With no device the card shows `devices.empty` centred. Forget all is an icon in the card header and asks first. **The Hop** is the compact server card below.
+Three symmetric cards. **This Mac** (`devices.this_mac`) is a header only: its icon and name on the leading edge, then a dot for The Hop (lit when devices can find each other from anywhere, with its words in the tooltip and never a line of its own), the primary **Link** button (`settings.devices.link.title`) and the help tip. Link opens the sheet below. **Devices** (`devices.title`) lists each linked device as its own pebble: its symbol (dimmed while away), its name and the Imps on it as small coloured dots, how it is reached as one icon (direct, through The Hop or away, with the words in its tooltip), the "Mine" switch with its tip and a Forget icon. With no device the card shows `devices.empty` centred. Forget all is an icon in the card header and asks first. **The Hop** is the compact server card below.
 
 **Link a device** is one sheet with two tabs, the same title and the same actions in its footer row:
 
@@ -78,7 +78,7 @@ The **Gallery** card (`sharing.gallery`) has two equal buttons: `sharing.browse`
 
 ## Presets for The Den and The Hop
 
-The Den and The Hop are one component, the compact server card (`ServerCard`, with its state in `ServerSetting`), on Devices, on Sharing and in the Den browser. Its header carries a status icon (the address and the state are its tooltip) and Check, a button that shows its own progress, tick or cross. Under it the choice is a row of buttons with symbols (no dropdown) and, for Custom only, the address field. A failed check or an address that is not valid floats as a notice (`.impNotice`); nothing is ever inserted into the page.
+The Den and The Hop are one component, the compact server card (`ServerCard`, with its state in `ServerSetting`), on Devices, on Sharing and in the Den browser. Its header carries a status icon (the address and the state are its tooltip) and Check, a button that shows its own progress, tick or cross. Under it the choice is a row of buttons with symbols (no dropdown) and, for Custom only, the address field. A failed check or an address that is not valid floats as a notice (`.impNotice`). Nothing is ever inserted into the page.
 
 Most people use the default servers. Each of The Den and The Hop has three choices:
 
@@ -88,7 +88,7 @@ Most people use the default servers. Each of The Den and The Hop has three choic
 | Custom | An address the user types. It must start with https://. |
 | Off | No server. |
 
-A server the person runs on this computer is a Custom address (`localhost:4677`, `http://localhost:8080`); there is no separate choice for it, since on the same Wi-Fi devices link without a Hop and a Hop on this computer only helps away from home when the router forwards its port. A "Check" button tests the choice and shows `servers.state_ok` or `servers.state_fail`, or `servers.state_fail_local` when nothing answers at a local address. Before a check the state is `servers.preset.imp_note` for Imp's servers and `servers.state_unchecked` otherwise. Off says what goes missing (`servers.den.off_note`, `servers.hop.off_note`). A check is for the address it started with: changing the address drops it. For a Den it asks the `/healthz` page, which must answer. For a Hop it opens a connection to the address. The Mac and the iPhone both have it.
+A server the person runs on this computer is a Custom address (`localhost:4677`, `http://localhost:8080`). There is no separate choice for it. On the same Wi-Fi devices link without a Hop, and a Hop on this computer only helps away from home when the router forwards its port. A "Check" button tests the choice and shows `servers.state_ok` or `servers.state_fail`, or `servers.state_fail_local` when nothing answers at a local address. Before a check the state is `servers.preset.imp_note` for Imp's servers and `servers.state_unchecked` otherwise. Off says what goes missing (`servers.den.off_note`, `servers.hop.off_note`). A check is for the address it started with: changing the address drops it. For a Den it asks the `/healthz` page, which must answer. For a Hop it opens a connection to the address. The Mac and the iPhone both have it.
 
 ![Pairing a device](./images/all-imps-pair.png) What happens when only one of the two is set up is on [States](/ux/states).
 
@@ -122,7 +122,7 @@ Imp ships presets as data, never as literals in code, and reads each the way it 
 
 Two cards. **Look** holds Appearance (Auto, Light, Dark), On colour and Background. **System** holds start at login and language. What a double click on an Imp does is no longer a setting here: it is a Triggers entry ("2 clicks on the Imp"). Backup and Reset are on their own page. The canvas has no floating decoration and no setting for it.
 
-**Window** is one row, Size, with four segmented buttons that have symbols: Small (560 by 520 pt), Medium (780 by 640, the default and the size the window first opens at), Large (1,040 by 780) and Full (the whole visible screen). Choosing one resizes the home window at once, animated, keeping its top left corner where it is and moving it just enough to stay on the screen; no size is larger than the screen's visible area. Dragging the edges still works; the row keeps showing the last size chosen. The smallest the window can be (440 by 480 pt) is a fixed design value, not a setting, and lies below the narrow breakpoint. Every screen in the window adapts to any size above it: nothing has a fixed layout size. The pure logic is `WindowSizing`.
+**Window** is one row, Size, with four segmented buttons that have symbols: Small (560 by 520 pt), Medium (780 by 640, the default and the size the window first opens at), Large (1,040 by 780) and Full (the whole visible screen). Choosing one resizes the home window at once, animated, keeping its top left corner where it is and moving it just enough to stay on the screen. No size is larger than the screen's visible area. Dragging the edges still works, and the row keeps showing the last size chosen. The smallest the window can be (440 by 480 pt) is a fixed design value, not a setting, and lies below the narrow breakpoint. Every screen in the window adapts to any size above it: nothing has a fixed layout size. The pure logic is `WindowSizing`.
 
 Where the layout changes is a design token: below `narrowWindowPoints` (520 pt) Imp Settings shows its plain list and the Settings rail shows icons only.
 
@@ -137,7 +137,7 @@ The same model as the Mac: a sheet with the title and Close on top, the sections
 | Section | Holds |
 | --- | --- |
 | Brains | Which Imps of this iPhone can think. How long an Imp waits, tries, pause. |
-| Devices | The name, one Link card (the QR code, Copy and Share, Scan and Paste; a bad code is a notice), the linked devices as pebbles with Forget all in the header, The Hop (buttons and Check). |
+| Devices | The name, one Link card (the QR code, Copy and Share, Scan and Paste, where a bad code is a notice), the linked devices as pebbles with Forget all in the header, The Hop (buttons and Check). |
 | Sharing | The Den (buttons and Check). |
 | App | Appearance (Auto, Light, Dark), On colour (White, Black), Sound and video (play voices), System (language, opens the system settings), shake, version. A tap on an Imp opens its chat at once: there is no double tap setting. |
 
@@ -379,4 +379,4 @@ The Imp never changes a setting value itself. When someone asks for a change ("m
 
 - Every setting has a stable id in `SettingsCatalog.swift` (for example `bubble_hide_after`, `backup_export`). The tool's `setting` and `page` lists are generated from that catalog, so a new setting cannot be missed. A test checks that each row on a settings screen has one `.settingAnchor(...)`.
 - Links do the same: `imp://settings?setting=bubble_hide_after` (add `&imp=<name>` for a setting of one Imp) or `imp://settings?page=backup`.
-- The iPhone has the brains, devices, sharing and app sections (see [iPhone](#iphone)); for a setting that is only on the Mac the answer is "that setting is on the Mac".
+- The iPhone has the brains, devices, sharing and app sections (see [iPhone](#iphone)). For a setting that is only on the Mac, the answer is "that setting is on the Mac".

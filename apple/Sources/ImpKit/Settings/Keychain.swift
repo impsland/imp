@@ -4,7 +4,7 @@ import Security
 /// Stores the API keys in the login keychain (never in UserDefaults).
 ///
 /// macOS asks for the user's password when an app reads a secret it isn't trusted with yet (an
-/// item saved by another build, say). Only `read` touches the secret; `contains` checks that an
+/// item saved by another build, say). Only `read` touches the secret, `contains` checks that an
 /// item is there without it, and so never asks.
 public enum Keychain {
     public static let service = "app.imp.Imp"

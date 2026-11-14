@@ -79,8 +79,8 @@ struct DevicesCard: View {
         }
     }
 
-    /// One linked device as a pebble: its icon, name and the Imps on it (coloured dots) on the leading edge;
-    /// how it is reached, Mine and Forget on the trailing edge.
+    /// One linked device as a pebble: its icon, name and the Imps on it (coloured dots) on the leading edge.
+    /// How it is reached, Mine and Forget on the trailing edge.
     private func peerRow(_ peer: DeviceLink.Peer) -> some View {
         let reach = LinkedDevices.reach(peer, hop: HopServer(model.prefs.hop))
         let hosted = model.prefs.imps.filter { peer.imps.contains($0.id) }
@@ -207,7 +207,7 @@ struct LinkJoin: Equatable {
 
 /// Link a device: one sheet, two ways. Show this Mac's code for the other device's camera (with its link to
 /// copy), or read the other device's code with this Mac's camera (or paste its link, or a picture of it).
-/// The tabs switch between them; the steps under the code say what to do on the other device.
+/// The tabs switch between them. The steps under the code say what to do on the other device.
 struct LinkDeviceSheet: View {
     enum Mode: String, Identifiable, CaseIterable {
         case show, scan
@@ -275,7 +275,7 @@ struct LinkDeviceSheet: View {
             }
         }
         .onAppear { before = Set(model.link.peers.map(\.id)) }
-        // A new code whenever its routes change (started, Wi-Fi changed, Hop set or cleared); none
+        // A new code whenever its routes change (started, Wi-Fi changed, Hop set or cleared). None
         // while this Mac has no way to be reached.
         .task(id: routesKey) { invite = preview ?? model.link.invite() }
         .onDisappear {

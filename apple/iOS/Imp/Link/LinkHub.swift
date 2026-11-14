@@ -49,7 +49,7 @@ enum PocketEvent {
 
 /// The phone's side of Imp Link (see `docs/connecting/link.md`): one `LinkNode` for this iPhone, and what
 /// its devices say about the Imps visiting here (their looks, chats, work, moods, speeches, talks and
-/// files). The Imps hatched here are `PocketRuntime`'s; the hub routes what the node hears to it.
+/// files). The Imps hatched here are `PocketRuntime`'s. The hub routes what the node hears to it.
 @MainActor @Observable
 final class LinkHub {
     nonisolated static let nameKey = "yourName"
@@ -272,7 +272,7 @@ final class LinkHub {
     // MARK: Links
 
     /// Links with the device that showed `invite`, from a code that was scanned or opened. A failure
-    /// is a toast; a success is announced when the node reports the link.
+    /// is a toast. A success is announced when the node reports the link.
     func join(_ invite: LinkInvite) async {
         linkingAsked = true
         if isLocked { unlock() }
@@ -519,7 +519,7 @@ final class LinkHub {
         case .linked(let device):
             toast = String(localized: "Linked with \(device.name)")
         case .forgotten(let id, let result):
-            // Their Imps visiting here go home (their bodies go); ours they held are home again.
+            // Their Imps visiting here go home (their bodies go). Ours they held are home again.
             for imp in result.sentHome {
                 clear(imp)
                 onEvent?(.left(imp))
@@ -635,7 +635,7 @@ final class LinkHub {
     func stop(_ imp: UUID) { tell(imp, .stop(imp: imp)) }
     func felt(_ imp: UUID, _ feeling: LinkFeeling) { tell(imp, .felt(imp: imp, feeling: feeling)) }
 
-    /// Asks the home what the Imp has said with other Imps; the answer lands in `talkLines`.
+    /// Asks the home what the Imp has said with other Imps. The answer lands in `talkLines`.
     func requestTalks(_ imp: UUID) { tell(imp, .talks(imp: imp)) }
 
     func newChat(_ imp: UUID) {
@@ -690,7 +690,7 @@ final class LinkHub {
     }
 
     /// A visiting Imp's home went out of reach: what it was saying can't go on (a question waiting for
-    /// its answer leaves the stage; a reply stays up to be read, then goes the way it would have).
+    /// its answer leaves the stage. A reply stays up to be read, then goes the way it would have).
     private func lost(visit id: UUID) {
         guard let speech = speeches[id] else { return }
         if speech.role == .reply { heard(nil, from: id) } else { drop(speech, for: id) }

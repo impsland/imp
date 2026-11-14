@@ -5,17 +5,17 @@ import Foundation
 public enum MarkdownBlock: Equatable {
     case paragraph(AttributedString)
     case heading(level: Int, AttributedString)
-    /// `marker` is "•", "◦" or "3."; nil for a later paragraph of the same item. `depth` 0 is top level.
+    /// `marker` is "•", "◦" or "3.", nil for a later paragraph of the same item. `depth` 0 is top level.
     case listItem(marker: String?, depth: Int, AttributedString)
     case quote(AttributedString)
     case code(String)
     /// `url` as written: resolve it with `Markdown.resolve` before loading. `link` is where a
-    /// picture wrapped in a link (`[![alt](pic)](link)`) points; clicking any other picture opens it.
+    /// picture wrapped in a link (`[![alt](pic)](link)`) points. Clicking any other picture opens it.
     case image(url: URL, alt: String, link: URL?)
     case table(Table)
     case rule
     /// Audio or video, embedded like a picture: `![title](voice.mp3)`. `#autoplay` on the file
-    /// (`voice.mp3#autoplay`) asks for it to start on its own; it's stripped from `url`.
+    /// (`voice.mp3#autoplay`) asks for it to start on its own. It's stripped from `url`.
     case media(url: URL, title: String, kind: MediaKind, autoplay: Bool)
 
     public enum MediaKind: Equatable, Sendable {
@@ -147,7 +147,7 @@ public enum Markdown {
 
     /// Foundation's parser keeps only the link of a linked picture and drops the picture. So,
     /// before parsing, `[![alt](pic)](link)` becomes a picture whose URL carries both (outside
-    /// code fences); `splittingImages` takes them apart again.
+    /// code fences), `splittingImages` takes them apart again.
     static let linkedImage = "imp-linked-image"
     private static let linkedImagePattern = try! NSRegularExpression(pattern: #"\[!\[([^\]]*)\]\(([^)\s]+)\)\]\(([^)\s]+)\)"#)
 
@@ -175,7 +175,7 @@ public enum Markdown {
         }.joined(separator: "\n")
     }
 
-    /// Chat replies mean a single newline as a line break; CommonMark would fold it into a space.
+    /// Chat replies mean a single newline as a line break, CommonMark would fold it into a space.
     /// So end each line outside code fences with a hard break (two spaces).
     static func keepingLineBreaks(_ text: String) -> String {
         var fenced = false
@@ -186,7 +186,7 @@ public enum Markdown {
         }.joined(separator: "\n")
     }
 
-    /// Images get their own block; the text around them stays paragraphs.
+    /// Images get their own block. The text around them stays paragraphs.
     private static func splittingImages(_ content: AttributedString) -> [MarkdownBlock] {
         var blocks: [MarkdownBlock] = []
         var text = AttributedString()
@@ -209,8 +209,8 @@ public enum Markdown {
         return blocks
     }
 
-    /// Text that can't hold a picture (a list item, quote, heading or table cell) keeps its words;
-    /// its pictures and players come out as blocks of their own, in order.
+    /// Text that can't hold a picture (a list item, quote, heading or table cell) keeps its words.
+    /// Its pictures and players come out as blocks of their own, in order.
     static func liftingEmbeds(_ content: AttributedString) -> (text: AttributedString, embeds: [MarkdownBlock]) {
         guard content.runs[\.imageURL].contains(where: { $0.0 != nil }) else { return (content, []) }
         var text = AttributedString()
@@ -227,7 +227,7 @@ public enum Markdown {
         return (text, embeds)
     }
 
-    /// A picture, or audio or video by its file's extension (a linked one plays; its link is dropped).
+    /// A picture, or audio or video by its file's extension (a linked one plays, its link is dropped).
     private static func embed(_ url: URL, alt: String) -> MarkdownBlock {
         if url.scheme == linkedImage, let parts = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems,
            let picture = parts.first(where: { $0.name == "src" })?.value.flatMap(URL.init(string:)) {

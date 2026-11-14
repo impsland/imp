@@ -55,7 +55,7 @@ once a device is linked, since that device has to be able to reach this one.
 iOS and macOS ask the person before an app uses the local network. When they say no, Network.framework keeps the
 listener and the browser `waiting` with a policy-denied DNS error (-65570). The node shows that as
 `status.localNetworkBlocked`, cleared when it becomes ready, and the apps say so with a button to Settings
-(iPhone: the app's page; Mac: System Settings › Privacy & Security › Local Network).
+(iPhone: the app's page. Mac: System Settings › Privacy & Security › Local Network).
 
 The book is saved in the Keychain (iPhone) or a private file (Mac). A book that can't be read now (the Keychain is
 closed before the first unlock) is kept and tried again later. A book that is there but can't be decoded is
@@ -212,7 +212,7 @@ inside the Imp's own Workspace. The checks above run first, size and checksum in
 can be opened: no other absolute path, no web address. A picture is attached for the model to see, a text
 is returned as text (cut after 100 000 characters, with a note), a PDF gives its text, and any other file
 gives its name, type, size and local path so the Imp can work on it with its shell. The tool runs on the Mac
-only; pocket Imps on a phone don't have it, because the files are on the Mac.
+only. Pocket Imps on a phone don't have it, because the files are on the Mac.
 
 Shared test vectors (paths, references, checksums) are in `spec/fixtures/workspace-refs.json`.
 
@@ -287,7 +287,7 @@ message depends on who sent it.
 | `chat` | `imp`, `turns`: list of `{ id, date, request, from?, reply, failed, steps }` | home, holder |
 | `work` | `imp`, `work`: `{ request, status?, partial, from? }` or null | home, holder |
 | `mood` | `imp`, `mood` (a mood name) | home, holder |
-| `brain` | `imp`, `ready`: whether it has a brain it can think with at home. False: it sleeps on the holder too, and asking it is refused there. `tools` (optional): false when the home doesn't count the holder as the owner's, so the Imp only talks for it; absent means yes. Sent again when that changes | home, holder |
+| `brain` | `imp`, `ready`: whether it has a brain it can think with at home. False: it sleeps on the holder too, and asking it is refused there. `tools` (optional): false when the home doesn't count the holder as the owner's, so the Imp only talks for it, and absent means yes. Sent again when that changes | home, holder |
 | `animate` | `imp`, `beats` (see [Kit format](/sharing/kits)) | home, holder |
 | `speech` | `imp`, `speech`: `{ id, role` (`asked`, `reply`, `asking`), `peer`, `hue`, `question`, `text }` or null | home, holder |
 | `talkLines` | `imp`, `lines`: who asked whom, with question and reply | home, holder |

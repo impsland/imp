@@ -52,7 +52,7 @@ struct ServiceRow: View {
     }
 }
 
-/// A star: filled on the service new Imps think with; click another to make it the one.
+/// A star: filled on the service new Imps think with. Click another to make it the one.
 struct DefaultServiceButton: View {
     let name: String
     let isDefault: Bool

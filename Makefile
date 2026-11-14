@@ -101,7 +101,7 @@ tokens-check:
 
 # Lists the commands.
 help:
-	@echo "make              build the Mac app (debug)"
+	@echo "make build        build the Mac app (debug)"
 	@echo "make core         build the Rust core for the Mac app and the Simulator"
 	@echo "make app          Imp.app in build/"
 	@echo "make run          build and open Imp.app"

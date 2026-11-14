@@ -2,7 +2,7 @@ import ImpKit
 import SwiftUI
 
 /// Where to look: a head turn (−1…1 each axis, y down) toward a point. Saturates ~220 pt away,
-/// like the Mac's. The Mac measures from the bottom of the screen and turns its y over; UIKit's y
+/// like the Mac's. The Mac measures from the bottom of the screen and turns its y over, UIKit's y
 /// already grows downward, so a point above the Imp is negative here (a look up).
 enum Gaze {
     static func toward(_ p: CGPoint, from c: CGPoint) -> CGPoint {
@@ -138,7 +138,7 @@ struct LiveImp: View {
 }
 
 extension Mood {
-    /// A mood the Mac named (`LinkUpdate.mood`); nil for one this build doesn't know.
+    /// A mood the Mac named (`LinkUpdate.mood`), nil for one this build doesn't know.
     init?(link name: String) { self.init(rawValue: name) }
 }
 

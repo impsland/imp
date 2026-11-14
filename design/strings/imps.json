@@ -20,8 +20,8 @@
   "imp.state.out": {
     "note": "State of an Imp let out of the window.",
     "en": "Out on the desktop",
-    "es": "Fuera, en el escritorio",
-    "zh-Hans": "在桌面上"
+    "es": "Fuera en escritorio",
+    "zh-Hans": "在桌面上玩"
   },
   "imp.state.hidden": {
     "note": "State of a hidden Imp.",
@@ -63,7 +63,7 @@
     },
     "en": "{name} is out on the desktop.",
     "es": "{name} está fuera, en el escritorio.",
-    "zh-Hans": "{name} 已来到桌面上。"
+    "zh-Hans": "{name} 已经来到桌面上。"
   },
   "imp.home.undo": {
     "note": "Undo bar after a free Imp is sent home into the window.",
@@ -106,7 +106,7 @@
   "imp.drag.hint": {
     "note": "Screen reader hint on an Imp.",
     "en": "Drag to move it.",
-    "es": "Arrástralo para moverlo.",
+    "es": "Arrastra para mover.",
     "zh-Hans": "拖动即可移动。"
   },
   "imp.drag.out_hint": {
@@ -145,7 +145,7 @@
       "name": "string"
     },
     "en": "Hide {name}",
-    "es": "Ocultar a {name}",
+    "es": "Ocultar {name}",
     "zh-Hans": "隐藏 {name}"
   },
   "imp.a11y.let_out": {
@@ -154,7 +154,7 @@
       "name": "string"
     },
     "en": "Let {name} out",
-    "es": "Dejar salir a {name}",
+    "es": "Soltar a {name}",
     "zh-Hans": "放 {name} 出来"
   },
   "imp.a11y.send_home": {
@@ -163,7 +163,7 @@
       "name": "string"
     },
     "en": "Send {name} home",
-    "es": "Enviar a {name} a casa",
+    "es": "Enviar {name} a casa",
     "zh-Hans": "送 {name} 回家"
   },
   "imp.a11y.call_home": {
@@ -172,7 +172,7 @@
       "name": "string"
     },
     "en": "Call {name} home",
-    "es": "Llamar a {name} a casa",
+    "es": "Traer a {name}",
     "zh-Hans": "叫 {name} 回家"
   },
   "imp.call_home.title": {
@@ -182,7 +182,7 @@
       "device": "string"
     },
     "en": "Bring {name} back from {device}?",
-    "es": "¿Traer a {name} de vuelta desde {device}?",
+    "es": "¿Traer a {name} de {device}?",
     "zh-Hans": "把 {name} 从 {device} 叫回来？"
   },
   "imp.call_home.message": {
@@ -198,7 +198,7 @@
     "note": "Stands for the device holding an Imp when its name is not known (it was never linked).",
     "en": "the other device",
     "es": "el otro dispositivo",
-    "zh-Hans": "另一台设备"
+    "zh-Hans": "另一台设备上"
   },
   "imp.a11y.label": {
     "note": "Screen reader label of an Imp: its name and its state.",

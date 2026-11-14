@@ -20,7 +20,7 @@
       "name": "string"
     },
     "en": "Give {name} a Brain",
-    "es": "Dale un cerebro a {name}",
+    "es": "Dar cerebro a {name}",
     "zh-Hans": "给 {name} 一个大脑"
   },
   "state.waking": {
@@ -43,7 +43,7 @@
     "note": "Title of the offline state.",
     "en": "You are offline",
     "es": "No tienes conexión",
-    "zh-Hans": "你已离线"
+    "zh-Hans": "你现在已离线"
   },
   "state.offline.note": {
     "note": "Note in the offline state.",
@@ -72,20 +72,20 @@
   "state.servers.set_up_den": {
     "note": "Button.",
     "en": "Set up Den",
-    "es": "Configurar Den",
+    "es": "Crear Den",
     "zh-Hans": "设置 Den"
   },
   "state.servers.set_up_hop": {
     "note": "Button.",
     "en": "Set up Hop",
-    "es": "Configurar Hop",
+    "es": "Crear Hop",
     "zh-Hans": "设置 Hop"
   },
   "error.generic": {
     "note": "The only error with no detail. Used when nothing more is known.",
     "en": "Something went wrong. Try again.",
     "es": "Algo salió mal. Inténtalo de nuevo.",
-    "zh-Hans": "出了点问题，请重试。"
+    "zh-Hans": "出了点问题，请再试一次。"
   },
   "error.brain.none": {
     "note": "Shown when someone talks to an Imp that sleeps.",
@@ -143,7 +143,7 @@
     "note": "Saving to disk failed.",
     "en": "Could not save that. Check the free space and try again.",
     "es": "No se pudo guardar. Revisa el espacio libre e inténtalo de nuevo.",
-    "zh-Hans": "无法保存。请检查可用空间后重试。"
+    "zh-Hans": "无法保存。请检查可用空间，然后重试。"
   },
   "error.share": {
     "note": "Sharing failed.",
@@ -167,6 +167,6 @@
     "note": "The device has no network while a Brain is checked.",
     "en": "No network. Check your connection, then try again.",
     "es": "Sin red. Revisa tu conexión e inténtalo de nuevo.",
-    "zh-Hans": "没有网络。请检查连接后再试。"
+    "zh-Hans": "没有网络。请检查连接，然后再试一次。"
   }
 }

@@ -19,7 +19,7 @@ import Foundation
 ///       "animations": [ { …as in a kit… } ] }                                // its own
 ///
 /// Only `name` is required. A missing field takes the default a new Imp has, an unknown one is ignored.
-/// Chats with other Imps aren't exported (they refer to Imps by local id); pictures aren't either
+/// Chats with other Imps aren't exported (they refer to Imps by local id). Pictures aren't either
 /// (they're files in the Imp's folder).
 public struct KitImp: Equatable, Sendable, Identifiable {
     /// Only for the review sheet: never written to a file.
@@ -92,7 +92,7 @@ public struct KitImp: Equatable, Sendable, Identifiable {
     // MARK: Reading
 
     /// One entry of `imps`. `names` maps the kit's server names to their ids. What can't be read goes to
-    /// `problems` (for the "Skipped" list); nil when the entry can't be used at all.
+    /// `problems` (for the "Skipped" list), nil when the entry can't be used at all.
     static func read(_ json: JSONValue, servers names: [String: UUID], problems: inout [String]) -> KitImp? {
         guard case .object = json else { problems.append(String(localized: "Should be an object.")); return nil }
         guard let name = json["name"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else {
@@ -335,7 +335,7 @@ extension ImpPreferences {
 
     /// A new Imp from a kit's: a new id and a name nobody has, waiting at home (not activated), its
     /// models matched to a service by address (never added), its triggers and tools its own.
-    /// Whether `kit.servers` entries are in the library is `add`'s business; this takes the ids they ended up with.
+    /// Whether `kit.servers` entries are in the library is `add`'s business. This takes the ids they ended up with.
     mutating func hatch(_ source: KitImp, servers serverIDs: [UUID: UUID], withChats: Bool) -> ImportedImp {
         var p = ImpProfile(name: ImpProfile.uniqueName(source.name, avoiding: imps.map(\.name)), hue: source.hue,
                            favoriteHue: source.favoriteHue, scale: source.scale, personality: source.personality)

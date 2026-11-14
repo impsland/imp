@@ -61,7 +61,7 @@ final class ChatPictureView: UIImageView {
     }
 }
 
-/// The full-screen picture. Pinch or double-tap to look closer; close by pulling the picture down, with the
+/// The full-screen picture. Pinch or double-tap to look closer. Close by pulling the picture down, with the
 /// close button, or with VoiceOver's escape gesture.
 final class PictureViewer: UIViewController, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     private let image: UIImage
@@ -267,7 +267,7 @@ final class PictureViewer: UIViewController, UIScrollViewDelegate, UIGestureReco
         present(sheet, animated: true)
     }
 
-    /// The pull: the picture follows the finger and gets a little smaller as the chat shows through; let go far
+    /// The pull: the picture follows the finger and gets a little smaller as the chat shows through. Let go far
     /// or fast enough and it flies back into the chat, else it settles back.
     @objc private func pulled(_ pan: UIPanGestureRecognizer) {
         let move = pan.translation(in: view)
@@ -351,7 +351,7 @@ private final class PictureScroll: UIScrollView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        // Unzoomed, the picture is exactly the screen; zoomed, it keeps the size the zoom gave it. Bounds and centre,
+        // Unzoomed, the picture is exactly the screen. Zoomed, it keeps the size the zoom gave it. Bounds and centre,
         // not frame: the picture carries a transform while it is zoomed, and a frame then means nothing.
         if zoomScale == minimumZoomScale, picture.bounds.size != bounds.size {
             picture.bounds = CGRect(origin: .zero, size: bounds.size)

@@ -49,7 +49,7 @@ struct ServerCard: View {
         }
     }
 
-    /// How the server stands, as one icon in the header; hover for the address and the words.
+    /// How the server stands, as one icon in the header. Hover for the address and the words.
     private var stateIcon: some View {
         let (symbol, color, state) = appearance
         let help = setting.inUse.map { words("servers.state_help", $0, state) } ?? state

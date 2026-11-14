@@ -36,7 +36,7 @@ import Testing
         #expect(phone.accept(transfer))
         #expect(await onMac.wait { mac.holder(of: imp.id) == phone.device.id })
 
-        // The phone asks for a file; the Mac answers in 256 KB parts, as DeviceLink does.
+        // The phone asks for a file. The Mac answers in 256 KB parts, as DeviceLink does.
         let request = UUID()
         #expect(phone.send(.file(id: request, imp: imp.id, ref: "imp-file://x/screenshot.png"), to: mac.device.id))
         #expect(await onMac.wait { onMac.events.contains { if case .message(.file(let id, _, _), _) = $0 { id == request } else { false } } })

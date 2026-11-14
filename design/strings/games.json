@@ -15,7 +15,7 @@
     "note": "VoiceOver label of the flame button that starts Embers.",
     "en": "Play Embers",
     "es": "Jugar a Brasas",
-    "zh-Hans": "玩余烬"
+    "zh-Hans": "玩玩余烬"
   },
   "games.play_echo": {
     "note": "VoiceOver label of the rune button that starts Echo.",
@@ -33,7 +33,7 @@
     "note": "Results card: quiet button that shows the rules again.",
     "en": "How to play",
     "es": "Cómo se juega",
-    "zh-Hans": "玩法"
+    "zh-Hans": "游戏玩法"
   },
   "games.skip": {
     "note": "Quiet button that skips the lesson of a game.",
@@ -44,7 +44,7 @@
   "games.new_best": {
     "note": "Badge on the results card when the score beats the best.",
     "en": "New best!",
-    "es": "¡Nuevo récord!",
+    "es": "¡Récord!",
     "zh-Hans": "新纪录！"
   },
   "games.best": {
@@ -60,13 +60,13 @@
     "note": "Prize badge: no ember got away in the round.",
     "en": "Nothing got away",
     "es": "Ninguna se escapó",
-    "zh-Hans": "一个没漏"
+    "zh-Hans": "一个都没溜走"
   },
   "games.prize.clean": {
     "note": "Prize badge: no smoke was hit in the round.",
     "en": "Clean burn",
     "es": "Fuego limpio",
-    "zh-Hans": "无烟"
+    "zh-Hans": "毫发无伤"
   },
   "games.prize.perfect_echo": {
     "note": "Prize badge: Echo was played all the way to the end.",
@@ -118,13 +118,13 @@
     "note": "Results stat: waves of embers caught whole, out of all waves.",
     "en": "Perfect waves",
     "es": "Olas perfectas",
-    "zh-Hans": "完美波次"
+    "zh-Hans": "完美的波次"
   },
   "games.stat.escaped": {
     "note": "Results stat: embers that rose out of the screen uncaught.",
     "en": "Got away",
     "es": "Escaparon",
-    "zh-Hans": "漏掉"
+    "zh-Hans": "溜走数"
   },
   "games.stat.longest": {
     "note": "Results stat: the longest sequence of Echo repeated.",

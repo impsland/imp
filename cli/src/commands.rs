@@ -1,6 +1,6 @@
 //! What each command does. Input and output are passed in, so tests can drive them.
 //!
-//! `config_cmd` is `imp config`, `imps` is `imp imp`; the chat, the serve command and the pairing are here.
+//! `config_cmd` is `imp config` and `imps` is `imp imp`. The chat, the serve command and the pairing are here.
 
 mod config_cmd;
 mod imps;

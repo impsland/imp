@@ -56,7 +56,7 @@ private func toolExchange(_ ask: String = "Make it sound nicer", file: String = 
         #expect(m.recap == "- The user is Ann.\n- Made affirmation.mp3" && m.exchangeCount == 1)
         #expect(m.messages.first?.content == "Make it sound nicer")
         let context = m.context(system: "You are Imp.", turn: .user("Play it"))
-        // The system prompt is left as it is; the recap opens the chat as a user/assistant exchange.
+        // The system prompt is left as it is. The recap opens the chat as a user/assistant exchange.
         #expect(context[0] == .system("You are Imp."))
         #expect(context[1] == .user(Recap.preface + "- The user is Ann.\n- Made affirmation.mp3"))
         #expect(context[2] == .assistant(Recap.acknowledgement))

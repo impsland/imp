@@ -511,7 +511,10 @@ async fn through_hop(
                 .await
                 .map_err(|_| HopFailure::Unavailable)?;
             if n == 0 {
-                return Err(HopFailure::Unavailable);
+                return Err(match client.closed() {
+                    Some(HopStatus::Rejected) => HopFailure::Rejected,
+                    _ => HopFailure::Unavailable,
+                });
             }
             let progress = client
                 .feed(&buffer[..n])

@@ -140,7 +140,7 @@ impl App {
         frame.set_cursor_position(Position::new(x, area.y + 1 + row));
     }
 
-    /// The Imp's mark, its name and brain on the left; what it is doing and the help hint on the right.
+    /// The Imp's mark, its name and brain on the left, then what it is doing and the help hint on the right.
     fn status_line(&self, width: usize) -> Line<'static> {
         let muted = self.theme.muted();
         let left = format!(" {} · {}", self.imp, self.model);

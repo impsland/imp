@@ -2,7 +2,7 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The Tools panel: the MCP servers this Imp can use. "Add tools" sits in the section's header; inside a
+/// The Tools panel: the MCP servers this Imp can use. "Add tools" sits in the section's header. Inside a
 /// server, "Add a header" is a plus in the header of its headers. No action is left alone under a list.
 struct PocketToolsPanel: View {
     @Bindable var draft: PocketDraft

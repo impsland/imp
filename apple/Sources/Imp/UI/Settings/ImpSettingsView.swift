@@ -129,7 +129,7 @@ struct ImpSettingsView: View {
     }
 
     /// The one Back. In a panel it returns to the settings' main screen (stage restored, focus back on
-    /// the marker that opened it) and never leaves; on the main screen it goes home. Esc is the same.
+    /// the marker that opened it) and never leaves. On the main screen it goes home. Esc is the same.
     private func back() {
         var next = nav
         switch next.back() {

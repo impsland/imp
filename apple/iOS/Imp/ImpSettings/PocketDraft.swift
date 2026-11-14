@@ -95,7 +95,7 @@ final class PocketDraft {
         name.trimmed.count > PocketImp.maxName ? PocketError.badName.errorDescription : nil
     }
 
-    /// A card you haven't filled in yet is fine (it's left out); one with something in it needs its address.
+    /// A card you haven't filled in yet is fine (it's left out). One with something in it needs its address.
     func serverProblem(_ server: ServerDraft) -> String? {
         if server.isBlank { return nil }
         if server.url.trimmed.isEmpty { return String(localized: "tools.problem.address") }

@@ -9,7 +9,7 @@ import ScreenCaptureKit
 /// `computer_verify` compare with). Everything runs on the main actor.
 ///
 /// Coordinates: see `ComputerSpace`. AX positions and CGEvent locations are global points
-/// (top-left origin); the model works in screenshot pixels, converted here and nowhere else.
+/// (top-left origin). The model works in screenshot pixels, converted here and nowhere else.
 @MainActor
 final class ComputerControl {
     /// Something to tell the model (shown as "Error: …").
@@ -485,7 +485,7 @@ enum AX {
         return AXUIElementIsAttributeSettable(el, attribute as CFString, &settable) == .success && settable.boolValue
     }
 
-    /// Several attributes in one round trip; attributes that failed are left out.
+    /// Several attributes in one round trip. Attributes that failed are left out.
     static func batch(_ el: AXUIElement, _ names: [String]) -> [String: CFTypeRef] {
         var result: CFArray?
         guard AXUIElementCopyMultipleAttributeValues(el, names as CFArray, AXCopyMultipleAttributeOptions(rawValue: 0), &result) == .success,
@@ -582,7 +582,7 @@ enum Input {
         }
     }
 
-    /// Types text as Unicode key events (any layout); newline and tab are real keys.
+    /// Types text as Unicode key events (any layout). Newline and tab are real keys.
     static func type(_ text: String) async {
         var buffer: [UniChar] = []
         func flush() async {

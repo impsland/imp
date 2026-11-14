@@ -40,7 +40,7 @@ final class ImpLife {
     }
 
     /// The glyph the current animation shows: how long it has shown and has left (it fades
-    /// out before it goes; one held by a sustained animation stays).
+    /// out before it goes. One held by a sustained animation stays).
     func glyph(at date: Date) -> (glyph: Glyph, age: Double, remaining: Double)? {
         guard let antic, var g = antic.steps.glyph(at: stepIndex, elapsed: date.timeIntervalSince(stepStarted)) else { return nil }
         if sustainedUntil > date { g.remaining = max(g.remaining, 0.5) }

@@ -18639,7 +18639,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "用一句话说说它做什么。"
+            "value" : "用一句话说明它的作用。"
           }
         }
       }
@@ -18705,7 +18705,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El dibujo que se muestra para este movimiento en las listas."
+            "value" : "El dibujo de este movimiento en las listas."
           }
         },
         "zh-Hans" : {
@@ -18735,7 +18735,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "动作持续多久。"
+            "value" : "这个动作会持续多久。"
           }
         }
       }
@@ -18777,7 +18777,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cuándo ocurre este movimiento."
+            "value" : "Cuándo ocurre."
           }
         },
         "zh-Hans" : {
@@ -18807,7 +18807,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把身体压扁或拉长，像一个球。"
+            "value" : "把身体压扁或拉长，像个球。"
           }
         }
       }
@@ -18879,7 +18879,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内置"
+            "value" : "内置项"
           }
         }
       }
@@ -19047,7 +19047,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "动画"
+            "value" : "动画效果"
           }
         }
       }
@@ -19071,7 +19071,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "语言"
+            "value" : "界面语言"
           }
         }
       }
@@ -19161,7 +19161,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Restablecer"
+            "value" : "Reiniciar"
           }
         },
         "zh-Hans" : {
@@ -19311,7 +19311,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "中"
+            "value" : "中等大"
           }
         }
       }
@@ -19407,7 +19407,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择颜色…"
+            "value" : "选择一种颜色…"
           }
         }
       }
@@ -19431,7 +19431,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择图片…"
+            "value" : "选择一张图片…"
           }
         }
       }
@@ -19503,7 +19503,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法使用这张图片。请换一张。"
+            "value" : "这张图片无法使用，请换一张。"
           }
         }
       }
@@ -19617,7 +19617,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ está despierto."
+            "value" : "%1$@ despertó."
           }
         },
         "zh-Hans" : {
@@ -19671,7 +19671,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择服务"
+            "value" : "选择一项服务"
           }
         }
       }
@@ -19695,7 +19695,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "从服务的模型中选择"
+            "value" : "从服务提供的模型中选择"
           }
         }
       }
@@ -19713,13 +19713,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añadir un servicio"
+            "value" : "Añadir servicio"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加服务"
+            "value" : "添加一项服务"
           }
         }
       }
@@ -19767,7 +19767,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "服务里具体的大脑。大的想得更好，但更慢。"
+            "value" : "服务里具体用哪个大脑。大的想得更好，但更慢。"
           }
         }
       }
@@ -19791,7 +19791,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择由谁来替这个小鬼思考。"
+            "value" : "选择由谁来为这个小鬼思考。"
           }
         }
       }
@@ -20145,7 +20145,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Por defecto"
+            "value" : "Normal"
           }
         },
         "zh-Hans" : {
@@ -20199,7 +20199,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这台电脑上的模型"
+            "value" : "这台电脑上的一个模型"
           }
         }
       }
@@ -20277,7 +20277,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用你密钥的服务"
+            "value" : "需要你自己密钥的服务"
           }
         }
       }
@@ -20517,7 +20517,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "继续"
+            "value" : "继续下一步"
           }
         }
       }
@@ -20637,7 +20637,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "需要注意"
+            "value" : "需要你留意"
           }
         }
       }
@@ -20781,7 +20781,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置"
+            "value" : "应用设置"
           }
         }
       }
@@ -20829,7 +20829,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重试"
+            "value" : "重新尝试"
           }
         }
       }
@@ -20925,7 +20925,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入一个词来查找。"
+            "value" : "输入一个词来查找内容。"
           }
         }
       }
@@ -21045,7 +21045,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "帮助大家找到它的词。用逗号分开。"
+            "value" : "帮大家找到它的词，用逗号分开。"
           }
         }
       }
@@ -21165,7 +21165,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "直连,在本地网络"
+            "value" : "直连，走本地网络"
           }
         }
       }
@@ -21189,7 +21189,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "通过服务器"
+            "value" : "经由服务器中转"
           }
         }
       }
@@ -21231,7 +21231,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar código"
+            "value" : "Ver código"
           }
         },
         "zh-Hans" : {
@@ -21429,7 +21429,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没有网络。请检查连接后再试。"
+            "value" : "没有网络。请检查连接，然后再试一次。"
           }
         }
       }
@@ -21501,7 +21501,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "出了点问题，请重试。"
+            "value" : "出了点问题，请再试一次。"
           }
         }
       }
@@ -21525,7 +21525,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法保存。请检查可用空间后重试。"
+            "value" : "无法保存。请检查可用空间，然后重试。"
           }
         }
       }
@@ -21645,7 +21645,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%2$lld 条中的 %1$lld 条"
+            "value" : "共 %2$lld 条，显示 %1$lld 条"
           }
         }
       }
@@ -21669,7 +21669,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有。"
+            "value" : "暂时还没有。"
           }
         }
       }
@@ -21765,7 +21765,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "找过"
+            "value" : "查找过的"
           }
         }
       }
@@ -21783,7 +21783,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nada coincide."
+            "value" : "Sin coincidencias."
           }
         },
         "zh-Hans" : {
@@ -21813,7 +21813,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "读了页面"
+            "value" : "读取了页面"
           }
         }
       }
@@ -21831,13 +21831,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No pudo leer la página"
+            "value" : "No pudo leerla"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没能读页面"
+            "value" : "没能读取这个页面"
           }
         }
       }
@@ -22215,7 +22215,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ está trabajando"
+            "value" : "%1$@ trabaja"
           }
         },
         "zh-Hans" : {
@@ -22389,7 +22389,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "只留在这台电脑上"
+            "value" : "只保留在这台电脑上"
           }
         }
       }
@@ -22413,7 +22413,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重试"
+            "value" : "重新尝试"
           }
         }
       }
@@ -22557,7 +22557,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未连接"
+            "value" : "尚未连接上"
           }
         }
       }
@@ -22599,7 +22599,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La página que Imp conoce"
+            "value" : "La página actual"
           }
         },
         "zh-Hans" : {
@@ -22647,7 +22647,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Página sin título"
+            "value" : "Sin título"
           }
         },
         "zh-Hans" : {
@@ -22695,7 +22695,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ está despierto."
+            "value" : "%1$@ despertó."
           }
         },
         "zh-Hans" : {
@@ -22791,7 +22791,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp no pudo guardar la clave. Inténtalo de nuevo."
+            "value" : "Imp no pudo guardar la clave."
           }
         },
         "zh-Hans" : {
@@ -22845,7 +22845,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "搜索或输入模型"
+            "value" : "搜索或输入模型名"
           }
         }
       }
@@ -22887,13 +22887,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Encontrado aquí"
+            "value" : "Hallado aquí"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已找到"
+            "value" : "在这里找到"
           }
         }
       }
@@ -23103,7 +23103,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Despertar a %1$@"
+            "value" : "Despertar %1$@"
           }
         },
         "zh-Hans" : {
@@ -23229,7 +23229,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "玩法"
+            "value" : "游戏玩法"
           }
         }
       }
@@ -23247,7 +23247,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¡Nuevo récord!"
+            "value" : "¡Récord!"
           }
         },
         "zh-Hans" : {
@@ -23301,7 +23301,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "玩余烬"
+            "value" : "玩玩余烬"
           }
         }
       }
@@ -23325,7 +23325,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无烟"
+            "value" : "毫发无伤"
           }
         }
       }
@@ -23349,7 +23349,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个没漏"
+            "value" : "一个都没溜走"
           }
         }
       }
@@ -23553,7 +23553,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "漏掉"
+            "value" : "溜走数"
           }
         }
       }
@@ -23625,7 +23625,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "完美波次"
+            "value" : "完美的波次"
           }
         }
       }
@@ -23643,7 +23643,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quedarme con %1$@"
+            "value" : "Conservar %1$@"
           }
         },
         "zh-Hans" : {
@@ -23673,7 +23673,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "说再见"
+            "value" : "告别吧"
           }
         }
       }
@@ -23763,13 +23763,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El hogar de los Imps"
+            "value" : "El hogar de Imps"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 之家"
+            "value" : "Imp 的家园"
           }
         }
       }
@@ -23859,7 +23859,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay Imps"
+            "value" : "Sin Imps aún"
           }
         },
         "zh-Hans" : {
@@ -23883,7 +23883,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traer de vuelta a %1$@"
+            "value" : "Recuperar a %1$@"
           }
         },
         "zh-Hans" : {
@@ -23907,7 +23907,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No hay Imps ocultos"
+            "value" : "Sin Imps ocultos"
           }
         },
         "zh-Hans" : {
@@ -23961,7 +23961,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 从地面探出头来。"
+            "value" : "%1$@ 正从地面探出头来。"
           }
         }
       }
@@ -24051,7 +24051,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamar a %1$@ a casa"
+            "value" : "Traer a %1$@"
           }
         },
         "zh-Hans" : {
@@ -24075,7 +24075,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ocultar a %1$@"
+            "value" : "Ocultar %1$@"
           }
         },
         "zh-Hans" : {
@@ -24123,7 +24123,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dejar salir a %1$@"
+            "value" : "Soltar a %1$@"
           }
         },
         "zh-Hans" : {
@@ -24147,7 +24147,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enviar a %1$@ a casa"
+            "value" : "Enviar %1$@ a casa"
           }
         },
         "zh-Hans" : {
@@ -24249,7 +24249,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "另一台设备"
+            "value" : "另一台设备上"
           }
         }
       }
@@ -24267,7 +24267,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Traer a %1$@ de vuelta desde %2$@?"
+            "value" : "¿Traer a %1$@ de %2$@?"
           }
         },
         "zh-Hans" : {
@@ -24291,7 +24291,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Arrástralo para moverlo."
+            "value" : "Arrastra para mover."
           }
         },
         "zh-Hans" : {
@@ -24417,7 +24417,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 已来到桌面上。"
+            "value" : "%1$@ 已经来到桌面上。"
           }
         }
       }
@@ -24579,13 +24579,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fuera, en el escritorio"
+            "value" : "Fuera en escritorio"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在桌面上"
+            "value" : "在桌面上玩"
           }
         }
       }
@@ -24777,7 +24777,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 的全部设置"
+            "value" : "%1$@ 的所有设置"
           }
         }
       }
@@ -24873,7 +24873,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "个性"
+            "value" : "个性设置"
           }
         }
       }
@@ -24963,7 +24963,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Compartir a %1$@"
+            "value" : "Compartir %1$@"
           }
         },
         "zh-Hans" : {
@@ -25041,7 +25041,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "颜色和大小"
+            "value" : "颜色与大小"
           }
         }
       }
@@ -25065,7 +25065,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "动画"
+            "value" : "动画效果"
           }
         }
       }
@@ -25089,7 +25089,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "名字和声音"
+            "value" : "名字与声音"
           }
         }
       }
@@ -25107,13 +25107,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$lld de %2$lld activas"
+            "value" : "%1$lld de %2$lld"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%2$lld 个中开启 %1$lld 个"
+            "value" : "已开启 %1$lld/%2$lld"
           }
         }
       }
@@ -25359,7 +25359,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 入门套件"
+            "value" : "Imp 自带入门套件"
           }
         }
       }
@@ -25377,13 +25377,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La red local está desactivada para Imp"
+            "value" : "Red local desactivada"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 的本地网络已关闭"
+            "value" : "Imp 的本地网络已被关闭"
           }
         }
       }
@@ -25407,7 +25407,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开设置"
+            "value" : "打开设置项"
           }
         }
       }
@@ -25431,7 +25431,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开系统设置"
+            "value" : "打开“系统设置”"
           }
         }
       }
@@ -25455,7 +25455,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在准备连接…"
+            "value" : "正在准备建立连接…"
           }
         }
       }
@@ -25551,7 +25551,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "性格"
+            "value" : "角色性格"
           }
         }
       }
@@ -25671,7 +25671,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "常用"
+            "value" : "最爱款"
           }
         }
       }
@@ -25767,7 +25767,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一些小细节，改变脸和动作的样子。"
+            "value" : "一些改变脸和动作样子的小细节。"
           }
         }
       }
@@ -25785,13 +25785,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cuánto se sonrojan las mejillas."
+            "value" : "Cuánto se sonrojan."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "脸颊有多红。"
+            "value" : "脸颊红润的程度。"
           }
         }
       }
@@ -25833,13 +25833,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hace los ojos más pequeños o más grandes."
+            "value" : "Hace los ojos más grandes o pequeños."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "让眼睛变小或变大。"
+            "value" : "让眼睛变得更小或更大。"
           }
         }
       }
@@ -25863,7 +25863,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把头歪向一边或另一边。"
+            "value" : "把头歪向左边或右边。"
           }
         }
       }
@@ -25881,13 +25881,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gira los cuernos hacia arriba o hacia abajo."
+            "value" : "Gira los cuernos arriba o abajo."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把角向上或向下转。"
+            "value" : "把角朝上或朝下转动。"
           }
         }
       }
@@ -25911,7 +25911,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "眼皮合上多少。越多越像没睡醒。"
+            "value" : "眼皮合上的程度。越多越像没睡醒。"
           }
         }
       }
@@ -25983,7 +25983,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把眼睛眯紧，或睁得很大。"
+            "value" : "把眼睛眯紧，或者睁得很大。"
           }
         }
       }
@@ -26097,7 +26097,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Restablecer"
+            "value" : "Reiniciar"
           }
         },
         "zh-Hans" : {
@@ -26319,7 +26319,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每条消息一起发给大脑的最近消息数。越少越快越省。"
+            "value" : "每次随消息一起发给大脑的最近消息数。越少越快也越省。"
           }
         }
       }
@@ -26433,13 +26433,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Resultados de herramientas"
+            "value" : "Resultados"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "工具结果"
+            "value" : "工具的结果"
           }
         }
       }
@@ -26487,7 +26487,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隐藏桌面上的 Imp"
+            "value" : "隐藏桌面上的所有 Imp"
           }
         }
       }
@@ -26529,13 +26529,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir la casa de los Imps"
+            "value" : "Abrir el hogar"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Imp 的家"
+            "value" : "打开 Imp 的家园"
           }
         }
       }
@@ -26559,7 +26559,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "桌面上没有 Imp"
+            "value" : "桌面上还没有 Imp"
           }
         }
       }
@@ -26601,7 +26601,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Salir de Imp"
+            "value" : "Cerrar Imp"
           }
         },
         "zh-Hans" : {
@@ -26631,7 +26631,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置"
+            "value" : "应用设置"
           }
         }
       }
@@ -26655,7 +26655,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "所有 Imp 的设置"
+            "value" : "所有 Imp 的设置项"
           }
         }
       }
@@ -26697,13 +26697,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar los Imps otra vez"
+            "value" : "Mostrar Imps"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重新显示 Imp"
+            "value" : "重新显示所有 Imp"
           }
         }
       }
@@ -26799,7 +26799,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "背景"
+            "value" : "桌面背景"
           }
         }
       }
@@ -26871,7 +26871,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置"
+            "value" : "应用设置"
           }
         }
       }
@@ -26913,7 +26913,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamar a casa"
+            "value" : "Traer"
           }
         },
         "zh-Hans" : {
@@ -26937,7 +26937,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamar a casa…"
+            "value" : "Traer…"
           }
         },
         "zh-Hans" : {
@@ -26985,7 +26985,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Copiar enlace"
+            "value" : "Copiar vínculo"
           }
         },
         "zh-Hans" : {
@@ -27057,7 +27057,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dejar salir"
+            "value" : "Soltar"
           }
         },
         "zh-Hans" : {
@@ -27087,7 +27087,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 从此住在 %2$@。"
+            "value" : "%1$@ 从现在起住在 %2$@。"
           }
         }
       }
@@ -27129,7 +27129,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enviar a casa"
+            "value" : "A casa"
           }
         },
         "zh-Hans" : {
@@ -27183,7 +27183,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置"
+            "value" : "小妖设置"
           }
         }
       }
@@ -27351,7 +27351,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "去别的设备做客"
+            "value" : "去别的设备做客吧"
           }
         }
       }
@@ -27879,7 +27879,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内置"
+            "value" : "内置规则"
           }
         }
       }
@@ -27951,7 +27951,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "个性"
+            "value" : "个性设置"
           }
         }
       }
@@ -28041,7 +28041,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automático"
+            "value" : "Auto"
           }
         },
         "zh-Hans" : {
@@ -28161,7 +28161,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamar a casa"
+            "value" : "Llamar"
           }
         },
         "zh-Hans" : {
@@ -28185,7 +28185,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamar a %1$@ a casa"
+            "value" : "Traer a %1$@"
           }
         },
         "zh-Hans" : {
@@ -28209,7 +28209,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Respondiendo a %1$@…"
+            "value" : "Responde a %1$@…"
           }
         },
         "zh-Hans" : {
@@ -28263,7 +28263,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请 %1$@ "
+            "value" : "让 %1$@ 去 "
           }
         }
       }
@@ -28335,7 +28335,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没能回答"
+            "value" : "没能给出回答"
           }
         }
       }
@@ -28377,7 +28377,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mensaje para %1$@"
+            "value" : "Escribir a %1$@"
           }
         },
         "zh-Hans" : {
@@ -28473,7 +28473,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usó %1$lld herramientas"
+            "value" : "%1$lld herramientas"
           }
         },
         "zh-Hans" : {
@@ -28575,7 +28575,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "通过服务器"
+            "value" : "经由服务器中转"
           }
         }
       }
@@ -28671,7 +28671,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法保存小妖。%1$@"
+            "value" : "没能保存这个小妖。%1$@"
           }
         }
       }
@@ -28689,13 +28689,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudo guardar"
+            "value" : "Sin guardar"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法保存"
+            "value" : "没能保存成功"
           }
         }
       }
@@ -28737,7 +28737,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sus Imps vuelven a casa. Para enlazar otra vez, muestra un código nuevo."
+            "value" : "Sus Imps vuelven. Para enlazar, muestra otro código."
           }
         },
         "zh-Hans" : {
@@ -28809,7 +28809,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Olvidar a %1$@?"
+            "value" : "¿Olvidar %1$@?"
           }
         },
         "zh-Hans" : {
@@ -28857,13 +28857,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Olvidar todos los dispositivos?"
+            "value" : "¿Olvidar todos?"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "忘记所有设备？"
+            "value" : "要忘记所有设备吗？"
           }
         }
       }
@@ -28881,7 +28881,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamarada. Los puntos valen el doble."
+            "value" : "Llamarada. Puntos dobles"
           }
         },
         "zh-Hans" : {
@@ -29151,7 +29151,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "剪贴板里没有 Imp 的链接。"
+            "value" : "剪贴板里没有来自 Imp 的链接。"
           }
         }
       }
@@ -29247,7 +29247,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这不是 Imp 的链接。"
+            "value" : "这不是来自 Imp 的链接。"
           }
         }
       }
@@ -29295,7 +29295,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "其他设备会看到这个名字。"
+            "value" : "其他设备会以这个名字看到这台 iPhone。"
           }
         }
       }
@@ -29415,7 +29415,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每次休息都比上一次长这么多倍。"
+            "value" : "每次休息的时间，都比上一次长这么多倍。"
           }
         }
       }
@@ -29463,7 +29463,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小妖再问之前先休息多久。"
+            "value" : "小妖再次提问之前先休息多久。"
           }
         }
       }
@@ -29511,7 +29511,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小妖等它的大脑多久，以及网络断了怎么办。"
+            "value" : "小妖等它的大脑要多久，以及网络断开时该怎么办。"
           }
         }
       }
@@ -29535,7 +29535,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络断了，小妖再问几次。密钥错了就不会再试。"
+            "value" : "网络断开时，小妖会再问几次。密钥错误则不会再试。"
           }
         }
       }
@@ -29607,7 +29607,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最多等"
+            "value" : "最长等待"
           }
         }
       }
@@ -29673,7 +29673,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Introducida, oculta"
+            "value" : "Oculta"
           }
         },
         "zh-Hans" : {
@@ -29769,13 +29769,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Izquierda o derecha"
+            "value" : "Izq. o der."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "左或右"
+            "value" : "向左或向右"
           }
         }
       }
@@ -29847,7 +29847,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "轻"
+            "value" : "轻柔档"
           }
         }
       }
@@ -29871,7 +29871,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "力度"
+            "value" : "力度大小"
           }
         }
       }
@@ -29919,7 +29919,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "中"
+            "value" : "正常档"
           }
         }
       }
@@ -30207,7 +30207,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "本机"
+            "value" : "这台 iPhone"
           }
         }
       }
@@ -30249,7 +30249,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$lld dispositivos"
+            "value" : "%1$lld equipos"
           }
         },
         "zh-Hans" : {
@@ -30279,7 +30279,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开设备"
+            "value" : "打开设备列表"
           }
         }
       }
@@ -30303,7 +30303,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "通过互联网"
+            "value" : "经由互联网"
           }
         }
       }
@@ -30345,7 +30345,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay charlas"
+            "value" : "Sin charlas"
           }
         },
         "zh-Hans" : {
@@ -30495,7 +30495,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "麦克风"
+            "value" : "麦克风权限"
           }
         }
       }
@@ -30543,7 +30543,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "权限"
+            "value" : "隐私权限"
           }
         }
       }
@@ -30561,13 +30561,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Confiar"
+            "value" : "Confiar en equipos"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "信任设备"
+            "value" : "信任这些设备"
           }
         }
       }
@@ -30783,7 +30783,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这需要 Den。请在设置中添加。"
+            "value" : "这需要有 Den。请到设置里添加。"
           }
         }
       }
@@ -30807,7 +30807,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在 Den 中分享和查找已关闭。"
+            "value" : "在 Den 中的分享和查找已关闭。"
           }
         }
       }
@@ -30855,7 +30855,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "让你的设备找到彼此。它只转发加密数据。"
+            "value" : "让你的设备能够找到彼此，只转发加密数据。"
           }
         }
       }
@@ -30993,7 +30993,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Personalizado"
+            "value" : "Propio"
           }
         },
         "zh-Hans" : {
@@ -31017,7 +31017,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Servidores de Imp"
+            "value" : "Servidores Imp"
           }
         },
         "zh-Hans" : {
@@ -31041,7 +31041,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La opción por defecto, a cargo del proyecto Imp."
+            "value" : "El predeterminado, del proyecto Imp."
           }
         },
         "zh-Hans" : {
@@ -31119,7 +31119,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法连接。请检查地址。"
+            "value" : "无法连接上，请检查地址。"
           }
         }
       }
@@ -31215,7 +31215,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "尚未检查"
+            "value" : "还没有检查过"
           }
         }
       }
@@ -31239,7 +31239,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "外观"
+            "value" : "外观样式"
           }
         }
       }
@@ -31359,7 +31359,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "应用的外观。"
+            "value" : "应用看起来的样子。"
           }
         }
       }
@@ -31383,7 +31383,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "应用如何启动以及使用的语言。"
+            "value" : "应用如何启动，以及使用哪种语言。"
           }
         }
       }
@@ -31407,7 +31407,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Den 还没有设置。"
+            "value" : "Den 尚未设置。"
           }
         }
       }
@@ -31425,7 +31425,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ no tiene conexión."
+            "value" : "%1$@ sin conexión."
           }
         },
         "zh-Hans" : {
@@ -31455,7 +31455,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hop 还没有设置。"
+            "value" : "Hop 尚未设置。"
           }
         }
       }
@@ -31551,7 +31551,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把 Imp 和设置存进文件,或再载入。"
+            "value" : "把 Imp 和设置存进文件，或再次载入。"
           }
         }
       }
@@ -31599,7 +31599,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "清除一切重新开始。无法撤销。"
+            "value" : "清除一切并重新开始，此操作无法撤销。"
           }
         }
       }
@@ -31617,7 +31617,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Restablecer"
+            "value" : "Reiniciar"
           }
         },
         "zh-Hans" : {
@@ -31647,7 +31647,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "再次提问前等多久。"
+            "value" : "再次提问之前要等多长时间。"
           }
         }
       }
@@ -31743,7 +31743,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大脑的秘密口令。"
+            "value" : "你的各个大脑所用的密钥口令。"
           }
         }
       }
@@ -31791,7 +31791,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每次间隔变长多少。"
+            "value" : "每次间隔会变长多少。"
           }
         }
       }
@@ -31839,7 +31839,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大脑很慢时 Imp 有多耐心。"
+            "value" : "大脑很慢时，Imp 有多大耐心。"
           }
         }
       }
@@ -31929,7 +31929,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los cerebros con los que piensan tus Imps."
+            "value" : "Los cerebros de tus Imps."
           }
         },
         "zh-Hans" : {
@@ -31959,7 +31959,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "等待回答多久后放弃。"
+            "value" : "放弃之前，最多等待回答多久。"
           }
         }
       }
@@ -32055,7 +32055,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "播放声音时显示什么。"
+            "value" : "播放声音时气泡里显示什么。"
           }
         }
       }
@@ -32079,7 +32079,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "播放时"
+            "value" : "播放声音时"
           }
         }
       }
@@ -32121,7 +32121,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Auto"
+            "value" : "Autoplay"
           }
         },
         "zh-Hans" : {
@@ -32199,7 +32199,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "背景"
+            "value" : "气泡背景"
           }
         }
       }
@@ -32223,7 +32223,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "半透明"
+            "value" : "半透明的"
           }
         }
       }
@@ -32247,7 +32247,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小妖说完后气泡停留多久。"
+            "value" : "小妖说完话后，气泡会停留多久。"
           }
         }
       }
@@ -32439,7 +32439,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "气泡如何显示回答。"
+            "value" : "气泡显示回答的方式。"
           }
         }
       }
@@ -32529,7 +32529,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamar a sus Imps a casa"
+            "value" : "Traer sus Imps"
           }
         },
         "zh-Hans" : {
@@ -32631,7 +32631,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "与这台设备连接的设备。"
+            "value" : "与这台设备已连接的设备。"
           }
         }
       }
@@ -32679,7 +32679,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "动画"
+            "value" : "动画效果"
           }
         }
       }
@@ -32823,7 +32823,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "权限"
+            "value" : "隐私权限"
           }
         }
       }
@@ -33039,7 +33039,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "暂时看不到对方"
+            "value" : "彼此暂时看不到"
           }
         }
       }
@@ -33063,7 +33063,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可以互相看到"
+            "value" : "彼此可以看到"
           }
         }
       }
@@ -33081,7 +33081,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Necesita configuración"
+            "value" : "Sin configurar"
           }
         },
         "zh-Hans" : {
@@ -33177,7 +33177,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Este dispositivo"
+            "value" : "Este equipo"
           }
         },
         "zh-Hans" : {
@@ -33225,13 +33225,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sus herramientas se pueden usar desde aquí"
+            "value" : "Sus herramientas, desde aquí"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可以从这里使用它的工具"
+            "value" : "能从这里用它的工具"
           }
         }
       }
@@ -33279,7 +33279,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "让 Imp 替你按键和点击。"
+            "value" : "让 Imp 能替你按键和点击。"
           }
         }
       }
@@ -33327,7 +33327,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这台电脑"
+            "value" : "这台电脑上"
           }
         }
       }
@@ -33399,7 +33399,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "麦克风"
+            "value" : "麦克风权限"
           }
         }
       }
@@ -33471,7 +33471,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大脑的网址。"
+            "value" : "这个大脑的网络地址。"
           }
         }
       }
@@ -33519,7 +33519,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大脑要求的秘密口令。"
+            "value" : "这个大脑要求提供的密钥口令。"
           }
         }
       }
@@ -33543,7 +33543,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在这台电脑上运行的大脑。"
+            "value" : "一个在这台电脑上运行的大脑。"
           }
         }
       }
@@ -33585,13 +33585,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un nombre que eliges para este cerebro."
+            "value" : "Un nombre a tu gusto"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你给这个大脑起的名字。"
+            "value" : "你给这个大脑取的名字。"
           }
         }
       }
@@ -33615,7 +33615,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 之间如何交谈。"
+            "value" : "Imp 彼此之间如何交谈。"
           }
         }
       }
@@ -33639,7 +33639,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 之间"
+            "value" : "Imp 彼此之间"
           }
         }
       }
@@ -33687,7 +33687,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "语言"
+            "value" : "使用语言"
           }
         }
       }
@@ -33735,7 +33735,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "聆听"
+            "value" : "聆听方式"
           }
         }
       }
@@ -33807,7 +33807,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 是继续同一个聊天还是开新聊天。"
+            "value" : "Imp 是继续同一个聊天，还是开新聊天。"
           }
         }
       }
@@ -33855,7 +33855,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个聊天保持不变的分钟数。"
+            "value" : "一个聊天保持为同一个聊天的分钟数。"
           }
         }
       }
@@ -33873,7 +33873,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mismo chat durante"
+            "value" : "Mismo chat"
           }
         },
         "zh-Hans" : {
@@ -33903,7 +33903,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置"
+            "value" : "应用设置"
           }
         }
       }
@@ -33927,7 +33927,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "工具的网址。"
+            "value" : "这个工具的网络地址。"
           }
         }
       }
@@ -33951,7 +33951,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启动工具的命令。"
+            "value" : "用来启动这个工具的命令。"
           }
         }
       }
@@ -33993,13 +33993,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un nombre que eliges para esta herramienta."
+            "value" : "Un nombre a tu gusto"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你给这个工具起的名字。"
+            "value" : "你给这个工具取的名字。"
           }
         }
       }
@@ -34023,7 +34023,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "工具运行所需的秘密值。"
+            "value" : "这个工具运行时需要的秘密值。"
           }
         }
       }
@@ -34137,7 +34137,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Compartir a %1$@"
+            "value" : "Compartir %1$@"
           }
         },
         "zh-Hans" : {
@@ -34263,7 +34263,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有"
+            "value" : "暂时还没有"
           }
         }
       }
@@ -34359,7 +34359,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你已离线"
+            "value" : "你现在已离线"
           }
         }
       }
@@ -34377,7 +34377,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Configurar Den"
+            "value" : "Crear Den"
           }
         },
         "zh-Hans" : {
@@ -34401,7 +34401,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Configurar Hop"
+            "value" : "Crear Hop"
           }
         },
         "zh-Hans" : {
@@ -34425,7 +34425,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dale un cerebro a %1$@"
+            "value" : "Dar cerebro a %1$@"
           }
         },
         "zh-Hans" : {
@@ -34575,7 +34575,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内置"
+            "value" : "内置项"
           }
         }
       }
@@ -34593,7 +34593,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ocultar las herramientas de %1$@"
+            "value" : "Ocultar herramientas de %1$@"
           }
         },
         "zh-Hans" : {
@@ -34641,7 +34641,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar las herramientas de %1$@"
+            "value" : "Ver herramientas de %1$@"
           }
         },
         "zh-Hans" : {
@@ -34665,13 +34665,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$lld de %2$lld activas"
+            "value" : "%1$lld de %2$lld"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%2$lld 个中开启 %1$lld 个"
+            "value" : "已开启 %1$lld/%2$lld"
           }
         }
       }
@@ -35007,7 +35007,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法启动"
+            "value" : "启动没有成功"
           }
         }
       }
@@ -35079,7 +35079,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可选"
+            "value" : "可选项"
           }
         }
       }
@@ -35097,13 +35097,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añade la dirección del servidor."
+            "value" : "Falta la dirección."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请填写服务器地址。"
+            "value" : "请填写服务器的地址。"
           }
         }
       }
@@ -35175,7 +35175,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小妖会失去这台服务器的工具。"
+            "value" : "小妖将不能再用这台服务器的工具。"
           }
         }
       }
@@ -35295,7 +35295,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除触发器"
+            "value" : "删除这个触发器"
           }
         }
       }
@@ -35313,7 +35313,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eliminar para todos los Imps"
+            "value" : "Borrar para todos"
           }
         },
         "zh-Hans" : {
@@ -35337,7 +35337,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Eliminar “%1$@” para todos los Imps?"
+            "value" : "¿Borrar “%1$@” para todos?"
           }
         },
         "zh-Hans" : {
@@ -35463,7 +35463,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触发时小鬼可以看到什么，比如剪贴板。"
+            "value" : "触发时小鬼能看到什么，比如剪贴板。"
           }
         }
       }
@@ -35559,7 +35559,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 自带的触发器：点击、入睡和醒来。添加前你会先看到它们。"
+            "value" : "Imp 自带的触发器：点击、入睡和醒来。添加之前你会先看到它们。"
           }
         }
       }
@@ -35631,7 +35631,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "仅限 %1$@"
+            "value" : "只给 %1$@ 用"
           }
         }
       }
@@ -35703,7 +35703,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "为所有 Imp 更改。"
+            "value" : "会对所有 Imp 生效。"
           }
         }
       }
@@ -35769,7 +35769,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Compartir con todos"
+            "value" : "Para todos"
           }
         },
         "zh-Hans" : {
@@ -35865,7 +35865,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usar el compartido"
+            "value" : "Usar común"
           }
         },
         "zh-Hans" : {
@@ -35889,7 +35889,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se quita la versión que solo tiene %1$@."
+            "value" : "Se quita la versión de %1$@."
           }
         },
         "zh-Hans" : {
@@ -35937,7 +35937,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Auto"
+            "value" : "Autoplay"
           }
         },
         "zh-Hans" : {

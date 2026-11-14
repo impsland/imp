@@ -3,8 +3,8 @@ import ImpKit
 import SwiftUI
 
 /// One server this iPhone uses, as a compact card: The Den (the gallery) or The Hop (lets devices find each
-/// other from anywhere). The header holds a status icon and Check, which carries its own progress and result;
-/// under it the choice is a row of buttons and, for Custom only, the address. Failures float as notices, so
+/// other from anywhere). The header holds a status icon and Check, which carries its own progress and result.
+/// Under it the choice is a row of buttons and, for Custom only, the address. Failures float as notices, so
 /// nothing is inserted into the page. Either server can be off.
 struct ServerCard: View {
     let hub: LinkHub

@@ -35,7 +35,7 @@ public enum QRCode {
             pixels[index * 4 + 3] > half && pixels[index * 4] < half
         }
         // The filter adds a white margin of its own. Cut it off so the matrix is only the code (its finder
-        // squares touch the corners); the margin is drawn once, at the size the standard asks for.
+        // squares touch the corners). The margin is drawn once, at the size the standard asks for.
         let used = all.indices.filter { all[$0] }
         guard !used.isEmpty else { return nil }
         let rows = used.map { $0 / side }, columns = used.map { $0 % side }

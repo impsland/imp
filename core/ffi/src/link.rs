@@ -914,14 +914,28 @@ impl LinkHopClient {
             .map_err(|_| failed("The server did not answer the way an Imp server does."))?;
         Ok(LinkHopProgress {
             reply: progress.reply,
-            status: progress.status.map(|s| match s {
-                HopStatus::Go => LinkHopStatus::Go,
-                HopStatus::Rejected => LinkHopStatus::Rejected,
-                HopStatus::Busy => LinkHopStatus::Busy,
-                HopStatus::Nobody => LinkHopStatus::Nobody,
-            }),
+            status: progress.status.map(hop_status),
             rest: progress.rest,
         })
+    }
+
+    /// The relay's answer when it closed the connection before the handshake ended: an early
+    /// `rejected` or `busy`. Nil for any other close.
+    pub fn closed(&self) -> Option<LinkHopStatus> {
+        self.client
+            .lock()
+            .unwrap_or_else(|p| p.into_inner())
+            .closed()
+            .map(hop_status)
+    }
+}
+
+fn hop_status(status: HopStatus) -> LinkHopStatus {
+    match status {
+        HopStatus::Go => LinkHopStatus::Go,
+        HopStatus::Rejected => LinkHopStatus::Rejected,
+        HopStatus::Busy => LinkHopStatus::Busy,
+        HopStatus::Nobody => LinkHopStatus::Nobody,
     }
 }
 

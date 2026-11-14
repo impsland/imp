@@ -69,7 +69,7 @@ Right click on an Imp (or touch and hold on a phone), also one level:
 2. Hide (`menu.imp.hide`)
 3. Visit {device} (`menu.imp.send_to`): the Imp goes and comes back. One item for each linked device its doors lead to
 4. Move to {Mac} (`menu.imp.move_to`), phone only, for an Imp hatched on the phone: it lives on that Mac from now on
-5. Copy kit (`menu.imp.copy_kit`) and Copy link (`menu.imp.copy_link`), desktop only; the link is off when the kit is too long for one
+5. Copy kit (`menu.imp.copy_kit`) and Copy link (`menu.imp.copy_link`), desktop only. The link is off when the kit is too long for one
 6. Let out or Send home (`menu.imp.let_out`, `menu.imp.send_home`), desktop and visitors
 7. Goodbye (`menu.imp.goodbye`), phone and desktop for an Imp that lives here, last and apart, and it asks first
 

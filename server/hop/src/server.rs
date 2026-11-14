@@ -169,7 +169,7 @@ async fn wait(
     drop((session, host.conn, guest.conn));
 }
 
-/// Tells a client its status; the connection closes when `me` drops.
+/// Tells a client its status. The connection closes when `me` drops.
 async fn say(mut me: Peer, status: u8) {
     let _ = me.stream.write_all(&[status]).await;
 }

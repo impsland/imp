@@ -19,7 +19,7 @@ BIN="$($SWIFT build --package-path apple -c "$CONFIG" $ARCH_FLAGS --show-bin-pat
 
 # Render the icon first, then assemble the bundle in a staging folder and move it into place in
 # one step. Building it in place let Finder and LaunchServices see (and cache) a half-made bundle
-# whose Info.plist names AppIcon before AppIcon.icns existed; adding files to Contents/Resources
+# whose Info.plist names AppIcon before AppIcon.icns existed. Adding files to Contents/Resources
 # never changes the bundle folder's date, so that generic icon stuck around.
 ICONSET="build/AppIcon.iconset"
 rm -rf "$ICONSET"

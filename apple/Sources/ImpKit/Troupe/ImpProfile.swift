@@ -18,8 +18,8 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     /// Who this Imp is: the first part of the system prompt for conversations with it.
     public var personality: String
     /// The rest of the system prompt: how its replies are shown (Markdown, pictures, players).
-    /// `nil` follows the built-in text (`Briefing.display`, which may improve in later versions);
-    /// an empty string sends the personality alone.
+    /// `nil` follows the built-in text (`Briefing.display`, which may improve in later versions).
+    /// An empty string sends the personality alone.
     public var instructions: String?
     /// Sends the tools it called, and what they returned, with the rest of the chat. `nil` is
     /// on (optional, so profiles saved before it existed still load).

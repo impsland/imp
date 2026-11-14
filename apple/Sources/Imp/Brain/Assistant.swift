@@ -41,7 +41,7 @@ final class Assistant {
 
     func hasKey(_ service: UUID) -> Bool { keyed.contains(service) }
 
-    /// A service's key, read on first use. From the private file that never asks anything; from the
+    /// A service's key, read on first use. From the private file that never asks anything. From the
     /// Keychain (only if the user keeps keys there) the read may ask for their password. A refusal
     /// isn't remembered: the next request asks again.
     private func key(for service: Service) throws -> String {

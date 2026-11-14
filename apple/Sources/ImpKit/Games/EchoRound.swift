@@ -21,7 +21,7 @@ public struct EchoRandom: RandomNumberGenerator, Sendable {
 ///
 /// A round that coaches starts with a guided step (a short sequence to repeat, with nothing at
 /// stake), the rules, and a countdown. Then the sequence starts at one rune and grows by one each
-/// time it is repeated right. A wrong tap costs a life and the same sequence plays again; with
+/// time it is repeated right. A wrong tap costs a life and the same sequence plays again. With
 /// three lives gone the round is over. Clean levels (no wrong tap) pay double, and every fifth
 /// one wins a life back.
 public struct EchoRound: Sendable {
@@ -159,7 +159,7 @@ public struct EchoRound: Sendable {
         return events
     }
 
-    /// Plays the sequence: each rune hops, then lights; after the last the player's turn begins.
+    /// Plays the sequence: each rune hops, then lights. After the last the player's turn begins.
     private mutating func show(_ events: inout [Event]) {
         let step = Self.interval(for: length), lead = Self.lead(for: length)
         while hops < length, clock >= Double(hops) * step {

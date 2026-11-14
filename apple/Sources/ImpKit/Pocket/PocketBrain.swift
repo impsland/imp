@@ -47,7 +47,7 @@ public struct PocketBrain: Sendable {
     /// stop button) throws `CancellationError`, and nothing is kept. Without `tools` it is a plain
     /// conversation: no tool server is called and the Imp has no tools of its own (for a request that
     /// doesn't come from the owner's own device, see `docs/connecting/link.md`). `limitedTo` is that
-    /// case with names: the device asking and this one; the Imp has no tools and is told why.
+    /// case with names: the device asking and this one. The Imp has no tools and is told why.
     public func ask(_ text: String, of imp: PocketImp, from sender: ChatTurn.Sender? = nil, talk: PocketTalk = PocketTalk(), tools: Bool = true,
                     limitedTo stranger: (device: String, home: String)? = nil,
                     onWork: @escaping @Sendable (LinkWork?) async -> Void = { _ in }) async throws -> PocketAnswer {

@@ -314,7 +314,7 @@ extension ImpPreferences {
         return own.first { $0.id == id } ?? own.first { $0.overrides == id } ?? animationLibrary.first { $0.id == id }
     }
 
-    /// Whether `ref` may play on `imp` at all (switched on; a missing one can't). A built-in one the
+    /// Whether `ref` may play on `imp` at all (switched on, a missing one can't). A built-in one the
     /// Imp has its own version of is on or off for it by that version's switch.
     public func isEnabled(_ ref: AnimationRef, imp: UUID?) -> Bool {
         switch ref {
@@ -434,14 +434,14 @@ extension ImpPreferences {
     }
 
     /// What a made animation's row shows: its switch and its starts. A new version of a built-in one has
-    /// the built-in one's starts; its switch is the built-in one's when shared, its own when an Imp's.
+    /// the built-in one's starts. Its switch is the built-in one's when shared, its own when an Imp's.
     public func rule(ofMade a: MadeAnimation, owner: UUID?) -> AnimationRule {
         guard let r = a.replaces else { return AnimationRule(isEnabled: a.isEnabled, triggers: a.triggers) }
         return AnimationRule(isEnabled: owner == nil ? isEnabled(r) : a.isEnabled, triggers: rule(for: r).triggers)
     }
 
     /// Switches a made animation on or off where it is kept. A shared new version of a built-in one
-    /// switches the built-in one (for every Imp); an Imp's own version switches for that Imp alone.
+    /// switches the built-in one (for every Imp). An Imp's own version switches for that Imp alone.
     public mutating func setEnabled(_ on: Bool, animation id: UUID) {
         guard let owner = owner(ofAnimation: id), var a = customAnimation(id, imp: owner) else { return }
         if owner == nil, let r = a.replaces { return setEnabled(on, for: r) }
@@ -450,7 +450,7 @@ extension ImpPreferences {
     }
 
     /// Adds or removes what starts a made animation. A gesture starts one animation: given to a
-    /// shared one it moves there from wherever it was; given to an Imp's own, it moves from that
+    /// shared one it moves there from wherever it was. Given to an Imp's own, it moves from that
     /// Imp's other ones (and wins over the shared one for that Imp).
     public mutating func setTrigger(_ trigger: AnimationTrigger, _ on: Bool, animation id: UUID) {
         guard let owner = owner(ofAnimation: id), var a = customAnimation(id, imp: owner) else { return }
@@ -559,7 +559,7 @@ extension AnimationBeat {
 
     static func round(_ x: Double) -> Double { (x * 1000).rounded() / 1000 }
 
-    /// A beat from a kit or a tool call. Nil without a duration; unknown moods and glyphs are reported and left out.
+    /// A beat from a kit or a tool call. Nil without a duration. Unknown moods and glyphs are reported and left out.
     init?(kit json: JSONValue, problems: inout [String]) {
         guard case .object = json, let duration = json["duration"]?.double else {
             problems.append(String(localized: "A beat needs a `duration` in seconds."))
@@ -640,7 +640,7 @@ extension MadeAnimation {
 }
 
 extension MadeAnimation {
-    /// A list of animations from a kit; what can't be read goes to `problems`, labelled.
+    /// A list of animations from a kit. What can't be read goes to `problems`, labelled.
     static func read(_ list: [JSONValue], problems: inout [String]) -> [MadeAnimation] {
         var out: [MadeAnimation] = []
         for (i, item) in list.enumerated() {

@@ -7,7 +7,7 @@ import os
 /// talks to the other devices, and everything the app does with what it hears.
 ///
 /// An Imp of this Mac is still this Mac's wherever its body is: its brain, keys, tools and chats stay
-/// here. A device it was thrown to draws it and is its chat; this relays what the Imp is doing
+/// here. A device it was thrown to draws it and is its chat. This relays what the Imp is doing
 /// (`watch`) and answers what that device asks of it. Only the device that holds an Imp may ask.
 ///
 /// Imps of other devices think there. Ours talk with them in both directions (`imp_message`).
@@ -79,7 +79,7 @@ final class DeviceLink {
         var limitedTo: String?
     }
 
-    /// Turns of the current chat a device is sent (it shows the latest; the Mac keeps them all).
+    /// Turns of the current chat a device is sent (it shows the latest, the Mac keeps them all).
     static let chatPage = 40
 
     init(app: AppModel) { self.app = app }
@@ -382,7 +382,7 @@ final class DeviceLink {
 
     // MARK: Imps coming and going
 
-    /// An Imp was thrown here. Ours coming home are taken; a visitor is drawn on the desktop (the
+    /// An Imp was thrown here. Ours coming home are taken. A visitor is drawn on the desktop (the
     /// node says no when it holds as many visits as it can).
     private func thrown(_ transfer: UUID, imp: LinkImp, entry: LinkEntry, home: LinkCard?, from device: UUID) {
         guard let node else { return }
@@ -521,7 +521,7 @@ final class DeviceLink {
 
     /// An Imp's talks with other Imps as the device that holds it gets them: the latest, cut to size, and each
     /// file they mention as an `imp-file` link of the Imp that wrote it (the question's for the asker, the
-    /// reply's for the one who answered). A bare `todo-done.png` means a file in the answerer's folder; as a
+    /// reply's for the one who answered). A bare `todo-done.png` means a file in the answerer's folder. As a
     /// link it says whose it is, with its size and checksum, so the phone can fetch it through any Imp it
     /// holds, and the file is the one that was shared.
     private func talkLinesForLink(of imp: UUID) async -> [TalkLine] {
@@ -659,7 +659,7 @@ final class DeviceLink {
     }
 
     /// An Imp on another device asks one of ours. Whatever goes wrong comes back as a failed answer.
-    /// One at a time per device, a few waiting; past that it is told this Mac is busy.
+    /// One at a time per device, a few waiting. Past that it is told this Mac is busy.
     private func answer(_ job: RemoteJob, back device: UUID) {
         var lane = lanes[device] ?? LinkLane()
         let admission = lane.submit(job)

@@ -25,7 +25,7 @@ extension StageVoicePlayer {
 /// A voice an Imp marked `#autoplay` takes its turn: it queues first in, first out, in order of
 /// arrival (a speech reserves its places when it arrives, a place is taken up once the file is
 /// here), so Imps talking back and forth are heard one after another. A voice plays once on its
-/// own (it's keyed by speech and file); to hear it again, tap it. Starting something by hand
+/// own (it's keyed by speech and file). To hear it again, tap it. Starting something by hand
 /// pauses whatever plays, and the queue goes on afterwards.
 ///
 /// Only the presentation is serialized. The Imps' thinking never waits for a voice: an answer goes
@@ -145,7 +145,7 @@ final class StageVoice {
     }
 
     /// Starts the first in line when nobody is talking. A head still waiting for its file holds
-    /// the line (it was first); one whose player is gone is skipped.
+    /// the line (it was first). One whose player is gone is skipped.
     private func pump() {
         while current == nil, let head = entries.first {
             guard let start = head.start else { return }
@@ -250,7 +250,7 @@ final class StageClip: StageVoicePlayer {
     /// You started it: whatever else plays, pauses.
     func play() { _ = begin() }
 
-    /// Starts it (its turn, or you); false when it can't play.
+    /// Starts it (its turn, or you). False when it can't play.
     func begin() -> Bool {
         guard !failed else { return false }
         StageVoice.activateSession(video: kind == .video)

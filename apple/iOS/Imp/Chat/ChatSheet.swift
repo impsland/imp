@@ -131,7 +131,7 @@ struct ImpSheet: View {
                     .accessibilityAddTraits(.isHeader)
                 HStack(spacing: Spacing.snug) {
                     if pane == .chat {
-                        // A state that has a picture shows it; otherwise the dot says ready or busy.
+                        // A state that has a picture shows it. Otherwise the dot says ready or busy.
                         if let symbol = statusSymbol {
                             Image(systemName: symbol).font(.icon(.small)).foregroundStyle(statusColor)
                                 .accessibilityHidden(true)
@@ -161,7 +161,7 @@ struct ImpSheet: View {
             }
             HoverIconButton(systemName: "xmark", help: "common.close", tint: Tone.text, action: close)
         }
-        // The portrait comes and goes as the keyboard lifts the sheet; the bar keeps its height, so the chat
+        // The portrait comes and goes as the keyboard lifts the sheet. The bar keeps its height, so the chat
         // under it is not pushed around while the keyboard moves.
         .frame(minHeight: Sizing.impPortrait)
         .padding(.leading, Spacing.page).padding(.trailing, Spacing.medium).padding(.top, Spacing.medium).padding(.bottom, Spacing.small)
@@ -304,7 +304,7 @@ struct ImpSheet: View {
 
     // MARK: Links
 
-    /// Web links open in Safari; a file on the Mac comes over and opens in Quick Look.
+    /// Web links open in Safari. A file on the Mac comes over and opens in Quick Look.
     private func open(_ url: URL) -> OpenURLAction.Result {
         if let scheme = url.scheme?.lowercased(), scheme != "file" { return .systemAction }
         let ref = url.absoluteString
@@ -430,7 +430,7 @@ private struct Composer: View {
                 case .offline:
                     asleepNotice
                 case .noBrain:
-                    // One hatched here is woken from here; a visitor's brain is set up on its home.
+                    // One hatched here is woken from here. A visitor's brain is set up on its home.
                     if let giveBrain {
                         ComposerNotice(symbol: "moon.zzz", title: source.intro(imp, availability).title,
                                        text: source.intro(imp, availability).text) {
@@ -633,7 +633,7 @@ private struct TurnView: View, Equatable {
     }
 }
 
-/// The tools it used, folded into one line ("Ran 3 tools ›"); tap to list them.
+/// The tools it used, folded into one line ("Ran 3 tools ›"). Tap to list them.
 private struct StepsLine: View {
     var steps: [String]
     @State private var open = false

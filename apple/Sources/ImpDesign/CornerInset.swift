@@ -22,7 +22,7 @@ public enum CornerInset {
 extension View {
     /// Sets a corner item that is not an icon button (a version, a count) as far from the `edge` as from the
     /// top of a bar `height` tall. The bar pads its sides for an icon button (`CornerInset.bar`), whose
-    /// visible circle is centred; a label's visible box is its own line, so it gets the difference on that
+    /// visible circle is centred. A label's visible box is its own line, so it gets the difference on that
     /// side, measured from its own height. Top inset and side inset come out equal at any text size.
     public func cornerLabel(_ edge: HorizontalEdge, bar height: CGFloat) -> some View {
         modifier(CornerLabel(edge: edge, bar: height))

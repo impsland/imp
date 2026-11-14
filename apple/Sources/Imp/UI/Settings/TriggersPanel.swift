@@ -3,7 +3,7 @@ import ImpKit
 import SwiftUI
 
 /// When something happens, the Imp does something: each trigger is a sentence, "When <event>, <action>",
-/// with a switch and its scope (every Imp, changed for this Imp, or only this Imp; see `SettingScope`).
+/// with a switch and its scope (every Imp, changed for this Imp, or only this Imp, see `SettingScope`).
 /// Every change here is for this Imp alone unless Every Imp is picked. Triggers run without a Brain, so
 /// they work while the Imp sleeps. New ones start as a draft: nothing is added until you say so.
 struct TriggersPanel: View {

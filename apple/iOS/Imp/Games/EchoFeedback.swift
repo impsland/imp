@@ -13,7 +13,7 @@ final class EchoHaptics {
         var sharpness: Float
     }
 
-    /// A soft thump; two quick knocks; a sharp tick with a soft echo behind it; three climbing.
+    /// A soft thump. Two quick knocks. A sharp tick with a soft echo behind it. Three climbing.
     static let runes: [[Tap]] = [
         [Tap(time: 0, strength: 0.6, sharpness: 0.2)],
         [Tap(time: 0, strength: 0.7, sharpness: 0.6), Tap(time: 0.09, strength: 0.7, sharpness: 0.6)],

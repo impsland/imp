@@ -34,7 +34,7 @@ struct TiltImp: View {
             PacedTimeline(activity: activity) { date in
                 let state = tilt.state(at: date)
                 let center = CGPoint(x: size.width / 2 + state.slide, y: size.height / 2)
-                // A finger wins; otherwise it looks the way the phone tips (downhill).
+                // A finger wins. Otherwise it looks the way the phone tips (downhill).
                 let gaze = touch.map { Gaze.toward($0, from: center) } ?? state.look
                 let mood = mood(at: date, state: state)
                 let _ = frame(mood: mood, state: state, date: date)

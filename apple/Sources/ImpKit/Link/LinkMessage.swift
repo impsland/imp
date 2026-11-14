@@ -103,7 +103,7 @@ public struct LinkWork: Codable, Sendable, Equatable {
 /// answering it, or waiting for another's answer.
 public struct LinkSpeech: Codable, Sendable, Equatable, Identifiable {
     public enum Role: String, Codable, Sendable {
-        /// Another Imp asked this one something; it's thinking.
+        /// Another Imp asked this one something. It's thinking.
         case asked
         /// This Imp's answer to that question.
         case reply
@@ -255,7 +255,7 @@ public enum LinkMessage: Codable, Sendable, Equatable {
     // MARK: Imps talking
 
     /// An Imp asks another something (`imp_message`). `toHome` is the target's home, which
-    /// answers; a device that isn't it forwards the question there once (`forwarded`).
+    /// answers. A device that isn't it forwards the question there once (`forwarded`).
     case message(id: UUID, from: LinkImp, to: UUID, toHome: UUID, text: String, forwarded: Bool)
     /// The reply to a `message`: what the Imp said, or why it couldn't (`failed`).
     case answer(id: UUID, text: String, failed: Bool)
@@ -263,7 +263,7 @@ public enum LinkMessage: Codable, Sendable, Equatable {
     // MARK: Moving in for good
 
     /// An Imp hatched here moves to the receiver for good: `kit` is its kit (`PocketImp.adoption`).
-    /// The receiver answers `adopted` once its user agreed, or `declined`; the sender deletes its
+    /// The receiver answers `adopted` once its user agreed, or `declined`. The sender deletes its
     /// copy only after `adopted`.
     case adopt(transfer: UUID, imp: UUID, kit: String, secrets: LinkSecrets, entry: LinkEntry)
     case adopted(transfer: UUID)

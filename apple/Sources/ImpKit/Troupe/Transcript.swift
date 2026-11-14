@@ -10,10 +10,10 @@ public enum Transcript {
     /// The exchanges of a talk between two Imps, as pretty JSON.
     public static func json(_ lines: [TalkLine]) -> String { text(lines) }
 
-    /// The turns in `json` (what `json(_:)` wrote); nil if it isn't that.
+    /// The turns in `json` (what `json(_:)` wrote), nil if it isn't that.
     public static func turns(fromJSON text: String) -> [ChatTurn]? { read(text) }
 
-    /// The lines in `json` (what `json(_:)` wrote); nil if it isn't that.
+    /// The lines in `json` (what `json(_:)` wrote), nil if it isn't that.
     public static func lines(fromJSON text: String) -> [TalkLine]? { read(text) }
 
     private static func text<T: Encodable>(_ value: T) -> String {

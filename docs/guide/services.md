@@ -5,7 +5,7 @@ and, if it needs one, a key.
 
 ## Two presets
 
-When you add a service, Imp offers two presets. Each one fills in the address; you can change it to any
+When you add a service, Imp offers two presets. Each one fills in the address. You can change it to any
 OpenAI-compatible service.
 
 | Preset     | Address                        | Runs                                   | Notes                               |

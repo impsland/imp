@@ -33,13 +33,13 @@
     "note": "Button that repeats something that failed.",
     "en": "Try again",
     "es": "Reintentar",
-    "zh-Hans": "重试"
+    "zh-Hans": "重新尝试"
   },
   "common.continue": {
     "note": "Button that goes to the next step.",
     "en": "Continue",
     "es": "Continuar",
-    "zh-Hans": "继续"
+    "zh-Hans": "继续下一步"
   },
   "common.check": {
     "note": "Button that tests a setting, such as a Brain or a server.",
@@ -93,7 +93,7 @@
     "note": "The app-wide settings, in menus and on buttons.",
     "en": "Settings",
     "es": "Ajustes",
-    "zh-Hans": "设置"
+    "zh-Hans": "应用设置"
   },
   "common.loading": {
     "note": "Shown while something loads.",
@@ -111,7 +111,7 @@
     "note": "Screen reader value of a settings section that has something to fix.",
     "en": "Needs attention",
     "es": "Necesita atención",
-    "zh-Hans": "需要注意"
+    "zh-Hans": "需要你留意"
   },
   "common.step": {
     "note": "Screen reader name of one step of a short flow. The name is the step's own title.",

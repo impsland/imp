@@ -6,7 +6,7 @@ import SwiftUI
 // MARK: - Timeline
 
 /// The beats in a row, as long as they last, over a ruler in seconds. Click a beat to pick it, drag
-/// it to move it, drag its right edge to change its length; click the ruler to play from there.
+/// it to move it, drag its right edge to change its length. Click the ruler to play from there.
 struct BeatTrack: View {
     @Binding var beats: [AnimationBeat]
     @Binding var selected: Int

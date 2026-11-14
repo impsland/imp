@@ -46,7 +46,7 @@ struct MenuHeader: View {
 }
 
 /// A row of equal pebble buttons, icon over label, for the top of a menu. A button whose label does not fit its
-/// width shows the icon alone; the label stays as its spoken name.
+/// width shows the icon alone. The label stays as its spoken name.
 struct QuickBar: View {
     struct Item {
         var icon: String

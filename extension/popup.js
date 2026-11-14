@@ -1,7 +1,7 @@
 // The toolbar popup: the Imps that are out (alive: they watch your pointer, blink, think, sleep),
 // what tab Imp knows you're on, and what it just did there.
 //
-// The background pushes its state over a port, whenever it changes; nothing here polls, and
+// The background pushes its state over a port, whenever it changes. Nothing here polls, and
 // nothing waits on the background: a click updates the screen at once, then the news follows.
 // Every render step only touches the DOM when its value changed.
 
@@ -10,7 +10,7 @@ import { ImpCanvas, Clock, reducedMotion } from "./imp.js";
 const api = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
 
-/// A word in the person's language (_locales). The key is the design/strings key, e.g. "extension.open".
+/** A word in the person's language (_locales). The key is the design/strings key, e.g. "extension.open". */
 const t = (key, ...values) => api.i18n.getMessage(key.replace(/\./g, "_"), values.map(String));
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -28,13 +28,13 @@ const clock = new Clock();
 let state = null;          // the background's last word
 let tab = null;            // the tab in front: { url, title, icon }
 let trying = 0;            // when Reconnect was pressed (0: not trying)
-let online = false;        // which layout is showing; kept steady while trying, so nothing jumps
+let online = false;        // which layout is showing. Kept steady while trying, so nothing jumps
 let pointer = null;
 let port = null;
 
 // MARK: Words and help
 
-/// Fills every word the page holds from the locale files.
+/** Fills every word the page holds from the locale files. */
 function translate() {
   document.documentElement.lang = api.i18n.getUILanguage();
   document.title = t("extension.action_title");
@@ -140,7 +140,7 @@ function renderTab(page) {
   if (!usable) img.removeAttribute("src");
   img.hidden = !usable || img.dataset.broken === page.icon;
   $("tab-fallback").hidden = !img.hidden;
-  // Imp can look inside ordinary web pages; the browser keeps its own pages and store to itself.
+  // Imp can look inside ordinary web pages. The browser keeps its own pages and store to itself.
   const seen = /^https?:/.test(page.url) && !/(chrome\.google\.com\/webstore|chromewebstore\.google\.com|addons\.mozilla\.org)/.test(page.url);
   const sight = $("tab-sight");
   sight.className = `help sight ${seen ? "yes" : "no"}`;
@@ -177,13 +177,13 @@ let allItems = [];   // everything the background remembers, newest first
 let fullOpen = false;
 const PREVIEW = 5;
 
-/// The words that start a line, as the person reads them (also what a search matches).
+/** The words that start a line, as the person reads them (also what a search matches). */
 function rowWords(a) {
   if (a.kind === "find") return a.ok ? t("extension.activity.found") : t("extension.activity.looked_for");
   return a.ok ? t("extension.activity.read") : t("extension.activity.read_failed");
 }
 
-/// One line of the list. The site is named only when it isn't the tab you're on.
+/** One line of the list. The site is named only when it isn't the tab you're on. */
 function makeRow(a, here) {
   const li = $("row").content.firstElementChild.cloneNode(true);
   const [glyph, what, when] = li.children;
@@ -313,7 +313,7 @@ function renderImps(list) {
   if (changed) for (const cell of cells) cell.rect = null;   // the layout moved: measure again when needed
 }
 
-/// Brings one Imp up to date; true if its size changed. Only what differs is touched.
+/** Brings one Imp up to date. True if its size changed. Only what differs is touched. */
 function updateCell(cell, imp, many) {
   const away = !!imp.away;
   // The status is the Imp's real one, wherever it is. Away only says where.
@@ -347,7 +347,7 @@ function updateCell(cell, imp, many) {
 
 // MARK: Looking at the pointer
 
-/// Where the pointer is from an Imp, as -1…1 on both axes (or where it glances while there is none).
+/** Where the pointer is from an Imp, as -1…1 on both axes (or where it glances while there is none). */
 function aim(cell) {
   if (!pointer) return cell.fig.setGaze(cell.wander);
   cell.rect ??= cell.canvas.getBoundingClientRect();
@@ -401,7 +401,7 @@ function connect() {
   port.onDisconnect.addListener(() => { port = null; setTimeout(connect, 300); });
 }
 
-/// Ends "trying" once the attempt is over and has been on show long enough to be seen.
+/** Ends "trying" once the attempt is over and has been on show long enough to be seen. */
 function settle() {
   if (!trying) return;
   const waited = performance.now() - trying;
@@ -410,7 +410,7 @@ function settle() {
 
 const settleAndRender = () => { settle(); render(); };
 
-// Pressing Reconnect changes the screen right now; the background is only told.
+// Pressing Reconnect changes the screen right now. The background is only told.
 $("reconnect").addEventListener("click", () => {
   if (trying) return;
   trying = performance.now();
@@ -422,7 +422,7 @@ $("reconnect").addEventListener("click", () => {
 });
 
 // Opens Imp's window, starting Imp if it isn't running (its imp:// link). The browser may ask
-// first; the tab stays where it is.
+// first. The tab stays where it is.
 $("open").addEventListener("click", async () => {
   try {
     const [t] = await api.tabs.query({ active: true, currentWindow: true });

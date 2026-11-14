@@ -35,7 +35,7 @@ private enum Keychain {
         SecItemDelete(query(service, account) as CFDictionary)
     }
 
-    /// Deletes every item of `service`. True when none is left (or there was none); false when the
+    /// Deletes every item of `service`. True when none is left (or there was none). False when the
     /// Keychain can't be changed now (before the first unlock).
     static func deleteAll(_ service: String) -> Bool {
         let status = SecItemDelete([kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service] as CFDictionary)

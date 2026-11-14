@@ -1,5 +1,5 @@
 //! The words of the terminal app, in the person's language. The table is generated from
-//! `design/strings/cli.json`; a missing translation shows the English text.
+//! `design/strings/cli.json`. A missing translation shows the English text.
 
 #[path = "strings.generated.rs"]
 mod table;
@@ -15,7 +15,7 @@ pub enum Lang {
 }
 
 impl Lang {
-    /// The language from a locale name such as `es_ES.UTF-8`; English for anything else.
+    /// The language from a locale name such as `es_ES.UTF-8`, or English for anything else.
     pub fn from_locale(locale: &str) -> Self {
         let tag = locale.to_ascii_lowercase();
         if tag.starts_with("es") {
@@ -44,7 +44,7 @@ impl Lang {
     }
 }
 
-/// The text for `key` in `lang`. English when that language has nothing; empty for an unknown key.
+/// The text for `key` in `lang`. English when that language has nothing, and empty for an unknown key.
 pub fn text(lang: Lang, key: &str) -> &'static str {
     let Ok(at) = STRINGS.binary_search_by(|(k, _)| (*k).cmp(key)) else {
         return "";

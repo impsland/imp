@@ -89,7 +89,7 @@ extension ChatMessage {
 }
 
 /// A chat with an Imp: what the chat view shows (`turns`) and what the model remembers of it
-/// (`memory`). An Imp keeps any number of them; you carry on in one at a time.
+/// (`memory`). An Imp keeps any number of them. You carry on in one at a time.
 public struct Chat: Codable, Equatable, Identifiable, Sendable {
     public var id: UUID
     public var title: String
@@ -142,7 +142,7 @@ public struct ChatSummary: Codable, Equatable, Identifiable, Sendable {
 /// one would put words in the model's mouth and open the chat on its turn). The acknowledgement
 /// keeps the roles alternating (user, assistant, user…), which strict chat templates require.
 /// Recapping again works the same: the earlier recap goes into the request and is folded into
-/// the new one, which replaces it; there is only ever one.
+/// the new one, which replaces it. There is only ever one.
 public enum Recap {
     /// Introduces the recap in the opening message.
     public static let preface = ChatMemory.rules.recapPreface

@@ -347,7 +347,7 @@ final class AppModel {
 
     /// Throws an Imp off `side` of the desktop towards `device`: it lands there coming in from the
     /// other side. False when it can't go (the device isn't around any more). Its window is on its way
-    /// off the desktop; the answer decides whether it stays away (`passed`) or comes back.
+    /// off the desktop. The answer decides whether it stays away (`passed`) or comes back.
     @discardableResult
     func send(_ id: UUID, to device: UUID, side: LinkSide, height: Double, speed: Double) -> Bool {
         guard let look = thrownLook(id), !throwing.values.contains(where: { $0.imp == id }),

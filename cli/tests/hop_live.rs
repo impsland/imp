@@ -135,7 +135,7 @@ async fn link(host: &mut Device, guest: &mut Device) {
     );
 }
 
-/// `from` throws `imp` to `to`; `to` takes it. Returns the transfer.
+/// `from` throws `imp` to `to`. Then `to` takes it. Returns the transfer.
 async fn throw(imp: &LinkImp, from: &mut Device, to: &mut Device) -> Uuid {
     let (imp, target) = (imp.clone(), to.id);
     let transfer = from

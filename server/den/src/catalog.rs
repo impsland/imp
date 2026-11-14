@@ -1,6 +1,6 @@
 //! The animation catalog: every animation in `spec/animations/catalog.json`, offered by the Den
 //! as one shared item each under the reserved account `imp`. The apps bundle only the entries
-//! marked `bundled`; the Den carries the whole list, so "Get more from the Den" finds the rest.
+//! marked `bundled`. The Den carries the whole list, so "Get more from the Den" finds the rest.
 
 use serde_json::{Value, json};
 use sqlx::{Row, SqlitePool};
@@ -223,7 +223,7 @@ mod tests {
         .unwrap();
         assert_eq!(usize::try_from(count).unwrap(), total);
 
-        // A changed kit is updated in place; installs and the hidden flag stay.
+        // A changed kit is updated in place. Installs and the hidden flag stay.
         sqlx::query(
             "UPDATE items SET sha256 = 'old', installs = 7, hidden = 1 WHERE slug = 'jump'",
         )

@@ -2,7 +2,7 @@ import Foundation
 import Network
 
 /// One plain TCP connection. The core does the handshake and the encryption, so this only moves bytes.
-public final class LinkSocket: @unchecked Sendable {   // NWConnection is thread safe; the rest is under `lock`
+public final class LinkSocket: @unchecked Sendable {   // NWConnection is thread safe. The rest is under `lock`
     let connection: NWConnection
     static let queue = DispatchQueue(label: "app.imp.link.socket")
 

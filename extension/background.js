@@ -144,7 +144,7 @@ function retry() {
   backoff = Math.min(backoff * 2, RETRY_LAST);
 }
 
-// Drops the socket (if any) and dials again at once; the popup hears "connecting" right away.
+// Drops the socket (if any) and dials again at once. The popup hears "connecting" right away.
 function reconnect() {
   backoff = RETRY_FIRST;
   const old = socket;
@@ -211,7 +211,7 @@ function note(kind, query, ok, tab) {
   publish();
 }
 
-// On-demand injection: no content script sits on every page; code runs only when Imp asks.
+// On-demand injection: no content script sits on every page. Code runs only when Imp asks.
 async function run(tab, func, args) {
   try {
     const [res] = await api.scripting.executeScript({ target: { tabId: tab.id }, func, args });

@@ -84,7 +84,7 @@ struct GameResultCard: View {
         .accessibilityFocused($focused)
     }
 
-    /// At most three, in equal columns; they stack when the text is too large for them.
+    /// At most three, in equal columns. They stack when the text is too large for them.
     private var stats: some View {
         EvenGrid(minWidth: statWidth, maxColumns: 3, spacing: Spacing.medium) {
             ForEach(result.stats) { stat in

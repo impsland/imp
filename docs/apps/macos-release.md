@@ -7,7 +7,7 @@ signing with an Apple Developer ID and notarization turn on later.
 
 - `make dist` builds a universal `build/Imp.dmg`. The app inside is signed with a self-signed certificate, so
   macOS sees every update as the same app. Keychain access and the Microphone permission carry over.
-- Apple has not notarized the app. The Homebrew cask clears the download quarantine in `scripts/cask.sh`. A
+- Apple has not notarized the app. The Homebrew cask clears the download quarantine in `apple/scripts/cask.sh`. A
   person who downloads the disk image by hand follows the guide for opening an unsigned app in the README.
 
 ## Turning on a Developer ID and notarization

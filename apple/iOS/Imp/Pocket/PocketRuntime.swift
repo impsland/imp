@@ -288,7 +288,7 @@ final class PocketRuntime {
     }
 
     /// One question from another Imp, here: it shows on the stage while the Imp thinks, and so does
-    /// the answer (or why there is none). The text goes straight back to the asker; only the
+    /// the answer (or why there is none). The text goes straight back to the asker. Only the
     /// bubble waits for a voice (see `StageVoice`).
     private func respond(to text: String, of id: UUID, from sender: ChatTurn.Sender, limitedTo device: String?) async -> (reply: String, failed: Bool) {
         guard let imp = store.imp(id) else { return (String(localized: "That Imp isn't on this iPhone."), true) }
@@ -448,7 +448,7 @@ final class PocketRuntime {
         speeches[id] = speech
         tell(id, .speech(imp: id, speech: speech))
         guard role == .reply else { return speech.id }
-        // Voices in the reply take their turns; the bubble stays up while they do (web ones only:
+        // Voices in the reply take their turns. The bubble stays up while they do (web ones only:
         // a pocket Imp has no folder on the Mac).
         StageVoice.shared.expect(speech) { LinkFiles.isWeb($0) }
         speechClear[id] = Task { [weak self] in
@@ -511,7 +511,7 @@ extension PocketRuntime: ChatSource {
 
     func ask(_ id: UUID, _ text: String) { ask(id, text, from: nil, limitedTo: nil) }
 
-    /// `device`: another device asking (its share of the queue is capped); a full queue drops the ask.
+    /// `device`: another device asking (its share of the queue is capped). A full queue drops the ask.
     private func ask(_ id: UUID, _ text: String, from device: UUID?, limitedTo stranger: String?) {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, hasBrain(id) else { return }

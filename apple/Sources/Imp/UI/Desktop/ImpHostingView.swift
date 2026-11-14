@@ -164,7 +164,7 @@ final class ImpHostingView: NSHostingView<ImpView> {
         lastDrag = (now.x, event.timestamp)
         if let last = lastPush, event.timestamp > last {
             let dt = max(event.timestamp - last, 1.0 / 240)
-            // deltaY grows downward; Cocoa's y grows up.
+            // deltaY grows downward, Cocoa's y grows up.
             let v = CGVector(dx: event.deltaX / dt, dy: -event.deltaY / dt)
             push = CGVector(dx: push.dx * 0.55 + v.dx * 0.45, dy: push.dy * 0.55 + v.dy * 0.45)
         }

@@ -11,7 +11,7 @@ import Foundation
 /// with `make run` found `npx` and the installed copy didn't.) So, like VS Code, Imp asks the
 /// user's shell once, as an interactive login shell, and runs commands with what it prints.
 public enum LoginEnvironment {
-    /// The process environment with the shell's on top. Asks the shell the first time only; if
+    /// The process environment with the shell's on top. Asks the shell the first time only. If
     /// the shell fails or hangs, it's the process environment (and the next call asks again).
     public static func resolved() async -> [String: String] {
         await cache.value()

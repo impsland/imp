@@ -32,7 +32,7 @@
     "description": "Start of a line: Imp looked for something on a page and did not find it. The searched words follow."
   },
   "extension_activity_no_match": {
-    "message": "Nada coincide.",
+    "message": "Sin coincidencias.",
     "description": "Shown when the search finds nothing."
   },
   "extension_activity_read": {
@@ -40,7 +40,7 @@
     "description": "A line: Imp read a page."
   },
   "extension_activity_read_failed": {
-    "message": "No pudo leer la página",
+    "message": "No pudo leerla",
     "description": "A line: Imp could not read a page."
   },
   "extension_activity_search": {
@@ -104,7 +104,7 @@
     "description": "Accessible name of an Imp that has no name."
   },
   "extension_imp_working": {
-    "message": "$1 está trabajando",
+    "message": "$1 trabaja",
     "description": "Accessible name of an Imp that is working."
   },
   "extension_imp_working_away": {
@@ -168,7 +168,7 @@
     "description": "Help for the page box when the browser keeps the page private."
   },
   "extension_tab_label": {
-    "message": "La página que Imp conoce",
+    "message": "La página actual",
     "description": "Accessible name of the box that shows the page you are on."
   },
   "extension_tab_sees": {
@@ -176,7 +176,7 @@
     "description": "Help for the page box when Imp can look inside the page."
   },
   "extension_tab_untitled": {
-    "message": "Página sin título",
+    "message": "Sin título",
     "description": "Name of a page that has no title."
   }
 }

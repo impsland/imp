@@ -566,7 +566,7 @@ enum IconRenderer {
 
         var body: some View {
             GeometryReader { geo in
-                // The Mac tile is the canvas less a 9.8% margin; everything is sized off the tile.
+                // The Mac tile is the canvas less a 9.8% margin. Everything is sized off the tile.
                 let tile = fullBleed ? geo.size.width : geo.size.width * (1 - 2 * 0.098)
                 let fill = LinearGradient(colors: [Color(red: 0.995, green: 0.975, blue: 0.945), Color(red: 0.95, green: 0.91, blue: 0.86)],
                                           startPoint: .top, endPoint: .bottom)

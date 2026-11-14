@@ -4,7 +4,7 @@ import ImpKit
 import SwiftUI
 
 /// The stage: the Imp acting it out, and the place to turn its face. Drag anywhere on it and the
-/// face turns there (a dashed line shows where it looks); double-click to have it look at you.
+/// face turns there (a dashed line shows where it looks), double-click to have it look at you.
 struct LookStage: View {
     let hue: Double
     let traits: ImpTraits

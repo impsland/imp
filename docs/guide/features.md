@@ -8,7 +8,7 @@ files, read a document or call a web API, and it works out the commands itself.
 
 ## Talk, type or click
 
-Ask out loud or type. Answers show up in a speech bubble. The full chat lives in the bubble; see
+Ask out loud or type. Answers show up in a speech bubble. The full chat lives in the bubble. See
 [the chat bubble](/concepts/bubble).
 
 ## Triggers

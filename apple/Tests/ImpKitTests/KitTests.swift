@@ -222,7 +222,7 @@ import Testing
         #expect(prefs.shortcuts.count == base + 2 && prefs.shortcuts.suffix(2).allSatisfy { $0.performer == b.id })
         #expect(prefs.imps[1].servers.count == 2 && prefs.imps[0].servers.isEmpty)
 
-        // The same kit again: servers are reused, not doubled; "every Imp" switches them on for all.
+        // The same kit again: servers are reused, not doubled. "Every Imp" switches them on for all.
         var again = try Kit.parse(Kit.parse(Self.full).json())
         again.triggers = Array(again.triggers.prefix(1))
         let second = prefs.add(again, triggers: [again.triggers[0].id], servers: Set(again.servers.map(\.id)), for: nil)

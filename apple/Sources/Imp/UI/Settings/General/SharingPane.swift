@@ -16,7 +16,7 @@ struct SharingPane: View {
         }
     }
 
-    /// Browse is offered with a Den set up; without one the button is off and its tooltip says why.
+    /// Browse is offered with a Den set up. Without one the button is off and its tooltip says why.
     private var gallery: some View {
         let ready = DenServer(model.prefs.den) != nil
         return Card("sharing.gallery", icon: "books.vertical.fill", info: "sharing.gallery.info") {

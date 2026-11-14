@@ -64,7 +64,7 @@ struct AppPane: View {
         .impAnimation(ImpDesign.Motion.expand, value: kind)
     }
 
-    /// The choice on one row; below it, only when the kind needs it, the action that finishes it.
+    /// The choice on one row. Below it, only when the kind needs it, the action that finishes it.
     @ViewBuilder private var background: some View {
         Row("menu.canvas.background", icon: "photo.fill") {
             ImpSegmented("menu.canvas.background", selection: Binding(get: { kind }, set: { actions.setBackground($0) }),

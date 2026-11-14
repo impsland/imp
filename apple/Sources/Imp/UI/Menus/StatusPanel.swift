@@ -49,7 +49,7 @@ struct StatusPanel: View {
         return imp.isReady ? .init(word: "menu.bar.state.out", symbol: ImpStateSymbol.out) : .init(word: "imp.state.asleep", symbol: ImpStateSymbol.asleep)
     }
 
-    /// An Imp that is out is hidden or shown again; one at home opens in the app's window.
+    /// An Imp that is out is hidden or shown again. One at home opens in the app's window.
     private func choose(_ profile: ImpProfile) {
         guard model.imps.contains(where: { $0.id == profile.id }) else {
             HomeWindow.shared.show(model, imp: profile.id)

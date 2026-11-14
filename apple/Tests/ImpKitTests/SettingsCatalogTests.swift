@@ -80,7 +80,7 @@ import Testing
         #expect(SettingsTarget(setting: "bubble_size", page: nil, imp: "Pip") == SettingsTarget(page: .bubble, setting: .bubbleSize))
         #expect(SettingsTarget(setting: nil, page: "looks") == SettingsTarget(page: .look))
         #expect(SettingsTarget(setting: nil, page: "Backup") == SettingsTarget(page: .backup))
-        // A setting wins over the page; an unknown setting falls back to the page.
+        // A setting wins over the page. An unknown setting falls back to the page.
         #expect(SettingsTarget(setting: "brain_source", page: "look")?.page == .brain)
         #expect(SettingsTarget(setting: "nonsense", page: "moves")?.page == .moves)
         #expect(SettingsTarget(setting: nil, page: nil) == nil)

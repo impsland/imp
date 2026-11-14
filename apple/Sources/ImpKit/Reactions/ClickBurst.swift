@@ -5,7 +5,7 @@ import Foundation
 /// Each burst does exactly one thing. A single or double click is only decided once the burst
 /// is over (no further click within `interval`, at most 0.3 s), so clicking
 /// twice opens settings without a bubble popping up first, and poking never does either. The
-/// cost is that a plain click waits out that interval; that's the standard trade when a click
+/// cost is that a plain click waits out that interval. That's the standard trade when a click
 /// and a double-click do different things. The flurry fires on the `flurry`-th quick click,
 /// right as it lands, so the Imp reacts to being poked without delay.
 public struct ClickBurst: Sendable {
@@ -17,7 +17,7 @@ public struct ClickBurst: Sendable {
     public static let flurry = 4
 
     /// The most a click waits for another. The system double-click interval (half a second by
-    /// default) makes every plain click feel slow; quick double-clicks land well within this.
+    /// default) makes every plain click feel slow. Quick double-clicks land well within this.
     public static let longestGap: TimeInterval = 0.3
 
     /// The gap to use: the system's double-click interval, but never longer than `longestGap`.

@@ -26,7 +26,7 @@ struct PhoneDevicesSection: View {
         }
     }
 
-    /// The linked devices, one pebble each; with none, a short empty state.
+    /// The linked devices, one pebble each. With none, a short empty state.
     private var devices: some View {
         Card("devices.title", icon: "laptopcomputer.and.iphone", info: "devices.list.info") {
             if !hub.links.isEmpty {

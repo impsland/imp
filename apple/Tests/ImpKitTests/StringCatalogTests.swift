@@ -34,7 +34,7 @@ import Foundation
     @Test func loads() { #expect(Self.catalog.count > 100) }
 
     /// Plurals come from plural variations. `^[…](inflect: true)` only works in SwiftUI's own Text
-    /// for a few languages; `String(localized:)` shows the markup as is.
+    /// for a few languages, `String(localized:)` shows the markup as is.
     @Test func noInflectionMarkup() {
         for (key, entry) in Self.catalog {
             let texts = [key] + (entry.localizations ?? [:]).values.flatMap(\.values)

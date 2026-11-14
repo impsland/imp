@@ -5,7 +5,7 @@ import SwiftUI
 /// Link a device, in one card: this iPhone's code (the QR code and a line, with Copy and Share), and Scan and
 /// Paste for another device's. The code is shown only when asked for (Show code), because showing it is what
 /// brings up the local network, and so the Local Network permission: opening Devices to look never asks.
-/// Showing the code makes a new one; once it is off the screen it still works for 15 minutes. A bad code
+/// Showing the code makes a new one. Once it is off the screen it still works for 15 minutes. A bad code
 /// floats as a notice instead of moving anything.
 struct LinkCodeCard: View {
     let hub: LinkHub

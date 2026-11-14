@@ -56,6 +56,7 @@ Check with `cargo fmt --all`, `cargo clippy --workspace --all-targets --locked -
 ## Run with Docker Compose
 
 ```sh
+cd server
 cp .env.example .env     # set DEN_SECRET, DEN_HOST and DEN_PUBLIC_URL
 docker compose up -d     # pulls ghcr.io/impsland/imp (add --build to build it from this folder)
 ```

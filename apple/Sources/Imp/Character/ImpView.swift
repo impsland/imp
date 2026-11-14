@@ -72,10 +72,10 @@ struct FrameSchedule: TimelineSchedule {
     var drowsyFrame = 1 / FramePolicy.calmFramesPerSecond
     /// Whose blinks to wake up for.
     var clock = BodyClock.shared
-    /// Set by the view after each frame; read as the next frame is scheduled.
+    /// Set by the view after each frame. Read as the next frame is scheduled.
     var settling = SettleWatch()
 
-    /// How often a view in an unseen window looks again; it is woken sooner when it comes into view.
+    /// How often a view in an unseen window looks again. It is woken sooner when it comes into view.
     static let hiddenCheck: TimeInterval = 10
 
     static func pace(mood: Mood, quiet: Bool, onScreen: Bool) -> Pace {

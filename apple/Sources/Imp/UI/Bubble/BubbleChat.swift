@@ -404,7 +404,7 @@ private struct TurnView: View {
             }
             .font(Typeface.small).foregroundStyle(Tone.muted)
             .frame(maxWidth: .infinity)
-            // Yours on the right; another Imp's on the left, in its colour.
+            // Yours on the right. Another Imp's on the left, in its colour.
             HStack {
                 if turn.via != .imp { Spacer(minLength: Sizing.hit * 2) }
                 RequestCard(turn: turn, model: model, layout: layout, measuring: measuring)

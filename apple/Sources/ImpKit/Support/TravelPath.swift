@@ -46,7 +46,7 @@ public struct TravelPath: Sendable {
         }
         switch travel {
         case .slide:
-            // Ease in and out; lean forward while speeding up, back while slowing down.
+            // Ease in and out. Lean forward while speeding up, back while slowing down.
             let t = k * k * (3 - 2 * k)
             let speed = 6 * k * (1 - k)                       // d(smoothstep)/dk, 0…1.5
             // Leans the way it's going while it speeds up, and back a little as it stops.

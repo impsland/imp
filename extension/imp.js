@@ -45,7 +45,7 @@ const mixRGB = (a, b, k) => {
   return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 };
 
-/// The colour of an Imp's skin for a hue (0...1), as a CSS colour: the popup's accent while that Imp is out.
+/** The colour of an Imp's skin for a hue (0...1), as a CSS colour: the popup's accent while that Imp is out. */
 export function skinColor(hue) {
   return hex(hsv(clamp(finite(hue, 0), 0, 1), 0.733, 0.9));
 }
@@ -428,7 +428,7 @@ const mR = (deg) => { const r = (deg * Math.PI) / 180, c = Math.cos(r), s = Math
 
 const EYE_WHITE = '#fffdfa';
 const FONT = 'ui-rounded, system-ui, -apple-system, Segoe UI, sans-serif';
-// The drawing is 100 units square; the canvas shows a margin around it for horns, hops and z's.
+// The drawing is 100 units square. The canvas shows a margin around it for horns, hops and z's.
 const VIEW = 120, MARGIN = 10;
 
 function starPath(cx, cy, r) {
@@ -449,7 +449,7 @@ function stops(grad, list) {
   return grad;
 }
 
-// One Imp on one canvas. `live` breathes and blinks; without it (reduced motion) it holds a still pose.
+// One Imp on one canvas. `live` breathes and blinks. Without it (reduced motion) it holds a still pose.
 export class ImpCanvas {
   constructor(canvas, { live = true, phase = 0 } = {}) {
     this.canvas = canvas;
@@ -510,14 +510,14 @@ export class ImpCanvas {
     this.blend.reset(this.mood);
   }
 
-  // A held pose changes at once; a live Imp springs to it on its own.
+  // A held pose changes at once. A live Imp springs to it on its own.
   settle() {
     if (this.live) return;
     this.snap();
     this.paint(0);
   }
 
-  // Called every animation frame; draws about thirty times a second.
+  // Called every animation frame. Draws about thirty times a second.
   frame(now) {
     if (now - this.lastDrawn < 0.028) return;
     this.lastDrawn = now;
@@ -784,7 +784,7 @@ export class ImpCanvas {
 
 // ---------------------------------------------------------------- the clock
 
-// One animation-frame loop for all the Imps on screen; it stops when nothing is live or the popup is hidden.
+// One animation-frame loop for all the Imps on screen. It stops when nothing is live or the popup is hidden.
 export class Clock {
   constructor() {
     this.figures = new Set();

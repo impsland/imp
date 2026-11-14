@@ -19,7 +19,7 @@ import Foundation
 /// 5. Low Power Mode and a warm device are the platform saying what it can sustain: the rates fall
 ///    (60 to 30, 30 to 20) but stay smooth. A serious or critical heat state also switches the
 ///    decorations off (`Conditions.decorated`).
-/// 6. Reduce Motion stops what only decorates (the breathing, the floating, the blinking); what a
+/// 6. Reduce Motion stops what only decorates (the breathing, the floating, the blinking). What a
 ///    finger drives still answers the finger.
 public enum FramePolicy {
     /// How much the device lets the Imps spend.
@@ -29,7 +29,7 @@ public enum FramePolicy {
         public static func < (a: Budget, b: Budget) -> Bool { a.rawValue < b.rawValue }
     }
 
-    /// Low Power Mode and a serious heat state save; a critical heat state saves hard.
+    /// Low Power Mode and a serious heat state save. A critical heat state saves hard.
     public static func budget(lowPower: Bool, thermal: ProcessInfo.ThermalState) -> Budget {
         switch thermal {
         case .critical: .critical
@@ -155,7 +155,7 @@ public enum FramePolicy {
 
     /// Seconds between motion-sensor samples, or nil when the sensor should be off. A device that
     /// saves power reads fewer. Reading the phone only to make a picture follow it (`decorative`)
-    /// stops under Reduce Motion; reading it to tell a shake that sends an Imp does not.
+    /// stops under Reduce Motion. Reading it to tell a shake that sends an Imp does not.
     public static func motionInterval(_ conditions: Conditions, decorative: Bool) -> TimeInterval? {
         guard conditions.running, !(decorative && conditions.reduceMotion) else { return nil }
         switch conditions.budget {

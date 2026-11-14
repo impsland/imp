@@ -240,7 +240,7 @@ struct Motion: Equatable {
         return k * k * (3 - 2 * k)
     }
 
-    /// Deterministic, natural-looking blinks every ~2.5–6 s, with occasional doubles.
+    /// Deterministic, natural-looking blinks every 2.5 to 6 seconds, with occasional doubles.
     static func blink(at t: TimeInterval) -> Double {
         let period = 4.3, duration = 0.16
         let cycle = floor(t / period)

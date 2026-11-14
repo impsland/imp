@@ -314,7 +314,7 @@ impl JoltDetector {
     /// the movement is over (no shake followed), or a shake.
     ///
     /// Which way a throw goes is read from the whole movement, not its first instant. People flick: a small
-    /// wind-up the other way, the sharp move, and a stop. The turn tells it best (the flick is one big turn;
+    /// wind-up the other way, the sharp move, and a stop. The turn tells it best (the flick is one big turn,
     /// the wind-up and the settling back are small ones the other way), so the biggest turn decides. A movement
     /// with no real turn (the phone slid) is read from its acceleration: the first push that is a large share
     /// of the strongest, so a slight wind-up doesn't count and the stop comes after the flick.

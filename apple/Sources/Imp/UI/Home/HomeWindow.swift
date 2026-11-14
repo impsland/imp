@@ -111,7 +111,7 @@ final class HomeWindow {
             w.isMovableByWindowBackground = false
             w.titlebarSeparatorStyle = .none
             w.backgroundColor = NSColor(Tone.surface)           // the window follows the Appearance preference
-            // The smallest size is a design value; the first opening uses the chosen size, then it keeps the size it was given.
+            // The smallest size is a design value. The first opening uses the chosen size, then it keeps the size it was given.
             w.contentMinSize = WindowSizing.minimum
             w.setContentSize(WindowSizing.size(of: model.prefs.windowPreset, in: (NSScreen.main?.visibleFrame.size ?? CGSize(width: 1280, height: 800))))
             w.isReleasedWhenClosed = false
@@ -148,7 +148,7 @@ final class HomeWindow {
     /// system only lets an app come forward when the request comes from the user's own click or key
     /// press *in that app*. Imp's menu bar panel, its Imps and their bubbles are non-activating
     /// panels (so typing elsewhere is never interrupted), several callers act a moment after the
-    /// click (a double-click is only known once the click burst is over, ~0.3 s later; the Imp's menu
+    /// click (a double-click is only known once the click burst is over, ~0.3 s later, the Imp's menu
     /// runs its header buttons once the menu has closed), and switching from accessory to regular
     /// takes effect a run-loop turn later. Any of these made `activate()` a no-op, and
     /// `makeKeyAndOrderFront` then only ordered the window to the front of *Imp's* windows, behind

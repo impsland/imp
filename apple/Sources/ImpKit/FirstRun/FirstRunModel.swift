@@ -127,7 +127,7 @@ public final class FirstRunModel {
 
     // MARK: Step 1: the service
 
-    /// Picks Remote or Local: it fills its address (still editable; on another device, a local one names the
+    /// Picks Remote or Local: it fills its address (still editable, on another device, a local one names the
     /// computer to edit).
     public func choose(_ picked: ServicePreset) {
         problem = nil
@@ -259,7 +259,7 @@ public final class FirstRunModel {
 
     /// The whole first run in one press, for a single page with the address, the key and the model: lists the
     /// models when they are not listed yet (a blank model becomes the first one that chats), then checks.
-    /// A failure says what to do and keeps what was typed; the same call is "Try again".
+    /// A failure says what to do and keeps what was typed. The same call is "Try again".
     public func wakeUp() {
         if let missing {
             problem = missing

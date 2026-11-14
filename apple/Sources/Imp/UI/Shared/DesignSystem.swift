@@ -139,7 +139,7 @@ struct SheetFrame<Header: View, Content: View, Footer: View>: View {
             .scrollBounceBehavior(.basedOnSize)
             .scrollIndicators(.automatic)
             .frame(height: bodyHeight)
-            // Balanced: a lone button is centred; otherwise the main one (last) is at the trailing edge.
+            // Balanced: a lone button is centred. Otherwise the main one (last) is at the trailing edge.
             ActionRow { footer }
                 // A button in the footer sits as far from the bottom as from the left.
                 .padding(.horizontal, Spacing.page)
@@ -195,7 +195,7 @@ struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
                 HoverIconButton(systemName: "xmark", help: "common.close") { dismiss() }
                     .keyboardShortcut(.cancelAction)
             }
-            // The icon tile sits `page` from the top and the left; Close, centred on the tile, as far from the
+            // The icon tile sits `page` from the top and the left, Close, centred on the tile, as far from the
             // right as from the top.
             .padding(.leading, Spacing.page)
             .padding(.trailing, CornerInset.row(height: Sizing.sheetIcon, top: Spacing.page))

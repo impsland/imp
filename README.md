@@ -101,7 +101,7 @@ ollama serve
 | 🏗️ [Architecture](docs/architecture/index.md) | Layers, repository layout, the portable core |
 | 🎨 [Design](docs/design/index.md) · [UX](docs/ux/index.md) | The look, the rules and the screens |
 
-Read the whole site locally with `make docs`, or start with [`docs/index.md`](docs/index.md).
+Build the site locally with `make docs` (output in `docs/.vitepress/dist`), or start with [`docs/index.md`](docs/index.md).
 
 ## 🗂️ Project layout
 

@@ -93,7 +93,7 @@ fn over(top: Rgba, under: Rgba) -> Rgba {
     )
 }
 
-/// `COLORFGBG` is `foreground;background` in ANSI colour numbers; 7 and 15 are the light ones.
+/// `COLORFGBG` is `foreground;background` in ANSI colour numbers. The numbers 7 and 15 are the light ones.
 fn light_background(value: &str) -> bool {
     value
         .rsplit(';')

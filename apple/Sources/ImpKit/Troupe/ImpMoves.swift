@@ -4,7 +4,7 @@ import Foundation
 /// the desktop is where a free Imp lives, so an Imp that crosses the edge changes where it is.
 ///
 /// The rules, in one place:
-/// - In the window the Imp follows the pointer unclamped; it is kept inside the canvas only when it settles.
+/// - In the window the Imp follows the pointer unclamped. It is kept inside the canvas only when it settles.
 /// - It is handed to its own desktop panel the moment its frame is no longer wholly inside the window
 ///   (the Imp's frame decides, not the pointer). The panel appears exactly where the Imp is drawn and keeps
 ///   the grab: where the pointer holds the Imp stays the same.

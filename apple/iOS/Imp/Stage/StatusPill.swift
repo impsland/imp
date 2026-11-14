@@ -19,7 +19,7 @@ struct StatusPill: View {
             Spacer(minLength: Spacing.medium)
             corner
         }
-        // The pill sits `page` from the left; the last button's circle sits as far from the right.
+        // The pill sits `page` from the left. The last button's circle sits as far from the right.
         .padding(.leading, Spacing.page)
         .padding(.trailing, CornerInset.padding(visible: Spacing.page))
         .frame(minHeight: Sizing.hit)

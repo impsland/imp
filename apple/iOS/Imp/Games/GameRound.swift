@@ -10,7 +10,7 @@ import SwiftUI
 /// The embers rise in waves (a column, a slant, a chevron, two columns), each judged as a whole:
 /// catch every ember of a wave for a bonus. A round with nothing got away, and a round with no smoke
 /// hit, each earn a finale. Twice in a round a special phase changes the rules for a few seconds
-/// (rings to take in one flight, a storm of wisps, a shower of gold), announced by a banner; then
+/// (rings to take in one flight, a storm of wisps, a shower of gold), announced by a banner. Then
 /// comes the Blaze.
 struct GameRound {
     static let length = 45.0
@@ -671,7 +671,7 @@ struct GameRound {
             if speed < Self.flightSpeed {
                 state.calm += dt
                 if state.calm > 0.5 {
-                    // The flight is over; the next fling is a new one.
+                    // The flight is over. The next fling is a new one.
                     if state.flying { state.flight += 1 }
                     state.flying = false
                     state.count = 0

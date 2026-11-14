@@ -204,7 +204,7 @@ struct PhoneStage: View {
 
     // MARK: Talk bubbles
 
-    /// Where each talking Imp's bubble goes. Each sits over its Imp's head; one that would land on a
+    /// Where each talking Imp's bubble goes. Each sits over its Imp's head. One that would land on a
     /// bubble placed before it (in the stage's fixed order, so nothing swaps places as the Imps
     /// float) goes up above that one. A bubble stays put while its Imp floats under it, so its words
     /// hold still to be read.

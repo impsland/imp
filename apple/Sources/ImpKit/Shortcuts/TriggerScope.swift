@@ -69,9 +69,9 @@ extension ImpPreferences {
 
     /// Keeps a trigger that was edited or added, for `target`.
     ///
-    /// - For every Imp: a shared one changes in place; an Imp's version of a shared one is written into
-    ///   the shared one and goes (the other Imps' versions stay); an Imp's own one becomes shared.
-    /// - For one Imp: its own one changes in place; a shared one gets a version for that Imp alone (a new
+    /// - For every Imp: a shared one changes in place. An Imp's version of a shared one is written into
+    ///   the shared one and goes (the other Imps' versions stay). An Imp's own one becomes shared.
+    /// - For one Imp: its own one changes in place. A shared one gets a version for that Imp alone (a new
     ///   trigger that `overrides` it), and the shared one is not touched. Another Imp's trigger is copied,
     ///   never taken.
     /// Returns the id the trigger is kept under.

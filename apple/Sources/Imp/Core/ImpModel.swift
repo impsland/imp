@@ -85,7 +85,7 @@ final class ImpModel {
     /// what it says and does comes from there (see "Visiting" at the end of this file).
     private(set) var visit: Visiting?
     /// Turns answered while the chat was open: only their media may start on its own
-    /// (`#autoplay`); older turns never replay when you scroll back to them.
+    /// (`#autoplay`). Older turns never replay when you scroll back to them.
     private(set) var freshTurns: Set<UUID> = []
     /// The model is writing a recap of the current chat.
     private(set) var isRecapping = false
@@ -140,7 +140,7 @@ final class ImpModel {
         // A visitor's chats are its home's: what it shows is a copy of the current one.
         history = app.persists && visiting == nil ? ChatHistory(folder: ChatHistory.folder(for: id))
                                                   : ChatHistory(folder: nil)
-        // Audio or video in the bubble holds it up while it plays; the clock starts when it stops.
+        // Audio or video in the bubble holds it up while it plays. The clock starts when it stops.
         playbackObserver = NotificationCenter.default.addObserver(forName: Playback.didChange, object: nil,
                                                                   queue: .main) { [weak self] note in
             let owner = note.object as? String
@@ -188,7 +188,7 @@ final class ImpModel {
 
     // MARK: Mood
 
-    /// Whether it can think: at home, its own brain decides; a visitor's home tells (`Wakefulness`).
+    /// Whether it can think: at home, its own brain decides. A visitor's home tells (`Wakefulness`).
     var wakefulness: Wakefulness { visit?.wakefulness ?? .atHome(brainReady: isReady) }
 
     func mood(at date: Date) -> Mood {
@@ -321,7 +321,7 @@ final class ImpModel {
 
     // MARK: Saved chats
 
-    /// Starts a fresh chat; the one you were in stays in the list to come back to.
+    /// Starts a fresh chat. The one you were in stays in the list to come back to.
     func newChat() {
         if visit?.isAwake == false { return }              // its home keeps the chats, and it can't hear
         stopForChatChange()
@@ -367,7 +367,7 @@ final class ImpModel {
     var canRecap: Bool { visit == nil && history.current.memory.exchangeCount > 1 && work == nil && !isRecapping }
 
     /// Has the model sum up the current chat, then forgets everything before the last exchange
-    /// in favour of that recap (it shows in the chat; the turns above it stay there to read).
+    /// in favour of that recap (it shows in the chat, the turns above it stay there to read).
     /// For a chat that's grown too long for the model, or costly to send.
     func recapChat() {
         guard canRecap else { return }
@@ -470,7 +470,7 @@ final class ImpModel {
         app.focus(self)
         if app.finishListening(for: self) { return }
         if [.thinking, .tools].contains(activity) { cancel(); react(.surprised, for: 0.6); return }
-        // One click opens the bubble at once; two or more run what the Imp's triggers say.
+        // One click opens the bubble at once. Two or more run what the Imp's triggers say.
         guard count > 1 else { return bubble?.phase == .typing ? dismissBubble() : startTyping() }
         guard let shortcut = prefs.clickShortcut(count, on: id, in: app.senses.state) else { return }
         perform(shortcut)
@@ -647,7 +647,7 @@ final class ImpModel {
         return taken.count
     }
 
-    /// Lines `reactions` up behind whatever is playing; each starts when the one before is done.
+    /// Lines `reactions` up behind whatever is playing. Each starts when the one before is done.
     private func play(_ reactions: [AnimationRef]) {
         acting += reactions
         guard actTask == nil, !acting.isEmpty else { return }
@@ -682,7 +682,7 @@ final class ImpModel {
         show(Bubble(title: String(localized: "Hmm"), text: text, phase: .error))
     }
 
-    /// Four quick clicks: whatever animation answers to pokes (none out of the box; one from the Den, or your own).
+    /// Four quick clicks: whatever animation answers to pokes (none out of the box, one from the Den, or your own).
     func flurry() {
         touch()
         felt(.poke)

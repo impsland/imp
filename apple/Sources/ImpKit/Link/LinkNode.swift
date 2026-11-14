@@ -13,7 +13,7 @@ import os
 @MainActor
 public final class LinkNode {
     public struct Options: Sendable {
-        /// The port to listen on; another one if it's taken. Nil: any port.
+        /// The port to listen on. Another one if it's taken. Nil: any port.
         public var port: UInt16? = LinkProtocol.port
         /// Advertise and browse with Bonjour.
         public var bonjour = true

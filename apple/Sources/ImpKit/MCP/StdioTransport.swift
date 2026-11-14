@@ -67,7 +67,7 @@ public final class StdioTransport: MCPTransport, @unchecked Sendable {
 
     public func start() async throws {
         process.environment = await LoginEnvironment.resolved().merging(environment) { _, new in new }
-        // Always drained (a full pipe would block the server); only the end is kept.
+        // Always drained (a full pipe would block the server). Only the end is kept.
         stderr.fileHandleForReading.readabilityHandler = { [weak self] handle in
             let data = handle.availableData
             guard let self else { return }

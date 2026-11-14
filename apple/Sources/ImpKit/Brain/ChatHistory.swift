@@ -76,7 +76,7 @@ public struct ChatHistory: Sendable {
     public private(set) var current = Chat()
     /// Every saved chat, newest first (the current one included, once it's saved).
     public private(set) var chats: [ChatSummary] = []
-    /// Where they're kept; nil keeps them in memory only.
+    /// Where they're kept, nil keeps them in memory only.
     public let folder: URL?
 
     public static func folder(for imp: UUID) -> URL {
@@ -110,7 +110,7 @@ public struct ChatHistory: Sendable {
     public func chat(_ id: UUID) -> Chat? { id == current.id ? current : load(id) }
 
     /// Adds a turn to the current chat, with what the model should remember of it (the user's
-    /// turn and the agent's new messages; nil for a failure, which the model never saw answered).
+    /// turn and the agent's new messages, nil for a failure, which the model never saw answered).
     public mutating func append(_ turn: ChatTurn, remembering exchange: [ChatMessage]? = nil) {
         Self.add(turn, remembering: exchange, to: &current)
         save(current)
@@ -284,7 +284,7 @@ public struct ChatHistory: Sendable {
         }
     }
 
-    /// Written off the main thread (a chat can be a few megabytes); later saves win, since each
+    /// Written off the main thread (a chat can be a few megabytes). Later saves win, since each
     /// writes the whole file atomically.
     private func write(_ data: Data, to file: URL) {
         Self.writer.async {

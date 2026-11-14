@@ -3,7 +3,7 @@ import ImpKit
 import SwiftUI
 
 /// A small bubble over a light, a dark and a busy background, so the Settings card shows what the
-/// chosen look does without leaving Settings. The real bubble also blurs what is behind it; here the
+/// chosen look does without leaving Settings. The real bubble also blurs what is behind it. Here the
 /// swatches are plain, so only the fill and its amount show.
 struct BubblePreview: View {
     let appearance: BubbleAppearance

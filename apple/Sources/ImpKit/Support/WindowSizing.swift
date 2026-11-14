@@ -8,7 +8,7 @@ public enum WindowPreset: String, Codable, CaseIterable, Sendable {
 }
 
 /// The home window's sizes. The smallest the window can be is a fixed design value (`minimum`), not a
-/// setting; a person picks one of a few standard sizes (`WindowPreset`) and may still resize by hand.
+/// setting. A person picks one of a few standard sizes (`WindowPreset`) and may still resize by hand.
 /// Pure, so it is tested without a window or a screen.
 ///
 /// The layout breakpoint below which Imp Settings shows its plain list (`Behavior.narrowWindowPoints`)

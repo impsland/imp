@@ -2,7 +2,7 @@ import Foundation
 import Testing
 @testable import ImpKit
 
-/// Runs `spec/fixtures/link-messages.json` and `bridge-messages.json`, which other clients read too.
+/// Runs `spec/fixtures/bridge-messages.json`, which other clients read too.
 @Suite struct ProtocolVectorTests {
     static func load(_ name: String) -> [String: Any] {
         let url = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()

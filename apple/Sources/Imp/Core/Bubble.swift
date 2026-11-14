@@ -20,7 +20,7 @@ struct Bubble: Equatable, Identifiable {
         var request = ""
         var response: String?
 
-        /// The most of a response kept for showing (outputs can be huge; the model got it all).
+        /// The most of a response kept for showing (outputs can be huge, the model got it all).
         static let responseLimit = 20_000
         static func clipped(_ response: String) -> String {
             response.count > responseLimit ? response.prefix(responseLimit) + "\n… (\(response.count - responseLimit) more characters)" : response

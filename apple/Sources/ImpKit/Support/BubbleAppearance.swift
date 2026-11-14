@@ -7,7 +7,7 @@ public struct BubbleAppearance: Codable, Hashable, Sendable {
     public enum Style: String, Codable, CaseIterable, Sendable { case solid, translucent }
 
     /// The same numbers as `Opacity.bubbleMin` and `Opacity.bubbleDefault` in `design/tokens.json`
-    /// (ImpKit does not see ImpDesign; a test in the Mac app's tests keeps them equal).
+    /// (ImpKit does not see ImpDesign, a test in the Mac app's tests keeps them equal).
     public static let minimumOpacity = 0.4
     public static let defaultOpacity = 0.75
 

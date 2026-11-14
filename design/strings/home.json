@@ -2,8 +2,8 @@
   "home.canvas.label": {
     "note": "Screen reader name of the main canvas.",
     "en": "The Imps' home",
-    "es": "El hogar de los Imps",
-    "zh-Hans": "Imp 之家"
+    "es": "El hogar de Imps",
+    "zh-Hans": "Imp 的家园"
   },
   "home.canvas.hint": {
     "note": "Screen reader hint for the main canvas.",
@@ -14,7 +14,7 @@
   "home.empty.title": {
     "note": "Empty main screen, title.",
     "en": "No Imps yet",
-    "es": "Aún no hay Imps",
+    "es": "Sin Imps aún",
     "zh-Hans": "还没有 Imp"
   },
   "home.empty.hint": {
@@ -41,7 +41,7 @@
   "home.hidden.empty": {
     "note": "Shown in the hidden Imps list when it is empty.",
     "en": "No hidden Imps",
-    "es": "No hay Imps ocultos",
+    "es": "Sin Imps ocultos",
     "zh-Hans": "没有隐藏的 Imp"
   },
   "home.hidden.bring_back": {
@@ -50,7 +50,7 @@
       "name": "string"
     },
     "en": "Bring back {name}",
-    "es": "Traer de vuelta a {name}",
+    "es": "Recuperar a {name}",
     "zh-Hans": "让 {name} 回来"
   },
   "home.hidden.peek": {
@@ -60,7 +60,7 @@
     },
     "en": "{name} is peeking out from the floor.",
     "es": "{name} se asoma desde el suelo.",
-    "zh-Hans": "{name} 从地面探出头来。"
+    "zh-Hans": "{name} 正从地面探出头来。"
   },
   "home.hidden.hint": {
     "note": "Screen reader hint for the hidden Imps element.",

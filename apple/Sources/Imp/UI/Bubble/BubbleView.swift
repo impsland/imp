@@ -51,7 +51,7 @@ struct BubbleCard: View {
                         .opacity(closeVisible ? 1 : 0)
                         .impAnimation(ImpDesign.Motion.hover, value: closeVisible)
                 }
-                // The chat in the other top corner (✕'s mirror); in the chat, the way back.
+                // The chat in the other top corner (✕'s mirror). In the chat, the way back.
                 .overlay(alignment: layout.closeCorner == .outsideLeading ? .topTrailing : .topLeading) {
                     if bubble.phase == .chat || !model.history.isEmpty || !model.history.chats.isEmpty || model.work != nil {
                         let open = bubble.phase == .chat

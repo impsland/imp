@@ -3,7 +3,7 @@
 //
 //   design/tokens.json     colours, spacing, radii, type, sizes, motion, behaviour numbers
 //   design/strings/*.json  every word a user reads, one stable key each, in en, es and zh-Hans
-//   spec/animations/catalog.json  the animations; the five marked bundled are cut into the Apple kit
+//   spec/animations/catalog.json  the animations, of which the five marked bundled are cut into the Apple kit
 //   spec/presets/*.json    the starter kit and the service presets, compiled into the Apple kit
 //
 //   node design/generate.mjs          write the generated files
@@ -336,7 +336,7 @@ function loadStrings() {
 }
 
 const terminalStrings = loadStrings()
-// The terminal app's words (cli.*) go to its own table only; no other platform lists them.
+// The terminal app's words (cli.*) go to its own table only, and no other platform lists them.
 const strings = new Map([...terminalStrings].filter(([key]) => !key.startsWith('cli.')))
 const argList = (e) => Object.keys(e.args ?? {})
 

@@ -111,7 +111,7 @@ import Testing
         var round = started(seed: 11)
         _ = round.tap((round.sequence[0] + 1) % EchoRound.runes)
         #expect(round.lives == EchoRound.lives - 1)
-        // Level one is slipped; levels two to five are clean, and five wins the life back.
+        // Level one is slipped. Levels two to five are clean, and five wins the life back.
         _ = untilTurn(&round)
         var gained = false
         while round.level < 5 {

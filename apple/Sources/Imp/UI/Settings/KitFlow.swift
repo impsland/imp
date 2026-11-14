@@ -148,7 +148,7 @@ final class KitFlow: Identifiable {
     private func present(json: String, from: String, model: AppModel) throws {
         let kit = try Kit.parse(json, limit: limit)
         let imps = model.prefs.imps
-        // A kit of Imps is for the whole troupe (its shared triggers stay shared); other kits go to one Imp.
+        // A kit of Imps is for the whole troupe (its shared triggers stay shared). Other kits go to one Imp.
         let target = kit.imps.isEmpty && !forEveryImp ? imp.flatMap { id in imps.contains { $0.id == id } ? id : nil } ?? imps.first?.id : nil
         review = KitReview(kit: kit, origin: from, existing: model.prefs.shortcuts, services: model.prefs.ai.services, target: target)
     }

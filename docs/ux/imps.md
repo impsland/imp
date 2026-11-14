@@ -51,7 +51,7 @@ Clicks behave the same whether the Imp is free or in the window.
 
 The selected Imp (the one a click or the keyboard last chose, and the one the menu bar acts on) has no border. It shows two things, in its own colour, on every platform and without hover:
 
-- the floor under it glows more (`Opacity.glow`, against a faint glow for the others);
+- the floor under it glows more (`Opacity.glow`, against a faint glow for the others),
 - its name sits in a capsule tinted with its colour (the others have a plain name on a dark scrim).
 
 Keyboard focus is shown apart, with the focus ring (`focusRing`), and only when focus came from the keyboard (Tab or the arrow keys), never from a click. Moving between states is animated, and with Reduce Motion it just happens.

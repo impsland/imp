@@ -86,7 +86,7 @@ Each item has one of three scopes, and its row says which under its title, with 
 | Changed for this Imp | `scope.changed` | This Imp's own version of a shared one. The other Imps keep the shared one. |
 | Only this Imp | `scope.only` | Only this Imp has it. |
 
-**The rule.** A change made on an Imp's page is for that Imp alone, unless the person picks Every Imp. In the model an Imp's version of a shared item points at it (`overrides`); the shared item itself is never touched from one Imp's page.
+**The rule.** A change made on an Imp's page is for that Imp alone, unless the person picks Every Imp. In the model an Imp's version of a shared item points at it (`overrides`). The shared item itself is never touched from one Imp's page.
 
 | What the person does on an Imp's page | What happens |
 | --- | --- |
@@ -121,7 +121,7 @@ The name moves here, with the persona and the voice. The name is part of who the
 
 ![Brain](./images/imp-brain-open.png)
 
-The Brain panel shows the status with Check (or Wake) at the trailing edge, then two choices: the same Brain as the other Imps, or its own. Its own means one service, picked from the services the app has or added with “Add a service”. The service's address, key and model are the ones the Imp uses; the panel shows no key or model fields. Memory is one card with three choices that decide how much of the chat goes to the Brain: **Sends** (the last 5 to 1,000 messages, or all), **Tool results** (on or off) and **New chat at** (the size, 50k to 1M, at which a gentle suggestion to recap or start a new chat appears). Each has a "?" help. All three belong to the Imp: there is no app-wide setting for them (the Long chats card on Talking is gone). The phone has no Memory settings: a pocket Imp sends a fixed number of messages and never suggests a new chat. Memory lists chats with a readable title (two lines), date and count, and Recap, Open and New Chat as clear buttons.
+The Brain panel shows the status with Check (or Wake) at the trailing edge, then two choices: the same Brain as the other Imps, or its own. Its own means one service, picked from the services the app has or added with “Add a service”. The service's address, key and model are the ones the Imp uses. The panel shows no key or model fields. Memory is one card with three choices that decide how much of the chat goes to the Brain: **Sends** (the last 5 to 1,000 messages, or all), **Tool results** (on or off) and **New chat at** (the size, 50k to 1M, at which a gentle suggestion to recap or start a new chat appears). Each has a "?" help. All three belong to the Imp: there is no app-wide setting for them (the Long chats card on Talking is gone). The phone has no Memory settings. A pocket Imp sends a fixed number of messages and never suggests a new chat. Memory lists chats with a readable title (two lines), date and count, and Recap, Open and New Chat as clear buttons.
 
 An Imp with no Brain sleeps. The Brain marker above its head is an unlit lantern. The Imp shows Zzz. The marker says `imp_settings.summary.brain_none`. It is not red and has no warning icon. Sleeping is a calm state, not a failure.
 
@@ -378,4 +378,4 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 
 ## Opening a setting from a chat
 
-An Imp can open the exact page of one of its own settings, or of another Imp's, with `imp_open_settings` (`setting` such as `look_colour`, or `page` such as `look`; `imp` names another Imp, `tool` an extra tool to edit). It cannot change the value: the person fills it in. The setting is lit softly in the Imp's colour for about 1.5 seconds and the page scrolls to it. Links: `imp://settings?setting=look_colour&imp=Pip` and `imp://settings?page=tools`. The marker or list row of the page is picked, and the row is highlighted briefly (no motion under Reduce Motion).
+An Imp can open the exact page of one of its own settings, or of another Imp's, with `imp_open_settings` (`setting` such as `look_colour`, or `page` such as `look`. `imp` names another Imp, `tool` an extra tool to edit). It cannot change the value, because the person fills it in. The setting is lit softly in the Imp's colour for about 1.5 seconds and the page scrolls to it. Links: `imp://settings?setting=look_colour&imp=Pip` and `imp://settings?page=tools`. The marker or list row of the page is picked, and the row is highlighted briefly (with no motion under Reduce Motion).

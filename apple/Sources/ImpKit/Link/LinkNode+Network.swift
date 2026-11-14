@@ -279,7 +279,8 @@ extension LinkNode {
             }
         }
         socket.cancel()
-        return .failed
+        // An early rejected (bad hello) comes in place of the nonce, followed by a close.
+        return client.closed() == .rejected ? .rejected : .failed
     }
 
     /// Waits in this device's Hop room, and hands each guest the Hop passes on to the node.

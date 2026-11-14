@@ -20,7 +20,7 @@
   "cli.chat.using_tool": {
     "note": "What the Imp is doing while it uses a tool.",
     "en": "Using the tool {tool}",
-    "es": "Usando la herramienta {tool}",
+    "es": "Usando {tool}",
     "zh-Hans": "正在使用工具 {tool}",
     "args": {
       "tool": "string"
@@ -30,13 +30,13 @@
     "note": "Faint hint in the empty message field.",
     "en": "Write a message",
     "es": "Escribe un mensaje",
-    "zh-Hans": "写点什么"
+    "zh-Hans": "输入一条消息"
   },
   "cli.chat.input_wait": {
     "note": "Faint hint in the message field while the Imp answers.",
     "en": "Wait for the answer",
     "es": "Espera la respuesta",
-    "zh-Hans": "请等待回答"
+    "zh-Hans": "请等待回答完成"
   },
   "cli.chat.help_hint": {
     "note": "Short reminder at the right of the status line that the question mark opens help.",
@@ -67,7 +67,7 @@
     "note": "A problem during an answer. {error} is a plain sentence.",
     "en": "Something went wrong: {error}",
     "es": "Algo salió mal: {error}",
-    "zh-Hans": "出了点问题:{error}",
+    "zh-Hans": "出了点问题：{error}",
     "args": {
       "error": "string"
     }
@@ -81,56 +81,56 @@
   "cli.help.close": {
     "note": "Last line of the help card.",
     "en": "Press any key to close",
-    "es": "Pulsa cualquier tecla para cerrar",
-    "zh-Hans": "按任意键关闭"
+    "es": "Pulsa una tecla",
+    "zh-Hans": "按任意键即可关闭"
   },
   "cli.help.send": {
     "note": "Help for the Enter key.",
     "en": "Send the message",
     "es": "Envía el mensaje",
-    "zh-Hans": "发送消息"
+    "zh-Hans": "发送这条消息"
   },
   "cli.help.newline": {
     "note": "Help for Alt+Enter and Shift+Enter.",
     "en": "Add a line",
-    "es": "Añade una línea",
-    "zh-Hans": "换行"
+    "es": "Nueva línea",
+    "zh-Hans": "添加一行"
   },
   "cli.help.newline_ctrl": {
     "note": "Help for Ctrl+J.",
     "en": "Add a line",
-    "es": "Añade una línea",
-    "zh-Hans": "换行"
+    "es": "Nueva línea",
+    "zh-Hans": "添加一行"
   },
   "cli.help.clear_input": {
     "note": "Help for Ctrl+U.",
     "en": "Clear what you wrote",
     "es": "Borra lo que escribiste",
-    "zh-Hans": "清空输入"
+    "zh-Hans": "清空已输入内容"
   },
   "cli.help.erase": {
     "note": "Help for Backspace.",
     "en": "Erase a letter",
     "es": "Borra una letra",
-    "zh-Hans": "删除一个字"
+    "zh-Hans": "删除一个字符"
   },
   "cli.help.scroll_line": {
     "note": "Help for the up and down arrows.",
     "en": "Scroll a line",
-    "es": "Desplaza una línea",
-    "zh-Hans": "滚动一行"
+    "es": "Una línea",
+    "zh-Hans": "滚动一行字"
   },
   "cli.help.scroll_page": {
     "note": "Help for Page Up and Page Down.",
     "en": "Scroll a page",
-    "es": "Desplaza una página",
-    "zh-Hans": "滚动一页"
+    "es": "Una página",
+    "zh-Hans": "滚动一整页"
   },
   "cli.help.scroll_end": {
     "note": "Help for End.",
     "en": "Jump to the newest",
     "es": "Salta a lo más nuevo",
-    "zh-Hans": "跳到最新"
+    "zh-Hans": "跳到最新消息"
   },
   "cli.help.key_wheel": {
     "note": "Name of the mouse wheel in the list of keys.",
@@ -148,37 +148,37 @@
     "note": "Help for Esc and Ctrl+C.",
     "en": "Leave the chat",
     "es": "Sale del chat",
-    "zh-Hans": "离开聊天"
+    "zh-Hans": "离开这个聊天"
   },
   "cli.help.quit_empty": {
     "note": "Help for Ctrl+D.",
     "en": "Leave when nothing is written",
     "es": "Sale si no hay nada escrito",
-    "zh-Hans": "没有输入时离开"
+    "zh-Hans": "没有输入时退出聊天"
   },
   "cli.help.open": {
     "note": "Help for the question mark key.",
     "en": "Show this help when nothing is written",
     "es": "Muestra esta ayuda si no hay nada escrito",
-    "zh-Hans": "没有输入时显示帮助"
+    "zh-Hans": "没有输入时显示此帮助"
   },
   "cli.help.open_any": {
     "note": "Help for the F1 key.",
     "en": "Show this help any time",
     "es": "Muestra esta ayuda siempre",
-    "zh-Hans": "随时显示帮助"
+    "zh-Hans": "随时显示此帮助"
   },
   "cli.help.new_chat": {
     "note": "Help for the /clear command.",
     "en": "Start a new chat",
-    "es": "Empieza un chat nuevo",
-    "zh-Hans": "开始新聊天"
+    "es": "Chat nuevo",
+    "zh-Hans": "开始一个新聊天"
   },
   "cli.help.leave": {
     "note": "Help for the /quit command.",
     "en": "Leave the chat",
     "es": "Sale del chat",
-    "zh-Hans": "离开聊天"
+    "zh-Hans": "离开这个聊天"
   },
   "cli.help.key_status": {
     "note": "Name of the status line in the list of what is on screen.",
@@ -196,12 +196,12 @@
     "note": "Help for the arrow that starts what you wrote.",
     "en": "What you wrote",
     "es": "Lo que escribiste",
-    "zh-Hans": "你写的内容"
+    "zh-Hans": "你输入的内容"
   },
   "cli.help.activity": {
     "note": "Help for the activity word in the status line.",
     "en": "What the Imp is doing now",
     "es": "Lo que hace el Imp ahora",
-    "zh-Hans": "Imp 现在在做什么"
+    "zh-Hans": "Imp 此刻在做什么"
   }
 }

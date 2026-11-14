@@ -212,7 +212,7 @@ public enum OwnTools {
                                "required": ["file"]])
     }
 
-    /// The tools for `groups`. `animations`: names it may play right now; `imps`: the others it can message.
+    /// The tools for `groups`. `animations`: names it may play right now, `imps`: the others it can message.
     public static func specs(_ groups: Set<ImpToolGroup>, animations: [String], imps: [String], pocket: [String] = [], browser: Bool,
                              talk: ImpTalk = .own, conversation: Bool = false) -> [ToolSpec] {
         var specs: [ToolSpec] = []

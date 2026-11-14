@@ -23,7 +23,7 @@ msgstr "Qué tan alto salta el Imp en este tiempo."
 #. Help of the move icon.
 msgctxt "anim.help.icon"
 msgid "The picture shown for this move in lists."
-msgstr "El dibujo que se muestra para este movimiento en las listas."
+msgstr "El dibujo de este movimiento en las listas."
 
 #. Help of the move length.
 msgctxt "anim.help.length"
@@ -38,7 +38,7 @@ msgstr "Un nombre para encontrarlo después."
 #. Help of when a move plays.
 msgctxt "anim.help.plays"
 msgid "When this move happens."
-msgstr "Cuándo ocurre este movimiento."
+msgstr "Cuándo ocurre."
 
 #. Help of the shape setting.
 msgctxt "anim.help.shape"
@@ -118,7 +118,7 @@ msgstr "Aspecto"
 #. Button.
 msgctxt "app.reset"
 msgid "Reset"
-msgstr "Restablecer"
+msgstr "Reiniciar"
 
 #. Card title on the App page: login and language.
 msgctxt "app.system"
@@ -213,7 +213,7 @@ msgstr "Añadir"
 #. Result of a successful Brain check.
 msgctxt "brain.check_ok"
 msgid "{name} is awake."
-msgstr "{name} está despierto."
+msgstr "{name} despertó."
 
 #. Shown while a Brain is checked.
 msgctxt "brain.checking"
@@ -233,7 +233,7 @@ msgstr "Elegir entre los modelos del servicio"
 #. Tooltip of the add service button.
 msgctxt "brain.help.add_service"
 msgid "Add a service"
-msgstr "Añadir un servicio"
+msgstr "Añadir servicio"
 
 #. Help of the key field.
 msgctxt "brain.help.key"
@@ -323,7 +323,7 @@ msgstr "Añadir"
 #. Label of the default Brain.
 msgctxt "brains.default"
 msgid "Default"
-msgstr "Por defecto"
+msgstr "Normal"
 
 #. Empty state of the Brains list.
 msgctxt "brains.empty"
@@ -545,7 +545,7 @@ msgstr "Escanear código"
 #. Button and tab: show this Mac's code for another device to scan.
 msgctxt "devices.show"
 msgid "Show code"
-msgstr "Mostrar código"
+msgstr "Ver código"
 
 #. Help on the This Mac card: the dot is The Hop.
 msgctxt "devices.this.info"
@@ -660,7 +660,7 @@ msgstr "Buscó"
 #. Shown when the search finds nothing.
 msgctxt "extension.activity.no_match"
 msgid "Nothing matches that."
-msgstr "Nada coincide."
+msgstr "Sin coincidencias."
 
 #. A line: Imp read a page.
 msgctxt "extension.activity.read"
@@ -670,7 +670,7 @@ msgstr "Leyó la página"
 #. A line: Imp could not read a page.
 msgctxt "extension.activity.read_failed"
 msgid "Could not read the page"
-msgstr "No pudo leer la página"
+msgstr "No pudo leerla"
 
 #. Placeholder of the search box over the full list.
 msgctxt "extension.activity.search"
@@ -750,7 +750,7 @@ msgstr "Imp"
 #. Accessible name of an Imp that is working.
 msgctxt "extension.imp.working"
 msgid "{name} is working"
-msgstr "{name} está trabajando"
+msgstr "{name} trabaja"
 
 #. Accessible name of an Imp that is working on another device.
 msgctxt "extension.imp.working_away"
@@ -830,7 +830,7 @@ msgstr "El navegador se guarda esta página. Imp solo conoce su dirección."
 #. Accessible name of the box that shows the page you are on.
 msgctxt "extension.tab.label"
 msgid "The page Imp knows"
-msgstr "La página que Imp conoce"
+msgstr "La página actual"
 
 #. Help for the page box when Imp can look inside the page.
 msgctxt "extension.tab.sees"
@@ -840,7 +840,7 @@ msgstr "Imp puede leer esta página y encontrar cosas en ella cuando lo necesita
 #. Name of a page that has no title.
 msgctxt "extension.tab.untitled"
 msgid "Untitled page"
-msgstr "Página sin título"
+msgstr "Sin título"
 
 #. The bubble of the first Imp when the app opens for the first time.
 msgctxt "firstrun.asleep_bubble"
@@ -850,7 +850,7 @@ msgstr "{name} está dormido. Dale un cerebro para despertarlo."
 #. The check worked. The Imp wakes up.
 msgctxt "firstrun.check.ok"
 msgid "{name} is awake."
-msgstr "{name} está despierto."
+msgstr "{name} despertó."
 
 #. Shown while the Brain is checked. The Imp stirs.
 msgctxt "firstrun.check.running"
@@ -870,7 +870,7 @@ msgstr "Pega tu clave para continuar."
 #. The check worked, but the key could not be stored.
 msgctxt "firstrun.error.key_not_saved"
 msgid "Imp could not save the key. Try again."
-msgstr "Imp no pudo guardar la clave. Inténtalo de nuevo."
+msgstr "Imp no pudo guardar la clave."
 
 #. No model is picked yet.
 msgctxt "firstrun.error.no_model"
@@ -890,7 +890,7 @@ msgstr "Dirección"
 #. Marks a local preset that answers on this computer.
 msgctxt "firstrun.service.found"
 msgid "Found here"
-msgstr "Encontrado aquí"
+msgstr "Hallado aquí"
 
 #. Quiet line on the phone under a local preset: the address is the computer's.
 msgctxt "firstrun.service.host_note"
@@ -935,7 +935,7 @@ msgstr "Servicio"
 #. Button that starts the path.
 msgctxt "firstrun.wake"
 msgid "Wake {name} up"
-msgstr "Despertar a {name}"
+msgstr "Despertar {name}"
 
 #. Results card: the main button that starts another round.
 msgctxt "games.again"
@@ -965,7 +965,7 @@ msgstr "Cómo se juega"
 #. Badge on the results card when the score beats the best.
 msgctxt "games.new_best"
 msgid "New best!"
-msgstr "¡Nuevo récord!"
+msgstr "¡Récord!"
 
 #. VoiceOver label of the rune button that starts Echo.
 msgctxt "games.play_echo"
@@ -1039,7 +1039,7 @@ msgstr "Olas perfectas"
 #. Safe button of the goodbye dialog.
 msgctxt "goodbye.cancel"
 msgid "Keep {name}"
-msgstr "Quedarme con {name}"
+msgstr "Conservar {name}"
 
 #. Destructive button of the goodbye dialog.
 msgctxt "goodbye.confirm"
@@ -1064,7 +1064,7 @@ msgstr "Los Imps se mueven por aquí. Pulsa Tab para ir de un Imp al siguiente."
 #. Screen reader name of the main canvas.
 msgctxt "home.canvas.label"
 msgid "The Imps' home"
-msgstr "El hogar de los Imps"
+msgstr "El hogar de Imps"
 
 #. Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.
 msgctxt "home.corner.show_hidden"
@@ -1084,17 +1084,17 @@ msgstr "Nuevo"
 #. Empty main screen, title.
 msgctxt "home.empty.title"
 msgid "No Imps yet"
-msgstr "Aún no hay Imps"
+msgstr "Sin Imps aún"
 
 #. Action that brings a hidden Imp back.
 msgctxt "home.hidden.bring_back"
 msgid "Bring back {name}"
-msgstr "Traer de vuelta a {name}"
+msgstr "Recuperar a {name}"
 
 #. Shown in the hidden Imps list when it is empty.
 msgctxt "home.hidden.empty"
 msgid "No hidden Imps"
-msgstr "No hay Imps ocultos"
+msgstr "Sin Imps ocultos"
 
 #. Screen reader hint for the hidden Imps element.
 msgctxt "home.hidden.hint"
@@ -1124,12 +1124,12 @@ msgstr "Abrir"
 #. Screen reader action for an Imp away on another device.
 msgctxt "imp.a11y.call_home"
 msgid "Call {name} home"
-msgstr "Llamar a {name} a casa"
+msgstr "Traer a {name}"
 
 #. Screen reader action.
 msgctxt "imp.a11y.hide"
 msgid "Hide {name}"
-msgstr "Ocultar a {name}"
+msgstr "Ocultar {name}"
 
 #. Screen reader label of an Imp: its name and its state.
 msgctxt "imp.a11y.label"
@@ -1139,12 +1139,12 @@ msgstr "{name}, {state}"
 #. Screen reader action.
 msgctxt "imp.a11y.let_out"
 msgid "Let {name} out"
-msgstr "Dejar salir a {name}"
+msgstr "Soltar a {name}"
 
 #. Screen reader action.
 msgctxt "imp.a11y.send_home"
 msgid "Send {name} home"
-msgstr "Enviar a {name} a casa"
+msgstr "Enviar {name} a casa"
 
 #. Screen reader action.
 msgctxt "imp.a11y.settings"
@@ -1169,12 +1169,12 @@ msgstr "el otro dispositivo"
 #. Asks before taking back an Imp from the device that holds it.
 msgctxt "imp.call_home.title"
 msgid "Bring {name} back from {device}?"
-msgstr "¿Traer a {name} de vuelta desde {device}?"
+msgstr "¿Traer a {name} de {device}?"
 
 #. Screen reader hint on an Imp.
 msgctxt "imp.drag.hint"
 msgid "Drag to move it."
-msgstr "Arrástralo para moverlo."
+msgstr "Arrastra para mover."
 
 #. Screen reader hint on an Imp on desktop.
 msgctxt "imp.drag.out_hint"
@@ -1234,7 +1234,7 @@ msgstr "Oculto"
 #. State of an Imp let out of the window.
 msgctxt "imp.state.out"
 msgid "Out on the desktop"
-msgstr "Fuera, en el escritorio"
+msgstr "Fuera en escritorio"
 
 #. State of an Imp whose home is another device.
 msgctxt "imp.state.visiting"
@@ -1314,7 +1314,7 @@ msgstr "Compartir"
 #. Screen reader label of the share button.
 msgctxt "imp_settings.share.a11y"
 msgid "Share {name}"
-msgstr "Compartir a {name}"
+msgstr "Compartir {name}"
 
 #. Summary line of the Brain row when the Imp has no Brain.
 msgctxt "imp_settings.summary.brain_none"
@@ -1344,7 +1344,7 @@ msgstr "Nombre y voz"
 #. Summary line of the Tools row.
 msgctxt "imp_settings.summary.tools"
 msgid "{on} of {total} on"
-msgstr "{on} de {total} activas"
+msgstr "{on} de {total}"
 
 #. Summary line of the Triggers row.
 msgctxt "imp_settings.summary.triggers"
@@ -1396,7 +1396,7 @@ msgstr "Kit inicial de Imp"
 #. Status line when Local Network access is off for Imp.
 msgctxt "link.localnet.off"
 msgid "Local Network is off for Imp"
-msgstr "La red local está desactivada para Imp"
+msgstr "Red local desactivada"
 
 #. Button on the iPhone that opens the app's page in Settings.
 msgctxt "link.localnet.open"
@@ -1481,7 +1481,7 @@ msgstr "Pequeños detalles que cambian la cara y su forma de moverse."
 #. Help of the cheeks slider.
 msgctxt "look.help.cheeks"
 msgid "How rosy the cheeks are."
-msgstr "Cuánto se sonrojan las mejillas."
+msgstr "Cuánto se sonrojan."
 
 #. Help of the colour.
 msgctxt "look.help.colour"
@@ -1491,7 +1491,7 @@ msgstr "El color de este Imp. Arrastra por la tira para cambiarlo."
 #. Help of the eye size slider.
 msgctxt "look.help.eyes"
 msgid "Make the eyes smaller or bigger."
-msgstr "Hace los ojos más pequeños o más grandes."
+msgstr "Hace los ojos más grandes o pequeños."
 
 #. Help of the head tilt slider.
 msgctxt "look.help.head"
@@ -1501,7 +1501,7 @@ msgstr "Inclina la cabeza hacia un lado o hacia el otro."
 #. Help of the horns slider.
 msgctxt "look.help.horns"
 msgid "Turn the horns up or down."
-msgstr "Gira los cuernos hacia arriba o hacia abajo."
+msgstr "Gira los cuernos arriba o abajo."
 
 #. Help of the eyelids slider.
 msgctxt "look.help.lids"
@@ -1546,7 +1546,7 @@ msgstr "Vista previa"
 #. Button that restores the default look.
 msgctxt "look.reset"
 msgid "Reset"
-msgstr "Restablecer"
+msgstr "Reiniciar"
 
 #. Slider label.
 msgctxt "look.size"
@@ -1616,7 +1616,7 @@ msgstr "También envía lo que hicieron y devolvieron las herramientas. Apagado 
 #. Row in the Imp's Memory card.
 msgctxt "memory.tools.title"
 msgid "Tool results"
-msgstr "Resultados de herramientas"
+msgstr "Resultados"
 
 #. Menu bar button that hides every Imp on the desktop.
 msgctxt "menu.bar.hide"
@@ -1636,7 +1636,7 @@ msgstr "Imps"
 #. Tooltip of the Imps button in the menu bar.
 msgctxt "menu.bar.imps_help"
 msgid "Open the Imps' home"
-msgstr "Abrir la casa de los Imps"
+msgstr "Abrir el hogar"
 
 #. Tooltip of the Hide button when no Imp is on the desktop.
 msgctxt "menu.bar.none_out_help"
@@ -1651,7 +1651,7 @@ msgstr "Salir"
 #. Tooltip of the Quit button.
 msgctxt "menu.bar.quit_help"
 msgid "Quit Imp"
-msgstr "Salir de Imp"
+msgstr "Cerrar Imp"
 
 #. Menu bar button that opens the settings for all Imps.
 msgctxt "menu.bar.settings"
@@ -1671,7 +1671,7 @@ msgstr "Mostrar"
 #. Tooltip of the Show button.
 msgctxt "menu.bar.show_help"
 msgid "Show the Imps again"
-msgstr "Mostrar los Imps otra vez"
+msgstr "Mostrar Imps"
 
 #. State of an Imp that is hidden for now.
 msgctxt "menu.bar.state.hidden"
@@ -1716,12 +1716,12 @@ msgstr "Ocultos ({count})"
 #. Button: take back one of our Imps from the device that holds it.
 msgctxt "menu.imp.call_home"
 msgid "Call Home"
-msgstr "Llamar a casa"
+msgstr "Traer"
 
 #. Menu item for an Imp away on another device: asks before calling it home.
 msgctxt "menu.imp.call_home_ask"
 msgid "Call Home…"
-msgstr "Llamar a casa…"
+msgstr "Traer…"
 
 #. Menu item that copies an Imp as a kit.
 msgctxt "menu.imp.copy_kit"
@@ -1731,7 +1731,7 @@ msgstr "Copiar kit"
 #. Menu item that copies a link to an Imp's kit.
 msgctxt "menu.imp.copy_link"
 msgid "Copy link"
-msgstr "Copiar enlace"
+msgstr "Copiar vínculo"
 
 #. Menu item that says goodbye to an Imp for good. A dialog asks first.
 msgctxt "menu.imp.goodbye"
@@ -1746,7 +1746,7 @@ msgstr "Ocultar"
 #. Menu item (desktop only) that lets an Imp out onto the desktop.
 msgctxt "menu.imp.let_out"
 msgid "Let out"
-msgstr "Dejar salir"
+msgstr "Soltar"
 
 #. Tip on the Imp menu item that moves it to a Mac for good.
 msgctxt "menu.imp.move_tip"
@@ -1761,7 +1761,7 @@ msgstr "Mudar a {name}"
 #. Menu item (desktop only) that puts a free Imp back in the window.
 msgctxt "menu.imp.send_home"
 msgid "Send home"
-msgstr "Enviar a casa"
+msgstr "A casa"
 
 #. Imp menu item that sends the Imp to visit a device. It comes back.
 msgctxt "menu.imp.send_to"
@@ -1951,7 +1951,7 @@ msgstr "Acerca de"
 #. Appearance choice: follow the system.
 msgctxt "phone.appearance.auto"
 msgid "Auto"
-msgstr "Automático"
+msgstr "Auto"
 
 #. Appearance choice.
 msgctxt "phone.appearance.dark"
@@ -1976,17 +1976,17 @@ msgstr "Configurar"
 #. Button: bring an Imp back.
 msgctxt "phone.callhome"
 msgid "Call home"
-msgstr "Llamar a casa"
+msgstr "Llamar"
 
 #. Spoken name of the call home button.
 msgctxt "phone.callhome.label"
 msgid "Call {name} home"
-msgstr "Llamar a {name} a casa"
+msgstr "Traer a {name}"
 
 #. iPhone: chat answering.
 msgctxt "phone.chat.answering"
 msgid "Answering {from}…"
-msgstr "Respondiendo a {from}…"
+msgstr "Responde a {from}…"
 
 #. iPhone: chat ask again.
 msgctxt "phone.chat.ask_again"
@@ -2021,7 +2021,7 @@ msgstr "Último"
 #. iPhone: chat message.
 msgctxt "phone.chat.message"
 msgid "Message {name}"
-msgstr "Mensaje para {name}"
+msgstr "Escribir a {name}"
 
 #. iPhone: chat new.
 msgctxt "phone.chat.new"
@@ -2041,7 +2041,7 @@ msgstr "Escribir a otro Imp"
 #. iPhone: chat ran tools.
 msgctxt "phone.chat.ran_tools"
 msgid "Ran {count} tools"
-msgstr "Usó {count} herramientas"
+msgstr "{count} herramientas"
 
 #. One line under the QR code.
 msgctxt "phone.code.caption"
@@ -2086,7 +2086,7 @@ msgstr "No se pudo guardar el Imp. {detail}"
 #. Title of the alert when an Imp's settings could not be saved.
 msgctxt "phone.editor.save_failed_title"
 msgid "Couldn't save"
-msgstr "No se pudo guardar"
+msgstr "Sin guardar"
 
 #. Alert button.
 msgctxt "phone.forget.everyone.title"
@@ -2096,7 +2096,7 @@ msgstr "Olvidar todos"
 #. What forgetting one device does.
 msgctxt "phone.forget.message"
 msgid "Its Imps come home. To link again, show a new code."
-msgstr "Sus Imps vuelven a casa. Para enlazar otra vez, muestra un código nuevo."
+msgstr "Sus Imps vuelven. Para enlazar, muestra otro código."
 
 #. Button that unlinks one device.
 msgctxt "phone.forget.one"
@@ -2111,7 +2111,7 @@ msgstr "Olvidar {name}"
 #. Question above the forget button.
 msgctxt "phone.forget.title"
 msgid "Forget {name}?"
-msgstr "¿Olvidar a {name}?"
+msgstr "¿Olvidar {name}?"
 
 #. What forgetting everyone does.
 msgctxt "phone.forget_all.message"
@@ -2121,12 +2121,12 @@ msgstr "Todos los Imps vuelven a casa. Enlaza otra vez con un código nuevo."
 #. Question above the forget everyone button.
 msgctxt "phone.forget_all.title"
 msgid "Forget every device?"
-msgstr "¿Olvidar todos los dispositivos?"
+msgstr "¿Olvidar todos?"
 
 #. iPhone: game blaze.
 msgctxt "phone.game.blaze"
 msgid "Blaze. Points count double"
-msgstr "Llamarada. Los puntos valen el doble."
+msgstr "Llamarada. Puntos dobles"
 
 #. iPhone: game clean burn.
 msgctxt "phone.game.clean_burn"
@@ -2291,7 +2291,7 @@ msgstr "Escanear"
 #. iPhone: what VoiceOver says for a key field while its value is hidden.
 msgctxt "phone.secret.hidden"
 msgid "Entered, hidden"
-msgstr "Introducida, oculta"
+msgstr "Oculta"
 
 #. Example address of a Den.
 msgctxt "phone.server.placeholder_den"
@@ -2311,7 +2311,7 @@ msgstr "Cualquiera"
 #. Segment: left or right.
 msgctxt "phone.shake.dir.sides"
 msgid "Left or right"
-msgstr "Izquierda o derecha"
+msgstr "Izq. o der."
 
 #. Segment: firm shake.
 msgctxt "phone.shake.firm"
@@ -2411,7 +2411,7 @@ msgstr "{name}"
 #. Connection pill: several devices linked.
 msgctxt "phone.status.devices"
 msgid "{count} devices"
-msgstr "{count} dispositivos"
+msgstr "{count} equipos"
 
 #. Spoken hint of the connection pill.
 msgctxt "phone.status.hint"
@@ -2431,7 +2431,7 @@ msgstr "Buscando…"
 #. The talks side of an Imp's sheet when it has not talked with another Imp yet.
 msgctxt "phone.talks.empty"
 msgid "No talks yet"
-msgstr "Aún no hay charlas"
+msgstr "Sin charlas"
 
 #. Row title: the app version.
 msgctxt "phone.version"
@@ -2476,7 +2476,7 @@ msgstr "Permisos"
 #. Switch.
 msgctxt "privacy.trust"
 msgid "Trust devices"
-msgstr "Confiar"
+msgstr "Confiar en equipos"
 
 #. Note under the switch.
 msgctxt "privacy.trust_note"
@@ -2566,17 +2566,17 @@ msgstr "Desactivado"
 #. Server choice: an address the user types.
 msgctxt "servers.preset.custom"
 msgid "Custom"
-msgstr "Personalizado"
+msgstr "Propio"
 
 #. Server choice: the default servers.
 msgctxt "servers.preset.imp"
 msgid "Imp's servers"
-msgstr "Servidores de Imp"
+msgstr "Servidores Imp"
 
 #. Note under the default servers choice.
 msgctxt "servers.preset.imp_note"
 msgid "The default, run by the Imp project."
-msgstr "La opción por defecto, a cargo del proyecto Imp."
+msgstr "El predeterminado, del proyecto Imp."
 
 #. Server choice: no server.
 msgctxt "servers.preset.off"
@@ -2656,7 +2656,7 @@ msgstr "Den no está configurado."
 #. Item: a linked device cannot be reached.
 msgctxt "settings.attention.device_offline"
 msgid "{device} is offline."
-msgstr "{device} no tiene conexión."
+msgstr "{device} sin conexión."
 
 #. Item.
 msgctxt "settings.attention.hop_off"
@@ -2696,7 +2696,7 @@ msgstr "Borra todo y empieza de nuevo. No se puede deshacer."
 #. Settings text.
 msgctxt "settings.backup.reset.title"
 msgid "Reset"
-msgstr "Restablecer"
+msgstr "Reiniciar"
 
 #. Settings text.
 msgctxt "settings.brains.first_wait.info"
@@ -2761,7 +2761,7 @@ msgstr "Intentos"
 #. Settings text.
 msgctxt "settings.brains.services.info"
 msgid "The brains your Imps think with."
-msgstr "Los cerebros con los que piensan tus Imps."
+msgstr "Los cerebros de tus Imps."
 
 #. Tooltip of a settings row.
 msgctxt "settings.brains.wait.info"
@@ -2801,7 +2801,7 @@ msgstr "Reproduce una imagen, un vídeo o un sonido de una respuesta en cuanto l
 #. Settings text.
 msgctxt "settings.bubble.autoplay.title"
 msgid "Autoplay"
-msgstr "Auto"
+msgstr "Autoplay"
 
 #. Tooltip of a settings row.
 msgctxt "settings.bubble.background.info"
@@ -2886,7 +2886,7 @@ msgstr "Tamaño"
 #. Help of the button on a linked device that takes back the Imps it holds.
 msgctxt "settings.devices.call_home"
 msgid "Call its Imps home"
-msgstr "Llamar a sus Imps a casa"
+msgstr "Traer sus Imps"
 
 #. Settings text.
 msgctxt "settings.devices.forget_all.title"
@@ -3001,7 +3001,7 @@ msgstr "Se ven entre sí"
 #. State of a node.
 msgctxt "settings.map.state_needs_setup"
 msgid "Needs setup"
-msgstr "Necesita configuración"
+msgstr "Sin configurar"
 
 #. State of a node.
 msgctxt "settings.map.state_off"
@@ -3021,7 +3021,7 @@ msgstr "Listo"
 #. Badge on the node of the device the app runs on.
 msgctxt "settings.map.this_device"
 msgid "This device"
-msgstr "Este dispositivo"
+msgstr "Este equipo"
 
 #. Node: the connected tool servers (MCP).
 msgctxt "settings.map.tools"
@@ -3031,7 +3031,7 @@ msgstr "Herramientas"
 #. Line label: this device may use the other device's tools.
 msgctxt "settings.map.tools_here"
 msgid "Its tools can be used from here"
-msgstr "Sus herramientas se pueden usar desde aquí"
+msgstr "Sus herramientas, desde aquí"
 
 #. Line label: the link goes through a server.
 msgctxt "settings.map.via"
@@ -3106,7 +3106,7 @@ msgstr "Qué modelo consultar."
 #. Settings text.
 msgctxt "settings.service.name.info"
 msgid "A name you pick for this brain."
-msgstr "Un nombre que eliges para este cerebro."
+msgstr "Un nombre a tu gusto"
 
 #. Settings text.
 msgctxt "settings.talking.between.info"
@@ -3166,7 +3166,7 @@ msgstr "Cuántos minutos sigue siendo el mismo chat."
 #. Settings text.
 msgctxt "settings.talking.window.title"
 msgid "Same chat for"
-msgstr "Mismo chat durante"
+msgstr "Mismo chat"
 
 #. Title of the app-wide settings.
 msgctxt "settings.title"
@@ -3191,7 +3191,7 @@ msgstr "Líneas extra enviadas con cada petición, como una contraseña."
 #. Settings text.
 msgctxt "settings.tool.name.info"
 msgid "A name you pick for this tool."
-msgstr "Un nombre que eliges para esta herramienta."
+msgstr "Un nombre a tu gusto"
 
 #. Settings text.
 msgctxt "settings.tool.variables.info"
@@ -3221,7 +3221,7 @@ msgstr "Se comparten su aspecto, personalidad, herramientas y disparadores. Las 
 #. Title of the share sheet.
 msgctxt "share.title"
 msgid "Share {name}"
-msgstr "Compartir a {name}"
+msgstr "Compartir {name}"
 
 #. Button on the Sharing page: look through The Den.
 msgctxt "sharing.browse"
@@ -3271,17 +3271,17 @@ msgstr "No tienes conexión"
 #. Button.
 msgctxt "state.servers.set_up_den"
 msgid "Set up Den"
-msgstr "Configurar Den"
+msgstr "Crear Den"
 
 #. Button.
 msgctxt "state.servers.set_up_hop"
 msgid "Set up Hop"
-msgstr "Configurar Hop"
+msgstr "Crear Hop"
 
 #. Button in the sleeping state.
 msgctxt "state.sleeping.action"
 msgid "Give {name} a Brain"
-msgstr "Dale un cerebro a {name}"
+msgstr "Dar cerebro a {name}"
 
 #. Note in the sleeping state.
 msgctxt "state.sleeping.note"
@@ -3316,7 +3316,7 @@ msgstr "Integradas"
 #. Screen reader action.
 msgctxt "tools.collapse"
 msgid "Hide the tools in {group}"
-msgstr "Ocultar las herramientas de {group}"
+msgstr "Ocultar herramientas de {group}"
 
 #. Empty state of the tools list.
 msgctxt "tools.empty"
@@ -3326,12 +3326,12 @@ msgstr "Aún no hay herramientas. Añade algunas desde un kit o un servidor MCP.
 #. Screen reader action.
 msgctxt "tools.expand"
 msgid "Show the tools in {group}"
-msgstr "Mostrar las herramientas de {group}"
+msgstr "Ver herramientas de {group}"
 
 #. Under a tool group: how many of its tools are on.
 msgctxt "tools.group_count"
 msgid "{on} of {total} on"
-msgstr "{on} de {total} activas"
+msgstr "{on} de {total}"
 
 #. Under a tool group that is switched off.
 msgctxt "tools.group_off"
@@ -3421,7 +3421,7 @@ msgstr "Opcional"
 #. Problem on a tool server with no address.
 msgctxt "tools.problem.address"
 msgid "Add the server's address."
-msgstr "Añade la dirección del servidor."
+msgstr "Falta la dirección."
 
 #. Spoken label of the button that removes a header.
 msgctxt "tools.remove_header"
@@ -3466,12 +3466,12 @@ msgstr "Eliminar disparador"
 #. Destructive action on a shared trigger: delete it for every Imp.
 msgctxt "triggers.delete_every"
 msgid "Delete for every Imp"
-msgstr "Eliminar para todos los Imps"
+msgstr "Borrar para todos"
 
 #. Confirmation before deleting a shared trigger for every Imp.
 msgctxt "triggers.delete_every.title"
 msgid "Delete “{name}” for every Imp?"
-msgstr "¿Eliminar “{name}” para todos los Imps?"
+msgstr "¿Borrar “{name}” para todos?"
 
 #. Action on a trigger.
 msgctxt "triggers.edit"
@@ -3561,7 +3561,7 @@ msgstr "Cuando {event}, {action}."
 #. Menu item on this Imp's trigger: share it with every Imp.
 msgctxt "triggers.share_every"
 msgid "Share to all"
-msgstr "Compartir con todos"
+msgstr "Para todos"
 
 #. Button in the empty triggers list: review and add the starter kit.
 msgctxt "triggers.starter"
@@ -3581,12 +3581,12 @@ msgstr "Disparadores"
 #. Button that removes this Imp's version of a shared trigger, so the shared one applies again.
 msgctxt "triggers.use_shared"
 msgid "Use shared"
-msgstr "Usar el compartido"
+msgstr "Usar común"
 
 #. Under the confirmation: the Imp's own version is removed.
 msgctxt "triggers.use_shared.message"
 msgid "The version only {name} has goes."
-msgstr "Se quita la versión que solo tiene {name}."
+msgstr "Se quita la versión de {name}."
 
 #. Confirmation before removing this Imp's version of a shared trigger.
 msgctxt "triggers.use_shared.title"
@@ -3596,7 +3596,7 @@ msgstr "¿Volver a usar “{name}” compartido?"
 #. Switch on the iPhone: voices in new replies.
 msgctxt "voice.autoplay"
 msgid "Autoplay"
-msgstr "Auto"
+msgstr "Autoplay"
 
 #. Note under the switch.
 msgctxt "voice.autoplay_note"

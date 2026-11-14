@@ -18,7 +18,7 @@ Names come from the string keys, so they are the same words on every platform.
 - A drag has a keyboard and screen reader way: the actions above, and arrow keys to move.
 - The Hidden Imps element on the floor is always focusable, with "Bring back {name}" for each. A peek is announced (`home.hidden.peek`).
 - Imp Settings can always be read as a plain list in a calm order: Brain, Personality, Look, Tools, Triggers, Moves, then Share and Goodbye. See [Imp Settings](/ux/imp-settings).
-- Every linked device on the Devices page is one row a screen reader reads whole: its name and its controls; how it is reached is an icon with a spoken label.
+- Every linked device on the Devices page is one row a screen reader reads whole: its name and its controls. How it is reached is an icon with a spoken label.
 - A field's own actions (`fieldAction`) are buttons with a spoken label, after the field in reading order.
 - An animation that shows a state has a spoken description, such as `brain.zzz`.
 - Changes that happen on their own are announced: an Imp waking, a transfer, an Undo bar, an error.

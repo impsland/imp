@@ -6,7 +6,7 @@ import Testing
 @Suite struct MouseGestureTests {
     let center = CGPoint(x: 500, y: 300), r: CGFloat = 50
 
-    /// Feeds a path sampled at 60 Hz; returns the first gesture (and when it came).
+    /// Feeds a path sampled at 60 Hz. Returns the first gesture (and when it came).
     private func first(_ g: inout MouseGestures, frames: Int, from start: Int = 0,
                        _ path: (Int) -> CGPoint) -> (AnimationTrigger, Double)? {
         for i in start..<(start + frames) {

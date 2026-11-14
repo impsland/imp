@@ -18,13 +18,13 @@
     "note": "Menu with the background choices.",
     "en": "Background",
     "es": "Fondo",
-    "zh-Hans": "背景"
+    "zh-Hans": "桌面背景"
   },
   "menu.canvas.settings": {
     "note": "Menu item that opens the app-wide settings.",
     "en": "Settings",
     "es": "Ajustes",
-    "zh-Hans": "设置"
+    "zh-Hans": "应用设置"
   },
   "menu.imp.talk": {
     "note": "Menu item that opens the Imp's message bubble.",
@@ -36,30 +36,30 @@
     "note": "Menu item that opens the settings of one Imp.",
     "en": "Settings",
     "es": "Ajustes",
-    "zh-Hans": "设置"
+    "zh-Hans": "小妖设置"
   },
   "menu.imp.let_out": {
     "note": "Menu item (desktop only) that lets an Imp out onto the desktop.",
     "en": "Let out",
-    "es": "Dejar salir",
+    "es": "Soltar",
     "zh-Hans": "放出来"
   },
   "menu.imp.send_home": {
     "note": "Menu item (desktop only) that puts a free Imp back in the window.",
     "en": "Send home",
-    "es": "Enviar a casa",
+    "es": "A casa",
     "zh-Hans": "送回家"
   },
   "menu.imp.call_home": {
     "note": "Button: take back one of our Imps from the device that holds it.",
     "en": "Call Home",
-    "es": "Llamar a casa",
+    "es": "Traer",
     "zh-Hans": "叫回家"
   },
   "menu.imp.call_home_ask": {
     "note": "Menu item for an Imp away on another device: asks before calling it home.",
     "en": "Call Home…",
-    "es": "Llamar a casa…",
+    "es": "Traer…",
     "zh-Hans": "叫回家…"
   },
   "menu.imp.hide": {
@@ -77,7 +77,7 @@
   "menu.imp.copy_link": {
     "note": "Menu item that copies a link to an Imp's kit.",
     "en": "Copy link",
-    "es": "Copiar enlace",
+    "es": "Copiar vínculo",
     "zh-Hans": "复制链接"
   },
   "menu.imp.share": {
@@ -120,13 +120,13 @@
     "note": "Opens a file chooser for a picture or a tile.",
     "en": "Choose a picture…",
     "es": "Elegir una imagen…",
-    "zh-Hans": "选择图片…"
+    "zh-Hans": "选择一张图片…"
   },
   "background.choose_colour": {
     "note": "Opens the colour chooser.",
     "en": "Choose a colour…",
     "es": "Elegir un color…",
-    "zh-Hans": "选择颜色…"
+    "zh-Hans": "选择一种颜色…"
   },
   "background.tile_hint": {
     "note": "Hint under the Tile choice.",
@@ -138,7 +138,7 @@
     "note": "Error when the chosen file is not a usable picture.",
     "en": "That picture could not be used. Pick another one.",
     "es": "No se pudo usar esa imagen. Elige otra.",
-    "zh-Hans": "无法使用这张图片。请换一张。"
+    "zh-Hans": "这张图片无法使用，请换一张。"
   },
   "menu.bar.imps": {
     "note": "Menu bar button that opens the Imps' home window.",
@@ -149,8 +149,8 @@
   "menu.bar.imps_help": {
     "note": "Tooltip of the Imps button in the menu bar.",
     "en": "Open the Imps' home",
-    "es": "Abrir la casa de los Imps",
-    "zh-Hans": "打开 Imp 的家"
+    "es": "Abrir el hogar",
+    "zh-Hans": "打开 Imp 的家园"
   },
   "menu.bar.hide": {
     "note": "Menu bar button that hides every Imp on the desktop.",
@@ -168,31 +168,31 @@
     "note": "Tooltip of the Hide button.",
     "en": "Hide the Imps on your desktop",
     "es": "Ocultar los Imps del escritorio",
-    "zh-Hans": "隐藏桌面上的 Imp"
+    "zh-Hans": "隐藏桌面上的所有 Imp"
   },
   "menu.bar.show_help": {
     "note": "Tooltip of the Show button.",
     "en": "Show the Imps again",
-    "es": "Mostrar los Imps otra vez",
-    "zh-Hans": "重新显示 Imp"
+    "es": "Mostrar Imps",
+    "zh-Hans": "重新显示所有 Imp"
   },
   "menu.bar.none_out_help": {
     "note": "Tooltip of the Hide button when no Imp is on the desktop.",
     "en": "No Imps are out on the desktop",
     "es": "Ningún Imp está en el escritorio",
-    "zh-Hans": "桌面上没有 Imp"
+    "zh-Hans": "桌面上还没有 Imp"
   },
   "menu.bar.settings": {
     "note": "Menu bar button that opens the settings for all Imps.",
     "en": "Settings",
     "es": "Ajustes",
-    "zh-Hans": "设置"
+    "zh-Hans": "应用设置"
   },
   "menu.bar.settings_help": {
     "note": "Tooltip of the Settings button in the menu bar.",
     "en": "Settings for all Imps",
     "es": "Ajustes de todos los Imps",
-    "zh-Hans": "所有 Imp 的设置"
+    "zh-Hans": "所有 Imp 的设置项"
   },
   "menu.bar.quit": {
     "note": "Menu bar button that quits the app.",
@@ -203,7 +203,7 @@
   "menu.bar.quit_help": {
     "note": "Tooltip of the Quit button.",
     "en": "Quit Imp",
-    "es": "Salir de Imp",
+    "es": "Cerrar Imp",
     "zh-Hans": "退出 Imp"
   },
   "menu.bar.state.out": {
@@ -296,12 +296,12 @@
     },
     "en": "{name} lives on {device} from now on.",
     "es": "{name} vive en {device} desde ahora.",
-    "zh-Hans": "{name} 从此住在 {device}。"
+    "zh-Hans": "{name} 从现在起住在 {device}。"
   },
   "menu.imp.visit_none": {
     "note": "Greyed Imp menu item when no other device is around.",
     "en": "Visit another device",
     "es": "Visitar otro dispositivo",
-    "zh-Hans": "去别的设备做客"
+    "zh-Hans": "去别的设备做客吧"
   }
 }

@@ -70,13 +70,13 @@ Public types of `ImpDesign`. Platform specs of each are in [Components](/design/
 
 - Rows of actions: `ActionRow` (a `Layout`: a lone action centred, otherwise the last one trailing).
 - States: `ImpStateSymbol`, `StateMark(word, symbol:)`.
-- Surface: `Backdrop`, `Card(title, icon:, info:, accessory:)`, `SectionHeader(title, icon:, info:, accessory:)` (icon tile and title leading; accessory then the tip trailing), `.impCard(radius:)`, `.impListRow()`, `SelectableCard`, `SelectMark`.
+- Surface: `Backdrop`, `Card(title, icon:, info:, accessory:)`, `SectionHeader(title, icon:, info:, accessory:)` (icon tile and title leading, then the accessory, then the tip trailing), `.impCard(radius:)`, `.impListRow()`, `SelectableCard`, `SelectMark`.
 - Settings: `Row(title, icon:, info:)`, `FieldRow(label, info:)`, `IconTile`, `InfoTip`, `StatusText`, `Badge`.
-- Buttons: `.buttonStyle(.primary)`, `.secondary`, `.quiet`, `.destructive`, `.imp(kind, small:)`, `ImpButtonStyle`; `WideButtonStyle` is the phone's big full-width button. `FitLabel(title, systemImage:)` shows icon and title, or the icon alone when narrow. `OnTint` is the ink or paper ShapeStyle for text on a fill.
-- Controls: `.toggleStyle(.impSwitch)`, `.impSwitchBare`, `.impButton`; `ImpSegmented` (words, then icons, then a menu; always pass `symbol:`); `ImpStepper`, `ImpPicker`, `CompactMenu`, `ImpTimeField`, `SegmentedTabs`, `ChoiceChip`.
+- Buttons: `.buttonStyle(.primary)`, `.secondary`, `.quiet`, `.destructive`, `.imp(kind, small:)`, `ImpButtonStyle`. `WideButtonStyle` is the phone's big full-width button. `FitLabel(title, systemImage:)` shows icon and title, or the icon alone when narrow. `OnTint` is the ink or paper ShapeStyle for text on a fill.
+- Controls: `.toggleStyle(.impSwitch)`, `.impSwitchBare`, `.impButton`. `ImpSegmented` (words, then icons, then a menu, so always pass `symbol:`). `ImpStepper`, `ImpPicker`, `CompactMenu`, `ImpTimeField`, `SegmentedTabs`, `ChoiceChip`.
 - Fields: `.impField()`, `EditorWell`, `TextArea`, `.impSlider()`.
 - Icon-only: `HoverIconButton`, `HoverIconMenu`.
-- Notice (spec `notice`): `ActionState` with `StatefulLabel(title, symbol:, state:)` and `.impActionState($state)` (a button carries its own state: wheel, then tick or cross, in a fixed frame; idle again after `Behavior.noticeSeconds`), `.impNotice($notice)` with `ImpNotice.info/success/warning/error` (a floating capsule over the bottom, self-dismissing, tappable, announced), `StatusSlot(text, symbol:, color:)` (a fixed-height line that swaps its words in place). `AttentionNotice([Line])` (spec `attention`) is for problems that persist: each `Line` has a symbol, its words and an optional `Fix` button.
+- Notice (spec `notice`): `ActionState` with `StatefulLabel(title, symbol:, state:)` and `.impActionState($state)` (a button carries its own state: wheel, then tick or cross, in a fixed frame, and idle again after `Behavior.noticeSeconds`), `.impNotice($notice)` with `ImpNotice.info/success/warning/error` (a floating capsule over the bottom, self-dismissing, tappable, announced), `StatusSlot(text, symbol:, color:)` (a fixed-height line that swaps its words in place). `AttentionNotice([Line])` (spec `attention`) is for problems that persist: each `Line` has a symbol, its words and an optional `Fix` button.
 - Floating: `.impPopover(isPresented:)`, `.impPopoverSurface()`, `PopoverHeader`, `UndoBar`.
 - Focus: `.focusRing(_:shown:)`, the only stroke on a control.
 

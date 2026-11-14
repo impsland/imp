@@ -5,7 +5,7 @@ import os
 import ImpKit
 
 /// A tiny local WebSocket server the Imp browser extension connects to. It tells Imp which
-/// page the active tab shows and finds elements on it. Loopback only; extension origins only.
+/// page the active tab shows and finds elements on it. Loopback only. Extension origins only.
 @MainActor @Observable
 final class BrowserBridge {
     enum Failure: LocalizedError {
@@ -210,7 +210,7 @@ final class BrowserBridge {
         }
     }
 
-    /// Resolves a pending request exactly once; later calls (timeout after reply, etc.) are no-ops.
+    /// Resolves a pending request exactly once. Later calls (timeout after reply, etc.) are no-ops.
     private func finish(_ id: String, _ result: Result<BridgeInbound, Error>) {
         pendingPeer[id] = nil
         guard let c = pending.removeValue(forKey: id) else { return }

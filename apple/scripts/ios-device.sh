@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Builds Imp for iPhone, installs it on a connected iPhone (cable, or Wi-Fi once paired in Xcode) and opens it.
-#   DEVICE  the iPhone's name or UDID (default: the only one connected; see `xcrun devicectl list devices`)
+#   DEVICE  the iPhone's name or UDID (default: the only one connected, see `xcrun devicectl list devices`)
 #   TEAM    the Apple Developer Team ID to sign with (default: a team signed in to Xcode, else your certificate's)
 #   CONFIG  Release (default) or Debug (Debug understands -demo, -openChat… see apple/iOS/README.md)
 set -euo pipefail

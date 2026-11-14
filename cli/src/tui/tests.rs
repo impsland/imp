@@ -421,7 +421,7 @@ fn the_terminals_own_background_is_the_surface() {
     let mut terminal = Terminal::new(TestBackend::new(60, 12)).unwrap();
     terminal.draw(|f| app.render(f)).unwrap();
     let buffer = terminal.backend().buffer().clone();
-    // Only the message field has a fill; the transcript and the status line keep the default background.
+    // Only the message field has a fill. The transcript and the status line keep the default background.
     for x in 0..60 {
         assert_eq!(buffer[(x, 0)].bg, ratatui::style::Color::Reset);
         assert_eq!(buffer[(x, 11)].bg, ratatui::style::Color::Reset);

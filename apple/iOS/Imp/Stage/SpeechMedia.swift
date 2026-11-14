@@ -59,7 +59,7 @@ struct StageOrb: View {
 
     var body: some View {
         Button { clip?.toggle() } label: {
-            // The orb drifts and swells only while its voice plays; at rest it is one still picture.
+            // The orb drifts and swells only while its voice plays. At rest it is one still picture.
             PacedTimeline(activity: clip?.isPlaying == true ? .lively : .still) { date in
                 let t = date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 3600)
                 let playing = clip?.isPlaying ?? false

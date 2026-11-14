@@ -37,7 +37,7 @@ After changing any text in the app, run `make strings`, then translate the new e
 ## The documentation site
 
 ```sh
-make docs     # npm ci and npm run build in docs/
+make docs     # runs npm ci and npm run build in docs/
 ```
 
 ## Where things are

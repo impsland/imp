@@ -1,7 +1,7 @@
 # Testing
 
 Every check in the repository runs from the `Makefile` at the root. CI runs the same commands
-(`.github/workflows/ci.yml`).
+(`.github/workflows/ci.yml` for the Apple apps, `.github/workflows/server.yml` for the Rust workspace).
 
 ## Everyday commands
 
@@ -13,7 +13,7 @@ Every check in the repository runs from the `Makefile` at the root. CI runs the 
 | `make rust`             | Format check, lint (`clippy -D warnings`) and tests for the Rust workspace    |
 | `make tokens-check`     | Fail when a generated design file is out of date (see [Design](/design/))     |
 
-CI also runs `node design/generate.mjs --check`, `make build`, `make test`, and builds the Rust core for the iOS Simulator.
+CI also runs `node design/generate.mjs --check` and `make build`. It builds the iPhone app for the Simulator too.
 
 ## Live tests (real services)
 

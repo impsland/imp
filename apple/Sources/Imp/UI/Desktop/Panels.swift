@@ -362,7 +362,7 @@ final class Panels {
 
     /// A carry that hits an outer side of the desktop hard is a throw (see `Toss.desktopExit`):
     /// onto the device that side leads to at that height, else it bounces off the edge and says why.
-    /// Only once a device is linked; until then the edges are just edges. True when it was a throw.
+    /// Only once a device is linked. Until then the edges are just edges. True when it was a throw.
     private func flung(at cursor: CGPoint, velocity: CGVector) -> Bool {
         let app = model.app
         guard app.link.isLinked || model.visit != nil, !app.isAway(model.id),
@@ -394,7 +394,7 @@ final class Panels {
         let height = screen.height > 0 ? Double((screen.maxY - frame.midY) / screen.height) : 0.5
         for side in [nearer, nearer.opposite] {
             guard let band = app.link.bands(of: model.id, side: side).first(where: { $0.device == device }) else { continue }
-            // Where it is, if that is the device's share of the side; else the middle of the share.
+            // Where it is, if that is the device's share of the side. Else the middle of the share.
             let at = band.top <= height && height < band.bottom ? height : (band.top + band.bottom) / 2
             guard app.send(model.id, to: device, side: side, height: at, speed: 0) else { break }
             return flyOff(side, speed: 1_600, then: done)

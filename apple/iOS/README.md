@@ -85,15 +85,15 @@ only runs while the app is in front. Nothing in the app depends on the transport
 The phone shares the Mac's design language (`apple/Sources/ImpDesign`, tokens in `design/tokens.json`).
 One flat surface (`Tone.surface`) under every screen and every sheet (`.presentationBackground(Tone.surface)`).
 Groups are soft fills (`Tone.card`) with big continuous corners: no outlines, no dividers, no gradients, no
-shadows on chrome. Chrome is monochrome (`Tone.accent`); the colour belongs to the Imp (`impTint`). Text on a
-fill uses `Tone.onAccent` or `OnTint`; `Tone.paper` is only for text over the stage, the camera or a scrim.
+shadows on chrome. Chrome is monochrome (`Tone.accent`), and the colour belongs to the Imp (`impTint`). Text on a
+fill uses `Tone.onAccent` or `OnTint`. `Tone.paper` is only for text over the stage, the camera or a scrim.
 Only a bubble that floats over the stage casts a shadow. The games keep their warm colours through the
 `Tone.spark*` tokens. Icons sit in `IconTile` beads or `HoverIconButton`, never edge to edge.
 
 Settings mirror the Mac. The pages of the Devices sheet are the `SettingsGroup`s the phone has (Brains,
-Devices, Animations, Talking, App); an Imp's own pages are the `ImpSetting`s it has (Brain, Personality, Look,
+Devices, Animations, Talking, App). An Imp's own pages are the `ImpSetting`s it has (Brain, Personality, Look,
 Tools), with the same titles, icons and help keys as the Mac. Every setting is a `Row` or a field with an icon
-and an `InfoTip`; controls adapt to a narrow screen and the largest Dynamic Type size by themselves.
+and an `InfoTip`. Controls adapt to a narrow screen and the largest Dynamic Type size by themselves.
 
 ## Energy
 

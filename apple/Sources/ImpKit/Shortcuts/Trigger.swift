@@ -112,13 +112,13 @@ public struct Trigger: Codable, Hashable, Sendable {
     }
 
     public var kind: Kind
-    /// clicks: how many; battery/busy: percent; every/back: minutes; time/hours: minutes after midnight.
+    /// clicks: how many, battery/busy: percent, every/back: minutes, time/hours: minutes after midnight.
     public var number: Int?
-    /// hours: where the window ends (minutes after midnight; it may wrap past midnight).
+    /// hours: where the window ends (minutes after midnight, it may wrap past midnight).
     public var until: Int?
-    /// app: its name or bundle ID; website: part of the address.
+    /// app: its name or bundle ID. Website: part of the address.
     public var text: String?
-    /// charger: plugged in (true) or unplugged; offline: goes offline (true) or comes back.
+    /// charger: plugged in (true) or unplugged. Offline: goes offline (true) or comes back.
     public var flag: Bool?
 
     public init(_ kind: Kind, number: Int? = nil, until: Int? = nil, text: String? = nil, flag: Bool? = nil) {
@@ -350,7 +350,7 @@ extension Trigger {
         }
     }
 
-    /// A minute of the day inside a window that may wrap past midnight (22:00–07:00).
+    /// A minute of the day inside a window that may wrap past midnight (22:00 to 07:00).
     static func within(_ m: Int, from a: Int, to b: Int) -> Bool {
         a <= b ? (a <= m && m < b) : (m >= a || m < b)
     }

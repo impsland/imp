@@ -60,7 +60,7 @@ public struct Kit: Equatable, Sendable {
 
     // MARK: Reading
 
-    /// A kit from pasted or downloaded text. Throws when the text isn't a kit at all; items that
+    /// A kit from pasted or downloaded text. Throws when the text isn't a kit at all. Items that
     /// are bad end up in `problems` instead.
     public static func parse(_ text: String, limit: Int = maxBytes) throws -> Kit {
         guard text.utf8.count <= limit else { throw KitError.tooLarge }
@@ -153,7 +153,7 @@ public struct Kit: Equatable, Sendable {
 
     private mutating func read(servers entries: [String: JSONValue]) {
         for key in entries.keys.sorted() {
-            // One entry at a time, through the same parser the Tools tab's Paste uses; a server
+            // One entry at a time, through the same parser the Tools tab's Paste uses. A server
             // named like a wrapper key ("mcp") is no trouble that way.
             guard case .object = entries[key]!, var server = MCPServerConfig.parse(setup: entries[key]!.jsonString).first else {
                 problems.append(String(localized: "Tool “\(key)”: needs a `command` (a program) or a `url` (a web address)."))
@@ -319,7 +319,7 @@ public enum KitSource: Equatable, Sendable {
     case text(String)
     case remote(URL)
 
-    /// Only https, or http for this Mac itself; no passwords in the address.
+    /// Only https, or http for this Mac itself. No passwords in the address.
     public static func validate(_ url: URL) throws {
         let scheme = url.scheme?.lowercased() ?? ""
         guard let host = url.host?.lowercased(), !host.isEmpty, ["https", "http"].contains(scheme) else {
@@ -449,7 +449,7 @@ extension MCPServerConfig {
 }
 
 extension JSONValue {
-    /// Keys in the order people read them; anything else after, A to Z.
+    /// Keys in the order people read them. Anything else after, A to Z.
     private static let keyOrder = ["app", "name", "about", "imps", "triggers", "mcpServers", "animations",
                                    "symbol", "replaces", "starts", "enabled", "favoriteColor", "beats", "duration", "look", "mood", "glyph", "tilt", "hop", "stretch",
                                    "traits", "lids", "slant", "eyes", "squint", "horns", "blush", "tempo",

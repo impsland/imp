@@ -273,7 +273,7 @@ final class EchoSession {
             : isBest ? String(localized: "Echo over. \(points) points. New best!") : String(localized: "Echo over. \(points) points")).post()
     }
 
-    /// A happy dance; a clean one is bigger, and a streak spins.
+    /// A happy dance. A clean one is bigger, and a streak spins.
     private func cheer(delay: Double, clean: Bool, streak: Int, date: Date) -> Performance {
         var steps: [AnticStep] = []
         if delay > 0 { steps.append(AnticStep(duration: delay, mood: .happy)) }

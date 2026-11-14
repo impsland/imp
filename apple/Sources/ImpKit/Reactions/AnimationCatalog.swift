@@ -1,7 +1,7 @@
 import Foundation
 
 /// The animation catalog: `spec/animations/catalog.json`, the one place animations are defined.
-/// The Den offers every entry; the apps carry only the ones marked `"bundled": true`, copied into
+/// The Den offers every entry. The apps carry only the ones marked `"bundled": true`, copied into
 /// `AnimationCatalog.generated.swift` by `node design/generate.mjs` (no hand copy), and read here.
 public enum AnimationCatalog {
     /// One animation of the catalog.

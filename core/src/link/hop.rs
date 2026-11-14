@@ -283,6 +283,20 @@ impl HopClient {
         }
         Ok(progress)
     }
+
+    /// The relay's answer when it closed the connection before the nonce was complete. A bad hello
+    /// gets `rejected` in place of the nonce, and a connection over a limit gets `busy` before the
+    /// hello is read. Both are one byte followed by a close, so `feed` cannot tell them from the
+    /// first byte of a nonce until the connection ends. Nil for any other close.
+    pub fn closed(&self) -> Option<HopStatus> {
+        if self.proved || self.nonce.len() != 1 {
+            return None;
+        }
+        match HopStatus::from_byte(self.nonce[0])? {
+            status @ (HopStatus::Rejected | HopStatus::Busy) => Some(status),
+            HopStatus::Go | HopStatus::Nobody => None,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -379,6 +393,44 @@ mod tests {
         let mut wire = vec![1u8; 32];
         wire.push(9);
         assert_eq!(client.feed(&wire), Err(HopError));
+    }
+
+    #[test]
+    fn an_early_rejected_or_busy_is_read_when_the_relay_closes() {
+        for status in [HopStatus::Rejected, HopStatus::Busy] {
+            let mut client = HopClient::new(HopCredentials::guest([8; 32], &[3; 32]));
+            let progress = client.feed(&[status as u8]).unwrap();
+            assert_eq!(progress, HopProgress::default());
+            assert_eq!(client.closed(), Some(status));
+        }
+    }
+
+    #[test]
+    fn any_other_close_before_the_status_has_no_answer() {
+        let guest = || HopClient::new(HopCredentials::guest([8; 32], &[3; 32]));
+        assert_eq!(guest().closed(), None);
+        for byte in [0u8, 3, 9] {
+            let mut client = guest();
+            client.feed(&[byte]).unwrap();
+            assert_eq!(client.closed(), None);
+        }
+        let mut client = guest();
+        client.feed(&[1, 1]).unwrap();
+        assert_eq!(client.closed(), None);
+        let mut client = guest();
+        client.feed(&[1; 32]).unwrap();
+        assert_eq!(client.closed(), None);
+    }
+
+    #[test]
+    fn a_nonce_that_starts_like_a_status_is_still_a_nonce() {
+        let guest = HopCredentials::guest([8; 32], &[3; 32]);
+        let expected = guest.proof(&[1; 32]).to_vec();
+        let mut client = HopClient::new(guest);
+        assert_eq!(client.feed(&[1]).unwrap(), HopProgress::default());
+        let progress = client.feed(&[1; 31]).unwrap();
+        assert_eq!(progress.reply, expected);
+        assert_eq!(client.closed(), None);
     }
 
     const ROOM: &str = "ac4fd1463cca02c58a6aa7d52e0c00596adffbf557017ef4580efa3390579a29";

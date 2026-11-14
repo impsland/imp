@@ -11,7 +11,7 @@ enum Permission: String, CaseIterable, Identifiable, Hashable {
     case screenRecording, accessibility
     var id: String { rawValue }
 
-    /// Needed by Imp itself; the others only when an Imp is given a tool that wants them.
+    /// Needed by Imp itself. The others only when an Imp is given a tool that wants them.
     static let core: [Permission] = [.microphone, .speech]
     var isOptional: Bool { !Self.core.contains(self) }
     /// What computer control needs.
@@ -60,7 +60,7 @@ enum Permission: String, CaseIterable, Identifiable, Hashable {
                 SFSpeechRecognizer.requestAuthorization { @Sendable _ in }
             } else { open("Privacy_SpeechRecognition") }
         case .screenRecording:
-            // The system prompt only appears once; after that the pane is the way.
+            // The system prompt only appears once. After that the pane is the way.
             if !Self.asked(.screenRecording) { _ = CGRequestScreenCaptureAccess() } else { open("Privacy_ScreenCapture") }
         case .accessibility:
             if !Self.asked(.accessibility) {

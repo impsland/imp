@@ -7,7 +7,7 @@ import SwiftUI
 
 /// A reply's Markdown, block by block (ImpKit's parser, the same the Mac's bubble uses): text,
 /// headings, lists, quotes, code, tables, and the pictures, voices and videos it shows. Files on
-/// the Mac are fetched over the link (`LinkFileStore`); web ones load directly.
+/// the Mac are fetched over the link (`LinkFileStore`). Web ones load directly.
 struct ReplyBlocks: View {
     var text: String
     var imp: LinkImp
@@ -161,7 +161,7 @@ private struct FileStatus: View {
 /// scroll away are dropped and built again when they come back. A picture that started as a short "getting
 /// it" line and grew once decoded changed the height of what was above you, and the chat jumped. Now the
 /// box keeps the picture's proportions (read from the file's header, which needs no decoding) or, before
-/// the file is here at all, a usual photo's; and a decoded picture is kept in memory, so a row built again
+/// the file is here at all, a usual photo's. And a decoded picture is kept in memory, so a row built again
 /// shows it at once.
 private struct PictureBlock: View {
     var ref: String

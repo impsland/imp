@@ -113,7 +113,7 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap); }
 .sight.yes { color: var(--good); }
 .sight.no { color: var(--muted); }
 
-/* What Imp did. Each line has a bead, its words and its time; spacing alone separates them. */
+/* What Imp did. Each line has a bead, its words and its time. Spacing alone separates them. */
 .rows { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-small); }
 .rows li { display: flex; align-items: center; gap: var(--space-small); font-size: var(--type-caption-size); min-width: 0; }
 .rows .what { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

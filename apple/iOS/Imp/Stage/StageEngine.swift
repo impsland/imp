@@ -25,7 +25,7 @@ final class StageEngine {
         var height: Double
         /// Points a second (0: gently, from a menu).
         var speed: Double
-        /// The device it is thrown to; nil when it just leaves.
+        /// The device it is thrown to, nil when it just leaves.
         var to: UUID?
         /// Moving in for good on a Mac (`PocketRuntime.move`), not just visiting.
         var moves = false
@@ -366,8 +366,8 @@ final class StageEngine {
         pacer.wake()
     }
 
-    /// The close (X): a round being scored ends now and shows its card with what it scored so far;
-    /// before that (the lesson, the rules, the countdown) nothing was scored, so the game is left.
+    /// The close (X): a round being scored ends now and shows its card with what it scored so far.
+    /// Before that (the lesson, the rules, the countdown) nothing was scored, so the game is left.
     func closeGame(now: Date = Date()) {
         guard var round else { return }
         guard round.closing == .results else { return endGame() }
@@ -584,7 +584,7 @@ final class StageEngine {
     // MARK: Summon
 
     /// Calls an Imp to a place in the room (its sheet opened), or lets it go (nil). It flies there on a
-    /// spring and waits; it can still be carried and thrown, and comes back when let go. With Reduce
+    /// spring and waits. It can still be carried and thrown, and comes back when let go. With Reduce
     /// Motion nobody is moved: the Imp stays where it is.
     func summon(_ id: UUID?, to point: CGPoint?) {
         guard let id, let point, !reduceMotion, bodies[id] != nil else {

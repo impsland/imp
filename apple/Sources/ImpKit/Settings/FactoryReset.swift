@@ -3,12 +3,12 @@ import Security
 
 /// Everything Imp keeps on this Mac, and wiping it: what's left is a Mac where Imp never ran.
 ///
-/// - the preferences (every Imp, service, borrowed tool, trigger and setting) and window frames,
-///   all in Imp's `UserDefaults` domain;
+/// - The preferences (every Imp, service, borrowed tool, trigger and setting) and window frames,
+///   all in Imp's `UserDefaults` domain.
 /// - Imp's folder in Application Support: the key file, each Imp's own folder (its tools and
-///   pictures), saved chats and memories, the browser extension's copy;
-/// - API keys kept in the Keychain;
-/// - what macOS caches for the app (URL caches, saved window state).
+///   pictures), saved chats and memories, the browser extension's copy.
+/// - API keys kept in the Keychain.
+/// - What macOS caches for the app (URL caches, saved window state).
 public struct FactoryReset {
     public var defaults: UserDefaults
     public var domain: String

@@ -10,7 +10,7 @@ private func catalogData() throws -> Data {
 }
 
 @Suite struct AnimationRuleTests {
-    /// The gestures are started by the Den's animations (installed as made ones), one each; the catalog says which.
+    /// The gestures are started by the Den's animations (installed as made ones), one each. The catalog says which.
     @Test func everyInteractionHasItsOwnFeeling() throws {
         let catalog = AnimationCatalog.parse(try catalogData())
         let handling = catalog.filter { $0.starts.contains { $0.isExclusive && $0 != .favoriteColor } }
@@ -19,7 +19,7 @@ private func catalogData() throws -> Data {
         for t in AnimationTrigger.allCases where t.isExclusive {
             #expect(catalog.filter { $0.starts.contains(t) }.count == 1, "\(t)")
         }
-        // Pressing and carrying are always noticed; cursor games follow the Mouse games switch.
+        // Pressing and carrying are always noticed. Cursor games follow the Mouse games switch.
         #expect(!AnimationTrigger.hold.watchesCursor && !AnimationTrigger.pickUp.watchesCursor)
         #expect(AnimationTrigger.stroke.watchesCursor && AnimationTrigger.stare.watchesCursor)
     }

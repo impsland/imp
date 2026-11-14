@@ -6,7 +6,7 @@ import Observation
 /// Files that replies show, fetched from the Imp's home on demand: a picture an Imp drew, a voice another
 /// Imp recorded, a video, a document it saved. They live on the home (in the Imp's folder), so the
 /// phone asks for each by the reference the reply uses and the home streams it over the link in
-/// parts. Kept in the cache afterwards; the same reference asked twice at once is fetched once.
+/// parts. Kept in the cache afterwards. The same reference asked twice at once is fetched once.
 @MainActor @Observable
 final class LinkFileStore {
     enum Failure: LocalizedError {

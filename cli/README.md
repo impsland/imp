@@ -100,7 +100,8 @@ A key is never printed and never written to the settings file. It is looked up i
 
 - `IMP_API_KEY` holds the API key (the name can be changed in the settings).
 - `IMP_CONFIG` is the path of the settings file.
-- `IMP_DATA_DIR` is the folder for saved data such as conversations between Imps.
+- `IMP_DATA_DIR` is the folder for saved data such as conversations between Imps. `imp serve` and `imp qr` read it too.
+- `IMP_HOP` is the Hop for `imp qr`, as `host:port`.
 - `NO_COLOR` turns the colours off. `LC_ALL`, `LC_MESSAGES` and `LANG` choose the language of the chat screen.
 
 ## Be your own server
@@ -111,6 +112,8 @@ A key is never printed and never written to the settings file. It is looked up i
 imp serve                      # Den on http://localhost:8080, Hop on localhost:4677
 imp serve --host 0.0.0.0       # let devices on your network reach it
 imp serve --den-port 9000 --hop-port 9001 --data-dir ./imp-data
+imp serve --den-only --public-url https://den.example.org   # the Den alone, with its public address
+imp serve --hop-only           # the Hop alone
 ```
 
 It prints where each one listens and what to type into the apps. Data is kept in the usual data folder for `imp`

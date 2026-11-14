@@ -105,7 +105,7 @@ struct MarkdownView: View {
                 .background(RoundedRectangle(cornerRadius: Radius.small, style: .continuous).fill(Tone.well))
         case .image(let url, let alt, let link):
             reporting(MarkdownImage(url: Markdown.resolve(url, base: base), alt: alt, link: link, maxHeight: imageHeight, onLoad: onImageLoad))
-                .frame(maxWidth: .infinity, alignment: .center)     // pictures sit in the middle; text stays left
+                .frame(maxWidth: .infinity, alignment: .center)     // pictures sit in the middle. Text stays left
         case .table(let table):
             MarkdownTable(table: table, fontSize: fontSize - 1)
         case .media(let url, let title, let kind, let autoplay):
@@ -152,7 +152,7 @@ private struct MarkdownTable: View {
     }
 }
 
-/// A picture once it's loaded; until then (or if it can't be), its description. Clicking either
+/// A picture once it's loaded. Until then (or if it can't be), its description. Clicking either
 /// opens the picture, or where it links to (links resolve like the reply's other links).
 private struct MarkdownImage: View {
     @Environment(\.openURL) private var openURL
@@ -185,8 +185,8 @@ private struct MarkdownImage: View {
     }
 }
 
-/// Shrinks a picture to the width it's offered and at most `maxHeight`, keeping its shape;
-/// never enlarges it. (Sized up front, so measuring the bubble gets its real height.)
+/// Shrinks a picture to the width it's offered and at most `maxHeight`, keeping its shape.
+/// Never enlarges it. (Sized up front, so measuring the bubble gets its real height.)
 private struct FittedImage: Layout {
     let size: CGSize
     let maxHeight: CGFloat

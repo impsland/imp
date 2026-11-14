@@ -4,7 +4,7 @@ import Observation
 import SwiftUI
 
 /// The one place the phone decides how hard it works. `FramePolicy` (ImpKit, unit tested) holds the
-/// rules; this reads the phone's state for them (Low Power Mode, heat) and hands every loop the
+/// rules. This reads the phone's state for them (Low Power Mode, heat) and hands every loop the
 /// answer: a timeline schedule (`PacedTimeline`), a sensor interval (`TiltSource`), or whether an Imp
 /// at rest moves at all (`RestMotion`).
 ///
@@ -129,7 +129,7 @@ private struct BreathesKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    /// How the picture this view is in is drawn right now. Set by its `PacedTimeline`; a view outside
+    /// How the picture this view is in is drawn right now. Set by its `PacedTimeline`. A view outside
     /// one is a still picture.
     fileprivate(set) var pace: FramePolicy.Pace {
         get { self[PaceKey.self] }

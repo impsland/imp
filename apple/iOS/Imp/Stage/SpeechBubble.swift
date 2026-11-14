@@ -5,7 +5,7 @@ import SwiftUI
 /// An Imp talking with another Imp, above its head: who (a chip in the other Imp's colour), and
 /// what it says. The question shows once, in the bubble of the Imp that asks it: the one asked is a
 /// chip with thinking dots, and its answer a chip with the answer (and a muted line of the question,
-/// since the asking bubble is gone by then). The same talk the Mac shows; it stays out of your chat. An answer with sound is the Imp *speaking*: the bubble's rim glows in the
+/// since the asking bubble is gone by then). The same talk the Mac shows. It stays out of your chat. An answer with sound is the Imp *speaking*: the bubble's rim glows in the
 /// speaker's colours and swells with the voice, and a small orb (tap it to pause or play) follows
 /// the loudness. Pictures show as thumbnails, videos as a small player.
 struct SpeechBubble: View {
@@ -233,7 +233,7 @@ struct BubbleShape: Shape {
         let r = min(radius, rect.width / 2, rect.height / 2)
         let margin = r + halfBase + 2
         let wanted = rect.midX + tail
-        // The base stays on the straight edge; the tip leans toward where it should point.
+        // The base stays on the straight edge. The tip leans toward where it should point.
         let x = rect.width > 2 * margin ? min(max(wanted, rect.minX + margin), rect.maxX - margin) : rect.midX
         let lean = min(max(wanted - x, -halfBase * 0.9), halfBase * 0.9)
         let tip = CGPoint(x: x + lean, y: rect.maxY + length)

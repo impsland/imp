@@ -6,7 +6,7 @@ import Foundation
 /// - A shared item applies to every Imp that has no version of its own. A new Imp gets every shared item.
 /// - A change made in one Imp's settings applies to that Imp alone, unless the person picks Every Imp.
 ///   Changing a shared item for one Imp makes that Imp's own version (`overrides` points at the
-///   shared one); the shared one stays as it is for every other Imp.
+///   shared one). The shared one stays as it is for every other Imp.
 /// - Removing an Imp's version brings the shared one back for that Imp. Removing a shared item (an
 ///   explicit Every Imp action) leaves the Imps' own versions with them, as their own.
 public enum SettingScope: String, Sendable, Hashable, CaseIterable {

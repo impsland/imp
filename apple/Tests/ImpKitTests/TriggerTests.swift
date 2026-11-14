@@ -232,7 +232,7 @@ import Testing
         #expect(early > late * 5)
         #expect(glide.at(0.2).lean > 0, "leans into a glide to the right")
         #expect(GlidePath(from: b, to: a, speed: 1_800).at(0.2).lean < 0)
-        // A harder throw arrives quicker; a gentle push (speed 0) still gets there.
+        // A harder throw arrives quicker. A gentle push (speed 0) still gets there.
         #expect(GlidePath(from: a, to: b, speed: 2_500).duration < GlidePath(from: a, to: b, speed: 1_000).duration)
         #expect(GlidePath(from: a, to: b, speed: 0).duration <= 1.5)
     }

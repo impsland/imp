@@ -8,7 +8,7 @@ public struct VoiceEnvelope: Equatable, Sendable {
     /// 0…1 per frame: quiet is 0, a raised voice reaches 1.
     public let levels: [Double]
 
-    /// Below this a frame is silence; at `loud` and above it's full.
+    /// Below this a frame is silence. At `loud` and above it's full.
     public static let quiet = -48.0, loud = -12.0
 
     /// `rms`: each frame's root mean square (linear, 0…1), `rate` frames per second. Levels rise
@@ -27,7 +27,7 @@ public struct VoiceEnvelope: Equatable, Sendable {
         levels = out
     }
 
-    /// The level `seconds` in (between frames it's blended; outside the file it's 0).
+    /// The level `seconds` in (between frames it's blended, outside the file it's 0).
     public func level(at seconds: Double) -> Double {
         guard seconds.isFinite, seconds >= 0, !levels.isEmpty else { return 0 }
         let x = seconds * rate

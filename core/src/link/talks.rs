@@ -323,7 +323,7 @@ mod tests {
 
     #[test]
     fn the_holder_of_the_target_reaches_it_for_its_own_imps_anywhere() {
-        // Imp 7 of device 11 is out on another screen; device 11 holds the target.
+        // Imp 7 of device 11 is out on another screen. Device 11 holds the target.
         let known = [staged(7, 11)];
         assert!(holder_may_ask(id(7), false, id(11), Some(id(11)), &known));
         // The target is at home, or held by someone else: the screens rule decides.
@@ -358,7 +358,7 @@ mod tests {
 
     #[test]
     fn a_question_across_three_devices_takes_two_hops_at_most() {
-        // A (asker's home) -> C (holder of the asking Imp) -> B (target's home); A is not linked to B.
+        // A (asker's home) -> C (holder of the asking Imp) -> B (target's home). A is not linked to B.
         let (a, b, c) = (id(2), id(3), id(4));
         assert_eq!(first(a, b, c, &[c]), First::Via(c));
         assert_eq!(received(c, b, false, a, &[a, b]), Received::Forward(b));
