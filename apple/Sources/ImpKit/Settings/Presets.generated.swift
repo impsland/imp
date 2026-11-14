@@ -1,4 +1,4 @@
-// Generated from spec/presets, do not edit. Run: node design/generate.mjs
+// generated from spec/presets, do not edit. Run: node design/generate.mjs
 
 /// The presets as their JSON files. Compiled in, so no resource bundle has to be found at run time.
 enum Presets {

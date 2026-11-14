@@ -1,7 +1,11 @@
 //! Live Hop (opt-in): nodes whose only route to each other is a running Hop, over TCP.
 //!
 //!   cargo run -p imp-hop &                      (listens on HOP_ADDR, 0.0.0.0:4677 by default)
-//!   IMP_HOP=127.0.0.1:4677 cargo test -p imp-cli --test hop_live -- --ignored
+//!   IMP_HOP="$(scutil --get LocalHostName).local:4677" cargo test -p imp-cli --test hop_live -- --ignored
+//!
+//! `make test-server` runs it the same way. Name the Hop by an address the other device can reach, such as
+//! this computer's .local name or LAN address. A loopback Hop (127.0.0.1, localhost) is never given out in a
+//! linking code, and these nodes have no host of their own to give it out under, so the join finds no route.
 //!
 //! The nodes have no host names, so a guest can only reach its host through the Hop. The Hop limits each
 //! address to 30 new connections a minute by default: repeated runs against one Hop need

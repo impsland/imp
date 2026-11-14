@@ -24,6 +24,7 @@ imp-den.path = "../server/den"
 directories.workspace = true
 hex.workspace = true
 imp-hop.path = "../server/hop"
+if-addrs.workspace = true
 imp-core.workspace = true
 keyring.workspace = true
 qrcode.workspace = true

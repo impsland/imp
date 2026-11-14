@@ -25,7 +25,13 @@ CI also runs `node design/generate.mjs --check` and `make build`. It builds the 
 `make test-server` reads two variables, with these defaults:
 
 - `IMP_SERVER=http://localhost:8080`, the Den's URL.
-- `IMP_HOP=localhost:4677`, the Hop's host and port.
+- `IMP_HOP=<this Mac>.local:4677`, the Hop's host and port. The default is this Mac's own `.local` name.
+  Don't use `localhost`: a linking code never gives out a loopback Hop, so the Hop tests would find no route.
+
+The Den tests are in Swift (`ServerLiveTests`) and the Hop tests in Rust (`cli/tests/hop_live.rs`). Start the
+Hop with `HOP_PER_IP_PER_MINUTE=100000` so repeated runs stay under its rate limit.
+The Den limits new accounts per address for hours, and every run makes accounts, so start the Den with a
+fresh `DEN_DATABASE` (for example a new file in `/tmp`) before running the tests again.
 
 ## The iPhone app
 

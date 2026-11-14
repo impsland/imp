@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Core for iPhone (Simulator)
-        run: apple/scripts/core.sh mac ios-sim
+        run: apple/scripts/apple.sh core mac ios-sim
       - name: Build Imp for iPhone (Simulator)
         run: |
           xcodebuild -project apple/iOS/ImpPhone.xcodeproj -scheme ImpPhone -destination 'generic/platform=iOS Simulator' \

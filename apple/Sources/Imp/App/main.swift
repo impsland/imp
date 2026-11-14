@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 import ImpKit
 
-// Offline renders (used by apple/scripts/build-app.sh and for design review), then exit.
+// Offline renders (used by `apple/scripts/apple.sh app` and for design review), then exit.
 let args = CommandLine.arguments
 func argument(after flag: String) -> URL? {
     args.firstIndex(of: flag).flatMap { args.indices.contains($0 + 1) ? URL(fileURLWithPath: args[$0 + 1]) : nil }

@@ -1,7 +1,7 @@
 //! A device that `imp qr` runs and a second node from the core join each other over real loopback sockets,
 //! directly and through a Hop, with the adapter the command line app uses on both ends.
 
-use imp_cli::link::{Runner, SeedStore};
+use imp_cli::link::{Runner, SeedStore, local_hosts};
 use imp_cli::qr::{PairOptions, make_node};
 use imp_core::link::LinkInvite;
 use imp_core::link::card::LinkKind;
@@ -121,23 +121,44 @@ fn host_name(invite: &LinkInvite) -> String {
 
 #[tokio::test]
 async fn a_device_joins_through_a_hop() {
-    let hop = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    // The Hop listens on every interface, because the code gives it out under this computer's own
+    // address (see below), not under 127.0.0.1.
+    let hop = TcpListener::bind("0.0.0.0:0").await.unwrap();
     let hop_port = hop.local_addr().unwrap().port();
+
+    // With no host names given, make_node uses this computer's own addresses, Wi-Fi first. The host's
+    // link listener stays on loopback, so the guest can only come in through the Hop.
+    let Some(own) = local_hosts().into_iter().next() else {
+        eprintln!("skipped: this computer has no network address to give the Hop out under");
+        return;
+    };
+    // A computer whose only address is a VPN tunnel may not reach itself through it. That says nothing
+    // about the code, so the test stops there.
+    if std::net::TcpStream::connect_timeout(
+        &format!("{own}:{hop_port}").parse().unwrap(),
+        Duration::from_secs(2),
+    )
+    .is_err()
+    {
+        eprintln!("skipped: this computer cannot reach its own address {own} (a VPN tunnel?)");
+        return;
+    }
     let (stop, stopped) = oneshot::channel::<()>();
     let relay = tokio::spawn(imp_hop::run(hop, imp_hop::Config::default(), async move {
         let _ = stopped.await;
     }));
 
-    // No host names in the code: the only way in is the Hop.
     let mut pair = options("hop");
     pair.hosts = Vec::new();
     pair.hop = Some(format!("127.0.0.1:{hop_port}"));
     let (node, _) = make_node(&pair, memory()).unwrap();
     let mut host = run(node).await;
     let invite = host.runner.with(|n, now| n.invite(now)).await.unwrap();
+    // On the device that scans the code, 127.0.0.1 would be that device itself, so a Hop on this
+    // computer's loopback is given out under the computer's own address (LinkRoutes::lenient).
     assert_eq!(
         invite.routes.hop,
-        HopAddress::new("127.0.0.1", hop_port).map(|h| h.text())
+        HopAddress::new(&own, hop_port).map(|h| h.text())
     );
 
     let mut guest = run(phone()).await;

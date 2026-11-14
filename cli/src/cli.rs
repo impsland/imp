@@ -92,7 +92,7 @@ pub enum Command {
         /// The name other devices see (the computer's name if left out)
         #[arg(long, value_name = "NAME", conflicts_with = "text")]
         name: Option<String>,
-        /// A host name or address to put in the code. Repeat for several. The local network address if left out
+        /// A host name or address to put in the code. Repeat for several. This computer's addresses if left out, Wi-Fi and Ethernet first
         #[arg(long = "host", value_name = "HOST", conflicts_with = "text")]
         hosts: Vec<String>,
         /// The Imp server to wait at, as host:port, for devices on another network

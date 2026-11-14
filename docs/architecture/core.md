@@ -7,7 +7,7 @@ Android. Windows and Linux reach the core through its C ABI.
 
 ## The build
 
-`apple/scripts/core.sh` (run by `make core`, `make build`, `make test` and `make ios`):
+`apple/scripts/apple.sh core` (run by `make core`, `make build`, `make test` and `make ios`):
 
 1. builds `imp-ffi` as a static library for each slice it is asked for (`mac`, `mac-universal`,
    `ios-sim`, `ios`) with the toolchain in `rust-toolchain.toml`,

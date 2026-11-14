@@ -422,10 +422,15 @@ public final class LinkNode {
 
     // MARK: Addresses
 
+    /// Interface names of VPN tunnels and of bridges for virtual machines. Their addresses go last in a
+    /// code, because a phone on the same Wi-Fi can't reach them. The command line app orders its
+    /// addresses the same way (`order_hosts` in cli/src/link.rs).
+    nonisolated static let farInterfaces = ["utun", "ipsec", "ppp", "tun", "tap", "wg", "gif", "stf", "bridge", "vmenet", "vnic"]
+
+    /// Where other devices can reach this one, best first: the .local name, then the addresses of Wi-Fi
+    /// and Ethernet, then those of VPN tunnels and virtual machine bridges.
     nonisolated static func localHosts() -> [String] {
-        var names: [String] = []
-        let host = ProcessInfo.processInfo.hostName.lowercased()
-        if host.hasSuffix(".local") { names.append(host) }
+        var addresses: [(interface: String, address: String, pointToPoint: Bool)] = []
         var list: UnsafeMutablePointer<ifaddrs>?
         if getifaddrs(&list) == 0, let first = list {
             defer { freeifaddrs(list) }
@@ -437,9 +442,25 @@ public final class LinkNode {
                 guard getnameinfo(sa, socklen_t(sa.pointee.sa_len), &buffer, socklen_t(buffer.count), nil, 0, NI_NUMERICHOST) == 0 else { continue }
                 let address = String(decoding: buffer.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }, as: UTF8.self)
                 // Link-local addresses (169.254...) are no use to anyone else.
-                if !address.hasPrefix("169.254.") { names.append(address) }
+                guard !address.hasPrefix("169.254.") else { continue }
+                addresses.append((String(cString: i.ifa_name), address, Int32(i.ifa_flags) & IFF_POINTOPOINT != 0))
             }
         }
+        return orderHosts(localName: ProcessInfo.processInfo.hostName, addresses: addresses)
+    }
+
+    /// Orders what `localHosts` found: the .local name first, then the near addresses in the order the
+    /// system lists them, then the far ones (see `farInterfaces`), without repeats.
+    nonisolated static func orderHosts(localName: String, addresses: [(interface: String, address: String, pointToPoint: Bool)]) -> [String] {
+        var names: [String] = []
+        let host = localName.lowercased()
+        if host.hasSuffix(".local") { names.append(host) }
+        let isFar = { (entry: (interface: String, address: String, pointToPoint: Bool)) in
+            entry.pointToPoint || farInterfaces.contains { entry.interface.hasPrefix($0) }
+        }
+        let near = addresses.filter { !isFar($0) }.map(\.address)
+        let far = addresses.filter(isFar).map(\.address)
+        for address in near + far where !names.contains(address) { names.append(address) }
         return names
     }
 }

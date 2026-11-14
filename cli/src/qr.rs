@@ -2,10 +2,10 @@
 //! core, shows it as a QR code and stays running as a linked device, so a phone or a Mac that scans the code
 //! can join. With text it draws that text instead, for example a kit address to open on a phone.
 
-use crate::link::{BookFile, Runner, SeedStore, local_address, new_device_id};
+use crate::link::{BookFile, Runner, SeedStore, local_hosts, new_device_id};
 use crate::{CliError, Result};
 use imp_core::link::PORT;
-use imp_core::link::card::LinkKind;
+use imp_core::link::card::{LinkKind, LinkRoutes};
 use imp_core::link::hop::HopAddress;
 use imp_core::link::node::{Event, JoinError, Node, Options, Problem};
 use qrcode::{Color, QrCode};
@@ -93,7 +93,7 @@ pub fn make_node(options: &PairOptions, seeds: Arc<dyn SeedStore>) -> Result<(No
         ))
     })?;
     let hosts = if options.hosts.is_empty() {
-        local_address().into_iter().collect()
+        local_hosts()
     } else {
         options.hosts.clone()
     };
@@ -137,6 +137,15 @@ fn describe(event: &Event) -> Option<String> {
     })
 }
 
+/// Says where a device that scans the code will look for this computer.
+fn reach_note(routes: &LinkRoutes) -> String {
+    match (routes.hosts.first(), &routes.hop) {
+        (Some(host), _) => format!("On the same Wi-Fi, a device finds this computer at {host}."),
+        (None, Some(hop)) => format!("This computer has no network address, so devices come in through the Hop at {hop}."),
+        (None, None) => "This computer has no network address. Connect it to the Wi-Fi, or pass --host or --hop.".into(),
+    }
+}
+
 /// Shows an invite as a QR code, stays linked and tells what happens, until `stop` completes.
 pub async fn pair(
     options: &PairOptions,
@@ -162,8 +171,10 @@ pub async fn pair(
     writeln!(out)?;
     writeln!(
         err,
-        "Scan this code with Imp on a Mac or an iPhone. It works for 15 minutes after it was last on screen.\nPress Ctrl-C to stop."
+        "Scan this code with Imp on a Mac or an iPhone. It works for 15 minutes after it was last on screen."
     )?;
+    writeln!(err, "{}", reach_note(&invite.routes))?;
+    writeln!(err, "Press Ctrl-C to stop.")?;
     tokio::pin!(stop);
     loop {
         tokio::select! {

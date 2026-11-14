@@ -1,4 +1,4 @@
-// Generated from spec/animations/catalog.json, do not edit. Run: node design/generate.mjs
+// generated from spec/animations/catalog.json, do not edit. Run: node design/generate.mjs
 
 extension AnimationCatalog {
     /// The bundled animations as catalog JSON. Compiled in, so no resource bundle has to be found at run time.

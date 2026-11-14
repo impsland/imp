@@ -74,7 +74,7 @@ jobs:
 
       - name: Update cask
         run: |
-          apple/scripts/cask.sh "$VERSION" "$(shasum -a 256 build/Imp.dmg | cut -d' ' -f1)" > tap/Casks/imp.rb
+          apple/scripts/apple.sh cask "$VERSION" "$(shasum -a 256 build/Imp.dmg | cut -d' ' -f1)" > tap/Casks/imp.rb
           cd tap
           git add Casks/imp.rb
           git diff --cached --quiet && exit 0

@@ -7,7 +7,7 @@ import SwiftUI
 /// Offline renders from the live character code: the app icon, and a contact sheet for review.
 @MainActor
 enum IconRenderer {
-    /// `Imp --render-icon <dir>`: the .iconset used by apple/scripts/build-app.sh.
+    /// `Imp --render-icon <dir>`: the .iconset used by `apple/scripts/apple.sh app`.
     static func renderIcon(to dir: URL) {
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         for base in [16, 32, 128, 256, 512] {
@@ -39,7 +39,7 @@ enum IconRenderer {
     }
 
     /// `Imp --render-dmg-background <dir>`: background.png and background@2x.png for the
-    /// installer disk image (apple/scripts/dmg-settings.py places the icons on it).
+    /// installer disk image (the dmgbuild settings in `apple/scripts/apple.sh dmg` place the icons on it).
     static func renderDMGBackground(to dir: URL) {
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         for (suffix, scale) in [("", 1.0), ("@2x", 2.0)] {
@@ -596,7 +596,7 @@ enum IconRenderer {
     /// (black in Light Mode, white in Dark Mode), and its exact offset under the icon varies. So the
     /// names land on the plinth's face: big enough for any offset, in a stone of middle lightness
     /// that both black and white text read on (about 4.5:1 either way).
-    /// Sizes and centres match apple/scripts/dmg-settings.py.
+    /// Sizes and centres match the dmgbuild settings in apple/scripts/apple.sh.
     private struct DMGBackground: View {
         static let size = CGSize(width: 660, height: 400)
         static let app = CGPoint(x: 170, y: 176)
