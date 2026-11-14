@@ -129,8 +129,10 @@ struct ChatTurnsView: View {
                             Label(turn.reply, systemImage: "exclamationmark.triangle.fill")
                                 .font(Typeface.body).foregroundStyle(Tone.danger)
                         } else {
+                            // Pictures load (a view without `onImageLoad` is only being measured, and loads nothing):
+                            // the sheet scrolls, so it simply grows as they arrive.
                             MarkdownView(blocks: Markdown.blocks(turn.reply), base: Workspace.directory(for: me.id), fontSize: Self.readingSize,
-                                         mediaOwner: turn.id.uuidString)
+                                         onImageLoad: {}, mediaOwner: turn.id.uuidString)
                         }
                     }
                 }
@@ -195,8 +197,9 @@ private struct TalkLineView: View {
                     Label(line.reply, systemImage: "exclamationmark.triangle.fill")
                         .font(Typeface.body).foregroundStyle(Tone.danger)
                 } else {
+                    // A file named in the answer is in the folder of the Imp that answered. Pictures load (see `ChatTurnsView`).
                     MarkdownView(blocks: Markdown.blocks(line.reply), base: Workspace.directory(for: line.answerer.id), fontSize: Self.readingSize,
-                                 mediaOwner: line.id.uuidString)
+                                 onImageLoad: {}, mediaOwner: line.id.uuidString)
                 }
             }
         }

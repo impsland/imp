@@ -93,6 +93,27 @@ import Testing
         "Contrast.swift": "pure colour maths (black and white as numbers, no view): `ContrastColor(red:...)` is not a screen colour",
     ]
 
+    /// A `MarkdownView` loads its pictures only when told what to do once one has loaded (`onImageLoad`): without
+    /// it, it is being measured. A screen that leaves it out never shows its pictures (the talk sheet did).
+    @Test func everyMarkdownViewSaysWhatAPictureLoadingDoes() throws {
+        var missing: [String] = []
+        for file in Self.swiftFiles("apple/Sources/Imp/UI") where file.lastPathComponent != "MarkdownView.swift" {
+            let source = try String(contentsOf: file, encoding: .utf8)
+            var rest = source[...]
+            while let start = rest.range(of: "MarkdownView(") {
+                // The call's arguments: up to the parenthesis that closes it.
+                var depth = 0, end = start.upperBound
+                for i in source[start.lowerBound...].indices {
+                    if source[i] == "(" { depth += 1 } else if source[i] == ")" { depth -= 1; if depth == 0 { end = i; break } }
+                }
+                let line = source[..<start.lowerBound].filter { $0 == "\n" }.count + 1
+                if !source[start.lowerBound..<end].contains("onImageLoad") { missing.append("\(file.lastPathComponent):\(line)") }
+                rest = source[end...]
+            }
+        }
+        #expect(missing.isEmpty, "MarkdownView without onImageLoad (its pictures never load): \(missing)")
+    }
+
     @Test func screensTakeTheirValuesFromTokens() throws {
         let files = (Self.swiftFiles("apple/Sources/Imp/UI") + Self.swiftFiles("apple/Sources/ImpDesign") + Self.swiftFiles("apple/iOS/Imp"))
             .filter { !$0.lastPathComponent.hasSuffix(".generated.swift") && Self.drawings[$0.lastPathComponent] == nil }
