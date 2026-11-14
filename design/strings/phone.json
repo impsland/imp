@@ -476,7 +476,7 @@
       "name": "string"
     },
     "en": "Ask {name} to ",
-    "es": "Pídele a {name} que ",
+    "es": "Pide a {name} que ",
     "zh-Hans": "让 {name} 去 "
   },
   "phone.chat.ask_to.hint": {

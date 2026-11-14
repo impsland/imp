@@ -1,6 +1,7 @@
 import Foundation
 
-/// The words and symbols of the settings map, shared by the Mac and the iPhone. The state is a symbol and a word, never colour alone.
+/// The words and symbols of the settings map, shared by the Mac and the iPhone. The state is a symbol and a
+/// word, never colour alone.
 extension AttentionItem {
     public var text: String {
         func said(_ key: String.LocalizationValue, _ arg: String) -> String { String(format: String(localized: key), arg) }

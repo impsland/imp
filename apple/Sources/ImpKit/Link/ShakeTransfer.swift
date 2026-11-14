@@ -1,7 +1,8 @@
 import Foundation
 import ImpCore
 
-/// The settings of "shake to send" on the iPhone. Kept in `UserDefaults` so the app and the tests read them the same way.
+/// The settings of "shake to send" on the iPhone. Kept in `UserDefaults` so the app and the tests read them
+/// the same way.
 public struct ShakeSettings: Sendable, Equatable {
     /// How hard a shake has to be.
     public enum Sensitivity: String, CaseIterable, Sendable, Identifiable {
@@ -52,7 +53,8 @@ public struct ShakeSettings: Sendable, Equatable {
     }
 }
 
-/// Which Imp a shake sends and where, decided by the core from what the phone knows. The reasons are in `docs/concepts/transfer.md`.
+/// Which Imp a shake sends and where, decided by the core from what the phone knows. The reasons are in
+/// `docs/concepts/transfer.md`.
 public enum ShakeTransfer {
     /// An Imp that is on the phone's screen and free to go.
     public struct Imp: Sendable, Equatable {

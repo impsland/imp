@@ -379,7 +379,7 @@
   <string name="menu_imp_visit_tip">%1$s visita %2$s y puede volver.</string>
   <string name="moves_builtin">Movimientos</string>
   <string name="moves_change">Cambiar</string>
-  <string name="moves_empty">Aún no hay movimientos especiales.</string>
+  <string name="moves_empty">Sin movimientos aún.</string>
   <string name="moves_follow_how">Seguir</string>
   <string name="moves_help_builtin">Elige uno de los movimientos que tienen todos los Imps y haz una versión solo para este.</string>
   <string name="moves_help_follow">Elige qué hace este Imp cuando mueves el puntero del ratón: quedarse quieto, mirarlo o correr tras él.</string>
@@ -413,7 +413,7 @@
   <string name="phone_callhome_label">Traer a %1$s</string>
   <string name="phone_chat_answering">Responde a %1$s…</string>
   <string name="phone_chat_ask_again">Reintentar</string>
-  <string name="phone_chat_ask_to">Pídele a %1$s que </string>
+  <string name="phone_chat_ask_to">Pide a %1$s que </string>
   <string name="phone_chat_ask_to_hint">Empieza un mensaje pidiéndole algo a %1$s.</string>
   <string name="phone_chat_edit_help">Editar</string>
   <string name="phone_chat_failed">No pudo responder</string>
@@ -682,7 +682,7 @@
   <string name="tools_expand">Ver herramientas de %1$s</string>
   <string name="tools_group_count">%1$d de %2$d</string>
   <string name="tools_group_off">Desactivado</string>
-  <string name="tools_group_switch">Herramientas de %1$s</string>
+  <string name="tools_group_switch">Herramientas %1$s</string>
   <string name="tools_header_add">Añadir</string>
   <string name="tools_header_name">Nombre</string>
   <string name="tools_header_saved">Guardado</string>

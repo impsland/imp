@@ -56,7 +56,7 @@ struct ImpView: View {
 ///  - lively: 60 fps while anything moves (30 when saving), the cursor included. The eyes read the
 ///    cursor on every frame and the face springs towards it by the real time that passed, so the
 ///    inner life's slower tick never shows.
-///  - drowsy: 30 fps (dozing: slow breath and floating z's; 20 when saving).
+///  - drowsy: 30 fps while dozing, with a slow breath and floating z's. 20 fps when saving.
 ///  - resting: no frames at all, except brief 60 fps bursts for blinks (they're deterministic,
 ///    see `Motion.blink`). The breath itself is a Core Animation loop on the panel's layer
 ///    (`ImpHostingView.setBreathing`), which runs outside the app.

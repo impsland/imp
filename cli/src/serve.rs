@@ -1,7 +1,8 @@
 //! `imp serve`: the Den, the Hop or both in one process, for a computer that wants to be its own server.
 //!
-//! The Hop keeps nothing on disk and does not need the Den. The Den keeps its data in a SQLite file in the data folder. Its secret is made once, stored in
-//! the same folder with permissions only the owner can use, and never printed.
+//! The Hop keeps nothing on disk and does not need the Den. The Den keeps its data in a SQLite file in the
+//! data folder. Its secret is made once, stored in the same folder with permissions only the owner can use,
+//! and never printed.
 
 use crate::{CliError, Result};
 use std::future::Future;

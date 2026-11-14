@@ -129,7 +129,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `error.tool_failed` | {tool} could not start. Check its settings. | {tool} no se pudo iniciar. Revisa sus ajustes. | {tool} 无法启动。请检查它的设置。 |
 | `extension.action_title` | Imp | Imp | Imp |
 | `extension.activity.count_all` | {total} in all | {total} en total | 共 {total} 条 |
-| `extension.activity.count_some` | {shown} of {total} | {shown} de {total} | 共 {total} 条，显示 {shown} 条 |
+| `extension.activity.count_some` | {shown} of {total} | {shown} de {total} | {shown} / {total} |
 | `extension.activity.empty` | Nothing yet. | Todavía nada. | 暂时还没有。 |
 | `extension.activity.found` | Found | Encontró | 找到了 |
 | `extension.activity.help` | When Imp reads a page or looks for something on one, it shows up here. | Cuando Imp lee una página o busca algo en ella, aparece aquí. | Imp 读页面或在页面上找东西时，会显示在这里。 |
@@ -367,7 +367,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `menu.imp.visit_tip` | {name} visits {device} and can come back. | {name} visita {device} y puede volver. | {name} 去 {device} 做客，还可以回来。 |
 | `moves.builtin` | Moves | Movimientos | 动作 |
 | `moves.change` | Change | Cambiar | 更改 |
-| `moves.empty` | No special moves yet. | Aún no hay movimientos especiales. | 还没有特别的动作。 |
+| `moves.empty` | No special moves yet. | Sin movimientos aún. | 还没有特别的动作。 |
 | `moves.follow_how` | Follow | Seguir | 跟随 |
 | `moves.help.builtin` | Pick one of the moves every Imp has and make a version only for this Imp. | Elige uno de los movimientos que tienen todos los Imps y haz una versión solo para este. | 选一个所有小鬼都有的动作，为这个小鬼做一个专属版本。 |
 | `moves.help.follow` | Choose what this Imp does when you move your mouse pointer: stay still, look at it, or run after it. | Elige qué hace este Imp cuando mueves el puntero del ratón: quedarse quieto, mirarlo o correr tras él. | 选择你移动鼠标指针时这个小鬼做什么：不动、看着它，或跟着它跑。 |
@@ -401,7 +401,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.callhome.label` | Call {name} home | Traer a {name} | 把 {name} 叫回家 |
 | `phone.chat.answering` | Answering {from}… | Responde a {from}… | 正在回复 {from}… |
 | `phone.chat.ask_again` | Retry | Reintentar | 重试 |
-| `phone.chat.ask_to` | Ask {name} to  | Pídele a {name} que  | 让 {name} 去  |
+| `phone.chat.ask_to` | Ask {name} to  | Pide a {name} que  | 让 {name} 去  |
 | `phone.chat.ask_to.hint` | Starts a message asking {name} to do something. | Empieza un mensaje pidiéndole algo a {name}. | 开始一条请 {name} 做事的消息。 |
 | `phone.chat.edit_help` | Edit | Editar | 编辑 |
 | `phone.chat.failed` | Couldn't answer | No pudo responder | 没能给出回答 |
@@ -670,7 +670,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tools.expand` | Show the tools in {group} | Ver herramientas de {group} | 显示 {group} 中的工具 |
 | `tools.group_count` | {on} of {total} on | {on} de {total} | 已开启 {on}/{total} |
 | `tools.group_off` | Off | Desactivado | 已关闭 |
-| `tools.group_switch` | {group} tools | Herramientas de {group} | {group} 的工具 |
+| `tools.group_switch` | {group} tools | Herramientas {group} | {group} 的工具 |
 | `tools.header_add` | Add | Añadir | 添加 |
 | `tools.header_name` | Name | Nombre | 名称 |
 | `tools.header_saved` | Saved | Guardado | 已保存 |

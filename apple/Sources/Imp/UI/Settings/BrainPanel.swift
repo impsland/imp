@@ -149,7 +149,8 @@ struct BrainPanel: View {
     }
 }
 
-/// The first run, in place in the Brain panel of an Imp with no service: the same page as the first-run sheet. The panel's own header has Back.
+/// The first run, in place in the Brain panel of an Imp with no service: the same page as the first-run
+/// sheet. The panel's own header has Back.
 private struct BrainSetup: View {
     let model: AppModel
     let id: UUID

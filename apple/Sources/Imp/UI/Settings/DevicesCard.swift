@@ -429,7 +429,8 @@ struct LinkDeviceSheet: View {
     }
 }
 
-/// Local Network is off for Imp on this Mac: says so, with a button to System Settings › Privacy & Security › Local Network.
+/// Local Network is off for Imp on this Mac: says so, with a button to System Settings › Privacy & Security ›
+/// Local Network.
 struct LocalNetworkNotice: View {
     var body: some View {
         VStack(spacing: Spacing.small) {

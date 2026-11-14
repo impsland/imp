@@ -58,7 +58,8 @@ impl DenAddress {
     }
 }
 
-/// Splits `host` or `host:port` (`form` is the answer for a missing host). A port that is not plain digits from 1 to 65535 is refused.
+/// Splits `host` or `host:port` (`form` is the answer for a missing host). A port that is not plain digits
+/// from 1 to 65535 is refused.
 fn host_and_port(text: &str, form: AddressError) -> Result<(String, Option<u16>), AddressError> {
     let (host, port) = match text.rsplit_once(':') {
         Some((host, digits)) => {

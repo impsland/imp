@@ -30,7 +30,7 @@ To send it to your iPhone in one go (connected by cable, or over Wi-Fi once set 
 
 Debug builds understand `-openChat` and `-hatch`, handy for screenshots, and `-join <implink://…>` with
 `-ask <text>` for end-to-end checks against a running Mac.
-`apple/scripts/make-icon.sh` re-renders the app icon from the Mac app's own icon art (`Imp --render-ios-icon`).
+`apple/iOS/scripts/make-icon.sh` re-renders the app icon from the Mac app's own icon art (`Imp --render-ios-icon`).
 
 ## Linking and tossing
 

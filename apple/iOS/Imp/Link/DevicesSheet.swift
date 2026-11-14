@@ -94,7 +94,8 @@ struct DevicesSheet: View {
     }
 }
 
-/// What the attention marks are worked out from: this iPhone and its Imps, the Brains they use, the servers and the linked devices.
+/// What the attention marks are worked out from: this iPhone and its Imps, the Brains they use, the servers
+/// and the linked devices.
 enum PhoneNodes {
     @MainActor static func nodes(hub: LinkHub, pocket: PocketRuntime) -> [SettingsNode] {
         let asleep = pocket.imps.filter { !pocket.hasBrain($0.id) }.map { Sleeper(id: $0.id, name: $0.look.name) }

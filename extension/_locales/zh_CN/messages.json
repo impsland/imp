@@ -8,7 +8,7 @@
     "description": "Count of all the entries."
   },
   "extension_activity_count_some": {
-    "message": "共 $2 条，显示 $1 条",
+    "message": "$1 / $2",
     "description": "Count of the entries that match the search."
   },
   "extension_activity_empty": {

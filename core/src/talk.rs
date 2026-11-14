@@ -1,4 +1,5 @@
-//! Messages from one Imp to another and the conversations they make: a message either goes on in the latest conversation of the two or starts a new one.
+//! Messages from one Imp to another and the conversations they make: a message either goes on in the latest
+//! conversation of the two or starts a new one.
 
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;

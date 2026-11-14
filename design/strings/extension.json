@@ -151,7 +151,7 @@
     },
     "en": "{shown} of {total}",
     "es": "{shown} de {total}",
-    "zh-Hans": "共 {total} 条，显示 {shown} 条"
+    "zh-Hans": "{shown} / {total}"
   },
   "extension.activity.count_all": {
     "note": "Count of all the entries.",

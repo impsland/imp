@@ -2,9 +2,9 @@ import SwiftUI
 import Testing
 @testable import ImpDesign
 
-/// The colour rules that keep text and icons readable in light and dark: the white or black the
-/// person chose on a coloured control and the fill that carries it, an Imp's colour as text, and the pairs of tokens text sits on. A token that fails is
-/// changed in design/tokens.json, never the threshold here.
+/// The colour rules that keep text and icons readable in light and dark: the white or black the person chose
+/// on a coloured control and the fill that carries it, an Imp's colour as text, and the pairs of tokens text
+/// sits on. A token that fails is changed in design/tokens.json, never the threshold here.
 @MainActor
 @Suite("Contrast")
 struct ContrastTests {

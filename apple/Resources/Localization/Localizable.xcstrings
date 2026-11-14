@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
-    },
     "%@ (now %@)" : {
       "localizations" : {
         "en" : {
@@ -391,7 +388,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ está dormido. %2$@"
+            "value" : "%1$@ duerme. %2$@"
           }
         },
         "zh-Hans" : {
@@ -413,7 +410,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ está dormido: %2$@ está fuera de alcance"
+            "value" : "%1$@ duerme: %2$@ está fuera"
           }
         },
         "zh-Hans" : {
@@ -1571,7 +1568,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld 个已关闭"
+            "value" : "%lld 已关"
           }
         }
       }
@@ -2214,7 +2211,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un chat nuevo. Pregunta a %@ lo que quieras."
+            "value" : "Chat nuevo. Pregunta a %@."
           }
         },
         "zh-Hans" : {
@@ -2500,7 +2497,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añadir un disparador"
+            "value" : "Añadir disparador"
           }
         },
         "zh-Hans" : {
@@ -2516,7 +2513,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añadir una herramienta extra"
+            "value" : "Añadir herramienta"
           }
         },
         "zh-Hans" : {
@@ -2693,7 +2690,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Empezar siempre una nueva"
+            "value" : "Empezar siempre nuevo"
           }
         },
         "zh-Hans" : {
@@ -2988,7 +2985,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cualquier sitio web abierto"
+            "value" : "Cualquier web abierta"
           }
         },
         "zh-Hans" : {
@@ -3053,7 +3050,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pregúntale a %@ lo que sea…"
+            "value" : "Pregúntale a %@…"
           }
         },
         "zh-Hans" : {
@@ -3069,7 +3066,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pregúntale lo que sea a Imp…"
+            "value" : "Pregúntale a Imp…"
           }
         },
         "zh-Hans" : {
@@ -3215,7 +3212,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reproducir multimedia automáticamente"
+            "value" : "Autorreproducir"
           }
         },
         "zh-Hans" : {
@@ -3376,7 +3373,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL no válida para %@."
+            "value" : "URL no válida: %@"
           }
         },
         "zh-Hans" : {
@@ -3408,7 +3405,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Batería por debajo del %lld %%"
+            "value" : "Batería bajo %lld %%"
           }
         },
         "zh-Hans" : {
@@ -3630,7 +3627,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pidiendo prestado un cerebro…"
+            "value" : "Pidiendo un cerebro…"
           }
         },
         "zh-Hans" : {
@@ -3872,7 +3869,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se puede reproducir %@"
+            "value" : "No se reproduce %@"
           }
         },
         "zh-Hans" : {
@@ -3888,7 +3885,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se puede reproducir"
+            "value" : "No se reproduce"
           }
         },
         "zh-Hans" : {
@@ -4373,7 +4370,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haz clic o arrastra para saltar"
+            "value" : "Clic o arrastra para ir"
           }
         },
         "zh-Hans" : {
@@ -4389,7 +4386,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haz clic para reproducir desde ahí"
+            "value" : "Reproducir desde aquí"
           }
         },
         "zh-Hans" : {
@@ -4405,7 +4402,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haz clic para volver a reproducirla"
+            "value" : "Reproducir otra vez"
           }
         },
         "zh-Hans" : {
@@ -4437,7 +4434,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hacer clic, escribir y desplazarse"
+            "value" : "Clic, escribir y desplazar"
           }
         },
         "zh-Hans" : {
@@ -4469,7 +4466,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haciendo clic en “%@”"
+            "value" : "Clic en “%@”"
           }
         },
         "zh-Hans" : {
@@ -4888,7 +4885,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Copiar enlace del kit"
+            "value" : "Copiar enlace"
           }
         },
         "zh-Hans" : {
@@ -5596,7 +5593,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Arrastra para mover"
+            "value" : "Arrastra"
           }
         },
         "zh-Hans" : {
@@ -6048,7 +6045,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exportar todos los Imps"
+            "value" : "Exportar Imps"
           }
         },
         "zh-Hans" : {
@@ -6403,7 +6400,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para todos los Imps que lo usan"
+            "value" : "Para cada Imp"
           }
         },
         "zh-Hans" : {
@@ -6483,7 +6480,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Olvidar todos los dispositivos?"
+            "value" : "¿Olvidar dispositivos?"
           }
         },
         "zh-Hans" : {
@@ -6724,7 +6721,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ojos entornados de felicidad."
+            "value" : "Ojos felices."
           }
         },
         "zh-Hans" : {
@@ -7447,7 +7444,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp no tiene permiso para usar la cámara."
+            "value" : "Imp no puede usar la cámara."
           }
         },
         "zh-Hans" : {
@@ -7610,7 +7607,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los Imps hablan en"
+            "value" : "Imps hablan en"
           }
         },
         "zh-Hans" : {
@@ -7964,7 +7961,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Guardado en tu llavero de inicio de sesión"
+            "value" : "En tu llavero de sesión"
           }
         },
         "zh-Hans" : {
@@ -8271,7 +8268,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permite que los Imps te oigan."
+            "value" : "Los Imps podrán oírte."
           }
         },
         "zh-Hans" : {
@@ -8402,7 +8399,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vincular un dispositivo"
+            "value" : "Vincular equipo"
           }
         },
         "zh-Hans" : {
@@ -8419,7 +8416,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vincular dispositivos"
+            "value" : "Vincular equipos"
           }
         },
         "zh-Hans" : {
@@ -8436,7 +8433,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vincular con un dispositivo"
+            "value" : "Vincular con equipo"
           }
         },
         "zh-Hans" : {
@@ -8468,7 +8465,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Código de vinculación"
+            "value" : "Código de enlace"
           }
         },
         "zh-Hans" : {
@@ -8516,7 +8513,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Listar herramientas extra"
+            "value" : "Listar herramientas"
           }
         },
         "zh-Hans" : {
@@ -8759,7 +8756,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mira hacia abajo y se enfurruña."
+            "value" : "Mira abajo y se enfurruña."
           }
         },
         "zh-Hans" : {
@@ -8775,7 +8772,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La solicitud MCP agotó el tiempo (%@)."
+            "value" : "Expiró la solicitud MCP (%@)."
           }
         },
         "zh-Hans" : {
@@ -8807,7 +8804,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El Mac se calienta"
+            "value" : "Mac caliente"
           }
         },
         "zh-Hans" : {
@@ -8823,7 +8820,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El Mac se despierta"
+            "value" : "El Mac despierta"
           }
         },
         "zh-Hans" : {
@@ -8903,7 +8900,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hacer que los Imps nuevos piensen con %@"
+            "value" : "Nuevos Imps piensan con %@"
           }
         },
         "zh-Hans" : {
@@ -9486,7 +9483,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Necesita un cerebro"
+            "value" : "Falta cerebro"
           }
         },
         "zh-Hans" : {
@@ -9502,7 +9499,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Necesita un nombre."
+            "value" : "Falta un nombre."
           }
         },
         "zh-Hans" : {
@@ -10129,7 +10126,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se encontró nada."
+            "value" : "Nada encontrado."
           }
         },
         "zh-Hans" : {
@@ -10177,7 +10174,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no se ha dicho nada"
+            "value" : "Nada dicho aún"
           }
         },
         "zh-Hans" : {
@@ -10193,7 +10190,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no se ha dicho nada."
+            "value" : "Nada dicho aún."
           }
         },
         "zh-Hans" : {
@@ -10610,7 +10607,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir un archivo compartido"
+            "value" : "Abrir archivo compartido"
           }
         },
         "zh-Hans" : {
@@ -10626,7 +10623,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir un cuadro de texto"
+            "value" : "Abrir cuadro de texto"
           }
         },
         "zh-Hans" : {
@@ -11161,7 +11158,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reproducir una animación"
+            "value" : "Reproducir animación"
           }
         },
         "zh-Hans" : {
@@ -11177,7 +11174,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reproducir animaciones"
+            "value" : "Probar animaciones"
           }
         },
         "zh-Hans" : {
@@ -11225,7 +11222,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reproducir este paso otra vez"
+            "value" : "Repetir este paso"
           }
         },
         "zh-Hans" : {
@@ -11610,7 +11607,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Procesador por encima del %lld %%"
+            "value" : "Procesador sobre %lld %%"
           }
         },
         "zh-Hans" : {
@@ -11973,7 +11970,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "回顾一下？"
+            "value" : "回顾？"
           }
         }
       }
@@ -12144,7 +12141,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quitar una herramienta extra"
+            "value" : "Quitar herramienta extra"
           }
         },
         "zh-Hans" : {
@@ -12530,7 +12527,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Restaurar valores predeterminados"
+            "value" : "Restablecer"
           }
         },
         "zh-Hans" : {
@@ -12908,7 +12905,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Guardar como archivo…"
+            "value" : "Guardar archivo…"
           }
         },
         "zh-Hans" : {
@@ -12924,7 +12921,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Guardar como archivo"
+            "value" : "Guardar archivo"
           }
         },
         "zh-Hans" : {
@@ -13543,7 +13540,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Compartir como kit"
+            "value" : "Compartir kit"
           }
         },
         "zh-Hans" : {
@@ -14462,7 +14459,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Detener (Espacio)"
+            "value" : "Parar (Espacio)"
           }
         },
         "zh-Hans" : {
@@ -14494,7 +14491,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Acariciarle la cabeza"
+            "value" : "Acariciar la cabeza"
           }
         },
         "zh-Hans" : {
@@ -14721,7 +14718,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hablar en su lugar"
+            "value" : "Hablar"
           }
         },
         "zh-Hans" : {
@@ -14819,7 +14816,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Líneas del cuadro de texto"
+            "value" : "Líneas de texto"
           }
         },
         "zh-Hans" : {
@@ -15235,7 +15232,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eso no es un solo Imp que se pueda acoger."
+            "value" : "No es un Imp para acoger."
           }
         },
         "zh-Hans" : {
@@ -15567,7 +15564,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El Mac está caliente"
+            "value" : "Mac caliente"
           }
         },
         "zh-Hans" : {
@@ -15759,7 +15756,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El archivo es demasiado grande para enviarlo."
+            "value" : "El archivo es muy grande."
           }
         },
         "zh-Hans" : {
@@ -16082,7 +16079,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Este Imp es demasiado grande para mudarse."
+            "value" : "Este Imp es muy grande."
           }
         },
         "zh-Hans" : {
@@ -16146,7 +16143,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esta acción no se puede deshacer."
+            "value" : "No se puede deshacer."
           }
         },
         "zh-Hans" : {
@@ -16323,7 +16320,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haciendo cosquillas a las GPU…"
+            "value" : "Cosquillas a las GPU…"
           }
         },
         "zh-Hans" : {
@@ -16387,7 +16384,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Demasiado largo para un enlace"
+            "value" : "Demasiado largo para enlace"
           }
         },
         "zh-Hans" : {
@@ -16441,7 +16438,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La herramienta %1$@ añade herramientas llamadas %2$@"
+            "value" : "La herramienta %1$@ añade %2$@"
           }
         },
         "zh-Hans" : {
@@ -16873,7 +16870,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escribir en su lugar"
+            "value" : "Escribir"
           }
         },
         "zh-Hans" : {
@@ -17002,7 +16999,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Movimiento desconocido «%@»."
+            "value" : "Sin movimiento “%@”."
           }
         },
         "zh-Hans" : {
@@ -17035,7 +17032,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desvincula todos los dispositivos y anula los códigos antiguos."
+            "value" : "Desvincula los equipos y anula los códigos."
           }
         },
         "zh-Hans" : {
@@ -17310,7 +17307,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Despertando herramientas"
+            "value" : "Activar herramientas"
           }
         },
         "zh-Hans" : {
@@ -17358,7 +17355,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sitio web abierto"
+            "value" : "Web abierta"
           }
         },
         "zh-Hans" : {
@@ -17589,7 +17586,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lo que puede hacer esto"
+            "value" : "Qué puede hacer"
           }
         },
         "zh-Hans" : {
@@ -18055,7 +18052,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "por encima del %lld %%"
+            "value" : "sobre %lld %%"
           }
         },
         "zh-Hans" : {
@@ -18135,7 +18132,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "por debajo del %lld %%"
+            "value" : "bajo %lld %%"
           }
         },
         "zh-Hans" : {
@@ -21645,7 +21642,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "共 %2$lld 条，显示 %1$lld 条"
+            "value" : "%1$lld / %2$lld"
           }
         }
       }
@@ -27441,7 +27438,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay movimientos especiales."
+            "value" : "Sin movimientos aún."
           }
         },
         "zh-Hans" : {
@@ -28257,7 +28254,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pídele a %1$@ que "
+            "value" : "Pide a %1$@ que "
           }
         },
         "zh-Hans" : {
@@ -34713,7 +34710,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Herramientas de %1$@"
+            "value" : "Herramientas %1$@"
           }
         },
         "zh-Hans" : {

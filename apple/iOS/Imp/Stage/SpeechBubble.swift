@@ -2,12 +2,12 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// An Imp talking with another Imp, above its head: who (a chip in the other Imp's colour), and
-/// what it says. The question shows once, in the bubble of the Imp that asks it: the one asked is a
-/// chip with thinking dots, and its answer a chip with the answer (and a muted line of the question,
-/// since the asking bubble is gone by then). The same talk the Mac shows. It stays out of your chat. An answer with sound is the Imp *speaking*: the bubble's rim glows in the
-/// speaker's colours and swells with the voice, and a small orb (tap it to pause or play) follows
-/// the loudness. Pictures show as thumbnails, videos as a small player.
+/// An Imp talking with another Imp, above its head: who (a chip in the other Imp's colour), and what it says.
+/// The question shows once, in the bubble of the Imp that asks it: the one asked is a chip with thinking
+/// dots, and its answer a chip with the answer (and a muted line of the question, since the asking bubble is
+/// gone by then). The same talk the Mac shows. It stays out of your chat. An answer with sound is the Imp
+/// *speaking*: the bubble's rim glows in the speaker's colours and swells with the voice, and a small orb
+/// (tap it to pause or play) follows the loudness. Pictures show as thumbnails, videos as a small player.
 struct SpeechBubble: View {
     var speech: LinkSpeech
     /// The Imp saying it: its colours glow around a spoken reply, and its folder holds the files.

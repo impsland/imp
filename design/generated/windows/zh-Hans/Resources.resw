@@ -129,7 +129,7 @@
   <data name="error.tool_failed" xml:space="preserve"><value>{tool} 无法启动。请检查它的设置。</value><comment>A tool server did not start.</comment></data>
   <data name="extension.action_title" xml:space="preserve"><value>Imp</value><comment>The tooltip of the toolbar button.</comment></data>
   <data name="extension.activity.count_all" xml:space="preserve"><value>共 {total} 条</value><comment>Count of all the entries.</comment></data>
-  <data name="extension.activity.count_some" xml:space="preserve"><value>共 {total} 条，显示 {shown} 条</value><comment>Count of the entries that match the search.</comment></data>
+  <data name="extension.activity.count_some" xml:space="preserve"><value>{shown} / {total}</value><comment>Count of the entries that match the search.</comment></data>
   <data name="extension.activity.empty" xml:space="preserve"><value>暂时还没有。</value><comment>Shown when Imp has done nothing yet.</comment></data>
   <data name="extension.activity.found" xml:space="preserve"><value>找到了</value><comment>Start of a line: Imp found something on a page. The searched words follow.</comment></data>
   <data name="extension.activity.help" xml:space="preserve"><value>Imp 读页面或在页面上找东西时，会显示在这里。</value><comment>Help for the list of what Imp just did.</comment></data>

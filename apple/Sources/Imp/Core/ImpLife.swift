@@ -4,9 +4,10 @@ import ImpKit
 import Observation
 import os
 
-/// Imp's "inner life": wakes up smoothly, notices when the cursor's been still, and fills quiet
-/// moments with small routines (glances, humming, ideas, head turns, dozing off…).
-/// Ticks with all the others, at 10 Hz while anything moves and slower at rest (see `LifeTicker`), off the render loop, so drawing never mutates state.
+/// Imp's "inner life": wakes up smoothly, notices when the cursor's been still, and fills quiet moments with
+/// small routines (glances, humming, ideas, head turns, dozing off…). Ticks with all the others, at 10 Hz
+/// while anything moves and slower at rest (see `LifeTicker`), off the render loop, so drawing never mutates
+/// state.
 @MainActor @Observable
 final class ImpLife {
     private(set) var antic: Antic?

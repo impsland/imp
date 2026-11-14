@@ -371,7 +371,7 @@
   <data name="menu.imp.visit_tip" xml:space="preserve"><value>{name} visita {device} y puede volver.</value><comment>Tip on the Imp menu item that sends it to visit a device.</comment></data>
   <data name="moves.builtin" xml:space="preserve"><value>Movimientos</value><comment>Row: change a built-in move.</comment></data>
   <data name="moves.change" xml:space="preserve"><value>Cambiar</value><comment>Button: change a built-in move.</comment></data>
-  <data name="moves.empty" xml:space="preserve"><value>Aún no hay movimientos especiales.</value><comment>Empty state of the moves panel.</comment></data>
+  <data name="moves.empty" xml:space="preserve"><value>Sin movimientos aún.</value><comment>Empty state of the moves panel.</comment></data>
   <data name="moves.follow_how" xml:space="preserve"><value>Seguir</value><comment>Row: how it follows the cursor.</comment></data>
   <data name="moves.help.builtin" xml:space="preserve"><value>Elige uno de los movimientos que tienen todos los Imps y haz una versión solo para este.</value><comment>Help of the built-in moves row.</comment></data>
   <data name="moves.help.follow" xml:space="preserve"><value>Elige qué hace este Imp cuando mueves el puntero del ratón: quedarse quieto, mirarlo o correr tras él.</value><comment>Help of the follow section.</comment></data>
@@ -405,7 +405,7 @@
   <data name="phone.callhome.label" xml:space="preserve"><value>Traer a {name}</value><comment>Spoken name of the call home button.</comment></data>
   <data name="phone.chat.answering" xml:space="preserve"><value>Responde a {from}…</value><comment>iPhone: chat answering.</comment></data>
   <data name="phone.chat.ask_again" xml:space="preserve"><value>Reintentar</value><comment>iPhone: chat ask again.</comment></data>
-  <data name="phone.chat.ask_to" xml:space="preserve"><value>Pídele a {name} que </value><comment>iPhone: chat ask to.</comment></data>
+  <data name="phone.chat.ask_to" xml:space="preserve"><value>Pide a {name} que </value><comment>iPhone: chat ask to.</comment></data>
   <data name="phone.chat.ask_to.hint" xml:space="preserve"><value>Empieza un mensaje pidiéndole algo a {name}.</value><comment>iPhone: chat ask to hint.</comment></data>
   <data name="phone.chat.edit_help" xml:space="preserve"><value>Editar</value><comment>iPhone: chat edit help.</comment></data>
   <data name="phone.chat.failed" xml:space="preserve"><value>No pudo responder</value><comment>iPhone: chat failed.</comment></data>
@@ -674,7 +674,7 @@
   <data name="tools.expand" xml:space="preserve"><value>Ver herramientas de {group}</value><comment>Screen reader action.</comment></data>
   <data name="tools.group_count" xml:space="preserve"><value>{on} de {total}</value><comment>Under a tool group: how many of its tools are on.</comment></data>
   <data name="tools.group_off" xml:space="preserve"><value>Desactivado</value><comment>Under a tool group that is switched off.</comment></data>
-  <data name="tools.group_switch" xml:space="preserve"><value>Herramientas de {group}</value><comment>Screen reader name of a tool group switch.</comment></data>
+  <data name="tools.group_switch" xml:space="preserve"><value>Herramientas {group}</value><comment>Screen reader name of a tool group switch.</comment></data>
   <data name="tools.header_add" xml:space="preserve"><value>Añadir</value><comment>Button that adds a header to a tool server.</comment></data>
   <data name="tools.header_name" xml:space="preserve"><value>Nombre</value><comment>Label of a header's name field.</comment></data>
   <data name="tools.header_saved" xml:space="preserve"><value>Guardado</value><comment>Placeholder of a header value that is already kept safe.</comment></data>

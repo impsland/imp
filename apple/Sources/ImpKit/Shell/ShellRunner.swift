@@ -1,8 +1,8 @@
 import Foundation
 
-/// Runs a command with zsh (a login shell with the user's interactive environment, so their PATH applies) in a working folder, with
-/// a time limit and a cap on how much output comes back. A failing command isn't an error here:
-/// its exit status and output are the result, so the model can read them and try again.
+/// Runs a command with zsh (a login shell with the user's interactive environment, so their PATH applies) in
+/// a working folder, with a time limit and a cap on how much output comes back. A failing command isn't an
+/// error here: its exit status and output are the result, so the model can read them and try again.
 public enum ShellRunner {
     public struct Result: Equatable, Sendable {
         public var status: Int32

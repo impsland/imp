@@ -127,7 +127,7 @@
   <string name="error_tool_failed">%1$s 无法启动。请检查它的设置。</string>
   <string name="extension_action_title">Imp</string>
   <string name="extension_activity_count_all">共 %1$d 条</string>
-  <string name="extension_activity_count_some">共 %2$d 条，显示 %1$d 条</string>
+  <string name="extension_activity_count_some">%1$d / %2$d</string>
   <string name="extension_activity_empty">暂时还没有。</string>
   <string name="extension_activity_found">找到了</string>
   <string name="extension_activity_help">Imp 读页面或在页面上找东西时，会显示在这里。</string>

@@ -2,8 +2,9 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The first run on the Mac: a sheet over the window with the Imp (asleep, stirring, awake) on top, the
-/// one page below (`FirstRunFlow`) and one primary button at the bottom. The top bar has Close. Close leaves the Imp asleep, a calm state of its own: there is no "later".
+/// The first run on the Mac: a sheet over the window with the Imp (asleep, stirring, awake) on top, the one
+/// page below (`FirstRunFlow`) and one primary button at the bottom. The top bar has Close. Close leaves the
+/// Imp asleep, a calm state of its own: there is no "later".
 struct FirstRunSheet: View {
     @Bindable var flow: FirstRunModel
     let hue: Double

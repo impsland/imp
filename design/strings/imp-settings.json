@@ -477,7 +477,7 @@
       "group": "string"
     },
     "en": "{group} tools",
-    "es": "Herramientas de {group}",
+    "es": "Herramientas {group}",
     "zh-Hans": "{group} 的工具"
   },
   "tools.expand": {
@@ -601,7 +601,7 @@
   "moves.empty": {
     "note": "Empty state of the moves panel.",
     "en": "No special moves yet.",
-    "es": "Aún no hay movimientos especiales.",
+    "es": "Sin movimientos aún.",
     "zh-Hans": "还没有特别的动作。"
   },
   "imp_settings.this_imp": {

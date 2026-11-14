@@ -8746,7 +8746,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "共 %2$lld 条，显示 %1$lld 条"
+            "value" : "%1$lld / %2$lld"
           }
         }
       }
@@ -14542,7 +14542,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay movimientos especiales."
+            "value" : "Sin movimientos aún."
           }
         },
         "zh-Hans" : {
@@ -15358,7 +15358,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pídele a %1$@ que "
+            "value" : "Pide a %1$@ que "
           }
         },
         "zh-Hans" : {
@@ -21814,7 +21814,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Herramientas de %1$@"
+            "value" : "Herramientas %1$@"
           }
         },
         "zh-Hans" : {

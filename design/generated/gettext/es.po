@@ -1826,7 +1826,7 @@ msgstr "Cambiar"
 #. Empty state of the moves panel.
 msgctxt "moves.empty"
 msgid "No special moves yet."
-msgstr "Aún no hay movimientos especiales."
+msgstr "Sin movimientos aún."
 
 #. Row: how it follows the cursor.
 msgctxt "moves.follow_how"
@@ -1996,7 +1996,7 @@ msgstr "Reintentar"
 #. iPhone: chat ask to.
 msgctxt "phone.chat.ask_to"
 msgid "Ask {name} to "
-msgstr "Pídele a {name} que "
+msgstr "Pide a {name} que "
 
 #. iPhone: chat ask to hint.
 msgctxt "phone.chat.ask_to.hint"
@@ -3341,7 +3341,7 @@ msgstr "Desactivado"
 #. Screen reader name of a tool group switch.
 msgctxt "tools.group_switch"
 msgid "{group} tools"
-msgstr "Herramientas de {group}"
+msgstr "Herramientas {group}"
 
 #. Button that adds a header to a tool server.
 msgctxt "tools.header_add"

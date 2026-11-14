@@ -629,7 +629,7 @@ msgstr "共 {total} 条"
 #. Count of the entries that match the search.
 msgctxt "extension.activity.count_some"
 msgid "{shown} of {total}"
-msgstr "共 {total} 条，显示 {shown} 条"
+msgstr "{shown} / {total}"
 
 #. Shown when Imp has done nothing yet.
 msgctxt "extension.activity.empty"
