@@ -16,7 +16,7 @@ enum Mood: String, Equatable, CaseIterable {
 
 /// Expression parameters. Imp has no pupils and no mouth: it feels with the silhouette of its
 /// mochi head, the shape of its white eyes, which way its face is turned, and its little horns.
-struct Face {
+struct Face: Equatable {
     // Head silhouette
     var headW = 1.0
     var headH = 1.0
@@ -180,6 +180,12 @@ final class FaceAnimator {
         }
         isSettled = SpringSettle.isSettled(values: Face.fields.map { face[keyPath: $0] },
                                            targets: Face.fields.map { target[keyPath: $0] }, velocities: velocity)
+        // At rest it is exactly there: a settled face is the same picture frame after frame, and a
+        // picture that has not changed is not drawn again (`ImpRenderer.changesWithTime`).
+        if isSettled {
+            for k in Face.fields { face[keyPath: k] = target[keyPath: k] }
+            velocity = [Double](repeating: 0, count: Face.fields.count)
+        }
         return face
     }
 }

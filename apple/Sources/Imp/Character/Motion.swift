@@ -1,7 +1,7 @@
 import Foundation
 
 /// Per-frame motion layered over the expression: breathing, blinks, horn wiggles, bouncing to your voice.
-struct Motion {
+struct Motion: Equatable {
     var t: TimeInterval = 0
     var blink = 0.0         // 0 open … 1 closed
     var bob = 0.0           // vertical offset
@@ -133,6 +133,17 @@ struct Motion {
     }
 
     static let breathRate = 1.7
+
+    /// How long a picture that only changes when its Imp blinks can go without a frame, at `t`: one
+    /// `frame` while a blink is under way or about to start, otherwise the time left until just
+    /// before the next blink. The Mac's resting Imp and the phone's room both wait by this.
+    static func blinkWait(at t: TimeInterval, frame: TimeInterval) -> TimeInterval {
+        if blink(at: t) > 0 || blink(at: t + frame) > 0 { return frame }
+        return max(frame, nextBlink(after: t) - t - frame)
+    }
+
+    /// The breath at its fullest (`breath(at:)` swings between this and its opposite).
+    static let breathDepth = breath(at: .pi / 2 / breathRate)
 
     /// The next moment a blink is under way, at or after `t` (blinks are deterministic).
     static func nextBlink(after t: TimeInterval) -> TimeInterval {

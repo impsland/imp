@@ -28,8 +28,8 @@ To send it to your iPhone in one go (connected by cable, or over Wi-Fi once set 
 `TEAM=<Team ID>`), installs on the one connected iPhone (or `DEVICE=<name or UDID>`) and opens it.
 `CONFIG=Debug` sends a debug build.
 
-Debug builds understand `-demo` (two Imps and a chat, no network), `-demoVoice <url>` (one of them answers out loud), `-openChat` and `-hatch`, handy for screenshots,
-and `-join <implink://…>` with `-ask <text>` for end-to-end checks against a running Mac.
+Debug builds understand `-openChat` and `-hatch`, handy for screenshots, and `-join <implink://…>` with
+`-ask <text>` for end-to-end checks against a running Mac.
 `apple/scripts/make-icon.sh` re-renders the app icon from the Mac app's own icon art (`Imp --render-ios-icon`).
 
 ## Linking and tossing
@@ -97,8 +97,15 @@ and an `InfoTip`; controls adapt to a narrow screen and the largest Dynamic Type
 
 ## Energy
 
-Everything that animates goes through `PacedTimeline` and `FramePolicy` (`Imp/Energy.swift`): a frame is drawn
-only while something moves, at the rate the policy allows. Animation pauses when the app is not active, when the
-screen is covered by a sheet or the chat, when nothing is moving, in Low Power Mode (slower) and under Reduce
-Motion (still). `PhoneEnergyAuditTests` fails on any `TimelineView(` outside `Energy.swift`, `repeatForever`,
-`CADisplayLink` or repeating `Timer`. Do not add continuous animation.
+Everything that animates goes through `Imp/App/Energy.swift` and `FramePolicy`: a frame is drawn only while
+something moves, at the rate the policy allows. Animation pauses when the app is not active, when the screen is
+covered by a sheet or the chat, when nothing is moving, in Low Power Mode (slower) and under Reduce Motion (still).
+
+A room at rest is what an open phone shows most of the time, so it costs next to nothing. The stage draws no
+frames. Each Imp draws its own blinks (`BlinkTimeline`), its breath and float are a transform on the finished
+picture (`RestMotion`), and a picture that did not change is not drawn again (`ImpPicture`). After a minute with
+nothing happening the room settles: the Imps stop floating and only blink, until something happens. Measured in
+the Simulator (Release, three awake Imps): about 18% of a core before, about 5% at rest and 2 to 3% settled.
+
+`PhoneEnergyAuditTests` fails on any `TimelineView(` or `repeatForever` outside `Energy.swift`, and on
+`CADisplayLink` or a repeating `Timer` anywhere. Do not add continuous animation.

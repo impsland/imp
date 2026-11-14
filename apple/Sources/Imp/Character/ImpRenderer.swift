@@ -47,6 +47,14 @@ enum ImpRenderer {
         if let glyph { extras.draw(&ctx, glyph: glyph, head: head, age: glyphAge, t: m.t, fade: glyphFade) }
     }
 
+    /// Whether the picture of this face and motion is different a moment later with nothing else
+    /// changed: the outline ripples, something drifts or spins around the head, or a glyph bobs over
+    /// it. When it is not, two frames that differ only in `Motion.t` are the same picture.
+    static func changesWithTime(face f: Face, motion m: Motion, glyph: Glyph?) -> Bool {
+        glyph != nil || f.wobble + m.ripple != 0 || f.spiral > 0.01
+            || f.burst > 0.03 || f.sparkle > 0.03 || f.heart > 0.03 || f.sleep > 0.3
+    }
+
     /// How high a hop may lift the body: all of `lift`, unless that would carry the top of the head
     /// or a horn out of the frame (tall, startled poses). Then the whole hop is lower, in
     /// proportion, so it still rises and falls smoothly instead of flattening against the edge.

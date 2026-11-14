@@ -110,8 +110,7 @@ struct FrameSchedule: TimelineSchedule {
             case .resting:
                 // Mid-blink: keep going. Otherwise sleep until just before the next one
                 // (at most a second, so slow state changes are still noticed).
-                Motion.blink(at: t) > 0 || Motion.blink(at: t + 1 / 60) > 0
-                    ? frame : Swift.min(1, Swift.max(frame, Motion.nextBlink(after: t) - t - frame))
+                Swift.min(1, Motion.blinkWait(at: t, frame: frame))
             }
             let step = settling.moving && pace != .hidden ? frame : paced
             date = date.addingTimeInterval(step)

@@ -2,7 +2,7 @@ import Foundation
 import Testing
 
 /// The phone's heat is decided by what keeps drawing. Nothing in the iPhone app may start a loop of its
-/// own: every continuous animation goes through `PacedTimeline` / `FramePolicy`, which pause it when the
+/// own: every continuous animation goes through `Energy.swift` and `FramePolicy`, which pause it when the
 /// scene is inactive, the view is covered, the picture is still, the phone saves power or Reduce Motion is on.
 @Suite struct PhoneEnergyAuditTests {
     private static let phone = URL(fileURLWithPath: #filePath)
@@ -12,8 +12,10 @@ import Testing
     /// What may not appear in the iPhone app's sources.
     private static let forbidden = ["repeatForever", "CADisplayLink", "TimelineView(.animation", "Timer.scheduledTimer", "Timer.publish"]
 
-    /// File name -> the forbidden thing it may contain, and why. Empty: nothing needs an exception.
-    private static let allowed: [String: (token: String, reason: String)] = [:]
+    /// File name -> the forbidden thing it may contain, and why.
+    private static let allowed: [String: (token: String, reason: String)] = [
+        "Energy.swift": ("repeatForever", "RestMotion: the breath and the float of an Imp at rest, which the policy switches off"),
+    ]
 
     private static func sources() -> [URL] {
         let walker = FileManager.default.enumerator(at: phone, includingPropertiesForKeys: nil)

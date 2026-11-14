@@ -6,16 +6,21 @@ import Foundation
 /// 1. Nothing that is not on screen runs: not while the app is in the background, not while a sheet
 ///    covers it, not on another tab.
 /// 2. A picture that does not change costs no frames at all (`Activity.still`).
-/// 3. Anything that visibly moves (a head turning, eyes following a finger, the cursor or the tilt, a
-///    hop, a mood fading) is drawn at the display's rate, 60 fps (`lively`). The Imps that only
-///    breathe, blink and float are drawn at 30 (`calm`): that is still smooth, and it is the stillness
-///    (no frames at all), not a low frame rate, that saves the energy. 120 Hz is not used: the motion
-///    here is slow and soft, and a second 60 frames a second would double the cost for no visible gain.
-/// 4. Low Power Mode and a warm device are the platform saying what it can sustain: the rates fall
+/// 3. An Imp at rest (`resting`) is drawn only while it blinks. Its breath and its float move the
+///    finished picture as a whole: the system animates that, and nothing is drawn again for it.
+///    Even so, a screen that moves all the time keeps the device working. So a room left alone for
+///    `quiet` seconds settles (`settled`): the Imps stop floating and only blink, until something
+///    happens. That is the state a screen left open spends its time in, and it costs next to nothing.
+/// 4. Anything that visibly moves (a head turning, eyes following a finger, the cursor or the tilt, a
+///    hop, a mood fading) is drawn at the display's rate, 60 fps (`lively`). A mood with a slow
+///    motion of its own (horns wiggling while it thinks, a doze) is drawn at 30 (`calm`). 120 Hz is
+///    not used: the motion here is slow and soft, and a second 60 frames a second would double the
+///    cost for no visible gain.
+/// 5. Low Power Mode and a warm device are the platform saying what it can sustain: the rates fall
 ///    (60 to 30, 30 to 20) but stay smooth. A serious or critical heat state also switches the
 ///    decorations off (`Conditions.decorated`).
-/// 5. Reduce Motion stops what only decorates (the breathing, the floating); what a finger drives
-///    still answers the finger.
+/// 6. Reduce Motion stops what only decorates (the breathing, the floating, the blinking); what a
+///    finger drives still answers the finger.
 public enum FramePolicy {
     /// How much the device lets the Imps spend.
     public enum Budget: Int, Comparable, Sendable {
@@ -37,7 +42,11 @@ public enum FramePolicy {
     public enum Activity: Int, Comparable, Sendable {
         /// Nothing changes: asleep, empty, or waiting for an event. No frames.
         case still
-        /// Breathing, blinking, floating.
+        /// Left alone for a while: the Imps only blink. Frames only for the blinks.
+        case settled
+        /// At rest: breathing, floating and blinking, nothing else. Frames only for the blinks.
+        case resting
+        /// A slow motion that needs drawing: horns wiggling, a doze, dots bouncing.
         case calm
         /// Something moves: a finger, the cursor or the tilt, a toss, a game, a mood fading.
         case lively
@@ -72,17 +81,28 @@ public enum FramePolicy {
         /// Whether decorations (glows, blurs, drifting colour, particles) may be drawn. They go when the
         /// device is saving power or running warm, and under Reduce Motion.
         public var decorated: Bool { running && budget == .full && !reduceMotion }
+
+        /// Whether an Imp at rest breathes, floats and blinks. A device at its limit and Reduce Motion
+        /// keep it still.
+        public var breathes: Bool { running && budget != .critical && !reduceMotion }
     }
 
     /// How a timeline should run.
     public enum Pace: Equatable, Sendable {
         /// No frames: the last one stays.
         case paused
+        /// No frames for the picture. Each Imp in it draws its own blinks, one frame every this many
+        /// seconds while a blink lasts.
+        case blinks(TimeInterval)
         /// At most one frame every this many seconds.
         case every(TimeInterval)
 
+        /// Seconds between frames while frames are drawn at all.
         public var interval: TimeInterval? {
-            if case .every(let seconds) = self { seconds } else { nil }
+            switch self {
+            case .paused: nil
+            case .blinks(let seconds), .every(let seconds): seconds
+            }
         }
     }
 
@@ -105,14 +125,28 @@ public enum FramePolicy {
         switch activity {
         case .still:
             return .paused
+        case .settled, .resting:
+            // A blink lasts a sixth of a second: the calm rate gives it five frames, which reads as a blink.
+            guard conditions.breathes, let seconds = calmInterval[budget] else { return .paused }
+            return .blinks(seconds)
         case .calm:
-            // A hot device and Reduce Motion keep the Imps still instead of breathing.
+            // A hot device and Reduce Motion keep the Imps still.
             guard !conditions.reduceMotion, let seconds = calmInterval[budget] else { return .paused }
             return .every(seconds)
         case .lively:
             return .every(livelyInterval[budget] ?? 1 / framesPerSecondSaving)
         }
     }
+
+    /// Whether the Imps in a picture doing `activity` breathe and float.
+    public static func breathes(_ activity: Activity, _ conditions: Conditions) -> Bool {
+        activity >= .resting && conditions.breathes
+    }
+
+    /// How long a room stays at rest with nothing happening (no finger, no tilt, no message, no change
+    /// of mood) before it settles.
+    public static let quiet: TimeInterval = 60
+
 
     /// Sensor samples per second. The picture eases towards each sample with a spring on every frame
     /// (`SpringStep`), so the sensor only has to be fast enough not to miss a throw or a shake.

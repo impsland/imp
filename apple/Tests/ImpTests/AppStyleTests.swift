@@ -198,7 +198,7 @@ import Testing
             "EchoLayer.swift": "game canvas", "EchoCoach.swift": "game canvas",
         ]),
         Rule(pattern: #"NSVisualEffectView|\.background\(\.(ultraThin|thin|regular|thick|ultraThick|bar)?Material|\bMaterial\b"#, what: "a blurred material", allowed: ["BubbleBlur.swift": "the bubble's behind-window blur, masked to its shape and tail"]),
-        Rule(pattern: #"repeatForever"#, what: "an endless animation"),
+        Rule(pattern: #"repeatForever"#, what: "an endless animation", allowed: ["Energy.swift": "the breath and the float of an Imp at rest"]),
         Rule(pattern: #"\bDungeon|EmberButtonStyle|CardDivider|buttonText"#, what: "a name of the old language"),
         Rule(pattern: #"\.shadow\("#, what: "a shadow (only things that float over content)", allowed: [
             "Notice.swift": "the floating notice sits over content",

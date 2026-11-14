@@ -76,7 +76,7 @@ struct PhoneStage: View {
                                                 .transition(.scale(scale: 0.6, anchor: .bottom).combined(with: .opacity))
                                                 .id(place.speech.id)
                                         }
-                                        .position(x: place.x, y: max(place.top + engine.floatOffset(b, at: date, calm: false), screen.safeAreaInsets.top + Spacing.page))
+                                        .position(x: place.x, y: max(place.top, screen.safeAreaInsets.top + Spacing.page))
                                         .zIndex(2)
                                 }
                             }
@@ -206,7 +206,8 @@ struct PhoneStage: View {
 
     /// Where each talking Imp's bubble goes. Each sits over its Imp's head; one that would land on a
     /// bubble placed before it (in the stage's fixed order, so nothing swaps places as the Imps
-    /// float) goes up above that one. Floating isn't counted, so nothing jitters.
+    /// float) goes up above that one. A bubble stays put while its Imp floats under it, so its words
+    /// hold still to be read.
     private func bubbles(size: CGSize, date: Date) -> [UUID: (speech: LinkSpeech, x: CGFloat, top: CGFloat)] {
         var placed: [UUID: (speech: LinkSpeech, x: CGFloat, top: CGFloat)] = [:]
         var frames: [CGRect] = []
@@ -214,7 +215,7 @@ struct PhoneStage: View {
             guard let b = engine.bodies[id], b.phase == .free || b.phase == .dragging,
                   let speech = hub.speeches[id] ?? pocket.speeches[id] else { continue }
             let (box, isNew) = sizes.size(of: speech)
-            if isNew { engine.pacer.wake(at: date) }
+            if isNew { engine.pacer.wake(at: max(date, Date())) }
             let x = min(max(b.pos.x, box.width / 2 + Spacing.medium), max(size.width - box.width / 2 - Spacing.medium, box.width / 2 + Spacing.medium))
             var top = b.pos.y - b.size * 0.4 - Spacing.roomy
             var frame = CGRect(x: x - box.width / 2, y: top - box.height, width: box.width, height: box.height)
@@ -249,11 +250,12 @@ struct PhoneStage: View {
             if let m = source.mood(id) { return m }
             return working != nil ? .working : .idle
         }()
-        engine.pacer.note(mood: mood, of: id, awake: awake, at: date)
+        let dots = working != nil && showsWords && !talking
+        engine.pacer.note(mood: mood, of: id, awake: awake, animated: dots, at: date)
         let gaze = engine.gaze(for: b)
         return ImpFigure(imp: b.imp, mood: mood, performance: b.performance, lean: b.lean,
                          gaze: gaze.map { Gaze.toward($0.point, from: b.pos) }, attentive: gaze?.attentive ?? false, date: date,
-                         bleed: ImpFigure.stageBleed)
+                         bleed: ImpFigure.stageBleed, breathes: awake)
             .frame(width: side, height: side)
             .background {
                 // The Imp's own light around it.
@@ -261,7 +263,7 @@ struct PhoneStage: View {
                     .frame(width: side * 2.3, height: side * 2.3)
             }
             .overlay(alignment: .top) {
-                if working != nil, showsWords, !talking { ThinkingDots(date: date).offset(y: -side * 0.12).transition(.scale.combined(with: .opacity)) }
+                if dots { ThinkingDots(date: date).offset(y: -side * 0.12).transition(.scale.combined(with: .opacity)) }
             }
             .overlay(alignment: .bottom) {
                 if showsWords {
@@ -286,9 +288,14 @@ struct PhoneStage: View {
             .accessibilityLabel(Text(b.imp.name))
             .accessibilityAddTraits(.isButton)
             .accessibilityActions { menu(for: b, source: source, awake: awake) }
-            .position(x: b.pos.x, y: b.pos.y + engine.floatOffset(b, at: date, calm: !awake))
+            // It floats while nobody holds it. One that sleeps hangs still.
+            .floating(BodyClock(id), reach: Self.floatReach, on: awake && b.phase != .dragging)
+            .position(x: b.pos.x, y: b.pos.y)
             .zIndex(b.phase == .dragging ? 1 : 0)
     }
+
+    /// How far an Imp floats up and down from its place, in points.
+    private static let floatReach: CGFloat = 3.5
 
     // MARK: Menu
 

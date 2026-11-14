@@ -43,7 +43,6 @@ final class StageEngine {
         var lean = 0.0
         var performance: Performance?
         var dizzyUntil = Date.distantPast
-        var floatPhase: Double
         /// Finger → centre while dragging.
         var grab = CGSize.zero
         var lastSample: (point: CGPoint, time: Date)?
@@ -129,11 +128,13 @@ final class StageEngine {
                 body.imp = imp
                 bodies[imp.id] = body
             } else {
-                var b = Body(imp: imp, pos: restingSpot(n), floatPhase: Double(n) * 1.7)
+                var b = Body(imp: imp, pos: restingSpot(n))
                 b.phase = .free
                 insert(b)
             }
         }
+        // A stage at rest draws nothing until it is told that something changed.
+        pacer.wake()
     }
 
     private func restingSpot(_ n: Int) -> CGPoint {
@@ -157,6 +158,7 @@ final class StageEngine {
         moved[id] = nil
         touched[id] = nil
         if order.isEmpty { round = nil; endEcho() }
+        pacer.wake()
     }
 
     // MARK: Events from other devices
@@ -167,7 +169,7 @@ final class StageEngine {
         let speed = min(max(entry.speed, 900), 2_600)
         let y = min(max(entry.height * size.height, f.minY + r), f.maxY - r)
         let from: CGFloat = entry.side == .left ? -r * 1.15 : size.width + r * 1.15
-        var b = Body(imp: imp, pos: CGPoint(x: from, y: y), floatPhase: Double.random(in: 0...6))
+        var b = Body(imp: imp, pos: CGPoint(x: from, y: y))
         // Brake so it coasts to a stop a good way in: the harder the throw, the further it lands.
         let t = (speed - 900) / 1_700
         let travel = size.width * (0.45 + 0.25 * t)
@@ -196,6 +198,7 @@ final class StageEngine {
 
     func refused(_ id: UUID, _ reason: String) {
         warn(reason)
+        pacer.wake()
         guard var b = bodies[id] else { return }
         switch b.phase {
         case .away:
@@ -335,6 +338,7 @@ final class StageEngine {
 
     /// A shake: everyone gets dizzy.
     func shake(now: Date = Date()) {
+        pacer.wake()
         for id in order where bodies[id]?.phase == .free {
             bodies[id]?.dizzyUntil = now.addingTimeInterval(3.2)
             felt(id, .shake)
@@ -745,7 +749,9 @@ final class StageEngine {
         }
         play(dt, date: date)
         separate(dt)
-        pacer.settle(moving: isMoving(at: date) || touch != nil || bodies.values.contains { $0.phase == .dragging }, empty: order.isEmpty && round == nil, at: date)
+        // A game's lesson, its countdown and its card have pictures of their own that move.
+        pacer.settle(moving: isMoving(at: date) || touch != nil || bodies.values.contains { $0.phase == .dragging },
+                     empty: order.isEmpty && round == nil, animated: isPlaying, at: date)
     }
 
     static func lean(_ vx: Double) -> Double { max(-14, min(14, vx * 0.012)) }
@@ -769,6 +775,9 @@ final class StageEngine {
     /// side edges. The name under it may pass the edge for a moment.
     private func floor(_ r: CGFloat) -> CGFloat { size.height - r * Self.reachBelow }
 
+    /// How much two Imps may still overlap, in points, and count as apart.
+    nonisolated static let apart: CGFloat = 0.25
+
     /// Imps are soft, not ghosts: two that overlap drift apart.
     private func separate(_ dt: Double) {
         let ids = order.filter { bodies[$0]?.phase == .free && bodies[$0]?.enteringFrom == nil }
@@ -781,7 +790,9 @@ final class StageEngine {
                 let reach = (a.size + c.size) * 0.34
                 guard d < reach else { continue }
                 let push = (reach - d) * 6 * dt
-                pacer.separating = true
+                // The last fraction of a point is closed too slowly to see, and in the end not at all
+                // (the push falls below what a position can hold): it is not motion to draw.
+                if reach - d > Self.apart { pacer.separating = true }
                 let ux = dx / d, uy = dy / d
                 a.pos.x -= ux * push; a.pos.y -= uy * push
                 c.pos.x += ux * push; c.pos.y += uy * push
@@ -791,13 +802,6 @@ final class StageEngine {
     }
 
     // MARK: Drawing helpers
-
-    /// Where `b` is drawn: its place plus a gentle float (still while carried, calmer when asleep).
-    func floatOffset(_ b: Body, at date: Date, calm: Bool) -> CGFloat {
-        guard b.phase != .dragging else { return 0 }
-        let t = date.timeIntervalSinceReferenceDate
-        return CGFloat(sin(t * 1.5 + b.floatPhase) * (calm ? 1.5 : 3.5))
-    }
 
     /// What `b` looks at: the finger if one is down, otherwise the closest friend.
     func gaze(for b: Body) -> (point: CGPoint, attentive: Bool)? {

@@ -74,7 +74,7 @@ struct PhoneHiddenFloor: View {
         let side = Self.side * imp.scale
         let visible = side * Self.shown
         let slot = Double((imps.firstIndex { $0.id == imp.id } ?? 0) + 1) / Double(imps.count + 1)
-        return ImpFigure(imp: imp, mood: .curious, date: Date())
+        return ImpFigure(imp: imp, mood: .curious, date: Date(), breathes: false)
             .frame(width: side, height: side)
             .offset(y: reduceMotion || out ? 0 : visible)
             .opacity(reduceMotion && !out ? 0 : 1)

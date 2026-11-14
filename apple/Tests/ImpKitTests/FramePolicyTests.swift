@@ -11,7 +11,7 @@ import Testing
         #expect(FramePolicy.budget(lowPower: true, thermal: .critical) == .critical)
     }
 
-    private let all: [FramePolicy.Activity] = [.still, .calm, .lively]
+    private let all: [FramePolicy.Activity] = [.still, .settled, .resting, .calm, .lively]
     private let budgets: [FramePolicy.Budget] = [.full, .saving, .critical]
 
     private func conditions(_ budget: FramePolicy.Budget) -> FramePolicy.Conditions {
@@ -24,6 +24,31 @@ import Testing
 
     @Test func aStillPictureCostsNoFrames() {
         #expect(FramePolicy.pace(.still, FramePolicy.Conditions()) == .paused)
+    }
+
+    /// The phone got hot left open: a room of Imps that only breathed was drawn 30 times a second for
+    /// ever. An Imp at rest now gets frames only while it blinks, and nothing is drawn for its breath.
+    @Test func anImpAtRestIsDrawnOnlyWhileItBlinks() {
+        for activity in [FramePolicy.Activity.settled, .resting] {
+            #expect(FramePolicy.pace(activity, FramePolicy.Conditions()) == .blinks(1.0 / 30))
+            #expect(FramePolicy.pace(activity, conditions(.saving)) == .blinks(1.0 / 20))
+            #expect(FramePolicy.pace(activity, conditions(.critical)) == .paused)
+            #expect(FramePolicy.pace(activity, FramePolicy.Conditions(reduceMotion: true)) == .paused)
+        }
+    }
+
+    @Test func aRoomLeftAloneStopsFloatingAndOnlyBlinks() {
+        let full = FramePolicy.Conditions()
+        #expect(!FramePolicy.breathes(.still, full))
+        #expect(!FramePolicy.breathes(.settled, full))
+        for activity in [FramePolicy.Activity.resting, .calm, .lively] { #expect(FramePolicy.breathes(activity, full)) }
+        #expect(FramePolicy.quiet >= 30)
+    }
+
+    @Test func nothingBreathesOffScreenWhenHotOrUnderReduceMotion() {
+        for c in everyCondition where !c.running || c.reduceMotion || c.thermal == .critical {
+            for activity in all { #expect(!FramePolicy.breathes(activity, c)) }
+        }
     }
 
     @Test func nothingRunsOffScreenOrInTheBackground() {
