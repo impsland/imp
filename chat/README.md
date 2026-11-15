@@ -413,7 +413,7 @@ imp serve --hop-only           # the Hop alone
 
 It prints where each one listens and what to type into the apps. Data is kept in the usual data folder for
 `imp` (or `--data-dir`, or `IMP_DATA_DIR`). The Den's secret is made the first time, kept in the file
-`den-secret` there with permissions only you can use, and is never printed. Press Ctrl-C to stop. The server
+`den-secret` there with permissions only you can use, and is never printed. Press Ctrl+C to stop. The server
 programs in `server/den` and `server/hop` and the Docker image are separate and unchanged.
 
 ## For developers

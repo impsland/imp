@@ -104,7 +104,7 @@
   <string name="den_help_summary">用一句话让大家知道这是什么。</string>
   <string name="den_help_tags">帮大家找到它的词，用逗号分开。</string>
   <string name="devices_copy_link_help">适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。</string>
-  <string name="devices_empty">还没有设备。连接一台 iPhone 或另一台 Mac,你的 Imp 就能去做客。</string>
+  <string name="devices_empty">还没有设备。连接一台 iPhone 或另一台 Mac，你的 Imp 就能去做客。</string>
   <string name="devices_list_info">与这台设备连接的设备。“我的”让设备可以代表你行事。</string>
   <string name="devices_reach_away">不在线</string>
   <string name="devices_reach_direct">直连，走本地网络</string>
@@ -585,7 +585,7 @@
   <string name="settings_bubble_size_title">大小</string>
   <string name="settings_devices_call_home">把它上面的 Imp 叫回家</string>
   <string name="settings_devices_forget_all_title">全部忘记</string>
-  <string name="settings_devices_link_info">连接另一台设备,让你的 Imp 去做客。</string>
+  <string name="settings_devices_link_info">连接另一台设备，让你的 Imp 去做客。</string>
   <string name="settings_devices_link_title">连接</string>
   <string name="settings_devices_mine_info">与这台设备已连接的设备。</string>
   <string name="settings_devices_pair_title">连接</string>
@@ -643,7 +643,7 @@
   <string name="settings_title">应用设置</string>
   <string name="settings_tool_address_info">这个工具的网络地址。</string>
   <string name="settings_tool_command_info">用来启动这个工具的命令。</string>
-  <string name="settings_tool_headers_info">随每个请求发送的额外内容,比如口令。</string>
+  <string name="settings_tool_headers_info">随每个请求发送的额外内容，比如口令。</string>
   <string name="settings_tool_name_info">你给这个工具取的名字。</string>
   <string name="settings_tool_variables_info">这个工具运行时需要的秘密值。</string>
   <string name="share_den">Den</string>
@@ -653,7 +653,7 @@
   <string name="share_title">共享 %1$s</string>
   <string name="sharing_browse">浏览</string>
   <string name="sharing_gallery">图库</string>
-  <string name="sharing_gallery_info">查找他人分享的动画、触发器和 Imp,或导入你的套件。要分享你的,请使用 Imp 上的分享按钮。</string>
+  <string name="sharing_gallery_info">查找他人分享的动画、触发器和 Imp，或导入你的套件。要分享你的，请使用 Imp 上的分享按钮。</string>
   <string name="sharing_import">导入</string>
   <string name="sheets_animations_nothing_yet">暂时还没有</string>
   <string name="state_link_lost">与 %1$s 的连接断开了，会自动重新连接。</string>

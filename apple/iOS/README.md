@@ -113,8 +113,7 @@ covered by a sheet or the chat, when nothing is moving, in Low Power Mode (slowe
 A room at rest is what an open phone shows most of the time, so it costs next to nothing. The stage draws no
 frames. Each Imp draws its own blinks (`BlinkTimeline`), its breath and float are a transform on the finished
 picture (`RestMotion`), and a picture that did not change is not drawn again (`ImpPicture`). After a minute with
-nothing happening the room settles: the Imps stop floating and only blink, until something happens. Measured in
-the Simulator (Release, three awake Imps): about 18% of a core before, about 5% at rest and 2 to 3% settled.
+nothing happening the room settles: the Imps stop floating and only blink, until something happens.
 
 `PhoneEnergyAuditTests` fails on any `TimelineView(` or `repeatForever` outside `Energy.swift`, and on
 `CADisplayLink` or a repeating `Timer` anywhere. Do not add continuous animation.

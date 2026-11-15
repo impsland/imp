@@ -64,10 +64,10 @@ struct DenPublishSheet: View {
         .impNotice($notice)
     }
 
-    private func field(_ title: LocalizedStringKey, info: LocalizedStringKey, text: Binding<String>, prompt: String, mono: Bool = false) -> some View {
+    private func field(_ title: LocalizedStringKey, info: LocalizedStringKey, text: Binding<String>, prompt: LocalizedStringKey, mono: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: Spacing.snug) {
             SectionHeader(title, info: info, font: Typeface.caption, color: Tone.muted, minHeight: nil)
-            TextField(String(prompt), text: text).impField(mono: mono).autocorrectionDisabled()
+            TextField(title, text: text, prompt: Text(prompt)).impField(mono: mono).autocorrectionDisabled()
         }
     }
 

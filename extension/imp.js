@@ -7,7 +7,7 @@
 
 const TAU = Math.PI * 2;
 
-export const MOODS = ['idle', 'happy', 'love', 'content', 'giggly', 'excited', 'surprised', 'curious', 'thinking',
+const MOODS = ['idle', 'happy', 'love', 'content', 'giggly', 'excited', 'surprised', 'curious', 'thinking',
   'shy', 'sad', 'scared', 'bored', 'sleepy', 'annoyed', 'mean', 'dizzy', 'error', 'listening', 'working'];
 
 const TRAIT_RANGES = {
@@ -50,15 +50,6 @@ const mixRGB = (a, b, k) => {
   const t = clamp(k, 0, 1);
   return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 };
-
-/**
- * Gives the skin colour of an Imp for a hue, as a CSS hex colour. Nothing in the extension calls it yet.
- * @param {number} hue The hue from 0 to 1. Other values are clamped, and a missing value counts as 0.
- * @returns {string} The colour as a six-digit hex string with a leading "#".
- */
-export function skinColor(hue) {
-  return hex(hsv(clamp(finite(hue, 0), 0, 1), 0.733, 0.9));
-}
 
 const hex = (rgb) => '#' + rgb.map((c) => Math.round(clamp(c, 0, 1) * 255).toString(16).padStart(2, '0')).join('');
 

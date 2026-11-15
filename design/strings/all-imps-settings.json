@@ -770,7 +770,7 @@
     "note": "Settings text.",
     "en": "Link another device so your Imps can visit it.",
     "es": "Vincula otro dispositivo para que tus Imps puedan visitarlo.",
-    "zh-Hans": "连接另一台设备,让你的 Imp 去做客。"
+    "zh-Hans": "连接另一台设备，让你的 Imp 去做客。"
   },
   "settings.devices.pair.title": {
     "note": "Settings text.",
@@ -902,7 +902,7 @@
     "note": "Settings text.",
     "en": "Extra lines sent with each request, like a password.",
     "es": "Líneas extra enviadas con cada petición, como una contraseña.",
-    "zh-Hans": "随每个请求发送的额外内容,比如口令。"
+    "zh-Hans": "随每个请求发送的额外内容，比如口令。"
   },
   "settings.tool.variables.info": {
     "note": "Settings text.",
@@ -1142,7 +1142,7 @@
     "note": "Empty state of the devices card.",
     "en": "No devices yet. Link an iPhone or another Mac and your Imps can visit it.",
     "es": "Aún no hay dispositivos. Vincula un iPhone u otro Mac y tus Imps podrán visitarlo.",
-    "zh-Hans": "还没有设备。连接一台 iPhone 或另一台 Mac,你的 Imp 就能去做客。"
+    "zh-Hans": "还没有设备。连接一台 iPhone 或另一台 Mac，你的 Imp 就能去做客。"
   },
   "devices.this.info": {
     "note": "Help on the This Mac card: the dot is The Hop.",
@@ -1184,7 +1184,7 @@
     "note": "Help on the Gallery card.",
     "en": "Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp.",
     "es": "Encuentra animaciones, disparadores e Imps que otros compartieron, o importa un kit. Para compartir los tuyos, usa el botón de compartir de un Imp.",
-    "zh-Hans": "查找他人分享的动画、触发器和 Imp,或导入你的套件。要分享你的,请使用 Imp 上的分享按钮。"
+    "zh-Hans": "查找他人分享的动画、触发器和 Imp，或导入你的套件。要分享你的，请使用 Imp 上的分享按钮。"
   },
   "sharing.import": {
     "note": "Button on the Sharing page: bring in a kit from a link or file.",

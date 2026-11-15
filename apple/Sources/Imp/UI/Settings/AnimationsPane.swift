@@ -131,7 +131,7 @@ struct AnimationsPane: View {
             item: .init(key: a.id.uuidString, title: a.title, summary: a.about.isEmpty ? (a.replaces?.summary ?? "") : a.about,
                         symbol: a.symbol, rule: prefs.rule(ofMade: a, owner: owner),
                         owner: ownerName, replaces: a.replaces?.title, edited: false, made: true),
-            hue: hue, traits: profile?.traits ?? .plain, locked: a.favoriteColorOnly && !favorite, live: live, owners: owners,
+            hue: hue, traits: profile?.traits ?? .plain, content: a.hashValue, locked: a.favoriteColorOnly && !favorite, live: live, owners: owners,
             performance: playing?.key == "made-\(a.id)" ? playing : nil,
             play: { playing = Performance(key: "made-\(a.id)", steps: Antics.paced(a.beats.map(AnticStep.init), tempo: tempo)) },
             finish: finish,
@@ -188,7 +188,7 @@ struct AnimationsPane: View {
         return AnimationRow(
             item: .init(key: reaction.rawValue, title: reaction.title, summary: reaction.summary, symbol: reaction.symbol,
                         rule: prefs.rule(for: reaction), owner: nil, replaces: nil, edited: replacement != nil, made: false),
-            hue: hue, traits: profile?.traits ?? .plain,
+            hue: hue, traits: profile?.traits ?? .plain, content: replacement?.hashValue ?? 0,
             locked: false, live: live, owners: owners,
             performance: playing?.key == reaction.rawValue ? playing : nil,
             play: { playing = Performance(.preset(reaction), prefs: model.prefs, imp: imp) },
@@ -316,6 +316,9 @@ struct AnimationRow: View, Equatable {
     let item: Item
     let hue: Double
     var traits = ImpTraits.plain
+    /// A hash of the animation the actions below were made from (its beats are not in `item`). Without it
+    /// an equal row would keep an old `play` and `edit` after the animation was changed.
+    var content = 0
     /// Dimmed with a lock: it plays only in its favourite colour, which this Imp isn't wearing.
     let locked: Bool
     let live: Live
@@ -334,7 +337,7 @@ struct AnimationRow: View, Equatable {
 
     /// Compares the plain values and which optional actions are set, never the closures themselves.
     nonisolated static func == (a: Self, b: Self) -> Bool {
-        a.item == b.item && a.hue == b.hue && a.traits == b.traits && a.locked == b.locked
+        a.item == b.item && a.content == b.content && a.hue == b.hue && a.traits == b.traits && a.locked == b.locked
             && a.live == b.live && a.owners == b.owners && a.performance == b.performance && (a.restore == nil) == (b.restore == nil)
             && (a.setTrigger == nil) == (b.setTrigger == nil)
     }
@@ -415,11 +418,15 @@ struct AnimationRow: View, Equatable {
         .opacity(rule.isEnabled ? 1 : Opacity.dimmed)
     }
 
+    private var switchLabel: LocalizedStringKey {
+        item.rule.isEnabled ? "Turn off \(item.title)" : "Turn on \(item.title)"
+    }
+
     private var controls: some View {
         HStack(spacing: Spacing.small) {
             HoverIconButton(systemName: "pencil", help: item.made ? "Change \(item.title)" : "Make your own version of \(item.title)", action: edit)
             triggerMenu
-            Toggle(String(""), isOn: Binding(get: { item.rule.isEnabled }, set: { setEnabled($0) }))
+            Toggle(switchLabel, isOn: Binding(get: { item.rule.isEnabled }, set: { setEnabled($0) }))
                 .labelsHidden().toggleStyle(.impSwitchBare)
                 .help(item.rule.isEnabled ? "Turn off \(item.title)" : "Turn on \(item.title)")
         }

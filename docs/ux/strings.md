@@ -106,7 +106,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `den.help.summary` | One sentence so people know what it is. | Una frase para que la gente sepa qué es. | 用一句话让大家知道这是什么。 |
 | `den.help.tags` | Words that help people find it. Separate them with commas. | Palabras que ayudan a encontrarlo. Sepáralas con comas. | 帮大家找到它的词，用逗号分开。 |
 | `devices.copy_link.help` | For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while. | Para un dispositivo que no puede escanear: pega el enlace en Escanear código en el otro dispositivo. Mantenlo en privado. Permite que un dispositivo se vincule con este Mac durante un rato. | 适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。 |
-| `devices.empty` | No devices yet. Link an iPhone or another Mac and your Imps can visit it. | Aún no hay dispositivos. Vincula un iPhone u otro Mac y tus Imps podrán visitarlo. | 还没有设备。连接一台 iPhone 或另一台 Mac,你的 Imp 就能去做客。 |
+| `devices.empty` | No devices yet. Link an iPhone or another Mac and your Imps can visit it. | Aún no hay dispositivos. Vincula un iPhone u otro Mac y tus Imps podrán visitarlo. | 还没有设备。连接一台 iPhone 或另一台 Mac，你的 Imp 就能去做客。 |
 | `devices.list.info` | Devices linked with this one. Mine lets a device act for you. | Dispositivos vinculados con este. Mío permite que un dispositivo actúe por ti. | 与这台设备连接的设备。“我的”让设备可以代表你行事。 |
 | `devices.reach.away` | Away | Ausente | 不在线 |
 | `devices.reach.direct` | Direct, on the local network | Directo, en la red local | 直连，走本地网络 |
@@ -581,7 +581,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.bubble.size.title` | Size | Tamaño | 大小 |
 | `settings.devices.call_home` | Call its Imps home | Traer sus Imps | 把它上面的 Imp 叫回家 |
 | `settings.devices.forget_all.title` | Forget all | Olvidar todo | 全部忘记 |
-| `settings.devices.link.info` | Link another device so your Imps can visit it. | Vincula otro dispositivo para que tus Imps puedan visitarlo. | 连接另一台设备,让你的 Imp 去做客。 |
+| `settings.devices.link.info` | Link another device so your Imps can visit it. | Vincula otro dispositivo para que tus Imps puedan visitarlo. | 连接另一台设备，让你的 Imp 去做客。 |
 | `settings.devices.link.title` | Link | Vincular | 连接 |
 | `settings.devices.mine.info` | The devices linked with this one. | Los dispositivos vinculados con este. | 与这台设备已连接的设备。 |
 | `settings.devices.pair.title` | Link | Vincular | 连接 |
@@ -639,7 +639,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.title` | Settings | Ajustes | 应用设置 |
 | `settings.tool.address.info` | The web address of the tool. | La dirección web de la herramienta. | 这个工具的网络地址。 |
 | `settings.tool.command.info` | The command that starts the tool. | El comando que inicia la herramienta. | 用来启动这个工具的命令。 |
-| `settings.tool.headers.info` | Extra lines sent with each request, like a password. | Líneas extra enviadas con cada petición, como una contraseña. | 随每个请求发送的额外内容,比如口令。 |
+| `settings.tool.headers.info` | Extra lines sent with each request, like a password. | Líneas extra enviadas con cada petición, como una contraseña. | 随每个请求发送的额外内容，比如口令。 |
 | `settings.tool.name.info` | A name you pick for this tool. | Un nombre a tu gusto | 你给这个工具取的名字。 |
 | `settings.tool.variables.info` | Secret values the tool needs to run. | Valores secretos que la herramienta necesita. | 这个工具运行时需要的秘密值。 |
 | `share.den` | Den | Den | Den |
@@ -649,7 +649,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `share.title` | Share {name} | Compartir {name} | 共享 {name} |
 | `sharing.browse` | Browse | Explorar | 浏览 |
 | `sharing.gallery` | Gallery | Galería | 图库 |
-| `sharing.gallery.info` | Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp. | Encuentra animaciones, disparadores e Imps que otros compartieron, o importa un kit. Para compartir los tuyos, usa el botón de compartir de un Imp. | 查找他人分享的动画、触发器和 Imp,或导入你的套件。要分享你的,请使用 Imp 上的分享按钮。 |
+| `sharing.gallery.info` | Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp. | Encuentra animaciones, disparadores e Imps que otros compartieron, o importa un kit. Para compartir los tuyos, usa el botón de compartir de un Imp. | 查找他人分享的动画、触发器和 Imp，或导入你的套件。要分享你的，请使用 Imp 上的分享按钮。 |
 | `sharing.import` | Import | Importar | 导入 |
 | `sheets.animations.nothing_yet` | Nothing yet | Nada todavía | 暂时还没有 |
 | `state.link_lost` | The link to {device} dropped. It reconnects on its own. | Se cortó el enlace con {device}. Se reconectará solo. | 与 {device} 的连接断开了，会自动重新连接。 |

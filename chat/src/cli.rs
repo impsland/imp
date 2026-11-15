@@ -26,9 +26,9 @@ imp mcp add search --header Authorization https://mcp.example.org/mcp";
 
 const LINK_LONG_ABOUT: &str = "Stay online as one of your devices, without a chat. Imps of this computer that are on a Mac or \
 an iPhone think here while it runs, Imps sent here visit, and Imps message each other across devices. Link a device \
-first with `imp qr`. A full-screen chat does the same while it is open. Press Ctrl-C to stop.";
+first with `imp qr`. A full-screen chat does the same while it is open. Press Ctrl+C to stop.";
 
-const SERVE_LONG_ABOUT: &str = "Run The Den, The Hop or both on this computer, so your devices can use it as their server. Press Ctrl-C to stop.\n\n\
+const SERVE_LONG_ABOUT: &str = "Run The Den, The Hop or both on this computer, so your devices can use it as their server. Press Ctrl+C to stop.\n\n\
 By default both run. The Den holds accounts, shared kits and the web gallery, and keeps its data in a folder on this computer. \
 The Hop relays links between devices and keeps nothing. The Hop does not need The Den, so each can run alone. \
 Options for a service you did not choose are not allowed.\n\n\
@@ -60,7 +60,7 @@ pub enum Command {
         #[command(subcommand)]
         action: ImpAction,
     },
-    /// Chat with an Imp in a full-screen chat. Type /help inside, press Esc to leave
+    /// Chat with an Imp in a full-screen chat. Type /help inside. Esc or Ctrl+C leaves.
     Chat {
         /// Which Imp to talk to (the default Imp if left out)
         #[arg(long, value_name = "NAME")]
@@ -77,7 +77,7 @@ pub enum Command {
         #[command(subcommand)]
         action: McpAction,
     },
-    /// Stay online for your linked devices without a chat. Press Ctrl-C to stop
+    /// Stay online for your linked devices without a chat. Press Ctrl+C to stop
     #[command(long_about = LINK_LONG_ABOUT)]
     Link {
         /// The name other devices see (the computer's name if left out)
@@ -90,7 +90,7 @@ pub enum Command {
         #[arg(long, env = "IMP_DATA_DIR", value_name = "DIR")]
         data_dir: Option<PathBuf>,
     },
-    /// Run The Den, The Hop or both on this computer, so your devices can use it as their server. Press Ctrl-C to stop
+    /// Run The Den, The Hop or both on this computer, so your devices can use it as their server. Press Ctrl+C to stop
     #[command(long_about = SERVE_LONG_ABOUT)]
     Serve {
         /// Run only The Den (accounts, shared kits and the web gallery)

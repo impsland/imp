@@ -514,7 +514,7 @@ msgstr "适用于无法扫描的设备：在另一台设备的“扫描代码”
 #. Empty state of the devices card.
 msgctxt "devices.empty"
 msgid "No devices yet. Link an iPhone or another Mac and your Imps can visit it."
-msgstr "还没有设备。连接一台 iPhone 或另一台 Mac,你的 Imp 就能去做客。"
+msgstr "还没有设备。连接一台 iPhone 或另一台 Mac，你的 Imp 就能去做客。"
 
 #. Help on the Devices card.
 msgctxt "devices.list.info"
@@ -2892,7 +2892,7 @@ msgstr "全部忘记"
 #. Settings text.
 msgctxt "settings.devices.link.info"
 msgid "Link another device so your Imps can visit it."
-msgstr "连接另一台设备,让你的 Imp 去做客。"
+msgstr "连接另一台设备，让你的 Imp 去做客。"
 
 #. Settings text.
 msgctxt "settings.devices.link.title"
@@ -3182,7 +3182,7 @@ msgstr "用来启动这个工具的命令。"
 #. Settings text.
 msgctxt "settings.tool.headers.info"
 msgid "Extra lines sent with each request, like a password."
-msgstr "随每个请求发送的额外内容,比如口令。"
+msgstr "随每个请求发送的额外内容，比如口令。"
 
 #. Settings text.
 msgctxt "settings.tool.name.info"
@@ -3232,7 +3232,7 @@ msgstr "图库"
 #. Help on the Gallery card.
 msgctxt "sharing.gallery.info"
 msgid "Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp."
-msgstr "查找他人分享的动画、触发器和 Imp,或导入你的套件。要分享你的,请使用 Imp 上的分享按钮。"
+msgstr "查找他人分享的动画、触发器和 Imp，或导入你的套件。要分享你的，请使用 Imp 上的分享按钮。"
 
 #. Button on the Sharing page: bring in a kit from a link or file.
 msgctxt "sharing.import"

@@ -33,7 +33,7 @@ pub static STRINGS: &[(&str, [&str; 3])] = &[
     ("cli.help.erase", ["Erase a letter", "Borra una letra", "删除一个字符"]),
     ("cli.help.erase_word", ["Erase the word before", "Borrar la palabra anterior", "删除前一个词"]),
     ("cli.help.files", ["Add a file or folder to the message", "Añadir un archivo o carpeta al mensaje", "在消息中添加文件或文件夹"]),
-    ("cli.help.imp", ["The Imp you talk to and its brain", "El Imp con quien hablas y su cerebro", "你在和哪个 Imp 说话,以及它的大脑"]),
+    ("cli.help.imp", ["The Imp you talk to and its brain", "El Imp con quien hablas y su cerebro", "你在和哪个 Imp 说话，以及它的大脑"]),
     ("cli.help.key_double_click", ["Double-click", "Doble clic", "双击"]),
     ("cli.help.key_drag", ["Drag", "Arrastrar", "拖动"]),
     ("cli.help.key_status", ["Status", "Estado", "状态"]),

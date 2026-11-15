@@ -110,7 +110,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **The Hop.** A relay on an Imp server that lets devices find each other from anywhere. It only passes encrypted data along. In the middle of a sentence it reads "the Hop". The Hop on this computer is the same relay, running locally.
 
-**Preset.** A ready choice for a setting. The Den and the Hop each have four: Imp's servers, This computer, Custom and Off.
+**Preset.** A ready choice for a setting. The Den and the Hop each have three: Imp's servers, Custom (any other address, on this computer too) and Off.
 
 ## Screens
 

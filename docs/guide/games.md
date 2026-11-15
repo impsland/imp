@@ -1,7 +1,8 @@
 # Games on the iPhone
 
-When the Imps on the phone can't think, because their home is away or an Imp has no brain yet, two small
-games are waiting in the corners of the screen. Both are optional, and your best score is kept.
+When the phone isn't connected to any of your computers, because their home is away or none is linked yet,
+two small games are waiting in the corners of the screen. They show while the Imps are on the stage and no
+round is running. Both are optional, and your best score is kept.
 
 ## Embers (bottom right)
 

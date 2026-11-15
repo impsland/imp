@@ -190,7 +190,7 @@
     "note": "Help for the Imp's name and brain shown in the status line.",
     "en": "The Imp you talk to and its brain",
     "es": "El Imp con quien hablas y su cerebro",
-    "zh-Hans": "你在和哪个 Imp 说话,以及它的大脑"
+    "zh-Hans": "你在和哪个 Imp 说话，以及它的大脑"
   },
   "cli.help.you": {
     "note": "Help for the arrow that starts what you wrote.",

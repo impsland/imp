@@ -22,8 +22,9 @@ struct GeneratedFilesTests {
         process.standardOutput = output
         process.standardError = output
         try process.run()
-        process.waitUntilExit()
+        // Read to the end first: a full pipe would stop the process, and the wait would never return.
         let text = String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+        process.waitUntilExit()
         #expect(process.terminationStatus == 0, "\(text)")
     }
 }

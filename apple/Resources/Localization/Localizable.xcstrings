@@ -2255,6 +2255,22 @@
         }
       }
     },
+    "A short wave hello" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un saludo corto con la mano"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一个简短的挥手问候"
+          }
+        }
+      }
+    },
     "A trigger can run tools and Mac commands. Read it first." : {
       "localizations" : {
         "es" : {
@@ -6524,6 +6540,22 @@
         }
       }
     },
+    "friendly, desk" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "amistoso, escritorio"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "友好, 桌面"
+          }
+        }
+      }
+    },
     "From %@" : {
       "localizations" : {
         "es" : {
@@ -9359,6 +9391,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "我的服务"
+          }
+        }
+      }
+    },
+    "my-package" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mi-paquete"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "my-package"
           }
         }
       }
@@ -21090,7 +21138,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有设备。连接一台 iPhone 或另一台 Mac,你的 Imp 就能去做客。"
+            "value" : "还没有设备。连接一台 iPhone 或另一台 Mac，你的 Imp 就能去做客。"
           }
         }
       }
@@ -32580,7 +32628,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接另一台设备,让你的 Imp 去做客。"
+            "value" : "连接另一台设备，让你的 Imp 去做客。"
           }
         }
       }
@@ -33972,7 +34020,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "随每个请求发送的额外内容,比如口令。"
+            "value" : "随每个请求发送的额外内容，比如口令。"
           }
         }
       }
@@ -34212,7 +34260,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "查找他人分享的动画、触发器和 Imp,或导入你的套件。要分享你的,请使用 Imp 上的分享按钮。"
+            "value" : "查找他人分享的动画、触发器和 Imp，或导入你的套件。要分享你的，请使用 Imp 上的分享按钮。"
           }
         }
       }

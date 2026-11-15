@@ -106,7 +106,7 @@
   <data name="den.help.summary" xml:space="preserve"><value>用一句话让大家知道这是什么。</value><comment>Help of the Den summary.</comment></data>
   <data name="den.help.tags" xml:space="preserve"><value>帮大家找到它的词，用逗号分开。</value><comment>Help of the Den tags.</comment></data>
   <data name="devices.copy_link.help" xml:space="preserve"><value>适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。</value><comment>Help of Copy Link in Link a device.</comment></data>
-  <data name="devices.empty" xml:space="preserve"><value>还没有设备。连接一台 iPhone 或另一台 Mac,你的 Imp 就能去做客。</value><comment>Empty state of the devices card.</comment></data>
+  <data name="devices.empty" xml:space="preserve"><value>还没有设备。连接一台 iPhone 或另一台 Mac，你的 Imp 就能去做客。</value><comment>Empty state of the devices card.</comment></data>
   <data name="devices.list.info" xml:space="preserve"><value>与这台设备连接的设备。“我的”让设备可以代表你行事。</value><comment>Help on the Devices card.</comment></data>
   <data name="devices.reach.away" xml:space="preserve"><value>不在线</value><comment>Help on a linked device: not reachable now.</comment></data>
   <data name="devices.reach.direct" xml:space="preserve"><value>直连，走本地网络</value><comment>Help on a linked device: reached on the local network.</comment></data>
@@ -581,7 +581,7 @@
   <data name="settings.bubble.size.title" xml:space="preserve"><value>大小</value><comment>Settings text.</comment></data>
   <data name="settings.devices.call_home" xml:space="preserve"><value>把它上面的 Imp 叫回家</value><comment>Help of the button on a linked device that takes back the Imps it holds.</comment></data>
   <data name="settings.devices.forget_all.title" xml:space="preserve"><value>全部忘记</value><comment>Settings text.</comment></data>
-  <data name="settings.devices.link.info" xml:space="preserve"><value>连接另一台设备,让你的 Imp 去做客。</value><comment>Settings text.</comment></data>
+  <data name="settings.devices.link.info" xml:space="preserve"><value>连接另一台设备，让你的 Imp 去做客。</value><comment>Settings text.</comment></data>
   <data name="settings.devices.link.title" xml:space="preserve"><value>连接</value><comment>Settings text.</comment></data>
   <data name="settings.devices.mine.info" xml:space="preserve"><value>与这台设备已连接的设备。</value><comment>Settings text.</comment></data>
   <data name="settings.devices.pair.title" xml:space="preserve"><value>连接</value><comment>Settings text.</comment></data>
@@ -639,7 +639,7 @@
   <data name="settings.title" xml:space="preserve"><value>应用设置</value><comment>Title of the app-wide settings.</comment></data>
   <data name="settings.tool.address.info" xml:space="preserve"><value>这个工具的网络地址。</value><comment>Settings text.</comment></data>
   <data name="settings.tool.command.info" xml:space="preserve"><value>用来启动这个工具的命令。</value><comment>Settings text.</comment></data>
-  <data name="settings.tool.headers.info" xml:space="preserve"><value>随每个请求发送的额外内容,比如口令。</value><comment>Settings text.</comment></data>
+  <data name="settings.tool.headers.info" xml:space="preserve"><value>随每个请求发送的额外内容，比如口令。</value><comment>Settings text.</comment></data>
   <data name="settings.tool.name.info" xml:space="preserve"><value>你给这个工具取的名字。</value><comment>Settings text.</comment></data>
   <data name="settings.tool.variables.info" xml:space="preserve"><value>这个工具运行时需要的秘密值。</value><comment>Settings text.</comment></data>
   <data name="share.den" xml:space="preserve"><value>Den</value><comment>Share sheet choice: publish in The Den. What is shared there is public.</comment></data>
@@ -649,7 +649,7 @@
   <data name="share.title" xml:space="preserve"><value>共享 {name}</value><comment>Title of the share sheet.</comment></data>
   <data name="sharing.browse" xml:space="preserve"><value>浏览</value><comment>Button on the Sharing page: look through The Den.</comment></data>
   <data name="sharing.gallery" xml:space="preserve"><value>图库</value><comment>Title of the card on Sharing with Browse and Import.</comment></data>
-  <data name="sharing.gallery.info" xml:space="preserve"><value>查找他人分享的动画、触发器和 Imp,或导入你的套件。要分享你的,请使用 Imp 上的分享按钮。</value><comment>Help on the Gallery card.</comment></data>
+  <data name="sharing.gallery.info" xml:space="preserve"><value>查找他人分享的动画、触发器和 Imp，或导入你的套件。要分享你的，请使用 Imp 上的分享按钮。</value><comment>Help on the Gallery card.</comment></data>
   <data name="sharing.import" xml:space="preserve"><value>导入</value><comment>Button on the Sharing page: bring in a kit from a link or file.</comment></data>
   <data name="sheets.animations.nothing_yet" xml:space="preserve"><value>暂时还没有</value><comment>Shown in the animations list when you have made none.</comment></data>
   <data name="state.link_lost" xml:space="preserve"><value>与 {device} 的连接断开了，会自动重新连接。</value><comment>A linked device disappeared.</comment></data>
