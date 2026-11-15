@@ -2,7 +2,7 @@ import CoreGraphics
 import Foundation
 import ImpCore
 
-// Telling a throw from a carry, and a throw from a shake. The rules live in `imp-core`. This only
+// Telling a throw from a carry, and a throw from a shake. The rules live in `imp-engine`. This only
 // turns screen geometry into what the core takes and back.
 
 private func point(_ p: CGPoint) -> LinkPoint { LinkPoint(x: p.x, y: p.y) }

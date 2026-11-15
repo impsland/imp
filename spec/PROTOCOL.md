@@ -8,7 +8,7 @@ workspace and ship in one Docker image.
 | Den | Accounts, and a place where Imps share kits (whole Imps, animations, triggers, tools). | HTTPS JSON API at the root, an MCP endpoint at `/mcp`, a small web gallery. |
 | Hop | A blind relay that lets one device reach another (the host) from anywhere. | A short binary handshake over TCP, then spliced bytes. |
 
-The code is the source of truth: `server/den/src`, `server/hop/src` and `core/src/link/hop.rs`.
+The code is the source of truth: `server/den/src`, `server/hop/src` and `engine/src/link/hop.rs`.
 
 ## Settings and addresses
 
@@ -20,7 +20,7 @@ Den features use only the Den address. Linking and the relay use only the Hop ad
 | Den address | A URL: `http` or `https`, a host, an optional port. | No path, user, query or fragment. A bare host name means `https`. The port is 1 to 65535. |
 | Hop address | `host:port` | No scheme and no path. The port is `4677` when left out. |
 
-The core checks both and gives the same sentence for a wrong address (`core/src/servers.rs`). The
+The core checks both and gives the same sentence for a wrong address (`engine/src/servers.rs`). The
 vectors are in `spec/fixtures/server-addresses.json`.
 
 ## Formats and versions
@@ -32,7 +32,7 @@ vectors are in `spec/fixtures/server-addresses.json`.
 | Hop and device link | No version on the wire. | A change an older side would misread changes the labels, so the older side fails cleanly (see `docs/connecting/link.md`). The Hop and the apps are released together. |
 
 Test vectors for the parts that clients share are in `spec/fixtures` (see its `README.md`). The Hop
-handshake rules live once, in `core/src/link/hop.rs`. Both the clients and the relay use that code.
+handshake rules live once, in `engine/src/link/hop.rs`. Both the clients and the relay use that code.
 Its tests pin the bytes of a hello, a proof and every label.
 
 ## Hop
@@ -167,7 +167,7 @@ listens on `HOP_ADDR` (default `0.0.0.0:4677`).
 | Live sessions per room | 16 | `HOP_ROOM_SESSIONS` |
 
 A live link pings every 20 seconds and is dropped after 45 seconds of silence (`PING_INTERVAL` and
-`SILENCE_LIMIT` in `core/src/link/mod.rs`). So a live session is never idle.
+`SILENCE_LIMIT` in `engine/src/link/mod.rs`). So a live session is never idle.
 
 ## Den API
 

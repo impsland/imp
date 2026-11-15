@@ -11,8 +11,9 @@ use crate::kit;
 /// The reserved handle the catalog is published under (nobody can register it).
 pub const HANDLE: &str = "imp";
 
-/// The catalog as the repository keeps it (the apps read the same file).
-const CATALOG: &str = include_str!("../../../spec/animations/catalog.json");
+#[path = "catalog.generated.rs"]
+mod generated;
+use generated::CATALOG;
 
 /// One catalog animation as a Den item.
 struct Entry {

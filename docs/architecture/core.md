@@ -1,6 +1,6 @@
 # How the apps reach the core
 
-The Mac and iPhone apps call `imp-core` through `imp-ffi`, a small crate that exports plain records
+The Mac and iPhone apps call `imp-engine` through `imp-ffi`, a small crate that exports plain records
 and functions with [UniFFI](https://github.com/mozilla/uniffi-rs) 0.32 (proc-macro mode, no UDL).
 UniFFI writes the Swift bindings from the built library. The same crate will give Kotlin bindings for
 Android. Windows and Linux reach the core through its C ABI.
@@ -24,14 +24,14 @@ earlier on `PATH` has no Apple mobile targets.
 
 ## No I/O in the apps' core
 
-`imp-core` has an `io` feature with the parts that reach the network and other processes: the
+`imp-engine` has an `io` feature with the parts that reach the network and other processes: the
 OpenAI-compatible HTTP client, the stdio and HTTP MCP transports and the driver that runs the agent loop
 over them.
 The command line app and the servers turn it on. `imp-ffi` turns it off, so the apps' core has no HTTP or TLS
 stack, and the apps do their own I/O through the system (URLSession, Network.framework). CI lints and
 tests the core both ways.
 
-The MCP protocol itself needs no I/O and is always built (`core/src/mcp/protocol.rs`): the JSON-RPC
+The MCP protocol itself needs no I/O and is always built (`engine/src/mcp/protocol.rs`): the JSON-RPC
 messages, how answers and tool lists are read, how tools are named, and the Streamable HTTP session
 headers. The apps call it through `imp-ffi` and only move the messages (a child process, URLSession).
 The command line transports call the same functions. When an HTTP session ends, the client sends a
@@ -39,15 +39,15 @@ DELETE with the session id.
 
 The rest of a chat works the same way. These need no I/O, and both the apps and the command line use them:
 
-- **The agent loop** (`core/src/agent.rs`) is a step machine. It says what to ask the model next and which
+- **The agent loop** (`engine/src/agent.rs`) is a step machine. It says what to ask the model next and which
   tools to run, and it adds each answer to the chat. It also stops after the step limit, then asks once
   more for a plain answer. A tool answer that starts with `Error:` counts as failed. Pictures from tools
   follow as one user message. The apps and the command line do only the requests and run the tools.
-- **Model requests** (`core/src/chat.rs`): the request body, the reply, the model list and the error
+- **Model requests** (`engine/src/chat.rs`): the request body, the reply, the model list and the error
   sentence a service sends back.
-- **Chat memory** (`core/src/memory.rs`): which exchanges the model sees, how a recap covers older ones,
+- **Chat memory** (`engine/src/memory.rs`): which exchanges the model sees, how a recap covers older ones,
   the long-chat notice and the chat title.
-- **Built-in tools** (`core/src/tools.rs`): one list gives each tool its name, its id and its group. The
+- **Built-in tools** (`engine/src/tools.rs`): one list gives each tool its name, its id and its group. The
   apps run a tool by its core name and never spell one themselves.
 
 ## Measurements

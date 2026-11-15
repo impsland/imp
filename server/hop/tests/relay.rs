@@ -395,8 +395,8 @@ async fn shutdown_tells_waiters_nobody_came() {
 }
 
 /// Feeds everything the relay sends to the core's client until the relay closes.
-async fn client_until_closed(s: &mut TcpStream) -> imp_core::link::hop::HopClient {
-    use imp_core::link::hop::{HopClient, HopCredentials};
+async fn client_until_closed(s: &mut TcpStream) -> imp_engine::link::hop::HopClient {
+    use imp_engine::link::hop::{HopClient, HopCredentials};
     let mut client = HopClient::new(HopCredentials::guest([8; 32], &[3; 32]));
     let mut buffer = [0u8; 64];
     loop {
@@ -420,7 +420,7 @@ async fn the_client_reads_an_early_rejected_from_the_close() {
     let client = client_until_closed(&mut s).await;
     assert_eq!(
         client.closed(),
-        Some(imp_core::link::hop::HopStatus::Rejected)
+        Some(imp_engine::link::hop::HopStatus::Rejected)
     );
 }
 
@@ -431,5 +431,8 @@ async fn the_client_reads_an_early_busy_from_the_close() {
     pause().await;
     let mut s = TcpStream::connect(hop.addr).await.expect("connect");
     let client = client_until_closed(&mut s).await;
-    assert_eq!(client.closed(), Some(imp_core::link::hop::HopStatus::Busy));
+    assert_eq!(
+        client.closed(),
+        Some(imp_engine::link::hop::HopStatus::Busy)
+    );
 }

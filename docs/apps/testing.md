@@ -28,7 +28,7 @@ CI also runs `node design/generate.mjs --check` and `make build`. It builds the 
 - `IMP_HOP=<this Mac>.local:4677`, the Hop's host and port. The default is this Mac's own `.local` name.
   Don't use `localhost`: a linking code never gives out a loopback Hop, so the Hop tests would find no route.
 
-The Den tests are in Swift (`ServerLiveTests`) and the Hop tests in Rust (`cli/tests/hop_live.rs`). Start the
+The Den tests are in Swift (`ServerLiveTests`) and the Hop tests in Rust (`chat/tests/hop_live.rs`). Start the
 Hop with `HOP_PER_IP_PER_MINUTE=100000` so repeated runs stay under its rate limit.
 The Den limits new accounts per address for hours, and every run makes accounts, so start the Den with a
 fresh `DEN_DATABASE` (for example a new file in `/tmp`) before running the tests again.
@@ -51,4 +51,4 @@ only checks that they compile.
 - `apple/Tests/ImpSnapshotTests`: reference images of the main screens and their key states.
 - `apple/iOS/SnapshotTests`: reference images of the iPhone's screens.
 - `spec/fixtures`: the JSON vectors every client reads (protocol messages, tool filtering, retry policy, workspace paths).
-- `core/` and `server/`: Rust tests, run by `make rust`.
+- `engine/` and `server/`: Rust tests, run by `make rust`.

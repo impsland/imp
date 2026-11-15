@@ -4,7 +4,7 @@ import Network
 import Observation
 import os
 
-/// A device's part in Imp Link (see `docs/connecting/link.md`). The rules live in `imp-core`'s node. This
+/// A device's part in Imp Link (see `docs/connecting/link.md`). The rules live in `imp-engine`'s node. This
 /// is its adapter: it listens, advertises and browses with Network.framework, opens the connections the
 /// node asks for, carries bytes both ways, keeps the book where only this user can read it and feeds
 /// the node the time. What the node says happened comes out as `Event`s.
@@ -424,7 +424,7 @@ public final class LinkNode {
 
     /// Interface names of VPN tunnels and of bridges for virtual machines. Their addresses go last in a
     /// code, because a phone on the same Wi-Fi can't reach them. The command line app orders its
-    /// addresses the same way (`order_hosts` in cli/src/link.rs).
+    /// addresses the same way (`order_hosts` in chat/src/link.rs).
     nonisolated static let farInterfaces = ["utun", "ipsec", "ppp", "tun", "tap", "wg", "gif", "stf", "bridge", "vmenet", "vnic"]
 
     /// Where other devices can reach this one, best first: the .local name, then the addresses of Wi-Fi

@@ -1,0 +1,85 @@
+name: Crates
+
+# Publishes the terminal app to crates.io, so `cargo install imp-chat` gets it, with the crates it is built from:
+# imp-engine, imp-shared, imp-den and imp-hop.
+#
+# Release: set `version` in Cargo.toml, then push a matching tag (git tag imp-chat-v1.3.0 && git push origin imp-chat-v1.3.0).
+# A crate whose version is already on crates.io is skipped, so a failed run can simply be started again
+# (Actions > Crates > Run workflow, or re-run the job).
+#
+# Authentication: crates.io Trusted Publishing (no stored secret). Set it up once per crate on crates.io
+# (Settings > Trusted Publishing: impsland/imp, workflow crates.yml, environment crates-io). A crate has to
+# exist before it can trust a workflow, so for the very first release add a crates.io API token as the
+# CARGO_REGISTRY_TOKEN secret of the crates-io environment, and remove it once Trusted Publishing is set up.
+
+on:
+  push:
+    tags: ["imp-chat-v*.*.*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crates
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: crates-io
+    permissions:
+      contents: read
+      id-token: write # Trusted Publishing exchanges the workflow's identity for a short-lived token
+    env:
+      # In dependency order: every crate is published after the ones it needs.
+      CRATES: imp-engine imp-shared imp-den imp-hop imp-chat
+      CARGO_TERM_COLOR: always
+      HAS_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      # rustup installs the toolchain that rust-toolchain.toml names, with its components.
+      - name: Toolchain
+        run: rustup show active-toolchain || rustup toolchain install
+
+      - name: Version
+        run: |
+          version="$(cargo metadata --no-deps --format-version 1 --locked \
+            | jq -r '.packages[] | select(.name == "imp-chat") | .version')"
+          [[ -n "$version" ]] || { echo "::error::Could not read the version of imp-chat"; exit 1; }
+          if [[ "$GITHUB_REF_TYPE" == tag && "$GITHUB_REF_NAME" != "imp-chat-v$version" ]]; then
+            echo "::error::The tag $GITHUB_REF_NAME does not match version $version in Cargo.toml (expected imp-chat-v$version)"
+            exit 1
+          fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Test
+        run: cargo test --workspace --locked
+
+      # Builds every crate from its packaged files alone, as crates.io will, before anything is uploaded.
+      - name: Package
+        run: cargo package --workspace --exclude imp-ffi --locked
+
+      - name: Trusted Publishing
+        id: auth
+        if: env.HAS_TOKEN != 'true'
+        uses: rust-lang/crates-io-auth-action@v1
+
+      - name: Publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token || secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          [[ -n "$CARGO_REGISTRY_TOKEN" ]] || { echo "::error::No crates.io token: set up Trusted Publishing or the CARGO_REGISTRY_TOKEN secret"; exit 1; }
+          for crate in $CRATES; do
+            status="$(curl -s -o /dev/null -w '%{http_code}' -A 'impsland-imp-release (https://github.com/impsland/imp)' \
+              "https://crates.io/api/v1/crates/$crate/$VERSION")"
+            if [[ "$status" == 200 ]]; then
+              echo "::notice::$crate $VERSION is already on crates.io, skipped"
+              continue
+            fi
+            # cargo waits until the crate is in the index, so the next one finds it.
+            cargo publish -p "$crate" --locked --no-verify
+          done
+          echo "### Published imp-chat $VERSION" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`cargo install imp-chat\` installs it." >> "$GITHUB_STEP_SUMMARY"

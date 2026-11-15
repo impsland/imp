@@ -1876,16 +1876,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "imp-cli"
-version = "1.2.0"
+name = "imp-chat"
+version = "1.3.0"
 dependencies = [
  "clap",
  "directories",
  "futures-util",
  "hex",
  "if-addrs",
- "imp-core",
  "imp-den",
+ "imp-engine",
  "imp-hop",
  "keyring",
  "qrcode",
@@ -1901,28 +1901,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "imp-core"
-version = "1.2.0"
-dependencies = [
- "base64 0.23.1",
- "ed25519-dalek",
- "futures-util",
- "hex",
- "hmac 0.13.0",
- "rand",
- "reqwest",
- "serde",
- "serde_json",
- "sha2 0.11.1",
- "snow",
- "thiserror",
- "tokio",
- "uuid",
-]
-
-[[package]]
 name = "imp-den"
-version = "1.2.0"
+version = "1.3.0"
 dependencies = [
  "altcha",
  "axum",
@@ -1948,10 +1928,30 @@ dependencies = [
 ]
 
 [[package]]
-name = "imp-ffi"
-version = "1.2.0"
+name = "imp-engine"
+version = "1.3.0"
 dependencies = [
- "imp-core",
+ "base64 0.23.1",
+ "ed25519-dalek",
+ "futures-util",
+ "hex",
+ "hmac 0.13.0",
+ "rand",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha2 0.11.1",
+ "snow",
+ "thiserror",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
+name = "imp-ffi"
+version = "1.3.0"
+dependencies = [
+ "imp-engine",
  "serde",
  "serde_json",
  "uniffi",
@@ -1960,10 +1960,10 @@ dependencies = [
 
 [[package]]
 name = "imp-hop"
-version = "1.2.0"
+version = "1.3.0"
 dependencies = [
  "ed25519-dalek",
- "imp-core",
+ "imp-engine",
  "imp-shared",
  "mimalloc",
  "rand",
@@ -1975,7 +1975,7 @@ dependencies = [
 
 [[package]]
 name = "imp-shared"
-version = "1.2.0"
+version = "1.3.0"
 dependencies = [
  "governor",
  "hex",

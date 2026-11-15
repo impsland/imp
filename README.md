@@ -56,6 +56,17 @@ Applications.
 > **"Imp can't be opened?"** Imp isn't notarized by Apple yet. See
 > [Getting started](docs/guide/getting-started.md#macos-says-imp-cant-be-opened).
 
+### ⌨️ In a terminal
+
+The `imp` terminal app runs on macOS, Linux and Windows. Install it from [crates.io](https://crates.io/crates/imp-chat)
+(Rust 1.99 or newer):
+
+```sh
+cargo install imp-chat
+```
+
+➡️ [Terminal app](docs/apps/cli.md)
+
 ## ⚡ Quick start with a local model
 
 ```sh
@@ -108,8 +119,8 @@ Build the site locally with `make docs` (output in `docs/.vitepress/dist`), or s
 | Folder | Contents |
 | --- | --- |
 | `apple/` | The Mac app, the iPhone app, shared Swift code (`ImpKit`, `ImpDesign`), tests and scripts |
-| `core/` | The portable Rust core (`imp-core`) and its bindings |
-| `cli/` | The `imp` terminal app |
+| `engine/` | The portable Rust core (`imp-engine`) and its bindings |
+| `chat/` | The `imp` terminal app |
 | `server/` | The Den, the Hop and their shared code, with Docker files |
 | `extension/` | The browser extension |
 | `spec/` | The protocol and the JSON fixtures every platform passes |

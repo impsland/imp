@@ -100,7 +100,7 @@ help_core() {
   cat << EOF
 Usage: $PROG core [--release] [SLICE...]
 
-Builds the portable Rust core (imp-core, through core/ffi) for the Apple apps:
+Builds the portable Rust core (imp-engine, through engine/ffi) for the Apple apps:
 
   apple/Frameworks/ImpCoreFFI.xcframework   the static library and its C header
   apple/Sources/ImpCore/ImpCore.swift       the Swift bindings (UniFFI)

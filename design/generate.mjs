@@ -9,8 +9,8 @@
  *   spec/presets/*.json            the starter kit and the service presets, compiled into the Apple apps
  *
  * It writes Swift for the Apple apps, CSS for the browser extension, Kotlin and XML for Android,
- * XAML, C# and .resw for Windows, CSS and gettext for Linux, Rust for the terminal app, and the
- * tables in the docs. The list of outputs is near the end of this file.
+ * XAML, C# and .resw for Windows, CSS and gettext for Linux, Rust for the terminal app and the Den's
+ * animation catalog, and the tables in the docs. The list of outputs is near the end of this file.
  *
  * Usage:
  *
@@ -470,6 +470,20 @@ function bundledAnimations() {
     `extension AnimationCatalog {\n` +
     `    /// The bundled animations as catalog JSON. Compiled in, so no resource bundle has to be found at run time.\n` +
     `    static let bundledJSON = ${swiftRawString(json, source)}\n}\n`
+}
+
+/**
+ * server/den/src/catalog.generated.rs: the whole catalog the Den seeds from, compiled in. A copy inside the
+ * crate, so the Den can be published to crates.io (a package cannot reach outside its folder).
+ */
+function denCatalog() {
+  const source = 'spec/animations/catalog.json'
+  const text = read(source).trimEnd()
+  JSON.parse(text)
+  if (text.includes('"###')) fail(`${source} cannot hold "### (it ends the Rust raw string)`)
+  return `// ${generatedFrom(source)}\n\n` +
+    `/// The animation catalog as the repository keeps it (the apps read the same file).\n` +
+    `pub const CATALOG: &str = r###"${text}"###;\n`
 }
 
 /** The presets the apps offer, as data: the starter kit (read by the same parser as any kit) and the services. */
@@ -961,14 +975,14 @@ function rustTheme() {
     out += `pub const ${appearance.toUpperCase()}: Palette = Palette {\n${fields.join('\n')}\n};\n\n`
   }
   const spacingConstants = spacings.map(([name, t]) => `    pub const ${snake(name).toUpperCase()}: u16 = ${t.value};`)
-  out += `/// Spacing in pixels. A terminal rounds it to cells in cli/src/theme.rs.\npub mod spacing {\n${spacingConstants.join('\n')}\n}\n\n`
+  out += `/// Spacing in pixels. A terminal rounds it to cells in chat/src/theme.rs.\npub mod spacing {\n${spacingConstants.join('\n')}\n}\n\n`
   out += `/// Animation lengths in milliseconds, and what each does under reduced motion (0 means it just happens).\npub mod motion {\n`
   out += `    pub const REDUCED_FADE_MS: u64 = ${milliseconds(reducedFade)};\n`
   for (const p of presets) out += `    pub const ${snake(p.name).toUpperCase()}_MS: u64 = ${milliseconds(p.seconds)};\n`
   return out + `}\n`
 }
 
-/** cli/src/strings.generated.rs: a table of each key that starts with cli. and its text in every language. */
+/** chat/src/strings.generated.rs: a table of each key that starts with cli. and its text in every language. */
 function rustStrings() {
   const quote = (text) => JSON.stringify(text)
   let out = `// ${STRINGS_NOTE}\n#![cfg_attr(rustfmt, rustfmt::skip)]\n\n`
@@ -1182,8 +1196,10 @@ const outputs = [
   ['design/generated/gtk/imp-components.css', gtkComponents()],
   ...gettextCatalogs(),
   // Terminal
-  ['cli/src/theme.generated.rs', rustTheme()],
-  ['cli/src/strings.generated.rs', rustStrings()],
+  ['chat/src/theme.generated.rs', rustTheme()],
+  ['chat/src/strings.generated.rs', rustStrings()],
+  // Server
+  ['server/den/src/catalog.generated.rs', denCatalog()],
   // Docs
   ['docs/design/components.md', componentsDoc()],
   ...platformReadmes(),

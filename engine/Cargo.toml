@@ -1,0 +1,54 @@
+[package]
+name = "imp-engine"
+description = "Portable Imp logic: the device link, retry policy, tool filtering, workspace paths and an OpenAI-compatible chat client"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords = ["imp", "llm", "mcp", "agent", "openai"]
+categories = ["api-bindings", "network-programming"]
+
+[lints]
+workspace = true
+
+# `io` adds the parts that reach the network and other processes (the OpenAI-compatible client, the
+# stdio MCP transport and the agent loop that runs them). The command line app and the servers use
+# them. The apps reach the core through imp-ffi without them, and do their own I/O.
+[features]
+default = ["io"]
+io = ["dep:futures-util", "dep:reqwest", "dep:tokio"]
+
+[dependencies]
+base64.workspace = true
+ed25519-dalek.workspace = true
+futures-util = { workspace = true, optional = true }
+hex.workspace = true
+hmac.workspace = true
+rand.workspace = true
+reqwest = { workspace = true, optional = true }
+serde.workspace = true
+serde_json.workspace = true
+snow.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, optional = true }
+uuid.workspace = true
+
+[[test]]
+name = "client"
+required-features = ["io"]
+
+[[test]]
+name = "agent"
+required-features = ["io"]
+
+[[test]]
+name = "mcp_http"
+required-features = ["io"]
+
+[[test]]
+name = "live"
+required-features = ["io"]

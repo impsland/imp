@@ -5,7 +5,7 @@ exactly one of them.
 
 | Layer | What it holds | Where |
 |---|---|---|
-| Portable core | Protocol messages, the link, tool selection, retry policy, workspace paths, MCP, the agent loop and chat state. No UI and no operating system calls. | `core/` (Rust, `imp-core`) |
+| Portable core | Protocol messages, the link, tool selection, retry policy, workspace paths, MCP, the agent loop and chat state. No UI and no operating system calls. | `engine/` (Rust, `imp-engine`) |
 | Platform adapters | Secure key storage, sockets and TLS, files, speech, notifications, windows and input, sensors and power. They translate between the system and the core. | in each platform folder |
 | Native UI | SwiftUI on Apple, Jetpack Compose on Android, WinUI 3 on Windows, GTK 4 on Linux, the browser extension, and the terminal UI of the CLI. | in each platform folder |
 
@@ -14,9 +14,9 @@ An adapter or a view never holds a rule of its own. When a platform needs a rule
 ## Repository layout
 
 ```text
-core/          imp-core, the portable core (Rust)
-core/ffi/      imp-ffi, the bindings the apps call the core through (UniFFI)
-cli/           imp, the command line app
+engine/        imp-engine, the portable core (Rust)
+engine/ffi/    imp-ffi, the bindings the apps call the core through (UniFFI)
+chat/          imp, the command line app
 server/        the Den (den/), the Hop (hop/) and their shared code (shared/), with the Docker files
 spec/          PROTOCOL.md and fixtures/, the JSON vectors every platform passes
 apple/         the Mac and iPhone apps: Package.swift, Sources/, Tests/, iOS/, Resources/, scripts/

@@ -1,11 +1,11 @@
-//! Steps 1 to 3: hello, nonce, proof. The bytes and the proof rules are the core's (`imp_core::link::hop`).
+//! Steps 1 to 3: hello, nonce, proof. The bytes and the proof rules are the core's (`imp_engine::link::hop`).
 
-use imp_core::link::hop::{HELLO_LEN, HopHello, NONCE_LEN, PROOF_LEN};
+use imp_engine::link::hop::{HELLO_LEN, HopHello, NONCE_LEN, PROOF_LEN};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 
 pub type Key = [u8; 32];
-pub use imp_core::link::hop::HopRole as Role;
+pub use imp_engine::link::hop::HopRole as Role;
 
 /// Who is at the door: a proven host of `room`, or a proven holder of `gate`'s key.
 #[derive(Clone, Copy, Debug)]

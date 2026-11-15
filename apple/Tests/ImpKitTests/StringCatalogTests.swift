@@ -99,9 +99,9 @@ import Foundation
     private static let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
         .deletingLastPathComponent().deletingLastPathComponent()
 
-    /// The terminal app's table, cli/src/strings.generated.rs: the only place the `cli.*` keys are generated into.
+    /// The terminal app's table, chat/src/strings.generated.rs: the only place the `cli.*` keys are generated into.
     private static let terminalTable: String = {
-        (try? String(contentsOf: root.appendingPathComponent("cli/src/strings.generated.rs"), encoding: .utf8)) ?? ""
+        (try? String(contentsOf: root.appendingPathComponent("chat/src/strings.generated.rs"), encoding: .utf8)) ?? ""
     }()
 
     /// The keys of the extension's chrome.i18n messages for one language folder (underscores for dots).
@@ -116,10 +116,10 @@ import Foundation
     /// also in each language of the extension's _locales.
     @Test func everySourceKeyHasAllThreeLanguages() {
         let extensionKeys = ["en", "es", "zh_CN"].map(Self.extensionMessages)
-        #expect(!Self.terminalTable.isEmpty, "cli/src/strings.generated.rs is missing. Run node design/generate.mjs.")
+        #expect(!Self.terminalTable.isEmpty, "chat/src/strings.generated.rs is missing. Run node design/generate.mjs.")
         for key in Self.sources.keys.sorted() {
             if key.hasPrefix("cli.") {
-                #expect(Self.terminalTable.contains("(\"\(key)\", ["), "\(key) is missing from cli/src/strings.generated.rs. Run node design/generate.mjs.")
+                #expect(Self.terminalTable.contains("(\"\(key)\", ["), "\(key) is missing from chat/src/strings.generated.rs. Run node design/generate.mjs.")
                 for source in [Self.sources[key]!.en, Self.sources[key]!.es, Self.sources[key]!.zhHans] {
                     if case .plain(let text) = source { #expect(!text.isEmpty, "\(key)") } else { Issue.record("\(key): the terminal app has no plurals") }
                 }

@@ -13,7 +13,7 @@
 #   CONFIG    Release or Debug for `make ios-device` (default: Release)
 #   IMP_SERVER  the Den's URL for `make test-server` (default: http://localhost:8080)
 #   IMP_HOP     the Hop's host:port for `make test-server` (default: this Mac's .local name, port 4677).
-#               Not localhost: a linking code never gives out a loopback Hop, see core/src/link/card.rs.
+#               Not localhost: a linking code never gives out a loopback Hop, see engine/src/link/card.rs.
 
 SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c
@@ -93,14 +93,14 @@ snapshots: core ## Run only the screen snapshots [RECORD=1 records them all agai
 # A run costs a few cents.
 test-live: core ## Run the tests against the real API in .env
 	IMP_LIVE_TESTS=1 $(SWIFT) test $(SWIFT_PACKAGE) --filter '\.Live[A-Za-z]*Tests'
-	IMP_LIVE_TESTS=1 cargo test -p imp-core --locked --test live -- --nocapture --test-threads=1
+	IMP_LIVE_TESTS=1 cargo test -p imp-engine --locked --test live -- --nocapture --test-threads=1
 
 # Plays a Mac, an iPhone and an Imp against a Den and a Hop that are already running (see server/README.md).
-# The Den tests are in Swift, the Hop tests in Rust (cli/tests/hop_live.rs). Run the Hop with
+# The Den tests are in Swift, the Hop tests in Rust (chat/tests/hop_live.rs). Run the Hop with
 # HOP_PER_IP_PER_MINUTE raised, for example 100000, or repeated runs hit its rate limit.
 test-server: core ## Run the tests against a running Den and Hop [IMP_SERVER=... IMP_HOP=...]
 	IMP_SERVER="$(IMP_SERVER)" $(SWIFT) test $(SWIFT_PACKAGE) --filter ServerLiveTests
-	IMP_HOP="$(IMP_HOP)" cargo test -p imp-cli --locked --test hop_live -- --ignored
+	IMP_HOP="$(IMP_HOP)" cargo test -p imp-chat --locked --test hop_live -- --ignored
 
 ##@ iPhone app
 
@@ -143,8 +143,8 @@ rust: ## Check the format, lint and test the Rust workspace
 	cargo fmt --all --check
 	cargo clippy --workspace --all-targets --locked -- -D warnings
 	cargo test --workspace --locked
-	cargo clippy -p imp-core -p imp-ffi --no-default-features --all-targets --locked -- -D warnings
-	cargo test -p imp-core --no-default-features --locked
+	cargo clippy -p imp-engine -p imp-ffi --no-default-features --all-targets --locked -- -D warnings
+	cargo test -p imp-engine --no-default-features --locked
 
 docs: ## Build the documentation site in docs/
 	cd docs && npm ci && npm run build

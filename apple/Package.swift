@@ -14,7 +14,7 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.19.7"),
     ],
     targets: [
-        // The portable core (Rust, core/ in the repository), built by `scripts/apple.sh core`: the static
+        // The portable core (Rust, engine/ in the repository), built by `scripts/apple.sh core`: the static
         // library and the Swift bindings generated from it.
         .binaryTarget(name: "ImpCoreFFI", path: "Frameworks/ImpCoreFFI.xcframework"),
         .target(name: "ImpCore", dependencies: ["ImpCoreFFI"]),

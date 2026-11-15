@@ -5,7 +5,7 @@ One Rust workspace, one Docker image, two services. The wire contract is in [PRO
 - **imp-den** (`server/den`, command `den`): accounts, shared kits, the web gallery and the MCP endpoint over HTTP.
 - **imp-hop** (`server/hop`, command `hop`): the blind relay that lets a device reach the device that hosts it. Listens on TCP 4677.
 - **imp-shared** (`server/shared`): configuration, client IP, rate limiting, logging and shutdown helpers.
-- **imp-core** (`core`) and **imp-cli** (`cli`, command `imp`): the terminal app and the logic it shares.
+- **imp-engine** (`engine`) and **imp-chat** (`chat`, command `imp`): the terminal app and the logic it shares.
 
 ## Run from GitHub Packages
 
@@ -34,12 +34,12 @@ which runs the same image.
 DEN_SECRET="$(openssl rand -base64 48)" \
 DEN_PUBLIC_URL=http://localhost:8080 \
 DEN_DATABASE=/tmp/den.db \
-cargo run -p imp-den
+cargo run -p imp-den --bin den
 
-cargo run -p imp-hop
+cargo run -p imp-hop --bin hop
 ```
 
-On a computer that just wants to be its own server, `imp serve` (from `cli`) can run the services in
+On a computer that just wants to be its own server, `imp serve` (from `chat`) can run the services in
 three ways. Data and a generated secret stay in its own data folder.
 
 - `imp serve` runs The Den and The Hop together, on ports 8080 and 4677.

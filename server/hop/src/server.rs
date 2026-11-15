@@ -15,7 +15,7 @@ use crate::handshake::{self, Failure, Key, Role};
 use crate::limits::Limits;
 use crate::relay;
 use crate::rooms::{Arrival, Peer, Rooms, Wake, adopt};
-use imp_core::link::hop::HopStatus;
+use imp_engine::link::hop::HopStatus;
 
 struct Shared {
     config: Config,

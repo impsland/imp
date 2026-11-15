@@ -1,0 +1,32 @@
+[package]
+name = "imp-ffi"
+description = "The bindings the apps call imp-engine through (UniFFI): Swift for macOS and iPhone"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+# Only the apps use the bindings, so they are not published.
+publish = false
+
+[lib]
+crate-type = ["staticlib", "lib"]
+name = "imp_ffi"
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/bindgen.rs"
+
+# The generated glue is `unsafe` by nature (C ABI). It is confined to this crate. imp-engine keeps
+# `forbid(unsafe_code)`.
+[lints.rust]
+unsafe_code = "allow"
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+
+[dependencies]
+imp-engine = { workspace = true, default-features = false }
+uniffi.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true

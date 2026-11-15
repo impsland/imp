@@ -7,8 +7,11 @@ each other, and travel to your Mac and iPhone and back, as in the apps.
 ## Install
 
 ```sh
-cargo install --path cli
+cargo install imp-chat
 ```
+
+This installs the `imp` program from [crates.io](https://crates.io/crates/imp-chat) (Rust 1.99 or newer). Run
+it again to update. From a checkout of the repository, `cargo install --path chat --locked` builds that version.
 
 ## Use
 
@@ -23,7 +26,8 @@ In the chat, type `/` for commands: `/model`, `/base_url` and `/api_key` change 
 tools, `/imp` switches Imps. Tool calls (`⏺`) and messages to other Imps (`⇢`) show as one line each.
 
 Your API key stays in an environment variable, the system keychain or the chat's memory, and is never written
-to the settings file.
+to the settings file. With the key in an environment variable, `imp chat` never opens the keychain, so it never
+asks for your password.
 
 ## With your devices
 
@@ -35,4 +39,4 @@ to with `/imp NAME`. It follows [Imp Link](/connecting/link).
 Run `imp --help` to see every command. The `imp` program can also run the Den and the Hop (`imp serve`). See
 `server/README.md` in the repository.
 
-Full details are in `cli/README.md`.
+Full details are in `chat/README.md`.

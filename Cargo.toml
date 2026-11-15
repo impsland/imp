@@ -1,13 +1,14 @@
 [workspace]
 resolver = "3"
-members = ["core", "core/ffi", "cli", "server/shared", "server/den", "server/hop"]
+members = ["engine", "engine/ffi", "chat", "server/shared", "server/den", "server/hop"]
 
 [workspace.package]
-version = "1.2.0"
+version = "1.3.0"
 edition = "2024"
 rust-version = "1.99"
 license = "MIT"
-publish = false
+repository = "https://github.com/impsland/imp"
+homepage = "https://github.com/impsland/imp"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
@@ -54,8 +55,10 @@ tower = { version = "0.5.3", features = ["util"] }
 tower-http = { version = "0.7.1", default-features = false, features = ["cors"] }
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["json", "env-filter"] }
-imp-shared = { path = "server/shared" }
-imp-core = { path = "core" }
+imp-shared = { path = "server/shared", version = "1.3.0" }
+imp-engine = { path = "engine", version = "1.3.0" }
+imp-den = { path = "server/den", version = "1.3.0" }
+imp-hop = { path = "server/hop", version = "1.3.0" }
 uniffi = { version = "0.32.2", features = ["cli"] }
 clap = { version = "4.6.7", features = ["derive", "wrap_help", "env"] }
 toml = "1.1.8"

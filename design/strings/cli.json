@@ -28,9 +28,9 @@
   },
   "cli.chat.input_hint": {
     "note": "Faint hint in the empty message field.",
-    "en": "Write a message",
-    "es": "Escribe un mensaje",
-    "zh-Hans": "输入一条消息"
+    "en": "Write a message, or / for commands",
+    "es": "Escribe un mensaje, o / para comandos",
+    "zh-Hans": "输入消息，或输入 / 使用命令"
   },
   "cli.chat.input_wait": {
     "note": "Faint hint in the message field while the Imp answers.",
@@ -109,7 +109,7 @@
     "zh-Hans": "清空已输入内容"
   },
   "cli.help.erase": {
-    "note": "Help for Backspace.",
+    "note": "Help for Backspace and Delete.",
     "en": "Erase a letter",
     "es": "Borra una letra",
     "zh-Hans": "删除一个字符"
@@ -206,9 +206,9 @@
   },
   "cli.chat.welcome_hint": {
     "note": "Shown under the Imp's name on an empty chat.",
-    "en": "Write a message, or type / for commands such as /model, /mcp and /send.",
-    "es": "Escribe un mensaje, o / para comandos como /model, /mcp y /send.",
-    "zh-Hans": "输入消息，或输入 / 使用 /model、/mcp、/send 等命令。"
+    "en": "Write a message, or type / for commands such as /model, /mcp and /send. Up and Down choose, Tab completes.",
+    "es": "Escribe un mensaje, o / para comandos como /model, /mcp y /send. Arriba y abajo eligen, Tab completa.",
+    "zh-Hans": "输入消息，或输入 / 使用 /model、/mcp、/send 等命令。用上下键选择，Tab 补全。"
   },
   "cli.chat.running": {
     "note": "Under a tool call whose result has not come yet.",
@@ -242,15 +242,15 @@
   },
   "cli.help.stop_or_quit": {
     "note": "What Esc does.",
-    "en": "Stop the answer, or leave",
-    "es": "Detener la respuesta, o salir",
-    "zh-Hans": "停止回答，或离开"
+    "en": "Close the list, stop, or leave",
+    "es": "Cerrar la lista, detener, o salir",
+    "zh-Hans": "关闭列表、停止或离开"
   },
   "cli.help.complete": {
-    "note": "What Tab does.",
-    "en": "Complete a / command",
-    "es": "Completar un comando /",
-    "zh-Hans": "补全 / 命令"
+    "note": "What Tab and Right do while the list of / commands is open.",
+    "en": "Accept the chosen / command",
+    "es": "Aceptar el comando / elegido",
+    "zh-Hans": "接受所选的 / 命令"
   },
   "cli.help.recall": {
     "note": "What Ctrl+P and Ctrl+N do.",
@@ -269,5 +269,41 @@
     "en": "A tool the Imp used, or a message to another Imp",
     "es": "Una herramienta que usó el Imp, o un mensaje a otro Imp",
     "zh-Hans": "Imp 使用的工具，或发给另一个 Imp 的消息"
+  },
+  "cli.chat.menu_hint": {
+    "note": "Short reminder at the right of the status line while the list of / commands is open.",
+    "en": "↑↓ choose · Tab complete · Esc close",
+    "es": "↑↓ elegir · Tab completar · Esc cerrar",
+    "zh-Hans": "↑↓ 选择 · Tab 补全 · Esc 关闭"
+  },
+  "cli.help.menu": {
+    "note": "Help for typing a slash.",
+    "en": "Show the commands",
+    "es": "Mostrar los comandos",
+    "zh-Hans": "显示命令"
+  },
+  "cli.help.move_cursor": {
+    "note": "Help for Left and Right.",
+    "en": "Move in the message",
+    "es": "Moverse por el mensaje",
+    "zh-Hans": "在消息中移动光标"
+  },
+  "cli.help.line_ends": {
+    "note": "Help for Home and End.",
+    "en": "Start or end of the line",
+    "es": "Inicio o final de la línea",
+    "zh-Hans": "移到行首或行尾"
+  },
+  "cli.help.word_move": {
+    "note": "Help for Alt+Left and Alt+Right.",
+    "en": "Move by word",
+    "es": "Moverse por palabras",
+    "zh-Hans": "按词移动"
+  },
+  "cli.help.erase_word": {
+    "note": "Help for Ctrl+W.",
+    "en": "Erase the word before",
+    "es": "Borrar la palabra anterior",
+    "zh-Hans": "删除前一个词"
   }
 }

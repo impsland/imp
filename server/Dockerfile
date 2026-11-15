@@ -3,8 +3,8 @@ FROM rust:1.99.1-alpine3.24 AS build
 RUN apk add --no-cache musl-dev
 WORKDIR /src
 COPY Cargo.toml Cargo.lock ./
-COPY core core
-COPY cli cli
+COPY engine engine
+COPY chat chat
 COPY server server
 COPY spec spec
 RUN --mount=type=cache,target=/usr/local/cargo/registry \

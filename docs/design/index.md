@@ -37,7 +37,7 @@ Every colour, space, corner, type size, touch target, animation and shared behav
 | `design/generated/android/` (`ImpTheme.kt`, `ImpComponents.kt`, `values*/strings.xml`) | The Android app (Compose). |
 | `design/generated/windows/` (`ImpTokens.xaml`, `ImpComponents.xaml`, `ImpTokens.cs`, `*/Resources.resw`) | The Windows app (WinUI 3). |
 | `design/generated/gtk/` (`imp-colors-*.css`, `imp-tokens.css`, `imp-components.css`) and `design/generated/gettext/` | The Linux app (GTK 4 and libadwaita). |
-| `cli/src/theme.generated.rs` and `cli/src/strings.generated.rs` | The terminal app (`imp`). The `cli.*` words go only here. |
+| `chat/src/theme.generated.rs` and `chat/src/strings.generated.rs` | The terminal app (`imp`). The `cli.*` words go only here. |
 | `docs/design/components.md` | The component specs, for people. |
 
 `node design/generate.mjs --check` (or `make tokens-check`) fails when a generated file is out of date. CI runs it, and the `ImpDesignTests` suite runs it, so `make test` covers it.
@@ -104,6 +104,6 @@ A new native app (Android, Windows, Linux) shares four things and writes only it
 1. **Tokens.** Copy `design/generated/<platform>` into the app: Android `ImpTheme.kt` (palettes, `ImpSpacing`, `ImpRadius`, `ImpType`, `ImpMotions`, the `ImpTheme` composable), Windows `ImpTokens.xaml` (Light and Dark theme dictionaries) and `ImpTokens.cs`, Linux `imp-colors-light.css`, `imp-colors-dark.css` and `imp-tokens.css` (`@define-color`). Read a colour from the theme, never as a literal.
 2. **Component specs.** `design/components.json` says how each component is built from tokens: pebble, surface, row, icon tile, buttons, segmented, switch, field, info tip, sheet, sheet bar, step indicator, section rail, preset grid, on tint, legible tint, bubble, popover, undo bar, badge, focus. The generator writes them as typed values (`ImpComponents.kt`), styles (`ImpComponents.xaml`) and CSS classes (`imp-components.css`). Build each view from its spec and the rules above. Never add an outline, divider or gradient.
 3. **Words.** `values*/strings.xml` (Android), `*/Resources.resw` (Windows) and `gettext/*.po` (Linux) hold every word in all three languages. A key's dots become underscores on Android. Each platform README in `design/generated/<platform>` has the exact steps.
-4. **Logic.** The Rust core (`core/`, with the uniffi bindings in `core/ffi`) holds chats, Brains, Imps, triggers, the link between devices and storage. UniFFI writes the Swift bindings today and the same crate gives Kotlin bindings (and a C interface for C# and GTK) later, so the app only draws state and sends intents. See [Architecture](/architecture/).
+4. **Logic.** The Rust core (`engine/`, with the uniffi bindings in `engine/ffi`) holds chats, Brains, Imps, triggers, the link between devices and storage. UniFFI writes the Swift bindings today and the same crate gives Kotlin bindings (and a C interface for C# and GTK) later, so the app only draws state and sends intents. See [Architecture](/architecture/).
 
 Then follow the [UX specification](/ux/) screen by screen, the [parity table](/ux/parity) for what each platform has, and [Accessibility](/ux/accessibility). Run `make tokens-check` in CI so the copies never drift from `design/`.

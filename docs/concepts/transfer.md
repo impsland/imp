@@ -17,7 +17,7 @@ screen and lands on the other device. The rules live in `apple/Sources/ImpKit/Li
   with a small wind-up the other way first. The detector gets the sideways acceleration and the turn in
   the screen's plane (`rotationRate.z`). A flick of the wrist is one big turn, so the biggest turn decides,
   a movement with no real turn is read from its first push that is at least 60 % of the strongest, so a
-  slight wind-up doesn't count and the stop comes after the move (`core/src/link/toss.rs`).
+  slight wind-up doesn't count and the stop comes after the move (`engine/src/link/toss.rs`).
 
 ## The interaction
 

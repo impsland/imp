@@ -2,7 +2,7 @@ import ImpCore
 import Foundation
 
 // The shapes Imp Link passes around. They hold data only. Every rule (what a valid device, card or route is,
-// who may talk to whom, where an Imp goes) lives in `imp-core`, which checks what it hands over.
+// who may talk to whom, where an Imp goes) lives in `imp-engine`, which checks what it hands over.
 
 /// The protocol's limits, from the core.
 public enum LinkProtocol {
