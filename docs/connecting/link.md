@@ -135,7 +135,9 @@ The home keeps, for every Imp that is away, its holder, a hash of its current ti
 - Passing its own Imp, the home makes a ticket and records the receiver as holder.
 - A holder that passes a visiting Imp on hands over the ticket it has. The new holder `claim`s it at the
   home (over a link, or as a visitor). A good claim makes it the holder, rotates the ticket (`claimed` with
-  the new one) and tells the previous holder `gone`.
+  the new one) and tells the previous holder `gone`. The ticket the holder had before its last claim stays
+  good from that same holder until it claims with the newer one, so a `claimed` lost when a connection
+  drops doesn't strand the Imp.
 - A holder claims every Imp it holds from a home each time it connects to that home, so a race (an Imp
   thought lost in a dropped transfer) settles on the newest holder. At most one body stays.
 - `release` (with the ticket) sends a visiting Imp home from wherever it is: deleting a visitor, or
@@ -286,7 +288,7 @@ message depends on who sent it.
 | `fileFailed` | `id`, `reason` | home, holder |
 | `look` | `imp`: a looks object | home, holder |
 | `chat` | `imp`, `turns`: list of `{ id, date, request, from?, reply, failed, steps }` | home, holder |
-| `work` | `imp`, `work`: `{ request, status?, partial, from? }` or null | home, holder |
+| `work` | `imp`, `work`: `{ request, status?, partial, from? }` or null. When an answer is done, the home sends the `chat` with its turn first, then `work` null, and the holder shows the newest turn as the answer | home, holder |
 | `mood` | `imp`, `mood` (a mood name) | home, holder |
 | `brain` | `imp`, `ready`: whether it has a brain it can think with at home. False: it sleeps on the holder too, and asking it is refused there. `tools` (optional): false when the home doesn't count the holder as the owner's, so the Imp only talks for it, and absent means yes. Sent again when that changes | home, holder |
 | `animate` | `imp`, `beats` (see [Kit format](/sharing/kits)) | home, holder |

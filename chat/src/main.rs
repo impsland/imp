@@ -7,6 +7,8 @@ use std::process::ExitCode;
 #[tokio::main]
 async fn main() -> ExitCode {
     let cli = Cli::parse();
+    // On a Mac, out of the folder it shared with the Mac app (see `imp_chat::folders`).
+    imp_chat::folders::settle_here();
     let (stdin, mut out, mut err) = (stdin(), stdout().lock(), stderr().lock());
     let mut input = stdin.lock();
     let mut io = Io {

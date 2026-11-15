@@ -185,8 +185,15 @@ A key given to `/api_key` is never shown in the chat and never written to the se
 ## Settings file
 
 By default it is `config.toml` in the system's config folder for `imp` (`~/.config/imp/config.toml` on Linux,
-`~/Library/Application Support/imp/config.toml` on a Mac). Use `--config FILE` or `IMP_CONFIG` for another
+`~/Library/Application Support/imp-chat/config.toml` on a Mac). Use `--config FILE` or `IMP_CONFIG` for another
 one. `imp config path` prints it.
+
+On a Mac, `imp` keeps its settings and data in `~/Library/Application Support/imp-chat`, a folder of its own.
+Before imp-chat 1.5 it used `~/Library/Application Support/imp`, which is also the Mac app's `Imp` folder (a Mac
+ignores case in file names), where the app's Factory Reset would delete them. The first time a newer `imp`
+runs, it moves the files it made there (`config.toml`, `link-book`, `link-identity`, `talks` and the rest)
+into its own folder and leaves the app's files alone. While an older `imp` is still running, nothing moves
+until it ends.
 
 ```toml
 default_imp = "pip"
@@ -387,6 +394,9 @@ password prompt. On macOS, a key saved in the keychain makes the Keychain ask on
 - `IMP_DATA_DIR` is the folder for saved data: conversations between Imps and the link book. `imp serve`,
   `imp qr` and `imp link` read it too.
 - `IMP_HOP` is the Hop to meet linked devices at, as `host:port`.
+- `IMP_LINK_LOG` is a file to add a line to for each event of the link (connected, disconnected, each
+  message's kind and size, passes), with the time. Never what was said, a key or a ticket. For finding out
+  why a connection dropped or an Imp went astray.
 - `NO_COLOR` turns the colours off. `LC_ALL`, `LC_MESSAGES` and `LANG` choose the language of the chat screen.
 
 ## Be your own server

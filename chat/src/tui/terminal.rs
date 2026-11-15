@@ -345,20 +345,7 @@ impl Chat {
             Outcome::Compact => self.compact(app).await,
             Outcome::Sent(notes) => app.notes_from(notes),
             Outcome::Switch(name) => self.switch(app, &name).await,
-            Outcome::Visit(id) => {
-                let visitor = self.device.as_ref().and_then(|d| d.visitor(id));
-                if let Some(visitor) = visitor {
-                    if self.visiting.is_none() {
-                        self.stash = Some(std::mem::take(&mut app.chat));
-                    }
-                    self.visiting = Some(id);
-                    app.show_visitor(&visitor);
-                    app.note(Note::info(format!(
-                        "{} is visiting from {}: it thinks there, and what you say goes there. /return sends it back, /imp {} comes back here.",
-                        visitor.look.name, visitor.home_name, self.session.name
-                    )));
-                }
-            }
+            Outcome::Visit(id) => self.visit(app, id),
             Outcome::CameHome { imp, messages } => self.came_home(app, &imp, messages),
         }
         false
@@ -392,6 +379,33 @@ impl Chat {
         }
         if let Some(tokens) = app.chat.long_chat_notice(self.session.long_chat_tokens) {
             app.note(Note::info(long_chat_sentence(tokens)));
+        }
+    }
+
+    /// Talk to a visiting Imp: its chat lives at its home. This computer's conversation waits.
+    fn visit(&mut self, app: &mut App, id: Uuid) {
+        let Some(visitor) = self.device.as_ref().and_then(|d| d.visitor(id)) else {
+            return;
+        };
+        if self.visiting.is_none() {
+            self.stash = Some(std::mem::take(&mut app.chat));
+        }
+        self.visiting = Some(id);
+        app.show_visitor(&visitor);
+        app.note(Note::info(format!(
+            "{} is visiting from {}: it thinks there, and what you say goes there. `/return` sends it back, `/imp {}` comes back here.",
+            visitor.look.name, visitor.home_name, self.session.name
+        )));
+    }
+
+    /// A visitor came over. As on a desktop it shows at once, when nothing is going on here: the Imp on
+    /// screen is away, or nothing was said yet. Otherwise the note says how to talk to it.
+    fn arrived(&mut self, app: &mut App, id: Uuid) {
+        let idle = self.visiting.is_none()
+            && !app.is_waiting()
+            && (app.away().is_some() || app.chat.messages().is_empty());
+        if idle {
+            self.visit(app, id);
         }
     }
 
@@ -466,6 +480,7 @@ impl Chat {
                     app.show_visitor(&visitor);
                 }
             }
+            Update::Arrived(id) => self.arrived(app, id),
             Update::Left(id) => {
                 if self.visiting == Some(id) {
                     app.visitor_left();

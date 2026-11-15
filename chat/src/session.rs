@@ -124,13 +124,12 @@ fn endpoint(
     })
 }
 
-/// The folder for saved data: `IMP_DATA_DIR`, or the usual data folder for `imp`.
+/// The folder for saved data: `IMP_DATA_DIR`, or the usual data folder for `imp` (see `folders`).
 pub fn data_dir() -> Result<PathBuf> {
     if let Some(dir) = keys::real_env("IMP_DATA_DIR").filter(|d| !d.trim().is_empty()) {
         return Ok(PathBuf::from(dir));
     }
-    directories::ProjectDirs::from("", "", "imp")
-        .map(|d| d.data_dir().to_path_buf())
+    crate::folders::data_dir()
         .ok_or_else(|| CliError("Could not find a folder for data. Set IMP_DATA_DIR.".into()))
 }
 

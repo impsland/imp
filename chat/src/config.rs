@@ -246,10 +246,10 @@ pub fn valid_env_name(name: &str) -> bool {
 }
 
 impl Config {
-    /// The usual place of the settings file, such as `~/.config/imp/config.toml`.
+    /// The usual place of the settings file, such as `~/.config/imp/config.toml` (see `folders`).
     pub fn default_path() -> Result<PathBuf> {
-        directories::ProjectDirs::from("", "", "imp")
-            .map(|d| d.config_dir().join("config.toml"))
+        crate::folders::config_dir()
+            .map(|d| d.join("config.toml"))
             .ok_or_else(|| {
                 CliError(
                     "Could not find a settings folder. Use --config to say where the file is."

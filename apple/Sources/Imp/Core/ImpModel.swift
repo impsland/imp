@@ -69,6 +69,10 @@ final class ImpModel {
     /// The view switched between resting (breath done by Core Animation) and drawing every frame.
     @ObservationIgnored var onRestingChange: ((Bool) -> Void)?
     @ObservationIgnored private var job: Task<Void, Never>?
+    /// A visitor's newest turn when its home started the work in progress, and whether the work ended
+    /// before the turn with its answer arrived (an older home sends them in that order).
+    @ObservationIgnored private var turnBeforeWork: UUID?
+    @ObservationIgnored private var answerDue = false
     @ObservationIgnored private var captionTask: Task<Void, Never>?
     @ObservationIgnored private var hideTask: Task<Void, Never>?
     /// The current bubble may time out (finished answers, hints and errors, unless shown to stay).
@@ -1070,6 +1074,10 @@ extension ImpModel {
             copy.append(ChatTurn(id: t.id, date: t.date, request: t.request, reply: t.reply, failed: t.failed, steps: steps, via: .typed))
         }
         history = copy
+        if answerDue, work != nil, history.turns.last?.id != turnBeforeWork {
+            answerDue = false
+            showVisitAnswer()
+        }
     }
 
     /// What it is working on at its home: the request, the step it is at and the answer so far. When
@@ -1077,13 +1085,26 @@ extension ImpModel {
     func heard(work heard: LinkWork?) {
         guard let heard else {
             guard work != nil else { return }
-            if let last = history.turns.last, last.failed { fail(String(localized: "thinking"), ToolArgumentError(last.reply)) }
-            else { showAnswer(history.turns.last?.reply ?? "", title: "") }
+            // The answer is the turn the home added for this work. Until its chat comes, wait for it.
+            if history.turns.last?.id == turnBeforeWork {
+                answerDue = true
+                // A home that never sends it (gone meanwhile) still ends the thinking.
+                Task { @MainActor [weak self] in
+                    try? await Task.sleep(for: .seconds(3))
+                    guard let self, self.answerDue, self.work != nil else { return }
+                    self.answerDue = false
+                    self.showVisitAnswer()
+                }
+            } else {
+                showVisitAnswer()
+            }
             return
         }
         // Answering another Imp shows as a talk bubble (`heard(speech:)`), not as work.
         guard heard.from == nil else { return }
         if work == nil {
+            turnBeforeWork = history.turns.last?.id
+            answerDue = false
             let heading = heard.request
             work = Work(ask: ChatTurn(request: heard.request, via: .typed), heading: heading, title: "")
             thinking(heading, captions: Captions.thinking)
@@ -1096,6 +1117,12 @@ extension ImpModel {
             addStep(Bubble.Step(icon: "gearshape", title: status, tool: "home"))
         }
         stream(heard.partial, title: "")
+    }
+
+    /// The answer of a visitor's work: the newest turn of its chat, or what went wrong.
+    private func showVisitAnswer() {
+        if let last = history.turns.last, last.failed { fail(String(localized: "thinking"), ToolArgumentError(last.reply)) }
+        else { showAnswer(history.turns.last?.reply ?? "", title: "") }
     }
 
     /// What it is feeling at its home: thinking and using tools show as they do on any Imp.

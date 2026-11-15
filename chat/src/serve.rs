@@ -62,13 +62,11 @@ impl ServeOptions {
     }
 }
 
-/// The usual data folder, such as `~/.local/share/imp` on Linux.
+/// The usual data folder, such as `~/.local/share/imp` on Linux (see `folders`).
 pub fn default_data_dir() -> Result<PathBuf> {
-    directories::ProjectDirs::from("", "", "imp")
-        .map(|d| d.data_dir().to_path_buf())
-        .ok_or_else(|| {
-            CliError("Could not find a data folder. Use --data-dir to say where it is.".into())
-        })
+    crate::folders::data_dir().ok_or_else(|| {
+        CliError("Could not find a data folder. Use --data-dir to say where it is.".into())
+    })
 }
 
 /// Reads the Den secret from the data folder, or makes one the first time.

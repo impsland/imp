@@ -299,17 +299,26 @@ async fn an_imp_goes_to_the_phone_answers_there_and_comes_back_with_its_conversa
             )
         })
         .await;
+    // The chat with the answer comes before the end of the work, which is when a holder shows it.
+    let mut answered: Option<Vec<LinkTurn>> = None;
+    let mut working = false;
     let turns: Vec<LinkTurn> = loop {
-        let Event::Message(LinkMessage::Chat { turns, .. }, _) =
-            phone_hears(&mut device, &mut phone, |e| {
-                matches!(e, Event::Message(LinkMessage::Chat { .. }, _))
-            })
-            .await
-        else {
-            unreachable!()
-        };
-        if turns.len() == 2 {
-            break turns;
+        let event = phone_hears(&mut device, &mut phone, |e| {
+            matches!(
+                e,
+                Event::Message(LinkMessage::Chat { .. } | LinkMessage::Work { .. }, _)
+            )
+        })
+        .await;
+        match event {
+            Event::Message(LinkMessage::Chat { turns, .. }, _) if turns.len() == 2 => {
+                answered = Some(turns);
+            }
+            Event::Message(LinkMessage::Work { work: Some(_), .. }, _) => working = true,
+            Event::Message(LinkMessage::Work { work: None, .. }, _) if working => {
+                break answered.expect("the answer's chat came before the work ended");
+            }
+            _ => {}
         }
     };
     assert_eq!(turns[1].request, "How are you?");
@@ -380,6 +389,9 @@ async fn an_imp_of_the_phone_visits_the_computer_and_answers_through_its_home() 
     )
     .await;
     assert!(matches!(note, Update::Note(t) if t.contains("came over from Pocket")));
+    // Right after the note, the chat hears that it arrived, so an idle chat can show it.
+    let arrived = computer_says(&mut device, &mut phone, |u| matches!(u, Update::Arrived(_))).await;
+    assert_eq!(arrived, Update::Arrived(pebble.id));
     let visitor = device.visitor(pebble.id).expect("it visits");
     assert_eq!(visitor.home_name, "Pocket");
 

@@ -15,6 +15,22 @@ pub struct AwayEntry {
     pub ticket: Bytes,
     /// Counts every new holder or ticket, so a stale answer can be told from a fresh one.
     pub generation: u64,
+    /// The hash of the ticket the holder had before its last claim. A `claimed` lost when a connection
+    /// drops leaves the holder with that one, so it is still good from the same holder, until the next
+    /// claim proves the new ticket arrived. Absent from books written before it existed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub previous: Option<Bytes>,
+}
+
+impl AwayEntry {
+    /// Whether `device` claims again with the ticket it had before its last claim.
+    fn retries(&self, ticket: &[u8], device: Uuid) -> bool {
+        device == self.holder
+            && self
+                .previous
+                .as_ref()
+                .is_some_and(|p| crypto::ticket_matches(ticket, &p.0))
+    }
 }
 
 /// A holder to be told `gone` when it next connects.
@@ -86,22 +102,32 @@ impl AwayLedger {
             holder,
             ticket: crypto::ticket_hash(&ticket).to_vec().into(),
             generation,
+            previous: None,
         });
         ticket
     }
 
     /// A holder says it has the Imp, with the ticket it was given. A good claim makes it the holder,
-    /// rotates the ticket, and queues `gone` for the previous holder.
+    /// rotates the ticket, and queues `gone` for the previous holder. The holder itself may also claim
+    /// with the ticket it had before its last claim, in case the `claimed` with the new one was lost.
     pub fn claim(&mut self, imp: Uuid, ticket: &[u8], device: Uuid) -> Claim {
         let Some(i) = self.entries.iter().position(|e| e.imp == imp) else {
             return Claim::Refused;
         };
-        if !crypto::ticket_matches(ticket, &self.entries[i].ticket.0) {
+        let current = crypto::ticket_matches(ticket, &self.entries[i].ticket.0);
+        if !current && !self.entries[i].retries(ticket, device) {
             return Claim::Refused;
         }
         let previous = Some(self.entries[i].holder).filter(|p| *p != device);
         let fresh = crypto::random_key();
         let entry = &mut self.entries[i];
+        // What the holder has stays good for it until it claims with the newest: the ticket being
+        // replaced, or (when it claimed with an older one) that older one still.
+        entry.previous = match (previous.is_none(), current) {
+            (true, true) => Some(entry.ticket.clone()),
+            (true, false) => entry.previous.clone(),
+            (false, _) => None,
+        };
         entry.holder = device;
         entry.ticket = crypto::ticket_hash(&fresh).to_vec().into();
         entry.generation += 1;
@@ -114,11 +140,12 @@ impl AwayLedger {
         }
     }
 
-    /// A holder sends the Imp home with its ticket. True if the ticket was good (the Imp is home now).
+    /// A holder sends the Imp home with its ticket (or the one before, see [`AwayLedger::claim`]). True
+    /// if the ticket was good (the Imp is home now).
     pub fn release(&mut self, imp: Uuid, ticket: &[u8]) -> bool {
-        let good = self
-            .entry(imp)
-            .is_some_and(|e| crypto::ticket_matches(ticket, &e.ticket.0));
+        let good = self.entry(imp).is_some_and(|e| {
+            crypto::ticket_matches(ticket, &e.ticket.0) || e.retries(ticket, e.holder)
+        });
         if good {
             self.entries.retain(|e| e.imp != imp);
         }
@@ -310,11 +337,53 @@ mod tests {
             panic!("refused");
         };
         assert!(previous.is_none() && ledger.notices().is_empty());
+        let Claim::Granted { ticket: third, .. } = ledger.claim(id(1), &second, id(10)) else {
+            panic!("the current ticket is good");
+        };
+        // The second ticket arrived, so the first is dead even for the holder.
         assert_eq!(ledger.claim(id(1), &first, id(10)), Claim::Refused);
         assert!(matches!(
-            ledger.claim(id(1), &second, id(10)),
+            ledger.claim(id(1), &third, id(10)),
             Claim::Granted { .. }
         ));
+    }
+
+    #[test]
+    fn a_holder_whose_claimed_was_lost_claims_again_with_the_ticket_it_has() {
+        let mut ledger = AwayLedger::default();
+        let first = ledger.mint(id(1), id(10));
+        // The holder claims; the connection drops before `claimed` with the second ticket arrives.
+        assert!(matches!(
+            ledger.claim(id(1), &first, id(10)),
+            Claim::Granted { .. }
+        ));
+        // Another device may not use it, but the holder may, and gets a fresh ticket.
+        assert_eq!(ledger.claim(id(1), &first, id(11)), Claim::Refused);
+        let Claim::Granted {
+            ticket: fresh,
+            previous,
+        } = ledger.claim(id(1), &first, id(10))
+        else {
+            panic!("the holder's last ticket is still good");
+        };
+        assert!(previous.is_none() && ledger.notices().is_empty());
+        // That `claimed` may be lost too: the ticket the holder has stays good until it uses a newer one.
+        assert!(matches!(
+            ledger.claim(id(1), &first, id(10)),
+            Claim::Granted { .. }
+        ));
+        assert!(ledger.release(id(1), &first) && !ledger.is_away(id(1)));
+        let _ = fresh;
+        // The same with a release: the ticket before the lost `claimed` brings the Imp home.
+        let first = ledger.mint(id(2), id(10));
+        ledger.claim(id(2), &first, id(10));
+        assert!(ledger.release(id(2), &first) && !ledger.is_away(id(2)));
+        // A book written before `previous` existed still reads.
+        let old: AwayEntry = serde_json::from_str(
+            r#"{"imp":"00000000-0000-0000-0000-000000000001","holder":"00000000-0000-0000-0000-00000000000a","ticket":"AAAA","generation":3}"#,
+        )
+        .unwrap();
+        assert!(old.previous.is_none());
     }
 
     #[test]

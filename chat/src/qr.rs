@@ -123,7 +123,7 @@ fn describe(update: &Update) -> Option<String> {
         }
         Update::CameHome { imp, .. } => format!("{imp} is back on this computer."),
         Update::Asked { line, .. } => line.clone(),
-        Update::Visitor(_) | Update::Left(_) => return None,
+        Update::Visitor(_) | Update::Left(_) | Update::Arrived(_) => return None,
     })
 }
 

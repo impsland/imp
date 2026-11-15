@@ -1,7 +1,7 @@
 //! The Imp command line app. The binary is called `imp`.
 //!
 //! - `cli` is the command line grammar and `commands` what each command does.
-//! - `config` is the settings file and `keys` where API keys come from.
+//! - `config` is the settings file, `folders` where it and the data live, and `keys` where API keys come from.
 //! - `session` is an Imp ready to chat: its model client, MCP servers and tools.
 //! - `project` is what a folder's `AGENTS.md` and `.agents/` add, `mentions` the files picked with `@`.
 //! - `chat_state` is the conversation (no input or output in it), `transcript` how tool calls read,
@@ -13,6 +13,7 @@ pub mod chat_state;
 pub mod cli;
 pub mod commands;
 pub mod config;
+pub mod folders;
 pub mod keys;
 pub mod link;
 pub mod mentions;

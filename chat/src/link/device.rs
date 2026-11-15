@@ -38,7 +38,7 @@ use std::path::{Path, PathBuf};
 use std::pin::Pin;
 use std::rc::Rc;
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use tokio::net::TcpListener;
 use tokio::sync::{mpsc, oneshot};
 use uuid::Uuid;
@@ -132,6 +132,8 @@ pub enum Update {
     Asked { imp: String, line: String },
     /// A visitor left this computer.
     Left(Uuid),
+    /// A visitor just came over (after the note that says so). A chat with nothing going on shows it.
+    Arrived(Uuid),
 }
 
 /// What the views read: kept up to date as events come in.
@@ -642,6 +644,7 @@ impl Device {
     // MARK: Events
 
     fn on_event(&mut self, event: Event) {
+        link_log(&event);
         match event {
             Event::Connected(device, _) => {
                 self.refresh();
@@ -920,6 +923,7 @@ impl Device {
                 self.queued.push(Update::Note(format!(
                     "{name} came over from {from}. Talk to it with /imp {name}, send it back with /return {name}."
                 )));
+                self.queued.push(Update::Arrived(id));
                 self.queued.push(Update::Visitor(id));
             }
         }
@@ -1228,9 +1232,11 @@ impl Device {
         let turns = tail(&home.turns);
         self.queued.push(Update::Asked { imp: name, line });
         if let Some(holder) = holder {
+            // The chat with the answer comes first: a holder shows the newest turn when the work ends
+            // (`docs/connecting/link.md`, "chat" and "work").
             let messages = [
-                LinkMessage::Work { imp, work: None },
                 LinkMessage::Chat { imp, turns },
+                LinkMessage::Work { imp, work: None },
                 LinkMessage::Mood {
                     imp,
                     mood: "idle".into(),
@@ -1714,4 +1720,46 @@ pub fn messages_of(turns: &[LinkTurn]) -> Vec<ChatMessage> {
         }
     }
     out
+}
+
+/// With `IMP_LINK_LOG` set to a file, one line per event of the link is added to it: when, what kind, which
+/// device, and how big a message was. Never what was said, nor a key or a ticket. For finding out why
+/// a connection dropped or an Imp went astray.
+fn link_log(event: &Event) {
+    use std::io::Write;
+    let Some(path) = std::env::var_os("IMP_LINK_LOG").filter(|p| !p.is_empty()) else {
+        return;
+    };
+    let line = match event {
+        Event::Connected(device, standing) => {
+            format!("connected {} {} {standing:?}", device.id, device.name)
+        }
+        Event::Disconnected(id) => format!("disconnected {id}"),
+        Event::Linked(device) => format!("linked {} {}", device.id, device.name),
+        Event::Forgotten(id, _) => format!("forgotten {id}"),
+        Event::Message(message, from) => {
+            let body = message.encode().unwrap_or_default();
+            let kind = serde_json::from_slice::<serde_json::Value>(&body)
+                .ok()
+                .and_then(|v| v.as_object().and_then(|o| o.keys().next().cloned()))
+                .unwrap_or_else(|| "?".into());
+            format!("message {kind} from {from} {} bytes", body.len())
+        }
+        Event::Passed(passed) => format!(
+            "passed {} to {} {:?}",
+            passed.imp, passed.to, passed.outcome
+        ),
+        Event::Joined { device, result } => format!("joined {device} ok={}", result.is_ok()),
+        Event::Problem(problem) => format!("problem {problem:?}"),
+    };
+    let secs = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0.0, |d| d.as_secs_f64());
+    if let Ok(mut file) = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)
+    {
+        let _ = writeln!(file, "{secs:.3} {line}");
+    }
 }

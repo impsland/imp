@@ -15,6 +15,8 @@ fn temp_config(tag: &str) -> PathBuf {
 
 fn imp(config: &PathBuf, args: &[&str], stdin: &str) -> Output {
     let mut child = Command::new(env!("CARGO_BIN_EXE_imp"))
+        // A home of its own: the program never touches the developer's settings or moves their files.
+        .env("HOME", test_home())
         .arg("--config")
         .arg(config)
         .args(args)
@@ -41,6 +43,8 @@ fn text(bytes: &[u8]) -> String {
 #[test]
 fn help_is_friendly() {
     let out = Command::new(env!("CARGO_BIN_EXE_imp"))
+        // A home of its own: the program never touches the developer's settings or moves their files.
+        .env("HOME", test_home())
         .arg("--help")
         .output()
         .unwrap();
@@ -55,7 +59,11 @@ fn help_is_friendly() {
 
 #[test]
 fn no_arguments_shows_help() {
-    let out = Command::new(env!("CARGO_BIN_EXE_imp")).output().unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_imp"))
+        // A home of its own: the program never touches the developer's settings or moves their files.
+        .env("HOME", test_home())
+        .output()
+        .unwrap();
     assert!(!out.status.success());
     assert!(text(&out.stderr).contains("Usage"));
 }
@@ -152,6 +160,8 @@ fn chatting_without_an_imp_explains_what_to_do() {
 #[test]
 fn serve_help_explains_the_choices_and_a_wrong_mix_is_refused() {
     let out = Command::new(env!("CARGO_BIN_EXE_imp"))
+        // A home of its own: the program never touches the developer's settings or moves their files.
+        .env("HOME", test_home())
         .args(["serve", "--help"])
         .output()
         .unwrap();
@@ -161,10 +171,19 @@ fn serve_help_explains_the_choices_and_a_wrong_mix_is_refused() {
         assert!(help.contains(word), "{word} missing in {help}");
     }
     let out = Command::new(env!("CARGO_BIN_EXE_imp"))
+        // A home of its own: the program never touches the developer's settings or moves their files.
+        .env("HOME", test_home())
         .args(["serve", "--hop-only", "--den-port", "9000"])
         .env_remove("IMP_DATA_DIR")
         .output()
         .unwrap();
     assert!(!out.status.success());
     assert!(text(&out.stderr).contains("cannot be used with"));
+}
+
+/// An empty home folder for the program under test.
+fn test_home() -> PathBuf {
+    let dir = std::env::temp_dir().join(format!("imp-chat-bin-home-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    dir
 }
