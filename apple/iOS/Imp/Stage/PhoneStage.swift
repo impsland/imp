@@ -55,9 +55,10 @@ struct PhoneStage: View {
                     PacedTimeline(activity: activity) { date in
                         let _ = call(in: geo.size, top: screen.safeAreaInsets.top)
                         let _ = engine.step(date, size: geo.size, insets: geo.safeAreaInsets)
-                        // Talks with other Imps, above the talker's head, kept on screen.
+                        // Talks with other Imps: over the talker's head, or under it or beside it when that is where there is
+                        // room, always on screen, above a half sheet, and never over another bubble.
                         // None while a game is on: the bubbles that arrive meanwhile are held by the hub and show when it ends.
-                        let places = engine.isPlaying ? [:] : bubbles(size: geo.size, date: date)
+                        let places = engine.isPlaying ? [:] : bubbles(size: geo.size, insets: screen.safeAreaInsets, date: date)
                         ZStack {
                             EchoFloor(engine: engine, date: date, reduceMotion: engine.reduceMotion)
                             ForEach(engine.order, id: \.self) { id in
@@ -67,16 +68,19 @@ struct PhoneStage: View {
                             }
                             ForEach(engine.order, id: \.self) { id in
                                 if let b = engine.bodies[id], let place = places[id] {
+                                    // The bubble hangs from the middle of its tail's edge, so its tail stays at the Imp
+                                    // whatever height the text comes out.
                                     Color.clear.frame(width: Stroke.hairline, height: Stroke.hairline)
-                                        .overlay(alignment: .bottom) {
-                                            SpeechBubble(speech: place.speech, speaker: b.imp, hub: hub, isPocket: pocket.contains(id), tailOffset: b.pos.x - place.x) {
+                                        .overlay(alignment: place.alignment) {
+                                            SpeechBubble(speech: place.speech, speaker: b.imp, hub: hub, isPocket: pocket.contains(id),
+                                                         tailOffset: place.tail, tailEdge: place.edge) {
                                                 if pocket.contains(id) { pocket.dismissSpeech(id) } else { hub.dismissSpeech(id) }
                                             }
                                                 .fixedSize(horizontal: false, vertical: true)
-                                                .transition(.scale(scale: 0.6, anchor: .bottom).combined(with: .opacity))
+                                                .transition(.scale(scale: 0.6, anchor: place.unit).combined(with: .opacity))
                                                 .id(place.speech.id)
                                         }
-                                        .position(x: place.x, y: max(place.top, screen.safeAreaInsets.top + Spacing.page))
+                                        .position(place.anchor)
                                         .zIndex(2)
                                 }
                             }
@@ -208,26 +212,77 @@ struct PhoneStage: View {
     /// bubble placed before it (in the stage's fixed order, so nothing swaps places as the Imps
     /// float) goes up above that one. A bubble stays put while its Imp floats under it, so its words
     /// hold still to be read.
-    private func bubbles(size: CGSize, date: Date) -> [UUID: (speech: LinkSpeech, x: CGFloat, top: CGFloat)] {
-        var placed: [UUID: (speech: LinkSpeech, x: CGFloat, top: CGFloat)] = [:]
-        var frames: [CGRect] = []
+    /// Where each talk bubble goes. A bubble tries, in turn, over its Imp's head, under it (clear of the name),
+    /// and beside it on the side with more room, and takes the first place that is on screen (under the top bar,
+    /// above the home indicator and a half sheet) and touches no bubble placed before it. Among places that all
+    /// touch something it takes the one that covers least, and one that would leave the screen is moved onto it.
+    /// The gap to the Imp is measured from its drawing, so it is the same for every size. A bubble keeps the side
+    /// it had while that side still works, so it does not jump as the Imps move.
+    private func bubbles(size: CGSize, insets: EdgeInsets, date: Date) -> [UUID: BubblePlace] {
+        let top = insets.top + Sizing.hit + Spacing.small
+        let bottom = min(size.height - insets.bottom, size.height * (1 - min(max(cover, 0), 1))) - Spacing.small
+        let area = CGRect(x: Spacing.medium, y: top, width: size.width - 2 * Spacing.medium, height: max(0, bottom - top))
+        let tail = SpeechBubble.tailLength, gap = Spacing.tight
+        // Where each Imp is drawn, so a bubble can stay off the others.
+        let drawn = engine.bodies.mapValues { b -> CGRect in
+            let r = b.size / 2, half = r * ImpRenderer.size.rx / 50
+            return CGRect(x: b.pos.x - half, y: b.pos.y - r * StageEngine.reachAbove, width: half * 2, height: r * (StageEngine.reachAbove + StageEngine.reachBelow))
+        }
+        var placed: [UUID: BubblePlace] = [:]
+        var taken: [CGRect] = []
         for id in engine.order {
             guard let b = engine.bodies[id], b.phase == .free || b.phase == .dragging,
-                  let speech = hub.speeches[id] ?? pocket.speeches[id] else { continue }
+                  let speech = hub.speeches[id] ?? pocket.speeches[id], let body = drawn[id] else { continue }
             let (box, isNew) = sizes.size(of: speech)
             if isNew { engine.pacer.wake(at: max(date, Date())) }
-            let x = min(max(b.pos.x, box.width / 2 + Spacing.medium), max(size.width - box.width / 2 - Spacing.medium, box.width / 2 + Spacing.medium))
-            var top = b.pos.y - b.size * 0.4 - Spacing.roomy
-            var frame = CGRect(x: x - box.width / 2, y: top - box.height, width: box.width, height: box.height)
-            for other in frames.sorted(by: { $0.minY > $1.minY }) where frame.insetBy(dx: -Spacing.tight, dy: -Spacing.snug).intersects(other) {
-                top = other.minY - Spacing.small
-                frame.origin.y = top - box.height
+            let w = min(box.width, area.width), h = box.height - tail
+            let r = b.size / 2
+            // The middle of the head, for a bubble beside it.
+            let middle = b.pos.y + r * 0.16
+            let name: CGFloat = StageLabels.showsWords(playing: engine.isPlaying, menuFor: menuFor, imp: id) ? Spacing.small + Sizing.dot * 3 : 0
+            func clampX(_ x: CGFloat) -> CGFloat { min(max(x, area.minX + w / 2), max(area.maxX - w / 2, area.minX + w / 2)) }
+            func clampY(_ y: CGFloat) -> CGFloat { min(max(y, area.minY + h / 2), max(area.maxY - h / 2, area.minY + h / 2)) }
+            var options: [(edge: Edge, frame: CGRect)] = [
+                (.bottom, CGRect(x: clampX(b.pos.x) - w / 2, y: body.minY - gap - tail - h, width: w, height: h)),
+                (.top, CGRect(x: clampX(b.pos.x) - w / 2, y: body.maxY + name + gap + tail, width: w, height: h)),
+            ]
+            let right = (Edge.leading, CGRect(x: body.maxX + gap + tail, y: clampY(middle) - h / 2, width: w, height: h))
+            let left = (Edge.trailing, CGRect(x: body.minX - gap - tail - w, y: clampY(middle) - h / 2, width: w, height: h))
+            options += b.pos.x < size.width / 2 ? [right, left] : [left, right]
+            if let kept = sizes.edge(of: speech.id), let i = options.firstIndex(where: { $0.edge == kept }) {
+                options.insert(options.remove(at: i), at: 0)
             }
-            frames.append(frame)
-            placed[id] = (speech, x, top)
+            func score(_ frame: CGRect) -> CGFloat {
+                // Off the screen counts most, then another bubble, then another Imp.
+                let off = frame.width * frame.height - Self.overlap(frame, area)
+                let bubbles = taken.reduce(0) { $0 + Self.overlap(frame, $1.insetBy(dx: -Spacing.small, dy: -Spacing.small)) }
+                let imps = drawn.reduce(0) { $0 + ($1.key == id ? 0 : Self.overlap(frame, $1.value)) }
+                return off * 1_000 + bubbles * 10 + imps
+            }
+            var best = options.min { score($0.frame) < score($1.frame) } ?? options[0]
+            if let clean = options.first(where: { score($0.frame) == 0 }) { best = clean }
+            // Whatever is left, on the screen.
+            var frame = best.frame
+            frame.origin.x = min(max(frame.minX, area.minX), max(area.maxX - frame.width, area.minX))
+            frame.origin.y = min(max(frame.minY, area.minY), max(area.maxY - frame.height, area.minY))
+            taken.append(frame)
+            sizes.keep(edge: best.edge, for: speech.id)
+            let target: CGPoint = switch best.edge {
+            case .bottom: CGPoint(x: b.pos.x, y: body.minY)
+            case .top: CGPoint(x: b.pos.x, y: body.maxY)
+            case .leading: CGPoint(x: body.maxX, y: middle)
+            case .trailing: CGPoint(x: body.minX, y: middle)
+            }
+            placed[id] = BubblePlace(speech: speech, frame: frame, edge: best.edge, target: target)
         }
         sizes.keep(placed.values.map(\.speech.id))
         return placed
+    }
+
+    /// How much of `a` lies in `b`.
+    private static func overlap(_ a: CGRect, _ b: CGRect) -> CGFloat {
+        let i = a.intersection(b)
+        return i.isNull ? 0 : i.width * i.height
     }
 
     // MARK: One Imp
@@ -262,12 +317,22 @@ struct PhoneStage: View {
                 Halo(color: Color.imp(b.imp.hue), opacity: !awake ? 0 : id == guest ? Opacity.glow : Opacity.tintFill)
                     .frame(width: side * 2.3, height: side * 2.3)
             }
+            // The dots and the name are placed from the drawing (its horns, its base), not from its square, so they
+            // are as close to a big Imp as to a small one. Each hangs from a line of no height at that place.
             .overlay(alignment: .top) {
-                if dots { ThinkingDots(date: date).offset(y: -side * 0.12).transition(.scale.combined(with: .opacity)) }
+                if dots {
+                    ThinkingDots(date: date)
+                        .frame(height: 0, alignment: .bottom)
+                        .offset(y: side / 2 * (1 - StageEngine.reachAbove) - Spacing.tight)
+                        .transition(.scale.combined(with: .opacity))
+                }
             }
-            .overlay(alignment: .bottom) {
+            .overlay(alignment: .top) {
                 if showsWords {
-                    NameTag(name: b.imp.name).offset(y: Spacing.roomy).opacity(b.phase == .dragging ? Opacity.disabled : 1)
+                    NameTag(name: b.imp.name)
+                        .frame(height: 0, alignment: .top)
+                        .offset(y: side / 2 * (1 + StageEngine.reachBelow) + Spacing.small)
+                        .opacity(b.phase == .dragging ? Opacity.disabled : 1)
                         .transition(.opacity)
                 }
             }

@@ -191,6 +191,7 @@ final class PocketDraft {
     }
 
     /// What saving depends on, to save again when it changes. Header values count, so a typed one is kept.
+    /// The name is first and the personality fifth (the editor waits longer after typing).
     var fingerprint: [String] {
         [name, "\(hue)", "\(scale)", String(describing: traits), personality, toolsOff.sorted().joined(separator: ","), brain.baseURL, brain.model]
             + servers.flatMap { [$0.name, $0.url] + $0.headers.flatMap { [$0.name, $0.value] } }

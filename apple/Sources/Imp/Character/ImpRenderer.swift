@@ -47,6 +47,21 @@ enum ImpRenderer {
         if let glyph { extras.draw(&ctx, glyph: glyph, head: head, age: glyphAge, t: m.t, fade: glyphFade) }
     }
 
+    /// The highest point of an Imp standing at rest (the top of its head, or the tips of its horns), in design
+    /// units from the top of the 100-unit box. Things over an Imp (a talk bubble, thinking dots) are placed from
+    /// the drawing itself, not from its square, so the gap is the same for a small Imp and a big one.
+    static func restingTop(_ f: Face = Face(.idle)) -> Double {
+        let top = size.top * f.headH, base = size.base * f.headH
+        let head = Head(cx: size.cx, cy: size.bottom - base, rx: size.rx * f.headW, top: top, bottom: base,
+                        square: f.square, sag: f.sag, peak: f.peak, wobble: f.wobble, lean: f.lookX, t: 0)
+        let pose = Pose(f, spin: 0, tumble: 0)
+        var highest = head.path.boundingRect.minY
+        for horn in [Horn(side: -1, head: head, pose: pose, face: f, wiggle: 0), Horn(side: 1, head: head, pose: pose, face: f, wiggle: 0)] {
+            for p in [horn.front, horn.back] where !p.isEmpty { highest = min(highest, p.boundingRect.minY) }
+        }
+        return highest
+    }
+
     /// Whether the picture of this face and motion is different a moment later with nothing else
     /// changed: the outline ripples, something drifts or spins around the head, or a glyph bobs over
     /// it. When it is not, two frames that differ only in `Motion.t` are the same picture.

@@ -15,8 +15,10 @@ struct SpeechBubble: View {
     var hub: LinkHub
     /// A pocket Imp has no folder on the Mac: only what's on the web can load.
     var isPocket = false
-    /// Where the tail points, from the bubble's middle (points).
+    /// Where the tail points, from the middle of its edge (points).
     var tailOffset: CGFloat = 0
+    /// The edge the tail grows from: the bottom over the Imp, the top under it, a side beside it.
+    var tailEdge: Edge = .bottom
     var onDismiss: () -> Void
 
     /// The reply's blocks, without the files this phone can't get.
@@ -32,11 +34,15 @@ struct SpeechBubble: View {
 
     /// About how big a bubble comes out, to keep bubbles from landing on each other (the tail's
     /// reach included). The real size is up to the layout.
+    /// How far the tail reaches out of the bubble (`BubbleShape.length`).
+    static let tailLength: CGFloat = 12
+
+    /// About how big the bubble comes out, its tail included (once, on the edge it grows from).
     static func size(of speech: LinkSpeech) -> CGSize {
         func lines(_ text: String, perLine: Int) -> Int {
             text.split(separator: "\n", omittingEmptySubsequences: false).reduce(0) { $0 + max(1, ($1.count + perLine - 1) / perLine) }
         }
-        let tail: CGFloat = 12
+        let tail = Self.tailLength
         switch speech.role {
         case .asked:
             return CGSize(width: max(96, 40 + 7.5 * CGFloat(speech.peer.count + 6)), height: 54 + tail)
@@ -93,11 +99,11 @@ struct SpeechBubble: View {
         .fixedSize(horizontal: speech.role == .asked, vertical: false)
         .background {
             // A bubble floats over the stage: it is the one thing here that sits on `raised` and casts a shadow.
-            BubbleShape(tail: tailOffset)
+            BubbleShape(tail: tailOffset, edge: tailEdge)
                 .fill(Tone.raised)
                 .overlay {
                     // Its Imp's colour washes the bubble only while the voice plays.
-                    if speaks { VoiceWash(hue: speaker.hue, owner: speech.id.uuidString, tail: tailOffset) }
+                    if speaks { VoiceWash(hue: speaker.hue, owner: speech.id.uuidString, tail: tailOffset, edge: tailEdge) }
                 }
                 .shadow(color: Elevation.cardColor, radius: Spacing.small, y: Spacing.tight)
         }
@@ -178,13 +184,14 @@ private struct VoiceWash: View {
     var hue: Double
     var owner: String
     var tail: CGFloat
+    var edge: Edge
 
     var body: some View {
         PacedTimeline(activity: .lively) { date in
             let t = date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 3600)
             let voice = StageVoice.shared.level(owner: owner, at: t)
             let presence = voice.playing ? 0.5 + 0.5 * voice.level : 0.22
-            BubbleShape(tail: tail)
+            BubbleShape(tail: tail, edge: edge)
                 .fill(Palette.RGB(h: hue, s: 0.7, b: 1).color.opacity(Opacity.tintFill * presence))
         }
         .allowsHitTesting(false)
@@ -214,11 +221,13 @@ enum SpeechBlocks {
     }
 }
 
-/// A rounded bubble with a tail at the bottom, `tail` points from the middle, drawn as one outline
-/// (so the border runs around the tail too, with no seam across its base). Held back from the
-/// corners, the tail leans the rest of the way toward whatever it points at.
+/// A rounded bubble with a tail on one `edge` (the bottom unless said otherwise), `tail` points from the middle
+/// of that edge, drawn as one outline (so the border runs around the tail too, with no seam across its base).
+/// Held back from the corners, the tail leans the rest of the way toward whatever it points at. The other
+/// edges are the bottom one turned or mirrored, so a tail looks the same on every side.
 struct BubbleShape: Shape {
     var tail: CGFloat
+    var edge: Edge = .bottom
     var radius: CGFloat = 16
     /// Half the tail's base, and how far it reaches below the bubble.
     var halfBase: CGFloat = 11
@@ -230,6 +239,25 @@ struct BubbleShape: Shape {
     }
 
     func path(in rect: CGRect) -> Path {
+        let w = rect.width, h = rect.height
+        switch edge {
+        case .bottom:
+            return tailBelow(in: rect)
+        case .top:
+            // Mirrored top to bottom.
+            return tailBelow(in: CGRect(x: 0, y: 0, width: w, height: h))
+                .applying(CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: rect.minX, ty: rect.minY + h))
+        case .leading:
+            // Drawn on its side (the bottom edge becomes the left one), then turned a quarter.
+            return tailBelow(in: CGRect(x: 0, y: 0, width: h, height: w))
+                .applying(CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: rect.minX + w, ty: rect.minY))
+        case .trailing:
+            return tailBelow(in: CGRect(x: 0, y: 0, width: h, height: w))
+                .applying(CGAffineTransform(a: 0, b: 1, c: 1, d: 0, tx: rect.minX, ty: rect.minY))
+        }
+    }
+
+    private func tailBelow(in rect: CGRect) -> Path {
         let r = min(radius, rect.width / 2, rect.height / 2)
         let margin = r + halfBase + 2
         let wanted = rect.midX + tail

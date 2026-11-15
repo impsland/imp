@@ -44,7 +44,7 @@ struct DevicesSheet: View {
                     .accessibilityAddTraits(.isHeader)
             }
             .sheetBarInsets()
-            SectionRail("settings.title", items: items, selection: $section, axis: .horizontal)
+            SectionRail("settings.title", items: items, selection: $section, axis: .horizontal, fills: true)
             ScrollView {
                 VStack(spacing: Spacing.medium) {
                     AttentionNotice(attention.filter { $0.group == section.group }.map(line))

@@ -13,6 +13,9 @@ struct PocketEditor: View {
     var done: () -> Void
     /// The Imp woke up here (it had no Brain before): its chat comes up.
     var woke: () -> Void
+    /// The sheet rests at half height and the Imp itself waits in the room above it: it is the preview, so the
+    /// sheet draws no second one.
+    var roomInView = false
 
     @State private var draft: PocketDraft
     @State private var open: ImpSetting?
@@ -24,9 +27,11 @@ struct PocketEditor: View {
     @State private var removing: UUID?
     @State private var saving: Task<Void, Never>?
 
-    init(pocket: PocketRuntime, editing: UUID, opening: ImpSetting? = nil, done: @escaping () -> Void, woke: @escaping () -> Void = {}) {
+    init(pocket: PocketRuntime, editing: UUID, opening: ImpSetting? = nil, roomInView: Bool = false,
+         done: @escaping () -> Void, woke: @escaping () -> Void = {}) {
         self.pocket = pocket
         self.id = editing
+        self.roomInView = roomInView
         self.done = done
         self.woke = woke
         _draft = State(initialValue: PocketDraft(pocket: pocket, editing: editing))
@@ -84,8 +89,12 @@ struct PocketEditor: View {
             wokeHere = !draft.hasBrain
             if open == .brain { startFlow() }
         }
-        // Kept as it changes, a moment after the last change, so a name being typed is not saved letter by letter.
-        .onChange(of: draft.fingerprint) { save(after: .milliseconds(350)) }
+        // Kept as it changes, a moment after the last change: a name or a persona being typed is not saved letter by
+        // letter, and a pick (a colour, a character, a size) shows on the Imp in the room almost at once.
+        .onChange(of: draft.fingerprint) { old, new in
+            let typing = old.first != new.first || old.dropFirst(4).first != new.dropFirst(4).first
+            save(after: .milliseconds(typing ? 350 : 80))
+        }
         // A Brain that works is kept by the form itself, and the errand is over: why stay?
         .onChange(of: brainFlow?.path.step) { _, step in
             if step == .done { brainWorked() }
@@ -126,7 +135,7 @@ struct PocketEditor: View {
     /// and, while it has no Brain, one quiet line that says it sleeps. What it thinks with is the Brain row.
     private var hero: some View {
         VStack(spacing: Spacing.small) {
-            preview.frame(width: Self.heroSide, height: Self.heroSide)
+            if !roomInView { preview.frame(width: Self.heroSide, height: Self.heroSide) }
             Text(verbatim: callName).font(Typeface.title).foregroundStyle(Tone.text).lineLimit(1)
                 .accessibilityAddTraits(.isHeader)
             if !draft.hasBrain {
@@ -142,7 +151,7 @@ struct PocketEditor: View {
 
     private func lit(_ setting: ImpSetting) -> Bool { setting != .brain || draft.hasBrain }
 
-    /// A short state, never a sentence: the model, a count, the size.
+    /// A short state, never a sentence: the model, the name, the size, a count.
     private func value(_ setting: ImpSetting) -> String? {
         switch setting {
         case .brain: return draft.hasBrain ? draft.brain.model : String(localized: "imp_settings.value.asleep")
@@ -150,7 +159,9 @@ struct PocketEditor: View {
             let count = draft.toolCount
             return words("imp_settings.value.tools", count.on, count.all)
         case .look: return "\(Int((draft.scale * 100).rounded()))%"
-        case .personality, .triggers, .moves: return nil
+        // Who it is: its name lives in Personality.
+        case .personality: return draft.name.trimmed.isEmpty ? nil : draft.name.trimmed
+        case .triggers, .moves: return nil
         }
     }
 
@@ -176,7 +187,7 @@ struct PocketEditor: View {
                     switch setting {
                     case .brain: if let brainFlow { PhoneBrainForm(flow: brainFlow) }
                     case .personality: PocketPersonalityPanel(draft: draft)
-                    case .look: PocketLookPanel(draft: draft)
+                    case .look: PocketLookPanel(draft: draft, showsImp: !roomInView)
                     case .tools: PocketToolsPanel(draft: draft, proxy: proxy, removing: $removing)
                     case .triggers, .moves: EmptyView()
                     }

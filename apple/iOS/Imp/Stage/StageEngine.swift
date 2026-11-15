@@ -62,6 +62,9 @@ final class StageEngine {
     /// How far the drawn body reaches below an Imp's centre, as a share of half its frame (the body's base
     /// in `ImpRenderer`'s 100-point box). The floor stops the body itself, not its frame or the name under it.
     nonisolated static let reachBelow = (ImpRenderer.size.bottom - 50) / 50
+    /// How far the drawn Imp reaches above its centre (the tips of its horns at rest), as a share of half its frame.
+    /// Talk bubbles and thinking dots sit this far up plus a fixed gap, whatever the Imp's size.
+    nonisolated static let reachAbove = (50 - ImpRenderer.restingTop()) / 50
 
     private(set) var bodies: [UUID: Body] = [:]
     /// Back to front: whoever was touched last is on top.

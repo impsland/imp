@@ -1,8 +1,8 @@
 import SwiftUI
 
 // The sections of a settings screen, always one tap away: a rail down the leading edge when there is
-// room (a desktop window, a wide screen), a bar that scrolls sideways across the top when there is
-// not (a phone, a narrow window). Picking a section swaps the content beside or below it, so nobody
+// room (a desktop window, a wide screen), a bar across the top when there is not (a phone, a narrow
+// window). A bar of a few sections fills its width in equal parts (`fills`), and many scroll sideways. Picking a section swaps the content beside or below it, so nobody
 // goes back to a list to reach the next one.
 
 /// One section of a `SectionRail`: an icon, one or two plain words, and whether something in it
@@ -24,7 +24,9 @@ public struct SectionItem<ID: Hashable & Sendable>: Identifiable, Sendable {
 
 /// The sections of a settings screen as a rail (`.vertical`) or a bar (`.horizontal`). The chosen
 /// one is filled with the tint, the others are quiet until pointed at. `compact` shows the icons
-/// alone (the titles become the tooltips and the spoken labels), for a rail in a narrow window.
+/// alone (the titles become the tooltips and the spoken labels), for a rail in a narrow window. `fills`
+/// shares a horizontal bar's width evenly between the sections, with their titles while they fit and
+/// their icons alone when they do not: one track, the pick lit in the tint.
 /// A section that needs a look carries a small mark, spoken as `common.needs_attention`.
 public struct SectionRail<ID: Hashable & Sendable>: View {
     let label: LocalizedStringKey
@@ -32,16 +34,18 @@ public struct SectionRail<ID: Hashable & Sendable>: View {
     @Binding var selection: ID
     let axis: Axis
     let compact: Bool
+    let fills: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// `label` names the whole control for VoiceOver.
     public init(_ label: LocalizedStringKey, items: [SectionItem<ID>], selection: Binding<ID>,
-                axis: Axis = .vertical, compact: Bool = false) {
+                axis: Axis = .vertical, compact: Bool = false, fills: Bool = false) {
         self.label = label
         self.items = items
         _selection = selection
         self.axis = axis
         self.compact = compact
+        self.fills = fills
     }
 
     public var body: some View {
@@ -49,6 +53,15 @@ public struct SectionRail<ID: Hashable & Sendable>: View {
             switch axis {
             case .vertical:
                 VStack(alignment: .leading, spacing: Spacing.tight) { buttons }
+            case .horizontal where fills:
+                // Titles while all of them fit side by side, icons alone when they do not.
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: Spacing.tight) { buttons(compact: false) }
+                    HStack(spacing: Spacing.tight) { buttons(compact: true) }
+                }
+                .padding(Spacing.tight)
+                .background(Capsule().fill(Tone.card))
+                .padding(.horizontal, Spacing.page)
             case .horizontal:
                 ScrollViewReader { proxy in
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -65,16 +78,19 @@ public struct SectionRail<ID: Hashable & Sendable>: View {
         .accessibilityLabel(label)
     }
 
-    private var buttons: some View {
+    private var buttons: some View { buttons(compact: compact) }
+
+    private func buttons(compact: Bool) -> some View {
         ForEach(items) { item in
             Button {
                 withImpAnimation(Motion.smooth, reduceMotion: reduceMotion) { selection = item.id }
             } label: {
-                SectionFace(item: item, chosen: item.id == selection, axis: axis, compact: compact)
+                SectionFace(item: item, chosen: item.id == selection, axis: axis, compact: compact,
+                            fills: fills && axis == .horizontal)
             }
             .buttonStyle(SectionStyle())
             .id(item.id)
-            .help(compact ? item.title : "")
+            .help(compact || fills ? item.title : "")
             .accessibilityLabel(item.title)
             .accessibilityValue(item.needsAttention ? Text("common.needs_attention") : Text(verbatim: ""))
             .accessibilityAddTraits(item.id == selection ? .isSelected : [])
@@ -89,9 +105,18 @@ private struct SectionFace<ID: Hashable & Sendable>: View {
     let chosen: Bool
     let axis: Axis
     let compact: Bool
+    /// A part of a bar that fills its width: as wide as the others, its icon and title centred, on the bar's track.
+    var fills = false
     @Environment(\.impTint) private var tint
     @Environment(\.isFocused) private var focused
     @State private var hover = false
+
+    /// The pebble under the face: the tint when chosen. On a filled bar the rest sit on its track.
+    private var fill: AnyShapeStyle {
+        if chosen { return AnyShapeStyle(TintFill(tint)) }
+        if hover { return AnyShapeStyle(Tone.cardHover) }
+        return AnyShapeStyle(Tone.card.opacity(axis == .horizontal && !fills ? 1 : 0))
+    }
 
     var body: some View {
         HStack(spacing: Spacing.small) {
@@ -113,8 +138,8 @@ private struct SectionFace<ID: Hashable & Sendable>: View {
         .padding(.horizontal, compact ? Spacing.tight : Spacing.cozy)
         .padding(.vertical, Spacing.tight)
         .frame(minWidth: Sizing.hit, minHeight: Sizing.hit)
-        .frame(maxWidth: axis == .vertical && !compact ? .infinity : nil, alignment: .leading)
-        .background(Capsule().fill(chosen ? AnyShapeStyle(TintFill(tint)) : AnyShapeStyle(hover ? Tone.cardHover : Tone.card.opacity(axis == .horizontal ? 1 : 0))))
+        .frame(maxWidth: fills || (axis == .vertical && !compact) ? .infinity : nil, alignment: fills ? .center : .leading)
+        .background(Capsule().fill(fill))
         .focusRing(Capsule(), shown: focused)
         .contentShape(Capsule())
         .onHover { hover = $0 }

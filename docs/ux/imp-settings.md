@@ -70,7 +70,7 @@ Tabs with boxed cards. It is the old design, and it hides the Imp. A side panel 
 
 ## On the iPhone
 
-One sheet, one level deep. The hub is the Imp at a fixed size (it never zooms, its size is a setting of the room), its name, a quiet line while it sleeps, then one list: Brain (its model, or Asleep), Personality, Look (its size) and Tools (how many are on). Say goodbye is a destructive button under the list. A row opens its panel in place, Back returns to the hub and Close dismisses the sheet. There are no markers on the phone: a list reads at a glance, fits every width and text size, and works the same with VoiceOver.
+One sheet, one level deep, that opens at half height like the chat: the Imp itself waits in the room above it and shows every change to its look there, so the sheet draws no second Imp until it is pulled up to full height. The hub is the Imp at a fixed size (it never zooms, its size is a setting of the room), its name, a quiet line while it sleeps, then one list: Brain (its model, or Asleep), Personality (its name), Look (its size) and Tools (how many are on). Say goodbye is a destructive button under the list. A row opens its panel in place, Back returns to the hub and Close dismisses the sheet. There are no markers on the phone: a list reads at a glance, fits every width and text size, and works the same with VoiceOver.
 
 Every change is kept as it is made, as in the iPhone's own Settings. There is no Save, and Close or a swipe never loses anything. The Look panel shows the Imp at its real size in the room, with no animation, so the Size slider shows what it does.
 

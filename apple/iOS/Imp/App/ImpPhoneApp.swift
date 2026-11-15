@@ -83,9 +83,15 @@ struct RootView: View {
     }
 
     /// The sheet as SwiftUI presents it. Swiping it away goes straight back to the room.
-    private var sheet: Binding<PhoneRoute?> {
-        Binding(get: { router.route }, set: { if $0 == nil { router.dismissed() } })
+    /// Whether the sheet is up. There is one sheet, whatever it shows: it stays up while it goes from the chat to
+    /// the settings or from one Imp to another, and only its content and its height change. Swiping it away goes
+    /// straight back to the room.
+    private var sheetUp: Binding<Bool> {
+        Binding(get: { router.route != nil }, set: { if !$0 { router.dismissed() } })
     }
+
+    /// What the sheet shows: the route, or while it slides away, the one it showed last.
+    @State private var shownRoute: PhoneRoute?
 
     var body: some View {
         ZStack {
@@ -133,22 +139,31 @@ struct RootView: View {
                 if toast == text { toast = nil }
             }
         }
-        // A new sheet starts at half height when it can rest there, so the room and its Imp stay in view.
+        // Something new in the sheet starts at half height when it can rest there, so the room and its Imp stay in
+        // view: the same from the room or from another sheet. Going from one Imp's chat to another's keeps the height.
         .onChange(of: router.route) { old, new in
-            if new == nil || old == nil || (old?.restsAtHalf == false && new?.restsAtHalf == true) { detent = .medium }
+            if let new { withImpAnimation(ImpDesign.Motion.scene, reduceMotion: reduceMotion) { shownRoute = new } }
+            if new == nil || old?.id != new?.id { detent = .medium }
         }
         // An Imp that went home, moved away or said goodbye takes its sheet with it.
         .onChange(of: PhoneStage.everyone(hub, pocket).map(\.imp.id)) { old, new in
             for id in old where !new.contains(id) && !pocket.contains(id) { router.left(id) }
         }
-        .sheet(item: sheet) { route in
-            // Read live: an Imp's sheet stays up while it goes from one Imp to another.
-            content(router.route ?? route)
-                .presentationDetents(route.restsAtHalf ? [.medium, .large] : [.large], selection: height)
-                // The room above a half sheet stays alive: the Imps can be touched, carried and thrown.
-                .presentationBackgroundInteraction(route.restsAtHalf ? .enabled(upThrough: .medium) : .disabled)
-                .presentationDragIndicator(.visible)
-                .presentationBackground(Tone.surface)
+        // One sheet for every route, so each looks and behaves the same however it was reached (from the room, or
+        // from another sheet): the grab bar on top, half height where the room should stay in view, full height for
+        // settings that need the whole screen. Changing what it shows never puts it away and brings another.
+        .sheet(isPresented: sheetUp) {
+            if let route = router.route ?? shownRoute {
+                content(route)
+                    // Each kind of sheet starts fresh (the same Imp's chat is the same view).
+                    .id(route.id)
+                    .transition(.opacity)
+                    .presentationDetents(route.restsAtHalf ? [.medium, .large] : [.large], selection: height)
+                    // The room above a half sheet stays alive: the Imps can be touched, carried and thrown.
+                    .presentationBackgroundInteraction(route.restsAtHalf ? .enabled(upThrough: .medium) : .disabled)
+                    .presentationDragIndicator(.visible)
+                    .presentationBackground(Tone.surface)
+            }
         }
         #if DEBUG
         .task {
@@ -201,7 +216,7 @@ struct RootView: View {
                 // Another Imp is another chat: what was being typed and where it was scrolled do not carry over.
                 .id(id)
         case .edit(let id, let brain):
-            PocketEditor(pocket: pocket, editing: id, opening: brain ? .brain : nil, done: close, woke: { router.woke(id) })
+            PocketEditor(pocket: pocket, editing: id, opening: brain ? .brain : nil, roomInView: roomInView, done: close, woke: { router.woke(id) })
         case .firstRun(let id):
             FirstRunPhone(pocket: pocket, id: id, close: close, awake: { router.woke(id) })
         case .settings(let devices):

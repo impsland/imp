@@ -6,6 +6,8 @@ import SwiftUI
 /// shows at once, without animation, and is kept as it is made.
 struct PocketLookPanel: View {
     @Bindable var draft: PocketDraft
+    /// Off while the Imp itself is in view in the room above a half sheet: it shows every change there.
+    var showsImp = true
 
     static let sizes: ClosedRange<Double> = 0.75...1.7
 
@@ -13,7 +15,7 @@ struct PocketLookPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
-            stage
+            if showsImp { stage }
             PocketCard(title: "look.colour") {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: Sizing.hit), spacing: 0)], spacing: 0) {
                     ForEach(Array(PocketDraft.hues.enumerated()), id: \.offset) { index, hue in

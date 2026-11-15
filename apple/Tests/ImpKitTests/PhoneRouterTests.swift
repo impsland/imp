@@ -131,11 +131,11 @@ struct PhoneRouterTests {
         #expect(PhoneRoute.settings(devices: true).id != PhoneRoute.firstRun(a).id)
     }
 
-    @Test("Only an Imp's sheet and the settings rest at half height")
+    @Test("An Imp's sheet, the settings and an Imp's settings rest at half height")
     func halfHeight() {
         #expect(PhoneRoute.imp(a).restsAtHalf)
         #expect(PhoneRoute.settings(devices: false).restsAtHalf)
-        #expect(!PhoneRoute.edit(a, brain: false).restsAtHalf)
+        #expect(PhoneRoute.edit(a, brain: false).restsAtHalf)
         #expect(!PhoneRoute.firstRun(a).restsAtHalf)
     }
 

@@ -16,9 +16,10 @@ public enum PhoneRoute: Hashable, Identifiable, Sendable {
     /// The app's settings. `devices` opens them on the linked devices.
     case settings(devices: Bool)
 
-    /// What makes a sheet a different sheet. Every Imp's sheet is the same one: going from one Imp to
-    /// another (a tap on an Imp in the room above the sheet) changes what it shows, in place, and does
-    /// not put the sheet away and bring another.
+    /// What makes the sheet show something else. A phone has one sheet, whatever it shows: a new route changes
+    /// its content in place, and a different identity starts fresh, at half height when it can rest there. Every
+    /// Imp's chat is the same identity: going from one Imp to another (a tap on an Imp in the room above the
+    /// sheet) keeps the sheet's height.
     public enum Identity: Hashable, Sendable {
         case imp
         case other(PhoneRoute)
@@ -36,11 +37,12 @@ public enum PhoneRoute: Hashable, Identifiable, Sendable {
         }
     }
 
-    /// The sheet can rest at half height, with the room alive above it. The others need the whole screen.
+    /// The sheet can rest at half height, with the room alive above it: an Imp's chat, the settings and an Imp's
+    /// settings (its look changes on the Imp itself, in the room). Only waking the first Imp needs the whole screen.
     public var restsAtHalf: Bool {
         switch self {
-        case .imp, .settings: true
-        case .edit, .firstRun: false
+        case .imp, .settings, .edit: true
+        case .firstRun: false
         }
     }
 }

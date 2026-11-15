@@ -132,7 +132,7 @@ Background is one segmented choice with a symbol on each kind (Theme, Colour, Pi
 
 ## iPhone
 
-The same model as the Mac: a sheet with the title and Close on top, the sections as a bar under it (`SectionRail`, horizontal) and the chosen section below in one scroll view. Sections are siblings, so there is no Back. The sheet opens on the section that was asked for and fits its content (`medium` and `large` detents).
+The same model as the Mac: a sheet with the title and Close on top, the sections as a bar under it (`SectionRail`, horizontal, `fills`: the three sections share the width in equal parts on one track, the chosen one lit in the tint, with icon and title, or the icon alone on a screen too narrow for the titles, never scrolling) and the chosen section below in one scroll view. Sections are siblings, so there is no Back. The sheet opens on the section that was asked for and fits its content (`medium` and `large` detents).
 
 | Section | Holds |
 | --- | --- |
