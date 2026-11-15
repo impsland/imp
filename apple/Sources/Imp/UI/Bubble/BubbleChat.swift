@@ -59,7 +59,7 @@ struct ChatView: View {
                                 EarlierTurns(count: earlier, measuring: measuring) {
                                     showEarlier(from: shown.first?.id, reader)
                                 }
-                                .id(layout.chatPages)        // a fresh trigger for each page
+                                .id(layout.chatPages)        // A new id for each page, so the loader fires again for the next one
                             }
                             ForEach(Array(shown.enumerated()), id: \.element.id) { index, turn in
                                 if turn.via == .recap {
@@ -77,8 +77,8 @@ struct ChatView: View {
                             }
                             Color.clear.frame(height: BubbleMetrics.anchor).id(Self.end)
                         }
-                        // The same room on both sides: no extra gutter on the right (the scroll bar
-                        // brings its own when it shows).
+                        // Only a little room at the bottom. The sides get none, since the scroll bar
+                        // brings its own gutter when it shows.
                         .padding(.bottom, Spacing.tight)
                     }
                     .defaultScrollAnchor(.bottom)
@@ -102,6 +102,7 @@ struct ChatView: View {
         layout.chatPages += 1
         guard let oldest else { return }
         Task { @MainActor in
+            // Lets the new page lay out before scrolling back to the turn that was at the top.
             await Task.yield()
             reader.scrollTo(oldest, anchor: .top)
         }
@@ -120,7 +121,7 @@ struct ChatView: View {
     private var header: some View {
         HStack(spacing: Spacing.cozy) {
             // The move handle: drag the card by it, or by any part of the card that isn't text or a button.
-            // It takes the drag itself: being in front of the card, it would otherwise swallow the mouse-down.
+            // It takes the drag itself, since it sits in front of the card and would otherwise swallow the mouse-down.
             Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
                 .font(Typeface.small.weight(.semibold))
                 .foregroundStyle(Tone.faint)
@@ -170,7 +171,7 @@ struct ChatView: View {
         layout.onToggle?()
     }
 
-    /// Two steps, since it can't be undone: the bin, then "Delete chat?" for a few seconds.
+    /// Two steps, since deleting cannot be undone: the trash button, then "Delete chat?" for three seconds.
     private var deleteButton: some View {
         Button {
             if confirmingDelete {
@@ -199,7 +200,7 @@ struct ChatView: View {
 private struct ChatPicker: View {
     let model: ImpModel
     let changed: () -> Void
-    /// The talks this Imp had with other Imps, newest first (read from every Imp's chats).
+    /// The talks this Imp had with other Imps, newest first, read from the app's talk log.
     @State private var talks: [TalkThread] = []
 
     var body: some View {
@@ -296,8 +297,8 @@ private struct EarlierTurns: View {
     }
 }
 
-/// A small icon button in the chat's header that asks first: the icon, then its question for a
-/// few seconds (a second click does it).
+/// A small icon button in the chat's header that asks first: a click swaps the icon for its question
+/// for three seconds, and a second click runs the action.
 private struct ConfirmButton: View {
     let icon: String
     let confirm: LocalizedStringKey
@@ -482,7 +483,7 @@ private struct RequestCard: View {
         }
     }
 
-    /// What a shortcut was run on, set off like a quotation.
+    /// The copied text a shortcut ran on, set off like a quotation.
     private func quote(_ text: String) -> some View {
         let long = text.count > Self.shortText
         return VStack(alignment: .leading, spacing: Spacing.tight) {

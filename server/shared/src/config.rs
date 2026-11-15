@@ -2,6 +2,7 @@
 
 use std::str::FromStr;
 
+/// A variable that is missing, or whose value does not parse or fails a check.
 #[derive(Debug, thiserror::Error)]
 pub enum ConfigError {
     #[error("{0} is required")]
@@ -10,11 +11,12 @@ pub enum ConfigError {
     Invalid { name: &'static str, reason: String },
 }
 
-/// The value of `name`, or `None` when it is unset or empty.
+/// The value of `name`, or `None` when it is unset, empty or only whitespace.
 pub fn env_opt(name: &str) -> Option<String> {
     std::env::var(name).ok().filter(|v| !v.trim().is_empty())
 }
 
+/// The value of `name`, or `ConfigError::Missing` when it is unset, empty or only whitespace.
 pub fn env_required(name: &'static str) -> Result<String, ConfigError> {
     env_opt(name).ok_or(ConfigError::Missing(name))
 }

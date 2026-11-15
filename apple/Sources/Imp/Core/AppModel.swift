@@ -116,7 +116,7 @@ final class AppModel {
         BrowserBridge.shared.start()
         tellBrowser()
         link.start()
-        // "Imp starts" once everyone's on screen.
+        // Fire the start trigger after a short pause, so the Imps have appeared on screen first.
         Task { [weak self] in
             try? await Task.sleep(for: .seconds(2))
             self?.fire(.start)
@@ -639,7 +639,7 @@ final class AppModel {
         imp(prefs.performer(of: action, fallback: focusID)) ?? focused
     }
 
-    // MARK: Shortcuts and shortcuts
+    // MARK: Shortcuts
 
     /// A global shortcut: its Imp takes what's on the clipboard. (Only shortcuts of Imps that are
     /// out on the desktop listen. If two share keys, the first in the list wins.)
@@ -654,7 +654,7 @@ final class AppModel {
     /// `text`. Trying a trigger that the Mac sets off says so to the model, so it plays along.
     func trigger(_ action: Shortcut, on chosen: ImpModel? = nil, text: String? = nil, trying: Bool = false) {
         guard let imp = chosen ?? performer(for: action) else { return HomeWindow.shared.show(self) }
-        setHidden(imp.id, false)                           // called on: out from under the sheet
+        setHidden(imp.id, false)                           // show the Imp if it was hidden, so its work is visible
         let happened = trying && action.trigger.kind.isAmbient
             ? "(A test run from Settings: imagine it just happened: \(action.triggerSummary).)" : nil
         imp.perform(action, clip: text.map(Clip.text), happened: happened)

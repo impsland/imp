@@ -20,14 +20,15 @@ extension Kit {
     }
 }
 
-/// Copies a kit to the clipboard, as JSON or as an imp:// link when it's short enough for one.
+/// Copies a kit to the clipboard, as JSON or as an imp:// link when it is short enough to fit in one.
 @MainActor
 enum KitSharing {
     static func copy(_ kit: Kit) { Pasteboard.write(text: kit.stamped.json()) }
     static func copyLink(_ kit: Kit) { if let link = kit.stamped.link { Pasteboard.write(text: link) } }
 }
 
-/// A small share button: Copy the kit, or Copy a link to it. A tick says it worked.
+/// A small share button: copies the kit or a link to it, and publishes it to the Den when one is set up.
+/// A tick says a copy worked.
 struct ShareKitButton: View {
     let kit: Kit
     let help: LocalizedStringResource
@@ -80,7 +81,8 @@ enum ImpExport {
         ids.contains { id in chatHistory(id, model: model).chats.contains { $0.peer == nil } }
     }
 
-    /// An Imp's chats: live while it's out, else read from its folder (an Imp at home has chats too).
+    /// An Imp's chats: its live history while the Imp is loaded in the app, else the saved history in its folder.
+    /// An Imp at home keeps chats too.
     private static func chatHistory(_ id: UUID, model: AppModel) -> ChatHistory {
         model.imp(id)?.history ?? ChatHistory(folder: ChatHistory.folder(for: id))
     }

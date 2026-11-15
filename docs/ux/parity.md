@@ -18,7 +18,7 @@ Which screens and states exist on which platform. Keep this table current.
 | Let out and Send home | Earlier | - | - | Planned | Planned (X11 only) |
 | Peek of hidden Imps | To build | To build | Planned | Planned | Planned |
 | Undo bar | Earlier | Earlier | Planned | Planned | Planned |
-| [Imp Settings](/ux/imp-settings) (Imp in the middle) | To build | To build | Planned | Planned | Planned |
+| [Imp Settings](/ux/imp-settings) (Imp in the middle) | Earlier | To build | Planned | Planned | Planned |
 | [All Imps settings](/ux/all-imps-settings) | To build | To build | Planned | Planned | Planned |
 | [First run](/ux/first-run) | To build | To build | Planned | Planned | Planned |
 | Status icon | Earlier | - | - | Planned | Planned |
@@ -27,7 +27,7 @@ Which screens and states exist on which platform. Keep this table current.
 
 | State | macOS | iPhone | Android | Windows | Linux |
 | --- | --- | --- | --- | --- | --- |
-| Empty canvas | To build | To build | Planned | Planned | Planned |
+| Empty canvas | Earlier | To build | Planned | Planned | Planned |
 | Sleeping Imp | Earlier | Earlier | Planned | Planned | Planned |
 | Waking Imp | Earlier | Earlier | Planned | Planned | Planned |
 | Offline | Earlier | Earlier | Planned | Planned | Planned |

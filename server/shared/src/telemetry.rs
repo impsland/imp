@@ -13,6 +13,7 @@ pub fn init(json: bool) {
     } else {
         builder.try_init()
     };
+    // A subscriber is already set in tests that call this more than once. The first one stays.
     drop(result);
 }
 

@@ -23,6 +23,7 @@ static SITE_CSS: &[u8] = include_bytes!("../web/assets/site.css");
 static FAVICON_PNG: &[u8] = include_bytes!("../web/assets/favicon-32.png");
 static ICON_PNG: &[u8] = include_bytes!("../web/assets/imp-icon.png");
 
+/// The gallery pages and the built-in assets, mounted at the root of the Den.
 pub fn routes() -> Router<Arc<Den>> {
     Router::new()
         .route("/", get(index))
@@ -31,6 +32,7 @@ pub fn routes() -> Router<Arc<Den>> {
         .route("/assets/{file}", get(asset))
 }
 
+/// A 200 response with the bytes and the content type, cache and security policy headers given.
 fn file(
     bytes: &'static [u8],
     content_type: &'static str,
@@ -45,10 +47,12 @@ fn file(
     response
 }
 
+/// The gallery page. The same HTML answers every gallery path, `no-cache` so that changes show at once.
 async fn index() -> Response {
     file(INDEX, "text/html; charset=utf-8", "no-cache", HTML_CSP)
 }
 
+/// Serves one built-in asset by its file name, cached for five minutes. Any other name is `NotFound`.
 async fn asset(Path(name): Path<String>) -> Result<Response, Error> {
     const CACHE: &str = "public, max-age=300";
     match name.as_str() {

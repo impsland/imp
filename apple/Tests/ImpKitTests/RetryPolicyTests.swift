@@ -305,7 +305,7 @@ private actor Notices {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [OutcomeProtocol.self]
         let client = try OpenAIClient(baseURL: "https://example.test/v1", apiKey: "k", session: URLSession(configuration: config))
-        // The deadline's clock is short, so it fires at once instead of after five seconds.
+        // The deadline's sleep is 100 ms here instead of the five second timeout, so the test does not wait for it.
         let a = Agent(client: client, model: "m", limits: limits, sleep: { _ in },
                       deadlineSleep: { _ in try await Task.sleep(for: .milliseconds(100)) })
         do {

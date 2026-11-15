@@ -7,6 +7,7 @@ use sqlx::{Row, SqlitePool};
 
 const USAGE: &str = "usage: den admin reported | hide <handle>/<slug> | unhide <handle>/<slug> | remove <handle>/<slug> | remove-account <handle> | backup <file>";
 
+/// Runs one `den admin` command, prints its message, and exits with failure on any error.
 pub async fn run(path: &str, args: &[String]) -> ExitCode {
     match execute(path, args).await {
         Ok(message) => {
@@ -20,6 +21,7 @@ pub async fn run(path: &str, args: &[String]) -> ExitCode {
     }
 }
 
+/// Splits an argument of the form `<handle>/<slug>`. Both parts must be non-empty.
 fn item_ref(arg: Option<&String>) -> Result<(&str, &str), String> {
     arg.and_then(|a| a.split_once('/'))
         .filter(|(h, s)| !h.is_empty() && !s.is_empty())
@@ -49,6 +51,7 @@ async fn execute(path: &str, args: &[String]) -> Result<String, String> {
                     .execute(&mut *tx)
                     .await
                     .map_err(failed)?;
+            // Unhiding clears the item's reports, so it takes five new reports to hide it again.
             if !hide {
                 sqlx::query("DELETE FROM reports WHERE item = (SELECT id FROM items WHERE handle = ?1 AND slug = ?2)")
                     .bind(handle)
@@ -107,6 +110,7 @@ async fn execute(path: &str, args: &[String]) -> Result<String, String> {
     }
 }
 
+/// Turns a changed-row count into the success message. Zero rows means nothing matched.
 fn found(rows: u64, done: &str) -> Result<String, String> {
     if rows == 0 {
         Err("nothing matches".to_owned())

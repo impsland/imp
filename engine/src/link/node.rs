@@ -1840,7 +1840,7 @@ impl Node {
             result.called_home.extend(one.called_home);
             result.sent_home.extend(one.sent_home);
         }
-        // Imps held by devices that were never linked cannot reach us with the old door key either.
+        // Imps still held by devices that are no longer linked cannot reach us with the old door key either.
         for imp in self
             .book
             .away

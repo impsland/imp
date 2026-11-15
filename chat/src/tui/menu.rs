@@ -5,7 +5,7 @@
 //! follow it (such as `save` after `/api_key`) are listed when there is a fixed set.
 //!
 //! While a word that starts with `@` is typed, anywhere in the message, the list shows the folder's
-//! files that match it. Accepting one puts its path in the message; a folder opens to what is in it.
+//! files that match it. Accepting one puts its path in the message. A folder opens to what is in it.
 
 use super::text::{text_width, truncate};
 use super::{Action, App, MOST_SUGGESTIONS};

@@ -1,6 +1,6 @@
 //! Runs a Den on a listener the caller already bound, so other programs (such as `imp serve`) can host one.
 //!
-//! The `den` program does its own start up from the environment and does not use this.
+//! The `den` program does its own startup from the environment and does not use this.
 
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -12,7 +12,8 @@ use crate::config::Config;
 use crate::{Den, db};
 
 /// Opens the database named in `config`, then serves on `listener` until `shutdown` completes.
-/// The background upkeep is stopped and awaited before this returns.
+/// The background upkeep is stopped and awaited before this returns. This does not seed the
+/// animation catalog, which only the `den` program does at startup.
 pub async fn serve(
     config: Config,
     listener: TcpListener,

@@ -611,7 +611,7 @@ fn a_device_that_thinks_it_is_linked_when_we_are_not_is_told_to_forget_us() {
 #[test]
 fn questions_between_imps_go_to_the_targets_home_and_forward_once() {
     let mut net = chain();
-    // Device 2 (index 2) has an Imp on its screen whose home is device 3... use Imps staged by device ids.
+    // Devices 1, 2 and 3 of `chain`: `me` is linked with `middle`, and `middle` with `far`.
     let (me, middle, far) = (id(1), id(2), id(3));
     let asker = imp(10, "Asker");
     let target = imp(20, "Target");

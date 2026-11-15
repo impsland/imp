@@ -16,7 +16,7 @@ Three rules follow from that.
 
 | Sheet | About | Rests at half height | What it holds |
 | --- | --- | --- | --- |
-| Imp | One Imp | Yes | Its chat with you. Settings is one tap away in the bar. Its talks with other Imps are a side room of the same sheet, opened from the Imp's menu. |
+| Imp | One Imp | Yes | Its chat with you. Settings is one tap away in the bar. Its talks with other Imps are a side room of the same sheet, opened from a Talks button in the bar. That button shows only when the Imp has talks. |
 | Imp Settings | One Imp | No | The Imp with its markers, then one panel at a time. |
 | First run | One Imp | No | Waking an Imp with a Brain, step by step. |
 | New Imp | Nobody yet | No | The same as Imp Settings, for an Imp being hatched. |

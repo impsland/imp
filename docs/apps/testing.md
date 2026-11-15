@@ -1,44 +1,58 @@
 # Testing
 
-Every check in the repository runs from the `Makefile` at the root. CI runs the same commands
-(`.github/workflows/ci.yml` for the Apple apps, `.github/workflows/server.yml` for the Rust workspace).
+The everyday checks run from the `Makefile` at the root. CI runs the same commands for the Apple apps
+(`.github/workflows/ci.yml`) and for the Rust workspace (`.github/workflows/server.yml`).
 
 ## Everyday commands
 
-| Command                 | What it does                                                                  |
-| ----------------------- | ----------------------------------------------------------------------------- |
-| `make test`             | All Swift tests on the Mac, the screen snapshots included                     |
-| `make snapshots`        | Only the screen snapshots (`apple/Tests/ImpSnapshotTests`)                    |
-| `make snapshots RECORD=1` | Record the snapshot images again                                            |
-| `make rust`             | Format check, lint (`clippy -D warnings`) and tests for the Rust workspace    |
-| `make tokens-check`     | Fail when a generated design file is out of date (see [Design](/design/))     |
+| Command                   | What it does                                                               |
+| ------------------------- | -------------------------------------------------------------------------- |
+| `make test`               | All Swift tests on the Mac, the screen snapshots included                  |
+| `make snapshots`          | Only the screen snapshots (`apple/Tests/ImpSnapshotTests`)                 |
+| `make snapshots RECORD=1` | Records the snapshot images again                                          |
+| `make rust`               | Format check, lint (`clippy -D warnings`) and tests for the Rust workspace |
+| `make tokens-check`       | Fails when a generated design file is out of date (see [Design](/design/)) |
 
-CI also runs `node design/generate.mjs --check` and `make build`. It builds the iPhone app for the Simulator too.
+CI also runs `node design/generate.mjs --check` and `make build` (the debug Mac app). A separate CI job
+builds the iPhone app for the Simulator.
 
 ## Live tests (real services)
 
-| Command                     | What it does                                                              |
-| --------------------------- | ------------------------------------------------------------------------- |
-| `make test-live`            | Calls the real API configured in `.env`: chat, tools, recaps, pictures and speech through MCP. **Costs a few cents.** |
-| `make test-server`          | Plays a Mac, an iPhone and an Imp against a running Den and Hop           |
+| Command           | What it does                                                                                                   |
+| ----------------- | -------------------------------------------------------------------------------------------------------------- |
+| `make test-live`  | Calls the real API configured in `.env`: chat, tools, recaps, pictures and speech through MCP. **Costs a few cents.** |
+| `make test-server` | Plays a Mac, an iPhone and an Imp against a running Den and Hop                                              |
 
-`make test-server` reads two variables, with these defaults:
+`make test-server` reads two variables:
 
-- `IMP_SERVER=http://localhost:8080`, the Den's URL.
-- `IMP_HOP=<this Mac>.local:4677`, the Hop's host and port. The default is this Mac's own `.local` name.
-  Don't use `localhost`: a linking code never gives out a loopback Hop, so the Hop tests would find no route.
+| Variable     | Default                             | Meaning                                                    |
+| ------------ | ----------------------------------- | ---------------------------------------------------------- |
+| `IMP_SERVER` | `http://localhost:8080`             | The Den's URL                                              |
+| `IMP_HOP`    | `<LocalHostName>.local:4677`        | The Hop's host and port, using this Mac's `.local` name    |
 
-The Den tests are in Swift (`ServerLiveTests`) and the Hop tests in Rust (`chat/tests/hop_live.rs`). Start the
-Hop with `HOP_PER_IP_PER_MINUTE=100000` so repeated runs stay under its rate limit.
-The Den limits new accounts per address for hours, and every run makes accounts, so start the Den with a
-fresh `DEN_DATABASE` (for example a new file in `/tmp`) before running the tests again.
+Don't use `localhost` for `IMP_HOP`. A linking code never gives out a loopback Hop, so the Hop tests would find no route.
+
+### Running the server tests
+
+1. Start a Den and a Hop. See `server/README.md`.
+2. Start the Hop with `HOP_PER_IP_PER_MINUTE=100000` so repeated runs stay under its rate limit.
+3. Start the Den with a fresh `DEN_DATABASE`, for example a new file in `/tmp`. The Den limits new accounts per
+   address for hours, and every run makes accounts.
+4. Run the tests:
+
+   ```sh
+   make test-server IMP_SERVER=http://localhost:8080 IMP_HOP=<LocalHostName>.local:4677
+   ```
+
+The Den tests are in Swift (`apple/Tests/ImpKitTests/ServerLiveTests.swift`). The Hop tests are in Rust
+(`chat/tests/hop_live.rs`).
 
 ## The iPhone app
 
-| Command                          | What it does                                                        |
-| -------------------------------- | ------------------------------------------------------------------- |
-| `make ios`                       | Builds the iPhone app for the Simulator (needs XcodeGen)            |
-| `make ios-snapshots-build`       | Builds the iPhone's snapshot tests without running them             |
+| Command                    | What it does                                                             |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `make ios`                 | Builds the iPhone app for the Simulator (needs XcodeGen)                 |
+| `make ios-snapshots-build` | Builds the iPhone's snapshot tests without running them                  |
 
 Running the iPhone snapshot tests needs the Simulator, so they run on a developer machine. `make ios-snapshots-build`
 only checks that they compile.

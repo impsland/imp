@@ -1,4 +1,5 @@
-//! The MCP server at `/mcp`: the same operations as the REST API, as tools.
+//! The MCP server at `/mcp`: a subset of the REST API's operations, offered as tools. Reports,
+//! installs, stats and account deletion have no tool.
 
 use std::borrow::Cow;
 use std::sync::Arc;

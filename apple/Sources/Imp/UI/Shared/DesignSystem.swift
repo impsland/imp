@@ -110,10 +110,10 @@ extension TopBar where Trailing == EmptyView {
 /// The shell of every sheet: the app's flat surface behind, a header on top, a body that scrolls, and a
 /// footer of buttons that stays put.
 ///
-/// A sheet can't be taller than the window it hangs from, and macOS cuts off whatever doesn't fit
-/// (the buttons, first). So the body sits in a scroll view sized to fit it, and no taller than the
-/// window leaves room for: as it grows (a prompt box appearing, conditions added) the sheet grows
-/// with it, then scrolls, and the header and the buttons always stay in view.
+/// A sheet cannot be taller than the window it hangs from, and macOS clips whatever does not fit,
+/// the buttons first. So the body is a scroll view sized to the room left after the header and footer.
+/// As the content grows (a prompt box appearing, conditions added), the sheet grows with it until that
+/// room runs out, then the body scrolls while the header and the buttons stay in view.
 struct SheetFrame<Header: View, Content: View, Footer: View>: View {
     var width: CGFloat = Sizing.sheetWidth
     @ViewBuilder var header: Header
@@ -139,7 +139,7 @@ struct SheetFrame<Header: View, Content: View, Footer: View>: View {
             .scrollBounceBehavior(.basedOnSize)
             .scrollIndicators(.automatic)
             .frame(height: bodyHeight)
-            // Balanced: a lone button is centred. Otherwise the main one (last) is at the trailing edge.
+            // A lone footer button is centred. With more, the last one (the main action) sits at the trailing edge.
             ActionRow { footer }
                 // A button in the footer sits as far from the bottom as from the left.
                 .padding(.horizontal, Spacing.page)
@@ -161,7 +161,8 @@ struct SheetFrame<Header: View, Content: View, Footer: View>: View {
         }
     }
 
-    /// The body's own height, or what's left of the window once the header and buttons are in.
+    /// The body's height: its content's height, capped at the room left in the window after the header and footer.
+    /// Nil until the content has been measured.
     private var bodyHeight: CGFloat? {
         guard contentHeight > 0 else { return nil }
         let room = max((fixedRoom ?? windowRoom) - headerHeight - footerHeight, SheetRoom.minimumForm)
@@ -191,11 +192,11 @@ struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
                 Spacer(minLength: Spacing.small)
                 accessory
                 if let info { InfoTip(info) }
-                // The one way to close a sheet: a close button in the corner (Escape works too).
+                // The close button in the corner. Escape also closes the sheet, through the cancel shortcut.
                 HoverIconButton(systemName: "xmark", help: "common.close") { dismiss() }
                     .keyboardShortcut(.cancelAction)
             }
-            // The icon tile sits `page` from the top and the left, Close, centred on the tile, as far from the
+            // The icon tile sits one page inset from the top and the left. Close is centred on the tile, as far from the
             // right as from the top.
             .padding(.leading, Spacing.page)
             .padding(.trailing, CornerInset.row(height: Sizing.sheetIcon, top: Spacing.page))
@@ -238,7 +239,7 @@ extension EnvironmentValues {
 // MARK: - Compact controls
 
 /// A problem, in as little room as possible: a coloured icon whose explanation pops up by itself
-/// the moment it appears (so it's seen right away), and again on a click.
+/// shortly after it appears (so it is seen right away), and again on a click.
 struct IssueTip: View {
     let text: Text
     var symbol = "exclamationmark.triangle.fill"
@@ -277,7 +278,7 @@ struct IssueTip: View {
         }
         .task(id: textID) {
             guard opensItself else { return }
-            try? await Task.sleep(for: .milliseconds(300))     // let the sheet or row settle first
+            try? await Task.sleep(for: .milliseconds(300))     // Waits for the sheet or row to settle before the explanation opens.
             showing = true
         }
         .help(text)
@@ -287,7 +288,7 @@ struct IssueTip: View {
 
 
 extension AttentionNotice.Line {
-    /// A problem from the settings map, with the button that fixes it when the fix is somewhere else.
+    /// A line for a settings-map problem, with an optional fix button for when the fix lives elsewhere.
     init(_ item: AttentionItem, fix: AttentionNotice.Fix? = nil) {
         self.init(id: item.id, symbol: item.symbol, text: item.text, fix: fix)
     }

@@ -2801,7 +2801,7 @@ msgstr "Reproduce una imagen, un vídeo o un sonido de una respuesta en cuanto l
 #. Settings text.
 msgctxt "settings.bubble.autoplay.title"
 msgid "Autoplay"
-msgstr "Autoplay"
+msgstr "Automático"
 
 #. Tooltip of a settings row.
 msgctxt "settings.bubble.background.info"
@@ -3596,7 +3596,7 @@ msgstr "¿Volver a usar “{name}” compartido?"
 #. Switch on the iPhone: voices in new replies.
 msgctxt "voice.autoplay"
 msgid "Autoplay"
-msgstr "Autoplay"
+msgstr "Automático"
 
 #. Note under the switch.
 msgctxt "voice.autoplay_note"

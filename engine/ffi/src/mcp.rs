@@ -41,7 +41,7 @@ pub struct McpTool {
 #[derive(Debug, Clone, PartialEq, uniffi::Record)]
 pub struct McpToolPage {
     pub tools: Vec<McpTool>,
-    /// The cursor of the next page, if there is one worth reading.
+    /// The cursor of the next page. Nothing on the last page, or when the cursor was already read.
     pub next_cursor: Option<String>,
 }
 

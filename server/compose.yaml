@@ -14,6 +14,7 @@ services:
       DEN_DATABASE: /data/den.db
       DEN_SECRET: ${DEN_SECRET:?set DEN_SECRET in .env}
       DEN_PUBLIC_URL: ${DEN_PUBLIC_URL:?set DEN_PUBLIC_URL in .env}
+      # The `web` subnet, where Caddy connects from. Its only other member is the Den itself.
       DEN_TRUSTED_PROXIES: 172.31.0.0/24
       DEN_LOG_FORMAT: json
     volumes:

@@ -682,7 +682,7 @@ async fn mcp(ctx: &mut Context<'_>, args: &[String], line: &str) -> Result<Outco
 }
 
 /// `/mcp add` with a pasted config (`{"mcpServers": {...}}`, or one `"name": {...}`), read by the core as the
-/// app reads a paste. Only the names of environment variables and headers are kept; their values are
+/// app reads a paste. Only the names of environment variables and headers are kept. Their values are
 /// read when the server starts, never saved.
 async fn mcp_add_pasted(ctx: &mut Context<'_>, text: &str) -> Result<Outcome> {
     let found = imp_engine::mcp::setup::parse_setup(text);

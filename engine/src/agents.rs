@@ -20,7 +20,7 @@ pub const SKILL_GROUP: &str = "skills";
 /// The longest skill description kept, in characters.
 const MOST_DESCRIPTION: usize = 1024;
 
-// --- front matter ------------------------------------------------------------------------------------
+// Front matter.
 
 /// The `key: value` lines between `---` lines at the top of a Markdown file. A small part of YAML:
 /// plain and quoted text, `[a, b]` and `- item` lists, `|` and `>` blocks, and `#` comments.
@@ -190,7 +190,7 @@ fn unquote(s: &str) -> String {
     }
 }
 
-// --- names and values --------------------------------------------------------------------------------
+// Names and values.
 
 /// Whether `name` can be an environment variable name. This also keeps a pasted key out of a file.
 pub fn valid_env_name(name: &str) -> bool {
@@ -251,7 +251,7 @@ pub fn valid_skill_name(name: &str) -> bool {
         && !name.contains("--")
 }
 
-// --- agents ------------------------------------------------------------------------------------------
+// Agents.
 
 /// An Imp as `agents/NAME.md` describes it. What is left out keeps the Imp's own setting.
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -368,7 +368,7 @@ impl AgentSpec {
     }
 }
 
-// --- skills ------------------------------------------------------------------------------------------
+// Skills.
 
 /// A skill: its name and when to use it.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -429,7 +429,7 @@ pub fn skill_text(name: &str, folder: &str, text: &str, files: &[String]) -> Str
     out
 }
 
-// --- the system text ---------------------------------------------------------------------------------
+// The system text.
 
 /// One `AGENTS.md`: how to name it to the model, and its text.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -36,6 +36,7 @@ impl Default for Config {
 }
 
 impl Config {
+    /// Reads each `HOP_` limit from the environment, falling back to the defaults, then validates them.
     pub fn from_env() -> Result<Self, ConfigError> {
         let d = Self::default();
         let secs =

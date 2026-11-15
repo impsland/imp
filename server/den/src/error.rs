@@ -77,6 +77,7 @@ impl Error {
         }
     }
 
+    /// The `detail` member of the problem document: one sentence for the client.
     pub fn detail(&self) -> String {
         match self {
             Error::BadRequest(d) | Error::Forbidden(d) | Error::Challenge(d) | Error::Quota(d) => {

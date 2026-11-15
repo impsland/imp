@@ -41,6 +41,7 @@ impl Bucket {
 }
 
 /// Counts time from `start`, so "last activity" fits in an atomic.
+/// The time of the last write in either direction, in milliseconds since `start`.
 struct Activity {
     start: Instant,
     last_ms: AtomicU64,
@@ -57,6 +58,8 @@ impl Activity {
     }
 }
 
+/// Copies `from` to `to` in chunks, sleeping to hold the bandwidth cap, and shuts `to` down at the end.
+/// Each write refreshes `activity`, which the idle watchdog in `splice` reads.
 async fn copy<R, W>(
     mut from: R,
     mut to: W,

@@ -41,7 +41,8 @@ pub struct RetryPolicy {
 }
 
 impl RetryPolicy {
-    /// Delays are in seconds. Negative values count as zero and a multiplier below 1 counts as 1.
+    /// Delays are in seconds. Negative delays count as zero, and a multiplier below 1 counts as 1. A value
+    /// that is not finite is read as 0 first, so it then becomes the smallest value allowed.
     pub fn new(retries: u32, delay: f64, multiplier: f64, max_delay: f64) -> Self {
         let clean = |v: f64| if v.is_finite() { v } else { 0.0 };
         Self {
@@ -68,6 +69,7 @@ impl RetryPolicy {
         Self::new(0, 0.0, 1.0, 60.0)
     }
 
+    /// How many retries follow the first try. Zero means one try and no waiting.
     pub fn retries(&self) -> u32 {
         self.retries
     }

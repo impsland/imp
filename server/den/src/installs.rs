@@ -44,8 +44,9 @@ impl Installs {
     }
 
     /// Counts an install of `item` by `client` unless this client already did today.
-    /// The tag that tells clients apart comes from a key that is replaced every day and never
-    /// stored, so nothing can link an install back to an address afterwards.
+    /// Clients are told apart by an HMAC tag under a random key that lives only in memory and is
+    /// replaced every day. The key and the tags are dropped with it, so an install cannot be linked
+    /// back to an address once the day has passed.
     pub fn count(&self, item: i64, client: &IpKey) {
         let tag = {
             let mut day = self.day.lock().unwrap_or_else(PoisonError::into_inner);

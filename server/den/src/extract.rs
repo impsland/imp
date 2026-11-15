@@ -17,7 +17,8 @@ use crate::error::Error;
 #[derive(Debug, Clone, Copy)]
 pub struct ClientIp(pub IpKey);
 
-/// The token of an `Authorization: Bearer` header.
+/// The token of an `Authorization: Bearer` header. `None` when the header is missing, uses another
+/// scheme, or holds a token longer than 200 bytes.
 pub fn bearer(headers: &HeaderMap) -> Option<String> {
     let value = headers.get(AUTHORIZATION)?.to_str().ok()?;
     let (scheme, token) = value.split_once(' ')?;
@@ -43,7 +44,8 @@ impl<S: Send + Sync> FromRequestParts<S> for Caller {
     }
 }
 
-/// A JSON request body.
+/// A request body parsed as JSON. A media type other than `application/json` or `+json` is refused
+/// with 415. An oversized body is 413, and an unreadable or invalid one is 400.
 pub struct Json<T>(pub T);
 
 impl<S: Send + Sync, T: DeserializeOwned> FromRequest<S> for Json<T> {
@@ -72,7 +74,7 @@ impl<S: Send + Sync, T: DeserializeOwned> FromRequest<S> for Json<T> {
     }
 }
 
-/// A query string.
+/// A query string. A value that does not parse is a 400 problem.
 pub struct Query<T>(pub T);
 
 impl<S: Send + Sync, T: DeserializeOwned + Send> FromRequestParts<S> for Query<T> {
@@ -86,7 +88,7 @@ impl<S: Send + Sync, T: DeserializeOwned + Send> FromRequestParts<S> for Query<T
     }
 }
 
-/// Path segments.
+/// Path segments. A path that does not parse is a 400 problem.
 pub struct Path<T>(pub T);
 
 impl<S: Send + Sync, T: DeserializeOwned + Send> FromRequestParts<S> for Path<T> {

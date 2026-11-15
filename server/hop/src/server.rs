@@ -24,7 +24,8 @@ struct Shared {
     stop: watch::Receiver<bool>,
 }
 
-/// Serves `listener` until `shutdown` completes. Waiters are told nobody came, then live sessions close.
+/// Serves `listener` until `shutdown` completes. Waiters are told nobody came, and live sessions
+/// are stopped. Connection tasks get up to 5 seconds to finish before they are aborted.
 pub async fn run(listener: TcpListener, config: Config, shutdown: impl Future<Output = ()>) {
     let (stop_tx, stop) = watch::channel(false);
     let shared = Arc::new(Shared {

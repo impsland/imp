@@ -65,8 +65,8 @@ public final class LinkSocket: @unchecked Sendable {   // NWConnection is thread
 
     /// Waits until everything sent so far has left. False if the connection is gone (or a send failed).
     ///
-    /// Counted from the completions of the sends themselves. (It used to send an empty message and wait for
-    /// that, which Network refuses with "invalid argument": every wait failed, and a file never went.)
+    /// Counted from the completions of the sends themselves. An empty marker message is not sent, because
+    /// Network refuses it with "invalid argument" and every wait would fail.
     public func drained() async -> Bool {
         await withCheckedContinuation { (finished: CheckedContinuation<Bool, Never>) in
             let now: Bool? = lock.withLock {

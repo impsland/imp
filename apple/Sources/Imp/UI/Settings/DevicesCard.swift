@@ -3,7 +3,7 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// This Mac in one card: its name, how it is reached (the dot is The Hop: lit when devices can find each
+/// This Mac in one card: its name, how it is reached (the dot is The Hop: lit once it is set up, so devices can find each
 /// other from anywhere) and Link, which opens the sheet that shows this Mac's code or reads another device's.
 struct ThisDeviceCard: View {
     let model: AppModel
@@ -175,7 +175,7 @@ struct LinkJoin: Equatable {
         return invite == nil ? .notALink : .ready
     }
 
-    /// Link is offered for a code from Imp, once, and not while linking.
+    /// Link is offered only for an Imp code, and not while a link is joining or after it has linked.
     var canLink: Bool { invite != nil && !joining && linked == nil }
     /// Nothing more can be typed or pasted while linking or once linked.
     var isLocked: Bool { joining || linked != nil }
@@ -188,7 +188,7 @@ struct LinkJoin: Equatable {
         return invite
     }
 
-    /// What was pasted: text, or the codes read off a picture. Nothing usable says so.
+    /// Takes pasted text as it is, or else the first Imp code read off a picture. Sets an error when there is neither.
     mutating func paste(text pasted: String?, codes: [String]) {
         error = nil
         if let pasted = pasted?.trimmingCharacters(in: .whitespacesAndNewlines), !pasted.isEmpty {
@@ -218,7 +218,7 @@ struct LinkDeviceSheet: View {
 
     let model: AppModel
     @State var mode: Mode
-    /// Shown instead of this Mac's own code (design renders: nothing is listened for).
+    /// For previews: shown instead of this Mac's own code, and nothing is listened for.
     var preview: LinkInvite?
     @State private var invite: LinkInvite?
     @State private var copied: ActionState = .idle
@@ -294,7 +294,7 @@ struct LinkDeviceSheet: View {
             Group {
                 if let image = invite.flatMap({ QRCode.image(for: $0.url.absoluteString) }) {
                     // Dark squares on white, never tinted: the picture carries its own quiet zone,
-                    // and the white backing keeps it readable on the dark appearance too.
+                    // and the paper-toned backing keeps it readable in the dark appearance too.
                     Image(decorative: image, scale: 1)
                         .interpolation(.none)
                         .resizable()
@@ -429,8 +429,8 @@ struct LinkDeviceSheet: View {
     }
 }
 
-/// Local Network is off for Imp on this Mac: says so, with a button to System Settings › Privacy & Security ›
-/// Local Network.
+/// Says that Local Network is off for Imp on this Mac, with a button that opens System Settings at
+/// Privacy & Security › Local Network.
 struct LocalNetworkNotice: View {
     var body: some View {
         VStack(spacing: Spacing.small) {

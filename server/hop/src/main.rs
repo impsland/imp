@@ -6,7 +6,8 @@ use imp_hop::Config;
 use imp_shared::{config, health, shutdown, telemetry};
 use tokio::net::TcpListener;
 
-/// musl's allocator is slow under many threads, so the static Alpine build uses mimalloc.
+/// The Alpine image is built against musl, whose allocator is slow under many threads, so every
+/// build uses mimalloc.
 #[global_allocator]
 static ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
 

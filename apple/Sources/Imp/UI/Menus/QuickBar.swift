@@ -5,7 +5,7 @@ import ImpDesign
 /// An Imp's right-click menu header: a little Imp, its status, and the two things you do most. It has the same
 /// inset, width and buttons as the menu bar panel, so both menus line up.
 struct MenuHeader: View {
-    /// A bigger Imp than before, horns kept at their old on-screen size.
+    /// Draws the Imp larger, with the horns scaled down so they keep their previous on-screen size.
     static func portrait(ready: Bool, hue: Double) -> Face {
         var f = Face.settled(ready ? .idle : .sad, lookX: 0.35, lookY: 0.25)
         f.hornSize *= 46.0 / 54.0

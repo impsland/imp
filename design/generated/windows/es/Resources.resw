@@ -566,7 +566,7 @@
   <data name="settings.bubble.audio.info" xml:space="preserve"><value>Qué se muestra mientras suena una voz o un sonido.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.bubble.audio.title" xml:space="preserve"><value>Al reproducir</value><comment>Settings text.</comment></data>
   <data name="settings.bubble.autoplay.info" xml:space="preserve"><value>Reproduce una imagen, un vídeo o un sonido de una respuesta en cuanto llega.</value><comment>Tooltip of a settings row.</comment></data>
-  <data name="settings.bubble.autoplay.title" xml:space="preserve"><value>Autoplay</value><comment>Settings text.</comment></data>
+  <data name="settings.bubble.autoplay.title" xml:space="preserve"><value>Automático</value><comment>Settings text.</comment></data>
   <data name="settings.bubble.background.info" xml:space="preserve"><value>Si la burbuja es opaca o deja ver lo que hay detrás.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.bubble.background.solid" xml:space="preserve"><value>Sólido</value><comment>Settings text.</comment></data>
   <data name="settings.bubble.background.title" xml:space="preserve"><value>Fondo</value><comment>Settings text.</comment></data>
@@ -725,7 +725,7 @@
   <data name="triggers.use_shared" xml:space="preserve"><value>Usar común</value><comment>Button that removes this Imp's version of a shared trigger, so the shared one applies again.</comment></data>
   <data name="triggers.use_shared.message" xml:space="preserve"><value>Se quita la versión de {name}.</value><comment>Under the confirmation: the Imp's own version is removed.</comment></data>
   <data name="triggers.use_shared.title" xml:space="preserve"><value>¿Volver a usar “{name}” compartido?</value><comment>Confirmation before removing this Imp's version of a shared trigger.</comment></data>
-  <data name="voice.autoplay" xml:space="preserve"><value>Autoplay</value><comment>Switch on the iPhone: voices in new replies.</comment></data>
+  <data name="voice.autoplay" xml:space="preserve"><value>Automático</value><comment>Switch on the iPhone: voices in new replies.</comment></data>
   <data name="voice.autoplay_note" xml:space="preserve"><value>Una voz que un Imp marca para sonar empieza sola en una respuesta nueva. Si no, la tocas.</value><comment>Note under the switch.</comment></data>
   <data name="voice.listen" xml:space="preserve"><value>Escuchar</value><comment>Switch.</comment></data>
   <data name="voice.speak" xml:space="preserve"><value>Hablar</value><comment>Switch.</comment></data>

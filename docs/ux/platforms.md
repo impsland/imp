@@ -16,7 +16,7 @@ The browser extension and the CLI are companions. The extension uses the same co
 
 | Platform | Main window |
 | --- | --- |
-| macOS | Full-size content, transparent title bar, no title text. Close, minimize and full screen stay. A 28 pt strip drags the window. |
+| macOS | Full-size content, transparent title bar, no title text. Close, minimize and full screen stay. A strip 28 points tall along the top drags the window (`dragStripPoints`). |
 | iPhone | Full screen under the system bars. |
 | Android | Edge to edge, transparent system bars, the more button in the top corner. |
 | Windows | Content extends into the title bar, Mica material, system caption buttons. The more button sits left of them. |

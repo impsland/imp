@@ -574,7 +574,7 @@
   <string name="settings_bubble_audio_info">Qué se muestra mientras suena una voz o un sonido.</string>
   <string name="settings_bubble_audio_title">Al reproducir</string>
   <string name="settings_bubble_autoplay_info">Reproduce una imagen, un vídeo o un sonido de una respuesta en cuanto llega.</string>
-  <string name="settings_bubble_autoplay_title">Autoplay</string>
+  <string name="settings_bubble_autoplay_title">Automático</string>
   <string name="settings_bubble_background_info">Si la burbuja es opaca o deja ver lo que hay detrás.</string>
   <string name="settings_bubble_background_solid">Sólido</string>
   <string name="settings_bubble_background_title">Fondo</string>
@@ -733,7 +733,7 @@
   <string name="triggers_use_shared">Usar común</string>
   <string name="triggers_use_shared_message">Se quita la versión de %1$s.</string>
   <string name="triggers_use_shared_title">¿Volver a usar “%1$s” compartido?</string>
-  <string name="voice_autoplay">Autoplay</string>
+  <string name="voice_autoplay">Automático</string>
   <string name="voice_autoplay_note">Una voz que un Imp marca para sonar empieza sola en una respuesta nueva. Si no, la tocas.</string>
   <string name="voice_listen">Escuchar</string>
   <string name="voice_speak">Hablar</string>

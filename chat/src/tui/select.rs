@@ -1,5 +1,5 @@
 //! Choosing transcript text with the mouse. The chat takes the mouse for the wheel, so the terminal's
-//! own selection does not work in it; this one does the same and copies what was chosen as soon as the
+//! own selection does not work in it. This one does the same and copies what was chosen as soon as the
 //! button is let go. Holding the mouse on the top row of the transcript, or below its last row, scrolls it.
 //!
 //! Places are rows of the whole transcript and columns on screen, so text that arrives below while
@@ -141,7 +141,7 @@ impl App {
             return;
         }
         // On (or above) the first row there may be more above, as the transcript starts at the top of the
-        // terminal; below the last row is the message field.
+        // terminal. Below the last row is the message field.
         let view = self.view.get();
         let more_above = self.scroll.get() < self.max_scroll.get();
         self.edge = if row <= view.area.y && more_above {

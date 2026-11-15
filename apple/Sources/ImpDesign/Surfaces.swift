@@ -1,10 +1,9 @@
 import SwiftUI
 
-// Popovers and help tips. A popover's body and its arrow are drawn by the system as one piece, in the
-// system's popover material, on the Mac and on the iPhone, in light and in dark. The app does not
-// paint a background of its own under a popover: `presentationBackground` colours the body but not
-// the arrow (the Mac's arrow belongs to the popover's frame, which has no colour to set), and that
-// left a seam where the two met. What the app adds is its text colour, its controls and the Imp's tint.
+// Popovers and help tips. The system draws a popover's body and its arrow as one piece, in the
+// system's popover material, on the Mac and on the iPhone, in light and in dark. The app paints no
+// background under a popover. A `presentationBackground` colours the body but not the arrow, which
+// leaves a seam, so it is not used here. The app adds only its text colour, its controls and the Imp's tint.
 
 private struct PopoverSurface: ViewModifier {
     @Environment(\.impTint) private var tint

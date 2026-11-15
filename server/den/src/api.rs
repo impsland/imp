@@ -1,4 +1,4 @@
-//! The REST routes of Den API.
+//! The REST routes of the Den API.
 
 use std::sync::Arc;
 

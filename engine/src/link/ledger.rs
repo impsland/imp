@@ -352,7 +352,7 @@ mod tests {
     fn a_holder_whose_claimed_was_lost_claims_again_with_the_ticket_it_has() {
         let mut ledger = AwayLedger::default();
         let first = ledger.mint(id(1), id(10));
-        // The holder claims; the connection drops before `claimed` with the second ticket arrives.
+        // The holder claims. The connection drops before the `claimed` reply arrives.
         assert!(matches!(
             ledger.claim(id(1), &first, id(10)),
             Claim::Granted { .. }

@@ -78,7 +78,7 @@ async fn serve() -> (String, Seen) {
                             .filter_map(|l| l.split_once(':'))
                             .map(|(k, v)| (k.to_ascii_lowercase(), v.trim().to_string()))
                             .collect();
-                        // The verb is kept under a name no header has.
+                        // The verb is kept under the ":method" pseudo-header, which no real header name can use.
                         let verb = head.split_whitespace().next().unwrap_or_default();
                         headers.insert(":method".into(), verb.to_string());
                         let length: usize = headers
@@ -152,7 +152,7 @@ async fn initialize_list_and_call_over_json_and_event_streams() {
         assert!(headers["accept"].contains("text/event-stream"));
         assert_eq!(headers["content-type"], "application/json");
     }
-    // The session id is kept from the answer to initialize on.
+    // The session id from the answer to initialize is sent on every request after it.
     assert!(!seen[0].0.contains_key("mcp-session-id"));
     for (headers, _) in &seen[1..] {
         assert_eq!(headers["mcp-session-id"], "session-7");

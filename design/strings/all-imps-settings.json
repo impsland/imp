@@ -373,7 +373,7 @@
   "voice.autoplay": {
     "note": "Switch on the iPhone: voices in new replies.",
     "en": "Autoplay",
-    "es": "Autoplay",
+    "es": "Automático",
     "zh-Hans": "自动播放"
   },
   "voice.autoplay_note": {
@@ -751,7 +751,7 @@
   "settings.bubble.autoplay.title": {
     "note": "Settings text.",
     "en": "Autoplay",
-    "es": "Autoplay",
+    "es": "Automático",
     "zh-Hans": "自动播放"
   },
   "settings.bubble.audio.title": {

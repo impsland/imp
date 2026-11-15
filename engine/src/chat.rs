@@ -14,6 +14,7 @@ use std::collections::BTreeMap;
 #[cfg(feature = "io")]
 use std::time::Duration;
 
+/// Who wrote a message. It is sent to the service in lowercase, as `system`, `user`, `assistant` or `tool`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Role {
@@ -31,6 +32,7 @@ pub struct ToolCall {
     pub arguments: String,
 }
 
+/// One message of a conversation as the model sees it. The constructors below build the common roles.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ChatMessage {
     pub role: Role,

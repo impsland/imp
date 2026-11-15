@@ -72,17 +72,61 @@ network that Caddy sits on.
 
 ## Environment
 
-| variable | service | meaning |
+### The Den
+
+| Variable | Default | Meaning |
 |----------|---------|---------|
-| `DEN_SECRET` | den | required, at least 32 bytes, signs ALTCHA challenges |
-| `DEN_PUBLIC_URL` | den | required, such as `https://den.example.org`, used in links, problem types and MCP host checks |
-| `DEN_ADDR` | den | listen address, default `0.0.0.0:8080` |
-| `DEN_DATABASE` | den | SQLite file, default `den.db` |
-| `DEN_TRUSTED_PROXIES` | den | comma separated CIDRs allowed to set `X-Forwarded-For` |
-| `DEN_ALTCHA_COST` | den | proof-of-work cost, default 5000 |
-| `DEN_LOG_FORMAT` | den | `json` or text |
-| `HOP_ADDR`, `HOP_LOG_FORMAT` | hop | listen address, default `0.0.0.0:4677`, and log format |
-| `HOP_HANDSHAKE_SECS`, `HOP_PER_IP_CONNECTIONS`, `HOP_PER_IP_PER_MINUTE`, `HOP_MAX_CONNECTIONS`, `HOP_IDLE_SECS`, `HOP_BYTES_PER_SECOND`, `HOP_HOST_WAIT_SECS`, `HOP_GUEST_WAIT_SECS`, `HOP_ROOM_SESSIONS` | hop | the limits table in PROTOCOL.md |
+| `DEN_SECRET` | none, required | At least 32 bytes. Signs ALTCHA challenges. Keep it: the Den needs the same one after a restart. |
+| `DEN_PUBLIC_URL` | none, required | Such as `https://den.example.org`. Used in links, problem types and MCP host checks. |
+| `DEN_ADDR` | `0.0.0.0:8080` | Listen address. |
+| `DEN_DATABASE` | `den.db` | SQLite file. |
+| `DEN_TRUSTED_PROXIES` | empty | Comma separated IP addresses or CIDR networks allowed to set `X-Forwarded-For`. |
+| `DEN_ALTCHA_COST` | `5000` | Proof-of-work cost. Must be at least 1. |
+| `DEN_LOG_FORMAT` | text | `json` for JSON lines, anything else for text. |
+
+### The Hop
+
+| Variable | Default | Meaning |
+|----------|---------|---------|
+| `HOP_ADDR` | `0.0.0.0:4677` | Listen address. |
+| `HOP_LOG_FORMAT` | text | `json` for JSON lines, anything else for text. |
+| `HOP_HANDSHAKE_SECS` | `10` | Deadline for steps 1 to 3. |
+| `HOP_PER_IP_CONNECTIONS` | `64` | Open connections per IP address (IPv6 /64). |
+| `HOP_PER_IP_PER_MINUTE` | `120` | New connections per IP address per minute. |
+| `HOP_MAX_CONNECTIONS` | `20000` | Open connections in total. |
+| `HOP_IDLE_SECS` | `120` | Idle time before a session closes. |
+| `HOP_BYTES_PER_SECOND` | `4194304` | Bandwidth per session, each way. |
+| `HOP_HOST_WAIT_SECS` | `300` | How long a host waits for a guest. |
+| `HOP_GUEST_WAIT_SECS` | `15` | How long a guest waits for a host. |
+| `HOP_ROOM_SESSIONS` | `16` | Live sessions per room. |
+
+Every Hop limit must be at least 1, or the Hop refuses to start. The limits are described in
+[PROTOCOL.md](../spec/PROTOCOL.md).
+
+## Ports and endpoints
+
+| Port | Service | Notes |
+|------|---------|-------|
+| 8080/tcp | den | HTTP. Not published by Compose: Caddy reaches it on the `web` network. |
+| 4677/tcp | hop | Relay. Published directly by Compose. |
+| 80/tcp, 443/tcp, 443/udp | caddy | TLS for `DEN_HOST`. |
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/healthz` | Health check. Used by the `healthcheck` command of both programs. |
+| `GET` | `/challenge` | A fresh ALTCHA challenge. |
+| `POST` | `/accounts` | Create an account from a solved challenge. |
+| `DELETE` | `/accounts/me` | Delete the signed-in account. |
+| `GET` | `/accounts/{handle}` | An account's page. |
+| `GET` | `/items` | List or search items. |
+| `GET` | `/items/{handle}/{slug}/kit.json` | Download an item's kit. |
+| `POST` | `/items/{handle}/{slug}/installs` | Count an install. |
+| `POST` | `/items/{handle}/{slug}/reports` | Report an item. |
+| `GET` | `/stats` | Gallery statistics. |
+| `GET` | `/`, `/i/{handle}/{slug}`, `/a/{handle}` | The web gallery. |
+| `*` | `/mcp` | The MCP endpoint. |
+
+The full wire contract is in [PROTOCOL.md](../spec/PROTOCOL.md).
 
 ## Moderation
 
@@ -97,7 +141,8 @@ docker compose exec den /usr/local/bin/den admin remove-account <handle>
 ```
 
 Changes show once the 30 second caches turn over. An item reported from 5 different addresses is
-hidden until you look at it.
+hidden. Nothing unhides it automatically: review it with `den admin reported`, then run
+`den admin unhide <handle>/<slug>` to show it again.
 
 ## Database schema
 

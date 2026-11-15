@@ -35,7 +35,12 @@ Names come from the string keys, so they are the same words on every platform.
 - Text (`text`) has at least 4.5 to 1 against `surface`, `card` and `raised`, in light and dark. The quiet text colors (`muted`, `faint`) are only for secondary text and stay readable.
 - The focus ring, the state shapes and controls have at least 3 to 1 against what is around them.
 - State is never only a color. A state has a word, a shape or an icon too. The map nodes use both.
-- Text, an icon or a switch knob on a coloured control (a button, the selected segment, a switch that is on) is white or black, as the person chose in Settings, App, On colour (`OnTint`). White is the default. The control's fill (`TintFill`) is the Imp's colour when the choice has at least 4.5 to 1 on it, and otherwise the nearest deeper (under white) or lighter (under black) shade of it that does. So white on a yellow or green Imp sits on a deeper yellow or green: the colour of the control gives way, never the legibility. The monochrome accent has no hue to keep and carries ink or paper, whichever reads better. An Imp's colour used as text or an icon is adjusted to at least 4.5 to 1 on its ground (`LegibleTint`): lighter in dark, darker in light. An Imp can be nearly black or nearly white, so the raw colour is never drawn as it is. `ContrastTests` check this over a sweep of hues in both appearances.
+- Text, an icon or a switch knob on a coloured control (a button, the selected segment, a switch that is on) is white or black, as the person chose in Settings, App, On colour (`OnTint`). White is the default.
+  - The control's fill (`TintFill`) is the Imp's colour when the choice has at least 4.5 to 1 on it. Otherwise it is the nearest deeper (under white) or lighter (under black) shade that does.
+  - On a yellow or green Imp, white sits on a deeper yellow or green. The colour of the control gives way, never the legibility.
+- The monochrome accent has no hue to keep. It carries ink or paper, whichever reads better.
+- An Imp's colour used as text or an icon is adjusted to at least 4.5 to 1 on its ground (`LegibleTint`). It is lighter in dark and darker in light. An Imp can be nearly black or nearly white, so the raw colour is never drawn as it is.
+- `ContrastTests` checks this over a sweep of hues in both appearances.
 - Light and dark both come from `design/tokens.json` and follow the system appearance. Groups are shown by their fill, never by an outline, so the fill must stay visible against the surface in both.
 
 ## Touch targets

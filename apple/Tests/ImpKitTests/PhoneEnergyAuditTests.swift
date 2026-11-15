@@ -2,7 +2,7 @@ import Foundation
 import Testing
 
 /// The phone's heat is decided by what keeps drawing. Nothing in the iPhone app may start a loop of its
-/// own: every continuous animation goes through `Energy.swift` and `FramePolicy`, which pause it when the
+/// own: every continuous animation goes through `apple/iOS/Imp/App/Energy.swift` and `FramePolicy`, which pause it when the
 /// scene is inactive, the view is covered, the picture is still, the phone saves power or Reduce Motion is on.
 @Suite struct PhoneEnergyAuditTests {
     private static let phone = URL(fileURLWithPath: #filePath)

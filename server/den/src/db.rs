@@ -4,7 +4,9 @@ use std::time::Duration;
 use sqlx::SqlitePool;
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 
-/// Opens the database (`:memory:` for tests) and applies the embedded migrations.
+/// Opens the SQLite database at `path`, creating the file when it is missing, and applies the
+/// embedded migrations. `:memory:` gives one connection for tests. A file uses WAL mode and waits up
+/// to five seconds on a busy lock.
 pub async fn open(path: &str) -> Result<SqlitePool, sqlx::Error> {
     let memory = path == ":memory:";
     let options = if memory {

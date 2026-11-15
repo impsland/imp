@@ -77,8 +77,8 @@ A **service** is an OpenAI compatible endpoint. A **brain** picks a service and 
 - Whether an Imp can think is one rule on every device (`Wakefulness`): at home its own brain decides,
   and a visitor is awake only while its home is connected and says it has a brain (`brain` in
   [Imp Link](/connecting/link)). An Imp that can't think sleeps whatever it is doing, and asking it is refused at once.
-- API keys and header values live in the platform's secure storage (Keychain on Apple systems), never
-  in these objects and never in a kit. When a pocket Imp moves to a Mac they travel apart as
+- API keys and header values live in a private key file that only the user's account can read, or in the
+  Keychain on Apple systems when the user turns that on. They are never in these objects and never in a kit. When a pocket Imp moves to a Mac they travel apart as
   `LinkSecrets` inside `adopt`.
 - In a kit a brain names its service by value (`{ "name", "baseURL" }`) because ids mean nothing on
   another device.
@@ -175,8 +175,7 @@ big-endian length followed by that JSON, at most 4 MiB.
   connection instead.
 - Fields that are optional in the Swift enum (`join`, `home`, `ticket`, `work`, `speech`, `from`) are
   absent or `null`.
-- Messages with a size or count over a limit decode but are dropped (`LinkMessage::is_sound` in the core). Every
-  limit is in [Imp Link](/connecting/link).
+- Every size and count limit for a message is listed in [Imp Link](/connecting/link).
 - One vector for every message, a few that must be rejected: `spec/fixtures/link-messages.json`.
 
 ## Browser bridge

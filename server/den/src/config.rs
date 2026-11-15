@@ -15,6 +15,8 @@ pub struct PublicUrl {
 }
 
 impl PublicUrl {
+    /// Parses `DEN_PUBLIC_URL`. Accepts only an `http://` or `https://` origin with no path,
+    /// query, fragment or credentials, so every link and host check uses one form.
     pub fn parse(value: &str) -> Result<Self, ConfigError> {
         let invalid = |reason: &str| ConfigError::Invalid {
             name: "DEN_PUBLIC_URL",
@@ -42,6 +44,7 @@ impl PublicUrl {
     }
 }
 
+/// The Den's settings, read once at startup. See the README for each variable.
 #[derive(Debug, Clone)]
 pub struct Config {
     pub addr: SocketAddr,
@@ -53,11 +56,13 @@ pub struct Config {
     pub json_logs: bool,
 }
 
+/// The shortest `DEN_SECRET` accepted, in bytes.
 pub const MIN_SECRET_BYTES: usize = 32;
-/// A phone solves this in about one to three seconds (see PROTOCOL.md).
+/// Chosen so that a phone solves a challenge in about one to three seconds.
 pub const DEFAULT_ALTCHA_COST: u32 = 5_000;
 
 impl Config {
+    /// Reads every `DEN_` variable and checks it. Fails on the first one that is missing or invalid.
     pub fn from_env() -> Result<Self, ConfigError> {
         let secret = env_required("DEN_SECRET")?;
         check_secret(&secret)?;

@@ -562,7 +562,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.bubble.audio.info` | What shows while a voice or sound plays. | Qué se muestra mientras suena una voz o un sonido. | 播放声音时气泡里显示什么。 |
 | `settings.bubble.audio.title` | While playing | Al reproducir | 播放声音时 |
 | `settings.bubble.autoplay.info` | Plays a picture, video or sound in a reply as soon as it arrives. | Reproduce una imagen, un vídeo o un sonido de una respuesta en cuanto llega. | 回复中的图片、视频或声音一到就自动播放。 |
-| `settings.bubble.autoplay.title` | Autoplay | Autoplay | 自动播放 |
+| `settings.bubble.autoplay.title` | Autoplay | Automático | 自动播放 |
 | `settings.bubble.background.info` | Whether the bubble is solid or lets what is behind it show through. | Si la burbuja es opaca o deja ver lo que hay detrás. | 气泡是不透明的，还是能透出后面的内容。 |
 | `settings.bubble.background.solid` | Solid | Sólido | 纯色 |
 | `settings.bubble.background.title` | Background | Fondo | 气泡背景 |
@@ -721,7 +721,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `triggers.use_shared` | Use shared | Usar común | 使用共享 |
 | `triggers.use_shared.message` | The version only {name} has goes. | Se quita la versión de {name}. | 只属于 {name} 的版本将被删除。 |
 | `triggers.use_shared.title` | Use the shared “{name}” again? | ¿Volver a usar “{name}” compartido? | 重新使用共享的“{name}”？ |
-| `voice.autoplay` | Autoplay | Autoplay | 自动播放 |
+| `voice.autoplay` | Autoplay | Automático | 自动播放 |
 | `voice.autoplay_note` | A voice an Imp marks to play starts by itself in a new reply. Otherwise you tap it. | Una voz que un Imp marca para sonar empieza sola en una respuesta nueva. Si no, la tocas. | Imp 标记为自动播放的语音会在新回复中自动开始。关闭后需要你点一下。 |
 | `voice.listen` | Listen | Escuchar | 聆听 |
 | `voice.speak` | Speak | Hablar | 朗读 |

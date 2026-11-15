@@ -33,8 +33,10 @@ they can open connections to the port.
   the handshake only completes with the host that holds the matching private key.
 - Strangers: a connection that does not know the door key fails to produce the first valid message and is
   closed. It learns nothing about the device.
-- Flooding: at most 32 connections, 10 seconds to finish the handshake, a rate limit of frames per
-  connection, and a 4 MiB frame limit.
+- Flooding: a device keeps at most 32 connections, gives 10 seconds to finish the handshake, limits each
+  connection to 100 frames a second (a burst of 400), and refuses frames over 4 MiB. The Hop has its own
+  limits: by default 64 connections per address, 120 new connections a minute per address, 20 000 in all,
+  and a byte rate of 4 MiB a second.
 
 **The Hop operator (and anyone who watches the Hop).** The Hop splices bytes. It never holds a seed, a
 door key or a session key.
@@ -59,13 +61,16 @@ and the invite key.
 device's identity and can connect as that device to every linked device until the owner forgets it there.
 
 - Tickets are stored as hashes, so a stolen book does not hold working tickets of Imps that are away.
-- The book is kept in the system's secure store (the Keychain on Apple), readable only on this device and
-  only after the first unlock. A stolen backup of the device does not move it to another device.
+- The book is kept in the Keychain on an iPhone, readable only on this device and only after the first unlock
+  (`apple/iOS/Imp/Pocket/Keychain.swift`). On a Mac it is a file in a folder that only this user can read
+  (folder 0700, file 0600, `apple/Sources/ImpKit/Link/LinkTypes.swift`). A stolen backup of the device does
+  not move it to another device.
 - Cure: forget the device on the other devices. Its links die and its Imps come home.
 
 **A lost or stolen device.** Same as the stolen book while it is unlocked. Forgetting it on another device
 ends the link, takes back its Imps (the ticket dies) and, with "forget everyone", changes the door key.
-An Imp's brain and keys were never on the other device, so they cannot be taken from it.
+A visiting Imp's brain and keys were never on the other device, so they cannot be taken from it. A pocket
+Imp is different: its service keys and header values are kept on its iPhone, so a lost iPhone can expose them.
 
 **A linked device that turns hostile.** It is a peer. It can send any message a peer may send, so it can
 throw Imps, ask what a visiting Imp may be asked and see what is on screens. It cannot act for an Imp it

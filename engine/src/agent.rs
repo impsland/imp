@@ -153,6 +153,7 @@ impl AgentRun {
     }
 }
 
+/// A boxed future that is not `Send`, so the agent loop can run on the current task.
 pub type BoxFuture<'a, T> = Pin<Box<dyn Future<Output = T> + 'a>>;
 
 /// A tool a host offers: its entry (for switching it off) and what the model sees.
@@ -219,6 +220,8 @@ pub enum AgentEvent {
     },
 }
 
+/// Why an agent run stopped early. A failed tool call is not one of these: it goes back to the model as
+/// text.
 #[derive(Debug, thiserror::Error)]
 pub enum AgentError {
     #[error("{0}")]

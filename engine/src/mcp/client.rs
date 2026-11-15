@@ -17,6 +17,7 @@ use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::process::{Child, ChildStdin, ChildStdout, Command};
 use tokio::sync::Mutex;
 
+/// Why an MCP server could not be started or could not answer.
 #[derive(Debug, thiserror::Error)]
 pub enum McpError {
     #[error("could not start {command}: {reason}")]
@@ -82,6 +83,8 @@ enum Link {
     Http(http::Http),
 }
 
+/// A connection to one MCP server, over a child process or over HTTP. Dropping a stdio client stops
+/// its child process.
 pub struct McpClient {
     name: String,
     link: Link,
@@ -209,8 +212,8 @@ impl McpClient {
     }
 
     /// Sends the request with this id and waits for its answer. Lines that are not JSON,
-    /// notifications and answers to other requests are skipped. Requests from the server get a
-    /// plain refusal.
+    /// notifications and answers to other requests are skipped. A `ping` from the server is answered
+    /// with an empty result, and any other request is answered with "Method not found".
     async fn exchange(&self, id: u64, message: &Value) -> Result<Value, McpError> {
         match &self.link {
             Link::Stdio { pipes, .. } => self.exchange_stdio(pipes, id, message).await,

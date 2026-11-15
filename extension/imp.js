@@ -1,7 +1,9 @@
 // Imp on a canvas, for the popup. A trimmed port of the app's own renderer (Face, Motion, Head,
-// Horn, Palette, Extras), the same one the Imp server's web gallery uses, so an Imp here has the
-// head, curled horns, eyes, colours and idle life it has on the Mac and the iPhone. Only what the
-// popup needs: a mood, breathing, blinking and looking at the pointer (no animations, no glyphs).
+// Horn, Palette, Extras), so an Imp here has the head, curled horns, eyes, colours and idle life it
+// has on the Mac and the iPhone. The Imp server's web gallery has its own copy in
+// server/den/web/assets/imp.js, which is fuller, so the two copies can drift apart. This file keeps
+// only what the popup needs: a mood, breathing, blinking and looking at the pointer, with no
+// animations and no glyphs.
 
 const TAU = Math.PI * 2;
 
@@ -16,11 +18,15 @@ const TRAIT_RANGES = {
 const clamp = (x, lo, hi) => Math.min(Math.max(x, lo), hi);
 const finite = (v, fallback) => (typeof v === 'number' && Number.isFinite(v) ? v : fallback);
 
+/**
+ * Tells whether the person has asked the system to reduce motion.
+ * @returns {boolean} True when the Reduce Motion setting is on.
+ */
 export function reducedMotion() {
   return matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-// Whatever the Mac sends is clamped here, so a odd value can't break the drawing.
+// Whatever the Mac sends is clamped here, so an odd value can't break the drawing.
 function normalizeTraits(raw) {
   const source = raw !== null && typeof raw === 'object' ? raw : {};
   const out = {};
@@ -45,7 +51,11 @@ const mixRGB = (a, b, k) => {
   return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 };
 
-/** The colour of an Imp's skin for a hue (0...1), as a CSS colour: the popup's accent while that Imp is out. */
+/**
+ * Gives the skin colour of an Imp for a hue, as a CSS hex colour. Nothing in the extension calls it yet.
+ * @param {number} hue The hue from 0 to 1. Other values are clamped, and a missing value counts as 0.
+ * @returns {string} The colour as a six-digit hex string with a leading "#".
+ */
 export function skinColor(hue) {
   return hex(hsv(clamp(finite(hue, 0), 0, 1), 0.733, 0.9));
 }
@@ -114,7 +124,7 @@ function faceTarget(mood, gaze, t) {
   return f;
 }
 
-// Springs every face parameter toward its target: slightly bouncy, alive.
+// Springs every face parameter toward its target, a little bouncy so the face looks alive.
 class FaceAnimator {
   constructor() {
     this.face = { ...FACE0 };
@@ -154,7 +164,7 @@ class FaceAnimator {
   }
 }
 
-// Moods fade into each other over a third of a second, so the body never jumps.
+// Moods fade into each other over about a third of a second, so the body never jumps.
 class BlendWeights {
   constructor(duration) {
     this.duration = duration;
@@ -449,13 +459,20 @@ function stops(grad, list) {
   return grad;
 }
 
-// One Imp on one canvas. `live` breathes and blinks. Without it (reduced motion) it holds a still pose.
+/**
+ * One Imp drawn on one canvas. A live Imp breathes, blinks and springs between moods. Without
+ * live (reduced motion) it holds a still pose.
+ */
 export class ImpCanvas {
+  /**
+   * @param {HTMLCanvasElement} canvas The canvas to draw on.
+   * @param {{live?: boolean, phase?: number}} [options] Whether the Imp is live, and its clock offset.
+   */
   constructor(canvas, { live = true, phase = 0 } = {}) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.live = live;
-    this.phase = phase;      // offsets the clock, so Imps side by side don't blink together
+    this.phase = phase;      // Offsets the clock, so Imps side by side don't blink together.
     this.mood = 'idle';
     this.gaze = null;
     this.animator = new FaceAnimator();
@@ -499,7 +516,10 @@ export class ImpCanvas {
     this.settle();
   }
 
-  // Where the pointer is, as -1…1 on both axes from the Imp (or null: nowhere).
+  /**
+   * Sets where the Imp looks.
+   * @param {number[] | null} gaze Two numbers from -1 to 1, for left-right and up-down, or null to look straight ahead.
+   */
   setGaze(gaze) {
     this.gaze = gaze;
     if (!this.live) this.settle();
@@ -517,7 +537,7 @@ export class ImpCanvas {
     this.paint(0);
   }
 
-  // Called every animation frame. Draws about thirty times a second.
+  // Called on every animation frame. It draws at most about thirty times a second.
   frame(now) {
     if (now - this.lastDrawn < 0.028) return;
     this.lastDrawn = now;
@@ -586,7 +606,8 @@ export class ImpCanvas {
       [[0, p.hornLight], [1, p.hornDark]]);
   }
 
-  // Back of the horns, the head (skin, light, shade, blush), all clipped to the head.
+  // Draws the back of the horns, then the head: its skin, and the light, shade and blush, which are
+  // clipped to the outline of the head.
   paintBody(head, horns, f, rotate) {
     const ctx = this.ctx, p = this.palette;
     for (const h of horns) {
@@ -727,7 +748,7 @@ export class ImpCanvas {
   paintExtras(head, f, t) {
     const ctx = this.ctx, accent = this.accent;
     ctx.fillStyle = ctx.strokeStyle = accent;
-    if (f.burst > 0.03) { // "!" ticks
+    if (f.burst > 0.03) { // The "!" ticks around the head.
       const pulse = 0.85 + 0.15 * Math.sin(t * 9);
       ctx.lineWidth = 1.6;
       ctx.lineCap = 'round';
@@ -758,7 +779,7 @@ export class ImpCanvas {
       ctx.globalAlpha = f.heart * (1 - phase * 0.6);
       ctx.fill(heartPath(head.cx + head.rx * 0.95 + Math.sin(phase * 6) * 1.5, head.cy - head.top - phase * 8, 2.6));
     }
-    if (f.sleep > 0.3) { // z's
+    if (f.sleep > 0.3) { // Rising z's while asleep.
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       for (let k = 0; k < 3; k++) {
@@ -784,7 +805,9 @@ export class ImpCanvas {
 
 // ---------------------------------------------------------------- the clock
 
-// One animation-frame loop for all the Imps on screen. It stops when nothing is live or the popup is hidden.
+/**
+ * One animation-frame loop for all the Imps on screen. It stops when no Imp is registered or when it is paused.
+ */
 export class Clock {
   constructor() {
     this.figures = new Set();

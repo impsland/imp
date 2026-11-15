@@ -1,7 +1,9 @@
 # Privacy
 
-Imp has **no account, no cloud and no telemetry**. It talks **only** to the model service you pick.
+Imp has **no telemetry**. Its model requests go **only** to the model service you pick.
 If that service is a model running on your own Mac, nothing leaves your Mac at all.
+Features you turn on, such as [Imp Link](/connecting/link), [The Den](/sharing/den) or an MCP server,
+send data to the servers they use, as described below.
 
 ```
   ┌──────────────── your Mac ────────────────┐

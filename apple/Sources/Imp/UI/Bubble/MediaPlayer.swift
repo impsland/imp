@@ -365,7 +365,7 @@ final class Media {
 
     func toggle() { isPlaying ? pause() : play() }
 
-    /// You started it.
+    /// Starts playback, which also pauses the other players in the chat.
     func play() {
         guard !failed, !stopped else { return }
         Playback.shared.started(self)
@@ -385,7 +385,7 @@ final class Media {
         isPlaying = false
     }
 
-    /// For good (the view went away): silence, and no more callbacks.
+    /// Silences the player for good, once its view has gone. No more callbacks follow.
     func stop() {
         pause()
         stopped = true
@@ -422,7 +422,8 @@ final class Media {
         Playback.shared.failed(self)
     }
 
-    /// Started or paused some other way (a video's own controls): the UI and the others follow.
+    /// Follows playback that starts or pauses outside this player's own button, such as through a
+    /// video's own controls. A start claims the shared playback, so the other players pause.
     private func syncPlaying() {
         guard !stopped else { return }
         let now = player.timeControlStatus != .paused

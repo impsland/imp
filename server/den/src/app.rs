@@ -27,6 +27,7 @@ const REQUEST_TIMEOUT: Duration = Duration::from_secs(15);
 static REQUEST_ID: HeaderName = HeaderName::from_static("x-request-id");
 
 pub fn router(den: Arc<Den>) -> Router {
+    // Any origin may make GET and HEAD requests. Other methods get no CORS headers.
     let cors = CorsLayer::new()
         .allow_origin(Any)
         .allow_methods([Method::GET, Method::HEAD])
@@ -52,7 +53,8 @@ async fn healthz(State(den): State<Arc<Den>>) -> Result<&'static str, Error> {
     Ok("ok")
 }
 
-/// Works out the client's address key and keeps it with the request.
+/// Works out the client's address key and keeps it with the request. `X-Forwarded-For` counts only
+/// when the TCP peer is a trusted proxy.
 async fn identify(State(den): State<Arc<Den>>, mut req: Request, next: Next) -> Response {
     let ip = {
         let peer = req
@@ -70,6 +72,7 @@ async fn identify(State(den): State<Arc<Den>>, mut req: Request, next: Next) -> 
     next.run(req).await
 }
 
+/// Answers with a timeout problem when a request runs longer than `REQUEST_TIMEOUT`.
 async fn timeout(req: Request, next: Next) -> Response {
     match tokio::time::timeout(REQUEST_TIMEOUT, next.run(req)).await {
         Ok(response) => response,
@@ -92,7 +95,8 @@ fn error_for(status: StatusCode) -> Error {
     }
 }
 
-/// Outermost layer: request id, problem bodies, security and cache headers, and the access log.
+/// Runs inside `identify` and outside the timeout and CORS layers. It sets the request id, writes
+/// problem bodies, adds the security and cache headers, and writes the access log.
 async fn finish(State(den): State<Arc<Den>>, req: Request, next: Next) -> Response {
     let started = Instant::now();
     let id = hex::encode(rand::random::<[u8; 8]>());

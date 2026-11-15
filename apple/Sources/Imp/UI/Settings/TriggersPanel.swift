@@ -97,7 +97,7 @@ struct TriggersPanel: View {
                 case .everyImp: EmptyView()
                 }
                 // Looked up by id on every read: an index goes stale the moment a trigger is deleted, and
-                // SwiftUI reads the binding once more before the row goes (that crashed).
+                // SwiftUI reads the binding once more before the row goes, and an index read there crashed the app.
                 Toggle(isOn: Binding(get: { model.prefs.shortcuts.first { $0.id == shortcut.id }?.isEnabled ?? false },
                                      set: { model.prefs.setTrigger(shortcut.id, enabled: $0, for: id) })) { Text(verbatim: sentence) }
                     .labelsHidden().toggleStyle(.impSwitchBare)

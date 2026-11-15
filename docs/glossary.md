@@ -86,7 +86,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Model.** The particular AI an Imp uses at a service.
 
-**Key.** The secret that lets the app use a service. It stays in the platform's secure store. It never travels in a kit, a link or a Den package.
+**Key.** The secret that lets the app use a service. It is kept in a private file that only your user account can read, or in the Keychain if you turn that on. It never travels in a kit, a link or a Den package.
 
 **Tool.** Something an Imp can do besides talk: run a command, read a file, open an app. A tool has an id like `own.body.imp_speak` or `mcp.files.read_file`.
 

@@ -13,7 +13,8 @@ pub struct KeyedLimiter<K: Hash + Eq + Clone> {
 }
 
 impl<K: Hash + Eq + Clone> KeyedLimiter<K> {
-    /// A zero `burst` or `period` is treated as one.
+    /// A zero `burst` is treated as one. Actions are never allowed more often than once per
+    /// millisecond per key, so a zero `period` gives that limit.
     pub fn new(burst: u32, period: Duration) -> Self {
         let burst = burst.max(1);
         let spacing = (period / burst).max(Duration::from_millis(1));

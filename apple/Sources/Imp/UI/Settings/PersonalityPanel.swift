@@ -18,8 +18,8 @@ struct PersonalityPanel: View {
 
     var body: some View {
         PanelSection("personality.name", icon: "signature", info: "personality.help.name") {
-            // An empty field says what it needs in its own prompt, with a red ring and mark: no line under
-            // the field is held free for a message that is rarely there.
+            // An empty field says what it needs in its own prompt, with a red ring and mark. No line under
+            // the field is kept free for a message that rarely appears.
             TextField("personality.name", text: $name, prompt: nameIsEmpty ? Text("personality.name_empty") : nil)
                 .impField(problem: nameIsEmpty ? String(localized: "personality.name_empty") : nil)
                 .accessibilityLabel(Text("personality.name"))
@@ -65,8 +65,8 @@ struct PersonalityPanel: View {
     }
 
     /// The rest of the system prompt: most people never need it, but it is all theirs to change. One row
-    /// says whether it is the built-in one and opens it in a sheet. The panel never grows a whole prompt
-    /// in place (a switch did, and building the editor stalled the switch and moved the page).
+    /// says whether it is the built-in one and opens it in a sheet. The prompt is never edited inline,
+    /// since building a large editor in the panel stalled the switch and moved the page.
     private var instructions: some View {
         Row("Reply rules", icon: "list.bullet.rectangle", info: "personality.help.rules") {
             HStack(spacing: Spacing.small) {
@@ -80,6 +80,7 @@ struct PersonalityPanel: View {
         .sheet(isPresented: $editingRules) { ReplyRulesSheet(imp: $imp) }
     }
 
+    /// The height of the reply rules editor inside its sheet.
     fileprivate static var editorHeight: CGFloat { wellHeight * 2.5 }
 }
 
@@ -92,6 +93,7 @@ private struct ReplyRulesSheet: View {
     var body: some View {
         SheetScaffold(icon: "list.bullet.rectangle", title: "Reply rules", info: "personality.help.rules",
                       width: Sizing.sheetWidth + Spacing.vast) {
+            // Text equal to the built-in prompt is stored as nil, so the built-in one stays in use.
             EditorWell(text: Binding(get: { imp.effectiveInstructions },
                                      set: { imp.instructions = $0 == Briefing.display ? nil : $0 }),
                        placeholder: "Empty. Only the personality is sent.",

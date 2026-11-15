@@ -6,7 +6,7 @@
 //!   the tool `use_skill` reads the whole file when a task needs it, so many skills cost few words.
 //! - `.agents/agents/NAME.md`: the Imp NAME in this folder. Its front matter can set `model`, `base_url`,
 //!   `api_key_env` (or `api_key: ${NAME}`), `tools`, `disallowedTools`, `hue` and `default`, and the text
-//!   under it is how the Imp behaves. One file is enough for a whole Imp; what it leaves out comes from
+//!   under it is how the Imp behaves. One file is enough for a whole Imp. What it leaves out comes from
 //!   the default Imp of the settings file.
 //! - `.agents/mcp.json`: MCP servers for every Imp in this folder, in the usual `mcpServers` format.
 //!
@@ -564,8 +564,7 @@ pub fn server_spec(
     }
 }
 
-// --- trust -------------------------------------------------------------------------------------------
-
+// Trust
 /// The folders the person allowed, each with the digest of what they allowed.
 #[derive(Debug, Clone, Default)]
 pub struct TrustStore {
@@ -626,8 +625,7 @@ impl TrustStore {
     }
 }
 
-// --- the skill tool ----------------------------------------------------------------------------------
-
+// The skill tool
 /// Offers `use_skill`, which gives the model the whole text of a skill and the files beside it.
 pub struct SkillHost {
     skills: Vec<Skill>,

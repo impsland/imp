@@ -14,7 +14,7 @@ Every empty, sleeping, waking, offline, error and partly set up state, with its 
 | Brains | No Brains | `brains.empty` |
 | Needs attention | Nothing to fix | Nothing is shown: no mark in the rail and no notice. |
 
-An empty state has one line of words and at most one button.
+An empty state has a short title, at most one line of hint text, and at most one button. The main screen's empty state (`home.empty.*`) follows this rule.
 
 ## A sleeping Imp
 
@@ -54,7 +54,7 @@ The device has no network.
 
 ## Servers partly set up
 
-The Den and The Hop are separate. Each is one of: set up, or not. The app never blocks on them. The Imps work with neither.
+The Den and The Hop are separate. Each one is either set up or not set up. The app never blocks on them. The Imps work with neither.
 
 | The Den | The Hop | What the settings say |
 | --- | --- | --- |
@@ -80,6 +80,7 @@ An error is a plain sentence. It says what happened and what to do next. It name
 | The model does not exist | `error.brain.model` |
 | The service is out of reach | `error.brain.unreachable` |
 | The local model does not answer | `error.brain.local` |
+| No network during first run | `error.brain.offline` |
 | Saving failed | `error.save` |
 | Sharing failed | `error.share` |
 | A tool server did not start | `error.tool_failed` |

@@ -5,9 +5,9 @@ exactly one of them.
 
 | Layer | What it holds | Where |
 |---|---|---|
-| Portable core | Protocol messages, the link, tool selection, retry policy, workspace paths, MCP, the agent loop and chat state. No UI and no operating system calls. | `engine/` (Rust, `imp-engine`) |
+| Portable core | Protocol messages, the link, tool selection, retry policy, workspace paths, MCP, the agent loop and chat state. No UI. Network and process code sits behind the `io` feature, which the apps leave off. | `engine/` (Rust, `imp-engine`) |
 | Platform adapters | Secure key storage, sockets and TLS, files, speech, notifications, windows and input, sensors and power. They translate between the system and the core. | in each platform folder |
-| Native UI | SwiftUI on Apple, Jetpack Compose on Android, WinUI 3 on Windows, GTK 4 on Linux, the browser extension, and the terminal UI of the CLI. | in each platform folder |
+| Native UI | SwiftUI on Apple, the browser extension, and the terminal UI of the CLI. Planned: Jetpack Compose on Android, WinUI 3 on Windows and GTK 4 on Linux. | in each platform folder |
 
 An adapter or a view never holds a rule of its own. When a platform needs a rule, it asks the core.
 

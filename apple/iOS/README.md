@@ -9,27 +9,34 @@ is never on two devices at once.
 
 ## Build
 
-```sh
-cd iOS
-xcodegen generate
-open ImpPhone.xcodeproj
-```
+The requirement is iOS 18 or later (`apple/iOS/project.yml`, `deploymentTarget`). Run the commands from
+the repository root.
 
-To run on a device, select the `ImpPhone` target › Signing & Capabilities and choose your team (the
-project ships with an empty `DEVELOPMENT_TEAM`). iOS 18 or later. Simulator build from the command line:
+| Goal | Command |
+|------|---------|
+| Open in Xcode | `cd apple/iOS && xcodegen generate && open ImpPhone.xcodeproj` |
+| Simulator build | `make ios` |
+| Snapshot tests, build only | `make ios-snapshots-build` |
+| Install on your iPhone | `make ios-device` |
+
+`xcodegen generate` is only needed after changing `project.yml`, because `ImpPhone.xcodeproj` is committed.
+
+Simulator build without the Makefile:
 
 ```sh
 xcodebuild -project apple/iOS/ImpPhone.xcodeproj -scheme ImpPhone -destination 'generic/platform=iOS Simulator' \
     -derivedDataPath .build/ios CODE_SIGNING_ALLOWED=NO build
 ```
 
-To send it to your iPhone in one go (connected by cable, or over Wi-Fi once set up in Xcode), run
-`make ios-device` from the repository root: it signs with the team signed in to Xcode (or
-`TEAM=<Team ID>`), installs on the one connected iPhone (or `DEVICE=<name or UDID>`) and opens it.
-`CONFIG=Debug` sends a debug build.
+To run on a device from Xcode, select the `ImpPhone` target, open Signing & Capabilities and choose your
+team. The project ships with an empty `DEVELOPMENT_TEAM`.
+
+`make ios-device` signs with the team signed in to Xcode (or `TEAM=<Team ID>`), installs on the one connected
+iPhone (or `DEVICE=<name or UDID>`) and opens it. It works over a cable, or over Wi-Fi once Xcode has paired
+the phone. `CONFIG=Debug` sends a debug build.
 
 Debug builds understand `-openChat` and `-hatch`, handy for screenshots, and `-join <implink://…>` with
-`-ask <text>` for end-to-end checks against a running Mac.
+`-ask <text>` for end-to-end checks against a running Mac (`apple/iOS/Imp/App/ImpPhoneApp.swift`).
 `apple/iOS/scripts/make-icon.sh` re-renders the app icon from the Mac app's own icon art (`Imp --render-ios-icon`).
 
 ## Linking and tossing
@@ -46,7 +53,9 @@ Debug builds understand `-openChat` and `-hatch`, handy for screenshots, and `-j
    **Send to** items do the same job for VoiceOver. If the target can't take the Imp, it bounces
    back with the reason.
 
-Visits: an Imp away from its home keeps thinking there. While its home is out of reach it sleeps, and its
+## Visiting Imps
+
+An Imp away from its home keeps thinking there. While its home is out of reach it sleeps, and its
 chat says so and waits. A visiting Imp's menu has Hide and Send Home. The **Devices** sheet
 (`DevicesSheet`) shows, per linked device, whether it is connected, reached through the server, or away,
 and which of this phone's Imps it holds, with **Call Home**. A visiting Imp can be passed on to a third

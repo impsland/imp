@@ -5,7 +5,7 @@
 //! folder, as file names on a Mac ignore case. Sharing it put the terminal app's settings and link
 //! identity where the app's Factory Reset deletes everything. So on a Mac `imp` has a folder of its own,
 //! `~/Library/Application Support/imp-chat`. The `imp` program moves the files it made in the shared
-//! folder there when it starts ([`settle_here`]); the app's files stay where they are. Choosing a folder
+//! folder there when it starts ([`settle_here`]). The app's files stay where they are. Choosing a folder
 //! never moves anything, so tests and other users of the library leave a person's files alone.
 //!
 //! `--config`, `IMP_CONFIG`, `--data-dir` and `IMP_DATA_DIR` still choose any other place.

@@ -259,8 +259,7 @@ impl App {
         self.notes.iter().map(|(_, n)| n)
     }
 
-    // --- keys -------------------------------------------------------------------------------
-
+    // Keys
     pub fn on_key(&mut self, key: KeyEvent) -> Action {
         if key.kind == KeyEventKind::Release {
             return Action::None;
@@ -554,7 +553,7 @@ impl App {
     }
 
     /// The wheel scrolls (the help card, when it is open). Dragging over the transcript chooses text,
-    /// which is copied when the button is let go; two clicks choose a word and three a paragraph.
+    /// which is copied when the button is let go. Two clicks choose a word and three a paragraph.
     pub fn on_mouse(&mut self, mouse: MouseEvent) -> Action {
         if self.help {
             match mouse.kind {
@@ -592,8 +591,7 @@ impl App {
         self.edit(|app| app.insert(&text));
     }
 
-    // --- what the program tells the screen -----------------------------------------------------
-
+    // What the program tells the screen
     /// A line under the conversation so far. It is never sent to the model.
     pub fn note(&mut self, note: Note) {
         self.notes.push((self.chat.messages().len(), note));
@@ -688,8 +686,7 @@ impl App {
         self.waiting = false;
     }
 
-    // --- the agent ----------------------------------------------------------------------------
-
+    // The agent
     pub fn on_agent(&mut self, event: &AgentEvent) {
         match event {
             AgentEvent::Retry(n) => self.retry = Some(n.text()),

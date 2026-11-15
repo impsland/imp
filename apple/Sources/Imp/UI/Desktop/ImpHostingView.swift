@@ -2,8 +2,8 @@ import AppKit
 import ImpKit
 import SwiftUI
 
-/// Hosting view that turns mouse input into Imp interactions: click = talk/poke, press and
-/// hold = cuddle, drag = carry (and shake), right-click = menu.
+/// Hosting view that turns mouse input into Imp interactions. A click talks or pokes, a press
+/// and hold cuddles, a drag carries (and shakes) the Imp, and a right-click opens its menu.
 final class ImpHostingView: NSHostingView<ImpView> {
     /// How the Imp is being handled, besides clicks.
     enum Handling {

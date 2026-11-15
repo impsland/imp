@@ -19,6 +19,7 @@ struct AnimationsPane: View {
     /// Open groups, kept between visits ("made" is open out of the box).
     @AppStorage("animationGroupsOpen") private var openGroups = "made"
 
+    /// The heading for one family of built-in animations: feelings or answers.
     static func title(_ family: Reaction.Family) -> LocalizedStringKey {
         switch family {
         case .expressions: "Feelings"
@@ -55,7 +56,7 @@ struct AnimationsPane: View {
         }
     }
 
-    /// Restores the built-in animations: an action on their card, so an icon in its header.
+    /// Puts every built-in animation back to its original version, as an icon in the built-in card's header.
     private func restoreButton(prefs: ImpPreferences) -> some View {
         HoverIconButton(systemName: "arrow.counterclockwise", help: "animations.restore") {
             withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { model.prefs.resetAnimations() }
@@ -295,7 +296,7 @@ struct Live: Equatable {
 }
 
 /// One animation: try it, what starts it, change it, and a switch. Plain values in, so a row only
-/// redraws when something it shows changed (the closures are ignored when comparing).
+/// redraws when something it shows changed (closures are not compared, only whether `restore` and `setTrigger` are set).
 struct AnimationRow: View, Equatable {
     struct Item: Equatable {
         var key: String
@@ -331,6 +332,7 @@ struct AnimationRow: View, Equatable {
     /// Nil: the starts can't be changed here (an Imp's own version of a built-in one keeps its starts).
     let setTrigger: (@MainActor (AnimationTrigger, Bool) -> Void)?
 
+    /// Compares the plain values and which optional actions are set, never the closures themselves.
     nonisolated static func == (a: Self, b: Self) -> Bool {
         a.item == b.item && a.hue == b.hue && a.traits == b.traits && a.locked == b.locked
             && a.live == b.live && a.owners == b.owners && a.performance == b.performance && (a.restore == nil) == (b.restore == nil)
@@ -424,7 +426,7 @@ struct AnimationRow: View, Equatable {
         .fixedSize()
     }
 
-    /// The symbol. While it's being tried, a little Imp acting it out.
+    /// The preview button: the animation's symbol, or a little Imp acting it out while it is being tried.
     private var preview: some View {
         Button(action: play) {
             ZStack {
@@ -435,6 +437,7 @@ struct AnimationRow: View, Equatable {
                         .offset(y: -Spacing.tight)
                         .transition(.scale(scale: 0.4).combined(with: .opacity))
                         .task(id: performance.started) {
+                            // Ends the try once the Imp has played it out, plus a short pause.
                             try? await Task.sleep(for: .seconds(performance.duration + 0.3))
                             finish(performance)
                         }

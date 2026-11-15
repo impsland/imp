@@ -104,9 +104,8 @@ public struct AnimationRule: Codable, Hashable, Sendable {
     }
 }
 
-/// The rules the user changed, by animation. Kept as a list of key and rule pairs, as it always was. A rule
-/// for an animation the app no longer carries (the old built-in ones now come from the Den) is dropped on
-/// reading.
+/// The rules the user changed, by animation, stored as a list of key and rule pairs. A rule whose key is
+/// no longer a `Reaction` is dropped on reading, so a retired animation leaves no stale entry.
 public struct AnimationRules: Codable, Hashable, Sendable, ExpressibleByDictionaryLiteral {
     private var rules: [Reaction: AnimationRule] = [:]
 

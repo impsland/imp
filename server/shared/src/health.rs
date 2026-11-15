@@ -10,7 +10,8 @@ use tokio::time::timeout;
 
 const DEADLINE: Duration = Duration::from_secs(4);
 
-/// The port of a listen address such as `0.0.0.0:8080`, if it has one.
+/// The loopback address on the port of a listen address such as `0.0.0.0:8080`, if it has a port.
+/// The check always dials 127.0.0.1, so it fails for a server bound to one non-loopback address.
 pub fn local_target(listen: &str) -> Option<SocketAddr> {
     let port = listen.rsplit_once(':')?.1.parse::<u16>().ok()?;
     Some(SocketAddr::from(([127, 0, 0, 1], port)))

@@ -1,4 +1,5 @@
 //! A small network for the link tests: nodes joined by in-memory connections. It does what an adapter does.
+// The link tests use only some of these helpers, so unused ones are allowed here.
 #![allow(dead_code)]
 
 use imp_engine::link::card::LinkKind;

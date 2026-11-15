@@ -120,7 +120,7 @@ Showing hidden Imps as small icons along an edge. It looks like a toolbar and it
 
 ![A sleeping Imp](./images/imp-sleeping.png)
 
-A screen reader reads an Imp as its name and state (`imp.a11y.label`) and offers these actions: talk, open settings, hide, let out, send home.
+A screen reader reads an Imp as its name and state (`imp.a11y.label`) and offers these actions: talk, open settings, hide, let out and send home. An Imp that is away offers call home instead of send home.
 
 ## Words
 

@@ -1,3 +1,7 @@
+//! The MCP rules that need no I/O: the JSON-RPC requests an MCP client sends, how it reads the replies,
+//! the names the model sees for each server's tools, and what a status or an event stream means. The
+//! transports in `client` and `http` only move the text these functions build and read.
+
 use crate::tools::{mcp_group_id, mcp_id, server_key};
 use serde_json::{Value, json};
 
@@ -267,7 +271,8 @@ fn session_headers(session: Option<&str>, protocol: Option<&str>) -> Vec<(String
     headers
 }
 
-/// Whether an HTTP status means the server took the message (200, or 202 for a notification).
+/// Whether an HTTP status means the server took the message. Any 2xx status counts, which covers
+/// 200 for a request and 202 for a notification.
 pub fn reply_is_accepted(status: u16) -> bool {
     (200..300).contains(&status)
 }

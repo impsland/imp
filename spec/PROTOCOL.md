@@ -20,8 +20,8 @@ Den features use only the Den address. Linking and the relay use only the Hop ad
 | Den address | A URL: `http` or `https`, a host, an optional port. | No path, user, query or fragment. A bare host name means `https`. The port is 1 to 65535. |
 | Hop address | `host:port` | No scheme and no path. The port is `4677` when left out. |
 
-The core checks both and gives the same sentence for a wrong address (`engine/src/servers.rs`). The
-vectors are in `spec/fixtures/server-addresses.json`.
+The core checks both addresses (`engine/src/servers.rs`) and returns the same error text to every
+client for a wrong address. The vectors are in `spec/fixtures/server-addresses.json`.
 
 ## Formats and versions
 

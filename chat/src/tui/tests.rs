@@ -1257,7 +1257,7 @@ fn at_lists_the_folders_files_and_enter_puts_one_in_the_message() {
     );
     assert_eq!(app.input(), "look at @src/main.rs ");
     assert!(app.menu().entries.is_empty());
-    // A folder opens to what is in it; the cursor stays after it.
+    // A folder opens to what is in it. The cursor stays after it.
     type_text(&mut app, "and @sr");
     app.on_key(key(KeyCode::Tab));
     assert_eq!(app.input(), "look at @src/main.rs and @src/");

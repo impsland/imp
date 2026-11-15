@@ -144,8 +144,8 @@ final class HomeWindow {
     /// Opens the window in front of everything. While the window is open, Imp is a regular app
     /// (in the Dock and the ⌘-Tab switcher).
     ///
-    /// Why it used to open behind other windows: since macOS 14 activation is cooperative, and the
-    /// system only lets an app come forward when the request comes from the user's own click or key
+    /// Without the steps below it opens behind other windows. Since macOS 14, activation is cooperative:
+    /// the system lets an app come forward only when the request comes from the user's own click or key
     /// press *in that app*. Imp's menu bar panel, its Imps and their bubbles are non-activating
     /// panels (so typing elsewhere is never interrupted), several callers act a moment after the
     /// click (a double-click is only known once the click burst is over, ~0.3 s later, the Imp's menu

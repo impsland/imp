@@ -30,7 +30,7 @@ Nine sections, each with a one-word name and a few cards of icon rows. A card ha
 
 | Page | Cards and rows |
 | --- | --- |
-| App | Look: Appearance (Auto, Light, Dark), On colour (White, Black) and Background (Theme, Colour, Picture, Tile). System: start at login, language. Window: the smallest width and height. |
+| App | Look: Appearance (Auto, Light, Dark), On colour (White, Black) and Background (Theme, Colour, Picture, Tile). System: start at login, language. Window: the size of the home window (Small, Medium, Large, Full). |
 | Bubble | Look: Background (Solid or Translucent, and the amount when translucent), with a live preview over a light, a dark and a picture swatch. Showing: hide after, text box lines, chat size. Media: autoplay, audio look. |
 | Talking | Listening: language. Between Imps: talk in, threads, window. |
 | Brains | Services: the list of Brains and the default for new Imps. Keys: the keychain. Requests: wait, retries, first wait, longer waits. |
@@ -153,7 +153,7 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 
 ## Choices, help and rows
 
-- A few short options seen at a glance are a segmented control with symbols (Appearance, Background, audio look). Sentence-like options (the server choice) are a dropdown, so they are never cramped. Long or open lists are a dropdown (language, models, locales, token sizes).
+- A few short options seen at a glance are a segmented control with symbols (Appearance, Background, audio look). Sentence-like options are a dropdown, so they are never cramped. The Den and Hop server choice is a row of buttons instead (see Presets for The Den and The Hop). Long or open lists are a dropdown (language, models, locales, token sizes).
 - No paragraph of help is shown on a page. Every setting has an icon and a "?" help. It opens a compact popover as wide as its words, with one or two short sentences.
 - Controls adapt on narrow widths. A row moves its control under its title. A segmented choice falls back from words to icons to a menu.
 - A field and an action that works on its value are one control: the action sits inside the field at its trailing edge (`fieldAction`, see [Components](/design/components)), never as a button beside it. A page's own action (New, Add) goes in the header of its card or list, never on a field's line.

@@ -6,7 +6,7 @@ On desktop the main screen is the same calm canvas as on the iPhone. The Imps mo
 
 - **A few corner buttons.** A small row of icon buttons sits in the top trailing corner of the window frame: New Imp, Show hidden Imps and Settings. Each is one click, each has a tooltip and a spoken label. Show hidden Imps appears only while some Imps are hidden, and it shows how many. There is no "more" menu: a menu that only opens more buttons costs a click for nothing.
 - **Settings, not the canvas, holds the choices.** The background is in Settings, as a one-click control.
-- **Empty canvas.** When there are no Imps, one inline prompt "New Imp" sits in the middle. It is an empty state. It goes away as soon as there is an Imp. It is never a permanent button.
+- **Empty canvas.** When there are no Imps, a short prompt sits in the middle: a title, a hint and one New button. It is an empty state. It goes away as soon as there is an Imp. It is never a permanent button.
 
 ## Why
 
@@ -58,20 +58,28 @@ Nothing on the canvas animates for decoration. There are no floating sparks and 
 Right click on empty space (or touch and hold on a phone). One level, no submenus:
 
 1. New Imp (`menu.canvas.new_imp`, Command N)
-2. Show hidden Imps (n) (`menu.canvas.show_hidden`), only when some are hidden
+2. Hidden (n) (`menu.canvas.show_hidden`), only when some are hidden. The number is how many
 3. Settings (`menu.canvas.settings`, Command comma)
 
 The background choices are not in this menu. They are one click away in Settings, so the right click stays short. The corner buttons do the same as these items.
 
-Right click on an Imp (or touch and hold on a phone), also one level:
+Right click on an Imp in the window (or touch and hold on a phone), also one level:
 
-1. Settings (`menu.imp.settings`)
+1. Settings (`menu.imp.settings`, Command I)
 2. Hide (`menu.imp.hide`)
-3. Visit {device} (`menu.imp.send_to`): the Imp goes and comes back. One item for each linked device its doors lead to
-4. Move to {Mac} (`menu.imp.move_to`), phone only, for an Imp hatched on the phone: it lives on that Mac from now on
-5. Copy kit (`menu.imp.copy_kit`) and Copy link (`menu.imp.copy_link`), desktop only. The link is off when the kit is too long for one
-6. Let out or Send home (`menu.imp.let_out`, `menu.imp.send_home`), desktop and visitors
-7. Goodbye (`menu.imp.goodbye`), phone and desktop for an Imp that lives here, last and apart, and it asks first
+3. Copy kit (`menu.imp.copy_kit`) and Copy link (`menu.imp.copy_link`), desktop only. Copy link is off when no link can be made
+4. Let out or Send home (`menu.imp.let_out`, `menu.imp.send_home`)
+5. Goodbye (`menu.imp.goodbye`), last and apart. It asks first. It is off when there is only one Imp
+
+The Imp in its own window on the desktop has a longer menu:
+
+1. Chat, and Settings (`menu.imp.settings`)
+2. Triggers, Colour and Size
+3. Hide (`menu.imp.hide`)
+4. Visit {name} (`menu.imp.send_to`), one item for each linked device. Without a linked device it shows Visit another device (`menu.imp.visit_none`)
+5. Send home (`menu.imp.send_home`)
+
+Move to {name} (`menu.imp.move_to`) is in the phone's menu only. It is for an Imp hatched on the phone.
 
 There is no Talk in this menu: a click or tap already opens the chat. The Imp's talks with other Imps are an icon in its chat's bar (`menu.imp.talks`), shown only when there are some.
 
@@ -79,7 +87,7 @@ The items are the same on every platform. Each platform shows them in its own me
 
 ### On the iPhone
 
-- **One top bar.** Safe-area aware, `Spacing.page` on both sides. On the leading side the connection pill: dots, one or two words (`phone.status.*`), cut in the middle when long, never clipped. On the trailing side ONE plain `ellipsis` icon button with a 44 pt target and no background. It opens a native menu with icons first: New Imp, Devices, Show hidden Imps (only when some are hidden), Settings. A tap on the pill also opens Devices.
+- **One top bar.** Safe-area aware, `Spacing.page` on both sides. On the leading side the connection pill: dots, one or two words (`phone.status.*`), cut in the middle when long, never clipped. On the trailing side are icon buttons, one tap each, with no menu: New Imp (`plus`), Hidden (`eye`, only while some Imps are hidden, with how many) and Settings (`gearshape`). A tap on the pill opens Devices.
 - **Names and bubbles.** Name tags are a `Tone.scrim` capsule with `Tone.paper` text, one line, cut in the middle. Bubbles stay inside the safe area with `Spacing.page` margins and never sit on another bubble. A sleeping Imp is dimmed and has no words over it.
 - **During a game** the top bar, speech bubbles, thinking dots and name tags are all hidden, and they come back when the game ends. A bubble that arrives meanwhile is held by the hub and shows afterwards, unless its own timer ran out.
 - **The edges of the room.** A free Imp bounces off the sides and the bottom of the screen when its body touches them, not its frame or its name: the name under it may pass the bottom edge for a moment.
@@ -88,7 +96,7 @@ The items are the same on every platform. Each platform shows them in its own me
 
 ### The bar menu
 
-The menu bar extra opens a compact panel on the app surface. At the top are four buttons, each an icon over a label: Imps, Show or Hide, Settings and Quit. Below them the Imps are rows, each with its name and state. There are no dividers between the rows.
+The menu bar extra opens a compact panel on the app surface. At the top are four buttons, each an icon over a label: Imps, Show or Hide, Settings and Quit. Below them each Imp is a pebble with its face, its name and a state word. One click hides or shows an Imp that is out, or opens one that is at home. Everything else lives in the window and in each Imp's own menu.
 
 ![The bar menu](./images/bar-menu.png)
 

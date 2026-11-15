@@ -16,6 +16,12 @@ Using Imp across devices and sharing:
 - [Sharing setups](/sharing/setups) explains kits: import, export and review.
 - [The Den](/sharing/den) is the gallery of shared Imps.
 
+Ideas and how they work:
+
+- [Glossary](/glossary) defines the words Imp uses for its own ideas.
+- [The full bubble](/concepts/bubble) is the chat window over an Imp.
+- [Transfer by shaking](/concepts/transfer) sends an Imp to a linked device.
+
 Building and reference:
 
 - [Building from source](/development/building) and [Testing](/apps/testing).

@@ -55,15 +55,16 @@ ollama serve
 
 1. Open Imp from the menu bar and go to its window.
 2. Add a service: choose the **Local** preset (it fills in Ollama's address, `http://localhost:11434/v1`) and set the model to `qwen3:8b`.
-3. That's it: every Imp you hatch thinks with it.
-4. Click your Imp and say hello.
+3. New Imps use this service by default, so your first Imp is ready to think.
+4. Click your Imp once to open the text box, then type hello.
 
 ## Good to know
 
 > [!NOTE]
 > Imp runs the commands it writes **without asking first**. They start in the Imp's own workspace folder
-> and have a time limit. You can switch the shell off for any Imp, and macOS still asks before Imp may use
-> the microphone or control other apps.
+> and stop after two minutes if they are still running. To switch the shell off for one Imp, open its
+> **Tools** tab and turn off **Commands**. macOS still asks before Imp may use the microphone or control
+> other apps.
 
 ## Next steps
 

@@ -8,9 +8,9 @@ and, if it needs one, a key.
 When you add a service, Imp offers two presets. Each one fills in the address. You can change it to any
 OpenAI-compatible service.
 
-| Preset     | Address                        | Runs                                   | Notes                               |
-| ---------- | ------------------------------ | -------------------------------------- | ----------------------------------- |
-| **Remote** | `https://openrouter.ai/api/v1` | In the cloud (OpenRouter)              | The default. Needs a key.           |
+| Preset     | Address                        | Runs                                   | Notes                                |
+| ---------- | ------------------------------ | -------------------------------------- | ------------------------------------ |
+| **Remote** | `https://openrouter.ai/api/v1` | In the cloud (OpenRouter)              | The default. Needs a key.            |
 | **Local**  | `http://localhost:11434/v1`    | On your Mac (Ollama's default address) | No key needed. Keeps data on device. |
 
 The little ↗ next to a preset opens the page where you get a key (OpenRouter) or a model (Ollama).
@@ -24,14 +24,15 @@ address for it, so type the one your server shows.
 ## How services and models work together
 
 - **Pick the model once**, when you add the service. Every Imp on that service uses it.
-- **The starred service** is the one new Imps start with. It is the first preset (Remote) until you star another.
+- **The starred service** is the one new Imps start with. Imp stars the first service you add. Click the star
+  on another service to change it.
 - **An Imp can choose its own** service or model, so a local model can handle private work while another Imp
   uses a larger cloud model.
-- **Removing a service** sends the Imps that used it back to the starred service, with its model. A model picked
-  for a removed service would not work anywhere else.
+- **Removing a service** sends the Imps that used it back to the starred service. If you remove the starred
+  service, the first remaining service becomes the starred one, and the model picked for the removed service is cleared.
 - **With no service left**, Imps sleep until you add one.
 
 ## Keys
 
-API keys are stored in a private file that only your user account can read. Turn on the Keychain in settings
-if you prefer it. See [Privacy](/guide/privacy).
+API keys are stored in a private file that only your user account can read. To store them in the Keychain
+instead, turn on the Keychain option in **Settings › Brains**. See [Privacy](/guide/privacy).

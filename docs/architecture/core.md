@@ -2,12 +2,12 @@
 
 The Mac and iPhone apps call `imp-engine` through `imp-ffi`, a small crate that exports plain records
 and functions with [UniFFI](https://github.com/mozilla/uniffi-rs) 0.32 (proc-macro mode, no UDL).
-UniFFI writes the Swift bindings from the built library. The same crate will give Kotlin bindings for
-Android. Windows and Linux reach the core through its C ABI.
+UniFFI writes the Swift bindings from the built library. The same crate could give Kotlin bindings for
+Android, and Windows and Linux could reach the core through a C ABI. Neither app exists yet.
 
 ## The build
 
-`apple/scripts/apple.sh core` (run by `make core`, `make build`, `make test` and `make ios`):
+`apple/scripts/apple.sh core` (run by `make core`, and by the app targets such as `make build`, `make test` and `make ios`):
 
 1. builds `imp-ffi` as a static library for each slice it is asked for (`mac`, `mac-universal`,
    `ios-sim`, `ios`) with the toolchain in `rust-toolchain.toml`,
@@ -27,8 +27,8 @@ earlier on `PATH` has no Apple mobile targets.
 `imp-engine` has an `io` feature with the parts that reach the network and other processes: the
 OpenAI-compatible HTTP client, the stdio and HTTP MCP transports and the driver that runs the agent loop
 over them.
-The command line app and the servers turn it on. `imp-ffi` turns it off, so the apps' core has no HTTP or TLS
-stack, and the apps do their own I/O through the system (URLSession, Network.framework). CI lints and
+The command line app turns it on. `imp-ffi` and the Hop leave it off. The apps' core therefore has no HTTP
+or TLS stack, and the apps do their own I/O through the system (URLSession, Network.framework). CI lints and
 tests the core both ways.
 
 The MCP protocol itself needs no I/O and is always built (`engine/src/mcp/protocol.rs`): the JSON-RPC
@@ -57,7 +57,7 @@ The rest of a chat works the same way. These need no I/O, and both the apps and 
   shell does.
 - **The `.agents/` layout** (`engine/src/agents.rs`): front matter, agent and skill files, the instructions and
   skills in the system text, the `use_skill` tool, `${NAME}` values and the digest of what a project asks to
-  be trusted. The command line app reads the folders; an app that adds `.agents/` reuses these rules.
+  be trusted. The command line app reads the folders. An app that adds `.agents/` reuses these rules.
 - **Chat memory** is used by the command line app too: it keeps the core's `ChatMemory` beside the chat it
   shows, so a long terminal chat is clipped, recapped (`/compact`) and noticed the same way as in the apps.
 

@@ -40,8 +40,8 @@ impl fmt::Display for IpKey {
 }
 
 impl IpKey {
-    /// A short tag for logs that doesn't reveal the address: the first bytes of a salted hash.
-    /// The salt is random per process, so tags correlate lines within one run and nothing more.
+    /// A short tag for logs that does not reveal the address: the first four bytes of a salted
+    /// SHA-256. The salt is random per process, so tags correlate lines within one run and nothing more.
     pub fn log_tag(&self) -> String {
         static SALT: OnceLock<[u8; 16]> = OnceLock::new();
         let salt = SALT.get_or_init(rand::random);
@@ -128,7 +128,8 @@ impl TrustedProxies {
 
     /// The client's address. `X-Forwarded-For` counts only when the TCP peer is a trusted proxy,
     /// and then the rightmost hop that isn't a trusted proxy is the client. Everything left of it
-    /// is whatever the client chose to claim, so it is never used.
+    /// is whatever the client chose to claim, so it is never used. An entry that does not parse
+    /// as an address ends the walk, and the last trusted address seen is returned.
     pub fn client_ip<'a>(
         &self,
         peer: IpAddr,

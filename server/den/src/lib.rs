@@ -1,4 +1,5 @@
-//! The Imp Den: accounts and shared kits. See PROTOCOL.md.
+//! The Imp Den: accounts, shared kits, the animation catalog, the web gallery and the MCP
+//! endpoint. See PROTOCOL.md.
 #![forbid(unsafe_code)]
 
 pub mod admin;

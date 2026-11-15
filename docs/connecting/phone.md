@@ -74,6 +74,7 @@ Every Imp messages the others the same way, whether it's on the phone, a pocket 
   devices.
 - For your other devices, each device must mark the other **Mine**, on both sides. Until then the Imps meet only
   when one is thrown onto the other's screen. An Imp asked across devices before that says which device to fix.
+
 The talk shows in bubbles over their heads: the question over the Imp asking, a small "thinking" bubble over the one
 asked, then the answer.
 

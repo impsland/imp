@@ -17,18 +17,18 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 // While Imp isn't there (or hasn't said who's out yet), one red Imp stands in.
 const STAND_IN = { name: "", hue: 0, scale: 1, mood: "idle", away: false, traits: null };
 const MAX_IMPS = 4;
-const MIN_TRYING = 600;    // a reconnect shows as "trying" at least this long (ms), so it reads as an answer
-const GIVE_UP = 5000;      // ...and never longer than this
-const AGO_EVERY = 20_000;
-const WANDER_EVERY = 2600;
+const MIN_TRYING = 600;    // A reconnect shows as trying for at least this long (ms), so it reads as an answer.
+const GIVE_UP = 5000;      // Trying never lasts longer than this (ms).
+const AGO_EVERY = 20_000;  // How often the "ago" times in the list are refreshed (ms).
+const WANDER_EVERY = 2600; // How often an Imp glances somewhere when no pointer is over the popup (ms).
 
 const still = reducedMotion();
 const clock = new Clock();
 
-let state = null;          // the background's last word
-let tab = null;            // the tab in front: { url, title, icon }
-let trying = 0;            // when Reconnect was pressed (0: not trying)
-let online = false;        // which layout is showing. Kept steady while trying, so nothing jumps
+let state = null;          // The last state the background sent.
+let tab = null;            // The tab in front: { url, title, icon }.
+let trying = 0;            // When Reconnect was pressed, in milliseconds. Zero means not trying.
+let online = false;        // Which layout is showing. It stays as it was while trying, so nothing jumps.
 let pointer = null;
 let port = null;
 
@@ -54,6 +54,10 @@ function translate() {
 // The one help tip. A "?" button names its words in data-help. The tip opens beside the button, inside the popup.
 const tip = $("tip");
 
+/**
+ * Opens the help tip beside a "?" button, or closes it when it already shows that button's words.
+ * @param {HTMLButtonElement} button The button that was clicked. Its data-help names the words to show.
+ */
 function showTip(button) {
   const key = button.dataset.help;
   if (!key) return;
@@ -88,20 +92,40 @@ function setText(el, text) {
   if (el.textContent !== text) el.textContent = text;
 }
 
+/**
+ * Gets the host name of a URL.
+ * @param {string} url Any URL.
+ * @returns {string} The host, such as "example.com", or "" when the URL can't be read.
+ */
 function hostOf(url) {
   try { return new URL(url).host; } catch { return ""; }
 }
 
+/**
+ * Points an SVG <use> element at one symbol in the sprite.
+ * @param {SVGUseElement} use The element to point.
+ * @param {string} name The symbol id, without the "#".
+ */
 function icon(use, name) {
   use.setAttribute("href", `#${name}`);
 }
 
+/**
+ * Keeps a number inside a range.
+ * @param {number} x The number.
+ * @param {number} lo The smallest allowed value.
+ * @param {number} hi The largest allowed value.
+ * @returns {number} x, limited to the range from lo to hi.
+ */
 function clamp(x, lo, hi) {
   return Math.min(Math.max(x, lo), hi);
 }
 
 // MARK: Render
 
+/**
+ * Draws every part of the popup from the latest state and tab. Each part only touches the DOM when its value changed.
+ */
 function render() {
   const connected = !!state?.connected;
   if (!trying) online = connected;
@@ -128,6 +152,10 @@ function renderStatus(connected) {
 
 // MARK: The tab
 
+/**
+ * Shows the tab in front, its icon, and whether Imp can look inside it.
+ * @param {{url: string, title: string, icon: string} | null} page The tab to show, or null to hide the card.
+ */
 function renderTab(page) {
   $("tab").hidden = !page;
   if (!page) return;
@@ -140,7 +168,7 @@ function renderTab(page) {
   if (!usable) img.removeAttribute("src");
   img.hidden = !usable || img.dataset.broken === page.icon;
   $("tab-fallback").hidden = !img.hidden;
-  // Imp can look inside ordinary web pages. The browser keeps its own pages and store to itself.
+  // Imp can look inside ordinary web pages. The browser keeps its own pages and its extension store to itself.
   const seen = /^https?:/.test(page.url) && !/(chrome\.google\.com\/webstore|chromewebstore\.google\.com|addons\.mozilla\.org)/.test(page.url);
   const sight = $("tab-sight");
   sight.className = `help sight ${seen ? "yes" : "no"}`;
@@ -171,11 +199,11 @@ api.tabs.onUpdated.addListener((id, change, t) => {
 
 // MARK: What Imp did
 
-let activityKey = "";
-let agoCells = [];   // [{ el, at }]
-let allItems = [];   // everything the background remembers, newest first
-let fullOpen = false;
-const PREVIEW = 5;
+let activityKey = "";   // Identifies the rows on show, so an unchanged list is not drawn again.
+let agoCells = [];      // The "ago" labels on show, as [{ el, at }].
+let allItems = [];      // Everything the background remembers, newest first.
+let fullOpen = false;   // Whether the full activity list is on show.
+const PREVIEW = 5;      // How many rows the card shows before "See all".
 
 /** The words that start a line, as the person reads them (also what a search matches). */
 function rowWords(a) {
@@ -201,6 +229,11 @@ function makeRow(a, here) {
   return li;
 }
 
+/**
+ * Shows the recent activity card. The rows are drawn again only when the list changed.
+ * @param {Array<{kind: string, query: string, ok: boolean, host: string, at: number}> | null} items The
+ *   background's activity, newest first, or null to hide the card while Imp is offline.
+ */
 function renderActivity(items) {
   $("activity").hidden = !items;
   if (!items) return;
@@ -218,8 +251,11 @@ function renderActivity(items) {
   tickAgo();
 }
 
-// MARK: The full Lately list: opens in place of the popup's other cards, with search and a scrolling list.
+// MARK: The full activity list. It opens in place of the popup's other cards, with search and a scrolling list.
 
+/**
+ * Draws the full activity list, filtered by the search box.
+ */
 function renderFull() {
   const q = $("full-search").value.trim().toLowerCase();
   const here = tab ? hostOf(tab.url) : "";
@@ -233,6 +269,10 @@ function renderFull() {
   tickAgo();
 }
 
+/**
+ * Shows or hides the full activity list. Closing it returns to the popup's normal cards.
+ * @param {boolean} open True to show the full list.
+ */
 function openFull(open) {
   fullOpen = open;
   document.body.classList.toggle("full", open);
@@ -258,6 +298,11 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+/**
+ * Words for how long ago something happened, such as "now", "5 seconds ago" or "2 hours ago".
+ * @param {number} at The time, in milliseconds since the epoch.
+ * @returns {string} The translated phrase.
+ */
 function ago(at) {
   const s = Math.max(0, Math.round((Date.now() - at) / 1000));
   if (s < 10) return t("extension.ago.now");
@@ -272,8 +317,13 @@ function tickAgo() {
 
 // MARK: The Imps
 
-const cells = [];   // one per Imp on the stage: { root, canvas, name, phone, fig, look, size, mood, rect, wander }
+const cells = [];   // One per Imp on the stage: { root, canvas, tag, name, phone, fig, look, size, mood, rect, wander }.
 
+/**
+ * Builds the card for one Imp on the stage and adds it to the page.
+ * @param {number} n The Imp's position on the stage. It also sets the animation phase, so Imps don't move in step.
+ * @returns {object} The cell: its elements, its drawing (fig), and the values last drawn.
+ */
 function makeCell(n) {
   const root = document.createElement("div");
   root.className = "imp";
@@ -296,11 +346,19 @@ function makeCell(n) {
   return { root, canvas, tag, name, phone, fig, look: "", size: 0, mood: "", rect: null, wander: null };
 }
 
+/**
+ * Takes one Imp off the stage and stops its drawing.
+ * @param {object} cell A cell made by makeCell().
+ */
 function removeCell(cell) {
   clock.remove(cell.fig);
   cell.root.remove();
 }
 
+/**
+ * Shows the Imps in the list, up to MAX_IMPS. Cards are added, removed or updated to match.
+ * @param {Array<object>} list The Imps to show, as the background sent them.
+ */
 function renderImps(list) {
   const shown = list.slice(0, MAX_IMPS);
   const many = shown.length > 2;
@@ -310,7 +368,7 @@ function renderImps(list) {
     if (!cells[n]) { cells[n] = makeCell(n); changed = true; }
     changed = updateCell(cells[n], imp, many) || changed;
   });
-  if (changed) for (const cell of cells) cell.rect = null;   // the layout moved: measure again when needed
+  if (changed) for (const cell of cells) cell.rect = null;   // The layout moved, so measure again when needed.
 }
 
 /** Brings one Imp up to date. True if its size changed. Only what differs is touched. */
@@ -364,7 +422,9 @@ function aimAll() {
 
 let wanderTimer = 0;
 
-// Rests when the popup is hidden: no frames, no timers.
+/**
+ * Pauses the animation and the idle glances while the popup is hidden, and resumes them when it shows again.
+ */
 function rest() {
   clock.pause(document.hidden);
   clearInterval(wanderTimer);
@@ -381,23 +441,27 @@ if (!still) { // with reduced motion the Imps hold still poses and don't follow 
   document.documentElement.addEventListener("pointerleave", () => { pointer = null; aimAll(); });
 }
 document.addEventListener("visibilitychange", rest);
+// Refreshes the "ago" labels. The timer keeps running, but the tick does nothing while the popup is hidden.
 setInterval(() => { if (!document.hidden) tickAgo(); }, AGO_EVERY);
 rest();
 
 // MARK: The background
 
+/**
+ * Opens the port to the background. It is opened again when the background goes to sleep.
+ */
 function connect() {
   try {
     port = api.runtime.connect({ name: "popup" });
   } catch {
-    return; // the extension was reloaded under this popup: nothing to talk to
+    return; // The extension was reloaded under this popup, so there is nothing to talk to.
   }
   port.onMessage.addListener((s) => {
     state = s;
     settle();
     render();
   });
-  // The background was put to sleep: asking again wakes it.
+  // Browsers put the background to sleep and close the port. Connecting again wakes it.
   port.onDisconnect.addListener(() => { port = null; setTimeout(connect, 300); });
 }
 
@@ -421,8 +485,9 @@ $("reconnect").addEventListener("click", () => {
   render();
 });
 
-// Opens Imp's window, starting Imp if it isn't running (its imp:// link). The browser may ask
-// first. The tab stays where it is.
+// Opens Imp's window through its imp:// link, which also starts Imp when it isn't running. The
+// browser may ask first. When the tab in front shows a web page, this navigates that same tab to
+// the link, so the page is replaced. Otherwise it opens a new tab.
 $("open").addEventListener("click", async () => {
   try {
     const [t] = await api.tabs.query({ active: true, currentWindow: true });

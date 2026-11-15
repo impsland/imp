@@ -17,8 +17,8 @@ When something happens, Imp gets your instruction together with what happened, a
 what to do. Triggers can fire on:
 
 - **Keys**: on what you copied (text or a picture).
-- **Clicks** on an Imp. One click opens its chat bubble. A double click opens its settings by default (you can
-  make it talk, or nothing). Three or more clicks run the Imp's click triggers.
+- **Clicks** on an Imp. One click opens its chat bubble. In the starter setup, a double click opens its
+  settings. Two or more clicks run the Imp's click triggers, so you can make a double click talk or do nothing.
 - **Your Mac**: the battery runs low, the charger is plugged in, an app comes to the front, a website
   opens, a time of day arrives, every few minutes, you come back to your desk, the Mac wakes, gets busy
   or hot, or the network drops.

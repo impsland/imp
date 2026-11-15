@@ -32,7 +32,7 @@ screen and lands on the other device. The rules live in `apple/Sources/ImpKit/Li
    the Imp back in from the side it left and a message says why. The bar goes away.
 6. Reduce Motion: the bar fades instead of sliding, and the Imp still drifts (the same flight as the menu send).
 
-Ignored: while a sheet is over the stage (chat, editor, Devices, which is also where all typing happens),
+Ignored: while a sheet is over the canvas (chat, editor, Devices, which is also where all typing happens),
 during a round of Embers or Echo (`engine.isBlocking`), and for one second after a shake (cooldown).
 
 ## Proximity
@@ -67,16 +67,14 @@ and iPhones on 2.0.x work with this unchanged.
 ## The cost of a wrong transfer
 
 Low and reversible, which is why the default is no question: the Imp becomes a visitor on the other
-device (the Imp, its chats and its keys stay home), Undo calls it back, and "Send Home" or "Call Home"
+device (the Imp, its chats and its keys stay home), Undo calls it back, and "Send home" or "Call home"
 still work later. It is higher when the device is somebody else's or far away, so those ask.
 
 ## Failure keeps the Imp intact
 
-The body stays on the stage as "away" until the other device says `took`. A decline, a timeout or a
+The body stays on the canvas as "away" until the other device says `took`. A decline, a timeout or a
 lost connection ends the pass as `declined`, the app brings the body back, and the node marks the Imp
-as not away. Tests in `LinkNodeTests`: `aDeclinedImpBouncesAndIsNotAway`,
-`aThrowNobodyAnswersTimesOutAndTheImpIsCalledHome`, `aTransferInterruptedByALostConnectionLeavesTheImpAtHome`,
-`aLateTookForAnImpOfOursIsToldGone` (a late acceptance cannot leave two bodies).
+as not away. A late acceptance cannot leave two bodies.
 
 ## The three decisions
 
@@ -88,12 +86,12 @@ common, not rare.
 
 (b) Which Imp: the one carried, thrown or flown in last ("moved"), then the one touched last, then
 by name so it is always the same. Compared with the other ideas:
-- last touched alone: a tap opens its chat, and a chat covers the stage, so taps say little about what you want to send.
+- last touched alone: a tap opens its chat, and a chat covers the canvas, so taps say little about what you want to send.
 - last active (working on a task): moving an Imp away mid-task is the worst surprise.
 - nearest the shake: a shake has no place on the screen.
 - the one being looked at: nothing on the phone knows it, apart from touches, which are the same signal.
 Only Imps on the phone's own screen and free (not held, flying, away or still arriving) count. Visiting
-Imps do not: they have their own "Send Home". No Imp is ever sent while a game is on.
+Imps do not: they have their own "Send home". No Imp is ever sent while a game is on.
 
 (c) Direction: by default the direction means nothing, because most people have one device nearby and
 a rule to learn would only get in the way. The "Left or right" setting gives two nearby devices a side:

@@ -114,8 +114,8 @@ Imp is carried near the edge. A side that leads nowhere bounces the Imp back wit
 edges always bounce.
 
 **Passing.** The thrower sends `pass`: a transfer id, the Imp's looks, the entry (side, height, speed),
-and, unless the receiver is the Imp's home, the Imp's home card (device id, name, kind, public key, door
-key, routes) and its ticket. The receiver answers `took`, or `declined` with a reason (full, playing a
+and, unless the receiver is the Imp's home, the Imp's home card (device id, name, kind, Noise public key,
+Ed25519 room key, door key, routes) and its ticket. The receiver answers `took`, or `declined` with a reason (full, playing a
 game, not linked) and the Imp bounces back. No answer in 10 seconds is a decline. A repeated transfer id is
 answered again, never taken twice. A receiver declines an Imp that is one of its own at home, one it
 already has a visit of from another device, and an Imp it is the home of unless the sender is its holder.
@@ -310,7 +310,16 @@ The core models are described in [Core models](/concepts/models).
 
 ## Limits
 
-16 links, 24 visiting Imps, 32 connections, 4 MiB frames, 20 000-character texts, 120-second answers. A
-connection may send 100 frames a second (a burst of 400). More closes it. A host splices at most 32
-guests at the Hop at once. Its waiting connection has 10 seconds to get through the hello and gives up
-after the Hop's wait (5 minutes) and a minute.
+| Limit | Value |
+|-------|-------|
+| Links per device | 16 |
+| Visiting Imps per device | 24 |
+| Connections per device | 32 |
+| Frame size | 4 MiB |
+| Frames per connection | 100 a second, with a burst of 400. More closes the connection |
+| Text in a message | 20 000 characters |
+| Answer to a question | 120 seconds |
+| Guests spliced with one host at the Hop | 16 (`HOP_ROOM_SESSIONS` changes it) |
+| A waiting host at the Hop | gives up after 5 minutes |
+| A guest waiting at the Hop | gives up after 15 seconds |
+| Handshake at the Hop | 10 seconds |

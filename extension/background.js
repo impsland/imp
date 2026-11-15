@@ -1,15 +1,17 @@
-// Imp bridge: tells the Imp desktop app which page the active tab shows, and finds
-// elements / reads text on that page when Imp asks. Talks only to ws://127.0.0.1:47823.
+// Imp bridge: tells the Imp desktop app which page the active tab shows, and finds elements or
+// reads text on that page when Imp asks. It talks only to 127.0.0.1 on port 47823: a WebSocket,
+// and a plain HTTP check on the same port before each attempt.
 // One script for every browser: a service worker in Chrome, an event page in Firefox and Safari.
-// Either may be put to sleep when idle and woken by an event, so nothing is kept anywhere but in
-// these variables: what Imp tells us again on every connection, and a short list of what it just
-// did (gone with the sleep, on purpose).
+// Either may be put to sleep when idle and woken by an event. Nothing is kept except these
+// variables: the Imps Imp last described (sent again on every connection) and a short list of
+// what Imp just did. The list is gone when the script sleeps, on purpose.
 
 const api = globalThis.browser ?? globalThis.chrome;
 const ADDRESS = "ws://127.0.0.1:47823";
-// Sleeping ends timers. An alarm wakes the background again, so Imp started later is found within a minute.
+// Sleeping ends timers. An alarm wakes the background again, so an Imp started later is found within a minute.
 const WAKE_ALARM = "connect";
-const PING_MS = 20_000;     // socket traffic keeps a Chrome service worker alive (Chrome 116+)
+// Sends an unprompted "pong" as a keepalive. Traffic on the socket keeps a Chrome service worker alive (Chrome 116+).
+const PING_MS = 20_000; // Socket traffic keeps a Chrome service worker alive (Chrome 116 and later).
 const RETRY_FIRST = 1_000;
 const RETRY_LAST = 30_000;
 const ACTIVITY_KEPT = 6;
@@ -22,7 +24,7 @@ const state = {
   troupe: [],         // the Imps out, as Imp described them: [{ name, hue, scale, traits, mood, away, status, device }]
   activity: [],       // what Imp just did on pages, newest first: [{ kind, query, ok, host, at }]
 };
-const popups = new Set();   // open popup ports
+const popups = new Set();   // the open popup ports
 const browserReady = detectBrowser().then((name) => { state.browser = name; publish(); return name; });
 
 let socket = null;
@@ -31,8 +33,11 @@ let pingTimer = null;
 let retryTimer = null;
 let lastSent = "";
 
-// The browser's own name when it says (Firefox and its forks), else from the extension's
-// scheme (Safari) or the Chromium brand list (Brave, Edge, Vivaldi, Opera, Chrome).
+/**
+ * Names the browser for Imp. Firefox and its forks say so themselves. Safari is recognised by the
+ * extension's own scheme. Other Chromium browsers are told apart by their brand list.
+ * @returns {Promise<string>} The browser's name, such as "Firefox" or "Chrome".
+ */
 async function detectBrowser() {
   if (api.runtime.getBrowserInfo) return (await api.runtime.getBrowserInfo()).name;
   if (location.protocol === "safari-web-extension:") return "Safari";
@@ -52,7 +57,9 @@ api.runtime.onConnect.addListener((port) => {
   port.postMessage(state);
 });
 
-// Tells every open popup, once per burst of changes.
+/**
+ * Sends the current state to every open popup. Several changes in one turn send it once.
+ */
 let publishQueued = false;
 function publish() {
   if (publishQueued || !popups.size) return;
@@ -85,25 +92,34 @@ function setLink(connected, connecting) {
 // MARK: Connection
 
 // The browser logs every WebSocket that can't connect as an error, even a handled one, so the
-// extension's error list filled up whenever Imp was closed. A failed fetch logs nothing, so a
-// quick knock comes first: a closed port refuses at once, while Imp's socket accepts the
-// connection and waits for a WebSocket handshake (or answers), so the knock times out instead.
+// extension's error list filled up whenever Imp was closed. A failed fetch logs nothing. A quick
+// knock therefore comes first: a closed port refuses at once, while Imp's socket accepts the
+// connection and waits for a WebSocket handshake, so the knock times out instead.
 const KNOCK_MS = 800;
 let knocking = false;
 
+/**
+ * Checks whether something is listening on Imp's port, without opening a WebSocket.
+ * @returns {Promise<boolean>} True when the port answered or accepted the knock and waited.
+ */
 async function impIsListening() {
   const stop = new AbortController();
   const timer = setTimeout(() => stop.abort(), KNOCK_MS);
   try {
     await fetch(ADDRESS.replace(/^ws/, "http") + "/", { cache: "no-store", signal: stop.signal });
-    return true;                                   // something answered on Imp's port
+    return true;                                   // Something answered on Imp's port.
   } catch (e) {
-    return e.name === "AbortError";                // accepted and waiting: Imp is there
+    return e.name === "AbortError";                // The port accepted the knock and waited: Imp is there.
   } finally {
     clearTimeout(timer);
   }
 }
 
+/**
+ * Opens the WebSocket to Imp if Imp is listening and no socket is already open or opening.
+ * Otherwise it schedules another attempt with retry().
+ * @returns {Promise<void>}
+ */
 async function connect() {
   if (knocking || (socket && socket.readyState <= WebSocket.OPEN)) return;
   clearTimeout(retryTimer);
@@ -116,7 +132,8 @@ async function connect() {
   try { s = new WebSocket(ADDRESS); } catch { return retry(); }
   socket = s;
   setLink(false, true);
-  // Each handler checks it still belongs to the current socket: one closed by Reconnect reports late.
+  // Each handler checks that its socket is still the current one, because a socket closed by
+  // Reconnect can report its events late.
   s.onopen = async () => {
     if (s !== socket) return;
     backoff = RETRY_FIRST;
@@ -138,13 +155,18 @@ async function connect() {
   s.onerror = () => s.close();
 }
 
+/**
+ * Schedules the next connect() after the current backoff, then doubles the backoff up to RETRY_LAST.
+ */
 function retry() {
   clearTimeout(retryTimer);
   retryTimer = setTimeout(connect, backoff);
   backoff = Math.min(backoff * 2, RETRY_LAST);
 }
 
-// Drops the socket (if any) and dials again at once. The popup hears "connecting" right away.
+/**
+ * Drops the current socket, if any, and dials again at once. The popup shows "connecting" right away.
+ */
 function reconnect() {
   backoff = RETRY_FIRST;
   const old = socket;
@@ -155,17 +177,28 @@ function reconnect() {
   connect();
 }
 
+/**
+ * Sends one message to Imp as JSON. A message is dropped when the socket isn't open.
+ * @param {object} obj The message to send.
+ */
 function send(obj) {
   if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(obj));
 }
 
 // MARK: The active tab
 
+/**
+ * Finds the tab in front of the last focused window.
+ * @returns {Promise<chrome.tabs.Tab | undefined>} The tab, or undefined when there is none.
+ */
 async function activeTab() {
   const [tab] = await api.tabs.query({ active: true, lastFocusedWindow: true });
   return tab;
 }
 
+/**
+ * Tells Imp the URL and title of the active tab, unless that is what Imp was last told.
+ */
 async function reportActive() {
   const tab = await activeTab();
   if (!tab?.url) return;
@@ -183,6 +216,10 @@ api.windows.onFocusChanged.addListener((w) => { if (w !== api.windows.WINDOW_ID_
 
 // MARK: What Imp asks
 
+/**
+ * Handles one message from Imp: the Imps to show, or a request to find an element or read text.
+ * @param {string} raw The message as received, a JSON string.
+ */
 async function handle(raw) {
   const msg = JSON.parse(raw);
   if (msg.type === "troupe") {
@@ -203,7 +240,14 @@ async function handle(raw) {
   }
 }
 
-// Remembers what Imp just did, for the popup to show (it never holds what the page said).
+/**
+ * Records what Imp just did, for the popup to show. It keeps the search text and the host, but never
+ * what the page said.
+ * @param {"find" | "read"} kind What Imp did.
+ * @param {string} query The text Imp looked for, or "" for a read.
+ * @param {boolean} ok Whether Imp found something or read some text.
+ * @param {chrome.tabs.Tab | undefined} tab The tab the action ran in.
+ */
 function note(kind, query, ok, tab) {
   let host = "";
   try { host = tab?.url ? new URL(tab.url).host : ""; } catch {}
@@ -211,22 +255,38 @@ function note(kind, query, ok, tab) {
   publish();
 }
 
-// On-demand injection: no content script sits on every page. Code runs only when Imp asks.
+/**
+ * Runs a function inside a tab. No content script sits on every page, so code runs only when Imp asks.
+ * @param {chrome.tabs.Tab} tab The tab to run in.
+ * @param {Function} func The function to inject. It must not use anything from this file.
+ * @param {unknown[]} args The arguments to pass to func.
+ * @returns {Promise<unknown>} The function's result, or null when it could not run.
+ */
 async function run(tab, func, args) {
   try {
     const [res] = await api.scripting.executeScript({ target: { tabId: tab.id }, func, args });
     return res?.result;
   } catch {
-    return null; // the browser's own pages and its extension store can't be scripted
+    return null; // The browser's own pages and its extension store can't be scripted, and other failures land here too.
   }
 }
 
-// Injected: self-contained, runs in the page.
+/**
+ * Injected into the page with run(). Returns the page's visible text.
+ * @param {number} limit The most characters to return.
+ * @returns {string} The trimmed text of the page body.
+ */
 function textInPage(limit) {
   return (document.body ? document.body.innerText : "").trim().slice(0, limit);
 }
 
-// Injected: self-contained, runs in the page. Returns screen points, top-left origin.
+/**
+ * Injected into the page with run(). Finds the best visible match for a CSS selector or a label, and
+ * scrolls it into view when it is off screen.
+ * @param {string} query A CSS selector, or text to match against labels such as the button text.
+ * @returns {{x: number, y: number, width: number, height: number} | null} The element's box in screen
+ *   points with a top-left origin, or null when nothing matches.
+ */
 function locateInPage(query) {
   const q = query.trim().toLowerCase();
   if (!q) return null;
@@ -257,7 +317,7 @@ function locateInPage(query) {
     if (score > bestScore) { best = el; bestScore = score; }
   };
 
-  try { // a CSS selector wins if it matches something visible
+  try { // A CSS selector wins when it matches something visible.
     const hit = [...document.querySelectorAll(query)].find(visible);
     if (hit) { best = hit; bestScore = Infinity; }
   } catch {}
@@ -284,11 +344,11 @@ function locateInPage(query) {
 
 // MARK: Start
 
-// This runs on every wake-up, so no install or startup listeners are needed. The alarm is only
-// created when missing: creating it again would push its next ring back each time we wake.
+// This code runs on every wake-up, so it needs no install or startup listeners. The alarm is
+// created only when it is missing, because creating it again would push back its next ring.
 api.alarms.onAlarm.addListener((alarm) => { if (alarm.name === WAKE_ALARM) connect(); });
 api.alarms.get(WAKE_ALARM).then((alarm) => {
-  if (!alarm) api.alarms.create(WAKE_ALARM, { periodInMinutes: 0.5 }); // 30 s is the shortest Chrome allows
+  if (!alarm) api.alarms.create(WAKE_ALARM, { periodInMinutes: 0.5 }); // Chrome allows 30 seconds at the shortest.
 });
 showBadge();
 connect();

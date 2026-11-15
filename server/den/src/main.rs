@@ -9,7 +9,8 @@ use imp_shared::{health, shutdown, telemetry};
 use tokio::net::TcpListener;
 use tokio::sync::watch;
 
-/// musl's allocator is slow under many threads, so the static Alpine build uses mimalloc.
+/// The Alpine image is built against musl, whose allocator is slow under many threads, so every
+/// build uses mimalloc.
 #[global_allocator]
 static ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
@@ -33,6 +34,7 @@ async fn main() -> ExitCode {
     }
 }
 
+/// Checks the local Den's `/healthz` on the port of `DEN_ADDR`. Exits with success on a 200.
 async fn healthcheck() -> ExitCode {
     let listen = env_parse("DEN_ADDR", "0.0.0.0:8080".to_owned()).unwrap_or_default();
     match health::local_target(&listen) {

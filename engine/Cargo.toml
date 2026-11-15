@@ -15,8 +15,9 @@ categories = ["api-bindings", "network-programming"]
 workspace = true
 
 # `io` adds the parts that reach the network and other processes (the OpenAI-compatible client, the
-# stdio MCP transport and the agent loop that runs them). The command line app and the servers use
-# them. The apps reach the core through imp-ffi without them, and do their own I/O.
+# stdio MCP transport and the agent loop that runs them). The command line app (imp-chat) uses the
+# default features. The Hop server turns them off, and the apps reach the core through imp-ffi
+# without them, so they do their own I/O.
 [features]
 default = ["io"]
 io = ["dep:futures-util", "dep:reqwest", "dep:tokio"]

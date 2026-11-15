@@ -305,7 +305,7 @@ impl App {
     ) {
         match message.role {
             Role::User => {
-                // Files picked with @ went to the model; the chat names them under what was written.
+                // Files picked with @ went to the model. The chat names them under what was written.
                 let (text, files) = mentions::shown(&message.content);
                 marked(rows, YOU, self.theme.muted(), text, width);
                 if !files.is_empty() {

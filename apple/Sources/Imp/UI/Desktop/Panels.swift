@@ -16,7 +16,7 @@ final class Panels {
     /// The doors along the desktop's edge while the Imp is carried near it.
     private lazy var doorSigns = DoorSigns(model: model)
     private var bubbleVisible = false
-    /// Builds the right-click menu for this Panels' Imp.
+    /// Builds the right-click menu for an Imp's model. The owner of these panels sets it.
     var menuProvider: ((ImpModel) -> NSMenu)?
 
     static let baseSize: CGFloat = 112
@@ -324,7 +324,7 @@ final class Panels {
     /// An Imp dragged out of the app's window gets its own panel while the pointer is still down. The
     /// original view keeps the mouse, so this follows the pointer itself until it is let go.
     /// `grab` is where the pointer is, from the middle of the Imp. The panel is already where the Imp was
-    /// drawn (`AppModel.setActive(at:)`), so placing it by the grab moves it by no more than the pointer has.
+    /// drawn (`AppModel.setActive(_:_:at:)`), so placing it by the grab moves it by no more than the pointer has.
     func carryFromWindow(grab: CGSize) {
         stopTravel()
         handled(.pressed)
@@ -561,7 +561,7 @@ final class Panels {
     private var laidOutBubble: UUID?
     /// True while we move the bubble ourselves (so it isn't mistaken for the user dragging it).
     private var placingBubble = false
-    private static let overlap: CGFloat = 10        // trail tip dips just below the horns
+    private static let overlap: CGFloat = 10        // how far the trail's tip overlaps the top of Imp's horns
     /// Space kept above the card for the floating ✕.
     private static let headroom: CGFloat = 22
     /// A long reply shows this much text before "Read all" (about ten lines).
@@ -850,8 +850,8 @@ final class Panels {
         let screen = (impPanel.screen ?? NSScreen.main)?.visibleFrame ?? .infinite
         var x = imp.midX - size.width / 2
         x = min(max(x, screen.minX + 4), screen.maxX - size.width - 4)
-        // The trail's tip sits just above Imp's horns. Never lower (it would cover Imp). Only a
-        // bubble taller than the whole screen is pushed down, and then the ✕ still stays visible.
+        // The trail's tip overlaps the top of Imp's horns by `overlap`, so the bubble never covers
+        // Imp. Only a bubble taller than the screen is pushed lower, and then the ✕ stays visible.
         let y = min(imp.maxY - Self.overlap - BubbleView.margin + 4, panelTopLimit(screen) - size.height)
         placingBubble = true
         bubblePanel.setFrameOrigin(CGPoint(x: x, y: y))

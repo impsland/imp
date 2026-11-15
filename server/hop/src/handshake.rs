@@ -15,6 +15,7 @@ pub struct Arrived {
     pub gate: Key,
 }
 
+/// Why the handshake ended without a proven client.
 pub enum Failure {
     /// A bad hello or proof: the client gets `Rejected`.
     Rejected,

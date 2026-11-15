@@ -90,7 +90,7 @@ final class DeviceLink {
     // MARK: Starting and stopping
 
     /// Comes up: listens, advertises, and dials the devices it is linked with. A model that doesn't
-    /// persist (design renders, tests) never touches the real book or the network.
+    /// persist (design renders, tests) never touches the real link file or the network.
     func start() {
         guard app.persists, node == nil else { return }
         let node: LinkNode

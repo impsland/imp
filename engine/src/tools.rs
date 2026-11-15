@@ -37,15 +37,18 @@ impl ToolEntry {
     }
 }
 
+/// The id of a built-in tool group, `own.<group>`.
 pub fn own_group_id(group: &str) -> String {
     format!("own.{group}")
 }
 
+/// The id of a built-in tool, `own.<group>.<tool>`.
 pub fn own_id(group: &str, tool: &str) -> String {
     format!("own.{group}.{tool}")
 }
 
 /// A server name as it appears in ids: anything but ASCII letters, digits, `_` and `-` becomes `_`.
+/// An empty name becomes `_` as well, so an id always has a server part.
 pub fn server_key(name: &str) -> String {
     let mapped: String = name
         .chars()
@@ -64,16 +67,18 @@ pub fn server_key(name: &str) -> String {
     }
 }
 
+/// The id of one MCP server's tool group, `mcp.<server>`, with the server name made into a key.
 pub fn mcp_group_id(server: &str) -> String {
     format!("mcp.{}", server_key(server))
 }
 
+/// The id of one tool of an MCP server, `mcp.<server>.<tool>`. The tool name is used as the server sent it.
 pub fn mcp_id(server: &str, tool: &str) -> String {
     format!("mcp.{}.{tool}", server_key(server))
 }
 
-/// The built-in tool groups in the order the Tools tab lists them, and whether an Imp has the group
-/// before anyone chooses. Computer control and sharing in the Den (which is public) are opt-in.
+/// The built-in tool groups in the order the Tools tab lists them, each with whether an Imp has the
+/// group before anyone chooses. Computer control and sharing in the Den (which is public) are opt-in.
 pub const GROUPS: [(&str, bool); 6] = [
     ("body", true),
     ("senses", true),
