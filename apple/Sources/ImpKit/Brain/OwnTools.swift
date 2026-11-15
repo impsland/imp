@@ -178,28 +178,15 @@ public enum OwnTools {
     }
 
     /// Messaging another Imp. `pocket` names Imps that live on the user's iPhone, which are reached the same way.
+    /// The words and the schema are the core's (`troupe::MessageTool`), so the command line app says the same.
+    /// `desktop`: the Imps are out on the Mac's desktop, answer in their own bubble and send files as links.
     public static func messageSpec(imps: [String], pocket: [String] = [], talk: ImpTalk = .own,
-                                   conversation: Bool = false) -> ToolSpec {
-        var properties: [String: JSONValue] = ["to": ["type": "string", "enum": .array((imps + pocket).map { .string($0) })],
-                                               "text": ["type": "string"]]
-        if talk == .decides {
-            let where_ = "Where the two of you talk: `own` (default) is a private chat between you and that Imp, "
-                + "kept apart from the user's; `shared` is the chat that Imp has with the user (use it when the user "
-                + "should see or take part in what's said)."
-            properties["chat"] = ["type": "string", "enum": ["own", "shared"], "description": .string(where_)]
-        }
-        if conversation {
-            let which = "Which conversation with that Imp: `new` starts a fresh one (a different subject), `continue` goes on in your latest "
-                + "one (a follow-up, it remembers what was said). Leave it out and it continues if you talked recently, else starts new. "
-                + "Only for a private chat between you two."
-            properties["conversation"] = ["type": "string", "enum": ["new", "continue"], "description": .string(which)]
-        }
-        var about = "Send a message to another Imp out on the desktop and get its answer (it shows its own bubble). "
-            + "Keep it short and friendly. Files in the answer come as imp-file:// links: show them with those links exactly as they are "
-            + "(\(openFile) opens one to look at or read). To send a file of yours, put it in your folder and link or embed it in the text."
-        if !pocket.isEmpty { about += " \(pocket.joined(separator: ", ")) are on the user's other devices and answer there." }
-        return ToolSpec(name: message, description: about,
-                        inputSchema: ["type": "object", "properties": .object(properties), "required": ["to", "text"]])
+                                   conversation: Bool = false, desktop: Bool = true) -> ToolSpec {
+        let spec = ImpCore.troupeMessageTool(options: ImpCore.TroupeMessageTool(
+            targets: imps, elsewhere: pocket, place: desktop ? "out on the desktop" : nil, ownBubble: desktop,
+            chatChoice: talk == .decides, conversation: conversation, openFileTool: desktop ? openFile : nil))
+        let schema = (try? JSONValue(jsonString: spec.parametersJson)) ?? ["type": "object"]
+        return ToolSpec(name: spec.name, description: spec.description, inputSchema: schema)
     }
 
     public static var openFileSpec: ToolSpec {

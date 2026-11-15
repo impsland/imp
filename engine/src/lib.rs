@@ -3,6 +3,7 @@
 //! `spec/fixtures`.
 
 pub mod agent;
+pub mod agents;
 pub mod chat;
 pub mod link;
 pub mod local_brain;
@@ -12,6 +13,7 @@ pub mod retry;
 pub mod servers;
 pub mod talk;
 pub mod tools;
+pub mod troupe;
 pub mod workspace;
 
 #[cfg(feature = "io")]

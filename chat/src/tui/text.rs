@@ -47,37 +47,54 @@ pub fn visible_start(total: usize, height: usize, from_bottom: usize) -> (usize,
     (max - from_bottom.min(max), max)
 }
 
-/// The row and column of byte offset `cursor` of `text` once it is wrapped into `lines` by [`wrap`].
-/// Spaces that were dropped where a line broke count as the end of the line before them.
-pub fn cursor_cell(text: &str, lines: &[String], cursor: usize) -> (usize, usize) {
-    let mut pos = 0;
-    for (row, line) in lines.iter().enumerate() {
-        let mut start = pos;
-        let rest = |at: usize| text.get(at..).unwrap_or("");
-        while !rest(start).starts_with(line.as_str()) {
-            match rest(start).chars().next() {
-                Some(c) if c.is_whitespace() && c != '\n' => start += c.len_utf8(),
-                _ => break,
+/// How a row of the transcript joins the row above it when it is copied.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Join {
+    /// A new line, paragraph or message.
+    Hard,
+    /// The same paragraph wrapped: the whitespace the wrap dropped (empty inside a broken word).
+    Soft(String),
+}
+
+/// Like [`wrap`], with how each line joins the one before it.
+pub fn wrap_joined(text: &str, width: usize) -> Vec<(String, Join)> {
+    let mut out = Vec::new();
+    for paragraph in text.split('\n') {
+        let lines = wrap(paragraph, width);
+        let mut pos = 0;
+        for (i, line) in lines.into_iter().enumerate() {
+            let found = paragraph
+                .get(pos..)
+                .and_then(|rest| rest.find(line.as_str()))
+                .map(|at| pos + at);
+            let join = match (i, found) {
+                (0, _) => Join::Hard,
+                (_, Some(at)) => Join::Soft(paragraph[pos..at].to_string()),
+                (_, None) => Join::Soft(" ".into()),
+            };
+            if let Some(at) = found {
+                pos = at + line.len();
             }
-        }
-        if cursor < start && row > 0 {
-            let before = &lines[row - 1];
-            return (row - 1, text_width(before));
-        }
-        let end = (start + line.len()).min(text.len());
-        let mid_word = text
-            .get(end..)
-            .and_then(|t| t.chars().next())
-            .is_some_and(|c| !c.is_whitespace());
-        if cursor < end || (cursor == end && !(mid_word && row + 1 < lines.len())) {
-            let cursor = cursor.max(start);
-            return (row, text.get(start..cursor).map_or(0, text_width));
-        }
-        pos = end;
-        if text.get(pos..).is_some_and(|t| t.starts_with('\n')) {
-            pos += 1;
+            out.push((line, join));
         }
     }
-    let last = lines.last().map_or(0, |l| text_width(l));
-    (lines.len().saturating_sub(1), last)
+    out
+}
+
+/// The part of `s` from column `from` up to (not including) column `to`. A wide letter counts as being
+/// in the column where it starts.
+pub fn slice_cols(s: &str, from: usize, to: usize) -> String {
+    let mut col = 0;
+    let mut out = String::new();
+    for c in s.chars() {
+        let w = text_width(c.encode_utf8(&mut [0; 4]));
+        if col >= to {
+            break;
+        }
+        if col >= from {
+            out.push(c);
+        }
+        col += w;
+    }
+    out
 }

@@ -1,13 +1,11 @@
 import Foundation
+import ImpCore
 
 extension MCPServerConfig {
     /// The stdio command as one editable line, e.g. `npx -y @modelcontextprotocol/server-memory`.
-    /// Splits on whitespace, honouring single/double quotes and backslash escapes.
+    /// Read and written as a shell does (quotes and backslashes), by the core, as the command line app does.
     public var commandLine: String {
-        get {
-            let words = [command] + arguments
-            return words.allSatisfy(\.isEmpty) ? "" : words.map(Self.quote).joined(separator: " ")
-        }
+        get { ImpCore.mcpJoinCommandLine(command: command, args: arguments) }
         set {
             let words = Self.split(newValue)
             command = words.first ?? ""
@@ -16,24 +14,6 @@ extension MCPServerConfig {
     }
 
     static func split(_ line: String) -> [String] {
-        var words: [String] = [], word = "", quote: Character?, escaped = false, inWord = false
-        for ch in line {
-            if escaped { word.append(ch); escaped = false; inWord = true; continue }
-            switch ch {
-            case "\\" where quote != "'": escaped = true
-            case "'", "\"":
-                if quote == nil { quote = ch; inWord = true } else if quote == ch { quote = nil } else { word.append(ch) }
-            case _ where ch.isWhitespace && quote == nil:
-                if inWord { words.append(word); word = ""; inWord = false }
-            default: word.append(ch); inWord = true
-            }
-        }
-        if inWord { words.append(word) }
-        return words
-    }
-
-    static func quote(_ word: String) -> String {
-        guard word.isEmpty || word.contains(where: { $0.isWhitespace || "'\"\\".contains($0) }) else { return word }
-        return "'" + word.replacingOccurrences(of: "'", with: #"'\''"#) + "'"
+        ImpCore.mcpSplitCommandLine(line: line)
     }
 }

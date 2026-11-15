@@ -2,10 +2,12 @@
 //! screen), this computer on the link once it is started, and the answer that is arriving. It waits for
 //! keys, the answer and the link at once, so a phone can talk to an Imp here while the chat is open.
 
-use super::{Action, App};
+use super::{Action, App, clipboard};
 use crate::chat_state::ChatState;
 use crate::link::SeedFile;
 use crate::link::device::{Device, DeviceOptions, StartError, Update};
+use crate::mentions;
+use crate::project::shown_path;
 use crate::session::{Session, SessionOptions};
 use crate::slash::{self, Context, Note, Outcome};
 use crate::{CliError, Result};
@@ -105,6 +107,7 @@ pub async fn run(
         SessionOptions {
             workspace: options.workspace.clone(),
             remote: device.as_ref().map(Device::remote),
+            agents_home: None,
         },
     )
     .await?;
@@ -134,10 +137,7 @@ pub async fn run(
 fn handle(app: &mut App, event: Event) -> Action {
     match event {
         Event::Key(key) => app.on_key(key),
-        Event::Mouse(mouse) => {
-            app.on_mouse(mouse);
-            Action::None
-        }
+        Event::Mouse(mouse) => app.on_mouse(mouse),
         Event::Paste(text) => {
             app.on_paste(&text);
             Action::None
@@ -172,15 +172,21 @@ impl Chat {
         keys: &mut Events,
         device_note: Option<String>,
     ) -> Result<()> {
-        let folder = self.session.workspace.display().to_string();
+        let folder = shown_path(&self.session.workspace);
         let mut app = App::new(
             &self.session.name,
             &self.session.model,
             &self.session.system,
         )
-        .in_folder(&folder);
+        .in_folder(&folder)
+        .with_context(&self.context(crate::strings::Lang::detect()));
+        app.chat.set_exchanges(self.session.memory_exchanges);
+        app.set_files(mentions::list_files(&self.session.workspace));
         for warning in &self.session.warnings {
             app.note(Note::problem(warning.clone()));
+        }
+        for notice in &self.session.notices {
+            app.note(Note::info(notice.clone()));
         }
         if let Some(note) = device_note {
             app.note(Note::info(note));
@@ -188,8 +194,12 @@ impl Chat {
         self.note_away(&mut app);
         let (agent_tx, mut agent_rx) = tokio::sync::mpsc::unbounded_channel::<AgentEvent>();
         let mut running: Option<AgentRun> = None;
-        // Redraws once a second while an answer arrives, so the seconds in the status line move.
-        let mut tick = tokio::time::interval(Duration::from_secs(1));
+        // Redraws ten times a second while an answer is on its way, so the spinner turns and the seconds
+        // move, and once in a while for a word in the status line that goes away.
+        let mut tick = tokio::time::interval(Duration::from_millis(100));
+        tick.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+        // Scrolls while text is dragged past the top or bottom of the transcript.
+        let mut edge = tokio::time::interval(Duration::from_millis(50));
         loop {
             terminal
                 .draw(|frame| app.render(frame))
@@ -198,7 +208,13 @@ impl Chat {
                 biased;
                 Some(event) = keys.recv() => match handle(&mut app, event) {
                     Action::Quit => return Ok(()),
-                    Action::Send(text) => match self.visiting {
+                    Action::Copy(text) => {
+                        clipboard::copy(&text);
+                        app.copied();
+                    }
+                    Action::Send(text) => {
+                        let text = self.attach(&mut app, text);
+                        match self.visiting {
                         Some(visitor) => {
                             let asked = match &self.device {
                                 Some(d) => d.ask_visitor(visitor, &text).await,
@@ -209,13 +225,14 @@ impl Chat {
                             }
                         }
                         None => running = Some(start_agent(&self.session, &app, &agent_tx)),
-                    },
+                        }
+                    }
                     Action::Stop => {
                         if running.take().is_some() {
                             while let Ok(event) = agent_rx.try_recv() {
                                 app.on_agent(&event);
                             }
-                            app.on_done(Ok(()));
+                            app.on_stopped();
                             app.note(Note::info("Stopped."));
                         } else if let (Some(visitor), Some(device)) = (self.visiting, &self.device) {
                             device.tell_visitor(visitor, false).await;
@@ -246,11 +263,54 @@ impl Chat {
                     }
                     running = None;
                     app.on_done(result);
+                    self.note_long_chat(&mut app);
+                    // The Imp may have made or removed files.
+                    app.set_files(mentions::list_files(&self.session.workspace));
                 }
                 update = next_update(&mut self.device) => self.on_update(&mut app, update),
-                _ = tick.tick(), if app.is_waiting() => {}
+                _ = tick.tick(), if app.is_animating() || app.has_flash() => {}
+                _ = edge.tick(), if app.edge_scrolling() => app.on_edge_tick(),
             }
         }
+    }
+
+    /// Puts the files a message names with `@` in it, for the model. The chat shows what was written.
+    fn attach(&self, app: &mut App, text: String) -> String {
+        let attached = mentions::attach(&text, &self.session.workspace);
+        for problem in attached.problems {
+            app.note(Note::problem(problem));
+        }
+        match attached.content {
+            Some(content) => {
+                app.chat.amend_last_user(content.clone());
+                content
+            }
+            None => text,
+        }
+    }
+
+    /// What the folder adds, in a few words for the empty screen: `AGENTS.md · 3 skills · mcp.json`.
+    fn context(&self, lang: crate::strings::Lang) -> String {
+        let project = &self.session.project;
+        let mut parts: Vec<String> = Vec::new();
+        if !project.instructions.is_empty() {
+            parts.push("AGENTS.md".into());
+        }
+        if !project.skills.is_empty() {
+            parts.push(crate::strings::format(
+                lang,
+                "cli.chat.context_skills",
+                &[("count", &project.skills.len().to_string())],
+            ));
+        }
+        if let Some(file) = self.session.agent_file() {
+            let name = file.file_name().map(|n| n.to_string_lossy().to_string());
+            parts.extend(name);
+        }
+        if project.mcp.iter().any(|f| f.trusted) {
+            parts.push("mcp.json".into());
+        }
+        parts.join(" · ")
     }
 
     /// Runs a `/` command. True when the chat should end.
@@ -279,8 +339,10 @@ impl Chat {
                 app.notes_from(notes);
                 if self.visiting.is_none() {
                     app.set_model(&self.session.model, &self.session.system);
+                    app.chat.set_exchanges(self.session.memory_exchanges);
                 }
             }
+            Outcome::Compact => self.compact(app).await,
             Outcome::Sent(notes) => app.notes_from(notes),
             Outcome::Switch(name) => self.switch(app, &name).await,
             Outcome::Visit(id) => {
@@ -302,6 +364,37 @@ impl Chat {
         false
     }
 
+    /// `/compact`: the model sums up what it remembers, and the chat goes on from the summary.
+    async fn compact(&mut self, app: &mut App) {
+        if app.chat.memory().is_empty() {
+            app.note(Note::info("There is nothing to sum up yet."));
+            return;
+        }
+        match self.session.recap(app.chat.memory()).await {
+            Ok(summary) if app.chat.recapped(&summary) => {
+                app.note(Note::info(format!(
+                    "Summed up the chat. {} goes on from this instead of everything said before the last message:",
+                    self.session.name
+                )));
+                app.note(Note::info(summary));
+            }
+            Ok(_) => app.note(Note::problem(
+                "The summary came back empty, so nothing changed.",
+            )),
+            Err(e) => app.note(Note::problem(e.0)),
+        }
+    }
+
+    /// Says once when a chat has grown long, and what to do about it.
+    fn note_long_chat(&self, app: &mut App) {
+        if self.visiting.is_some() {
+            return;
+        }
+        if let Some(tokens) = app.chat.long_chat_notice(self.session.long_chat_tokens) {
+            app.note(Note::info(long_chat_sentence(tokens)));
+        }
+    }
+
     /// Talk to another Imp of this computer.
     async fn switch(&mut self, app: &mut App, name: &str) {
         if name == self.session.name {
@@ -309,10 +402,7 @@ impl Chat {
                 app.note(Note::info(format!("This is {name} already.")));
                 return;
             }
-            let chat = self
-                .stash
-                .take()
-                .unwrap_or_else(|| ChatState::new(self.session.system.clone()));
+            let chat = self.stash.take().unwrap_or_else(|| self.session.new_chat());
             app.switch(&self.session.name, &self.session.model, chat);
             self.note_away(app);
             return;
@@ -320,6 +410,7 @@ impl Chat {
         let options = SessionOptions {
             workspace: Some(self.session.workspace.clone()),
             remote: self.device.as_ref().map(Device::remote),
+            agents_home: None,
         };
         match Session::open(&self.session.path, Some(name), options).await {
             Ok(next) => {
@@ -327,7 +418,7 @@ impl Chat {
                 old.close().await;
                 self.visiting = None;
                 self.stash = None;
-                let chat = ChatState::new(self.session.system.clone());
+                let chat = self.session.new_chat();
                 app.switch(&self.session.name, &self.session.model, chat);
                 for warning in &self.session.warnings {
                     app.note(Note::problem(warning.clone()));
@@ -352,13 +443,10 @@ impl Chat {
 
     fn came_home(&mut self, app: &mut App, imp: &str, messages: Vec<imp_engine::ChatMessage>) {
         if imp == self.session.name && self.visiting.is_none() {
-            let mut chat = ChatState::from_messages(self.session.system.clone(), messages);
+            let mut chat = self.session.chat_from(messages);
             // What was said here before it left is kept when it says nothing new.
             if chat.messages().is_empty() {
-                chat = ChatState::from_messages(
-                    self.session.system.clone(),
-                    app.chat.messages().to_vec(),
-                );
+                chat = self.session.chat_from(app.chat.messages().to_vec());
             }
             app.switch(&self.session.name, &self.session.model, chat);
             app.note(Note::info(format!("{imp} is back.")));
@@ -405,6 +493,14 @@ impl Chat {
             }
         }
     }
+}
+
+/// What the chat says when it has grown long.
+pub fn long_chat_sentence(tokens: usize) -> String {
+    format!(
+        "This chat is long: about {}k tokens go with each message. /compact sums it up so it costs less, /clear starts over.",
+        tokens / 1000
+    )
 }
 
 fn start_agent(

@@ -9,11 +9,13 @@ mod link;
 mod link_ui;
 mod local_brain;
 mod mcp;
+mod mcp_setup;
 mod memory;
 mod retry;
 mod servers;
 mod talk;
 mod tools;
+mod troupe;
 mod workspace;
 
 pub use agent::*;

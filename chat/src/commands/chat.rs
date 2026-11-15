@@ -7,7 +7,7 @@ use super::Io;
 use crate::chat_state::ChatState;
 use crate::link::device::DeviceOptions;
 use crate::session::{Session, SessionOptions};
-use crate::slash::{self, Context, NoteKind, Outcome};
+use crate::slash::{self, Context, Outcome};
 use crate::transcript::{CallLine, call_line, result_line};
 use crate::{CliError, Result};
 use imp_engine::{
@@ -37,15 +37,15 @@ pub async fn run(
 
 /// The line chat with an Imp's session: messages, and the `/` commands that work without a screen.
 async fn plain_chat(session: &mut Session, io: &mut Io<'_>) -> Result<()> {
-    for warning in &session.warnings {
-        writeln!(io.err, "{warning}")?;
+    for line in session.warnings.iter().chain(&session.notices) {
+        writeln!(io.err, "{line}")?;
     }
     writeln!(
         io.err,
         "Chatting with {} ({}). Type /help for commands, /quit to leave.",
         session.name, session.model
     )?;
-    let mut chat = ChatState::new(session.system.clone());
+    let mut chat = session.new_chat();
     loop {
         write!(io.err, "you> ")?;
         io.err.flush()?;
@@ -74,6 +74,16 @@ async fn plain_chat(session: &mut Session, io: &mut Io<'_>) -> Result<()> {
                     chat.clear();
                     writeln!(io.err, "Starting over.")?;
                 }
+                Outcome::Compact if chat.memory().is_empty() => {
+                    writeln!(io.err, "There is nothing to sum up yet.")?;
+                }
+                Outcome::Compact => match session.recap(chat.memory()).await {
+                    Ok(summary) if chat.recapped(&summary) => {
+                        writeln!(io.err, "Summed up the chat:\n{summary}")?;
+                    }
+                    Ok(_) => writeln!(io.err, "! The summary came back empty.")?,
+                    Err(e) => writeln!(io.err, "! {e}")?,
+                },
                 Outcome::Switch(name) => {
                     let next =
                         Session::open(&session.path, Some(&name), SessionOptions::default()).await;
@@ -81,7 +91,7 @@ async fn plain_chat(session: &mut Session, io: &mut Io<'_>) -> Result<()> {
                         Ok(next) => {
                             session.close().await;
                             *session = next;
-                            chat = ChatState::new(session.system.clone());
+                            chat = session.new_chat();
                             writeln!(
                                 io.err,
                                 "Chatting with {} ({}).",
@@ -93,11 +103,7 @@ async fn plain_chat(session: &mut Session, io: &mut Io<'_>) -> Result<()> {
                 }
                 Outcome::Notes(notes) | Outcome::Sent(notes) => {
                     for note in notes {
-                        match note.kind {
-                            NoteKind::Code => writeln!(io.err, "{}", note.text)?,
-                            NoteKind::Info => writeln!(io.err, "{}", note.text)?,
-                            NoteKind::Problem => writeln!(io.err, "! {}", note.text)?,
-                        }
+                        writeln!(io.err, "{}", note.plain())?;
                     }
                 }
                 Outcome::Visit(_) | Outcome::CameHome { .. } => writeln!(
@@ -106,12 +112,19 @@ async fn plain_chat(session: &mut Session, io: &mut Io<'_>) -> Result<()> {
                 )?,
             }
             chat.set_system(session.system.clone());
+            chat.set_exchanges(session.memory_exchanges);
             continue;
         }
         let text = line
             .strip_prefix('/')
             .filter(|l| l.starts_with('/'))
             .unwrap_or(&line);
+        // Files named with @ go with the message.
+        let attached = crate::mentions::attach(text, &session.workspace);
+        for problem in &attached.problems {
+            writeln!(io.err, "{problem}")?;
+        }
+        let text = attached.content.as_deref().unwrap_or(text);
         answer(
             &session.client,
             &session.model,
@@ -124,6 +137,9 @@ async fn plain_chat(session: &mut Session, io: &mut Io<'_>) -> Result<()> {
             io,
         )
         .await?;
+        if let Some(tokens) = chat.long_chat_notice(session.long_chat_tokens) {
+            writeln!(io.err, "{}", crate::tui::long_chat_sentence(tokens))?;
+        }
     }
     Ok(())
 }
@@ -254,10 +270,11 @@ async fn answer(
         },
     )
     .await;
-    if let Err(e) = result {
+    if let Err(e) = &result {
         chat.abort_reply();
         writeln!(io.out)?;
         writeln!(io.err, "Something went wrong: {e}")?;
     }
+    chat.finish_exchange(result.is_ok());
     Ok::<(), CliError>(())
 }

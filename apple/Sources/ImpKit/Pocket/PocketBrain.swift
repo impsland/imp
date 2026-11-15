@@ -148,9 +148,7 @@ struct PocketTools: ToolProvider {
         var specs: [ToolSpec] = []
         if talk.play != nil, !talk.animations.isEmpty { specs.append(OwnTools.playSpec(animations: talk.animations)) }
         if talk.send != nil, !talk.others.isEmpty {
-            var spec = OwnTools.messageSpec(imps: talk.others)
-            spec.description = "Send a message to another of the user's Imps (on their Mac or in their pocket) and get its answer. Keep it short and friendly."
-            specs.append(spec)
+            specs.append(OwnTools.messageSpec(imps: talk.others, desktop: false))
         }
         return specs
     }

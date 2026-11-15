@@ -68,6 +68,63 @@ impl Theme {
             .bg(Color::Rgb(255, 255, 255))
     }
 
+    /// Words that matter in a line: a heading, a name, a setting's value.
+    pub fn strong(&self) -> Style {
+        Style::default().add_modifier(Modifier::BOLD)
+    }
+
+    /// A heading in an answer or a note. The first level is also in the Imp's colour.
+    pub fn heading(&self, first: bool) -> Style {
+        let bold = Style::default().add_modifier(Modifier::BOLD);
+        match (&self.colors, first) {
+            (Some(p), true) => bold.fg(color(p.echo_accent)),
+            _ => bold,
+        }
+    }
+
+    /// The bullet or number of a list item, and the mark of a heading.
+    pub fn bullet(&self) -> Style {
+        match &self.colors {
+            Some(p) => Style::default().fg(color(p.echo_accent)),
+            None => Style::default(),
+        }
+    }
+
+    /// Code in a line of text, such as a command to type: on the soft fill, so it reads as something to copy.
+    pub fn inline_code(&self) -> Style {
+        match &self.colors {
+            Some(p) => Style::default()
+                .fg(color(p.accent_bright))
+                .bg(color(over(p.card, p.surface))),
+            None => Style::default().add_modifier(Modifier::BOLD),
+        }
+    }
+
+    /// A block of code: the soft fill across the row.
+    pub fn code_block(&self) -> Style {
+        match &self.colors {
+            Some(p) => Style::default().bg(color(over(p.card, p.surface))),
+            None => Style::default(),
+        }
+    }
+
+    /// A link.
+    pub fn link(&self) -> Style {
+        let underlined = Style::default().add_modifier(Modifier::UNDERLINED);
+        match &self.colors {
+            Some(p) => underlined.fg(color(p.link)),
+            None => underlined,
+        }
+    }
+
+    /// Something that is on or went well.
+    pub fn good(&self) -> Style {
+        match &self.colors {
+            Some(p) => Style::default().fg(color(p.good)),
+            None => Style::default().add_modifier(Modifier::BOLD),
+        }
+    }
+
     /// Problems.
     pub fn danger(&self) -> Style {
         match &self.colors {

@@ -14,7 +14,7 @@ use imp_engine::{
     BoxFuture, ChatMessage, HostTool, OpenAiClient, RequestLimits, TalkStore, ToolEntry, ToolHost,
     ToolSelection, ToolSpec, Toolbox, run_agent,
 };
-use serde_json::{Value, json};
+use serde_json::Value;
 use std::rc::Rc;
 use std::time::{SystemTime, UNIX_EPOCH};
 use uuid::Uuid;
@@ -170,23 +170,22 @@ impl ImpMessageHost {
         }
     }
 
+    /// The tool as the core words it, with the Imps here and those on other devices apart.
     fn spec(&self) -> ToolSpec {
-        let which = "Which conversation with that Imp: `new` starts a fresh one (a different subject), `continue` goes on in your latest one (a follow-up, it remembers what was said). Leave it out and it continues if you talked recently, else starts new.";
-        ToolSpec {
-            name: TOOL_NAME.into(),
-            description:
-                "Send a message to another Imp and get its answer. Keep it short and friendly."
-                    .into(),
-            parameters: json!({
-                "type": "object",
-                "properties": {
-                    "to": { "type": "string", "enum": self.targets().into_iter().map(|(l, _)| l).collect::<Vec<_>>() },
-                    "text": { "type": "string" },
-                    "conversation": { "type": "string", "enum": ["new", "continue"], "description": which },
-                },
-                "required": ["to", "text"],
-            }),
+        let (mut targets, mut elsewhere) = (Vec::new(), Vec::new());
+        for (label, target) in self.targets() {
+            match target {
+                Target::Here(_) => targets.push(label),
+                Target::Away(_) => elsewhere.push(label),
+            }
         }
+        imp_engine::troupe::MessageTool {
+            targets,
+            elsewhere,
+            conversation: true,
+            ..imp_engine::troupe::MessageTool::default()
+        }
+        .spec()
     }
 }
 
@@ -256,10 +255,7 @@ pub async fn answer_here(
         now,
     );
     let conversation = log.open(continues, now);
-    let mut messages = vec![ChatMessage::system(format!(
-        "{} {sender} is another Imp and is messaging you. Answer them briefly.",
-        system_prompt(to, target),
-    ))];
+    let mut messages = vec![ChatMessage::system(system_prompt(to, target))];
     for m in &conversation.messages {
         messages.push(if m.from == sender {
             ChatMessage::user(&m.text)
@@ -267,7 +263,10 @@ pub async fn answer_here(
             ChatMessage::assistant(&m.text)
         });
     }
-    messages.push(ChatMessage::user(text));
+    // The new message says who sent it, in the core's words, as in the apps.
+    messages.push(ChatMessage::user(imp_engine::troupe::message_turn(
+        sender, text, None,
+    )));
     let answer = run_agent(
         &client,
         &target.model,

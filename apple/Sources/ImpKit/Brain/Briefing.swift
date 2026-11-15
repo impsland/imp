@@ -1,4 +1,5 @@
 import Foundation
+import ImpCore
 
 /// Turns what the user handed over into the user turn the model sees. A picture travels twice:
 /// attached (so a model that can see, sees it) and as a file path (so its commands can work on it).
@@ -67,8 +68,9 @@ public enum Briefing {
     }
 
     /// Another Imp of the troupe sent a message (`imp_message`): its answer goes back to it. `place` says where it is.
+    /// The words are the core's (`troupe::message_turn`), so an Imp is told the same on every device.
     public static func message(from sender: String, _ text: String, place: String = "on the desktop") -> ChatMessage {
-        .user("Message from \(sender), another Imp \(place): “\(text)”\n\n(Your reply goes back to \(sender).)")
+        .user(ImpCore.troupeMessageTurn(sender: sender, text: text, place: place))
     }
 
     /// Stands for the Imp's workspace folder in its instructions.

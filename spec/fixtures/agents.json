@@ -1,0 +1,215 @@
+{
+  "about": "Language-neutral vectors for the shared .agents/ layout: the front matter of Markdown files, an Imp described by agents/NAME.md, a skill's SKILL.md, and ${NAME} values. In `agents`, only the listed fields are checked. A case with `error` must fail with a message containing it, and never contain `never_says`.",
+  "front_matter": [
+    {
+      "name": "text, lists, blocks and comments",
+      "text": "---\nname: pip\ndescription: \"Reads: files\" # note\ntools: [read_file, 'grep']\ndisallowedTools:\n  - write_file\n  - delete\nlong: >\n  one\n  two\nkeep: |\n  a\n  b\nmodel: gpt # comment\nquoted: 'it''s'\n---\nBe kind.\n",
+      "text_values": {
+        "name": "pip",
+        "description": "Reads: files",
+        "long": "one two",
+        "keep": "a\nb",
+        "model": "gpt",
+        "quoted": "it's",
+        "missing": null
+      },
+      "lists": {
+        "tools": [
+          "read_file",
+          "grep"
+        ],
+        "disallowedTools": [
+          "write_file",
+          "delete"
+        ]
+      },
+      "body": "Be kind.\n"
+    },
+    {
+      "name": "a comma list in text",
+      "text": "---\ntools: Read, Grep\n---\n",
+      "text_values": {},
+      "lists": {
+        "tools": [
+          "Read",
+          "Grep"
+        ]
+      },
+      "body": ""
+    },
+    {
+      "name": "no front matter",
+      "text": "# Title\n---\n",
+      "text_values": {
+        "name": null
+      },
+      "body": "# Title\n---\n"
+    },
+    {
+      "name": "an unclosed front matter is text",
+      "text": "---\nname: x\n",
+      "text_values": {
+        "name": null
+      },
+      "body": "---\nname: x\n"
+    },
+    {
+      "name": "Windows line ends and a byte order mark",
+      "text": "﻿---\r\nname: win\r\n---\r\nBody",
+      "text_values": {
+        "name": "win"
+      },
+      "body": "Body"
+    }
+  ],
+  "agents": [
+    {
+      "name": "a whole Imp in one file",
+      "stem": "imp",
+      "text": "---\ndescription: Plans\ndefault: true\nbase_url: https://openrouter.ai/api/v1/\napi_key: ${OPENROUTER_API_KEY}\nmodel: openai/gpt-6-luna\ntools: [read_file, imp_message]\nhue: 0.25\n---\nThe planner.\n",
+      "agent": {
+        "name": "imp",
+        "description": "Plans",
+        "default": true,
+        "base_url": "https://openrouter.ai/api/v1",
+        "api_key_env": "OPENROUTER_API_KEY",
+        "model": "openai/gpt-6-luna",
+        "tools": [
+          "read_file",
+          "imp_message"
+        ],
+        "hue": 0.25,
+        "personality": "The planner."
+      }
+    },
+    {
+      "name": "the name in the front matter wins, $NAME and api_key_env",
+      "stem": "file",
+      "text": "---\nname: pip\napi_key_env: PIP_KEY\nmodel: inherit\n---\n",
+      "agent": {
+        "name": "pip",
+        "api_key_env": "PIP_KEY",
+        "model": null,
+        "personality": null,
+        "default": false,
+        "tools": null
+      }
+    },
+    {
+      "name": "a personality key when there is no text",
+      "stem": "a",
+      "text": "---\npersonality: Short.\napi_key: $A_KEY\ntools_off: [x]\n---\n",
+      "agent": {
+        "personality": "Short.",
+        "api_key_env": "A_KEY",
+        "tools_off": [
+          "x"
+        ]
+      }
+    },
+    {
+      "name": "a key written in the file",
+      "stem": "a",
+      "text": "---\napi_key: sk-or-v1-abcdef\n---\n",
+      "error": "write api_key as ${NAME}",
+      "never_says": "sk-or"
+    },
+    {
+      "name": "a key where its variable's name goes",
+      "stem": "a",
+      "text": "---\napi_key_env: sk-or-v1-abc\n---\n",
+      "error": "api_key_env is the NAME",
+      "never_says": "sk-or"
+    },
+    {
+      "name": "an address that is not the web",
+      "stem": "a",
+      "text": "---\nbase_url: ftp://x\n---\n",
+      "error": "base_url must start with http"
+    },
+    {
+      "name": "a hue out of range",
+      "stem": "a",
+      "text": "---\nhue: 2\n---\n",
+      "error": "hue is a number from 0 to 1"
+    }
+  ],
+  "skills": [
+    {
+      "name": "a skill",
+      "folder": "notes",
+      "text": "---\nname: release-notes\ndescription: >\n  Write the release\n  notes\n---\nSteps",
+      "skill": {
+        "name": "release-notes",
+        "description": "Write the release notes"
+      }
+    },
+    {
+      "name": "the folder names it",
+      "folder": "web-perf",
+      "text": "---\ndescription: \"Measures: speed\"\n---\n",
+      "skill": {
+        "name": "web-perf",
+        "description": "Measures: speed"
+      }
+    },
+    {
+      "name": "no description",
+      "folder": "x",
+      "text": "---\nname: x\n---\n",
+      "error": "no description"
+    },
+    {
+      "name": "a name that is not allowed",
+      "folder": "Bad_Name",
+      "text": "---\ndescription: d\n---\n",
+      "error": "is not allowed"
+    },
+    {
+      "name": "a double dash",
+      "folder": "a--b",
+      "text": "---\ndescription: d\n---\n",
+      "error": "is not allowed"
+    }
+  ],
+  "values": {
+    "env": {
+      "A": "1",
+      "EMPTY": ""
+    },
+    "cases": [
+      {
+        "value": "x${A}y",
+        "filled": "x1y"
+      },
+      {
+        "value": "${B:-dflt}",
+        "filled": "dflt"
+      },
+      {
+        "value": "${EMPTY:-dflt}",
+        "filled": "dflt"
+      },
+      {
+        "value": "${B}",
+        "filled": ""
+      },
+      {
+        "value": "Bearer ${A}",
+        "filled": "Bearer 1"
+      },
+      {
+        "value": "${",
+        "filled": "${"
+      },
+      {
+        "value": "${not a name}",
+        "filled": "${not a name}"
+      },
+      {
+        "value": "plain",
+        "filled": "plain"
+      }
+    ]
+  }
+}

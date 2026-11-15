@@ -49,6 +49,17 @@ The rest of a chat works the same way. These need no I/O, and both the apps and 
   the long-chat notice and the chat title.
 - **Built-in tools** (`engine/src/tools.rs`): one list gives each tool its name, its id and its group. The
   apps run a tool by its core name and never spell one themselves.
+- **What Imps say to each other** (`engine/src/troupe.rs`): the `imp_message` tool's words and schema, and the
+  turn an Imp gets when another Imp messages it. What only one app has (a speech bubble, file links) is an
+  option, so the words are written once.
+- **Adding an MCP server** (`engine/src/mcp/setup.rs`): pasted setup text (a JSON config, an address or a
+  command line), the names suggested for it, MCP config files, and command lines read and written as a
+  shell does.
+- **The `.agents/` layout** (`engine/src/agents.rs`): front matter, agent and skill files, the instructions and
+  skills in the system text, the `use_skill` tool, `${NAME}` values and the digest of what a project asks to
+  be trusted. The command line app reads the folders; an app that adds `.agents/` reuses these rules.
+- **Chat memory** is used by the command line app too: it keeps the core's `ChatMemory` beside the chat it
+  shows, so a long terminal chat is clipped, recapped (`/compact`) and noticed the same way as in the apps.
 
 ## Measurements
 

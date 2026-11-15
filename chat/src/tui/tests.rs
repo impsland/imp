@@ -7,7 +7,7 @@ use imp_engine::{RetryNotice, StreamEvent, ToolCall};
 use ratatui::Terminal;
 use ratatui::backend::TestBackend;
 use ratatui::crossterm::event::{
-    KeyCode, KeyEvent, KeyEventKind, KeyModifiers, MouseEvent, MouseEventKind,
+    KeyCode, KeyEvent, KeyEventKind, KeyModifiers, MouseButton, MouseEvent, MouseEventKind,
 };
 use std::time::Duration;
 
@@ -216,7 +216,7 @@ fn status_shows_retries_and_tools() {
     assert_eq!(app.activity(), "Using the tool read");
     let text = screen(&app, 60, 10).join("\n");
     assert!(text.contains("⏺ read()"), "{text}");
-    assert!(text.contains("⎿ running…"), "{text}");
+    assert!(text.contains("⎿ ⠋ running…"), "{text}");
     app.on_agent(&AgentEvent::ToolResult {
         call_id: "c".into(),
         name: "files__read".into(),
@@ -336,8 +336,9 @@ fn the_help_card_lists_every_key_and_is_not_full_width() {
     let mut app = chatty();
     app.on_key(key(KeyCode::F(1)));
     assert!(app.is_help_open());
-    // The card has grown with the editing keys, so it needs a few more rows to show all of them.
-    let rows = screen(&app, 80, 36);
+    // The card has grown with the editing, file and mouse keys, so it needs a few more rows to show
+    // all of them at once. A shorter screen scrolls it (see the test after this one).
+    let rows = screen(&app, 80, 42);
     let text = rows.join("\n");
     for group in GROUPS {
         for b in *group {
@@ -361,7 +362,7 @@ fn the_help_card_lists_every_key_and_is_not_full_width() {
         .max()
         .unwrap_or(0);
     assert!(card < 80 && widest <= 80, "{text}");
-    let narrow = screen(&app, 36, 56).join("\n");
+    let narrow = screen(&app, 36, 66).join("\n");
     for group in GROUPS {
         for b in *group {
             assert!(
@@ -394,6 +395,7 @@ fn every_key_the_chat_answers_is_in_the_help() {
         "Tab Right",
         "/",
         "Up Down",
+        "Shift+↑ Shift+↓",
         "PgUp PgDn",
         "End",
         "Esc",
@@ -919,7 +921,8 @@ fn a_message_to_another_imp_reads_as_one() {
     app.on_agent(&AgentEvent::ToolStart(call));
     let text = screen(&app, 60, 12).join("\n");
     assert!(text.contains("⇢ zed: How is the weather?"), "{text}");
-    assert!(text.contains("⇠ waiting for zed…"), "{text}");
+    // A spinner turns before it while zed thinks.
+    assert!(text.contains("⇠ ⠋ waiting for zed…"), "{text}");
     app.on_agent(&AgentEvent::ToolResult {
         call_id: "t".into(),
         name: "imp_message".into(),
@@ -994,4 +997,471 @@ fn a_visitor_shows_its_homes_chat_and_what_it_is_writing() {
     visitor.work = None;
     app.show_visitor(&visitor);
     assert_eq!(app.activity(), "Asleep");
+}
+
+fn mouse(app: &mut App, kind: MouseEventKind, column: u16, row: u16) -> Action {
+    app.on_mouse(MouseEvent {
+        kind,
+        column,
+        row,
+        modifiers: KeyModifiers::NONE,
+    })
+}
+
+/// The row of the screen whose text contains `needle`.
+fn row_of(rows: &[String], needle: &str) -> u16 {
+    rows.iter()
+        .position(|r| r.contains(needle))
+        .unwrap_or_else(|| panic!("{needle} is not on screen:\n{}", rows.join("\n"))) as u16
+}
+
+#[test]
+fn the_empty_chat_shows_the_imp_once_and_the_folder_under_the_field() {
+    let app = app("pip", "openai/gpt-6-luna").in_folder("~/Developer/imp");
+    let rows = screen(&app, 80, 30);
+    let text = rows.join("\n");
+    // Who it is and where it works are said once, in the status line.
+    assert_eq!(text.matches("openai/gpt-6-luna").count(), 1, "{text}");
+    assert!(
+        rows[29].starts_with("● pip · openai/gpt-6-luna · ~/Developer/imp"),
+        "{text}"
+    );
+    // The Imp is in the middle of the transcript, left and right.
+    let art = row_of(&rows, "WWWWWWWWW.  wWWWW");
+    let line = &rows[art as usize];
+    let left = line.len() - line.trim_start().len();
+    let width = line.trim().chars().count();
+    assert!(left.abs_diff(80 - left - width) <= 6, "{text}");
+    assert!(art > 2, "there is room above it\n{text}");
+    assert!(text.contains("/model"), "{text}");
+    // Without room for it, only the words show.
+    let short = screen(&app, 80, 12).join("\n");
+    assert!(!short.contains("WWWWWWWWW.  wWWWW"), "{short}");
+    assert!(short.contains("/model"), "{short}");
+    // A narrow status line keeps the end of the folder, then lets it go.
+    let narrow = screen(&app, 56, 30);
+    assert!(narrow[29].contains("…/imp"), "{}", narrow[29]);
+    let tiny = screen(&app, 30, 30);
+    assert!(
+        !tiny[29].contains("imp ·") && tiny[29].contains("Ready"),
+        "{}",
+        tiny[29]
+    );
+}
+
+#[test]
+fn a_short_screen_keeps_the_field_and_status_and_the_help_scrolls() {
+    let mut app = chatty();
+    type_text(&mut app, "draft");
+    // Below ten rows the field has no blank rows around it.
+    let rows = screen(&app, 60, 6);
+    let text = rows.join("\n");
+    assert!(rows[4].contains("› draft"), "{text}");
+    assert!(rows[5].contains("pip"), "{text}");
+    let _ = screen(&app, 60, 2);
+    // A help card that does not fit scrolls, and says so. The arrows scroll it and keep it open.
+    let mut helped = chatty();
+    helped.on_key(key(KeyCode::F(1)));
+    let top = screen(&helped, 60, 16).join("\n");
+    assert!(top.contains("scroll"), "{top}");
+    assert!(top.contains("Send the message"), "{top}");
+    assert!(!top.contains("Open this help from anywhere"), "{top}");
+    helped.on_key(key(KeyCode::End));
+    assert!(helped.is_help_open());
+    let bottom = screen(&helped, 60, 16).join("\n");
+    assert!(bottom.contains("F1"), "{bottom}");
+    helped.on_key(key(KeyCode::Down));
+    mouse(&mut helped, MouseEventKind::ScrollUp, 1, 1);
+    assert!(helped.is_help_open());
+    helped.on_key(key(KeyCode::Char('x')));
+    assert!(!helped.is_help_open());
+    assert_eq!(
+        helped.input(),
+        "",
+        "the key that closes the card is not typed"
+    );
+    // On a wide, short screen the card takes two columns and every key shows.
+    let mut wide = chatty();
+    wide.on_key(key(KeyCode::F(1)));
+    let text = screen(&wide, 200, 30).join("\n");
+    assert!(!text.contains("scroll,"), "{text}");
+    for group in GROUPS {
+        for b in *group {
+            assert!(
+                text.contains(b.label(Lang::En)),
+                "missing {}\n{text}",
+                b.keys
+            );
+        }
+    }
+}
+
+/// A finished chat with a long answer, drawn once so the mouse knows where things are.
+fn answered(width: u16, height: u16) -> App {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "Tell me");
+    app.on_key(key(KeyCode::Enter));
+    answer(
+        &mut app,
+        "The quick brown fox jumps over the lazy dog and keeps running far away\nNew line here",
+    );
+    let _ = screen(&app, width, height);
+    app
+}
+
+#[test]
+fn dragging_over_text_copies_it_without_marks_and_joins_wrapped_lines() {
+    let mut app = answered(30, 16);
+    let rows = screen(&app, 30, 16);
+    let first = row_of(&rows, "● The quick");
+    let last = row_of(&rows, "New line here");
+    assert_eq!(
+        mouse(&mut app, MouseEventKind::Down(MouseButton::Left), 0, first),
+        Action::None
+    );
+    mouse(&mut app, MouseEventKind::Drag(MouseButton::Left), 10, last);
+    let copied = mouse(&mut app, MouseEventKind::Up(MouseButton::Left), 10, last);
+    assert_eq!(
+        copied,
+        Action::Copy(
+            "The quick brown fox jumps over the lazy dog and keeps running far away\nNew line"
+                .into()
+        )
+    );
+    // The chosen text shows reversed.
+    let mut terminal = Terminal::new(TestBackend::new(30, 16)).unwrap();
+    terminal.draw(|f| app.render(f)).unwrap();
+    let cell = &terminal.backend().buffer()[(4, first)];
+    assert!(cell.modifier.contains(ratatui::style::Modifier::REVERSED));
+    // Esc lets go of it before it would leave the chat.
+    assert_eq!(app.on_key(key(KeyCode::Esc)), Action::None);
+    assert!(app.selected_text().is_empty());
+    // A click without a drag copies nothing.
+    mouse(&mut app, MouseEventKind::Down(MouseButton::Left), 5, first);
+    assert_eq!(
+        mouse(&mut app, MouseEventKind::Up(MouseButton::Left), 5, first),
+        Action::None
+    );
+}
+
+#[test]
+fn two_clicks_copy_a_word_three_a_paragraph_and_ctrl_c_copies_again() {
+    let mut app = answered(30, 16);
+    let rows = screen(&app, 30, 16);
+    let first = row_of(&rows, "● The quick");
+    let click = |app: &mut App| {
+        let down = mouse(app, MouseEventKind::Down(MouseButton::Left), 7, first);
+        mouse(app, MouseEventKind::Up(MouseButton::Left), 7, first);
+        down
+    };
+    assert_eq!(click(&mut app), Action::None);
+    assert_eq!(click(&mut app), Action::Copy("quick".into()));
+    assert_eq!(
+        click(&mut app),
+        Action::Copy(
+            "The quick brown fox jumps over the lazy dog and keeps running far away".into()
+        )
+    );
+    assert_eq!(
+        app.on_key(with(KeyCode::Char('c'), KeyModifiers::CONTROL)),
+        Action::Copy(
+            "The quick brown fox jumps over the lazy dog and keeps running far away".into()
+        ),
+        "with text chosen, Ctrl+C copies instead of leaving"
+    );
+    assert_eq!(
+        app.on_key(with(KeyCode::Char('c'), KeyModifiers::CONTROL)),
+        Action::Quit
+    );
+}
+
+#[test]
+fn dragging_past_the_top_scrolls_and_keeps_choosing() {
+    let mut app = app("pip", "m");
+    for i in 0..10 {
+        type_text(&mut app, &format!("question {i}"));
+        app.on_key(key(KeyCode::Enter));
+        answer(&mut app, &format!("answer {i}"));
+    }
+    let rows = screen(&app, 40, 12);
+    let bottom = row_of(&rows, "answer 9");
+    // From the end of the last answer, upwards.
+    mouse(
+        &mut app,
+        MouseEventKind::Down(MouseButton::Left),
+        39,
+        bottom,
+    );
+    mouse(&mut app, MouseEventKind::Drag(MouseButton::Left), 2, 3);
+    assert!(!app.edge_scrolling());
+    // The terminal's top row is the transcript's, so holding the mouse on it scrolls.
+    mouse(&mut app, MouseEventKind::Drag(MouseButton::Left), 2, 0);
+    let _ = screen(&app, 40, 12);
+    assert!(app.edge_scrolling());
+    for _ in 0..3 {
+        app.on_edge_tick();
+        let _ = screen(&app, 40, 12);
+    }
+    assert!(app.scroll() >= 4, "{}", app.scroll());
+    let Action::Copy(text) = mouse(&mut app, MouseEventKind::Up(MouseButton::Left), 2, 0) else {
+        panic!("nothing copied");
+    };
+    assert!(text.ends_with("answer 9"), "{text}");
+    assert!(text.lines().count() > 5, "{text}");
+    assert!(!app.edge_scrolling());
+}
+
+#[test]
+fn while_scrolled_up_new_lines_do_not_move_the_view() {
+    let mut app = app("pip", "m");
+    for i in 0..8 {
+        type_text(&mut app, &format!("question {i}"));
+        app.on_key(key(KeyCode::Enter));
+        answer(&mut app, &format!("answer {i}"));
+    }
+    type_text(&mut app, "more");
+    app.on_key(key(KeyCode::Enter));
+    app.on_agent(&AgentEvent::StepStart);
+    let _ = screen(&app, 40, 12);
+    app.on_key(key(KeyCode::PageUp));
+    let before = screen(&app, 40, 12);
+    assert!(before[11].contains("End ↓ latest"), "{}", before[11]);
+    app.on_agent(&AgentEvent::Stream(StreamEvent::Text(
+        "one\ntwo\nthree\nfour".into(),
+    )));
+    let after = screen(&app, 40, 12);
+    assert_eq!(before[..6], after[..6], "the view moved");
+    app.on_key(key(KeyCode::End));
+    assert!(screen(&app, 40, 12).join("\n").contains("four"));
+}
+
+#[test]
+fn at_lists_the_folders_files_and_enter_puts_one_in_the_message() {
+    let mut app = app("pip", "m");
+    app.set_files(vec![
+        "README.md".into(),
+        "src/".into(),
+        "src/main.rs".into(),
+        "src/menu.rs".into(),
+    ]);
+    type_text(&mut app, "look at @ma");
+    let menu = app.menu();
+    assert!(menu.files);
+    assert_eq!(menu.entries[0].label, "src/main.rs");
+    let text = screen(&app, 60, 14).join("\n");
+    assert!(text.contains("src/main.rs"), "{text}");
+    assert_eq!(
+        app.on_key(key(KeyCode::Enter)),
+        Action::None,
+        "Enter picks, it does not send"
+    );
+    assert_eq!(app.input(), "look at @src/main.rs ");
+    assert!(app.menu().entries.is_empty());
+    // A folder opens to what is in it; the cursor stays after it.
+    type_text(&mut app, "and @sr");
+    app.on_key(key(KeyCode::Tab));
+    assert_eq!(app.input(), "look at @src/main.rs and @src/");
+    let names: Vec<String> = app.menu().entries.iter().map(|e| e.label.clone()).collect();
+    assert_eq!(names, ["src/main.rs", "src/menu.rs"]);
+    // Esc closes the list, and Enter then sends.
+    app.on_key(key(KeyCode::Esc));
+    assert!(matches!(app.on_key(key(KeyCode::Enter)), Action::Send(_)));
+    // In the middle of the text, the rest is kept.
+    let mut mid = self::app("pip", "m");
+    mid.set_files(vec!["notes.txt".into()]);
+    type_text(&mut mid, "read  please");
+    for _ in 0.."  please".len() - 1 {
+        mid.on_key(key(KeyCode::Left));
+    }
+    type_text(&mut mid, "@no");
+    mid.on_key(key(KeyCode::Tab));
+    assert_eq!(mid.input(), "read @notes.txt please");
+    assert_eq!(mid.cursor(), "read @notes.txt".len());
+}
+
+#[test]
+fn a_message_with_files_shows_what_was_written_and_their_names() {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "read @a.txt");
+    app.on_key(key(KeyCode::Enter));
+    app.chat.amend_last_user(format!(
+        "read @a.txt{}\n<file path=\"a.txt\">\nsecret contents\n</file>\n</attached_files>",
+        crate::mentions::ATTACHED
+    ));
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(text.contains("› read @a.txt"), "{text}");
+    assert!(text.contains("⎿ with a.txt"), "{text}");
+    assert!(!text.contains("secret contents"), "{text}");
+    assert!(
+        app.chat.request_messages()[1]
+            .content
+            .contains("secret contents")
+    );
+}
+
+fn cursor_at(app: &App, w: u16, h: u16) -> ratatui::layout::Position {
+    let mut terminal = Terminal::new(TestBackend::new(w, h)).unwrap();
+    terminal.draw(|f| app.render(f)).unwrap();
+    terminal.get_cursor_position().unwrap()
+}
+
+#[test]
+fn a_typed_space_shows_and_moves_the_cursor() {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "a");
+    let after_a = cursor_at(&app, 40, 12).x;
+    type_text(&mut app, " ");
+    assert_eq!(
+        cursor_at(&app, 40, 12).x,
+        after_a + 1,
+        "the space moved the cursor"
+    );
+    type_text(&mut app, " b");
+    let rows = screen(&app, 40, 12);
+    assert!(rows.iter().any(|r| r.contains("› a  b")), "{rows:?}");
+    // A space at the end of a full row is kept, and the next word starts the next row.
+    let mut long = self::app("pip", "m");
+    type_text(&mut long, "hello world again");
+    let rows = screen(&long, 16, 12);
+    assert!(rows.iter().any(|r| r.ends_with("world")), "{rows:?}");
+}
+
+#[test]
+fn up_and_down_move_between_lines_then_through_what_was_sent() {
+    let mut app = app("pip", "m");
+    for said in ["first", "second"] {
+        type_text(&mut app, said);
+        app.on_key(key(KeyCode::Enter));
+        answer(&mut app, "ok");
+    }
+    let _ = screen(&app, 40, 16);
+    // A draft of two lines: Up goes to its first line before it brings back anything.
+    type_text(&mut app, "draft one");
+    app.on_key(with(KeyCode::Char('j'), KeyModifiers::CONTROL));
+    type_text(&mut app, "two");
+    app.on_key(key(KeyCode::Up));
+    assert_eq!(app.input(), "draft one\ntwo");
+    assert_eq!(app.cursor(), 3, "the same column, one line up");
+    app.on_key(key(KeyCode::Up));
+    assert_eq!(app.input(), "second");
+    app.on_key(key(KeyCode::Up));
+    assert_eq!(app.input(), "first");
+    app.on_key(key(KeyCode::Up));
+    assert_eq!(app.input(), "first", "the oldest stays");
+    app.on_key(key(KeyCode::Down));
+    assert_eq!(app.input(), "second");
+    app.on_key(key(KeyCode::Down));
+    assert_eq!(app.input(), "draft one\ntwo", "the draft comes back");
+    app.on_key(key(KeyCode::Down));
+    assert_eq!(app.input(), "draft one\ntwo");
+    // Shift with the arrows scrolls the chat instead.
+    let mut long = self::app("pip", "m");
+    for i in 0..12 {
+        type_text(&mut long, &format!("q{i}"));
+        long.on_key(key(KeyCode::Enter));
+        answer(&mut long, "a");
+    }
+    let _ = screen(&long, 40, 10);
+    long.on_key(with(KeyCode::Up, KeyModifiers::SHIFT));
+    assert_eq!(long.scroll(), 1);
+    assert_eq!(long.input(), "");
+    long.on_key(with(KeyCode::Down, KeyModifiers::SHIFT));
+    assert_eq!(long.scroll(), 0);
+}
+
+#[test]
+fn answers_show_their_markdown_as_styles() {
+    let mut app = chatty();
+    app.on_agent(&AgentEvent::StepEnd);
+    app.on_done(Ok(()));
+    type_text(&mut app, "more");
+    app.on_key(key(KeyCode::Enter));
+    answer(
+        &mut app,
+        "## Steps\n\n- **Open** the `config.toml`\n- Save\n\n```\nlet x = 1;\n```",
+    );
+    let mut terminal = Terminal::new(TestBackend::new(60, 30)).unwrap();
+    terminal.draw(|f| app.render(f)).unwrap();
+    let buffer = terminal.backend().buffer().clone();
+    let rows: Vec<String> = (0..30)
+        .map(|y| (0..60).map(|x| buffer[(x, y)].symbol()).collect::<String>())
+        .collect();
+    let text = rows.join("\n");
+    assert!(text.contains("● Steps"), "{text}");
+    assert!(text.contains("• Open the config.toml"), "{text}");
+    assert!(text.contains("let x = 1;"), "{text}");
+    assert!(
+        !text.contains("**") && !text.contains("```") && !text.contains("## "),
+        "{text}"
+    );
+    let y = rows.iter().position(|r| r.contains("• Open")).unwrap() as u16;
+    let x = rows[y as usize].find("Open").unwrap() as u16;
+    let x = rows[y as usize][..x as usize].chars().count() as u16;
+    assert!(
+        buffer[(x, y)]
+            .modifier
+            .contains(ratatui::style::Modifier::BOLD)
+    );
+}
+
+#[test]
+fn what_a_command_says_is_set_apart_and_lines_up() {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "hello");
+    app.on_key(key(KeyCode::Enter));
+    answer(&mut app, "hi");
+    type_text(&mut app, "/settings");
+    assert!(matches!(
+        app.on_key(key(KeyCode::Enter)),
+        Action::Command(_)
+    ));
+    app.notes_from(vec![
+        Note::heading("pip"),
+        Note::field("model", "m"),
+        Note::field("personality", "Kind."),
+        Note::check(true, "own.troupe.imp_message"),
+        Note::check(false, "mcp.files.delete"),
+        Note::info("Use `/model NAME` to change it."),
+    ]);
+    let rows = screen(&app, 60, 20);
+    let text = rows.join("\n");
+    let command = rows
+        .iter()
+        .position(|r| r.starts_with("› /settings"))
+        .unwrap();
+    assert_eq!(rows[command - 1], "", "a blank row above\n{text}");
+    let model = rows.iter().find(|r| r.contains("model")).unwrap();
+    let kind = rows.iter().find(|r| r.contains("personality")).unwrap();
+    assert_eq!(
+        model.rfind(' ').map(|i| i + 1),
+        kind.find("Kind."),
+        "values line up\n{text}"
+    );
+    assert!(text.contains("✓ own.troupe.imp_message"), "{text}");
+    assert!(text.contains("· mcp.files.delete"), "{text}");
+    assert!(text.contains("Use /model NAME to change it."), "{text}");
+    let last = rows.iter().rposition(|r| r.contains("change it")).unwrap();
+    assert_eq!(rows[last + 1], "", "a blank row below\n{text}");
+}
+
+#[test]
+fn a_long_think_shows_that_the_imp_is_working() {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "hard question");
+    app.on_key(key(KeyCode::Enter));
+    app.on_agent(&AgentEvent::StepStart);
+    assert!(app.is_animating());
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(text.contains("⠋ Thinking… · Esc to stop"), "{text}");
+    app.on_agent(&AgentEvent::Stream(StreamEvent::Text("Here".into())));
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(!text.contains("Thinking…"), "{text}");
+    assert!(text.contains("● Here▌"), "{text}");
+    app.on_done(Ok(()));
+    assert!(!app.is_animating());
+    assert_eq!(super::view::spinner_frame(0), "⠋");
+    assert_ne!(
+        super::view::spinner_frame(100),
+        super::view::spinner_frame(0)
+    );
 }

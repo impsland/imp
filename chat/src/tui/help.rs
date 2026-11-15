@@ -1,4 +1,5 @@
-//! The help card: every key, and what is on the screen, in a few plain words.
+//! The help card: every key, and what is on the screen, in a few plain words. On a short screen it
+//! drops its blank lines, then takes two columns if the screen is wide, and else scrolls.
 
 use super::App;
 use super::text::{text_width, wrap};
@@ -46,15 +47,19 @@ pub const GROUPS: &[&[Binding]] = &[
         key("Left Right", "cli.help.move_cursor"),
         key("Alt+← Alt+→", "cli.help.word_move"),
         key("Home End", "cli.help.line_ends"),
+        key("Up Down", "cli.help.up_down"),
         key("Ctrl+P Ctrl+N", "cli.help.recall"),
         key("/", "cli.help.menu"),
+        key("@", "cli.help.files"),
         key("Tab Right", "cli.help.complete"),
     ],
     &[
-        key("Up Down", "cli.help.scroll_line"),
+        key("Shift+↑ Shift+↓", "cli.help.scroll_line"),
         key("PgUp PgDn", "cli.help.scroll_page"),
         key("End", "cli.help.scroll_end"),
         word("cli.help.key_wheel", "cli.help.wheel"),
+        word("cli.help.key_drag", "cli.help.select"),
+        word("cli.help.key_double_click", "cli.help.select_word"),
     ],
     &[
         key("Esc", "cli.help.stop_or_quit"),
@@ -84,16 +89,27 @@ impl Binding {
     }
 }
 
-/// The lines of the card for an inner width: a title, the groups, and how to close it.
-fn lines(app: &App, inner: usize, compact: bool) -> Vec<Line<'static>> {
+/// The widest key label.
+fn key_width(lang: Lang) -> usize {
+    GROUPS
+        .iter()
+        .flat_map(|g| g.iter())
+        .map(|b| text_width(b.label(lang)))
+        .max()
+        .unwrap_or(0)
+}
+
+/// The lines of some groups for an inner width, with a blank line before each group unless `compact`.
+fn group_lines(
+    app: &App,
+    groups: &[&[Binding]],
+    inner: usize,
+    compact: bool,
+) -> Vec<Line<'static>> {
     let (lang, theme) = (app.lang, &app.theme);
-    let all = || GROUPS.iter().flat_map(|g| g.iter());
-    let key_width = all().map(|b| text_width(b.label(lang))).max().unwrap_or(0);
-    let mut out = vec![Line::styled(
-        strings::text(lang, "cli.help.title"),
-        theme.text().add_modifier(Modifier::BOLD),
-    )];
-    for group in GROUPS {
+    let key_width = key_width(lang);
+    let mut out = Vec::new();
+    for group in groups {
         if !compact {
             out.push(Line::raw(""));
         }
@@ -116,23 +132,56 @@ fn lines(app: &App, inner: usize, compact: bool) -> Vec<Line<'static>> {
             }
         }
     }
+    out
+}
+
+/// The title, `body`, and how to close the card.
+fn framed(app: &App, body: Vec<Line<'static>>) -> Vec<Line<'static>> {
+    let mut out = vec![Line::styled(
+        strings::text(app.lang, "cli.help.title"),
+        app.theme.text().add_modifier(Modifier::BOLD),
+    )];
+    out.extend(body);
     out.push(Line::raw(""));
     out.push(Line::styled(
-        strings::text(lang, "cli.help.close"),
-        theme.muted(),
+        strings::text(app.lang, "cli.help.close"),
+        app.theme.muted(),
     ));
+    out
+}
+
+/// The groups in two columns of `column` width each, `gap` apart, split where the columns are most even.
+fn two_columns(app: &App, column: usize, gap: usize) -> Vec<Line<'static>> {
+    let split = (1..GROUPS.len())
+        .min_by_key(|k| {
+            let left = group_lines(app, &GROUPS[..*k], column, true).len();
+            let right = group_lines(app, &GROUPS[*k..], column, true).len();
+            left.max(right)
+        })
+        .unwrap_or(1);
+    let left = group_lines(app, &GROUPS[..split], column, true);
+    let right = group_lines(app, &GROUPS[split..], column, true);
+    let mut out = vec![Line::raw("")];
+    for i in 0..left.len().max(right.len()) {
+        let mut spans: Vec<Span<'static>> = Vec::new();
+        let mut used = 0;
+        if let Some(l) = left.get(i) {
+            used = l.width();
+            spans.extend(l.spans.iter().cloned());
+        }
+        if let Some(r) = right.get(i) {
+            spans.push(Span::raw(" ".repeat(column.saturating_sub(used) + gap)));
+            spans.extend(r.spans.iter().cloned());
+        }
+        out.push(Line::from(spans));
+    }
     out
 }
 
 /// Draws the card in the middle of `area`, as wide as its words and no wider than the screen.
 pub fn render(app: &App, frame: &mut Frame, area: Rect) {
     let lang = app.lang;
-    let key_width = GROUPS
-        .iter()
-        .flat_map(|g| g.iter())
-        .map(|b| text_width(b.label(lang)))
-        .max()
-        .unwrap_or(0);
+    let key_width = key_width(lang);
     let widest_text = GROUPS
         .iter()
         .flat_map(|g| g.iter())
@@ -141,15 +190,44 @@ pub fn render(app: &App, frame: &mut Frame, area: Rect) {
         .max()
         .unwrap_or(0);
     let pad = 2;
-    let inner = (key_width + 2 + widest_text)
-        .min((area.width as usize).saturating_sub(pad * 2))
-        .max(1);
-    let mut content = lines(app, inner, false);
-    if content.len() + 2 > area.height as usize {
+    let gap = 3;
+    let screen_width = area.width as usize;
+    let room = (area.height as usize).saturating_sub(2);
+    let natural = key_width + 2 + widest_text;
+    let mut inner = natural.min(screen_width.saturating_sub(pad * 2)).max(1);
+    let mut content = framed(app, group_lines(app, GROUPS, inner, false));
+    if content.len() > room {
         // Without the blank lines between the groups, so every key still shows on a short screen.
-        content = lines(app, inner, true);
+        content = framed(app, group_lines(app, GROUPS, inner, true));
     }
-    let width = (inner + pad * 2).min(area.width as usize) as u16;
+    if content.len() > room {
+        // Side by side, when the screen is wide enough for the words to wrap only a little.
+        let column = (natural.min(screen_width.saturating_sub(pad * 2 + gap) / 2)).max(1);
+        if column >= key_width + 24 {
+            let two = framed(app, two_columns(app, column, gap));
+            if two.len() <= room || two.len() < content.len() {
+                content = two;
+                inner = column * 2 + gap;
+            }
+        }
+    }
+    // Still too tall: it scrolls, and its last line says how.
+    let scrolls = content.len() > room && room >= 3;
+    if scrolls {
+        let visible = room - 1;
+        let most = content.len() - visible;
+        let from = app.help_scroll.get().min(most);
+        app.help_scroll.set(from);
+        let mut shown: Vec<Line<'static>> = content.drain(from..from + visible).collect();
+        let up = if from > 0 { "↑ " } else { "  " };
+        let down = if from < most { "↓ " } else { "  " };
+        shown.push(Line::styled(
+            format!("{up}{down}{}", strings::text(lang, "cli.chat.help_scroll")),
+            app.theme.muted(),
+        ));
+        content = shown;
+    }
+    let width = (inner + pad * 2).min(screen_width) as u16;
     let height = (content.len() + 2).min(area.height as usize) as u16;
     let card = Rect::new(
         area.x + (area.width - width) / 2,
@@ -162,7 +240,7 @@ pub fn render(app: &App, frame: &mut Frame, area: Rect) {
     let body = Rect::new(
         card.x + pad as u16,
         card.y + 1,
-        inner as u16,
+        (inner as u16).min(width.saturating_sub(pad as u16)),
         height.saturating_sub(2),
     );
     frame.render_widget(Paragraph::new(content), body.intersection(card));

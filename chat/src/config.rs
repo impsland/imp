@@ -58,7 +58,8 @@ pub struct McpServerConfig {
 }
 
 impl McpServerConfig {
-    fn check(&self, name: &str) -> Result<()> {
+    /// Whether the server is one the settings file can hold, as a sentence when not.
+    pub fn check(&self, name: &str) -> Result<()> {
         let bad = |why: &str| Err(CliError(format!("The MCP server {name}: {why}")));
         match (&self.command, &self.url) {
             (Some(_), Some(_)) | (None, None) => {
@@ -166,12 +167,28 @@ pub struct Config {
     /// The most model requests in one answer, when tools keep being called.
     #[serde(default = "default_max_steps")]
     pub max_steps: usize,
+    /// How many of the chat's latest exchanges are sent with each message. 0 (the default): all
+    /// that are kept, up to the core's limit. Fewer costs less but forgets sooner.
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub memory_exchanges: usize,
+    /// The chat says it has grown long, and suggests `/compact`, when what is sent reaches this many
+    /// tokens. 0 turns it off.
+    #[serde(default = "default_long_chat_tokens")]
+    pub long_chat_tokens: usize,
     /// Minutes after which a conversation between two Imps counts as over.
     #[serde(default = "default_window")]
     pub talk_window_minutes: u32,
     /// Who decides whether a message to another Imp goes on in the last conversation.
     #[serde(default)]
     pub talk_threading: imp_engine::Threading,
+}
+
+fn is_zero(n: &usize) -> bool {
+    *n == 0
+}
+
+fn default_long_chat_tokens() -> usize {
+    imp_engine::memory::NOTICE_DEFAULT_TOKENS
 }
 
 fn default_max_steps() -> usize {
@@ -198,6 +215,8 @@ impl Default for Config {
             retries: default_retries(),
             imps: BTreeMap::new(),
             max_steps: default_max_steps(),
+            memory_exchanges: 0,
+            long_chat_tokens: default_long_chat_tokens(),
             talk_window_minutes: default_window(),
             talk_threading: imp_engine::Threading::default(),
         }
@@ -221,12 +240,9 @@ pub fn valid_imp_name(name: &str) -> bool {
 }
 
 /// Whether `name` can be an environment variable name. This also keeps a pasted key out of the file.
+/// The rule is the core's, shared with the folder's agent files.
 pub fn valid_env_name(name: &str) -> bool {
-    let mut chars = name.chars();
-    chars
-        .next()
-        .is_some_and(|c| c.is_ascii_alphabetic() || c == '_')
-        && chars.all(|c| c.is_ascii_alphanumeric() || c == '_')
+    imp_engine::agents::valid_env_name(name)
 }
 
 impl Config {
@@ -326,7 +342,7 @@ impl Config {
                 }
                 None => {
                     return Err(CliError(
-                        "Which Imp? Use --imp NAME, or `imp config set default_imp NAME`.".into(),
+                        "Which Imp? Use --imp NAME, `imp config set default_imp NAME`, or `default: true` in a folder's .agents/agents/NAME.md.".into(),
                     ));
                 }
             },
@@ -367,9 +383,29 @@ impl Config {
                     .filter(|n| (1..=50).contains(n))
                     .ok_or_else(|| CliError("max_steps must be a number from 1 to 50.".into()))?;
             }
+            "memory_exchanges" => {
+                let most = imp_engine::memory::STORED_EXCHANGES;
+                self.memory_exchanges = value
+                    .parse()
+                    .ok()
+                    .filter(|n| *n <= most)
+                    .ok_or_else(|| {
+                        CliError(format!(
+                            "memory_exchanges is how many exchanges are sent, from 1 to {most}, or 0 for all."
+                        ))
+                    })?;
+            }
+            "long_chat_tokens" => {
+                self.long_chat_tokens = value.parse().ok().ok_or_else(|| {
+                    CliError(
+                        "long_chat_tokens is a number of tokens, such as 250000, or 0 for never."
+                            .into(),
+                    )
+                })?;
+            }
             _ => {
                 return Err(CliError(format!(
-                    "Unknown setting {key}. The settings are default_imp, api_key_env, retries and max_steps."
+                    "Unknown setting {key}. The settings are default_imp, api_key_env, retries, max_steps, memory_exchanges and long_chat_tokens."
                 )));
             }
         }

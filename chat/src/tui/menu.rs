@@ -3,9 +3,13 @@
 //! While a command name is typed the list shows the commands that match it, best first. Once the
 //! name is followed by a space, one line shows how to use the command, and the words that can
 //! follow it (such as `save` after `/api_key`) are listed when there is a fixed set.
+//!
+//! While a word that starts with `@` is typed, anywhere in the message, the list shows the folder's
+//! files that match it. Accepting one puts its path in the message; a folder opens to what is in it.
 
 use super::text::{text_width, truncate};
 use super::{Action, App, MOST_SUGGESTIONS};
+use crate::mentions;
 use crate::slash::{self, Command};
 use ratatui::style::Modifier;
 use ratatui::text::Line;
@@ -19,6 +23,8 @@ pub struct Entry {
     pub about: String,
     /// The command itself, when the list is of commands and not of words after one.
     pub command: Option<&'static Command>,
+    /// Where the cursor goes after accepting it, when not at the end.
+    pub cursor: Option<usize>,
 }
 
 /// What is shown under the field for the text typed.
@@ -27,6 +33,8 @@ pub struct Menu {
     /// How to use the command whose name is typed, once a space follows it.
     pub hint: Option<String>,
     pub entries: Vec<Entry>,
+    /// The list is of files, after `@`: Enter accepts one rather than sending.
+    pub files: bool,
 }
 
 impl App {
@@ -40,6 +48,9 @@ impl App {
 
     /// The list and the hint for the text typed. The list is empty after Esc closed it.
     pub fn menu(&self) -> Menu {
+        if let Some(files) = self.file_menu() {
+            return files;
+        }
         if self.waiting || self.input.contains('\n') || !self.input.starts_with('/') {
             return Menu::default();
         }
@@ -58,12 +69,14 @@ impl App {
                         label: c.usage.to_string(),
                         about: c.about.to_string(),
                         command: Some(c),
+                        cursor: None,
                     })
                     .collect()
             };
             return Menu {
                 hint: None,
                 entries,
+                files: false,
             };
         };
         let Some(command) = slash::find(word) else {
@@ -85,13 +98,50 @@ impl App {
                     label: c.word.to_string(),
                     about: c.about.to_string(),
                     command: None,
+                    cursor: None,
                 })
                 .collect()
         };
         Menu {
             hint: Some(format!("{} — {}", command.usage, command.about)),
             entries,
+            files: false,
         }
+    }
+
+    /// The files for the `@` word at the cursor. None when the cursor is not in one.
+    fn file_menu(&self) -> Option<Menu> {
+        let (start, query) = mentions::mention_at(&self.input, self.cursor)?;
+        if self.menu_closed || self.files.is_empty() {
+            return Some(Menu::default());
+        }
+        let end = mentions::word_end(&self.input, start);
+        let after = &self.input[end..];
+        let entries = mentions::rank(&self.files, query, 50)
+            .into_iter()
+            .map(|path| {
+                let written = mentions::written(path);
+                // A file is followed by a space, a folder by nothing, so its contents show next.
+                let space = if path.ends_with('/') || after.starts_with(char::is_whitespace) {
+                    ""
+                } else {
+                    " "
+                };
+                let insert = format!("{}{written}{space}{after}", &self.input[..start]);
+                Entry {
+                    cursor: Some(start + written.len() + space.len()),
+                    insert,
+                    label: path.to_string(),
+                    about: String::new(),
+                    command: None,
+                }
+            })
+            .collect();
+        Some(Menu {
+            hint: None,
+            entries,
+            files: true,
+        })
     }
 
     /// The highlighted entry, kept inside the list.
@@ -120,8 +170,11 @@ impl App {
     /// Puts the highlighted entry in the field.
     pub(super) fn accept(&mut self, menu: &Menu) -> Action {
         if let Some(entry) = self.picked(menu) {
-            let text = entry.insert.clone();
+            let (text, cursor) = (entry.insert.clone(), entry.cursor);
             self.set_input(text);
+            if let Some(at) = cursor.filter(|at| self.input.is_char_boundary(*at)) {
+                self.cursor = at;
+            }
             self.pick = 0;
         }
         Action::None

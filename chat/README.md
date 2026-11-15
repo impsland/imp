@@ -71,29 +71,38 @@ Everything can also be done inside the chat: `/mcp add files npx -y @modelcontex
 | `imp serve` | Run the Den and the Hop on this computer |
 | `imp qr TEXT` | Draw any text as a QR code |
 
+## What the Imp remembers
+
+The chat shows everything that was said. What the model is sent is the Imp's memory of it, the same as
+in the Mac and iPhone apps: the latest exchanges (all of them by default, see `memory_exchanges`), with
+long tool results clipped. A message that failed or that you stopped still shows, but is not sent again.
+When a chat grows long (`long_chat_tokens`, 250,000 tokens by default) it says so once. `/compact` then
+has the model sum up the chat so far; the summary goes in place of everything before the last exchange,
+so the chat carries on for less. `/clear` starts over.
+
 ## The full-screen chat
 
 In a terminal, `imp chat` shows the conversation with the reply arriving as it is written.
 
 ```text
-● pip · openai/gpt-6-luna
-  /Users/me/projects/my-app
-  Write a message, or type / for commands such as /model, /mcp and /send.
-
 › Ask zed what he thinks of basil.
 ⇢ zed: What do you think of basil?
   ⇠ Arrr, basil's a fine herb, makes a tomato taste shipshape.
 ● Zed likes it: he says it makes tomatoes better.
 
- › Write a message
-● pip · openai/gpt-6-luna                                           Ready · ? help
+ › Write a message, / for commands, @ for files
+● pip · openai/gpt-6-luna · ~/projects/my-app                      Ready · ? help
 ```
+
+An empty chat shows the Imp in the middle of the screen, with how to start and what the folder adds
+(`AGENTS.md · 3 skills`). Who the Imp is, its model and the folder it works in are in the bottom line.
 
 - `›` is what you wrote and `●` is the Imp. `⏺` is a tool it used, with its arguments, and `⎿` is the
   result's first line (or `running…`). `⇢` is a message to another Imp and `⇠` its answer.
 - Dim lines are notes from commands and your devices. They are never sent to the model.
-- The bottom line shows the Imp, its model and what it is doing: `Thinking 3s`, `Using the tool read_file`,
-  `Retrying 2 of 3`, `On iPhone`.
+- The bottom line shows the Imp, its model, the folder, and what it is doing: `Thinking 3s`,
+  `Using the tool read_file`, `Retrying 2 of 3`, `On iPhone`. On a narrow terminal the folder is shortened
+  from the left (`…/my-app`), then left out.
 - Enter sends. Alt+Enter, Shift+Enter or Ctrl+J adds a line. Pasting several lines works.
 - Type `/` to see the commands. Up and Down choose one, Tab or Right puts it in the message, and Enter runs it
   (a command that needs more, such as `/send DEVICE`, is completed instead). Esc closes the list. After a command
@@ -101,10 +110,26 @@ In a terminal, `imp chat` shows the conversation with the reply arriving as it i
 - Left, Right, Home, End (or Ctrl+A, Ctrl+E) move in the message. Alt or Ctrl with Left or Right moves by word.
   Backspace and Delete erase at the cursor, Ctrl+W (or Alt+Backspace) the word before it, Ctrl+U everything.
 - Ctrl+P and Ctrl+N bring back what you sent.
-- PageUp, PageDown, Up, Down (when no list is open) and the mouse wheel scroll. End (with nothing typed) or Ctrl+End jumps back to the newest line.
+- Type `@` to add a file: the folder's files that match what follows are listed (`@main` finds
+  `src/main.rs`), and Tab or Enter puts the path in the message. A folder opens to what is in it. When the
+  message is sent, each file named with `@` goes with it for the Imp to read (text up to 100 KB, 256 KB
+  in all; a folder goes as the list of what is in it). The chat shows `⎿ with notes.txt` under the message.
+  Paths with spaces are written `@"my notes.md"`. A word such as `@zed` that is not a path is left alone.
+- Drag over the conversation to choose text: it is copied as soon as you let go, and the status line says
+  `Copied`. Two clicks copy a word and three a paragraph. Holding the mouse on the top row (or below the
+  last one) scrolls while choosing. The marks (`●`, `›`) are left out, and a paragraph that wrapped is
+  copied as one line. Ctrl+C copies the chosen text again and Esc lets go of it. The text goes to the
+  clipboard with `pbcopy` on a Mac (`wl-copy`, `xclip` or `xsel` on Linux), or, over SSH, through the
+  terminal (OSC 52, which iTerm2, kitty, WezTerm, Ghostty, Alacritty and tmux understand). Most terminals still
+  offer their own selection while a key is held as you drag (Shift in most, Option in iTerm2).
+- PageUp, PageDown, Up, Down (when no list is open) and the mouse wheel scroll. While you read further up,
+  new lines arrive below without moving what you are reading, and the status line says `End ↓ latest`.
+  End (with nothing typed) or Ctrl+End jumps back to the newest line.
 - Esc closes the `/` list, else stops an answer that is arriving, and otherwise leaves. Ctrl+C leaves. The terminal is put back as it
   was, also after an error.
-- `?` (when nothing is typed) or F1 opens a card that explains every key.
+- `?` (when nothing is typed) or F1 opens a card that explains every key. On a short terminal it drops its
+  blank lines, takes two columns if the terminal is wide, and else scrolls with Up, Down and the wheel.
+- On a short terminal the message field loses its blank rows and the Imp's picture is left out.
 
 `imp chat --plain` is the line chat. It is also used when the input or output is not a terminal, for
 example in a pipe. Answers go to standard output and everything else (tool calls, notes) to standard error:
@@ -129,6 +154,7 @@ Type them in the chat. Changes are saved to the settings file and take effect wi
 |---|---|
 | `/help` | List the commands |
 | `/clear` | Start the conversation over |
+| `/compact` | Sum up the chat so far: the Imp goes on from the summary instead of everything said before (also `/recap`) |
 | `/quit` | Leave (also `/exit`) |
 | `/model [NAME]` | Show or change the model, such as `/model openai/gpt-6-luna` |
 | `/base_url [URL]` | Show or change the service address (an OpenAI-compatible `/v1` root) |
@@ -140,9 +166,12 @@ Type them in the chat. Changes are saved to the settings file and take effect wi
 | `/mcp` | List the MCP servers, with their tools or why they did not start |
 | `/mcp add NAME COMMAND [ARGS...]` | Add a server the chat starts. `--env VAR` passes a variable on |
 | `/mcp add NAME URL` | Add a server at an address. `--header NAME` sends a header |
+| `/mcp add {CONFIG}` | Add the servers of a pasted config, such as `{"mcpServers": {...}}`. Only the names of its variables and headers are kept |
 | `/mcp remove NAME`, `/mcp reload` | Remove a server, or start them all again |
 | `/tools`, `/tools off ID`, `/tools on ID` | List the tools by id, switch one off or on |
 | `/settings` | The Imp's settings, its folder and the settings file |
+| `/project` | What this folder's `AGENTS.md` and `.agents/` add (also `/skills`, `/agents`) |
+| `/project trust`, `/project untrust` | Start the MCP servers of the folder's `.agents/mcp.json`, or stop them |
 | `/devices` | Linked devices, the Imps on their screens and the visitors here |
 | `/pair` | Show a code to link a Mac or an iPhone |
 | `/send DEVICE [IMP]` | Send this Imp (or another) to a linked device |
@@ -164,6 +193,8 @@ default_imp = "pip"
 api_key_env = "IMP_API_KEY"   # the variable every Imp reads its key from, unless it names its own
 retries = 3                   # tries again after a failed request, 0 to 10
 max_steps = 10                # the most rounds of tool calls for one answer
+memory_exchanges = 0          # how many of the latest exchanges go with each message, 0 for all
+long_chat_tokens = 250000     # say a chat is long (and suggest /compact) at this many tokens, 0 never
 
 [imps.pip]
 id = "…"                      # made by imp, the same on every device it visits
@@ -177,6 +208,66 @@ api_key_env = "OPENROUTER_API_KEY"   # optional, for this Imp only
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
 ```
+
+## AGENTS.md and the .agents folder
+
+A chat reads the files that other coding agents read too, from its folder's project: the nearest folder,
+from the one you start the chat in up, with a `.agents` folder or a `.git`.
+
+```text
+my-app/
+  AGENTS.md                       instructions for every Imp working here
+  src/AGENTS.md                   more, for a chat started in src/ (read after the one above)
+  .agents/
+    AGENTS.md                     instructions too
+    skills/release-notes/SKILL.md a skill
+    agents/pip.md                 the Imp pip, in this folder
+    mcp.json                      MCP servers for every Imp here
+```
+
+- **AGENTS.md** goes in the system text, after who the Imp is, in the order above (32 KB at most). That
+  is where standing rules belong: the model gives the system text the most weight, it holds for the whole
+  chat and after `/clear`, and it stays the same from message to message, so services that cache the start
+  of a request can reuse it.
+- **Skills** follow the [Agent Skills](https://agentskills.io) format: a `SKILL.md` whose front matter has a
+  `name` (lowercase letters, digits and dashes) and a `description` of when to use it. Only the names and
+  descriptions go in the system text. The Imp gets a tool, `use_skill`, that reads the whole skill and lists
+  the files beside it when a task needs it, so many skills cost few words. `/tools off own.skills.use_skill`
+  switches it off.
+- **agents/NAME.md** is the whole Imp NAME for this folder. The front matter can have `model`, `base_url`,
+  `api_key_env: NAME` (or `api_key: ${NAME}`: the environment variable that holds the key, never the key
+  itself), `tools` (only these are on: tool names such as `read_file`, ids such as `mcp.files.read_file`, or
+  servers such as `mcp.files`), `disallowedTools`, `hue` and `default: true` (the Imp a chat in this
+  folder opens with). The text under it is how the Imp behaves. What a file leaves out comes from your
+  default Imp, and an Imp that is not in your settings file exists only in this folder.
+
+  ```markdown
+  ---
+  description: Reviews changes before they are merged
+  default: true
+  base_url: https://openrouter.ai/api/v1
+  api_key: ${OPENROUTER_API_KEY}
+  model: openai/gpt-6-luna
+  tools: [read_file, search_files, use_skill, imp_message]
+  ---
+  You review code. Say what could break, most serious first, and keep it short.
+  ```
+
+  The Imps of a folder message each other with `imp_message` as the Imps of the settings file do: with
+  `imp.md` and `pip.md`, `imp` can ask `pip`, who answers with its own service, model and personality.
+- **mcp.json** lists servers the usual way: `{"mcpServers": {"NAME": {"command": ..., "args": [...],
+  "env": {...}}}}` or `{"url": ..., "headers": {...}}`. Values can be written in it or taken from the
+  environment with `${NAME}` (or `${NAME:-default}`), and `${workspaceFolder}` is the chat's folder. An
+  Imp's own server of the same name wins.
+- **Trust.** A downloaded project could start programs (its MCP servers) or send your key to its own
+  address (`base_url` with `api_key_env`). So a project's servers and its Imps' `base_url` and key variable
+  are not used until you allow them with `/project trust`; until then those Imps use your default Imp's
+  service, and the chat says what waits. If any of them changes, they wait to be allowed again.
+  `/project untrust` turns them off.
+
+The same layout in your home folder (`~/.agents/AGENTS.md`, `~/.agents/skills/`, `~/.agents/agents/`,
+`~/.agents/mcp.json`) is yours, read in every chat and trusted. A project's skill or Imp replaces yours of
+the same name. `/project` shows what was found, and problems with the files are shown when the chat starts.
 
 ## Tools through MCP servers
 

@@ -1,0 +1,64 @@
+{
+  "about": "Language-neutral vectors for setting up MCP servers: command lines split and quoted as a shell does, the forgiving reading of pasted setup text (with the names it suggests), and the strict reading of a config file such as .agents/mcp.json. Fields left out of a server are empty. A file case with `error` must fail with a message containing it.",
+  "words": [
+    {"line": "npx -y @modelcontextprotocol/server-memory", "words": ["npx", "-y", "@modelcontextprotocol/server-memory"], "unclosed": false},
+    {"line": "npx -y \"@scope/server fs\" '/Users/me/My Docs' a\\ b", "words": ["npx", "-y", "@scope/server fs", "/Users/me/My Docs", "a b"], "unclosed": false},
+    {"line": "say 'it'\\''s'", "words": ["say", "it's"], "unclosed": false},
+    {"line": "echo \"a\\\"b\" 'c\\d' \"e'f\"", "words": ["echo", "a\"b", "c\\d", "e'f"], "unclosed": false},
+    {"line": "x \"\" ''", "words": ["x", "", ""], "unclosed": false},
+    {"line": "  ", "words": [], "unclosed": false},
+    {"line": "open \"unclosed", "words": ["open", "unclosed"], "unclosed": true},
+    {"line": "trailing\\", "words": ["trailing"], "unclosed": true}
+  ],
+  "quote": [
+    {"word": "plain", "quoted": "plain"},
+    {"word": "two words", "quoted": "'two words'"},
+    {"word": "it's", "quoted": "'it'\\''s'"},
+    {"word": "", "quoted": "''"},
+    {"word": "a\"b", "quoted": "'a\"b'"},
+    {"word": "a\\b", "quoted": "'a\\b'"}
+  ],
+  "setup": [
+    {"name": "a Claude-style config", "text": "{\"mcpServers\": {\"github\": {\"command\": \"npx\", \"args\": [\"-y\", \"@modelcontextprotocol/server-github\"], \"env\": {\"GITHUB_TOKEN\": \"t\"}}, \"remote\": {\"type\": \"http\", \"url\": \"https://mcp.example.com/mcp\", \"headers\": {\"Authorization\": \"Bearer x\"}}}}",
+     "servers": [
+       {"name": "github", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-github"], "env": {"GITHUB_TOKEN": "t"}},
+       {"name": "remote", "url": "https://mcp.example.com/mcp", "headers": {"Authorization": "Bearer x"}}
+     ]},
+    {"name": "numbers and empty arguments are kept", "text": "{\"command\": \"srv\", \"args\": [\"--port\", 8080, \"--name\", \"\", \"-v\"]}",
+     "servers": [{"name": "8080", "command": "srv", "args": ["--port", "8080", "--name", "", "-v"]}]},
+    {"name": "a bare pair with a stray comma", "text": "\"memory\": {\"command\": \"npx\", \"args\": [\"-y\", \"@modelcontextprotocol/server-memory\"]},",
+     "servers": [{"name": "memory", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-memory"]}]},
+    {"name": "a whole command line in command", "text": "{\"command\": \"uvx mcp-server-fetch\"}",
+     "servers": [{"name": "Fetch", "command": "uvx", "args": ["mcp-server-fetch"]}]},
+    {"name": "servers, as some editors write it", "text": "{\"servers\": {\"x\": {\"url\": \"https://x.dev/mcp\"}}}",
+     "servers": [{"name": "x", "url": "https://x.dev/mcp"}]},
+    {"name": "serverUrl", "text": "{\"serverUrl\": \"https://api.acme.io/mcp\"}",
+     "servers": [{"name": "Acme", "url": "https://api.acme.io/mcp"}]},
+    {"name": "a shell prompt and a home path", "text": "$ npx -y @modelcontextprotocol/server-filesystem ~/Documents\n",
+     "servers": [{"name": "Filesystem", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "~/Documents"]}]},
+    {"name": "docker", "text": "docker run -i --rm mcp/fetch",
+     "servers": [{"name": "Fetch", "command": "docker", "args": ["run", "-i", "--rm", "mcp/fetch"]}]},
+    {"name": "a version after the package", "text": "npx -y @upstash/context7-mcp@latest",
+     "servers": [{"name": "Context7", "command": "npx", "args": ["-y", "@upstash/context7-mcp@latest"]}]},
+    {"name": "an address", "text": "https://mcp.linear.app/mcp",
+     "servers": [{"name": "Linear", "url": "https://mcp.linear.app/mcp"}]},
+    {"name": "an address with a port", "text": "http://localhost:8931/mcp",
+     "servers": [{"name": "Localhost", "url": "http://localhost:8931/mcp"}]},
+    {"name": "blank", "text": "  ", "servers": []},
+    {"name": "broken JSON", "text": "{not json", "servers": []},
+    {"name": "nothing runnable", "text": "{\"name\": \"nothing runnable\"}", "servers": []}
+  ],
+  "files": [
+    {"name": "a command and an address, one switched off", "text": "{\"mcpServers\": {\"files\": {\"command\": \"npx\", \"args\": [\"-y\", \"server\", \"${workspaceFolder}\"], \"env\": {\"TOKEN\": \"${MY_TOKEN:-none}\"}}, \"off\": {\"command\": \"c\", \"disabled\": true}, \"web\": {\"type\": \"http\", \"url\": \"https://x.dev/mcp\", \"headers\": {\"Authorization\": \"Bearer ${A}\"}}}}",
+     "servers": [
+       {"name": "files", "command": "npx", "args": ["-y", "server", "${workspaceFolder}"], "env": {"TOKEN": "${MY_TOKEN:-none}"}},
+       {"name": "web", "url": "https://x.dev/mcp", "headers": {"Authorization": "Bearer ${A}"}}
+     ]},
+    {"name": "servers, as some editors write it", "text": "{\"servers\": {\"w\": {\"url\": \"https://w.dev/mcp\"}}}",
+     "servers": [{"name": "w", "url": "https://w.dev/mcp"}]},
+    {"name": "no servers at all", "text": "{}", "error": "no \"mcpServers\" object"},
+    {"name": "a server with neither", "text": "{\"mcpServers\": {\"a\": {}}}", "error": "a needs either a \"command\" or a \"url\""},
+    {"name": "an address that is not the web", "text": "{\"mcpServers\": {\"a\": {\"url\": \"ftp://x\"}}}", "error": "must start with http:// or https://"},
+    {"name": "not JSON", "text": "mcpServers: files", "error": "it is not JSON"}
+  ]
+}

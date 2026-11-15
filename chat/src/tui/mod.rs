@@ -2,11 +2,16 @@
 //! and agent events can be tested without a terminal. `run` is the thin part that talks to one.
 //!
 //! `mod.rs` is the state and the keys, `view` draws it, `help` is the card the `?` key opens, `text`
-//! measures and wraps, `terminal` owns the real terminal, the session, the device and the event loop.
+//! measures and wraps, `select` is choosing transcript text with the mouse to copy it, `clipboard` puts
+//! it on the system clipboard, `terminal` owns the real terminal, the session, the device and the event loop.
 
+mod clipboard;
+mod field;
 mod help;
 mod input;
+mod markdown;
 mod menu;
+mod select;
 mod terminal;
 mod text;
 mod view;
@@ -21,15 +26,15 @@ use crate::strings::{self, Lang};
 use crate::theme::Theme;
 use imp_engine::{AgentEvent, ChatMessage};
 use ratatui::crossterm::event::{
-    KeyCode, KeyEvent, KeyEventKind, KeyModifiers, MouseEvent, MouseEventKind,
+    KeyCode, KeyEvent, KeyEventKind, KeyModifiers, MouseButton, MouseEvent, MouseEventKind,
 };
 use std::cell::Cell;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 use uuid::Uuid;
 
 pub use help::{Binding, GROUPS};
 pub use menu::Entry;
-pub use terminal::run;
+pub use terminal::{long_chat_sentence, run};
 pub use text::{visible_start, wrap};
 
 /// What a key asks the program to do.
@@ -43,6 +48,8 @@ pub enum Action {
     Command(String),
     /// Stop the answer that is arriving.
     Stop,
+    /// Put this text on the clipboard.
+    Copy(String),
 }
 
 /// How many lines the mouse wheel moves.
@@ -53,6 +60,8 @@ const MAX_INPUT_HEIGHT: u16 = 8;
 const MOST_SUGGESTIONS: usize = 6;
 /// The most messages kept to walk back through with Ctrl+P.
 const MOST_RECALLED: usize = 100;
+/// How long a short word such as "Copied" stays in the status line.
+const FLASH: Duration = Duration::from_secs(2);
 
 /// A visiting Imp on screen: its chat lives at its home device.
 #[derive(Debug, Clone, PartialEq)]
@@ -76,11 +85,29 @@ pub struct App {
     /// Which entry of the `/` list is highlighted, and whether Esc closed the list.
     pick: usize,
     menu_closed: bool,
-    /// How many lines the transcript is scrolled up from the bottom.
-    scroll: usize,
+    /// How many lines the transcript is scrolled up from the bottom. Drawing raises it when lines arrive
+    /// below while it is above zero, so what is being read stays where it is.
+    scroll: Cell<usize>,
     /// Set while drawing: the transcript's height and how far it can scroll.
     viewport: Cell<usize>,
     max_scroll: Cell<usize>,
+    /// Set while drawing: where the transcript is and which of its rows shows first, for the mouse.
+    view: Cell<select::View>,
+    /// Text chosen with the mouse, in rows of the transcript, and whether the button is still down.
+    selection: Cell<Option<select::Selection>>,
+    dragging: bool,
+    /// While dragging past the top (true) or bottom (false) of the transcript, it scrolls on its own.
+    edge: Option<bool>,
+    /// The last click, to tell a double or triple click.
+    last_click: Option<(Instant, u16, u16, u8)>,
+    /// A short word for the status line and when it was said ("Copied").
+    flash: Option<(String, Instant)>,
+    /// How far the help card is scrolled, on a screen too short for it.
+    help_scroll: Cell<usize>,
+    /// The folder's files and folders, for `@`.
+    files: Vec<String>,
+    /// What the folder adds (AGENTS.md, skills), in a few words for the empty screen.
+    context: String,
     waiting: bool,
     /// When the answer that is arriving was asked for.
     started: Option<Instant>,
@@ -95,9 +122,13 @@ pub struct App {
     /// The device this Imp is on, while it is away.
     away: Option<String>,
     visiting: Option<Visiting>,
-    /// What was sent before, for Ctrl+P and Ctrl+N.
+    /// What was sent before, for Up and Down (and Ctrl+P and Ctrl+N), and what was being written
+    /// before the walk through it started, which comes back after the newest.
     recalled: Vec<String>,
     recall_at: Option<usize>,
+    draft: Option<String>,
+    /// Set while drawing: the width of the message field, for moving up and down its rows.
+    field_width: Cell<usize>,
     /// The folder the chat was started in, for the empty screen.
     folder: String,
     lang: Lang,
@@ -118,9 +149,18 @@ impl App {
             cursor: 0,
             pick: 0,
             menu_closed: false,
-            scroll: 0,
+            scroll: Cell::new(0),
             viewport: Cell::new(10),
             max_scroll: Cell::new(0),
+            view: Cell::new(select::View::default()),
+            selection: Cell::new(None),
+            dragging: false,
+            edge: None,
+            last_click: None,
+            flash: None,
+            help_scroll: Cell::new(0),
+            files: Vec::new(),
+            context: String::new(),
             waiting: false,
             started: None,
             retry: None,
@@ -133,6 +173,8 @@ impl App {
             visiting: None,
             recalled: Vec::new(),
             recall_at: None,
+            draft: None,
+            field_width: Cell::new(80),
             folder: String::new(),
             lang: Lang::detect(),
             theme: Theme::detect(),
@@ -146,10 +188,38 @@ impl App {
         self
     }
 
-    /// The folder shown on the empty screen.
+    /// The folder shown in the status line.
     pub fn in_folder(mut self, folder: &str) -> Self {
         self.folder = folder.to_string();
         self
+    }
+
+    /// What the folder adds, in a few words for the empty screen, such as `AGENTS.md · 3 skills`.
+    pub fn with_context(mut self, context: &str) -> Self {
+        self.context = context.to_string();
+        self
+    }
+
+    /// The folder's files and folders (folders end with `/`), offered after `@`.
+    pub fn set_files(&mut self, files: Vec<String>) {
+        self.files = files;
+    }
+
+    /// Says in the status line for a moment that text was copied.
+    pub fn copied(&mut self) {
+        self.flash(strings::text(self.lang, "cli.chat.copied"));
+    }
+
+    /// Says something short in the status line for a moment, such as "Copied".
+    pub fn flash(&mut self, word: &str) {
+        self.flash = Some((word.to_string(), Instant::now()));
+    }
+
+    /// Whether the status line says something that will go away, so the screen must be drawn again.
+    pub fn has_flash(&self) -> bool {
+        self.flash
+            .as_ref()
+            .is_some_and(|(_, at)| at.elapsed() < FLASH)
     }
 
     pub fn input(&self) -> &str {
@@ -157,7 +227,11 @@ impl App {
     }
 
     pub fn scroll(&self) -> usize {
-        self.scroll
+        self.scroll.get()
+    }
+
+    fn set_scroll(&mut self, lines: usize) {
+        self.scroll.set(lines);
     }
 
     pub fn is_waiting(&self) -> bool {
@@ -192,11 +266,30 @@ impl App {
             return Action::None;
         }
         if self.help {
-            self.help = false;
-            return Action::None;
+            return self.help_key(key);
         }
         let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
+        // With text chosen, Esc lets go of it and Ctrl+C copies it again instead of leaving.
+        if self.selection.get().is_some() {
+            match key.code {
+                KeyCode::Esc => {
+                    self.selection.set(None);
+                    return Action::None;
+                }
+                KeyCode::Char('c') if ctrl => {
+                    let text = self.selected_text();
+                    self.selection.set(None);
+                    return if text.is_empty() {
+                        Action::None
+                    } else {
+                        Action::Copy(text)
+                    };
+                }
+                _ => {}
+            }
+        }
         let alt = key.modifiers.contains(KeyModifiers::ALT);
+        let shift = key.modifiers.contains(KeyModifiers::SHIFT);
         let newline_mod = key
             .modifiers
             .intersects(KeyModifiers::SHIFT | KeyModifiers::ALT);
@@ -224,6 +317,10 @@ impl App {
             KeyCode::Char('n') if ctrl => self.recall(false),
             KeyCode::Up if open => self.move_pick(&menu, false),
             KeyCode::Down if open => self.move_pick(&menu, true),
+            KeyCode::Up if shift => self.scroll_by(1, true),
+            KeyCode::Down if shift => self.scroll_by(1, false),
+            KeyCode::Up => self.up_or_back(),
+            KeyCode::Down => self.down_or_forward(),
             KeyCode::Tab if open => self.accept(&menu),
             KeyCode::Right if open && at_end => self.accept(&menu),
             KeyCode::Tab => {
@@ -242,7 +339,7 @@ impl App {
             KeyCode::Right => self.move_cursor(App::right),
             KeyCode::Home => self.move_cursor(App::line_start),
             KeyCode::End if ctrl || self.input.is_empty() => {
-                self.scroll = 0;
+                self.set_scroll(0);
                 Action::None
             }
             KeyCode::End => self.move_cursor(App::line_end),
@@ -251,14 +348,16 @@ impl App {
             }
             KeyCode::PageUp => self.scroll_by(self.page(), true),
             KeyCode::PageDown => self.scroll_by(self.page(), false),
-            KeyCode::Up => self.scroll_by(1, true),
-            KeyCode::Down => self.scroll_by(1, false),
             _ => Action::None,
         }
     }
 
-    /// Enter on the highlighted command runs it, or completes it when it cannot run bare.
+    /// Enter on the highlighted command runs it, or completes it when it cannot run bare. On a file
+    /// after `@` it puts the file in the message.
     fn enter(&mut self, menu: &menu::Menu) -> Action {
+        if menu.files && !menu.entries.is_empty() {
+            return self.accept(menu);
+        }
         if let Some(command) = self.picked(menu).and_then(|e| e.command) {
             if slash::needs_args(command) {
                 return self.accept(menu);
@@ -270,19 +369,38 @@ impl App {
 
     fn show_help(&mut self) -> Action {
         self.help = true;
+        self.help_scroll.set(0);
+        Action::None
+    }
+
+    /// While the help card is open, the arrows and pages scroll it (on a short screen) and any other key closes it.
+    fn help_key(&mut self, key: KeyEvent) -> Action {
+        let at = self.help_scroll.get();
+        let page = self.page();
+        match key.code {
+            KeyCode::Up => self.help_scroll.set(at.saturating_sub(1)),
+            KeyCode::Down => self.help_scroll.set(at + 1),
+            KeyCode::PageUp => self.help_scroll.set(at.saturating_sub(page)),
+            KeyCode::PageDown => self.help_scroll.set(at + page),
+            KeyCode::Home => self.help_scroll.set(0),
+            KeyCode::End => self.help_scroll.set(usize::MAX / 2),
+            _ => self.help = false,
+        }
         Action::None
     }
 
     /// A change to the text: it starts the `/` list over and leaves the walk through what was sent.
     fn edit(&mut self, change: impl FnOnce(&mut App)) -> Action {
         change(self);
+        self.selection.set(None);
         self.recall_at = None;
         self.pick = 0;
         self.menu_closed = false;
         Action::None
     }
 
-    /// Ctrl+P puts the message sent before in the field, Ctrl+N the one after.
+    /// Puts the message sent before in the field (`back`), or the one after. Past the newest comes back
+    /// what was being written when the walk started, so nothing typed is lost.
     fn recall(&mut self, back: bool) -> Action {
         if self.recalled.is_empty() {
             return Action::None;
@@ -290,14 +408,48 @@ impl App {
         let last = self.recalled.len() - 1;
         let at = match (self.recall_at, back) {
             (None, true) => Some(last),
-            (None, false) => None,
+            (None, false) => return Action::None,
             (Some(i), true) => Some(i.saturating_sub(1)),
             (Some(i), false) if i < last => Some(i + 1),
             (Some(_), false) => None,
         };
+        if self.recall_at.is_none() {
+            self.draft = Some(self.input.clone());
+        }
         self.recall_at = at;
-        let text = at.map(|i| self.recalled[i].clone()).unwrap_or_default();
+        let text = match at {
+            Some(i) => self.recalled[i].clone(),
+            None => self.draft.take().unwrap_or_default(),
+        };
         self.set_input(text);
+        Action::None
+    }
+
+    /// The row of the field the cursor is on, the rows, and the cursor's column.
+    fn field_place(&self) -> (usize, Vec<field::Row>, usize) {
+        let rows = field::layout(&self.input, self.field_width.get());
+        let (row, col) = field::cursor_cell(&self.input, &rows, self.cursor);
+        (row, rows, col)
+    }
+
+    /// Up moves to the row above in the message. On its first row it brings back what was sent before,
+    /// as in a shell.
+    fn up_or_back(&mut self) -> Action {
+        let (row, rows, col) = self.field_place();
+        if row == 0 {
+            return self.recall(true);
+        }
+        self.cursor = field::offset_at(&self.input, &rows, row - 1, col);
+        Action::None
+    }
+
+    /// Down moves to the row below. On the last row it goes forward through what was sent.
+    fn down_or_forward(&mut self) -> Action {
+        let (row, rows, col) = self.field_place();
+        if row + 1 >= rows.len() {
+            return self.recall(false);
+        }
+        self.cursor = field::offset_at(&self.input, &rows, row + 1, col);
         Action::None
     }
 
@@ -306,10 +458,11 @@ impl App {
     }
 
     fn scroll_by(&mut self, lines: usize, up: bool) -> Action {
+        let now = self.scroll.get();
         if up {
-            self.scroll = (self.scroll + lines).min(self.max_scroll.get());
+            self.set_scroll((now + lines).min(self.max_scroll.get()));
         } else {
-            self.scroll = self.scroll.saturating_sub(lines);
+            self.set_scroll(now.saturating_sub(lines));
         }
         Action::None
     }
@@ -344,12 +497,12 @@ impl App {
                 return Action::None;
             }
             self.set_input(String::new());
-            self.scroll = 0;
+            self.set_scroll(0);
             self.error = None;
             if !text.starts_with("/api_key") && !text.starts_with("/key") {
                 self.remember(&text);
             }
-            self.note(Note::info(format!("› {}", slash::shown(&text))));
+            self.note(Note::command(slash::shown(&text)));
             return Action::Command(text);
         }
         let text = text
@@ -384,7 +537,7 @@ impl App {
         }
         self.remember(&text);
         self.set_input(String::new());
-        self.scroll = 0;
+        self.set_scroll(0);
         self.error = None;
         self.waiting = true;
         self.started = Some(Instant::now());
@@ -395,20 +548,43 @@ impl App {
     pub fn clear(&mut self) {
         self.chat.clear();
         self.notes.clear();
-        self.scroll = 0;
+        self.selection.set(None);
+        self.set_scroll(0);
         self.error = None;
     }
 
-    pub fn on_mouse(&mut self, mouse: MouseEvent) {
-        match mouse.kind {
-            MouseEventKind::ScrollUp => {
-                self.scroll_by(WHEEL_LINES, true);
+    /// The wheel scrolls (the help card, when it is open). Dragging over the transcript chooses text,
+    /// which is copied when the button is let go; two clicks choose a word and three a paragraph.
+    pub fn on_mouse(&mut self, mouse: MouseEvent) -> Action {
+        if self.help {
+            match mouse.kind {
+                MouseEventKind::ScrollUp => self
+                    .help_scroll
+                    .set(self.help_scroll.get().saturating_sub(WHEEL_LINES)),
+                MouseEventKind::ScrollDown => {
+                    self.help_scroll.set(self.help_scroll.get() + WHEEL_LINES);
+                }
+                MouseEventKind::Down(_) => self.help = false,
+                _ => {}
             }
-            MouseEventKind::ScrollDown => {
-                self.scroll_by(WHEEL_LINES, false);
-            }
-            _ => {}
+            return Action::None;
         }
+        match mouse.kind {
+            MouseEventKind::ScrollUp => self.scroll_by(WHEEL_LINES, true),
+            MouseEventKind::ScrollDown => self.scroll_by(WHEEL_LINES, false),
+            MouseEventKind::Down(MouseButton::Left) => self.press(mouse.column, mouse.row),
+            MouseEventKind::Drag(MouseButton::Left) => {
+                self.drag(mouse.column, mouse.row);
+                Action::None
+            }
+            MouseEventKind::Up(MouseButton::Left) => self.release(),
+            _ => Action::None,
+        }
+    }
+
+    /// While text is dragged past the edge of the transcript, it scrolls this often.
+    pub fn edge_scrolling(&self) -> bool {
+        self.dragging && self.edge.is_some()
     }
 
     pub fn on_paste(&mut self, text: &str) {
@@ -421,7 +597,7 @@ impl App {
     /// A line under the conversation so far. It is never sent to the model.
     pub fn note(&mut self, note: Note) {
         self.notes.push((self.chat.messages().len(), note));
-        self.scroll = 0;
+        self.set_scroll(0);
     }
 
     pub fn notes_from(&mut self, notes: Vec<Note>) {
@@ -446,7 +622,8 @@ impl App {
         self.waiting = false;
         self.started = None;
         self.error = None;
-        self.scroll = 0;
+        self.selection.set(None);
+        self.set_scroll(0);
     }
 
     /// The model or the system text changed for the next message.
@@ -470,7 +647,8 @@ impl App {
             .is_none_or(|v| v.id != visitor.look.id);
         if first {
             self.notes.clear();
-            self.scroll = 0;
+            self.selection.set(None);
+            self.set_scroll(0);
             self.error = None;
         }
         self.imp = visitor.look.name.clone();
@@ -527,14 +705,27 @@ impl App {
 
     /// The answer is complete, or it failed with a sentence to show.
     pub fn on_done(&mut self, result: std::result::Result<(), String>) {
+        // An answer is remembered for the next message. A failed one is not sent again.
+        let answered = result.is_ok() && self.visiting.is_none();
+        self.finish(answered);
+        self.error = result.err();
+    }
+
+    /// The person stopped the answer. What arrived still shows, but it is not sent again.
+    pub fn on_stopped(&mut self) {
+        self.finish(false);
+        self.error = None;
+    }
+
+    fn finish(&mut self, answered: bool) {
         if self.chat.is_streaming() {
             self.chat.abort_reply();
         }
+        self.chat.finish_exchange(answered);
         self.waiting = false;
         self.started = None;
         self.retry = None;
         self.tool = None;
-        self.error = result.err();
     }
 
     /// A plain sentence about something that did not start, shown where problems are shown.
@@ -542,9 +733,31 @@ impl App {
         self.error = Some(sentence.to_string());
     }
 
+    /// The spinner's frame now: it turns while an answer is on its way.
+    pub(super) fn spinner(&self) -> &'static str {
+        let ms = self.started.map_or(0, |s| s.elapsed().as_millis());
+        view::spinner_frame(ms)
+    }
+
+    /// ` 4s` once an answer has taken a second, or nothing.
+    pub(super) fn seconds(&self) -> String {
+        self.started
+            .map(|s| s.elapsed().as_secs())
+            .filter(|s| *s > 0)
+            .map_or(String::new(), |s| format!(" {s}s"))
+    }
+
+    /// Whether something on the screen moves, so it is drawn again often.
+    pub fn is_animating(&self) -> bool {
+        self.waiting
+    }
+
     /// What the status line says on its right side.
     pub fn activity(&self) -> String {
         let lang = self.lang;
+        if let Some((word, _)) = self.flash.as_ref().filter(|_| self.has_flash()) {
+            return word.clone();
+        }
         let seconds = self
             .started
             .map(|s| s.elapsed().as_secs())

@@ -28,9 +28,9 @@
   },
   "cli.chat.input_hint": {
     "note": "Faint hint in the empty message field.",
-    "en": "Write a message, or / for commands",
-    "es": "Escribe un mensaje, o / para comandos",
-    "zh-Hans": "输入消息，或输入 / 使用命令"
+    "en": "Write a message, / for commands, @ for files",
+    "es": "Escribe un mensaje, / para comandos, @ para archivos",
+    "zh-Hans": "输入消息，/ 使用命令，@ 选择文件"
   },
   "cli.chat.input_wait": {
     "note": "Faint hint in the message field while the Imp answers.",
@@ -115,7 +115,7 @@
     "zh-Hans": "删除一个字符"
   },
   "cli.help.scroll_line": {
-    "note": "Help for the up and down arrows.",
+    "note": "Help for Shift with the up and down arrows: scroll the chat.",
     "en": "Scroll a line",
     "es": "Una línea",
     "zh-Hans": "滚动一行字"
@@ -205,10 +205,10 @@
     "zh-Hans": "Imp 此刻在做什么"
   },
   "cli.chat.welcome_hint": {
-    "note": "Shown under the Imp's name on an empty chat.",
-    "en": "Write a message, or type / for commands such as /model, /mcp and /send. Up and Down choose, Tab completes.",
-    "es": "Escribe un mensaje, o / para comandos como /model, /mcp y /send. Arriba y abajo eligen, Tab completa.",
-    "zh-Hans": "输入消息，或输入 / 使用 /model、/mcp、/send 等命令。用上下键选择，Tab 补全。"
+    "note": "Shown under the Imp on an empty chat. Its name, model and folder are in the status line.",
+    "en": "Write a message. Type / for commands such as /model and /mcp, @ to add a file, ? for every key. Drag over text to copy it.",
+    "es": "Escribe un mensaje. / para comandos como /model y /mcp, @ para añadir un archivo, ? para ver las teclas. Arrastra sobre un texto para copiarlo.",
+    "zh-Hans": "输入消息。输入 / 使用 /model、/mcp 等命令，@ 添加文件，? 查看所有按键。拖动选中文字即可复制。"
   },
   "cli.chat.running": {
     "note": "Under a tool call whose result has not come yet.",
@@ -305,5 +305,83 @@
     "en": "Erase the word before",
     "es": "Borrar la palabra anterior",
     "zh-Hans": "删除前一个词"
+  },
+  "cli.chat.scrolled_hint": {
+    "note": "Status line hint while the chat is scrolled up: End goes back to the latest lines.",
+    "en": "End ↓ latest",
+    "es": "Fin ↓ lo último",
+    "zh-Hans": "End ↓ 最新"
+  },
+  "cli.chat.copied": {
+    "note": "Said for a moment in the status line after text was copied.",
+    "en": "Copied",
+    "es": "Copiado",
+    "zh-Hans": "已复制"
+  },
+  "cli.chat.attached": {
+    "note": "Under a message: the files picked with @ that went with it. {files} is a list of paths.",
+    "en": "with {files}",
+    "es": "con {files}",
+    "zh-Hans": "附带 {files}",
+    "args": {
+      "files": "string"
+    }
+  },
+  "cli.chat.help_scroll": {
+    "note": "Last line of the help card when the screen is too short for all of it.",
+    "en": "Up Down scroll, any other key closes",
+    "es": "Arriba y abajo desplazan, otra tecla cierra",
+    "zh-Hans": "上下键滚动，其他键关闭"
+  },
+  "cli.chat.context_skills": {
+    "note": "On the empty chat, how many skills the folder has. {count} is a number.",
+    "en": "{count} skills",
+    "es": "{count} habilidades",
+    "zh-Hans": "{count} 个技能",
+    "args": {
+      "count": "string"
+    }
+  },
+  "cli.help.files": {
+    "note": "Help for the @ key.",
+    "en": "Add a file or folder to the message",
+    "es": "Añadir un archivo o carpeta al mensaje",
+    "zh-Hans": "在消息中添加文件或文件夹"
+  },
+  "cli.help.key_drag": {
+    "note": "The word for dragging with the mouse, in the place of a key name.",
+    "en": "Drag",
+    "es": "Arrastrar",
+    "zh-Hans": "拖动"
+  },
+  "cli.help.select": {
+    "note": "Help for dragging over text.",
+    "en": "Choose text, copied when you let go",
+    "es": "Elegir texto, se copia al soltar",
+    "zh-Hans": "选中文字，松开即复制"
+  },
+  "cli.help.key_double_click": {
+    "note": "The word for a double click, in the place of a key name.",
+    "en": "Double-click",
+    "es": "Doble clic",
+    "zh-Hans": "双击"
+  },
+  "cli.help.select_word": {
+    "note": "Help for double and triple clicks.",
+    "en": "Copy a word, or a paragraph with three clicks",
+    "es": "Copiar una palabra, o un párrafo con tres clics",
+    "zh-Hans": "复制一个词，三击复制整段"
+  },
+  "cli.chat.stop_hint": {
+    "note": "After Thinking while the Imp works on an answer: the key that stops it.",
+    "en": "Esc to stop",
+    "es": "Esc para detener",
+    "zh-Hans": "按 Esc 停止"
+  },
+  "cli.help.up_down": {
+    "note": "Help for Up and Down in the message field.",
+    "en": "Move between lines, then through what you sent",
+    "es": "Moverse entre líneas, luego por lo enviado",
+    "zh-Hans": "在行间移动，再浏览已发送的内容"
   }
 }

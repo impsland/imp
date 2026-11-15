@@ -3,6 +3,7 @@
 //! - `cli` is the command line grammar and `commands` what each command does.
 //! - `config` is the settings file and `keys` where API keys come from.
 //! - `session` is an Imp ready to chat: its model client, MCP servers and tools.
+//! - `project` is what a folder's `AGENTS.md` and `.agents/` add, `mentions` the files picked with `@`.
 //! - `chat_state` is the conversation (no input or output in it), `transcript` how tool calls read,
 //!   `slash` the `/` commands of a chat, `tui` the full-screen chat.
 //! - `troupe` is Imps messaging each other, `link` this computer as one of the person's devices.
@@ -14,6 +15,8 @@ pub mod commands;
 pub mod config;
 pub mod keys;
 pub mod link;
+pub mod mentions;
+pub mod project;
 pub mod qr;
 pub mod serve;
 pub mod session;

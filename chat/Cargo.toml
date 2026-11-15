@@ -28,12 +28,14 @@ imp-den.workspace = true
 directories.workspace = true
 futures-util = { workspace = true, features = ["alloc"] }
 hex.workspace = true
+sha2.workspace = true
 imp-hop.workspace = true
 if-addrs.workspace = true
 imp-engine.workspace = true
 keyring.workspace = true
 qrcode.workspace = true
 rand.workspace = true
+pulldown-cmark.workspace = true
 ratatui.workspace = true
 serde_json.workspace = true
 textwrap.workspace = true

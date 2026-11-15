@@ -1034,6 +1034,7 @@ impl Device {
                     SessionOptions {
                         workspace,
                         remote: None,
+                        agents_home: None,
                     },
                 )
                 .await
@@ -1121,6 +1122,7 @@ impl Device {
                 result = run => Some(result),
                 _ = stopped => None,
             };
+            let finished = result.is_some();
             match result {
                 Some(Ok(text)) => turn.reply = text,
                 Some(Err(e)) => {
@@ -1134,6 +1136,7 @@ impl Device {
             if chat.is_streaming() {
                 chat.abort_reply();
             }
+            chat.finish_exchange(!turn.failed && finished);
             turn.steps = steps.into_inner();
             Done::Home(Box::new(HomeDone {
                 imp,

@@ -40,6 +40,9 @@ pub struct MemoryRules {
     pub turn_limit: u32,
     pub recap_preface: String,
     pub recap_acknowledgement: String,
+    /// The long-chat notice by default, in tokens, and the thresholds a person can choose besides off.
+    pub notice_default_tokens: u32,
+    pub notice_choices: Vec<u32>,
 }
 
 impl From<MemoryCall> for memory::MemoryCall {
@@ -127,6 +130,8 @@ pub fn memory_rules() -> MemoryRules {
         turn_limit: memory::TURN_LIMIT as u32,
         recap_preface: memory::RECAP_PREFACE.to_string(),
         recap_acknowledgement: memory::RECAP_ACKNOWLEDGEMENT.to_string(),
+        notice_default_tokens: memory::NOTICE_DEFAULT_TOKENS as u32,
+        notice_choices: memory::NOTICE_CHOICES.iter().map(|c| *c as u32).collect(),
     }
 }
 

@@ -3,13 +3,14 @@
 //! `protocol` holds every rule and needs no I/O, so the apps reach it through `imp-ffi` and bring
 //! their own transports. With the `io` feature this module also has the transports: a child process
 //! (see `client`) and an HTTP client (see `http`). Both only move text and ask `protocol` what it
-//! means.
+//! means. `setup` reads what a person pastes to add a server, and MCP config files.
 
 #[cfg(feature = "io")]
 mod client;
 #[cfg(feature = "io")]
 mod http;
 pub mod protocol;
+pub mod setup;
 
 #[cfg(feature = "io")]
 pub use client::{McpClient, McpEndpoint, McpError, McpHost, McpSecrets, McpServerSpec};

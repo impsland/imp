@@ -4,62 +4,9 @@ use imp_chat::config::Config;
 use imp_chat::troupe::ImpMessageHost;
 use imp_engine::{TalkStore, ToolHost, ToolSelection};
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tokio::net::TcpListener;
 
-/// Answers every request with "Answer N" and records the request bodies.
-async fn mock() -> (String, Arc<Mutex<Vec<String>>>) {
-    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-    let url = format!("http://{}/v1", listener.local_addr().unwrap());
-    let seen = Arc::new(Mutex::new(Vec::<String>::new()));
-    let log = seen.clone();
-    tokio::spawn(async move {
-        loop {
-            let Ok((mut socket, _)) = listener.accept().await else {
-                return;
-            };
-            let log = log.clone();
-            tokio::spawn(async move {
-                let mut data = Vec::new();
-                let mut buf = [0u8; 8192];
-                let body = loop {
-                    let read = socket.read(&mut buf).await.unwrap_or(0);
-                    data.extend_from_slice(&buf[..read]);
-                    let text = String::from_utf8_lossy(&data).to_string();
-                    if let Some((head, rest)) = text.split_once("\r\n\r\n") {
-                        let length = head
-                            .lines()
-                            .find_map(|l| {
-                                l.to_ascii_lowercase()
-                                    .strip_prefix("content-length:")
-                                    .map(|v| v.trim().parse::<usize>().unwrap())
-                            })
-                            .unwrap_or(0);
-                        if rest.len() >= length {
-                            break rest.to_string();
-                        }
-                    }
-                    if read == 0 {
-                        break String::new();
-                    }
-                };
-                let n = {
-                    let mut log = log.lock().unwrap();
-                    log.push(body);
-                    log.len()
-                };
-                let sse = format!(
-                    "data: {{\"choices\":[{{\"delta\":{{\"content\":\"Answer {n}\"}}}}]}}\n\ndata: {{\"choices\":[{{\"delta\":{{}},\"finish_reason\":\"stop\"}}]}}\n\ndata: [DONE]\n\n"
-                );
-                let head = "HTTP/1.1 200 OK\r\ncontent-type: text/event-stream\r\nconnection: close\r\n\r\n";
-                let _ = socket.write_all(format!("{head}{sse}").as_bytes()).await;
-                let _ = socket.shutdown().await;
-            });
-        }
-    });
-    (url, seen)
-}
+mod common;
+use common::mock;
 
 fn data_dir(name: &str) -> PathBuf {
     let dir = std::env::temp_dir().join(format!("imp-troupe-{}-{name}", std::process::id()));
@@ -114,7 +61,12 @@ async fn a_recent_conversation_is_continued_by_default() {
     );
     assert!(bodies[1].contains("Answer 1"));
     assert!(bodies[1].contains("What was it?"));
-    assert!(bodies[1].contains("Pip is another Imp") || bodies[1].contains("pip is another Imp"));
+    // The answering Imp is told who wrote, in the core's words (the apps use the same).
+    assert!(
+        bodies[1].contains("Message from pip, another Imp"),
+        "{}",
+        bodies[1]
+    );
     let log = TalkStore::new(&dir).load("bo", "pip");
     assert_eq!(log.conversations.len(), 1);
     assert_eq!(log.conversations[0].messages.len(), 4);
@@ -202,4 +154,79 @@ async fn the_tool_is_described_called_and_can_be_switched_off() {
     assert!(tool_host.call("other_tool", "{}").await.is_none());
     assert_eq!(seen.lock().unwrap().len(), 1);
     let _ = std::fs::remove_dir_all(dir);
+}
+
+/// Two Imps set up only by `.agents/agents/imp.md` and `pip.md`, with their own service and key
+/// variable: once the folder is trusted, `imp` messages `pip` at pip's address with pip's model.
+#[tokio::test]
+async fn imps_from_agent_files_alone_message_each_other() {
+    use imp_chat::project::{Project, TrustStore};
+    let (url, seen) = mock().await;
+    let root = data_dir("agent-files");
+    let agents = root.join("work/.agents/agents");
+    std::fs::create_dir_all(&agents).unwrap();
+    std::fs::write(
+        agents.join("imp.md"),
+        format!("---\ndefault: true\nbase_url: {url}\nmodel: imp-model\napi_key: ${{IMP_FILES_KEY}}\n---\nThe planner.\n"),
+    )
+    .unwrap();
+    std::fs::write(
+        agents.join("pip.md"),
+        format!("---\nbase_url: {url}/\nmodel: pip-model\napi_key_env: PIP_FILES_KEY\n---\nI am Pip, I count things.\n"),
+    )
+    .unwrap();
+    let workspace = root.join("work");
+    // Not trusted yet: the files' services are not used, and the chat says what waits.
+    let untrusted = Project::load(&workspace, None, &TrustStore::default());
+    let mut config = Config::default();
+    untrusted.apply(&mut config);
+    assert_eq!(config.default_imp.as_deref(), Some("imp"));
+    assert_eq!(config.imps["pip"].base_url, imp_chat::config::DEFAULT_URL);
+    assert_eq!(config.imps["pip"].api_key_env, None);
+    assert!(
+        untrusted.notices()[0].contains("PIP_FILES_KEY"),
+        "{:?}",
+        untrusted.notices()
+    );
+    // Trusted: each Imp is whole from its file.
+    let store = TrustStore::at(root.join("trust.json"));
+    store
+        .set(&untrusted.root, untrusted.trust_digest.as_deref())
+        .unwrap();
+    let project = Project::load(&workspace, None, &store);
+    assert!(project.trusted && project.notices().is_empty());
+    let mut config = Config::default();
+    project.apply(&mut config);
+    let (name, imp) = config.pick_imp(None).unwrap();
+    assert_eq!((name, imp.model.as_str()), ("imp", "imp-model"));
+    assert_eq!(config.imps["pip"].base_url, url);
+    let env = |n: &str| (n == "PIP_FILES_KEY").then(|| "pip-secret".to_string());
+    let key = imp_chat::keys::find(&config, "pip", &config.imps["pip"], env, |_| None);
+    assert_eq!(key.unwrap().key, "pip-secret");
+    let host = ImpMessageHost::new(
+        "imp",
+        config.clone(),
+        TalkStore::new(root.join("talks")),
+        Box::new(move |n, i| imp_chat::keys::find(&config, n, i, env, |_| None).map(|k| k.key)),
+    )
+    .with_clock(t0);
+    let enum_of_to = host.tools()[0].spec.parameters["properties"]["to"]["enum"].clone();
+    assert_eq!(enum_of_to, serde_json::json!(["pip"]));
+    let answer = host
+        .call("imp_message", r#"{"to":"pip","text":"How many?"}"#)
+        .await
+        .unwrap();
+    assert!(answer.contains("Answer 1"), "{answer}");
+    let body = seen.lock().unwrap()[0].clone();
+    assert!(body.contains("pip-model"), "{body}");
+    assert!(body.contains("I am Pip, I count things."), "{body}");
+    assert!(body.contains("How many?"), "{body}");
+    // A change to a service asks again.
+    std::fs::write(
+        agents.join("pip.md"),
+        "---\nbase_url: https://elsewhere.example/v1\napi_key_env: PIP_FILES_KEY\n---\nPip.\n",
+    )
+    .unwrap();
+    assert!(!Project::load(&workspace, None, &store).trusted);
+    let _ = std::fs::remove_dir_all(root);
 }

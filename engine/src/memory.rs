@@ -1,6 +1,9 @@
 //! What an Imp remembers of one chat and what it sends the model: whole exchanges, clipped tool
 //! results, a recap in place of what came before, and the long-chat notice. The apps only keep the
-//! files.
+//! files. The command line app keeps a [`ChatMemory`] beside the chat it shows, and turns its
+//! [`ChatMessage`]s into memory messages and back with the `From` conversions here.
+
+use crate::chat::{ChatMessage, Role, ToolCall};
 
 /// Exchanges sent by default (an exchange: a user turn with every tool call and reply it led to).
 pub const DEFAULT_EXCHANGES: usize = 20;
@@ -21,6 +24,10 @@ pub const RECAP_PREFACE: &str =
     "Recap of our chat so far (it replaces the earlier messages, which aren't included):\n\n";
 /// The model's side of the opening exchange.
 pub const RECAP_ACKNOWLEDGEMENT: &str = "Understood. I'll carry on from this recap.";
+/// The long-chat notice comes when what is sent reaches this many tokens, unless set otherwise.
+pub const NOTICE_DEFAULT_TOKENS: usize = 250_000;
+/// The thresholds a person can choose for the long-chat notice, besides off.
+pub const NOTICE_CHOICES: [usize; 6] = [50_000, 100_000, 250_000, 500_000, 750_000, 1_000_000];
 
 const TITLE_LIMIT: usize = 48;
 
@@ -56,6 +63,61 @@ impl MemoryMessage {
 
     fn opens_exchange(&self) -> bool {
         self.role == "user" && !self.attachment
+    }
+}
+
+fn role_name(role: Role) -> &'static str {
+    match role {
+        Role::System => "system",
+        Role::User => "user",
+        Role::Assistant => "assistant",
+        Role::Tool => "tool",
+    }
+}
+
+/// A chat message as it is remembered. Pictures are not: the apps keep them as files.
+impl From<&ChatMessage> for MemoryMessage {
+    fn from(m: &ChatMessage) -> Self {
+        Self {
+            role: role_name(m.role).to_string(),
+            content: Some(m.content.clone()),
+            tool_calls: m
+                .tool_calls
+                .iter()
+                .map(|c| MemoryCall {
+                    id: c.id.clone(),
+                    name: c.name.clone(),
+                    arguments: c.arguments.clone(),
+                })
+                .collect(),
+            tool_call_id: m.tool_call_id.clone(),
+            attachment: m.attachment,
+        }
+    }
+}
+
+/// A remembered message as it is sent again. An unknown role reads as the user's.
+impl From<&MemoryMessage> for ChatMessage {
+    fn from(m: &MemoryMessage) -> Self {
+        let role = match m.role.as_str() {
+            "system" => Role::System,
+            "assistant" => Role::Assistant,
+            "tool" => Role::Tool,
+            _ => Role::User,
+        };
+        let mut out = ChatMessage::new(role, m.content.clone().unwrap_or_default());
+        out.tool_calls = m
+            .tool_calls
+            .iter()
+            .map(|c| ToolCall {
+                id: c.id.clone(),
+                name: c.name.clone(),
+                arguments: c.arguments.clone(),
+            })
+            .collect();
+        out.tool_call_id.clone_from(&m.tool_call_id);
+        out.attachment = m.attachment;
+        out
     }
 }
 
@@ -314,6 +376,34 @@ pub fn chat_title(request: &str, has_picture: bool, sender: Option<&str>) -> Str
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn chat_messages_are_remembered_and_sent_back_as_they_were() {
+        let mut call = ChatMessage::assistant("");
+        call.tool_calls.push(ToolCall {
+            id: "c1".into(),
+            name: "files__read".into(),
+            arguments: "{}".into(),
+        });
+        let mut picture = ChatMessage::user("pictures");
+        picture.attachment = true;
+        picture.images.push("data:image/png;base64,AA==".into());
+        for m in [
+            ChatMessage::system("s"),
+            ChatMessage::user("hi"),
+            call,
+            ChatMessage::tool_result("c1", "text"),
+        ] {
+            let remembered = MemoryMessage::from(&m);
+            assert_eq!(ChatMessage::from(&remembered), m);
+        }
+        let back = ChatMessage::from(&MemoryMessage::from(&picture));
+        assert!(
+            back.attachment && back.images.is_empty(),
+            "pictures stay files"
+        );
+        assert!(NOTICE_CHOICES.contains(&NOTICE_DEFAULT_TOKENS));
+    }
 
     fn u(s: &str) -> MemoryMessage {
         MemoryMessage::new("user", s)

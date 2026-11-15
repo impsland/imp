@@ -28,6 +28,11 @@ const fn cmd(name: &'static str, usage: &'static str, about: &'static str) -> Co
 pub const COMMANDS: &[Command] = &[
     cmd("/help", "/help", "List these commands"),
     cmd("/clear", "/clear", "Start the conversation over"),
+    cmd(
+        "/compact",
+        "/compact",
+        "Sum up the chat so far, so a long chat costs less and still remembers",
+    ),
     cmd("/quit", "/quit", "Leave the chat (also /exit, Esc)"),
     cmd("/model", "/model [NAME]", "Show or change the model"),
     cmd(
@@ -57,7 +62,7 @@ pub const COMMANDS: &[Command] = &[
     ),
     cmd(
         "/mcp",
-        "/mcp [add NAME COMMAND [ARGS...] | add NAME URL | remove NAME | reload]",
+        "/mcp [add NAME COMMAND [ARGS...] | add NAME URL | add {CONFIG} | remove NAME | reload]",
         "List, add or remove MCP servers",
     ),
     cmd(
@@ -66,6 +71,11 @@ pub const COMMANDS: &[Command] = &[
         "List the tools, or switch one on or off",
     ),
     cmd("/settings", "/settings", "Show the Imp's settings"),
+    cmd(
+        "/project",
+        "/project [trust | untrust]",
+        "Show what this folder's AGENTS.md and .agents/ add, or allow its MCP servers and Imp services",
+    ),
     cmd(
         "/devices",
         "/devices",
@@ -180,6 +190,14 @@ pub fn choices(command: &str) -> &'static [Choice] {
         choice("remove", "Remove an MCP server", true),
         choice("reload", "Start the servers again", false),
     ];
+    const PROJECT: &[Choice] = &[
+        choice(
+            "trust",
+            "Allow .agents/mcp.json and the services of .agents/agents",
+            false,
+        ),
+        choice("untrust", "Stop them and ask again next time", false),
+    ];
     const TOOLS: &[Choice] = &[
         choice("on", "Switch a tool on", true),
         choice("off", "Switch a tool off", true),
@@ -188,6 +206,7 @@ pub fn choices(command: &str) -> &'static [Choice] {
         "/api_key" => API_KEY,
         "/mcp" => MCP,
         "/tools" => TOOLS,
+        "/project" => PROJECT,
         _ => &[],
     }
 }
@@ -196,6 +215,7 @@ fn alias(word: &str) -> Option<&'static str> {
     Some(match word {
         "/exit" | "/q" => "/quit",
         "/new" | "/reset" => "/clear",
+        "/recap" | "/summarize" => "/compact",
         "/url" | "/baseurl" | "/base-url" => "/base_url",
         "/key" | "/apikey" | "/api-key" => "/api_key",
         "/imps" => "/imp",
@@ -203,37 +223,88 @@ fn alias(word: &str) -> Option<&'static str> {
         "/config" => "/settings",
         "/link" | "/qr" => "/pair",
         "/visitors" | "/peers" => "/devices",
+        "/agents" | "/skills" => "/project",
         _ => return None,
     })
 }
 
-/// A line the chat shows for a command. Not part of the conversation.
+/// A line the chat shows for a command. Not part of the conversation. The full-screen chat gives each
+/// kind its look; [`Note::plain`] is the same line as text, for the line chat.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Note {
     pub kind: NoteKind,
     pub text: String,
+    /// What a [`NoteKind::Field`] is: `model` for the value `openai/gpt-6-luna`.
+    pub label: String,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NoteKind {
+    /// A sentence. `code` and **bold** in it show as such.
     Info,
     Problem,
     /// A row of a QR code: drawn black on white, as it is.
     Code,
+    /// The command that was typed, at the top of what it says.
+    Command,
+    /// The title of a group of lines, such as `MCP servers of pip`.
+    Heading,
+    /// A label and its value. The labels of the fields in a row line up.
+    Field,
+    /// Something that is on (or connected), or off.
+    On,
+    Off,
 }
 
 impl Note {
-    pub fn info(text: impl Into<String>) -> Self {
+    fn new(kind: NoteKind, text: impl Into<String>) -> Self {
         Self {
-            kind: NoteKind::Info,
+            kind,
             text: text.into(),
+            label: String::new(),
         }
     }
 
+    pub fn info(text: impl Into<String>) -> Self {
+        Self::new(NoteKind::Info, text)
+    }
+
     pub fn problem(text: impl Into<String>) -> Self {
+        Self::new(NoteKind::Problem, text)
+    }
+
+    pub fn code(row: impl Into<String>) -> Self {
+        Self::new(NoteKind::Code, row)
+    }
+
+    pub fn command(line: impl Into<String>) -> Self {
+        Self::new(NoteKind::Command, line)
+    }
+
+    pub fn heading(text: impl Into<String>) -> Self {
+        Self::new(NoteKind::Heading, text)
+    }
+
+    pub fn field(label: impl Into<String>, value: impl Into<String>) -> Self {
         Self {
-            kind: NoteKind::Problem,
-            text: text.into(),
+            label: label.into(),
+            ..Self::new(NoteKind::Field, value)
+        }
+    }
+
+    pub fn check(on: bool, text: impl Into<String>) -> Self {
+        Self::new(if on { NoteKind::On } else { NoteKind::Off }, text)
+    }
+
+    /// The line as plain text.
+    pub fn plain(&self) -> String {
+        match self.kind {
+            NoteKind::Info | NoteKind::Code | NoteKind::Heading => self.text.clone(),
+            NoteKind::Problem => format!("! {}", self.text),
+            NoteKind::Command => format!("› {}", self.text),
+            NoteKind::Field => format!("  {}  {}", self.label, self.text),
+            NoteKind::On => format!("  on   {}", self.text),
+            NoteKind::Off => format!("  off  {}", self.text),
         }
     }
 }
@@ -246,6 +317,8 @@ pub enum Outcome {
     Quit,
     /// Start the conversation over.
     Clear,
+    /// Sum the conversation up and go on from the summary.
+    Compact,
     /// Talk to this Imp of the computer instead.
     Switch(String),
     /// Talk to this visiting Imp.
@@ -319,6 +392,10 @@ async fn run_inner(line: &str, ctx: &mut Context<'_>) -> Result<Outcome> {
         "/help" => Ok(help()),
         "/quit" => Ok(Outcome::Quit),
         "/clear" => Ok(Outcome::Clear),
+        "/compact" if ctx.visiting.is_some() => Err(CliError(
+            "This Imp is visiting: its chat is kept on its home device.".into(),
+        )),
+        "/compact" => Ok(Outcome::Compact),
         "/model" => setting(ctx, "model", &rest(), |s| s.model.clone()).await,
         "/base_url" => setting(ctx, "base_url", &rest(), |s| s.imp.base_url.clone()).await,
         "/personality" => setting(ctx, "personality", &rest(), |s| s.imp.personality.clone()).await,
@@ -341,9 +418,10 @@ async fn run_inner(line: &str, ctx: &mut Context<'_>) -> Result<Outcome> {
         }
         "/api_key" => api_key(ctx, args),
         "/imp" => imp(ctx, args),
-        "/mcp" => mcp(ctx, args).await,
+        "/mcp" => mcp(ctx, args, &rest()).await,
         "/tools" => tools(ctx, args).await,
         "/settings" => Ok(settings(ctx.session)),
+        "/project" => project(ctx, args).await,
         "/devices" => devices(ctx).await,
         "/pair" => pair(ctx).await,
         "/send" => send(ctx, args).await,
@@ -363,75 +441,23 @@ async fn run_inner(line: &str, ctx: &mut Context<'_>) -> Result<Outcome> {
     }
 }
 
-/// Splits a command line into words. Quotes keep spaces in a word, as in a shell.
+/// Splits a command line into words as a shell does, with the core's rule (the apps use the same):
+/// quotes keep spaces in a word, and a backslash takes the next character as it is.
 pub fn split(line: &str) -> Result<Vec<String>> {
-    let mut words = Vec::new();
-    let mut word = String::new();
-    let mut quote: Option<char> = None;
-    let mut started = false;
-    let mut chars = line.chars();
-    while let Some(c) = chars.next() {
-        match (quote, c) {
-            (Some(q), c) if c == q => quote = None,
-            (Some(_), '\\') => word.extend(chars.next()),
-            (Some(_), c) => word.push(c),
-            (None, '"' | '\'') => {
-                quote = Some(c);
-                started = true;
-            }
-            (None, '\\') => {
-                word.extend(chars.next());
-                started = true;
-            }
-            (None, c) if c.is_whitespace() => {
-                if started {
-                    words.push(std::mem::take(&mut word));
-                    started = false;
-                }
-            }
-            (None, c) => {
-                word.push(c);
-                started = true;
-            }
-        }
-    }
-    if quote.is_some() {
+    let words = imp_engine::mcp::setup::split_words(line);
+    if words.unclosed {
         return Err(CliError("A quote is not closed.".into()));
     }
-    if started {
-        words.push(word);
-    }
-    Ok(words)
+    Ok(words.words)
 }
 
 fn help() -> Outcome {
-    let width = COMMANDS
-        .iter()
-        .map(|c| c.usage.len())
-        .max()
-        .unwrap_or(0)
-        .min(34);
-    let mut notes = vec![Note::info("Commands:")];
+    let mut notes = vec![Note::heading("Commands")];
     for c in COMMANDS {
-        let pad = width.saturating_sub(c.usage.len()) + 2;
-        if c.usage.len() > width {
-            notes.push(Note::info(format!("  {}", c.usage)));
-            notes.push(Note::info(format!(
-                "  {}{}",
-                " ".repeat(width + 2),
-                c.about
-            )));
-        } else {
-            notes.push(Note::info(format!(
-                "  {}{}{}",
-                c.usage,
-                " ".repeat(pad),
-                c.about
-            )));
-        }
+        notes.push(Note::field(c.usage, c.about));
     }
     notes.push(Note::info(
-        "Tab completes a command. //text sends a message that starts with /.",
+        "Tab completes a command. `//text` sends a message that starts with /. `?` lists every key.",
     ));
     Outcome::Notes(notes)
 }
@@ -513,7 +539,7 @@ fn api_key(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
 }
 
 fn imp(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
-    let config = ctx.session.config()?;
+    let config = ctx.session.effective_config()?;
     let visitors = ctx
         .device
         .as_ref()
@@ -521,7 +547,7 @@ fn imp(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
         .unwrap_or_default();
     match args.first() {
         None => {
-            let mut notes = vec![Note::info("Imps on this computer:")];
+            let mut notes = vec![Note::heading("Imps on this computer")];
             for (name, imp) in &config.imps {
                 let here = if *name == ctx.session.name && ctx.visiting.is_none() {
                     " (this chat)"
@@ -533,10 +559,18 @@ fn imp(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
                     .as_ref()
                     .and_then(|d| d.away_on(imp.id.unwrap_or_default()))
                     .map_or(String::new(), |on| format!(", on {on}"));
-                notes.push(Note::info(format!("  {name}  {}{away}{here}", imp.model)));
+                let folder = if ctx.session.project.agents.contains_key(name) {
+                    ", from this folder"
+                } else {
+                    ""
+                };
+                notes.push(Note::field(
+                    name.clone(),
+                    format!("{}{folder}{away}{here}", imp.model),
+                ));
             }
             if !visitors.is_empty() {
-                notes.push(Note::info("Visiting:"));
+                notes.push(Note::heading("Visiting"));
                 for v in &visitors {
                     let state = if v.awake { "" } else { ", asleep" };
                     let here = if ctx.visiting == Some(v.look.id) {
@@ -544,13 +578,13 @@ fn imp(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
                     } else {
                         ""
                     };
-                    notes.push(Note::info(format!(
-                        "  {}  from {}{state}{here}",
-                        v.look.name, v.home_name
-                    )));
+                    notes.push(Note::field(
+                        v.look.name.clone(),
+                        format!("from {}{state}{here}", v.home_name),
+                    ));
                 }
             }
-            notes.push(Note::info("Talk to one with /imp NAME."));
+            notes.push(Note::info("Talk to one with `/imp NAME`."));
             Ok(Outcome::Notes(notes))
         }
         Some(name) => {
@@ -574,7 +608,7 @@ fn imp(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
     }
 }
 
-async fn mcp(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
+async fn mcp(ctx: &mut Context<'_>, args: &[String], line: &str) -> Result<Outcome> {
     if ctx.visiting.is_some() {
         return Err(CliError(
             "This Imp is visiting: its tools are on its home device.".into(),
@@ -582,6 +616,14 @@ async fn mcp(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
     }
     match args.first().map(String::as_str) {
         None | Some("list") => Ok(mcp_list(ctx.session)),
+        Some("add")
+            if line
+                .strip_prefix("add")
+                .map(str::trim_start)
+                .is_some_and(|t| t.starts_with('{') || t.starts_with('"')) =>
+        {
+            mcp_add_pasted(ctx, line["add".len()..].trim()).await
+        }
         Some("add") => {
             let [_, name, target, rest @ ..] = args else {
                 return Err(CliError(
@@ -596,10 +638,8 @@ async fn mcp(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
             }
             let server = server_from(target, rest)?;
             let mut config = ctx.session.config()?;
-            let imp = config
-                .imps
-                .get_mut(&ctx.session.name)
-                .ok_or_else(|| CliError("This Imp is no longer in the settings file.".into()))?;
+            let missing = ctx.session.not_in_file();
+            let imp = config.imps.get_mut(&ctx.session.name).ok_or(missing)?;
             let replaced = imp
                 .mcp_servers
                 .insert(name.clone(), server.clone())
@@ -619,10 +659,8 @@ async fn mcp(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
                 return Err(CliError("Write /mcp remove NAME.".into()));
             };
             let mut config = ctx.session.config()?;
-            let imp = config
-                .imps
-                .get_mut(&ctx.session.name)
-                .ok_or_else(|| CliError("This Imp is no longer in the settings file.".into()))?;
+            let missing = ctx.session.not_in_file();
+            let imp = config.imps.get_mut(&ctx.session.name).ok_or(missing)?;
             if imp.mcp_servers.remove(name).is_none() {
                 return Err(CliError(format!(
                     "{} has no MCP server called {name}.",
@@ -640,6 +678,90 @@ async fn mcp(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
         Some(other) => Err(CliError(format!(
             "/mcp has no {other}. Use /mcp, /mcp add, /mcp remove or /mcp reload."
         ))),
+    }
+}
+
+/// `/mcp add` with a pasted config (`{"mcpServers": {...}}`, or one `"name": {...}`), read by the core as the
+/// app reads a paste. Only the names of environment variables and headers are kept; their values are
+/// read when the server starts, never saved.
+async fn mcp_add_pasted(ctx: &mut Context<'_>, text: &str) -> Result<Outcome> {
+    let found = imp_engine::mcp::setup::parse_setup(text);
+    if found.is_empty() {
+        return Err(CliError(
+            "That is not an MCP config. Paste one such as {\"mcpServers\": {...}}, or write /mcp add NAME COMMAND [ARGS...].".into(),
+        ));
+    }
+    let mut config = ctx.session.config()?;
+    let missing = ctx.session.not_in_file();
+    let imp = config.imps.get_mut(&ctx.session.name).ok_or(missing)?;
+    let mut notes = Vec::new();
+    let mut names = Vec::new();
+    for pasted in found {
+        let name = server_name(&pasted.name);
+        let server = McpServerConfig {
+            command: (!pasted.is_http()).then(|| pasted.command.clone()),
+            args: pasted.args.clone(),
+            env: pasted
+                .env
+                .keys()
+                .filter(|k| crate::config::valid_env_name(k))
+                .cloned()
+                .collect(),
+            url: pasted.is_http().then(|| pasted.url.clone()),
+            headers: pasted
+                .headers
+                .keys()
+                .filter(|h| valid_header_name(h))
+                .cloned()
+                .collect(),
+        };
+        server.check(&name)?;
+        notes.push(Note::info(format!(
+            "Added the MCP server {name} ({}) and saved it.",
+            pasted.describe()
+        )));
+        if !server.env.is_empty() {
+            notes.push(Note::info(format!(
+                "  It reads {} from the environment when it starts. The values in what you pasted were not saved.",
+                server.env.join(", ")
+            )));
+        }
+        for header in &server.headers {
+            notes.push(Note::info(format!(
+                "  Its {header} header comes from {} or the keychain. The value you pasted was not saved.",
+                keys::header_env(&name, header)
+            )));
+        }
+        imp.mcp_servers.insert(name.clone(), server);
+        names.push(name);
+    }
+    config.save(&ctx.session.path)?;
+    ctx.session.reconnect_tools().await?;
+    for name in names {
+        notes.extend(server_line(ctx.session, &name));
+    }
+    Ok(Outcome::Notes(notes))
+}
+
+/// A server name the settings file takes: lowercase letters, digits, dashes and underscores.
+fn server_name(suggested: &str) -> String {
+    let name: String = suggested
+        .trim()
+        .to_lowercase()
+        .chars()
+        .map(|c| {
+            if c.is_ascii_alphanumeric() || c == '_' || c == '-' {
+                c
+            } else {
+                '-'
+            }
+        })
+        .collect();
+    let name: String = name.trim_matches('-').chars().take(32).collect();
+    if name.is_empty() {
+        "server".into()
+    } else {
+        name
     }
 }
 
@@ -708,8 +830,8 @@ fn server_line(session: &Session, name: &str) -> Vec<Note> {
         .iter()
         .filter(|s| s.name == name)
         .map(|s| match &s.tools {
-            Ok(n) => Note::info(format!("  {}  {} tools  {}", s.name, n, s.target)),
-            Err(why) => Note::problem(format!("  {}  {why}", s.name)),
+            Ok(n) => Note::check(true, format!("**{}**  {} tools · {}", s.name, n, s.target)),
+            Err(why) => Note::problem(format!("{}: {why}", s.name)),
         })
         .collect()
 }
@@ -719,16 +841,16 @@ fn mcp_list(session: &Session) -> Outcome {
         return Outcome::Notes(vec![
             Note::info(format!("{} has no MCP servers.", session.name)),
             Note::info(
-                "Add one with /mcp add NAME COMMAND [ARGS...], for example the files of this folder:",
+                "Add one with `/mcp add NAME COMMAND [ARGS...]`, or paste a config after `/mcp add`. For the files of this folder:",
             ),
-            Note::info("  /mcp add files npx -y @modelcontextprotocol/server-filesystem ."),
+            Note::info("`/mcp add files npx -y @modelcontextprotocol/server-filesystem .`"),
         ]);
     }
-    let mut notes = vec![Note::info(format!("MCP servers of {}:", session.name))];
+    let mut notes = vec![Note::heading(format!("MCP servers of {}", session.name))];
     for s in &session.servers {
         notes.extend(server_line(session, &s.name));
     }
-    notes.push(Note::info("/tools lists their tools."));
+    notes.push(Note::info("`/tools` lists their tools."));
     Outcome::Notes(notes)
 }
 
@@ -747,13 +869,12 @@ async fn tools(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
                     ctx.session.name
                 )));
             }
-            let mut notes = vec![Note::info(format!("Tools of {}:", ctx.session.name))];
+            let mut notes = vec![Note::heading(format!("Tools of {}", ctx.session.name))];
             for t in all {
-                let state = if t.on { "on " } else { "off" };
-                notes.push(Note::info(format!("  {state}  {}", t.id)));
+                notes.push(Note::check(t.on, t.id));
             }
             notes.push(Note::info(
-                "/tools off ID switches one off, /tools on ID back on.",
+                "`/tools off ID` switches one off, `/tools on ID` back on.",
             ));
             Ok(Outcome::Notes(notes))
         }
@@ -761,10 +882,8 @@ async fn tools(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
             let on = switch == "on";
             let known = ctx.session.tools().iter().any(|t| t.id == *id);
             let mut config = ctx.session.config()?;
-            let imp = config
-                .imps
-                .get_mut(&ctx.session.name)
-                .ok_or_else(|| CliError("This Imp is no longer in the settings file.".into()))?;
+            let missing = ctx.session.not_in_file();
+            let imp = config.imps.get_mut(&ctx.session.name).ok_or(missing)?;
             imp.tools_off.retain(|t| t != id);
             if !on {
                 if !known {
@@ -789,37 +908,183 @@ async fn tools(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
 
 fn settings(session: &Session) -> Outcome {
     let imp = &session.imp;
+    let servers = if session.servers.is_empty() {
+        "none".to_string()
+    } else {
+        session
+            .servers
+            .iter()
+            .map(|s| s.name.clone())
+            .collect::<Vec<_>>()
+            .join(", ")
+    };
     let mut notes = vec![
-        Note::info(session.name.clone()),
-        Note::info(format!("  model        {}", imp.model)),
-        Note::info(format!("  base_url     {}", imp.base_url)),
-        Note::info(format!("  personality  {}", imp.personality)),
-        Note::info(format!("  api key      {}", key_status(session))),
-        Note::info(format!("  folder       {}", session.workspace.display())),
-        Note::info(format!(
-            "  mcp servers  {}",
-            if session.servers.is_empty() {
-                "none".to_string()
-            } else {
-                session
-                    .servers
-                    .iter()
-                    .map(|s| s.name.clone())
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            }
-        )),
+        Note::heading(session.name.clone()),
+        Note::field("model", imp.model.clone()),
+        Note::field("base_url", imp.base_url.clone()),
+        Note::field("personality", imp.personality.clone()),
+        Note::field("api key", key_status(session)),
+        Note::field("folder", crate::project::shown_path(&session.workspace)),
+        Note::field("mcp servers", servers),
     ];
     if !imp.tools_off.is_empty() {
-        notes.push(Note::info(format!(
-            "  tools off    {}",
-            imp.tools_off.join(", ")
-        )));
+        notes.push(Note::field("tools off", imp.tools_off.join(", ")));
     }
-    notes.push(Note::info(format!(
-        "  file         {}",
-        session.path.display()
-    )));
+    notes.push(Note::field(
+        "memory",
+        match session.memory_exchanges {
+            0 => "every exchange".to_string(),
+            n => format!("the last {n} exchanges"),
+        },
+    ));
+    notes.push(Note::field(
+        "file",
+        crate::project::shown_path(&session.path),
+    ));
+    if let Some(file) = session.agent_file() {
+        notes.push(Note::field("folder file", crate::project::shown_path(file)));
+    }
+    Outcome::Notes(notes)
+}
+
+/// `/project`: what the folder adds, and `trust` or `untrust` for its MCP servers.
+async fn project(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
+    use crate::project::{TrustStore, shown_path};
+    match args.first().map(String::as_str) {
+        None | Some("list" | "show") => Ok(project_notes(ctx.session)),
+        Some(word @ ("trust" | "untrust")) => {
+            let trust = word == "trust";
+            let project = &ctx.session.project;
+            let Some(digest) = project.trust_digest.clone() else {
+                return Err(CliError(format!(
+                    "Nothing in {} needs to be allowed: it has no .agents/mcp.json, and its Imps set no service.",
+                    shown_path(&project.root)
+                )));
+            };
+            let what = project.waiting();
+            TrustStore::default_store().set(&project.root, trust.then_some(digest.as_str()))?;
+            ctx.session.reconnect_tools().await?;
+            let said = if !trust {
+                "This folder's MCP servers and Imp services are off again and wait to be allowed."
+                    .to_string()
+            } else if what.is_empty() {
+                "This folder is allowed already.".to_string()
+            } else {
+                format!(
+                    "Allowed {}. If the files change, they wait to be allowed again.",
+                    what.join(", and ")
+                )
+            };
+            let mut notes = vec![Note::info(said)];
+            if trust {
+                let names: Vec<String> = ctx
+                    .session
+                    .project
+                    .project_mcp()
+                    .map(|f| f.servers.keys().cloned().collect())
+                    .unwrap_or_default();
+                for name in names {
+                    notes.extend(server_line(ctx.session, &name));
+                }
+            }
+            Ok(Outcome::Notes(notes))
+        }
+        Some(other) => Err(CliError(format!(
+            "/project has no {other}. Use /project, /project trust or /project untrust."
+        ))),
+    }
+}
+
+fn project_notes(session: &Session) -> Outcome {
+    use crate::project::shown_path;
+    let project = &session.project;
+    let mut notes = vec![Note::heading(format!(
+        "Project {}",
+        shown_path(&project.root)
+    ))];
+    if project.is_empty() {
+        notes.push(Note::info(
+            "It adds nothing. An AGENTS.md there gives every Imp standing instructions, and .agents/ can hold skills/NAME/SKILL.md, agents/IMP.md and mcp.json.",
+        ));
+        return Outcome::Notes(notes);
+    }
+    if !project.instructions.is_empty() {
+        notes.push(Note::heading("Instructions, in the system text"));
+        for doc in &project.instructions {
+            notes.push(Note::field(
+                shown_path(&doc.path),
+                format!("{} lines", doc.text.lines().count()),
+            ));
+        }
+    }
+    if !project.skills.is_empty() {
+        notes.push(Note::heading(format!(
+            "Skills, read with {} when a task needs one",
+            crate::project::SKILL_TOOL
+        )));
+        for skill in &project.skills {
+            notes.push(Note::field(
+                skill.spec.name.clone(),
+                skill.spec.description.clone(),
+            ));
+        }
+    }
+    if !project.agents.is_empty() {
+        notes.push(Note::heading("Imps set up here, `/imp NAME` talks to one"));
+        for agent in project.agents.values() {
+            let about = agent
+                .spec
+                .description
+                .as_ref()
+                .map_or(String::new(), |d| format!("{d} · "));
+            notes.push(Note::field(
+                agent.spec.name.clone(),
+                format!("{about}{}", shown_path(&agent.path)),
+            ));
+            if agent.spec.base_url.is_some() || agent.spec.api_key_env.is_some() {
+                let state = if agent.own || project.trusted {
+                    "in use"
+                } else {
+                    "waiting: /project trust uses it"
+                };
+                notes.push(Note::field(
+                    "",
+                    format!(
+                        "service {}{} ({state})",
+                        agent
+                            .spec
+                            .base_url
+                            .as_deref()
+                            .unwrap_or("of the default Imp"),
+                        agent
+                            .spec
+                            .api_key_env
+                            .as_deref()
+                            .map_or(String::new(), |k| format!(", key in {k}"))
+                    ),
+                ));
+            }
+        }
+    }
+    for file in &project.mcp {
+        let state = if file.own {
+            "yours"
+        } else if file.trusted {
+            "allowed"
+        } else {
+            "waiting: /project trust starts them"
+        };
+        notes.push(Note::heading(format!(
+            "MCP servers of {}, {state}",
+            shown_path(&file.path)
+        )));
+        for (name, server) in &file.servers {
+            notes.push(Note::field(name.clone(), server.describe()));
+        }
+    }
+    for problem in &project.problems {
+        notes.push(Note::problem(problem.clone()));
+    }
     Outcome::Notes(notes)
 }
 
@@ -857,13 +1122,10 @@ async fn linked_device<'a>(ctx: &'a mut Context<'_>) -> Result<&'a mut Device> {
 async fn devices(ctx: &mut Context<'_>) -> Result<Outcome> {
     let device = linked_device(ctx).await?;
     let peers = device.peers();
-    let mut notes = vec![Note::info(format!(
-        "This computer is {} on the link.",
-        device.name()
-    ))];
+    let mut notes = vec![Note::heading(format!("Devices of {}", device.name()))];
     if peers.is_empty() {
         notes.push(Note::info(
-            "No device is linked yet. /pair shows a code to scan.",
+            "No device is linked yet. `/pair` shows a code to scan.",
         ));
     }
     for p in &peers {
@@ -872,34 +1134,36 @@ async fn devices(ctx: &mut Context<'_>) -> Result<Outcome> {
             (true, false) => "connected",
             (false, _) => "not connected",
         };
-        let trusted = if p.trusted { ", yours (trusted)" } else { "" };
-        notes.push(Note::info(format!("  {}  {state}{trusted}", p.name)));
+        let trusted = if p.trusted { " · yours (trusted)" } else { "" };
         let imps: Vec<&str> = p.stage.iter().map(|s| s.imp.name.as_str()).collect();
-        if p.connected && !imps.is_empty() {
-            notes.push(Note::info(format!(
-                "    on its screen: {}",
-                imps.join(", ")
-            )));
-        }
+        let screen = if p.connected && !imps.is_empty() {
+            format!(" · on its screen: {}", imps.join(", "))
+        } else {
+            String::new()
+        };
+        notes.push(Note::check(
+            p.connected,
+            format!("**{}**  {state}{trusted}{screen}", p.name),
+        ));
     }
     let visitors = device.visitors();
     if !visitors.is_empty() {
-        notes.push(Note::info("Visiting this computer:"));
+        notes.push(Note::heading("Visiting this computer"));
         for v in visitors {
             let state = if v.awake {
                 ""
             } else {
                 " (asleep: its home is away)"
             };
-            notes.push(Note::info(format!(
-                "  {}  from {}{state}",
-                v.look.name, v.home_name
-            )));
+            notes.push(Note::check(
+                v.awake,
+                format!("**{}**  from {}{state}", v.look.name, v.home_name),
+            ));
         }
     }
     if peers.iter().any(|p| p.connected) {
         notes.push(Note::info(
-            "/send DEVICE sends this Imp there. /trust DEVICE lets Imps use their tools for it.",
+            "`/send DEVICE` sends this Imp there. `/trust DEVICE` lets Imps use their tools for it.",
         ));
     }
     Ok(Outcome::Notes(notes))
@@ -909,18 +1173,15 @@ async fn pair(ctx: &mut Context<'_>) -> Result<Outcome> {
     let device = device(ctx).await?;
     let invite = device.invite().await?;
     let url = invite.url();
-    let mut notes: Vec<Note> = crate::qr::rows(&url)?
-        .into_iter()
-        .map(|row| Note {
-            kind: NoteKind::Code,
-            text: row,
-        })
-        .collect();
-    notes.push(Note::info(
-        "Scan this code with Imp on a Mac or an iPhone (Devices, then Scan). It works for 15 minutes.",
+    let mut notes: Vec<Note> = crate::qr::rows(&url)?.into_iter().map(Note::code).collect();
+    notes.push(Note::heading("Link a Mac or an iPhone"));
+    notes.push(Note::field(
+        "scan",
+        "Open Imp on the other device, then **Devices → Scan**, and point it at the code.",
     ));
-    notes.push(Note::info(reach_note(&invite.routes)));
-    notes.push(Note::info(format!("The code as text: {url}")));
+    notes.push(Note::field("works for", "15 minutes, for one device"));
+    notes.push(Note::field("network", reach_note(&invite.routes)));
+    notes.push(Note::field("as text", format!("`{url}`")));
     Ok(Outcome::Notes(notes))
 }
 
@@ -1120,7 +1381,11 @@ mod tests {
             panic!("help gives notes")
         };
         for c in COMMANDS {
-            assert!(lines.iter().any(|l| l.text.contains(c.usage)), "{}", c.name);
+            assert!(
+                lines.iter().any(|l| l.plain().contains(c.usage)),
+                "{}",
+                c.name
+            );
         }
     }
 }

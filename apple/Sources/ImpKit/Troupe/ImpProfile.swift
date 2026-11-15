@@ -115,8 +115,9 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     public var remembersToolCalls: Bool { sendsToolCalls ?? true }
     /// The size at which a long chat gets a gentle suggestion to recap it or start a new one.
     public var newChatAt: Int { newChatAtTokens.flatMap { Self.newChatChoices.contains($0) ? $0 : nil } ?? Self.newChatDefault }
-    public static let newChatChoices = [50_000, 100_000, 250_000, 500_000, 750_000, 1_000_000]
-    public static let newChatDefault = 250_000
+    /// The core's thresholds (`memory::NOTICE_CHOICES`), shared with the command line app's `long_chat_tokens`.
+    public static let newChatChoices = ChatMemory.rules.noticeChoices.map(Int.init)
+    public static let newChatDefault = Int(ChatMemory.rules.noticeDefaultTokens)
     public var memoryExchanges: Int { exchangesSent.map { max($0, 1) } ?? ChatMemory.noLimit }
 
     /// Its own folder (see `Workspace`).

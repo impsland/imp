@@ -4,14 +4,17 @@
 //! saved to the settings file first, then only the part it touches is rebuilt: the client for an address or
 //! a key, the tools for an MCP server.
 
+use crate::chat_state::ChatState;
 use crate::config::{Config, ImpConfig, McpServerConfig, valid_env_name};
 use crate::keys::{self, KeySource};
+use crate::project::{Project, shown_path};
 use crate::troupe::{ImpMessageHost, Remote};
 use crate::{CliError, Result};
 use imp_engine::link::{LinkImp, LinkTraits};
+use imp_engine::memory::ChatMemory;
 use imp_engine::{
-    McpEndpoint, McpHost, McpServerSpec, OpenAiClient, RequestLimits, TalkStore, ToolHost,
-    ToolSelection, Toolbox,
+    ChatMessage, McpEndpoint, McpHost, McpServerSpec, OpenAiClient, RequestLimits, TalkStore,
+    ToolHost, ToolSelection, Toolbox,
 };
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
@@ -29,12 +32,15 @@ pub fn system_prompt(name: &str, imp: &ImpConfig) -> String {
     )
 }
 
-/// What the model is told in a chat: what it is, and the folder the chat was started in (`workspace`).
-fn system_prompt_in(name: &str, imp: &ImpConfig, workspace: &Path) -> String {
+/// What the model is told in a chat: what it is, the folder the chat was started in (`workspace`), and
+/// what that folder's `AGENTS.md` files and skills say. All of it stays the same for the whole chat, so a
+/// service that caches the start of a request can reuse it.
+fn system_prompt_in(name: &str, imp: &ImpConfig, workspace: &Path, project: &Project) -> String {
     format!(
-        "{}\n\nThe person started this chat in the folder {}. When they talk about files or \"this folder\", they mean that one. Tools that take a path want it inside that folder, written in full.",
+        "{}\n\nThe person started this chat in the folder {}. When they talk about files or \"this folder\", they mean that one. Tools that take a path want it inside that folder, written in full. When a message ends with <attached_files>, those are files the person picked with @ for you to read.{}",
         system_prompt(name, imp),
-        workspace.display()
+        workspace.display(),
+        project.prompt()
     )
 }
 
@@ -140,6 +146,8 @@ pub struct SessionOptions {
     pub workspace: Option<PathBuf>,
     /// Imps on other devices this Imp can message.
     pub remote: Option<Rc<dyn Remote>>,
+    /// The folder whose `.agents/` is the person's own. Their home folder if left out.
+    pub agents_home: Option<PathBuf>,
 }
 
 /// One MCP server of the session and how it went.
@@ -174,9 +182,16 @@ pub struct Session {
     pub servers: Vec<ServerStatus>,
     pub selection: ToolSelection,
     pub max_steps: usize,
+    /// How many remembered exchanges go with each message (0: all), and when a chat counts as long.
+    pub memory_exchanges: usize,
+    pub long_chat_tokens: usize,
     /// Plain sentences about things that did not start, such as an MCP server.
     pub warnings: Vec<String>,
+    /// Plain sentences about the folder that need nothing fixed, such as servers waiting to be trusted.
+    pub notices: Vec<String>,
     pub workspace: PathBuf,
+    /// What the folder's `.agents/` and `AGENTS.md` files add.
+    pub project: Project,
     /// Where the API key came from. None: no key (fine for a local model).
     pub key_source: Option<KeySource>,
     /// A key given in the chat, used before the others until the chat ends.
@@ -186,26 +201,32 @@ pub struct Session {
 
 impl Session {
     pub async fn open(path: &Path, name: Option<&str>, options: SessionOptions) -> Result<Self> {
-        let config = Config::load_with_ids(path)?;
-        let (name, imp) = config.pick_imp(name)?;
         let workspace = match &options.workspace {
             Some(w) => w.clone(),
             None => std::env::current_dir()?,
         };
+        let project = Project::load_here(&workspace, options.agents_home.as_deref());
+        let mut config = Config::load_with_ids(path)?;
+        project.apply(&mut config);
+        let (name, imp) = config.pick_imp(name)?;
         let mut session = Self {
             path: path.to_path_buf(),
             name: name.to_string(),
             imp: imp.clone(),
             model: imp.model.clone(),
             client: Rc::new(OpenAiClient::new(&imp.base_url, None, policy(&config))?),
-            system: system_prompt_in(name, imp, &workspace),
+            system: system_prompt_in(name, imp, &workspace, &project),
             toolbox: Rc::new(Toolbox::new()),
             mcp: Rc::new(McpHost::connect(&[], MCP_TIMEOUT).await.0),
             servers: Vec::new(),
             selection: ToolSelection::all(),
             max_steps: config.max_steps,
+            memory_exchanges: config.memory_exchanges,
+            long_chat_tokens: config.long_chat_tokens,
             warnings: Vec::new(),
+            notices: Vec::new(),
             workspace,
+            project,
             key_source: None,
             key_override: None,
             options,
@@ -215,9 +236,24 @@ impl Session {
         Ok(session)
     }
 
-    /// The settings file as it is now.
+    /// The settings file as it is now, without what the folder adds. This is the one to change and save.
     pub fn config(&self) -> Result<Config> {
         Config::load_with_ids(&self.path)
+    }
+
+    /// The settings as this chat uses them: the file, with the folder's Imps put in.
+    pub fn effective_config(&self) -> Result<Config> {
+        let mut config = self.config()?;
+        self.project.apply(&mut config);
+        Ok(config)
+    }
+
+    /// The folder's file that sets up this Imp, if one does.
+    pub fn agent_file(&self) -> Option<&Path> {
+        self.project
+            .agents
+            .get(&self.name)
+            .map(|a| a.path.as_path())
     }
 
     /// How other devices see this Imp.
@@ -227,14 +263,33 @@ impl Session {
 
     /// Changes one of the Imp's settings, saves the file and rebuilds what it touches.
     pub async fn set(&mut self, key: &str, value: &str) -> Result<()> {
+        if let Some(file) = self.project.sets(&self.name, key) {
+            return Err(CliError(format!(
+                "{} sets the {key} of {} in this folder. Change it there.",
+                shown_path(file),
+                self.name
+            )));
+        }
         let mut config = self.config()?;
         let imp = config
             .imps
             .get_mut(&self.name)
-            .ok_or_else(|| CliError(format!("{} is no longer in the settings file.", self.name)))?;
+            .ok_or_else(|| self.not_in_file())?;
         imp.set(key, value)?;
         config.save(&self.path)?;
         self.reload(&config)
+    }
+
+    /// Why a change can't be saved: the Imp is not in the settings file.
+    pub fn not_in_file(&self) -> CliError {
+        match self.agent_file() {
+            Some(file) => CliError(format!(
+                "{} lives in this folder ({}), not in the settings file. Change it there.",
+                self.name,
+                shown_path(file)
+            )),
+            None => CliError(format!("{} is no longer in the settings file.", self.name)),
+        }
     }
 
     /// Uses `key` as the API key until the chat ends. None goes back to the usual places.
@@ -245,20 +300,43 @@ impl Session {
     }
 
     /// Takes the Imp's settings from `config` again: the model, the address, the personality.
+    /// The folder's files are read again first, so a changed `AGENTS.md` or skill counts too.
     pub fn reload(&mut self, config: &Config) -> Result<()> {
+        self.project = Project::load_here(&self.workspace, self.options.agents_home.as_deref());
+        let mut config = config.clone();
+        self.project.apply(&mut config);
         let imp = config
             .imps
             .get(&self.name)
             .ok_or_else(|| CliError(format!("{} is no longer in the settings file.", self.name)))?;
         self.imp = imp.clone();
         self.model = imp.model.clone();
-        self.system = system_prompt_in(&self.name, imp, &self.workspace);
+        self.system = system_prompt_in(&self.name, imp, &self.workspace, &self.project);
         self.max_steps = config.max_steps;
-        self.selection = ToolSelection {
-            tools_off: imp.tools_off.iter().cloned().collect(),
+        self.memory_exchanges = config.memory_exchanges;
+        self.long_chat_tokens = config.long_chat_tokens;
+        // The skills and the tool list may have changed with the files.
+        self.build_toolbox(&config);
+        self.rebuild_client(&config)
+    }
+
+    /// Which tools are on: all but the Imp's `tools_off`, and only those its folder file lists, if it lists any.
+    fn selection_for(&self, toolbox: &Toolbox) -> ToolSelection {
+        let mut tools_off: std::collections::BTreeSet<String> =
+            self.imp.tools_off.iter().cloned().collect();
+        if let Some(agent) = self.project.agents.get(&self.name) {
+            for tool in toolbox.tools() {
+                if let Some(entry) = tool.entry
+                    && !agent.spec.allows(&entry.id, &entry.name, &entry.group)
+                {
+                    tools_off.insert(entry.id);
+                }
+            }
+        }
+        ToolSelection {
+            tools_off,
             ..ToolSelection::all()
-        };
-        self.rebuild_client(config)
+        }
     }
 
     fn rebuild_client(&mut self, config: &Config) -> Result<()> {
@@ -285,34 +363,60 @@ impl Session {
         let config = self.config()?;
         self.reload(&config)?;
         self.mcp.close().await;
+        // With the folder's Imps, so `imp_message` can still reach them.
+        let config = self.effective_config()?;
         self.connect_tools(&config).await;
         Ok(())
     }
 
     async fn connect_tools(&mut self, config: &Config) {
-        let specs = mcp_specs_in(
+        let mut specs = mcp_specs_in(
             &self.imp,
             &self.workspace,
             keys::real_env,
             keys::real_keychain,
         );
+        // The folder's servers, unless the Imp has its own of the same name.
+        let folder_servers: Vec<_> = self
+            .project
+            .trusted_servers()
+            .into_iter()
+            .filter(|(name, _, _)| !self.imp.mcp_servers.contains_key(*name))
+            .map(|(name, server, file)| (name.to_string(), server.clone(), file.path.clone()))
+            .collect();
+        for (name, server, _) in &folder_servers {
+            specs.push(crate::project::server_spec(
+                name,
+                server,
+                &self.workspace,
+                &keys::real_env,
+            ));
+        }
         let (mcp, problems) = McpHost::connect(&specs, MCP_TIMEOUT).await;
         let mcp = Rc::new(mcp);
         let offered = mcp.tools();
-        self.servers = self
+        let targets = self
             .imp
             .mcp_servers
             .iter()
-            .map(|(name, server)| {
-                let group = imp_engine::tools::mcp_group_id(name);
+            .map(|(name, server)| (name.clone(), describe_server(server)))
+            .chain(folder_servers.iter().map(|(name, server, file)| {
+                (
+                    name.clone(),
+                    format!("{}  (from {})", server.describe(), shown_path(file)),
+                )
+            }));
+        self.servers = targets
+            .map(|(name, target)| {
+                let group = imp_engine::tools::mcp_group_id(&name);
                 let count = offered
                     .iter()
                     .filter(|t| t.entry.as_ref().is_some_and(|e| e.group == group))
                     .count();
                 let problem = problems.iter().find(|p| p.contains(&format!(" {name} ")));
                 ServerStatus {
-                    name: name.clone(),
-                    target: describe_server(server),
+                    name,
+                    target,
                     tools: match problem {
                         Some(p) => Err(p.clone()),
                         None => Ok(count),
@@ -321,6 +425,8 @@ impl Session {
             })
             .collect();
         self.warnings = problems;
+        self.warnings.extend(self.project.problems.iter().cloned());
+        self.notices = self.project.notices();
         self.mcp = mcp;
         self.build_toolbox(config);
     }
@@ -337,6 +443,9 @@ impl Session {
     fn build_toolbox(&mut self, config: &Config) {
         let mut toolbox = Toolbox::new();
         toolbox.add(self.mcp.clone());
+        if let Some(skills) = self.project.skill_host() {
+            toolbox.add(Rc::new(skills));
+        }
         if config.imps.len() > 1 || self.options.remote.is_some() {
             match talks_dir() {
                 Ok(dir) => {
@@ -358,11 +467,8 @@ impl Session {
                     .push(format!("Messaging other Imps is off. {e}")),
             }
         }
+        self.selection = self.selection_for(&toolbox);
         self.toolbox = Rc::new(toolbox);
-        self.selection = ToolSelection {
-            tools_off: self.imp.tools_off.iter().cloned().collect(),
-            ..ToolSelection::all()
-        };
     }
 
     /// Every tool the Imp has, with whether it is on.
@@ -376,6 +482,42 @@ impl Session {
                 name: t.spec.name,
             })
             .collect()
+    }
+
+    /// A new chat with this Imp.
+    pub fn new_chat(&self) -> ChatState {
+        let mut chat = ChatState::new(self.system.clone());
+        chat.set_exchanges(self.memory_exchanges);
+        chat
+    }
+
+    /// A chat with this Imp that goes on from `messages`.
+    pub fn chat_from(&self, messages: Vec<ChatMessage>) -> ChatState {
+        let mut chat = ChatState::from_messages(self.system.clone(), messages);
+        chat.set_exchanges(self.memory_exchanges);
+        chat
+    }
+
+    /// Has the model sum up what it remembers of a chat, as the apps do, so the chat can go on with
+    /// the summary in place of its history. The request is the core's.
+    pub async fn recap(&self, memory: &ChatMemory) -> Result<String> {
+        let mut messages: Vec<ChatMessage> = memory
+            .recap_request(&self.name)
+            .iter()
+            .map(ChatMessage::from)
+            .collect();
+        let summary = imp_engine::run_agent(
+            &self.client,
+            &self.model,
+            &mut messages,
+            &Toolbox::new(),
+            &ToolSelection::all(),
+            1,
+            |_| {},
+        )
+        .await
+        .map_err(|e| CliError(format!("The chat could not be summed up: {e}")))?;
+        Ok(summary)
     }
 
     /// Ends the sessions of the MCP servers.

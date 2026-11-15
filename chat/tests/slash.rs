@@ -3,7 +3,7 @@
 
 use imp_chat::config::Config;
 use imp_chat::session::{Session, SessionOptions, expand, mcp_specs_in};
-use imp_chat::slash::{self, Context, NoteKind, Outcome};
+use imp_chat::slash::{self, Context, Outcome};
 use imp_engine::McpEndpoint;
 use std::path::{Path, PathBuf};
 
@@ -27,6 +27,8 @@ async fn session(dir: &Path) -> Session {
         SessionOptions {
             workspace: Some(dir.to_path_buf()),
             remote: None,
+            // Not the developer's own ~/.agents.
+            agents_home: Some(no_home()),
         },
     )
     .await
@@ -52,10 +54,7 @@ fn said(outcome: &Outcome) -> String {
     match outcome {
         Outcome::Notes(notes) | Outcome::Sent(notes) => notes
             .iter()
-            .map(|n| match n.kind {
-                NoteKind::Problem => format!("! {}", n.text),
-                _ => n.text.clone(),
-            })
+            .map(|n| n.plain())
             .collect::<Vec<_>>()
             .join("\n"),
         other => format!("{other:?}"),
@@ -179,4 +178,11 @@ fn the_folder_of_the_chat_fills_in_the_arguments() {
         panic!("a command")
     };
     assert_eq!(args.last().map(String::as_str), Some("/work/project"));
+}
+
+/// An empty folder standing for the person's home, so the tests never read the developer's ~/.agents.
+fn no_home() -> PathBuf {
+    let dir = std::env::temp_dir().join(format!("imp-chat-no-home-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    dir
 }
