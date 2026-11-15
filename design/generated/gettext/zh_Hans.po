@@ -386,6 +386,11 @@ msgctxt "common.choose"
 msgid "Choose…"
 msgstr "选择…"
 
+#. Clears what was typed in a search field.
+msgctxt "common.clear"
+msgid "Clear"
+msgstr "清除"
+
 #. Button or label that closes a window or panel.
 msgctxt "common.close"
 msgid "Close"
@@ -1944,6 +1949,11 @@ msgctxt "phone.about.title"
 msgid "About"
 msgstr "关于"
 
+#. Card title in the iPhone's App settings: the app's language and whether voices play by themselves.
+msgctxt "phone.app.speech"
+msgid "Language and voices"
+msgstr "语言与语音"
+
 #. Appearance choice: follow the system.
 msgctxt "phone.appearance.auto"
 msgid "Auto"
@@ -1963,6 +1973,41 @@ msgstr "浅色"
 msgctxt "phone.brain.change"
 msgid "Change"
 msgstr "更改"
+
+#. Button of the Brain form of an Imp that already thinks: tries the new service and model, then keeps them.
+msgctxt "phone.brain.check_save"
+msgid "Check and save"
+msgstr "检查并保存"
+
+#. Button beside the model field (iPhone Brain form): lists the service's models to pick one.
+msgctxt "phone.brain.list_models"
+msgid "Show models"
+msgstr "显示模型"
+
+#. Placeholder of the model field in an iPhone Imp's Brain form: left blank, the first model that chats is picked.
+msgctxt "phone.brain.model_auto"
+msgid "Picked for you"
+msgstr "自动选择"
+
+#. Under Picked for you in the iPhone's model list: blank lets the Imp take the first model that chats when it wakes.
+msgctxt "phone.brain.model_auto_detail"
+msgid "The first model that chats, chosen when it wakes."
+msgstr "唤醒时自动选择第一个能聊天的模型。"
+
+#. Row in the iPhone's model list when the search holds a name the service doesn't list: use that name as the model.
+msgctxt "phone.brain.model_use"
+msgid "Use “{name}”"
+msgstr "使用“{name}”"
+
+#. Under the list of Imps in the iPhone's Brains settings: a new Imp (the + button) starts with this Imp's service, model and key.
+msgctxt "phone.brains.default"
+msgid "New Imps start with {name}'s Brain."
+msgstr "新的小妖会沿用 {name} 的大脑。"
+
+#. Brains section of the iPhone settings, when no Imp was hatched on this iPhone yet.
+msgctxt "phone.brains.empty"
+msgid "Imps you hatch on this iPhone show here, each with the Brain it thinks with."
+msgstr "你在这台 iPhone 上孵化的小妖会显示在这里，并附上各自使用的大脑。"
 
 #. Button beside an Imp without a Brain (iPhone settings): opens its Brain to set one up.
 msgctxt "phone.brains.set_up"
@@ -2064,16 +2109,6 @@ msgctxt "phone.copy"
 msgid "Copy"
 msgstr "拷贝"
 
-#. Main button of the sheet that makes a new Imp on the iPhone.
-msgctxt "phone.editor.hatch"
-msgid "Hatch"
-msgstr "孵化"
-
-#. Main button of an Imp's settings on the iPhone.
-msgctxt "phone.editor.save"
-msgid "Save"
-msgstr "保存"
-
 #. Message of that alert, with what went wrong.
 msgctxt "phone.editor.save_failed"
 msgid "The Imp couldn't be saved. {detail}"
@@ -2144,6 +2179,26 @@ msgctxt "phone.game.time_best"
 msgid "Time. {points} points. New best!"
 msgstr "时间到。{points} 分。新纪录！"
 
+#. Help of the Haptics switch on the iPhone.
+msgctxt "phone.haptics.info"
+msgid "Taps in your hand when you pick something, when an Imp comes or goes, and when something works or fails."
+msgstr "选择内容、小妖到来或离开、操作成功或失败时，手中会有轻触反馈。"
+
+#. Card title and switch in the iPhone's App settings: taps felt in the hand.
+msgctxt "phone.haptics.title"
+msgid "Haptics"
+msgstr "触感反馈"
+
+#. Shown under the language picker on the iPhone after a change: iOS applies an app's language when it opens.
+msgctxt "phone.language.next_open"
+msgid "Imp switches language the next time it opens."
+msgstr "Imp 会在下次打开时切换语言。"
+
+#. Language picker option on the iPhone: follow the iPhone's own language.
+msgctxt "phone.language.system"
+msgid "Same as my iPhone"
+msgstr "与 iPhone 相同"
+
 #. Help of the linked devices card.
 msgctxt "phone.linked.info"
 msgid "Devices linked with this iPhone. Imps can travel between you."
@@ -2189,11 +2244,6 @@ msgctxt "phone.pair.code_bad"
 msgid "That code isn't from Imp."
 msgstr "该二维码不是 Imp 的。"
 
-#. Quiet button on the first screen: make an Imp of your own instead of waking the first one.
-msgctxt "phone.pair.hatch"
-msgid "Hatch"
-msgstr "孵化"
-
 #. iPhone: pair link bad.
 msgctxt "phone.pair.link_bad"
 msgid "That isn't a link from Imp."
@@ -2208,16 +2258,6 @@ msgstr "扫描另一台设备上的代码"
 msgctxt "phone.pair.seen_as"
 msgid "Other devices see this iPhone by this name."
 msgstr "其他设备会以这个名字看到这台 iPhone。"
-
-#. Help on the first screen.
-msgctxt "phone.pair.tip"
-msgid "Wake this Imp with a Brain, or link another device and throw an Imp over."
-msgstr "给这只小妖一个大脑叫醒它，或者关联另一台设备，把小妖扔过来。"
-
-#. Title of the first screen on the iPhone.
-msgctxt "phone.pair.title"
-msgid "Imp for iPhone"
-msgstr "iPhone 版 Imp"
 
 #. Button that links from a copied link.
 msgctxt "phone.paste.link"
@@ -2288,11 +2328,6 @@ msgstr "扫描"
 msgctxt "phone.secret.hidden"
 msgid "Entered, hidden"
 msgstr "已输入，已隐藏"
-
-#. Example address of a Den.
-msgctxt "phone.server.placeholder_den"
-msgid "den.example.com"
-msgstr "den.example.com"
 
 #. Example address of a Hop.
 msgctxt "phone.server.placeholder_hop"
@@ -2393,6 +2428,31 @@ msgstr "{name} 不在附近"
 msgctxt "phone.stage.throw_hint"
 msgid "Throw an Imp off the side of another screen. It lands here."
 msgstr "把小妖从另一块屏幕的边缘扔过来，它会落在这里。"
+
+#. Under Link a device on the first screen: what linking gives you.
+msgctxt "phone.start.link_detail"
+msgid "Bring Imps over from your Mac or another iPhone."
+msgstr "把小妖从你的 Mac 或另一台 iPhone 带过来。"
+
+#. The first screen's second way to begin: link this iPhone with a Mac or another iPhone.
+msgctxt "phone.start.link_title"
+msgid "Link a device"
+msgstr "关联设备"
+
+#. One sentence under the first screen's title: what Imp is.
+msgctxt "phone.start.subtitle"
+msgid "A tiny helper that lives on your screen and thinks with the AI you choose."
+msgstr "一个住在你屏幕上的小帮手，用你选择的 AI 思考。"
+
+#. Big title of the iPhone's first screen, over the sleeping first Imp. Imp is the app's name.
+msgctxt "phone.start.title"
+msgid "Meet Imp"
+msgstr "认识 Imp"
+
+#. Under the first screen's main button (Wake Imp up): what waking it needs.
+msgctxt "phone.start.wake_note"
+msgid "Paste a key from an AI service, or use a model on your Mac."
+msgstr "粘贴 AI 服务的密钥，或使用你 Mac 上的模型。"
 
 #. Connection pill: no device linked.
 msgctxt "phone.status.alone"
@@ -3413,6 +3473,16 @@ msgstr "新建"
 msgctxt "tools.optional"
 msgid "Optional"
 msgstr "可选项"
+
+#. Card title in an iPhone Imp's Tools: the tools the Imp has by itself (messaging other Imps, playing animations), each with a switch.
+msgctxt "tools.own"
+msgid "Built in"
+msgstr "内置"
+
+#. Help of the Built in tools card on the iPhone.
+msgctxt "tools.own.info"
+msgid "What the Imp can do by itself. Switch off what it shouldn't use."
+msgstr "小妖自带的能力。关闭不希望它使用的功能。"
 
 #. Problem on a tool server with no address.
 msgctxt "tools.problem.address"

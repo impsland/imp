@@ -22,7 +22,7 @@ struct PhoneDevicesSection: View {
                     ForEach(elsewhere, id: \.id) { imp in held(imp, by: hub.holders[imp.id].map(hub.deviceName)) }
                 }
             }
-            ServerCard(hub: hub, kind: .hop)
+            ServerCard(hub: hub)
         }
     }
 

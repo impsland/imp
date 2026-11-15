@@ -88,7 +88,6 @@ struct DevicesSheet: View {
         case .devices:
             PhoneDevicesSection(hub: hub, pocket: pocket, scan: { scanning = true },
                                 forget: { forgetting = $0 }, forgetAll: { forgettingEveryone = true })
-        case .sharing: ServerCard(hub: hub, kind: .den)
         case .app: PhoneAppSection()
         }
     }
@@ -103,7 +102,6 @@ enum PhoneNodes {
                                    imps: pocket.looks.map(\.name), sleeping: asleep),
                       SettingsNode(id: "brains", kind: .brains, name: "",
                                    state: pocket.imps.contains { pocket.hasBrain($0.id) } ? .ready : .needsSetup),
-                      SettingsNode(id: "den", kind: .den, name: "", state: SettingsMap.serverState(hub.den, .den)),
                       SettingsNode(id: "hop", kind: .hop, name: "", state: SettingsMap.serverState(hub.hop, .hop),
                                    isLocal: ServerKind.isOnThisDevice(hub.hop))]
         for link in hub.links {

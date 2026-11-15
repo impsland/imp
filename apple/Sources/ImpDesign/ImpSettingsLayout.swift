@@ -131,50 +131,6 @@ public enum ImpSettingsGeometry {
         }
     }
 
-    // MARK: The phone
-
-    /// The four slots of the phone's arrangement: two markers on each side of the Imp.
-    public enum PhoneSlot: Sendable, CaseIterable { case upperLeft, upperRight, lowerLeft, lowerRight }
-
-    /// The slot of each setting the phone shows (Triggers and Moves live on the Mac).
-    public static func phoneSlot(_ setting: ImpSetting) -> PhoneSlot? {
-        switch setting {
-        case .brain: .upperLeft
-        case .look: .upperRight
-        case .personality: .lowerLeft
-        case .tools: .lowerRight
-        case .triggers, .moves: nil
-        }
-    }
-
-    /// A phone marker's cell. Narrower than the Mac's so two fit beside the Imp on the smallest phone.
-    public static var phoneMarkerWidth: CGFloat { Sizing.marker * 1.75 }
-    /// The smallest the Imp is drawn between its markers.
-    public static var phoneMinImp: CGFloat { Sizing.marker * 2 }
-
-    /// The Imp's side between the markers in a stage `width` wide: what is left of the width after a marker and
-    /// the page margin on each side, within `phoneMinImp` and `maxImp`.
-    public static func phoneImp(width: CGFloat) -> CGFloat {
-        min(max(width - 2 * (phoneMarkerWidth + gap + Spacing.page), phoneMinImp), maxImp)
-    }
-
-    /// The height of the stage: the Imp, or the two rows of markers when they are taller.
-    public static func phoneStageHeight(imp: CGFloat) -> CGFloat {
-        max(imp, 2 * markerHeight + gap)
-    }
-
-    /// The centre of a marker in `slot`, from the centre of the Imp whose side is `imp`.
-    public static func phoneOffset(_ slot: PhoneSlot, imp: CGFloat) -> CGSize {
-        let x = imp / 2 + gap + phoneMarkerWidth / 2
-        let y = (markerHeight + gap) / 2
-        return switch slot {
-        case .upperLeft: CGSize(width: -x, height: -y)
-        case .upperRight: CGSize(width: x, height: -y)
-        case .lowerLeft: CGSize(width: -x, height: y)
-        case .lowerRight: CGSize(width: x, height: y)
-        }
-    }
-
     /// How much of the preview's frame the Imp fills for a size setting (the smallest size is
     /// 0.75 and the biggest 1.7), so the size slider shows on the Imp in the middle.
     public static func previewScale(_ size: Double) -> Double {

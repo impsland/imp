@@ -14,11 +14,11 @@ enum PhonePrefs {
     static let dismissedWithheldKey = "dismissedWithheldNotices"
 }
 
-/// The sections of the phone's settings, always one tap away, each one of the Mac's sections. Animations
-/// and Tools are not here: they are made and given out on the Mac and nothing in them changes what this
-/// phone shows (docs/ux/parity.md).
+/// The sections of the phone's settings, always one tap away, each one of the Mac's sections. Animations,
+/// Tools and Sharing are not here: they are made, given out and shared in the Den on the Mac, and nothing in
+/// them changes what this phone does. Imps hatched here have no Den tools (docs/ux/parity.md).
 enum PhoneSection: String, CaseIterable, Identifiable {
-    case brains, devices, sharing, app
+    case brains, devices, app
     var id: String { rawValue }
 
     /// The Mac's section this one is. Its name and what needs attention in it come from there.
@@ -26,7 +26,6 @@ enum PhoneSection: String, CaseIterable, Identifiable {
         switch self {
         case .brains: .brains
         case .devices: .devices
-        case .sharing: .sharing
         case .app: .app
         }
     }
@@ -37,7 +36,6 @@ enum PhoneSection: String, CaseIterable, Identifiable {
         switch self {
         case .brains: "lightbulb"
         case .devices: "link"
-        case .sharing: "tray.full"
         case .app: "slider.horizontal.3"
         }
     }

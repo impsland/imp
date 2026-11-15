@@ -42,10 +42,6 @@ struct PhoneSnapshotTests {
         check(attention(nodes, in: .brains), "settings-attention-brains")
     }
 
-    @Test func sharingNeedsAttention() {
-        check(attention([SettingsNode(id: "den", kind: .den, name: "", state: .off)], in: .sharing), "settings-attention-sharing")
-    }
-
     @Test func firstRunService() { check(firstRun { _ in }, "first-run-service") }
 
     @Test func firstRunError() { check(firstRun { $0.continueFromService() }, "first-run-error") }

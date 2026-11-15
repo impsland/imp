@@ -387,6 +387,11 @@ msgctxt "common.choose"
 msgid "Choose…"
 msgstr "Elegir…"
 
+#. Clears what was typed in a search field.
+msgctxt "common.clear"
+msgid "Clear"
+msgstr "Borrar"
+
 #. Button or label that closes a window or panel.
 msgctxt "common.close"
 msgid "Close"
@@ -1948,6 +1953,11 @@ msgctxt "phone.about.title"
 msgid "About"
 msgstr "Acerca de"
 
+#. Card title in the iPhone's App settings: the app's language and whether voices play by themselves.
+msgctxt "phone.app.speech"
+msgid "Language and voices"
+msgstr "Idioma y voces"
+
 #. Appearance choice: follow the system.
 msgctxt "phone.appearance.auto"
 msgid "Auto"
@@ -1967,6 +1977,41 @@ msgstr "Claro"
 msgctxt "phone.brain.change"
 msgid "Change"
 msgstr "Cambiar"
+
+#. Button of the Brain form of an Imp that already thinks: tries the new service and model, then keeps them.
+msgctxt "phone.brain.check_save"
+msgid "Check and save"
+msgstr "Probar y guardar"
+
+#. Button beside the model field (iPhone Brain form): lists the service's models to pick one.
+msgctxt "phone.brain.list_models"
+msgid "Show models"
+msgstr "Ver modelos"
+
+#. Placeholder of the model field in an iPhone Imp's Brain form: left blank, the first model that chats is picked.
+msgctxt "phone.brain.model_auto"
+msgid "Picked for you"
+msgstr "Se elige por ti"
+
+#. Under Picked for you in the iPhone's model list: blank lets the Imp take the first model that chats when it wakes.
+msgctxt "phone.brain.model_auto_detail"
+msgid "The first model that chats, chosen when it wakes."
+msgstr "El primer modelo que conversa, elegido al despertar."
+
+#. Row in the iPhone's model list when the search holds a name the service doesn't list: use that name as the model.
+msgctxt "phone.brain.model_use"
+msgid "Use “{name}”"
+msgstr "Usar «{name}»"
+
+#. Under the list of Imps in the iPhone's Brains settings: a new Imp (the + button) starts with this Imp's service, model and key.
+msgctxt "phone.brains.default"
+msgid "New Imps start with {name}'s Brain."
+msgstr "Los Imps nuevos empiezan con el cerebro de {name}."
+
+#. Brains section of the iPhone settings, when no Imp was hatched on this iPhone yet.
+msgctxt "phone.brains.empty"
+msgid "Imps you hatch on this iPhone show here, each with the Brain it thinks with."
+msgstr "Los Imps que crees en este iPhone aparecen aquí, cada uno con el cerebro con el que piensa."
 
 #. Button beside an Imp without a Brain (iPhone settings): opens its Brain to set one up.
 msgctxt "phone.brains.set_up"
@@ -2068,16 +2113,6 @@ msgctxt "phone.copy"
 msgid "Copy"
 msgstr "Copiar"
 
-#. Main button of the sheet that makes a new Imp on the iPhone.
-msgctxt "phone.editor.hatch"
-msgid "Hatch"
-msgstr "Crear"
-
-#. Main button of an Imp's settings on the iPhone.
-msgctxt "phone.editor.save"
-msgid "Save"
-msgstr "Guardar"
-
 #. Message of that alert, with what went wrong.
 msgctxt "phone.editor.save_failed"
 msgid "The Imp couldn't be saved. {detail}"
@@ -2148,6 +2183,26 @@ msgctxt "phone.game.time_best"
 msgid "Time. {points} points. New best!"
 msgstr "Tiempo. {points} puntos. ¡Nuevo récord!"
 
+#. Help of the Haptics switch on the iPhone.
+msgctxt "phone.haptics.info"
+msgid "Taps in your hand when you pick something, when an Imp comes or goes, and when something works or fails."
+msgstr "Toques en la mano al elegir algo, cuando un Imp llega o se va, y cuando algo sale bien o falla."
+
+#. Card title and switch in the iPhone's App settings: taps felt in the hand.
+msgctxt "phone.haptics.title"
+msgid "Haptics"
+msgstr "Vibración háptica"
+
+#. Shown under the language picker on the iPhone after a change: iOS applies an app's language when it opens.
+msgctxt "phone.language.next_open"
+msgid "Imp switches language the next time it opens."
+msgstr "Imp cambiará de idioma la próxima vez que se abra."
+
+#. Language picker option on the iPhone: follow the iPhone's own language.
+msgctxt "phone.language.system"
+msgid "Same as my iPhone"
+msgstr "Igual que mi iPhone"
+
 #. Help of the linked devices card.
 msgctxt "phone.linked.info"
 msgid "Devices linked with this iPhone. Imps can travel between you."
@@ -2193,11 +2248,6 @@ msgctxt "phone.pair.code_bad"
 msgid "That code isn't from Imp."
 msgstr "Ese código no es de Imp."
 
-#. Quiet button on the first screen: make an Imp of your own instead of waking the first one.
-msgctxt "phone.pair.hatch"
-msgid "Hatch"
-msgstr "Crear"
-
 #. iPhone: pair link bad.
 msgctxt "phone.pair.link_bad"
 msgid "That isn't a link from Imp."
@@ -2212,16 +2262,6 @@ msgstr "Escanea el código del otro dispositivo"
 msgctxt "phone.pair.seen_as"
 msgid "Other devices see this iPhone by this name."
 msgstr "Los otros dispositivos ven este iPhone con este nombre."
-
-#. Help on the first screen.
-msgctxt "phone.pair.tip"
-msgid "Wake this Imp with a Brain, or link another device and throw an Imp over."
-msgstr "Despierta a este Imp con un cerebro, o enlaza otro dispositivo y lanza un Imp hacia aquí."
-
-#. Title of the first screen on the iPhone.
-msgctxt "phone.pair.title"
-msgid "Imp for iPhone"
-msgstr "Imp para iPhone"
 
 #. Button that links from a copied link.
 msgctxt "phone.paste.link"
@@ -2292,11 +2332,6 @@ msgstr "Escanear"
 msgctxt "phone.secret.hidden"
 msgid "Entered, hidden"
 msgstr "Oculta"
-
-#. Example address of a Den.
-msgctxt "phone.server.placeholder_den"
-msgid "den.example.com"
-msgstr "den.example.com"
 
 #. Example address of a Hop.
 msgctxt "phone.server.placeholder_hop"
@@ -2397,6 +2432,31 @@ msgstr "{name} no está por aquí"
 msgctxt "phone.stage.throw_hint"
 msgid "Throw an Imp off the side of another screen. It lands here."
 msgstr "Lanza un Imp por el borde de otra pantalla. Aterriza aquí."
+
+#. Under Link a device on the first screen: what linking gives you.
+msgctxt "phone.start.link_detail"
+msgid "Bring Imps over from your Mac or another iPhone."
+msgstr "Trae Imps desde tu Mac u otro iPhone."
+
+#. The first screen's second way to begin: link this iPhone with a Mac or another iPhone.
+msgctxt "phone.start.link_title"
+msgid "Link a device"
+msgstr "Enlazar un dispositivo"
+
+#. One sentence under the first screen's title: what Imp is.
+msgctxt "phone.start.subtitle"
+msgid "A tiny helper that lives on your screen and thinks with the AI you choose."
+msgstr "Un pequeño ayudante que vive en tu pantalla y piensa con la IA que elijas."
+
+#. Big title of the iPhone's first screen, over the sleeping first Imp. Imp is the app's name.
+msgctxt "phone.start.title"
+msgid "Meet Imp"
+msgstr "Conoce a Imp"
+
+#. Under the first screen's main button (Wake Imp up): what waking it needs.
+msgctxt "phone.start.wake_note"
+msgid "Paste a key from an AI service, or use a model on your Mac."
+msgstr "Pega una clave de un servicio de IA o usa un modelo de tu Mac."
 
 #. Connection pill: no device linked.
 msgctxt "phone.status.alone"
@@ -3417,6 +3477,16 @@ msgstr "Nuevo"
 msgctxt "tools.optional"
 msgid "Optional"
 msgstr "Opcional"
+
+#. Card title in an iPhone Imp's Tools: the tools the Imp has by itself (messaging other Imps, playing animations), each with a switch.
+msgctxt "tools.own"
+msgid "Built in"
+msgstr "Integradas"
+
+#. Help of the Built in tools card on the iPhone.
+msgctxt "tools.own.info"
+msgid "What the Imp can do by itself. Switch off what it shouldn't use."
+msgstr "Lo que el Imp puede hacer por sí solo. Desactiva lo que no deba usar."
 
 #. Problem on a tool server with no address.
 msgctxt "tools.problem.address"

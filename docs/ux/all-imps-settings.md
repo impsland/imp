@@ -136,12 +136,11 @@ The same model as the Mac: a sheet with the title and Close on top, the sections
 
 | Section | Holds |
 | --- | --- |
-| Brains | Which Imps of this iPhone can think. How long an Imp waits, tries, pause. |
+| Brains | Each Imp of this iPhone with what it thinks with (service and model) or Set up, and which Imp's Brain a new Imp starts with. How long an Imp waits, tries, pause. |
 | Devices | The name, one Link card (the QR code, Copy and Share, Scan and Paste, where a bad code is a notice), the linked devices as pebbles with Forget all in the header, The Hop (buttons and Check). |
-| Sharing | The Den (buttons and Check). |
-| App | Appearance (Auto, Light, Dark), On colour (White, Black), Sound and video (play voices), System (language, opens the system settings), shake, version. A tap on an Imp opens its chat at once: there is no double tap setting. |
+| App | Look: Appearance (Auto, Light, Dark), On colour (White, Black). Language and voices: the language (Same as my iPhone or one of Imp's languages, the same setting as Settings › Apps › Imp › Language, applied the next time Imp opens) and Autoplay. Haptics (on or off, for every tap the app gives: picks such as a size step, a colour or a character, an Imp leaving for or landing from another device, a result that works or fails, touching an Imp, games). Shake, version. A tap on an Imp opens its chat at once: there is no double tap setting. |
 
-Animations and Tools are not on the phone. See [Parity](/ux/parity#the-phone-leaves-out).
+Animations, Tools and Sharing are not on the phone: a pocket Imp has no Den tools, so a Den address there would do nothing. See [Parity](/ux/parity#the-phone-leaves-out).
 
 ### Bubble background (Mac only)
 
@@ -379,4 +378,4 @@ The Imp never changes a setting value itself. When someone asks for a change ("m
 
 - Every setting has a stable id in `SettingsCatalog.swift` (for example `bubble_hide_after`, `backup_export`). The tool's `setting` and `page` lists are generated from that catalog, so a new setting cannot be missed. A test checks that each row on a settings screen has one `.settingAnchor(...)`.
 - Links do the same: `imp://settings?setting=bubble_hide_after` (add `&imp=<name>` for a setting of one Imp) or `imp://settings?page=backup`.
-- The iPhone has the brains, devices, sharing and app sections (see [iPhone](#iphone)). For a setting that is only on the Mac, the answer is "that setting is on the Mac".
+- The iPhone has the brains, devices and app sections (see [iPhone](#iphone)). For a setting that is only on the Mac, the answer is "that setting is on the Mac".

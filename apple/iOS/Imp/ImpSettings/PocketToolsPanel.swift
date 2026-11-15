@@ -2,8 +2,9 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The Tools panel: the MCP servers this Imp can use. "Add tools" sits in the section's header. Inside a
-/// server, "Add a header" is a plus in the header of its headers. No action is left alone under a list.
+/// The Tools panel: first the Imp's own tools, each with a switch (as on the Mac), then the MCP servers it can use.
+/// "Add tools" sits in the section's header. Inside a server, "Add a header" is a plus in the header of its
+/// headers. No action is left alone under a list.
 struct PocketToolsPanel: View {
     @Bindable var draft: PocketDraft
     let proxy: ScrollViewProxy
@@ -15,6 +16,24 @@ struct PocketToolsPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
+            PocketCard(title: "tools.own", tip: String(localized: "tools.own.info")) {
+                VStack(spacing: 0) {
+                    ForEach(PocketDraft.ownTools) { tool in
+                        Toggle(isOn: Binding(get: { draft.uses(tool) }, set: { draft.setUses(tool, $0) })) {
+                            Label { Text(verbatim: tool.title) } icon: {
+                                Image(systemName: tool.name == OwnTools.message ? "bubble.left.and.bubble.right" : "figure.dance")
+                                    .font(.icon(.large)).foregroundStyle(Tone.muted)
+                                    .frame(width: Sizing.mark)
+                            }
+                            .font(Typeface.body).foregroundStyle(Tone.text)
+                        }
+                        .toggleStyle(.impSwitch)
+                        .frame(minHeight: Sizing.hit)
+                        .accessibilityIdentifier("tools.\(tool.name)")
+                    }
+                }
+                .selectionHaptic(draft.toolsOff)
+            }
             // Add is an action on the list, so it sits in the list's header, as on the Mac.
             SectionHeader("tools.mcp", info: "tools.help.mcp", font: Typeface.label, minHeight: nil) {
                 Button { addServer() } label: { FitLabel("tools.add", systemImage: "plus") }

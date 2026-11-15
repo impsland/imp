@@ -19,7 +19,20 @@ struct ImpPhoneApp: App {
         }
         #endif
         _hub = State(initialValue: hub)
-        _pocket = State(initialValue: PocketRuntime(hub: hub))
+        _pocket = State(initialValue: PocketRuntime(hub: hub, store: Self.store()))
+    }
+
+    /// The Imps hatched here. The UI tests (`-uiTestSandbox`, debug builds only) get a file of their own, so a test never
+    /// sees or touches the owner's Imps, and `-uiTestReset` empties it (keys too) for a test that starts from nothing.
+    private static func store() -> PocketStore {
+        #if DEBUG
+        if CommandLine.arguments.contains("-uiTestSandbox") {
+            let sandbox = PocketStore(url: URL.applicationSupportDirectory.appending(path: "pocket-imps-uitest.json"))
+            if CommandLine.arguments.contains("-uiTestReset") { for imp in sandbox.imps { sandbox.remove(imp.id) } }
+            return sandbox
+        }
+        #endif
+        return PocketStore()
     }
 
     var body: some Scene {
@@ -78,7 +91,7 @@ struct RootView: View {
         ZStack {
             Backdrop()
             if !onStage {
-                PairingView(hub: hub, hatch: { router.open(.hatch) }, wake: hatchFirstImp)
+                PairingView(hub: hub, wake: hatchFirstImp)
                     .transition(.opacity)
             } else {
                 PhoneStage(hub: hub, pocket: pocket, hidden: hidden, covered: router.route != nil, cover: cover, guest: router.route?.imp,
@@ -90,7 +103,7 @@ struct RootView: View {
                     .onPreferenceChange(EmbersPlaying.self) { playing = $0 }
                 VStack {
                     StatusPill(hub: hub, hiddenCount: hidden.set.onFloor(in: PhoneStage.everyone(hub, pocket).map(\.imp.id)).count,
-                               devices: { router.open(.settings(devices: true)) }, hatch: { router.open(.hatch) },
+                               devices: { router.open(.settings(devices: true)) }, hatch: hatchNew,
                                showHidden: { withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { hidden.bringBackAll() } },
                                settings: { router.open(.settings(devices: false)) })
                     Spacer()
@@ -139,7 +152,10 @@ struct RootView: View {
         }
         #if DEBUG
         .task {
-            if CommandLine.arguments.contains("-hatch") { router.open(.hatch) }
+            if CommandLine.arguments.contains("-hatch") { hatchNew() }
+            // For the UI tests on a device: the app's settings, or the first Imp hatched here in its settings.
+            if CommandLine.arguments.contains("-openSettings") { router.open(.settings(devices: false)) }
+            if CommandLine.arguments.contains("-editImp"), let first = pocket.imps.first { router.open(.edit(first.id, brain: false)) }
             if CommandLine.arguments.contains("-openChat") {
                 // Waits for the Imps (from the demo, or from a Mac it's connecting to).
                 for _ in 0..<120 where hub.visits.isEmpty { try? await Task.sleep(for: .milliseconds(250)) }
@@ -164,6 +180,13 @@ struct RootView: View {
         router.open(.firstRun(imp.id))
     }
 
+    /// New Imp: it is in the room at once, thinking with the Brain the other Imps here use. The first one of all has
+    /// no Brain to share, so its Brain comes up to give it one.
+    private func hatchNew() {
+        let (id, awake) = pocket.hatchReady()
+        if !awake { router.open(.edit(id, brain: true)) }
+    }
+
     /// Close, in every sheet: back to the Imp's sheet a step was taken from, otherwise to the room.
     private func close() { router.close(exists: { pocket.contains($0) || hub.visit($0) != nil }) }
 
@@ -177,10 +200,8 @@ struct RootView: View {
                      giveBrain: own ? { router.open(.edit(id, brain: true)) } : nil, close: close)
                 // Another Imp is another chat: what was being typed and where it was scrolled do not carry over.
                 .id(id)
-        case .hatch:
-            PocketEditor(pocket: pocket, editing: nil, done: close)
         case .edit(let id, let brain):
-            PocketEditor(pocket: pocket, editing: id, opening: brain ? .brain : nil, done: close)
+            PocketEditor(pocket: pocket, editing: id, opening: brain ? .brain : nil, done: close, woke: { router.woke(id) })
         case .firstRun(let id):
             FirstRunPhone(pocket: pocket, id: id, close: close, awake: { router.woke(id) })
         case .settings(let devices):

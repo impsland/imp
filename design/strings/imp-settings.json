@@ -1342,5 +1342,17 @@
     "en": "{count}M",
     "es": "{count}M",
     "zh-Hans": "{count}M"
+  },
+  "tools.own": {
+    "note": "Card title in an iPhone Imp's Tools: the tools the Imp has by itself (messaging other Imps, playing animations), each with a switch.",
+    "en": "Built in",
+    "es": "Integradas",
+    "zh-Hans": "内置"
+  },
+  "tools.own.info": {
+    "note": "Help of the Built in tools card on the iPhone.",
+    "en": "What the Imp can do by itself. Switch off what it shouldn't use.",
+    "es": "Lo que el Imp puede hacer por sí solo. Desactiva lo que no deba usar.",
+    "zh-Hans": "小妖自带的能力。关闭不希望它使用的功能。"
   }
 }

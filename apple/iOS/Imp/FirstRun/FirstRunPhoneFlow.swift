@@ -2,35 +2,19 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The two steps of the first run (Service, Model) on the iPhone, without any chrome, so the first-run
-/// sheet and the Brain panel of an Imp show the very same content. The primary button is `FirstRunPhoneButton`,
-/// pinned by the screen that shows this.
-struct FirstRunPhoneFlow: View {
+/// A Brain on one screen, with no steps: the kind of service, then its address, the key and the model together.
+/// The model is a choice that looks like the fields around it: blank is "Picked for you" (the first model that
+/// chats, chosen when it wakes), and a tap opens `ModelPicker`, the service's models with a search. The same form
+/// wakes the first Imp and sets any Imp's Brain; its one button is `PhoneBrainButton`, pinned by the screen that
+/// shows it. A Brain that works taps once in the hand, one that fails taps the error.
+struct PhoneBrainForm: View {
     @Bindable var flow: FirstRunModel
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.openURL) private var openURL
     @FocusState private var focus: Field?
-    /// What is typed to find a model. It is not the choice: the chosen model is the ticked row.
-    @State private var query = ""
+    @State private var picking = false
 
-    private enum Field: Hashable { case address, key, model }
+    private enum Field: Hashable { case address, key }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.medium) {
-            switch flow.path.number {
-            case 2: modelStep
-            default: serviceStep
-            }
-            StatusSlot(flow.problemText, symbol: "exclamationmark.circle", color: Tone.warnText)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .impAnimation(ImpDesign.Motion.scene, value: flow.path.number)
-        .onChange(of: flow.path.number) { _, _ in focus = nil }
-    }
-
-    // MARK: 1 Service
-
-    private var serviceStep: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             EvenGrid(minWidth: Sizing.menuTitle, spacing: Spacing.snug) {
                 ForEach(flow.presets) { preset in
@@ -42,122 +26,214 @@ struct FirstRunPhoneFlow: View {
                     }
                 }
             }
-            Titled(title: "firstrun.service.address") {
-                TextField("firstrun.service.address", text: $flow.address, prompt: Text(verbatim: "https://…/v1"))
-                    .impField(mono: true)
-                    .codeEntry(.address)
-                    .focused($focus, equals: .address)
-                    .submitLabel(flow.showsKey ? .next : .go)
-                    .onSubmit { if flow.showsKey { focus = .key } else { flow.continueFromService() } }
-            }
-            if flow.showsKey {
-                Titled(title: "firstrun.service.key") {
-                    // On the address's keyboard, so going from one to the other changes nothing (see `SecretField`).
-                    SecretField(title: "firstrun.service.key", text: $flow.key)
+            VStack(alignment: .leading, spacing: Spacing.cozy) {
+                Titled(title: "firstrun.service.address") {
+                    TextField("firstrun.service.address", text: $flow.address, prompt: Text(verbatim: "https://…/v1"))
                         .impField(mono: true)
-                        .focused($focus, equals: .key)
-                        .submitLabel(.go)
-                        .onSubmit { flow.continueFromService() }
+                        .codeEntry(.address)
+                        .focused($focus, equals: .address)
+                        .submitLabel(.next)
+                        .onSubmit { focus = flow.showsKey ? .key : nil }
+                        .accessibilityIdentifier("brain.address")
                 }
-            }
-            if flow.path.step == .loadingModels {
-                HStack(spacing: Spacing.small) {
-                    ProgressView()
-                    Text("firstrun.service.loading").font(Typeface.caption).foregroundStyle(Tone.muted)
-                }
-            } else {
-                // One quiet line that guides the next step.
-                Text(flow.needsHost && !flow.showsKey ? "firstrun.service.host_note" : "firstrun.service.note")
-                    .font(Typeface.caption).foregroundStyle(Tone.muted)
-            }
-        }
-        .disabled(flow.path.step == .loadingModels)
-    }
-
-    // MARK: 2 Model
-
-    private var modelStep: some View {
-        VStack(alignment: .leading, spacing: Spacing.small) {
-            // A service that lists its models is searched, and the choice is the ticked row. One that lists
-            // none takes the model's name as typed.
-            TextField("firstrun.model.search", text: flow.models.isEmpty ? $flow.model : $query, prompt: Text("firstrun.model.search"))
-                .impField(mono: true)
-                .codeEntry()
-                .focused($focus, equals: .model)
-                .submitLabel(flow.models.isEmpty ? .go : .search)
-                .onSubmit { if flow.models.isEmpty { flow.check() } else { focus = nil } }
-            let shown = Array(flow.models(matching: query).prefix(Self.listLimit))
-            if !shown.isEmpty {
-                LazyVStack(spacing: 0) {
-                    ForEach(shown, id: \.self) { name in
-                        PhoneModelRow(name: name, picked: name == flow.model) { flow.model = name; focus = nil }
+                if flow.showsKey {
+                    Titled(title: "firstrun.service.key") {
+                        // On the address's keyboard, so going from one to the other changes nothing (see `SecretField`).
+                        SecretField(title: "firstrun.service.key", text: $flow.key)
+                            .impField(mono: true)
+                            .focused($focus, equals: .key)
+                            .submitLabel(.done)
+                            .onSubmit { focus = nil }
+                            .accessibilityIdentifier("brain.key")
                     }
                 }
-                .background(RoundedRectangle(cornerRadius: Radius.small, style: .continuous).fill(Tone.card))
-                .clipShape(RoundedRectangle(cornerRadius: Radius.small, style: .continuous))
+                Titled(title: "firstrun.step.model") { model }
+            }
+            if let problem = flow.problemText {
+                StatusText(verbatim: problem, symbol: "exclamationmark.circle", color: Tone.warnText)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                // One quiet line that says what is needed.
+                Text(flow.needsHost && !flow.showsKey ? "firstrun.service.host_note" : "firstrun.service.note")
+                    .font(Typeface.caption).foregroundStyle(Tone.muted)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .disabled(flow.path.isBusy)
+        // Felt as well as seen: the Brain works, or it didn't.
+        .onChange(of: flow.path.step) { _, step in
+            if step == .awake { Haptics.notify(.success) }
+            if step == .failed { Haptics.notify(.error) }
+        }
     }
 
-    /// A long list of models is searched, not scrolled through.
-    private static let listLimit = 40
+    /// The model as a field-like choice: the same height and well as the fields above. Its name, or "Picked for
+    /// you" when blank, and a chevron that says a list opens.
+    private var model: some View {
+        Button {
+            focus = nil
+            picking = true
+        } label: {
+            HStack(spacing: Spacing.small) {
+                if flow.model.trimmingCharacters(in: .whitespaces).isEmpty {
+                    Label { Text("phone.brain.model_auto") } icon: { Image(systemName: "sparkles") }
+                        .font(Typeface.body).foregroundStyle(Tone.muted)
+                } else {
+                    Text(verbatim: flow.model).font(Typeface.mono).foregroundStyle(Tone.text)
+                        .lineLimit(1).truncationMode(.middle)
+                }
+                Spacer(minLength: Spacing.small)
+                Image(systemName: "chevron.up.chevron.down").font(.icon(.small, weight: .semibold)).foregroundStyle(Tone.muted)
+                    .accessibilityHidden(true)
+            }
+            .padding(.horizontal, Spacing.cozy)
+            .frame(maxWidth: .infinity, minHeight: Sizing.control)
+            .background(RoundedRectangle(cornerRadius: Radius.small, style: .continuous).fill(Tone.well))
+            .contentShape(RoundedRectangle(cornerRadius: Radius.small, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text("firstrun.step.model"))
+        .accessibilityValue(flow.model.isEmpty ? Text("phone.brain.model_auto") : Text(verbatim: flow.model))
+        .accessibilityHint(Text("phone.brain.list_models"))
+        .accessibilityIdentifier("brain.model")
+        .sheet(isPresented: $picking) { ModelPicker(flow: flow) }
+    }
 }
 
-/// The step names, the indicator and its jumps: the same in the sheet and in the Brain panel.
-struct FirstRunPhoneSteps: View {
+/// The service's models to choose one, with a search: "Picked for you" first, then a name typed in the search
+/// that the service doesn't list ("Use …"), then the models, the chosen one ticked and first. The list loads
+/// when it opens. A pick closes it.
+struct ModelPicker: View {
     @Bindable var flow: FirstRunModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var query = ""
+
+    private var typed: String { query.trimmingCharacters(in: .whitespaces) }
+    private var shown: [String] { flow.models(matching: query) }
 
     var body: some View {
-        StepIndicator(steps: FirstRunPath.names.map { String(localized: String.LocalizationValue($0)) },
-                      current: (flow.path.number ?? FirstRunPath.totalSteps) - 1,
-                      reachable: { flow.canGo(to: $0 + 1) }) { flow.go(to: $0 + 1) }
+        VStack(spacing: Spacing.small) {
+            SheetBar(close: { dismiss() }) {
+                Text("firstrun.step.model").font(Typeface.cardTitle).foregroundStyle(Tone.text).accessibilityAddTraits(.isHeader)
+            }
+            .sheetBarInsets()
+            FieldWell(symbol: "magnifyingglass", mono: true) {
+                TextField("firstrun.model.search", text: $query, prompt: Text("firstrun.model.search"))
+                    .codeEntry()
+                    .submitLabel(.search)
+                    .accessibilityIdentifier("models.search")
+            } actions: {
+                if !query.isEmpty { FieldAction(systemName: "xmark.circle.fill", help: "common.clear") { query = "" } }
+            }
+            .padding(.horizontal, Spacing.page)
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    if typed.isEmpty {
+                        row(Text("phone.brain.model_auto"), detail: Text("phone.brain.model_auto_detail"), symbol: "sparkles",
+                            picked: flow.model.trimmingCharacters(in: .whitespaces).isEmpty) { choose("") }
+                    } else if !flow.models.contains(typed) {
+                        row(Text(words("phone.brain.model_use", typed)), detail: nil, symbol: "keyboard", picked: false) { choose(typed) }
+                    }
+                    ForEach(shown, id: \.self) { name in
+                        row(Text(verbatim: name).font(Typeface.mono), detail: nil, symbol: nil, picked: name == flow.model) { choose(name) }
+                    }
+                    status
+                }
+                .background(RoundedRectangle(cornerRadius: Radius.large, style: .continuous).fill(Tone.card))
+                .padding(.horizontal, Spacing.page).padding(.top, Spacing.small).padding(.bottom, Spacing.wide)
+            }
+            .scrollDismissesKeyboard(.immediately)
+        }
+        .impControls()
+        .background(Tone.surface)
+        .presentationBackground(Tone.surface)
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .onAppear { flow.listModels() }
     }
-}
 
-/// A model in the list: its name, ticked when it is the one.
-private struct PhoneModelRow: View {
-    let name: String
-    let picked: Bool
-    let action: () -> Void
+    /// While the list loads, or why it can't, with Try again.
+    @ViewBuilder private var status: some View {
+        if flow.path.step == .loadingModels {
+            HStack(spacing: Spacing.small) {
+                ProgressView()
+                Text("firstrun.service.loading").font(Typeface.caption).foregroundStyle(Tone.muted)
+            }
+            .frame(maxWidth: .infinity, minHeight: Sizing.hit)
+            .padding(.vertical, Spacing.small)
+        } else if flow.models.isEmpty, let problem = flow.problemText {
+            VStack(spacing: Spacing.small) {
+                StatusText(verbatim: problem, symbol: "exclamationmark.circle", color: Tone.warnText)
+                    .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                Button("common.try_again") { flow.listModels() }.buttonStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(Spacing.medium)
+        }
+    }
 
-    var body: some View {
+    private func row(_ title: Text, detail: Text?, symbol: String?, picked: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: Spacing.small) {
-                Text(verbatim: name).font(Typeface.mono).foregroundStyle(Tone.text).lineLimit(1)
+                if let symbol {
+                    Image(systemName: symbol).font(.icon(.medium)).foregroundStyle(LegibleTint()).frame(width: Sizing.mark)
+                        .accessibilityHidden(true)
+                }
+                VStack(alignment: .leading, spacing: 0) {
+                    title.font(Typeface.body).foregroundStyle(Tone.text).lineLimit(1).truncationMode(.middle)
+                    if let detail { detail.font(Typeface.caption).foregroundStyle(Tone.muted) }
+                }
                 Spacer(minLength: Spacing.small)
-                if picked { Image(systemName: "checkmark").font(.icon(.small, weight: .bold)).foregroundStyle(LegibleTint()) }
+                if picked {
+                    Image(systemName: "checkmark").font(.icon(.small, weight: .bold)).foregroundStyle(LegibleTint())
+                        .accessibilityHidden(true)
+                }
             }
-            .padding(.horizontal, Spacing.medium)
+            .padding(.horizontal, Spacing.medium).padding(.vertical, Spacing.small)
             .frame(maxWidth: .infinity, minHeight: Sizing.hit, alignment: .leading)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(picked ? .isSelected : [])
     }
+
+    private func choose(_ name: String) {
+        flow.model = name
+        Haptics.selection()
+        dismiss()
+    }
 }
 
-/// The one primary button of the flow: Continue, Wake {name} up, Try again.
-struct FirstRunPhoneButton: View {
+/// The form's one button. It lists the models when it has to, checks the Brain with a tiny request and keeps it.
+/// "Wake {name} up" for an Imp that sleeps, "Check and save" for one that thinks.
+struct PhoneBrainButton: View {
     @Bindable var flow: FirstRunModel
+    var hasBrain = false
 
     var body: some View {
-        switch flow.primary {
-        case .none: EmptyView()
-        case .continueToModel: button("common.continue") { flow.continueFromService() }
-        case .loading: button("common.continue") {}.disabled(true)
-        case .wake: button(verbatim: words("firstrun.wake", flow.impName)) { flow.check() }
-        case .tryAgain: button("common.try_again") { flow.check() }
-        case .waking: button(verbatim: words("firstrun.check.running", flow.impName)) {}.disabled(true)
+        Group {
+            switch flow.path.step {
+            case .awake:
+                // A beat to see it worked, before the sheet goes.
+                Button {} label: { Label { Text(verbatim: words("firstrun.check.ok", flow.impName)) } icon: { Image(systemName: "checkmark.circle.fill") } }
+                    .allowsHitTesting(false)
+            case .loadingModels, .checking:
+                Button {} label: { Label { Text(verbatim: words("firstrun.check.running", flow.impName)) } icon: { ProgressView() } }
+                    .disabled(true)
+            case .done:
+                EmptyView()
+            case .failed:
+                Button("common.try_again") { flow.wakeUp() }
+            case .service, .model:
+                if hasBrain {
+                    Button("phone.brain.check_save") { flow.wakeUp() }
+                } else {
+                    Button { flow.wakeUp() } label: { Text(verbatim: words("firstrun.wake", flow.impName)) }
+                }
+            }
         }
-    }
-
-    private func button(_ title: LocalizedStringKey, action: @escaping () -> Void) -> some View {
-        Button(title, action: action).buttonStyle(WideButtonStyle())
-    }
-
-    /// For text that is already final (formatted at runtime), shown as it is.
-    private func button(verbatim title: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) { Text(verbatim: title) }.buttonStyle(WideButtonStyle())
+        .buttonStyle(WideButtonStyle())
+        .accessibilityIdentifier("brain.go")
     }
 }

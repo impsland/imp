@@ -187,7 +187,7 @@ struct PhoneStage: View {
             guard let name = engine.bodies[imp]?.imp.name else { return engine.shake() }
             let devices = choices.compactMap { hub.device($0) }
             guard !devices.isEmpty else { return engine.shake() }
-            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            Haptics.notify(.warning)
             asking = ShakeAsk(imp: imp, impName: name, choices: devices, why: why)
         case .nothing:
             engine.shake()
@@ -199,7 +199,7 @@ struct PhoneStage: View {
     private func sendShaken(_ id: UUID, to device: UUID, side: LinkSide?) {
         guard let imp = engine.bodies[id]?.imp, engine.sendGently(id, to: device, preferring: side) else { return }
         hub.shakeBegan(imp, to: device)
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        Haptics.tap(.medium)
     }
 
     // MARK: Talk bubbles
@@ -306,7 +306,7 @@ struct PhoneStage: View {
         // The menu is opened here, by the press itself. The system's own touch-and-hold menu never came
         // up on an Imp, because the drag that carries the Imp took the touch first.
         menuImp = id
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        Haptics.tap(.medium)
         Task {
             try? await Task.sleep(for: .seconds(Behavior.toastSeconds))
             if menuFor == id { menuFor = nil }
@@ -386,9 +386,14 @@ struct PhoneStage: View {
             guard let device = exit.to, let imp = engine.bodies[id]?.imp else { return }
             if exit.moves {
                 pocket.move(id, exit: exit, to: device)
-            } else if !hub.pass(imp, exit: exit, to: device) {
+                Haptics.tap(.rigid, intensity: 0.7)
+            } else if hub.pass(imp, exit: exit, to: device) {
+                // Off to another device: a light tap as it goes.
+                Haptics.tap(.rigid, intensity: 0.7)
+            } else {
                 hub.shakeFailed(id)
                 engine.refused(id, words("phone.stage.not_around", hub.deviceName(device)))
+                Haptics.notify(.warning)
             }
         }
         engine.warn = { hub.toast = $0 }
@@ -396,9 +401,16 @@ struct PhoneStage: View {
         let hear: (StageEvent) -> Void = { event in
             switch event {
             case .roster: engine.reconcile(Self.staged(hub, pocket, hidden).map(\.imp))
-            case .arrived(let imp, let entry): engine.arrive(imp, entry)
-            case .left(let id): engine.leave(id)
-            case .refused(let id, let why): engine.refused(id, why)
+            case .arrived(let imp, let entry):
+                engine.arrive(imp, entry)
+                // An Imp lands here from another device: you feel it come in.
+                Haptics.tap(.medium)
+            case .left(let id):
+                engine.leave(id)
+                Haptics.tap(.light, intensity: 0.6)
+            case .refused(let id, let why):
+                engine.refused(id, why)
+                Haptics.notify(.warning)
             case .animate(let id, let act): engine.animate(id, act)
             }
         }

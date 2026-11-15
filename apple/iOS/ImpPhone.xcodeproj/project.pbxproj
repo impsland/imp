@@ -23,6 +23,7 @@
 		1DEAD9F87BA4E7A32FFCDF00 /* PocketStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8710DB1B265BCCBA13421566 /* PocketStore.swift */; };
 		1FDEBF1B0CAAE0F84003E309 /* ImpPhoneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74497FE5DFBB7671E3040DC /* ImpPhoneApp.swift */; };
 		20953F5703FB85F5DA6DDE54 /* PocketRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5217187CC8D3EC6C1EEF960F /* PocketRuntime.swift */; };
+		242EC6502F71563BEC286375 /* PhoneScreensUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FED144EB39DB139F3C4CE33 /* PhoneScreensUITests.swift */; };
 		25CC0FD6C4C433C2E96DE5C6 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A19E5176B3C6283E47AA469 /* Keychain.swift */; };
 		2622E414F9EA62123E8AA6A9 /* EchoSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8707C2A323F4106D30FC8B /* EchoSession.swift */; };
 		2CC77F90BD05D01F58B04866 /* ChatSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560FD7E7B4D4DC3F750A6B4F /* ChatSource.swift */; };
@@ -35,6 +36,7 @@
 		484F41A6AA42E13F3CFFFB92 /* BubbleSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10193FB32C2FF1FBBDF36113 /* BubbleSizes.swift */; };
 		4E2B4FFD77A5689883746397 /* TiltImp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A57348BC46B25FBF58AE48 /* TiltImp.swift */; };
 		5160526D57D45232F430B758 /* ImpRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E56E2B80612481500C8FE /* ImpRenderer.swift */; };
+		52455C5A7F08DCE4CAFFF975 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA842034E0C413C23C9E4305 /* Haptics.swift */; };
 		54258AB0FC3D143CFDA758BA /* Extras.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB667F35A19A58EFCAAF5CB6 /* Extras.swift */; };
 		5839E503CC91E8163AFDAF9B /* ShakeSend.swift in Sources */ = {isa = PBXBuildFile; fileRef = E16E8DED10C2A155E042C920 /* ShakeSend.swift */; };
 		59722A40EC5C738A245710B5 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AA17C8D6E7748402B3655100 /* InfoPlist.xcstrings */; };
@@ -79,6 +81,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1B622D00F9CF3FD6A37EE466 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A393859AEDD1EE284B29B8BB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D3246F4E95DC50054F57CF35;
+			remoteInfo = ImpPhone;
+		};
 		D4183552C3F19E1C6A3AC19A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A393859AEDD1EE284B29B8BB /* Project object */;
@@ -97,6 +106,7 @@
 		154403A8E907ABF7EDDA394A /* Antics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Antics.swift; sourceTree = "<group>"; };
 		18A7FF0B0CDB79AF719CC786 /* StagePacer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StagePacer.swift; sourceTree = "<group>"; };
 		1C8707C2A323F4106D30FC8B /* EchoSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoSession.swift; sourceTree = "<group>"; };
+		1D1733B4BF4202A628F38598 /* ImpPhoneUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ImpPhoneUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D6F4A4BEABAB147C1273508 /* Performance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Performance.swift; sourceTree = "<group>"; };
 		1E29CECC0BD71424D59AA182 /* PlayerSurface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerSurface.swift; sourceTree = "<group>"; };
 		1E51505EB7F9729D43558F80 /* LinkHub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkHub.swift; sourceTree = "<group>"; };
@@ -130,6 +140,7 @@
 		8710DB1B265BCCBA13421566 /* PocketStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketStore.swift; sourceTree = "<group>"; };
 		8A729AA76723FFDE222FBF3A /* DoorLabels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoorLabels.swift; sourceTree = "<group>"; };
 		8CE45252DD9BCAD14AD35BA1 /* PhoneDevicesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneDevicesSection.swift; sourceTree = "<group>"; };
+		8FED144EB39DB139F3C4CE33 /* PhoneScreensUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneScreensUITests.swift; sourceTree = "<group>"; };
 		918A04F0CAE8B032656AA893 /* PhoneSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneSettings.swift; sourceTree = "<group>"; };
 		94A57348BC46B25FBF58AE48 /* TiltImp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TiltImp.swift; sourceTree = "<group>"; };
 		975BA420957EF15542EF8161 /* PhoneSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneSnapshotTests.swift; sourceTree = "<group>"; };
@@ -142,6 +153,7 @@
 		B704DBCEBFB179FACE7B68F6 /* EmbersCoach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbersCoach.swift; sourceTree = "<group>"; };
 		BF2C7FB6FA3E3B338AE85B8E /* EchoCoach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoCoach.swift; sourceTree = "<group>"; };
 		C75429333D8816180164775B /* FirstRunPhoneFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunPhoneFlow.swift; sourceTree = "<group>"; };
+		CA842034E0C413C23C9E4305 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		CB667F35A19A58EFCAAF5CB6 /* Extras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extras.swift; sourceTree = "<group>"; };
 		CD0AD477B00E68D68AC1AFBE /* PhoneHidden.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneHidden.swift; sourceTree = "<group>"; };
 		CE13A23106BA33A8D58626D4 /* EchoLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoLayer.swift; sourceTree = "<group>"; };
@@ -273,6 +285,7 @@
 			isa = PBXGroup;
 			children = (
 				4FF0727F25D8F0BDCEA2A99B /* Energy.swift */,
+				CA842034E0C413C23C9E4305 /* Haptics.swift */,
 				D74497FE5DFBB7671E3040DC /* ImpPhoneApp.swift */,
 				9E6C79866A4273D398450529 /* IssueBadge.swift */,
 				E175916FB949122EB3243FA9 /* Theme.swift */,
@@ -296,11 +309,20 @@
 			path = Games;
 			sourceTree = "<group>";
 		};
+		A5AC6661231C9A613D2E2BEC /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				8FED144EB39DB139F3C4CE33 /* PhoneScreensUITests.swift */,
+			);
+			path = UITests;
+			sourceTree = "<group>";
+		};
 		A6AFC50D01AF18744D03FEBA /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				0DC695E7AE998FA6BF5BA85B /* ImpPhone.app */,
 				691B235BD86ADF6741E6047A /* ImpPhoneSnapshotTests.xctest */,
+				1D1733B4BF4202A628F38598 /* ImpPhoneUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -312,6 +334,7 @@
 				0896923E2770E96595D122C0 /* Packages */,
 				CAF11B54EC0ECFD9216F4497 /* Shared */,
 				6EE5173952B51A3437CA8614 /* SnapshotTests */,
+				A5AC6661231C9A613D2E2BEC /* UITests */,
 				A6AFC50D01AF18744D03FEBA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -402,6 +425,24 @@
 			productReference = 691B235BD86ADF6741E6047A /* ImpPhoneSnapshotTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		8EE2F82503EAA0673E20FD27 /* ImpPhoneUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BC98DDA640DAE96B698FAA0D /* Build configuration list for PBXNativeTarget "ImpPhoneUITests" */;
+			buildPhases = (
+				1BA607B5A91FD85154F328CF /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				729CE35A0E64CA989616B140 /* PBXTargetDependency */,
+			);
+			name = ImpPhoneUITests;
+			packageProductDependencies = (
+			);
+			productName = ImpPhoneUITests;
+			productReference = 1D1733B4BF4202A628F38598 /* ImpPhoneUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		D3246F4E95DC50054F57CF35 /* ImpPhone */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 78917913D64B5BF95A5308B6 /* Build configuration list for PBXNativeTarget "ImpPhone" */;
@@ -436,6 +477,11 @@
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
+					8EE2F82503EAA0673E20FD27 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+						TestTargetID = D3246F4E95DC50054F57CF35;
+					};
 					D3246F4E95DC50054F57CF35 = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
@@ -464,6 +510,7 @@
 			targets = (
 				D3246F4E95DC50054F57CF35 /* ImpPhone */,
 				2B7DCB387DD66361ECD536B3 /* ImpPhoneSnapshotTests */,
+				8EE2F82503EAA0673E20FD27 /* ImpPhoneUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -482,6 +529,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1BA607B5A91FD85154F328CF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				242EC6502F71563BEC286375 /* PhoneScreensUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		864CDD4CD0707317E948F57B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -506,6 +561,7 @@
 				EA59AA119E4F010E68D5A3CF /* GameResults.swift in Sources */,
 				F972ED1E6A05AE26D6F309DC /* GameRound.swift in Sources */,
 				E8BA8DE233B42D3C55E93B74 /* Geometry.swift in Sources */,
+				52455C5A7F08DCE4CAFFF975 /* Haptics.swift in Sources */,
 				E8F42E3DB6AFD272B99A32B1 /* Horn.swift in Sources */,
 				120F363469D4AEC723B21473 /* ImpFigure.swift in Sources */,
 				1FDEBF1B0CAAE0F84003E309 /* ImpPhoneApp.swift in Sources */,
@@ -562,6 +618,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		729CE35A0E64CA989616B140 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D3246F4E95DC50054F57CF35 /* ImpPhone */;
+			targetProxy = 1B622D00F9CF3FD6A37EE466 /* PBXContainerItemProxy */;
+		};
 		7F5C6D49F97B8CD4A0DA6325 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D3246F4E95DC50054F57CF35 /* ImpPhone */;
@@ -605,7 +666,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 21;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -620,7 +681,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 2.12.0;
+				MARKETING_VERSION = 2.13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -628,6 +689,24 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		1BA919C3171093AB5DA03FFF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.imp.ImpPhoneUITests;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ImpPhone;
 			};
 			name = Release;
 		};
@@ -648,6 +727,24 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Imp.app/Imp";
 			};
 			name = Release;
+		};
+		5AEE68642BCFD587937DCC51 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.imp.ImpPhoneUITests;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ImpPhone;
+			};
+			name = Debug;
 		};
 		96934F6B483DECEBC0C3477C /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -705,7 +802,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 21;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -726,7 +823,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 2.12.0;
+				MARKETING_VERSION = 2.13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -794,6 +891,15 @@
 			buildConfigurations = (
 				DF26B545A7FB6754C42A606B /* Debug */,
 				5893943C0D9AA453F36DDAE9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BC98DDA640DAE96B698FAA0D /* Build configuration list for PBXNativeTarget "ImpPhoneUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5AEE68642BCFD587937DCC51 /* Debug */,
+				1BA919C3171093AB5DA03FFF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

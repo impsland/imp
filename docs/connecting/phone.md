@@ -49,12 +49,15 @@ An Imp away from its home keeps thinking there, with its home's model, keys, too
 
 ## Imps hatched on the phone
 
-Hatch one from the status menu, or **Hatch an Imp** on the first screen. It lives in your pocket.
+The first one is the sleeping Imp on the first screen: tap **Wake Imp up** and give it a Brain. After that, tap
+**+** at the top of the room: the new Imp appears at once, already thinking with the Brain of your other Imps (its
+key is copied, so you never type it again). It lives in your pocket.
 
 - It thinks on the iPhone, using a service you give it (address, model and key) and any web (HTTP) tool servers.
 - Keys and header values are kept in the phone's Keychain.
 - It works with no Mac linked, or while yours is out of reach. A pocket Imp has no shell, no computer control, no
-  triggers and no Mac senses. It can use the tool servers you gave it and its own animations.
+  triggers, no Mac senses and no Den tools. It can message your other Imps, play its animations and use the tool
+  servers you gave it.
 - Throw it to another iPhone and it visits there.
 - **Move to** `<Mac>…` (in its menu, while a Mac is connected) moves it home for good, with its chats, looks,
   personality, service and tool servers. The Mac shows the usual kit review first. The Imp arrives with its shell
@@ -62,9 +65,11 @@ Hatch one from the status menu, or **Hatch an Imp** on the first screen. It live
   - Its service joins the Mac's services under its own name, or matches one already there by address.
   - An Imp with no brain yet moves too, and sleeps on the Mac until you choose a service for it.
   - An Imp that is busy thinking stays until it's done.
-- When you hatch one, pick a service in one tap. **Remote** is OpenRouter. **Local** is a service on your Mac,
-  reached by the Mac's name on your network, so it still works when the Mac's Wi-Fi address changes.
-- Hold a pocket Imp to edit or delete it.
+- Its Brain is one screen: pick **Remote** (OpenRouter) or **Local** (a service on your Mac, reached by the Mac's
+  name on your network, so it still works when the Mac's Wi-Fi address changes), paste the key and tap Wake.
+  The model is picked for you, or choose one from the list.
+- In its **Tools**, switch **Message another Imp** and **Play animations** on or off, and add tool servers.
+- Hold a pocket Imp to open its settings. Changes are kept as you make them.
 
 ## Messages and talks
 

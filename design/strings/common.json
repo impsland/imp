@@ -147,5 +147,11 @@
     "en": "Failed",
     "es": "Falló",
     "zh-Hans": "失败"
+  },
+  "common.clear": {
+    "note": "Clears what was typed in a search field.",
+    "en": "Clear",
+    "es": "Borrar",
+    "zh-Hans": "清除"
   }
 }

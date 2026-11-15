@@ -20519,6 +20519,30 @@
         }
       }
     },
+    "common.clear" : {
+      "comment" : "Clears what was typed in a search field.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除"
+          }
+        }
+      }
+    },
     "common.close" : {
       "comment" : "Button or label that closes a window or panel.",
       "extractionState" : "manual",
@@ -28073,6 +28097,30 @@
         }
       }
     },
+    "phone.app.speech" : {
+      "comment" : "Card title in the iPhone's App settings: the app's language and whether voices play by themselves.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language and voices"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Idioma y voces"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "语言与语音"
+          }
+        }
+      }
+    },
     "phone.appearance.auto" : {
       "comment" : "Appearance choice: follow the system.",
       "extractionState" : "manual",
@@ -28165,6 +28213,174 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更改"
+          }
+        }
+      }
+    },
+    "phone.brain.check_save" : {
+      "comment" : "Button of the Brain form of an Imp that already thinks: tries the new service and model, then keeps them.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check and save"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Probar y guardar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查并保存"
+          }
+        }
+      }
+    },
+    "phone.brain.list_models" : {
+      "comment" : "Button beside the model field (iPhone Brain form): lists the service's models to pick one.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show models"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver modelos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示模型"
+          }
+        }
+      }
+    },
+    "phone.brain.model_auto" : {
+      "comment" : "Placeholder of the model field in an iPhone Imp's Brain form: left blank, the first model that chats is picked.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Picked for you"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se elige por ti"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动选择"
+          }
+        }
+      }
+    },
+    "phone.brain.model_auto_detail" : {
+      "comment" : "Under Picked for you in the iPhone's model list: blank lets the Imp take the first model that chats when it wakes.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The first model that chats, chosen when it wakes."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El primer modelo que conversa, elegido al despertar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "唤醒时自动选择第一个能聊天的模型。"
+          }
+        }
+      }
+    },
+    "phone.brain.model_use" : {
+      "comment" : "Row in the iPhone's model list when the search holds a name the service doesn't list: use that name as the model.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use “%1$@”"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar «%1$@»"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用“%1$@”"
+          }
+        }
+      }
+    },
+    "phone.brains.default" : {
+      "comment" : "Under the list of Imps in the iPhone's Brains settings: a new Imp (the + button) starts with this Imp's service, model and key.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Imps start with %1$@'s Brain."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los Imps nuevos empiezan con el cerebro de %1$@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新的小妖会沿用 %1$@ 的大脑。"
+          }
+        }
+      }
+    },
+    "phone.brains.empty" : {
+      "comment" : "Brains section of the iPhone settings, when no Imp was hatched on this iPhone yet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imps you hatch on this iPhone show here, each with the Brain it thinks with."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los Imps que crees en este iPhone aparecen aquí, cada uno con el cerebro con el que piensa."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你在这台 iPhone 上孵化的小妖会显示在这里，并附上各自使用的大脑。"
           }
         }
       }
@@ -28649,54 +28865,6 @@
         }
       }
     },
-    "phone.editor.hatch" : {
-      "comment" : "Main button of the sheet that makes a new Imp on the iPhone.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hatch"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crear"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "孵化"
-          }
-        }
-      }
-    },
-    "phone.editor.save" : {
-      "comment" : "Main button of an Imp's settings on the iPhone.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Save"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Guardar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "保存"
-          }
-        }
-      }
-    },
     "phone.editor.save_failed" : {
       "comment" : "Message of that alert, with what went wrong.",
       "extractionState" : "manual",
@@ -29033,6 +29201,102 @@
         }
       }
     },
+    "phone.haptics.info" : {
+      "comment" : "Help of the Haptics switch on the iPhone.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taps in your hand when you pick something, when an Imp comes or goes, and when something works or fails."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toques en la mano al elegir algo, cuando un Imp llega o se va, y cuando algo sale bien o falla."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择内容、小妖到来或离开、操作成功或失败时，手中会有轻触反馈。"
+          }
+        }
+      }
+    },
+    "phone.haptics.title" : {
+      "comment" : "Card title and switch in the iPhone's App settings: taps felt in the hand.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haptics"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vibración háptica"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触感反馈"
+          }
+        }
+      }
+    },
+    "phone.language.next_open" : {
+      "comment" : "Shown under the language picker on the iPhone after a change: iOS applies an app's language when it opens.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp switches language the next time it opens."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp cambiará de idioma la próxima vez que se abra."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 会在下次打开时切换语言。"
+          }
+        }
+      }
+    },
+    "phone.language.system" : {
+      "comment" : "Language picker option on the iPhone: follow the iPhone's own language.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Same as my iPhone"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Igual que mi iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与 iPhone 相同"
+          }
+        }
+      }
+    },
     "phone.linked.info" : {
       "comment" : "Help of the linked devices card.",
       "extractionState" : "manual",
@@ -29249,30 +29513,6 @@
         }
       }
     },
-    "phone.pair.hatch" : {
-      "comment" : "Quiet button on the first screen: make an Imp of your own instead of waking the first one.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hatch"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crear"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "孵化"
-          }
-        }
-      }
-    },
     "phone.pair.link_bad" : {
       "comment" : "iPhone: pair link bad.",
       "extractionState" : "manual",
@@ -29341,54 +29581,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "其他设备会以这个名字看到这台 iPhone。"
-          }
-        }
-      }
-    },
-    "phone.pair.tip" : {
-      "comment" : "Help on the first screen.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wake this Imp with a Brain, or link another device and throw an Imp over."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Despierta a este Imp con un cerebro, o enlaza otro dispositivo y lanza un Imp hacia aquí."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "给这只小妖一个大脑叫醒它，或者关联另一台设备，把小妖扔过来。"
-          }
-        }
-      }
-    },
-    "phone.pair.title" : {
-      "comment" : "Title of the first screen on the iPhone.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp for iPhone"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp para iPhone"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone 版 Imp"
           }
         }
       }
@@ -29725,30 +29917,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已输入，已隐藏"
-          }
-        }
-      }
-    },
-    "phone.server.placeholder_den" : {
-      "comment" : "Example address of a Den.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "den.example.com"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "den.example.com"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "den.example.com"
           }
         }
       }
@@ -30229,6 +30397,126 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "把小妖从另一块屏幕的边缘扔过来，它会落在这里。"
+          }
+        }
+      }
+    },
+    "phone.start.link_detail" : {
+      "comment" : "Under Link a device on the first screen: what linking gives you.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bring Imps over from your Mac or another iPhone."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trae Imps desde tu Mac u otro iPhone."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把小妖从你的 Mac 或另一台 iPhone 带过来。"
+          }
+        }
+      }
+    },
+    "phone.start.link_title" : {
+      "comment" : "The first screen's second way to begin: link this iPhone with a Mac or another iPhone.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link a device"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlazar un dispositivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关联设备"
+          }
+        }
+      }
+    },
+    "phone.start.subtitle" : {
+      "comment" : "One sentence under the first screen's title: what Imp is.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A tiny helper that lives on your screen and thinks with the AI you choose."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un pequeño ayudante que vive en tu pantalla y piensa con la IA que elijas."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一个住在你屏幕上的小帮手，用你选择的 AI 思考。"
+          }
+        }
+      }
+    },
+    "phone.start.title" : {
+      "comment" : "Big title of the iPhone's first screen, over the sleeping first Imp. Imp is the app's name.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meet Imp"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conoce a Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "认识 Imp"
+          }
+        }
+      }
+    },
+    "phone.start.wake_note" : {
+      "comment" : "Under the first screen's main button (Wake Imp up): what waking it needs.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paste a key from an AI service, or use a model on your Mac."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pega una clave de un servicio de IA o usa un modelo de tu Mac."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴 AI 服务的密钥，或使用你 Mac 上的模型。"
           }
         }
       }
@@ -35125,6 +35413,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "可选项"
+          }
+        }
+      }
+    },
+    "tools.own" : {
+      "comment" : "Card title in an iPhone Imp's Tools: the tools the Imp has by itself (messaging other Imps, playing animations), each with a switch.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Built in"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Integradas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内置"
+          }
+        }
+      }
+    },
+    "tools.own.info" : {
+      "comment" : "Help of the Built in tools card on the iPhone.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What the Imp can do by itself. Switch off what it shouldn't use."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que el Imp puede hacer por sí solo. Desactiva lo que no deba usar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小妖自带的能力。关闭不希望它使用的功能。"
           }
         }
       }

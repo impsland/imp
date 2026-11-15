@@ -62,10 +62,9 @@ struct LookPanel: View {
 
     private var character: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            EvenGrid(minWidth: Sizing.menuTitle, spacing: Spacing.snug) {
-                ForEach(ImpTraits.presets) { p in
-                    ChoiceChip(verbatim: "\(p.emoji) \(p.name)", picked: imp.traits.preset?.id == p.id) { imp.traits = p.traits }
-                }
+            EmojiRow("look.character", items: ImpTraits.presets.map { .init(id: $0.id, emoji: $0.emoji, name: $0.name) },
+                     picked: imp.traits.preset?.id) { id in
+                if let preset = ImpTraits.presets.first(where: { $0.id == id }) { imp.traits = preset.traits }
             }
             trait("look.lids", "eye.slash", "look.help.lids", $imp.traits.lids, 0...0.6, format: Self.percent(0.6))
             trait("look.brows", "eyebrow", "look.help.brows", $imp.traits.slant, -1...1) { String(format: "%+.1f", $0) }

@@ -71,6 +71,7 @@ The header of a card, a section or a sheet: the picture and the title on the lea
 
 - Leading edge: icon tile, then the title. Trailing edge: the optional control, then the help tip. Never the tip beside the title with empty space on the right.
 - At most one help tip per header. A row (a setting with its own control) is not a header: its tip stays beside its title.
+- A centred title (an empty state, a caption under a picture) is centred on its own words. Its help tip hangs beside it with `hangingTip`, outside the layout, so the tip never pushes the title off centre.
 - A header's controls sit in a row of their own height, so the header is as tall with them as without.
 
 ## cornerInset

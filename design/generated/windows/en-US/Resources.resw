@@ -82,6 +82,7 @@
   <data name="common.cancel" xml:space="preserve"><value>Cancel</value><comment>Button that closes a dialog without doing anything.</comment></data>
   <data name="common.check" xml:space="preserve"><value>Check</value><comment>Button that tests a setting, such as a Brain or a server.</comment></data>
   <data name="common.choose" xml:space="preserve"><value>Choose…</value><comment>Button that opens a chooser.</comment></data>
+  <data name="common.clear" xml:space="preserve"><value>Clear</value><comment>Clears what was typed in a search field.</comment></data>
   <data name="common.close" xml:space="preserve"><value>Close</value><comment>Button or label that closes a window or panel.</comment></data>
   <data name="common.continue" xml:space="preserve"><value>Continue</value><comment>Button that goes to the next step.</comment></data>
   <data name="common.done" xml:space="preserve"><value>Done</value><comment>Button that closes a sheet or panel after changes.</comment></data>
@@ -396,10 +397,18 @@
   <data name="personality.voice" xml:space="preserve"><value>Voice</value><comment>Field label.</comment></data>
   <data name="personality.voice_look" xml:space="preserve"><value>Shows as</value><comment>Row: how the voice shows.</comment></data>
   <data name="phone.about.title" xml:space="preserve"><value>About</value><comment>Card title: about the app.</comment></data>
+  <data name="phone.app.speech" xml:space="preserve"><value>Language and voices</value><comment>Card title in the iPhone's App settings: the app's language and whether voices play by themselves.</comment></data>
   <data name="phone.appearance.auto" xml:space="preserve"><value>Auto</value><comment>Appearance choice: follow the system.</comment></data>
   <data name="phone.appearance.dark" xml:space="preserve"><value>Dark</value><comment>Appearance choice.</comment></data>
   <data name="phone.appearance.light" xml:space="preserve"><value>Light</value><comment>Appearance choice.</comment></data>
   <data name="phone.brain.change" xml:space="preserve"><value>Change</value><comment>Button in an Imp's Brain panel on the iPhone that starts choosing another service or model.</comment></data>
+  <data name="phone.brain.check_save" xml:space="preserve"><value>Check and save</value><comment>Button of the Brain form of an Imp that already thinks: tries the new service and model, then keeps them.</comment></data>
+  <data name="phone.brain.list_models" xml:space="preserve"><value>Show models</value><comment>Button beside the model field (iPhone Brain form): lists the service's models to pick one.</comment></data>
+  <data name="phone.brain.model_auto" xml:space="preserve"><value>Picked for you</value><comment>Placeholder of the model field in an iPhone Imp's Brain form: left blank, the first model that chats is picked.</comment></data>
+  <data name="phone.brain.model_auto_detail" xml:space="preserve"><value>The first model that chats, chosen when it wakes.</value><comment>Under Picked for you in the iPhone's model list: blank lets the Imp take the first model that chats when it wakes.</comment></data>
+  <data name="phone.brain.model_use" xml:space="preserve"><value>Use “{name}”</value><comment>Row in the iPhone's model list when the search holds a name the service doesn't list: use that name as the model.</comment></data>
+  <data name="phone.brains.default" xml:space="preserve"><value>New Imps start with {name}'s Brain.</value><comment>Under the list of Imps in the iPhone's Brains settings: a new Imp (the + button) starts with this Imp's service, model and key.</comment></data>
+  <data name="phone.brains.empty" xml:space="preserve"><value>Imps you hatch on this iPhone show here, each with the Brain it thinks with.</value><comment>Brains section of the iPhone settings, when no Imp was hatched on this iPhone yet.</comment></data>
   <data name="phone.brains.set_up" xml:space="preserve"><value>Set up</value><comment>Button beside an Imp without a Brain (iPhone settings): opens its Brain to set one up.</comment></data>
   <data name="phone.callhome" xml:space="preserve"><value>Call home</value><comment>Button: bring an Imp back.</comment></data>
   <data name="phone.callhome.label" xml:space="preserve"><value>Call {name} home</value><comment>Spoken name of the call home button.</comment></data>
@@ -420,8 +429,6 @@
   <data name="phone.connected" xml:space="preserve"><value>Connected</value><comment>State of a linked device that answers.</comment></data>
   <data name="phone.connected_hop" xml:space="preserve"><value>Through the server</value><comment>State of a linked device reached through The Hop.</comment></data>
   <data name="phone.copy" xml:space="preserve"><value>Copy</value><comment>Button: copy the link.</comment></data>
-  <data name="phone.editor.hatch" xml:space="preserve"><value>Hatch</value><comment>Main button of the sheet that makes a new Imp on the iPhone.</comment></data>
-  <data name="phone.editor.save" xml:space="preserve"><value>Save</value><comment>Main button of an Imp's settings on the iPhone.</comment></data>
   <data name="phone.editor.save_failed" xml:space="preserve"><value>The Imp couldn't be saved. {detail}</value><comment>Message of that alert, with what went wrong.</comment></data>
   <data name="phone.editor.save_failed_title" xml:space="preserve"><value>Couldn't save</value><comment>Title of the alert when an Imp's settings could not be saved.</comment></data>
   <data name="phone.forget.everyone.title" xml:space="preserve"><value>Forget all</value><comment>Alert button.</comment></data>
@@ -436,6 +443,10 @@
   <data name="phone.game.flawless" xml:space="preserve"><value>Nothing got away.</value><comment>iPhone: game flawless.</comment></data>
   <data name="phone.game.time" xml:space="preserve"><value>Time. {points} points</value><comment>iPhone: game time.</comment></data>
   <data name="phone.game.time_best" xml:space="preserve"><value>Time. {points} points. New best!</value><comment>iPhone: game time best.</comment></data>
+  <data name="phone.haptics.info" xml:space="preserve"><value>Taps in your hand when you pick something, when an Imp comes or goes, and when something works or fails.</value><comment>Help of the Haptics switch on the iPhone.</comment></data>
+  <data name="phone.haptics.title" xml:space="preserve"><value>Haptics</value><comment>Card title and switch in the iPhone's App settings: taps felt in the hand.</comment></data>
+  <data name="phone.language.next_open" xml:space="preserve"><value>Imp switches language the next time it opens.</value><comment>Shown under the language picker on the iPhone after a change: iOS applies an app's language when it opens.</comment></data>
+  <data name="phone.language.system" xml:space="preserve"><value>Same as my iPhone</value><comment>Language picker option on the iPhone: follow the iPhone's own language.</comment></data>
   <data name="phone.linked.info" xml:space="preserve"><value>Devices linked with this iPhone. Imps can travel between you.</value><comment>Help of the linked devices card.</comment></data>
   <data name="phone.linked.none" xml:space="preserve"><value>Nobody is linked yet</value><comment>One line on the iPhone when no other device is linked.</comment></data>
   <data name="phone.linked.title" xml:space="preserve"><value>Linked</value><comment>Title of the linked devices card.</comment></data>
@@ -445,12 +456,9 @@
   <data name="phone.pair.clipboard_bad" xml:space="preserve"><value>The clipboard doesn't hold a link from Imp.</value><comment>iPhone: pair clipboard bad.</comment></data>
   <data name="phone.pair.clipboard_empty" xml:space="preserve"><value>Copy the link from the other device first, then paste it here.</value><comment>iPhone: pair clipboard empty.</comment></data>
   <data name="phone.pair.code_bad" xml:space="preserve"><value>That code isn't from Imp.</value><comment>iPhone: pair code bad.</comment></data>
-  <data name="phone.pair.hatch" xml:space="preserve"><value>Hatch</value><comment>Quiet button on the first screen: make an Imp of your own instead of waking the first one.</comment></data>
   <data name="phone.pair.link_bad" xml:space="preserve"><value>That isn't a link from Imp.</value><comment>iPhone: pair link bad.</comment></data>
   <data name="phone.pair.scan_other" xml:space="preserve"><value>Scan the code on the other device</value><comment>Hint above the camera.</comment></data>
   <data name="phone.pair.seen_as" xml:space="preserve"><value>Other devices see this iPhone by this name.</value><comment>Help on the name card of the link sheet: what the name is for.</comment></data>
-  <data name="phone.pair.tip" xml:space="preserve"><value>Wake this Imp with a Brain, or link another device and throw an Imp over.</value><comment>Help on the first screen.</comment></data>
-  <data name="phone.pair.title" xml:space="preserve"><value>Imp for iPhone</value><comment>Title of the first screen on the iPhone.</comment></data>
   <data name="phone.paste.link" xml:space="preserve"><value>Paste</value><comment>Button that links from a copied link.</comment></data>
   <data name="phone.persona.placeholder" xml:space="preserve"><value>Who is this Imp? How does it talk?</value><comment>Placeholder of the personality field of an Imp on the iPhone.</comment></data>
   <data name="phone.requests.backoff.info" xml:space="preserve"><value>Each rest is this many times longer than the one before.</value><comment>Help for pause growth.</comment></data>
@@ -465,7 +473,6 @@
   <data name="phone.requests.title" xml:space="preserve"><value>Waiting</value><comment>Card title on the iPhone settings page for brains.</comment></data>
   <data name="phone.scan.code" xml:space="preserve"><value>Scan</value><comment>Button that opens the camera to scan a link code.</comment></data>
   <data name="phone.secret.hidden" xml:space="preserve"><value>Entered, hidden</value><comment>iPhone: what VoiceOver says for a key field while its value is hidden.</comment></data>
-  <data name="phone.server.placeholder_den" xml:space="preserve"><value>den.example.com</value><comment>Example address of a Den.</comment></data>
   <data name="phone.server.placeholder_hop" xml:space="preserve"><value>hop.example.com:4677</value><comment>Example address of a Hop.</comment></data>
   <data name="phone.shake.dir.any" xml:space="preserve"><value>Any</value><comment>Segment: any direction.</comment></data>
   <data name="phone.shake.dir.sides" xml:space="preserve"><value>Left or right</value><comment>Segment: left or right.</comment></data>
@@ -486,6 +493,11 @@
   <data name="phone.stage.nobody" xml:space="preserve"><value>Nobody here</value><comment>Door label when the edge leads to no device.</comment></data>
   <data name="phone.stage.not_around" xml:space="preserve"><value>{name} isn't around</value><comment>iPhone: stage not around.</comment></data>
   <data name="phone.stage.throw_hint" xml:space="preserve"><value>Throw an Imp off the side of another screen. It lands here.</value><comment>Empty main screen while another device is nearby.</comment></data>
+  <data name="phone.start.link_detail" xml:space="preserve"><value>Bring Imps over from your Mac or another iPhone.</value><comment>Under Link a device on the first screen: what linking gives you.</comment></data>
+  <data name="phone.start.link_title" xml:space="preserve"><value>Link a device</value><comment>The first screen's second way to begin: link this iPhone with a Mac or another iPhone.</comment></data>
+  <data name="phone.start.subtitle" xml:space="preserve"><value>A tiny helper that lives on your screen and thinks with the AI you choose.</value><comment>One sentence under the first screen's title: what Imp is.</comment></data>
+  <data name="phone.start.title" xml:space="preserve"><value>Meet Imp</value><comment>Big title of the iPhone's first screen, over the sleeping first Imp. Imp is the app's name.</comment></data>
+  <data name="phone.start.wake_note" xml:space="preserve"><value>Paste a key from an AI service, or use a model on your Mac.</value><comment>Under the first screen's main button (Wake Imp up): what waking it needs.</comment></data>
   <data name="phone.status.alone" xml:space="preserve"><value>This iPhone</value><comment>Connection pill: no device linked.</comment></data>
   <data name="phone.status.connected" xml:space="preserve"><value>{name}</value><comment>Connection pill: linked and connected to a device.</comment></data>
   <data name="phone.status.devices" xml:space="preserve"><value>{count} devices</value><comment>Connection pill: several devices linked.</comment></data>
@@ -690,6 +702,8 @@
   <data name="tools.mcp_starting" xml:space="preserve"><value>Starting</value><comment>Status of an MCP server.</comment></data>
   <data name="tools.new_server" xml:space="preserve"><value>New</value><comment>Title of a tool server that has no name or address yet.</comment></data>
   <data name="tools.optional" xml:space="preserve"><value>Optional</value><comment>Placeholder of a field that may be left empty.</comment></data>
+  <data name="tools.own" xml:space="preserve"><value>Built in</value><comment>Card title in an iPhone Imp's Tools: the tools the Imp has by itself (messaging other Imps, playing animations), each with a switch.</comment></data>
+  <data name="tools.own.info" xml:space="preserve"><value>What the Imp can do by itself. Switch off what it shouldn't use.</value><comment>Help of the Built in tools card on the iPhone.</comment></data>
   <data name="tools.problem.address" xml:space="preserve"><value>Add the server's address.</value><comment>Problem on a tool server with no address.</comment></data>
   <data name="tools.remove_header" xml:space="preserve"><value>Remove header</value><comment>Spoken label of the button that removes a header.</comment></data>
   <data name="tools.remove_server" xml:space="preserve"><value>Remove server</value><comment>Button and dialog title: remove a tool server from an Imp.</comment></data>

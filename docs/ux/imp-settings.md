@@ -70,9 +70,16 @@ Tabs with boxed cards. It is the old design, and it hides the Imp. A side panel 
 
 ## On the iPhone
 
-One sheet holds the live Imp on top, then the hub and the open panel. The hub is the markers, or the plain list at accessibility text sizes and with VoiceOver. Back in a panel returns to the hub and Close dismisses the sheet. Hatch or Save is at the bottom of the hub. Every panel is the Mac's panel in phone controls, except Moves (Animations), which stays on the Mac.
+One sheet, one level deep. The hub is the Imp at a fixed size (it never zooms, its size is a setting of the room), its name, a quiet line while it sleeps, then one list: Brain (its model, or Asleep), Personality, Look (its size) and Tools (how many are on). Say goodbye is a destructive button under the list. A row opens its panel in place, Back returns to the hub and Close dismisses the sheet. There are no markers on the phone: a list reads at a glance, fits every width and text size, and works the same with VoiceOver.
 
-The Brain panel of an Imp without a Brain runs the two first-run steps in place (Service, Model) with Remote and Local, and turns into the normal Brain panel when the Imp wakes. A sleeping Imp on the stage and "Give {name} a Brain" in its chat open the settings with the Brain panel already open. Keys are typed once and go to the Keychain.
+Every change is kept as it is made, as in the iPhone's own Settings. There is no Save, and Close or a swipe never loses anything. The Look panel shows the Imp at its real size in the room, with no animation, so the Size slider shows what it does.
+
+- **Personality** holds the name and the persona: the name is who the Imp is, so it is not on the hub.
+- **Look** holds the colour, the size and the character: one line of emoji presets (named for VoiceOver and on hover), the same on the Mac, then the trait sliders.
+- **Tools** first lists the Imp's own tools with a switch each, as on the Mac: Message another Imp and Play animations. Then its MCP servers. A pocket Imp has no Den tools: sharing happens on the Mac.
+- **Brain** is one screen with no steps: Remote or Local, then the address, the key and the model together, and one button. The model is a choice dressed as a field (the same height and well): blank reads "Picked for you", and nothing is filled in for you. A tap opens the model list, full height, with a search: "Picked for you" first, a name the service doesn't list as "Use “…”", then the models, the chosen one ticked. A pick closes the list. The button says "Wake {name} up" for an Imp that sleeps and "Check and save" for one that thinks; with a blank model it takes the first one that chats. When the Brain works, the button shows it for a beat, the phone taps once, and the sheet closes by itself: an Imp that just woke comes up in its chat. A Brain that fails says why in place and taps the error. Keys go to the Keychain.
+
+**New Imp** (`+` in the room) hatches an Imp at once, with a fresh name and colour and the Brain of the newest Imp that thinks on this iPhone (its key is copied in the Keychain, so each Imp keeps its own). No sheet comes up. Only when no Imp has a Brain yet does the new Imp's Brain open. A sleeping Imp on the stage and "Give {name} a Brain" in its chat open the settings with the Brain already open.
 
 ## Scope: this Imp or every Imp
 
@@ -339,6 +346,8 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `tools.mcp_starting` | Starting |
 | `tools.new_server` | New |
 | `tools.optional` | Optional |
+| `tools.own` | Built in |
+| `tools.own.info` | What the Imp can do by itself. Switch off what it shouldn't use. |
 | `tools.problem.address` | Add the server's address. |
 | `tools.remove_header` | Remove header |
 | `tools.remove_server` | Remove server |

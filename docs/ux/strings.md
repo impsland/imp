@@ -81,6 +81,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `common.cancel` | Cancel | Cancelar | 取消 |
 | `common.check` | Check | Comprobar | 检查 |
 | `common.choose` | Choose… | Elegir… | 选择… |
+| `common.clear` | Clear | Borrar | 清除 |
 | `common.close` | Close | Cerrar | 关闭 |
 | `common.continue` | Continue | Continuar | 继续下一步 |
 | `common.done` | Done | Listo | 完成 |
@@ -392,10 +393,18 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `personality.voice` | Voice | Voz | 声音 |
 | `personality.voice_look` | Shows as | Se muestra | 显示为 |
 | `phone.about.title` | About | Acerca de | 关于 |
+| `phone.app.speech` | Language and voices | Idioma y voces | 语言与语音 |
 | `phone.appearance.auto` | Auto | Auto | 自动 |
 | `phone.appearance.dark` | Dark | Oscuro | 深色 |
 | `phone.appearance.light` | Light | Claro | 浅色 |
 | `phone.brain.change` | Change | Cambiar | 更改 |
+| `phone.brain.check_save` | Check and save | Probar y guardar | 检查并保存 |
+| `phone.brain.list_models` | Show models | Ver modelos | 显示模型 |
+| `phone.brain.model_auto` | Picked for you | Se elige por ti | 自动选择 |
+| `phone.brain.model_auto_detail` | The first model that chats, chosen when it wakes. | El primer modelo que conversa, elegido al despertar. | 唤醒时自动选择第一个能聊天的模型。 |
+| `phone.brain.model_use` | Use “{name}” | Usar «{name}» | 使用“{name}” |
+| `phone.brains.default` | New Imps start with {name}'s Brain. | Los Imps nuevos empiezan con el cerebro de {name}. | 新的小妖会沿用 {name} 的大脑。 |
+| `phone.brains.empty` | Imps you hatch on this iPhone show here, each with the Brain it thinks with. | Los Imps que crees en este iPhone aparecen aquí, cada uno con el cerebro con el que piensa. | 你在这台 iPhone 上孵化的小妖会显示在这里，并附上各自使用的大脑。 |
 | `phone.brains.set_up` | Set up | Configurar | 设置 |
 | `phone.callhome` | Call home | Llamar | 叫回家 |
 | `phone.callhome.label` | Call {name} home | Traer a {name} | 把 {name} 叫回家 |
@@ -416,8 +425,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.connected` | Connected | Conectado | 已连接 |
 | `phone.connected_hop` | Through the server | Por el servidor | 经由服务器中转 |
 | `phone.copy` | Copy | Copiar | 拷贝 |
-| `phone.editor.hatch` | Hatch | Crear | 孵化 |
-| `phone.editor.save` | Save | Guardar | 保存 |
 | `phone.editor.save_failed` | The Imp couldn't be saved. {detail} | No se pudo guardar el Imp. {detail} | 没能保存这个小妖。{detail} |
 | `phone.editor.save_failed_title` | Couldn't save | Sin guardar | 没能保存成功 |
 | `phone.forget.everyone.title` | Forget all | Olvidar todos | 全部忘记 |
@@ -432,6 +439,10 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.game.flawless` | Nothing got away. | No se escapó ninguna. | 一颗也没溜走。 |
 | `phone.game.time` | Time. {points} points | Tiempo. {points} puntos | 时间到。{points} 分 |
 | `phone.game.time_best` | Time. {points} points. New best! | Tiempo. {points} puntos. ¡Nuevo récord! | 时间到。{points} 分。新纪录！ |
+| `phone.haptics.info` | Taps in your hand when you pick something, when an Imp comes or goes, and when something works or fails. | Toques en la mano al elegir algo, cuando un Imp llega o se va, y cuando algo sale bien o falla. | 选择内容、小妖到来或离开、操作成功或失败时，手中会有轻触反馈。 |
+| `phone.haptics.title` | Haptics | Vibración háptica | 触感反馈 |
+| `phone.language.next_open` | Imp switches language the next time it opens. | Imp cambiará de idioma la próxima vez que se abra. | Imp 会在下次打开时切换语言。 |
+| `phone.language.system` | Same as my iPhone | Igual que mi iPhone | 与 iPhone 相同 |
 | `phone.linked.info` | Devices linked with this iPhone. Imps can travel between you. | Dispositivos enlazados con este iPhone. Los Imps pueden viajar entre ustedes. | 与这台 iPhone 关联的设备。小妖可以在你们之间旅行。 |
 | `phone.linked.none` | Nobody is linked yet | Aún no hay nadie enlazado | 还没有关联的设备 |
 | `phone.linked.title` | Linked | Enlazados | 已关联 |
@@ -441,12 +452,9 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.pair.clipboard_bad` | The clipboard doesn't hold a link from Imp. | El portapapeles no contiene un enlace de Imp. | 剪贴板里没有来自 Imp 的链接。 |
 | `phone.pair.clipboard_empty` | Copy the link from the other device first, then paste it here. | Primero copia el enlace del otro dispositivo y luego pégalo aquí. | 请先在另一台设备上复制链接，再粘贴到这里。 |
 | `phone.pair.code_bad` | That code isn't from Imp. | Ese código no es de Imp. | 该二维码不是 Imp 的。 |
-| `phone.pair.hatch` | Hatch | Crear | 孵化 |
 | `phone.pair.link_bad` | That isn't a link from Imp. | Ese no es un enlace de Imp. | 这不是来自 Imp 的链接。 |
 | `phone.pair.scan_other` | Scan the code on the other device | Escanea el código del otro dispositivo | 扫描另一台设备上的代码 |
 | `phone.pair.seen_as` | Other devices see this iPhone by this name. | Los otros dispositivos ven este iPhone con este nombre. | 其他设备会以这个名字看到这台 iPhone。 |
-| `phone.pair.tip` | Wake this Imp with a Brain, or link another device and throw an Imp over. | Despierta a este Imp con un cerebro, o enlaza otro dispositivo y lanza un Imp hacia aquí. | 给这只小妖一个大脑叫醒它，或者关联另一台设备，把小妖扔过来。 |
-| `phone.pair.title` | Imp for iPhone | Imp para iPhone | iPhone 版 Imp |
 | `phone.paste.link` | Paste | Pegar | 粘贴 |
 | `phone.persona.placeholder` | Who is this Imp? How does it talk? | ¿Quién es este Imp? ¿Cómo habla? | 这只小妖是谁？它怎么说话？ |
 | `phone.requests.backoff.info` | Each rest is this many times longer than the one before. | Cada descanso dura este número de veces más que el anterior. | 每次休息的时间，都比上一次长这么多倍。 |
@@ -461,7 +469,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.requests.title` | Waiting | Esperas | 等待 |
 | `phone.scan.code` | Scan | Escanear | 扫描 |
 | `phone.secret.hidden` | Entered, hidden | Oculta | 已输入，已隐藏 |
-| `phone.server.placeholder_den` | den.example.com | den.example.com | den.example.com |
 | `phone.server.placeholder_hop` | hop.example.com:4677 | hop.example.com:4677 | hop.example.com:4677 |
 | `phone.shake.dir.any` | Any | Cualquiera | 任意 |
 | `phone.shake.dir.sides` | Left or right | Izq. o der. | 向左或向右 |
@@ -482,6 +489,11 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.stage.nobody` | Nobody here | Nadie aquí | 这里没有人 |
 | `phone.stage.not_around` | {name} isn't around | {name} no está por aquí | {name} 不在附近 |
 | `phone.stage.throw_hint` | Throw an Imp off the side of another screen. It lands here. | Lanza un Imp por el borde de otra pantalla. Aterriza aquí. | 把小妖从另一块屏幕的边缘扔过来，它会落在这里。 |
+| `phone.start.link_detail` | Bring Imps over from your Mac or another iPhone. | Trae Imps desde tu Mac u otro iPhone. | 把小妖从你的 Mac 或另一台 iPhone 带过来。 |
+| `phone.start.link_title` | Link a device | Enlazar un dispositivo | 关联设备 |
+| `phone.start.subtitle` | A tiny helper that lives on your screen and thinks with the AI you choose. | Un pequeño ayudante que vive en tu pantalla y piensa con la IA que elijas. | 一个住在你屏幕上的小帮手，用你选择的 AI 思考。 |
+| `phone.start.title` | Meet Imp | Conoce a Imp | 认识 Imp |
+| `phone.start.wake_note` | Paste a key from an AI service, or use a model on your Mac. | Pega una clave de un servicio de IA o usa un modelo de tu Mac. | 粘贴 AI 服务的密钥，或使用你 Mac 上的模型。 |
 | `phone.status.alone` | This iPhone | Este iPhone | 这台 iPhone |
 | `phone.status.connected` | {name} | {name} | {name} |
 | `phone.status.devices` | {count} devices | {count} equipos | {count} 台设备 |
@@ -686,6 +698,8 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tools.mcp_starting` | Starting | Iniciando | 正在启动 |
 | `tools.new_server` | New | Nuevo | 新建 |
 | `tools.optional` | Optional | Opcional | 可选项 |
+| `tools.own` | Built in | Integradas | 内置 |
+| `tools.own.info` | What the Imp can do by itself. Switch off what it shouldn't use. | Lo que el Imp puede hacer por sí solo. Desactiva lo que no deba usar. | 小妖自带的能力。关闭不希望它使用的功能。 |
 | `tools.problem.address` | Add the server's address. | Falta la dirección. | 请填写服务器的地址。 |
 | `tools.remove_header` | Remove header | Quitar cabecera | 移除请求头 |
 | `tools.remove_server` | Remove server | Quitar servidor | 移除服务器 |

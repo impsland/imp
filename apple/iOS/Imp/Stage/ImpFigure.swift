@@ -128,6 +128,8 @@ struct LiveImp: View {
                       breathes: mood != .sleepy)
         }
         .onAppear { pacer.onChange = { activity = $0 } }
+        // A new colour or character springs in over a moment (`Puppet`): it needs frames to get there.
+        .onChange(of: imp) { pacer.wake() }
     }
 
     private func frame(_ date: Date) {

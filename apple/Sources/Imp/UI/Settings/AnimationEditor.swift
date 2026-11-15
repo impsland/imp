@@ -428,13 +428,11 @@ struct AnimationEditor: View {
                 .frame(width: Sizing.column / 4, height: Sizing.column / 4)
                 .onTapGesture { playing = performance() }
                 .help("Click to play it again")
-                HStack(spacing: Spacing.tight) {
-                    Text("\(beats.count) beats · \(Self.seconds(beats.reduce(0) { $0 + $1.duration }))")
-                        .font(Typeface.small.weight(.medium).monospacedDigit()).foregroundStyle(Tone.muted)
-                    if !traits.isPlain {
-                        InfoTip(verbatim: String(localized: "\(actor?.callName ?? "") plays it with its own character: \(traits.summary.lowercased())."))
-                    }
-                }
+                // Centred under the preview on its own words: the tip hangs beside it.
+                Text("\(beats.count) beats · \(Self.seconds(beats.reduce(0) { $0 + $1.duration }))")
+                    .font(Typeface.small.weight(.medium).monospacedDigit()).foregroundStyle(Tone.muted)
+                    .hangingTip(traits.isPlain ? nil
+                                : InfoTip(verbatim: String(localized: "\(actor?.callName ?? "") plays it with its own character: \(traits.summary.lowercased()).")))
             }
             VStack(alignment: .leading, spacing: Spacing.medium) {
                 if let r = animation.replaces {

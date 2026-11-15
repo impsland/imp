@@ -85,6 +85,9 @@ public final class FirstRunModel {
     public let onThisComputer: Bool
     /// The choices: Remote and Local (`ServicePreset.all`).
     public let presets: [ServicePreset]
+    /// Whether listing the models fills the model with the first that chats (the Mac's list) or leaves it as it
+    /// is (the iPhone's picker, where blank means "picked for you" and the pick is made only when it wakes).
+    public let preselectsModel: Bool
 
     public private(set) var path = FirstRunPath()
     public private(set) var problem: FirstRunProblem?
@@ -115,10 +118,11 @@ public final class FirstRunModel {
     /// `awakeBeat` is how long the awake Imp is shown before the flow moves on by itself.
     public init(impName: String, onThisComputer: Bool, services: FirstRunServices,
                 presets: [ServicePreset] = ServicePreset.all, awakeBeat: Duration = .milliseconds(900),
-                adopt: @escaping @MainActor (FirstRunBrain) throws -> Void) {
+                preselectsModel: Bool = true, adopt: @escaping @MainActor (FirstRunBrain) throws -> Void) {
         self.impName = impName
         self.onThisComputer = onThisComputer
         self.presets = presets
+        self.preselectsModel = preselectsModel
         self.network = services
         self.awakeBeat = awakeBeat
         self.adopt = adopt
@@ -240,10 +244,12 @@ public final class FirstRunModel {
                 guard !Task.isCancelled else { return }
                 models = names
                 listedFor = listing
-                if model.isEmpty || (!names.isEmpty && !names.contains(model)) { model = Self.suggested(from: names) }
+                if preselectsModel, model.isEmpty || (!names.isEmpty && !names.contains(model)) { model = Self.suggested(from: names) }
                 path.apply(.loaded)
                 if wakesAfterLoading {
                     wakesAfterLoading = false
+                    // Left blank: the first model that chats, picked now that the list is here.
+                    if model.trimmingCharacters(in: .whitespaces).isEmpty { model = Self.suggested(from: names) }
                     check()
                 }
             } catch is CancellationError {
@@ -254,6 +260,26 @@ public final class FirstRunModel {
                 problem = FirstRunProblem.from(error, local: local)
                 path.apply(.loadFailed)
             }
+        }
+    }
+
+    /// Lists the service's models from wherever the path is, for a single page where the address, the key and
+    /// the model are edited together: it rewinds to the service first, so an edited address or key is listed
+    /// again. Models already listed for what is typed are kept. Nothing is checked.
+    public func listModels() {
+        guard !path.isBusy, !path.isOver else { return }
+        if modelsAreCurrent, !models.isEmpty { return }
+        wakesAfterLoading = false
+        rewindToService()
+        continueFromService()
+    }
+
+    /// Back to the service step, whatever step the path is on.
+    private func rewindToService() {
+        while path.step != .service {
+            let before = path.step
+            path.apply(.back)
+            if path.step == before { return }
         }
     }
 
@@ -270,11 +296,8 @@ public final class FirstRunModel {
             check()
             return
         }
-        while path.step != .service {
-            let before = path.step
-            path.apply(.back)
-            if path.step == before { return }
-        }
+        rewindToService()
+        guard path.step == .service else { return }
         wakesAfterLoading = true
         continueFromService()
         if path.step == .model {

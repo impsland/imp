@@ -28,8 +28,9 @@ struct ServerDraft: Identifiable {
     var hostKept: Bool { savedFor != nil && savedFor == PocketDraft.host(url) }
 }
 
-/// Everything the editor changes about one Imp, held until Save. The Brain is owned by the first-run flow
-/// (`FirstRunModel`): it hands a checked Brain to `adopt`, and the draft only reads it.
+/// Everything the editor changes about one Imp. The editor saves it as it changes (`PocketEditor`), so there is
+/// no Save button and closing never loses anything. The Brain is owned by the Brain form (`FirstRunModel`): it
+/// hands a checked Brain to `adopt`, and the draft only reads it.
 @MainActor @Observable
 final class PocketDraft {
     struct KeyProblem: LocalizedError {
@@ -37,36 +38,37 @@ final class PocketDraft {
         var errorDescription: String? { String(format: String(localized: "phone.editor.save_failed"), detail) }
     }
 
-    static let hues: [Double] = [0, 0.08, 0.15, 0.33, 0.5, 0.6, 0.75, 0.9]
-    /// The size a new Imp starts with.
-    static let newSize = 1.7
+    static var hues: [Double] { PocketRuntime.hues }
     /// The settings this iPhone has. Triggers and Moves live on the Mac.
     static let settings: [ImpSetting] = [.brain, .personality, .look, .tools]
+    /// The Imp's own tools this iPhone has, each with a switch: messaging the other Imps, and playing its animations.
+    static let ownTools: [ToolEntry] = [OwnTools.message, OwnTools.play].compactMap(ToolRegistry.entry(named:))
 
     let id: UUID
-    let isNew: Bool
     var name: String
     var hue: Double
     var scale: Double
     var traits: ImpTraits
     var personality: String
     var servers: [ServerDraft]
+    /// The Imp's own tools switched off, by registry id.
+    var toolsOff: Set<String>
     /// The Brain as it will be saved.
     private(set) var brain: PocketService
     /// A key the flow checked, to store on Save. Empty means no key. Nil keeps what is saved.
     private(set) var newKey: String?
 
-    init(pocket: PocketRuntime, editing: UUID?) {
-        let imp = editing.flatMap { id in pocket.imps.first { $0.id == id } }
+    init(pocket: PocketRuntime, editing: UUID) {
+        let imp = pocket.imps.first { $0.id == editing }
         let secrets = pocket.secrets
-        id = imp?.id ?? UUID()
-        isNew = imp == nil
-        name = imp?.name ?? ImpProfile.randomName(avoiding: pocket.imps.map(\.name))
-        hue = imp?.hue ?? Self.hues.randomElement() ?? 0
-        scale = imp?.scale ?? Self.newSize
+        id = editing
+        name = imp?.name ?? ""
+        hue = imp?.hue ?? ImpProfile.defaultHue
+        scale = imp?.scale ?? PocketRuntime.newSize
         traits = imp?.traits ?? .plain
         personality = imp.map { $0.personality == Persona.pocket(named: $0.name) ? "" : $0.personality } ?? ""
         brain = imp?.brain ?? PocketService()
+        toolsOff = Set(imp?.toolsOff ?? [])
         servers = imp?.servers.map { server -> ServerDraft in
             let heads = server.headers.map { name in
                 HeaderDraft(name: name, savedName: imp.flatMap { secrets.get(.header(server.id, name), imp: $0.id) != nil ? name : nil })
@@ -76,6 +78,20 @@ final class PocketDraft {
         } ?? []
     }
 
+    // MARK: Tools
+
+    func uses(_ tool: ToolEntry) -> Bool { !toolsOff.contains(tool.id) }
+
+    func setUses(_ tool: ToolEntry, _ on: Bool) {
+        if on { toolsOff.remove(tool.id) } else { toolsOff.insert(tool.id) }
+    }
+
+    /// The tools it has on, of all it has: its own and the servers that are ready.
+    var toolCount: (on: Int, all: Int) {
+        let real = servers.filter { !$0.isBlank }
+        return (Self.ownTools.filter(uses).count + real.filter { serverProblem($0) == nil }.count, Self.ownTools.count + real.count)
+    }
+
     // MARK: The Brain
 
     var hasBrain: Bool { !brain.baseURL.trimmed.isEmpty && !brain.model.trimmed.isEmpty }
@@ -83,10 +99,10 @@ final class PocketDraft {
     /// The service's name for a value on screen.
     var serviceName: String { brain.name ?? service?.title ?? Self.host(brain.baseURL) ?? "" }
 
-    /// Takes the Brain the flow checked.
-    func adopt(_ checked: FirstRunBrain) {
+    /// Takes the Brain the flow checked. `stored`: its key is in the Keychain already.
+    func adopt(_ checked: FirstRunBrain, stored: Bool = false) {
         brain = PocketService(checked)
-        newKey = checked.key
+        newKey = stored ? nil : checked.key
     }
 
     // MARK: Checking
@@ -107,9 +123,9 @@ final class PocketDraft {
         return servers.allSatisfy { $0.isBlank || serverProblem($0) == nil }
     }
 
-    var isPlainLook: Bool { abs(hue - ImpProfile.defaultHue) < 0.005 && scale == 1 && traits.isPlain }
+    var isPlainCharacter: Bool { traits.isPlain }
 
-    func resetLook() { hue = ImpProfile.defaultHue; scale = 1; traits = .plain }
+    func resetCharacter() { traits = .plain }
 
     /// Where an address leads. A secret saved for one place isn't sent to another.
     nonisolated static func host(_ address: String) -> String? {
@@ -159,21 +175,25 @@ final class PocketDraft {
         } catch {
             throw KeyProblem(detail: error.localizedDescription)
         }
+        newKey = nil
         let service = brain
-        if isNew {
-            pocket.hatch(PocketImp(id: id, name: name.trimmed, hue: hue, scale: scale, traits: traits, personality: words, brain: service,
-                                   servers: made.map(\.0)))
-        } else {
-            pocket.edit(id) { imp in
-                imp.name = name.trimmed
-                imp.hue = hue
-                imp.scale = scale
-                imp.traits = traits
-                imp.personality = words
-                imp.brain = service
-                imp.servers = made.map(\.0)
-            }
+        let off = toolsOff.sorted()
+        pocket.edit(id) { imp in
+            imp.name = name.trimmed
+            imp.hue = hue
+            imp.scale = scale
+            imp.traits = traits
+            imp.personality = words
+            imp.brain = service
+            imp.servers = made.map(\.0)
+            imp.toolsOff = off.isEmpty ? nil : off
         }
+    }
+
+    /// What saving depends on, to save again when it changes. Header values count, so a typed one is kept.
+    var fingerprint: [String] {
+        [name, "\(hue)", "\(scale)", String(describing: traits), personality, toolsOff.sorted().joined(separator: ","), brain.baseURL, brain.model]
+            + servers.flatMap { [$0.name, $0.url] + $0.headers.flatMap { [$0.name, $0.value] } }
     }
 }
 

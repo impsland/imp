@@ -51,16 +51,17 @@ Which screens and states exist on which platform. Keep this table current.
 What the Mac has from this specification and the iPhone does not, to build:
 
 - **Scope of triggers and animations.** The phone's Imps keep their own triggers and have no shared set, so there is nothing to label or override. The Mac's model (`SettingScope`, `ImpPreferences.saveTrigger`) is shared code the phone can adopt.
-- **The server card.** The phone's Devices and Sharing sections still show The Hop and The Den with their own menu and Check (`PhoneServerCards`), not the Mac's `ServerCard` layout. The choices and the check work the same.
+- **The server card.** The phone's Devices section still shows The Hop with its own menu and Check (`PhoneServerCards`), not the Mac's `ServerCard` layout. The choices and the check work the same.
 - **Link a device as one sheet.** Done on the first screen (its own sheet with the same cards). In Settings the phone still shows the code, Scan and Paste as cards of its Devices section.
 - **Field actions.** The phone's fields do not use `FieldWell` yet. None of its fields has a button beside it.
 
-The first run and its two steps, Remote and Local, are the same on both.
+The first run uses the same model (`FirstRunModel`) and words, with Remote and Local, on both. The phone shows it on one screen, without step numbers.
 
 ## The phone leaves out
 
 - **Animations.** The phone page only listed the five built-in animations. They are made, assigned and found in The Den on the Mac, and nothing on the page changed what a phone user sees. Removed. Reactions have no on/off setting on the phone.
-- **Tools** (MCP). Tools run on a computer. The phone never had a page for them, and its Imps use the tools of a trusted linked device through the "Mine" switch on that device.
+- **Tools** (MCP) in the app's settings. Tools run on a computer. The phone's Imps use the tools of a trusted linked device through the "Mine" switch on that device. A pocket Imp's own tools (Message another Imp, Play animations, its MCP servers) are in its own settings, each with a switch.
+- **Sharing** (The Den). Sharing, finding and taking animations happen on the Mac. A pocket Imp has no Den tools, so the phone has no Den address to set.
 - The bubble's Background (Solid or Translucent) is the Mac's: it blurs the desktop behind the bubble's own panel, and the phone's bubble sits over the app's stage.
 - The Window setting (the smallest window) is the Mac's: the phone's app fills the screen.
 - Permissions, Bubble and Backup are the Mac's. The phone asks for each permission when it needs it.

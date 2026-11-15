@@ -198,7 +198,7 @@ final class LinkHub {
     }
 
     /// Sets (or clears, with empty text) the Hop this iPhone waits at. False for text that isn't an address.
-    /// The Den is kept apart (`setDen`): neither touches the other.
+    /// The phone has no use for the Den: sharing is done on the Mac.
     @discardableResult
     func setHop(_ text: String) -> Bool {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -208,18 +208,8 @@ final class LinkHub {
         return true
     }
 
-    /// Sets (or clears, with empty text) the Den. False for text that isn't an address.
-    @discardableResult
-    func setDen(_ text: String) -> Bool {
-        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard ServerKind.den.problem(with: text) == nil else { return false }
-        servers.den = text
-        return true
-    }
-
-    /// The addresses as last set (empty: none).
+    /// The address as last set (empty: none).
     var hop: String { servers.hop }
-    var den: String { servers.den }
 
     /// Where a model server on a linked Mac is reached from this phone: its name on the network
     /// (`.local` first). Nil when no Mac is linked.

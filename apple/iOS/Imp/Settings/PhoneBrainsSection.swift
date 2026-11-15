@@ -2,8 +2,8 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The Brains section: which Imps of this iPhone can think, and how long they wait for their Brain.
-/// Each Imp has its own service and model, set in its own settings.
+/// The Brains section: what each Imp of this iPhone thinks with, which Brain a new Imp starts with, and how long
+/// they wait for their Brain. Each Imp has its own service and model, set in its own settings.
 struct PhoneBrainsSection: View {
     let pocket: PocketRuntime
     /// Opens an Imp's Brain, to set one up or change it.
@@ -12,30 +12,16 @@ struct PhoneBrainsSection: View {
     var body: some View {
         VStack(spacing: Spacing.medium) {
             Card("settings.group.brains", icon: "lightbulb", info: "settings.brains.services.info") {
-                VStack(alignment: .leading, spacing: 0) {
-                    // Each Imp is a way to its Brain: one without asks to set one up, one with shows it is ready.
-                    ForEach(pocket.imps, id: \.id) { imp in
-                        let ready = pocket.hasBrain(imp.id)
-                        Button { openBrain(imp.id) } label: {
-                            HStack(spacing: Spacing.cozy) {
-                                Circle().fill(Color.imp(imp.look.hue)).frame(width: Spacing.small, height: Spacing.small).accessibilityHidden(true)
-                                Text(verbatim: imp.look.name).font(Typeface.body).foregroundStyle(Tone.text)
-                                Spacer(minLength: Spacing.small)
-                                if ready {
-                                    StateMark("settings.map.state_ready", symbol: "checkmark.circle.fill", color: Tone.good)
-                                    Image(systemName: "chevron.right").font(.icon(.small, weight: .semibold)).foregroundStyle(Tone.faint)
-                                        .accessibilityHidden(true)
-                                } else {
-                                    FitLabel("phone.brains.set_up", systemImage: ImpSetting.brain.symbol)
-                                        .impPill(.secondary, small: true)
-                                }
-                            }
-                            .frame(minHeight: Sizing.hit)
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityElement(children: .combine)
-                        .accessibilityHint(Text(ready ? "phone.brain.change" : "phone.brains.set_up"))
+                if pocket.imps.isEmpty {
+                    Text("phone.brains.empty").font(Typeface.body).foregroundStyle(Tone.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(pocket.imps, id: \.id) { imp in row(imp) }
+                    }
+                    if let source = pocket.defaultBrainImp {
+                        StatusText(verbatim: words("phone.brains.default", source.name), symbol: "plus.circle", color: Tone.muted)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
             }
@@ -51,6 +37,36 @@ struct PhoneBrainsSection: View {
                          value: limit(\.backoff), range: RequestLimits.backoffRange, step: RequestLimits.backoffStep) { "× \($0.formatted())" }
             }
         }
+    }
+
+    /// One Imp: its colour, its name and what it thinks with, or Set up when it sleeps.
+    private func row(_ imp: PocketImp) -> some View {
+        let ready = pocket.hasBrain(imp.id)
+        return Button { openBrain(imp.id) } label: {
+            HStack(spacing: Spacing.cozy) {
+                Circle().fill(Color.imp(imp.hue)).frame(width: Spacing.medium, height: Spacing.medium).accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(verbatim: imp.name).font(Typeface.label).foregroundStyle(Tone.text).lineLimit(1)
+                    Text(verbatim: ready ? [imp.brain.label ?? "", imp.brain.model].filter { !$0.isEmpty }.joined(separator: " · ")
+                                         : String(localized: "imp_settings.value.asleep"))
+                        .font(Typeface.caption).foregroundStyle(Tone.muted).lineLimit(1).truncationMode(.middle)
+                }
+                Spacer(minLength: Spacing.small)
+                if ready {
+                    Image(systemName: "chevron.right").font(.icon(.small, weight: .semibold)).foregroundStyle(Tone.faint)
+                        .accessibilityHidden(true)
+                } else {
+                    FitLabel("phone.brains.set_up", systemImage: ImpSetting.brain.symbol)
+                        .impPill(.secondary, small: true)
+                }
+            }
+            .frame(minHeight: Sizing.hit)
+            .padding(.vertical, Spacing.tight)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(Text(ready ? "phone.brain.change" : "phone.brains.set_up"))
     }
 
     private func limitRow(_ title: LocalizedStringKey, icon: String, info: LocalizedStringKey, value: Binding<Double>, range: ClosedRange<Double>, step: Double,

@@ -377,35 +377,11 @@
     "es": "Todos los Imps vuelven a casa. Enlaza otra vez con un código nuevo.",
     "zh-Hans": "所有小妖都会回家。请用新的二维码重新关联。"
   },
-  "phone.server.placeholder_den": {
-    "note": "Example address of a Den.",
-    "en": "den.example.com",
-    "es": "den.example.com",
-    "zh-Hans": "den.example.com"
-  },
   "phone.server.placeholder_hop": {
     "note": "Example address of a Hop.",
     "en": "hop.example.com:4677",
     "es": "hop.example.com:4677",
     "zh-Hans": "hop.example.com:4677"
-  },
-  "phone.pair.title": {
-    "note": "Title of the first screen on the iPhone.",
-    "en": "Imp for iPhone",
-    "es": "Imp para iPhone",
-    "zh-Hans": "iPhone 版 Imp"
-  },
-  "phone.pair.tip": {
-    "note": "Help on the first screen.",
-    "en": "Wake this Imp with a Brain, or link another device and throw an Imp over.",
-    "es": "Despierta a este Imp con un cerebro, o enlaza otro dispositivo y lanza un Imp hacia aquí.",
-    "zh-Hans": "给这只小妖一个大脑叫醒它，或者关联另一台设备，把小妖扔过来。"
-  },
-  "phone.pair.hatch": {
-    "note": "Quiet button on the first screen: make an Imp of your own instead of waking the first one.",
-    "en": "Hatch",
-    "es": "Crear",
-    "zh-Hans": "孵化"
   },
   "phone.pair.seen_as": {
     "note": "Help on the name card of the link sheet: what the name is for.",
@@ -622,18 +598,6 @@
     "es": "Llamarada. Puntos dobles",
     "zh-Hans": "烈焰时刻。得分翻倍。"
   },
-  "phone.editor.hatch": {
-    "note": "Main button of the sheet that makes a new Imp on the iPhone.",
-    "en": "Hatch",
-    "es": "Crear",
-    "zh-Hans": "孵化"
-  },
-  "phone.editor.save": {
-    "note": "Main button of an Imp's settings on the iPhone.",
-    "en": "Save",
-    "es": "Guardar",
-    "zh-Hans": "保存"
-  },
   "phone.editor.save_failed_title": {
     "note": "Title of the alert when an Imp's settings could not be saved.",
     "en": "Couldn't save",
@@ -696,5 +660,113 @@
     "en": "Getting ready to link…",
     "es": "Preparando el vínculo…",
     "zh-Hans": "正在准备建立连接…"
+  },
+  "phone.brains.empty": {
+    "note": "Brains section of the iPhone settings, when no Imp was hatched on this iPhone yet.",
+    "en": "Imps you hatch on this iPhone show here, each with the Brain it thinks with.",
+    "es": "Los Imps que crees en este iPhone aparecen aquí, cada uno con el cerebro con el que piensa.",
+    "zh-Hans": "你在这台 iPhone 上孵化的小妖会显示在这里，并附上各自使用的大脑。"
+  },
+  "phone.brains.default": {
+    "note": "Under the list of Imps in the iPhone's Brains settings: a new Imp (the + button) starts with this Imp's service, model and key.",
+    "args": {
+      "name": "string"
+    },
+    "en": "New Imps start with {name}'s Brain.",
+    "es": "Los Imps nuevos empiezan con el cerebro de {name}.",
+    "zh-Hans": "新的小妖会沿用 {name} 的大脑。"
+  },
+  "phone.brain.model_auto": {
+    "note": "Placeholder of the model field in an iPhone Imp's Brain form: left blank, the first model that chats is picked.",
+    "en": "Picked for you",
+    "es": "Se elige por ti",
+    "zh-Hans": "自动选择"
+  },
+  "phone.brain.list_models": {
+    "note": "Button beside the model field (iPhone Brain form): lists the service's models to pick one.",
+    "en": "Show models",
+    "es": "Ver modelos",
+    "zh-Hans": "显示模型"
+  },
+  "phone.brain.check_save": {
+    "note": "Button of the Brain form of an Imp that already thinks: tries the new service and model, then keeps them.",
+    "en": "Check and save",
+    "es": "Probar y guardar",
+    "zh-Hans": "检查并保存"
+  },
+  "phone.app.speech": {
+    "note": "Card title in the iPhone's App settings: the app's language and whether voices play by themselves.",
+    "en": "Language and voices",
+    "es": "Idioma y voces",
+    "zh-Hans": "语言与语音"
+  },
+  "phone.language.system": {
+    "note": "Language picker option on the iPhone: follow the iPhone's own language.",
+    "en": "Same as my iPhone",
+    "es": "Igual que mi iPhone",
+    "zh-Hans": "与 iPhone 相同"
+  },
+  "phone.language.next_open": {
+    "note": "Shown under the language picker on the iPhone after a change: iOS applies an app's language when it opens.",
+    "en": "Imp switches language the next time it opens.",
+    "es": "Imp cambiará de idioma la próxima vez que se abra.",
+    "zh-Hans": "Imp 会在下次打开时切换语言。"
+  },
+  "phone.start.title": {
+    "note": "Big title of the iPhone's first screen, over the sleeping first Imp. Imp is the app's name.",
+    "en": "Meet Imp",
+    "es": "Conoce a Imp",
+    "zh-Hans": "认识 Imp"
+  },
+  "phone.start.subtitle": {
+    "note": "One sentence under the first screen's title: what Imp is.",
+    "en": "A tiny helper that lives on your screen and thinks with the AI you choose.",
+    "es": "Un pequeño ayudante que vive en tu pantalla y piensa con la IA que elijas.",
+    "zh-Hans": "一个住在你屏幕上的小帮手，用你选择的 AI 思考。"
+  },
+  "phone.start.wake_note": {
+    "note": "Under the first screen's main button (Wake Imp up): what waking it needs.",
+    "en": "Paste a key from an AI service, or use a model on your Mac.",
+    "es": "Pega una clave de un servicio de IA o usa un modelo de tu Mac.",
+    "zh-Hans": "粘贴 AI 服务的密钥，或使用你 Mac 上的模型。"
+  },
+  "phone.start.link_title": {
+    "note": "The first screen's second way to begin: link this iPhone with a Mac or another iPhone.",
+    "en": "Link a device",
+    "es": "Enlazar un dispositivo",
+    "zh-Hans": "关联设备"
+  },
+  "phone.start.link_detail": {
+    "note": "Under Link a device on the first screen: what linking gives you.",
+    "en": "Bring Imps over from your Mac or another iPhone.",
+    "es": "Trae Imps desde tu Mac u otro iPhone.",
+    "zh-Hans": "把小妖从你的 Mac 或另一台 iPhone 带过来。"
+  },
+  "phone.brain.model_auto_detail": {
+    "note": "Under Picked for you in the iPhone's model list: blank lets the Imp take the first model that chats when it wakes.",
+    "en": "The first model that chats, chosen when it wakes.",
+    "es": "El primer modelo que conversa, elegido al despertar.",
+    "zh-Hans": "唤醒时自动选择第一个能聊天的模型。"
+  },
+  "phone.brain.model_use": {
+    "note": "Row in the iPhone's model list when the search holds a name the service doesn't list: use that name as the model.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Use “{name}”",
+    "es": "Usar «{name}»",
+    "zh-Hans": "使用“{name}”"
+  },
+  "phone.haptics.title": {
+    "note": "Card title and switch in the iPhone's App settings: taps felt in the hand.",
+    "en": "Haptics",
+    "es": "Vibración háptica",
+    "zh-Hans": "触感反馈"
+  },
+  "phone.haptics.info": {
+    "note": "Help of the Haptics switch on the iPhone.",
+    "en": "Taps in your hand when you pick something, when an Imp comes or goes, and when something works or fails.",
+    "es": "Toques en la mano al elegir algo, cuando un Imp llega o se va, y cuando algo sale bien o falla.",
+    "zh-Hans": "选择内容、小妖到来或离开、操作成功或失败时，手中会有轻触反馈。"
   }
 }

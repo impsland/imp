@@ -434,10 +434,10 @@ private struct SpecialBanner: View {
 /// Taps for catches, kindling, smoke, the Blaze, bonks, the countdown and the end of the round.
 @MainActor
 final class GameHaptics {
-    private let light = UIImpactFeedbackGenerator(style: .light)
-    private let heavy = UIImpactFeedbackGenerator(style: .rigid)
-    private let soft = UIImpactFeedbackGenerator(style: .soft)
-    private let notice = UINotificationFeedbackGenerator()
+    private let light = HapticImpact(style: .light)
+    private let heavy = HapticImpact(style: .rigid)
+    private let soft = HapticImpact(style: .soft)
+    private let notice = HapticNotice()
 
     func prepare() { light.prepare(); heavy.prepare(); soft.prepare(); notice.prepare() }
     func caught(_ multiplier: Int) { light.impactOccurred(intensity: min(1, 0.4 + 0.15 * Double(multiplier))) }

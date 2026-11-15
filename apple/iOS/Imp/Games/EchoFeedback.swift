@@ -22,8 +22,8 @@ final class EchoHaptics {
     ]
 
     private var engine: CHHapticEngine?
-    private let impact = UIImpactFeedbackGenerator(style: .medium)
-    private let notice = UINotificationFeedbackGenerator()
+    private let impact = HapticImpact(style: .medium)
+    private let notice = HapticNotice()
     private let capable = CHHapticEngine.capabilitiesForHardware().supportsHaptics
 
     func prepare() {
@@ -67,6 +67,7 @@ final class EchoHaptics {
     func yourTurn() { play([Tap(time: 0, strength: 0.4, sharpness: 0.3)]) }
 
     private func play(_ taps: [Tap]) {
+        guard Haptics.isOn else { return }
         if let engine, capable {
             let events = taps.map { tap in
                 CHHapticEvent(eventType: .hapticTransient, parameters: [

@@ -4,16 +4,17 @@ import SwiftUI
 import UIKit
 import VisionKit
 
-/// The first screen, with nothing linked and no Imp yet: one sleeping Imp and what to do about it.
-/// One main button wakes it. Linking another device and hatching an Imp of your own are the two
-/// quieter ways to begin.
+/// The first screen, with nothing linked and no Imp yet. Top half: one sleeping Imp that says what it needs in its
+/// own speech bubble, its name and one sentence about what it is. Bottom half, in the thumb zone: one main button
+/// that wakes it (a Brain is all it needs), and the one other way to begin, linking a device that has Imps already,
+/// as a card that says what it does. The parts come in one after the other, once, unless Reduce Motion is on.
 struct PairingView: View {
     let hub: LinkHub
-    /// Starts hatching an Imp on this iPhone, for those who want to make their own first.
-    var hatch: () -> Void
     /// Hatches the first Imp, asleep, and starts waking it with a Brain.
     var wake: () -> Void
     @State private var linking = false
+    @State private var shown = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// What the first Imp is called until its owner picks another name.
     static let firstName = "Imp"
@@ -21,39 +22,102 @@ struct PairingView: View {
     var body: some View {
         GeometryReader { geo in
             ScrollView {
-                VStack(spacing: Spacing.large) {
-                    Spacer(minLength: Spacing.small)
-                    Text(words("firstrun.asleep_bubble", Self.firstName))
-                        .font(Typeface.body).foregroundStyle(Tone.text)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, Spacing.large).padding(.vertical, Spacing.cozy)
-                        .impCard()
-                        .padding(.horizontal, Spacing.vast)
-                    TiltImp().frame(width: Sizing.column / 3, height: Sizing.column / 3)
-                    HStack(spacing: 0) {
-                        Text("phone.pair.title")
-                            .font(Typeface.title)
-                            .foregroundStyle(Tone.text)
+                VStack(spacing: 0) {
+                    Spacer(minLength: Spacing.huge)
+                    hero(side: min(geo.size.width * 0.44, Self.maxImp))
+                        .entrance(shown, order: 0, reduceMotion: reduceMotion)
+                    VStack(spacing: Spacing.small) {
+                        Text("phone.start.title")
+                            .font(Typeface.display).foregroundStyle(Tone.text)
                             .accessibilityAddTraits(.isHeader)
-                        InfoTip("phone.pair.tip")
+                        Text("phone.start.subtitle")
+                            .font(Typeface.body).foregroundStyle(Tone.muted)
+                            .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
                     }
-                    Spacer(minLength: Spacing.small)
-                    VStack(spacing: Spacing.cozy) {
-                        Button(action: wake) { Text(words("firstrun.wake", Self.firstName)) }
-                            .buttonStyle(WideButtonStyle())
-                        Button("settings.devices.pair.title") { linking = true }
-                            .buttonStyle(WideButtonStyle(filled: false))
-                        Button(action: hatch) { FitLabel("phone.pair.hatch", systemImage: "sparkles") }
-                            .buttonStyle(.quiet)
-                    }
-                    .padding(.horizontal, Spacing.wide).padding(.bottom, Spacing.large)
+                    .padding(.top, Spacing.large).padding(.horizontal, Spacing.vast)
+                    .entrance(shown, order: 1, reduceMotion: reduceMotion)
+                    Spacer(minLength: Spacing.huge)
+                    actions
+                        .entrance(shown, order: 2, reduceMotion: reduceMotion)
                 }
-                .frame(maxWidth: .infinity, minHeight: geo.size.height)
+                .frame(maxWidth: Self.maxWidth, minHeight: geo.size.height)
+                .frame(maxWidth: .infinity)
             }
             .scrollBounceBehavior(.basedOnSize)
         }
         .impControls(tint: Tone.accent)
         .sheet(isPresented: $linking) { LinkSheet(hub: hub) }
+        .onAppear { shown = true }
+    }
+
+    /// The Imp, asleep, and what it says: the same bubble it talks in on the stage, its tail pointing at it.
+    /// It leans as the phone tips, stirs at a touch and hops when tapped.
+    private func hero(side: CGFloat) -> some View {
+        VStack(spacing: Spacing.small) {
+            Text(words("firstrun.asleep_bubble", Self.firstName))
+                .font(Typeface.body).foregroundStyle(Tone.text)
+                .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.cozy)
+                // The stage's bubble, sitting on the page: raised, but no shadow (it floats over nothing).
+                .background(BubbleShape(tail: 0).fill(Tone.raised))
+                .padding(.horizontal, Spacing.vast)
+                .accessibilityHidden(true)
+            TiltImp(asleep: true)
+                // Asleep, it draws its own Zs.
+                .frame(width: side, height: side)
+                .accessibilityLabel(Text(words("firstrun.asleep_bubble", Self.firstName)))
+        }
+    }
+
+    /// The main way in, with what it needs in one line under it, then the other way in as a card.
+    private var actions: some View {
+        VStack(spacing: Spacing.large) {
+            VStack(spacing: Spacing.small) {
+                Button(action: wake) {
+                    Label { Text(words("firstrun.wake", Self.firstName)) } icon: { Image(systemName: "sparkles") }
+                }
+                .buttonStyle(WideButtonStyle())
+                .accessibilityIdentifier("start.wake")
+                Text("phone.start.wake_note")
+                    .font(Typeface.caption).foregroundStyle(Tone.muted)
+                    .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+            }
+            Button { linking = true } label: {
+                HStack(spacing: Spacing.cozy) {
+                    IconTile(systemName: "laptopcomputer.and.iphone")
+                    VStack(alignment: .leading, spacing: Spacing.hairline) {
+                        Text("phone.start.link_title").font(Typeface.label).foregroundStyle(Tone.text)
+                        Text("phone.start.link_detail").font(Typeface.caption).foregroundStyle(Tone.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer(minLength: Spacing.small)
+                    Image(systemName: "chevron.right").font(.icon(.small, weight: .semibold)).foregroundStyle(Tone.faint)
+                        .accessibilityHidden(true)
+                }
+                .padding(Spacing.medium)
+                .frame(maxWidth: .infinity, minHeight: Sizing.hit, alignment: .leading)
+                .background(RoundedRectangle(cornerRadius: Radius.large, style: .continuous).fill(Tone.card))
+                .contentShape(RoundedRectangle(cornerRadius: Radius.large, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityIdentifier("start.link")
+        }
+        .padding(.horizontal, Spacing.page).padding(.bottom, Spacing.large)
+    }
+
+    /// The biggest the Imp is drawn, and the widest the page gets (a big phone in zoomed display).
+    private static let maxImp: CGFloat = 190
+    private static let maxWidth: CGFloat = 480
+}
+
+private extension View {
+    /// Comes in after the parts before it (`order`): a fade and a short rise, or only the fade with Reduce Motion.
+    func entrance(_ shown: Bool, order: Int, reduceMotion: Bool) -> some View {
+        opacity(shown ? 1 : 0)
+            .offset(y: shown || reduceMotion ? 0 : Spacing.medium)
+            .animation(ImpDesign.Motion.scene.animation.delay(Double(order) * 0.08), value: shown)
     }
 }
 

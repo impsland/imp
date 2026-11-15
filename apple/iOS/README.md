@@ -35,7 +35,7 @@ team. The project ships with an empty `DEVELOPMENT_TEAM`.
 iPhone (or `DEVICE=<name or UDID>`) and opens it. It works over a cable, or over Wi-Fi once Xcode has paired
 the phone. `CONFIG=Debug` sends a debug build.
 
-Debug builds understand `-openChat` and `-hatch`, handy for screenshots, and `-join <implink://…>` with
+Debug builds understand `-openChat`, `-hatch`, `-openSettings` and `-editImp`, handy for screenshots, and `-join <implink://…>` with
 `-ask <text>` for end-to-end checks against a running Mac (`apple/iOS/Imp/App/ImpPhoneApp.swift`).
 `apple/iOS/scripts/make-icon.sh` re-renders the app icon from the Mac app's own icon art (`Imp --render-ios-icon`).
 
@@ -63,11 +63,14 @@ device with its **ticket**, which lets that device act for the Imp at its home.
 
 ## Imps hatched on the phone
 
-The status pill's menu (or **Hatch an Imp** on the first screen) hatches a pocket Imp:
-a name, a colour, a personality, an OpenAI-compatible service and optional HTTP tool servers. It thinks on
+**+** in the room hatches a pocket Imp at once (`PocketRuntime.hatchReady`):
+a fresh name and colour, and the Brain of the newest Imp that thinks here, its key copied in the Keychain. Only
+the very first one opens its Brain. Its settings (`PocketEditor`) are a list of Brain, Personality, Look and Tools
+and keep every change as it is made: a personality, an OpenAI-compatible service, its own tools switched on or off
+(`toolsOff`) and optional HTTP tool servers. It thinks on
 the phone (`PocketRuntime`, built on ImpKit's `PocketBrain`), with or without a Mac linked. Its chats and settings
 are one JSON file in Application Support (`PocketStore`). Keys and header values are only in the Keychain
-(`PocketKeychain`) and the form only says "Saved" afterwards. Throw one off a side while the Mac is
+(`PocketKeychain`). Throw one off a side while the Mac is
 connected and it moves home for good.
 
 ## Security

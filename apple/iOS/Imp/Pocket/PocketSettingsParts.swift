@@ -28,32 +28,7 @@ private struct PhoneGlyph: View {
     }
 }
 
-/// A setting around the Imp: a round glyph, one word and a small state (a count or "Asleep"). No box.
-struct PhoneMarker: View {
-    let setting: ImpSetting
-    let value: String?
-    let lit: Bool
-    let asleepNote: String
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: Spacing.hairline) {
-                PhoneGlyph(setting: setting, lit: lit)
-                Text(setting.title).font(Typeface.label).foregroundStyle(Tone.text).lineLimit(1)
-                // The state line keeps its height so the four markers line up.
-                Text(verbatim: value ?? " ").font(Typeface.small).foregroundStyle(Tone.muted).lineLimit(1)
-            }
-            .frame(width: ImpSettingsGeometry.phoneMarkerWidth, height: ImpSettingsGeometry.markerHeight)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(Text(setting.title))
-        .accessibilityValue(setting == .brain && !lit ? asleepNote : (value ?? ""))
-    }
-}
-
-/// A setting as a row of the plain list.
+/// A setting as a row of the Imp's settings: its glyph, its name, a short state and the way in.
 struct PhoneListRow: View {
     let setting: ImpSetting
     let value: String?
@@ -65,16 +40,17 @@ struct PhoneListRow: View {
         Button(action: action) {
             HStack(spacing: Spacing.medium) {
                 PhoneGlyph(setting: setting, lit: lit)
-                Text(setting.title).font(Typeface.cardTitle).foregroundStyle(Tone.text)
+                Text(setting.title).font(Typeface.body).foregroundStyle(Tone.text).layoutPriority(1)
                 Spacer(minLength: Spacing.small)
                 if let value {
-                    Text(verbatim: value).font(Typeface.small).foregroundStyle(Tone.muted).multilineTextAlignment(.trailing)
+                    Text(verbatim: value).font(Typeface.caption).foregroundStyle(Tone.muted)
+                        .lineLimit(1).truncationMode(.middle)
                 }
                 Image(systemName: "chevron.right").font(.icon(.small, weight: .bold)).foregroundStyle(Tone.muted)
                     .accessibilityHidden(true)
             }
-            .padding(.vertical, Spacing.small)
-            .frame(maxWidth: .infinity, minHeight: Sizing.marker, alignment: .leading)
+            .padding(.vertical, Spacing.cozy)
+            .frame(maxWidth: .infinity, minHeight: Sizing.hit, alignment: .leading)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -171,16 +147,7 @@ struct Wrap: Layout {
     }
 }
 
-#Preview("Markers: awake and asleep") {
-    HStack(spacing: Spacing.small) {
-        PhoneMarker(setting: .brain, value: "OpenRouter", lit: true, asleepNote: "") {}
-        PhoneMarker(setting: .brain, value: "Asleep", lit: false, asleepNote: "Dot is asleep. Give it a Brain.") {}
-        PhoneMarker(setting: .tools, value: "2/3", lit: true, asleepNote: "") {}
-    }
-    .padding().background(Tone.surface).impControls(tint: Tone.accent)
-}
-
-#Preview("Plain list") {
+#Preview("Settings rows") {
     VStack(spacing: 0) {
         ForEach([ImpSetting.brain, .personality, .look, .tools]) { setting in
             PhoneListRow(setting: setting, value: setting == .brain ? "Asleep" : nil, lit: setting != .brain, asleepNote: "Dot is asleep. Give it a Brain.") {}

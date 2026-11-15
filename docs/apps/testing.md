@@ -57,6 +57,19 @@ The Den tests are in Swift (`apple/Tests/ImpKitTests/ServerLiveTests.swift`). Th
 Running the iPhone snapshot tests needs the Simulator, so they run on a developer machine. `make ios-snapshots-build`
 only checks that they compile.
 
+The UI tests (`apple/iOS/UITests`, scheme `ImpPhoneUITests`) drive the app on a real iPhone: they hatch Imps, set a
+Brain, change the look and the tools, go through Settings and keep a screenshot of every screen. They run in a sandbox
+of Imps of their own (`-uiTestSandbox`, debug builds only), emptied when each test starts and ends: the phone owner's
+Imps are never shown, changed or deleted. The Brain is any OpenAI-compatible server on your Mac, passed in `IMP_TEST_BRAIN` (without it the
+Brain steps are skipped):
+
+```sh
+TEST_RUNNER_IMP_TEST_BRAIN="http://$(scutil --get LocalHostName).local:8799/v1" \
+  xcodebuild test -project apple/iOS/ImpPhone.xcodeproj -scheme ImpPhoneUITests -destination 'id=<UDID>' \
+  DEVELOPMENT_TEAM=<Team ID> -allowProvisioningUpdates -resultBundlePath build/ui.xcresult
+xcrun xcresulttool export attachments --path build/ui.xcresult --output-path build/ui
+```
+
 ## Where the tests live
 
 - `apple/Tests/ImpKitTests`: the logic in `ImpKit` (agent loop, tools, MCP, kits, link).
@@ -64,5 +77,6 @@ only checks that they compile.
 - `apple/Tests/ImpTests`: the Mac app's own paths that need its models and views.
 - `apple/Tests/ImpSnapshotTests`: reference images of the main screens and their key states.
 - `apple/iOS/SnapshotTests`: reference images of the iPhone's screens.
+- `apple/iOS/UITests`: the iPhone's settings, end to end on a device.
 - `spec/fixtures`: the JSON vectors every client reads (protocol messages, tool filtering, retry policy, workspace paths).
 - `engine/` and `server/`: Rust tests, run by `make rust`.

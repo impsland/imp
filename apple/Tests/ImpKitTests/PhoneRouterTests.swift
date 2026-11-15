@@ -128,14 +128,13 @@ struct PhoneRouterTests {
         #expect(PhoneRoute.imp(a).id == PhoneRoute.imp(b).id)
         #expect(PhoneRoute.imp(a).id != PhoneRoute.edit(a, brain: false).id)
         #expect(PhoneRoute.edit(a, brain: false).id != PhoneRoute.edit(b, brain: false).id)
-        #expect(PhoneRoute.settings(devices: true).id != PhoneRoute.hatch.id)
+        #expect(PhoneRoute.settings(devices: true).id != PhoneRoute.firstRun(a).id)
     }
 
     @Test("Only an Imp's sheet and the settings rest at half height")
     func halfHeight() {
         #expect(PhoneRoute.imp(a).restsAtHalf)
         #expect(PhoneRoute.settings(devices: false).restsAtHalf)
-        #expect(!PhoneRoute.hatch.restsAtHalf)
         #expect(!PhoneRoute.edit(a, brain: false).restsAtHalf)
         #expect(!PhoneRoute.firstRun(a).restsAtHalf)
     }
@@ -145,7 +144,6 @@ struct PhoneRouterTests {
         #expect(PhoneRoute.imp(a).imp == a)
         #expect(PhoneRoute.edit(a, brain: true).imp == a)
         #expect(PhoneRoute.firstRun(a).imp == a)
-        #expect(PhoneRoute.hatch.imp == nil)
         #expect(PhoneRoute.settings(devices: true).imp == nil)
     }
 }

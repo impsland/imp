@@ -13,8 +13,8 @@ packages:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "2.12.0"
-    CURRENT_PROJECT_VERSION: "20"
+    MARKETING_VERSION: "2.13.0"
+    CURRENT_PROJECT_VERSION: "21"
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
     # Xcode runs on Apple silicon only, so the Simulator is arm64 too, like the core built for it.
@@ -98,6 +98,21 @@ targets:
         TEST_HOST: $(BUILT_PRODUCTS_DIR)/Imp.app/Imp
         BUNDLE_LOADER: $(TEST_HOST)
         SWIFT_EMIT_LOC_STRINGS: NO
+  # Drives the app on a real iPhone (taps, screenshots). Run with the ImpPhoneUITests scheme against a
+  # device, see docs/apps/testing.md. Debug builds open sheets from launch arguments (ImpPhoneApp.swift).
+  ImpPhoneUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: ImpPhone
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.imp.ImpPhoneUITests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: ImpPhone
+        SWIFT_EMIT_LOC_STRINGS: NO
 schemes:
   ImpPhone:
     build:
@@ -108,3 +123,12 @@ schemes:
     test:
       targets:
         - ImpPhoneSnapshotTests
+  ImpPhoneUITests:
+    build:
+      targets:
+        ImpPhone: all
+        ImpPhoneUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - ImpPhoneUITests

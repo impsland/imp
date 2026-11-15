@@ -2,8 +2,8 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The first run on the iPhone: waking an Imp that has no Brain. The same steps and words as on the Mac,
-/// in this app's controls. A local preset is a server on another computer: the user edits its address.
+/// The first run on the iPhone: waking an Imp that has no Brain, on one screen (`PhoneBrainForm`). The same
+/// words as on the Mac, in this app's controls. A local preset is a server on another computer: the user edits its address.
 /// Close leaves the Imp asleep.
 struct FirstRunPhone: View {
     let pocket: PocketRuntime
@@ -22,7 +22,8 @@ struct FirstRunPhone: View {
         let imp = pocket.imp(id)
         let services = FirstRunServices.live(persona: pocket.personality(of: id), probeSeconds: Double(Behavior.localProbeTimeoutSeconds),
                                              checkSeconds: Double(Behavior.brainCheckTimeoutSeconds))
-        _flow = State(initialValue: FirstRunModel(impName: imp?.name ?? "", onThisComputer: false, services: services) { [weak pocket] brain in
+        _flow = State(initialValue: FirstRunModel(impName: imp?.name ?? "", onThisComputer: false, services: services,
+                                                  preselectsModel: false) { [weak pocket] brain in
             try pocket?.adoptFirstRunBrain(brain, for: id)
         })
     }
@@ -32,7 +33,7 @@ struct FirstRunPhone: View {
     }
 }
 
-/// The sheet: the bar, the Imp waking up, the step and the one button in the thumb zone. It has nothing behind it
+/// The sheet: the bar, the Imp waking up, the form and the one button in the thumb zone. It has nothing behind it
 /// but a `FirstRunModel`, so each step can be previewed.
 struct FirstRunPhoneSheet: View {
     @Bindable var flow: FirstRunModel
@@ -44,17 +45,19 @@ struct FirstRunPhoneSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            SheetBar(back: flow.path.canGoBack ? { flow.back() } : nil, close: close) { FirstRunPhoneSteps(flow: flow) }
-                .sheetBarInsets()
+            SheetBar(close: close) {
+                Text("brain.title").font(Typeface.cardTitle).foregroundStyle(Tone.text).accessibilityAddTraits(.isHeader)
+            }
+            .sheetBarInsets()
             // The hero is sized by the page without the keyboard, so the keyboard coming up only lifts Continue.
             FormPage { page in
                 VStack(spacing: Spacing.large) {
                     hero(height: page.height)
-                    FirstRunPhoneFlow(flow: flow)
+                    PhoneBrainForm(flow: flow)
                 }
                 .padding(.horizontal, Spacing.page).padding(.top, Spacing.medium).padding(.bottom, Spacing.medium)
             } footer: {
-                FirstRunPhoneButton(flow: flow)
+                PhoneBrainButton(flow: flow)
                     .padding(.horizontal, Spacing.page).padding(.bottom, Spacing.medium).padding(.top, Spacing.small)
             }
         }
@@ -115,4 +118,4 @@ private let previewImp = LinkImp(id: UUID(), name: "Dot", hue: ImpProfile.defaul
 
 #Preview("Service") { page(previewFlow()) }
 #Preview("A server on the network") { page(previewFlow { if let local = ServicePreset.local { $0.choose(local) } }) }
-#Preview("Empty key") { page(previewFlow { $0.continueFromService() }) }
+#Preview("Empty key") { page(previewFlow { $0.wakeUp() }) }

@@ -86,7 +86,7 @@ final class StageEngine {
     private(set) var round: GameRound?
     var reduceMotion = false
     private let haptics = GameHaptics()
-    private let ticks = UISelectionFeedbackGenerator()
+    private let ticks = HapticSelection()
     /// The device whose door the carried Imp is in front of, if it is near enough to an edge.
     private(set) var litDoor: UUID?
     /// The round of Echo being played (or just finished, until its card is dismissed).

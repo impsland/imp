@@ -68,6 +68,7 @@ Views are written by hand with each platform's own tools. Only tokens and string
 | `common.cancel` | Cancel |
 | `common.check` | Check |
 | `common.choose` | Choose… |
+| `common.clear` | Clear |
 | `common.close` | Close |
 | `common.continue` | Continue |
 | `common.done` | Done |

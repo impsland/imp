@@ -2,58 +2,52 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// Hatches an Imp on this iPhone, or changes one. One sheet: the bar on top, the live Imp under it (it shrinks
-/// when a panel is open but never goes away) and then the hub of settings or the open panel. Back in a panel
-/// returns to the hub, Close dismisses. The one button (Hatch or Save) is at the bottom of the hub. Keys are typed
-/// once and go to the Keychain. With accessibility text sizes or VoiceOver the hub is a plain list.
+/// An Imp hatched on this iPhone, in its settings. One sheet: the bar on top, then the hub (the Imp, its name and
+/// what it thinks with, and one list of its settings) or the open panel. Back in a panel returns to the hub, Close
+/// dismisses. Every change is kept as it is made, as in the iPhone's own Settings: there is no Save, and Close
+/// never loses anything. Keys go to the Keychain. A Brain that works is the end of the errand: the sheet closes by
+/// itself, and an Imp that slept until then comes up in its chat, ready to talk.
 struct PocketEditor: View {
     let pocket: PocketRuntime
-    /// The Imp being changed, or nil for a new one.
-    let editing: UUID?
+    let id: UUID
     var done: () -> Void
+    /// The Imp woke up here (it had no Brain before): its chat comes up.
+    var woke: () -> Void
 
     @State private var draft: PocketDraft
     @State private var open: ImpSetting?
-    /// The guided Brain setup, while the Imp has none or its Brain is being changed.
+    /// The Brain form. Its button checks the Brain and keeps it.
     @State private var brainFlow: FirstRunModel?
-    @State private var voiceOver = UIAccessibility.isVoiceOverRunning
-    @Environment(\.dynamicTypeSize) private var typeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var saveProblem: String?
     @State private var confirmingGoodbye = false
     @State private var removing: UUID?
+    @State private var saving: Task<Void, Never>?
 
-    init(pocket: PocketRuntime, editing: UUID?, opening: ImpSetting? = nil, done: @escaping () -> Void) {
+    init(pocket: PocketRuntime, editing: UUID, opening: ImpSetting? = nil, done: @escaping () -> Void, woke: @escaping () -> Void = {}) {
         self.pocket = pocket
-        self.editing = editing
+        self.id = editing
         self.done = done
-        let draft = PocketDraft(pocket: pocket, editing: editing)
-        _draft = State(initialValue: draft)
+        self.woke = woke
+        _draft = State(initialValue: PocketDraft(pocket: pocket, editing: editing))
         _open = State(initialValue: opening)
     }
 
     private var callName: String { draft.name.trimmed.isEmpty ? String(localized: "imp_settings.this_imp") : draft.name.trimmed }
-
-    /// The plain list: with accessibility text sizes or a screen reader. A phone is always narrow, so only these decide.
-    private var listed: Bool {
-        ImpSettingsLayout.mode(width: CGFloat(Behavior.narrowWindowPoints), largeText: typeSize.isAccessibilitySize, screenReader: voiceOver) == .list
-    }
 
     /// No Brain: the Imp sleeps, unless it is being woken right now. Calm, not a fault.
     private var asleep: Bool { !draft.hasBrain && brainFlow?.path.imp != .stirring }
 
     var body: some View {
         VStack(spacing: 0) {
-            SheetBar(back: open == nil ? nil : { leave() }, close: done) {
-                Text(open.map { String(localized: $0.title) } ?? draft.name.trimmed)
-                    .font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1)
-                    .accessibilityAddTraits(.isHeader)
-            } leading: {
-                // Goodbye is an action on the whole Imp, not a setting: an icon in the corner Back leaves free.
-                if editing != nil {
-                    HoverIconButton(systemName: "hand.wave.fill", help: "imp_settings.goodbye", tint: Tone.muted) { confirmingGoodbye = true }
-                        .accessibilityLabel(words("imp_settings.goodbye.a11y", callName))
+            // The hub's title is the Imp's name under its picture. A panel's is in the bar.
+            SheetBar(back: open == nil ? nil : { leave() }, close: close) {
+                if let open {
+                    Text(open.title).font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1)
+                        .accessibilityAddTraits(.isHeader)
                 }
+            } leading: {
+                EmptyView()
             }
             .sheetBarInsets()
             if let open { panel(open) } else { hub }
@@ -64,7 +58,8 @@ struct PocketEditor: View {
         .presentationBackground(Tone.surface)
         .confirmationDialog(words("goodbye.title", callName), isPresented: $confirmingGoodbye, titleVisibility: .visible) {
             Button("goodbye.confirm", role: .destructive) {
-                if let editing { pocket.delete(editing) }
+                saving?.cancel()
+                pocket.delete(id)
                 done()
             }
             Button(words("goodbye.cancel", callName), role: .cancel) {}
@@ -85,102 +80,83 @@ struct PocketEditor: View {
         } message: {
             Text(saveProblem ?? "")
         }
-        .onReceive(NotificationCenter.default.publisher(for: UIAccessibility.voiceOverStatusDidChangeNotification)) { _ in
-            voiceOver = UIAccessibility.isVoiceOverRunning
+        .onAppear {
+            wokeHere = !draft.hasBrain
+            if open == .brain { startFlow() }
         }
-        .onAppear { if open == .brain, !draft.hasBrain, brainFlow == nil { startFlow(open: false) } }
-        // The guided setup is over once the Imp is awake: the panel then shows the Brain it ended with.
+        // Kept as it changes, a moment after the last change, so a name being typed is not saved letter by letter.
+        .onChange(of: draft.fingerprint) { save(after: .milliseconds(350)) }
+        // A Brain that works is kept by the form itself, and the errand is over: why stay?
         .onChange(of: brainFlow?.path.step) { _, step in
-            if step == .done { brainFlow = nil }
+            if step == .done { brainWorked() }
         }
+        .onDisappear { save() }
     }
 
     // MARK: Hub
 
-    /// The one button (Hatch or Save) stands under the hub, above the keyboard while the name is typed.
     private var hub: some View {
-        FormPage { page in
-            if listed { listHub } else { markerHub(page) }
-        } footer: {
-            Button(draft.isNew ? "phone.editor.hatch" : "phone.editor.save", action: save)
-                .buttonStyle(WideButtonStyle())
-                .disabled(!draft.canSave)
-                .padding(.horizontal, Spacing.page).padding(.vertical, Spacing.medium)
-        }
-    }
-
-    /// The Imp with its four markers on an even arrangement, then its name. Centred in the room there is
-    /// without the keyboard, so the keyboard coming up only scrolls it.
-    private func markerHub(_ page: CGSize) -> some View {
-        let imp = ImpSettingsGeometry.phoneImp(width: page.width)
-        let stage = ImpSettingsGeometry.phoneStageHeight(imp: imp)
-        return VStack(spacing: Spacing.large) {
-            ZStack {
-                preview.frame(width: imp, height: imp)
-                ForEach(PocketDraft.settings) { setting in
-                    if let slot = ImpSettingsGeometry.phoneSlot(setting) {
-                        PhoneMarker(setting: setting, value: value(setting), lit: lit(setting),
-                                    asleepNote: words("imp_settings.brain_marker.asleep", callName)) { pick(setting) }
-                            .offset(ImpSettingsGeometry.phoneOffset(slot, imp: imp))
+        ScrollView {
+            VStack(spacing: Spacing.large) {
+                hero
+                VStack(spacing: 0) {
+                    ForEach(PocketDraft.settings) { setting in
+                        PhoneListRow(setting: setting, value: value(setting), lit: lit(setting),
+                                     asleepNote: words("imp_settings.brain_marker.asleep", callName)) { pick(setting) }
+                            .accessibilityIdentifier("imp.\(setting.rawValue)")
                     }
                 }
-            }
-            .frame(width: page.width, height: stage)
-            nameField.padding(.horizontal, Spacing.page)
-        }
-        .frame(maxWidth: .infinity, minHeight: page.height)
-    }
-
-    private var listHub: some View {
-        VStack(spacing: Spacing.medium) {
-            preview.frame(width: ImpSettingsGeometry.listImp, height: ImpSettingsGeometry.listImp)
-                .accessibilityHidden(true)
-            nameField
-            VStack(spacing: 0) {
-                ForEach(ImpSetting.listOrder.filter(PocketDraft.settings.contains)) { setting in
-                    PhoneListRow(setting: setting, value: value(setting), lit: lit(setting),
-                                 asleepNote: words("imp_settings.brain_marker.asleep", callName)) { pick(setting) }
+                .padding(.horizontal, Spacing.medium)
+                .background(RoundedRectangle(cornerRadius: Radius.large, style: .continuous).fill(Tone.card))
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel(words("imp_settings.list.label", callName))
+                Button(role: .destructive) { confirmingGoodbye = true } label: {
+                    Label { Text(words("imp_settings.goodbye.a11y", callName)) } icon: { Image(systemName: "hand.wave.fill") }
+                        .frame(maxWidth: .infinity)
                 }
+                .buttonStyle(.destructive)
+                .accessibilityIdentifier("imp.goodbye")
             }
-            .accessibilityElement(children: .contain)
-            .accessibilityLabel(words("imp_settings.list.label", callName))
+            .padding(.horizontal, Spacing.page).padding(.top, Spacing.small).padding(.bottom, Spacing.wide)
         }
-        .padding(.horizontal, Spacing.page)
+        .scrollBounceBehavior(.basedOnSize)
     }
 
-    /// The Imp's name as the title-like field under it.
-    private var nameField: some View {
-        VStack(spacing: Spacing.tight) {
-            TextField("personality.name", text: $draft.name)
-                .impField()
-                .font(Typeface.cardTitle)
-                .multilineTextAlignment(.center)
-                .textInputAutocapitalization(.words)
-                .submitLabel(.done)
-            if let problem = draft.nameProblem { IssueBadge(text: problem) }
-            else if draft.name.trimmed.isEmpty { IssueBadge(text: String(localized: "personality.name_empty")) }
+    /// The Imp as it is, never zooming: its size is a setting of the room, not of this picture. Under it its name
+    /// and, while it has no Brain, one quiet line that says it sleeps. What it thinks with is the Brain row.
+    private var hero: some View {
+        VStack(spacing: Spacing.small) {
+            preview.frame(width: Self.heroSide, height: Self.heroSide)
+            Text(verbatim: callName).font(Typeface.title).foregroundStyle(Tone.text).lineLimit(1)
+                .accessibilityAddTraits(.isHeader)
+            if !draft.hasBrain {
+                StatusText(verbatim: words("imp_settings.brain_marker.asleep", callName), symbol: "moon.zzz.fill", color: Tone.muted)
+                    .multilineTextAlignment(.center)
+            }
         }
+        .frame(maxWidth: .infinity)
+        .padding(.top, Spacing.small)
     }
+
+    private static let heroSide = Sizing.marker * 2.6
 
     private func lit(_ setting: ImpSetting) -> Bool { setting != .brain || draft.hasBrain }
 
-    /// A count or a state word, never a sentence.
+    /// A short state, never a sentence: the model, a count, the size.
     private func value(_ setting: ImpSetting) -> String? {
         switch setting {
-        case .brain: return draft.hasBrain ? nil : String(localized: "imp_settings.value.asleep")
+        case .brain: return draft.hasBrain ? draft.brain.model : String(localized: "imp_settings.value.asleep")
         case .tools:
-            let real = draft.servers.filter { !$0.isBlank }
-            if real.isEmpty { return nil }
-            return words("imp_settings.value.tools", real.filter { draft.serverProblem($0) == nil }.count, real.count)
-        case .personality, .look, .triggers, .moves: return nil
+            let count = draft.toolCount
+            return words("imp_settings.value.tools", count.on, count.all)
+        case .look: return "\(Int((draft.scale * 100).rounded()))%"
+        case .personality, .triggers, .moves: return nil
         }
     }
 
-    /// The Imp, asleep with Zzz. It leans the way the phone tips, as on the first screen.
+    /// The Imp, asleep with Zzz. It leans the way the phone tips, as in the room.
     private var preview: some View {
         TiltImp(imp: LinkImp(id: draft.id, name: draft.name, hue: draft.hue, scale: 1, traits: draft.traits), interactive: false)
-            .scaleEffect(ImpSettingsGeometry.previewScale(draft.scale))
-            .impAnimation(ImpDesign.Motion.smooth, value: draft.scale)
             .overlay(alignment: .topTrailing) {
                 if asleep {
                     Text(verbatim: "Zzz").font(Typeface.cardTitle).foregroundStyle(Tone.muted).accessibilityHidden(true)
@@ -193,53 +169,53 @@ struct PocketEditor: View {
     // MARK: Panels
 
     private func panel(_ setting: ImpSetting) -> some View {
-        VStack(spacing: 0) {
-            preview.frame(width: ImpSettingsGeometry.listImp * 0.7, height: ImpSettingsGeometry.listImp * 0.7)
-                .padding(.vertical, Spacing.small)
-            ScrollViewReader { proxy in
-                // The Brain's Continue stands under the panel, above the keyboard while an address or a key is typed.
-                FormPage { _ in
-                    Group {
-                        switch setting {
-                        case .brain: PocketBrainPanel(draft: draft, flow: brainFlow, change: { startFlow() })
-                        case .personality: PocketPersonalityPanel(draft: draft)
-                        case .look: PocketLookPanel(draft: draft)
-                        case .tools: PocketToolsPanel(draft: draft, proxy: proxy, removing: $removing)
-                        case .triggers, .moves: EmptyView()
-                        }
+        ScrollViewReader { proxy in
+            // The Brain's button stands under the form, above the keyboard while an address or a key is typed.
+            FormPage { _ in
+                Group {
+                    switch setting {
+                    case .brain: if let brainFlow { PhoneBrainForm(flow: brainFlow) }
+                    case .personality: PocketPersonalityPanel(draft: draft)
+                    case .look: PocketLookPanel(draft: draft)
+                    case .tools: PocketToolsPanel(draft: draft, proxy: proxy, removing: $removing)
+                    case .triggers, .moves: EmptyView()
                     }
-                    .padding(.horizontal, Spacing.page).padding(.bottom, Spacing.large)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                } footer: {
-                    if setting == .brain, let brainFlow {
-                        FirstRunPhoneButton(flow: brainFlow)
-                            .padding(.horizontal, Spacing.page).padding(.vertical, Spacing.medium)
-                    }
+                }
+                .padding(.horizontal, Spacing.page).padding(.top, Spacing.small).padding(.bottom, Spacing.large)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            } footer: {
+                if setting == .brain, let brainFlow {
+                    PhoneBrainButton(flow: brainFlow, hasBrain: draft.hasBrain)
+                        .padding(.horizontal, Spacing.page).padding(.vertical, Spacing.medium)
                 }
             }
         }
     }
 
-    /// A marker opens its panel in place of the hub. An Imp without a Brain meets the guided setup there.
     private func pick(_ setting: ImpSetting) {
-        if setting == .brain, !draft.hasBrain, brainFlow == nil { startFlow(open: false) }
+        if setting == .brain { startFlow() }
         withImpAnimation(ImpDesign.Motion.scene, reduceMotion: reduceMotion) { open = setting }
     }
 
     private func leave() {
+        save()
         withImpAnimation(ImpDesign.Motion.scene, reduceMotion: reduceMotion) { open = nil }
     }
 
-    /// The first-run steps for this Imp, with what it has now filled in.
-    private func startFlow(open: Bool = true) {
+    private func close() {
+        save()
+        done()
+    }
+
+    /// The Brain form for this Imp, with what it has now filled in. A Brain that works is kept at once.
+    private func startFlow() {
         let services = FirstRunServices.live(persona: draft.personality.trimmed.isEmpty ? Persona.pocket(named: draft.name.trimmed) : draft.personality,
                                              probeSeconds: Double(Behavior.localProbeTimeoutSeconds),
                                              checkSeconds: Double(Behavior.brainCheckTimeoutSeconds))
-        let flow = FirstRunModel(impName: callName, onThisComputer: false, services: services) { [draft, pocket, editing] brain in
-            // An Imp that already lives here keeps its Brain the moment it wakes, whatever happens to the
-            // rest of the sheet. A new one keeps it when it is hatched.
-            if let editing { try pocket.adoptFirstRunBrain(brain, for: editing) }
-            draft.adopt(brain)
+        let flow = FirstRunModel(impName: callName, onThisComputer: false, services: services,
+                                 preselectsModel: false) { [draft, pocket, id] brain in
+            try pocket.adoptFirstRunBrain(brain, for: id)
+            draft.adopt(brain, stored: true)
         }
         if draft.hasBrain {
             if let service = draft.service ?? (ServicePreset.isOwnComputer(draft.brain.baseURL) ? ServicePreset.local : ServicePreset.remote) {
@@ -252,10 +228,30 @@ struct PocketEditor: View {
         brainFlow = flow
     }
 
-    private func save() {
+    /// The Brain was checked and kept: the sheet goes. An Imp that slept until now opens in its chat.
+    private func brainWorked() {
+        save()
+        if wokeHere { woke() } else { done() }
+    }
+
+    /// Whether the Imp had no Brain when the sheet opened, so this sheet is where it woke up.
+    @State private var wokeHere = false
+
+    /// Keeps what changed, now or after `delay` (a newer change starts the wait again).
+    private func save(after delay: Duration? = nil) {
+        saving?.cancel()
+        guard let delay else { return keep() }
+        saving = Task { @MainActor in
+            try? await Task.sleep(for: delay)
+            guard !Task.isCancelled else { return }
+            keep()
+        }
+    }
+
+    private func keep() {
+        guard pocket.contains(id), draft.canSave else { return }
         do {
             try draft.save(into: pocket)
-            done()
         } catch {
             saveProblem = error.localizedDescription
         }

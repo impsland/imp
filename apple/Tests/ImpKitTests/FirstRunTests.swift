@@ -330,6 +330,39 @@ private actor Seen {
         #expect(adopted.brains.map(\.model) == ["m2"])
     }
 
+    @Test func listingTheModelsOnOnePageWorksFromAnyStepAndChecksNothing() async {
+        let adopted = Adopted()
+        let model = make(models: ["m1", "m2"], adopted: adopted)
+        model.key = "fake-key"
+        model.listModels()
+        await settle(model) { model.path.step == .model }
+        #expect(model.models == ["m1", "m2"] && model.model == "m1" && adopted.brains.isEmpty)
+        // An edited address is listed again, from the model step.
+        model.address = "https://llm.example.com/v1"
+        model.listModels()
+        #expect(model.path.step == .loadingModels)
+        await settle(model) { model.path.step == .model }
+        #expect(model.path.step == .model && adopted.brains.isEmpty)
+    }
+
+    @Test func withoutPreselectingTheModelStaysBlankUntilItWakes() async {
+        let adopted = Adopted()
+        let services = FirstRunServices(find: { [] }, models: { _, _ in ["text-embedding-3", "chat-1", "chat-2"] }, check: { _ in })
+        let model = FirstRunModel(impName: "Imp", onThisComputer: false, services: services, awakeBeat: .zero,
+                                  preselectsModel: false) { adopted.brains.append($0) }
+        model.key = "fake-key"
+        model.listModels()
+        await settle(model) { model.path.step == .model }
+        #expect(model.model.isEmpty && model.models.count == 3, "listing leaves the choice to the person")
+        model.model = "my-own-model"
+        model.listModels()
+        #expect(model.model == "my-own-model", "a typed name that is not listed is kept")
+        model.model = ""
+        model.wakeUp()
+        await settle(model) { model.path.step == .done }
+        #expect(adopted.brains.map(\.model) == ["chat-1"], "blank wakes with the first model that chats")
+    }
+
     @Test func wakingUpWithoutAKeyOnlyNamesTheProblem() {
         let model = make()
         model.wakeUp()

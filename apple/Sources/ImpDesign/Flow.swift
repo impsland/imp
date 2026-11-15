@@ -27,7 +27,7 @@ public struct SheetBar<Center: View, Leading: View>: View {
     public var body: some View {
         HStack(spacing: Spacing.small) {
             HStack(spacing: 0) {
-                if let back { HoverIconButton(systemName: "chevron.left", help: "common.back", tint: Tone.text, action: back) }
+                if let back { HoverIconButton(systemName: "chevron.left", help: "common.back", tint: Tone.text, action: back).accessibilityIdentifier("sheet.back") }
                 else { leading }
                 Spacer(minLength: 0)
             }
@@ -38,6 +38,7 @@ public struct SheetBar<Center: View, Leading: View>: View {
                 if let close {
                     HoverIconButton(systemName: "xmark", help: "common.close", tint: Tone.text, action: close)
                         .keyboardShortcut(.cancelAction)
+                        .accessibilityIdentifier("sheet.close")
                 }
             }
             .frame(maxWidth: .infinity)

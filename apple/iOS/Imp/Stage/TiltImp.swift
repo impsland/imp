@@ -11,6 +11,8 @@ struct TiltImp: View {
     /// Whether a finger can touch it (it looks, and a tap makes it hop). Off when the Imp sits
     /// inside a scrolling form and only follows the phone.
     var interactive = true
+    /// Dozes when left alone (an Imp with no Brain yet). A finger, a tilt or a shake still stirs it.
+    var asleep = false
     @State private var tilt = TiltWatcher()
     @State private var pacer = StagePacer()
     /// How fast the Imp is drawn right now (the pacer says, `FramePolicy` turns it into frames).
@@ -39,7 +41,7 @@ struct TiltImp: View {
                 let mood = mood(at: date, state: state)
                 let _ = frame(mood: mood, state: state, date: date)
                 ImpFigure(imp: imp, mood: mood, performance: performance,
-                          lean: state.lean, gaze: gaze, attentive: touch != nil, date: date)
+                          lean: state.lean, gaze: gaze, attentive: touch != nil, date: date, breathes: mood != .sleepy)
                     .offset(x: state.slide)
             }
             .contentShape(Rectangle())
@@ -65,6 +67,8 @@ struct TiltImp: View {
             onScreen = false
             tilt.stop()
         }
+        // A new colour or character springs in over a moment (`Puppet`): it needs frames to get there.
+        .onChange(of: imp) { pacer.wake() }
         .onChange(of: conditions) {
             updateMotion()
             if conditions.running { pacer.wake() }
@@ -84,7 +88,7 @@ struct TiltImp: View {
 
     /// Tells the pacer what this frame found, so the next frames come as fast as they need to and no faster.
     private func frame(mood: Mood, state: TiltWatcher.State, date: Date) {
-        pacer.note(mood: mood, of: imp.id, awake: true, at: date)
+        pacer.note(mood: mood, of: imp.id, awake: mood != .sleepy, at: date)
         let acting = performance.map { date.timeIntervalSince($0.started) < $0.duration } ?? false
         pacer.settle(moving: !tilt.isSettled || acting || touch != nil || (flash.map { $0.until > date } ?? false),
                      empty: false, at: date)
@@ -93,14 +97,17 @@ struct TiltImp: View {
     private func mood(at date: Date, state: TiltWatcher.State) -> Mood {
         if let flash, flash.until > date { return flash.mood }
         if touch != nil { return .curious }
-        return abs(state.lean) > 9 ? .excited : .idle
+        if abs(state.lean) > 9 { return .excited }
+        // Asleep, it dozes again once a hop is over.
+        let hopping = performance.map { date.timeIntervalSince($0.started) < $0.duration } ?? false
+        return asleep && !hopping ? .sleepy : .idle
     }
 
     private func hop() {
         performance = Performance(key: "hop-\(UUID())", steps: [AnticStep(duration: Motion.hopLength, mood: .happy, hop: true),
                                                               AnticStep(duration: 0.8, mood: .content)])
         pacer.wake()
-        UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+        Haptics.tap(.soft)
     }
 }
 

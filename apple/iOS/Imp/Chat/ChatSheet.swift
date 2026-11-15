@@ -97,7 +97,7 @@ struct ImpSheet: View {
             Button("phone.chat.new") {
                 source.newChat(impID)
                 openedAt = Date()
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                Haptics.notify(.success)
             }
         } message: {
             if let imp { Text(source.newChatNote(imp)) }
@@ -260,7 +260,7 @@ struct ImpSheet: View {
             .onChange(of: turns.last?.id) { _, _ in
                 withImpAnimation(ImpDesign.Motion.spring, reduceMotion: reduceMotion) { proxy.scrollTo("end", anchor: .bottom) }
                 if turns.last?.date ?? .distantPast > openedAt {
-                    UINotificationFeedbackGenerator().notificationOccurred(turns.last?.failed == true ? .error : .success)
+                    Haptics.notify(turns.last?.failed == true ? .error : .success)
                 }
             }
             .onChange(of: work?.partial) { proxy.scrollTo("end", anchor: .bottom) }
@@ -291,11 +291,11 @@ struct ImpSheet: View {
                 .accessibilityHidden(true)
             // An Imp that can't answer is explained once, in the card above the field: not here as well.
             if availability == .ready {
-                HStack(spacing: 0) {
-                    Text(intro.title)
-                        .font(Typeface.cardTitle).foregroundStyle(Tone.text)
-                    InfoTip(verbatim: intro.text)
-                }
+                // Centred on the title alone: the tip hangs beside it.
+                Text(intro.title)
+                    .font(Typeface.cardTitle).foregroundStyle(Tone.text)
+                    .multilineTextAlignment(.center)
+                    .hangingTip(InfoTip(verbatim: intro.text))
             }
         }
         .frame(maxWidth: .infinity)
@@ -453,7 +453,7 @@ private struct Composer: View {
             HStack(alignment: .bottom, spacing: Spacing.cozy) {
                 field
                 if working && trimmed.isEmpty {
-                    Button { source.stop(impID); UIImpactFeedbackGenerator(style: .medium).impactOccurred() } label: { glyph("stop.fill") }
+                    Button { source.stop(impID); Haptics.tap(.medium) } label: { glyph("stop.fill") }
                         .buttonStyle(.plain)
                         .accessibilityLabel("Stop")
                         .transition(.scale.combined(with: .opacity))
@@ -567,7 +567,7 @@ private struct Composer: View {
         guard !trimmed.isEmpty else { return }
         source.ask(impID, trimmed)
         text = ""
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        Haptics.tap(.light)
     }
 }
 

@@ -29,6 +29,7 @@ struct StatusPill: View {
     private var corner: some View {
         HStack(spacing: Spacing.tight) {
             HoverIconButton(systemName: "plus", help: "menu.canvas.new_imp", tint: Tone.muted, action: hatch)
+                .accessibilityIdentifier("stage.new")
             if hiddenCount > 0 {
                 HoverIconButton(systemName: "eye", help: "home.corner.show_hidden", tint: Tone.muted, action: showHidden)
                     .overlay(alignment: .topTrailing) {
@@ -44,6 +45,7 @@ struct StatusPill: View {
                     .transition(.opacity)
             }
             HoverIconButton(systemName: "gearshape", help: "menu.canvas.settings", tint: Tone.muted, action: settings)
+                .accessibilityIdentifier("stage.settings")
         }
         .impAnimation(ImpDesign.Motion.fade, value: hiddenCount > 0)
     }

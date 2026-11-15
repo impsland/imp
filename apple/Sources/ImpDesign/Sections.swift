@@ -78,6 +78,7 @@ public struct SectionRail<ID: Hashable & Sendable>: View {
             .accessibilityLabel(item.title)
             .accessibilityValue(item.needsAttention ? Text("common.needs_attention") : Text(verbatim: ""))
             .accessibilityAddTraits(item.id == selection ? .isSelected : [])
+            .accessibilityIdentifier("section.\(String(describing: item.id))")
         }
     }
 }

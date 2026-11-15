@@ -105,6 +105,19 @@ struct FitWidth: Layout {
 /// small popover whose arrow points at the icon itself. It is the only
 /// help mechanism: there is no tooltip on hover, so nothing system-styled shows over the popover.
 /// Screens never show the explanation as a paragraph of their own.
+extension View {
+    /// Hangs a help tip just past this view's trailing edge, outside its layout: a centred title stays centred on
+    /// its own words, with the tip beside it, instead of the pair being centred and the title pushed aside.
+    /// For centred headings only. In a leading row, put the tip in the row (`SectionHeader`, `Row`).
+    public func hangingTip(_ tip: InfoTip?) -> some View {
+        // The tip is a finger-sized target (`Sizing.hit` wide) with its glyph in the middle: moved one target to the
+        // trailing side, it starts where the words end, as it would in a row, but takes no room from them.
+        overlay(alignment: .trailing) {
+            if let tip { tip.fixedSize().offset(x: Sizing.hit) }
+        }
+    }
+}
+
 public struct InfoTip: View {
     let text: Text
     var symbol: String

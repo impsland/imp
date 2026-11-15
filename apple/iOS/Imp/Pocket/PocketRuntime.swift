@@ -106,6 +106,35 @@ final class PocketRuntime {
         store.add(imp)
     }
 
+    /// The Brain a new Imp starts with, as on the Mac: the one the newest Imp that thinks here uses.
+    var defaultBrainImp: PocketImp? { store.imps.last { hasBrain($0.id) } }
+
+    /// The size a new Imp starts with.
+    static let newSize = 1.0
+    /// The colours an Imp can wear.
+    static let hues: [Double] = [0, 0.08, 0.15, 0.33, 0.5, 0.6, 0.75, 0.9]
+
+    /// Hatches a new Imp at once, ready to talk: a fresh name and colour, and the default Brain with its key
+    /// (copied in the Keychain, so each Imp keeps its own). With no Brain anywhere yet it sleeps until it gets one.
+    /// Returns its id and whether it has a Brain.
+    @discardableResult
+    func hatchReady() -> (id: UUID, awake: Bool) {
+        let names = store.imps.map(\.name)
+        var imp = PocketImp(name: ImpProfile.randomName(avoiding: names),
+                            hue: Self.hues.filter { hue in !store.imps.contains { abs($0.hue - hue) < 0.02 } }.randomElement()
+                                ?? Self.hues.randomElement() ?? ImpProfile.defaultHue,
+                            scale: Self.newSize)
+        if let source = defaultBrainImp {
+            let key = store.secrets.get(.apiKey, imp: source.id)
+            // A key that can't be copied leaves the new Imp asleep rather than thinking without it.
+            if key.map({ (try? store.secrets.set($0, .apiKey, imp: imp.id)) != nil }) ?? true {
+                imp.brain = source.brain
+            }
+        }
+        hatch(imp)
+        return (imp.id, hasBrain(imp.id))
+    }
+
     func edit(_ id: UUID, _ change: (inout PocketImp) -> Void) {
         store.update(id, change)
         if let look = store.imp(id)?.look { tell(id, .look(imp: look)) }

@@ -9,8 +9,6 @@ public enum ImpPane: String, CaseIterable, Sendable {
 public enum PhoneRoute: Hashable, Identifiable, Sendable {
     /// Everything about one Imp: its chat and its talks (`PhoneRouter.pane` says which is shown).
     case imp(UUID)
-    /// Making a new Imp.
-    case hatch
     /// An Imp's settings. `brain` opens them on the Brain.
     case edit(UUID, brain: Bool)
     /// Waking an Imp that has no Brain, step by step.
@@ -34,7 +32,7 @@ public enum PhoneRoute: Hashable, Identifiable, Sendable {
     public var imp: UUID? {
         switch self {
         case .imp(let id), .edit(let id, _), .firstRun(let id): id
-        case .hatch, .settings: nil
+        case .settings: nil
         }
     }
 
@@ -42,7 +40,7 @@ public enum PhoneRoute: Hashable, Identifiable, Sendable {
     public var restsAtHalf: Bool {
         switch self {
         case .imp, .settings: true
-        case .hatch, .edit, .firstRun: false
+        case .edit, .firstRun: false
         }
     }
 }
