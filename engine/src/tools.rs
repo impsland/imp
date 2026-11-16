@@ -213,6 +213,12 @@ impl ToolSelection {
     }
 }
 
+/// Whether calls to the tool `name` that come together in one reply may run at the same time. Only
+/// `imp_message` does: each call waits on a different Imp. Others (the shell, files) may depend on the order.
+pub fn runs_concurrently(tool: &str) -> bool {
+    tool == BuiltInTool::ImpMessage.name()
+}
+
 /// What a call to a switched-off tool is told.
 pub fn refusal(name: &str) -> String {
     format!(
@@ -224,6 +230,14 @@ pub fn refusal(name: &str) -> String {
 mod tests {
     use super::*;
     use serde_json::Value;
+
+    #[test]
+    fn only_messages_to_imps_run_together() {
+        assert!(runs_concurrently("imp_message"));
+        for name in ["imp_speak", "imp_open_file", "shell", "computer_act", ""] {
+            assert!(!runs_concurrently(name), "{name}");
+        }
+    }
 
     #[test]
     fn every_built_in_tool_has_one_name_and_a_known_group() {

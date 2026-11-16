@@ -9,14 +9,19 @@
 
 use crate::config::{Config, ImpConfig};
 use crate::session::system_prompt;
+use futures_util::StreamExt;
+use futures_util::stream::FuturesUnordered;
 use imp_engine::link::LinkImp;
+use imp_engine::troupe::{self as words, TalkWaiting, TargetProfile};
 use imp_engine::{
     BoxFuture, ChatMessage, HostTool, OpenAiClient, RequestLimits, TalkStore, ToolEntry, ToolHost,
     ToolSelection, ToolSpec, Toolbox, run_agent,
 };
 use serde_json::Value;
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::task::{Poll, Waker};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use uuid::Uuid;
 
 /// An Imp on another device that can be messaged.
@@ -49,17 +54,129 @@ enum Target {
 
 pub const TOOL_NAME: &str = "imp_message";
 
+type KeyFn = dyn Fn(&str, &ImpConfig) -> Option<String>;
+
 /// Looks up the API key of an Imp. Keys are never kept by the tool.
 pub type KeyLookup = Box<dyn Fn(&str, &ImpConfig) -> Option<String>>;
+
+/// An answer to a message sent without waiting, on its way back to the Imp that sent it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Arrival {
+    /// The Imp that was asked, by the name the tool took.
+    pub from: String,
+    /// The task label the receipt gave.
+    pub task: String,
+    /// When the message went out, as the event says it.
+    pub sent: String,
+    /// The answer, or a plain sentence why there is none.
+    pub text: String,
+    pub failed: bool,
+    /// The depth of the message that was sent. An Imp woken by this answer is one deeper.
+    pub depth: u32,
+}
+
+impl Arrival {
+    /// The user-role message that brings the answer back to the Imp. It is added at the end of the chat: no
+    /// earlier message is changed.
+    pub fn event(&self) -> String {
+        words::answer_event(&self.from, &self.task, &self.sent, &self.text, self.failed)
+    }
+
+    /// How deep the Imp is that this answer wakes.
+    pub fn wakes_at(&self) -> u32 {
+        self.depth + 1
+    }
+}
+
+/// The messages one Imp has sent without waiting, and their answers as they come. The chat polls
+/// [`Later::next`] to drive them (nothing here is `Send`, so they are not spawned) and gives each answer to
+/// the Imp as a new message.
+pub struct Later {
+    pending: Rc<Cell<usize>>,
+    depth: Cell<u32>,
+    timeout: Cell<Duration>,
+    tasks: RefCell<FuturesUnordered<BoxFuture<'static, Arrival>>>,
+    waker: RefCell<Option<Waker>>,
+}
+
+impl Default for Later {
+    fn default() -> Self {
+        Self {
+            pending: Rc::default(),
+            depth: Cell::new(0),
+            timeout: Cell::new(Duration::from_secs(words::ASYNC_TIMEOUT_SECS)),
+            tasks: RefCell::default(),
+            waker: RefCell::default(),
+        }
+    }
+}
+
+impl Later {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Replaces how long a local Imp has to answer, for tests.
+    pub fn set_timeout(&self, timeout: Duration) {
+        self.timeout.set(timeout);
+    }
+
+    /// The answers still on their way.
+    pub fn pending(&self) -> usize {
+        self.pending.get()
+    }
+
+    /// The depth messages sent now carry: 0 in a turn the person started, one more than the answer's in a
+    /// turn an answer started.
+    pub fn depth(&self) -> u32 {
+        self.depth.get()
+    }
+
+    pub fn set_depth(&self, depth: u32) {
+        self.depth.set(depth);
+    }
+
+    fn add(&self, task: BoxFuture<'static, Arrival>) {
+        self.pending.set(self.pending.get() + 1);
+        self.tasks.borrow_mut().push(task);
+        if let Some(waker) = self.waker.borrow_mut().take() {
+            waker.wake();
+        }
+    }
+
+    /// Runs the messages on their way until the next answer is in, and returns it. It waits forever when
+    /// none is on its way.
+    pub async fn next(&self) -> Arrival {
+        std::future::poll_fn(|cx| {
+            *self.waker.borrow_mut() = Some(cx.waker().clone());
+            match self.tasks.borrow_mut().poll_next_unpin(cx) {
+                Poll::Ready(Some(arrival)) => Poll::Ready(arrival),
+                _ => Poll::Pending,
+            }
+        })
+        .await
+    }
+}
 
 pub struct ImpMessageHost {
     sender: String,
     config: Config,
     store: TalkStore,
-    keys: KeyLookup,
+    keys: Rc<KeyFn>,
     now: fn() -> u64,
     look: Option<LinkImp>,
     remote: Option<Rc<dyn Remote>>,
+    waiting: TalkWaiting,
+    later: Option<Rc<Later>>,
+}
+
+/// What an Imp here says about itself to the others: its description, and its MCP servers as what it can do.
+pub fn profile_of(name: &str, imp: &ImpConfig) -> TargetProfile {
+    TargetProfile {
+        name: name.to_string(),
+        about: imp.description.as_deref().and_then(words::about_line),
+        abilities: words::ability_tags(&imp.mcp_servers.keys().cloned().collect::<Vec<_>>()),
+    }
 }
 
 pub fn clock() -> u64 {
@@ -74,11 +191,22 @@ impl ImpMessageHost {
             sender: sender.to_string(),
             config,
             store,
-            keys,
+            keys: Rc::from(keys),
             now: clock,
             look: None,
             remote: None,
+            waiting: TalkWaiting::Wait,
+            later: None,
         }
+    }
+
+    /// Lets the Imp send a message without waiting, if `waiting` allows it. The answers go to `later`, which
+    /// the chat polls. Without it every message waits, whatever `waiting` says.
+    #[must_use]
+    pub fn with_later(mut self, waiting: TalkWaiting, later: Option<Rc<Later>>) -> Self {
+        self.waiting = waiting;
+        self.later = later;
+        self
     }
 
     /// Lets the Imp (which looks like `look` to other devices) message the Imps of `remote` too.
@@ -105,31 +233,91 @@ impl ImpMessageHost {
             .collect()
     }
 
-    /// Everyone this Imp can message, by the name the tool uses: the other Imps here by name, and the
-    /// Imps on other devices by name, or as `name@device` when the name is taken.
+    /// Everyone this Imp can message, by the name the tool uses (`imp_engine::troupe::tool_names`, the
+    /// apps' rule): the other Imps here by name, and the Imps on other devices by name, or as `name@device`
+    /// when the name is taken (by this Imp too).
     fn targets(&self) -> Vec<(String, Target)> {
-        let mut all: Vec<(String, Target)> = self
-            .others()
-            .into_iter()
-            .map(|n| (n.to_string(), Target::Here(n.to_string())))
-            .collect();
+        let here: Vec<String> = self.others().into_iter().map(str::to_string).collect();
         let own_ids: Vec<Uuid> = self.config.imps.values().filter_map(|i| i.id).collect();
-        let away = self.remote.as_ref().map(|r| r.imps()).unwrap_or_default();
-        for imp in away {
-            if own_ids.contains(&imp.look.id) {
-                continue;
+        let away: Vec<RemoteImp> = self
+            .remote
+            .as_ref()
+            .map(|r| r.imps())
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|imp| !own_ids.contains(&imp.look.id))
+            .collect();
+        let places: Vec<(String, String)> = away
+            .iter()
+            .map(|imp| (imp.look.name.clone(), imp.place.clone()))
+            .collect();
+        let (here_names, away_names) = imp_engine::troupe::tool_names(&self.sender, &here, &places);
+        here_names
+            .into_iter()
+            .zip(here)
+            .map(|(label, name)| (label, Target::Here(name)))
+            .chain(
+                away_names
+                    .into_iter()
+                    .zip(away)
+                    .map(|(label, imp)| (label, Target::Away(imp))),
+            )
+            .collect()
+    }
+
+    /// The Imp the tool's `to` names, with the name it has in the tool.
+    fn resolve(&self, to: &str) -> Result<(String, Target), String> {
+        let mut targets = self.targets();
+        let Some(at) = targets
+            .iter()
+            .position(|(label, _)| label.to_lowercase() == to.trim().to_lowercase())
+        else {
+            let names: Vec<&str> = targets.iter().map(|(l, _)| l.as_str()).collect();
+            return Err(format!(
+                "There is no Imp called {to} to message. The others are: {}.",
+                names.join(", ")
+            ));
+        };
+        let (label, target) = targets.swap_remove(at);
+        Ok((label, target))
+    }
+
+    /// The message on its way, owning all it needs, so it can go on after the tool has returned.
+    fn delivery(
+        &self,
+        to: &str,
+        target: Target,
+        text: &str,
+        asked: Option<&str>,
+    ) -> BoxFuture<'static, Result<String, String>> {
+        let (text, asked) = (text.to_string(), asked.map(str::to_string));
+        match target {
+            Target::Here(name) => {
+                let (config, store, keys) =
+                    (self.config.clone(), self.store.clone(), self.keys.clone());
+                let (sender, now) = (self.sender.clone(), (self.now)());
+                Box::pin(async move {
+                    answer_here(
+                        &config,
+                        &store,
+                        &*keys,
+                        &sender,
+                        &name,
+                        &text,
+                        asked.as_deref(),
+                        now,
+                    )
+                    .await
+                })
             }
-            let plain = imp.look.name.clone();
-            let label = if all.iter().any(|(l, _)| *l == plain) {
-                format!("{plain}@{}", imp.place)
-            } else {
-                plain
-            };
-            if !all.iter().any(|(l, _)| *l == label) {
-                all.push((label, Target::Away(imp)));
+            Target::Away(imp) => {
+                let (Some(remote), Some(look)) = (self.remote.clone(), self.look.clone()) else {
+                    let why = format!("{to} can't be reached.");
+                    return Box::pin(async move { Err(why) });
+                };
+                Box::pin(async move { remote.ask(look, imp, &text).await })
             }
         }
-        all
     }
 
     /// Sends `text` to the Imp `to` and returns its answer. `asked` is the `conversation` argument.
@@ -139,51 +327,97 @@ impl ImpMessageHost {
         text: &str,
         asked: Option<&str>,
     ) -> Result<String, String> {
-        let mut targets = self.targets();
-        let Some(at) = targets.iter().position(|(label, _)| label == to) else {
-            let names: Vec<&str> = targets.iter().map(|(l, _)| l.as_str()).collect();
-            return Err(format!(
-                "There is no Imp called {to} to message. The others are: {}.",
-                names.join(", ")
-            ));
+        let (_, target) = self.resolve(to)?;
+        self.delivery(to, target, text, asked).await
+    }
+
+    /// Sends `text` to the Imp `to` and returns at once with a receipt. The answer comes later, from
+    /// [`Later::next`], to be added to the chat as a new message. Fails with a sentence for the model when
+    /// the Imp has too many answers on their way, or this is too deep a chain of Imps waking each other.
+    pub fn deliver_later(
+        &self,
+        to: &str,
+        text: &str,
+        asked: Option<&str>,
+    ) -> Result<String, String> {
+        let Some(later) = &self.later else {
+            return Err("Messages here wait for the answer.".into());
         };
-        match targets.swap_remove(at).1 {
-            Target::Here(name) => {
-                answer_here(
-                    &self.config,
-                    &self.store,
-                    &self.keys,
-                    &self.sender,
-                    &name,
-                    text,
-                    asked,
-                    (self.now)(),
-                )
-                .await
+        let depth = later.depth();
+        words::may_leave(later.pending(), depth)?;
+        let (label, target) = self.resolve(to)?;
+        let task = words::task_label(Uuid::new_v4());
+        let sent = words::clock_label((self.now)());
+        // Another device answers within the link's own time. An Imp here has the time the chat allows.
+        let limit = match &target {
+            Target::Here(_) => Some(later.timeout.get()),
+            Target::Away(_) => None,
+        };
+        let delivery = self.delivery(to, target, text, asked);
+        let (from, receipt) = (label.clone(), words::receipt(&label, &task));
+        let pending = later.pending.clone();
+        later.add(Box::pin(async move {
+            let answer = match limit {
+                Some(limit) => match tokio::time::timeout(limit, delivery).await {
+                    Ok(answer) => answer,
+                    Err(_) => Err(format!(
+                        "{from} didn't answer within {} minutes.",
+                        limit.as_secs().div_ceil(60)
+                    )),
+                },
+                None => delivery.await,
+            };
+            pending.set(pending.get().saturating_sub(1));
+            let (text, failed) = match answer {
+                Ok(text) => (text, false),
+                Err(why) => (why, true),
+            };
+            Arrival {
+                from,
+                task,
+                sent,
+                text,
+                failed,
+                depth,
             }
-            Target::Away(imp) => {
-                let (Some(remote), Some(look)) = (&self.remote, &self.look) else {
-                    return Err(format!("{to} can't be reached."));
-                };
-                remote.ask(look.clone(), imp, text).await
-            }
-        }
+        }));
+        Ok(receipt)
     }
 
     /// The tool as the core words it, with the Imps here and those on other devices apart.
     fn spec(&self) -> ToolSpec {
-        let (mut targets, mut elsewhere) = (Vec::new(), Vec::new());
+        let (mut targets, mut elsewhere, mut profiles) = (Vec::new(), Vec::new(), Vec::new());
         for (label, target) in self.targets() {
+            // What each says about itself: the Imps here from the settings, the others from their look.
+            let profile = match &target {
+                Target::Here(name) => self
+                    .config
+                    .imps
+                    .get(name)
+                    .map(|imp| profile_of(&label, imp)),
+                Target::Away(imp) => Some(TargetProfile {
+                    name: label.clone(),
+                    about: imp.look.about.clone(),
+                    abilities: imp.look.abilities.clone(),
+                }),
+            };
+            profiles.extend(profile);
             match target {
                 Target::Here(_) => targets.push(label),
                 Target::Away(_) => elsewhere.push(label),
             }
         }
-        imp_engine::troupe::MessageTool {
+        words::MessageTool {
             targets,
             elsewhere,
             conversation: true,
-            ..imp_engine::troupe::MessageTool::default()
+            profiles,
+            waiting: if self.later.is_some() {
+                self.waiting
+            } else {
+                TalkWaiting::Wait
+            },
+            ..words::MessageTool::default()
         }
         .spec()
     }
@@ -210,11 +444,14 @@ impl ToolHost for ImpMessageHost {
             let (Some(to), Some(text)) = (field("to"), field("text")) else {
                 return Some("Error: imp_message needs `to` and `text`.".into());
             };
-            Some(
-                self.deliver(to, text, field("conversation"))
-                    .await
-                    .unwrap_or_else(|e| format!("Error: {e}")),
-            )
+            let asked_to_wait = args.get("wait").and_then(Value::as_bool);
+            let wait = self.later.is_none() || words::wants_wait(self.waiting, asked_to_wait);
+            let sent = if wait {
+                self.deliver(to, text, field("conversation")).await
+            } else {
+                self.deliver_later(to, text, field("conversation"))
+            };
+            Some(sent.unwrap_or_else(|e| format!("Error: {e}")))
         })
     }
 }
@@ -226,7 +463,7 @@ impl ToolHost for ImpMessageHost {
 pub async fn answer_here(
     config: &Config,
     store: &TalkStore,
-    keys: &KeyLookup,
+    keys: &dyn Fn(&str, &ImpConfig) -> Option<String>,
     sender: &str,
     to: &str,
     text: &str,

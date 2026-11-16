@@ -452,6 +452,8 @@ private struct RequestCard: View {
         VStack(alignment: .leading, spacing: Spacing.snug) {
             if turn.via == .imp, let sender = turn.sender {
                 ExchangeChip(role: .asked, peer: sender)
+            } else if turn.via == .answer, let sender = turn.sender {
+                ExchangeChip(role: .answered, peer: sender)
             } else if let header {
                 Label(header.title, systemImage: header.icon)
                     .font(Typeface.small.weight(.semibold))
@@ -471,7 +473,7 @@ private struct RequestCard: View {
         }
         .padding(.horizontal, Spacing.cozy).padding(.vertical, Spacing.small)
         .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous)
-            .fill((turn.via == .imp ? turn.sender.map { Color.imp($0.hue) } ?? tint : tint).opacity(Opacity.tintFill)))
+            .fill(([.imp, .answer].contains(turn.via) ? turn.sender.map { Color.imp($0.hue) } ?? tint : tint).opacity(Opacity.tintFill)))
     }
 
     /// Where it came from, when it wasn't simply typed.
@@ -479,7 +481,7 @@ private struct RequestCard: View {
         switch turn.via {
         case .shortcut?: (String(localized: "Trigger · \(turn.request)"), "bolt.fill")
         case .spoken?: (String(localized: "Said"), "mic.fill")
-        case .typed?, .recap?, .imp?, nil: nil
+        case .typed?, .recap?, .imp?, .answer?, nil: nil
         }
     }
 

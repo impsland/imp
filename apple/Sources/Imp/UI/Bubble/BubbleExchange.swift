@@ -25,12 +25,13 @@ struct ExchangeChip: View {
     }
 
     /// The name in bold, the rest plain.
-    static func words(_ role: Bubble.Exchange.Role, _ name: String) -> Text {
-        let name = Text(name).fontWeight(.semibold)
+    static func words(_ role: Bubble.Exchange.Role, _ peerName: String) -> Text {
+        let name = Text(peerName).fontWeight(.semibold)
         switch role {
         case .asked: return Text("\(name) asks")
         case .reply: return Text("Reply to \(name)")
         case .asking: return Text("Asking \(name)…")
+        case .answered: return Text(String(format: String(localized: "exchange.answered"), peerName))
         }
     }
 }

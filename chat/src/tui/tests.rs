@@ -717,7 +717,7 @@ fn a_command_and_a_space_show_how_to_use_it() {
     let hint = app.menu().hint.unwrap_or_default();
     assert_eq!(
         hint,
-        "/send DEVICE [IMP] — Send this Imp (or another) to a linked device"
+        "/send DEVICE [IMP]: Send this Imp (or another) to a linked device"
     );
     assert!(
         app.menu().entries.is_empty(),
@@ -957,6 +957,8 @@ fn a_visitor_shows_its_homes_chat_and_what_it_is_writing() {
             hue: 0.3,
             scale: 1.0,
             traits: LinkTraits::default(),
+            about: None,
+            abilities: Vec::new(),
         },
         home: uuid::Uuid::from_u128(4),
         home_name: "iPhone".into(),
@@ -1464,4 +1466,56 @@ fn a_long_think_shows_that_the_imp_is_working() {
         super::view::spinner_frame(100),
         super::view::spinner_frame(0)
     );
+}
+
+#[test]
+fn an_answer_that_came_later_wakes_the_imp_with_a_new_message_and_shows_as_an_event() {
+    let mut app = App::new("pip", "m", "sys");
+    type_text(&mut app, "ask bo");
+    let Action::Send(_) = app.on_key(key(KeyCode::Enter)) else {
+        panic!("sent");
+    };
+    // The turn ends with the receipt as the tool's result.
+    for e in [
+        AgentEvent::StepStart,
+        AgentEvent::Stream(StreamEvent::ToolCallDelta {
+            index: 0,
+            id: Some("c1".into()),
+            name: Some("imp_message".into()),
+            arguments: "{\"to\":\"bo\",\"text\":\"capital?\"}".into(),
+        }),
+        AgentEvent::StepEnd,
+        AgentEvent::ToolResult {
+            call_id: "c1".into(),
+            name: "imp_message".into(),
+            content: "Sent to bo (task t-1a2b3c).".into(),
+        },
+    ] {
+        app.on_agent(&e);
+    }
+    // Busy: an answer can't start a turn.
+    assert!(!app.wake("[Event, not from the user] bo answered"));
+    answer(&mut app, "Asked. I will tell you when bo answers.");
+    let before: Vec<_> = app.chat.messages().to_vec();
+    let event = imp_engine::troupe::answer_event("bo", "t-1a2b3c", "13:46 UTC", "Canberra", false);
+    assert!(app.wake(&event));
+    assert!(app.is_waiting());
+    // It is a new message at the end. Nothing before it changed.
+    let after = app.chat.messages();
+    assert_eq!(after.len(), before.len() + 1);
+    assert_eq!(after[..before.len()], before[..]);
+    assert_eq!(after.last().unwrap().content, event);
+    let tool = after
+        .iter()
+        .find(|m| m.role == imp_engine::Role::Tool)
+        .unwrap();
+    assert_eq!(tool.content, "Sent to bo (task t-1a2b3c).");
+    // A second answer waits until this turn is over.
+    assert!(!app.wake(&event));
+    let shown = screen(&app, 80, 20).join("\n");
+    assert!(
+        shown.contains("⇠ [Event, not from the user] bo answered your message"),
+        "{shown}"
+    );
+    assert!(!shown.contains("(Act on it now"), "{shown}");
 }

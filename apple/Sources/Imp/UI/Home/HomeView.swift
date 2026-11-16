@@ -29,7 +29,7 @@ struct HomeView: View {
                         WindowDragStrip().frame(height: CGFloat(Behavior.dragStripPoints))
                         ImpCanvas(model: model, router: router)
                     }
-                    .overlay(alignment: .topTrailing) { CornerButtons(model: model, router: router) }
+                    .overlay { CornerButtons(model: model, router: router, corners: .platform) }
                     .overlay(alignment: .bottom) { UndoOverlay(model: model, router: router) }
                     .transition(.opacity)
                 case .imp(let id):
@@ -113,36 +113,89 @@ struct HomeView: View {
     }
 }
 
-/// The canvas's actions in the top trailing corner, each one click: New Imp, Show hidden (only while some
-/// Imps are hidden, with how many) and Settings. The same actions are in the right-click menu and the menu bar.
-private struct CornerButtons: View {
+/// The canvas's actions, each one click, spread over the three corners the window's own buttons leave
+/// free (`HomeCorners`): Settings in the other top corner, New Imp below it (with Show hidden beside it,
+/// only while some Imps are hidden, with how many) and Devices below the window's buttons (a dot while a
+/// linked device is connected). The same actions are in the right-click menu and the menu bar.
+struct CornerButtons: View {
     let model: AppModel
     let router: HomeRouter
+    let corners: HomeCorners
+    @Environment(\.layoutDirection) private var direction
 
     private var actions: HomeActions { HomeActions(model: model, router: router) }
 
     var body: some View {
-        HStack(spacing: Spacing.tight) {
-            HoverIconButton(systemName: "plus", help: "menu.canvas.new_imp", tint: Tone.muted) { actions.newImp() }
-            if model.hiddenCount > 0 {
-                HoverIconButton(systemName: "eye", help: "home.corner.show_hidden", tint: Tone.muted) { actions.showHidden() }
-                    .overlay(alignment: .topTrailing) {
-                        Text(model.hiddenCount, format: .number)
-                            .font(Typeface.small)
-                            .foregroundStyle(OnTint(Color.imp))
-                            .padding(.horizontal, Spacing.snug)
-                            .background(Capsule().fill(TintFill(Color.imp)))
-                            .allowsHitTesting(false)
-                            .accessibilityHidden(true)
-                    }
-                    .accessibilityValue(Text(model.hiddenCount, format: .number))
+        ZStack {
+            corner(corners.settings) { settings }
+            corner(corners.newImp) {
+                // New Imp keeps the very corner. Show hidden comes and goes on its inner side.
+                if corners.newImp.isLeft {
+                    newImp
+                    showHidden
+                } else {
+                    showHidden
+                    newImp
+                }
             }
-            HoverIconButton(systemName: "gearshape", help: "menu.canvas.settings", tint: Tone.muted) { actions.openSettings() }
+            corner(corners.devices) { devices }
         }
-        // Centred in a bar's height, so the gear is as far from the right as from the top.
-        .padding(.trailing, CornerInset.bar(height: Metrics.barHeight))
-        .frame(height: Metrics.barHeight)
         .impAnimation(ImpDesign.Motion.fade, value: model.hiddenCount > 0)
+    }
+
+    /// A row of buttons in `place`, centred in a bar's height, so the outer button is as far from the side as
+    /// from the top (or the bottom).
+    private func corner(_ place: HomeCorners.Corner, @ViewBuilder _ buttons: () -> some View) -> some View {
+        // Rows are laid out left to right in the corner, whatever the language's direction.
+        HStack(spacing: Spacing.tight) { buttons() }
+            .environment(\.layoutDirection, .leftToRight)
+            .padding(place.outerEdge(direction), CornerInset.bar(height: Metrics.barHeight))
+            .frame(height: Metrics.barHeight)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: place.alignment(direction))
+    }
+
+    private var settings: some View {
+        HoverIconButton(systemName: "gearshape", help: "menu.canvas.settings", tint: Tone.muted) { actions.openSettings() }
+    }
+
+    private var newImp: some View {
+        HoverIconButton(systemName: "plus", help: "menu.canvas.new_imp", tint: Tone.muted) { actions.newImp() }
+    }
+
+    @ViewBuilder private var showHidden: some View {
+        if model.hiddenCount > 0 {
+            HoverIconButton(systemName: "eye", help: "home.corner.show_hidden", tint: Tone.muted) { actions.showHidden() }
+                .overlay(alignment: .topTrailing) {
+                    Text(model.hiddenCount, format: .number)
+                        .font(Typeface.small)
+                        .foregroundStyle(OnTint(Color.imp))
+                        .padding(.horizontal, Spacing.snug)
+                        .background(Capsule().fill(TintFill(Color.imp)))
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                }
+                .accessibilityValue(Text(model.hiddenCount, format: .number))
+        }
+    }
+
+    private var devices: some View {
+        let connected = model.link.connectedPeers.count
+        return HoverIconButton(systemName: "laptopcomputer.and.iphone", help: "home.corner.devices", tint: Tone.muted) {
+            router.open(group: .devices)
+        }
+        .overlay(alignment: .topTrailing) {
+            if connected > 0 {
+                Circle().fill(Tone.good)
+                    .frame(width: Spacing.small, height: Spacing.small)
+                    .padding(CornerInset.slack)
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+            }
+        }
+        .accessibilityValue(connected > 0
+            ? Text(verbatim: String.localizedStringWithFormat(NSLocalizedString("home.corner.devices.connected", comment: ""), connected))
+            : Text(verbatim: ""))
+        .impAnimation(ImpDesign.Motion.fade, value: connected > 0)
     }
 }
 

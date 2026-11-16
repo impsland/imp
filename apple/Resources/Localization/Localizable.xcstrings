@@ -318,7 +318,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ se esconde hasta que lo muestres de nuevo desde la barra de menús (Mostrar) o lo pulses en la ventana de los Imps. Mientras tanto, sus disparadores descansan."
+            "value" : "%@ se oculta hasta que lo muestres de nuevo desde la barra de menús (Mostrar) o lo pulses en la ventana de los Imps. Mientras tanto, sus disparadores descansan."
           }
         },
         "zh-Hans" : {
@@ -334,7 +334,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ se esconde hasta que lo muestres de nuevo desde la barra de menús (Mostrar). Mientras tanto, sigue de visita."
+            "value" : "%@ se oculta hasta que lo muestres de nuevo desde la barra de menús (Mostrar). Mientras tanto, sigue de visita."
           }
         },
         "zh-Hans" : {
@@ -480,7 +480,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ está vinculado."
+            "value" : "%@ está enlazado."
           }
         },
         "zh-Hans" : {
@@ -576,7 +576,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ ya no es el dispositivo que vinculaste, así que Imp lo rechazó."
+            "value" : "%@ ya no es el dispositivo que enlazaste, así que Imp lo rechazó."
           }
         },
         "zh-Hans" : {
@@ -732,7 +732,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ no quiso vincularse: su código caducó o fue reemplazado. Muestra uno nuevo."
+            "value" : "%@ no quiso enlazarse: su código caducó o fue reemplazado. Muestra uno nuevo."
           }
         },
         "zh-Hans" : {
@@ -1568,7 +1568,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld 已关"
+            "value" : "已关闭 %lld 个"
           }
         }
       }
@@ -4264,7 +4264,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择从 Imp 保存的聊天 (.json)"
+            "value" : "选择从 Imp 保存的聊天（.json）"
           }
         }
       }
@@ -4659,7 +4659,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Control del ordenador"
+            "value" : "Control del equipo"
           }
         },
         "zh-Hans" : {
@@ -5051,7 +5051,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法存储文件"
+            "value" : "无法保存文件"
           }
         }
       }
@@ -5095,7 +5095,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enfadadas"
+            "value" : "Enfadado"
           }
         },
         "zh-Hans" : {
@@ -6028,7 +6028,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Todo lo que tú y %@ dijisteis, con las herramientas que usó."
+            "value" : "Todo lo que dijiste tú y %@, con las herramientas que usó."
           }
         },
         "zh-Hans" : {
@@ -6496,7 +6496,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Olvidar dispositivos?"
+            "value" : "¿Olvidar todos los dispositivos?"
           }
         },
         "zh-Hans" : {
@@ -6551,7 +6551,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "友好, 桌面"
+            "value" : "友好，桌面"
           }
         }
       }
@@ -6887,7 +6887,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esconder a %@"
+            "value" : "Ocultar a %@"
           }
         },
         "zh-Hans" : {
@@ -7364,7 +7364,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp no puede esperar a tus otros dispositivos en esta red."
+            "value" : "Imp no puede recibir conexiones de tus otros dispositivos en esta red."
           }
         },
         "zh-Hans" : {
@@ -7380,7 +7380,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp no puede leer su lista de dispositivos vinculados."
+            "value" : "Imp no puede leer su lista de dispositivos enlazados."
           }
         },
         "zh-Hans" : {
@@ -7412,7 +7412,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp no puede guardar su lista de dispositivos vinculados."
+            "value" : "Imp no puede guardar su lista de dispositivos enlazados."
           }
         },
         "zh-Hans" : {
@@ -7460,7 +7460,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp ha llegado a su límite de dispositivos vinculados."
+            "value" : "Imp ha llegado a su límite de dispositivos enlazados."
           }
         },
         "zh-Hans" : {
@@ -7606,7 +7606,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los Imps que tiene vuelven a tu escritorio. Para vincular de nuevo, uno de los dos muestra un código nuevo."
+            "value" : "Los Imps que tiene vuelven a tu escritorio. Para enlazar de nuevo, uno de los dos muestra un código nuevo."
           }
         },
         "zh-Hans" : {
@@ -7622,7 +7622,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los Imps de otros dispositivos vuelven a tu escritorio. Los códigos antiguos dejan de funcionar; vincula de nuevo con uno nuevo."
+            "value" : "Los Imps de otros dispositivos vuelven a tu escritorio. Los códigos antiguos dejan de funcionar; enlaza de nuevo con uno nuevo."
           }
         },
         "zh-Hans" : {
@@ -8026,7 +8026,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Almacenamiento de claves"
+            "value" : "Almacén de claves"
           }
         },
         "zh-Hans" : {
@@ -8204,7 +8204,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo"
+            "value" : "Desatendido"
           }
         },
         "zh-Hans" : {
@@ -8220,7 +8220,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo durante %@"
+            "value" : "Desatendido durante %@"
           }
         },
         "zh-Hans" : {
@@ -8316,7 +8316,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permite que un Imp haga clic y escriba en otras apps. Solo para controlar el ordenador."
+            "value" : "Permite que un Imp haga clic y escriba en otras apps. Solo para controlar el equipo."
           }
         },
         "zh-Hans" : {
@@ -8332,7 +8332,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permite que un Imp vea la app que maneja. Solo para el control del ordenador."
+            "value" : "Permite que un Imp vea la app que maneja. Solo para el control del equipo."
           }
         },
         "zh-Hans" : {
@@ -8414,7 +8414,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vincular"
+            "value" : "Enlazar"
           }
         },
         "zh-Hans" : {
@@ -8431,7 +8431,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vincular equipo"
+            "value" : "Enlazar equipo"
           }
         },
         "zh-Hans" : {
@@ -8448,7 +8448,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vincular equipos"
+            "value" : "Enlazar equipos"
           }
         },
         "zh-Hans" : {
@@ -8465,7 +8465,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vincular con equipo"
+            "value" : "Enlazar con equipo"
           }
         },
         "zh-Hans" : {
@@ -8481,7 +8481,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vinculado con %@."
+            "value" : "Enlazado con %@."
           }
         },
         "zh-Hans" : {
@@ -8513,7 +8513,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La vinculación no está activa en este Mac."
+            "value" : "La función de enlace no está activa en este Mac."
           }
         },
         "zh-Hans" : {
@@ -8529,7 +8529,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vinculando…"
+            "value" : "Enlazando…"
           }
         },
         "zh-Hans" : {
@@ -8675,7 +8675,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mirada"
+            "value" : "Aspecto"
           }
         },
         "zh-Hans" : {
@@ -9308,7 +9308,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "移到“每个 Imp”"
+            "value" : "移到“所有 Imp”"
           }
         }
       }
@@ -9488,7 +9488,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "名称: 值，每行一个。"
+            "value" : "名称：值，每行一个。"
           }
         }
       }
@@ -10286,7 +10286,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desactivado"
+            "value" : "Apagado"
           }
         },
         "zh-Hans" : {
@@ -10607,7 +10607,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre primero Imp en un dispositivo vinculado (en la misma red que este Mac o con el mismo servidor)."
+            "value" : "Abre primero Imp en un dispositivo enlazado (en la misma red que este Mac o con el mismo servidor)."
           }
         },
         "zh-Hans" : {
@@ -10704,13 +10704,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir la casa de los Imps (⌘,)"
+            "value" : "Abrir el hogar de los Imps (⌘,)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Imp 的家（⌘,）"
+            "value" : "打开 Imp 的家园（⌘,）"
           }
         }
       }
@@ -10784,7 +10784,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Manejando el ordenador"
+            "value" : "Manejando el equipo"
           }
         },
         "zh-Hans" : {
@@ -12905,13 +12905,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Misma conversación durante"
+            "value" : "Mismo chat durante"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "同一对话持续"
+            "value" : "同一聊天时长"
           }
         }
       }
@@ -12943,7 +12943,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将 %@ 存储为套件文件。Imp 可在这台或另一台 Mac 上通过“导入”读回。绝不存储 API 密钥。"
+            "value" : "将 %@ 保存为套件文件。Imp 可在这台或另一台 Mac 上通过“导入”读回。绝不保存 API 密钥。"
           }
         }
       }
@@ -12959,7 +12959,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "存储为文件…"
+            "value" : "存为文件…"
           }
         }
       }
@@ -12975,7 +12975,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "存储为文件"
+            "value" : "存为文件"
           }
         }
       }
@@ -13007,7 +13007,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已存储"
+            "value" : "已保存"
           }
         }
       }
@@ -13023,7 +13023,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已存储在你的钥匙串中"
+            "value" : "已保存在你的钥匙串中"
           }
         }
       }
@@ -15024,7 +15024,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ese dispositivo no es el que vinculaste antes. Olvídalo primero y vuelve a vincularlo."
+            "value" : "Ese dispositivo no es el que enlazaste antes. Olvídalo primero y vuelve a vincularlo."
           }
         },
         "zh-Hans" : {
@@ -15040,7 +15040,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ese dispositivo no quiso vincularse. Puede que su código haya caducado: muestra uno nuevo."
+            "value" : "Ese dispositivo no quiso enlazarse. Puede que su código haya caducado: muestra uno nuevo."
           }
         },
         "zh-Hans" : {
@@ -15382,7 +15382,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件过大，无法读取（上限为 %lld MB）。请不含对话导出，或一次导出少量 Imp。"
+            "value" : "文件过大，无法读取（上限为 %lld MB）。请导出时不包含对话，或一次导出少量 Imp。"
           }
         }
       }
@@ -16143,7 +16143,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Este Mac no puede vincularse con más dispositivos."
+            "value" : "Este Mac no puede enlazarse con más dispositivos."
           }
         },
         "zh-Hans" : {
@@ -16336,7 +16336,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lanza un Imp al borde de la pantalla para enviarlo a un dispositivo vinculado."
+            "value" : "Lanza un Imp al borde de la pantalla para enviarlo a un dispositivo enlazado."
           }
         },
         "zh-Hans" : {
@@ -16432,7 +16432,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Demasiado largo para enlace"
+            "value" : "Demasiado largo para un enlace"
           }
         },
         "zh-Hans" : {
@@ -16464,7 +16464,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Demasiadas solicitudes (429). Hasta los imps necesitan un respiro."
+            "value" : "Demasiadas solicitudes (429). Hasta los Imps necesitan un respiro."
           }
         },
         "zh-Hans" : {
@@ -17047,7 +17047,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sin movimiento “%@”."
+            "value" : "Movimiento desconocido “%@”."
           }
         },
         "zh-Hans" : {
@@ -17080,7 +17080,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desvincula los equipos y anula los códigos."
+            "value" : "Desenlaza todos los equipos y anula los códigos antiguos."
           }
         },
         "zh-Hans" : {
@@ -17194,7 +17194,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usar el llavero"
+            "value" : "Usar el Llavero"
           }
         },
         "zh-Hans" : {
@@ -17355,7 +17355,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activar herramientas"
+            "value" : "Activando herramientas"
           }
         },
         "zh-Hans" : {
@@ -17666,7 +17666,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lo que tú y %@ dijisteis en este chat. Es solo para leer. Muéstralo como burbujas o como JSON, y copia el JSON."
+            "value" : "Lo que tú y %@ se dijeron en este chat. Es solo para leer. Muéstralo como burbujas o como JSON, y copia el JSON."
           }
         },
         "zh-Hans" : {
@@ -18732,7 +18732,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小鬼在这一拍里跳多高。"
+            "value" : "Imp 在这一拍里跳多高。"
           }
         }
       }
@@ -18876,7 +18876,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在小鬼旁边冒出来的小图案。"
+            "value" : "在 Imp 旁边冒出来的小图案。"
           }
         }
       }
@@ -18900,7 +18900,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小鬼向一侧倾斜多少。"
+            "value" : "Imp 向一侧倾斜多少。"
           }
         }
       }
@@ -19788,7 +19788,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个秘密口令，让小鬼可以使用这项服务。它只保存在这台 Mac 上。"
+            "value" : "一个秘密口令，让 Imp 可以使用这项服务。它只保存在这台 Mac 上。"
           }
         }
       }
@@ -19836,7 +19836,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择由谁来为这个小鬼思考。"
+            "value" : "选择由谁来为这个 Imp 思考。"
           }
         }
       }
@@ -19860,7 +19860,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用所有小鬼共用的大脑，或只为这个小鬼选另一个。"
+            "value" : "使用所有 Imp 共用的大脑，或只为这个 Imp 选另一个。"
           }
         }
       }
@@ -20190,7 +20190,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Normal"
+            "value" : "Por defecto"
           }
         },
         "zh-Hans" : {
@@ -20214,7 +20214,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay cerebros. Añade un modelo en este ordenador o un servicio con tu clave."
+            "value" : "Aún no hay cerebros. Añade un modelo en este equipo o un servicio con tu clave."
           }
         },
         "zh-Hans" : {
@@ -20238,7 +20238,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un modelo en este ordenador"
+            "value" : "Un modelo en este equipo"
           }
         },
         "zh-Hans" : {
@@ -20724,7 +20724,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desactivado"
+            "value" : "Apagado"
           }
         },
         "zh-Hans" : {
@@ -20748,7 +20748,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activado"
+            "value" : "Encendido"
           }
         },
         "zh-Hans" : {
@@ -21018,7 +21018,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大家分享小鬼、动画、触发器和工具的地方。"
+            "value" : "大家分享 Imp、动画、触发器和工具的地方。"
           }
         }
       }
@@ -21204,7 +21204,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ausente"
+            "value" : "No disponible"
           }
         },
         "zh-Hans" : {
@@ -21612,7 +21612,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudo compartir a %1$@. Inténtalo de nuevo en un momento."
+            "value" : "No se pudo compartir con %1$@. Inténtalo de nuevo en un momento."
           }
         },
         "zh-Hans" : {
@@ -21643,6 +21643,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ 无法启动。请检查它的设置。"
+          }
+        }
+      }
+    },
+    "exchange.answered" : {
+      "comment" : "In the chat and the bubble: an Imp answered a message the Imp sent without waiting. %@ is its name.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%%@ answered"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%%@ respondió"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%%@ 回答了"
           }
         }
       }
@@ -22644,7 +22668,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El navegador se guarda esta página. Imp solo conoce su dirección."
+            "value" : "El navegador no comparte esta página. Imp solo conoce su dirección."
           }
         },
         "zh-Hans" : {
@@ -22980,7 +23004,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usa la dirección de tu computadora en esta red."
+            "value" : "Usa la dirección de tu equipo en esta red."
           }
         },
         "zh-Hans" : {
@@ -23843,6 +23867,84 @@
         }
       }
     },
+    "home.corner.devices" : {
+      "comment" : "Help and screen reader name of the corner button that opens the Devices settings.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devices"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Equipos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设备"
+          }
+        }
+      }
+    },
+    "home.corner.devices.connected" : {
+      "comment" : "Screen reader value of the Devices corner button: how many linked devices are connected now. A dot on the button shows when any is.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld connected"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld connected"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld conectado"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld conectados"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "已连接 %1$lld 台"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "home.corner.show_hidden" : {
       "comment" : "Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.",
       "extractionState" : "manual",
@@ -24648,13 +24750,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fuera en escritorio"
+            "value" : "Fuera en el escritorio"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在桌面上玩"
+            "value" : "在桌面上"
           }
         }
       }
@@ -25332,7 +25434,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "同时复制这个小鬼聊过的内容。"
+            "value" : "同时复制这个 Imp 聊过的内容。"
           }
         }
       }
@@ -25356,7 +25458,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "粘贴一个套装、网址或 imp:// 链接，或放入文件。你会先查看。"
+            "value" : "粘贴一个套件、网址或 imp:// 链接，或放入文件。你会先查看。"
           }
         }
       }
@@ -25380,7 +25482,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "套装里这台 Mac 用不了的东西，所以被略过。"
+            "value" : "套件里这台 Mac 用不了的东西，所以被略过。"
           }
         }
       }
@@ -25476,7 +25578,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开设置项"
+            "value" : "打开设置"
           }
         }
       }
@@ -25542,7 +25644,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp no pudo leer sus vínculos guardados y empezó de nuevo. Vuelve a vincular tus dispositivos."
+            "value" : "Imp no pudo leer sus enlaces guardados y empezó de nuevo. Enlaza tus dispositivos otra vez."
           }
         },
         "zh-Hans" : {
@@ -25788,7 +25890,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择这个小鬼的颜色和大小。"
+            "value" : "选择这个 Imp 的颜色和大小。"
           }
         }
       }
@@ -25884,7 +25986,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这个小鬼的颜色。沿着色条拖动来改变。"
+            "value" : "这个 Imp 的颜色。沿着色条拖动来改变。"
           }
         }
       }
@@ -26028,7 +26130,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这个小鬼在屏幕上有多大。"
+            "value" : "这个 Imp 在屏幕上有多大。"
           }
         }
       }
@@ -26340,7 +26442,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新聊天于"
+            "value" : "新聊天上限"
           }
         }
       }
@@ -26670,7 +26772,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cerrar Imp"
+            "value" : "Salir de Imp"
           }
         },
         "zh-Hans" : {
@@ -26796,7 +26898,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "藏起来了"
+            "value" : "已隐藏"
           }
         }
       }
@@ -26886,7 +26988,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dispositivos"
+            "value" : "Equipos"
           }
         },
         "zh-Hans" : {
@@ -27054,7 +27156,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Copiar vínculo"
+            "value" : "Copiar enlace"
           }
         },
         "zh-Hans" : {
@@ -27174,7 +27276,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mudar a %1$@"
+            "value" : "Mover a %1$@"
           }
         },
         "zh-Hans" : {
@@ -27198,7 +27300,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A casa"
+            "value" : "Enviar a casa"
           }
         },
         "zh-Hans" : {
@@ -27252,7 +27354,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小妖设置"
+            "value" : "Imp 设置"
           }
         }
       }
@@ -27324,7 +27426,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "和%1$@说话"
+            "value" : "和 %1$@ 说话"
           }
         }
       }
@@ -27396,7 +27498,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "给%1$@打字"
+            "value" : "给 %1$@ 打字"
           }
         }
       }
@@ -27564,7 +27666,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选一个所有小鬼都有的动作，为这个小鬼做一个专属版本。"
+            "value" : "选一个所有 Imp 都有的动作，为这个 Imp 做一个专属版本。"
           }
         }
       }
@@ -27588,7 +27690,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择你移动鼠标指针时这个小鬼做什么：不动、看着它，或跟着它跑。"
+            "value" : "选择你移动鼠标指针时这个 Imp 做什么：不动、看着它，或跟着它跑。"
           }
         }
       }
@@ -27636,7 +27738,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "只为这个小鬼做的动作。它们会代替共用的动作。"
+            "value" : "只为这个 Imp 做的动作。它们会代替共用的动作。"
           }
         }
       }
@@ -27689,6 +27791,78 @@
         }
       }
     },
+    "personality.about" : {
+      "comment" : "Field label: what the Imp is good at, which other Imps read to know whom to ask.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What it's good at"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En qué destaca"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "擅长什么"
+          }
+        }
+      }
+    },
+    "personality.about_hint" : {
+      "comment" : "Placeholder of the field about what the Imp is good at.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Researching on the web, fixing code…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Investigar en la web, arreglar código…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上网查资料、修代码……"
+          }
+        }
+      }
+    },
+    "personality.help.about" : {
+      "comment" : "Help of the field about what the Imp is good at.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One or two lines. The other Imps read it to know whom to ask for what."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una o dos líneas. Los otros Imps la leen para saber a quién pedirle cada cosa."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一两行字。其他 Imp 会读它，来决定什么事该问谁。"
+          }
+        }
+      }
+    },
     "personality.help.name" : {
       "comment" : "Help of the name field.",
       "extractionState" : "manual",
@@ -27708,7 +27882,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你怎么称呼这个小鬼。叫它的名字，它就会回答。"
+            "value" : "你怎么称呼这个 Imp。叫它的名字，它就会回答。"
           }
         }
       }
@@ -27780,7 +27954,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这个小鬼大声说话时，你的屏幕上会出现什么。"
+            "value" : "这个 Imp 大声说话时，你的屏幕上会出现什么。"
           }
         }
       }
@@ -27894,7 +28068,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Personaje"
+            "value" : "Persona"
           }
         },
         "zh-Hans" : {
@@ -28356,7 +28530,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新的小妖会沿用 %1$@ 的大脑。"
+            "value" : "新的 Imp 会沿用 %1$@ 的大脑。"
           }
         }
       }
@@ -28374,13 +28548,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los Imps que crees en este iPhone aparecen aquí, cada uno con el cerebro con el que piensa."
+            "value" : "Los Imps que hagas nacer en este iPhone aparecen aquí, cada uno con el cerebro con el que piensa."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你在这台 iPhone 上孵化的小妖会显示在这里，并附上各自使用的大脑。"
+            "value" : "你在这台 iPhone 上孵化的 Imp 会显示在这里，并附上各自使用的大脑。"
           }
         }
       }
@@ -28422,7 +28596,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamar"
+            "value" : "Traer"
           }
         },
         "zh-Hans" : {
@@ -28734,7 +28908,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$lld herramientas"
+            "value" : "Herramientas usadas: %1$lld"
           }
         },
         "zh-Hans" : {
@@ -28860,7 +29034,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "拷贝"
+            "value" : "复制"
           }
         }
       }
@@ -28884,7 +29058,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没能保存这个小妖。%1$@"
+            "value" : "没能保存这个 Imp。%1$@"
           }
         }
       }
@@ -28926,7 +29100,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Olvidar todos"
+            "value" : "Olvidar todo"
           }
         },
         "zh-Hans" : {
@@ -28956,7 +29130,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "它的小妖会回家。要再关联，请出示新的二维码。"
+            "value" : "它的 Imp 会回家。要再关联，请出示新的二维码。"
           }
         }
       }
@@ -29052,7 +29226,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "所有小妖都会回家。请用新的二维码重新关联。"
+            "value" : "所有 Imp 都会回家。请用新的二维码重新关联。"
           }
         }
       }
@@ -29070,7 +29244,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Olvidar todos?"
+            "value" : "¿Olvidar todos los dispositivos?"
           }
         },
         "zh-Hans" : {
@@ -29220,7 +29394,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择内容、小妖到来或离开、操作成功或失败时，手中会有轻触反馈。"
+            "value" : "选择内容、Imp 到来或离开、操作成功或失败时，手中会有轻触反馈。"
           }
         }
       }
@@ -29238,7 +29412,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vibración háptica"
+            "value" : "Vibración"
           }
         },
         "zh-Hans" : {
@@ -29310,13 +29484,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dispositivos enlazados con este iPhone. Los Imps pueden viajar entre ustedes."
+            "value" : "Dispositivos enlazados con este iPhone. Los Imps pueden viajar entre tus dispositivos."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "与这台 iPhone 关联的设备。小妖可以在你们之间旅行。"
+            "value" : "与这台 iPhone 关联的设备。Imp 可以在你们之间旅行。"
           }
         }
       }
@@ -29628,7 +29802,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这只小妖是谁？它怎么说话？"
+            "value" : "这个 Imp 是谁？它怎么说话？"
           }
         }
       }
@@ -29700,7 +29874,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小妖再次提问之前先休息多久。"
+            "value" : "Imp 再次提问之前先休息多久。"
           }
         }
       }
@@ -29748,7 +29922,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小妖等它的大脑要多久，以及网络断开时该怎么办。"
+            "value" : "Imp 等它的大脑要多久，以及网络断开时该怎么办。"
           }
         }
       }
@@ -29772,7 +29946,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络断开时，小妖会再问几次。密钥错误则不会再试。"
+            "value" : "网络断开时，Imp 会再问几次。密钥错误则不会再试。"
           }
         }
       }
@@ -29820,7 +29994,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大脑超过这个时间还没好，小妖就不等了，并告诉你。"
+            "value" : "大脑超过这个时间还没好，Imp 就不等了，并告诉你。"
           }
         }
       }
@@ -29862,7 +30036,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esperas"
+            "value" : "Espera"
           }
         },
         "zh-Hans" : {
@@ -30012,7 +30186,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重"
+            "value" : "强劲档"
           }
         }
       }
@@ -30108,7 +30282,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在已关联的设备旁摇一摇 iPhone，你刚动过的小妖就会过去。可以撤销。"
+            "value" : "在已关联的设备旁摇一摇 iPhone，你刚动过的 Imp 就会过去。可以撤销。"
           }
         }
       }
@@ -30204,7 +30378,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "分享"
+            "value" : "共享"
           }
         }
       }
@@ -30294,7 +30468,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ se muda a %2$@ para siempre y su llave se va con él. %2$@ te pide que lo revises antes."
+            "value" : "%1$@ se va a %2$@ para siempre y su clave se va con él. %2$@ te pide que lo revises antes."
           }
         },
         "zh-Hans" : {
@@ -30396,7 +30570,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把小妖从另一块屏幕的边缘扔过来，它会落在这里。"
+            "value" : "把 Imp 从另一块屏幕的边缘扔过来，它会落在这里。"
           }
         }
       }
@@ -30420,7 +30594,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把小妖从你的 Mac 或另一台 iPhone 带过来。"
+            "value" : "把 Imp 从你的 Mac 或另一台 iPhone 带过来。"
           }
         }
       }
@@ -30798,7 +30972,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deja que un Imp ejecute comandos en este ordenador cuando se lo pides."
+            "value" : "Deja que un Imp ejecute comandos en este equipo cuando se lo pides."
           }
         },
         "zh-Hans" : {
@@ -31302,7 +31476,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desactivado"
+            "value" : "Apagado"
           }
         },
         "zh-Hans" : {
@@ -31326,7 +31500,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Propio"
+            "value" : "A medida"
           }
         },
         "zh-Hans" : {
@@ -31398,7 +31572,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desactivado"
+            "value" : "Apagado"
           }
         },
         "zh-Hans" : {
@@ -31470,7 +31644,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ no se está ejecutando en este ordenador. Inícialo primero."
+            "value" : "%1$@ no se está ejecutando en este equipo. Inícialo primero."
           }
         },
         "zh-Hans" : {
@@ -31500,7 +31674,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@:%2$@"
+            "value" : "%1$@：%2$@"
           }
         }
       }
@@ -31638,7 +31812,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sobre color"
+            "value" : "Sobre el color"
           }
         },
         "zh-Hans" : {
@@ -32580,7 +32754,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小妖说完话后，气泡会停留多久。"
+            "value" : "Imp 说完话后，气泡会停留多久。"
           }
         }
       }
@@ -32862,7 +33036,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traer sus Imps"
+            "value" : "Traer a sus Imps"
           }
         },
         "zh-Hans" : {
@@ -32934,37 +33108,61 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vincular"
+            "value" : "Enlazar"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接"
+            "value" : "关联"
           }
         }
       }
     },
-    "settings.devices.mine.info" : {
-      "comment" : "Settings text.",
+    "settings.devices.mine.help" : {
+      "comment" : "Hover help of the Mine switch of a linked device.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The devices linked with this one."
+            "value" : "On for your own devices, off for a friend's"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los dispositivos vinculados con este."
+            "value" : "Activado en tus dispositivos, apagado en el de un amigo"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "与这台设备已连接的设备。"
+            "value" : "自己的设备打开，朋友的设备关闭"
+          }
+        }
+      }
+    },
+    "settings.devices.mine.info" : {
+      "comment" : "Help beside the Mine switch of a linked device: what turning it on allows, and when to leave it off.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actívalo en un dispositivo que sea tuyo. Así sus Imps pueden escribir a los Imps de aquí, los Imps le responden con sus herramientas, puede abrir los archivos de cualquier Imp y un Imp que le lances va sin preguntar. Actívalo en los dos dispositivos para que los Imps hablen en ambos sentidos. Déjalo apagado en el de un amigo: los Imps le siguen respondiendo, pero sin herramientas."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果这台设备是你自己的，就打开它。这样它上面的 Imp 可以给这里的 Imp 发消息，Imp 回答它时会使用工具，它能打开任何 Imp 的文件，把 Imp 扔给它时也不会先询问。两台设备都打开，Imp 才能互相对话。朋友的设备请保持关闭：Imp 仍会回答它，但不使用工具。"
           }
         }
       }
@@ -32982,13 +33180,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vincular"
+            "value" : "Enlazar"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接"
+            "value" : "关联"
           }
         }
       }
@@ -33126,7 +33324,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dispositivos"
+            "value" : "Equipos"
           }
         },
         "zh-Hans" : {
@@ -33342,7 +33540,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hop en este ordenador"
+            "value" : "Hop en este equipo"
           }
         },
         "zh-Hans" : {
@@ -33438,7 +33636,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desactivado"
+            "value" : "Apagado"
           }
         },
         "zh-Hans" : {
@@ -33654,13 +33852,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Este ordenador"
+            "value" : "Este equipo"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这台电脑上"
+            "value" : "这台 Mac 上"
           }
         }
       }
@@ -33870,7 +34068,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un cerebro que funciona en este ordenador."
+            "value" : "Un cerebro que funciona en este equipo."
           }
         },
         "zh-Hans" : {
@@ -33918,7 +34116,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un nombre a tu gusto"
+            "value" : "Un nombre a tu gusto."
           }
         },
         "zh-Hans" : {
@@ -34092,7 +34290,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一只小妖发给另一只的消息落在哪个聊天里。"
+            "value" : "一个 Imp 发给另一个 Imp 的消息落在哪个聊天里。"
           }
         }
       }
@@ -34169,6 +34367,126 @@
         }
       }
     },
+    "settings.talking.waiting.decides" : {
+      "comment" : "Option: the Imp chooses per message whether to wait.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Imp decides"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El Imp decide"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由 Imp 决定"
+          }
+        }
+      }
+    },
+    "settings.talking.waiting.dont_wait" : {
+      "comment" : "Option: the Imp goes on without waiting for the answer.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Don't wait"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No esperar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不等待"
+          }
+        }
+      }
+    },
+    "settings.talking.waiting.info" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Whether an Imp waits for the answer of the Imp it messages, or goes on and hears it later as a new turn."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si un Imp espera la respuesta del Imp al que escribe, o sigue y la recibe después como un turno nuevo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 给另一个 Imp 发消息后，是等对方回答，还是继续做事、之后再以新一轮收到回答。"
+          }
+        }
+      }
+    },
+    "settings.talking.waiting.title" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "等待"
+          }
+        }
+      }
+    },
+    "settings.talking.waiting.wait" : {
+      "comment" : "Option: the Imp waits for the answer.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wait"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esperar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "等待"
+          }
+        }
+      }
+    },
     "settings.talking.window.info" : {
       "comment" : "Settings text.",
       "extractionState" : "manual",
@@ -34188,7 +34506,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个聊天保持为同一个聊天的分钟数。"
+            "value" : "同一个聊天能保持的时长，以分钟计。"
           }
         }
       }
@@ -34326,7 +34644,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un nombre a tu gusto"
+            "value" : "Un nombre a tu gusto."
           }
         },
         "zh-Hans" : {
@@ -34710,7 +35028,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Crear Den"
+            "value" : "Configurar Den"
           }
         },
         "zh-Hans" : {
@@ -34734,7 +35052,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Crear Hop"
+            "value" : "Configurar Hop"
           }
         },
         "zh-Hans" : {
@@ -34956,7 +35274,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有工具。可以从工具包或 MCP 服务器添加。"
+            "value" : "还没有工具。可以从套件或 MCP 服务器添加。"
           }
         }
       }
@@ -35022,7 +35340,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desactivado"
+            "value" : "Apagado"
           }
         },
         "zh-Hans" : {
@@ -35196,7 +35514,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "让小鬼查看网页，并使用你为它打开的浏览器。"
+            "value" : "让 Imp 查看网页，并使用你为它打开的浏览器。"
           }
         }
       }
@@ -35220,7 +35538,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小鬼本来就会做的事，比如看你的屏幕。把不该用的关掉。"
+            "value" : "Imp 本来就会做的事，比如看你的屏幕。把不该用的关掉。"
           }
         }
       }
@@ -35244,7 +35562,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "从外面加进来的额外工具。每个都让小鬼多会一些事。"
+            "value" : "从外面加进来的额外工具。每个都让 Imp 多会一些事。"
           }
         }
       }
@@ -35268,7 +35586,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "给小鬼提供更多工具的程序或网站。"
+            "value" : "给 Imp 提供更多工具的程序或网站。"
           }
         }
       }
@@ -35340,7 +35658,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启动没有成功"
+            "value" : "启动失败"
           }
         }
       }
@@ -35460,7 +35778,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小妖自带的能力。关闭不希望它使用的功能。"
+            "value" : "Imp 自带的能力。关闭不希望它使用的功能。"
           }
         }
       }
@@ -35556,7 +35874,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小妖将不能再用这台服务器的工具。"
+            "value" : "Imp 将不能再用这台服务器的工具。"
           }
         }
       }
@@ -35694,7 +36012,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Borrar para todos"
+            "value" : "Eliminar para todos"
           }
         },
         "zh-Hans" : {
@@ -35718,7 +36036,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Borrar “%1$@” para todos?"
+            "value" : "¿Eliminar “%1$@” para todos?"
           }
         },
         "zh-Hans" : {
@@ -35796,7 +36114,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触发时小鬼要做什么。"
+            "value" : "触发时 Imp 要做什么。"
           }
         }
       }
@@ -35844,7 +36162,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触发时小鬼能看到什么，比如剪贴板。"
+            "value" : "触发时 Imp 能看到什么，比如剪贴板。"
           }
         }
       }
@@ -35868,7 +36186,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "用你自己的话告诉小鬼要做什么。"
+            "value" : "用你自己的话告诉 Imp 要做什么。"
           }
         }
       }
@@ -35892,7 +36210,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触发器会在发生某件事时自动叫醒小鬼，比如到了某个时间或电量低。"
+            "value" : "触发器会在发生某件事时自动叫醒 Imp，比如到了某个时间或电量低。"
           }
         }
       }

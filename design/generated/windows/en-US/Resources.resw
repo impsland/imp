@@ -129,6 +129,7 @@
   <data name="error.save" xml:space="preserve"><value>Could not save that. Check the free space and try again.</value><comment>Saving to disk failed.</comment></data>
   <data name="error.share" xml:space="preserve"><value>Could not share {name}. Try again in a moment.</value><comment>Sharing failed.</comment></data>
   <data name="error.tool_failed" xml:space="preserve"><value>{tool} could not start. Check its settings.</value><comment>A tool server did not start.</comment></data>
+  <data name="exchange.answered" xml:space="preserve"><value>%@ answered</value><comment>In the chat and the bubble: an Imp answered a message the Imp sent without waiting. %@ is its name.</comment></data>
   <data name="extension.action_title" xml:space="preserve"><value>Imp</value><comment>The tooltip of the toolbar button.</comment></data>
   <data name="extension.activity.count_all" xml:space="preserve"><value>{total} in all</value><comment>Count of all the entries.</comment></data>
   <data name="extension.activity.count_some" xml:space="preserve"><value>{shown} of {total}</value><comment>Count of the entries that match the search.</comment></data>
@@ -220,6 +221,9 @@
   <data name="goodbye.title" xml:space="preserve"><value>Say goodbye to {name}?</value><comment>Title of the dialog that asks before an Imp is deleted.</comment></data>
   <data name="home.canvas.hint" xml:space="preserve"><value>Imps move around here. Press Tab to go from one Imp to the next.</value><comment>Screen reader hint for the main canvas.</comment></data>
   <data name="home.canvas.label" xml:space="preserve"><value>The Imps' home</value><comment>Screen reader name of the main canvas.</comment></data>
+  <data name="home.corner.devices" xml:space="preserve"><value>Devices</value><comment>Help and screen reader name of the corner button that opens the Devices settings.</comment></data>
+  <data name="home.corner.devices.connected.one" xml:space="preserve"><value>{count} connected</value><comment>Screen reader value of the Devices corner button: how many linked devices are connected now. A dot on the button shows when any is.</comment></data>
+  <data name="home.corner.devices.connected.other" xml:space="preserve"><value>{count} connected</value><comment>Screen reader value of the Devices corner button: how many linked devices are connected now. A dot on the button shows when any is.</comment></data>
   <data name="home.corner.show_hidden" xml:space="preserve"><value>Hidden</value><comment>Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.</comment></data>
   <data name="home.empty.hint" xml:space="preserve"><value>Hatch your first Imp to get started.</value><comment>Empty main screen, one line under the title.</comment></data>
   <data name="home.empty.new_imp" xml:space="preserve"><value>New</value><comment>The one prompt in the middle of an empty main screen.</comment></data>
@@ -380,6 +384,9 @@
   <data name="moves.help.own" xml:space="preserve"><value>Moves made for only this Imp. They play instead of the shared ones.</value><comment>Help of the own animations list.</comment></data>
   <data name="moves.help.speed" xml:space="preserve"><value>How fast it goes after the pointer. Only for Hop and Glide.</value><comment>Help of the follow speed slider.</comment></data>
   <data name="moves.title" xml:space="preserve"><value>Moves</value><comment>Panel title.</comment></data>
+  <data name="personality.about" xml:space="preserve"><value>What it's good at</value><comment>Field label: what the Imp is good at, which other Imps read to know whom to ask.</comment></data>
+  <data name="personality.about_hint" xml:space="preserve"><value>Researching on the web, fixing code…</value><comment>Placeholder of the field about what the Imp is good at.</comment></data>
+  <data name="personality.help.about" xml:space="preserve"><value>One or two lines. The other Imps read it to know whom to ask for what.</value><comment>Help of the field about what the Imp is good at.</comment></data>
   <data name="personality.help.name" xml:space="preserve"><value>What you call this Imp. Say its name and it answers.</value><comment>Help of the name field.</comment></data>
   <data name="personality.help.persona" xml:space="preserve"><value>Tell it who to be, like a kind pirate or a quiet helper. It will talk that way.</value><comment>Help of the persona field.</comment></data>
   <data name="personality.help.rules" xml:space="preserve"><value>The hidden rules that tell it how to answer. Most people never change them.</value><comment>Help of the reply rules switch.</comment></data>
@@ -599,7 +606,8 @@
   <data name="settings.devices.forget_all.title" xml:space="preserve"><value>Forget all</value><comment>Settings text.</comment></data>
   <data name="settings.devices.link.info" xml:space="preserve"><value>Link another device so your Imps can visit it.</value><comment>Settings text.</comment></data>
   <data name="settings.devices.link.title" xml:space="preserve"><value>Link</value><comment>Settings text.</comment></data>
-  <data name="settings.devices.mine.info" xml:space="preserve"><value>The devices linked with this one.</value><comment>Settings text.</comment></data>
+  <data name="settings.devices.mine.help" xml:space="preserve"><value>On for your own devices, off for a friend's</value><comment>Hover help of the Mine switch of a linked device.</comment></data>
+  <data name="settings.devices.mine.info" xml:space="preserve"><value>Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools.</value><comment>Help beside the Mine switch of a linked device: what turning it on allows, and when to leave it off.</comment></data>
   <data name="settings.devices.pair.title" xml:space="preserve"><value>Link</value><comment>Settings text.</comment></data>
   <data name="settings.group.animations" xml:space="preserve"><value>Animations</value><comment>Group title.</comment></data>
   <data name="settings.group.app" xml:space="preserve"><value>App</value><comment>Group title.</comment></data>
@@ -650,6 +658,11 @@
   <data name="settings.talking.talk_in.title" xml:space="preserve"><value>Talk in</value><comment>Settings text.</comment></data>
   <data name="settings.talking.threads.info" xml:space="preserve"><value>Whether Imps keep chatting in the same chat or start a new one.</value><comment>Settings text.</comment></data>
   <data name="settings.talking.threads.title" xml:space="preserve"><value>Chats</value><comment>Settings text.</comment></data>
+  <data name="settings.talking.waiting.decides" xml:space="preserve"><value>The Imp decides</value><comment>Option: the Imp chooses per message whether to wait.</comment></data>
+  <data name="settings.talking.waiting.dont_wait" xml:space="preserve"><value>Don't wait</value><comment>Option: the Imp goes on without waiting for the answer.</comment></data>
+  <data name="settings.talking.waiting.info" xml:space="preserve"><value>Whether an Imp waits for the answer of the Imp it messages, or goes on and hears it later as a new turn.</value><comment>Settings text.</comment></data>
+  <data name="settings.talking.waiting.title" xml:space="preserve"><value>Waiting</value><comment>Settings text.</comment></data>
+  <data name="settings.talking.waiting.wait" xml:space="preserve"><value>Wait</value><comment>Option: the Imp waits for the answer.</comment></data>
   <data name="settings.talking.window.info" xml:space="preserve"><value>How many minutes a chat stays the same chat.</value><comment>Settings text.</comment></data>
   <data name="settings.talking.window.title" xml:space="preserve"><value>Same chat for</value><comment>Settings text.</comment></data>
   <data name="settings.title" xml:space="preserve"><value>Settings</value><comment>Title of the app-wide settings.</comment></data>

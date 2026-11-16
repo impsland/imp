@@ -61,9 +61,8 @@ extension LinkHub: ChatSource {
     func peers(_ id: UUID) -> [LinkImp] {
         // It can't message anyone for a device its home doesn't count as the owner's.
         guard isAwake(id), !toolless.contains(id), let home = visit(id)?.home.id else { return [] }
-        var seen: Set<String> = [imp(id)?.name.lowercased() ?? ""]
+        // Every one, even when called like it or like another: its home names them apart (`TalkNames`).
         return LinkTalks.targets(of: id, mine: node.stage(of: home), stage: staged).map(\.imp)
-            .filter { seen.insert($0.name.lowercased()).inserted }
     }
 
     func toolsWithheld(_ id: UUID) -> (title: String, text: String)? {

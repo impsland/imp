@@ -77,7 +77,7 @@ Every change is kept as it is made, as in the iPhone's own Settings. There is no
 - **Personality** holds the name and the persona: the name is who the Imp is, so it is not on the hub.
 - **Look** holds the colour, the size and the character: one line of emoji presets (named for VoiceOver and on hover), the same on the Mac, then the trait sliders.
 - **Tools** first lists the Imp's own tools with a switch each, as on the Mac: Message another Imp and Play animations. Then its MCP servers. A pocket Imp has no Den tools: sharing happens on the Mac.
-- **Brain** is one screen with no steps: Remote or Local, then the address, the key and the model together, and one button. The model is a choice dressed as a field (the same height and well): blank reads "Picked for you", and nothing is filled in for you. A tap opens the model list, full height, with a search: "Picked for you" first, a name the service doesn't list as "Use “…”", then the models, the chosen one ticked. A pick closes the list. The button says "Wake {name} up" for an Imp that sleeps and "Check and save" for one that thinks; with a blank model it takes the first one that chats. When the Brain works, the button shows it for a beat, the phone taps once, and the sheet closes by itself: an Imp that just woke comes up in its chat. A Brain that fails says why in place and taps the error. Keys go to the Keychain.
+- **Brain** is one screen with no steps: Remote or Local, then the address, the key and the model together, and one button. The model is a choice dressed as a field (the same height and well): blank reads "Picked for you", and nothing is filled in for you. A tap opens the model list, full height, with a search: "Picked for you" first, a name the service doesn't list as "Use “…”", then the models, the chosen one ticked. A pick closes the list. The button says "Wake {name} up" for an Imp that sleeps and "Check and save" for one that thinks. With a blank model it takes the first one that chats. When the Brain works, the button shows it for a beat, the phone taps once, and the sheet closes by itself: an Imp that just woke comes up in its chat. A Brain that fails says why in place and taps the error. Keys go to the Keychain.
 
 **New Imp** (`+` in the room) hatches an Imp at once, with a fresh name and colour and the Brain of the newest Imp that thinks on this iPhone (its key is copied in the Keychain, so each Imp keeps its own). No sheet comes up. Only when no Imp has a Brain yet does the new Imp's Brain open. A sleeping Imp on the stage and "Give {name} a Brain" in its chat open the settings with the Brain already open.
 
@@ -123,6 +123,8 @@ Rejected: sharing a Character on its own. It would be a second thing to learn an
 ![Personality](./images/imp-personality.png)
 
 The name moves here, with the persona and the voice. The name is part of who the Imp is, not part of how it looks. An empty name shows `personality.name_empty` and is not saved.
+
+Between the persona and the voice is **What it's good at** (`personality.about`): one or two lines, at most 200 characters, with an info text (`personality.help.about`) saying the other Imps read it to know whom to ask. It is empty by default. It goes to the other Imps with the Imp's abilities (shell, browser, the names of its tool servers, which the Mac works out), on this Mac and on linked devices.
 
 ## Brain
 
@@ -299,6 +301,9 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `moves.help.own` | Moves made for only this Imp. They play instead of the shared ones. |
 | `moves.help.speed` | How fast it goes after the pointer. Only for Hop and Glide. |
 | `moves.title` | Moves |
+| `personality.about` | What it's good at |
+| `personality.about_hint` | Researching on the web, fixing code… |
+| `personality.help.about` | One or two lines. The other Imps read it to know whom to ask for what. |
 | `personality.help.name` | What you call this Imp. Say its name and it answers. |
 | `personality.help.persona` | Tell it who to be, like a kind pirate or a quiet helper. It will talk that way. |
 | `personality.help.rules` | The hidden rules that tell it how to answer. Most people never change them. |

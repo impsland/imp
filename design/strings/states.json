@@ -72,13 +72,13 @@
   "state.servers.set_up_den": {
     "note": "Button.",
     "en": "Set up Den",
-    "es": "Crear Den",
+    "es": "Configurar Den",
     "zh-Hans": "设置 Den"
   },
   "state.servers.set_up_hop": {
     "note": "Button.",
     "en": "Set up Hop",
-    "es": "Crear Hop",
+    "es": "Configurar Hop",
     "zh-Hans": "设置 Hop"
   },
   "error.generic": {
@@ -151,7 +151,7 @@
       "name": "string"
     },
     "en": "Could not share {name}. Try again in a moment.",
-    "es": "No se pudo compartir a {name}. Inténtalo de nuevo en un momento.",
+    "es": "No se pudo compartir con {name}. Inténtalo de nuevo en un momento.",
     "zh-Hans": "无法共享 {name}。请稍后再试。"
   },
   "error.tool_failed": {

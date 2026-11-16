@@ -100,6 +100,8 @@ fn pip() -> LinkImp {
         hue: 0.4,
         scale: 1.0,
         traits: Default::default(),
+        about: None,
+        abilities: Vec::new(),
     }
 }
 

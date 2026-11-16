@@ -8,14 +8,14 @@
   "phone.requests.title": {
     "note": "Card title on the iPhone settings page for brains.",
     "en": "Waiting",
-    "es": "Esperas",
+    "es": "Espera",
     "zh-Hans": "等待"
   },
   "phone.requests.info": {
     "note": "Help for the waiting card.",
     "en": "How long an Imp waits for its Brain, and what it does when the internet drops.",
     "es": "Cuánto espera un Imp a su cerebro y qué hace si se corta internet.",
-    "zh-Hans": "小妖等它的大脑要多久，以及网络断开时该怎么办。"
+    "zh-Hans": "Imp 等它的大脑要多久，以及网络断开时该怎么办。"
   },
   "phone.requests.timeout.title": {
     "note": "Row title: longest wait.",
@@ -27,7 +27,7 @@
     "note": "Help for the longest wait.",
     "en": "If the Brain takes longer than this, the Imp stops waiting and says so.",
     "es": "Si el cerebro tarda más que esto, el Imp deja de esperar y lo dice.",
-    "zh-Hans": "大脑超过这个时间还没好，小妖就不等了，并告诉你。"
+    "zh-Hans": "大脑超过这个时间还没好，Imp 就不等了，并告诉你。"
   },
   "phone.requests.retries.title": {
     "note": "Row title: how many retries.",
@@ -39,7 +39,7 @@
     "note": "Help for retries.",
     "en": "How many times the Imp asks again when the internet drops. Wrong keys are never tried again.",
     "es": "Cuántas veces vuelve a preguntar el Imp si se corta internet. Las claves erróneas no se reintentan.",
-    "zh-Hans": "网络断开时，小妖会再问几次。密钥错误则不会再试。"
+    "zh-Hans": "网络断开时，Imp 会再问几次。密钥错误则不会再试。"
   },
   "phone.requests.delay.title": {
     "note": "Row title: first pause.",
@@ -51,7 +51,7 @@
     "note": "Help for the first pause.",
     "en": "How long the Imp rests before it asks again.",
     "es": "Cuánto descansa el Imp antes de volver a preguntar.",
-    "zh-Hans": "小妖再次提问之前先休息多久。"
+    "zh-Hans": "Imp 再次提问之前先休息多久。"
   },
   "phone.requests.backoff.title": {
     "note": "Row title: pause growth.",
@@ -75,7 +75,7 @@
     "note": "Help for shake to send.",
     "en": "Shake the iPhone next to a linked device and the Imp you moved last goes there. You can undo it.",
     "es": "Agita el iPhone junto a un dispositivo enlazado y el último Imp que moviste va allí. Puedes deshacerlo.",
-    "zh-Hans": "在已关联的设备旁摇一摇 iPhone，你刚动过的小妖就会过去。可以撤销。"
+    "zh-Hans": "在已关联的设备旁摇一摇 iPhone，你刚动过的 Imp 就会过去。可以撤销。"
   },
   "phone.shake.hard.title": {
     "note": "Row title: shake strength.",
@@ -99,7 +99,7 @@
     "note": "Segment: firm shake.",
     "en": "Firm",
     "es": "Fuerte",
-    "zh-Hans": "重"
+    "zh-Hans": "强劲档"
   },
   "phone.shake.which.title": {
     "note": "Row title: which device.",
@@ -134,8 +134,8 @@
   "phone.linked.info": {
     "note": "Help of the linked devices card.",
     "en": "Devices linked with this iPhone. Imps can travel between you.",
-    "es": "Dispositivos enlazados con este iPhone. Los Imps pueden viajar entre ustedes.",
-    "zh-Hans": "与这台 iPhone 关联的设备。小妖可以在你们之间旅行。"
+    "es": "Dispositivos enlazados con este iPhone. Los Imps pueden viajar entre tus dispositivos.",
+    "zh-Hans": "与这台 iPhone 关联的设备。Imp 可以在你们之间旅行。"
   },
   "phone.forget.one": {
     "note": "Button that unlinks one device.",
@@ -155,7 +155,7 @@
   "phone.forget.everyone.title": {
     "note": "Alert button.",
     "en": "Forget all",
-    "es": "Olvidar todos",
+    "es": "Olvidar todo",
     "zh-Hans": "全部忘记"
   },
   "phone.name.field": {
@@ -228,7 +228,7 @@
     "note": "Empty main screen while another device is nearby.",
     "en": "Throw an Imp off the side of another screen. It lands here.",
     "es": "Lanza un Imp por el borde de otra pantalla. Aterriza aquí.",
-    "zh-Hans": "把小妖从另一块屏幕的边缘扔过来，它会落在这里。"
+    "zh-Hans": "把 Imp 从另一块屏幕的边缘扔过来，它会落在这里。"
   },
   "phone.stage.nobody": {
     "note": "Door label when the edge leads to no device.",
@@ -291,13 +291,13 @@
     "note": "Button: copy the link.",
     "en": "Copy",
     "es": "Copiar",
-    "zh-Hans": "拷贝"
+    "zh-Hans": "复制"
   },
   "phone.share": {
     "note": "Button: share the link.",
     "en": "Share",
     "es": "Compartir",
-    "zh-Hans": "分享"
+    "zh-Hans": "共享"
   },
   "phone.connected": {
     "note": "State of a linked device that answers.",
@@ -338,7 +338,7 @@
   "phone.callhome": {
     "note": "Button: bring an Imp back.",
     "en": "Call home",
-    "es": "Llamar",
+    "es": "Traer",
     "zh-Hans": "叫回家"
   },
   "phone.callhome.label": {
@@ -363,19 +363,19 @@
     "note": "What forgetting one device does.",
     "en": "Its Imps come home. To link again, show a new code.",
     "es": "Sus Imps vuelven. Para enlazar, muestra otro código.",
-    "zh-Hans": "它的小妖会回家。要再关联，请出示新的二维码。"
+    "zh-Hans": "它的 Imp 会回家。要再关联，请出示新的二维码。"
   },
   "phone.forget_all.title": {
     "note": "Question above the forget everyone button.",
     "en": "Forget every device?",
-    "es": "¿Olvidar todos?",
+    "es": "¿Olvidar todos los dispositivos?",
     "zh-Hans": "要忘记所有设备吗？"
   },
   "phone.forget_all.message": {
     "note": "What forgetting everyone does.",
     "en": "Every Imp comes home. Link again with a new code.",
     "es": "Todos los Imps vuelven a casa. Enlaza otra vez con un código nuevo.",
-    "zh-Hans": "所有小妖都会回家。请用新的二维码重新关联。"
+    "zh-Hans": "所有 Imp 都会回家。请用新的二维码重新关联。"
   },
   "phone.server.placeholder_hop": {
     "note": "Example address of a Hop.",
@@ -491,7 +491,7 @@
       "count": "int"
     },
     "en": "Ran {count} tools",
-    "es": "{count} herramientas",
+    "es": "Herramientas usadas: {count}",
     "zh-Hans": "使用了 {count} 个工具"
   },
   "phone.stage.delete.title": {
@@ -526,7 +526,7 @@
       "mac": "string"
     },
     "en": "{imp} moves in on {mac} for good, and its key goes with it. {mac} asks you to look it over first.",
-    "es": "{imp} se muda a {mac} para siempre y su llave se va con él. {mac} te pide que lo revises antes.",
+    "es": "{imp} se va a {mac} para siempre y su clave se va con él. {mac} te pide que lo revises antes.",
     "zh-Hans": "{imp} 将永久搬到 {mac}，它的密钥也会一起带走。{mac} 请你先过目。"
   },
   "phone.stage.not_around": {
@@ -611,13 +611,13 @@
     },
     "en": "The Imp couldn't be saved. {detail}",
     "es": "No se pudo guardar el Imp. {detail}",
-    "zh-Hans": "没能保存这个小妖。{detail}"
+    "zh-Hans": "没能保存这个 Imp。{detail}"
   },
   "phone.persona.placeholder": {
     "note": "Placeholder of the personality field of an Imp on the iPhone.",
     "en": "Who is this Imp? How does it talk?",
     "es": "¿Quién es este Imp? ¿Cómo habla?",
-    "zh-Hans": "这只小妖是谁？它怎么说话？"
+    "zh-Hans": "这个 Imp 是谁？它怎么说话？"
   },
   "phone.brains.set_up": {
     "note": "Button beside an Imp without a Brain (iPhone settings): opens its Brain to set one up.",
@@ -634,7 +634,7 @@
   "link.reset": {
     "note": "Toast once when the saved links could not be read and were reset.",
     "en": "Imp couldn't read its saved links, so it started fresh. Link your devices again.",
-    "es": "Imp no pudo leer sus vínculos guardados y empezó de nuevo. Vuelve a vincular tus dispositivos.",
+    "es": "Imp no pudo leer sus enlaces guardados y empezó de nuevo. Enlaza tus dispositivos otra vez.",
     "zh-Hans": "Imp 无法读取已保存的连接，已重新开始。请重新连接你的设备。"
   },
   "link.localnet.off": {
@@ -647,7 +647,7 @@
     "note": "Button on the iPhone that opens the app's page in Settings.",
     "en": "Open Settings",
     "es": "Abrir Ajustes",
-    "zh-Hans": "打开设置项"
+    "zh-Hans": "打开设置"
   },
   "link.localnet.open_mac": {
     "note": "Button on the Mac that opens System Settings, Local Network.",
@@ -664,8 +664,8 @@
   "phone.brains.empty": {
     "note": "Brains section of the iPhone settings, when no Imp was hatched on this iPhone yet.",
     "en": "Imps you hatch on this iPhone show here, each with the Brain it thinks with.",
-    "es": "Los Imps que crees en este iPhone aparecen aquí, cada uno con el cerebro con el que piensa.",
-    "zh-Hans": "你在这台 iPhone 上孵化的小妖会显示在这里，并附上各自使用的大脑。"
+    "es": "Los Imps que hagas nacer en este iPhone aparecen aquí, cada uno con el cerebro con el que piensa.",
+    "zh-Hans": "你在这台 iPhone 上孵化的 Imp 会显示在这里，并附上各自使用的大脑。"
   },
   "phone.brains.default": {
     "note": "Under the list of Imps in the iPhone's Brains settings: a new Imp (the + button) starts with this Imp's service, model and key.",
@@ -674,7 +674,7 @@
     },
     "en": "New Imps start with {name}'s Brain.",
     "es": "Los Imps nuevos empiezan con el cerebro de {name}.",
-    "zh-Hans": "新的小妖会沿用 {name} 的大脑。"
+    "zh-Hans": "新的 Imp 会沿用 {name} 的大脑。"
   },
   "phone.brain.model_auto": {
     "note": "Placeholder of the model field in an iPhone Imp's Brain form: left blank, the first model that chats is picked.",
@@ -740,7 +740,7 @@
     "note": "Under Link a device on the first screen: what linking gives you.",
     "en": "Bring Imps over from your Mac or another iPhone.",
     "es": "Trae Imps desde tu Mac u otro iPhone.",
-    "zh-Hans": "把小妖从你的 Mac 或另一台 iPhone 带过来。"
+    "zh-Hans": "把 Imp 从你的 Mac 或另一台 iPhone 带过来。"
   },
   "phone.brain.model_auto_detail": {
     "note": "Under Picked for you in the iPhone's model list: blank lets the Imp take the first model that chats when it wakes.",
@@ -760,13 +760,13 @@
   "phone.haptics.title": {
     "note": "Card title and switch in the iPhone's App settings: taps felt in the hand.",
     "en": "Haptics",
-    "es": "Vibración háptica",
+    "es": "Vibración",
     "zh-Hans": "触感反馈"
   },
   "phone.haptics.info": {
     "note": "Help of the Haptics switch on the iPhone.",
     "en": "Taps in your hand when you pick something, when an Imp comes or goes, and when something works or fails.",
     "es": "Toques en la mano al elegir algo, cuando un Imp llega o se va, y cuando algo sale bien o falla.",
-    "zh-Hans": "选择内容、小妖到来或离开、操作成功或失败时，手中会有轻触反馈。"
+    "zh-Hans": "选择内容、Imp 到来或离开、操作成功或失败时，手中会有轻触反馈。"
   }
 }

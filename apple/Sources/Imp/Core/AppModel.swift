@@ -85,6 +85,19 @@ final class AppModel {
         let here = imps.filter { !isAway($0.id) }
         return here.first { $0.id == focusID } ?? here.first
     }
+    /// Messages each Imp sent to others without waiting (`imp_message` with `wait` off) whose answer hasn't come
+    /// yet, by sender. Not saved: the answers still on their way are dropped when the app quits.
+    var pendingMessages: [UUID: Int] = [:]
+
+    /// What an Imp can do, as the other Imps are told: `shell`, `browser` and the names of its tool servers.
+    func abilities(of profile: ImpProfile) -> [String] {
+        let names = prefs.mcpServers.filter { profile.servers.contains($0.id) && $0.isEnabled }.map(\.name)
+        return ImpAbilities.tags(of: profile, serverNames: names)
+    }
+
+    /// How other devices see an Imp of this Mac: its look, what it is good at and what it can do.
+    func linkImp(_ profile: ImpProfile) -> LinkImp { LinkImp(profile, abilities: abilities(of: profile)) }
+
     func imp(_ id: UUID) -> ImpModel? { imps.first { $0.id == id } }
     func visitor(_ id: UUID) -> ImpModel? { visitors.first { $0.id == id } }
     /// Every Imp body on the desktop: this Mac's own, and the visitors.
@@ -360,7 +373,7 @@ final class AppModel {
 
     /// How an Imp on the desktop is thrown on: one of this Mac's that is out here, or a visitor.
     private func thrownLook(_ id: UUID) -> LinkImp? {
-        if let profile = profile(id) { return profile.isActive && profile.awayOn == nil ? LinkImp(profile) : nil }
+        if let profile = profile(id) { return profile.isActive && profile.awayOn == nil ? linkImp(profile) : nil }
         return visitor(id)?.visit?.look
     }
 
@@ -591,6 +604,7 @@ final class AppModel {
         guard prefs.imps.count > 1, let i = prefs.imps.firstIndex(where: { $0.id == id }) else { return nil }
         setActive(id, false)
         removeImp(id)
+        link.asked.forget(imp: id)
         let ids = prefs.imps.map(\.id)
         return ids[min(i, ids.count - 1)]
     }

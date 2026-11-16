@@ -106,6 +106,37 @@ public struct PhoneRouter: Equatable, Sendable {
         if origin?.imp == id { origin = nil }
         if route?.imp == id { route = nil; origin = nil }
     }
+
+    /// The room changed: every sheet about an Imp that isn't here any more closes (`PhoneRouter.departed`).
+    public mutating func roomChanged(from old: PhonePresence, to new: PhonePresence) {
+        for id in Self.departed(from: old, to: new) { left(id) }
+    }
+
+    /// The Imps that left this phone between `old` and `new`. An Imp is in one place at a time, so a sheet
+    /// about one that is somewhere else has to close, even its chat left open while it was thrown:
+    /// - a visitor gone from the room (sent home, called home, thrown on to another device), and an Imp of this
+    ///   phone that was deleted;
+    /// - an Imp of this phone that another device took (it's there now, and talks there). Only once it is taken:
+    ///   while it flies, the throw may be declined or time out and it lands back here, its chat still open.
+    public static func departed(from old: PhonePresence, to new: PhonePresence) -> [UUID] {
+        let gone = old.room.filter { !new.room.contains($0) && !new.own.contains($0) }
+        let taken = new.away.subtracting(old.away).sorted { $0.uuidString < $1.uuidString }
+        return gone + taken.filter { !gone.contains($0) }
+    }
+}
+
+/// Who is on a phone right now, as far as its sheets care.
+public struct PhonePresence: Equatable, Sendable {
+    /// The Imps in the room: its own (not away, not in flight) and the visitors.
+    public var room: [UUID]
+    /// The Imps of this phone, wherever they are.
+    public var own: Set<UUID>
+    /// The Imps of this phone another device holds now.
+    public var away: Set<UUID>
+
+    public init(room: [UUID], own: Set<UUID>, away: Set<UUID>) {
+        self.room = room; self.own = own; self.away = away
+    }
 }
 
 /// Where an Imp waits while its sheet is open: in the middle of the room left above the sheet, a little

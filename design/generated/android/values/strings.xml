@@ -127,6 +127,7 @@
   <string name="error_save">Could not save that. Check the free space and try again.</string>
   <string name="error_share">Could not share %1$s. Try again in a moment.</string>
   <string name="error_tool_failed">%1$s could not start. Check its settings.</string>
+  <string name="exchange_answered">%%@ answered</string>
   <string name="extension_action_title">Imp</string>
   <string name="extension_activity_count_all">%1$d in all</string>
   <string name="extension_activity_count_some">%1$d of %2$d</string>
@@ -222,6 +223,11 @@
   <string name="goodbye_title">Say goodbye to %1$s?</string>
   <string name="home_canvas_hint">Imps move around here. Press Tab to go from one Imp to the next.</string>
   <string name="home_canvas_label">The Imps\' home</string>
+  <string name="home_corner_devices">Devices</string>
+  <plurals name="home_corner_devices_connected">
+    <item quantity="one">%1$d connected</item>
+    <item quantity="other">%1$d connected</item>
+  </plurals>
   <string name="home_corner_show_hidden">Hidden</string>
   <string name="home_empty_hint">Hatch your first Imp to get started.</string>
   <string name="home_empty_new_imp">New</string>
@@ -384,6 +390,9 @@
   <string name="moves_help_own">Moves made for only this Imp. They play instead of the shared ones.</string>
   <string name="moves_help_speed">How fast it goes after the pointer. Only for Hop and Glide.</string>
   <string name="moves_title">Moves</string>
+  <string name="personality_about">What it\'s good at</string>
+  <string name="personality_about_hint">Researching on the web, fixing code…</string>
+  <string name="personality_help_about">One or two lines. The other Imps read it to know whom to ask for what.</string>
   <string name="personality_help_name">What you call this Imp. Say its name and it answers.</string>
   <string name="personality_help_persona">Tell it who to be, like a kind pirate or a quiet helper. It will talk that way.</string>
   <string name="personality_help_rules">The hidden rules that tell it how to answer. Most people never change them.</string>
@@ -603,7 +612,8 @@
   <string name="settings_devices_forget_all_title">Forget all</string>
   <string name="settings_devices_link_info">Link another device so your Imps can visit it.</string>
   <string name="settings_devices_link_title">Link</string>
-  <string name="settings_devices_mine_info">The devices linked with this one.</string>
+  <string name="settings_devices_mine_help">On for your own devices, off for a friend\'s</string>
+  <string name="settings_devices_mine_info">Turn on for a device that\'s yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp\'s files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend\'s device: Imps still answer it, but without tools.</string>
   <string name="settings_devices_pair_title">Link</string>
   <string name="settings_group_animations">Animations</string>
   <string name="settings_group_app">App</string>
@@ -654,6 +664,11 @@
   <string name="settings_talking_talk_in_title">Talk in</string>
   <string name="settings_talking_threads_info">Whether Imps keep chatting in the same chat or start a new one.</string>
   <string name="settings_talking_threads_title">Chats</string>
+  <string name="settings_talking_waiting_decides">The Imp decides</string>
+  <string name="settings_talking_waiting_dont_wait">Don\'t wait</string>
+  <string name="settings_talking_waiting_info">Whether an Imp waits for the answer of the Imp it messages, or goes on and hears it later as a new turn.</string>
+  <string name="settings_talking_waiting_title">Waiting</string>
+  <string name="settings_talking_waiting_wait">Wait</string>
   <string name="settings_talking_window_info">How many minutes a chat stays the same chat.</string>
   <string name="settings_talking_window_title">Same chat for</string>
   <string name="settings_title">Settings</string>

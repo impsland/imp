@@ -296,7 +296,7 @@ extension KitTests {
         var other = ImpPreferences()
         let added = other.add(kit, imps: Set(kit.imps.map(\.id)), triggers: [], servers: [], for: nil)
         let new = try #require(other.imps.last)
-        #expect(new.name == "Pip" && other.imps.count == 2)
+        #expect(new.name == "Pip 2" && other.imps.count == 2)          // the first Imp of a Mac is Pip too
         #expect(added.needingSecrets.count == 1 && other.mcpServers.map(\.environment) == [["TOKEN": ""]])
         #expect(new.servers == other.mcpServers.map(\.id))
         #expect(other.ai.services.isEmpty)                                         // never auto-adds a service
@@ -375,7 +375,7 @@ extension KitTests {
         let kit = Kit.exporting(imps: Set(prefs.imps.map(\.id)), from: prefs, shared: true)
         #expect(kit.imps.count == 2 && kit.triggers.map(\.name) == ["Everyone"])  // …and aren't exported
         let back = try Kit.parse(kit.json())
-        #expect(back.imps.map(\.name) == ["Imp", "Pip"] && back.triggers.map(\.name) == ["Everyone"])
+        #expect(back.imps.map(\.name) == ["Pip", "Pip"] && back.triggers.map(\.name) == ["Everyone"])
         // Servers only the Imps use are the kit's tools, once.
         #expect(back.servers.map(\.name) == ["Notes"] && back.imps[1].servers == [back.servers[0].id])
     }

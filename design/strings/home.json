@@ -85,5 +85,28 @@
     "en": "Hidden",
     "es": "Ocultos",
     "zh-Hans": "已隐藏"
+  },
+  "home.corner.devices": {
+    "note": "Help and screen reader name of the corner button that opens the Devices settings.",
+    "en": "Devices",
+    "es": "Equipos",
+    "zh-Hans": "设备"
+  },
+  "home.corner.devices.connected": {
+    "note": "Screen reader value of the Devices corner button: how many linked devices are connected now. A dot on the button shows when any is.",
+    "args": {
+      "count": "int"
+    },
+    "en": {
+      "one": "{count} connected",
+      "other": "{count} connected"
+    },
+    "es": {
+      "one": "{count} conectado",
+      "other": "{count} conectados"
+    },
+    "zh-Hans": {
+      "other": "已连接 {count} 台"
+    }
   }
 }

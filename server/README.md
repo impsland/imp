@@ -124,6 +124,7 @@ Every Hop limit must be at least 1, or the Hop refuses to start. The limits are 
 | `POST` | `/items/{handle}/{slug}/reports` | Report an item. |
 | `GET` | `/stats` | Gallery statistics. |
 | `GET` | `/`, `/i/{handle}/{slug}`, `/a/{handle}` | The web gallery. |
+| `GET` | `/assets/{file}` | Files of the web gallery. |
 | `*` | `/mcp` | The MCP endpoint. |
 
 The full wire contract is in [PROTOCOL.md](../spec/PROTOCOL.md).

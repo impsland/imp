@@ -2,7 +2,8 @@ import Foundation
 import ImpKit
 
 extension AppModel {
-    /// Everything the Imps said to each other, from every Imp's chats: the ones that are out
+    /// Everything the Imps said to each other, from every Imp's chats (and the copies of what they asked Imps
+    /// elsewhere): the ones that are out
     /// through their live history, the ones at home from their files. The files are read off the
     /// main actor (chats can be many). Offscreen renders and tests never read the user's chats.
     func talkLines() async -> [TalkLine] {
@@ -21,7 +22,8 @@ extension AppModel {
             }
             .filter { seen.insert($0.id).inserted }
         }.value
-        return samples + found
+        // And what they asked Imps on other devices, which those devices filed (`AskedTalks`).
+        return samples + found + link.asked.lines
     }
 }
 

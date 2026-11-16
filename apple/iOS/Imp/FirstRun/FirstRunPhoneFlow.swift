@@ -5,7 +5,7 @@ import SwiftUI
 /// A Brain on one screen, with no steps: the kind of service, then its address, the key and the model together.
 /// The model is a choice that looks like the fields around it: blank is "Picked for you" (the first model that
 /// chats, chosen when it wakes), and a tap opens `ModelPicker`, the service's models with a search. The same form
-/// wakes the first Imp and sets any Imp's Brain; its one button is `PhoneBrainButton`, pinned by the screen that
+/// wakes the first Imp and sets any Imp's Brain. Its one button is `PhoneBrainButton`, pinned by the screen that
 /// shows it. A Brain that works taps once in the hand, one that fails taps the error.
 struct PhoneBrainForm: View {
     @Bindable var flow: FirstRunModel

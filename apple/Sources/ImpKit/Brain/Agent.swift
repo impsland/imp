@@ -79,22 +79,55 @@ public struct Agent: Sendable {
                 let calls = run.reply(reply: StreamReply(
                     text: reply.text, toolCalls: reply.toolCalls.map { StreamToolCall(id: $0.id, name: $0.name, arguments: $0.arguments) }))
                 guard let tools else { continue }
-                for call in calls {
-                    try Task.checkCancellation()
-                    await onEvent(.toolStarted(call.name, arguments: call.arguments))
-                    let done: ToolOutcome
-                    do {
-                        let output = try await tools.run(call.name, arguments: call.arguments)
-                        done = run.toolResult(callId: call.id, tool: call.name, text: output.text, images: output.images.map(\.dataURL))
-                    } catch is CancellationError {
-                        throw CancellationError()
-                    } catch {
-                        done = run.toolFailed(callId: call.id, tool: call.name, message: error.localizedDescription)
+                // Consecutive calls of tools that may overlap (`troupe::runs_concurrently`: asking other Imps) run
+                // together. Every result is handed back in the order the model asked, so the transcript keeps it.
+                var index = 0
+                while index < calls.count {
+                    var end = index + 1
+                    if ImpCore.troupeRunsConcurrently(tool: calls[index].name) {
+                        while end < calls.count, ImpCore.troupeRunsConcurrently(tool: calls[end].name) { end += 1 }
                     }
-                    await onEvent(.toolFinished(call.name, ok: done.ok, result: done.text))
+                    let batch = Array(calls[index..<end])
+                    index = end
+                    try Task.checkCancellation()
+                    for call in batch { await onEvent(.toolStarted(call.name, arguments: call.arguments)) }
+                    let results = try await Self.execute(batch.map { ($0.name, $0.arguments) }, with: tools)
+                    for (call, result) in zip(batch, results) {
+                        let done: ToolOutcome
+                        switch result {
+                        case .success(let output):
+                            done = run.toolResult(callId: call.id, tool: call.name, text: output.text, images: output.images.map(\.dataURL))
+                        case .failure(let error):
+                            done = run.toolFailed(callId: call.id, tool: call.name, message: error.localizedDescription)
+                        }
+                        await onEvent(.toolFinished(call.name, ok: done.ok, result: done.text))
+                    }
                 }
             }
         }
+    }
+
+    /// Runs one batch of calls: a single one on its own, several at once. Results come back in the order of
+    /// `calls`. Cancellation of any of them cancels the rest and is thrown.
+    private static func execute(_ calls: [(name: String, arguments: String)], with tools: ToolProvider) async throws
+        -> [Result<ToolOutput, Error>] {
+        func attempt(_ call: (name: String, arguments: String)) async -> Result<ToolOutput, Error> {
+            do { return .success(try await tools.run(call.name, arguments: call.arguments)) } catch { return .failure(error) }
+        }
+        var results: [Result<ToolOutput, Error>]
+        if calls.count == 1 {
+            results = [await attempt(calls[0])]
+        } else {
+            results = await withTaskGroup(of: (Int, Result<ToolOutput, Error>).self) { group in
+                for (i, call) in calls.enumerated() { group.addTask { (i, await attempt(call)) } }
+                var done: [Int: Result<ToolOutput, Error>] = [:]
+                for await (i, result) in group { done[i] = result }
+                return calls.indices.map { done[$0]! }
+            }
+        }
+        try Task.checkCancellation()
+        for case .failure(let error) in results where error is CancellationError { throw CancellationError() }
+        return results
     }
 
     /// Whether a try already showed some of the answer: a retry would show it twice.

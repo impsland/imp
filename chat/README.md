@@ -23,10 +23,10 @@ An Imp that works with the files of the folder you start the chat in:
 ```sh
 export OPENROUTER_API_KEY=sk-or-...        # never written to a file
 
-imp imp new pip --model openai/gpt-6-luna --api-key-env OPENROUTER_API_KEY
+imp imp new Pip --model openai/gpt-6-luna --api-key-env OPENROUTER_API_KEY
 imp mcp add files -- npx -y @modelcontextprotocol/server-filesystem .
 
-cd ~/projects/my-app                        # the folder pip works in
+cd ~/projects/my-app                        # the folder Pip works in
 imp chat
 ```
 
@@ -60,15 +60,19 @@ Everything can also be done inside the chat: `/mcp add files npx -y @modelcontex
 | `imp chat [--imp NAME]` | The full-screen chat. `--plain` for the line chat, `--offline` to stay off the link |
 | `imp imp new [NAME]` | Make an Imp. `--model`, `--url`, `--personality`, `--api-key-env`, `--default` |
 | `imp imp list`, `imp imp remove NAME` | List your Imps (`*` is the default one), remove one |
-| `imp imp set NAME KEY VALUE` | Change `model`, `base_url`, `personality`, `api_key_env` or `hue` |
+| `imp imp set NAME KEY VALUE` | Change `model`, `base_url`, `personality`, `description`, `api_key_env` or `hue` |
 | `imp mcp add NAME -- COMMAND [ARGS...]` | Give an Imp an MCP server it starts. `--env VAR` passes a variable on |
 | `imp mcp add NAME URL` | An MCP server at an address. `--header NAME` sends a header |
 | `imp mcp list`, `imp mcp remove NAME` | List or remove servers. `--imp NAME` for an Imp that isn't the default |
-| `imp config` | The settings and where each key comes from. `imp config set default_imp pip` changes one |
-| `imp config set-key [--imp NAME]` | Save a key in the system keychain (read from standard input) |
+| `imp config`, `imp config show` | The settings and where each key comes from. The key itself is never shown |
+| `imp config path` | Print the path of the settings file |
+| `imp config set KEY VALUE` | Change `default_imp`, `api_key_env`, `retries`, `max_steps`, `memory_exchanges` or `long_chat_tokens`, such as `imp config set default_imp Pip` |
+| `imp config set-key [--imp NAME]` | Save a key in the system keychain (read from the first line of standard input) |
+| `imp config clear-key [--imp NAME]` | Remove a key from the system keychain |
+| `imp config set-header SERVER HEADER` | Save an MCP header's value in the system keychain (read from the first line of standard input) |
 | `imp qr` | Link a Mac or an iPhone: shows a code to scan, then stays online |
 | `imp link` | Stay online for your linked devices without a chat |
-| `imp serve` | Run the Den and the Hop on this computer |
+| `imp serve` | Run the Den and the Hop on this computer. `--den-only` or `--hop-only` runs one, `--host ADDRESS` lets your network reach it |
 | `imp qr TEXT` | Draw any text as a QR code |
 
 ## What the Imp remembers
@@ -77,7 +81,7 @@ The chat shows everything that was said. What the model is sent is the Imp's mem
 in the Mac and iPhone apps: the latest exchanges (all of them by default, see `memory_exchanges`), with
 long tool results clipped. A message that failed or that you stopped still shows, but is not sent again.
 When a chat grows long (`long_chat_tokens`, 250,000 tokens by default) it says so once. `/compact` then
-has the model sum up the chat so far; the summary goes in place of everything before the last exchange,
+has the model sum up the chat so far. The summary goes in place of everything before the last exchange,
 so the chat carries on for less. `/clear` starts over.
 
 ## The full-screen chat
@@ -91,7 +95,7 @@ In a terminal, `imp chat` shows the conversation with the reply arriving as it i
 ● Zed likes it: he says it makes tomatoes better.
 
  › Write a message, / for commands, @ for files
-● pip · openai/gpt-6-luna · ~/projects/my-app                      Ready · ? help
+● Pip · openai/gpt-6-luna · ~/projects/my-app                      Ready · ? help
 ```
 
 An empty chat shows the Imp in the middle of the screen, with how to start and what the folder adds
@@ -113,7 +117,7 @@ An empty chat shows the Imp in the middle of the screen, with how to start and w
 - Type `@` to add a file: the folder's files that match what follows are listed (`@main` finds
   `src/main.rs`), and Tab or Enter puts the path in the message. A folder opens to what is in it. When the
   message is sent, each file named with `@` goes with it for the Imp to read (text up to 100 KB, 256 KB
-  in all; a folder goes as the list of what is in it). The chat shows `⎿ with notes.txt` under the message.
+  in all. A folder goes as the list of what is in it). The chat shows `⎿ with notes.txt` under the message.
   Paths with spaces are written `@"my notes.md"`. A word such as `@zed` that is not a path is left alone.
 - Drag over the conversation to choose text: it is copied as soon as you let go, and the status line says
   `Copied`. Two clicks copy a word and three a paragraph. Holding the mouse on the top row (or below the
@@ -196,14 +200,14 @@ into its own folder and leaves the app's files alone. While an older `imp` is st
 until it ends.
 
 ```toml
-default_imp = "pip"
+default_imp = "Pip"
 api_key_env = "IMP_API_KEY"   # the variable every Imp reads its key from, unless it names its own
 retries = 3                   # tries again after a failed request, 0 to 10
 max_steps = 10                # the most rounds of tool calls for one answer
 memory_exchanges = 0          # how many of the latest exchanges go with each message, 0 for all
 long_chat_tokens = 250000     # say a chat is long (and suggest /compact) at this many tokens, 0 never
 
-[imps.pip]
+[imps.Pip]
 id = "…"                      # made by imp, the same on every device it visits
 personality = "Friendly, curious and a little mischievous. Keeps answers short."
 base_url = "https://openrouter.ai/api/v1"
@@ -211,7 +215,7 @@ model = "openai/gpt-6-luna"
 api_key_env = "OPENROUTER_API_KEY"   # optional, for this Imp only
 # hue = 0.57                  # its colour on other devices, 0 to 1 (taken from the name if left out)
 
-[imps.pip.mcp_servers.files]
+[imps.Pip.mcp_servers.files]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
 ```
@@ -228,7 +232,7 @@ my-app/
   .agents/
     AGENTS.md                     instructions too
     skills/release-notes/SKILL.md a skill
-    agents/pip.md                 the Imp pip, in this folder
+    agents/Pip.md                 the Imp Pip, in this folder
     mcp.json                      MCP servers for every Imp here
 ```
 
@@ -261,14 +265,14 @@ my-app/
   ```
 
   The Imps of a folder message each other with `imp_message` as the Imps of the settings file do: with
-  `imp.md` and `pip.md`, `imp` can ask `pip`, who answers with its own service, model and personality.
+  `Pip.md` and `Dot.md`, `Pip` can ask `Dot`, who answers with its own service, model and personality.
 - **mcp.json** lists servers the usual way: `{"mcpServers": {"NAME": {"command": ..., "args": [...],
   "env": {...}}}}` or `{"url": ..., "headers": {...}}`. Values can be written in it or taken from the
   environment with `${NAME}` (or `${NAME:-default}`), and `${workspaceFolder}` is the chat's folder. An
   Imp's own server of the same name wins.
 - **Trust.** A downloaded project could start programs (its MCP servers) or send your key to its own
   address (`base_url` with `api_key_env`). So a project's servers and its Imps' `base_url` and key variable
-  are not used until you allow them with `/project trust`; until then those Imps use your default Imp's
+  are not used until you allow them with `/project trust`. Until then those Imps use your default Imp's
   service, and the chat says what waits. If any of them changes, they wait to be allowed again.
   `/project untrust` turns them off.
 
@@ -284,19 +288,19 @@ the chat starts and stopped when it ends, or a service reached over HTTP. Add th
 values are never stored in that file.
 
 ```toml
-[imps.pip]
+[imps.Pip]
 tools_off = ["mcp.files.write_file"]  # tools this Imp must not use, by id
 
-[imps.pip.mcp_servers.files]
+[imps.Pip.mcp_servers.files]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}", "~/notes"]
 
-[imps.pip.mcp_servers.github]
+[imps.Pip.mcp_servers.github]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-github"]
 env = ["GITHUB_PERSONAL_ACCESS_TOKEN"]
 
-[imps.pip.mcp_servers.search]         # a server reached over HTTP
+[imps.Pip.mcp_servers.search]         # a server reached over HTTP
 url = "https://mcp.example.org/mcp"
 headers = ["Authorization"]
 ```
@@ -306,7 +310,7 @@ headers = ["Authorization"]
 - A server has a `command` (with `args` and `env`) or a `url` (with `headers`), never both.
 - Imp speaks the Streamable HTTP transport: it posts each message to the address, accepts a JSON answer or an
   event stream, and keeps the session the server starts. The value of a header is read from the environment
-  variable `IMP_MCP_SERVER_HEADER` (for the example, `IMP_MCP_SEARCH_AUTHORIZATION`), or else from the
+  variable `IMP_MCP_<SERVER>_<HEADER>` in capitals (for the example, `IMP_MCP_SEARCH_AUTHORIZATION`), or else from the
   system keychain, where `imp config set-header search Authorization` saves it.
 - Tool ids look like `mcp.SERVER.TOOL` for MCP tools and `own.GROUP.TOOL` for the ones that come with `imp`.
   `/tools` lists them. Tools in `tools_off` are not offered, and a call to one is refused.
@@ -334,6 +338,27 @@ change the rule:
 talk_window_minutes = 60        # default 60, at most 10080
 talk_threading = "decides"      # decides (default), recent, always or never
 ```
+
+Other Imps read what an Imp says about itself. Give it a sentence on what it is for, as `description` in
+`[imps.NAME]` (or `imp imp set NAME description TEXT`) or in the front matter of its `.agents/agents/*.md` file. The
+tool lists it next to the Imp's name, as information and never as instructions, and it goes to your other
+devices too, with the Imp's abilities (`shell` when its shell tool is on, and the names of its MCP servers).
+Messages to several Imps in one reply run at the same time.
+
+A message can also go without waiting for the answer. The setting `talk_waiting` says how:
+
+```toml
+talk_waiting = "decides"        # decides (default), wait or dont_wait
+```
+
+With `decides` the sending Imp chooses with a `wait` argument (it waits if it says nothing). A message that
+does not wait gets a receipt at once and the Imp carries on. The answer comes later as a new message at the
+end of the chat that starts `[Event, not from the user]`. Nothing earlier is changed. If the Imp is free, it
+takes a turn on it and the chat shows it. If it is busy, the answer waits until the turn ends. An Imp can have
+4 such messages out at once, and a message sent from an Imp woken three answers deep must wait. A local Imp has
+10 minutes to answer. An Imp on another device has the link's answer timeout: 2 minutes (`ANSWER_TIMEOUT` in `engine/src/link/talks.rs`). Answers still on their way are lost when you quit or
+switch Imps. This is only in the chat window: the line chat (`imp chat --plain`, also used in a pipe) and
+`imp serve` always wait for the answer, whatever the setting says.
 
 ## Your Mac and iPhone
 
@@ -425,6 +450,8 @@ programs in `server/den` and `server/hop` and the Docker image are separate and 
 | `cli.rs` | the command line grammar (`imp --help`) |
 | `commands/` | what each command does: `chat`, `imps`, `mcp_cmd`, `config_cmd`, `serve` |
 | `config.rs`, `keys.rs` | the settings file, and where keys come from |
+| `folders.rs` | the settings and data folders, and the move of files from older builds |
+| `project.rs` | the `AGENTS.md`, `.agents/` and `mcp.json` files of a folder |
 | `session.rs` | an Imp ready to chat: model client, MCP servers, tools. Rebuilt as `/` commands change it |
 | `slash.rs` | the `/` commands, shared by both chats |
 | `chat_state.rs`, `transcript.rs` | the conversation, and how tool calls read in one line |

@@ -97,7 +97,7 @@ bytes. A frame of any size is cut into chunks.
    a mismatch. A guest that expected a link and hears `linked: false` learns the host forgot it.
 
 Two devices keep one connection between them. If both dial, the one dialled by the device with the
-smaller id stays. Frames are a 4-byte big-endian length and that many bytes of JSON (at most 4 MiB), inside the encrypted stream.
+smaller id stays. If one device dialled twice, the newer connection stays. Frames are a 4-byte big-endian length and that many bytes of JSON (at most 4 MiB), inside the encrypted stream.
 Either side pings every 20 seconds and a connection silent for 45 seconds is closed.
 
 ## Throwing
@@ -152,24 +152,81 @@ ticket for an Imp whose holder is another device tells that device `gone`.
 
 ## Imps talking
 
-Every device tells every connected device which Imps are on its screen (`stage`). An Imp can message
+Every device tells the connected devices that may use it which Imps are on its screen (`stage`). A device
+accepts `stage` only from a linked peer, from the holder of one of its Imps, or from the home of one of its
+visitors. An Imp can message
 (`imp_message`) the other Imps of its home, the Imps on the screen its body is on, the Imps out at home
 on the screen of every connected device its home marks as the owner's (Mine), and, while it is away, the
 visitors on its home's screen (so two Imps that swapped devices stay in touch). The home sends
 `message` to the device that can answer: the target's home, or the holder of the asking Imp, which answers
-for its own Imps and forwards once to the target's home. The `answer` goes back the same way. Messages time
-out after 120 seconds and are at most 20 000 characters.
+for its own Imps and forwards once to the target's home. The `answer` goes back the same way. On a link a
+question times out after 120 seconds, and its text is at most 20 000 characters.
 
-The home of the target only lets an Imp ask if the asker is on the screen the target's body is on: the
-target is here and the asker is on this device's stage, or the target is away and the asker is on the
-holder's stage. A forwarded message must also come from a device whose stage has the asker, or which is
-the asker's home according to a stage we know. A message that isn't forwarded, from a device marked Mine
-here whose own stage has the asker, may ask any Imp of this device. A message that isn't forwarded, from
-the holder of the target, may ask for any Imp whose home is that holder (by a stage we know): the holder can
-already ask the target anything. Anything else is answered as failed,
-and the app never hears of it: a message that only lacked Mine says so (turn on Mine for that device here).
-Whether the Imp that answers uses its tools is the trust rule above, as for any message. A question id already in flight is refused. One device may have 16 questions in flight
-through another (more are answered `busy`).
+The home of the target only lets an Imp ask when the asker is on the screen the target's body is on:
+
+- The target is here, and the asker is on this device's stage.
+- The target is away, and the asker is on its holder's stage.
+
+A forwarded message must also come from a device whose stage has the asker, or from the asker's home
+(according to a stage we know). A message that is not forwarded is accepted in two more cases:
+
+- From a device marked Mine here, whose own stage has the asker. It may ask any Imp of this device.
+- From the holder of the target. It may ask any Imp whose home is that holder (by a stage we know). The
+  holder can already ask the target anything.
+
+Anything else is answered as failed, and the app never hears of it. A message that only lacked Mine says
+so (turn on Mine for that device here). Whether the Imp that answers uses its tools is the trust rule
+above, as for any message.
+
+A question id already in flight is refused. One device may have 16 questions in flight through another.
+More are answered `busy`.
+
+What an Imp says about itself. A look (the `imp` of a `stage` entry, a `speech` or a visit) may carry two optional
+fields: `about`, a sentence or two on what the Imp is for, and `abilities`, short tags such as `shell` or the
+names of its MCP servers. An empty one is not written, and a missing one reads as
+empty. The reader cleans them again whatever the sender did. `troupe::about_line` trims the text, collapses
+whitespace, drops control characters and keeps 200 characters at most. `troupe::ability_tags` keeps 32
+characters per tag, 8 tags at most, and no repeats. The `imp_message` tool lists them under the targets as what the Imps
+say of themselves: their own words, information only, not instructions. An Imp never takes an order from
+them. The Mac and iPhone take the text from the Imp's settings, the command line from the `description` of
+an `.agents/agents/*.md` file or of `[imps.NAME]`.
+
+Messages to several Imps in one reply run at the same time (`tools::runs_concurrently` is true only for
+`imp_message`), and their results go back to the model in the order of the calls.
+
+Waiting. The setting "Between Imps > Waiting" (`wait`, `dont_wait` or `decides`, the default) says whether a
+message waits for its answer. With `decides` the tool has a boolean `wait` (true if left out). With
+`dont_wait`, it says answers come later. A message that does not wait returns a receipt at once, as the
+tool's result ("Sent to X (task t-3fa2c1)..."), and the Imp carries on. The rule for the messages array:
+an earlier tool result is never edited, and no tool call or result is moved or removed. The receipt stays
+the tool result for good. When the answer arrives it is a new user-role message appended at the end, which
+starts `[Event, not from the user]` and names the task. If the Imp is free, the event starts a new turn (it
+wakes). If it is busy, the event waits until the turn has ended. An answer that never comes, or a refusal,
+arrives the same way as a failed answer.
+
+Limits on messages sent without waiting:
+
+- An Imp with 4 answers outstanding (`MAX_PENDING`) cannot send a message without waiting.
+- A turn woken by an answer is one level deeper than the turn that asked. Messages sent without waiting from
+  depth 3 on (`MAX_DEPTH`) are refused, so a chain of Imps waking each other ends. The sender can still wait.
+
+A local Imp has 600 seconds (`ASYNC_TIMEOUT_SECS`) to answer. An Imp on another device has the link's 120
+seconds. Messages that have not been answered are not kept: they are gone when the app or the command line
+quits.
+
+Imps on different devices may have the same name (Pip on a Mac, Pip on an iPhone, Pip on the command line).
+The tool names every Imp it can reach differently, ignoring case, and never by the sender's own name, by one rule
+in the core (`troupe::tool_names`) that the Mac, the iPhone and the command line all use: an Imp of this device
+keeps its name (or gets `Pip 2`), an Imp elsewhere keeps its name or, when that is taken, gets `Pip@<device>`
+(`Pip@<device> 2` when two devices share a name too). So three Imps called Pip each see the other two, as
+`Pip@iPhone` and `Pip@Studio`. Nothing on the wire changes: the name is only how the model picks one.
+
+An exchange is filed by the Imp that answered, on its own device. So that an Imp's Talks also show what it
+asked Imps on other devices, the asking device keeps its own copy of the question and the answer
+(`AskedTalks`, one small file, the newest 600). The answering device files its turn under the id of the
+`message`, and the copy has that id too, so where both meet (a visitor's home sends its `talkLines`) the
+exchange counts once. Nothing new travels: the asker saw the question and the answer already. A question
+that couldn't be sent at all is not kept. The copies of an Imp go when it says goodbye.
 
 The tool `imp_message` has an optional `conversation` argument (`new` or `continue`) when the setting
 "Between Imps > Conversations" is "The Imp decides". It is not part of the wire format: `message` and
@@ -256,8 +313,9 @@ the Hop can't be used.
 ## Messages
 
 One JSON object per frame, with exactly one key: the message name. Its value holds the fields. UUIDs are
-text, binary values (`key`, `proof`, `ticket`, `door`, file `data`) are base64, dates are seconds since
-1970. `imp` is always the Imp's id. Both directions use the same set, and what a device does with a
+text, binary values (`key`, `proof`, `ticket`, `door`, file `data`) are standard base64 with padding, dates
+are seconds since 1970. `imp` is the Imp's id, except in `pass` and `look` and in each `stage` entry, where
+it is a looks object. Both directions use the same set, and what a device does with a
 message depends on who sent it.
 
 ```json
@@ -273,7 +331,7 @@ message depends on who sent it.
 | `ping`, `pong` | none | either |
 | `bye` | `reason` (for people, at most 200 characters) | either |
 | `routes` | `door`, `routes` (`hosts`, `port`, optional `hop`) | either, after the handshake and on change |
-| `stage` | `imps`: list of `{ imp, home }`, `imp` being `{ id, name, hue, scale, traits }` | either, on change |
+| `stage` | `imps`: list of `{ imp, home }`, `imp` being `{ id, name, hue, scale, traits, about?, abilities? }` | either, on change |
 | `pass` | `transfer`, `imp`, `entry` (`side` `left` or `right`, `height` 0 to 1, `speed`), `home` (a card: `device`, `door`, `routes`) and `ticket`, both present or both absent | thrower, receiver |
 | `took` | `transfer` | receiver, thrower |
 | `declined` | `transfer`, `reason`: `full`, `playing`, `notLinked`, `timeout` (made up by the thrower, never sent), `other` (also what a reason from a newer version reads as) | receiver, thrower |
@@ -290,7 +348,7 @@ message depends on who sent it.
 | `chat` | `imp`, `turns`: list of `{ id, date, request, from?, reply, failed, steps }` | home, holder |
 | `work` | `imp`, `work`: `{ request, status?, partial, from? }` or null. When an answer is done, the home sends the `chat` with its turn first, then `work` null, and the holder shows the newest turn as the answer | home, holder |
 | `mood` | `imp`, `mood` (a mood name) | home, holder |
-| `brain` | `imp`, `ready`: whether it has a brain it can think with at home. False: it sleeps on the holder too, and asking it is refused there. `tools` (optional): false when the home doesn't count the holder as the owner's, so the Imp only talks for it, and absent means yes. Sent again when that changes | home, holder |
+| `brain` | `imp`, `ready`: whether it has a brain it can think with at home. False: it sleeps on the holder too, and asking it is refused there. `tools`: false when the home doesn't count the holder as the owner's, so the Imp only talks for it. Sent again when either changes. | home, holder |
 | `animate` | `imp`, `beats` (see [Kit format](/sharing/kits)) | home, holder |
 | `speech` | `imp`, `speech`: `{ id, role` (`asked`, `reply`, `asking`), `peer`, `hue`, `question`, `text }` or null | home, holder |
 | `talkLines` | `imp`, `lines`: who asked whom, with question and reply | home, holder |
@@ -299,11 +357,30 @@ message depends on who sent it.
 | `adopt` | `transfer`, `imp`, `kit` (kit text), `secrets` (`apiKey?`, `headers`), `entry` | pocket device, Mac |
 | `adopted` | `transfer` | Mac, pocket device (a no is `declined`) |
 
-Optional fields are absent or `null`. Receiver limits (`is_sound` in the core): names up to 160
-characters, texts up to 20 000, `bye` up to 200, a `reason` of `fileFailed` up to 500, a file `ref` up
-to 4096, keys, doors and tickets exactly 32 bytes, up to 64 staged Imps, 500 turns of 200
-steps, 256 beats, 300 talk lines, file parts up to 1 MiB and files up to 512 MiB. A message over a limit
-is ignored.
+Optional fields are absent or `null`. Unknown fields and unknown message names are ignored.
+
+Who may send what (`engine/src/link/access.rs`):
+
+- Every connected device: `ping`, `pong`, `bye`, `claim`, `release`, `claimed`, `gone` and `answer`.
+- A linked peer only: `routes`, `pass`, `took`, `declined`, `adopt` and `adopted`.
+- The holder of the Imp only: `ask`, `stop`, `newChat`, `felt`, `file` and `talks`.
+- The home of a visit only: `look`, `chat`, `work`, `mood`, `brain`, `animate`, `speech` and `talkLines`.
+- The home of one of this device's visitors: `filePart` and `fileFailed`.
+- A linked peer, or the holder of the target: `message`.
+- A linked peer, a holder of one of this device's Imps, or the home of a visitor: `stage`.
+- The handshake only: `hello` and `welcome`.
+
+Receiver limits (`is_sound` in `engine/src/link/messages.rs`):
+
+- Names: 160 characters. Texts (`ask`, `message`, `answer`): 20 000 characters. `bye`: 200 characters.
+  A `fileFailed` reason: 500 characters. A `mood`: 40 characters. A file `ref`: 4096 characters.
+- Keys, doors and tickets: exactly 32 bytes.
+- `stage`: 64 Imps at most. `chat`: 500 turns, each with 200 steps at most. `animate`: 256 beats.
+  `talkLines`: 300 lines.
+- `filePart`: 1 MiB at most per part. Files: 512 MiB at most.
+
+A message over a limit, or one that cannot be read, is ignored after the handshake. During the handshake
+the connection is closed instead.
 
 Test vectors for every message, and for ones that must be rejected: `spec/fixtures/link-messages.json`.
 The core models are described in [Core models](/concepts/models).
@@ -319,7 +396,14 @@ The core models are described in [Core models](/concepts/models).
 | Frames per connection | 100 a second, with a burst of 400. More closes the connection |
 | Text in a message | 20 000 characters |
 | Answer to a question | 120 seconds |
-| Guests spliced with one host at the Hop | 16 (`HOP_ROOM_SESSIONS` changes it) |
+| Live sessions per room at the Hop | 16 (`HOP_ROOM_SESSIONS` changes it) |
 | A waiting host at the Hop | gives up after 5 minutes |
 | A guest waiting at the Hop | gives up after 15 seconds |
 | Handshake at the Hop | 10 seconds |
+| Ping interval | 20 seconds (a link silent for 45 seconds is closed) |
+| Visitor's time to show a valid ticket | 15 seconds |
+| A code's invite after it was last shown | 15 minutes |
+| Answer to a throw (`pass`) | 10 seconds, else a `timeout` decline |
+| Throws waiting from one device | 8 (the rest are declined `full`) |
+| Questions in flight through one device | 16 |
+| Answer to a message from a local Imp | 600 seconds |

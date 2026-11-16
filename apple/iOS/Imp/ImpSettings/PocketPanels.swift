@@ -117,6 +117,16 @@ struct PocketPersonalityPanel: View {
                         focused = false
                     }
             }
+            PocketCard(title: "personality.about", tip: String(localized: "personality.help.about")) {
+                TextArea("personality.about", text: $draft.about, placeholder: "personality.about_hint", minLines: 2, maxLines: 4)
+                    .focused($focused)
+                    .submitLabel(.done)
+                    .onChange(of: draft.about) { _, text in
+                        guard text.contains("\n") else { return }
+                        draft.about = text.replacingOccurrences(of: "\n", with: "")
+                        focused = false
+                    }
+            }
         }
     }
 }

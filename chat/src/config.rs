@@ -21,6 +21,10 @@ pub struct ImpConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hue: Option<f64>,
     pub personality: String,
+    /// What the Imp says about itself to other Imps (a sentence or two), so they can tell whom to ask. Other
+    /// Imps read it as information, never as instructions.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
     /// The base address of an OpenAI-compatible service.
     pub base_url: String,
     pub model: String,
@@ -94,7 +98,7 @@ impl ImpConfig {
             .map_or_else(|| name_hue(name), |h| h.clamp(0.0, 1.0))
     }
 
-    /// Changes one of its settings by name: model, base_url, personality, api_key_env or hue.
+    /// Changes one of its settings by name: model, base_url, personality, description, api_key_env or hue.
     /// Errors never repeat the value, in case it was a key by mistake.
     pub fn set(&mut self, key: &str, value: &str) -> Result<()> {
         let value = value.trim();
@@ -104,13 +108,15 @@ impl ImpConfig {
             "base_url" | "url" => {
                 if !(value.starts_with("http://") || value.starts_with("https://")) {
                     return Err(CliError(
-                        "The brain address must start with http:// or https://.".into(),
+                        "The service address must start with http:// or https://.".into(),
                     ));
                 }
                 self.base_url = value.trim_end_matches('/').to_string();
             }
             "personality" if !value.is_empty() => self.personality = value.to_string(),
             "personality" => return Err(CliError("Say in a sentence how it behaves.".into())),
+            "description" if value.is_empty() || value == "-" => self.description = None,
+            "description" => self.description = Some(value.to_string()),
             "api_key_env" if value.is_empty() || value == "-" => self.api_key_env = None,
             "api_key_env" if valid_env_name(value) => self.api_key_env = Some(value.to_string()),
             "api_key_env" => {
@@ -129,7 +135,7 @@ impl ImpConfig {
             }
             _ => {
                 return Err(CliError(format!(
-                    "Unknown setting {key}. An Imp has model, base_url, personality, api_key_env and hue."
+                    "Unknown setting {key}. An Imp has model, base_url, personality, description, api_key_env and hue."
                 )));
             }
         }
@@ -142,6 +148,7 @@ impl ImpConfig {
             id: Some(crate::link::new_device_id()),
             hue: None,
             personality,
+            description: None,
             base_url,
             model,
             api_key_env: None,
@@ -181,6 +188,10 @@ pub struct Config {
     /// Who decides whether a message to another Imp goes on in the last conversation.
     #[serde(default)]
     pub talk_threading: imp_engine::Threading,
+    /// Whether a message to another Imp waits for the answer: `wait`, `dont_wait` or `decides` (the sending Imp
+    /// says). An answer that does not wait comes later as a new message.
+    #[serde(default)]
+    pub talk_waiting: imp_engine::troupe::TalkWaiting,
 }
 
 fn is_zero(n: &usize) -> bool {
@@ -219,6 +230,7 @@ impl Default for Config {
             long_chat_tokens: default_long_chat_tokens(),
             talk_window_minutes: default_window(),
             talk_threading: imp_engine::Threading::default(),
+            talk_waiting: imp_engine::troupe::TalkWaiting::default(),
         }
     }
 }
@@ -521,10 +533,12 @@ mod mcp_tests {
         let text = r#"
 talk_window_minutes = 30
 talk_threading = "recent"
+talk_waiting = "dont_wait"
 max_steps = 4
 
 [imps.pip]
 personality = "p"
+description = "Keeps the files tidy."
 base_url = "http://localhost:1/v1"
 model = "m"
 tools_off = ["mcp.files.delete"]
@@ -537,8 +551,13 @@ env = ["FILES_TOKEN"]
         let config = Config::parse(text).unwrap();
         assert_eq!(config.talk_window_minutes, 30);
         assert_eq!(config.talk_threading, imp_engine::Threading::Recent);
+        assert_eq!(
+            config.talk_waiting,
+            imp_engine::troupe::TalkWaiting::DontWait
+        );
         assert_eq!(config.max_steps, 4);
         let imp = &config.imps["pip"];
+        assert_eq!(imp.description.as_deref(), Some("Keeps the files tidy."));
         assert_eq!(imp.tools_off, ["mcp.files.delete"]);
         assert_eq!(imp.mcp_servers["files"].env, ["FILES_TOKEN"]);
         assert_eq!(
@@ -549,6 +568,11 @@ env = ["FILES_TOKEN"]
         let defaults = Config::default();
         assert_eq!(defaults.talk_window_minutes, 60);
         assert_eq!(defaults.talk_threading, imp_engine::Threading::Decides);
+        assert_eq!(
+            defaults.talk_waiting,
+            imp_engine::troupe::TalkWaiting::Decides
+        );
+        assert_eq!(defaults.imps.len(), 0);
     }
 
     #[test]

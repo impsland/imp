@@ -17,6 +17,9 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     public var scale = 1.0
     /// Who this Imp is: the first part of the system prompt for conversations with it.
     public var personality: String
+    /// What it is good at, in a line or two: the other Imps read it to know whom to ask. `nil`: not said
+    /// (optional, so older profiles load). Cut to `maxAboutLength` when it is used (`troupeAboutLine`).
+    public var about: String?
     /// The rest of the system prompt: how its replies are shown (Markdown, pictures, players).
     /// `nil` follows the built-in text (`Briefing.display`, which may improve in later versions).
     /// An empty string sends the personality alone.
@@ -112,6 +115,8 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     /// The instructions in effect: the user's own, or the built-in ones.
     public var effectiveInstructions: String { instructions ?? Briefing.display }
 
+    public static let maxAboutLength = 200
+
     public var remembersToolCalls: Bool { sendsToolCalls ?? true }
     /// The size at which a long chat gets a gentle suggestion to recap it or start a new one.
     public var newChatAt: Int { newChatAtTokens.flatMap { Self.newChatChoices.contains($0) ? $0 : nil } ?? Self.newChatDefault }
@@ -132,12 +137,15 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
             .joined(separator: "\n\n")
     }
 
+    /// The name of the first Imp, on the Mac and on the iPhone.
+    public static let firstName = "Pip"
+
     /// A stable identity for the first Imp.
     public static let defaultID = UUID(uuidString: "1A1A1A1A-0000-4000-8000-00000000F00D")!
 
-    /// Our little red Imp. Red is its favourite colour too.
+    /// Our little red Imp, Pip. Red is its favourite colour too. Not called "Imp", so it is never confused with the app.
     public static var imp: ImpProfile {
-        ImpProfile(id: defaultID, name: "Imp", hue: defaultHue, favoriteHue: defaultHue, personality: Persona.imp)
+        ImpProfile(id: defaultID, name: firstName, hue: defaultHue, favoriteHue: defaultHue, personality: Persona.imp)
     }
 
     /// Every Imp hatches red.
@@ -162,19 +170,23 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
         return min(d, 1 - d)
     }
 
-    /// A name nobody in the troupe has yet: random from the pool, or the first free one.
+    /// A name nobody in the troupe has yet: random from the pool, or the first free one. Once every name is
+    /// taken, a pool name with a number (`Pip 2`). Never "Imp": that is the app.
     public static func randomName(avoiding used: [String], random: Bool = true) -> String {
         let lower = Set(used.map { $0.lowercased() })
         let free = names.filter { !lower.contains($0.lowercased()) }
         if let n = random ? free.randomElement() : free.first { return n }
-        var i = used.count + 1
-        while lower.contains("imp \(i)") { i += 1 }
-        return "Imp \(i)"
+        for i in 2... {
+            if let n = names.first(where: { !lower.contains("\($0.lowercased()) \(i)") }) { return "\(n) \(i)" }
+        }
+        return names[0]
     }
 
-    static let names = ["Pip", "Nib", "Tock", "Mote", "Fizz", "Bram", "Quill", "Dot", "Sprocket", "Wick", "Juniper",
-                        "Biscuit", "Ziggy", "Pebble", "Clove", "Moxie", "Tinder", "Noodle", "Zest", "Gizmo", "Ember", "Truffle",
-                        "Cinder", "Bumble", "Smudge", "Pickle", "Fennel", "Kettle", "Mochi", "Sorrel", "Widget", "Puck"]
+    /// Short, cute names that sound about the same in most languages: mostly open syllables ending in a vowel,
+    /// none that means something rude or is a brand in a language we know of. Pip comes first: it's the first Imp.
+    static let names = ["Pip", "Dot", "Biscuit", "Mochi", "Momo", "Coco", "Lulu", "Nori", "Miso", "Tofu", "Yuzu",
+                        "Kiwi", "Mango", "Zuzu", "Pebble", "Noodle", "Bumble", "Pickle", "Ziggy", "Fizz", "Nib", "Puck",
+                        "Gizmo", "Ember", "Bean", "Button", "Muffin", "Peanut", "Waffle", "Toffee", "Poppy", "Sunny"]
 
     /// Skin colours to choose from.
     public static let colors: [(name: String, hue: Double)] = [

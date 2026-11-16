@@ -128,7 +128,7 @@ fn make(config: &mut Config, path: &Path, given: NewImp, io: &mut Io<'_>) -> Res
     };
     if !(base_url.starts_with("http://") || base_url.starts_with("https://")) {
         return Err(CliError(
-            "The brain address must start with http:// or https://.".into(),
+            "The service address must start with http:// or https://.".into(),
         ));
     }
     let model = match given.model {

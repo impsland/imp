@@ -356,7 +356,7 @@
   "personality.persona": {
     "note": "Field label for the text that tells the Imp who it is.",
     "en": "Persona",
-    "es": "Personaje",
+    "es": "Persona",
     "zh-Hans": "角色设定"
   },
   "personality.persona_hint": {
@@ -468,7 +468,7 @@
   "tools.group_off": {
     "note": "Under a tool group that is switched off.",
     "en": "Off",
-    "es": "Desactivado",
+    "es": "Apagado",
     "zh-Hans": "已关闭"
   },
   "tools.group_switch": {
@@ -526,13 +526,13 @@
     "note": "Status of an MCP server.",
     "en": "Could not start",
     "es": "No se pudo iniciar",
-    "zh-Hans": "启动没有成功"
+    "zh-Hans": "启动失败"
   },
   "tools.empty": {
     "note": "Empty state of the tools list.",
     "en": "No tools yet. Add some from a kit or an MCP server.",
     "es": "Aún no hay herramientas. Añade algunas desde un kit o un servidor MCP.",
-    "zh-Hans": "还没有工具。可以从工具包或 MCP 服务器添加。"
+    "zh-Hans": "还没有工具。可以从套件或 MCP 服务器添加。"
   },
   "tools.add": {
     "note": "Button that adds tools.",
@@ -620,13 +620,13 @@
     "note": "Help of the Brain source switch.",
     "en": "Use the Brain every Imp shares, or pick a different one just for this Imp.",
     "es": "Usa el Cerebro que comparten todos los Imps, o elige otro solo para este Imp.",
-    "zh-Hans": "使用所有小鬼共用的大脑，或只为这个小鬼选另一个。"
+    "zh-Hans": "使用所有 Imp 共用的大脑，或只为这个 Imp 选另一个。"
   },
   "brain.help.service": {
     "note": "Help of the service list.",
     "en": "Pick who does the thinking for this Imp.",
     "es": "Elige quién piensa por este Imp.",
-    "zh-Hans": "选择由谁来为这个小鬼思考。"
+    "zh-Hans": "选择由谁来为这个 Imp 思考。"
   },
   "brain.key": {
     "note": "Section: the secret key.",
@@ -638,7 +638,7 @@
     "note": "Help of the key field.",
     "en": "A secret password that lets the Imp use this service. It stays on this Mac.",
     "es": "Una contraseña secreta que deja al Imp usar este servicio. Se queda en este Mac.",
-    "zh-Hans": "一个秘密口令，让小鬼可以使用这项服务。它只保存在这台 Mac 上。"
+    "zh-Hans": "一个秘密口令，让 Imp 可以使用这项服务。它只保存在这台 Mac 上。"
   },
   "brain.help.model": {
     "note": "Help of the model picker.",
@@ -662,7 +662,7 @@
     "note": "Help of the body section.",
     "en": "Pick the colour and the size of this Imp.",
     "es": "Elige el color y el tamaño de este Imp.",
-    "zh-Hans": "选择这个小鬼的颜色和大小。"
+    "zh-Hans": "选择这个 Imp 的颜色和大小。"
   },
   "look.favourite": {
     "note": "Tooltip of the favourite colour button.",
@@ -674,13 +674,13 @@
     "note": "Help of the colour.",
     "en": "The colour of this Imp. Drag along the strip to change it.",
     "es": "El color de este Imp. Arrastra por la tira para cambiarlo.",
-    "zh-Hans": "这个小鬼的颜色。沿着色条拖动来改变。"
+    "zh-Hans": "这个 Imp 的颜色。沿着色条拖动来改变。"
   },
   "look.help.size": {
     "note": "Help of the size.",
     "en": "How big this Imp is on your screen.",
     "es": "Qué tan grande es este Imp en tu pantalla.",
-    "zh-Hans": "这个小鬼在屏幕上有多大。"
+    "zh-Hans": "这个 Imp 在屏幕上有多大。"
   },
   "look.help.character": {
     "note": "Help of the character section.",
@@ -740,7 +740,7 @@
     "note": "Help of the name field.",
     "en": "What you call this Imp. Say its name and it answers.",
     "es": "Cómo llamas a este Imp. Di su nombre y responde.",
-    "zh-Hans": "你怎么称呼这个小鬼。叫它的名字，它就会回答。"
+    "zh-Hans": "你怎么称呼这个 Imp。叫它的名字，它就会回答。"
   },
   "personality.help.persona": {
     "note": "Help of the persona field.",
@@ -776,7 +776,7 @@
     "note": "Help of the voice section.",
     "en": "What shows on your screen while this Imp talks out loud.",
     "es": "Se ve en tu pantalla mientras este Imp habla en voz alta.",
-    "zh-Hans": "这个小鬼大声说话时，你的屏幕上会出现什么。"
+    "zh-Hans": "这个 Imp 大声说话时，你的屏幕上会出现什么。"
   },
   "personality.voice_look": {
     "note": "Row: how the voice shows.",
@@ -794,7 +794,7 @@
     "note": "Help of the follow section.",
     "en": "Choose what this Imp does when you move your mouse pointer: stay still, look at it, or run after it.",
     "es": "Elige qué hace este Imp cuando mueves el puntero del ratón: quedarse quieto, mirarlo o correr tras él.",
-    "zh-Hans": "选择你移动鼠标指针时这个小鬼做什么：不动、看着它，或跟着它跑。"
+    "zh-Hans": "选择你移动鼠标指针时这个 Imp 做什么：不动、看着它，或跟着它跑。"
   },
   "moves.follow_how": {
     "note": "Row: how it follows the cursor.",
@@ -818,7 +818,7 @@
     "note": "Help of the own animations list.",
     "en": "Moves made for only this Imp. They play instead of the shared ones.",
     "es": "Movimientos hechos solo para este Imp. Se usan en lugar de los compartidos.",
-    "zh-Hans": "只为这个小鬼做的动作。它们会代替共用的动作。"
+    "zh-Hans": "只为这个 Imp 做的动作。它们会代替共用的动作。"
   },
   "moves.builtin": {
     "note": "Row: change a built-in move.",
@@ -836,37 +836,37 @@
     "note": "Help of the built-in moves row.",
     "en": "Pick one of the moves every Imp has and make a version only for this Imp.",
     "es": "Elige uno de los movimientos que tienen todos los Imps y haz una versión solo para este.",
-    "zh-Hans": "选一个所有小鬼都有的动作，为这个小鬼做一个专属版本。"
+    "zh-Hans": "选一个所有 Imp 都有的动作，为这个 Imp 做一个专属版本。"
   },
   "tools.help.built_in": {
     "note": "Help of the built-in tools list.",
     "en": "Things the Imp can already do, like look at your screen. Switch off any it should not use.",
     "es": "Cosas que el Imp ya sabe hacer, como mirar tu pantalla. Apaga las que no deba usar.",
-    "zh-Hans": "小鬼本来就会做的事，比如看你的屏幕。把不该用的关掉。"
+    "zh-Hans": "Imp 本来就会做的事，比如看你的屏幕。把不该用的关掉。"
   },
   "tools.help.mcp": {
     "note": "Help of the extra tools list.",
     "en": "Extra tools added from outside. Each one gives the Imp new things to do.",
     "es": "Herramientas extra añadidas de fuera. Cada una da al Imp cosas nuevas que hacer.",
-    "zh-Hans": "从外面加进来的额外工具。每个都让小鬼多会一些事。"
+    "zh-Hans": "从外面加进来的额外工具。每个都让 Imp 多会一些事。"
   },
   "tools.help.server": {
     "note": "Help of a tool server badge.",
     "en": "A program or website that gives the Imp more tools.",
     "es": "Un programa o sitio web que da más herramientas al Imp.",
-    "zh-Hans": "给小鬼提供更多工具的程序或网站。"
+    "zh-Hans": "给 Imp 提供更多工具的程序或网站。"
   },
   "tools.help.browser": {
     "note": "Help of the browser row.",
     "en": "Lets the Imp look at pages and use the browser you opened for it.",
     "es": "Deja al Imp ver páginas y usar el navegador que le abriste.",
-    "zh-Hans": "让小鬼查看网页，并使用你为它打开的浏览器。"
+    "zh-Hans": "让 Imp 查看网页，并使用你为它打开的浏览器。"
   },
   "triggers.help.list": {
     "note": "Help of the triggers list.",
     "en": "A trigger wakes the Imp up by itself when something happens, like a time or a low battery.",
     "es": "Un disparador despierta al Imp solo cuando pasa algo, como una hora o poca batería.",
-    "zh-Hans": "触发器会在发生某件事时自动叫醒小鬼，比如到了某个时间或电量低。"
+    "zh-Hans": "触发器会在发生某件事时自动叫醒 Imp，比如到了某个时间或电量低。"
   },
   "triggers.help.name": {
     "note": "Help of the trigger name.",
@@ -884,13 +884,13 @@
     "note": "Help of the trigger action.",
     "en": "What the Imp does when it goes off.",
     "es": "Lo que hace el Imp cuando se activa.",
-    "zh-Hans": "触发时小鬼要做什么。"
+    "zh-Hans": "触发时 Imp 要做什么。"
   },
   "triggers.help.input": {
     "note": "Help of the trigger input.",
     "en": "What the Imp gets to look at when it goes off, like the clipboard.",
     "es": "Lo que el Imp puede mirar cuando se activa, como el portapapeles.",
-    "zh-Hans": "触发时小鬼能看到什么，比如剪贴板。"
+    "zh-Hans": "触发时 Imp 能看到什么，比如剪贴板。"
   },
   "triggers.instruction": {
     "note": "Field: the instruction.",
@@ -902,7 +902,7 @@
     "note": "Help of the instruction field.",
     "en": "Tell the Imp in your own words what to do.",
     "es": "Dile al Imp con tus palabras qué hacer.",
-    "zh-Hans": "用你自己的话告诉小鬼要做什么。"
+    "zh-Hans": "用你自己的话告诉 Imp 要做什么。"
   },
   "triggers.help.for": {
     "note": "Help for the For choice in the trigger editor.",
@@ -920,13 +920,13 @@
     "note": "Help of the hop setting.",
     "en": "How high the Imp jumps in this beat.",
     "es": "Qué tan alto salta el Imp en este tiempo.",
-    "zh-Hans": "小鬼在这一拍里跳多高。"
+    "zh-Hans": "Imp 在这一拍里跳多高。"
   },
   "anim.help.tilt": {
     "note": "Help of the tilt setting.",
     "en": "How far the Imp leans to the side.",
     "es": "Cuánto se inclina el Imp hacia un lado.",
-    "zh-Hans": "小鬼向一侧倾斜多少。"
+    "zh-Hans": "Imp 向一侧倾斜多少。"
   },
   "anim.help.shape": {
     "note": "Help of the shape setting.",
@@ -938,7 +938,7 @@
     "note": "Help of the symbol setting.",
     "en": "A small picture that pops up beside the Imp.",
     "es": "Un dibujo pequeño que aparece junto al Imp.",
-    "zh-Hans": "在小鬼旁边冒出来的小图案。"
+    "zh-Hans": "在 Imp 旁边冒出来的小图案。"
   },
   "anim.help.beats": {
     "note": "Help of the beats track.",
@@ -974,7 +974,7 @@
     "note": "Help of the Den server.",
     "en": "Where people share Imps, animations, triggers and tools.",
     "es": "Donde la gente comparte Imps, animaciones, disparadores y herramientas.",
-    "zh-Hans": "大家分享小鬼、动画、触发器和工具的地方。"
+    "zh-Hans": "大家分享 Imp、动画、触发器和工具的地方。"
   },
   "den.help.search": {
     "note": "Help of the Den search.",
@@ -1022,13 +1022,13 @@
     "note": "Help of the kit paste field.",
     "en": "Paste a kit, a web address or an imp:// link, or drop a file. You look at it first.",
     "es": "Pega un kit, una dirección web o un enlace imp://, o suelta un archivo. Primero lo revisas.",
-    "zh-Hans": "粘贴一个套装、网址或 imp:// 链接，或放入文件。你会先查看。"
+    "zh-Hans": "粘贴一个套件、网址或 imp:// 链接，或放入文件。你会先查看。"
   },
   "kit.help.chats": {
     "note": "Help of bringing chats along.",
     "en": "Also copy what this Imp talked about.",
     "es": "Copia también de lo que habló este Imp.",
-    "zh-Hans": "同时复制这个小鬼聊过的内容。"
+    "zh-Hans": "同时复制这个 Imp 聊过的内容。"
   },
   "kit.help.tools": {
     "note": "Help of the kit tools.",
@@ -1040,7 +1040,7 @@
     "note": "Help of skipped items.",
     "en": "Things in the kit this Mac cannot use, so they are left out.",
     "es": "Cosas del kit que este Mac no puede usar, por eso se dejan fuera.",
-    "zh-Hans": "套装里这台 Mac 用不了的东西，所以被略过。"
+    "zh-Hans": "套件里这台 Mac 用不了的东西，所以被略过。"
   },
   "brain.choose": {
     "note": "Primary button of a sleeping Imp's Brain panel when services exist but none is chosen.",
@@ -1144,7 +1144,7 @@
   "triggers.delete_every": {
     "note": "Destructive action on a shared trigger: delete it for every Imp.",
     "en": "Delete for every Imp",
-    "es": "Borrar para todos",
+    "es": "Eliminar para todos",
     "zh-Hans": "为所有 Imp 删除"
   },
   "triggers.delete_every.title": {
@@ -1153,7 +1153,7 @@
       "name": "string"
     },
     "en": "Delete “{name}” for every Imp?",
-    "es": "¿Borrar “{name}” para todos?",
+    "es": "¿Eliminar “{name}” para todos?",
     "zh-Hans": "为所有 Imp 删除“{name}”？"
   },
   "triggers.starter": {
@@ -1266,7 +1266,7 @@
     "note": "Message of the dialog that removes a tool server.",
     "en": "The Imp loses the tools of this server.",
     "es": "El Imp pierde las herramientas de este servidor.",
-    "zh-Hans": "小妖将不能再用这台服务器的工具。"
+    "zh-Hans": "Imp 将不能再用这台服务器的工具。"
   },
   "tools.problem.address": {
     "note": "Problem on a tool server with no address.",
@@ -1317,7 +1317,7 @@
     "note": "Row in the Imp's Memory card.",
     "en": "New chat at",
     "es": "Chat nuevo en",
-    "zh-Hans": "新聊天于"
+    "zh-Hans": "新聊天上限"
   },
   "memory.new_chat.info": {
     "note": "Info for New chat at.",
@@ -1353,6 +1353,24 @@
     "note": "Help of the Built in tools card on the iPhone.",
     "en": "What the Imp can do by itself. Switch off what it shouldn't use.",
     "es": "Lo que el Imp puede hacer por sí solo. Desactiva lo que no deba usar.",
-    "zh-Hans": "小妖自带的能力。关闭不希望它使用的功能。"
+    "zh-Hans": "Imp 自带的能力。关闭不希望它使用的功能。"
+  },
+  "personality.about": {
+    "note": "Field label: what the Imp is good at, which other Imps read to know whom to ask.",
+    "en": "What it's good at",
+    "es": "En qué destaca",
+    "zh-Hans": "擅长什么"
+  },
+  "personality.about_hint": {
+    "note": "Placeholder of the field about what the Imp is good at.",
+    "en": "Researching on the web, fixing code…",
+    "es": "Investigar en la web, arreglar código…",
+    "zh-Hans": "上网查资料、修代码……"
+  },
+  "personality.help.about": {
+    "note": "Help of the field about what the Imp is good at.",
+    "en": "One or two lines. The other Imps read it to know whom to ask for what.",
+    "es": "Una o dos líneas. Los otros Imps la leen para saber a quién pedirle cada cosa.",
+    "zh-Hans": "一两行字。其他 Imp 会读它，来决定什么事该问谁。"
   }
 }

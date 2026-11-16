@@ -86,6 +86,11 @@ struct RootView: View {
     /// Whether the sheet is up. There is one sheet, whatever it shows: it stays up while it goes from the chat to
     /// the settings or from one Imp to another, and only its content and its height change. Swiping it away goes
     /// straight back to the room.
+    /// Who is here, for the sheets: an Imp's sheet closes once it is somewhere else.
+    private var presence: PhonePresence {
+        PhonePresence(room: PhoneStage.everyone(hub, pocket).map(\.imp.id), own: Set(pocket.imps.map(\.id)), away: hub.away)
+    }
+
     private var sheetUp: Binding<Bool> {
         Binding(get: { router.route != nil }, set: { if !$0 { router.dismissed() } })
     }
@@ -145,10 +150,9 @@ struct RootView: View {
             if let new { withImpAnimation(ImpDesign.Motion.scene, reduceMotion: reduceMotion) { shownRoute = new } }
             if new == nil || old?.id != new?.id { detent = .medium }
         }
-        // An Imp that went home, moved away or said goodbye takes its sheet with it.
-        .onChange(of: PhoneStage.everyone(hub, pocket).map(\.imp.id)) { old, new in
-            for id in old where !new.contains(id) && !pocket.contains(id) { router.left(id) }
-        }
+        // An Imp that went home, moved away or said goodbye takes its sheet with it. One of this iPhone thrown to
+        // another device takes its chat too, once that device has it: it can't be in two places (`PhoneRouter.departed`).
+        .onChange(of: presence) { old, new in router.roomChanged(from: old, to: new) }
         // One sheet for every route, so each looks and behaves the same however it was reached (from the room, or
         // from another sheet): the grab bar on top, half height where the room should stay in view, full height for
         // settings that need the whole screen. Changing what it shows never puts it away and brings another.
@@ -202,8 +206,8 @@ struct RootView: View {
         if !awake { router.open(.edit(id, brain: true)) }
     }
 
-    /// Close, in every sheet: back to the Imp's sheet a step was taken from, otherwise to the room.
-    private func close() { router.close(exists: { pocket.contains($0) || hub.visit($0) != nil }) }
+    /// Close, in every sheet: back to the Imp's sheet a step was taken from (while that Imp is here), otherwise to the room.
+    private func close() { router.close(exists: { (pocket.contains($0) && !hub.away.contains($0)) || hub.visit($0) != nil }) }
 
     @ViewBuilder private func content(_ route: PhoneRoute) -> some View {
         switch route {

@@ -29,6 +29,11 @@ struct TalkingPane: View {
                                  title: { $0.title }, symbol: { $0.symbol })
                 }
                 .settingAnchor(.talkingThreads)
+                Row("settings.talking.waiting.title", icon: "hourglass", info: "settings.talking.waiting.info") {
+                    ImpSegmented("settings.talking.waiting.title", selection: $model.prefs.talkWaiting, options: TalkWaiting.allCases,
+                                 title: { $0.title }, symbol: { $0.symbol })
+                }
+                .settingAnchor(.talkingWaiting)
                 if model.prefs.talkThreading == .recent || model.prefs.talkThreading == .decides {
                     Row("settings.talking.window.title", icon: "clock", info: "settings.talking.window.info") {
                         ImpStepper(value: $model.prefs.talkWindowMinutes, in: 1...TalkThreading.maxWindowMinutes, step: 15) {
@@ -50,6 +55,16 @@ extension ImpTalk {
         switch self {
         case .own: "bubble.left.and.bubble.right"
         case .shared: "bubble.left"
+        case .decides: "sparkles"
+        }
+    }
+}
+
+extension TalkWaiting {
+    var symbol: String {
+        switch self {
+        case .wait: "hourglass"
+        case .dontWait: "paperplane"
         case .decides: "sparkles"
         }
     }

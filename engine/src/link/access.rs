@@ -159,7 +159,7 @@ mod tests {
         let brain = LinkMessage::Brain {
             imp: id(1),
             ready: false,
-            tools: Some(false),
+            tools: false,
         };
         assert!(ok(&brain, 10, Standing::Visitor));
         assert!(!ok(&brain, 3, Standing::Peer));

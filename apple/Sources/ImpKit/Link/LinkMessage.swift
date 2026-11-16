@@ -1,3 +1,4 @@
+import ImpCore
 import Foundation
 
 // Imp Link messages (see `docs/connecting/link.md`). They are the JSON the core reads and writes, one per frame.
@@ -39,13 +40,42 @@ public struct LinkImp: Codable, Sendable, Equatable, Identifiable {
     public var hue: Double
     public var scale: Double
     public var traits: ImpTraits
+    /// What the Imp says it is good at (one or two lines), for the Imps that may message it. Untrusted
+    /// when it comes from another device: sanitize with `troupeAboutLine` before showing or using it.
+    public var about: String?
+    /// What it can do (`shell`, `browser`, its tool servers' names), likewise untrusted.
+    public var abilities: [String]
 
-    public init(id: UUID, name: String, hue: Double, scale: Double, traits: ImpTraits) {
+    public init(id: UUID, name: String, hue: Double, scale: Double, traits: ImpTraits, about: String? = nil, abilities: [String] = []) {
         self.id = id; self.name = name; self.hue = hue; self.scale = scale; self.traits = traits
+        self.about = about; self.abilities = abilities
     }
 
-    public init(_ profile: ImpProfile) {
-        self.init(id: profile.id, name: profile.name, hue: profile.hue, scale: profile.scale, traits: profile.traits)
+    /// `abilities`: what this device computed for the Imp (`ImpAbilities`); the profile alone can't know its tool servers' names.
+    public init(_ profile: ImpProfile, abilities: [String] = []) {
+        self.init(id: profile.id, name: profile.name, hue: profile.hue, scale: profile.scale, traits: profile.traits,
+                  about: profile.about.flatMap { ImpCore.troupeAboutLine(text: $0) },
+                  abilities: ImpCore.troupeAbilityTags(tags: abilities))
+    }
+
+    private enum CodingKeys: String, CodingKey { case id, name, hue, scale, traits, about, abilities }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(id: try c.decode(UUID.self, forKey: .id), name: try c.decode(String.self, forKey: .name),
+                  hue: try c.decode(Double.self, forKey: .hue), scale: try c.decode(Double.self, forKey: .scale),
+                  traits: try c.decode(ImpTraits.self, forKey: .traits),
+                  about: try c.decodeIfPresent(String.self, forKey: .about),
+                  abilities: try c.decodeIfPresent([String].self, forKey: .abilities) ?? [])
+    }
+
+    /// Written only when there is something to say: an empty description or list stays off the wire.
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(id, forKey: .id); try c.encode(name, forKey: .name); try c.encode(hue, forKey: .hue)
+        try c.encode(scale, forKey: .scale); try c.encode(traits, forKey: .traits)
+        if let about, !about.isEmpty { try c.encode(about, forKey: .about) }
+        if !abilities.isEmpty { try c.encode(abilities, forKey: .abilities) }
     }
 }
 
@@ -71,15 +101,17 @@ public struct LinkTurn: Codable, Sendable, Equatable, Identifiable {
     public var failed: Bool
     /// What the Imp did on the way (tool steps), as short titles.
     public var steps: [String]
+    /// True when `request` is not a request but the answer of the Imp `from` to a message this Imp sent without waiting.
+    public var answer: Bool?
 
-    public init(id: UUID, date: Date, request: String, from: String? = nil, reply: String, failed: Bool, steps: [String] = []) {
-        self.id = id; self.date = date; self.request = request; self.from = from
+    public init(id: UUID, date: Date, request: String, from: String? = nil, reply: String, failed: Bool, steps: [String] = [], answer: Bool? = nil) {
+        self.id = id; self.date = date; self.request = request; self.from = from; self.answer = answer
         self.reply = reply; self.failed = failed; self.steps = steps
     }
 
     public init(_ turn: ChatTurn) {
         self.init(id: turn.id, date: turn.date, request: turn.request, from: turn.sender?.name, reply: turn.reply,
-                  failed: turn.failed, steps: turn.steps.map(\.title))
+                  failed: turn.failed, steps: turn.steps.map(\.title), answer: turn.via == .answer ? true : nil)
     }
 }
 
@@ -183,9 +215,9 @@ public enum LinkDecline: String, Codable, Sendable, Equatable {
 }
 
 /// Both directions share this one enum: every device is a host to some and a guest to others, and
-/// either side can send any message. What a device does with one depends on who sent it (see
-/// `LinkAccess`). Messages this version doesn't know decode to nil and are ignored. `imp` is always
-/// the Imp's id.
+/// either side can send any message. What a device does with one depends on who sent it
+/// and what that sender may do.
+/// Messages this version does not know decode to nil and are ignored. `imp` is always the Imp's id.
 public enum LinkMessage: Codable, Sendable, Equatable {
     /// The Imps on this device's screen right now (sent whenever they change).
     case stage(imps: [LinkStaged])
@@ -238,8 +270,8 @@ public enum LinkMessage: Codable, Sendable, Equatable {
     /// needed, a key). Sent with everything else to a new holder and whenever it changes. Without
     /// one it sleeps wherever its body is (`Wakefulness`), and asking it is refused there at once.
     /// `tools`: whether the home lets it use its tools for what this holder asks (the holder is one of
-    /// the owner's devices there). Nil from older homes, read as yes.
-    case brain(imp: UUID, ready: Bool, tools: Bool? = nil)
+    /// the owner's devices there).
+    case brain(imp: UUID, ready: Bool, tools: Bool)
     /// Plays an animation, beat by beat.
     case animate(imp: UUID, beats: [AnimationBeat])
     /// What it's saying to another Imp right now (nil: nothing).

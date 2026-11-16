@@ -38,7 +38,7 @@
   "settings.map.hop_local": {
     "note": "Node: a Hop that runs on this computer.",
     "en": "The Hop on this computer",
-    "es": "Hop en este ordenador",
+    "es": "Hop en este equipo",
     "zh-Hans": "这台电脑上的 Hop"
   },
   "settings.map.state_ready": {
@@ -56,7 +56,7 @@
   "settings.map.state_off": {
     "note": "State of a node.",
     "en": "Off",
-    "es": "Desactivado",
+    "es": "Apagado",
     "zh-Hans": "已关闭"
   },
   "settings.map.state_offline": {
@@ -167,19 +167,19 @@
   "brains.default": {
     "note": "Label of the default Brain.",
     "en": "Default",
-    "es": "Normal",
+    "es": "Por defecto",
     "zh-Hans": "默认"
   },
   "brains.empty": {
     "note": "Empty state of the Brains list.",
     "en": "No Brains yet. Add a model on this computer or a service with your key.",
-    "es": "Aún no hay cerebros. Añade un modelo en este ordenador o un servicio con tu clave.",
+    "es": "Aún no hay cerebros. Añade un modelo en este equipo o un servicio con tu clave.",
     "zh-Hans": "还没有大脑。可以添加这台电脑上的模型，或使用你自己密钥的服务。"
   },
   "brains.local": {
     "note": "Choice when adding a Brain.",
     "en": "A model on this computer",
-    "es": "Un modelo en este ordenador",
+    "es": "Un modelo en este equipo",
     "zh-Hans": "这台电脑上的一个模型"
   },
   "brains.with_key": {
@@ -244,13 +244,13 @@
   "servers.preset.custom": {
     "note": "Server choice: an address the user types.",
     "en": "Custom",
-    "es": "Propio",
+    "es": "A medida",
     "zh-Hans": "自定义"
   },
   "servers.preset.off": {
     "note": "Server choice: no server.",
     "en": "Off",
-    "es": "Desactivado",
+    "es": "Apagado",
     "zh-Hans": "关闭"
   },
   "servers.address": {
@@ -280,7 +280,7 @@
   "servers.state_fail_local": {
     "note": "A check of a server set to This computer found nothing answering there. {server} is The Den or The Hop.",
     "en": "{server} isn't running on this computer. Start it first.",
-    "es": "{server} no se está ejecutando en este ordenador. Inícialo primero.",
+    "es": "{server} no se está ejecutando en este equipo. Inícialo primero.",
     "zh-Hans": "此电脑上没有运行 {server}。请先启动它。",
     "args": {
       "server": "string"
@@ -325,7 +325,7 @@
   "servers.off": {
     "note": "Shown next to a server choice that is off.",
     "en": "Off",
-    "es": "Desactivado",
+    "es": "Apagado",
     "zh-Hans": "已关闭"
   },
   "animations.title": {
@@ -409,7 +409,7 @@
   "privacy.computer_note": {
     "note": "Note under the switch.",
     "en": "Lets an Imp run commands on this computer when you ask.",
-    "es": "Deja que un Imp ejecute comandos en este ordenador cuando se lo pides.",
+    "es": "Deja que un Imp ejecute comandos en este equipo cuando se lo pides.",
     "zh-Hans": "你提出要求时，允许 Imp 在这台电脑上运行命令。"
   },
   "privacy.microphone": {
@@ -493,7 +493,7 @@
   "settings.group.devices": {
     "note": "Settings text.",
     "en": "Devices",
-    "es": "Dispositivos",
+    "es": "Equipos",
     "zh-Hans": "设备"
   },
   "settings.group.sharing": {
@@ -523,7 +523,7 @@
   "settings.app.control_ink.title": {
     "note": "Setting: white or black text, icons and switches on coloured buttons and controls.",
     "en": "On colour",
-    "es": "Sobre color",
+    "es": "Sobre el color",
     "zh-Hans": "彩色控件上"
   },
   "settings.app.control_ink.info": {
@@ -763,8 +763,8 @@
   "settings.devices.link.title": {
     "note": "Settings text.",
     "en": "Link",
-    "es": "Vincular",
-    "zh-Hans": "连接"
+    "es": "Enlazar",
+    "zh-Hans": "关联"
   },
   "settings.devices.link.info": {
     "note": "Settings text.",
@@ -775,19 +775,25 @@
   "settings.devices.pair.title": {
     "note": "Settings text.",
     "en": "Link",
-    "es": "Vincular",
-    "zh-Hans": "连接"
+    "es": "Enlazar",
+    "zh-Hans": "关联"
   },
   "settings.devices.mine.info": {
-    "note": "Settings text.",
-    "en": "The devices linked with this one.",
-    "es": "Los dispositivos vinculados con este.",
-    "zh-Hans": "与这台设备已连接的设备。"
+    "note": "Help beside the Mine switch of a linked device: what turning it on allows, and when to leave it off.",
+    "en": "Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools.",
+    "es": "Actívalo en un dispositivo que sea tuyo. Así sus Imps pueden escribir a los Imps de aquí, los Imps le responden con sus herramientas, puede abrir los archivos de cualquier Imp y un Imp que le lances va sin preguntar. Actívalo en los dos dispositivos para que los Imps hablen en ambos sentidos. Déjalo apagado en el de un amigo: los Imps le siguen respondiendo, pero sin herramientas.",
+    "zh-Hans": "如果这台设备是你自己的，就打开它。这样它上面的 Imp 可以给这里的 Imp 发消息，Imp 回答它时会使用工具，它能打开任何 Imp 的文件，把 Imp 扔给它时也不会先询问。两台设备都打开，Imp 才能互相对话。朋友的设备请保持关闭：Imp 仍会回答它，但不使用工具。"
+  },
+  "settings.devices.mine.help": {
+    "note": "Hover help of the Mine switch of a linked device.",
+    "en": "On for your own devices, off for a friend's",
+    "es": "Activado en tus dispositivos, apagado en el de un amigo",
+    "zh-Hans": "自己的设备打开，朋友的设备关闭"
   },
   "settings.devices.call_home": {
     "note": "Help of the button on a linked device that takes back the Imps it holds.",
     "en": "Call its Imps home",
-    "es": "Traer sus Imps",
+    "es": "Traer a sus Imps",
     "zh-Hans": "把它上面的 Imp 叫回家"
   },
   "settings.devices.forget_all.title": {
@@ -811,8 +817,8 @@
   "settings.privacy.computer.title": {
     "note": "Settings text.",
     "en": "This computer",
-    "es": "Este ordenador",
-    "zh-Hans": "这台电脑上"
+    "es": "Este equipo",
+    "zh-Hans": "这台 Mac 上"
   },
   "settings.privacy.microphone.title": {
     "note": "Settings text.",
@@ -847,7 +853,7 @@
   "settings.service.name.info": {
     "note": "Settings text.",
     "en": "A name you pick for this brain.",
-    "es": "Un nombre a tu gusto",
+    "es": "Un nombre a tu gusto.",
     "zh-Hans": "你给这个大脑取的名字。"
   },
   "settings.service.address.info": {
@@ -877,13 +883,13 @@
   "settings.service.local.info": {
     "note": "Settings text.",
     "en": "A brain that runs on this computer.",
-    "es": "Un cerebro que funciona en este ordenador.",
+    "es": "Un cerebro que funciona en este equipo.",
     "zh-Hans": "一个在这台电脑上运行的大脑。"
   },
   "settings.tool.name.info": {
     "note": "Settings text.",
     "en": "A name you pick for this tool.",
-    "es": "Un nombre a tu gusto",
+    "es": "Un nombre a tu gusto.",
     "zh-Hans": "你给这个工具取的名字。"
   },
   "settings.tool.address.info": {
@@ -968,7 +974,7 @@
     "note": "Settings text.",
     "en": "How many minutes a chat stays the same chat.",
     "es": "Cuántos minutos sigue siendo el mismo chat.",
-    "zh-Hans": "一个聊天保持为同一个聊天的分钟数。"
+    "zh-Hans": "同一个聊天能保持的时长，以分钟计。"
   },
   "app.window.title": {
     "note": "Card on the App page: the smallest size of the app's window.",
@@ -1088,7 +1094,7 @@
     "note": "Tooltip of a settings row.",
     "en": "How long a bubble stays after the Imp stops talking.",
     "es": "Cuánto se queda una burbuja después de que el Imp deja de hablar.",
-    "zh-Hans": "小妖说完话后，气泡会停留多久。"
+    "zh-Hans": "Imp 说完话后，气泡会停留多久。"
   },
   "settings.bubble.lines.info": {
     "note": "Tooltip of a settings row.",
@@ -1124,7 +1130,7 @@
     "note": "Tooltip of a settings row.",
     "en": "Which chat a message from one Imp to another lands in.",
     "es": "En qué chat llega un mensaje de un Imp a otro.",
-    "zh-Hans": "一只小妖发给另一只的消息落在哪个聊天里。"
+    "zh-Hans": "一个 Imp 发给另一个 Imp 的消息落在哪个聊天里。"
   },
   "devices.this_mac": {
     "note": "Title of the card for this Mac on the Devices page.",
@@ -1171,7 +1177,7 @@
   "devices.reach.away": {
     "note": "Help on a linked device: not reachable now.",
     "en": "Away",
-    "es": "Ausente",
+    "es": "No disponible",
     "zh-Hans": "不在线"
   },
   "sharing.gallery": {
@@ -1196,10 +1202,40 @@
     "note": "Help of the status dot of a server: its address and state.",
     "en": "{address}: {state}",
     "es": "{address}: {state}",
-    "zh-Hans": "{address}:{state}",
+    "zh-Hans": "{address}：{state}",
     "args": {
       "address": "string",
       "state": "string"
     }
+  },
+  "settings.talking.waiting.title": {
+    "note": "Settings text.",
+    "en": "Waiting",
+    "es": "Espera",
+    "zh-Hans": "等待"
+  },
+  "settings.talking.waiting.info": {
+    "note": "Settings text.",
+    "en": "Whether an Imp waits for the answer of the Imp it messages, or goes on and hears it later as a new turn.",
+    "es": "Si un Imp espera la respuesta del Imp al que escribe, o sigue y la recibe después como un turno nuevo.",
+    "zh-Hans": "Imp 给另一个 Imp 发消息后，是等对方回答，还是继续做事、之后再以新一轮收到回答。"
+  },
+  "settings.talking.waiting.wait": {
+    "note": "Option: the Imp waits for the answer.",
+    "en": "Wait",
+    "es": "Esperar",
+    "zh-Hans": "等待"
+  },
+  "settings.talking.waiting.dont_wait": {
+    "note": "Option: the Imp goes on without waiting for the answer.",
+    "en": "Don't wait",
+    "es": "No esperar",
+    "zh-Hans": "不等待"
+  },
+  "settings.talking.waiting.decides": {
+    "note": "Option: the Imp chooses per message whether to wait.",
+    "en": "The Imp decides",
+    "es": "El Imp decide",
+    "zh-Hans": "由 Imp 决定"
   }
 }

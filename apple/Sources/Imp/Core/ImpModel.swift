@@ -69,8 +69,15 @@ final class ImpModel {
     /// The view switched between resting (breath done by Core Animation) and drawing every frame.
     @ObservationIgnored var onRestingChange: ((Bool) -> Void)?
     @ObservationIgnored private var job: Task<Void, Never>?
+    /// Identifies the turn now running, so a turn that was replaced doesn't start the queue (`finishedTurn`).
+    @ObservationIgnored private var turnToken: UUID?
+    /// Answers to messages this Imp sent without waiting, that came while it was busy: each starts a turn
+    /// when the one before is over, in order. Not saved: they are lost on quit, like the answers still on their way.
+    @ObservationIgnored private var queuedAnswers: [Source] = []
+    /// How deep the turn now running is in a chain of answers (0: you or a trigger started it).
+    @ObservationIgnored private var turnDepth = 0
     /// A visitor's newest turn when its home started the work in progress, and whether the work ended
-    /// before the turn with its answer arrived (an older home sends them in that order).
+    /// before the turn with its answer arrived (an iPhone home ends the work before it files the turn).
     @ObservationIgnored private var turnBeforeWork: UUID?
     @ObservationIgnored private var answerDue = false
     @ObservationIgnored private var captionTask: Task<Void, Never>?
@@ -622,13 +629,13 @@ final class ImpModel {
     /// `limitedTo` names the device it comes from when that isn't one of the owner's own: the Imp
     /// answers without any tool then.
     func answer(_ text: String, from sender: ChatTurn.Sender, in place: ImpTalk.Place, conversation: String? = nil,
-                limitedTo device: String? = nil) async throws -> String {
+                limitedTo device: String? = nil, turnID: UUID? = nil) async throws -> String {
         guard !isBusy else { throw ToolArgumentError("\(profile.name) is busy right now. Try again later.") }
         // Files either side mentions are named by their owner Imp, so the other one can open them
         // (a path relative to one Workspace means nothing in another). See `WorkspaceReference`.
         let said = WorkspaceReference.canonicalize(text, owner: sender.id)
         let reply: String = try await withCheckedThrowingContinuation { c in
-            start(.message(from: sender, text: said, place: place, conversation: conversation), limitedTo: device)
+            start(.message(from: sender, text: said, place: place, conversation: conversation, id: turnID), limitedTo: device)
             replyTo = c
         }
         return WorkspaceReference.canonicalize(reply, owner: profile.id)
@@ -709,8 +716,29 @@ final class ImpModel {
         /// A trigger's instruction, with what was copied (nil: the instruction alone) and what set
         /// it off on the Mac (nil: the user did).
         case shortcut(Shortcut, Clip?, happened: String?)
-        /// Another Imp's message (`imp_message`).
-        case message(from: ChatTurn.Sender, text: String, place: ImpTalk.Place, conversation: String?)
+        /// Another Imp's message (`imp_message`). `id`: the id its turn is filed under, the question's id when it came
+        /// from another device (so the asker's copy and this one are one exchange, see `AskedTalks`).
+        case message(from: ChatTurn.Sender, text: String, place: ImpTalk.Place, conversation: String?, id: UUID?)
+        /// The answer to a message this Imp sent without waiting. `event` is what the model reads (the core's
+        /// words), `shown` what the chat shows, `from` who answered. `depth`: how many answers deep this turn is.
+        case answered(event: String, shown: String, from: ChatTurn.Sender, depth: Int)
+    }
+
+    /// An answer to a message this Imp sent without waiting arrived (or failed, or timed out): it gets a turn
+    /// of its own now if the Imp is free, else once the turn in progress is over. Dropped while the Imp
+    /// is a visitor (its home thinks for it) or asleep.
+    func receive(answer event: String, shown: String, from: ChatTurn.Sender, depth: Int) {
+        let source = Source.answered(event: event, shown: shown, from: from, depth: depth)
+        guard visit == nil, wakefulness.isAwake else { return }
+        if turnToken != nil || isBusy || bubble?.phase == .typing { queuedAnswers.append(source) } else { start(source) }
+    }
+
+    /// The turn that was running is over: the next queued answer starts, if the Imp is free.
+    private func finishedTurn(_ token: UUID) {
+        guard turnToken == token else { return }
+        turnToken = nil
+        guard !queuedAnswers.isEmpty, !isBusy, bubble?.phase != .typing, visit == nil, wakefulness.isAwake else { return }
+        start(queuedAnswers.removeFirst())
     }
 
     private func start(_ source: Source, limitedTo device: String? = nil) {
@@ -720,6 +748,7 @@ final class ImpModel {
         switch source {
         case .typed, .spoken: guard wakefulness.isAwake else { return refuseAsleep() }
         case .shortcut, .message: break
+        case .answered: guard wakefulness.isAwake else { return }
         }
         touch()
         app.focus(self)
@@ -727,7 +756,13 @@ final class ImpModel {
         stopActing()                                  // the last answer's show is over
         recapTask?.cancel()                           // a new turn would slip past the recap
         showPending(source)
-        job = Task { await run(source, limitedTo: device) }
+        let token = UUID()
+        turnToken = token
+        if case .answered(_, _, _, let depth) = source { turnDepth = depth } else { turnDepth = 0 }
+        job = Task { [weak self] in
+            await self?.run(source, limitedTo: device)
+            self?.finishedTurn(token)
+        }
     }
 
     /// Typed words show at once, before the job has started: in the chat as the newest turn with
@@ -777,16 +812,20 @@ final class ImpModel {
                 if case .text(let text)? = clip { copied = text }
                 ask = ChatTurn(request: shortcut.name, via: .shortcut, instruction: instruction.isEmpty ? nil : instruction,
                                copiedText: copied, picture: path)
-            case .message(let sender, let text, let place, let conversation):
+            case .message(let sender, let text, let place, let conversation, let id):
                 turn = Briefing.message(from: sender.name, text)
                 heading = text
-                ask = ChatTurn(request: text, via: .imp, sender: sender)
+                ask = ChatTurn(id: id ?? UUID(), request: text, via: .imp, sender: sender)
                 received = Bubble.Exchange(role: .asked, peer: sender, question: text)
                 if place == .own {
                     peerChat = sender
                     continuing = app.prefs.talkThreading.continues(asked: conversation, last: history.lastTalk(withPeer: sender.id),
                                                                    windowMinutes: app.prefs.talkWindowMinutes)
                 }
+            case .answered(let event, let shown, let from, _):
+                turn = .user(event)
+                heading = String(format: String(localized: "exchange.answered"), from.name)
+                ask = ChatTurn(request: shown, via: .answer, sender: from)
             }
             work = ask.map { Work(ask: $0, heading: heading, title: title, received: received, peerChat: peerChat, continuing: continuing) }
             log.info("\(self.profile.name, privacy: .public) works on “\(title.isEmpty ? "a message" : title, privacy: .public)”")
@@ -797,7 +836,7 @@ final class ImpModel {
             if case .message = source { messaging = false }       // answering an Imp: no messaging back and forth
             // Asked from a device that isn't the owner's own: plain conversation, nothing that acts.
             let tools = device != nil ? nil
-                : try app.assistant.tools(for: profile, own: ImpTools(host: OwnToolHost(app: app, imp: id, messaging: messaging)))
+                : try app.assistant.tools(for: profile, own: ImpTools(host: OwnToolHost(app: app, imp: id, messaging: messaging, depth: turnDepth)))
             if device == nil, app.assistant.toolsConnecting { addStep(.wakingUp) }
             let (reply, exchange) = try await app.assistant.chat(messages(with: turn, peer: peerChat, continuing: continuing, limitedTo: device), brain: profile.brain, tools: tools,
                                                                  stream: true) { [weak self] event in

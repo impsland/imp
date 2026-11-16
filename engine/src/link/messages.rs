@@ -169,6 +169,13 @@ pub struct LinkImp {
     pub hue: f64,
     pub scale: f64,
     pub traits: LinkTraits,
+    /// What the Imp says about itself to other Imps (`imp_engine::troupe::about_line` makes it safe to read).
+    /// Left out by apps that don't send one.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub about: Option<String>,
+    /// What the Imp can do, in a few words each (`imp_engine::troupe::ability_tags`).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub abilities: Vec<String>,
 }
 
 /// An Imp on someone's screen, and the device it thinks on.
@@ -385,12 +392,11 @@ pub enum LinkMessage {
     },
     /// Whether it has a brain it can think with at its home. False: it sleeps on the holder too.
     /// `tools`: whether its home lets it use its tools for what the holder asks (the holder is one of
-    /// the owner's devices there). Absent from older homes, which is read as yes.
+    /// the owner's devices there).
     Brain {
         imp: Uuid,
         ready: bool,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        tools: Option<bool>,
+        tools: bool,
     },
     Animate {
         imp: Uuid,
@@ -595,6 +601,29 @@ mod tests {
     }
 
     use super::*;
+
+    const OLD_IMP: &str = r#"{"id":"00000000-0000-0000-0000-000000000001","name":"Pip","hue":0.5,"scale":1.0,"traits":{"lids":0,"slant":0,"eyes":0,"squint":0,"horns":0,"blush":0,"tilt":0,"tempo":0}}"#;
+
+    #[test]
+    fn an_imp_without_about_or_abilities_still_reads_and_does_not_write_them() {
+        let old: LinkImp = serde_json::from_str(OLD_IMP).unwrap();
+        assert_eq!((old.about.as_deref(), old.abilities.len()), (None, 0));
+        // An older app gets nothing it does not know.
+        let written = serde_json::to_string(&old).unwrap();
+        assert!(
+            !written.contains("about") && !written.contains("abilities"),
+            "{written}"
+        );
+        let with = LinkImp {
+            about: Some("researches the web".into()),
+            abilities: vec!["browser".into(), "shell".into()],
+            ..old
+        };
+        let json = serde_json::to_value(&with).unwrap();
+        assert_eq!(json["about"], "researches the web");
+        assert_eq!(json["abilities"], serde_json::json!(["browser", "shell"]));
+        assert_eq!(serde_json::from_value::<LinkImp>(json).unwrap(), with);
+    }
 
     #[test]
     fn unknown_and_malformed() {

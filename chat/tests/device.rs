@@ -216,6 +216,8 @@ fn pocket_imp() -> LinkImp {
         hue: 0.3,
         scale: 1.0,
         traits: LinkTraits::default(),
+        about: None,
+        abilities: Vec::new(),
     }
 }
 
@@ -404,7 +406,7 @@ async fn an_imp_of_the_phone_visits_the_computer_and_answers_through_its_home() 
                 &LinkMessage::Brain {
                     imp: id,
                     ready: true,
-                    tools: Some(false),
+                    tools: false,
                 },
                 desk,
             )

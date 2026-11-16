@@ -50,6 +50,8 @@ final class PocketDraft {
     var scale: Double
     var traits: ImpTraits
     var personality: String
+    /// What it is good at (the other Imps read it).
+    var about: String
     var servers: [ServerDraft]
     /// The Imp's own tools switched off, by registry id.
     var toolsOff: Set<String>
@@ -67,6 +69,7 @@ final class PocketDraft {
         scale = imp?.scale ?? PocketRuntime.newSize
         traits = imp?.traits ?? .plain
         personality = imp.map { $0.personality == Persona.pocket(named: $0.name) ? "" : $0.personality } ?? ""
+        about = imp?.about ?? ""
         brain = imp?.brain ?? PocketService()
         toolsOff = Set(imp?.toolsOff ?? [])
         servers = imp?.servers.map { server -> ServerDraft in
@@ -184,6 +187,7 @@ final class PocketDraft {
             imp.scale = scale
             imp.traits = traits
             imp.personality = words
+            imp.about = about.trimmed.isEmpty ? nil : about.trimmed
             imp.brain = service
             imp.servers = made.map(\.0)
             imp.toolsOff = off.isEmpty ? nil : off
@@ -193,7 +197,7 @@ final class PocketDraft {
     /// What saving depends on, to save again when it changes. Header values count, so a typed one is kept.
     /// The name is first and the personality fifth (the editor waits longer after typing).
     var fingerprint: [String] {
-        [name, "\(hue)", "\(scale)", String(describing: traits), personality, toolsOff.sorted().joined(separator: ","), brain.baseURL, brain.model]
+        [name, "\(hue)", "\(scale)", String(describing: traits), personality, about, toolsOff.sorted().joined(separator: ","), brain.baseURL, brain.model]
             + servers.flatMap { [$0.name, $0.url] + $0.headers.flatMap { [$0.name, $0.value] } }
     }
 }

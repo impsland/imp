@@ -11,12 +11,14 @@ use crate::chat::{ChatError, ChatMessage, ChatReply, StreamEvent, ToolCall, Tool
 use crate::retry::RetryNotice;
 use crate::tools::ToolEntry;
 #[cfg(feature = "io")]
-use crate::tools::{ToolSelection, refusal};
+use crate::tools::{ToolSelection, refusal, runs_concurrently};
 #[cfg(feature = "io")]
 use std::cell::RefCell;
 use std::future::Future;
 use std::pin::Pin;
 use std::rc::Rc;
+#[cfg(feature = "io")]
+use std::task::Poll;
 
 /// What the machine wants next.
 #[derive(Debug, Clone, PartialEq)]
@@ -228,9 +230,33 @@ pub enum AgentError {
     Chat(#[from] ChatError),
 }
 
+/// Runs the futures at the same time on the current task and calls `done` with each one's index and
+/// result as it finishes. Returns when all have. The futures are not `Send`, so this does not spawn them.
+#[cfg(feature = "io")]
+async fn join_each<T>(futures: Vec<BoxFuture<'_, T>>, mut done: impl FnMut(usize, T)) {
+    let mut open: Vec<Option<BoxFuture<'_, T>>> = futures.into_iter().map(Some).collect();
+    std::future::poll_fn(|cx| {
+        for (index, slot) in open.iter_mut().enumerate() {
+            if let Some(future) = slot
+                && let Poll::Ready(value) = future.as_mut().poll(cx)
+            {
+                *slot = None;
+                done(index, value);
+            }
+        }
+        if open.iter().all(Option::is_none) {
+            Poll::Ready(())
+        } else {
+            Poll::Pending
+        }
+    })
+    .await;
+}
+
 /// Runs the loop with `client` and `host`. New assistant and tool messages are added to
 /// `messages`. Returns the text of the final answer. Calls to tools that are switched off or
-/// unknown are answered with a refusal.
+/// unknown are answered with a refusal. Calls to Imps in one reply (`runs_concurrently`) run at the
+/// same time. Their results still go into `messages` in the order they were called.
 #[cfg(feature = "io")]
 pub async fn run_agent(
     client: &OpenAiClient,
@@ -270,20 +296,55 @@ pub async fn run_agent(
             Err(error) => break Err(AgentError::from(error)),
         };
         emit(AgentEvent::StepEnd);
-        for call in run.reply(reply) {
-            emit(AgentEvent::ToolStart(call.clone()));
-            let content = if offered.iter().any(|s| s.name == call.name) {
-                host.call(&call.name, &call.arguments).await
+        let calls = run.reply(reply);
+        let mut at = 0;
+        while at < calls.len() {
+            // Calls that may run together, if they come one after another, go out at the same time. Any
+            // other call goes alone, after the ones before it, so a tool that depends on the order still can.
+            let group = if runs_concurrently(&calls[at].name) {
+                calls[at..]
+                    .iter()
+                    .take_while(|c| runs_concurrently(&c.name))
+                    .count()
             } else {
-                None
+                1
+            };
+            let group = &calls[at..at + group];
+            at += group.len();
+            for call in group {
+                emit(AgentEvent::ToolStart(call.clone()));
             }
-            .unwrap_or_else(|| refusal(&call.name));
-            emit(AgentEvent::ToolResult {
-                call_id: call.id.clone(),
-                name: call.name.clone(),
-                content: content.clone(),
-            });
-            run.tool_result(&call.id, &call.name, &content, Vec::new());
+            let runs: Vec<BoxFuture<'_, String>> = group
+                .iter()
+                .map(|call| -> BoxFuture<'_, String> {
+                    Box::pin(async {
+                        if offered.iter().any(|s| s.name == call.name) {
+                            host.call(&call.name, &call.arguments).await
+                        } else {
+                            None
+                        }
+                        .unwrap_or_else(|| refusal(&call.name))
+                    })
+                })
+                .collect();
+            // The model reads the results in the order it called, whichever finishes first: a result is
+            // handed over once all those before it are.
+            let mut results: Vec<Option<String>> = vec![None; group.len()];
+            let mut handed = 0;
+            join_each(runs, |index, content| {
+                results[index] = Some(content);
+                while let Some(Some(content)) = results.get(handed) {
+                    let call = &group[handed];
+                    emit(AgentEvent::ToolResult {
+                        call_id: call.id.clone(),
+                        name: call.name.clone(),
+                        content: content.clone(),
+                    });
+                    run.tool_result(&call.id, &call.name, content, Vec::new());
+                    handed += 1;
+                }
+            })
+            .await;
         }
     };
     *messages = run.messages;

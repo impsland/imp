@@ -229,7 +229,7 @@ fn alias(word: &str) -> Option<&'static str> {
 }
 
 /// A line the chat shows for a command. Not part of the conversation. The full-screen chat gives each
-/// kind its look; [`Note::plain`] is the same line as text, for the line chat.
+/// kind its look. [`Note::plain`] is the same line as text, for the line chat.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Note {
     pub kind: NoteKind,

@@ -56,13 +56,13 @@
   "common.on": {
     "note": "State of a switch.",
     "en": "On",
-    "es": "Activado",
+    "es": "Encendido",
     "zh-Hans": "开"
   },
   "common.off": {
     "note": "State of a switch.",
     "en": "Off",
-    "es": "Desactivado",
+    "es": "Apagado",
     "zh-Hans": "关"
   },
   "common.set_up": {

@@ -1,4 +1,5 @@
 import Foundation
+import ImpCore
 
 // Pocket Imps: Imps hatched on the iPhone. An Imp lives where its brain runs. A pocket Imp thinks on
 // the phone, with an OpenAI-compatible service and, if it likes, tools from HTTP MCP servers. It has
@@ -105,6 +106,8 @@ public struct PocketImp: Codable, Equatable, Sendable, Identifiable {
     public var scale: Double
     public var traits: ImpTraits
     public var personality: String
+    /// What it is good at, in a line or two: other Imps read it to know whom to ask. Optional, so saved Imps load.
+    public var about: String?
     public var brain: PocketService
     public var servers: [PocketServer]
     /// Single tools switched off, by registry id (`ToolRegistry`). Optional, so saved Imps load.
@@ -121,14 +124,19 @@ public struct PocketImp: Codable, Equatable, Sendable, Identifiable {
     public static let exchangesSent = ChatMemory.defaultExchanges
 
     public init(id: UUID = UUID(), name: String, hue: Double = ImpProfile.defaultHue, scale: Double = 1, traits: ImpTraits = .plain,
-                personality: String? = nil, brain: PocketService = PocketService(), servers: [PocketServer] = [], chats: [Chat] = []) {
+                personality: String? = nil, brain: PocketService = PocketService(), servers: [PocketServer] = [], chats: [Chat] = [], about: String? = nil) {
         self.id = id; self.name = name; self.hue = hue; self.scale = scale; self.traits = traits
         self.personality = personality ?? Persona.pocket(named: name)
-        self.brain = brain; self.servers = servers; self.chats = chats
+        self.brain = brain; self.servers = servers; self.chats = chats; self.about = about
     }
 
     /// How the phone draws it (and tells the Mac who it is).
-    public var look: LinkImp { LinkImp(id: id, name: name, hue: hue, scale: scale, traits: traits) }
+    public var look: LinkImp {
+        LinkImp(id: id, name: name, hue: hue, scale: scale, traits: traits, about: about.flatMap { ImpCore.troupeAboutLine(text: $0) }, abilities: abilities)
+    }
+
+    /// What it can do, as the other Imps are told: the names of its tool servers (no shell on the phone).
+    public var abilities: [String] { ImpAbilities.tags(shell: false, browser: false, servers: servers.map(\.name)) }
 
     /// Fit to use: a name, https (or a device on your own network) for every address, and a model.
     public func validate() throws {
@@ -199,7 +207,7 @@ public struct PocketImp: Codable, Equatable, Sendable, Identifiable {
 
     /// The turns of the chat with you, the latest `limit`, as the phone shows them.
     public func turns(limit: Int = 40) -> [LinkTurn] {
-        (current?.turns ?? []).filter { $0.sender == nil }.suffix(limit).map(LinkTurn.init)
+        (current?.turns ?? []).filter { $0.sender == nil || $0.via == .answer }.suffix(limit).map(LinkTurn.init)
     }
 
     /// What it remembers of its talk with `peer` (another Imp), or of the chat with you.

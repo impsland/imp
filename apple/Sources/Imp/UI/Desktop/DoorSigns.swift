@@ -34,6 +34,7 @@ final class DoorBoard {
 struct DoorSignsView: View {
     let board: DoorBoard
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.layoutDirection) private var direction
 
     var body: some View {
         let side = board.side
@@ -85,9 +86,14 @@ struct DoorSignsView: View {
         .shadow(color: Elevation.cardColor, radius: Spacing.tight, y: Spacing.hairline)
         .frame(maxWidth: Sizing.tipWidth, alignment: side == .left ? .leading : .trailing)
         .scaleEffect(lit && !reduceMotion ? 1.06 : 1, anchor: side == .left ? .leading : .trailing)
+        // One row whatever the side, turned around for the right one. Two branches (strip then label, or label then
+        // strip) would be two different views: on a change of side the old one faded out under the new, and the
+        // label showed twice, the second one faint and turned the other way.
         return HStack(spacing: Spacing.snug) {
-            if side == .left { strip; label } else { label; strip }
+            strip
+            label.environment(\.layoutDirection, direction)
         }
+        .environment(\.layoutDirection, side == .left ? .leftToRight : .rightToLeft)
     }
 }
 
@@ -127,10 +133,17 @@ final class DoorSigns {
         let frame = CGRect(x: side == .left ? screen.minX : screen.maxX - Self.width, y: screen.minY,
                            width: Self.width, height: screen.height)
         let panel = self.panel ?? makePanel()
-        if panel.frame != frame { panel.setFrame(frame, display: false) }
-        if board.side != side { board.side = side }
-        if board.signs != signs { board.signs = signs }
-        if board.lit != lit { board.lit = lit }
+        // Doors that come up, or move to another side or display, are drawn there at once: nothing slides or fades
+        // over from where they were. Only a new lit door moves, and the doors fade in.
+        let moved = !board.shown || board.side != side || panel.frame != frame
+        var now = Transaction()
+        now.disablesAnimations = moved
+        withTransaction(now) {
+            if panel.frame != frame { panel.setFrame(frame, display: false) }
+            if board.side != side { board.side = side }
+            if board.signs != signs { board.signs = signs }
+            if board.lit != lit { board.lit = lit }
+        }
         fading?.cancel()
         fading = nil
         if !panel.isVisible { panel.orderFrontRegardless() }

@@ -8,10 +8,11 @@ use crate::chat_state::ChatState;
 use crate::config::{Config, ImpConfig, McpServerConfig, valid_env_name};
 use crate::keys::{self, KeySource};
 use crate::project::{Project, shown_path};
-use crate::troupe::{ImpMessageHost, Remote};
+use crate::troupe::{ImpMessageHost, Later, Remote};
 use crate::{CliError, Result};
 use imp_engine::link::{LinkImp, LinkTraits};
 use imp_engine::memory::ChatMemory;
+use imp_engine::troupe::{TalkWaiting, ability_tags, about_line};
 use imp_engine::{
     ChatMessage, McpEndpoint, McpHost, McpServerSpec, OpenAiClient, RequestLimits, TalkStore,
     ToolHost, ToolSelection, Toolbox,
@@ -147,6 +148,9 @@ pub struct SessionOptions {
     pub remote: Option<Rc<dyn Remote>>,
     /// The folder whose `.agents/` is the person's own. Their home folder if left out.
     pub agents_home: Option<PathBuf>,
+    /// The chat gives the Imp the answers to messages it sent without waiting (it polls `Session::later`).
+    /// Without it every message to another Imp waits for the answer.
+    pub answers_later: bool,
 }
 
 /// One MCP server of the session and how it went.
@@ -181,6 +185,10 @@ pub struct Session {
     pub servers: Vec<ServerStatus>,
     pub selection: ToolSelection,
     pub max_steps: usize,
+    /// Whether a message to another Imp waits for the answer (`talk_waiting` in the settings).
+    pub waiting: TalkWaiting,
+    /// The messages sent without waiting and their answers, when the chat takes them (`answers_later`).
+    pub later: Option<Rc<Later>>,
     /// How many remembered exchanges go with each message (0: all), and when a chat counts as long.
     pub memory_exchanges: usize,
     pub long_chat_tokens: usize,
@@ -220,6 +228,8 @@ impl Session {
             servers: Vec::new(),
             selection: ToolSelection::all(),
             max_steps: config.max_steps,
+            waiting: config.talk_waiting,
+            later: options.answers_later.then(|| Rc::new(Later::new())),
             memory_exchanges: config.memory_exchanges,
             long_chat_tokens: config.long_chat_tokens,
             warnings: Vec::new(),
@@ -257,7 +267,18 @@ impl Session {
 
     /// How other devices see this Imp.
     pub fn look(&self) -> LinkImp {
-        look_of(&self.name, &self.imp)
+        let mut look = look_of(&self.name, &self.imp);
+        // What it can do includes the folder's servers that started, not only its own.
+        let servers: Vec<String> = self
+            .servers
+            .iter()
+            .filter(|s| s.tools.is_ok())
+            .map(|s| s.name.clone())
+            .collect();
+        if !servers.is_empty() {
+            look.abilities = ability_tags(&servers);
+        }
+        look
     }
 
     /// Changes one of the Imp's settings, saves the file and rebuilds what it touches.
@@ -312,6 +333,7 @@ impl Session {
         self.model = imp.model.clone();
         self.system = system_prompt_in(&self.name, imp, &self.workspace, &self.project);
         self.max_steps = config.max_steps;
+        self.waiting = config.talk_waiting;
         self.memory_exchanges = config.memory_exchanges;
         self.long_chat_tokens = config.long_chat_tokens;
         // The skills and the tool list may have changed with the files.
@@ -458,7 +480,8 @@ impl Session {
                                 .map(|k| k.key)
                         }),
                     )
-                    .with_remote(self.look(), self.options.remote.clone());
+                    .with_remote(self.look(), self.options.remote.clone())
+                    .with_later(self.waiting, self.later.clone());
                     toolbox.add(Rc::new(host));
                 }
                 Err(e) => self
@@ -533,6 +556,8 @@ pub fn look_of(name: &str, imp: &ImpConfig) -> LinkImp {
         hue: imp.hue_for(name),
         scale: 1.0,
         traits: LinkTraits::default(),
+        about: imp.description.as_deref().and_then(about_line),
+        abilities: ability_tags(&imp.mcp_servers.keys().cloned().collect::<Vec<_>>()),
     }
 }
 

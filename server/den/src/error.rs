@@ -89,7 +89,10 @@ impl Error {
             Error::NotFound => "There is nothing here.".to_owned(),
             Error::MethodNotAllowed => "This path doesn't take that method.".to_owned(),
             Error::HandleTaken => "That handle is already taken.".to_owned(),
-            Error::TooLarge => "The request body is larger than 600 KB.".to_owned(),
+            Error::TooLarge => format!(
+                "The request body is larger than {} KB.",
+                crate::app::MAX_BODY / 1024
+            ),
             Error::UnsupportedMedia => "Send `Content-Type: application/json`.".to_owned(),
             Error::Invalid(v) => format!("{} problem(s) found, see `errors`.", v.len()),
             Error::RateLimited(wait) => format!("Try again in {} seconds.", retry_after(*wait)),

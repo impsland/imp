@@ -22,7 +22,7 @@ use crate::error::{Error, Pending};
 use crate::extract::ClientIp;
 use crate::{api, mcp, web};
 
-const MAX_BODY: usize = 600 * 1024;
+pub(crate) const MAX_BODY: usize = 600 * 1024;
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(15);
 static REQUEST_ID: HeaderName = HeaderName::from_static("x-request-id");
 

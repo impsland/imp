@@ -34,6 +34,7 @@ async fn session(dir: &Path, name: Option<&str>) -> Session {
             remote: None,
             // Not the developer's own ~/.agents.
             agents_home: Some(no_home()),
+            answers_later: false,
         },
     )
     .await

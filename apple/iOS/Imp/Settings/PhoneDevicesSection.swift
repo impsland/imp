@@ -75,7 +75,7 @@ struct PhoneDevicesSection: View {
                     .accessibilityElement().accessibilityLabel(Text(verbatim: reach))
                 HoverIconButton(systemName: "xmark.circle", help: "phone.forget.one", tint: Tone.danger) { forget(device) }
             }
-            Row("phone.mine", info: "privacy.trust_note") {
+            Row("phone.mine", info: "settings.devices.mine.info") {
                 Toggle("phone.mine", isOn: Binding(get: { hub.isTrusted(device.id) }, set: { hub.setTrusted(device.id, $0) }))
                     .toggleStyle(.impSwitchBare)
             }

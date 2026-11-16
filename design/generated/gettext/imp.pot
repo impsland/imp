@@ -621,6 +621,11 @@ msgctxt "error.tool_failed"
 msgid "{tool} could not start. Check its settings."
 msgstr ""
 
+#. In the chat and the bubble: an Imp answered a message the Imp sent without waiting. %@ is its name.
+msgctxt "exchange.answered"
+msgid "%@ answered"
+msgstr ""
+
 #. The tooltip of the toolbar button.
 msgctxt "extension.action_title"
 msgid "Imp"
@@ -1069,6 +1074,18 @@ msgstr ""
 msgctxt "home.canvas.label"
 msgid "The Imps' home"
 msgstr ""
+
+#. Help and screen reader name of the corner button that opens the Devices settings.
+msgctxt "home.corner.devices"
+msgid "Devices"
+msgstr ""
+
+#. Screen reader value of the Devices corner button: how many linked devices are connected now. A dot on the button shows when any is.
+msgctxt "home.corner.devices.connected"
+msgid "{count} connected"
+msgid_plural "{count} connected"
+msgstr[0] ""
+msgstr[1] ""
 
 #. Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.
 msgctxt "home.corner.show_hidden"
@@ -1865,6 +1882,21 @@ msgstr ""
 #. Panel title.
 msgctxt "moves.title"
 msgid "Moves"
+msgstr ""
+
+#. Field label: what the Imp is good at, which other Imps read to know whom to ask.
+msgctxt "personality.about"
+msgid "What it's good at"
+msgstr ""
+
+#. Placeholder of the field about what the Imp is good at.
+msgctxt "personality.about_hint"
+msgid "Researching on the web, fixing code…"
+msgstr ""
+
+#. Help of the field about what the Imp is good at.
+msgctxt "personality.help.about"
+msgid "One or two lines. The other Imps read it to know whom to ask for what."
 msgstr ""
 
 #. Help of the name field.
@@ -2962,9 +2994,14 @@ msgctxt "settings.devices.link.title"
 msgid "Link"
 msgstr ""
 
-#. Settings text.
+#. Hover help of the Mine switch of a linked device.
+msgctxt "settings.devices.mine.help"
+msgid "On for your own devices, off for a friend's"
+msgstr ""
+
+#. Help beside the Mine switch of a linked device: what turning it on allows, and when to leave it off.
 msgctxt "settings.devices.mine.info"
-msgid "The devices linked with this one."
+msgid "Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools."
 msgstr ""
 
 #. Settings text.
@@ -3215,6 +3252,31 @@ msgstr ""
 #. Settings text.
 msgctxt "settings.talking.threads.title"
 msgid "Chats"
+msgstr ""
+
+#. Option: the Imp chooses per message whether to wait.
+msgctxt "settings.talking.waiting.decides"
+msgid "The Imp decides"
+msgstr ""
+
+#. Option: the Imp goes on without waiting for the answer.
+msgctxt "settings.talking.waiting.dont_wait"
+msgid "Don't wait"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.waiting.info"
+msgid "Whether an Imp waits for the answer of the Imp it messages, or goes on and hears it later as a new turn."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.talking.waiting.title"
+msgid "Waiting"
+msgstr ""
+
+#. Option: the Imp waits for the answer.
+msgctxt "settings.talking.waiting.wait"
+msgid "Wait"
 msgstr ""
 
 #. Settings text.

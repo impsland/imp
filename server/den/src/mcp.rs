@@ -250,7 +250,7 @@ pub fn service(den: Arc<Den>) -> StreamableHttpService<ImpMcp, NeverSessionManag
         .with_allowed_hosts(hosts)
         .with_allowed_origins([public.origin.clone()])
         .enforce_origin_validation()
-        .with_max_request_body_bytes(600 * 1024);
+        .with_max_request_body_bytes(crate::app::MAX_BODY);
     StreamableHttpService::new(
         move || Ok(ImpMcp::new(Arc::clone(&den))),
         Arc::new(NeverSessionManager::default()),

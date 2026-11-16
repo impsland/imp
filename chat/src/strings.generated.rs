@@ -20,7 +20,7 @@ pub static STRINGS: &[(&str, [&str; 3])] = &[
     ("cli.chat.scrolled_hint", ["End ↓ latest", "Fin ↓ lo último", "End ↓ 最新"]),
     ("cli.chat.stop_hint", ["Esc to stop", "Esc para detener", "按 Esc 停止"]),
     ("cli.chat.thinking", ["Thinking", "Pensando", "思考中"]),
-    ("cli.chat.tool_result", ["result: {text}", "resultado: {text}", "结果:{text}"]),
+    ("cli.chat.tool_result", ["result: {text}", "resultado: {text}", "结果：{text}"]),
     ("cli.chat.tool_use", ["{imp} uses the tool {tool}", "{imp} usa la herramienta {tool}", "{imp} 使用工具 {tool}"]),
     ("cli.chat.using_tool", ["Using the tool {tool}", "Usando {tool}", "正在使用工具 {tool}"]),
     ("cli.chat.waiting_for", ["waiting for {imp}…", "esperando a {imp}…", "等待 {imp}…"]),

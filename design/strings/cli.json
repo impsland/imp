@@ -58,7 +58,7 @@
     "note": "The first line of what a tool returned.",
     "en": "result: {text}",
     "es": "resultado: {text}",
-    "zh-Hans": "结果:{text}",
+    "zh-Hans": "结果：{text}",
     "args": {
       "text": "string"
     }

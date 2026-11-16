@@ -1,4 +1,5 @@
 import AppKit
+import ImpCore
 import ImpDesign
 import ImpKit
 
@@ -19,9 +20,12 @@ final class OwnToolHost {
     private let id: UUID
     /// Off while it answers another Imp, so two Imps can't keep messaging each other forever.
     private let messaging: Bool
+    /// How many answers deep the turn is that uses these tools (0: you or a trigger started it). Messages it
+    /// sends without waiting wake the answer at one more (`troupe::may_leave` stops chains that run away).
+    private let depth: Int
 
-    init(app: AppModel, imp: UUID, messaging: Bool) {
-        self.app = app; self.id = imp; self.messaging = messaging
+    init(app: AppModel, imp: UUID, messaging: Bool, depth: Int = 0) {
+        self.app = app; self.id = imp; self.messaging = messaging; self.depth = depth
     }
 
     private var profile: ImpProfile? { app?.profile(id) }
@@ -48,18 +52,24 @@ final class OwnToolHost {
     /// The others it can talk to: out on the desktop, not itself.
     private var others: [ImpModel] { app?.imps.filter { $0.id != id } ?? [] }
 
-    /// Imps of other devices it can message too, by name: those on the screen its body is on (a name
-    /// an Imp here has is theirs alone).
-    private var remoteImps: [LinkStaged] {
-        guard let app else { return [] }
-        var seen = Set(app.prefs.imps.map { $0.name.lowercased() })
-        return app.link.targets(of: id).filter { seen.insert($0.imp.name.lowercased()).inserted }
+    /// Everyone it can message, by the name the tool takes: the others out on the desktop, and the Imps of
+    /// other devices on the screen its body is on. A name taken here or by itself becomes `Pip@iPhone`, so
+    /// an Imp called like another (on the iPhone, on the command line) is still reachable (`TalkNames`).
+    private var talkNames: TalkNames<ImpModel, LinkStaged> {
+        let remote = app?.link.targets(of: id) ?? []
+        return TalkNames(sender: profile?.name ?? "", here: others, name: { $0.profile.name },
+                         away: remote, awayName: { $0.imp.name }, place: { app?.link.name(of: $0.home) ?? "" })
     }
 
     func specs() -> [ToolSpec] {
-        OwnTools.specs(groups, animations: playable.map(\.name), imps: others.map(\.profile.name), pocket: remoteImps.map(\.imp.name),
-                       browser: BrowserBridge.shared.isConnected, talk: app?.prefs.impTalk ?? .own,
-                       conversation: app?.prefs.talkThreading == .decides)
+        let names = talkNames
+        // What each Imp it can message says about itself. What a device sent is untrusted: sanitized again.
+        let profiles = names.here.map { ImpAbilities.profile(name: $0.name, about: $0.imp.profile.about, abilities: app?.abilities(of: $0.imp.profile) ?? []) }
+            + names.away.map { ImpAbilities.profile(name: $0.name, about: $0.imp.imp.about, abilities: $0.imp.imp.abilities) }
+        return OwnTools.specs(groups, animations: playable.map(\.name), imps: names.here.map(\.name), pocket: names.away.map(\.name),
+                              browser: BrowserBridge.shared.isConnected, talk: app?.prefs.impTalk ?? .own,
+                              conversation: app?.prefs.talkThreading == .decides,
+                              profiles: profiles, waiting: app?.prefs.talkWaiting ?? .decides)
     }
 
     /// Like `call`, but a tool can hand pictures back too (`imp_open_file`).
@@ -446,14 +456,78 @@ final class OwnToolHost {
         }
         let me = profile ?? .imp
         let sender = ChatTurn.Sender(id: me.id, name: me.name, hue: me.hue)
-        guard let other = others.first(where: { $0.profile.name.caseInsensitiveCompare(to) == .orderedSame }) else {
-            guard let app, let remote = remoteImps.first(where: { $0.imp.name.caseInsensitiveCompare(to) == .orderedSame }) else {
-                throw ToolArgumentError("\(to) isn't out on the desktop.")
+        let names = talkNames
+        let found = names.find(to)
+        // How the message gets there and its answer back: the same for waiting and not waiting.
+        let answerer: ChatTurn.Sender
+        let deliver: @MainActor () async throws -> String
+        if let other = found.here {
+            let place = (app?.prefs.impTalk ?? .own).place(asked: args["chat"]?.string)
+            let conversation = args["conversation"]?.string
+            answerer = ChatTurn.Sender(id: other.id, name: other.profile.name, hue: other.profile.hue)
+            deliver = { try await other.answer(text, from: sender, in: place, conversation: conversation) }
+        } else {
+            guard let app, let remote = found.away else {
+                let everyone = names.names.joined(separator: ", ")
+                throw ToolArgumentError(everyone.isEmpty ? "\(to) isn't out on the desktop." : "\(to) isn't out on the desktop. You can message: \(everyone).")
             }
-            return "\(remote.imp.name) says: \(try await app.link.talk(from: me, to: remote, text: text))"
+            answerer = ChatTurn.Sender(id: remote.imp.id, name: remote.imp.name, hue: remote.imp.hue)
+            deliver = { try await app.link.talk(from: me, to: remote, text: text) }
         }
-        let place = (app?.prefs.impTalk ?? .own).place(asked: args["chat"]?.string)
-        let reply = try await other.answer(text, from: sender, in: place, conversation: args["conversation"]?.string)
-        return "\(other.profile.name) says: \(reply)"
+        let setting = app?.prefs.talkWaiting ?? .decides
+        guard !setting.waits(asked: args["wait"]?.bool) else { return "\(to) says: \(try await deliver())" }
+
+        // Not waiting: the answer comes back later as a turn of its own (`ImpModel.receive`).
+        guard let app else { throw ToolArgumentError("You're not here.") }
+        let pending = app.pendingMessages[id] ?? 0
+        if let refusal = ImpCore.troupeMayLeave(pending: UInt32(pending), depth: UInt32(depth)) { throw ToolArgumentError(refusal) }
+        let task = ImpCore.troupeTaskLabel(id: UUID().uuidString)
+        let sent = Self.clock.string(from: Date()), senderID = id, askedAt = depth, name = to.trimmingCharacters(in: .whitespacesAndNewlines)
+        app.pendingMessages[senderID] = pending + 1
+        Task { @MainActor [weak app] in
+            let result = await Self.within(seconds: Double(ImpCore.troupeLimits().asyncTimeoutSecs), deliver)
+            guard let app else { return }
+            if let left = app.pendingMessages[senderID] { app.pendingMessages[senderID] = left > 1 ? left - 1 : nil }
+            // The sender was put away or said goodbye meanwhile: nobody to tell, the answer is dropped.
+            guard let sender = app.imp(senderID) else { return }
+            var text: String, failed = false
+            switch result {
+            case .success(let said): text = said
+            case .failure(let error):
+                failed = true
+                text = (error as? ToolArgumentError)?.message ?? error.localizedDescription
+            }
+            let event = ImpCore.troupeAnswerEvent(from: name, task: task, sent: sent, text: text, failed: failed)
+            sender.receive(answer: event, shown: text, from: answerer, depth: askedAt + 1)
+        }
+        return ImpCore.troupeReceipt(to: name, task: task)
+    }
+
+    private static let clock: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm"
+        return f
+    }()
+
+    /// The result of `work`, or a failure once `seconds` pass (then `work` is cancelled). An Imp that is busy
+    /// answering may still finish, but nobody listens.
+    private static func within(seconds: Double, _ work: @escaping @MainActor () async throws -> String) async -> Result<String, Error> {
+        final class Once { var done = false }
+        return await withCheckedContinuation { c in
+            let once = Once()
+            let finish: @MainActor (Result<String, Error>) -> Void = { result in
+                guard !once.done else { return }
+                once.done = true
+                c.resume(returning: result)
+            }
+            let job = Task { @MainActor in
+                do { finish(.success(try await work())) } catch { finish(.failure(error)) }
+            }
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(seconds))
+                job.cancel()
+                finish(.failure(ToolArgumentError("No answer came in time.")))
+            }
+        }
     }
 }

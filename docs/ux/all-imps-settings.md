@@ -32,7 +32,7 @@ Nine sections, each with a one-word name and a few cards of icon rows. A card ha
 | --- | --- |
 | App | Look: Appearance (Auto, Light, Dark), On colour (White, Black) and Background (Theme, Colour, Picture, Tile). System: start at login, language. Window: the size of the home window (Small, Medium, Large, Full). |
 | Bubble | Look: Background (Solid or Translucent, and the amount when translucent), with a live preview over a light, a dark and a picture swatch. Showing: hide after, text box lines, chat size. Media: autoplay, audio look. |
-| Talking | Listening: language. Between Imps: talk in, threads, window. |
+| Talking | Listening: language. Between Imps: talk in, threads, waiting, window. |
 | Brains | Services: the list of Brains and the default for new Imps. Keys: the keychain. Requests: wait, retries, first wait, longer waits. |
 | Devices | This Mac with Link, the linked devices (Forget all in the header) and The Hop in the compact server card. |
 | Sharing | The Gallery (Browse, Import) and The Den in the compact server card. |
@@ -41,6 +41,10 @@ Nine sections, each with a one-word name and a few cards of icon rows. A card ha
 | Backup | Keep: export and import. Reset: start again. Reset is last and asks first. |
 
 ![App settings](./images/all-imps-app.png)
+
+### Between Imps: Waiting
+
+A segmented row after Chats: Wait, Don't wait, The Imp decides (the default). Wait is how messages between Imps always worked: the sender stops until the answer comes. Don't wait hands the message over at once and the sender goes on. The answer comes back later as a turn of its own, shown as "Bo answered" in Bo's colour, and the Imp reacts to it. The Imp decides leaves the choice to the Imp, per message. Why: a question that takes minutes (research, a long job) should not freeze the Imp that asked, and several questions can be out at once. The limits (how many answers may be pending, how deep a chain of answers may go, how long to wait for one) are the core's, so a chain of Imps cannot run away.
 
 ### Why
 
@@ -302,7 +306,8 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `settings.devices.forget_all.title` | Forget all |
 | `settings.devices.link.info` | Link another device so your Imps can visit it. |
 | `settings.devices.link.title` | Link |
-| `settings.devices.mine.info` | The devices linked with this one. |
+| `settings.devices.mine.help` | On for your own devices, off for a friend's |
+| `settings.devices.mine.info` | Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools. |
 | `settings.devices.pair.title` | Link |
 | `settings.group.animations` | Animations |
 | `settings.group.app` | App |
@@ -353,6 +358,11 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `settings.talking.talk_in.title` | Talk in |
 | `settings.talking.threads.info` | Whether Imps keep chatting in the same chat or start a new one. |
 | `settings.talking.threads.title` | Chats |
+| `settings.talking.waiting.decides` | The Imp decides |
+| `settings.talking.waiting.dont_wait` | Don't wait |
+| `settings.talking.waiting.info` | Whether an Imp waits for the answer of the Imp it messages, or goes on and hears it later as a new turn. |
+| `settings.talking.waiting.title` | Waiting |
+| `settings.talking.waiting.wait` | Wait |
 | `settings.talking.window.info` | How many minutes a chat stays the same chat. |
 | `settings.talking.window.title` | Same chat for |
 | `settings.title` | Settings |

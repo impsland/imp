@@ -2,8 +2,8 @@
 //!
 //! - `AGENTS.md` (in the project's folders, and `.agents/AGENTS.md`): standing instructions. They go in
 //!   the system text, after who the Imp is, so they hold for the whole chat and survive `/clear`.
-//! - `.agents/skills/NAME/SKILL.md`: skills. Only each one's name and description go in the system text;
-//!   the tool `use_skill` reads the whole file when a task needs it, so many skills cost few words.
+//! - `.agents/skills/NAME/SKILL.md`: skills. Only each one's name and description go in the system text.
+//!   The tool `use_skill` reads the whole file when a task needs it, so many skills cost few words.
 //! - `.agents/agents/NAME.md`: the Imp NAME in this folder. Its front matter can set `model`, `base_url`,
 //!   `api_key_env` (or `api_key: ${NAME}`), `tools`, `disallowedTools`, `hue` and `default`, and the text
 //!   under it is how the Imp behaves. One file is enough for a whole Imp. What it leaves out comes from
@@ -378,6 +378,7 @@ impl Project {
                 imp.id = Some(folder_imp_id(&self.root, name));
                 imp.hue = None;
                 imp.personality = DEFAULT_PERSONALITY.into();
+                imp.description = None;
                 imp.mcp_servers.clear();
                 imp.tools_off.clear();
                 imp
@@ -387,6 +388,9 @@ impl Project {
             }
             if let Some(personality) = &spec.personality {
                 imp.personality.clone_from(personality);
+            }
+            if spec.description.is_some() {
+                imp.description.clone_from(&spec.description);
             }
             if spec.hue.is_some() {
                 imp.hue = spec.hue;
@@ -863,6 +867,9 @@ mod tests {
         let reviewer = &config.imps["reviewer"];
         assert_eq!(reviewer.base_url, "http://local/v1");
         assert_eq!(reviewer.api_key_env.as_deref(), Some("PIP_KEY"));
+        // What the file says about the Imp is what other Imps read about it.
+        assert_eq!(reviewer.description.as_deref(), Some("Reviews"));
+        assert_eq!(pip.description, None);
         assert_eq!(reviewer.personality, "Reviews code.");
         assert_eq!(reviewer.tools_off, ["mcp.files.delete"]);
         assert_eq!(reviewer.id, Some(folder_imp_id(&project.root, "reviewer")));

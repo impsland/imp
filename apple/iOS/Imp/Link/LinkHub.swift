@@ -572,7 +572,7 @@ final class LinkHub {
         case .mood(let imp, let name): moods[imp] = Mood(link: name)
         case .brain(let imp, let ready, let tools):
             if ready { brainless.remove(imp) } else { brainless.insert(imp) }
-            if tools == false { toolless.insert(imp) } else { toolless.remove(imp) }
+            if tools { toolless.remove(imp) } else { toolless.insert(imp) }
         case .animate(let imp, let beats):
             let act = Performance(key: "mac", steps: beats.map(AnticStep.init))
             acts[imp] = act

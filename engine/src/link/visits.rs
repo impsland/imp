@@ -257,6 +257,8 @@ pub(crate) mod tests {
             hue: 0.5,
             scale: 1.0,
             traits: Default::default(),
+            about: None,
+            abilities: Vec::new(),
         }
     }
 

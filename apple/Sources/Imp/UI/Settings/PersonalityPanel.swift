@@ -14,6 +14,12 @@ struct PersonalityPanel: View {
 
     private var nameIsEmpty: Bool { name.trimmingCharacters(in: .whitespaces).isEmpty }
 
+    /// What it's good at, cut to `ImpProfile.maxAboutLength` as it's typed. Empty is stored as nothing.
+    private var aboutText: Binding<String> {
+        Binding(get: { imp.about ?? "" },
+                set: { imp.about = $0.isEmpty ? nil : String($0.prefix(ImpProfile.maxAboutLength)) })
+    }
+
     private static var wellHeight: CGFloat { Sizing.control * 4 }
 
     var body: some View {
@@ -38,6 +44,14 @@ struct PersonalityPanel: View {
             instructions
         }
         .settingAnchor(.personalityPersona)
+
+        PanelSection("personality.about", icon: "sparkle.magnifyingglass", info: "personality.help.about") {
+            TextField("personality.about", text: aboutText, prompt: Text("personality.about_hint"), axis: .vertical)
+                .lineLimit(1...2)
+                .impField()
+                .accessibilityLabel(Text("personality.about"))
+        }
+        .settingAnchor(.personalityAbout)
 
         PanelSection("personality.voice", icon: "waveform", info: "personality.help.voice") {
             Row("personality.voice_look", icon: "speaker.wave.2.fill", info: "personality.help.voice_look") {

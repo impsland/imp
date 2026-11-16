@@ -89,7 +89,7 @@
   "extension.tab.blind": {
     "note": "Help for the page box when the browser keeps the page private.",
     "en": "The browser keeps this page to itself. Imp only knows its address.",
-    "es": "El navegador se guarda esta página. Imp solo conoce su dirección.",
+    "es": "El navegador no comparte esta página. Imp solo conoce su dirección.",
     "zh-Hans": "浏览器不让别人看这个页面。Imp 只知道它的地址。"
   },
   "extension.activity.title": {

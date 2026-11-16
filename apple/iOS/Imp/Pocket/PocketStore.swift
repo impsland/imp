@@ -16,6 +16,11 @@ final class PocketStore {
         imps = (try? Data(contentsOf: url)).map(PocketImp.decodeAll) ?? []
     }
 
+    /// Where `AskedTalks` keeps what these Imps asked Imps on other devices: beside the Imps' file.
+    var askedTalksFile: URL {
+        url.deletingLastPathComponent().appending(path: url.deletingPathExtension().lastPathComponent + "-asked-talks.json")
+    }
+
     func imp(_ id: UUID) -> PocketImp? { imps.first { $0.id == id } }
 
     func contains(_ id: UUID) -> Bool { imps.contains { $0.id == id } }

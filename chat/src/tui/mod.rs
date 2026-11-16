@@ -543,6 +543,20 @@ impl App {
         Action::Send(text)
     }
 
+    /// An answer to a message the Imp sent without waiting has come while it was free. `event` is added at the
+    /// end of the chat as a new message (never in place of an earlier one) and the Imp takes a turn on it.
+    /// False when it can't start one now.
+    pub fn wake(&mut self, event: &str) -> bool {
+        if self.waiting || !self.chat.push_user(event) {
+            return false;
+        }
+        self.set_scroll(0);
+        self.error = None;
+        self.waiting = true;
+        self.started = Some(Instant::now());
+        true
+    }
+
     /// Starts the conversation over. Notes go too.
     pub fn clear(&mut self) {
         self.chat.clear();

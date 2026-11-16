@@ -96,7 +96,7 @@ impl ChatMessage {
             images,
             attachment: true,
             ..Self::user(format!(
-                "{what} from {}. (Attached automatically for you to look at; the user didn't send this.)",
+                "{what} from {}. (Attached automatically for you to look at. The user didn't send it.)",
                 names.join(", ")
             ))
         }

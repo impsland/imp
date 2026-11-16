@@ -28,8 +28,8 @@ address for it, so type the one your server shows.
   on another service to change it.
 - **An Imp can choose its own** service or model, so a local model can handle private work while another Imp
   uses a larger cloud model.
-- **Removing a service** sends the Imps that used it back to the starred service. If you remove the starred
-  service, the first remaining service becomes the starred one, and the model picked for the removed service is cleared.
+- **Removing the starred service** makes the first remaining service the starred one. The model picked for
+  the removed service is cleared too, because it belonged to that service.
 - **With no service left**, Imps sleep until you add one.
 
 ## Keys

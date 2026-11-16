@@ -110,6 +110,8 @@ struct DevicesCard: View {
                 .accessibilityElement().accessibilityLabel(Text(verbatim: reach.text))
             Toggle("Mine", isOn: Binding(get: { peer.isTrusted }, set: { link.setTrusted(peer.id, $0) }))
                 .toggleStyle(.impSwitch).fixedSize()
+                .help(String(localized: "settings.devices.mine.help"))
+                .accessibilityHint(Text("settings.devices.mine.info"))
             InfoTip("settings.devices.mine.info")
             HoverIconButton(systemName: "xmark.circle", help: "Forget…", tint: Tone.danger) { forgetting = peer }
         }

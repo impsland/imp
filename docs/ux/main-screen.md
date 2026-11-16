@@ -4,7 +4,7 @@
 
 On desktop the main screen is the same calm canvas as on the iPhone. The Imps move on it freely. The whole window is the canvas.
 
-- **A few corner buttons.** A small row of icon buttons sits in the top trailing corner of the window frame: New Imp, Show hidden Imps and Settings. Each is one click, each has a tooltip and a spoken label. Show hidden Imps appears only while some Imps are hidden, and it shows how many. There is no "more" menu: a menu that only opens more buttons costs a click for nothing.
+- **The corners around the window's own buttons.** The window's close, minimise and zoom buttons hold one top corner. The canvas's buttons take the other three, so nothing crowds them: Settings in the other top corner, New Imp below it, and Devices below the window's buttons. On macOS (window buttons top left) that is Settings top right, New Imp bottom right and Devices bottom left. Where the window buttons are top right (Windows), everything mirrors: Settings top left, New Imp bottom left and Devices bottom right. Corners are physical, not leading and trailing, because the system keeps its buttons where they are in any language. Show hidden Imps sits beside New Imp, on its inner side, only while some Imps are hidden, and it shows how many. Devices opens the Devices settings and wears a small green dot while a linked device is connected. Each button is one click, each has a tooltip and a spoken label. There is no "more" menu: a menu that only opens more buttons costs a click for nothing. The rule is `HomeCorners`.
 - **Settings, not the canvas, holds the choices.** The background is in Settings, as a one-click control.
 - **Empty canvas.** When there are no Imps, a short prompt sits in the middle: a title, a hint and one New button. It is an empty state. It goes away as soon as there is an Imp. It is never a permanent button.
 
@@ -12,8 +12,8 @@ On desktop the main screen is the same calm canvas as on the iPhone. The Imps mo
 
 - The iPhone screen is already clean and people like it. Desktop gets the same picture, so one idea works everywhere.
 - A canvas with no buttons leaves room for the Imps. The Imps are the interface.
-- The three actions people need are always in the same corner. Right click does the same on desktop. Touch and hold does the same on a phone.
-- Desktop windows can be small. Three small icons in a corner cover almost no canvas.
+- Each action people need always has its own corner, the same one every time, away from the window's buttons. A corner is the easiest place to hit with a pointer. Right click does the same on desktop. Touch and hold does the same on a phone.
+- Desktop windows can be small. One or two small icons per corner cover almost no canvas.
 
 ![The canvas with Imps](./images/canvas-imps.png)
 
@@ -126,6 +126,8 @@ The menu bar extra opens a compact panel on the app surface. At the top are four
 | `background.tile_hint` | A tile repeats to fill the window. Pick a seamless pattern. |
 | `home.canvas.hint` | Imps move around here. Press Tab to go from one Imp to the next. |
 | `home.canvas.label` | The Imps' home |
+| `home.corner.devices` | Devices |
+| `home.corner.devices.connected` | one: {count} connected / other: {count} connected |
 | `home.corner.show_hidden` | Hidden |
 | `home.empty.hint` | Hatch your first Imp to get started. |
 | `home.empty.new_imp` | New |

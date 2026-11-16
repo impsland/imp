@@ -25,6 +25,10 @@ public struct ChatTurn: Codable, Equatable, Identifiable, Sendable {
         case recap
         /// Another Imp asked (`imp_message`): `sender` says which, `request` is its question.
         case imp
+        /// Not a request: the answer to a message this Imp sent without waiting (`sender` is the Imp that answered,
+        /// `request` its answer or what went wrong, `reply` what this Imp made of it). The exchange itself is filed
+        /// by the Imp that answered, so `TalkLog` doesn't count this turn.
+        case answer
     }
 
     /// The Imp that sent a message: kept with the turn, so the chat shows who said it and in

@@ -209,7 +209,7 @@ public struct Kit: Equatable, Sendable {
 
     // MARK: Writing
 
-    /// The kit as JSON text: readable, or compact for a link. Secrets are never in it (`KitExport`).
+    /// The kit as JSON text: readable, or compact for a link. Secrets are never in it.
     public func json(pretty: Bool = true) -> String {
         var top: [String: JSONValue] = [:]
         if let app, !app.isEmpty { top["app"] = .string(app) }

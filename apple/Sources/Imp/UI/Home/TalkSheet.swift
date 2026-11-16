@@ -207,7 +207,7 @@ private struct TalkLineView: View {
 
     /// A card in the speaker's colour: this Imp's to the right, the other's to the left.
     private func side<Content: View>(of speaker: ChatTurn.Sender, @ViewBuilder _ content: () -> Content) -> some View {
-        let mine = speaker.id == me.id
+        let mine = TalkSide(speaker: speaker.id, owner: me.id) == .mine
         return HStack(spacing: 0) {
             if mine { Spacer(minLength: Self.gutter) }
             VStack(alignment: .leading, spacing: Spacing.snug) { content() }

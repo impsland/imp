@@ -58,6 +58,8 @@ struct Bubble: Equatable, Identifiable {
             case reply
             /// This Imp waits for another Imp's answer to its question ("Asking Mo…").
             case asking
+            /// This Imp's turn that begins with the answer to a message it sent without waiting ("Bo answered").
+            case answered
         }
         var role: Role
         /// The other Imp (the asker, or the one asked), with its colour.

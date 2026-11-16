@@ -84,6 +84,11 @@ final class DeviceLink {
 
     init(app: AppModel) { self.app = app }
 
+    /// What this Mac's Imps asked Imps on other devices: the answerer files it there, so this Mac keeps its own
+    /// copy, for Talks here and for the devices that ask for an Imp's talks. Never the user's file in tests.
+    @ObservationIgnored private(set) lazy var asked = AskedTalks(file: app.persists ? Self.askedFile : nil)
+    static var askedFile: URL { URL.applicationSupportDirectory.appendingPathComponent("Imp/asked-talks.json") }
+
     static var file: URL { URL.applicationSupportDirectory.appendingPathComponent("Imp/link.json") }
     static var deviceName: String { Host.current().localizedName ?? "Mac" }
 
@@ -496,7 +501,7 @@ final class DeviceLink {
         // Talks with other Imps show as its speech bubble there, not in your chat.
         let chat = imp.history.current.turns.filter { $0.sender == nil }.suffix(Self.chatPage).map(LinkTurn.init)
         let holder = node?.holder(of: id)
-        return Snapshot(look: LinkImp(profile), mood: (imp.activity?.mood ?? .idle).rawValue, ready: imp.isReady,
+        return Snapshot(look: app.linkImp(profile), mood: (imp.activity?.mood ?? .idle).rawValue, ready: imp.isReady,
                         tools: holder.map { node?.isTrusted($0) ?? false } ?? true, work: work,
                         chat: chat, speech: Self.speech(imp.bubble))
     }
@@ -504,10 +509,12 @@ final class DeviceLink {
     /// The bubble's talk with another Imp, if that's what it shows.
     private static func speech(_ bubble: Bubble?) -> LinkSpeech? {
         guard let b = bubble, let ex = b.exchange, [.thinking, .result, .error].contains(b.phase) else { return nil }
-        let role: LinkSpeech.Role = switch ex.role {
-        case .asked: .asked
-        case .reply: .reply
-        case .asking: .asking
+        let role: LinkSpeech.Role
+        switch ex.role {
+        case .asked: role = .asked
+        case .reply: role = .reply
+        case .asking: role = .asking
+        case .answered: return nil       // only the chat shows who answered
         }
         return LinkSpeech(id: b.id, role: role, peer: ex.peer.name, hue: ex.peer.hue, question: ex.question,
                           text: role == .reply ? b.text : "")
@@ -611,7 +618,7 @@ final class DeviceLink {
     func targets(of imp: UUID) -> [LinkStaged] {
         guard let node else { return [] }
         let me = node.device.id
-        let mine = app.prefs.imps.filter(\.isActive).map { LinkStaged(imp: LinkImp($0), home: me) }
+        let mine = app.prefs.imps.filter(\.isActive).map { LinkStaged(imp: app.linkImp($0), home: me) }
         let body = node.holder(of: imp).map { node.stage(of: $0) + visitorsStaged } ?? visitorsStaged
         let stage = body + node.onMyOtherDevices
         return LinkTalks.targets(of: imp, mine: mine, stage: stage).filter { $0.home != me }
@@ -625,20 +632,35 @@ final class DeviceLink {
         let unreachable = ToolArgumentError(String(localized: "\(target.imp.name) isn't reachable right now."))
         guard let node else { throw unreachable }
         let id = UUID()
-        let me = LinkImp(sender)
+        let me = app.linkImp(sender)
         switch node.talk(id: id, from: me, to: target.id, toHome: target.home, text: words, holder: node.holder(of: sender.id) ?? node.device.id) {
         case .unreachable:
             throw unreachable
         case .here:
             return try await reply(from: me, to: target.id, text: words)
         case .via:
-            return try await withTaskCancellationHandler {
-                try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-                    asks[id] = continuation
-                    if Task.isCancelled { settle(id, .failure(CancellationError())) }
+            // Its answer is filed on the other device: this Mac keeps a copy (`AskedTalks`), under the question's id.
+            let date = Date()
+            func keep(_ reply: String, failed: Bool) {
+                asked.record(TalkLine(id: id, date: date, asker: ChatTurn.Sender(id: sender.id, name: sender.name, hue: sender.hue),
+                                      answerer: ChatTurn.Sender(id: target.imp.id, name: target.imp.name, hue: target.imp.hue),
+                                      question: words, reply: reply, failed: failed))
+            }
+            do {
+                let reply = try await withTaskCancellationHandler {
+                    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+                        asks[id] = continuation
+                        if Task.isCancelled { settle(id, .failure(CancellationError())) }
+                    }
+                } onCancel: {
+                    Task { @MainActor [weak self] in self?.settle(id, .failure(CancellationError())) }
                 }
-            } onCancel: {
-                Task { @MainActor [weak self] in self?.settle(id, .failure(CancellationError())) }
+                keep(reply, failed: false)
+                return reply
+            } catch let answered as ToolArgumentError {
+                // The other device answered that it couldn't, or nobody answered in time: it was asked all the same.
+                keep(answered.message, failed: true)
+                throw answered
             }
         }
     }
@@ -647,15 +669,15 @@ final class DeviceLink {
         asks.removeValue(forKey: id)?.resume(with: result)
     }
 
-    /// An Imp of this Mac answers another Imp.
-    private func reply(from sender: LinkImp, to target: UUID, text: String, limitedTo device: String? = nil) async throws -> String {
+    /// An Imp of this Mac answers another Imp. `turnID`: the question's id, when it came over the link.
+    private func reply(from sender: LinkImp, to target: UUID, text: String, limitedTo device: String? = nil, turnID: UUID? = nil) async throws -> String {
         let words = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !words.isEmpty, app.profile(target)?.isActive == true, let model = app.imp(target) else {
             throw ToolArgumentError(String(localized: "That Imp isn't out."))
         }
         let from = ChatTurn.Sender(id: sender.id, name: sender.name, hue: sender.hue)
         let place = app.prefs.impTalk.place(asked: nil)
-        return try await model.answer(String(words.prefix(LinkProtocol.maxText)), from: from, in: place, limitedTo: device)
+        return try await model.answer(String(words.prefix(LinkProtocol.maxText)), from: from, in: place, limitedTo: device, turnID: turnID)
     }
 
     /// An Imp on another device asks one of ours. Whatever goes wrong comes back as a failed answer.
@@ -676,7 +698,7 @@ final class DeviceLink {
         Task { @MainActor [weak self] in
             guard let self else { return }
             do {
-                let said = try await reply(from: job.sender, to: job.target, text: job.text, limitedTo: job.limitedTo)
+                let said = try await reply(from: job.sender, to: job.target, text: job.text, limitedTo: job.limitedTo, turnID: job.id)
                 node?.send(.answer(id: job.id, text: String(said.prefix(LinkProtocol.maxText)), failed: false), to: device)
             } catch {
                 node?.send(.answer(id: job.id, text: String(error.localizedDescription.prefix(LinkProtocol.maxText)), failed: true), to: device)
@@ -706,7 +728,7 @@ final class DeviceLink {
     /// The other devices are told which Imps are on this desktop, visitors too.
     private func watchStage() {
         let staged = withObservationTracking {
-            app.prefs.imps.filter { $0.isActive && $0.awayOn == nil }.map { LinkStaged(imp: LinkImp($0), home: node?.device.id ?? UUID()) }
+            app.prefs.imps.filter { $0.isActive && $0.awayOn == nil }.map { LinkStaged(imp: app.linkImp($0), home: node?.device.id ?? UUID()) }
                 + visitorsStaged
         } onChange: { [weak self] in
             Task { @MainActor in self?.watchStage() }

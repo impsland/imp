@@ -211,7 +211,7 @@ struct ImpSheet: View {
                             DaySeparator(text: label)
                         }
                         // Equatable: a row is built again only when it changed, not each time the sheet is drawn.
-                        TurnView(turn: turn, imp: imp, hub: hub, fresh: turn.date > openedAt,
+                        TurnView(turn: turn, imp: imp, hub: hub, answererHue: turn.answer == true ? source.peers(impID).first { $0.name == turn.from }?.hue : nil, fresh: turn.date > openedAt,
                                  canRetry: availability == .ready, ask: { [source, impID] in source.ask(impID, $0) })
                             .equatable()
                     }
@@ -608,10 +608,35 @@ private struct AskBubble: View {
     }
 }
 
+/// An Imp's answer to a message this one sent without waiting: on the left, in that Imp's colour, under "Bo answered".
+private struct AnswerBubble: View {
+    var text: String
+    var from: String
+    var hue: Double
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.snug) {
+            Label { Text(verbatim: String(format: String(localized: "exchange.answered"), from)) } icon: { ImpSwatch.image(hue: hue) }
+                .font(Typeface.small.weight(.semibold))
+                .foregroundStyle(Tone.muted)
+            Text(Inline.text(text))
+                .font(Typeface.body)
+                .foregroundStyle(Tone.text)
+                .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.cozy)
+                .background(Color.imp(hue).opacity(0.22), in: RoundedRectangle(cornerRadius: Radius.bubble, style: .continuous))
+                .contextMenu { Button { UIPasteboard.general.string = text } label: { Label("Copy", systemImage: "doc.on.doc") } }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.trailing, Sizing.marker)
+    }
+}
+
 private struct TurnView: View, Equatable {
     var turn: LinkTurn
     var imp: LinkImp
     var hub: LinkHub
+    /// The colour of the Imp that answered, when this turn is its answer to a message sent without waiting.
+    var answererHue: Double?
     /// Arrived while the chat was open (its voice may play on its own).
     var fresh: Bool
     /// Ask again is offered (the Imp can answer). `ask` is what it does, and is left out of the comparison.
@@ -620,13 +645,17 @@ private struct TurnView: View, Equatable {
     @AppStorage(PhonePrefs.autoplayKey) private var autoplayVoices = true
 
     nonisolated static func == (a: TurnView, b: TurnView) -> Bool {
-        a.turn == b.turn && a.imp == b.imp && a.fresh == b.fresh && a.canRetry == b.canRetry && a.hub === b.hub
+        a.turn == b.turn && a.imp == b.imp && a.answererHue == b.answererHue && a.fresh == b.fresh && a.canRetry == b.canRetry && a.hub === b.hub
     }
 
     var body: some View {
         let retry: (() -> Void)? = canRetry ? { ask(turn.request) } : nil
         VStack(spacing: Spacing.small) {
-            AskBubble(text: turn.request, retry: retry)
+            if turn.answer == true {
+                AnswerBubble(text: turn.request, from: turn.from ?? "", hue: answererHue ?? imp.hue)
+            } else {
+                AskBubble(text: turn.request, retry: retry)
+            }
             if !turn.steps.isEmpty { StepsLine(steps: turn.steps) }
             ReplyCard(text: turn.reply, imp: imp, hub: hub, failed: turn.failed, autoplay: fresh && autoplayVoices, retry: turn.failed ? retry : nil)
         }

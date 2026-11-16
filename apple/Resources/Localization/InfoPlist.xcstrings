@@ -110,13 +110,13 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Imp escanea el código que muestra otro dispositivo para vincularse con él."
+            "value": "Imp escanea el código que muestra otro dispositivo para enlazarse con él."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Imp 扫描另一台设备显示的代码，以便与它连接。"
+            "value": "Imp 扫描另一台设备显示的代码，以便与它关联。"
           }
         }
       }

@@ -115,6 +115,22 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         #expect(parsed.servers.first?.headers == ["Authorization": ""])
     }
 
+    @Test func whatItIsGoodAtMovesWithItToTheMac() throws {
+        var (imp, store) = pocketImp(chats: [chat(2)])
+        imp.about = "Finds train times."
+        let (kit, secrets) = try imp.adoption(secrets: store)
+        var prefs = ImpPreferences()
+        _ = try prefs.adopt(kit: kit, as: imp.id, secrets: secrets)
+        #expect(prefs.imps.first { $0.id == imp.id }?.about == "Finds train times.")
+    }
+
+    @Test func aSharedKitCannotSlipInALongOrMultiLineDescription() throws {
+        let long = String(repeating: "word ", count: 80)
+        let text = #"{"imps":[{"name":"Bo","about":"Line one\nline two \#(long)"}]}"#
+        let about = try #require(try Kit.parse(text, limit: LinkProtocol.maxFrame).imps.first?.about)
+        #expect(!about.contains("\n") && about.count <= 200 && about.hasPrefix("Line one line two"))
+    }
+
     @Test func theReviewShowsTheShellOffAsAdoptionLeavesIt() throws {
         let (imp, store) = pocketImp(chats: [chat(2)])
         let (text, _) = try imp.adoption(secrets: store)
@@ -402,6 +418,49 @@ private actor Sent {
         #expect(answer.turn.steps.map(\.failed) == [true, true])
         #expect(answer.turn.steps[1].response == "Error: Mo's iPhone went away.")
         #expect(!answer.turn.failed)
+    }
+
+    @Test func notWaitingReturnsTheReceiptAndWaitingStillWaits() async throws {
+        let (imp, store) = pocketImp()
+        let b = brain(store, replies: [toolCall("imp_message", #"{"to":"Mo","text":"hi","wait":false}"#),
+                                       toolCall("imp_message", #"{"to":"Mo","text":"again","wait":true}"#), text("Done.")])
+        let sent = Sent()
+        let talk = PocketTalk(others: ["Mo"], send: { to, text in await sent.message(to, text); return "waited" },
+                              later: { to, text in await sent.message(to, "later: " + text); return "RECEIPT" })
+        let answer = try await b.ask("Hi", of: imp, talk: talk)
+        #expect(answer.turn.steps[0].response == "RECEIPT")
+        #expect(answer.turn.steps[1].response == "Mo says: waited")
+        #expect(await sent.messages == [["Mo", "later: hi"], ["Mo", "again"]])
+    }
+
+    @Test func anAnswerTurnIsFiledAsAnswerWithTheEventAsUserMessage() async throws {
+        let (imp, store) = pocketImp()
+        let b = brain(store, replies: [text("Thanks, Mo.")])
+        let mo = ChatTurn.Sender(id: UUID(), name: "Mo", hue: 0.7)
+        let talk = PocketTalk(others: ["Mo"], send: { _, _ in "x" })
+        let answer = try await b.ask("It is fine.", of: imp, talk: talk, answered: (event: "EVENT TEXT", from: mo))
+        let messages = try #require(PocketStub.bodies[0]["messages"] as? [[String: Any]])
+        #expect(messages.last?["content"] as? String == "EVENT TEXT")
+        #expect(Set(toolNames(PocketStub.bodies[0])) == ["imp_message"])
+        #expect(answer.turn.via == .answer && answer.turn.sender == mo && answer.turn.request == "It is fine." && answer.peer == nil)
+        #expect(answer.linkTurn.answer == true && answer.linkTurn.from == "Mo")
+        var imp2 = imp
+        imp2.record(answer)
+        #expect(imp2.turns().count == 1)
+    }
+
+    @Test func aSavedImpWithoutAboutLoads() throws {
+        let (imp, _) = pocketImp()
+        var json = try #require(try JSONSerialization.jsonObject(with: JSONEncoder().encode(imp)) as? [String: Any])
+        json["about"] = nil
+        let old = try JSONDecoder().decode(PocketImp.self, from: JSONSerialization.data(withJSONObject: json))
+        #expect(old.about == nil && old.look.about == nil)
+        var withAbout = old
+        withAbout.about = "Fixing code"
+        withAbout.servers = [PocketServer(id: UUID(), name: "notes", url: "https://x.example/mcp")]
+        let look = withAbout.look
+        #expect(look.about == "Fixing code" && look.abilities == ["notes"])
+        #expect(try JSONDecoder().decode(PocketImp.self, from: JSONEncoder().encode(withAbout)).about == "Fixing code")
     }
 
     @Test func anImpAnsweringAnotherDoesNotGetToMessage() async throws {

@@ -36,7 +36,7 @@
     "note": "Menu item that opens the settings of one Imp.",
     "en": "Settings",
     "es": "Ajustes",
-    "zh-Hans": "小妖设置"
+    "zh-Hans": "Imp 设置"
   },
   "menu.imp.let_out": {
     "note": "Menu item (desktop only) that lets an Imp out onto the desktop.",
@@ -47,7 +47,7 @@
   "menu.imp.send_home": {
     "note": "Menu item (desktop only) that puts a free Imp back in the window.",
     "en": "Send home",
-    "es": "A casa",
+    "es": "Enviar a casa",
     "zh-Hans": "送回家"
   },
   "menu.imp.call_home": {
@@ -77,7 +77,7 @@
   "menu.imp.copy_link": {
     "note": "Menu item that copies a link to an Imp's kit.",
     "en": "Copy link",
-    "es": "Copiar vínculo",
+    "es": "Copiar enlace",
     "zh-Hans": "复制链接"
   },
   "menu.imp.share": {
@@ -203,7 +203,7 @@
   "menu.bar.quit_help": {
     "note": "Tooltip of the Quit button.",
     "en": "Quit Imp",
-    "es": "Cerrar Imp",
+    "es": "Salir de Imp",
     "zh-Hans": "退出 Imp"
   },
   "menu.bar.state.out": {
@@ -222,7 +222,7 @@
     "note": "State of an Imp that is hidden for now.",
     "en": "Hidden",
     "es": "Oculto",
-    "zh-Hans": "藏起来了"
+    "zh-Hans": "已隐藏"
   },
   "menu.imp.type": {
     "note": "Button in an Imp's menu that opens the typing box.",
@@ -237,7 +237,7 @@
     },
     "en": "Talk to {name}",
     "es": "Hablar con {name}",
-    "zh-Hans": "和{name}说话"
+    "zh-Hans": "和 {name} 说话"
   },
   "menu.imp.type_help": {
     "note": "Tooltip of the Type button in an Imp's menu.",
@@ -246,12 +246,12 @@
     },
     "en": "Type to {name}",
     "es": "Escribir a {name}",
-    "zh-Hans": "给{name}打字"
+    "zh-Hans": "给 {name} 打字"
   },
   "menu.canvas.devices": {
     "note": "Menu item that opens Devices.",
     "en": "Devices",
-    "es": "Dispositivos",
+    "es": "Equipos",
     "zh-Hans": "设备"
   },
   "menu.imp.talks": {
@@ -275,7 +275,7 @@
       "name": "string"
     },
     "en": "Move to {name}",
-    "es": "Mudar a {name}",
+    "es": "Mover a {name}",
     "zh-Hans": "搬到 {name}"
   },
   "menu.imp.visit_tip": {

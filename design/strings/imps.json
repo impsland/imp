@@ -20,8 +20,8 @@
   "imp.state.out": {
     "note": "State of an Imp let out of the window.",
     "en": "Out on the desktop",
-    "es": "Fuera en escritorio",
-    "zh-Hans": "在桌面上玩"
+    "es": "Fuera en el escritorio",
+    "zh-Hans": "在桌面上"
   },
   "imp.state.hidden": {
     "note": "State of a hidden Imp.",
@@ -209,5 +209,11 @@
     "en": "{name}, {state}",
     "es": "{name}, {state}",
     "zh-Hans": "{name}，{state}"
+  },
+  "exchange.answered": {
+    "note": "In the chat and the bubble: an Imp answered a message the Imp sent without waiting. %@ is its name.",
+    "en": "%@ answered",
+    "es": "%@ respondió",
+    "zh-Hans": "%@ 回答了"
   }
 }

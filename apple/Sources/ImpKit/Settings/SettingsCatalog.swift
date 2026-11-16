@@ -57,7 +57,7 @@ public enum SettingID: String, CaseIterable, Sendable {
     case bubbleBackground = "bubble_background", bubbleAmount = "bubble_amount"
     // Talking
     case talkingListeningLanguage = "talking_listening_language", talkingTalkIn = "talking_talk_in"
-    case talkingThreads = "talking_threads", talkingWindow = "talking_window"
+    case talkingThreads = "talking_threads", talkingWindow = "talking_window", talkingWaiting = "talking_waiting"
     // Brains
     case brainsServices = "brains_services", brainsKeychain = "brains_keychain", brainsWait = "brains_wait"
     case brainsRetries = "brains_retries", brainsFirstWait = "brains_first_wait", brainsLonger = "brains_longer"
@@ -76,7 +76,7 @@ public enum SettingID: String, CaseIterable, Sendable {
     case brainSource = "brain_source"
     case brainSends = "brain_sends", brainTools = "brain_tools", brainNewChat = "brain_new_chat", brainCurrentChat = "brain_current_chat"
     // Per Imp: personality
-    case personalityName = "personality_name", personalityPersona = "personality_persona"
+    case personalityName = "personality_name", personalityPersona = "personality_persona", personalityAbout = "personality_about"
     case personalityVoice = "personality_voice", personalityVoiceLook = "personality_voice_look"
     case personalityRules = "personality_rules"
     // Per Imp: look
@@ -111,6 +111,7 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .talkingListeningLanguage: Entry(page: .talking, title: "settings.talking.language.title", hint: "the language you speak to the Imp, dictation, microphone language")
         case .talkingTalkIn: Entry(page: .talking, title: "settings.talking.talk_in.title", hint: "where Imps talk to each other, in the bubble or in their own chat")
         case .talkingThreads: Entry(page: .talking, title: "settings.talking.threads.title", hint: "separate chats or one running conversation")
+        case .talkingWaiting: Entry(page: .talking, title: "settings.talking.waiting.title", hint: "whether an Imp waits for another Imp's answer or goes on")
         case .talkingWindow: Entry(page: .talking, title: "settings.talking.window.title", hint: "how long before a chat starts over")
         case .brainsServices: Entry(page: .brains, title: "settings.group.brains", hint: "AI services the Imps can use, add an API, address, model, OpenAI, Claude, Ollama")
         case .brainsKeychain: Entry(page: .brains, title: "settings.brains.keychain.title", hint: "where API keys are stored, the Keychain")
@@ -136,6 +137,7 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .brainNewChat: Entry(page: .brain, title: "memory.new_chat.title", hint: "the size at which a long chat gets a suggestion to recap or start a new chat")
         case .brainCurrentChat: Entry(page: .brain, title: "Current chat", hint: "let the Imp see the chat it is in")
         case .personalityName: Entry(page: .personality, title: "personality.name", hint: "the Imp's name and what it calls you")
+        case .personalityAbout: Entry(page: .personality, title: "personality.about", hint: "what the Imp is good at, its description for the other Imps")
         case .personalityPersona: Entry(page: .personality, title: "personality.persona", hint: "who the Imp is, its character description and instructions")
         case .personalityVoice: Entry(page: .personality, title: "personality.voice", hint: "how the Imp sounds, the spoken voice")
         case .personalityVoiceLook: Entry(page: .personality, title: "personality.voice_look", hint: "how the Imp's voice looks while it speaks")

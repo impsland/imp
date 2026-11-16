@@ -76,6 +76,23 @@ The body stays on the canvas as "away" until the other device says `took`. A dec
 lost connection ends the pass as `declined`, the app brings the body back, and the node marks the Imp
 as not away. A late acceptance cannot leave two bodies.
 
+## An open chat goes with the Imp
+
+An Imp is in one place at a time, so a sheet about it can't stay open where it no longer is. On the iPhone
+(`PhoneRouter.departed`, tested in `PhonePresenceTests`):
+
+- An Imp of the iPhone thrown to the Mac with its chat (or its settings) open: the sheet stays while it flies,
+  and closes once the Mac has taken it (`took`). Its chat goes on in its bubble on the Mac. Close never leads
+  back to the chat of an Imp that is away.
+- A decline, a timeout or a lost connection brings it back, and the chat was never closed.
+- An answer it was thinking about keeps going at its home (the iPhone) and lands in its chat. The Mac shows
+  the work while it holds it. Text typed but not sent is dropped with the sheet.
+- A visitor (a Mac Imp on the iPhone) sent home, called home or thrown on takes its sheet with it, and so does
+  an Imp said goodbye to.
+- Called back or Undo: it lands in the room again and its chat is one tap away. It does not reopen by itself.
+
+On the Mac an Imp's chat is its own bubble, which leaves with the Imp's window.
+
 ## The three decisions
 
 (a) One eligible nearby device: send at once, no confirmation, Undo for 6 seconds. The cost is low and

@@ -92,7 +92,7 @@ struct PocketEditor: View {
         // Kept as it changes, a moment after the last change: a name or a persona being typed is not saved letter by
         // letter, and a pick (a colour, a character, a size) shows on the Imp in the room almost at once.
         .onChange(of: draft.fingerprint) { old, new in
-            let typing = old.first != new.first || old.dropFirst(4).first != new.dropFirst(4).first
+            let typing = old.first != new.first || old.dropFirst(4).first != new.dropFirst(4).first || old.dropFirst(5).first != new.dropFirst(5).first
             save(after: .milliseconds(typing ? 350 : 80))
         }
         // A Brain that works is kept by the form itself, and the errand is over: why stay?

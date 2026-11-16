@@ -164,7 +164,7 @@
     "description": "Connection status when Imp cannot be reached."
   },
   "extension_tab_blind": {
-    "message": "El navegador se guarda esta página. Imp solo conoce su dirección.",
+    "message": "El navegador no comparte esta página. Imp solo conoce su dirección.",
     "description": "Help for the page box when the browser keeps the page private."
   },
   "extension_tab_label": {

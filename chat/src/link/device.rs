@@ -1039,6 +1039,7 @@ impl Device {
                         workspace,
                         remote: None,
                         agents_home: None,
+                        answers_later: false,
                     },
                 )
                 .await
@@ -1331,11 +1332,7 @@ impl Device {
                     imp,
                     mood: "idle".into(),
                 },
-                LinkMessage::Brain {
-                    imp,
-                    ready,
-                    tools: Some(tools),
-                },
+                LinkMessage::Brain { imp, ready, tools },
                 LinkMessage::Chat { imp, turns },
                 LinkMessage::Work { imp, work: None },
                 LinkMessage::Speech { imp, speech: None },
@@ -1377,7 +1374,7 @@ impl Device {
                     &LinkMessage::Brain {
                         imp,
                         ready: true,
-                        tools: Some(tools),
+                        tools,
                     },
                     holder,
                 );

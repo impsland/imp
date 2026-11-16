@@ -17,7 +17,7 @@ struct PairingView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// What the first Imp is called until its owner picks another name.
-    static let firstName = "Imp"
+    static let firstName = ImpProfile.firstName
 
     var body: some View {
         GeometryReader { geo in

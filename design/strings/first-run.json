@@ -71,7 +71,7 @@
   "firstrun.service.host_note": {
     "note": "Quiet line on the phone under a local preset: the address is the computer's.",
     "en": "Use the address of your computer on this network.",
-    "es": "Usa la dirección de tu computadora en esta red.",
+    "es": "Usa la dirección de tu equipo en esta red.",
     "zh-Hans": "请填写你电脑在这个网络里的地址。"
   },
   "firstrun.service.key": {

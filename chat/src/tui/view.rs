@@ -28,8 +28,8 @@ const IMP: &str = "●";
 /// A tool call, its result, and a message to another Imp and its answer.
 const CALL: &str = "⏺";
 const RESULT: &str = "⎿";
-const ASK: &str = "⇢";
 const ANSWER: &str = "⇠";
+const ASK: &str = "⇢";
 /// Columns left of the text in the message field: one of space, the mark and one of space.
 const FIELD_INDENT: u16 = 3;
 /// The frames of the spinner that shows the Imp is still at work.
@@ -304,6 +304,12 @@ impl App {
         width: usize,
     ) {
         match message.role {
+            // An answer that came later is an event, not something the person typed.
+            Role::User if message.content.starts_with(imp_engine::troupe::EVENT_MARK) => {
+                let said = message.content.split("\n\n").next().unwrap_or("");
+                marked(rows, ANSWER, self.theme.muted(), said, width);
+                rows.push(Row::blank());
+            }
             Role::User => {
                 // Files picked with @ went to the model. The chat names them under what was written.
                 let (text, files) = mentions::shown(&message.content);

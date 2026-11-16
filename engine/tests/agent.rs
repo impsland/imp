@@ -4,8 +4,8 @@
 //! no extra binary. Lines the test harness prints are skipped by the client because they are not JSON.
 
 use imp_engine::{
-    AgentEvent, ChatMessage, McpClient, McpEndpoint, McpHost, McpServerSpec, OpenAiClient,
-    RetryPolicy, Role, ToolSelection, Toolbox, run_agent,
+    AgentEvent, BoxFuture, ChatMessage, HostTool, McpClient, McpEndpoint, McpHost, McpServerSpec,
+    OpenAiClient, RetryPolicy, Role, ToolHost, ToolSelection, ToolSpec, Toolbox, run_agent,
 };
 use serde_json::{Value, json};
 use std::io::{BufRead, Write};
@@ -352,4 +352,159 @@ async fn environment_values_reach_the_server() {
         imp_engine::ToolHost::call(&toolbox, "nope", "{}").await,
         None
     );
+}
+
+/// One reply that calls several tools at once: `(id, name, arguments)` for each.
+fn calls_body(calls: &[(&str, &str, &str)]) -> String {
+    let list: Vec<Value> = calls
+        .iter()
+        .enumerate()
+        .map(|(i, (id, name, args))| json!({ "index": i, "id": id, "function": { "name": name, "arguments": args } }))
+        .collect();
+    let delta = json!({ "choices": [{ "delta": { "tool_calls": list } }] });
+    let end = json!({ "choices": [{ "delta": {}, "finish_reason": "tool_calls" }] });
+    format!("data: {delta}\n\ndata: {end}\n\ndata: [DONE]\n\n")
+}
+
+/// A tool host with `imp_message` and `shell`, both of which take `ms` to answer. It records when each call
+/// starts and ends.
+struct Timed {
+    log: std::cell::RefCell<Vec<String>>,
+}
+
+impl ToolHost for Timed {
+    fn tools(&self) -> Vec<HostTool> {
+        ["imp_message", "shell"]
+            .into_iter()
+            .map(|name| HostTool {
+                entry: None,
+                spec: ToolSpec {
+                    name: name.into(),
+                    description: String::new(),
+                    parameters: json!({ "type": "object" }),
+                },
+            })
+            .collect()
+    }
+
+    fn call<'a>(&'a self, name: &'a str, arguments: &'a str) -> BoxFuture<'a, Option<String>> {
+        Box::pin(async move {
+            let args: Value = serde_json::from_str(arguments).unwrap();
+            let who = args["who"].as_str().unwrap().to_string();
+            self.log.borrow_mut().push(format!("start {who}"));
+            tokio::time::sleep(Duration::from_millis(args["ms"].as_u64().unwrap())).await;
+            self.log.borrow_mut().push(format!("end {who}"));
+            Some(format!("{name} {who}"))
+        })
+    }
+}
+
+#[tokio::test]
+async fn messages_to_imps_in_one_reply_run_together_and_come_back_in_call_order() {
+    let (url, seen) = mock(vec![
+        calls_body(&[
+            ("c1", "imp_message", r#"{"who":"slow","ms":400}"#),
+            ("c2", "imp_message", r#"{"who":"fast","ms":50}"#),
+            ("c3", "imp_message", r#"{"who":"mid","ms":150}"#),
+        ]),
+        text_body("done"),
+    ])
+    .await;
+    let client = OpenAiClient::new(&url, None, RetryPolicy::none()).unwrap();
+    let host = Timed {
+        log: Default::default(),
+    };
+    let mut messages = vec![ChatMessage::system("s"), ChatMessage::user("ask all")];
+    let mut events = Vec::new();
+    let began = std::time::Instant::now();
+    run_agent(
+        &client,
+        "m",
+        &mut messages,
+        &host,
+        &ToolSelection::all(),
+        5,
+        |e| events.push(e),
+    )
+    .await
+    .unwrap();
+    // They overlapped: the three took about as long as the slowest, not the sum (600 ms).
+    assert!(
+        began.elapsed() < Duration::from_millis(560),
+        "{:?}",
+        began.elapsed()
+    );
+    let log = host.log.borrow().clone();
+    assert_eq!(log[..3], ["start slow", "start fast", "start mid"]);
+    assert_eq!(log[3..], ["end fast", "end mid", "end slow"]);
+    // The messages are the provider's order: the assistant turn, then each result by its call id.
+    let tool_ids: Vec<_> = messages
+        .iter()
+        .filter(|m| m.role == Role::Tool)
+        .map(|m| (m.tool_call_id.clone().unwrap(), m.content.clone()))
+        .collect();
+    assert_eq!(
+        tool_ids,
+        [
+            ("c1".to_string(), "imp_message slow".to_string()),
+            ("c2".to_string(), "imp_message fast".to_string()),
+            ("c3".to_string(), "imp_message mid".to_string()),
+        ]
+    );
+    assert_eq!(messages[2].role, Role::Assistant);
+    assert_eq!(messages[3].tool_call_id.as_deref(), Some("c1"));
+    // The results are reported in call order too, though the fast one finished first.
+    let reported: Vec<_> = events
+        .iter()
+        .filter_map(|e| match e {
+            AgentEvent::ToolResult { call_id, .. } => Some(call_id.as_str()),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(reported, ["c1", "c2", "c3"]);
+    assert_eq!(seen.lock().unwrap().len(), 2);
+}
+
+#[tokio::test]
+async fn other_tools_stay_one_after_another_in_order() {
+    let (url, _) = mock(vec![
+        calls_body(&[
+            ("c1", "shell", r#"{"who":"a","ms":60}"#),
+            ("c2", "shell", r#"{"who":"b","ms":10}"#),
+            ("c3", "imp_message", r#"{"who":"c","ms":60}"#),
+            ("c4", "imp_message", r#"{"who":"d","ms":10}"#),
+            ("c5", "shell", r#"{"who":"e","ms":10}"#),
+        ]),
+        text_body("done"),
+    ])
+    .await;
+    let client = OpenAiClient::new(&url, None, RetryPolicy::none()).unwrap();
+    let host = Timed {
+        log: Default::default(),
+    };
+    let mut messages = vec![ChatMessage::user("go")];
+    run_agent(
+        &client,
+        "m",
+        &mut messages,
+        &host,
+        &ToolSelection::all(),
+        5,
+        |_| {},
+    )
+    .await
+    .unwrap();
+    assert_eq!(
+        *host.log.borrow(),
+        [
+            "start a", "end a", "start b", "end b", // the shell: one at a time
+            "start c", "start d", "end d", "end c", // the Imps: together
+            "start e", "end e", // and the shell waits for them
+        ]
+    );
+    let ids: Vec<_> = messages
+        .iter()
+        .filter_map(|m| m.tool_call_id.as_deref())
+        .collect();
+    assert_eq!(ids, ["c1", "c2", "c3", "c4", "c5"]);
 }

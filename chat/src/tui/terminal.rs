@@ -10,15 +10,18 @@ use crate::mentions;
 use crate::project::shown_path;
 use crate::session::{Session, SessionOptions};
 use crate::slash::{self, Context, Note, Outcome};
+use crate::troupe::{Arrival, Later};
 use crate::{CliError, Result};
 use imp_engine::{AgentEvent, run_agent};
 use ratatui::crossterm::event::{
     DisableBracketedPaste, DisableMouseCapture, EnableBracketedPaste, EnableMouseCapture, Event,
 };
 use ratatui::crossterm::execute;
+use std::collections::VecDeque;
 use std::future::Future;
 use std::path::Path;
 use std::pin::Pin;
+use std::rc::Rc;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
@@ -108,6 +111,7 @@ pub async fn run(
             workspace: options.workspace.clone(),
             remote: device.as_ref().map(Device::remote),
             agents_home: None,
+            answers_later: true,
         },
     )
     .await?;
@@ -122,6 +126,7 @@ pub async fn run(
         options,
         visiting: None,
         stash: None,
+        arrived: VecDeque::new(),
     };
     let result = chat
         .event_loop(&mut terminal, &mut key_rx, device_note)
@@ -155,6 +160,17 @@ struct Chat {
     visiting: Option<Uuid>,
     /// The conversation with this computer's Imp, kept while a visitor is on screen.
     stash: Option<ChatState>,
+    /// Answers to messages the Imp sent without waiting, for when it is free to read them. Each becomes a new
+    /// message at the end of its chat. Nothing earlier is changed.
+    arrived: VecDeque<Arrival>,
+}
+
+/// Waits for the next answer to a message the Imp sent without waiting, or forever when it can't send any.
+async fn next_answer(later: Option<Rc<Later>>) -> Arrival {
+    match later {
+        Some(later) => later.next().await,
+        None => std::future::pending().await,
+    }
 }
 
 /// Waits for the next update of the device, or forever when there is none.
@@ -201,9 +217,11 @@ impl Chat {
         // Scrolls while text is dragged past the top or bottom of the transcript.
         let mut edge = tokio::time::interval(Duration::from_millis(50));
         loop {
+            self.wake(&mut app, &mut running, &agent_tx);
             terminal
                 .draw(|frame| app.render(frame))
                 .map_err(|e| CliError(format!("The screen could not be drawn: {e}")))?;
+            let later = self.session.later.clone();
             tokio::select! {
                 biased;
                 Some(event) = keys.recv() => match handle(&mut app, event) {
@@ -224,7 +242,12 @@ impl Chat {
                                 app.on_done(Err(e.0));
                             }
                         }
-                        None => running = Some(start_agent(&self.session, &app, &agent_tx)),
+                        None => {
+                            if let Some(later) = &self.session.later {
+                                later.set_depth(0);
+                            }
+                            running = Some(start_agent(&self.session, &app, &agent_tx));
+                        }
                         }
                     }
                     Action::Stop => {
@@ -268,10 +291,40 @@ impl Chat {
                     app.set_files(mentions::list_files(&self.session.workspace));
                 }
                 update = next_update(&mut self.device) => self.on_update(&mut app, update),
+                arrival = next_answer(later) => self.arrived.push_back(arrival),
                 _ = tick.tick(), if app.is_animating() || app.has_flash() => {}
                 _ = edge.tick(), if app.edge_scrolling() => app.on_edge_tick(),
             }
         }
+    }
+
+    /// An answer to a message the Imp sent without waiting wakes it when it is free: the answer is added to
+    /// its chat as a new message, framed as an event, and it takes a turn on it like on any message. While a
+    /// turn is running (or a visitor or a command is on screen) the answer waits its turn.
+    fn wake(
+        &mut self,
+        app: &mut App,
+        running: &mut Option<AgentRun>,
+        events: &tokio::sync::mpsc::UnboundedSender<AgentEvent>,
+    ) {
+        let idle = running.is_none()
+            && self.visiting.is_none()
+            && app.away().is_none()
+            && !app.is_waiting();
+        if !idle {
+            return;
+        }
+        let Some(arrival) = self.arrived.front() else {
+            return;
+        };
+        if !app.wake(&arrival.event()) {
+            return;
+        }
+        if let Some(later) = &self.session.later {
+            later.set_depth(arrival.wakes_at());
+        }
+        self.arrived.pop_front();
+        *running = Some(start_agent(&self.session, app, events));
     }
 
     /// Puts the files a message names with `@` in it, for the model. The chat shows what was written.
@@ -425,6 +478,7 @@ impl Chat {
             workspace: Some(self.session.workspace.clone()),
             remote: self.device.as_ref().map(Device::remote),
             agents_home: None,
+            answers_later: true,
         };
         match Session::open(&self.session.path, Some(name), options).await {
             Ok(next) => {
@@ -432,6 +486,8 @@ impl Chat {
                 old.close().await;
                 self.visiting = None;
                 self.stash = None;
+                // Answers to what the other Imp sent are lost with it.
+                self.arrived.clear();
                 let chat = self.session.new_chat();
                 app.switch(&self.session.name, &self.session.model, chat);
                 for warning in &self.session.warnings {

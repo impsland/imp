@@ -355,6 +355,7 @@ impl AgentSpec {
         match key {
             "model" => self.model.is_some(),
             "personality" => self.personality.is_some(),
+            "description" => self.description.is_some(),
             "hue" => self.hue.is_some(),
             "base_url" | "url" => self.base_url.is_some(),
             "api_key_env" => self.api_key_env.is_some(),

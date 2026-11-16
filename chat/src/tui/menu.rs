@@ -103,7 +103,7 @@ impl App {
                 .collect()
         };
         Menu {
-            hint: Some(format!("{} — {}", command.usage, command.about)),
+            hint: Some(format!("{}: {}", command.usage, command.about)),
             entries,
             files: false,
         }

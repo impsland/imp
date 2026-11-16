@@ -366,6 +366,8 @@ impl DeviceMap {
                     hue: i.hue,
                     scale: 1.0,
                     traits: Default::default(),
+                    about: None,
+                    abilities: Vec::new(),
                 },
                 home: Uuid::nil(),
             })

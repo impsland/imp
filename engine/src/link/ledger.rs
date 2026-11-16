@@ -17,7 +17,7 @@ pub struct AwayEntry {
     pub generation: u64,
     /// The hash of the ticket the holder had before its last claim. A `claimed` lost when a connection
     /// drops leaves the holder with that one, so it is still good from the same holder, until the next
-    /// claim proves the new ticket arrived. Absent from books written before it existed.
+    /// claim proves the new ticket arrived. Not written while there is none.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub previous: Option<Bytes>,
 }
@@ -378,7 +378,7 @@ mod tests {
         let first = ledger.mint(id(2), id(10));
         ledger.claim(id(2), &first, id(10));
         assert!(ledger.release(id(2), &first) && !ledger.is_away(id(2)));
-        // A book written before `previous` existed still reads.
+        // An entry with no earlier ticket is written without `previous` and reads back without it.
         let old: AwayEntry = serde_json::from_str(
             r#"{"imp":"00000000-0000-0000-0000-000000000001","holder":"00000000-0000-0000-0000-00000000000a","ticket":"AAAA","generation":3}"#,
         )

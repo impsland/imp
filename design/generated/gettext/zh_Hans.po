@@ -18,7 +18,7 @@ msgstr "每个小块是动作中的一个瞬间。拖动来移动或拉长它。
 #. Help of the hop setting.
 msgctxt "anim.help.hop"
 msgid "How high the Imp jumps in this beat."
-msgstr "小鬼在这一拍里跳多高。"
+msgstr "Imp 在这一拍里跳多高。"
 
 #. Help of the move icon.
 msgctxt "anim.help.icon"
@@ -48,12 +48,12 @@ msgstr "把身体压扁或拉长，像个球。"
 #. Help of the symbol setting.
 msgctxt "anim.help.symbol"
 msgid "A small picture that pops up beside the Imp."
-msgstr "在小鬼旁边冒出来的小图案。"
+msgstr "在 Imp 旁边冒出来的小图案。"
 
 #. Help of the tilt setting.
 msgctxt "anim.help.tilt"
 msgid "How far the Imp leans to the side."
-msgstr "小鬼向一侧倾斜多少。"
+msgstr "Imp 向一侧倾斜多少。"
 
 #. Heading of the five bundled animations.
 msgctxt "animations.built_in"
@@ -238,7 +238,7 @@ msgstr "添加一项服务"
 #. Help of the key field.
 msgctxt "brain.help.key"
 msgid "A secret password that lets the Imp use this service. It stays on this Mac."
-msgstr "一个秘密口令，让小鬼可以使用这项服务。它只保存在这台 Mac 上。"
+msgstr "一个秘密口令，让 Imp 可以使用这项服务。它只保存在这台 Mac 上。"
 
 #. Help of the model picker.
 msgctxt "brain.help.model"
@@ -248,12 +248,12 @@ msgstr "服务里具体用哪个大脑。大的想得更好，但更慢。"
 #. Help of the service list.
 msgctxt "brain.help.service"
 msgid "Pick who does the thinking for this Imp."
-msgstr "选择由谁来为这个小鬼思考。"
+msgstr "选择由谁来为这个 Imp 思考。"
 
 #. Help of the Brain source switch.
 msgctxt "brain.help.source"
 msgid "Use the Brain every Imp shares, or pick a different one just for this Imp."
-msgstr "使用所有小鬼共用的大脑，或只为这个小鬼选另一个。"
+msgstr "使用所有 Imp 共用的大脑，或只为这个 Imp 选另一个。"
 
 #. Hint at the top of the Brain panel.
 msgctxt "brain.hint"
@@ -489,7 +489,7 @@ msgstr "输入一个词来查找内容。"
 #. Help of the Den server.
 msgctxt "den.help.server"
 msgid "Where people share Imps, animations, triggers and tools."
-msgstr "大家分享小鬼、动画、触发器和工具的地方。"
+msgstr "大家分享 Imp、动画、触发器和工具的地方。"
 
 #. Help of the Den name.
 msgctxt "den.help.slug"
@@ -620,6 +620,11 @@ msgstr "无法共享 {name}。请稍后再试。"
 msgctxt "error.tool_failed"
 msgid "{tool} could not start. Check its settings."
 msgstr "{tool} 无法启动。请检查它的设置。"
+
+#. In the chat and the bubble: an Imp answered a message the Imp sent without waiting. %@ is its name.
+msgctxt "exchange.answered"
+msgid "%@ answered"
+msgstr "%@ 回答了"
 
 #. The tooltip of the toolbar button.
 msgctxt "extension.action_title"
@@ -1068,6 +1073,17 @@ msgctxt "home.canvas.label"
 msgid "The Imps' home"
 msgstr "Imp 的家园"
 
+#. Help and screen reader name of the corner button that opens the Devices settings.
+msgctxt "home.corner.devices"
+msgid "Devices"
+msgstr "设备"
+
+#. Screen reader value of the Devices corner button: how many linked devices are connected now. A dot on the button shows when any is.
+msgctxt "home.corner.devices.connected"
+msgid "{count} connected"
+msgid_plural "{count} connected"
+msgstr[0] "已连接 {count} 台"
+
 #. Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.
 msgctxt "home.corner.show_hidden"
 msgid "Hidden"
@@ -1236,7 +1252,7 @@ msgstr "已隐藏"
 #. State of an Imp let out of the window.
 msgctxt "imp.state.out"
 msgid "Out on the desktop"
-msgstr "在桌面上玩"
+msgstr "在桌面上"
 
 #. State of an Imp whose home is another device.
 msgctxt "imp.state.visiting"
@@ -1372,17 +1388,17 @@ msgstr "{on}/{total}"
 #. Help of bringing chats along.
 msgctxt "kit.help.chats"
 msgid "Also copy what this Imp talked about."
-msgstr "同时复制这个小鬼聊过的内容。"
+msgstr "同时复制这个 Imp 聊过的内容。"
 
 #. Help of the kit paste field.
 msgctxt "kit.help.paste"
 msgid "Paste a kit, a web address or an imp:// link, or drop a file. You look at it first."
-msgstr "粘贴一个套装、网址或 imp:// 链接，或放入文件。你会先查看。"
+msgstr "粘贴一个套件、网址或 imp:// 链接，或放入文件。你会先查看。"
 
 #. Help of skipped items.
 msgctxt "kit.help.skipped"
 msgid "Things in the kit this Mac cannot use, so they are left out."
-msgstr "套装里这台 Mac 用不了的东西，所以被略过。"
+msgstr "套件里这台 Mac 用不了的东西，所以被略过。"
 
 #. Help of the kit tools.
 msgctxt "kit.help.tools"
@@ -1402,7 +1418,7 @@ msgstr "Imp 的本地网络已被关闭"
 #. Button on the iPhone that opens the app's page in Settings.
 msgctxt "link.localnet.open"
 msgid "Open Settings"
-msgstr "打开设置项"
+msgstr "打开设置"
 
 #. Button on the Mac that opens System Settings, Local Network.
 msgctxt "link.localnet.open_mac"
@@ -1467,7 +1483,7 @@ msgstr "头部"
 #. Help of the body section.
 msgctxt "look.help.body"
 msgid "Pick the colour and the size of this Imp."
-msgstr "选择这个小鬼的颜色和大小。"
+msgstr "选择这个 Imp 的颜色和大小。"
 
 #. Help of the eyebrows slider.
 msgctxt "look.help.brows"
@@ -1487,7 +1503,7 @@ msgstr "脸颊红润的程度。"
 #. Help of the colour.
 msgctxt "look.help.colour"
 msgid "The colour of this Imp. Drag along the strip to change it."
-msgstr "这个小鬼的颜色。沿着色条拖动来改变。"
+msgstr "这个 Imp 的颜色。沿着色条拖动来改变。"
 
 #. Help of the eye size slider.
 msgctxt "look.help.eyes"
@@ -1517,7 +1533,7 @@ msgstr "它做所有事的快慢。1.0 是正常。"
 #. Help of the size.
 msgctxt "look.help.size"
 msgid "How big this Imp is on your screen."
-msgstr "这个小鬼在屏幕上有多大。"
+msgstr "这个 Imp 在屏幕上有多大。"
 
 #. Help of the squint slider.
 msgctxt "look.help.squint"
@@ -1582,7 +1598,7 @@ msgstr "聊天达到多大时 Imp 会建议总结或开始新聊天。"
 #. Row in the Imp's Memory card.
 msgctxt "memory.new_chat.title"
 msgid "New chat at"
-msgstr "新聊天于"
+msgstr "新聊天上限"
 
 #. Choice for Sends: every message.
 msgctxt "memory.no_limit"
@@ -1677,7 +1693,7 @@ msgstr "重新显示所有 Imp"
 #. State of an Imp that is hidden for now.
 msgctxt "menu.bar.state.hidden"
 msgid "Hidden"
-msgstr "藏起来了"
+msgstr "已隐藏"
 
 #. State of an Imp that is waiting in the app window.
 msgctxt "menu.bar.state.home"
@@ -1772,7 +1788,7 @@ msgstr "去 {name} 做客"
 #. Menu item that opens the settings of one Imp.
 msgctxt "menu.imp.settings"
 msgid "Settings"
-msgstr "小妖设置"
+msgstr "Imp 设置"
 
 #. Menu item that shares an Imp.
 msgctxt "menu.imp.share"
@@ -1787,7 +1803,7 @@ msgstr "说话"
 #. Tooltip of the Talk button in an Imp's menu.
 msgctxt "menu.imp.talk_help"
 msgid "Talk to {name}"
-msgstr "和{name}说话"
+msgstr "和 {name} 说话"
 
 #. Tip and title of the button in an Imp's chat that opens what it said with other Imps.
 msgctxt "menu.imp.talks"
@@ -1802,7 +1818,7 @@ msgstr "输入"
 #. Tooltip of the Type button in an Imp's menu.
 msgctxt "menu.imp.type_help"
 msgid "Type to {name}"
-msgstr "给{name}打字"
+msgstr "给 {name} 打字"
 
 #. Greyed Imp menu item when no other device is around.
 msgctxt "menu.imp.visit_none"
@@ -1837,12 +1853,12 @@ msgstr "跟随"
 #. Help of the built-in moves row.
 msgctxt "moves.help.builtin"
 msgid "Pick one of the moves every Imp has and make a version only for this Imp."
-msgstr "选一个所有小鬼都有的动作，为这个小鬼做一个专属版本。"
+msgstr "选一个所有 Imp 都有的动作，为这个 Imp 做一个专属版本。"
 
 #. Help of the follow section.
 msgctxt "moves.help.follow"
 msgid "Choose what this Imp does when you move your mouse pointer: stay still, look at it, or run after it."
-msgstr "选择你移动鼠标指针时这个小鬼做什么：不动、看着它，或跟着它跑。"
+msgstr "选择你移动鼠标指针时这个 Imp 做什么：不动、看着它，或跟着它跑。"
 
 #. Help of the follow mode picker.
 msgctxt "moves.help.follow_how"
@@ -1852,7 +1868,7 @@ msgstr "关：它不动。眼睛：只有眼睛看着指针。蹦跳：它跳着
 #. Help of the own animations list.
 msgctxt "moves.help.own"
 msgid "Moves made for only this Imp. They play instead of the shared ones."
-msgstr "只为这个小鬼做的动作。它们会代替共用的动作。"
+msgstr "只为这个 Imp 做的动作。它们会代替共用的动作。"
 
 #. Help of the follow speed slider.
 msgctxt "moves.help.speed"
@@ -1864,10 +1880,25 @@ msgctxt "moves.title"
 msgid "Moves"
 msgstr "动作"
 
+#. Field label: what the Imp is good at, which other Imps read to know whom to ask.
+msgctxt "personality.about"
+msgid "What it's good at"
+msgstr "擅长什么"
+
+#. Placeholder of the field about what the Imp is good at.
+msgctxt "personality.about_hint"
+msgid "Researching on the web, fixing code…"
+msgstr "上网查资料、修代码……"
+
+#. Help of the field about what the Imp is good at.
+msgctxt "personality.help.about"
+msgid "One or two lines. The other Imps read it to know whom to ask for what."
+msgstr "一两行字。其他 Imp 会读它，来决定什么事该问谁。"
+
 #. Help of the name field.
 msgctxt "personality.help.name"
 msgid "What you call this Imp. Say its name and it answers."
-msgstr "你怎么称呼这个小鬼。叫它的名字，它就会回答。"
+msgstr "你怎么称呼这个 Imp。叫它的名字，它就会回答。"
 
 #. Help of the persona field.
 msgctxt "personality.help.persona"
@@ -1882,7 +1913,7 @@ msgstr "告诉它怎么回答的隐藏规则。大多数人从不修改。"
 #. Help of the voice section.
 msgctxt "personality.help.voice"
 msgid "What shows on your screen while this Imp talks out loud."
-msgstr "这个小鬼大声说话时，你的屏幕上会出现什么。"
+msgstr "这个 Imp 大声说话时，你的屏幕上会出现什么。"
 
 #. Help of the voice look picker.
 msgctxt "personality.help.voice_look"
@@ -2002,12 +2033,12 @@ msgstr "使用“{name}”"
 #. Under the list of Imps in the iPhone's Brains settings: a new Imp (the + button) starts with this Imp's service, model and key.
 msgctxt "phone.brains.default"
 msgid "New Imps start with {name}'s Brain."
-msgstr "新的小妖会沿用 {name} 的大脑。"
+msgstr "新的 Imp 会沿用 {name} 的大脑。"
 
 #. Brains section of the iPhone settings, when no Imp was hatched on this iPhone yet.
 msgctxt "phone.brains.empty"
 msgid "Imps you hatch on this iPhone show here, each with the Brain it thinks with."
-msgstr "你在这台 iPhone 上孵化的小妖会显示在这里，并附上各自使用的大脑。"
+msgstr "你在这台 iPhone 上孵化的 Imp 会显示在这里，并附上各自使用的大脑。"
 
 #. Button beside an Imp without a Brain (iPhone settings): opens its Brain to set one up.
 msgctxt "phone.brains.set_up"
@@ -2107,12 +2138,12 @@ msgstr "经由服务器中转"
 #. Button: copy the link.
 msgctxt "phone.copy"
 msgid "Copy"
-msgstr "拷贝"
+msgstr "复制"
 
 #. Message of that alert, with what went wrong.
 msgctxt "phone.editor.save_failed"
 msgid "The Imp couldn't be saved. {detail}"
-msgstr "没能保存这个小妖。{detail}"
+msgstr "没能保存这个 Imp。{detail}"
 
 #. Title of the alert when an Imp's settings could not be saved.
 msgctxt "phone.editor.save_failed_title"
@@ -2127,7 +2158,7 @@ msgstr "全部忘记"
 #. What forgetting one device does.
 msgctxt "phone.forget.message"
 msgid "Its Imps come home. To link again, show a new code."
-msgstr "它的小妖会回家。要再关联，请出示新的二维码。"
+msgstr "它的 Imp 会回家。要再关联，请出示新的二维码。"
 
 #. Button that unlinks one device.
 msgctxt "phone.forget.one"
@@ -2147,7 +2178,7 @@ msgstr "忘记 {name}？"
 #. What forgetting everyone does.
 msgctxt "phone.forget_all.message"
 msgid "Every Imp comes home. Link again with a new code."
-msgstr "所有小妖都会回家。请用新的二维码重新关联。"
+msgstr "所有 Imp 都会回家。请用新的二维码重新关联。"
 
 #. Question above the forget everyone button.
 msgctxt "phone.forget_all.title"
@@ -2182,7 +2213,7 @@ msgstr "时间到。{points} 分。新纪录！"
 #. Help of the Haptics switch on the iPhone.
 msgctxt "phone.haptics.info"
 msgid "Taps in your hand when you pick something, when an Imp comes or goes, and when something works or fails."
-msgstr "选择内容、小妖到来或离开、操作成功或失败时，手中会有轻触反馈。"
+msgstr "选择内容、Imp 到来或离开、操作成功或失败时，手中会有轻触反馈。"
 
 #. Card title and switch in the iPhone's App settings: taps felt in the hand.
 msgctxt "phone.haptics.title"
@@ -2202,7 +2233,7 @@ msgstr "与 iPhone 相同"
 #. Help of the linked devices card.
 msgctxt "phone.linked.info"
 msgid "Devices linked with this iPhone. Imps can travel between you."
-msgstr "与这台 iPhone 关联的设备。小妖可以在你们之间旅行。"
+msgstr "与这台 iPhone 关联的设备。Imp 可以在你们之间旅行。"
 
 #. One line on the iPhone when no other device is linked.
 msgctxt "phone.linked.none"
@@ -2267,7 +2298,7 @@ msgstr "粘贴"
 #. Placeholder of the personality field of an Imp on the iPhone.
 msgctxt "phone.persona.placeholder"
 msgid "Who is this Imp? How does it talk?"
-msgstr "这只小妖是谁？它怎么说话？"
+msgstr "这个 Imp 是谁？它怎么说话？"
 
 #. Help for pause growth.
 msgctxt "phone.requests.backoff.info"
@@ -2282,7 +2313,7 @@ msgstr "递增"
 #. Help for the first pause.
 msgctxt "phone.requests.delay.info"
 msgid "How long the Imp rests before it asks again."
-msgstr "小妖再次提问之前先休息多久。"
+msgstr "Imp 再次提问之前先休息多久。"
 
 #. Row title: first pause.
 msgctxt "phone.requests.delay.title"
@@ -2292,12 +2323,12 @@ msgstr "第一次停多久"
 #. Help for the waiting card.
 msgctxt "phone.requests.info"
 msgid "How long an Imp waits for its Brain, and what it does when the internet drops."
-msgstr "小妖等它的大脑要多久，以及网络断开时该怎么办。"
+msgstr "Imp 等它的大脑要多久，以及网络断开时该怎么办。"
 
 #. Help for retries.
 msgctxt "phone.requests.retries.info"
 msgid "How many times the Imp asks again when the internet drops. Wrong keys are never tried again."
-msgstr "网络断开时，小妖会再问几次。密钥错误则不会再试。"
+msgstr "网络断开时，Imp 会再问几次。密钥错误则不会再试。"
 
 #. Row title: how many retries.
 msgctxt "phone.requests.retries.title"
@@ -2307,7 +2338,7 @@ msgstr "再试几次"
 #. Help for the longest wait.
 msgctxt "phone.requests.timeout.info"
 msgid "If the Brain takes longer than this, the Imp stops waiting and says so."
-msgstr "大脑超过这个时间还没好，小妖就不等了，并告诉你。"
+msgstr "大脑超过这个时间还没好，Imp 就不等了，并告诉你。"
 
 #. Row title: longest wait.
 msgctxt "phone.requests.timeout.title"
@@ -2347,7 +2378,7 @@ msgstr "向左或向右"
 #. Segment: firm shake.
 msgctxt "phone.shake.firm"
 msgid "Firm"
-msgstr "重"
+msgstr "强劲档"
 
 #. Row title: ask before sending to a friend.
 msgctxt "phone.shake.friends.title"
@@ -2367,7 +2398,7 @@ msgstr "力度大小"
 #. Help for shake to send.
 msgctxt "phone.shake.info"
 msgid "Shake the iPhone next to a linked device and the Imp you moved last goes there. You can undo it."
-msgstr "在已关联的设备旁摇一摇 iPhone，你刚动过的小妖就会过去。可以撤销。"
+msgstr "在已关联的设备旁摇一摇 iPhone，你刚动过的 Imp 就会过去。可以撤销。"
 
 #. Segment: normal shake.
 msgctxt "phone.shake.normal"
@@ -2387,7 +2418,7 @@ msgstr "设备"
 #. Button: share the link.
 msgctxt "phone.share"
 msgid "Share"
-msgstr "分享"
+msgstr "共享"
 
 #. Door label that sends an Imp back to the device it came from.
 msgctxt "phone.stage.back_to"
@@ -2427,12 +2458,12 @@ msgstr "{name} 不在附近"
 #. Empty main screen while another device is nearby.
 msgctxt "phone.stage.throw_hint"
 msgid "Throw an Imp off the side of another screen. It lands here."
-msgstr "把小妖从另一块屏幕的边缘扔过来，它会落在这里。"
+msgstr "把 Imp 从另一块屏幕的边缘扔过来，它会落在这里。"
 
 #. Under Link a device on the first screen: what linking gives you.
 msgctxt "phone.start.link_detail"
 msgid "Bring Imps over from your Mac or another iPhone."
-msgstr "把小妖从你的 Mac 或另一台 iPhone 带过来。"
+msgstr "把 Imp 从你的 Mac 或另一台 iPhone 带过来。"
 
 #. The first screen's second way to begin: link this iPhone with a Mac or another iPhone.
 msgctxt "phone.start.link_title"
@@ -2657,7 +2688,7 @@ msgstr "此电脑上没有运行 {server}。请先启动它。"
 #. Help of the status dot of a server: its address and state.
 msgctxt "servers.state_help"
 msgid "{address}: {state}"
-msgstr "{address}:{state}"
+msgstr "{address}：{state}"
 
 #. State of a server that answers.
 msgctxt "servers.state_ok"
@@ -2882,7 +2913,7 @@ msgstr "半透明的"
 #. Tooltip of a settings row.
 msgctxt "settings.bubble.hide.info"
 msgid "How long a bubble stays after the Imp stops talking."
-msgstr "小妖说完话后，气泡会停留多久。"
+msgstr "Imp 说完话后，气泡会停留多久。"
 
 #. Settings text.
 msgctxt "settings.bubble.hide.title"
@@ -2957,17 +2988,22 @@ msgstr "连接另一台设备，让你的 Imp 去做客。"
 #. Settings text.
 msgctxt "settings.devices.link.title"
 msgid "Link"
-msgstr "连接"
+msgstr "关联"
 
-#. Settings text.
+#. Hover help of the Mine switch of a linked device.
+msgctxt "settings.devices.mine.help"
+msgid "On for your own devices, off for a friend's"
+msgstr "自己的设备打开，朋友的设备关闭"
+
+#. Help beside the Mine switch of a linked device: what turning it on allows, and when to leave it off.
 msgctxt "settings.devices.mine.info"
-msgid "The devices linked with this one."
-msgstr "与这台设备已连接的设备。"
+msgid "Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools."
+msgstr "如果这台设备是你自己的，就打开它。这样它上面的 Imp 可以给这里的 Imp 发消息，Imp 回答它时会使用工具，它能打开任何 Imp 的文件，把 Imp 扔给它时也不会先询问。两台设备都打开，Imp 才能互相对话。朋友的设备请保持关闭：Imp 仍会回答它，但不使用工具。"
 
 #. Settings text.
 msgctxt "settings.devices.pair.title"
 msgid "Link"
-msgstr "连接"
+msgstr "关联"
 
 #. Group title.
 msgctxt "settings.group.animations"
@@ -3107,7 +3143,7 @@ msgstr "控制"
 #. Settings text.
 msgctxt "settings.privacy.computer.title"
 msgid "This computer"
-msgstr "这台电脑上"
+msgstr "这台 Mac 上"
 
 #. Settings text.
 msgctxt "settings.privacy.core.info"
@@ -3197,7 +3233,7 @@ msgstr "聆听方式"
 #. Tooltip of a settings row.
 msgctxt "settings.talking.talk_in.info"
 msgid "Which chat a message from one Imp to another lands in."
-msgstr "一只小妖发给另一只的消息落在哪个聊天里。"
+msgstr "一个 Imp 发给另一个 Imp 的消息落在哪个聊天里。"
 
 #. Settings text.
 msgctxt "settings.talking.talk_in.title"
@@ -3214,10 +3250,35 @@ msgctxt "settings.talking.threads.title"
 msgid "Chats"
 msgstr "聊天"
 
+#. Option: the Imp chooses per message whether to wait.
+msgctxt "settings.talking.waiting.decides"
+msgid "The Imp decides"
+msgstr "由 Imp 决定"
+
+#. Option: the Imp goes on without waiting for the answer.
+msgctxt "settings.talking.waiting.dont_wait"
+msgid "Don't wait"
+msgstr "不等待"
+
+#. Settings text.
+msgctxt "settings.talking.waiting.info"
+msgid "Whether an Imp waits for the answer of the Imp it messages, or goes on and hears it later as a new turn."
+msgstr "Imp 给另一个 Imp 发消息后，是等对方回答，还是继续做事、之后再以新一轮收到回答。"
+
+#. Settings text.
+msgctxt "settings.talking.waiting.title"
+msgid "Waiting"
+msgstr "等待"
+
+#. Option: the Imp waits for the answer.
+msgctxt "settings.talking.waiting.wait"
+msgid "Wait"
+msgstr "等待"
+
 #. Settings text.
 msgctxt "settings.talking.window.info"
 msgid "How many minutes a chat stays the same chat."
-msgstr "一个聊天保持为同一个聊天的分钟数。"
+msgstr "同一个聊天能保持的时长，以分钟计。"
 
 #. Settings text.
 msgctxt "settings.talking.window.title"
@@ -3377,7 +3438,7 @@ msgstr "隐藏 {group} 中的工具"
 #. Empty state of the tools list.
 msgctxt "tools.empty"
 msgid "No tools yet. Add some from a kit or an MCP server."
-msgstr "还没有工具。可以从工具包或 MCP 服务器添加。"
+msgstr "还没有工具。可以从套件或 MCP 服务器添加。"
 
 #. Screen reader action.
 msgctxt "tools.expand"
@@ -3427,22 +3488,22 @@ msgstr "请求头"
 #. Help of the browser row.
 msgctxt "tools.help.browser"
 msgid "Lets the Imp look at pages and use the browser you opened for it."
-msgstr "让小鬼查看网页，并使用你为它打开的浏览器。"
+msgstr "让 Imp 查看网页，并使用你为它打开的浏览器。"
 
 #. Help of the built-in tools list.
 msgctxt "tools.help.built_in"
 msgid "Things the Imp can already do, like look at your screen. Switch off any it should not use."
-msgstr "小鬼本来就会做的事，比如看你的屏幕。把不该用的关掉。"
+msgstr "Imp 本来就会做的事，比如看你的屏幕。把不该用的关掉。"
 
 #. Help of the extra tools list.
 msgctxt "tools.help.mcp"
 msgid "Extra tools added from outside. Each one gives the Imp new things to do."
-msgstr "从外面加进来的额外工具。每个都让小鬼多会一些事。"
+msgstr "从外面加进来的额外工具。每个都让 Imp 多会一些事。"
 
 #. Help of a tool server badge.
 msgctxt "tools.help.server"
 msgid "A program or website that gives the Imp more tools."
-msgstr "给小鬼提供更多工具的程序或网站。"
+msgstr "给 Imp 提供更多工具的程序或网站。"
 
 #. Badge for a tool group that comes from an MCP server.
 msgctxt "tools.mcp"
@@ -3457,7 +3518,7 @@ msgstr "已连接"
 #. Status of an MCP server.
 msgctxt "tools.mcp_failed"
 msgid "Could not start"
-msgstr "启动没有成功"
+msgstr "启动失败"
 
 #. Status of an MCP server.
 msgctxt "tools.mcp_starting"
@@ -3482,7 +3543,7 @@ msgstr "内置"
 #. Help of the Built in tools card on the iPhone.
 msgctxt "tools.own.info"
 msgid "What the Imp can do by itself. Switch off what it shouldn't use."
-msgstr "小妖自带的能力。关闭不希望它使用的功能。"
+msgstr "Imp 自带的能力。关闭不希望它使用的功能。"
 
 #. Problem on a tool server with no address.
 msgctxt "tools.problem.address"
@@ -3502,7 +3563,7 @@ msgstr "移除服务器"
 #. Message of the dialog that removes a tool server.
 msgctxt "tools.remove_server.message"
 msgid "The Imp loses the tools of this server."
-msgstr "小妖将不能再用这台服务器的工具。"
+msgstr "Imp 将不能再用这台服务器的工具。"
 
 #. Label of a tool server's name field.
 msgctxt "tools.server_name"
@@ -3552,7 +3613,7 @@ msgstr "还没有触发器。添加一个，{name} 就会自己行动。"
 #. Help of the trigger action.
 msgctxt "triggers.help.do"
 msgid "What the Imp does when it goes off."
-msgstr "触发时小鬼要做什么。"
+msgstr "触发时 Imp 要做什么。"
 
 #. Help for the For choice in the trigger editor.
 msgctxt "triggers.help.for"
@@ -3562,17 +3623,17 @@ msgstr "由哪个 Imp 来做。除非选择所有 Imp，这里的更改只对这
 #. Help of the trigger input.
 msgctxt "triggers.help.input"
 msgid "What the Imp gets to look at when it goes off, like the clipboard."
-msgstr "触发时小鬼能看到什么，比如剪贴板。"
+msgstr "触发时 Imp 能看到什么，比如剪贴板。"
 
 #. Help of the instruction field.
 msgctxt "triggers.help.instruction"
 msgid "Tell the Imp in your own words what to do."
-msgstr "用你自己的话告诉小鬼要做什么。"
+msgstr "用你自己的话告诉 Imp 要做什么。"
 
 #. Help of the triggers list.
 msgctxt "triggers.help.list"
 msgid "A trigger wakes the Imp up by itself when something happens, like a time or a low battery."
-msgstr "触发器会在发生某件事时自动叫醒小鬼，比如到了某个时间或电量低。"
+msgstr "触发器会在发生某件事时自动叫醒 Imp，比如到了某个时间或电量低。"
 
 #. Help of the trigger name.
 msgctxt "triggers.help.name"

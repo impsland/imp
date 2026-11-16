@@ -34,6 +34,8 @@ pub fn imp(n: u128, name: &str) -> LinkImp {
         hue: 0.3,
         scale: 1.0,
         traits: Default::default(),
+        about: None,
+        abilities: Vec::new(),
     }
 }
 

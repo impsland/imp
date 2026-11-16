@@ -2,6 +2,20 @@
 
 How an Imp moves and answers the pointer. This is the same inside the window and on the desktop.
 
+## Names
+
+The first Imp is **Pip**, on the Mac and on the iPhone. No Imp is ever called "Imp", so an Imp is never confused with the app.
+
+A new Imp takes a name nobody in the troupe has yet, from a pool of short names (`ImpProfile.names`):
+
+| Rule | Why |
+| --- | --- |
+| Short, one or two syllables, mostly ending in a vowel (Mochi, Momo, Yuzu) | They sound about the same in English, Spanish, Chinese and most other languages. |
+| Cute and soft (Biscuit, Dot, Pebble, Noodle) | They suit the characters. |
+| No name that is rude slang, an insult or a brand in a language we know of | A name has to be safe wherever the app is used. |
+
+When every name is taken, the next Imp gets a pool name with a number: `Pip 2`, then `Dot 2`.
+
 ## Moving, letting out and sending home
 
 ### Decision
@@ -61,7 +75,7 @@ Keyboard focus is shown apart, with the focus ring (`focusRing`), and only when 
 Everything about one Imp is one sheet (see [The room never leaves](/design/room)).
 
 - **The bar.** The Imp's name and one line of state on the leading side. Then Talks with other Imps (only when there are some), New Chat, Settings (only for an Imp hatched on this iPhone) and Close. The Imp's small portrait is in the bar only when the sheet covers the room. At half height the Imp itself is in the room above.
-- **Talks are a side room.** The sheet is the chat with you. What the Imp said with other Imps is rarely needed, so its button shows in the bar only when the Imp has talks: it opens them in the same sheet, with Back in the bar to return to the chat. It lists the Imps it talked with, and a tap opens one conversation in place. An Imp with no talks shows `phone.talks.empty`.
+- **Talks are a side room.** The sheet is the chat with you. What the Imp said with other Imps is rarely needed, so its button shows in the bar only when the Imp has talks: it opens them in the same sheet, with Back in the bar to return to the chat. It lists the Imps it talked with, and a tap opens one conversation in place, the Imp's own words on the right under its name and the other Imp's on the left, like a messenger. An Imp with no talks shows `phone.talks.empty`.
 - **Colour.** The sheet wears the Imp's colour: what you said, the send button, the switch and the selected side. Text on the colour follows the white or black choice in Settings.
 - **Close.** Returns to the room. Settings opened from here returns here.
 

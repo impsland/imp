@@ -181,10 +181,12 @@ public enum OwnTools {
     /// The words and the schema are the core's (`troupe::MessageTool`), so the command line app says the same.
     /// `desktop`: the Imps are out on the Mac's desktop, answer in their own bubble and send files as links.
     public static func messageSpec(imps: [String], pocket: [String] = [], talk: ImpTalk = .own,
-                                   conversation: Bool = false, desktop: Bool = true) -> ToolSpec {
+                                   conversation: Bool = false, desktop: Bool = true,
+                                   profiles: [ImpCore.TroupeTargetProfile] = [], waiting: TalkWaiting = .decides) -> ToolSpec {
         let spec = ImpCore.troupeMessageTool(options: ImpCore.TroupeMessageTool(
             targets: imps, elsewhere: pocket, place: desktop ? "out on the desktop" : nil, ownBubble: desktop,
-            chatChoice: talk == .decides, conversation: conversation, openFileTool: desktop ? openFile : nil))
+            chatChoice: talk == .decides, conversation: conversation, openFileTool: desktop ? openFile : nil,
+            profiles: profiles, waiting: waiting.rawValue))
         let schema = (try? JSONValue(jsonString: spec.parametersJson)) ?? ["type": "object"]
         return ToolSpec(name: spec.name, description: spec.description, inputSchema: schema)
     }
@@ -201,7 +203,8 @@ public enum OwnTools {
 
     /// The tools for `groups`. `animations`: names it may play right now, `imps`: the others it can message.
     public static func specs(_ groups: Set<ImpToolGroup>, animations: [String], imps: [String], pocket: [String] = [], browser: Bool,
-                             talk: ImpTalk = .own, conversation: Bool = false) -> [ToolSpec] {
+                             talk: ImpTalk = .own, conversation: Bool = false,
+                             profiles: [ImpCore.TroupeTargetProfile] = [], waiting: TalkWaiting = .decides) -> [ToolSpec] {
         var specs: [ToolSpec] = []
         if groups.contains(.body) {
             specs.append(playSpec(animations: animations))
@@ -312,7 +315,8 @@ public enum OwnTools {
                               "anyOf": [["required": ["setting"]], ["required": ["page"]], ["required": ["tool"]]]]))
         }
         if groups.contains(.troupe), !imps.isEmpty || !pocket.isEmpty {
-            specs.append(messageSpec(imps: imps, pocket: pocket, talk: talk, conversation: conversation))
+            specs.append(messageSpec(imps: imps, pocket: pocket, talk: talk, conversation: conversation,
+                                      profiles: profiles, waiting: waiting))
             specs.append(openFileSpec)
         }
         if groups.contains(.den) { specs += denSpecs }

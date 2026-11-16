@@ -1,4 +1,5 @@
 import Foundation
+import ImpCore
 import ImpKit
 import Observation
 
@@ -10,7 +11,9 @@ import Observation
 final class PocketRuntime {
     private struct Failure: LocalizedError, Sendable {
         var errorDescription: String?
-        init(_ text: String) { errorDescription = text }
+        /// The other device answered with it (it failed there, or nobody answered in time), so the question was asked.
+        var isAnswer = false
+        init(_ text: String, isAnswer: Bool = false) { errorDescription = text; self.isAnswer = isAnswer }
     }
 
     /// Something an Imp has to do, after what it's doing now. `abort` says so if the Imp goes before its turn.
@@ -27,6 +30,8 @@ final class PocketRuntime {
     private static let animations = Reaction.allCases.map(\.rawValue)
 
     private let store: PocketStore
+    /// What these Imps asked Imps on other devices: the answerer files it there, so this iPhone keeps its own copy.
+    private let asked: AskedTalks
     private(set) var work: [UUID: LinkWork] = [:]
     /// What each pocket Imp is saying to another Imp (a bubble above it on the stage), like the
     /// visiting Imps' in `LinkHub.speeches`.
@@ -38,7 +43,7 @@ final class PocketRuntime {
     @ObservationIgnored private let hub: LinkHub
     @ObservationIgnored private var brain: PocketBrain
     /// How long a request may take and how it is retried. Kept in UserDefaults (`RequestLimits.Key`).
-    private(set) var limits = RequestLimits.stored()
+    private(set) var limits = ImpKit.RequestLimits.stored()
     @ObservationIgnored private var running: [UUID: Task<Void, Never>] = [:]
     @ObservationIgnored private var waiting: [UUID: [Job]] = [:]
     @ObservationIgnored private var queuedBy: [UUID: Int] = [:]
@@ -46,17 +51,21 @@ final class PocketRuntime {
     /// them or says no, and, if it doesn't answer, until the next time that Mac's stage is seen.
     private(set) var moving: [UUID: UUID] = [:]
     @ObservationIgnored private var pending: [UUID: CheckedContinuation<String, Error>] = [:]
+    /// How many messages each pocket Imp sent without waiting that have no answer yet (`troupe::may_leave` caps it).
+    /// Not saved: an answer on its way is lost with the app, like on the Mac.
+    @ObservationIgnored private var unanswered: [UUID: Int] = [:]
     @ObservationIgnored private var speechClear: [UUID: Task<Void, Never>] = [:]
 
     init(hub: LinkHub, store: PocketStore = PocketStore()) {
         self.hub = hub
         self.store = store
-        brain = PocketBrain(secrets: store.secrets, limits: RequestLimits.stored())
+        asked = AskedTalks(file: store.askedTalksFile)
+        brain = PocketBrain(secrets: store.secrets, limits: ImpKit.RequestLimits.stored())
         hub.onPocket = { [weak self] in self?.heard($0) }
     }
 
     /// Keeps new request limits and uses them from the next request on, no restart needed.
-    func setLimits(_ new: RequestLimits) {
+    func setLimits(_ new: ImpKit.RequestLimits) {
         let clamped = new.clamped
         guard clamped != limits else { return }
         limits = clamped.store()
@@ -72,10 +81,12 @@ final class PocketRuntime {
     func contains(_ id: UUID) -> Bool { store.contains(id) }
 
     /// What the Imps hatched here said to each other (and were asked by Mac Imps), from their chats.
+    /// What the Imps here said with other Imps: what they were asked (in their chats) and what they asked Imps on
+    /// other devices (`AskedTalks`).
     var talkLines: [TalkLine] {
         store.imps.flatMap { imp in
             TalkLog.lines(answeredBy: ChatTurn.Sender(id: imp.id, name: imp.name, hue: imp.hue), in: imp.chats)
-        }
+        } + asked.lines
     }
 
     /// A linked Mac's name on the network (`.local` first): where a model server on the Mac is
@@ -153,6 +164,7 @@ final class PocketRuntime {
     /// is told it isn't around, and nothing of it stays on the stage.
     private func forget(_ id: UUID) {
         store.remove(id)
+        asked.forget(imp: id)
         moving[id] = nil
         let dropped = waiting.removeValue(forKey: id) ?? []
         for job in dropped { release(job) }
@@ -250,9 +262,11 @@ final class PocketRuntime {
 
     /// One ask, from you or from another Imp: thinks, files the turn in its chat.
     /// `limitedTo` names the device asking when this iPhone doesn't count it as the owner's: no tools then.
-    private func answer(_ text: String, of id: UUID, from sender: ChatTurn.Sender? = nil, limitedTo device: String? = nil) async throws -> PocketAnswer {
+    private func answer(_ text: String, of id: UUID, from sender: ChatTurn.Sender? = nil, limitedTo device: String? = nil,
+                        turnID: UUID? = nil, answered: (event: String, from: ChatTurn.Sender)? = nil, depth: Int = 0) async throws -> PocketAnswer {
         guard let imp = store.imp(id) else { throw Failure(String(localized: "That Imp isn't on this iPhone.")) }
-        let result = try await brain.ask(text, of: imp, from: sender, talk: talk(for: imp), limitedTo: device.map { ($0, hub.name) }) { [weak self] work in
+        let result = try await brain.ask(text, of: imp, from: sender, talk: talk(for: imp, depth: depth), limitedTo: device.map { ($0, hub.name) },
+                                         turnID: turnID, answered: answered) { [weak self] work in
             await self?.report(work, for: id)
         }
         store.update(id) { $0.record(result) }
@@ -267,17 +281,27 @@ final class PocketRuntime {
 
     // MARK: Messaging
 
-    private func talk(for imp: PocketImp) -> PocketTalk {
+    /// `depth`: how many answers deep the turn is that uses it (0: you or another device asked).
+    private func talk(for imp: PocketImp, depth: Int = 0) -> PocketTalk {
         let id = imp.id
         let me = hub.node.device.id
         let here = store.imps.filter { hasBrain($0.id) }.map { LinkStaged(imp: $0.look, home: me) }
-        var taken = Set([imp.name.lowercased()])
-        let named = targets(of: id, here: here).filter { taken.insert($0.imp.name.lowercased()).inserted }
-        return PocketTalk(others: named.map(\.imp.name), send: { [weak self] to, text in
+        // Imps on other devices may share a name with one here or with this one: `TalkNames` gives each
+        // its own (`Pip@Studio`), so every one stays reachable.
+        let all = targets(of: id, here: here)
+        let talkNames = TalkNames(sender: imp.name, here: all.filter { $0.home == me }, name: \.imp.name,
+                                  away: all.filter { $0.home != me }, awayName: \.imp.name, place: { hub.deviceName($0.home) })
+        let named = talkNames.here + talkNames.away
+        // What each says about itself. What another device sent is sanitized again.
+        let profiles = named.map { ImpAbilities.profile(name: $0.name, about: $0.imp.imp.about, abilities: $0.imp.imp.abilities) }
+        return PocketTalk(others: named.map(\.name), send: { [weak self] to, text in
             guard let self else { throw CancellationError() }
             return try await self.deliver(text, to: to, from: id, among: named)
         }, animations: Self.animations, play: { [weak self] names in
             await self?.play(names, for: id)
+        }, profiles: profiles, later: { [weak self] to, text in
+            guard let self else { throw CancellationError() }
+            return try await self.deliverLater(text, to: to, from: id, among: named, depth: depth)
         })
     }
 
@@ -290,8 +314,9 @@ final class PocketRuntime {
         return LinkTalks.targets(of: id, mine: here, stage: stage)
     }
 
-    private func deliver(_ text: String, to name: String, from id: UUID, among targets: [LinkStaged]) async throws -> String {
-        guard let sender = store.imp(id), let target = targets.first(where: { $0.imp.name.caseInsensitiveCompare(name) == .orderedSame }) else {
+    private func deliver(_ text: String, to name: String, from id: UUID, among targets: [(name: String, imp: LinkStaged)]) async throws -> String {
+        let wanted = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let sender = store.imp(id), let target = targets.first(where: { $0.name.caseInsensitiveCompare(wanted) == .orderedSame })?.imp else {
             throw Failure(String(localized: "\(name) isn't around"))
         }
         let asking = say(.asking, to: target.imp.name, hue: target.imp.hue, text, for: id)
@@ -299,7 +324,87 @@ final class PocketRuntime {
         if let other = store.imp(target.id), target.home == hub.node.device.id {
             return try await asked(other, text, from: ChatTurn.Sender(id: sender.id, name: sender.name, hue: sender.hue))
         }
-        return try await askAway(target, text, from: sender.look)
+        // Its answer is filed on the other device: this iPhone keeps a copy, for this Imp's Talks.
+        let message = UUID(), date = Date()
+        let me = ChatTurn.Sender(id: sender.id, name: sender.name, hue: sender.hue)
+        let them = ChatTurn.Sender(id: target.imp.id, name: target.imp.name, hue: target.imp.hue)
+        func keep(_ reply: String, failed: Bool) {
+            asked.record(TalkLine(id: message, date: date, asker: me, answerer: them, question: text, reply: reply, failed: failed))
+        }
+        do {
+            let reply = try await askAway(target, text, from: sender.look, id: message)
+            keep(reply, failed: false)
+            return reply
+        } catch let failure as Failure where failure.isAnswer {
+            keep(failure.localizedDescription, failed: true)
+            throw failure
+        }
+    }
+
+    private static let clock: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm"
+        return f
+    }()
+
+    /// Sends without waiting: the receipt comes back at once and the answer later, as a turn of the sender's own
+    /// (`ChatTurn.Via.answer`) through its job queue: at once if it is idle, else after what it is doing. The answer is
+    /// dropped when the sender is gone or has moved to another device (it thinks there). `depth` is the sender's turn's.
+    private func deliverLater(_ text: String, to name: String, from id: UUID, among targets: [(name: String, imp: LinkStaged)], depth: Int) async throws -> String {
+        let wanted = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard store.contains(id), let target = targets.first(where: { $0.name.caseInsensitiveCompare(wanted) == .orderedSame })?.imp else {
+            throw Failure(String(localized: "\(name) isn't around"))
+        }
+        let count = unanswered[id] ?? 0
+        if let refusal = ImpCore.troupeMayLeave(pending: UInt32(count), depth: UInt32(depth)) { throw Failure(refusal) }
+        let task = ImpCore.troupeTaskLabel(id: UUID().uuidString)
+        let sent = Self.clock.string(from: Date())
+        let from = ChatTurn.Sender(id: target.imp.id, name: target.imp.name, hue: target.imp.hue)
+        unanswered[id] = count + 1
+        Task { [weak self] in
+            guard let self else { return }
+            var reply: String, failed = false
+            do {
+                // Another device answers within the link's own time. An Imp here answers within the core's.
+                let local = target.home == hub.node.device.id
+                reply = local
+                    ? try await within(seconds: Double(ImpCore.troupeLimits().asyncTimeoutSecs)) { try await self.deliver(text, to: wanted, from: id, among: targets) }
+                    : try await deliver(text, to: wanted, from: id, among: targets)
+            } catch {
+                (reply, failed) = (error.localizedDescription, true)
+            }
+            if let left = unanswered[id] { unanswered[id] = left > 1 ? left - 1 : nil }
+            let event = ImpCore.troupeAnswerEvent(from: wanted, task: task, sent: sent, text: reply, failed: failed)
+            wake(id, with: event, shown: reply, from: from, depth: depth + 1)
+        }
+        return ImpCore.troupeReceipt(to: wanted, task: task)
+    }
+
+    /// Gives `id` a turn for an answer that came in. Gone, moved away or asleep: nobody to tell, it is dropped.
+    private func wake(_ id: UUID, with event: String, shown: String, from: ChatTurn.Sender, depth: Int) {
+        guard store.contains(id), hub.node.holder(of: id) == nil, hasBrain(id) else { return }
+        enqueue(id) { [self] in _ = try? await answer(shown, of: id, answered: (event, from), depth: depth) }
+    }
+
+    /// The result of `work`, or a failure once `seconds` pass (then `work` is cancelled).
+    private func within(seconds: Double, _ work: @escaping @MainActor () async throws -> String) async throws -> String {
+        final class Once { var done = false }
+        return try await withCheckedThrowingContinuation { continuation in
+            let once = Once()
+            let finish: @MainActor (Result<String, Error>) -> Void = { result in
+                guard !once.done else { return }
+                once.done = true
+                continuation.resume(with: result)
+            }
+            let job = Task { @MainActor in
+                do { finish(.success(try await work())) } catch { finish(.failure(error)) }
+            }
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(seconds))
+                job.cancel()
+                finish(.failure(Failure(String(localized: "No answer came in time."))))
+            }
+        }
     }
 
     /// Another pocket Imp's answer, once it has got round to it.
@@ -319,14 +424,15 @@ final class PocketRuntime {
     /// One question from another Imp, here: it shows on the stage while the Imp thinks, and so does
     /// the answer (or why there is none). The text goes straight back to the asker. Only the
     /// bubble waits for a voice (see `StageVoice`).
-    private func respond(to text: String, of id: UUID, from sender: ChatTurn.Sender, limitedTo device: String?) async -> (reply: String, failed: Bool) {
+    /// `turnID`: the question's id when it came from another device, so the asker's copy and this one are one exchange (`AskedTalks`).
+    private func respond(to text: String, of id: UUID, from sender: ChatTurn.Sender, limitedTo device: String?, turnID: UUID? = nil) async -> (reply: String, failed: Bool) {
         guard let imp = store.imp(id) else { return (String(localized: "That Imp isn't on this iPhone."), true) }
         let said = say(.asked, to: sender.name, hue: sender.hue, text, for: id)
         var reply = ""
         var failed = false
         do {
             guard hasBrain(id) else { throw Failure(String(localized: "\(imp.name) has no brain yet.")) }
-            let answer = try await answer(text, of: id, from: sender, limitedTo: device)
+            let answer = try await answer(text, of: id, from: sender, limitedTo: device, turnID: turnID)
             (reply, failed) = (answer.turn.reply, answer.turn.failed)
         } catch is CancellationError {
             (reply, failed) = (String(localized: "Stopped."), true)
@@ -343,8 +449,7 @@ final class PocketRuntime {
 
     /// The answer of an Imp on another device, or why there isn't one. The node fails a question
     /// nobody answers in time, and one whose device went away.
-    private func askAway(_ target: LinkStaged, _ text: String, from imp: LinkImp) async throws -> String {
-        let message = UUID()
+    private func askAway(_ target: LinkStaged, _ text: String, from imp: LinkImp, id message: UUID) async throws -> String {
         let unreachable = Failure(String(localized: "\(target.imp.name) isn't around"))
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
@@ -380,7 +485,7 @@ final class PocketRuntime {
             hub.refresh()
             onEvent?(.left(id))
         case .answer(let id, let text, let failed):
-            finish(id, failed ? .failure(Failure(text)) : .success(text))
+            finish(id, failed ? .failure(Failure(text, isAnswer: true)) : .success(text))
         case .notAdopted(let id, let device, let sure):
             settle(id, by: device, sure: sure)
         case .connected:
@@ -404,7 +509,7 @@ final class PocketRuntime {
             }
             let queued = enqueue(to, from: by, abort: { [self] in hub.node.send(gone, to: by) }) { [self] in
                 let (reply, failed) = await respond(to: text, of: to, from: ChatTurn.Sender(id: from.id, name: from.name, hue: from.hue),
-                                                    limitedTo: trusted ? nil : hub.deviceName(by))
+                                                    limitedTo: trusted ? nil : hub.deviceName(by), turnID: id)
                 hub.node.send(.answer(id: id, text: reply, failed: failed), to: by)
             }
             if !queued {

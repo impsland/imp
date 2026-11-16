@@ -20,7 +20,8 @@ imp-engine = "1"
 | --- | --- | --- |
 | `io` | yes | The parts that reach the network and other processes: the OpenAI-compatible client, the stdio and Streamable HTTP MCP transports, and the agent loop that runs them. |
 
-Turn default features off for the pure logic. The apps reach it through `imp-ffi` and do their own I/O.
+Turn default features off for the pure logic. The Hop server does this. The apps reach the logic through
+`imp-ffi` (the `engine/ffi` crate), which does their own I/O.
 
 ## Modules
 
@@ -44,10 +45,15 @@ Turn default features off for the pure logic. The apps reach it through `imp-ffi
 
 ```sh
 cargo test -p imp-engine
+cargo test -p imp-engine --no-default-features --locked   # the pure logic, as the Hop and the apps build it
 ```
 
-The live API tests in `tests/live.rs` are opt-in and cost a few cents. They read `OPENAI_BASE_URL`,
-`OPENAI_API_KEY` and `OPENAI_MODEL` from `./.env`. Set `IMP_LIVE_TESTS=1` to run them.
+The live API tests in `tests/live.rs` are opt-in and cost a few cents. They talk to the service in `./.env`,
+which sets `OPENAI_BASE_URL`, `OPENAI_API_KEY` and `OPENAI_MODEL`. Run them with:
+
+```sh
+IMP_LIVE_TESTS=1 cargo test -p imp-engine --test live -- --nocapture
+```
 
 ## License
 

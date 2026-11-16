@@ -9,7 +9,7 @@ const LONG_ABOUT: &str = "Talk to your Imps from a terminal\n\nImp is a little c
 This is its terminal version. Make an Imp, then chat with it.";
 
 const AFTER_HELP: &str = "Getting started:\n  \
-imp imp new pip --model openai/gpt-6-luna      Make an Imp called pip\n  \
+imp imp new Pip --model openai/gpt-6-luna      Make an Imp called Pip\n  \
 imp mcp add files -- npx -y @modelcontextprotocol/server-filesystem .\n                                               \
 Let it work with the files of the folder you chat in\n  \
 imp chat                                       Chat with it (type /help inside)\n  \
@@ -155,7 +155,7 @@ pub enum ConfigAction {
     Show,
     /// Print the path of the settings file
     Path,
-    /// Change a setting: default_imp, api_key_env, retries or max_steps
+    /// Change a setting: default_imp, api_key_env, retries, max_steps, memory_exchanges or long_chat_tokens
     Set {
         /// The setting
         key: String,
@@ -242,7 +242,7 @@ pub enum McpAction {
         /// An environment variable to pass on to the command, by NAME. Repeat for several
         #[arg(long = "env", value_name = "VAR")]
         env: Vec<String>,
-        /// A header to send to the address, by NAME (its value is read from IMP_MCP_SERVER_HEADER or the keychain)
+        /// A header to send to the address, by NAME (its value is read from IMP_MCP_<SERVER>_<HEADER> or the keychain)
         #[arg(long = "header", value_name = "NAME")]
         headers: Vec<String>,
         /// The address (https://...), or the command and its arguments after --

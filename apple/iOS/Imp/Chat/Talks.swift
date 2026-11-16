@@ -22,7 +22,7 @@ enum Talks {
 
 /// An Imp's talks, read-only, as the second side of its sheet: one row per Imp it talked with, and a
 /// tap opens the whole conversation in place, with one way back. What's on this phone shows at once.
-/// The Mac's join when it answers (an older Mac never does).
+/// The Mac's join when it answers.
 struct TalksPane: View {
     let hub: LinkHub
     let pocket: PocketRuntime
@@ -157,7 +157,9 @@ private struct TalkConversation: View {
     }
 }
 
-/// A question and its answer, each under a small chip with the Imp's name in its colour.
+/// A question and its answer, each under a small chip with the Imp's name in its colour. Like a messenger, and
+/// like the Mac's talk: what the sheet's own Imp said is on the right, what the other Imp said on the left,
+/// whichever of them asked (`TalkSide`).
 private struct Exchange: View {
     var line: TalkLine
     var hub: LinkHub
@@ -172,9 +174,8 @@ private struct Exchange: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.cozy) {
-            VStack(alignment: .leading, spacing: Spacing.snug) {
-                Chip(who: line.asker)
+        VStack(spacing: Spacing.cozy) {
+            said(by: line.asker) {
                 Text(Inline.text(line.question))
                     .font(Typeface.body)
                     .foregroundStyle(Tone.text)
@@ -182,9 +183,7 @@ private struct Exchange: View {
                     .background(Color.imp(line.asker.hue).opacity(Opacity.tintFill), in: RoundedRectangle(cornerRadius: Radius.large, style: .continuous))
                     .textSelection(.enabled)
             }
-            .padding(.trailing, Spacing.vast)
-            VStack(alignment: .leading, spacing: Spacing.snug) {
-                Chip(who: line.answerer)
+            said(by: line.answerer) {
                 if line.failed {
                     HStack(spacing: Spacing.snug) {
                         Text("Couldn't answer")
@@ -201,15 +200,26 @@ private struct Exchange: View {
                         .impCard(radius: Radius.large)
                 }
             }
-            .padding(.leading, Spacing.page)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// One bubble under its speaker's chip, on the speaker's side, with room left on the other side.
+    private func said<Bubble: View>(by speaker: ChatTurn.Sender, @ViewBuilder _ bubble: () -> Bubble) -> some View {
+        let side = TalkSide(speaker: speaker.id, owner: impID)
+        return VStack(alignment: side == .mine ? .trailing : .leading, spacing: Spacing.snug) {
+            Chip(who: speaker, side: side)
+            bubble()
+        }
+        .padding(side == .mine ? .leading : .trailing, Spacing.vast)
+        .frame(maxWidth: .infinity, alignment: side == .mine ? .trailing : .leading)
     }
 }
 
 /// An Imp's name with a dot in its colour.
 private struct Chip: View {
     var who: ChatTurn.Sender
+    /// Its bubble's side: the chip keeps off that edge as much as the bubble's corner does.
+    var side: TalkSide = .theirs
 
     var body: some View {
         HStack(spacing: Spacing.snug) {
@@ -219,6 +229,6 @@ private struct Chip: View {
                 // The Imp colour, nudged until it reads on the surface.
                 .foregroundStyle(LegibleTint(Color.imp(who.hue), on: .surface))
         }
-        .padding(.leading, Spacing.snug)
+        .padding(side == .mine ? .trailing : .leading, Spacing.snug)
     }
 }

@@ -32,6 +32,7 @@ extension PocketImp {
                          chats: chats.filter { $0.peer == nil && !$0.isEmpty })
         imp.traits = traits
         imp.toolsOff = toolsOff ?? []
+        imp.about = about
         kit.servers = servers.map {
             var config = MCPServerConfig(name: $0.name, transport: .http, url: $0.url)
             config.id = $0.id

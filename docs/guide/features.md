@@ -16,7 +16,7 @@ Ask out loud or type. Answers show up in a speech bubble. The full chat lives in
 When something happens, Imp gets your instruction together with what happened, and its model decides
 what to do. Triggers can fire on:
 
-- **Keys**: on what you copied (text or a picture).
+- **Keys**: a keyboard shortcut you set. A shortcut can also take in what you copied (text or a picture).
 - **Clicks** on an Imp. One click opens its chat bubble. In the starter setup, a double click opens its
   settings. Two or more clicks run the Imp's click triggers, so you can make a double click talk or do nothing.
 - **Your Mac**: the battery runs low, the charger is plugged in, an app comes to the front, a website

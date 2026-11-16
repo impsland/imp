@@ -202,3 +202,59 @@ private actor EventLog {
         #expect(!plain.isNotChosen && ai.service(in: plain)?.id == a.id)
     }
 }
+
+/// A tool provider that records how many calls ran at once, and answers after a delay set by the call's arguments.
+actor Overlap {
+    private(set) var running = 0
+    private(set) var most = 0
+    func enter() { running += 1; most = max(most, running) }
+    func leave() { running -= 1 }
+}
+
+struct SlowTools: ToolProvider {
+    let overlap = Overlap()
+    func tools() async -> [ToolSpec] { [ToolSpec(name: OwnTools.message, description: "m"), ToolSpec(name: "echo", description: "e")] }
+    func call(_ name: String, arguments: String) async throws -> String {
+        await overlap.enter()
+        let millis = Int(arguments.filter(\.isNumber)) ?? 0
+        try? await Task.sleep(for: .milliseconds(millis))
+        await overlap.leave()
+        return "\(name) \(millis)"
+    }
+}
+
+extension BrainTests {
+    private func twoCalls(_ name: String, _ first: Int, _ second: Int) -> String {
+        func call(_ id: String, _ ms: Int) -> String {
+            #"{"id":"\#(id)","type":"function","function":{"name":"\#(name)","arguments":"{\"ms\":\#(ms)}"}}"#
+        }
+        return #"{"choices":[{"message":{"content":null,"tool_calls":[\#(call("a", first)),\#(call("b", second))]}}]}"#
+    }
+
+    private func slowAgent(_ replies: [String], _ tools: SlowTools) throws -> Agent {
+        StubProtocol.lock.withLock { StubProtocol.queue = replies }
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [StubProtocol.self]
+        let client = try OpenAIClient(baseURL: "https://example.test/v1", apiKey: "k", session: URLSession(configuration: config))
+        return Agent(client: client, model: "m", tools: tools)
+    }
+
+    @Test func messagesToImpsRunTogetherAndKeepTheirOrder() async throws {
+        let tools = SlowTools()
+        let a = try slowAgent([twoCalls(OwnTools.message, 400, 50), #"{"choices":[{"message":{"content":"done"}}]}"#], tools)
+        let started = Date()
+        let (_, transcript) = try await a.run([.user("go")])
+        let took = Date().timeIntervalSince(started)
+        #expect(await tools.overlap.most == 2)
+        #expect(took < 0.75)           // 450 ms if they had run one after the other, plus the model's two replies
+        let results = transcript.filter { $0.role == "tool" }
+        #expect(results.map(\.content) == ["\(OwnTools.message) 400", "\(OwnTools.message) 50"])    // as asked, not as finished
+    }
+
+    @Test func otherToolsStayOneAfterTheOther() async throws {
+        let tools = SlowTools()
+        let a = try slowAgent([twoCalls("echo", 80, 80), #"{"choices":[{"message":{"content":"done"}}]}"#], tools)
+        _ = try await a.run([.user("go")])
+        #expect(await tools.overlap.most == 1)
+    }
+}

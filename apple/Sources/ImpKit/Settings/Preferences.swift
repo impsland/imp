@@ -67,13 +67,13 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     public var mouseGames = true
     /// Animations the user switched off or gave other triggers (the rest use their defaults).
     public var animations: AnimationRules = [:]
-    /// The first run (waking an Imp with a Brain) was shown once. Optional, so older settings load.
+    /// The first run (waking an Imp with a Brain) was shown once. Stored only once set: unset reads as the default.
     private var firstRunShown: Bool?
     public var firstRunSeen: Bool {
         get { firstRunShown ?? false }
         set { firstRunShown = newValue }
     }
-    /// Storage for `animationLibrary` (optional, so older settings load).
+    /// Storage for `animationLibrary` (stored only once set: unset reads as the default).
     var customAnimations: [MadeAnimation]?
     /// 0 = never.
     public var bubbleAutoHideSeconds: Double = 30
@@ -83,7 +83,7 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { bubbleLook = newValue }
     }
     private var bubbleLook: BubbleAppearance?
-    /// How long a model request may take and how it is retried (see `RequestLimits`). Optional storage, so older settings load.
+    /// How long a model request may take and how it is retried (see `RequestLimits`). Stored only once set: unset reads as the default.
     public var requests: RequestLimits {
         get { requestLimits ?? .standard }
         set { requestLimits = newValue.clamped }
@@ -102,7 +102,7 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { voice = newValue }
     }
     private var voice: VoiceStyle?
-    /// The most lines the bubble's text box grows to before it scrolls (2 to 12). Optional storage, so older settings load.
+    /// The most lines the bubble's text box grows to before it scrolls (2 to 12). Stored only once set: unset reads as the default.
     public var inputMaxLines: Int {
         get { BubbleSizing.clampedLines(inputLines ?? BubbleSizing.defaultInputLines) }
         set { inputLines = BubbleSizing.clampedLines(newValue) }
@@ -124,19 +124,25 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { window = newValue }
     }
     private var window: WindowPreset?
-    /// Where Imps talk to each other. Optional storage, so older settings load.
+    /// Where Imps talk to each other. Stored only once set: unset reads as the default.
     public var impTalk: ImpTalk {
         get { talk ?? .own }
         set { talk = newValue }
     }
     private var talk: ImpTalk?
     /// Whether a message between Imps goes on in their latest conversation or starts a new one
-    /// (see `TalkThreading`). Optional storage, so older settings load.
+    /// (see `TalkThreading`). Stored only once set: unset reads as the default.
     public var talkThreading: TalkThreading {
         get { threading ?? .decides }
         set { threading = newValue }
     }
     private var threading: TalkThreading?
+    /// Whether an Imp waits for the answer of an Imp it messages (see `TalkWaiting`). Stored only once set: unset reads as the default.
+    public var talkWaiting: TalkWaiting {
+        get { waiting ?? .decides }
+        set { waiting = newValue }
+    }
+    private var waiting: TalkWaiting?
     /// Minutes after which a conversation between two Imps counts as over (the `recent` rule, and what the
     /// sender's own choice falls back to).
     public var talkWindowMinutes: Int {

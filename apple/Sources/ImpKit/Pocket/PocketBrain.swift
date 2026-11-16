@@ -1,4 +1,5 @@
 import Foundation
+import ImpCore
 
 /// What a pocket Imp can reach besides its own thinking. The app provides it for each ask.
 public struct PocketTalk: Sendable {
@@ -10,10 +11,17 @@ public struct PocketTalk: Sendable {
     public var animations: [String]
     /// Plays animations, in order (at most four at a time).
     public var play: (@Sendable (_ names: [String]) async -> Void)?
+    /// What each of `others` says it is good at, for the message tool's description.
+    public var profiles: [ImpCore.TroupeTargetProfile]
+    /// Sends a message without waiting: returns the receipt at once, the answer comes later as a turn of its own.
+    /// Nil: every message waits.
+    public var later: (@Sendable (_ to: String, _ text: String) async throws -> String)?
 
     public init(others: [String] = [], send: (@Sendable (String, String) async throws -> String)? = nil,
-                animations: [String] = [], play: (@Sendable ([String]) async -> Void)? = nil) {
+                animations: [String] = [], play: (@Sendable ([String]) async -> Void)? = nil,
+                profiles: [ImpCore.TroupeTargetProfile] = [], later: (@Sendable (String, String) async throws -> String)? = nil) {
         self.others = others; self.send = send; self.animations = animations; self.play = play
+        self.profiles = profiles; self.later = later
     }
 }
 
@@ -47,9 +55,13 @@ public struct PocketBrain: Sendable {
     /// stop button) throws `CancellationError`, and nothing is kept. Without `tools` it is a plain
     /// conversation: no tool server is called and the Imp has no tools of its own (for a request that
     /// doesn't come from the owner's own device, see `docs/connecting/link.md`). `limitedTo` is that
-    /// case with names: the device asking and this one. The Imp has no tools and is told why.
+    /// case with names: the device asking and this one. The Imp has no tools and is told why. `turnID`: the id the
+    /// turn is filed under, the question's id when an Imp on another device asked (see `AskedTalks`).
+    /// `answered`: this turn is the answer to a message the Imp sent without waiting. `event` is what the model
+    /// reads, `text` what the chat shows, `from` the Imp that answered. It is filed in the chat with you.
     public func ask(_ text: String, of imp: PocketImp, from sender: ChatTurn.Sender? = nil, talk: PocketTalk = PocketTalk(), tools: Bool = true,
-                    limitedTo stranger: (device: String, home: String)? = nil,
+                    limitedTo stranger: (device: String, home: String)? = nil, turnID: UUID? = nil,
+                    answered: (event: String, from: ChatTurn.Sender)? = nil,
                     onWork: @escaping @Sendable (LinkWork?) async -> Void = { _ in }) async throws -> PocketAnswer {
         let allowed = tools && stranger == nil
         let hub = MCPHub()
@@ -69,7 +81,7 @@ public struct PocketBrain: Sendable {
             if allowed { tools.append(PocketTools(talk: sender == nil ? talk : PocketTalk(animations: talk.animations, play: talk.play))) }
             let client = try OpenAIClient(baseURL: imp.brain.baseURL, apiKey: secrets.get(.apiKey, imp: imp.id) ?? "", session: session)
             let agent = Agent(client: client, model: imp.brain.model, tools: ToolSet(tools, selection: ToolSelection(toolsOff: Set(imp.toolsOff ?? []))), limits: limits)
-            let turn = sender.map { Briefing.message(from: $0.name, text, place: "in the user's troupe") } ?? .user(text)
+            let turn = answered.map { .user($0.event) } ?? sender.map { Briefing.message(from: $0.name, text, place: "in the user's troupe") } ?? .user(text)
             let memory = imp.memory(with: sender?.id)
             let system = [imp.personality, Briefing.pocket, stranger.map { Briefing.untrusted(device: $0.device, home: $0.home) } ?? ""].map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }.joined(separator: "\n\n")
@@ -86,12 +98,12 @@ public struct PocketBrain: Sendable {
         await onWork(nil)
         switch outcome {
         case .success(let (reply, memory)):
-            let turn = ChatTurn(request: text, reply: reply, steps: await run.steps, via: sender == nil ? .typed : .imp, sender: sender)
+            let turn = ChatTurn(id: turnID ?? UUID(), request: text, reply: reply, steps: await run.steps, via: answered != nil ? .answer : sender == nil ? .typed : .imp, sender: answered?.from ?? sender)
             return PocketAnswer(turn: turn, memory: memory, peer: sender?.id)
         case .failure(let error):
             if error is CancellationError || Task.isCancelled { throw CancellationError() }
-            let turn = ChatTurn(request: text, reply: error.localizedDescription, failed: true, steps: await run.steps,
-                                via: sender == nil ? .typed : .imp, sender: sender)
+            let turn = ChatTurn(id: turnID ?? UUID(), request: text, reply: error.localizedDescription, failed: true, steps: await run.steps,
+                                via: answered != nil ? .answer : sender == nil ? .typed : .imp, sender: answered?.from ?? sender)
             return PocketAnswer(turn: turn, memory: nil, peer: sender?.id)
         }
     }
@@ -148,7 +160,7 @@ struct PocketTools: ToolProvider {
         var specs: [ToolSpec] = []
         if talk.play != nil, !talk.animations.isEmpty { specs.append(OwnTools.playSpec(animations: talk.animations)) }
         if talk.send != nil, !talk.others.isEmpty {
-            specs.append(OwnTools.messageSpec(imps: talk.others, desktop: false))
+            specs.append(OwnTools.messageSpec(imps: talk.others, desktop: false, profiles: talk.profiles, waiting: .decides))
         }
         return specs
     }
@@ -172,6 +184,8 @@ struct PocketTools: ToolProvider {
             guard let send = talk.send, let other = talk.others.first(where: { $0.caseInsensitiveCompare(to) == .orderedSame }) else {
                 throw ToolArgumentError("\(to) isn't somewhere you can reach.")
             }
+            // The phone has no setting for it: the Imp chooses with `wait` (`TalkWaiting.decides`).
+            if !TalkWaiting.decides.waits(asked: args["wait"]?.bool), let later = talk.later { return try await later(other, text) }
             return "\(other) says: \(try await send(other, text))"
         default:
             throw ToolArgumentError("Unknown tool \(name).")

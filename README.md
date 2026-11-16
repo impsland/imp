@@ -130,9 +130,10 @@ Build the site locally with `make docs` (output in `docs/.vitepress/dist`), or s
 ## 🛠️ Build
 
 ```sh
-make install     # build Imp.app and copy it to /Applications
-make test        # run the Swift tests (snapshots included)
+make install     # build Imp.app, copy it to /Applications and open it
+make test        # run every test, the screen snapshots included
 make rust        # format, lint and test the Rust workspace
+make help        # list every command
 ```
 
 ➡️ [Building from source](docs/development/building.md) · [Testing](docs/apps/testing.md)

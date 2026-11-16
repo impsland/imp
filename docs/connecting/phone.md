@@ -69,6 +69,8 @@ key is copied, so you never type it again). It lives in your pocket.
   name on your network, so it still works when the Mac's Wi-Fi address changes), paste the key and tap Wake.
   The model is picked for you, or choose one from the list.
 - In its **Tools**, switch **Message another Imp** and **Play animations** on or off, and add tool servers.
+- In its **Personality**, **What it's good at** is a line or two the other Imps read to know whom to ask. Its tool
+  servers' names go with it as what it can do (no commands on the phone).
 - Hold a pocket Imp to open its settings. Changes are kept as you make them.
 
 ## Messages and talks
@@ -80,11 +82,19 @@ Every Imp messages the others the same way, whether it's on the phone, a pocket 
 - For your other devices, each device must mark the other **Mine**, on both sides. Until then the Imps meet only
   when one is thrown onto the other's screen. An Imp asked across devices before that says which device to fix.
 
+A message can wait for the answer or not (the tool's `wait` argument). The phone has no Between-Imps settings: the
+Imp chooses each time (the Mac's **Decides** setting). Without waiting, the tool returns a receipt at once and the
+answer arrives later as a new message in the Imp's chat ("Bo answered"), which starts a turn of its own: at once if
+the Imp is idle, else once it has finished what it is doing. Same limits as on the Mac (`troupe::may_leave`).
+The answer is dropped if the Imp was deleted, moved to a Mac or is away on another device meanwhile, and answers still
+on their way are lost when the app quits.
+
 The talk shows in bubbles over their heads: the question over the Imp asking, a small "thinking" bubble over the one
 asked, then the answer.
 
 - Every talk is kept. An Imp's **Talks** (in its chat's menu, on the Mac and the phone) puts both sides of a
-  conversation back together, to read later.
+  conversation back together, to read later. As in any messenger, what that Imp said is on the right and what
+  the other Imp said is on the left, whichever of them asked, on the Mac and the phone alike (`TalkSide`).
 - A voice reply plays with the Imp seen speaking, its bubble glowing with the voice.
 - Voices play one at a time, so two Imps never talk over each other. The Imps don't wait for a voice to finish
   before they think.

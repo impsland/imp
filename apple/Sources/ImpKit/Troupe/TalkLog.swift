@@ -46,7 +46,7 @@ public enum TalkLog {
     /// The exchanges in one Imp's chats: every turn another Imp asked it. `me` is that Imp.
     public static func lines(answeredBy me: ChatTurn.Sender, in chats: [Chat]) -> [TalkLine] {
         chats.flatMap(\.turns).compactMap { turn in
-            guard let asker = turn.sender, asker.id != me.id else { return nil }
+            guard turn.via != .answer, let asker = turn.sender, asker.id != me.id else { return nil }
             return TalkLine(id: turn.id, date: turn.date, asker: asker, answerer: me, question: turn.request,
                             reply: turn.reply, failed: turn.failed)
         }
@@ -81,4 +81,16 @@ public enum TalkLog {
             return line
         }
     }
+}
+
+/// Which side of a talk a bubble is on, as in any messenger: the Imp whose talk it is (the owner of the
+/// screen it's read on) on the right, the other Imp on the left, whichever of them asked. The same on the
+/// Mac and the iPhone.
+public enum TalkSide: Equatable, Sendable {
+    /// The owner said it: the trailing side.
+    case mine
+    /// The other Imp said it: the leading side.
+    case theirs
+
+    public init(speaker: UUID, owner: UUID) { self = speaker == owner ? .mine : .theirs }
 }
