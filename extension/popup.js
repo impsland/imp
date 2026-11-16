@@ -167,7 +167,7 @@ function renderTab(page) {
   if (usable && img.getAttribute("src") !== page.icon) img.src = page.icon;
   if (!usable) img.removeAttribute("src");
   img.hidden = !usable || img.dataset.broken === page.icon;
-  $("tab-fallback").hidden = !img.hidden;
+  $("tab-fallback").toggleAttribute("hidden", !img.hidden);
   // Imp can look inside ordinary web pages. The browser keeps its own pages and its extension store to itself.
   const seen = /^https?:/.test(page.url) && !/(chrome\.google\.com\/webstore|chromewebstore\.google\.com|addons\.mozilla\.org)/.test(page.url);
   const sight = $("tab-sight");
@@ -180,7 +180,7 @@ function renderTab(page) {
 $("tab-icon").addEventListener("error", (e) => {
   e.target.dataset.broken = e.target.getAttribute("src");
   e.target.hidden = true;
-  $("tab-fallback").hidden = false;
+  $("tab-fallback").removeAttribute("hidden");
 });
 
 async function refreshTab() {

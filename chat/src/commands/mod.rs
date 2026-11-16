@@ -56,7 +56,13 @@ pub async fn run(cli: Cli, io: &mut Io<'_>) -> Result<()> {
         Some(p) => p,
         None => Config::default_path()?,
     };
-    match cli.command {
+    // No command at all is the same as `imp chat`: the chat opens at once with the default Imp.
+    let command = cli.command.unwrap_or(Command::Chat {
+        imp: None,
+        plain: false,
+        offline: false,
+    });
+    match command {
         Command::Config { action } => {
             config_cmd::run(&path, action.unwrap_or(ConfigAction::Show), io)
         }

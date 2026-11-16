@@ -220,6 +220,7 @@ struct LinkDeviceSheet: View {
 
     let model: AppModel
     @State var mode: Mode
+    @Environment(\.dismiss) private var dismiss
     /// For previews: shown instead of this Mac's own code, and nothing is listened for.
     var preview: LinkInvite?
     @State private var invite: LinkInvite?
@@ -423,10 +424,16 @@ struct LinkDeviceSheet: View {
         join.paste(text: pasteboard.string(forType: .string), codes: picture.map(CodeScanner.codes(in:)) ?? [])
     }
 
+    /// Links with the code. Once linked the camera has nothing left to read, so the sheet closes with it.
     private func link(_ invite: LinkInvite) {
         join.start()
         Task {
-            do { join.finish(linked: try await model.link.join(invite).name) } catch { join.finish(failed: DeviceLink.message(error)) }
+            do {
+                join.finish(linked: try await model.link.join(invite).name)
+                dismiss()
+            } catch {
+                join.finish(failed: DeviceLink.message(error))
+            }
         }
     }
 }

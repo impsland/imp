@@ -24,7 +24,7 @@ pub static STRINGS: &[(&str, [&str; 3])] = &[
     ("cli.chat.tool_use", ["{imp} uses the tool {tool}", "{imp} usa la herramienta {tool}", "{imp} 使用工具 {tool}"]),
     ("cli.chat.using_tool", ["Using the tool {tool}", "Usando {tool}", "正在使用工具 {tool}"]),
     ("cli.chat.waiting_for", ["waiting for {imp}…", "esperando a {imp}…", "等待 {imp}…"]),
-    ("cli.chat.welcome_hint", ["Write a message. Type / for commands such as /model and /mcp, @ to add a file, ? for every key. Drag over text to copy it.", "Escribe un mensaje. / para comandos como /model y /mcp, @ para añadir un archivo, ? para ver las teclas. Arrastra sobre un texto para copiarlo.", "输入消息。输入 / 使用 /model、/mcp 等命令，@ 添加文件，? 查看所有按键。拖动选中文字即可复制。"]),
+    ("cli.chat.welcome_hint", ["◦ / for commands such as /model\n◦ @ to add a file such as @file.txt\n◦ ? for every key\n◦ Drag over text to copy it.", "◦ / para comandos como /model y /mcp\n◦ @ para añadir un archivo, como @file.txt\n◦ ? para ver las teclas\n◦ Arrastra sobre un texto para copiarlo.", "◦ / 使用 /model、/mcp 等命令\n◦ @ 添加文件，如 @file.txt\n◦ ? 查看所有按键\n◦ 拖动选中文字即可复制。"]),
     ("cli.help.activity", ["What the Imp is doing now", "Lo que hace el Imp ahora", "Imp 此刻在做什么"]),
     ("cli.help.clear_input", ["Clear what you wrote", "Borra lo que escribiste", "清空已输入内容"]),
     ("cli.help.close", ["Press any key to close", "Pulsa una tecla", "按任意键即可关闭"]),

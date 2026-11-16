@@ -38,14 +38,15 @@ imp serve --den-only       Run only The Den\n  \
 imp serve --hop-only       Run only The Hop";
 
 #[derive(Debug, Parser, PartialEq)]
-#[command(name = "imp", version, about = ABOUT, long_about = LONG_ABOUT, after_help = AFTER_HELP, arg_required_else_help = true)]
+#[command(name = "imp", version, about = ABOUT, long_about = LONG_ABOUT, after_help = AFTER_HELP)]
 pub struct Cli {
     /// Use this settings file instead of the usual one
     #[arg(long, global = true, env = "IMP_CONFIG", value_name = "FILE")]
     pub config: Option<PathBuf>,
 
+    /// Without a command, `imp` starts `imp chat`
     #[command(subcommand)]
-    pub command: Command,
+    pub command: Option<Command>,
 }
 
 #[derive(Debug, Subcommand, PartialEq)]
@@ -279,17 +280,17 @@ mod tests {
     #[test]
     fn config_commands() {
         assert_eq!(
-            parse(&["config"]).unwrap().command,
+            parse(&["config"]).unwrap().command.unwrap(),
             Command::Config { action: None }
         );
         assert_eq!(
-            parse(&["config", "show"]).unwrap().command,
+            parse(&["config", "show"]).unwrap().command.unwrap(),
             Command::Config {
                 action: Some(ConfigAction::Show)
             }
         );
         assert_eq!(
-            parse(&["config", "set", "retries", "5"]).unwrap().command,
+            parse(&["config", "set", "retries", "5"]).unwrap().command.unwrap(),
             Command::Config {
                 action: Some(ConfigAction::Set {
                     key: "retries".into(),
@@ -300,7 +301,7 @@ mod tests {
         assert_eq!(
             parse(&["config", "set-key", "--imp", "pip"])
                 .unwrap()
-                .command,
+                .command.unwrap(),
             Command::Config {
                 action: Some(ConfigAction::SetKey {
                     imp: Some("pip".into())
@@ -312,7 +313,7 @@ mod tests {
     #[test]
     fn imp_commands() {
         assert_eq!(
-            parse(&["imp", "list"]).unwrap().command,
+            parse(&["imp", "list"]).unwrap().command.unwrap(),
             Command::Imp {
                 action: ImpAction::List
             }
@@ -329,7 +330,7 @@ mod tests {
         ])
         .unwrap();
         assert_eq!(
-            new.command,
+            new.command.unwrap(),
             Command::Imp {
                 action: ImpAction::New {
                     name: Some("pip".into()),
@@ -354,7 +355,7 @@ mod tests {
         ])
         .unwrap();
         assert_eq!(
-            unnamed.command,
+            unnamed.command.unwrap(),
             Command::Imp {
                 action: ImpAction::New {
                     name: None,
@@ -372,7 +373,7 @@ mod tests {
     fn chat_and_global_config_flag() {
         let cli = parse(&["chat", "--imp", "pip", "--config", "/tmp/x.toml"]).unwrap();
         assert_eq!(
-            cli.command,
+            cli.command.unwrap(),
             Command::Chat {
                 imp: Some("pip".into()),
                 plain: false,
@@ -381,7 +382,7 @@ mod tests {
         );
         assert_eq!(cli.config, Some(PathBuf::from("/tmp/x.toml")));
         assert_eq!(
-            parse(&["chat"]).unwrap().command,
+            parse(&["chat"]).unwrap().command.unwrap(),
             Command::Chat {
                 imp: None,
                 plain: false,
@@ -406,7 +407,7 @@ mod tests {
         ])
         .unwrap();
         assert_eq!(
-            add.command,
+            add.command.unwrap(),
             Command::Mcp {
                 action: McpAction::Add {
                     name: "files".into(),
@@ -424,13 +425,13 @@ mod tests {
         );
         assert!(parse(&["mcp", "add", "files"]).is_err());
         assert!(matches!(
-            parse(&["link"]).unwrap().command,
+            parse(&["link"]).unwrap().command.unwrap(),
             Command::Link { .. }
         ));
         assert_eq!(
             parse(&["imp", "set", "pip", "model", "x/y"])
                 .unwrap()
-                .command,
+                .command.unwrap(),
             Command::Imp {
                 action: ImpAction::Set {
                     name: "pip".into(),
@@ -444,7 +445,7 @@ mod tests {
     fn serve_flags(args: &[&str]) -> (bool, bool) {
         let mut full = vec!["serve"];
         full.extend_from_slice(args);
-        match parse(&full).unwrap().command {
+        match parse(&full).unwrap().command.unwrap() {
             Command::Serve {
                 den_only, hop_only, ..
             } => (den_only, hop_only),
@@ -495,10 +496,7 @@ mod tests {
 
     #[test]
     fn help_and_mistakes() {
-        assert_eq!(
-            parse(&[]).unwrap_err().kind(),
-            ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand
-        );
+        assert_eq!(parse(&[]).unwrap().command, None);
         assert_eq!(
             parse(&["--help"]).unwrap_err().kind(),
             ErrorKind::DisplayHelp

@@ -101,8 +101,6 @@ final class StageEngine {
     var isPlaying: Bool { echo != nil || round != nil }
     var isBlocking: Bool { isPlaying }
 
-    /// Whether any device is connected to throw Imps to.
-    var isConnected: () -> Bool = { true }
     /// Where an Imp thrown off a side at a height goes (see `LinkDoors`).
     var door: (UUID, LinkSide, Double) -> LinkDoors.Outcome = { _, _, _ in .bounce(.nobodyConnected) }
     /// The side (the given one first) and height an Imp leaves by to reach a device, if a door leads there.

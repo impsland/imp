@@ -18,7 +18,7 @@ struct GameLayer: View {
 
     var body: some View {
         let _ = engine.reduceMotion = reduceMotion
-        let offer = engine.round == nil && engine.echo == nil && !engine.order.isEmpty && !engine.isConnected()
+        let offer = engine.round == nil && engine.echo == nil && !engine.order.isEmpty
         let lesson = engine.round.map { $0.phase == .fling || $0.phase == .rules } ?? false
         ZStack {
             if let echo = engine.echo {

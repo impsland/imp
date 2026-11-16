@@ -52,7 +52,12 @@ struct PocketEditor: View {
                         .accessibilityAddTraits(.isHeader)
                 }
             } leading: {
-                EmptyView()
+                // Saying goodbye is the one sheet-wide action; it sits where Back would, on the hub only.
+                if open == nil {
+                    HoverIconButton(systemName: "hand.wave.fill", help: "imp_settings.goodbye", tint: Tone.danger) { confirmingGoodbye = true }
+                        .accessibilityLabel(words("imp_settings.goodbye.a11y", callName))
+                        .accessibilityIdentifier("imp.goodbye")
+                }
             }
             .sheetBarInsets()
             if let open { panel(open) } else { hub }
@@ -119,12 +124,6 @@ struct PocketEditor: View {
                 .background(RoundedRectangle(cornerRadius: Radius.large, style: .continuous).fill(Tone.card))
                 .accessibilityElement(children: .contain)
                 .accessibilityLabel(words("imp_settings.list.label", callName))
-                Button(role: .destructive) { confirmingGoodbye = true } label: {
-                    Label { Text(words("imp_settings.goodbye.a11y", callName)) } icon: { Image(systemName: "hand.wave.fill") }
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.destructive)
-                .accessibilityIdentifier("imp.goodbye")
             }
             .padding(.horizontal, Spacing.page).padding(.top, Spacing.small).padding(.bottom, Spacing.wide)
         }

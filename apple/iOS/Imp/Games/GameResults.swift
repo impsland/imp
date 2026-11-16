@@ -216,7 +216,8 @@ struct GameTopBar<Center: View, Below: View>: View {
     }
 }
 
-/// The close of a game: a plain glyph (no container) with a soft halo so it reads over the scene.
+/// The close of a game: a plain glyph (no container) in the theme's text colour, with a halo in the
+/// theme's surface colour so it reads over the scene in both light and dark themes.
 struct GameCloseButton: View {
     var action: () -> Void
 
@@ -224,8 +225,8 @@ struct GameCloseButton: View {
         Button(action: action) {
             Image(systemName: "xmark")
                 .font(.icon(.large, weight: .bold))
-                .foregroundStyle(Tone.paper)
-                .shadow(color: Tone.scrim, radius: Spacing.snug)
+                .foregroundStyle(Tone.text)
+                .shadow(color: Tone.surface, radius: Spacing.snug)
                 .frame(width: Sizing.hit, height: Sizing.hit)
                 .contentShape(Rectangle())
         }

@@ -58,14 +58,20 @@ fn help_is_friendly() {
 }
 
 #[test]
-fn no_arguments_shows_help() {
-    let out = Command::new(env!("CARGO_BIN_EXE_imp"))
-        // A home of its own: the program never touches the developer's settings or moves their files.
-        .env("HOME", test_home())
-        .output()
-        .unwrap();
-    assert!(!out.status.success());
-    assert!(text(&out.stderr).contains("Usage"));
+fn no_arguments_starts_chat_like_imp_chat() {
+    // A home of its own: the program never touches the developer's settings or moves their files.
+    let run = |args: &[&str]| {
+        Command::new(env!("CARGO_BIN_EXE_imp"))
+            .args(args)
+            .env("HOME", test_home())
+            .output()
+            .unwrap()
+    };
+    let bare = run(&[]);
+    let chat = run(&["chat"]);
+    assert_eq!(bare.status.code(), chat.status.code());
+    assert_eq!(text(&bare.stderr), text(&chat.stderr));
+    assert!(!text(&bare.stderr).contains("Usage"));
 }
 
 #[test]

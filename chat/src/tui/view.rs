@@ -135,16 +135,21 @@ impl App {
     fn welcome(&self, width: usize, height: Option<usize>, below: usize) -> Vec<Row> {
         let muted = self.theme.muted();
         let text_width_max = width.saturating_sub(4).clamp(1, 64);
-        let mut words = wrap_joined(
+        let tips = wrap_joined(
             strings::text(self.lang, "cli.chat.welcome_hint"),
             text_width_max,
         );
-        if !self.context.is_empty() {
-            words.extend(wrap_joined(&self.context, text_width_max));
-        }
+        // The tips are one block: centred as a whole, so their lines start at the same column.
+        let tips_block = tips.iter().map(|(line, _)| text_width(line)).max().unwrap_or(0);
+        let context = if self.context.is_empty() {
+            Vec::new()
+        } else {
+            wrap_joined(&self.context, text_width_max)
+        };
+        let lines = tips.len() + context.len();
         let art_width = ART.iter().map(|l| text_width(l)).max().unwrap_or(0);
         let art_rows = ART.len() + 1;
-        let with_art = height.is_some_and(|h| h >= art_rows + words.len() + below + 2)
+        let with_art = height.is_some_and(|h| h >= art_rows + lines + below + 2)
             && width >= art_width + 2;
         let centered = |text: &str, block: usize, style: Style, join: Join| {
             let pad = width.saturating_sub(block) / 2;
@@ -164,7 +169,10 @@ impl App {
             }
             rows.push(Row::blank());
         }
-        for (line, join) in words {
+        for (line, join) in tips {
+            rows.push(centered(&line, tips_block, muted, join));
+        }
+        for (line, join) in context {
             rows.push(centered(&line, text_width(&line), muted, join));
         }
         rows.push(Row::blank());

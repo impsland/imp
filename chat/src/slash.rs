@@ -113,7 +113,7 @@ pub fn matching(typed: &str) -> Vec<&'static Command> {
     }
     COMMANDS
         .iter()
-        .filter(|c| c.name.starts_with(word) || alias(word).is_some_and(|a| a == c.name))
+        .filter(|c| c.name.starts_with(word) || alias_starts_with(c.name, word))
         .collect()
 }
 
@@ -128,7 +128,7 @@ pub fn suggest(typed: &str) -> Vec<&'static Command> {
     let mut ranked: Vec<(u8, usize, &'static Command)> = Vec::new();
     for (i, c) in COMMANDS.iter().enumerate() {
         let name = c.name.trim_start_matches('/');
-        let rank = if name.starts_with(wanted) || alias(&word).is_some_and(|a| a == c.name) {
+        let rank = if name.starts_with(wanted) || alias_starts_with(c.name, &word) {
             0
         } else if name.contains(wanted) {
             1
@@ -211,21 +211,40 @@ pub fn choices(command: &str) -> &'static [Choice] {
     }
 }
 
+/// Other names for a command: each alias and the command it stands for. An alias completes like a name,
+/// so `/ex` suggests `/quit` through `/exit`.
+const ALIASES: &[(&str, &str)] = &[
+    ("/exit", "/quit"),
+    ("/q", "/quit"),
+    ("/new", "/clear"),
+    ("/reset", "/clear"),
+    ("/recap", "/compact"),
+    ("/summarize", "/compact"),
+    ("/url", "/base_url"),
+    ("/baseurl", "/base_url"),
+    ("/base-url", "/base_url"),
+    ("/key", "/api_key"),
+    ("/apikey", "/api_key"),
+    ("/api-key", "/api_key"),
+    ("/imps", "/imp"),
+    ("/?", "/help"),
+    ("/config", "/settings"),
+    ("/link", "/pair"),
+    ("/qr", "/pair"),
+    ("/visitors", "/devices"),
+    ("/peers", "/devices"),
+    ("/agents", "/project"),
+    ("/skills", "/project"),
+];
+
+/// The command an alias stands for, if the word is one.
 fn alias(word: &str) -> Option<&'static str> {
-    Some(match word {
-        "/exit" | "/q" => "/quit",
-        "/new" | "/reset" => "/clear",
-        "/recap" | "/summarize" => "/compact",
-        "/url" | "/baseurl" | "/base-url" => "/base_url",
-        "/key" | "/apikey" | "/api-key" => "/api_key",
-        "/imps" => "/imp",
-        "/?" => "/help",
-        "/config" => "/settings",
-        "/link" | "/qr" => "/pair",
-        "/visitors" | "/peers" => "/devices",
-        "/agents" | "/skills" => "/project",
-        _ => return None,
-    })
+    ALIASES.iter().find(|(a, _)| *a == word).map(|(_, target)| *target)
+}
+
+/// Whether one of a command's aliases starts with what was typed.
+fn alias_starts_with(command: &str, typed: &str) -> bool {
+    ALIASES.iter().any(|(a, target)| *target == command && a.starts_with(typed))
 }
 
 /// A line the chat shows for a command. Not part of the conversation. The full-screen chat gives each
@@ -1336,6 +1355,9 @@ mod tests {
         assert_eq!(names("/mo"), ["/model"]);
         assert!(names("/").len() == COMMANDS.len());
         assert_eq!(names("/url"), ["/base_url"]);
+        // A prefix of an alias completes its command, before the alias is complete.
+        assert_eq!(names("/ex"), ["/quit"]);
+        assert_eq!(suggest("/ex").first().map(|c| c.name), Some("/quit"));
         assert!(names("/model gpt").is_empty());
         assert!(names("hi").is_empty());
     }

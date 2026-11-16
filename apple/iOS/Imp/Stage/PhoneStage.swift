@@ -442,7 +442,6 @@ struct PhoneStage: View {
         let activity = $activity
         engine.pacer.onChange = { activity.wrappedValue = $0 }
         hub.isPlaying = { engine.isBlocking }
-        engine.isConnected = { !hub.connectedPeers.isEmpty }
         engine.door = { hub.door(of: $0, side: $1, height: $2) }
         engine.way = { hub.way(of: $0, to: $1, preferring: $2) }
         engine.doors = { hub.doors(of: $0, side: $1) }
