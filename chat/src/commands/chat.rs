@@ -9,12 +9,12 @@ use crate::link::device::DeviceOptions;
 use crate::project;
 use crate::session::{Session, SessionOptions};
 use crate::slash::{self, Context, Outcome};
-use crate::transcript::{CallLine, call_line, result_line};
+use crate::transcript::{CallLine, DetailLine, Kind, argument_lines, call_line, result_line};
 use crate::{CliError, Result};
 use imp_engine::{
     AgentEvent, OpenAiClient, StreamEvent, ToolHost, ToolSelection, Toolbox, run_agent,
 };
-use std::io::IsTerminal;
+use std::io::{IsTerminal, Write};
 use std::path::Path;
 
 pub async fn run(
@@ -248,7 +248,12 @@ async fn answer(
                 }
                 AgentEvent::ToolStart(call) => {
                     let _ = match call_line(&call.name, &call.arguments) {
-                        CallLine::Tool(text) => writeln!(err, "  ⏺ {name} uses {text}"),
+                        CallLine::Tool(text) => {
+                            // The line names the call; what it was given follows whole, since this chat
+                            // cannot open a call later.
+                            let _ = writeln!(err, "  ⏺ {name} uses {text}");
+                            write_details(err, argument_lines(&call.name, &call.arguments))
+                        }
                         CallLine::Message { to, text } => {
                             writeln!(err, "  ⇢ {name} asks {to}: {text}")
                         }
@@ -262,10 +267,22 @@ async fn answer(
                     let (text, failed) = result_line(content);
                     let _ = if tool == crate::troupe::TOOL_NAME {
                         writeln!(err, "  ⇠ {text}")
-                    } else if failed {
-                        writeln!(err, "    ✕ {text}")
                     } else {
-                        writeln!(err, "    ⎿ {text}")
+                        let mark = if failed { "✕" } else { "⎿" };
+                        let mut lines = content.lines();
+                        let first = lines
+                            .next()
+                            .filter(|_| !content.trim().is_empty())
+                            .unwrap_or(&text);
+                        writeln!(err, "    {mark} {first}").and_then(|()| {
+                            write_details(
+                                err,
+                                lines.map(|l| DetailLine {
+                                    kind: Kind::Plain,
+                                    text: l.to_string(),
+                                }),
+                            )
+                        })
                     };
                 }
                 _ => {}
@@ -281,4 +298,14 @@ async fn answer(
     }
     chat.finish_exchange(result.is_ok());
     Ok::<(), CliError>(())
+}
+
+/// Lines of the details of a call under it, each indented and led by its mark.
+fn write_details(
+    out: &mut dyn Write,
+    lines: impl IntoIterator<Item = DetailLine>,
+) -> std::io::Result<()> {
+    lines
+        .into_iter()
+        .try_for_each(|l| writeln!(out, "      {}{}", l.kind.marker(), l.text))
 }

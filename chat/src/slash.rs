@@ -34,7 +34,7 @@ pub const COMMANDS: &[Command] = &[
         "/compact",
         "Sum up the chat, so a long one costs less",
     ),
-    cmd("/quit", "/quit", "Leave the chat (also /exit, Esc)"),
+    cmd("/quit", "/quit", "Leave the chat (also /exit)"),
     cmd("/model", "/model [NAME]", "Show or change the model"),
     cmd(
         "/base_url",

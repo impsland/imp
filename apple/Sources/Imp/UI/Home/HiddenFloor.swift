@@ -46,7 +46,8 @@ struct HiddenFloor: View {
         let side = Panels.baseSize * imp.scale
         let visible = side * Self.shown
         let x = CanvasLayout.point(of: router.places[imp.id] ?? CGPoint(x: 0.5, y: 0.5), in: size, figure: side).x
-        return StageImp(hue: imp.hue, performance: nil, traits: imp.traits, clock: BodyClock(imp.id))
+        return StageImp(hue: imp.hue, mood: model.isReady(imp.id) ? .idle : .sleepy, performance: nil, traits: imp.traits,
+                        clock: BodyClock(imp.id))
             .frame(width: side, height: side)
             // The head and horns come up from the floor. With Reduce Motion it fades in where it will stand.
             .offset(y: reduceMotion || out ? 0 : visible)

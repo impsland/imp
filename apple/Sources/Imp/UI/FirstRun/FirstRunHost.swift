@@ -29,5 +29,6 @@ struct FirstRunHost: View {
     var body: some View {
         let profile = app.profile(id) ?? .imp
         FirstRunSheet(flow: flow, hue: profile.hue, traits: profile.traits, clock: BodyClock(id), close: close)
+            .onDisappear { flow.cancel() }
     }
 }

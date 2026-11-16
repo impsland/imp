@@ -104,7 +104,10 @@ struct PocketEditor: View {
         .onChange(of: brainFlow?.path.step) { _, step in
             if step == .done { brainWorked() }
         }
-        .onDisappear { save() }
+        .onDisappear {
+            save()
+            brainFlow?.cancel()
+        }
     }
 
     // MARK: Hub

@@ -176,7 +176,9 @@ private struct CanvasImp: View {
     }
 
     @ViewBuilder private func figure(_ imp: ImpProfile, side: CGFloat) -> some View {
-        StageImp(hue: imp.hue, performance: model.performances[id], traits: imp.traits, clock: BodyClock(id),
+        // An Imp with no Brain sleeps on the home screen too, as in its settings and the first run.
+        StageImp(hue: imp.hue, mood: model.isReady(id) ? .idle : .sleepy, performance: model.performances[id],
+                 traits: imp.traits, clock: BodyClock(id),
                  center: { router.slot(of: id, side: side).map { CGPoint(x: $0.midX, y: $0.midY) } })
     }
 

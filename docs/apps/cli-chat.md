@@ -18,7 +18,8 @@ one you pick with `--imp NAME`. This page is about using it. The commands are in
 ## What you see
 
 - `›` is what you wrote and `●` is the Imp.
-- `⏺` is a tool the Imp used, with its arguments, and `⎿` is the first line of the result (or `running…`).
+- `⏺` is a tool the Imp used, with its arguments, and `⎿` is the first line of the result (or `running…`). Click a tool line to open that
+  call in full: all its arguments, its whole result, and a diff for file edits. Ctrl+O opens the latest one.
 - `⇢` is a message to another Imp and `⇠` is its answer.
 - Dim lines are notes from commands and your devices. They are never sent to the model.
 - The bottom line shows the Imp, its model and its folder, and what it is doing: `Thinking 3s`,
@@ -77,7 +78,7 @@ Custom commands from `.agents/commands/` are in the same list, after the built-i
 
 ## Keys
 
-- **Esc** closes the `/` list. Otherwise it stops an answer that is arriving, and otherwise leaves the chat.
+- **Esc** closes the `/` list, or stops an answer that is arriving. It never leaves the chat, so a stray press is harmless. Use `/quit` or Ctrl+C to leave.
 - **Ctrl+C** leaves the chat.
 - **?** (when nothing is typed) or **F1** opens a card that lists every key. On a short window it scrolls with
   the arrows.

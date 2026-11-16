@@ -4,12 +4,15 @@ import SwiftUI
 
 /// While an Imp is carried towards an edge, the doors on that side: one band per device at the heights
 /// that lead to it, labelled with its name. The band under the finger lights up. A side that leads
-/// nowhere says so, faintly. It sits inside the stage's timeline, so it follows the finger for free.
+/// nowhere says so, faintly. It shows only once the Imp has been held near the edge for a moment, never for
+/// one that is thrown on purpose (`EdgeDwell`). It sits inside the stage's timeline, so it follows the finger for free.
 struct DoorLabels: View {
     let engine: StageEngine
+    /// The frame it is drawn for. The engine is not observable, so a new frame is what makes the labels read it again.
+    let frame: Date
 
     var body: some View {
-        if let carried = engine.carried {
+        if let carried = engine.carried, engine.edgeHintShown {
             let near = engine.nearness(of: carried)
             // With reduced motion the labels are there or not, without fading in step by step.
             let shown = engine.reduceMotion ? (near.amount > 0 ? 1 : 0) : near.amount

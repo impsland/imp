@@ -95,6 +95,10 @@ final class StageEngine {
     private let ticks = HapticSelection()
     /// The device whose door the carried Imp is in front of, if it is near enough to an edge.
     private(set) var litDoor: UUID?
+    /// Whether the carried Imp has been held near a side long enough for the device names to show (never after a throw).
+    private(set) var edgeHintShown = false
+    private var edgeDwell = EdgeDwell(delay: Double(Behavior.edgeHintDelaySeconds), maxSpeed: Double(Behavior.edgeHintMaxSpeedPoints))
+    private var edgeTick = EdgeTick(distance: Double(Behavior.edgeTickDistancePoints))
     /// The round of Echo being played (or just finished, until its card is dismissed).
     private(set) var echo: EchoSession?
     /// A game is on, from its lesson to the dismissal of its results card (the card is part of the
@@ -273,14 +277,29 @@ final class StageEngine {
         return (left ? .left : .right, min(max(Double(amount), 0), 1))
     }
 
-    /// Keeps `litDoor` to the door under the finger, with a tick each time it changes to another.
+    /// Feeds the dwell timer once a frame with where the carried Imp is and how fast it heads for that side, so the
+    /// hint also shows when the finger holds still (no drag events come then).
+    private func watchEdge(of b: Body, at date: Date) {
+        let near = nearness(of: b)
+        edgeDwell.carry(near: near.amount > 0.5 ? near.side : nil, speed: speed(of: b, towards: near.side), at: date)
+        edgeHintShown = edgeDwell.shown(at: date) != nil
+    }
+
+    /// How fast the finger carries `b` towards `side`, in points a second (negative when it moves back from it).
+    private func speed(of b: Body, towards side: LinkSide) -> Double {
+        Double(side == .left ? -b.fingerVelocity.dx : b.fingerVelocity.dx)
+    }
+
+    /// Keeps `litDoor` to the door under the finger, with a tick when the Imp crosses the line near that door's side
+    /// on its way to it.
     private func light(_ b: Body) {
         var lit: UUID?
         let near = nearness(of: b)
         if !isBlocking, near.amount > 0.5, case .to(let device) = door(b.imp.id, near.side, height(of: b)) { lit = device }
-        guard lit != litDoor else { return }
         litDoor = lit
-        if lit != nil { ticks.selectionChanged() }
+        let distance = near.side == .left ? b.pos.x : size.width - b.pos.x
+        let crossed = edgeTick.carry(near: near.side, distance: Double(distance), speed: speed(of: b, towards: near.side))
+        if crossed, lit != nil { ticks.selectionChanged() }
     }
 
     /// Throws `id` off `side` to the device that side leads to at the Imp's height. A side that leads
@@ -621,6 +640,9 @@ final class StageEngine {
             b.fingerVelocity = .zero
             b.warnedOffline = false
             b.performance = nil
+            edgeDwell.release()
+            edgeTick.release()
+            edgeHintShown = false
             focus = id
             touched[id] = now
             ticks.prepare()
@@ -650,6 +672,9 @@ final class StageEngine {
     func dragEnded(_ id: UUID, at p: CGPoint, predicted: CGPoint, now: Date = Date()) {
         touch = nil
         litDoor = nil
+        edgeDwell.release()
+        edgeTick.release()
+        edgeHintShown = false
         guard var b = bodies[id], b.phase == .dragging else { return }
         moved[id] = now
         // Stopped before letting go: no momentum.
@@ -704,6 +729,7 @@ final class StageEngine {
                     b.fingerVelocity = CGVector(dx: b.fingerVelocity.dx * k, dy: b.fingerVelocity.dy * k)
                 }
                 b.lean += (Self.lean(b.fingerVelocity.dx) - b.lean) * min(1, dt * 10)
+                watchEdge(of: b, at: date)
             case .free where summoned?.id == id && b.enteringFrom == nil && !isPlaying:
                 // Called to its sheet: a spring to where it waits, instead of drifting.
                 guard let goal = summoned?.point else { break }

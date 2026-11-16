@@ -60,6 +60,8 @@ pub struct Row {
     pub line: Line<'static>,
     pub gutter: usize,
     pub join: Join,
+    /// The id of the tool call this row shows, so a click on it can open that call.
+    pub call: Option<String>,
 }
 
 impl Row {
@@ -68,6 +70,7 @@ impl Row {
             line,
             gutter,
             join: Join::Hard,
+            call: None,
         }
     }
 
@@ -164,6 +167,7 @@ impl App {
                 ]),
                 gutter: pad,
                 join,
+                call: None,
             }
         };
         let mut rows = Vec::new();
@@ -360,6 +364,7 @@ impl App {
             .map(|m| m.content.as_str());
         match call_line(&call.name, &call.arguments) {
             CallLine::Tool(text) => {
+                let first = rows.len();
                 marked(rows, CALL, self.mark_style(), &text, width);
                 let (said, style) = match result.map(result_line) {
                     Some((text, false)) => (text, muted),
@@ -375,6 +380,9 @@ impl App {
                     ),
                 };
                 indented(rows, RESULT, style, &said, width);
+                for row in &mut rows[first..] {
+                    row.call = Some(call.id.clone());
+                }
             }
             CallLine::Message { to, text } => {
                 let asked = format!("{to}: {text}");
@@ -441,6 +449,7 @@ impl App {
         if self.help {
             help::render(self, frame, area);
         }
+        self.render_detail(frame, area);
     }
 
     /// The rows that fit, from the bottom or as far up as it is scrolled. An empty chat is in the middle.
@@ -643,6 +652,7 @@ fn lead_rows(
             line: Line::from(line),
             gutter: lead_width,
             join,
+            call: None,
         });
     }
 }
@@ -659,6 +669,7 @@ fn md_row(lead: Span<'static>, md: MdRow) -> Row {
         line: Line::from(spans),
         gutter: lead_width + md.indent,
         join: md.join,
+        call: None,
     }
 }
 
@@ -678,6 +689,7 @@ fn marked(rows: &mut Vec<Row>, mark: &str, mark_style: Style, text: &str, width:
             gutter: text_width(&lead),
             line: Line::from(vec![Span::styled(lead, mark_style), Span::raw(line)]),
             join,
+            call: None,
         });
     }
 }
@@ -693,6 +705,7 @@ fn indented(rows: &mut Vec<Row>, mark: &str, style: Style, text: &str, width: us
             gutter: text_width(&lead),
             line: Line::styled(format!("{lead}{line}"), style),
             join,
+            call: None,
         });
     }
 }

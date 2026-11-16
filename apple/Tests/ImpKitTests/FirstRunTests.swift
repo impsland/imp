@@ -469,6 +469,18 @@ private actor Seen {
         #expect(model.problemText?.contains("fake-secret-value") == false)
     }
 
+    @Test func closingWhileACheckRunsAdoptsNothing() async throws {
+        let adopted = Adopted()
+        let model = make(check: { _ in try await Task.sleep(for: .milliseconds(150)) }, adopted: adopted)
+        await atModels(model)
+        model.model = "m1"
+        model.check()
+        #expect(model.path.step == .checking)
+        model.cancel()
+        try await Task.sleep(for: .milliseconds(300))
+        #expect(adopted.brains.isEmpty)
+    }
+
     @Test func typedValuesSurviveMovingBetweenSteps() async {
         let model = make()
         await atModels(model)

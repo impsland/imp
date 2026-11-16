@@ -17,7 +17,7 @@ There are two kinds of command:
 | `/help` | Lists the commands and your custom commands |
 | `/clear` | Starts the conversation over (also `/new`, `/reset`) |
 | `/compact` | Sums up the chat, so the Imp goes on from the summary (also `/recap`, `/summarize`) |
-| `/quit` | Leaves the chat (also `/exit`, `/q`, or Esc) |
+| `/quit` | Leaves the chat (also `/exit`, `/q`) |
 | `/model [NAME]` | Shows or changes the model, such as `/model openai/gpt-6-luna` |
 | `/base_url [URL]` | Shows or changes the service address, an OpenAI-compatible `/v1` root (also `/url`) |
 | `/api_key [KEY]` | Shows where the key comes from, or uses `KEY` until the chat ends (also `/key`) |

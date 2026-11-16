@@ -76,26 +76,33 @@ struct Keycaps: View {
 struct TestButton: View {
     let title: LocalizedStringKey
     let action: () async throws -> String
+    /// What a failure says to the user, with what to do about it.
+    var explain: (Error) -> String = { $0.localizedDescription }
     @State private var state: ActionState = .idle
+    @State private var running: Task<Void, Never>?
     @Environment(\.postNotice) private var postNotice
 
     var body: some View {
         Button {
             state = .working
-            Task {
+            running = Task {
                 do {
                     let text = try await action()
                     state = .done
                     postNotice(.success(text))
+                } catch is CancellationError {
+                    return
                 } catch {
                     state = .failed
-                    postNotice(.error(error.localizedDescription))
+                    postNotice(.error(explain(error)))
                 }
             }
         } label: { StatefulLabel(title, symbol: "checkmark.circle", state: state) }
             .buttonStyle(.imp(.secondary, small: true))
             .disabled(state == .working)
             .impActionState($state)
+            // A sheet closed mid-request must not answer into nothing.
+            .onDisappear { running?.cancel() }
             .fixedSize()
     }
 }

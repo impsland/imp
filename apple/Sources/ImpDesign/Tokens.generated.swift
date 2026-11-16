@@ -715,8 +715,16 @@ public enum Behavior {
     public static let localProbeTimeoutSeconds = 2
     /// How long the first run waits for a service to list its models before it says so and lets the model be typed.
     public static let modelListTimeoutSeconds = 8
+    /// How long a carried Imp must rest near a side of the desktop before the names of the devices behind it show. A quick move to a side shows nothing.
+    public static let deskDoorDelaySeconds = 0.5
     /// How long the first run waits for a Brain to answer its first small request.
     public static let brainCheckTimeoutSeconds = 20
+    /// How long a carried Imp must stay near a side of the phone before the names of the devices behind it show. A quick move to a side shows nothing.
+    public static let edgeHintDelaySeconds = 0.5
+    /// A carried Imp moving towards a side faster than this (points a second) is being thrown, so no device names show. Equal to the core's throw speed (PHONE_SPEED in engine/src/link/toss.rs), so the names hide exactly when a throw happens.
+    public static let edgeHintMaxSpeedPoints = 900
+    /// How close to a side of the phone (points from it, to the middle of the Imp) a carried Imp must come, heading for that side, for the tick that says a door is there. Moving back from the side never ticks.
+    public static let edgeTickDistancePoints = 40
     /// How long a Copy button shows its tick after it copied.
     public static let copiedTickSeconds = 1.4
     /// How far an Imp is pulled sideways by a full tilt, in points. It springs back when the phone is level. The first screen and the home screen use it.

@@ -75,6 +75,7 @@ pub const GROUPS: &[&[Binding]] = &[
         key("●", "cli.help.imp"),
         key("›", "cli.help.you"),
         key("⏺ ⇢", "cli.help.tool"),
+        key("Ctrl+O", "cli.help.tool_details"),
         word("cli.help.key_status", "cli.help.activity"),
     ],
 ];

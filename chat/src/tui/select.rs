@@ -234,10 +234,19 @@ impl App {
         self.edge = None;
         match self.selection.get() {
             Some(sel) if sel.anchor != sel.head => self.copy_selection(),
-            _ => {
+            // A click without a drag: on a tool call's rows it opens that call in full.
+            Some(sel) => {
                 self.selection.set(None);
+                if let Some(id) = self
+                    .drawn_rows()
+                    .get(sel.anchor.0)
+                    .and_then(|row| row.call.clone())
+                {
+                    self.open_tool_detail(&id);
+                }
                 Action::None
             }
+            None => Action::None,
         }
     }
 

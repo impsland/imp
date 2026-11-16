@@ -131,7 +131,7 @@ An empty chat shows the Imp in the middle of the screen, with how to start and w
 - PageUp, PageDown, Up, Down (when no list is open) and the mouse wheel scroll. While you read further up,
   new lines arrive below without moving what you are reading, and the status line says `End ↓ latest`.
   End (with nothing typed) or Ctrl+End jumps back to the newest line.
-- Esc closes the `/` list, else stops an answer that is arriving, and otherwise leaves. Ctrl+C leaves. The terminal is put back as it
+- Esc closes the `/` list, else stops an answer that is arriving. It never leaves the chat. Ctrl+C or `/quit` leave. The terminal is put back as it
   was, also after an error.
 - `?` (when nothing is typed) or F1 opens a card that explains every key. On a short terminal it drops its
   blank lines, takes two columns if the terminal is wide, and else scrolls with Up, Down and the wheel.

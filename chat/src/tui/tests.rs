@@ -112,7 +112,8 @@ fn empty_input_sends_nothing_and_newlines_are_kept() {
 #[test]
 fn leaving_and_commands() {
     let mut app = App::new("pip", "m", "sys");
-    assert_eq!(app.on_key(key(KeyCode::Esc)), Action::Quit);
+    // Esc never leaves the chat, so a stray press does nothing.
+    assert_eq!(app.on_key(key(KeyCode::Esc)), Action::None);
     assert_eq!(
         app.on_key(with(KeyCode::Char('c'), KeyModifiers::CONTROL)),
         Action::Quit
@@ -362,7 +363,7 @@ fn the_help_card_lists_every_key_and_is_not_full_width() {
         .max()
         .unwrap_or(0);
     assert!(card < 80 && widest <= 80, "{text}");
-    let narrow = screen(&app, 36, 66).join("\n");
+    let narrow = screen(&app, 36, 72).join("\n");
     for group in GROUPS {
         for b in *group {
             assert!(
@@ -403,6 +404,7 @@ fn every_key_the_chat_answers_is_in_the_help() {
         "Ctrl+D",
         "/quit",
         "/clear",
+        "Ctrl+O",
         "?",
         "F1",
     ] {
@@ -737,7 +739,7 @@ fn esc_closes_the_list_first_and_leaves_the_second_time() {
     type_text(&mut app, "p");
     assert!(!app.menu().entries.is_empty());
     app.on_key(key(KeyCode::Esc));
-    assert_eq!(app.on_key(key(KeyCode::Esc)), Action::Quit);
+    assert_eq!(app.on_key(key(KeyCode::Esc)), Action::None);
     // Tab brings a closed list back.
     let mut app = self::app("pip", "m");
     type_text(&mut app, "/mc");
@@ -940,11 +942,15 @@ fn what_was_sent_comes_back_with_ctrl_p() {
 }
 
 #[test]
-fn esc_stops_an_answer_and_leaves_otherwise() {
+fn esc_stops_an_answer_and_does_nothing_otherwise() {
     let mut app = chatty();
     assert_eq!(app.on_key(key(KeyCode::Esc)), Action::Stop);
     app.on_done(Ok(()));
-    assert_eq!(app.on_key(key(KeyCode::Esc)), Action::Quit);
+    assert_eq!(
+        app.on_key(key(KeyCode::Esc)),
+        Action::None,
+        "Esc never leaves the chat"
+    );
 }
 
 #[test]
@@ -1649,4 +1655,174 @@ fn custom_commands_are_offered_after_slash_and_run_as_messages() {
         Action::Send(text) => assert_eq!(text, "Review src/auth.rs for bugs and missing tests."),
         _ => panic!("a custom command should be sent to the Imp"),
     }
+}
+
+/// A chat in which the Imp called each of `calls` (name, arguments, result), one after the other.
+fn called(calls: &[(&str, &str, &str)]) -> App {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "go");
+    app.on_key(key(KeyCode::Enter));
+    for (i, (name, arguments, result)) in calls.iter().enumerate() {
+        let call = ToolCall {
+            id: format!("c{i}"),
+            name: (*name).into(),
+            arguments: (*arguments).into(),
+        };
+        app.on_agent(&AgentEvent::StepStart);
+        app.on_agent(&AgentEvent::Stream(StreamEvent::ToolCallDelta {
+            index: 0,
+            id: Some(call.id.clone()),
+            name: Some(call.name.clone()),
+            arguments: call.arguments.clone(),
+        }));
+        app.on_agent(&AgentEvent::StepEnd);
+        app.on_agent(&AgentEvent::ToolStart(call.clone()));
+        app.on_agent(&AgentEvent::ToolResult {
+            call_id: call.id,
+            name: (*name).into(),
+            content: (*result).into(),
+        });
+    }
+    app
+}
+
+fn ctrl_o() -> KeyEvent {
+    with(KeyCode::Char('o'), KeyModifiers::CONTROL)
+}
+
+#[test]
+fn ctrl_o_opens_a_tool_call_whole_and_esc_closes_it() {
+    let path = "/Users/me/projects/my-app/docs/notes/a-very-long-folder-name/TODO.md";
+    let arguments = format!(r##"{{"path":"{path}","content":"# TODO\nbuy milk"}}"##);
+    let mut app = called(&[("files__write_file", &arguments, "Wrote 2 lines")]);
+    // The one-line view stays the default: the path is cut and nothing is marked as added.
+    let text = screen(&app, 40, 14).join("\n");
+    assert!(
+        !text.contains(path) && !text.contains("+ buy milk") && !app.is_detail_open(),
+        "{text}"
+    );
+    app.on_key(ctrl_o());
+    assert!(app.is_detail_open());
+    let rows = screen(&app, 40, 14);
+    let text = rows.join("\n");
+    // The path is wrapped over rows, not cut: every piece of it is on screen.
+    let joined: String = rows.iter().map(|r| r.trim()).collect();
+    assert!(joined.contains(path), "{text}");
+    assert!(text.contains("write_file"), "{text}");
+    assert!(
+        text.contains("+ # TODO") && text.contains("+ buy milk"),
+        "{text}"
+    );
+    assert!(
+        text.contains("Result") && text.contains("Wrote 2 lines"),
+        "{text}"
+    );
+    assert!(text.contains("call 1 of 1"), "{text}");
+    // Keys do not reach the message behind.
+    app.on_key(key(KeyCode::Char('x')));
+    assert_eq!(app.input(), "");
+    app.on_key(key(KeyCode::Esc));
+    assert!(!app.is_detail_open());
+    assert!(!screen(&app, 40, 14).join("\n").contains("+ buy milk"));
+}
+
+#[test]
+fn an_edit_shows_minus_and_plus_lines() {
+    let mut app = called(&[(
+        "files__edit_file",
+        r#"{"path":"a.txt","edits":[{"oldText":"keep\nold line","newText":"keep\nnew line"}]}"#,
+        "ok",
+    )]);
+    app.on_key(ctrl_o());
+    let text = screen(&app, 50, 16).join("\n");
+    assert!(text.contains("- old line"), "{text}");
+    assert!(text.contains("+ new line"), "{text}");
+    assert!(text.contains("  keep"), "{text}");
+}
+
+#[test]
+fn a_long_result_is_capped_with_a_note_and_enter_shows_all() {
+    let result = (1..=100)
+        .map(|i| format!("line {i}"))
+        .collect::<Vec<_>>()
+        .join("\n");
+    let mut app = called(&[("files__read_file", r#"{"path":"big.txt"}"#, &result)]);
+    app.on_key(ctrl_o());
+    // Scrolled to the end, the cap shows its note and not the lines past it.
+    app.on_key(key(KeyCode::End));
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(text.contains("line 40"), "{text}");
+    assert!(text.contains("… 60 more lines"), "{text}");
+    assert!(!text.contains("line 41"), "{text}");
+    app.on_key(key(KeyCode::Enter));
+    app.on_key(key(KeyCode::End));
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(text.contains("line 100"), "{text}");
+    assert!(!text.contains("more lines"), "{text}");
+    // Scrolling back up reaches the first lines.
+    app.on_key(key(KeyCode::Home));
+    assert!(screen(&app, 60, 12).join("\n").contains("line 1"));
+}
+
+#[test]
+fn the_arrows_move_between_calls_and_there_is_nothing_to_open_without_one() {
+    let mut app = called(&[
+        ("files__read_file", r#"{"path":"first.txt"}"#, "one"),
+        ("files__read_file", r#"{"path":"second.txt"}"#, "two"),
+    ]);
+    app.on_key(ctrl_o());
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(
+        text.contains("second.txt") && text.contains("call 2 of 2"),
+        "{text}"
+    );
+    app.on_key(key(KeyCode::Left));
+    let text = screen(&app, 60, 12).join("\n");
+    assert!(
+        text.contains("first.txt") && text.contains("call 1 of 2"),
+        "{text}"
+    );
+    app.on_key(key(KeyCode::Left));
+    assert!(screen(&app, 60, 12).join("\n").contains("call 1 of 2"));
+    app.on_key(ctrl_o());
+    assert!(!app.is_detail_open());
+
+    let mut bare = chatty();
+    bare.on_key(ctrl_o());
+    assert!(!bare.is_detail_open());
+}
+
+#[test]
+fn the_details_fit_tiny_screens_and_leave_with_ctrl_c() {
+    let mut app = called(&[("files__read_file", r#"{"path":"a"}"#, "x")]);
+    app.on_key(ctrl_o());
+    for (w, h) in [(1, 1), (3, 2), (10, 3), (80, 2)] {
+        let _ = screen(&app, w, h);
+    }
+    assert_eq!(
+        app.on_key(with(KeyCode::Char('c'), KeyModifiers::CONTROL)),
+        Action::Quit
+    );
+}
+
+#[test]
+fn a_click_on_a_tool_call_opens_that_call_in_full() {
+    let mut app = called(&[
+        ("files__read_file", r#"{"path":"a.md"}"#, "first result"),
+        ("files__read_file", r#"{"path":"b.md"}"#, "second result"),
+    ]);
+    let rows = screen(&app, 40, 14);
+    let first = row_of(&rows, "a.md");
+    mouse(&mut app, MouseEventKind::Down(MouseButton::Left), 4, first);
+    mouse(&mut app, MouseEventKind::Up(MouseButton::Left), 4, first);
+    assert!(app.is_detail_open());
+    let text = screen(&app, 40, 14).join("\n");
+    assert!(text.contains("call 1 of 2"), "{text}");
+    app.on_key(key(KeyCode::Esc));
+    // A click on the Imp's own words opens nothing.
+    let rows = screen(&app, 40, 14);
+    let words = row_of(&rows, "go");
+    mouse(&mut app, MouseEventKind::Down(MouseButton::Left), 2, words);
+    mouse(&mut app, MouseEventKind::Up(MouseButton::Left), 2, words);
+    assert!(!app.is_detail_open());
 }

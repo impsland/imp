@@ -322,7 +322,11 @@
   <x:Double x:Key="ImpBehaviorDragStripPoints">28</x:Double>
   <x:Double x:Key="ImpBehaviorLocalProbeTimeoutSeconds">2</x:Double>
   <x:Double x:Key="ImpBehaviorModelListTimeoutSeconds">8</x:Double>
+  <x:Double x:Key="ImpBehaviorDeskDoorDelaySeconds">0.5</x:Double>
   <x:Double x:Key="ImpBehaviorBrainCheckTimeoutSeconds">20</x:Double>
+  <x:Double x:Key="ImpBehaviorEdgeHintDelaySeconds">0.5</x:Double>
+  <x:Double x:Key="ImpBehaviorEdgeHintMaxSpeedPoints">900</x:Double>
+  <x:Double x:Key="ImpBehaviorEdgeTickDistancePoints">40</x:Double>
   <x:Double x:Key="ImpBehaviorCopiedTickSeconds">1.4</x:Double>
   <x:Double x:Key="ImpBehaviorTiltSlide">34</x:Double>
   <x:Double x:Key="ImpBehaviorTiltLean">16</x:Double>

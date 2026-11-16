@@ -26,7 +26,8 @@ struct FirstRunFlow: View {
             FieldRow("brain.model", info: "settings.service.model.info") {
                 ModelField(model: $flow.model, placeholder: "firstrun.model.search") { [address = flow.address, key = flow.key] in
                     try await OpenAIClient(baseURL: address.trimmingCharacters(in: .whitespacesAndNewlines),
-                                           apiKey: key.trimmingCharacters(in: .whitespacesAndNewlines)).models()
+                                           apiKey: key.trimmingCharacters(in: .whitespacesAndNewlines))
+                        .models(timeout: Double(Behavior.modelListTimeoutSeconds))
                 }
                 .disabled(!ServicePreset.isValidAddress(flow.address))
             }

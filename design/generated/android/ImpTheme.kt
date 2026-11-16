@@ -369,7 +369,11 @@ object ImpBehavior {
     val dragStripPoints = 28
     val localProbeTimeoutSeconds = 2
     val modelListTimeoutSeconds = 8
+    val deskDoorDelaySeconds = 0.5f
     val brainCheckTimeoutSeconds = 20
+    val edgeHintDelaySeconds = 0.5f
+    val edgeHintMaxSpeedPoints = 900
+    val edgeTickDistancePoints = 40
     val copiedTickSeconds = 1.4f
     val tiltSlide = 34
     val tiltLean = 16

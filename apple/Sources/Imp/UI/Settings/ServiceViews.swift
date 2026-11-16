@@ -33,7 +33,7 @@ struct ServiceRow: View {
             }
             FieldRow("Model", info: "settings.service.model.info") {
                 ModelField(model: $service.model, placeholder: "Model for every Imp on \(service.label)") {
-                    try await model.assistant.client(for: service).models()
+                    try await model.assistant.client(for: service).models(timeout: Double(Behavior.modelListTimeoutSeconds))
                 }
             }
             HStack(spacing: Spacing.small) {
@@ -41,9 +41,9 @@ struct ServiceRow: View {
                     .font(Typeface.small).foregroundStyle(Tone.muted).lineLimit(1)
                 Spacer(minLength: Spacing.small)
                 TestButton(title: "Test", action: {
-                    let count = try await model.assistant.client(for: service).models().count
+                    let count = try await model.assistant.client(for: service).models(timeout: Double(Behavior.modelListTimeoutSeconds)).count
                     return String(localized: "Works. \(count) models")
-                })
+                }, explain: { BrainCheck.message(for: $0, service: service, model: service.model, imp: "") })
             }
         }
         .padding(Spacing.large)
@@ -239,7 +239,7 @@ struct AddServiceSheet: View {
                           showsKey: choice?.isLocal != true) {
                 FieldRow("brain.model") {
                     ModelField(model: $modelName, placeholder: "For every Imp on it") { [draft, key] in
-                        try await OpenAIClient(baseURL: draft.baseURL, apiKey: key).models()
+                        try await OpenAIClient(baseURL: draft.baseURL, apiKey: key).models(timeout: Double(Behavior.modelListTimeoutSeconds))
                     }
                     .disabled(!isValid)
                 }
@@ -248,9 +248,10 @@ struct AddServiceSheet: View {
             .impCard(radius: Radius.medium)
         } footer: {
             TestButton(title: "Test", action: { [draft, key] in
-                let count = try await OpenAIClient(baseURL: draft.baseURL, apiKey: key).models().count
+                let count = try await OpenAIClient(baseURL: draft.baseURL, apiKey: key)
+                    .models(timeout: Double(Behavior.modelListTimeoutSeconds)).count
                 return String(localized: "Works. \(count) models")
-            })
+            }, explain: { BrainCheck.message(for: $0, service: draft, model: draft.model, imp: "") })
             .disabled(!isValid)
             NoticePoster { post in
                 Button("common.add") {

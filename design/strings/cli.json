@@ -242,9 +242,9 @@
   },
   "cli.help.stop_or_quit": {
     "note": "What Esc does.",
-    "en": "Close the list, stop, or leave",
-    "es": "Cerrar la lista, detener, o salir",
-    "zh-Hans": "关闭列表、停止或离开"
+    "en": "Close the list, or stop an answer",
+    "es": "Cerrar la lista o detener una respuesta",
+    "zh-Hans": "关闭列表或停止回答"
   },
   "cli.help.complete": {
     "note": "What Tab and Right do while the list of / commands is open.",
@@ -383,5 +383,36 @@
     "en": "Move between lines, then through what you sent",
     "es": "Moverse entre líneas, luego por lo enviado",
     "zh-Hans": "在行间移动，再浏览已发送的内容"
+  },
+  "cli.help.tool_details": {
+    "note": "The key in the help card that opens the details of a tool call.",
+    "en": "Open the details of a tool call, with ← → between calls",
+    "es": "Abre los detalles de una herramienta, con ← → entre llamadas",
+    "zh-Hans": "打开工具调用的详情，用 ← → 切换调用"
+  },
+  "cli.chat.detail_result": {
+    "note": "Heading of a tool call's result in its details view.",
+    "en": "Result",
+    "es": "Resultado",
+    "zh-Hans": "结果"
+  },
+  "cli.chat.detail_more": {
+    "note": "Last line of a long argument or result in the details view of a tool call. {count} is how many lines are hidden.",
+    "en": "… {count} more lines (Enter shows them all)",
+    "es": "… {count} líneas más (Intro las muestra todas)",
+    "zh-Hans": "… 还有 {count} 行（按 Enter 显示全部）",
+    "args": {
+      "count": "string"
+    }
+  },
+  "cli.chat.detail_footer": {
+    "note": "Last line of the details view of a tool call. {n} is which call this is and {total} how many there are.",
+    "en": "← → call {n} of {total} · ↑ ↓ scroll · Esc close",
+    "es": "← → llamada {n} de {total} · ↑ ↓ desplazar · Esc cerrar",
+    "zh-Hans": "← → 第 {n} 个，共 {total} 个 · ↑ ↓ 滚动 · Esc 关闭",
+    "args": {
+      "n": "string",
+      "total": "string"
+    }
   }
 }

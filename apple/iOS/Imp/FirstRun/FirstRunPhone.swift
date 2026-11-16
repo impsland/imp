@@ -30,6 +30,7 @@ struct FirstRunPhone: View {
 
     var body: some View {
         FirstRunPhoneSheet(flow: flow, imp: pocket.imp(id), close: close, awake: awake)
+            .onDisappear { flow.cancel() }
     }
 }
 

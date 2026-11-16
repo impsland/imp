@@ -93,13 +93,35 @@ extension Appearance {
     }
 }
 
+/// The system's light or dark, as the app's root sees it, passed down to every sheet. A sheet that opened in an
+/// explicit theme keeps that theme when the person goes back to Auto (`preferredColorScheme(nil)` does not clear
+/// it), so Auto gives the sheet the system's theme explicitly.
+private struct InheritedColorSchemeKey: EnvironmentKey {
+    static let defaultValue: ColorScheme? = nil
+}
+
+private extension EnvironmentValues {
+    var inheritedColorScheme: ColorScheme? {
+        get { self[InheritedColorSchemeKey.self] }
+        set { self[InheritedColorSchemeKey.self] = newValue }
+    }
+}
+
 /// Applies the person's choices of light or dark, and of white or black on coloured controls, at the
 /// root of the app and of every sheet.
 private struct PhoneAppearance: ViewModifier {
     @AppStorage(PhonePrefs.appearanceKey) private var appearance: Appearance = .system
     @AppStorage(PhonePrefs.controlInkKey) private var controlInk: ControlInk = .white
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.inheritedColorScheme) private var inherited
+
     func body(content: Content) -> some View {
-        content.preferredColorScheme(appearance.colorScheme).environment(\.tintInk, controlInk.tintInk)
+        // A sheet takes the system's theme from the app's root (`inherited`), since its own is the theme it opened in.
+        let system = inherited ?? colorScheme
+        content
+            .preferredColorScheme(appearance.colorScheme ?? system)
+            .environment(\.inheritedColorScheme, system)
+            .environment(\.tintInk, controlInk.tintInk)
     }
 }
 

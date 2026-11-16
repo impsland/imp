@@ -70,6 +70,156 @@ pub fn result_line(content: &str) -> (String, bool) {
     (text, failed)
 }
 
+/// What a line of a tool call's details is, which decides its mark and its colour.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Kind {
+    /// The name of an argument.
+    Heading,
+    Plain,
+    /// A line of a change that stays as it was.
+    Same,
+    Added,
+    Removed,
+}
+
+impl Kind {
+    /// What starts the line: `+` and `-` for a change, so it reads without colours too.
+    pub fn marker(self) -> &'static str {
+        match self {
+            Kind::Added => "+ ",
+            Kind::Removed => "- ",
+            Kind::Same => "  ",
+            Kind::Heading | Kind::Plain => "",
+        }
+    }
+}
+
+/// One line of the details of a call.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DetailLine {
+    pub kind: Kind,
+    pub text: String,
+}
+
+impl DetailLine {
+    fn new(kind: Kind, text: &str) -> Self {
+        Self {
+            kind,
+            text: text.to_string(),
+        }
+    }
+}
+
+/// Tools that write a whole file, whose `content` is new text.
+const WRITE_TOOLS: [&str; 3] = ["write_file", "create_file", "write"];
+/// The names editing tools give the text that was there and the text that replaces it.
+const CHANGE_KEYS: [(&str, &str); 4] = [
+    ("oldText", "newText"),
+    ("old_string", "new_string"),
+    ("old_str", "new_str"),
+    ("old_text", "new_text"),
+];
+
+/// Every argument of a call, whole: each under its name, a written file as added lines and an edit as
+/// the lines taken out and put in (the text that was there is known from the call itself).
+pub fn argument_lines(name: &str, arguments: &str) -> Vec<DetailLine> {
+    let args: Value = match serde_json::from_str(arguments) {
+        Ok(args) => args,
+        Err(_) if arguments.trim().is_empty() => return Vec::new(),
+        Err(_) => return text_lines(Kind::Plain, arguments),
+    };
+    let Value::Object(map) = &args else {
+        return plain(&args);
+    };
+    let writes = WRITE_TOOLS.contains(&short_name(name));
+    let change = CHANGE_KEYS
+        .iter()
+        .find(|(old, new)| map.get(*old).is_some_and(Value::is_string) && map.contains_key(*new));
+    // The map is sorted by name; what is written or changed comes last, after the path it is for.
+    let mut entries: Vec<(&String, &Value)> = map.iter().collect();
+    entries.sort_by_key(|(key, _)| {
+        matches!(key.as_str(), "content" | "edits") || change.is_some_and(|(old, _)| key == old)
+    });
+    let mut out = Vec::new();
+    for (key, v) in entries {
+        if change.is_some_and(|(_, new)| key == new) {
+            continue;
+        }
+        match (v, change) {
+            (Value::String(content), _) if writes && key == "content" => {
+                out.push(DetailLine::new(Kind::Heading, key));
+                out.extend(text_lines(Kind::Added, content));
+            }
+            (Value::String(old), Some((o, n))) if key == o => {
+                out.push(DetailLine::new(Kind::Heading, &format!("{o} → {n}")));
+                out.extend(diff(old, map[*n].as_str().unwrap_or_default()));
+            }
+            (Value::Array(edits), _) if key == "edits" => {
+                out.push(DetailLine::new(Kind::Heading, key));
+                for (i, edit) in edits.iter().enumerate() {
+                    if i > 0 {
+                        out.push(DetailLine::new(Kind::Plain, ""));
+                    }
+                    match CHANGE_KEYS.iter().find_map(|(old, new)| {
+                        Some((edit.get(old)?.as_str()?, edit.get(new)?.as_str()?))
+                    }) {
+                        Some((old, new)) => out.extend(diff(old, new)),
+                        None => out.extend(plain(edit)),
+                    }
+                }
+            }
+            _ => {
+                out.push(DetailLine::new(Kind::Heading, key));
+                out.extend(plain(v));
+            }
+        }
+    }
+    out
+}
+
+/// A value as it reads: a string as its own lines, anything else as JSON.
+fn plain(v: &Value) -> Vec<DetailLine> {
+    match v {
+        Value::String(s) => text_lines(Kind::Plain, s),
+        Value::Array(_) | Value::Object(_) => text_lines(
+            Kind::Plain,
+            &serde_json::to_string_pretty(v).unwrap_or_default(),
+        ),
+        other => text_lines(Kind::Plain, &other.to_string()),
+    }
+}
+
+fn text_lines(kind: Kind, text: &str) -> Vec<DetailLine> {
+    text.lines().map(|l| DetailLine::new(kind, l)).collect()
+}
+
+/// A change by lines: the lines the two texts start and end with alike stay, what is between them is
+/// taken out and put in. Enough to read a change; it does not look for lines that moved.
+fn diff(old: &str, new: &str) -> Vec<DetailLine> {
+    let (old, new): (Vec<&str>, Vec<&str>) = (old.lines().collect(), new.lines().collect());
+    let start = old.iter().zip(&new).take_while(|(a, b)| a == b).count();
+    let end = old[start..]
+        .iter()
+        .rev()
+        .zip(new[start..].iter().rev())
+        .take_while(|(a, b)| a == b)
+        .count();
+    let line = |kind, l: &&str| DetailLine::new(kind, l);
+    let mut out: Vec<DetailLine> = old[..start].iter().map(|l| line(Kind::Same, l)).collect();
+    out.extend(
+        old[start..old.len() - end]
+            .iter()
+            .map(|l| line(Kind::Removed, l)),
+    );
+    out.extend(
+        new[start..new.len() - end]
+            .iter()
+            .map(|l| line(Kind::Added, l)),
+    );
+    out.extend(old[old.len() - end..].iter().map(|l| line(Kind::Same, l)));
+    out
+}
+
 fn one_line(s: &str) -> String {
     s.split_whitespace().collect::<Vec<_>>().join(" ")
 }
@@ -120,5 +270,55 @@ mod tests {
         assert_eq!(result_line("a\nb\n\nc"), ("a (+2 lines)".into(), false));
         assert!(result_line("Error: no such file").1);
         assert_eq!(result_line("").0, "(nothing)");
+    }
+
+    #[test]
+    fn a_written_file_is_all_added_lines() {
+        let lines = argument_lines(
+            "files__write_file",
+            r#"{"path":"a.md","content":"one\ntwo"}"#,
+        );
+        let kinds: Vec<(Kind, &str)> = lines.iter().map(|l| (l.kind, l.text.as_str())).collect();
+        assert_eq!(
+            kinds,
+            [
+                (Kind::Heading, "path"),
+                (Kind::Plain, "a.md"),
+                (Kind::Heading, "content"),
+                (Kind::Added, "one"),
+                (Kind::Added, "two"),
+            ]
+        );
+    }
+
+    #[test]
+    fn an_edit_shows_what_was_taken_out_and_put_in() {
+        let lines = argument_lines(
+            "edit_file",
+            r#"{"path":"a","edits":[{"oldText":"a\nb\nc","newText":"a\nB\nc"}]}"#,
+        );
+        let kinds: Vec<(Kind, &str)> = lines.iter().map(|l| (l.kind, l.text.as_str())).collect();
+        assert_eq!(
+            kinds[3..],
+            [
+                (Kind::Same, "a"),
+                (Kind::Removed, "b"),
+                (Kind::Added, "B"),
+                (Kind::Same, "c"),
+            ]
+        );
+        let flat = argument_lines("str_replace", r#"{"old_string":"x","new_string":"y"}"#);
+        assert_eq!(flat[0].text, "old_string → new_string");
+        assert_eq!((flat[1].kind, flat[2].kind), (Kind::Removed, Kind::Added));
+    }
+
+    #[test]
+    fn other_arguments_show_whole() {
+        let long = "y".repeat(300);
+        let lines = argument_lines("t", &format!(r#"{{"a":"{long}","n":3}}"#));
+        assert_eq!(lines[1].text, long);
+        assert_eq!(lines[3].text, "3");
+        assert!(argument_lines("t", "").is_empty());
+        assert_eq!(argument_lines("t", "oops")[0].text, "oops");
     }
 }

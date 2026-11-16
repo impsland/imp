@@ -84,7 +84,7 @@ struct PhoneStage: View {
                                         .zIndex(2)
                                 }
                             }
-                            DoorLabels(engine: engine).zIndex(2)
+                            DoorLabels(engine: engine, frame: date).zIndex(2)
                             GameLayer(engine: engine, date: date, size: geo.size, insets: screen.safeAreaInsets)
                                 .zIndex(3)
                         }
@@ -323,7 +323,8 @@ struct PhoneStage: View {
                 if dots {
                     ThinkingDots(date: date)
                         .frame(height: 0, alignment: .bottom)
-                        .offset(y: side / 2 * (1 - StageEngine.reachAbove) - Spacing.tight)
+                        // Above the top of a hop, so the dots never cover the Imp when it jumps.
+                        .offset(y: side / 2 * (1 - StageEngine.reachAbove) - Spacing.tight - Spacing.medium)
                         .transition(.scale.combined(with: .opacity))
                 }
             }
@@ -517,7 +518,8 @@ private struct ThinkingDots: View {
         let t = date.timeIntervalSinceReferenceDate
         HStack(spacing: Spacing.tight) {
             ForEach(0..<3, id: \.self) { i in
-                Circle().fill(Tone.accentBright).frame(width: Spacing.snug, height: Spacing.snug)
+                // White on the scrim, in both themes: the dark dots were lost on the light stage.
+                Circle().fill(Tone.paper).frame(width: Spacing.snug, height: Spacing.snug)
                     .offset(y: -Spacing.tight * max(0, sin(t * 6 - Double(i) * 0.9)))
             }
         }

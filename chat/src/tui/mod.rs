@@ -1,11 +1,13 @@
 //! The full-screen chat. `App` holds everything on the screen and has no input or output, so keys
 //! and agent events can be tested without a terminal. `run` is the thin part that talks to one.
 //!
-//! `mod.rs` is the state and the keys, `view` draws it, `help` is the card the `?` key opens, `text`
+//! `mod.rs` is the state and the keys, `view` draws it, `help` is the card the `?` key opens, `detail` is
+//! the whole of one tool call that Ctrl+O opens, `text`
 //! measures and wraps, `select` is choosing transcript text with the mouse to copy it, `clipboard` puts
 //! it on the system clipboard, `terminal` owns the real terminal, the session, the device and the event loop.
 
 mod clipboard;
+mod detail;
 mod field;
 mod help;
 mod input;
@@ -123,6 +125,8 @@ pub struct App {
     tool: Option<String>,
     error: Option<String>,
     help: bool,
+    /// The details of a tool call, while they are open.
+    detail: Option<detail::Detail>,
     /// Lines from commands and devices, each after so many messages of the conversation.
     notes: Vec<(usize, Note)>,
     /// A command that is running, shown in the status line.
@@ -177,6 +181,7 @@ impl App {
             tool: None,
             error: None,
             help: false,
+            detail: None,
             notes: Vec::new(),
             busy: None,
             away: None,
@@ -282,6 +287,9 @@ impl App {
         if self.help {
             return self.help_key(key);
         }
+        if self.detail.is_some() {
+            return self.detail_key(key);
+        }
         let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
         // With text chosen, Esc lets go of it and Ctrl+C copies it again instead of leaving.
         if self.selection.get().is_some() {
@@ -317,11 +325,16 @@ impl App {
                 Action::None
             }
             KeyCode::Esc if self.waiting => Action::Stop,
-            KeyCode::Esc => Action::Quit,
+            // Esc never leaves the chat: a stray press must not end it. /quit and Ctrl+C do that.
+            KeyCode::Esc => Action::None,
             KeyCode::Char('c') if ctrl => Action::Quit,
             KeyCode::Char('d') if ctrl && self.input.is_empty() => Action::Quit,
             KeyCode::F(1) => self.show_help(),
             KeyCode::Char('?') if self.input.is_empty() => self.show_help(),
+            KeyCode::Char('o') if ctrl => {
+                self.open_detail();
+                Action::None
+            }
             KeyCode::Char('u') if ctrl => self.edit(|app| app.set_input(String::new())),
             KeyCode::Char('j') if ctrl => self.edit(|app| app.insert("\n")),
             KeyCode::Char('w') if ctrl => self.edit(App::delete_word_back),
@@ -603,6 +616,14 @@ impl App {
                     self.help_scroll.set(self.help_scroll.get() + WHEEL_LINES);
                 }
                 MouseEventKind::Down(_) => self.help = false,
+                _ => {}
+            }
+            return Action::None;
+        }
+        if self.detail.is_some() {
+            match mouse.kind {
+                MouseEventKind::ScrollUp => self.detail_wheel(true),
+                MouseEventKind::ScrollDown => self.detail_wheel(false),
                 _ => {}
             }
             return Action::None;

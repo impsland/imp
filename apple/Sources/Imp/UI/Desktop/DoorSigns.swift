@@ -106,6 +106,10 @@ final class DoorSigns {
     private let board = DoorBoard()
     private var panel: FloatingPanel?
     private var fading: Task<Void, Never>?
+    /// The wait before the doors show, once the Imp is near a side. Re-checked with the last pointer position.
+    private var dwelling: Task<Void, Never>?
+    private var dwelled = false
+    private var lastCursor: CGPoint?
 
     /// How close to a side the pointer must come for its doors to show, and how far it may drift
     /// back before they go (so they don't flicker at the boundary).
@@ -116,11 +120,26 @@ final class DoorSigns {
 
     /// The Imp is carried with the pointer at `cursor`. Only a change of side, display, doors or lit door does any work.
     func carried(to cursor: CGPoint) {
+        lastCursor = cursor
         let app = model.app
         // As for a throw: edges are just edges until a device is linked.
         guard app.link.isLinked || model.visit != nil, !app.isAway(model.id),
               let approach = Toss.desktopApproach(cursor: cursor, within: board.shown ? Self.leave : Self.near,
                                                   screens: NSScreen.screens.map(\.frame)) else { return hide() }
+        // The doors show only once the Imp has rested near the side for a moment. A move straight across an
+        // edge (the way a hand-over is made) is over before that, so nothing is shown for it.
+        if !board.shown, !dwelled {
+            if dwelling == nil {
+                dwelling = Task { [weak self] in
+                    try? await Task.sleep(for: .milliseconds(Int(Double(Behavior.deskDoorDelaySeconds) * 1000)))
+                    guard let self, !Task.isCancelled else { return }
+                    self.dwelling = nil
+                    self.dwelled = true
+                    if let cursor = self.lastCursor { self.carried(to: cursor) }
+                }
+            }
+            return
+        }
         let side = approach.side
         let signs = app.link.bands(of: model.id, side: side).compactMap { band -> DoorSign? in
             guard let peer = app.link.peers.first(where: { $0.id == band.device }) else { return nil }
@@ -150,8 +169,11 @@ final class DoorSigns {
         if !board.shown { board.shown = true }
     }
 
-    /// Fades the doors out and puts the panel away once they have.
+    /// Fades the doors out and puts the panel away once they have. Also ends a wait that has not shown them yet.
     func hide() {
+        dwelling?.cancel()
+        dwelling = nil
+        dwelled = false
         guard board.shown, fading == nil else { return }
         board.shown = false
         let reduce = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion

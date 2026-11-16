@@ -170,6 +170,7 @@ private struct BrainSetup: View {
             FirstRunPrimaryButton(flow: flow)
         }
         .onChange(of: flow.path.step) { _, step in if step == .done { finished() } }
+        .onDisappear { flow.cancel() }
     }
 }
 
@@ -179,6 +180,7 @@ enum BrainCheck {
     static func message(for error: Error, service: Service?, model: String, imp: String) -> String {
         let name = service?.label ?? ""
         guard let api = error as? APIError else {
+            if (error as? URLError)?.code == .timedOut { return words("error.brain.timeout", name) }
             return service?.isLocal == true ? words("error.brain.local") : words("error.brain.unreachable", name)
         }
         switch api {

@@ -209,6 +209,12 @@ public final class FirstRunModel {
         path.apply(.back)
     }
 
+    /// The sheet or page was closed: a listing or check still running stops, so a Brain is not adopted for an Imp
+    /// the user left asleep.
+    public func cancel() {
+        task?.cancel()
+    }
+
     /// What the one primary button does at this moment.
     public var primary: FirstRunPrimary {
         switch path.step {
