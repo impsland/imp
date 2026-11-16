@@ -20,7 +20,7 @@ struct FirstRunPhone: View {
         self.close = close
         self.awake = awake
         let imp = pocket.imp(id)
-        let services = FirstRunServices.live(persona: pocket.personality(of: id), probeSeconds: Double(Behavior.localProbeTimeoutSeconds),
+        let services = FirstRunServices.live(persona: pocket.personality(of: id), probeSeconds: Double(Behavior.localProbeTimeoutSeconds), listSeconds: Double(Behavior.modelListTimeoutSeconds),
                                              checkSeconds: Double(Behavior.brainCheckTimeoutSeconds))
         _flow = State(initialValue: FirstRunModel(impName: imp?.name ?? "", onThisComputer: false, services: services,
                                                   preselectsModel: false) { [weak pocket] brain in

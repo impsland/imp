@@ -407,6 +407,36 @@
     "es": "Sin charlas",
     "zh-Hans": "还没有对话"
   },
+  "phone.talks.one": {
+    "note": "iPhone: the bar's subtitle while one talk is open (the list says Talks).",
+    "en": "Talk",
+    "es": "Charla",
+    "zh-Hans": "对话"
+  },
+  "phone.talks.started_by_imp": {
+    "note": "iPhone: a talk row's icon, when the sheet's own Imp started the talk.",
+    "en": "Started by this Imp",
+    "es": "Iniciada por este Imp",
+    "zh-Hans": "由此 Imp 发起"
+  },
+  "phone.talks.started_by_peer": {
+    "note": "iPhone: a talk row's icon, when the other Imp started the talk.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Started by {name}",
+    "es": "Iniciada por {name}",
+    "zh-Hans": "由 {name} 发起"
+  },
+  "phone.talks.exchanges": {
+    "note": "iPhone: how many question and answer pairs a talk has, read out for its count.",
+    "args": {
+      "count": "int"
+    },
+    "en": "{count} exchanges",
+    "es": "{count} intercambios",
+    "zh-Hans": "{count} 次往来"
+  },
   "phone.chat.jump_latest": {
     "note": "iPhone: chat jump latest.",
     "en": "Latest",

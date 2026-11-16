@@ -19,7 +19,7 @@ struct FirstRunHost: View {
     /// The model of the first run for an Imp, with the real requests. The Brain panel builds the same one.
     static func model(app: AppModel, id: UUID) -> FirstRunModel {
         let profile = app.profile(id) ?? .imp
-        let services = FirstRunServices.live(persona: profile.systemPrompt, probeSeconds: Double(Behavior.localProbeTimeoutSeconds),
+        let services = FirstRunServices.live(persona: profile.systemPrompt, probeSeconds: Double(Behavior.localProbeTimeoutSeconds), listSeconds: Double(Behavior.modelListTimeoutSeconds),
                                              checkSeconds: Double(Behavior.brainCheckTimeoutSeconds))
         return FirstRunModel(impName: profile.callName, onThisComputer: true, services: services) { [weak app] brain in
             try app?.adoptFirstRunBrain(brain, for: id)

@@ -32,11 +32,12 @@ public struct FirstRunServices: Sendable {
     }
 
     /// The real requests. `persona` is what the Imp is told before the tiny request.
-    public static func live(persona: String, probeSeconds: Double, checkSeconds: Double, session: URLSession = .shared) -> FirstRunServices {
+    public static func live(persona: String, probeSeconds: Double, listSeconds: Double, checkSeconds: Double,
+                            session: URLSession = .shared) -> FirstRunServices {
         let finder = LocalServerFinder(timeout: probeSeconds)
         return FirstRunServices(
             find: { await finder.find() },
-            models: { try await OpenAIClient(baseURL: $0, apiKey: $1, session: session).models() },
+            models: { try await OpenAIClient(baseURL: $0, apiKey: $1, session: session).models(timeout: listSeconds) },
             check: { brain in
                 let client = try OpenAIClient(baseURL: brain.baseURL, apiKey: brain.key, session: session)
                 _ = try await withTimeout(seconds: checkSeconds) {
@@ -110,6 +111,8 @@ public final class FirstRunModel {
     @ObservationIgnored private var task: Task<Void, Never>?
     /// The address and key the models were listed for.
     @ObservationIgnored private var listedFor: String?
+    /// The address and key a listing failed for, until a listing works or is asked for again.
+    @ObservationIgnored private var listFailedFor: String?
     /// "Wake up" on one page: the models are being listed, and the check follows by itself.
     @ObservationIgnored private var wakesAfterLoading = false
 
@@ -221,6 +224,8 @@ public final class FirstRunModel {
     // MARK: Step 1 -> 2: the models
 
     private var modelsAreCurrent: Bool { listedFor == listKey }
+    /// The address and key the last listing failed for: a typed model is tried without listing them again.
+    private var listingFailed: Bool { listFailedFor == listKey }
     private var listKey: String { trimmedAddress + "\n" + trimmedKey }
 
     /// Continue on step 1: loads the models from the address with the key. A failure keeps what was typed.
@@ -230,6 +235,10 @@ public final class FirstRunModel {
             return
         }
         problem = nil
+        if listingFailed, path.step == .service, !model.trimmingCharacters(in: .whitespaces).isEmpty {
+            path.apply(.skipList)
+            return
+        }
         if modelsAreCurrent, path.step == .service {
             path.go(to: 2)
             return
@@ -244,6 +253,7 @@ public final class FirstRunModel {
                 guard !Task.isCancelled else { return }
                 models = names
                 listedFor = listing
+                listFailedFor = nil
                 if preselectsModel, model.isEmpty || (!names.isEmpty && !names.contains(model)) { model = Self.suggested(from: names) }
                 path.apply(.loaded)
                 if wakesAfterLoading {
@@ -257,6 +267,7 @@ public final class FirstRunModel {
             } catch {
                 guard !Task.isCancelled else { return }
                 wakesAfterLoading = false
+                listFailedFor = listing
                 problem = FirstRunProblem.from(error, local: local)
                 path.apply(.loadFailed)
             }
@@ -270,6 +281,8 @@ public final class FirstRunModel {
         guard !path.isBusy, !path.isOver else { return }
         if modelsAreCurrent, !models.isEmpty { return }
         wakesAfterLoading = false
+        // An explicit request lists again, even when the last listing failed.
+        listFailedFor = nil
         rewindToService()
         continueFromService()
     }
@@ -293,6 +306,12 @@ public final class FirstRunModel {
         }
         guard !path.isBusy, !path.isOver else { return }
         if path.step != .service, modelsAreCurrent, !model.trimmingCharacters(in: .whitespaces).isEmpty {
+            check()
+            return
+        }
+        // The listing failed, and a model was typed: try that model, do not list again first.
+        if path.step == .service, listingFailed, !model.trimmingCharacters(in: .whitespaces).isEmpty {
+            path.apply(.skipList)
             check()
             return
         }

@@ -163,6 +163,7 @@
   --behavior-narrow-window-points: 520;
   --behavior-drag-strip-points: 28;
   --behavior-local-probe-timeout-seconds: 2;
+  --behavior-model-list-timeout-seconds: 8;
   --behavior-brain-check-timeout-seconds: 20;
   --behavior-copied-tick-seconds: 1.4;
   --behavior-tilt-slide: 34;

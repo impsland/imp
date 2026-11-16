@@ -378,6 +378,23 @@ private actor Seen {
         #expect(model.path.step == .service && model.problem == .wrongKey && model.key == "fake-key" && model.address == ServicePreset.all[0].baseURL)
     }
 
+    @Test func aTypedModelIsTriedWhenTheServiceGivesNoList() async {
+        let adopted = Adopted()
+        let services = FirstRunServices(find: { [] },
+                                        models: { _, _ in throw APIError.http(status: 404, message: "no list") },
+                                        check: { _ in })
+        let model = FirstRunModel(impName: "Imp", onThisComputer: true, services: services, awakeBeat: .zero) { adopted.brains.append($0) }
+        model.address = "http://127.0.0.1:9/v1"
+        model.continueFromService()
+        await settle(model) { model.problem != nil }
+        #expect(model.path.step == .service && model.problem == .modelMissing)
+        // The person types the model the server does not list. Waking tries it, without listing again.
+        model.model = "my-local-model"
+        model.wakeUp()
+        await settle(model) { model.path.step == .done }
+        #expect(adopted.brains.map(\.model) == ["my-local-model"])
+    }
+
     @Test func aWorkingCheckWakesTheImpHandsOverTheBrainAndEndsByItself() async {
         let adopted = Adopted()
         let model = make(adopted: adopted)

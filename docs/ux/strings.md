@@ -508,6 +508,10 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.status.internet` | Through the internet | Por internet | 经由互联网 |
 | `phone.status.looking` | Looking… | Buscando… | 正在查找… |
 | `phone.talks.empty` | No talks yet | Sin charlas | 还没有对话 |
+| `phone.talks.exchanges` | {count} exchanges | {count} intercambios | {count} 次往来 |
+| `phone.talks.one` | Talk | Charla | 对话 |
+| `phone.talks.started_by_imp` | Started by this Imp | Iniciada por este Imp | 由此 Imp 发起 |
+| `phone.talks.started_by_peer` | Started by {name} | Iniciada por {name} | 由 {name} 发起 |
 | `phone.version` | Version | Versión | 版本 |
 | `phone.visiting` | Visiting: {names} | De visita: {names} | 来做客：{names} |
 | `phone.with` | With {name} | Con {name} | 在 {name} 那里 |

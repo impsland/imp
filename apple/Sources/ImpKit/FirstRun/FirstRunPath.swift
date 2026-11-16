@@ -28,6 +28,8 @@ public enum FirstRunEvent: Equatable, Sendable {
     case checkFailed
     case carryOn
     case back
+    /// The model was typed without a list (the listing failed): straight to the model step.
+    case skipList
     /// Jump to a step by its number (1 or 2), when it is unlocked.
     case go(Int)
 }
@@ -91,6 +93,7 @@ public struct FirstRunPath: Equatable, Sendable {
         case (.service, .load): step = .loadingModels
         case (.loadingModels, .loaded): step = .model; reached = max(reached, 2)
         case (.loadingModels, .loadFailed): step = .service
+        case (.service, .skipList): step = .model; reached = max(reached, 2)
         case (.model, .check), (.failed, .check): step = .checking
         case (.checking, .checkWorked): step = .awake
         case (.checking, .checkFailed): step = .failed

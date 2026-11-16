@@ -30914,6 +30914,102 @@
         }
       }
     },
+    "phone.talks.exchanges" : {
+      "comment" : "iPhone: how many question and answer pairs a talk has, read out for its count.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld exchanges"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld intercambios"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld 次往来"
+          }
+        }
+      }
+    },
+    "phone.talks.one" : {
+      "comment" : "iPhone: the bar's subtitle while one talk is open (the list says Talks).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Talk"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Charla"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对话"
+          }
+        }
+      }
+    },
+    "phone.talks.started_by_imp" : {
+      "comment" : "iPhone: a talk row's icon, when the sheet's own Imp started the talk.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Started by this Imp"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciada por este Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由此 Imp 发起"
+          }
+        }
+      }
+    },
+    "phone.talks.started_by_peer" : {
+      "comment" : "iPhone: a talk row's icon, when the other Imp started the talk.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Started by %1$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciada por %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由 %1$@ 发起"
+          }
+        }
+      }
+    },
     "phone.version" : {
       "comment" : "Row title: the app version.",
       "extractionState" : "manual",

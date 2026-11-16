@@ -713,6 +713,8 @@ public enum Behavior {
     public static let dragStripPoints = 28
     /// How long the first run waits for one local model server to answer before it moves to the next.
     public static let localProbeTimeoutSeconds = 2
+    /// How long the first run waits for a service to list its models before it says so and lets the model be typed.
+    public static let modelListTimeoutSeconds = 8
     /// How long the first run waits for a Brain to answer its first small request.
     public static let brainCheckTimeoutSeconds = 20
     /// How long a Copy button shows its tick after it copied.

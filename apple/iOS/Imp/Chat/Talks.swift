@@ -27,8 +27,8 @@ struct TalksPane: View {
     let hub: LinkHub
     let pocket: PocketRuntime
     let impID: UUID
-    /// The Imp whose conversation is open, or nil for the list.
-    @State private var peer: UUID?
+    /// The Imp whose conversation is open, or nil for the list. The sheet's bar names it and goes back to the list.
+    @Binding var peer: UUID?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var threads: [TalkThread] { Talks.threads(of: impID, hub: hub, pocket: pocket) }
@@ -37,24 +37,8 @@ struct TalksPane: View {
         let threads = threads
         Group {
             if let thread = threads.first(where: { $0.peer.id == peer }) {
-                VStack(spacing: 0) {
-                    Button { show(nil) } label: {
-                        HStack(spacing: Spacing.snug) {
-                            Image(systemName: "chevron.left").font(.icon(.small, weight: .bold)).foregroundStyle(Tone.muted)
-                            Circle().fill(Color.imp(thread.peer.hue)).frame(width: Spacing.small, height: Spacing.small)
-                            Text(thread.peer.name).font(Typeface.label).foregroundStyle(Tone.text).lineLimit(1)
-                        }
-                        .frame(minHeight: Sizing.hit)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(Text("common.back"))
-                    .accessibilityValue(Text(thread.peer.name))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, Spacing.page)
-                    TalkConversation(thread: thread, hub: hub, impID: impID)
-                }
-                .transition(.opacity)
+                TalkConversation(thread: thread, hub: hub, impID: impID)
+                    .transition(.opacity)
             } else {
                 ScrollView {
                     if threads.isEmpty {
@@ -68,7 +52,7 @@ struct TalksPane: View {
                     } else {
                         LazyVStack(spacing: Spacing.small) {
                             ForEach(threads) { thread in
-                                Button { show(thread.peer.id) } label: { TalkRow(thread: thread) }
+                                Button { show(thread.peer.id) } label: { TalkRow(thread: thread, impID: impID) }
                                     .buttonStyle(.plain)
                             }
                         }
@@ -91,6 +75,8 @@ struct TalksPane: View {
 
 private struct TalkRow: View {
     var thread: TalkThread
+    /// The Imp whose talks these are: who started a talk is told from who it was started with.
+    var impID: UUID
 
     var body: some View {
         let last = thread.lines.last
@@ -108,6 +94,18 @@ private struct TalkRow: View {
                 }
             }
             Spacer(minLength: Spacing.small)
+            // Brief facts, as icons with numbers: who started the talk, and how many exchanges it has.
+            HStack(spacing: Spacing.snug) {
+                let started = thread.lines.first?.asker.id == impID
+                Image(systemName: started ? "arrow.up.right" : "arrow.down.left")
+                    .accessibilityLabel(started ? Text("phone.talks.started_by_imp") : Text(words("phone.talks.started_by_peer", thread.peer.name)))
+                Image(systemName: "bubble.left")
+                Text(verbatim: "\(thread.lines.count)").monospacedDigit()
+                    .accessibilityLabel(words("phone.talks.exchanges", thread.lines.count))
+            }
+            .font(Typeface.small)
+            .foregroundStyle(Tone.muted)
+            .accessibilityElement(children: .combine)
             Text(thread.updated, format: .relative(presentation: .named))
                 .font(Typeface.small)
                 .foregroundStyle(Tone.muted)

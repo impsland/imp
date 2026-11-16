@@ -514,6 +514,10 @@
   <string name="phone_status_internet">经由互联网</string>
   <string name="phone_status_looking">正在查找…</string>
   <string name="phone_talks_empty">还没有对话</string>
+  <string name="phone_talks_exchanges">%1$d 次往来</string>
+  <string name="phone_talks_one">对话</string>
+  <string name="phone_talks_started_by_imp">由此 Imp 发起</string>
+  <string name="phone_talks_started_by_peer">由 %1$s 发起</string>
   <string name="phone_version">版本</string>
   <string name="phone_visiting">来做客：%1$s</string>
   <string name="phone_with">在 %1$s 那里</string>

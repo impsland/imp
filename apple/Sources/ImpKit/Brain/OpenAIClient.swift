@@ -123,8 +123,8 @@ public struct OpenAIClient: Sendable {
     // MARK: Models
 
     /// Model IDs from `GET /models`.
-    public func models() async throws -> [String] {
-        var request = URLRequest(url: baseURL.appendingPathComponent("models"), timeoutInterval: 30)
+    public func models(timeout: TimeInterval = 30) async throws -> [String] {
+        var request = URLRequest(url: baseURL.appendingPathComponent("models"), timeoutInterval: timeout)
         authorize(&request)
         let (data, response) = try await session.data(for: request)
         try Self.check(response, data: data)

@@ -16,7 +16,7 @@ There are two kinds of command:
 | --- | --- |
 | `/help` | Lists the commands and your custom commands |
 | `/clear` | Starts the conversation over (also `/new`, `/reset`) |
-| `/compact` | Sums up the chat so far, so the Imp goes on from the summary (also `/recap`, `/summarize`) |
+| `/compact` | Sums up the chat, so the Imp goes on from the summary (also `/recap`, `/summarize`) |
 | `/quit` | Leaves the chat (also `/exit`, `/q`, or Esc) |
 | `/model [NAME]` | Shows or changes the model, such as `/model openai/gpt-6-luna` |
 | `/base_url [URL]` | Shows or changes the service address, an OpenAI-compatible `/v1` root (also `/url`) |
@@ -32,7 +32,7 @@ There are two kinds of command:
 | `/mcp remove NAME`, `/mcp reload` | Removes a server, or starts them all again |
 | `/tools`, `/tools off ID`, `/tools on ID` | Lists the tools by id, or switches one off or on |
 | `/settings` | Shows the Imp's settings, its folder and the settings file (also `/config`) |
-| `/project` | Shows what this folder's `AGENTS.md` and `.agents/` add (also `/skills`, `/agents`) |
+| `/project` | Shows what this folder adds (also `/skills`, `/agents`) |
 | `/project trust`, `/project untrust` | Lets the folder's MCP servers and service settings run, or stops them |
 | `/devices` | Lists the linked devices, the Imps on their screens and the visitors here (also `/peers`, `/visitors`) |
 | `/pair` | Shows a code to link a Mac or an iPhone (also `/link`, `/qr`) |

@@ -508,6 +508,10 @@
   <data name="phone.status.internet" xml:space="preserve"><value>经由互联网</value><comment>Spoken label of the globe in the connection pill.</comment></data>
   <data name="phone.status.looking" xml:space="preserve"><value>正在查找…</value><comment>Connection pill: a linked device is not reached yet.</comment></data>
   <data name="phone.talks.empty" xml:space="preserve"><value>还没有对话</value><comment>The talks side of an Imp's sheet when it has not talked with another Imp yet.</comment></data>
+  <data name="phone.talks.exchanges" xml:space="preserve"><value>{count} 次往来</value><comment>iPhone: how many question and answer pairs a talk has, read out for its count.</comment></data>
+  <data name="phone.talks.one" xml:space="preserve"><value>对话</value><comment>iPhone: the bar's subtitle while one talk is open (the list says Talks).</comment></data>
+  <data name="phone.talks.started_by_imp" xml:space="preserve"><value>由此 Imp 发起</value><comment>iPhone: a talk row's icon, when the sheet's own Imp started the talk.</comment></data>
+  <data name="phone.talks.started_by_peer" xml:space="preserve"><value>由 {name} 发起</value><comment>iPhone: a talk row's icon, when the other Imp started the talk.</comment></data>
   <data name="phone.version" xml:space="preserve"><value>版本</value><comment>Row title: the app version.</comment></data>
   <data name="phone.visiting" xml:space="preserve"><value>来做客：{names}</value><comment>Imps of another device that are here now.</comment></data>
   <data name="phone.with" xml:space="preserve"><value>在 {name} 那里</value><comment>Under an Imp that another device holds.</comment></data>

@@ -62,6 +62,7 @@ These numbers are shared by every platform.
 | `narrowWindowPoints` | 520 | Below this width Imp Settings shows its plain list under the Imp. |
 | `dragStripPoints` | 28 | The height of the strip along the top of a desktop window that drags the window. |
 | `localProbeTimeoutSeconds` | 2 | How long the first run waits for one local model server to answer before it moves to the next. |
+| `modelListTimeoutSeconds` | 8 | How long the first run waits for a service to list its models before it says so and lets the model be typed. |
 | `brainCheckTimeoutSeconds` | 20 | How long the first run waits for a Brain to answer its first small request. |
 | `copiedTickSeconds` | 1.4 | How long a Copy button shows its tick after it copied. |
 | `tiltSlide` | 34 | How far an Imp is pulled sideways by a full tilt, in points. It springs back when the phone is level. The first screen and the home screen use it. |

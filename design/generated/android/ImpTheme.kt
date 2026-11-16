@@ -368,6 +368,7 @@ object ImpBehavior {
     val narrowWindowPoints = 520
     val dragStripPoints = 28
     val localProbeTimeoutSeconds = 2
+    val modelListTimeoutSeconds = 8
     val brainCheckTimeoutSeconds = 20
     val copiedTickSeconds = 1.4f
     val tiltSlide = 34

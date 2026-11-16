@@ -2530,6 +2530,26 @@ msgctxt "phone.talks.empty"
 msgid "No talks yet"
 msgstr "Sin charlas"
 
+#. iPhone: how many question and answer pairs a talk has, read out for its count.
+msgctxt "phone.talks.exchanges"
+msgid "{count} exchanges"
+msgstr "{count} intercambios"
+
+#. iPhone: the bar's subtitle while one talk is open (the list says Talks).
+msgctxt "phone.talks.one"
+msgid "Talk"
+msgstr "Charla"
+
+#. iPhone: a talk row's icon, when the sheet's own Imp started the talk.
+msgctxt "phone.talks.started_by_imp"
+msgid "Started by this Imp"
+msgstr "Iniciada por este Imp"
+
+#. iPhone: a talk row's icon, when the other Imp started the talk.
+msgctxt "phone.talks.started_by_peer"
+msgid "Started by {name}"
+msgstr "Iniciada por {name}"
+
 #. Row title: the app version.
 msgctxt "phone.version"
 msgid "Version"

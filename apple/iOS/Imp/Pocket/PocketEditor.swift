@@ -220,7 +220,7 @@ struct PocketEditor: View {
     /// The Brain form for this Imp, with what it has now filled in. A Brain that works is kept at once.
     private func startFlow() {
         let services = FirstRunServices.live(persona: draft.personality.trimmed.isEmpty ? Persona.pocket(named: draft.name.trimmed) : draft.personality,
-                                             probeSeconds: Double(Behavior.localProbeTimeoutSeconds),
+                                             probeSeconds: Double(Behavior.localProbeTimeoutSeconds), listSeconds: Double(Behavior.modelListTimeoutSeconds),
                                              checkSeconds: Double(Behavior.brainCheckTimeoutSeconds))
         let flow = FirstRunModel(impName: callName, onThisComputer: false, services: services,
                                  preselectsModel: false) { [draft, pocket, id] brain in

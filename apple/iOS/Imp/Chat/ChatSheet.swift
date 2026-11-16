@@ -38,6 +38,8 @@ struct ImpSheet: View {
     @State private var problem: String?
     /// Voices in replies that arrive after this play on their own (older ones wait for a tap).
     @State private var openedAt = Date()
+    /// The Imp whose talk is open in the talks pane, if one is.
+    @State private var talkPeer: UUID?
     /// The bottom of the transcript is on screen (otherwise a jump-to-latest button shows).
     @State private var atEnd = true
     /// Whether the transcript is being scrolled (a finger, a fling, a scroll to the latest). Not observed:
@@ -51,6 +53,10 @@ struct ImpSheet: View {
     /// Work you asked for. A question from another Imp shows as its speech bubble on the stage.
     private var work: LinkWork? { source.working(impID).flatMap { $0.from == nil ? $0 : nil } }
     private var canStartOver: Bool { availability != .offline && !(turns.isEmpty && work == nil) }
+    /// The name of the talk's other Imp while one talk is open in the talks pane.
+    private var talkTitle: String? {
+        talkPeer.flatMap { id in Talks.threads(of: impID, hub: hub, pocket: pocket).first { $0.peer.id == id }?.peer.name }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -61,7 +67,7 @@ struct ImpSheet: View {
                     transcript(imp)
                     Composer(source: source, impID: impID, imp: imp, typing: typing, giveBrain: giveBrain)
                 case .talks:
-                    TalksPane(hub: hub, pocket: pocket, impID: impID)
+                    TalksPane(hub: hub, pocket: pocket, impID: impID, peer: $talkPeer)
                 }
             } else {
                 // The Imp went home while the chat was open.
@@ -75,6 +81,7 @@ struct ImpSheet: View {
         .environment(\.openURL, OpenURLAction { url in open(url) })
         .quickLookPreview($preview)
         .impAnimation(ImpDesign.Motion.smooth, value: pane)
+        .onChange(of: pane) { _, new in if new == .chat { talkPeer = nil } }
         // The Talks button shows once there are talks: the homes that keep them are asked as the sheet opens.
         .task(id: impID) { Talks.refresh(impID, hub: hub) }
         .overlay(alignment: .top) {
@@ -112,10 +119,13 @@ struct ImpSheet: View {
     /// does: its mood, what it acts out (`ChatSource.act`), and it watches what you type.
     private func header(_ imp: LinkImp) -> some View {
         HStack(spacing: Spacing.medium) {
-            // The talks are a side room, opened from the bar of the chat: one way back to the chat.
+            // The talks are a side room, opened from the bar of the chat. One talk open: the bar names it, and
+            // its back goes to the list. The list: its back goes to the chat.
             if pane == .talks {
-                HoverIconButton(systemName: "chevron.left", help: "common.back", tint: Tone.text) { pane = .chat }
-                    .padding(.leading, -Spacing.small)
+                HoverIconButton(systemName: "chevron.left", help: "common.back", tint: Tone.text) {
+                    if talkPeer != nil { talkPeer = nil } else { pane = .chat }
+                }
+                .padding(.leading, -Spacing.small)
             } else {
                 // Always in the bar, so the keyboard lifting the sheet only fades it in: nothing is built or
                 // laid out then. It is not drawn at all while the room above shows the Imp.
@@ -127,7 +137,7 @@ struct ImpSheet: View {
                     .accessibilityHidden(roomInView)
             }
             VStack(alignment: .leading, spacing: Spacing.hairline) {
-                Text(imp.name).font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1)
+                Text(talkTitle ?? imp.name).font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1)
                     .accessibilityAddTraits(.isHeader)
                 HStack(spacing: Spacing.snug) {
                     if pane == .chat {
@@ -139,7 +149,7 @@ struct ImpSheet: View {
                             Circle().fill(statusColor).frame(width: Spacing.snug, height: Spacing.snug)
                         }
                     }
-                    Text(pane == .talks ? String(localized: "menu.imp.talks") : status)
+                    Text(pane == .talks ? String(localized: talkPeer == nil ? "menu.imp.talks" : "phone.talks.one") : status)
                         .font(Typeface.small)
                         .foregroundStyle(Tone.muted)
                         .lineLimit(1)

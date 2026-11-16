@@ -12,7 +12,7 @@ struct PhoneBrainForm: View {
     @FocusState private var focus: Field?
     @State private var picking = false
 
-    private enum Field: Hashable { case address, key }
+    private enum Field: Hashable { case address, key, model }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
@@ -68,9 +68,34 @@ struct PhoneBrainForm: View {
         }
     }
 
-    /// The model as a field-like choice: the same height and well as the fields above. Its name, or "Picked for
-    /// you" when blank, and a chevron that says a list opens.
-    private var model: some View {
+    /// The model: a choice that looks like the fields above, with its name, or "Picked for you" when blank. When the
+    /// service gives no list (or it cannot be read), the name is typed straight into the field instead.
+    @ViewBuilder private var model: some View {
+        if flow.models.isEmpty, flow.problemText != nil, flow.path.step != .loadingModels {
+            typedModel
+        } else {
+            pickedModel
+        }
+    }
+
+    private var typedModel: some View {
+        TextField(text: $flow.model, prompt: Text("phone.brain.model_auto").foregroundStyle(Tone.muted)) {
+            Text("firstrun.step.model")
+        }
+        .font(Typeface.mono)
+        .foregroundStyle(Tone.text)
+        .autocorrectionDisabled()
+        .textInputAutocapitalization(.never)
+        .focused($focus, equals: .model)
+        .submitLabel(.done)
+        .onSubmit { focus = nil }
+        .padding(.horizontal, Spacing.cozy)
+        .frame(maxWidth: .infinity, minHeight: Sizing.control, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: Radius.small, style: .continuous).fill(Tone.well))
+        .accessibilityIdentifier("brain.model")
+    }
+
+    private var pickedModel: some View {
         Button {
             focus = nil
             picking = true

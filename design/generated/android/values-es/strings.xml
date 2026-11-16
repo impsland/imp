@@ -524,6 +524,10 @@
   <string name="phone_status_internet">Por internet</string>
   <string name="phone_status_looking">Buscando…</string>
   <string name="phone_talks_empty">Sin charlas</string>
+  <string name="phone_talks_exchanges">%1$d intercambios</string>
+  <string name="phone_talks_one">Charla</string>
+  <string name="phone_talks_started_by_imp">Iniciada por este Imp</string>
+  <string name="phone_talks_started_by_peer">Iniciada por %1$s</string>
   <string name="phone_version">Versión</string>
   <string name="phone_visiting">De visita: %1$s</string>
   <string name="phone_with">Con %1$s</string>

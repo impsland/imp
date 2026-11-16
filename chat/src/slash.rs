@@ -32,7 +32,7 @@ pub const COMMANDS: &[Command] = &[
     cmd(
         "/compact",
         "/compact",
-        "Sum up the chat so far, so a long chat costs less and still remembers",
+        "Sum up the chat, so a long one costs less",
     ),
     cmd("/quit", "/quit", "Leave the chat (also /exit, Esc)"),
     cmd("/model", "/model [NAME]", "Show or change the model"),
@@ -75,7 +75,7 @@ pub const COMMANDS: &[Command] = &[
     cmd(
         "/project",
         "/project [trust | untrust]",
-        "Show what this folder's AGENTS.md and .agents/ add, or allow its MCP servers and Imp services",
+        "What this folder adds, or allow its servers and services",
     ),
     cmd(
         "/devices",
