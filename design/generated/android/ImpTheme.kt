@@ -370,6 +370,8 @@ object ImpBehavior {
     val localProbeTimeoutSeconds = 2
     val brainCheckTimeoutSeconds = 20
     val copiedTickSeconds = 1.4f
+    val tiltSlide = 34
+    val tiltLean = 16
     val framesPerSecond = 60
     val framesPerSecondSaving = 30
     val calmFramesPerSecond = 30

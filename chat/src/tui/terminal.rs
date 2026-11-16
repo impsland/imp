@@ -198,6 +198,9 @@ impl Chat {
         .with_context(&self.context(crate::strings::Lang::detect()));
         app.chat.set_exchanges(self.session.memory_exchanges);
         app.set_files(mentions::list_files(&self.session.workspace));
+        app.set_custom_commands(crate::project::load_custom_commands(
+            &self.session.workspace,
+        ));
         for warning in &self.session.warnings {
             app.note(Note::problem(warning.clone()));
         }
@@ -287,8 +290,9 @@ impl Chat {
                     running = None;
                     app.on_done(result);
                     self.note_long_chat(&mut app);
-                    // The Imp may have made or removed files.
+                    // The Imp may have made or removed files, and a command may have been added.
                     app.set_files(mentions::list_files(&self.session.workspace));
+                    app.set_custom_commands(crate::project::load_custom_commands(&self.session.workspace));
                 }
                 update = next_update(&mut self.device) => self.on_update(&mut app, update),
                 arrival = next_answer(later) => self.arrived.push_back(arrival),

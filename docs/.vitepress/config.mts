@@ -60,6 +60,9 @@ export default defineConfig({
         text: 'Apps',
         items: [
           { text: 'Terminal app (imp)', link: '/apps/cli' },
+          { text: 'Using the terminal chat', link: '/apps/cli-chat' },
+          { text: 'Commands in the chat', link: '/apps/cli-commands' },
+          { text: 'Sub-agents', link: '/apps/cli-agents' },
           { text: 'Testing', link: '/apps/testing' },
           { text: 'Releasing the Mac app', link: '/apps/macos-release' },
         ],

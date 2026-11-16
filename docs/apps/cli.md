@@ -34,11 +34,13 @@ builds that version.
    imp mcp add files -- npx -y @modelcontextprotocol/server-filesystem .
    ```
 
-4. Start the chat.
+4. Start the chat. `imp` on its own does the same.
 
    ```sh
-   imp chat
+   imp
    ```
+
+Then type a message and press Enter. Type `/` to see the commands.
 
 ## Commands
 
@@ -46,7 +48,7 @@ Run `imp --help` to see every command, or `imp <command> --help` to see one.
 
 | Command | What it does |
 | --- | --- |
-| `imp chat` | Opens the chat with your Imps |
+| `imp`, `imp chat` | Opens the chat with your Imps (`imp chat --imp NAME` for another one) |
 | `imp imp new [NAME]` | Makes an Imp. Flags: `--model`, `--url`, `--personality`, `--api-key-env`, `--default` |
 | `imp imp list`, `imp imp set`, `imp imp remove` | Lists, changes or removes Imps |
 | `imp mcp add`, `imp mcp list`, `imp mcp remove` | Manages the MCP servers that give Imps their tools |
@@ -57,18 +59,14 @@ Run `imp --help` to see every command, or `imp <command> --help` to see one.
 
 ## In the chat
 
-Type `/` in the chat to see the commands.
+The chat has its own pages:
 
-| Command | What it does |
-| --- | --- |
-| `/model`, `/base_url`, `/api_key` | Change the brain: the model, the service address and the key |
-| `/mcp add` | Adds tools from an MCP server |
-| `/imp` | Switches Imps |
-| `/pair` | Shows a code to pair a Mac or an iPhone |
-| `/send iPhone` | Sends an Imp to your iPhone. It keeps thinking on this computer |
-| `/call` | Brings a sent Imp back |
-
-Tool calls (`⏺`) and messages to other Imps (`⇢`) show as one line each.
+- [Using the terminal chat](/apps/cli-chat): writing messages, `@` files, the `/` list, sending again, copying
+  text, and keys.
+- [Commands in the chat](/apps/cli-commands): every `/` command, and how to write your own with
+  `.agents/commands/`, such as `/review src/auth.rs`.
+- [Sub-agents](/apps/cli-agents): Imps that a project shares, such as a reviewer or a researcher, and how Imps
+  ask each other for help.
 
 ## Keys
 
@@ -83,4 +81,4 @@ asks for your password.
 brings it back, and Imps thrown to the computer visit it and can be talked to with `/imp NAME`. It follows
 [Imp Link](/connecting/link).
 
-Full details are in `chat/README.md`.
+Full details are in `chat/README.md`, the reference that ships with the crate.

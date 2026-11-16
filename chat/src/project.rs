@@ -500,6 +500,75 @@ fn sorted_entries(dir: &Path) -> Vec<PathBuf> {
     out
 }
 
+/// A custom command: `.agents/commands/NAME.md`. Typing `/NAME ARGUMENTS` sends its text to the Imp, with
+/// `$ARGUMENTS` replaced by the arguments. What a command sends is the person's own request, so it needs no trust.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CustomCommand {
+    pub name: String,
+    pub text: String,
+}
+
+/// The custom commands of the folder of `workspace` and of the person's home folder (`~/.agents/commands`).
+/// A folder's own command wins over the home one of the same name.
+pub fn custom_commands(workspace: &Path, home: Option<&Path>) -> Vec<CustomCommand> {
+    let root = project_root(workspace, home);
+    let mut found: BTreeMap<String, CustomCommand> = BTreeMap::new();
+    let mut folders: Vec<PathBuf> = home
+        .map(|h| h.join(".agents").join("commands"))
+        .into_iter()
+        .collect();
+    folders.push(root.join(".agents").join("commands"));
+    for folder in folders {
+        let Ok(entries) = std::fs::read_dir(&folder) else {
+            continue;
+        };
+        let mut paths: Vec<PathBuf> = entries.filter_map(|e| e.ok().map(|e| e.path())).collect();
+        paths.sort();
+        for path in paths {
+            if path.extension().and_then(|e| e.to_str()) != Some("md") {
+                continue;
+            }
+            let Some(name) = path.file_stem().and_then(|n| n.to_str()) else {
+                continue;
+            };
+            if !valid_command_name(name) {
+                continue;
+            }
+            let Ok(text) = std::fs::read_to_string(&path) else {
+                continue;
+            };
+            let text = text.trim_end().to_string();
+            if text.trim().is_empty() {
+                continue;
+            }
+            found.insert(
+                name.to_string(),
+                CustomCommand {
+                    name: name.to_string(),
+                    text,
+                },
+            );
+        }
+    }
+    found.into_values().collect()
+}
+
+/// The custom commands of `workspace`, with the person's home folder from the system.
+pub fn load_custom_commands(workspace: &Path) -> Vec<CustomCommand> {
+    let home = directories::BaseDirs::new().map(|b| b.home_dir().to_path_buf());
+    custom_commands(workspace, home.as_deref())
+}
+
+/// A command name is letters, digits, `-` and `_`, starting with a letter or digit.
+fn valid_command_name(name: &str) -> bool {
+    name.chars()
+        .next()
+        .is_some_and(|c| c.is_ascii_alphanumeric())
+        && name
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+}
+
 /// A path with the home folder written as `~`.
 pub fn shown_path(path: &Path) -> String {
     if let Some(home) = directories::BaseDirs::new()
@@ -900,5 +969,40 @@ mod tests {
         );
         let bad = setup::parse_config_file(r#"{"mcpServers":{"a b":{"command":"c"}}}"#).unwrap();
         assert!(checked_servers(bad).unwrap_err().contains("not allowed"));
+    }
+
+    #[test]
+    fn custom_commands_come_from_the_folder_and_home_and_the_folder_wins() {
+        let home = Dir::new("cmd-home");
+        let folder = Dir::new("cmd-folder");
+        folder.write(".git/HEAD", "ref");
+        home.write(".agents/commands/review.md", "Home review $ARGUMENTS\n");
+        home.write(".agents/commands/tidy.md", "Tidy up.\n");
+        folder.write(
+            ".agents/commands/review.md",
+            "Review $ARGUMENTS for bugs and missing tests.\n",
+        );
+        folder.write(".agents/commands/notes.txt", "not a command");
+        folder.write(".agents/commands/bad name.md", "spaces are not allowed");
+        folder.write(".agents/commands/empty.md", "  \n");
+
+        let found = custom_commands(&folder.0, Some(&home.0));
+        let names: Vec<&str> = found.iter().map(|c| c.name.as_str()).collect();
+        assert_eq!(names, ["review", "tidy"]);
+        assert_eq!(
+            found[0].text,
+            "Review $ARGUMENTS for bugs and missing tests."
+        );
+        assert_eq!(found[1].text, "Tidy up.");
+    }
+
+    #[test]
+    fn valid_command_names_are_plain_words() {
+        assert!(valid_command_name("review"));
+        assert!(valid_command_name("pr-check_2"));
+        assert!(!valid_command_name(""));
+        assert!(!valid_command_name("-x"));
+        assert!(!valid_command_name("a b"));
+        assert!(!valid_command_name("a.b"));
     }
 }

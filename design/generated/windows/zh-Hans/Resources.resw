@@ -418,6 +418,7 @@
   <data name="phone.chat.ask_again" xml:space="preserve"><value>重试</value><comment>iPhone: chat ask again.</comment></data>
   <data name="phone.chat.ask_to" xml:space="preserve"><value>让 {name} 去 </value><comment>iPhone: chat ask to.</comment></data>
   <data name="phone.chat.ask_to.hint" xml:space="preserve"><value>开始一条请 {name} 做事的消息。</value><comment>iPhone: chat ask to hint.</comment></data>
+  <data name="phone.chat.ask_to_prefix" xml:space="preserve"><value>请 {name}：</value><comment>iPhone: the start of a message asking another Imp, sent to the Imp. The field does not show it.</comment></data>
   <data name="phone.chat.edit_help" xml:space="preserve"><value>编辑</value><comment>iPhone: chat edit help.</comment></data>
   <data name="phone.chat.failed" xml:space="preserve"><value>没能给出回答</value><comment>iPhone: chat failed.</comment></data>
   <data name="phone.chat.jump_latest" xml:space="preserve"><value>最新</value><comment>iPhone: chat jump latest.</comment></data>

@@ -64,6 +64,8 @@ These numbers are shared by every platform.
 | `localProbeTimeoutSeconds` | 2 | How long the first run waits for one local model server to answer before it moves to the next. |
 | `brainCheckTimeoutSeconds` | 20 | How long the first run waits for a Brain to answer its first small request. |
 | `copiedTickSeconds` | 1.4 | How long a Copy button shows its tick after it copied. |
+| `tiltSlide` | 34 | How far an Imp is pulled sideways by a full tilt, in points. It springs back when the phone is level. The first screen and the home screen use it. |
+| `tiltLean` | 16 | How far an Imp leans into a full tilt, in degrees. The first screen and the home screen use it. |
 | `framesPerSecond` | 60 | Frames a second for anything that visibly moves: a head turning, eyes following the cursor or the tilt, a hop, a mood fading. |
 | `framesPerSecondSaving` | 30 | The same, in Low Power Mode or when the device runs warm. |
 | `calmFramesPerSecond` | 30 | Frames a second for an Imp that only breathes, blinks and floats. Nothing changing means no frames at all. |

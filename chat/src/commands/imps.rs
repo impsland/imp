@@ -45,13 +45,14 @@ pub fn run(path: &Path, action: ImpAction, io: &mut Io<'_>) -> Result<()> {
         }
         ImpAction::Remove { name } => remove(&mut config, path, &name, io),
         ImpAction::Set { name, key, value } => {
-            let imp = config
-                .imps
-                .get_mut(&name)
+            let stored = config
+                .find_imp(&name)
+                .map(|(stored, _)| stored.clone())
                 .ok_or_else(|| CliError(format!("There is no Imp called {name}.")))?;
+            let imp = config.imps.get_mut(&stored).expect("found above");
             imp.set(&key, &value)?;
             config.save(path)?;
-            writeln!(io.out, "Saved {key} for {name}.")?;
+            writeln!(io.out, "Saved {key} for {stored}.")?;
             Ok(())
         }
     }
@@ -108,8 +109,10 @@ fn make(config: &mut Config, path: &Path, given: NewImp, io: &mut Io<'_>) -> Res
             "An Imp's name can have 1 to 32 letters, digits, dashes and underscores.".into(),
         ));
     }
-    if config.imps.contains_key(&name) {
-        return Err(CliError(format!("There is already an Imp called {name}.")));
+    if let Some((stored, _)) = config.find_imp(&name) {
+        return Err(CliError(format!(
+            "There is already an Imp called {stored}."
+        )));
     }
     let personality = match given.personality {
         Some(p) => p,
@@ -164,9 +167,11 @@ fn make(config: &mut Config, path: &Path, given: NewImp, io: &mut Io<'_>) -> Res
 }
 
 fn remove(config: &mut Config, path: &Path, name: &str, io: &mut Io<'_>) -> Result<()> {
-    if config.imps.remove(name).is_none() {
+    let Some(stored) = config.find_imp(name).map(|(stored, _)| stored.clone()) else {
         return Err(CliError(format!("There is no Imp called {name}.")));
-    }
+    };
+    config.imps.remove(&stored);
+    let name = stored.as_str();
     if config.default_imp.as_deref() == Some(name) {
         config.default_imp = None;
     }

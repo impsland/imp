@@ -21,6 +21,7 @@ mod tests;
 
 use crate::chat_state::ChatState;
 use crate::link::device::{Visitor, messages_of};
+use crate::project::CustomCommand;
 use crate::slash::{self, Note};
 use crate::strings::{self, Lang};
 use crate::theme::Theme;
@@ -106,6 +107,8 @@ pub struct App {
     help_scroll: Cell<usize>,
     /// The folder's files and folders, for `@`.
     files: Vec<String>,
+    /// The custom commands of the folder and of the home folder (`.agents/commands`).
+    custom: Vec<CustomCommand>,
     /// What the folder adds (AGENTS.md, skills), in a few words for the empty screen.
     context: String,
     waiting: bool,
@@ -160,6 +163,7 @@ impl App {
             flash: None,
             help_scroll: Cell::new(0),
             files: Vec::new(),
+            custom: Vec::new(),
             context: String::new(),
             waiting: false,
             started: None,
@@ -203,6 +207,11 @@ impl App {
     /// The folder's files and folders (folders end with `/`), offered after `@`.
     pub fn set_files(&mut self, files: Vec<String>) {
         self.files = files;
+    }
+
+    /// The custom commands, offered after `/` and run when typed.
+    pub fn set_custom_commands(&mut self, commands: Vec<CustomCommand>) {
+        self.custom = commands;
     }
 
     /// Says in the status line for a moment that text was copied.
@@ -357,7 +366,14 @@ impl App {
         if menu.files && !menu.entries.is_empty() {
             return self.accept(menu);
         }
-        if let Some(command) = self.picked(menu).and_then(|e| e.command) {
+        if let Some(entry) = self.picked(menu).filter(|e| e.custom) {
+            // A custom command that takes arguments is completed first, so they can be typed.
+            if entry.insert.ends_with(' ') {
+                return self.accept(menu);
+            }
+            let insert = entry.insert.clone();
+            self.set_input(insert);
+        } else if let Some(command) = self.picked(menu).and_then(|e| e.command) {
             if slash::needs_args(command) {
                 return self.accept(menu);
             }
@@ -481,7 +497,9 @@ impl App {
         if text.is_empty() {
             return Action::None;
         }
-        if slash::is_command(&text) {
+        // A custom command sends its text to the Imp, so it is a message, not a command.
+        let custom = slash::custom_text(&text, &self.custom);
+        if custom.is_none() && slash::is_command(&text) {
             let word = text.split_whitespace().next().unwrap_or("");
             match word {
                 "/quit" | "/exit" => return Action::Quit,
@@ -504,6 +522,7 @@ impl App {
             self.note(Note::command(slash::shown(&text)));
             return Action::Command(text);
         }
+        let text = custom.unwrap_or(text);
         let text = text
             .strip_prefix('/')
             .filter(|t| t.starts_with('/'))

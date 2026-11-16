@@ -140,7 +140,11 @@ impl App {
             text_width_max,
         );
         // The tips are one block: centred as a whole, so their lines start at the same column.
-        let tips_block = tips.iter().map(|(line, _)| text_width(line)).max().unwrap_or(0);
+        let tips_block = tips
+            .iter()
+            .map(|(line, _)| text_width(line))
+            .max()
+            .unwrap_or(0);
         let context = if self.context.is_empty() {
             Vec::new()
         } else {
@@ -149,8 +153,8 @@ impl App {
         let lines = tips.len() + context.len();
         let art_width = ART.iter().map(|l| text_width(l)).max().unwrap_or(0);
         let art_rows = ART.len() + 1;
-        let with_art = height.is_some_and(|h| h >= art_rows + lines + below + 2)
-            && width >= art_width + 2;
+        let with_art =
+            height.is_some_and(|h| h >= art_rows + lines + below + 2) && width >= art_width + 2;
         let centered = |text: &str, block: usize, style: Style, join: Join| {
             let pad = width.saturating_sub(block) / 2;
             Row {

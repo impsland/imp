@@ -423,6 +423,7 @@
   <data name="phone.chat.ask_again" xml:space="preserve"><value>Reintentar</value><comment>iPhone: chat ask again.</comment></data>
   <data name="phone.chat.ask_to" xml:space="preserve"><value>Pide a {name} que </value><comment>iPhone: chat ask to.</comment></data>
   <data name="phone.chat.ask_to.hint" xml:space="preserve"><value>Empieza un mensaje pidiéndole algo a {name}.</value><comment>iPhone: chat ask to hint.</comment></data>
+  <data name="phone.chat.ask_to_prefix" xml:space="preserve"><value>Pide a {name} que: </value><comment>iPhone: the start of a message asking another Imp, sent to the Imp. The field does not show it.</comment></data>
   <data name="phone.chat.edit_help" xml:space="preserve"><value>Editar</value><comment>iPhone: chat edit help.</comment></data>
   <data name="phone.chat.failed" xml:space="preserve"><value>No pudo responder</value><comment>iPhone: chat failed.</comment></data>
   <data name="phone.chat.jump_latest" xml:space="preserve"><value>Último</value><comment>iPhone: chat jump latest.</comment></data>

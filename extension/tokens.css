@@ -165,6 +165,8 @@
   --behavior-local-probe-timeout-seconds: 2;
   --behavior-brain-check-timeout-seconds: 20;
   --behavior-copied-tick-seconds: 1.4;
+  --behavior-tilt-slide: 34;
+  --behavior-tilt-lean: 16;
   --behavior-frames-per-second: 60;
   --behavior-frames-per-second-saving: 30;
   --behavior-calm-frames-per-second: 30;

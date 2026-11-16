@@ -455,6 +455,15 @@
     "es": "Pide a {name} que ",
     "zh-Hans": "让 {name} 去 "
   },
+  "phone.chat.ask_to_prefix": {
+    "note": "iPhone: the start of a message asking another Imp, sent to the Imp. The field does not show it.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Ask {name} To: ",
+    "es": "Pide a {name} que: ",
+    "zh-Hans": "请 {name}："
+  },
   "phone.chat.ask_to.hint": {
     "note": "iPhone: chat ask to hint.",
     "args": {

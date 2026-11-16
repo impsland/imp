@@ -418,6 +418,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.chat.ask_again` | Retry | Reintentar | 重试 |
 | `phone.chat.ask_to` | Ask {name} to  | Pide a {name} que  | 让 {name} 去  |
 | `phone.chat.ask_to.hint` | Starts a message asking {name} to do something. | Empieza un mensaje pidiéndole algo a {name}. | 开始一条请 {name} 做事的消息。 |
+| `phone.chat.ask_to_prefix` | Ask {name} To:  | Pide a {name} que:  | 请 {name}： |
 | `phone.chat.edit_help` | Edit | Editar | 编辑 |
 | `phone.chat.failed` | Couldn't answer | No pudo responder | 没能给出回答 |
 | `phone.chat.jump_latest` | Latest | Último | 最新 |

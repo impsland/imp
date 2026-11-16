@@ -290,7 +290,10 @@ mod tests {
             }
         );
         assert_eq!(
-            parse(&["config", "set", "retries", "5"]).unwrap().command.unwrap(),
+            parse(&["config", "set", "retries", "5"])
+                .unwrap()
+                .command
+                .unwrap(),
             Command::Config {
                 action: Some(ConfigAction::Set {
                     key: "retries".into(),
@@ -301,7 +304,8 @@ mod tests {
         assert_eq!(
             parse(&["config", "set-key", "--imp", "pip"])
                 .unwrap()
-                .command.unwrap(),
+                .command
+                .unwrap(),
             Command::Config {
                 action: Some(ConfigAction::SetKey {
                     imp: Some("pip".into())
@@ -431,7 +435,8 @@ mod tests {
         assert_eq!(
             parse(&["imp", "set", "pip", "model", "x/y"])
                 .unwrap()
-                .command.unwrap(),
+                .command
+                .unwrap(),
             Command::Imp {
                 action: ImpAction::Set {
                     name: "pip".into(),

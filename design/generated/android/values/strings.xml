@@ -429,6 +429,7 @@
   <string name="phone_chat_ask_again">Retry</string>
   <string name="phone_chat_ask_to">Ask %1$s to </string>
   <string name="phone_chat_ask_to_hint">Starts a message asking %1$s to do something.</string>
+  <string name="phone_chat_ask_to_prefix">Ask %1$s To: </string>
   <string name="phone_chat_edit_help">Edit</string>
   <string name="phone_chat_failed">Couldn\'t answer</string>
   <string name="phone_chat_jump_latest">Latest</string>

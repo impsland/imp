@@ -1519,3 +1519,43 @@ fn an_answer_that_came_later_wakes_the_imp_with_a_new_message_and_shows_as_an_ev
     );
     assert!(!shown.contains("(Act on it now"), "{shown}");
 }
+
+#[test]
+fn custom_commands_are_offered_after_slash_and_run_as_messages() {
+    let mut app = app("pip", "m");
+    app.set_custom_commands(vec![
+        crate::project::CustomCommand {
+            name: "review".into(),
+            text: "Review $ARGUMENTS for bugs and missing tests.".into(),
+        },
+        crate::project::CustomCommand {
+            name: "exit".into(),
+            text: "Shadowed by the built-in.".into(),
+        },
+    ]);
+    // Typed by its first letters, it shows with the built-ins' list and its usage.
+    type_text(&mut app, "/re");
+    let menu = app.menu();
+    let custom: Vec<&menu::Entry> = menu.entries.iter().filter(|e| e.custom).collect();
+    assert_eq!(custom.len(), 1);
+    assert_eq!(custom[0].label, "/review ARGUMENTS");
+    assert_eq!(custom[0].insert, "/review ");
+    assert_eq!(
+        custom[0].about,
+        "Review $ARGUMENTS for bugs and missing tests."
+    );
+    // A built-in name is never offered twice.
+    app.on_key(with(KeyCode::Char('u'), KeyModifiers::CONTROL));
+    type_text(&mut app, "/e");
+    assert!(app.menu().entries.iter().all(|e| !e.custom));
+    // Enter on it completes the arguments; then the line is sent as the command's text.
+    app.on_key(with(KeyCode::Char('u'), KeyModifiers::CONTROL));
+    type_text(&mut app, "/rev");
+    app.on_key(key(KeyCode::Enter));
+    assert_eq!(app.input(), "/review ");
+    type_text(&mut app, "src/auth.rs");
+    match app.on_key(key(KeyCode::Enter)) {
+        Action::Send(text) => assert_eq!(text, "Review src/auth.rs for bugs and missing tests."),
+        _ => panic!("a custom command should be sent to the Imp"),
+    }
+}

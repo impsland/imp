@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     "%@ (now %@)" : {
       "localizations" : {
         "en" : {
@@ -206,6 +209,7 @@
       }
     },
     "%@ flies off the screen onto %@. Or throw it hard at the side of the screen." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1868,6 +1872,7 @@
       }
     },
     "%lldM" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1884,6 +1889,7 @@
       }
     },
     "%lldk" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2654,6 +2660,7 @@
       }
     },
     "Also sends the tools %@ used and their results. Off is smaller and cheaper." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4220,6 +4227,9 @@
         }
       }
     },
+    "Choice" : {
+
+    },
     "Choose" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4492,6 +4502,9 @@
           }
         }
       }
+    },
+    "Clicks" : {
+
     },
     "Clicks go to the Imp you click and everything else to the one you talked to last" : {
       "localizations" : {
@@ -6476,6 +6489,7 @@
       }
     },
     "Forget Everyone…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -6536,22 +6550,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "忘记…"
-          }
-        }
-      }
-    },
-    "friendly, desk" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "amistoso, escritorio"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "友好，桌面"
           }
         }
       }
@@ -7129,6 +7127,7 @@
       }
     },
     "How many recent exchanges go with each message. Fewer is faster and cheaper." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8151,6 +8150,7 @@
       }
     },
     "Last %lld" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9056,6 +9056,7 @@
       }
     },
     "Messages sent" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9391,22 +9392,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "我的服务"
-          }
-        }
-      }
-    },
-    "my-package" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "mi-paquete"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "my-package"
           }
         }
       }
@@ -9946,6 +9931,7 @@
       }
     },
     "No limit" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12104,6 +12090,7 @@
       }
     },
     "Remembers" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13239,6 +13226,7 @@
       }
     },
     "Send %@ Home" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13255,6 +13243,7 @@
       }
     },
     "Send %@ to %@…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -13277,6 +13266,7 @@
       }
     },
     "Send %@ to Another Device…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14423,6 +14413,7 @@
       }
     },
     "Starting…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14439,6 +14430,7 @@
       }
     },
     "Starts when an Imp that's out needs it" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14455,6 +14447,7 @@
       }
     },
     "Starts when…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16542,6 +16535,7 @@
       }
     },
     "Tool calls" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16849,6 +16843,7 @@
       }
     },
     "Turns every built-in animation on, with its original starts. What you made or changed stays." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -18239,6 +18234,22 @@
         }
       }
     },
+    "friendly, desk" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "amistoso, escritorio"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "友好，桌面"
+          }
+        }
+      }
+    },
     "heavy lids" : {
       "localizations" : {
         "es" : {
@@ -18267,6 +18278,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "它的家"
+          }
+        }
+      }
+    },
+    "my-package" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mi-paquete"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "my-package"
           }
         }
       }
@@ -28723,6 +28750,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开始一条请 %1$@ 做事的消息。"
+          }
+        }
+      }
+    },
+    "phone.chat.ask_to_prefix" : {
+      "comment" : "iPhone: the start of a message asking another Imp, sent to the Imp. The field does not show it.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ask %1$@ To: "
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pide a %1$@ que: "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请 %1$@："
           }
         }
       }

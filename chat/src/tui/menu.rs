@@ -23,6 +23,8 @@ pub struct Entry {
     pub about: String,
     /// The command itself, when the list is of commands and not of words after one.
     pub command: Option<&'static Command>,
+    /// A custom command (`.agents/commands`): accepting it runs it, or fills in its arguments.
+    pub custom: bool,
     /// Where the cursor goes after accepting it, when not at the end.
     pub cursor: Option<usize>,
 }
@@ -69,10 +71,34 @@ impl App {
                         label: c.usage.to_string(),
                         about: c.about.to_string(),
                         command: Some(c),
+                        custom: false,
                         cursor: None,
                     })
                     .collect()
             };
+            // Custom commands come after the built-in ones, and only when their name is being typed.
+            let mut entries = entries;
+            if !self.menu_closed {
+                let typed = self.input.as_str();
+                for c in self.custom.iter().filter(|c| {
+                    let name = format!("/{}", c.name);
+                    name.starts_with(typed) && slash::find(&name).is_none()
+                }) {
+                    let usage = slash::custom_usage(c);
+                    entries.push(Entry {
+                        insert: if usage.ends_with("ARGUMENTS") {
+                            format!("/{} ", c.name)
+                        } else {
+                            format!("/{}", c.name)
+                        },
+                        label: usage,
+                        about: slash::custom_about(c),
+                        command: None,
+                        custom: true,
+                        cursor: None,
+                    });
+                }
+            }
             return Menu {
                 hint: None,
                 entries,
@@ -98,6 +124,7 @@ impl App {
                     label: c.word.to_string(),
                     about: c.about.to_string(),
                     command: None,
+                    custom: false,
                     cursor: None,
                 })
                 .collect()
@@ -134,6 +161,7 @@ impl App {
                     label: path.to_string(),
                     about: String::new(),
                     command: None,
+                    custom: false,
                 }
             })
             .collect();

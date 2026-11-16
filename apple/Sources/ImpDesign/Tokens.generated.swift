@@ -717,6 +717,10 @@ public enum Behavior {
     public static let brainCheckTimeoutSeconds = 20
     /// How long a Copy button shows its tick after it copied.
     public static let copiedTickSeconds = 1.4
+    /// How far an Imp is pulled sideways by a full tilt, in points. It springs back when the phone is level. The first screen and the home screen use it.
+    public static let tiltSlide = 34
+    /// How far an Imp leans into a full tilt, in degrees. The first screen and the home screen use it.
+    public static let tiltLean = 16
     /// Frames a second for anything that visibly moves: a head turning, eyes following the cursor or the tilt, a hop, a mood fading.
     public static let framesPerSecond = 60
     /// The same, in Low Power Mode or when the device runs warm.

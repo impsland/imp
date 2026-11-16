@@ -6,6 +6,7 @@ use crate::config::{McpServerConfig, valid_header_name};
 use crate::keys;
 use crate::link::device::{Device, DeviceOptions, Update};
 use crate::link::{SeedFile, device::reach_note};
+use crate::project::{self, CustomCommand};
 use crate::session::{Session, describe_server};
 use crate::{CliError, Result};
 use imp_engine::ChatMessage;
@@ -239,12 +240,17 @@ const ALIASES: &[(&str, &str)] = &[
 
 /// The command an alias stands for, if the word is one.
 fn alias(word: &str) -> Option<&'static str> {
-    ALIASES.iter().find(|(a, _)| *a == word).map(|(_, target)| *target)
+    ALIASES
+        .iter()
+        .find(|(a, _)| *a == word)
+        .map(|(_, target)| *target)
 }
 
 /// Whether one of a command's aliases starts with what was typed.
 fn alias_starts_with(command: &str, typed: &str) -> bool {
-    ALIASES.iter().any(|(a, target)| *target == command && a.starts_with(typed))
+    ALIASES
+        .iter()
+        .any(|(a, target)| *target == command && a.starts_with(typed))
 }
 
 /// A line the chat shows for a command. Not part of the conversation. The full-screen chat gives each
@@ -386,6 +392,49 @@ pub fn shown(line: &str) -> String {
     }
 }
 
+/// The line as the Imp is to read it when it names a custom command (`/review src/auth.rs`): the
+/// command's text with `$ARGUMENTS` filled in. None when the line names no custom command. A built-in
+/// command of the same name always wins.
+pub fn custom_text(line: &str, commands: &[CustomCommand]) -> Option<String> {
+    let t = line.trim();
+    let (first, rest) = t.split_once(char::is_whitespace).unwrap_or((t, ""));
+    let name = first.strip_prefix('/')?;
+    if find(first).is_some() {
+        return None;
+    }
+    let command = commands.iter().find(|c| c.name == name)?;
+    Some(fill_arguments(&command.text, rest.trim()))
+}
+
+fn fill_arguments(text: &str, arguments: &str) -> String {
+    if text.contains("$ARGUMENTS") {
+        text.replace("$ARGUMENTS", arguments)
+    } else if arguments.is_empty() {
+        text.to_string()
+    } else {
+        format!("{text}\n\n{arguments}")
+    }
+}
+
+/// How a custom command is written in the list: its name, and its arguments when the text takes them.
+pub fn custom_usage(c: &CustomCommand) -> String {
+    if c.text.contains("$ARGUMENTS") {
+        format!("/{} ARGUMENTS", c.name)
+    } else {
+        format!("/{}", c.name)
+    }
+}
+
+/// The first line of a custom command's text, for the list.
+pub fn custom_about(c: &CustomCommand) -> String {
+    c.text
+        .lines()
+        .map(str::trim)
+        .find(|l| !l.is_empty())
+        .unwrap_or("")
+        .to_string()
+}
+
 /// Whether a line is a command rather than a message. `//text` sends `/text` as a message.
 pub fn is_command(line: &str) -> bool {
     let t = line.trim_start();
@@ -408,7 +457,7 @@ async fn run_inner(line: &str, ctx: &mut Context<'_>) -> Result<Outcome> {
     let name = alias(first).unwrap_or(first.as_str());
     let rest = || line.trim()[first.len()..].trim().to_string();
     match name {
-        "/help" => Ok(help()),
+        "/help" => Ok(help(&project::load_custom_commands(&ctx.session.workspace))),
         "/quit" => Ok(Outcome::Quit),
         "/clear" => Ok(Outcome::Clear),
         "/compact" if ctx.visiting.is_some() => Err(CliError(
@@ -470,10 +519,13 @@ pub fn split(line: &str) -> Result<Vec<String>> {
     Ok(words.words)
 }
 
-fn help() -> Outcome {
+fn help(custom: &[CustomCommand]) -> Outcome {
     let mut notes = vec![Note::heading("Commands")];
     for c in COMMANDS {
         notes.push(Note::field(c.usage, c.about));
+    }
+    for c in custom {
+        notes.push(Note::field(custom_usage(c), custom_about(c)));
     }
     notes.push(Note::info(
         "Tab completes a command. `//text` sends a message that starts with /. `?` lists every key.",
@@ -607,8 +659,8 @@ fn imp(ctx: &mut Context<'_>, args: &[String]) -> Result<Outcome> {
             Ok(Outcome::Notes(notes))
         }
         Some(name) => {
-            if config.imps.contains_key(name) {
-                return Ok(Outcome::Switch(name.clone()));
+            if let Some((stored, _)) = config.find_imp(name) {
+                return Ok(Outcome::Switch(stored.clone()));
             }
             let lower = name.to_lowercase();
             if let Some(v) = visitors
@@ -1399,7 +1451,7 @@ mod tests {
                 .iter()
                 .all(|c| c.usage.starts_with(c.name) && !c.about.is_empty())
         );
-        let Outcome::Notes(lines) = help() else {
+        let Outcome::Notes(lines) = help(&[]) else {
             panic!("help gives notes")
         };
         for c in COMMANDS {
@@ -1409,5 +1461,49 @@ mod tests {
                 c.name
             );
         }
+    }
+
+    #[test]
+    fn custom_commands_fill_their_arguments() {
+        let commands = vec![
+            CustomCommand {
+                name: "review".into(),
+                text: "Review $ARGUMENTS for bugs and missing tests.".into(),
+            },
+            CustomCommand {
+                name: "summary".into(),
+                text: "Summarise the chat.".into(),
+            },
+            CustomCommand {
+                name: "model".into(),
+                text: "Not used: a built-in wins.".into(),
+            },
+        ];
+        assert_eq!(
+            custom_text("/review src/auth.rs", &commands).as_deref(),
+            Some("Review src/auth.rs for bugs and missing tests.")
+        );
+        assert_eq!(
+            custom_text("/review", &commands).as_deref(),
+            Some("Review  for bugs and missing tests.")
+        );
+        // No placeholder: the arguments follow the text.
+        assert_eq!(
+            custom_text("/summary now please", &commands).as_deref(),
+            Some("Summarise the chat.\n\nnow please")
+        );
+        assert_eq!(
+            custom_text("/summary", &commands).as_deref(),
+            Some("Summarise the chat.")
+        );
+        assert_eq!(custom_text("/model gpt", &commands), None);
+        assert_eq!(custom_text("/unknown", &commands), None);
+        assert_eq!(custom_text("hello /review", &commands), None);
+        assert_eq!(custom_usage(&commands[0]), "/review ARGUMENTS");
+        assert_eq!(custom_usage(&commands[1]), "/summary");
+        assert_eq!(
+            custom_about(&commands[0]),
+            "Review $ARGUMENTS for bugs and missing tests."
+        );
     }
 }

@@ -2079,6 +2079,11 @@ msgctxt "phone.chat.ask_to.hint"
 msgid "Starts a message asking {name} to do something."
 msgstr ""
 
+#. iPhone: the start of a message asking another Imp, sent to the Imp. The field does not show it.
+msgctxt "phone.chat.ask_to_prefix"
+msgid "Ask {name} To: "
+msgstr ""
+
 #. iPhone: chat edit help.
 msgctxt "phone.chat.edit_help"
 msgid "Edit"

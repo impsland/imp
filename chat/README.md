@@ -27,7 +27,7 @@ imp imp new Pip --model openai/gpt-6-luna --api-key-env OPENROUTER_API_KEY
 imp mcp add files -- npx -y @modelcontextprotocol/server-filesystem .
 
 cd ~/projects/my-app                        # the folder Pip works in
-imp chat
+imp                                         # the same as imp chat
 ```
 
 `imp imp new` asks for anything you leave out. The service address is OpenRouter's
@@ -113,7 +113,9 @@ An empty chat shows the Imp in the middle of the screen, with how to start and w
   and a space, a line shows how to use it, and fixed choices such as `save` after `/api_key` are listed.
 - Left, Right, Home, End (or Ctrl+A, Ctrl+E) move in the message. Alt or Ctrl with Left or Right moves by word.
   Backspace and Delete erase at the cursor, Ctrl+W (or Alt+Backspace) the word before it, Ctrl+U everything.
-- Ctrl+P and Ctrl+N bring back what you sent.
+- Up on the first line of the message brings back what you sent before, and each Up goes one message further
+  back, to the oldest. Within a message of several lines, Up first moves to the line above. Down on the last
+  line goes forward again, and after the newest it returns what you were writing. Ctrl+P and Ctrl+N do the same.
 - Type `@` to add a file: the folder's files that match what follows are listed (`@main` finds
   `src/main.rs`), and Tab or Enter puts the path in the message. A folder opens to what is in it. When the
   message is sent, each file named with `@` goes with it for the Imp to read (text up to 100 KB, 256 KB
@@ -186,6 +188,31 @@ Type them in the chat. Changes are saved to the settings file and take effect wi
 
 A key given to `/api_key` is never shown in the chat and never written to the settings file.
 
+Names that are close enough also work: `/exit`, `/q` and `/new` do what `/quit` and `/clear` do, and `/ex`
+already offers `/quit` in the list. `/help` also lists your custom commands.
+
+## Custom commands
+
+A file in `.agents/commands/` (in the project, or in `~/.agents/commands/` for every chat) is a command. Its
+name is the file name without `.md`, and its text is sent to the Imp when you type the command:
+
+```text
+my-app/.agents/commands/review.md     contains:  Review $ARGUMENTS for bugs and missing tests.
+```
+
+```text
+› /review src/auth.rs
+› Review src/auth.rs for bugs and missing tests.
+```
+
+- `$ARGUMENTS` is replaced by what follows the command. Without it, what follows is added after the text.
+- Names are letters, digits, `-` and `_`. A built-in command of the same name always wins.
+- A project's command replaces your home one of the same name.
+- Custom commands are in the `/` list after the built-in ones, and `/help` lists them. They need no
+  `/project trust`: they only send the text you wrote in the file, on a command you type.
+
+The full guide, with examples, is in the documentation under *Terminal app* (`docs/apps/cli-commands.md`).
+
 ## Settings file
 
 By default it is `config.toml` in the system's config folder for `imp` (`~/.config/imp/config.toml` on Linux,
@@ -233,6 +260,7 @@ my-app/
     AGENTS.md                     instructions too
     skills/release-notes/SKILL.md a skill
     agents/Pip.md                 the Imp Pip, in this folder
+    commands/review.md            the command /review
     mcp.json                      MCP servers for every Imp here
 ```
 
@@ -319,6 +347,9 @@ headers = ["Authorization"]
 - A server that does not start is shown with the reason, and the chat goes on without it.
 
 ## Imps talking to each other
+
+The guide to Imps that a project shares, such as a reviewer and a researcher, with examples, is in
+`docs/apps/cli-agents.md`. This section is the reference.
 
 When you have more than one Imp, each can send a message to the others with the `imp_message` tool, as in the
 Mac and iPhone apps. The other Imp answers with its own model and personality, without tools of its own. The

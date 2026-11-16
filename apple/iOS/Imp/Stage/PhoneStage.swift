@@ -54,7 +54,7 @@ struct PhoneStage: View {
 
                     PacedTimeline(activity: activity) { date in
                         let _ = call(in: geo.size, top: screen.safeAreaInsets.top)
-                        let _ = engine.step(date, size: geo.size, insets: geo.safeAreaInsets)
+                        let _ = engine.step(date, size: geo.size, insets: geo.safeAreaInsets, tilt: motion.tilt)
                         // Talks with other Imps: over the talker's head, or under it or beside it when that is where there is
                         // room, always on screen, above a half sheet, and never over another bubble.
                         // None while a game is on: the bubbles that arrive meanwhile are held by the hub and show when it ends.
@@ -356,6 +356,7 @@ struct PhoneStage: View {
             // It floats while nobody holds it. One that sleeps hangs still.
             .floating(BodyClock(id), reach: Self.floatReach, on: awake && b.phase != .dragging)
             .position(x: b.pos.x, y: b.pos.y)
+            .offset(x: b.tiltSlide)
             .zIndex(b.phase == .dragging ? 1 : 0)
     }
 
@@ -441,6 +442,7 @@ struct PhoneStage: View {
         let engine = engine, hub = hub, pocket = pocket, hidden = hidden
         let activity = $activity
         engine.pacer.onChange = { activity.wrappedValue = $0 }
+        motion.onTilt = { engine.pacer.wake() }
         hub.isPlaying = { engine.isBlocking }
         engine.door = { hub.door(of: $0, side: $1, height: $2) }
         engine.way = { hub.way(of: $0, to: $1, preferring: $2) }
@@ -565,6 +567,10 @@ final class MotionWatcher {
     private var jolts = JoltDetector()
     private var applied: (threshold: Double, pushes: Int)?
     var onEvent: ((JoltDetector.Event) -> Void)?
+    /// The phone was tipped further than `tiltStep` since the last report: the stage has to draw frames to follow it.
+    var onTilt: (() -> Void)?
+    private var reportedTilt = 0.0
+    private static let tiltStep = 0.02
     /// The way the last shake began.
     var shakeStart: LinkSide? { jolts.shakeStart }
 
@@ -576,14 +582,29 @@ final class MotionWatcher {
         jolts = JoltDetector(threshold: sensitivity.threshold, shakeCount: sensitivity.pushes)
     }
 
+    /// How far the phone is tipped to the side (-1...1, right is positive), while its motion is followed.
+    var tilt: Double { following ? TiltSource.shared.gravity.x : 0 }
+    private var following = false
+
     func start(interval: TimeInterval) {
         configure()
+        following = true
         TiltSource.shared.attach(self, interval: interval) { [weak self] a, t in
+            guard let self else { return }
+            // The tilt: an idle stage draws no frames, so a tilt has to wake it (the Imps are moved on each frame).
+            let tilt = TiltSource.shared.gravity.x
+            if abs(tilt - reportedTilt) > Self.tiltStep {
+                reportedTilt = tilt
+                onTilt?()
+            }
             // The turn too: a flick of the wrist is told by it far better than by the push alone.
-            guard let self, let event = jolts.feed(x: a.x, spin: TiltSource.shared.spin, at: t) else { return }
+            guard let event = jolts.feed(x: a.x, spin: TiltSource.shared.spin, at: t) else { return }
             onEvent?(event)
         }
     }
 
-    func stop() { TiltSource.shared.detach(self) }
+    func stop() {
+        following = false
+        TiltSource.shared.detach(self)
+    }
 }

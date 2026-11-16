@@ -15815,6 +15815,30 @@
         }
       }
     },
+    "phone.chat.ask_to_prefix" : {
+      "comment" : "iPhone: the start of a message asking another Imp, sent to the Imp. The field does not show it.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ask %1$@ To: "
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pide a %1$@ que: "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请 %1$@："
+          }
+        }
+      }
+    },
     "phone.chat.edit_help" : {
       "comment" : "iPhone: chat edit help.",
       "extractionState" : "manual",

@@ -323,6 +323,8 @@
   <x:Double x:Key="ImpBehaviorLocalProbeTimeoutSeconds">2</x:Double>
   <x:Double x:Key="ImpBehaviorBrainCheckTimeoutSeconds">20</x:Double>
   <x:Double x:Key="ImpBehaviorCopiedTickSeconds">1.4</x:Double>
+  <x:Double x:Key="ImpBehaviorTiltSlide">34</x:Double>
+  <x:Double x:Key="ImpBehaviorTiltLean">16</x:Double>
   <x:Double x:Key="ImpBehaviorFramesPerSecond">60</x:Double>
   <x:Double x:Key="ImpBehaviorFramesPerSecondSaving">30</x:Double>
   <x:Double x:Key="ImpBehaviorCalmFramesPerSecond">30</x:Double>

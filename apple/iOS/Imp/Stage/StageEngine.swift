@@ -35,6 +35,9 @@ final class StageEngine {
         var imp: LinkImp
         var pos: CGPoint
         var vel = CGVector.zero
+        /// The sideways pull of a tilt (drawn, not moved): it springs back to the place when the phone is level.
+        var tiltSlide: CGFloat = 0
+        var tiltSlideVelocity = 0.0
         var phase = Phase.free
         /// Friction (1/s): high while an arrival brakes, gentle afterwards.
         var drag = StageEngine.restDrag
@@ -671,17 +674,28 @@ final class StageEngine {
         CGRect(x: 0, y: insets.top + 70, width: size.width, height: max(100, size.height - insets.top - insets.bottom - 70 - 40))
     }
 
-    /// Advances the world to `date`. Called by the timeline once a frame.
-    func step(_ date: Date, size: CGSize, insets: EdgeInsets) {
+    /// Advances the world to `date`. Called by the timeline once a frame. `tilt`: the phone's sideways gravity,
+    /// -1...1 (positive is tipped right). Outside a game each Imp is pulled to that side and leans, as on the first screen.
+    func step(_ date: Date, size: CGSize, insets: EdgeInsets, tilt: Double = 0) {
         self.size = size
         self.insets = insets
         let dt = min(max(last.map { date.timeIntervalSince($0) } ?? 0, 0), 1 / 30)
         last = date
         guard dt > 0 else { return }
         let f = field
+        // As the first screen does it: the tilt asks for a sideways pull and a lean, the springs follow it, and
+        // a level phone pulls everything back to where it was.
+        let tiltSide = isPlaying ? 0 : max(-1, min(1, tilt * 1.6))
         for id in order {
             guard var b = bodies[id] else { continue }
             let r = b.size / 2
+            var slide = Double(b.tiltSlide), slideVelocity = b.tiltSlideVelocity
+            SpringStep.advance(&slide, velocity: &slideVelocity, to: tiltSide * Double(Behavior.tiltSlide),
+                               stiffness: TiltSpring.slideStiffness, damping: TiltSpring.slideDamping, dt: dt)
+            b.tiltSlide = CGFloat(slide)
+            b.tiltSlideVelocity = slideVelocity
+            // Still on its way back or out: keep the frames coming until it is at rest.
+            if abs(slide - tiltSide * Double(Behavior.tiltSlide)) > 0.3 || abs(slideVelocity) > 1 { pacer.wake() }
             switch b.phase {
             case .dragging:
                 // A finger that stops stops its speed too.
@@ -721,7 +735,8 @@ final class StageEngine {
                 collide(&b, r: r, field: f)
                 if hypot(b.vel.dx, b.vel.dy) < 8, b.enteringFrom == nil { b.vel = .zero }
                 if b.enteringFrom == nil, b.drag != Self.restDrag, hypot(b.vel.dx, b.vel.dy) < 120 { b.drag = Self.restDrag }
-                b.lean += (Self.lean(b.vel.dx) - b.lean) * min(1, dt * 8)
+                let leaning = Self.lean(b.vel.dx) + tiltSide * Double(Behavior.tiltLean)
+                b.lean += (leaning - b.lean) * min(1, dt * 8)
             case .flyingOut(let toss):
                 b.pos.x += b.vel.dx * dt
                 b.pos.y += b.vel.dy * dt

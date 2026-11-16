@@ -333,14 +333,27 @@ impl Config {
             .map(|(name, imp)| (name.as_str(), imp))
     }
 
+    /// The Imp called `name`, in any letter case: an exact name first, else the one that matches
+    /// without regard to case. Names are kept unique without regard to case, so there is at most one.
+    /// Returns the name as it is stored.
+    pub fn find_imp(&self, name: &str) -> Option<(&String, &ImpConfig)> {
+        if let Some(found) = self.imps.get_key_value(name) {
+            return Some(found);
+        }
+        let lower = name.to_lowercase();
+        self.imps
+            .iter()
+            .find(|(stored, _)| stored.to_lowercase() == lower)
+    }
+
     /// The Imp named `name`, or the default one, or the only one there is.
     pub fn pick_imp<'a>(&'a self, name: Option<&str>) -> Result<(&'a str, &'a ImpConfig)> {
         let found = match name {
-            Some(n) => self.imps.get_key_value(n).ok_or_else(|| {
+            Some(n) => self.find_imp(n).ok_or_else(|| {
                 CliError(format!("There is no Imp called {n}. Try `imp imp list`."))
             })?,
             None => match &self.default_imp {
-                Some(n) => self.imps.get_key_value(n.as_str()).ok_or_else(|| {
+                Some(n) => self.find_imp(n.as_str()).ok_or_else(|| {
                     CliError(format!(
                         "The default Imp {n} does not exist. Try `imp imp list`."
                     ))
@@ -366,12 +379,12 @@ impl Config {
     pub fn set(&mut self, key: &str, value: &str) -> Result<()> {
         match key {
             "default_imp" => {
-                if !self.imps.contains_key(value) {
+                let Some((stored, _)) = self.find_imp(value) else {
                     return Err(CliError(
                         "That Imp does not exist. Try `imp imp list`.".into(),
                     ));
-                }
-                self.default_imp = Some(value.to_string());
+                };
+                self.default_imp = Some(stored.clone());
             }
             "api_key_env" => {
                 if !valid_env_name(value) {
@@ -482,6 +495,15 @@ mod tests {
         assert_eq!(c.api_key_env, DEFAULT_KEY_ENV);
         assert_eq!(c.retries, 3);
         assert!(Config::parse("api_key = \"sk-nope\"\n").is_err());
+    }
+
+    #[test]
+    fn imp_names_ignore_letter_case() {
+        let c = sample();
+        assert_eq!(c.find_imp("PIP").map(|(n, _)| n.as_str()), Some("pip"));
+        assert_eq!(c.find_imp("Zed").map(|(n, _)| n.as_str()), Some("zed"));
+        assert_eq!(c.pick_imp(Some("ZED")).unwrap().0, "zed");
+        assert!(c.find_imp("nobody").is_none());
     }
 
     #[test]

@@ -6,6 +6,7 @@
 use super::Io;
 use crate::chat_state::ChatState;
 use crate::link::device::DeviceOptions;
+use crate::project;
 use crate::session::{Session, SessionOptions};
 use crate::slash::{self, Context, Outcome};
 use crate::transcript::{CallLine, call_line, result_line};
@@ -53,7 +54,9 @@ async fn plain_chat(session: &mut Session, io: &mut Io<'_>) -> Result<()> {
         if line.trim().is_empty() {
             continue;
         }
-        if slash::is_command(&line) {
+        // A custom command is sent to the Imp as its text, so only the other lines are commands.
+        let custom = slash::custom_text(&line, &project::load_custom_commands(&session.workspace));
+        if custom.is_none() && slash::is_command(&line) {
             let history = chat.messages().to_vec();
             let mut no_device = None;
             let outcome = slash::run(
@@ -115,6 +118,7 @@ async fn plain_chat(session: &mut Session, io: &mut Io<'_>) -> Result<()> {
             chat.set_exchanges(session.memory_exchanges);
             continue;
         }
+        let line = custom.unwrap_or(line);
         let text = line
             .strip_prefix('/')
             .filter(|l| l.starts_with('/'))

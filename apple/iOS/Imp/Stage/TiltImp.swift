@@ -1,4 +1,5 @@
 import CoreMotion
+import ImpDesign
 import ImpKit
 import SwiftUI
 
@@ -161,6 +162,12 @@ final class TiltSource {
     }
 }
 
+/// How the sideways pull of a tilt springs in and back (the same on the first screen and on the home screen).
+enum TiltSpring {
+    static let slideStiffness = 40.0
+    static let slideDamping = 7.0
+}
+
 /// Turns how the phone is held (from the shared `TiltSource`) into how the Imp leans, slides and
 /// looks. Smoothed with springs so the Imp moves like it has weight. Read once a frame.
 @MainActor
@@ -231,14 +238,15 @@ final class TiltWatcher {
         let dt = last.map { date.timeIntervalSince($0) } ?? 0
         last = date
         let (side, pitch) = aim
-        let target = (lean: side * 16, slide: side * 34, x: side * 0.9, y: pitch * 0.8)
+        let target = (lean: side * Double(Behavior.tiltLean), slide: side * Double(Behavior.tiltSlide), x: side * 0.9, y: pitch * 0.8)
         func spring(_ value: Double, _ v: inout Double, to goal: Double, stiffness: Double = 60, damping: Double = 9) -> Double {
             var value = value
             SpringStep.advance(&value, velocity: &v, to: goal, stiffness: stiffness, damping: damping, dt: dt)
             return value
         }
         current.lean = spring(current.lean, &velocity.lean, to: target.lean)
-        current.slide = CGFloat(spring(Double(current.slide), &velocity.slide, to: target.slide, stiffness: 40, damping: 7))
+        current.slide = CGFloat(spring(Double(current.slide), &velocity.slide, to: target.slide,
+                                       stiffness: TiltSpring.slideStiffness, damping: TiltSpring.slideDamping))
         current.look = CGPoint(x: spring(current.look.x, &velocity.x, to: target.x, stiffness: 90, damping: 14),
                                y: spring(current.look.y, &velocity.y, to: target.y, stiffness: 90, damping: 14))
         // Resting means close to the goal and nearly stopped, which is when frames can slow down.

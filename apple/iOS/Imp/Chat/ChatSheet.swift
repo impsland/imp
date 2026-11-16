@@ -414,6 +414,8 @@ private struct Composer: View {
     let typing: TypingState
     var giveBrain: (() -> Void)?
     @State private var text = ""
+    /// The other Imp the message is for (picked with the @ button), if any.
+    @State private var askedPeer: LinkImp?
     @FocusState private var focused: Bool
     @AppStorage(PhonePrefs.dismissedWithheldKey) private var dismissedRaw = ""
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -521,31 +523,52 @@ private struct Composer: View {
     /// brings the keyboard up. Each wears its colour in the menu. The button is a bare grey glyph on the
     /// text's line, so the field keeps its room for words.
     private func peerMenu(_ peers: [LinkImp]) -> some View {
-        Menu {
-            ForEach(peers) { other in
-                Button { mention(other) } label: {
-                    Label { Text(verbatim: other.name) } icon: { ImpSwatch.image(hue: other.hue) }
+        Group {
+            if let asked = askedPeer {
+                // The chosen Imp shows as its colour: a tap puts the @ back, so another can be chosen.
+                Button { askedPeer = nil; Haptics.tap(.light) } label: {
+                    // The same box as the @ (one line of text with the same padding), so the circle, drawn
+                    // over it at its own size, is centred on that line exactly as the @ is.
+                    Text(Image(systemName: "at"))
+                        .foregroundStyle(.clear)
+                        .padding(.vertical, Self.linePadding)
+                        .frame(minWidth: Spacing.page)
+                        .overlay {
+                            Circle().fill(Color.imp(asked.hue))
+                                .frame(width: Sizing.dot * 2, height: Sizing.dot * 2)
+                        }
+                        .contentShape(Rectangle())
                 }
-                .accessibilityHint(Text(words("phone.chat.ask_to.hint", other.name)))
+                .accessibilityLabel(words("phone.chat.ask_to.hint", asked.name))
+            } else {
+                Menu {
+                    ForEach(peers) { other in
+                        Button { mention(other) } label: {
+                            Label { Text(verbatim: other.name) } icon: { ImpSwatch.image(hue: other.hue) }
+                        }
+                        .accessibilityHint(Text(words("phone.chat.ask_to.hint", other.name)))
+                    }
+                } label: {
+                    // One line of the field's text (its font comes from the well, its padding is the field's): see `field`.
+                    // Grey like the prompt.
+                    Text(Image(systemName: "at"))
+                        .foregroundStyle(Tone.muted)
+                        .padding(.vertical, Self.linePadding)
+                        .frame(minWidth: Spacing.page)
+                        .contentShape(Rectangle())
+                }
+                .menuStyle(.button)
+                .buttonStyle(.plain)
+                .menuIndicator(.hidden)
+                .accessibilityLabel("phone.chat.peers")
             }
-        } label: {
-            // One line of the field's text (its font comes from the well, its padding is the field's): see `field`.
-            // Grey like the prompt.
-            Text(Image(systemName: "at"))
-                .foregroundStyle(Tone.muted)
-                .padding(.vertical, Self.linePadding)
-                .frame(minWidth: Spacing.page)
-                .contentShape(Rectangle())
         }
-        .menuStyle(.button)
         .buttonStyle(.plain)
-        .menuIndicator(.hidden)
-        .accessibilityLabel("phone.chat.peers")
     }
 
+    /// Picks the Imp a message is for. Nothing is written in the field: the message starts with "Ask <name> To:" when sent.
     private func mention(_ other: LinkImp) {
-        if trimmed.isEmpty { text = words("phone.chat.ask_to", other.name) }
-        else { text += (text.last?.isWhitespace == true ? "" : " ") + other.name + " " }
+        askedPeer = other
         focused = true
     }
 
@@ -565,8 +588,10 @@ private struct Composer: View {
 
     private func send() {
         guard !trimmed.isEmpty else { return }
-        source.ask(impID, trimmed)
+        let message = askedPeer.map { words("phone.chat.ask_to_prefix", $0.name) + trimmed } ?? trimmed
+        source.ask(impID, message)
         text = ""
+        askedPeer = nil
         Haptics.tap(.light)
     }
 }
