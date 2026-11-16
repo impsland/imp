@@ -612,6 +612,53 @@ fn the_list_scrolls_and_says_where_the_highlight_is() {
 }
 
 #[test]
+fn the_list_is_above_the_field_and_commands_with_forms_show_them_under_the_name() {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "/mc");
+    let rows = screen(&app, 80, 24);
+    let field = rows
+        .iter()
+        .position(|r| r == " › /mc")
+        .unwrap_or_else(|| panic!("{rows:#?}"));
+    let name = rows.iter().position(|r| r.starts_with(" › /mcp")).unwrap();
+    assert!(rows[name].contains("List, add or remove MCP servers"));
+    let forms = [
+        "add NAME COMMAND [ARGS...]",
+        "add NAME URL",
+        "add {CONFIG}",
+        "remove NAME",
+        "reload",
+    ];
+    for (i, form) in forms.iter().enumerate() {
+        assert_eq!(rows[name + 1 + i].trim(), *form, "{rows:#?}");
+        assert!(rows[name + 1 + i].starts_with("    "), "indented");
+    }
+    assert!(field > name + forms.len(), "{rows:#?}");
+}
+
+#[test]
+fn the_hint_of_a_command_is_above_the_field_too() {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "/model ");
+    let rows = screen(&app, 80, 24);
+    let hint = row_of(&rows, "/model [NAME]: ");
+    let field = row_of(&rows, "› /model");
+    assert!(hint < field, "{rows:#?}");
+}
+
+#[test]
+fn a_short_terminal_shortens_the_list_with_forms_without_overlap() {
+    let mut app = app("pip", "m");
+    type_text(&mut app, "/mc");
+    for (w, h) in [(80, 5), (80, 7), (40, 9), (20, 4), (10, 2), (1, 1)] {
+        assert_eq!(screen(&app, w, h).len(), h as usize);
+    }
+    let rows = screen(&app, 80, 9);
+    assert!(rows.iter().any(|r| r.starts_with(" › /mcp")), "{rows:#?}");
+    assert!(rows.iter().any(|r| r == " › /mc"), "{rows:#?}");
+}
+
+#[test]
 fn tab_and_right_accept_the_highlighted_command() {
     let mut app = app("pip", "m");
     type_text(&mut app, "/sen");
@@ -1200,17 +1247,61 @@ fn dragging_past_the_top_scrolls_and_keeps_choosing() {
     mouse(&mut app, MouseEventKind::Drag(MouseButton::Left), 2, 0);
     let _ = screen(&app, 40, 12);
     assert!(app.edge_scrolling());
-    for _ in 0..3 {
+    for _ in 0..10 {
         app.on_edge_tick();
         let _ = screen(&app, 40, 12);
     }
-    assert!(app.scroll() >= 4, "{}", app.scroll());
+    assert!(app.scroll() >= 3, "{}", app.scroll());
     let Action::Copy(text) = mouse(&mut app, MouseEventKind::Up(MouseButton::Left), 2, 0) else {
         panic!("nothing copied");
     };
     assert!(text.ends_with("answer 9"), "{text}");
     assert!(text.lines().count() > 5, "{text}");
     assert!(!app.edge_scrolling());
+}
+
+#[test]
+fn edge_scrolling_is_slow_and_grows_only_a_little_with_the_distance() {
+    let mut app = app("pip", "m");
+    for i in 0..10 {
+        type_text(&mut app, &format!("question {i}"));
+        app.on_key(key(KeyCode::Enter));
+        answer(&mut app, &format!("answer {i}"));
+    }
+    let rows = screen(&app, 40, 12);
+    let bottom = row_of(&rows, "answer 9");
+    mouse(
+        &mut app,
+        MouseEventKind::Down(MouseButton::Left),
+        39,
+        bottom,
+    );
+    // Just past the top edge: one line at once, then about two lines a second (ten ticks of 100 ms).
+    mouse(&mut app, MouseEventKind::Drag(MouseButton::Left), 2, 0);
+    let _ = screen(&app, 40, 12);
+    assert_eq!(app.scroll(), 1);
+    for _ in 0..10 {
+        app.on_edge_tick();
+        let _ = screen(&app, 40, 12);
+    }
+    let near = app.scroll() - 1;
+    assert!((1..=3).contains(&near), "{near}");
+    // Moving the mouse along the edge does not scroll by itself.
+    let held = app.scroll();
+    mouse(&mut app, MouseEventKind::Drag(MouseButton::Left), 5, 0);
+    assert_eq!(app.scroll(), held);
+    // Far below the transcript it is faster, but never more than the fastest rate in a second.
+    let before = app.scroll();
+    mouse(&mut app, MouseEventKind::Drag(MouseButton::Left), 5, 11);
+    let _ = screen(&app, 40, 12);
+    let at_once = before.saturating_sub(app.scroll());
+    assert!(at_once <= 1, "{at_once}");
+    for _ in 0..10 {
+        app.on_edge_tick();
+        let _ = screen(&app, 40, 12);
+    }
+    let far = before.saturating_sub(app.scroll());
+    assert!((1..=9).contains(&far), "{far}");
 }
 
 #[test]

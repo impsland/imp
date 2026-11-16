@@ -1,4 +1,4 @@
-//! The list of `/` commands under the message field, and the hint for the one being typed.
+//! The list of `/` commands above the message field, and the hint for the one being typed.
 //!
 //! While a command name is typed the list shows the commands that match it, best first. Once the
 //! name is followed by a space, one line shows how to use the command, and the words that can
@@ -8,7 +8,7 @@
 //! files that match it. Accepting one puts its path in the message. A folder opens to what is in it.
 
 use super::text::{text_width, truncate};
-use super::{Action, App, MOST_SUGGESTIONS};
+use super::{Action, App, MOST_SUGGESTION_ROWS, MOST_SUGGESTIONS};
 use crate::mentions;
 use crate::slash::{self, Command};
 use ratatui::style::Modifier;
@@ -21,6 +21,8 @@ pub struct Entry {
     pub insert: String,
     pub label: String,
     pub about: String,
+    /// The forms of a command that has several, shown as lines under it.
+    pub details: Vec<&'static str>,
     /// The command itself, when the list is of commands and not of words after one.
     pub command: Option<&'static Command>,
     /// A custom command (`.agents/commands`): accepting it runs it, or fills in its arguments.
@@ -29,7 +31,7 @@ pub struct Entry {
     pub cursor: Option<usize>,
 }
 
-/// What is shown under the field for the text typed.
+/// What is shown above the field for the text typed.
 #[derive(Debug, Default)]
 pub struct Menu {
     /// How to use the command whose name is typed, once a space follows it.
@@ -40,7 +42,7 @@ pub struct Menu {
 }
 
 impl App {
-    /// The commands that match what is typed, best first, for the list under the field.
+    /// The commands that match what is typed, best first, for the list above the field.
     pub fn suggestions(&self) -> Vec<&'static Command> {
         if self.waiting || self.input.contains('\n') {
             return Vec::new();
@@ -62,17 +64,21 @@ impl App {
             } else {
                 self.suggestions()
                     .into_iter()
-                    .map(|c| Entry {
-                        insert: if slash::takes_args(c) {
-                            format!("{} ", c.name)
-                        } else {
-                            c.name.to_string()
-                        },
-                        label: c.usage.to_string(),
-                        about: c.about.to_string(),
-                        command: Some(c),
-                        custom: false,
-                        cursor: None,
+                    .map(|c| {
+                        let details = slash::variants(c);
+                        Entry {
+                            insert: if slash::takes_args(c) {
+                                format!("{} ", c.name)
+                            } else {
+                                c.name.to_string()
+                            },
+                            label: if details.is_empty() { c.usage } else { c.name }.to_string(),
+                            about: c.about.to_string(),
+                            details,
+                            command: Some(c),
+                            custom: false,
+                            cursor: None,
+                        }
                     })
                     .collect()
             };
@@ -93,6 +99,7 @@ impl App {
                         },
                         label: usage,
                         about: slash::custom_about(c),
+                        details: Vec::new(),
                         command: None,
                         custom: true,
                         cursor: None,
@@ -123,6 +130,7 @@ impl App {
                     ),
                     label: c.word.to_string(),
                     about: c.about.to_string(),
+                    details: Vec::new(),
                     command: None,
                     custom: false,
                     cursor: None,
@@ -160,6 +168,7 @@ impl App {
                     insert,
                     label: path.to_string(),
                     about: String::new(),
+                    details: Vec::new(),
                     command: None,
                     custom: false,
                 }
@@ -208,8 +217,9 @@ impl App {
         Action::None
     }
 
-    /// The lines under the field, no more than `room` of them: the hint, then the visible part of
-    /// the list with a line saying where in it the highlight is when it does not all fit.
+    /// The lines above the field, no more than `room` of them: the hint, then the visible part of
+    /// the list (a command with several forms takes a line for each) with a line saying where in it
+    /// the highlight is when it does not all fit.
     pub(super) fn popup(&self, room: usize, width: usize) -> Vec<Line<'static>> {
         let menu = self.menu();
         let mut lines = Vec::new();
@@ -220,17 +230,28 @@ impl App {
             ));
         }
         let total = menu.entries.len();
-        let avail = room.saturating_sub(lines.len());
+        let avail = room.saturating_sub(lines.len()).min(MOST_SUGGESTION_ROWS);
         if total == 0 || avail == 0 {
             return lines;
         }
-        let mut visible = total.min(MOST_SUGGESTIONS).min(avail);
-        let footer = total > visible && avail >= 2;
-        if footer {
-            visible = visible.min(avail - 1);
-        }
+        let height = |e: &Entry| 1 + e.details.len();
+        let rows_of =
+            |from: usize, to: usize| menu.entries[from..to].iter().map(height).sum::<usize>();
+        let fits = total <= MOST_SUGGESTIONS && rows_of(0, total) <= avail;
+        let footer = !fits && avail >= 2;
+        let budget = avail - usize::from(footer);
         let pick = self.pick_in(total);
-        let start = pick.saturating_sub(visible / 2).min(total - visible);
+        let mut visible = total.min(MOST_SUGGESTIONS);
+        let mut start = pick.saturating_sub(visible / 2).min(total - visible);
+        // Drop entries from the far end, then the near one, until the rows fit with the highlight in.
+        while visible > 1 && rows_of(start, start + visible) > budget {
+            if start + visible - 1 > pick {
+                visible -= 1;
+            } else {
+                start += 1;
+                visible -= 1;
+            }
+        }
         let shown = &menu.entries[start..start + visible];
         let label_width = shown
             .iter()
@@ -238,6 +259,7 @@ impl App {
             .max()
             .unwrap_or(0)
             .min(width / 2);
+        let mut list = Vec::new();
         for (i, e) in shown.iter().enumerate() {
             let chosen = start + i == pick;
             let label = truncate(&e.label, label_width);
@@ -248,11 +270,20 @@ impl App {
             } else {
                 self.theme.muted()
             };
-            lines.push(Line::styled(
+            list.push(Line::styled(
                 truncate(&format!(" {mark} {label}{pad}{}", e.about), width),
                 style,
             ));
+            for form in &e.details {
+                list.push(Line::styled(
+                    truncate(&format!("       {form}"), width),
+                    self.theme.muted(),
+                ));
+            }
         }
+        // Only a single entry taller than the room can still be too long.
+        list.truncate(budget);
+        lines.extend(list);
         if footer {
             let up = if start > 0 { " ↑" } else { "" };
             let down = if start + visible < total { " ↓" } else { "" };

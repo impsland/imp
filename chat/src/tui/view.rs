@@ -417,11 +417,11 @@ impl App {
             .min(area.height.saturating_sub(status_height));
         let room = area.height.saturating_sub(input_height + status_height + 1) as usize;
         let popup = self.popup(room, area.width as usize);
-        let below = popup.len() as u16;
-        let [top, field, hints, status] = Layout::vertical([
+        let above = popup.len() as u16;
+        let [top, hints, field, status] = Layout::vertical([
             Constraint::Min(0),
+            Constraint::Length(above),
             Constraint::Length(input_height),
-            Constraint::Length(below),
             Constraint::Length(status_height),
         ])
         .areas(area);
@@ -429,7 +429,7 @@ impl App {
         let cursor = field::cursor_cell(&self.input, &field_rows, self.cursor);
         let lines = field::row_texts(&self.input, &field_rows);
         self.render_field(frame, field, &lines, cursor, pad);
-        if below > 0 {
+        if above > 0 {
             frame.render_widget(Paragraph::new(popup), hints);
         }
         if status_height > 0 {

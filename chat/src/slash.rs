@@ -167,6 +167,30 @@ pub fn takes_args(c: &Command) -> bool {
     c.usage.len() > c.name.len()
 }
 
+/// The ways to use a command that has several, written in its usage as `[a | b ID | c]`: one line each,
+/// for the lists that show them under the command. Empty when the usage has a single form.
+pub fn variants(c: &Command) -> Vec<&'static str> {
+    let rest = c.usage.get(c.name.len()..).unwrap_or("").trim();
+    let Some(inner) = rest.strip_prefix('[').and_then(|r| r.strip_suffix(']')) else {
+        return Vec::new();
+    };
+    let mut forms = Vec::new();
+    let (mut depth, mut from) = (0usize, 0usize);
+    for (i, ch) in inner.char_indices() {
+        match ch {
+            '[' | '{' => depth += 1,
+            ']' | '}' => depth = depth.saturating_sub(1),
+            '|' if depth == 0 => {
+                forms.push(inner[from..i].trim());
+                from = i + 1;
+            }
+            _ => {}
+        }
+    }
+    forms.push(inner[from..].trim());
+    if forms.len() > 1 { forms } else { Vec::new() }
+}
+
 /// One word that can follow a command, such as `save` after `/api_key`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Choice {
@@ -523,6 +547,9 @@ fn help(custom: &[CustomCommand]) -> Outcome {
     let mut notes = vec![Note::heading("Commands")];
     for c in COMMANDS {
         notes.push(Note::field(c.usage, c.about));
+        for form in variants(c) {
+            notes.push(Note::field(format!("    {form}"), ""));
+        }
     }
     for c in custom {
         notes.push(Note::field(custom_usage(c), custom_about(c)));
@@ -1461,6 +1488,29 @@ mod tests {
                 c.name
             );
         }
+    }
+
+    #[test]
+    fn commands_with_several_forms_list_them() {
+        let forms = |name: &str| variants(find(name).unwrap());
+        assert_eq!(
+            forms("/mcp"),
+            [
+                "add NAME COMMAND [ARGS...]",
+                "add NAME URL",
+                "add {CONFIG}",
+                "remove NAME",
+                "reload"
+            ]
+        );
+        assert_eq!(forms("/project"), ["trust", "untrust"]);
+        assert_eq!(forms("/tools"), ["on", "off ID"]);
+        assert!(forms("/model").is_empty());
+        assert!(forms("/pair").is_empty());
+        let Outcome::Notes(lines) = help(&[]) else {
+            panic!("help gives notes")
+        };
+        assert!(lines.iter().any(|l| l.plain().trim() == "remove NAME"));
     }
 
     #[test]

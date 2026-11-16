@@ -161,6 +161,9 @@ struct RootView: View {
                 content(route)
                     // Each kind of sheet starts fresh (the same Imp's chat is the same view).
                     .id(route.id)
+                    // A sheet is its own presentation: the appearance has to reach it too, or it keeps the
+                    // light or dark look it opened with until it is shown again.
+                    .phoneAppearance()
                     .transition(.opacity)
                     .presentationDetents(route.restsAtHalf ? [.medium, .large] : [.large], selection: height)
                     // The room above a half sheet stays alive: the Imps can be touched, carried and thrown.

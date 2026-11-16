@@ -17,6 +17,30 @@ use std::time::{Duration, Instant};
 /// Two clicks this close together are a double click.
 const DOUBLE_CLICK: Duration = Duration::from_millis(450);
 
+/// How often the transcript scrolls while the mouse is held past its top or bottom. Slow enough that
+/// the choice can be stopped on the row wanted.
+pub(super) const EDGE_TICK: Duration = Duration::from_millis(100);
+
+/// Lines a second the transcript scrolls while the mouse is held just past its edge (the first row past it).
+/// Slow, so a page of a long chat takes a few seconds and the choice can be stopped where it is wanted.
+const EDGE_LINES_PER_SECOND_NEAR: f64 = 2.0;
+
+/// Lines a second at the most, reached when the mouse is `EDGE_FAR_ROWS` rows past the edge. Kept
+/// low, so even a long chat can be chosen from the top to the bottom without the choice running away.
+const EDGE_LINES_PER_SECOND_FAR: f64 = 8.0;
+
+/// How many rows past the edge the mouse must be to scroll at the fastest rate.
+const EDGE_FAR_ROWS: usize = 8;
+
+/// The lines one [`EDGE_TICK`] scrolls, for a mouse `past` rows beyond the edge. Fractions add up
+/// across ticks (see `App::on_edge_tick`), so a slow rate is smooth rather than stepped.
+fn edge_lines_per_tick(past: usize) -> f64 {
+    let far = (past.saturating_sub(1) as f64 / (EDGE_FAR_ROWS - 1) as f64).min(1.0);
+    let per_second =
+        EDGE_LINES_PER_SECOND_NEAR + (EDGE_LINES_PER_SECOND_FAR - EDGE_LINES_PER_SECOND_NEAR) * far;
+    per_second * EDGE_TICK.as_secs_f64()
+}
+
 /// Where the transcript was drawn: its area (without the space above it on an empty chat), the first
 /// row shown, and how many rows there were.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -144,32 +168,45 @@ impl App {
         // terminal. Below the last row is the message field.
         let view = self.view.get();
         let more_above = self.scroll.get() < self.max_scroll.get();
-        self.edge = if row <= view.area.y && more_above {
-            Some(true)
+        let edge = if row <= view.area.y && more_above {
+            Some((true, (view.area.y - row) as usize + 1))
         } else if row >= view.area.bottom() && self.scroll.get() > 0 {
-            Some(false)
+            Some((false, (row - view.area.bottom()) as usize + 1))
         } else {
             None
         };
-        if let Some(up) = self.edge {
-            self.scroll_edge(up);
+        // The first row past the edge scrolls one line at once. After that the ticks do, at a rate set by
+        // how far past the edge the mouse is. Moving the mouse does not change that rate by itself.
+        let started = self.edge.is_none();
+        self.edge = edge;
+        if let Some((up, _)) = self.edge {
+            if started {
+                self.edge_carry = 0.0;
+                self.scroll_edge(up, 1);
+            }
             return;
         }
+        self.edge_carry = 0.0;
         if let (Some(point), Some(mut sel)) = (self.point_at(column, row), self.selection.get()) {
             sel.head = point;
             self.selection.set(Some(sel));
         }
     }
 
-    /// One step of scrolling while the mouse is held past an edge.
+    /// One tick of scrolling while the mouse is held past an edge: whole lines of what has built up.
     pub fn on_edge_tick(&mut self) {
-        if let (true, Some(up)) = (self.dragging, self.edge) {
-            self.scroll_edge(up);
+        if let (true, Some((up, past))) = (self.dragging, self.edge) {
+            self.edge_carry += edge_lines_per_tick(past);
+            let lines = self.edge_carry.floor();
+            if lines >= 1.0 {
+                self.edge_carry -= lines;
+                self.scroll_edge(up, lines as usize);
+            }
         }
     }
 
-    fn scroll_edge(&mut self, up: bool) {
-        self.scroll_by(1, up);
+    fn scroll_edge(&mut self, up: bool, lines: usize) {
+        self.scroll_by(lines, up);
         let view = self.view.get();
         let height = view.area.height as usize;
         let max = view.total.saturating_sub(height);

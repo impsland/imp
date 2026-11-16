@@ -57,8 +57,10 @@ pub enum Action {
 const WHEEL_LINES: usize = 3;
 /// The most lines the message field grows to, padding included.
 const MAX_INPUT_HEIGHT: u16 = 8;
-/// The most commands shown at once in the list under the field while one is typed.
+/// The most commands shown at once in the list above the field while one is typed.
 const MOST_SUGGESTIONS: usize = 6;
+/// The most rows of that list, with the forms of a command that has several counted in.
+const MOST_SUGGESTION_ROWS: usize = 12;
 /// The most messages kept to walk back through with Ctrl+P.
 const MOST_RECALLED: usize = 100;
 /// How long a short word such as "Copied" stays in the status line.
@@ -97,8 +99,11 @@ pub struct App {
     /// Text chosen with the mouse, in rows of the transcript, and whether the button is still down.
     selection: Cell<Option<select::Selection>>,
     dragging: bool,
-    /// While dragging past the top (true) or bottom (false) of the transcript, it scrolls on its own.
-    edge: Option<bool>,
+    /// While dragging past the top (true) or bottom (false) of the transcript, it scrolls on its own, at a
+    /// rate that grows with how many rows past the edge the mouse is.
+    edge: Option<(bool, usize)>,
+    /// The part of a line the edge scrolling has built up and not yet scrolled.
+    edge_carry: f64,
     /// The last click, to tell a double or triple click.
     last_click: Option<(Instant, u16, u16, u8)>,
     /// A short word for the status line and when it was said ("Copied").
@@ -159,6 +164,7 @@ impl App {
             selection: Cell::new(None),
             dragging: false,
             edge: None,
+            edge_carry: 0.0,
             last_click: None,
             flash: None,
             help_scroll: Cell::new(0),

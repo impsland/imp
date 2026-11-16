@@ -2,6 +2,7 @@
 //! screen), this computer on the link once it is started, and the answer that is arriving. It waits for
 //! keys, the answer and the link at once, so a phone can talk to an Imp here while the chat is open.
 
+use super::select::EDGE_TICK;
 use super::{Action, App, clipboard};
 use crate::chat_state::ChatState;
 use crate::link::SeedFile;
@@ -218,7 +219,7 @@ impl Chat {
         let mut tick = tokio::time::interval(Duration::from_millis(100));
         tick.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
         // Scrolls while text is dragged past the top or bottom of the transcript.
-        let mut edge = tokio::time::interval(Duration::from_millis(50));
+        let mut edge = tokio::time::interval(EDGE_TICK);
         loop {
             self.wake(&mut app, &mut running, &agent_tx);
             terminal

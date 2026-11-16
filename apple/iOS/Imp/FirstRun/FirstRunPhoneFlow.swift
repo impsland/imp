@@ -97,7 +97,7 @@ struct PhoneBrainForm: View {
         .accessibilityValue(flow.model.isEmpty ? Text("phone.brain.model_auto") : Text(verbatim: flow.model))
         .accessibilityHint(Text("phone.brain.list_models"))
         .accessibilityIdentifier("brain.model")
-        .sheet(isPresented: $picking) { ModelPicker(flow: flow) }
+        .sheet(isPresented: $picking) { ModelPicker(flow: flow).phoneAppearance() }
     }
 }
 

@@ -46,7 +46,7 @@ struct PairingView: View {
             .scrollBounceBehavior(.basedOnSize)
         }
         .impControls(tint: Tone.accent)
-        .sheet(isPresented: $linking) { LinkSheet(hub: hub) }
+        .sheet(isPresented: $linking) { LinkSheet(hub: hub).phoneAppearance() }
         .onAppear { shown = true }
     }
 
