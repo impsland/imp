@@ -27,14 +27,12 @@ enum KitSharing {
     static func copyLink(_ kit: Kit) { if let link = kit.stamped.link { Pasteboard.write(text: link) } }
 }
 
-/// A small share button: copies the kit or a link to it, and publishes it to the Den when one is set up.
+/// A small share button: copies the kit or a link to it.
 /// A tick says a copy worked.
 struct ShareKitButton: View {
     let kit: Kit
     let help: LocalizedStringResource
     @State private var copied = false
-    @State private var publishing = false
-    @Environment(\.publishContext) private var publishContext
 
     var body: some View {
         let linkable = kit.stamped.link != nil
@@ -42,17 +40,11 @@ struct ShareKitButton: View {
             Button { done(KitSharing.copy(kit)) } label: { Label("Copy kit", systemImage: "doc.on.doc") }
             Button { done(KitSharing.copyLink(kit)) } label: { Label(linkable ? "Copy link" : "Too long for a link", systemImage: "link") }
                 .disabled(!linkable)
-            if publishContext != nil {
-                Button { publishing = true } label: { Label("Publish to the Den…", systemImage: "square.and.arrow.up") }
-            }
         } label: {
             HoverGlyph(systemName: copied ? "checkmark" : "square.and.arrow.up.on.square", tint: copied ? Tone.good : Tone.muted)
         }
         .menuStyle(.button).buttonStyle(.plain).menuIndicator(.hidden).fixedSize()
         .help(Text(help))
-        .sheet(isPresented: $publishing) {
-            if let publishContext { DenPublishSheet(context: publishContext, kit: kit) }
-        }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text(help))
     }

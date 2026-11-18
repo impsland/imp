@@ -7,8 +7,8 @@ are thrown off the side of one screen and land on another, and an Imp keeps thin
 
 The Hop (the relay run by the Imp project or by you, see `spec/PROTOCOL.md`) is one of the ways to reach
 a device. It only ever carries the encrypted bytes described here. The Hop is its own setting, apart from
-the Den: linking uses only the Hop address, and a device with no Hop still links on the same network.
-Settings under Devices explains what a missing Hop, or a missing Den, leaves out.
+the Den or any gallery: linking uses only the Hop address, and a device with no Hop still links on the same network.
+Settings under Devices explains what a missing Hop leaves out.
 
 ## Words
 

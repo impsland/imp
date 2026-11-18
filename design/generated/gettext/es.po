@@ -35,11 +35,6 @@ msgctxt "anim.help.name"
 msgid "A name so you can find it again."
 msgstr "Un nombre para encontrarlo después."
 
-#. Help of when a move plays.
-msgctxt "anim.help.plays"
-msgid "When this move happens."
-msgstr "Cuándo ocurre."
-
 #. Help of the shape setting.
 msgctxt "anim.help.shape"
 msgid "Squash or stretch the body, like a ball."
@@ -55,45 +50,25 @@ msgctxt "anim.help.tilt"
 msgid "How far the Imp leans to the side."
 msgstr "Cuánto se inclina el Imp hacia un lado."
 
-#. Heading of the five bundled animations.
-msgctxt "animations.built_in"
-msgid "Built in"
-msgstr "Integradas"
-
 #. Button.
 msgctxt "animations.find"
 msgid "Browse"
 msgstr "Explorar"
 
-#. Heading of animations that came from The Den.
+#. Heading of the animations you made or added.
 msgctxt "animations.from_den"
-msgid "Den"
-msgstr "Den"
-
-#. Shown when The Den is not set up.
-msgctxt "animations.needs_den"
-msgid "Set up The Den to find more."
-msgstr "Configura Den para encontrar más."
+msgid "Made"
+msgstr "Hechas"
 
 #. Button and sheet title: make a new animation of your own.
 msgctxt "animations.new"
 msgid "New"
 msgstr "Nueva"
 
-#. Button.
-msgctxt "animations.restore"
-msgid "Restore"
-msgstr "Restaurar"
-
 #. Placeholder of the search field on the Animations page.
 msgctxt "animations.search"
 msgid "Search"
 msgstr "Buscar"
-
-#. Group title.
-msgctxt "animations.title"
-msgid "Animations"
-msgstr "Animaciones"
 
 #. Row.
 msgctxt "app.language"
@@ -471,46 +446,6 @@ msgstr "Reintentar"
 msgctxt "common.undo"
 msgid "Undo"
 msgstr "Deshacer"
-
-#. Help of the Den kind.
-msgctxt "den.help.kind"
-msgid "Pick what kind of thing to look for."
-msgstr "Elige qué tipo de cosa buscar."
-
-#. Help of the Den public note.
-msgctxt "den.help.public"
-msgid "Anyone can add it. Chats, memory and keys are never included."
-msgstr "Cualquiera puede añadirlo. Los chats, la memoria y las claves nunca se incluyen."
-
-#. Help of the Den search.
-msgctxt "den.help.search"
-msgid "Type a word to find things."
-msgstr "Escribe una palabra para buscar."
-
-#. Help of the Den server.
-msgctxt "den.help.server"
-msgid "Where people share Imps, animations, triggers and tools."
-msgstr "Donde la gente comparte Imps, animaciones, disparadores y herramientas."
-
-#. Help of the Den name.
-msgctxt "den.help.slug"
-msgid "A short name for the web address. Use small letters and dashes."
-msgstr "Un nombre corto para la dirección web. Usa minúsculas y guiones."
-
-#. Help of the Den sort.
-msgctxt "den.help.sort"
-msgid "Show the most loved first, or the newest first."
-msgstr "Muestra primero lo más querido, o lo más nuevo."
-
-#. Help of the Den summary.
-msgctxt "den.help.summary"
-msgid "One sentence so people know what it is."
-msgstr "Una frase para que la gente sepa qué es."
-
-#. Help of the Den tags.
-msgctxt "den.help.tags"
-msgid "Words that help people find it. Separate them with commas."
-msgstr "Palabras que ayudan a encontrarlo. Sepáralas con comas."
 
 #. Help of Copy Link in Link a device.
 msgctxt "devices.copy_link.help"
@@ -1360,8 +1295,8 @@ msgstr "Animaciones"
 
 #. Summary line of the Personality row.
 msgctxt "imp_settings.summary.personality"
-msgid "Name and voice"
-msgstr "Nombre y voz"
+msgid "Name and persona"
+msgstr "Nombre y personalidad"
 
 #. Summary line of the Tools row.
 msgctxt "imp_settings.summary.tools"
@@ -1409,11 +1344,6 @@ msgstr "Cosas del kit que este Mac no puede usar, por eso se dejan fuera."
 msgctxt "kit.help.tools"
 msgid "Tools can run things on your Mac. Read them first."
 msgstr "Las herramientas pueden ejecutar cosas en tu Mac. Léelas primero."
-
-#. Where a kit in the kit review came from: the starter kit that ships with Imp.
-msgctxt "kit.origin.starter"
-msgid "Imp's starter kit"
-msgstr "Kit inicial de Imp"
 
 #. Status line when Local Network access is off for Imp.
 msgctxt "link.localnet.off"
@@ -1835,55 +1765,15 @@ msgctxt "menu.imp.visit_tip"
 msgid "{name} visits {device} and can come back."
 msgstr "{name} visita {device} y puede volver."
 
-#. Row: change a built-in move.
-msgctxt "moves.builtin"
-msgid "Moves"
-msgstr "Movimientos"
-
-#. Button: change a built-in move.
-msgctxt "moves.change"
-msgid "Change"
-msgstr "Cambiar"
-
 #. Empty state of the moves panel.
 msgctxt "moves.empty"
 msgid "No special moves yet."
 msgstr "Sin movimientos aún."
 
-#. Row: how it follows the cursor.
-msgctxt "moves.follow_how"
-msgid "Follow"
-msgstr "Seguir"
-
-#. Help of the built-in moves row.
-msgctxt "moves.help.builtin"
-msgid "Pick one of the moves every Imp has and make a version only for this Imp."
-msgstr "Elige uno de los movimientos que tienen todos los Imps y haz una versión solo para este."
-
-#. Help of the follow section.
-msgctxt "moves.help.follow"
-msgid "Choose what this Imp does when you move your mouse pointer: stay still, look at it, or run after it."
-msgstr "Elige qué hace este Imp cuando mueves el puntero del ratón: quedarse quieto, mirarlo o correr tras él."
-
-#. Help of the follow mode picker.
-msgctxt "moves.help.follow_how"
-msgid "Off: it stays still. Eyes: only its eyes look at the pointer. Hop: it jumps after the pointer. Glide: it slides after the pointer."
-msgstr "Desactivado: se queda quieto. Ojos: solo sus ojos miran el puntero. Saltito: salta tras el puntero. Deslizarse: se desliza tras el puntero."
-
 #. Help of the own animations list.
 msgctxt "moves.help.own"
 msgid "Moves made for only this Imp. They play instead of the shared ones."
 msgstr "Movimientos hechos solo para este Imp. Se usan en lugar de los compartidos."
-
-#. Help of the follow speed slider.
-msgctxt "moves.help.speed"
-msgid "How fast it goes after the pointer. Only for Hop and Glide."
-msgstr "Qué tan rápido va tras el puntero. Solo para Saltito y Deslizarse."
-
-#. Panel title.
-msgctxt "moves.title"
-msgid "Moves"
-msgstr "Movimientos"
 
 #. Field label: what the Imp is good at, which other Imps read to know whom to ask.
 msgctxt "personality.about"
@@ -1914,16 +1804,6 @@ msgstr "Dile quién ser, como un pirata amable o un ayudante callado. Hablará a
 msgctxt "personality.help.rules"
 msgid "The hidden rules that tell it how to answer. Most people never change them."
 msgstr "Las reglas ocultas que le dicen cómo responder. Casi nadie las cambia."
-
-#. Help of the voice section.
-msgctxt "personality.help.voice"
-msgid "What shows on your screen while this Imp talks out loud."
-msgstr "Se ve en tu pantalla mientras este Imp habla en voz alta."
-
-#. Help of the voice look picker.
-msgctxt "personality.help.voice_look"
-msgid "Pick the picture shown while it talks: Glow is a glowing edge, Smoke is a puff of smoke, Both shows the two, Players is a small player with play and pause."
-msgstr "Elige el dibujo que sale mientras habla: Brillo es un borde que brilla, Humo es una nube de humo, Ambos muestra los dos y Reproductores es un reproductor pequeño con play y pausa."
 
 #. Field label.
 msgctxt "personality.name"
@@ -1969,16 +1849,6 @@ msgstr "Propias"
 msgctxt "personality.title"
 msgid "Personality"
 msgstr "Personalidad"
-
-#. Field label.
-msgctxt "personality.voice"
-msgid "Voice"
-msgstr "Voz"
-
-#. Row: how the voice shows.
-msgctxt "personality.voice_look"
-msgid "Shows as"
-msgstr "Se muestra"
 
 #. Card title: about the app.
 msgctxt "phone.about.title"
@@ -2625,31 +2495,6 @@ msgctxt "servers.address_hint"
 msgid "Start with https://"
 msgstr "Empieza con https://"
 
-#. Short explanation of The Den.
-msgctxt "servers.den.about"
-msgid "Where Imps share animations, triggers and Imps. Shared items are public."
-msgstr "Donde los Imps comparten animaciones, disparadores e Imps. Lo compartido es público."
-
-#. Shows which Den is in use.
-msgctxt "servers.den.in_use"
-msgid "Using the Den at {address}"
-msgstr "Usando el Den en {address}"
-
-#. Shown on a screen that needs The Den when none is set.
-msgctxt "servers.den.needed"
-msgid "This needs a Den. Set one in Settings."
-msgstr "Esto necesita un Den. Configura uno en Ajustes."
-
-#. Under Off on the Den card.
-msgctxt "servers.den.off_note"
-msgid "Sharing and finding in The Den are off."
-msgstr "Compartir y buscar en Den está desactivado."
-
-#. Section title.
-msgctxt "servers.den.title"
-msgid "Den"
-msgstr "Den"
-
 #. Short explanation of The Hop.
 msgctxt "servers.hop.about"
 msgid "Lets your devices find each other. It only passes encrypted data."
@@ -2710,7 +2555,7 @@ msgctxt "servers.state_fail"
 msgid "Cannot reach it. Check the address."
 msgstr "No se puede conectar. Revisa la dirección."
 
-#. A check of a server set to This computer found nothing answering there. {server} is The Den or The Hop.
+#. A check of a server set to This computer found nothing answering there. {server} is The Hop.
 msgctxt "servers.state_fail_local"
 msgid "{server} isn't running on this computer. Start it first."
 msgstr "{server} no se está ejecutando en este equipo. Inícialo primero."
@@ -2764,11 +2609,6 @@ msgstr "Cómo se ve la app."
 msgctxt "settings.app.system.info"
 msgid "How the app starts and which language it speaks."
 msgstr "Cómo arranca la app y en qué idioma habla."
-
-#. Item.
-msgctxt "settings.attention.den_off"
-msgid "The Den is not set up."
-msgstr "Den no está configurado."
 
 #. Item: a linked device cannot be reached.
 msgctxt "settings.attention.device_offline"
@@ -3095,11 +2935,6 @@ msgctxt "settings.map.brains"
 msgid "Brains"
 msgstr "Cerebros"
 
-#. Node: The Den.
-msgctxt "settings.map.den"
-msgid "Den"
-msgstr "Den"
-
 #. Node: The Hop.
 msgctxt "settings.map.hop"
 msgid "Hop"
@@ -3345,16 +3180,6 @@ msgctxt "settings.tool.variables.info"
 msgid "Secret values the tool needs to run."
 msgstr "Valores secretos que la herramienta necesita."
 
-#. Share sheet choice: publish in The Den. What is shared there is public.
-msgctxt "share.den"
-msgid "Den"
-msgstr "Den"
-
-#. Shown when The Den is not set up.
-msgctxt "share.den_needs_setup"
-msgid "Set up The Den to share there."
-msgstr "Configura Den para compartir allí."
-
 #. Share sheet choice: a kit file.
 msgctxt "share.file"
 msgid "File"
@@ -3414,11 +3239,6 @@ msgstr "Los Imps que usan un modelo de este dispositivo siguen funcionando. Los 
 msgctxt "state.offline.title"
 msgid "You are offline"
 msgstr "No tienes conexión"
-
-#. Button.
-msgctxt "state.servers.set_up_den"
-msgid "Set up Den"
-msgstr "Configurar Den"
 
 #. Button.
 msgctxt "state.servers.set_up_hop"
@@ -3550,6 +3370,21 @@ msgctxt "tools.mcp_failed"
 msgid "Could not start"
 msgstr "No se pudo iniciar"
 
+#. Status of an MCP server that asks the person to sign in.
+msgctxt "tools.mcp_needs_signin"
+msgid "Sign-in needed"
+msgstr "Falta iniciar sesión"
+
+#. Button on an MCP server in the Tools list: opens the server's sign-in page.
+msgctxt "tools.mcp_sign_in"
+msgid "Sign in"
+msgstr "Iniciar sesión"
+
+#. Button on an MCP server in the Tools list: forgets the sign-in.
+msgctxt "tools.mcp_sign_out"
+msgid "Sign out"
+msgstr "Cerrar sesión"
+
 #. Status of an MCP server.
 msgctxt "tools.mcp_starting"
 msgid "Starting"
@@ -3615,6 +3450,21 @@ msgctxt "triggers.add"
 msgid "Add"
 msgstr "Añadir"
 
+#. Menu title that adds a condition.
+msgctxt "triggers.cond.add"
+msgid "Add"
+msgstr "Añadir"
+
+#. Menu title when a trigger has no conditions.
+msgctxt "triggers.cond.always"
+msgid "Always"
+msgstr "Siempre"
+
+#. Help of the button that removes a condition.
+msgctxt "triggers.cond.remove"
+msgid "Remove this condition"
+msgstr "Quitar esta condición"
+
 #. Action on a trigger.
 msgctxt "triggers.delete"
 msgid "Delete trigger"
@@ -3640,25 +3490,60 @@ msgctxt "triggers.empty"
 msgid "No triggers yet. Add one and {name} acts on its own."
 msgstr "Aún no hay disparadores. Añade uno y {name} actuará por su cuenta."
 
+#. Trigger editor row: the steps.
+msgctxt "triggers.f.do"
+msgid "Do"
+msgstr "Hacer"
+
+#. Trigger editor row: which Imp.
+msgctxt "triggers.f.for"
+msgid "For"
+msgstr "Para"
+
+#. Trigger editor row: the conditions.
+msgctxt "triggers.f.only_if"
+msgid "Only if"
+msgstr "Solo si"
+
+#. Trigger editor row: the event.
+msgctxt "triggers.f.when"
+msgid "When"
+msgstr "Cuando"
+
+#. Row of the trigger editor: how the Imp follows the cursor.
+msgctxt "triggers.follow"
+msgid "Follow"
+msgstr "Seguir"
+
+#. Event submenu: pointer gestures on the Imp.
+msgctxt "triggers.gestures"
+msgid "Gestures"
+msgstr "Gestos"
+
+#. Event menu group: things the Mac does.
+msgctxt "triggers.group.mac"
+msgid "Mac"
+msgstr "Mac"
+
+#. Event menu group: things about time.
+msgctxt "triggers.group.time"
+msgid "Time"
+msgstr "Tiempo"
+
+#. Event menu group: things the person does.
+msgctxt "triggers.group.you"
+msgid "You"
+msgstr "Tú"
+
 #. Help of the trigger action.
 msgctxt "triggers.help.do"
-msgid "What the Imp does when it goes off."
-msgstr "Lo que hace el Imp cuando se activa."
+msgid "The steps the Imp runs, in order, when it goes off."
+msgstr "Los pasos que el Imp ejecuta, en orden, cuando se activa."
 
 #. Help for the For choice in the trigger editor.
 msgctxt "triggers.help.for"
 msgid "Which Imp does the job. A change here is for this Imp alone unless you pick Every Imp."
 msgstr "Qué Imp hace el trabajo. Un cambio aquí es solo para este Imp, salvo que elijas Todos los Imps."
-
-#. Help of the trigger input.
-msgctxt "triggers.help.input"
-msgid "What the Imp gets to look at when it goes off, like the clipboard."
-msgstr "Lo que el Imp puede mirar cuando se activa, como el portapapeles."
-
-#. Help of the instruction field.
-msgctxt "triggers.help.instruction"
-msgid "Tell the Imp in your own words what to do."
-msgstr "Dile al Imp con tus palabras qué hacer."
 
 #. Help of the triggers list.
 msgctxt "triggers.help.list"
@@ -3670,20 +3555,35 @@ msgctxt "triggers.help.name"
 msgid "A name so you can find it again."
 msgstr "Un nombre para encontrarlo después."
 
-#. Help for the starter kit button.
-msgctxt "triggers.help.starter"
-msgid "The triggers Imp comes with: clicks, falling asleep and waking up. You see them before anything is added."
-msgstr "Los disparadores que trae Imp: clics, dormirse y despertar. Los ves antes de añadir nada."
+#. Help of the conditions row.
+msgctxt "triggers.help.only_if"
+msgid "Every condition has to hold at that moment, like the battery being low or the time being late."
+msgstr "Todas las condiciones tienen que cumplirse en ese momento, como poca batería o una hora tardía."
+
+#. Info of the trigger editor.
+msgctxt "triggers.help.sheet"
+msgid "When the event happens and every condition holds, the steps run in order."
+msgstr "Cuando ocurre el evento y se cumplen todas las condiciones, los pasos se ejecutan en orden."
+
+#. Help of the follow speed slider of a follow trigger.
+msgctxt "triggers.help.speed"
+msgid "How fast it goes after the pointer. Only for Hop and Glide."
+msgstr "Qué tan rápido va tras el puntero. Solo para Saltito y Deslizarse."
 
 #. Help of the trigger conditions.
 msgctxt "triggers.help.when"
 msgid "What has to happen to set it off, like a time, an app or a low battery."
 msgstr "Lo que tiene que pasar para activarlo, como una hora, una app o poca batería."
 
-#. Field: the instruction.
-msgctxt "triggers.instruction"
-msgid "Task"
-msgstr "Tarea"
+#. Hint under an animation: it plays on an event only through a trigger.
+msgctxt "triggers.hint.animation"
+msgid "To play it on an event, add a trigger."
+msgstr "Para reproducirla en un evento, añade un disparador."
+
+#. Button that opens a new trigger that plays the animation.
+msgctxt "triggers.hint.button"
+msgid "Add trigger"
+msgstr "Añadir disparador"
 
 #. Menu item on a shared trigger: make this Imp's own version. The other Imps keep the shared one.
 msgctxt "triggers.just_for"
@@ -3694,6 +3594,66 @@ msgstr "Solo para {name}"
 msgctxt "triggers.new"
 msgid "New"
 msgstr "Nuevo"
+
+#. Name of the open-something choice for screen readers.
+msgctxt "triggers.open"
+msgid "Open"
+msgstr "Abrir"
+
+#. Open step: the chat.
+msgctxt "triggers.open.chat"
+msgid "Chat"
+msgstr "Chat"
+
+#. Open step: listening.
+msgctxt "triggers.open.listen"
+msgid "Listen"
+msgstr "Escuchar"
+
+#. Open step: settings.
+msgctxt "triggers.open.settings"
+msgid "Settings"
+msgstr "Ajustes"
+
+#. Open step: the text box.
+msgctxt "triggers.open.text_box"
+msgid "Text box"
+msgstr "Cuadro de texto"
+
+#. Problem: an ask step with nothing to ask.
+msgctxt "triggers.problem.ask"
+msgid "Write what the Imp should do, or hand over the clipboard."
+msgstr "Escribe lo que debe hacer el Imp, o entrega el portapapeles."
+
+#. Problem: a keys trigger has no keys.
+msgctxt "triggers.problem.keys"
+msgid "Record the keys that set it off."
+msgstr "Graba las teclas que lo activan."
+
+#. Problem: a step names an animation the Imp does not have.
+msgctxt "triggers.problem.missing"
+msgid "This Imp has no animation called “{name}”."
+msgstr "Este Imp no tiene ninguna animación llamada «{name}»."
+
+#. Problem: no steps.
+msgctxt "triggers.problem.no_steps"
+msgid "Add at least one step."
+msgstr "Añade al menos un paso."
+
+#. Problem: a play step with no animation.
+msgctxt "triggers.problem.play"
+msgid "Pick the animation to play."
+msgstr "Elige la animación que se reproduce."
+
+#. Problem: a say step with no text.
+msgctxt "triggers.problem.say"
+msgid "Write what the Imp says."
+msgstr "Escribe lo que dice el Imp."
+
+#. Problem: too many steps.
+msgctxt "triggers.problem.too_many"
+msgid "A trigger has five steps at most."
+msgstr "Un disparador tiene cinco pasos como máximo."
 
 #. Choice in the trigger editor: the change is for this Imp only.
 msgctxt "triggers.scope.just"
@@ -3710,20 +3670,70 @@ msgctxt "triggers.scope.note_version"
 msgid "Saves a version for {name} only. The other Imps keep the shared one."
 msgstr "Guarda una versión solo para {name}. Los demás Imps conservan la compartida."
 
-#. One trigger as a sentence. The event and the action are short phrases.
-msgctxt "triggers.sentence"
-msgid "When {event}, {action}."
-msgstr "Cuando {event}, {action}."
-
 #. Menu item on this Imp's trigger: share it with every Imp.
 msgctxt "triggers.share_every"
 msgid "Share to all"
 msgstr "Para todos"
 
-#. Button in the empty triggers list: review and add the starter kit.
-msgctxt "triggers.starter"
-msgid "Starter kit"
-msgstr "Kit inicial"
+#. Menu title that adds a step.
+msgctxt "triggers.step.add"
+msgid "Add a step"
+msgstr "Añadir un paso"
+
+#. Toggle of a say step: also speak it.
+msgctxt "triggers.step.aloud"
+msgid "Aloud"
+msgstr "En voz alta"
+
+#. Animation menu of a sleep or wake step: no animation.
+msgctxt "triggers.step.anim_none"
+msgid "The usual way"
+msgstr "Lo habitual"
+
+#. Placeholder of the instruction of an ask step.
+msgctxt "triggers.step.ask_ph"
+msgid "What should it do? Say it in your own words."
+msgstr "¿Qué debe hacer? Dilo con tus palabras."
+
+#. Toggle of an ask step: hand over the clipboard.
+msgctxt "triggers.step.clipboard"
+msgid "With clipboard"
+msgstr "Con el portapapeles"
+
+#. Help of the button that moves a step down.
+msgctxt "triggers.step.down"
+msgid "Move down"
+msgstr "Bajar"
+
+#. Animation menu when the Imp has none.
+msgctxt "triggers.step.no_animations"
+msgid "No animations yet"
+msgstr "Aún no hay animaciones"
+
+#. Animation menu when none is picked yet.
+msgctxt "triggers.step.pick_animation"
+msgid "Pick an animation"
+msgstr "Elige una animación"
+
+#. Help of the button that removes a step.
+msgctxt "triggers.step.remove"
+msgid "Remove step"
+msgstr "Quitar paso"
+
+#. Placeholder of the text of a say step.
+msgctxt "triggers.step.say_ph"
+msgid "What it says"
+msgstr "Lo que dice"
+
+#. Label of the follow speed.
+msgctxt "triggers.step.speed"
+msgid "Speed"
+msgstr "Velocidad"
+
+#. Help of the button that moves a step up.
+msgctxt "triggers.step.up"
+msgid "Move up"
+msgstr "Subir"
 
 #. Screen reader name of a trigger switch.
 msgctxt "triggers.switch"
@@ -3749,6 +3759,81 @@ msgstr "Se quita la versión de {name}."
 msgctxt "triggers.use_shared.title"
 msgid "Use the shared “{name}” again?"
 msgstr "¿Volver a usar “{name}” compartido?"
+
+#. Placeholder of the app field.
+msgctxt "triggers.v.any_app"
+msgid "Any app"
+msgstr "Cualquier app"
+
+#. Condition: the Imp is asleep.
+msgctxt "triggers.v.asleep"
+msgid "Asleep"
+msgstr "Dormido"
+
+#. Near event: no wait.
+msgctxt "triggers.v.at_once"
+msgid "Right away"
+msgstr "Enseguida"
+
+#. Condition: the Imp is awake.
+msgctxt "triggers.v.awake"
+msgid "Awake"
+msgstr "Despierto"
+
+#. Name of a two-way choice for screen readers.
+msgctxt "triggers.v.choice"
+msgid "Choice"
+msgstr "Opción"
+
+#. Name of the clicks choice for screen readers.
+msgctxt "triggers.v.clicks"
+msgid "Clicks"
+msgstr "Clics"
+
+#. Network event: comes back.
+msgctxt "triggers.v.comes_online"
+msgid "Comes back"
+msgstr "Vuelve"
+
+#. Network event: goes away.
+msgctxt "triggers.v.goes_offline"
+msgid "Goes away"
+msgstr "Se va"
+
+#. Network condition: offline.
+msgctxt "triggers.v.offline"
+msgid "Offline"
+msgstr "Sin conexión"
+
+#. Charger condition: on battery.
+msgctxt "triggers.v.on_battery"
+msgid "On battery"
+msgstr "Con batería"
+
+#. Charger condition: plugged in.
+msgctxt "triggers.v.on_charger"
+msgid "On the charger"
+msgstr "Con el cargador"
+
+#. Network condition: online.
+msgctxt "triggers.v.online"
+msgid "Online"
+msgstr "Con conexión"
+
+#. Help of the open apps menu.
+msgctxt "triggers.v.pick_app"
+msgid "Pick an open app"
+msgstr "Elige una app abierta"
+
+#. Charger event: plugged in.
+msgctxt "triggers.v.plugged"
+msgid "Plugged in"
+msgstr "Se conecta"
+
+#. Charger event: unplugged.
+msgctxt "triggers.v.unplugged"
+msgid "Unplugged"
+msgstr "Se desconecta"
 
 #. Switch on the iPhone: voices in new replies.
 msgctxt "voice.autoplay"

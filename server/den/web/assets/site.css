@@ -243,3 +243,9 @@ thead th { color: var(--muted); font-weight: 700; }
 @media (forced-colors: active) {
   .btn.primary, .chip[aria-pressed="true"], .seg.now .beat { border: 2px solid ButtonText; }
 }
+
+/* Connect panel on the home page */
+.connect { margin: 0 0 24px; }
+.connect h2 { margin-bottom: .5em; }
+.snippet { margin: 0 0 12px; padding: 12px 14px; background: var(--code-bg); border: 1px solid var(--edge); border-radius: 12px; overflow-x: auto; }
+.snippet code { background: none; padding: 0; white-space: pre; }

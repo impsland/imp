@@ -5,6 +5,8 @@ public enum MCPStatus: Hashable, Sendable {
     case connecting
     case ready(toolCount: Int, toolNames: [String])
     case failed(String)
+    /// The server asks for a sign-in the person has not given (or it ran out).
+    case needsSignIn
 }
 
 /// Owns one client per enabled server and exposes all their tools to the model.
@@ -16,19 +18,89 @@ public actor MCPHub: ToolProvider {
         var specs: [ToolSpec] = []
     }
 
+    /// The tool name of the stand-in a server offers while it needs a sign-in.
+    static let signInTool = "sign_in"
+
     public private(set) var status: [UUID: MCPStatus] = [:]
     private var entries: [UUID: Entry] = [:]
     private var onStatusChange: (@Sendable ([UUID: MCPStatus]) -> Void)?
 
-    public init() {}
+    private let auth: MCPAuthStore
+    private var signIn: (@Sendable (MCPServerConfig) async throws -> Void)?
+
+    private let session: URLSession
+
+    public init(auth: MCPAuthStore = .standard) { self.auth = auth; session = .shared }
+    init(auth: MCPAuthStore, session: URLSession) { self.auth = auth; self.session = session }
+
+    /// What to do when a tool call needs a sign-in: the app shows the browser sheet and returns
+    /// when it is done, or throws when the person cancelled or it failed.
+    public func setSignIn(_ handler: (@Sendable (MCPServerConfig) async throws -> Void)?) { signIn = handler }
+
+    /// Connects `id` again (after a sign-in or sign-out). Never opens the sign-in sheet.
+    public func reconnect(_ id: UUID) async {
+        guard let config = entries[id]?.config else { return }
+        entries[id]?.task?.cancel()
+        let old = entries[id]?.client
+        entries[id]?.client = nil
+        entries[id]?.specs = []
+        status[id] = .connecting
+        entries[id]?.task = Task { await self.connect(config, interactive: false) }
+        notify()
+        await old?.close()
+    }
+
+    /// Runs the sign-in for `id` (the sheet, through the handler), connects again and says what
+    /// came of it, in words for the model. The stand-in tool's body.
+    private func signInAndReport(_ id: UUID) async -> String {
+        guard let config = entries[id]?.config else { return String(localized: "Unknown tool.") }
+        guard let signIn else { return Self.openImp(config.name) }
+        do {
+            try await signIn(config)
+        } catch MCPSignInError.notAttended {
+            return Self.openImp(config.name)
+        } catch is CancellationError {
+            return String(localized: "The sign-in to \(config.name) was cancelled. Its tools are not available.")
+        } catch MCPSignInError.cancelled {
+            return String(localized: "The sign-in to \(config.name) was cancelled. Its tools are not available.")
+        } catch {
+            return String(localized: "The sign-in to \(config.name) failed: \(error.localizedDescription)")
+        }
+        await reconnect(id)
+        await entries[id]?.task?.value
+        if case .ready(_, let names)? = status[id] {
+            let exposedNames = exposed().filter { $0.server == id }.map(\.spec.name)
+            return String(localized: "Signed in to \(config.name). Its tools are now available: \((exposedNames.isEmpty ? names : exposedNames).joined(separator: ", ")).")
+        }
+        return String(localized: "Signed in to \(config.name), but its tools could not be listed.")
+    }
+
+    private static func openImp(_ server: String) -> String {
+        String(localized: "Open Imp and sign in to \(server) in Tools")
+    }
+
+    private static func standIn(for config: MCPServerConfig) -> ToolSpec {
+        ToolSpec(name: signInTool,
+                 description: String(localized: "\(config.name) needs the user to sign in before its tools are available. Call this when the user wants to use \(config.name); it opens the sign-in page."),
+                 inputSchema: (try? JSONValue(jsonString: #"{"type":"object","properties":{}}"#)) ?? .object([:]))
+    }
 
     /// Called with the full status table whenever it changes.
     public func setStatusHandler(_ handler: (@Sendable ([UUID: MCPStatus]) -> Void)?) {
         onStatusChange = handler
     }
 
-    /// Reconciles running connections with `configs`.
-    public func update(_ configs: [MCPServerConfig]) async {
+    /// Reconciles running connections with `configs`. `userInitiated`: every changed server was
+    /// added, switched on or edited by the person (see `update(_:signInNow:)`).
+    public func update(_ configs: [MCPServerConfig], userInitiated: Bool) async {
+        await update(configs, signInNow: userInitiated ? Set(configs.map(\.id)) : [])
+    }
+
+    /// Reconciles running connections with `configs`. `signInNow`: the servers the person just
+    /// added, switched on or edited (never the app starting, a background refresh, or a change that
+    /// came from another device). Such a server that answers "sign in" gets the sign-in sheet at
+    /// once and is connected again when it is done. Any other stays "Sign-in needed".
+    public func update(_ configs: [MCPServerConfig], signInNow: Set<UUID> = []) async {
         let wanted = Dictionary(uniqueKeysWithValues: configs.filter(\.isEnabled).map { ($0.id, $0) })
         for (id, entry) in entries where wanted[id] != entry.config {
             await drop(id)
@@ -36,7 +108,7 @@ public actor MCPHub: ToolProvider {
         for (id, config) in wanted where entries[id] == nil {
             status[id] = .connecting
             var entry = Entry(config: config)
-            entry.task = Task { await self.connect(config) }
+            entry.task = Task { await self.connect(config, interactive: signInNow.contains(id)) }
             entries[id] = entry
         }
         notify()
@@ -45,7 +117,7 @@ public actor MCPHub: ToolProvider {
     /// Connects, lists tools and disconnects. For a Settings "Test" button.
     public func test(_ config: MCPServerConfig) async -> MCPStatus {
         do {
-            let client = try MCPClient(config: config)
+            let client = try MCPClient(config: config, auth: auth, session: session)
             do {
                 try await client.connect()
                 let names = try await client.listTools().map(\.name)
@@ -56,8 +128,13 @@ public actor MCPHub: ToolProvider {
                 throw error
             }
         } catch {
-            return .failed(error.localizedDescription)
+            return Self.status(for: error)
         }
+    }
+
+    private static func status(for error: Error) -> MCPStatus {
+        if case MCPError.needsSignIn = error { return .needsSignIn }
+        return .failed(error.localizedDescription)
     }
 
     // MARK: ToolProvider
@@ -93,11 +170,31 @@ public actor MCPHub: ToolProvider {
     }
 
     public func call(_ name: String, arguments: String) async throws -> String {
-        guard let target = exposed().first(where: { $0.spec.name == name }),
-              let client = entries[target.server]?.client else {
+        guard let target = exposed().first(where: { $0.spec.name == name }) else {
             throw MCPError.badConfig("Unknown tool \(name).")
         }
-        return try await client.callTool(name: target.tool, argumentsJSON: arguments)
+        if entries[target.server]?.client == nil, status[target.server] == .needsSignIn, target.tool == Self.signInTool {
+            return await signInAndReport(target.server)
+        }
+        guard let client = entries[target.server]?.client else {
+            throw MCPError.badConfig("Unknown tool \(name).")
+        }
+        do {
+            return try await client.callTool(name: target.tool, argumentsJSON: arguments)
+        } catch MCPError.needsSignIn {
+            // Ask the person to sign in (they can cancel), then try the call once more.
+            guard let config = entries[target.server]?.config, let signIn else {
+                throw MCPError.signInRequired(server: entries[target.server]?.config.name ?? "")
+            }
+            do { try await signIn(config) } catch is CancellationError { throw CancellationError() } catch {
+                throw MCPError.signInRequired(server: config.name)
+            }
+            do {
+                return try await client.callTool(name: target.tool, argumentsJSON: arguments)
+            } catch MCPError.needsSignIn {
+                throw MCPError.signInRequired(server: config.name)
+            }
+        }
     }
 
     // MARK: Naming
@@ -120,19 +217,32 @@ public actor MCPHub: ToolProvider {
 
     // MARK: Connections
 
-    private func connect(_ config: MCPServerConfig) async {
-        let outcome: Result<(MCPClient, [ToolSpec]), Error>
+    private func open(_ config: MCPServerConfig) async -> Result<(MCPClient, [ToolSpec]), Error> {
         do {
-            let client = try MCPClient(config: config)
+            let client = try MCPClient(config: config, auth: auth, session: session)
             do {
                 try await client.connect()
-                outcome = .success((client, try await client.listTools()))
+                return .success((client, try await client.listTools()))
             } catch {
                 await client.close()
                 throw error
             }
         } catch {
-            outcome = .failure(error)
+            return .failure(error)
+        }
+    }
+
+    private func connect(_ config: MCPServerConfig, interactive: Bool) async {
+        var outcome = await open(config)
+        // The person just asked for this server and it wants a sign-in: ask at once, then try again.
+        if interactive, case .failure(MCPError.needsSignIn) = outcome, let signIn,
+           entries[config.id]?.config == config, !Task.isCancelled {
+            entries[config.id]?.specs = [Self.standIn(for: config)]
+            status[config.id] = .needsSignIn
+            notify()
+            if (try? await signIn(config)) != nil, entries[config.id]?.config == config, !Task.isCancelled {
+                outcome = await open(config)
+            }
         }
         // Ignore results for entries that were dropped or replaced meanwhile.
         guard entries[config.id]?.config == config, !Task.isCancelled else {
@@ -149,7 +259,9 @@ public actor MCPHub: ToolProvider {
             await client.onEnd { [weak self] error in Task { await self?.ended(config.id, client: key, error) } }
         case .failure(let error):
             entries[config.id]?.task = nil
-            status[config.id] = .failed(error.localizedDescription)
+            let state = Self.status(for: error)
+            entries[config.id]?.specs = state == .needsSignIn ? [Self.standIn(for: config)] : []
+            status[config.id] = state
         }
         notify()
     }
@@ -159,8 +271,9 @@ public actor MCPHub: ToolProvider {
     private func ended(_ id: UUID, client: ObjectIdentifier, _ error: MCPError) {
         guard let current = entries[id]?.client, ObjectIdentifier(current) == client else { return }
         entries[id]?.client = nil
-        entries[id]?.specs = []
-        status[id] = .failed(error.localizedDescription)
+        let state = Self.status(for: error)
+        entries[id]?.specs = state == .needsSignIn ? entries[id].map { [Self.standIn(for: $0.config)] } ?? [] : []
+        status[id] = state
         notify()
     }
 

@@ -21,31 +21,27 @@ builds the iPhone app for the Simulator.
 | Command           | What it does                                                                                                   |
 | ----------------- | -------------------------------------------------------------------------------------------------------------- |
 | `make test-live`  | Calls the real API configured in `.env`: chat, tools, recaps, pictures and speech through MCP. **Costs a few cents.** |
-| `make test-server` | Plays a Mac, an iPhone and an Imp against a running Den and Hop                                              |
+| `make test-server` | Runs the Hop tests against a running Hop|
 
-`make test-server` reads two variables:
+`make test-server` reads one variable:
 
 | Variable     | Default                             | Meaning                                                    |
 | ------------ | ----------------------------------- | ---------------------------------------------------------- |
-| `IMP_SERVER` | `http://localhost:8080`             | The Den's URL                                              |
 | `IMP_HOP`    | `<LocalHostName>.local:4677`        | The Hop's host and port, using this Mac's `.local` name    |
 
 Don't use `localhost` for `IMP_HOP`. A linking code never gives out a loopback Hop, so the Hop tests would find no route.
 
 ### Running the server tests
 
-1. Start a Den and a Hop. See `server/README.md`.
+1. Start a Hop (`imp serve`, or see `server/README.md`).
 2. Start the Hop with `HOP_PER_IP_PER_MINUTE=100000` so repeated runs stay under its rate limit.
-3. Start the Den with a fresh `DEN_DATABASE`, for example a new file in `/tmp`. The Den limits new accounts per
-   address for hours, and every run makes accounts.
-4. Run the tests:
+3. Run the tests:
 
    ```sh
-   make test-server IMP_SERVER=http://localhost:8080 IMP_HOP=<LocalHostName>.local:4677
+   make test-server IMP_HOP=<LocalHostName>.local:4677
    ```
 
-The Den tests are in Swift (`apple/Tests/ImpKitTests/ServerLiveTests.swift`). The Hop tests are in Rust
-(`chat/tests/hop_live.rs`).
+The Hop tests are in Rust (`chat/tests/hop_live.rs`).
 
 ## The iPhone app
 

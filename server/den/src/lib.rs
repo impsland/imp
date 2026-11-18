@@ -1,11 +1,10 @@
-//! The Imp Den: accounts, shared kits, the animation catalog, the web gallery and the MCP
+//! The Imp Den: accounts, shared kits, the web gallery and the MCP
 //! endpoint. See PROTOCOL.md.
 #![forbid(unsafe_code)]
 
 pub mod admin;
 pub mod api;
 pub mod app;
-pub mod catalog;
 pub mod config;
 mod crypto;
 pub mod db;
@@ -16,6 +15,8 @@ mod installs;
 pub mod kit;
 pub mod mcp;
 mod meta;
+pub mod oauth_http;
+mod redirect;
 pub mod serve;
 mod web;
 

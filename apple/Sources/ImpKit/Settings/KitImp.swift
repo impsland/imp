@@ -134,7 +134,7 @@ public struct KitImp: Equatable, Sendable, Identifiable {
         if let list = json["triggers"]?.array {
             for (i, item) in list.enumerated() {
                 do {
-                    var shortcut = try Shortcut(tool: item, imp: UUID(), animation: MadeAnimation.resolver(imp.animations))
+                    var shortcut = try Shortcut(tool: item, imp: UUID())
                     shortcut.performer = nil
                     imp.triggers.append(shortcut)
                 } catch {
@@ -166,7 +166,7 @@ public struct KitImp: Equatable, Sendable, Identifiable {
         if let brain { o["brain"] = brain.kitJSON }
         let used = servers.compactMap { keys[$0] }
         if !used.isEmpty { o["mcpServers"] = .array(used.map { .string($0) }) }
-        if !triggers.isEmpty { o["triggers"] = .array(triggers.map { $0.kitJSON(with: animations) }) }
+        if !triggers.isEmpty { o["triggers"] = .array(triggers.map { $0.kitJSON }) }
         if !chats.isEmpty { o["chats"] = .array(chats.map(\.kitJSON)) }
         if !traits.isPlain { o["traits"] = traits.kitJSON }
         if !animations.isEmpty { o["animations"] = .array(animations.map(\.kitJSON)) }
@@ -372,7 +372,6 @@ extension ImpPreferences {
         for var trigger in source.triggers {
             trigger.id = UUID()
             trigger.performer = p.id
-            if case .custom(let old)? = trigger.animation { trigger.animation = adopted[old].map { .custom($0) } ?? trigger.animation }
             shortcuts.append(trigger)
         }
         let chats = withChats ? source.chats.sorted { $0.updated < $1.updated } : []
@@ -384,8 +383,7 @@ extension ImpPreferences {
 
 extension Kit {
     /// The Imps `ids` (in the troupe's order) with their triggers, the tools they use and, when `chats`
-    /// has any for them, their chats. `shared` adds the triggers every Imp answers to (the starter kit's
-    /// are left out unless the user changed them).
+    /// has any for them, their chats. `shared` adds the triggers every Imp answers to.
     public static func exporting(imps ids: Set<UUID>, from prefs: ImpPreferences, name: String = "", shared: Bool = false,
                                  chats: [UUID: [Chat]] = [:]) -> Kit {
         var kit = Kit(name: name)
@@ -393,7 +391,7 @@ extension Kit {
         let used = Set(kit.imps.flatMap(\.servers))
         kit.servers = prefs.mcpServers.filter { used.contains($0.id) }
         if shared {
-            kit.triggers = prefs.sharedShortcuts.filter { !prefs.isStarter($0) }
+            kit.triggers = prefs.sharedShortcuts
         }
         return kit
     }

@@ -27,7 +27,8 @@ final class PocketRuntime {
     /// How many jobs one Imp may have queued (or running), and one remote device in all.
     private static let queueLimit = 5
 
-    private static let animations = Reaction.allCases.map(\.rawValue)
+    /// Pocket Imps carry no animations of their own (there are no preset ones), so they get no play tool.
+    private static let animations: [String] = []
 
     private let store: PocketStore
     /// What these Imps asked Imps on other devices: the answerer files it there, so this iPhone keeps its own copy.
@@ -297,9 +298,7 @@ final class PocketRuntime {
         return PocketTalk(others: named.map(\.name), send: { [weak self] to, text in
             guard let self else { throw CancellationError() }
             return try await self.deliver(text, to: to, from: id, among: named)
-        }, animations: Self.animations, play: { [weak self] names in
-            await self?.play(names, for: id)
-        }, profiles: profiles, later: { [weak self] to, text in
+        }, animations: Self.animations, play: nil, profiles: profiles, later: { [weak self] to, text in
             guard let self else { throw CancellationError() }
             return try await self.deliverLater(text, to: to, from: id, among: named, depth: depth)
         })
@@ -466,14 +465,6 @@ final class PocketRuntime {
 
     private func finish(_ message: UUID, _ result: Result<String, Error>) {
         pending.removeValue(forKey: message)?.resume(with: result)
-    }
-
-    private func play(_ names: [String], for id: UUID) {
-        let beats = names.compactMap(Reaction.init(rawValue:)).flatMap { $0.beats }
-        guard !beats.isEmpty else { return }
-        let act = Performance(key: "mac", steps: beats.map(AnticStep.init))
-        acts[id] = act
-        onEvent?(.animate(id, act))
     }
 
     // MARK: Hearing other devices

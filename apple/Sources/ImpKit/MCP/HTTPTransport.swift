@@ -12,10 +12,12 @@ public final class HTTPTransport: MCPTransport, @unchecked Sendable {
     private let lock = NSLock()
     private var sessionID: String?
     private var protocolVersion: String?
+    private let authorizer: MCPAuthorizer?
 
-    public init(url: URL, headers: [String: String], session: URLSession = .shared) {
+    public init(url: URL, headers: [String: String], session: URLSession = .shared, auth: MCPAuthStore? = nil) {
         (incoming, continuation) = AsyncStream.makeStream(of: String.self)
         self.url = url; self.headers = headers; self.session = session
+        authorizer = auth.map { MCPAuthorizer(serverURL: url.absoluteString, store: $0, session: session) }
     }
 
     public func start() async throws {}
@@ -24,10 +26,14 @@ public final class HTTPTransport: MCPTransport, @unchecked Sendable {
         lock.withLock { self.protocolVersion = protocolVersion }
     }
 
-    private func request(method: String, protocolHeaders: [McpHeader], timeout: TimeInterval) -> URLRequest {
+    /// A header the person set themselves wins over a stored sign-in.
+    private var setsAuthorization: Bool { headers.keys.contains { $0.lowercased() == "authorization" } }
+
+    private func request(method: String, protocolHeaders: [McpHeader], timeout: TimeInterval) async -> URLRequest {
         var r = URLRequest(url: url, timeoutInterval: timeout)
         r.httpMethod = method
         for (k, v) in headers { r.setValue(v, forHTTPHeaderField: k) }
+        if !setsAuthorization, let h = await authorizer?.header() { r.setValue(h.value, forHTTPHeaderField: h.name) }
         for h in protocolHeaders { r.setValue(h.value, forHTTPHeaderField: h.name) }
         return r
     }
@@ -38,10 +44,14 @@ public final class HTTPTransport: MCPTransport, @unchecked Sendable {
 
     public func send(_ message: String) async throws {
         let (session, version) = known
-        var r = request(method: "POST", protocolHeaders: mcpPostHeaders(session: session, protocolVersion: version), timeout: 120)
-        r.httpBody = Data(message.utf8)
-        let (data, response) = try await self.session.data(for: r)
+        let protocolHeaders = mcpPostHeaders(session: session, protocolVersion: version)
+        var (data, response) = try await post(message, protocolHeaders)
+        if let http = response as? HTTPURLResponse, http.statusCode == 401, !setsAuthorization,
+           let authorizer, await authorizer.refreshStored() {
+            (data, response) = try await post(message, protocolHeaders)   // once, with the fresh token
+        }
         guard let http = response as? HTTPURLResponse else { return }
+        if let signIn = needsSignIn(http) { throw signIn }
         if let id = http.value(forHTTPHeaderField: mcpSessionHeaderName()) {
             lock.withLock { sessionID = id }
         }
@@ -57,11 +67,26 @@ public final class HTTPTransport: MCPTransport, @unchecked Sendable {
         }
     }
 
+    private func post(_ message: String, _ protocolHeaders: [McpHeader]) async throws -> (Data, URLResponse) {
+        var r = await request(method: "POST", protocolHeaders: protocolHeaders, timeout: 120)
+        r.httpBody = Data(message.utf8)
+        return try await session.data(for: r)
+    }
+
+    /// A 401, or a 403 that asks for more permission, means the person has to sign in (again).
+    private func needsSignIn(_ http: HTTPURLResponse) -> MCPError? {
+        guard http.statusCode == 401 || http.statusCode == 403 else { return nil }
+        let challenge = http.value(forHTTPHeaderField: "WWW-Authenticate").flatMap { mcpParseChallenge(header: $0) }
+        if http.statusCode == 403, challenge?.insufficientScope != true { return nil }
+        if setsAuthorization { return nil }   // their own credentials were refused: plain HTTP error
+        return .needsSignIn(url: url.absoluteString, challenge: challenge)
+    }
+
     /// Ends the session with a DELETE when the server started one, as Streamable HTTP says.
     public func close() async {
         let (session, version) = known
         if let end = mcpEndHeaders(session: session, protocolVersion: version) {
-            _ = try? await self.session.data(for: request(method: "DELETE", protocolHeaders: end, timeout: 5))
+            _ = try? await self.session.data(for: await request(method: "DELETE", protocolHeaders: end, timeout: 5))
             lock.withLock { sessionID = nil }
         }
         continuation.finish()

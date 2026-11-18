@@ -1,4 +1,7 @@
 import Foundation
+#if os(iOS)
+import UIKit
+#endif
 import ImpCore
 
 /// What a pocket Imp can reach besides its own thinking. The app provides it for each ask.
@@ -48,6 +51,21 @@ public struct PocketBrain: Sendable {
         self.secrets = secrets; self.session = session; self.limits = limits
     }
 
+    /// What a server's sign-in stand-in tool does here. A request can arrive while nobody is looking at
+    /// the phone, so the sheet opens only when the app is in the foreground; otherwise the model is told
+    /// to ask the person to open Imp.
+    static let signIn: (@Sendable (MCPServerConfig) async throws -> Void)? = {
+        #if os(iOS)
+        return { server in
+            guard await MainActor.run(body: { UIApplication.shared.applicationState == .active }) else { throw MCPSignInError.notAttended }
+            let presenter = await MainActor.run { WebAuthPresenter() }
+            try await MCPSignIn(presenter: presenter).signIn(to: server.url.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
+        #else
+        return nil
+        #endif
+    }()
+
     /// Asks `imp` something and returns the finished turn. `sender` is the Imp that asked, if one did
     /// (not you): its turn is filed in a chat of its own and the Imp doesn't get to message anyone
     /// back (two Imps can't keep messaging each other forever). `onWork` hears what it's doing as it
@@ -75,6 +93,7 @@ public struct PocketBrain: Sendable {
                 config.headers = secrets.headerValues(of: server, imp: imp.id)
                 return config
             }
+            await hub.setSignIn(Self.signIn)
             await hub.update(configs)
             var tools: [ToolProvider] = []
             if !configs.isEmpty { tools.append(hub) }

@@ -14,8 +14,6 @@ struct KitFlowSheet: View {
         Group {
             if let review = flow.review {
                 KitReviewSheet(model: model, flow: flow, review: review, router: router)
-            } else if flow.browsing && !flow.isLoading {
-                DenBrowserSheet(model: model, flow: flow, router: router)
             } else {
                 KitEntrySheet(model: model, flow: flow, router: router)
             }
@@ -42,9 +40,6 @@ struct KitEntrySheet: View {
         SheetScaffold(icon: "shippingbox.fill", title: "Add a kit or an Imp",
                       info: "Paste a kit, a web address or an imp:// link, or drop a file. You review it first.") {
             HStack(spacing: Spacing.small) {
-                Button { flow.browsing = true } label: { FitLabel("Browse the Den", systemImage: "books.vertical") }
-                    .buttonStyle(.imp(.secondary, small: true))
-                    .help("Search what other people shared.")
                 Button { paste() } label: { FitLabel("Paste", systemImage: "doc.on.clipboard") }
                     .buttonStyle(.imp(.secondary, small: true))
                     .help("Fill in from the clipboard.")

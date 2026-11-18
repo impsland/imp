@@ -52,20 +52,13 @@ The device has no network.
 
 ![A sleeping Imp](./images/imp-sleeping.png)
 
-## Servers partly set up
+## The Hop not set up
 
-The Den and The Hop are separate. Each one is either set up or not set up. The app never blocks on them. The Imps work with neither.
+The Hop is the only server setting. The app never blocks on it, and the Imps work without it. Without a Hop, Devices is marked and its page says `settings.attention.hop_off`: devices only find each other on the same network (`servers.hop.needed`).
 
-| The Den | The Hop | What the settings say |
-| --- | --- | --- |
-| Not set up | Not set up | Sharing is marked and its page says `settings.attention.den_off`. Devices is marked and its page says `settings.attention.hop_off`. Both map nodes are off. |
-| Set up | Not set up | Devices is marked and says `settings.attention.hop_off`. Devices only find each other on the same network (`servers.hop.needed`). |
-| Not set up | Set up | Sharing is marked and says `settings.attention.den_off`. A screen that needs the Den says `servers.den.needed` with the button `state.servers.set_up_den`, which opens Sharing. |
-| Set up | Set up | No mark and no notice. |
+The Den is not a setting. It is an MCP tool like any other (see [The Den](/sharing/den)), so an Imp without it simply has no such tool.
 
 ![Brains with nothing set up: the notice at the top of the page and the marks in the rail](./images/all-imps-nothing.png)
-
-Where a feature needs The Den (finding animations, sharing an Imp), the screen shows a short line and a button instead of hiding the feature: `animations.needs_den`, `share.den_needs_setup`.
 
 ## Errors
 
@@ -109,7 +102,6 @@ An error is a plain sentence. It says what happened and what to do next. It name
 | `state.offline.imp` | {name} cannot reach its Brain. It wakes up when you are back online. |
 | `state.offline.note` | Imps that use a model on this device still work. The others wait until you are back online. |
 | `state.offline.title` | You are offline |
-| `state.servers.set_up_den` | Set up Den |
 | `state.servers.set_up_hop` | Set up Hop |
 | `state.sleeping.action` | Give {name} a Brain |
 | `state.sleeping.note` | With no Brain, it cannot think. Its triggers still work. |

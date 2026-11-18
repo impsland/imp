@@ -1,8 +1,7 @@
 import Foundation
 
-/// One beat of an animation as data: hold a pose for a while. The same vocabulary every built-in
-/// animation is written in (see the app's `Antics`), so any of them can be opened, changed and
-/// shared, and new ones can do anything the built-in ones do.
+/// One beat of an animation as data: hold a pose for a while. The one vocabulary every
+/// animation is written in (see the app's `Antics`), so any of them can be opened, changed and shared.
 public struct AnimationBeat: Codable, Hashable, Sendable {
     public var duration: Double
     /// Where the face turns, −1…1 each way (x right +, y down +). Nil: the mood decides (moods
@@ -88,43 +87,33 @@ public struct AnimationBeat: Codable, Hashable, Sendable {
     static func clamp(_ x: Double, _ r: ClosedRange<Double>) -> Double { min(max(x, r.lowerBound), r.upperBound) }
 }
 
-/// An animation someone made: a new one with a name of its own, or a new version of a built-in
-/// one (`replaces`). Kept for every Imp (`ImpPreferences.animationLibrary`) or for one Imp alone
-/// (`ImpProfile.animations`), where it wins over the shared one.
+/// An animation someone made (the Imp itself, on request, or the user). Kept for every Imp
+/// (`ImpPreferences.animationLibrary`) or for one Imp alone (`ImpProfile.animations`), where it wins
+/// over the shared one. Nothing is built in: an Imp starts with no animations at all.
 public struct MadeAnimation: Codable, Hashable, Sendable, Identifiable {
     public var id = UUID()
     public var name: String
     public var about: String
     /// An SF Symbol for the list.
     public var symbol: String
-    /// The built-in animation this one plays instead of. Nil: an animation of its own.
-    public var replaces: Reaction?
-    /// What starts it (only for an animation of its own: a replacement keeps the built-in one's starts).
-    public var triggers: Set<AnimationTrigger>
     public var isEnabled: Bool
     public var beats: [AnimationBeat]
-    /// Plays only while the Imp wears its favourite colour (`ImpProfile.isFavorite`).
-    public var favoriteColorOnly: Bool
     /// For an Imp's own animation: the shared one it stands in for, for that Imp alone (see `SettingScope`).
     public var overrides: UUID?
 
     public init(id: UUID = UUID(), name: String, about: String = "", symbol: String = MadeAnimation.defaultSymbol,
-                replaces: Reaction? = nil, triggers: Set<AnimationTrigger> = [], isEnabled: Bool = true,
-                favoriteColorOnly: Bool = false, overrides: UUID? = nil, beats: [AnimationBeat]) {
-        self.id = id; self.name = name; self.about = about; self.symbol = symbol; self.replaces = replaces
-        self.triggers = triggers; self.isEnabled = isEnabled; self.favoriteColorOnly = favoriteColorOnly
+                isEnabled: Bool = true, overrides: UUID? = nil, beats: [AnimationBeat]) {
+        self.id = id; self.name = name; self.about = about; self.symbol = symbol
+        self.isEnabled = isEnabled
         self.overrides = overrides; self.beats = beats
     }
 
-    /// A missing `favoriteColorOnly` means any colour.
+    /// Older saves also had `triggers` and `favoriteColorOnly`: they are ignored (triggers start animations now).
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         self.init(id: try c.decode(UUID.self, forKey: .id), name: try c.decode(String.self, forKey: .name),
                   about: try c.decode(String.self, forKey: .about), symbol: try c.decode(String.self, forKey: .symbol),
-                  replaces: try c.decodeIfPresent(Reaction.self, forKey: .replaces),
-                  triggers: try c.decode(Set<AnimationTrigger>.self, forKey: .triggers),
                   isEnabled: try c.decode(Bool.self, forKey: .isEnabled),
-                  favoriteColorOnly: try c.decodeIfPresent(Bool.self, forKey: .favoriteColorOnly) ?? false,
                   overrides: try c.decodeIfPresent(UUID.self, forKey: .overrides),
                   beats: try c.decode([AnimationBeat].self, forKey: .beats))
     }
@@ -136,10 +125,10 @@ public struct MadeAnimation: Codable, Hashable, Sendable, Identifiable {
 
     public var duration: Double { beats.reduce(0) { $0 + $1.duration } }
 
-    /// The name to show: its own, or the built-in one's it replaces.
+    /// The name to show.
     public var title: String {
         let n = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        return n.isEmpty ? (replaces?.title ?? String(localized: "Untitled")) : n
+        return n.isEmpty ? String(localized: "Untitled") : n
     }
 
     /// Symbols to pick from in the editor.
@@ -161,7 +150,6 @@ public struct MadeAnimation: Codable, Hashable, Sendable, Identifiable {
             let k = Self.maxDuration / total
             a.beats = a.beats.map { var b = $0; b.duration = max(AnimationBeat.durationRange.lowerBound, b.duration * k); return b }
         }
-        if a.replaces != nil { a.triggers = [] }
         return a
     }
 }
@@ -261,37 +249,28 @@ public struct ImpTraits: Codable, Hashable, Sendable {
     }
 }
 
-/// Something that can be played: a built-in animation, or one someone made.
+/// Something that can be played: an animation someone made.
 public enum AnimationRef: Hashable, Sendable {
-    case preset(Reaction)
     case custom(UUID)
 
     /// Stable text for it (what's playing, cooldowns).
     public var key: String {
         switch self {
-        case .preset(let r): r.rawValue
         case .custom(let id): "custom-\(id.uuidString)"
         }
     }
 
-    public var preset: Reaction? { if case .preset(let r) = self { r } else { nil } }
-
     /// The animation `key` names (the reverse of `key`).
     public init?(key: String) {
-        if key.hasPrefix("custom-"), let id = UUID(uuidString: String(key.dropFirst("custom-".count))) {
-            self = .custom(id)
-        } else if let r = Reaction(rawValue: key) {
-            self = .preset(r)
-        } else {
-            return nil
-        }
+        guard key.hasPrefix("custom-"), let id = UUID(uuidString: String(key.dropFirst("custom-".count))) else { return nil }
+        self = .custom(id)
     }
 }
 
 // MARK: - The library
 
 extension ImpPreferences {
-    /// Animations someone made for every Imp: new ones and new versions of built-in ones.
+    /// Animations someone made for every Imp.
     public var animationLibrary: [MadeAnimation] {
         get { customAnimations ?? [] }
         set { customAnimations = newValue.isEmpty ? nil : newValue }
@@ -302,23 +281,15 @@ extension ImpPreferences {
         imp.flatMap { id in imps.first { $0.id == id } }?.animations ?? []
     }
 
-    /// The animation that plays for `reaction` on `imp`: the Imp's own version, else the shared
-    /// one, else nil (the built-in one).
-    public func replacement(for reaction: Reaction, imp: UUID?) -> MadeAnimation? {
-        ownAnimations(of: imp).first { $0.replaces == reaction } ?? animationLibrary.first { $0.replaces == reaction }
-    }
-
     /// A made animation by id: the Imp's own first (its version of a shared one stands in for it), then the shared ones.
     public func customAnimation(_ id: UUID, imp: UUID?) -> MadeAnimation? {
         let own = ownAnimations(of: imp)
         return own.first { $0.id == id } ?? own.first { $0.overrides == id } ?? animationLibrary.first { $0.id == id }
     }
 
-    /// Whether `ref` may play on `imp` at all (switched on, a missing one can't). A built-in one the
-    /// Imp has its own version of is on or off for it by that version's switch.
+    /// Whether `ref` may play on `imp` at all (switched on; a missing one can't).
     public func isEnabled(_ ref: AnimationRef, imp: UUID?) -> Bool {
         switch ref {
-        case .preset(let r): ownAnimations(of: imp).first { $0.replaces == r }?.isEnabled ?? isEnabled(r)
         case .custom(let id): customAnimation(id, imp: imp)?.isEnabled ?? false
         }
     }
@@ -327,45 +298,17 @@ extension ImpPreferences {
     public func scope(ofAnimation id: UUID, for imp: UUID) -> SettingScope {
         guard let own = ownAnimations(of: imp).first(where: { $0.id == id }) else { return .everyImp }
         let shadowed = own.overrides.map { o in animationLibrary.contains { $0.id == o } } == true
-            || own.replaces.map { r in animationLibrary.contains { $0.replaces == r } } == true
         return shadowed ? .changed : .onlyThisImp
     }
 
-    /// Whether `ref` may play on `imp` now: the animations that unlock with a favourite colour only
-    /// while the Imp wears it (`wearingFavorite`).
-    public func isUnlocked(_ ref: AnimationRef, imp: UUID?, wearingFavorite: Bool) -> Bool {
-        guard case .custom(let id) = ref, customAnimation(id, imp: imp)?.favoriteColorOnly == true else { return true }
-        return wearingFavorite
-    }
-
-    /// New animations (not replacements) `imp` has: its own first, then the shared ones it has no version of.
+    /// The animations `imp` has: its own first, then the shared ones it has no version of.
     public func originals(for imp: UUID?) -> [MadeAnimation] {
         let own = ownAnimations(of: imp)
         let replaced = Set(own.compactMap(\.overrides))
-        return (own + animationLibrary.filter { !replaced.contains($0.id) }).filter { $0.replaces == nil }
+        return own + animationLibrary.filter { !replaced.contains($0.id) }
     }
 
-    /// What `trigger` may start on `imp`, in priority order: its own animations, the shared ones, then the built-in.
-    public func refs(for trigger: AnimationTrigger, imp: UUID?) -> [AnimationRef] {
-        let made = originals(for: imp).filter { $0.isEnabled && $0.triggers.contains(trigger) }.map { AnimationRef.custom($0.id) }
-        let builtIn = Reaction.allCases.filter { rule(for: $0).triggers.contains(trigger) && isEnabled(.preset($0), imp: imp) }
-        return made + builtIn.map { .preset($0) }
-    }
-
-    /// The one animation a gesture starts on `imp` (an Imp's own wins over the shared ones).
-    public func ref(for trigger: AnimationTrigger, imp: UUID?) -> AnimationRef? {
-        refs(for: trigger, imp: imp).first
-    }
-
-    /// Whether some made animation is started by the cursor (see `watchesCursor`).
-    var madeAnimationsWatchCursor: Bool {
-        (animationLibrary + imps.flatMap(\.animations)).contains { a in
-            a.replaces == nil && a.isEnabled && a.triggers.contains { $0.watchesCursor }
-        }
-    }
-
-    /// Keeps `animation` (new or changed) for `imp`, or for every Imp (nil). A replacement takes the
-    /// place of any other replacement of the same built-in one there. Returns the id it is kept under.
+    /// Keeps `animation` (new or changed) for `imp`, or for every Imp (nil). Returns the id it is kept under.
     ///
     /// - For an Imp: its own one changes in place. A shared one gets a version for that Imp alone (a new
     ///   animation that `overrides` it), and the shared one is not touched. Another Imp's is copied, never taken.
@@ -375,7 +318,6 @@ extension ImpPreferences {
     public mutating func save(_ animation: MadeAnimation, for imp: UUID?) -> UUID {
         var a = animation.normalized
         func put(_ list: inout [MadeAnimation]) {
-            if let r = a.replaces { list.removeAll { $0.replaces == r && $0.id != a.id } }
             if let i = list.firstIndex(where: { $0.id == a.id }) { list[i] = a } else { list.append(a) }
         }
         let holder = imps.firstIndex { $0.animations.contains { $0.id == a.id } }
@@ -398,32 +340,18 @@ extension ImpPreferences {
             var list = animationLibrary
             put(&list)
             animationLibrary = list
-            if a.isEnabled { claimGestures(of: a) }
         }
         return a.id
     }
 
-    /// Removes a made animation, wherever it is (the built-in one it replaced plays again, and the
-    /// gestures it held that nobody else holds go back to the built-in animation that has them out of the box).
-    /// Removing a shared one leaves the Imps' own versions of it with them, as their own.
+    /// Removes a made animation, wherever it is. Removing a shared one leaves the Imps' own versions of it
+    /// with them, as their own.
     public mutating func removeAnimation(_ id: UUID) {
-        let held = (animationLibrary + imps.flatMap(\.animations)).first { $0.id == id }?.triggers ?? []
         animationLibrary.removeAll { $0.id == id }
         for i in imps.indices {
             imps[i].animations.removeAll { $0.id == id }
             for j in imps[i].animations.indices where imps[i].animations[j].overrides == id { imps[i].animations[j].overrides = nil }
         }
-        for trigger in held where trigger.isExclusive { restoreDefault(of: trigger) }
-    }
-
-    /// Gives a gesture nobody holds back to the built-in animation the catalog starts it with.
-    private mutating func restoreDefault(of trigger: AnimationTrigger) {
-        let heldByMade = (animationLibrary + imps.flatMap(\.animations)).contains { $0.replaces == nil && $0.triggers.contains(trigger) }
-        guard !heldByMade, !Reaction.allCases.contains(where: { rule(for: $0).triggers.contains(trigger) }),
-              let owner = Reaction.allCases.first(where: { $0.defaultTriggers.contains(trigger) }) else { return }
-        var r = rule(for: owner)
-        r.triggers.insert(trigger)
-        store(r, for: owner)
     }
 
     /// Who has it: an Imp's id, nil for every Imp. `.none` when it isn't anywhere.
@@ -433,63 +361,14 @@ extension ImpPreferences {
         return .none
     }
 
-    /// What a made animation's row shows: its switch and its starts. A new version of a built-in one has
-    /// the built-in one's starts. Its switch is the built-in one's when shared, its own when an Imp's.
-    public func rule(ofMade a: MadeAnimation, owner: UUID?) -> AnimationRule {
-        guard let r = a.replaces else { return AnimationRule(isEnabled: a.isEnabled, triggers: a.triggers) }
-        return AnimationRule(isEnabled: owner == nil ? isEnabled(r) : a.isEnabled, triggers: rule(for: r).triggers)
-    }
-
-    /// Switches a made animation on or off where it is kept. A shared new version of a built-in one
-    /// switches the built-in one (for every Imp). An Imp's own version switches for that Imp alone.
+    /// Switches a made animation on or off where it is kept.
     public mutating func setEnabled(_ on: Bool, animation id: UUID) {
         guard let owner = owner(ofAnimation: id), var a = customAnimation(id, imp: owner) else { return }
-        if owner == nil, let r = a.replaces { return setEnabled(on, for: r) }
         a.isEnabled = on
         save(a, for: owner)
     }
 
-    /// Adds or removes what starts a made animation. A gesture starts one animation: given to a
-    /// shared one it moves there from wherever it was. Given to an Imp's own, it moves from that
-    /// Imp's other ones (and wins over the shared one for that Imp).
-    public mutating func setTrigger(_ trigger: AnimationTrigger, _ on: Bool, animation id: UUID) {
-        guard let owner = owner(ofAnimation: id), var a = customAnimation(id, imp: owner) else { return }
-        if let r = a.replaces {
-            // A new version keeps the built-in one's starts: a shared one changes them for every Imp,
-            // an Imp's own version can't (they aren't that Imp's to change).
-            if owner == nil { setTrigger(trigger, on, for: r) }
-            return
-        }
-        if on { a.triggers.insert(trigger) } else { a.triggers.remove(trigger) }
-        if on && trigger.isExclusive, let imp = owner, let i = imps.firstIndex(where: { $0.id == imp }) {
-            for j in imps[i].animations.indices where imps[i].animations[j].id != id { imps[i].animations[j].triggers.remove(trigger) }
-        }
-        save(a, for: owner)
-    }
-
-    /// A shared animation that holds gestures takes them from the built-in ones and the other shared ones.
-    private mutating func claimGestures(of a: MadeAnimation) {
-        for trigger in a.triggers where trigger.isExclusive {
-            for r in Reaction.allCases where rule(for: r).triggers.contains(trigger) {
-                var rule = rule(for: r)
-                rule.triggers.remove(trigger)
-                store(rule, for: r)
-            }
-            var list = animationLibrary
-            for j in list.indices where list[j].id != a.id { list[j].triggers.remove(trigger) }
-            animationLibrary = list
-        }
-    }
-
-    /// A built-in gesture given to a built-in animation leaves the shared made ones.
-    mutating func releaseGesture(_ trigger: AnimationTrigger) {
-        guard trigger.isExclusive, animationLibrary.contains(where: { $0.triggers.contains(trigger) }) else { return }
-        var list = animationLibrary
-        for j in list.indices { list[j].triggers.remove(trigger) }
-        animationLibrary = list
-    }
-
-    /// A made animation by name (or a built-in one by its id or title), as the Imp's tools take them.
+    /// A made animation by name, as the Imp's tools take them.
     /// A model may write a name the way it writes ids ("hn_delight" for "HN Delight"): an exact match
     /// first, then one that differs only in case, spaces, dashes and underscores.
     public func ref(named name: String, imp: UUID?) -> AnimationRef? {
@@ -499,7 +378,6 @@ extension ImpPreferences {
         let made = originals(for: imp)
         for same in [{ (a: String) in a.caseInsensitiveCompare(n) == .orderedSame }, { Self.looseName($0) == Self.looseName(n) }] {
             if let a = made.first(where: { same($0.title) }) { return .custom(a.id) }
-            if let r = Reaction.allCases.first(where: { same($0.rawValue) || same($0.title) }) { return .preset(r) }
         }
         return nil
     }
@@ -509,23 +387,22 @@ extension ImpPreferences {
         String(name.lowercased().unicodeScalars.filter { CharacterSet.alphanumerics.contains($0) }.map(Character.init))
     }
 
-    /// What the Imp's tools call `ref` on `imp` (a made animation's name, a built-in one's id). Nil: it's gone.
+    /// What the Imp's tools call `ref` on `imp` (a made animation's name). Nil: it's gone.
     public func animationName(_ ref: AnimationRef, imp: UUID?) -> String? {
         switch ref {
-        case .preset(let r): r.rawValue
         case .custom(let id): customAnimation(id, imp: imp)?.title
         }
     }
 
     /// A name for a new animation nobody of `imp` (or the shared list) uses yet.
     public func uniqueAnimationName(_ name: String, imp: UUID?, except id: UUID? = nil) -> String {
-        let used = (ownAnimations(of: imp) + animationLibrary).filter { $0.id != id }.map(\.title) + Reaction.allCases.map(\.title)
+        let used = (ownAnimations(of: imp) + animationLibrary).filter { $0.id != id }.map(\.title)
         return ImpProfile.uniqueName(name.isEmpty ? String(localized: "My animation") : name, avoiding: used)
     }
 }
 
 extension ImpProfile {
-    /// Its own animations: new ones only it plays, and its own versions of built-in ones.
+    /// Its own animations: the ones only it plays.
     public var animations: [MadeAnimation] {
         get { ownAnimations ?? [] }
         set { ownAnimations = newValue.isEmpty ? nil : newValue }
@@ -589,52 +466,33 @@ extension MadeAnimation {
         var o: [String: JSONValue] = ["name": .string(name), "beats": .array(beats.map(\.kitJSON))]
         if !about.isEmpty { o["about"] = .string(about) }
         if symbol != Self.defaultSymbol { o["symbol"] = .string(symbol) }
-        if let replaces { o["replaces"] = .string(replaces.rawValue) }
-        if !triggers.isEmpty { o["starts"] = .array(AnimationTrigger.allCases.filter(triggers.contains).map { .string($0.rawValue) }) }
         if !isEnabled { o["enabled"] = .bool(false) }
-        if favoriteColorOnly { o["favoriteColor"] = .bool(true) }
         return .object(o)
     }
 
     /// An animation from a kit or a tool call. Nil (with the reason in `problems`) when it can't be played.
     public init?(kit json: JSONValue, problems: inout [String]) {
         guard case .object = json else { problems.append(String(localized: "Should be an object.")); return nil }
-        var replaces: Reaction?
-        if let r = json["replaces"]?.string, !r.isEmpty {
-            // Only the bundled animations can be replaced. A kit that replaces another one (the Den's
-            // other animations, older kits) brings an animation of its own, if it has a name.
-            replaces = Reaction.allCases.first { $0.rawValue.caseInsensitiveCompare(r) == .orderedSame }
-            if replaces == nil && (json["name"]?.string ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                problems.append(String(localized: "Replaces “\(r)”, which isn't a built-in animation."))
-                return nil
-            }
-        }
         let name = json["name"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        guard !name.isEmpty || replaces != nil else { problems.append(String(localized: "Needs a name.")); return nil }
+        guard !name.isEmpty else { problems.append(String(localized: "Needs a name.")); return nil }
         guard let list = json["beats"]?.array, !list.isEmpty else { problems.append(String(localized: "Needs `beats`.")); return nil }
         let beats = list.compactMap { AnimationBeat(kit: $0, problems: &problems) }
         guard !beats.isEmpty else { return nil }
         if list.count > Self.maxBeats { problems.append(String(localized: "Only the first \(Self.maxBeats) beats are kept.")) }
-        var triggers: Set<AnimationTrigger> = []
-        for case .string(let s) in json["starts"]?.array ?? [] {
-            if let t = AnimationTrigger(rawValue: s) { triggers.insert(t) } else { problems.append(String(localized: "Unknown start “\(s)”.")) }
-        }
         self = MadeAnimation(name: name, about: json["about"]?.string ?? "",
-                               symbol: json["symbol"]?.string ?? Self.defaultSymbol, replaces: replaces, triggers: triggers,
+                               symbol: json["symbol"]?.string ?? Self.defaultSymbol,
                                isEnabled: json["enabled"]?.bool ?? true,
-                               favoriteColorOnly: json["favoriteColor"]?.bool ?? false, beats: beats).normalized
+                               beats: beats).normalized
     }
 }
 
 extension MadeAnimation {
     /// How a kit's trigger finds what it plays: a key, else the name of one of the kit's `animations`
-    /// (the kit writes them so), else a built-in one's id or title.
+    /// (the kit writes them so).
     static func resolver(_ animations: [MadeAnimation]) -> (String) -> AnimationRef? {
         { name in
             if let ref = AnimationRef(key: name) { return ref }
-            if let a = animations.first(where: { $0.replaces == nil && $0.title.caseInsensitiveCompare(name) == .orderedSame }) { return .custom(a.id) }
-            return Reaction.allCases.first { $0.rawValue.caseInsensitiveCompare(name) == .orderedSame || $0.title.caseInsensitiveCompare(name) == .orderedSame }
-                .map { .preset($0) }
+            return animations.first(where: { $0.title.caseInsensitiveCompare(name) == .orderedSame }).map { .custom($0.id) }
         }
     }
 }

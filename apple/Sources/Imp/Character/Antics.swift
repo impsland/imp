@@ -42,12 +42,9 @@ struct Antic: Equatable {
     var sticky = false
 }
 
-/// The beats of every built-in animation, read from the catalog (`spec/animations`) by `AnimationCatalog`,
-/// shared by live Imps (`ImpLife`) and figures in the window (`Performance`).
-enum Antics {
-    /// The beats of a built-in animation.
-    static func steps(for reaction: Reaction) -> [AnticStep] { reaction.beats.map(AnticStep.init) }
-}
+/// Where the beats of an animation are turned into steps, shared by live Imps (`ImpLife`) and figures in
+/// the window (`Performance`). No animation is built in: they are all made (see `MadeAnimation`).
+enum Antics {}
 
 // MARK: - Animations as data
 
@@ -73,11 +70,10 @@ extension AnimationBeat {
 }
 
 extension Antics {
-    /// The beats `ref` is written with for `imp` (its own version, else the shared one, else the
-    /// built-in one), at its own pace: for the editor and the Imp's tools. Nil: no such animation.
+    /// The beats `ref` is written with for `imp` (its own version, else the shared one): for the
+    /// editor and the Imp's tools. Nil: no such animation.
     static func beats(for ref: AnimationRef, prefs: ImpPreferences, imp: UUID?) -> [AnimationBeat]? {
         switch ref {
-        case .preset(let r): prefs.replacement(for: r, imp: imp)?.beats ?? r.beats
         case .custom(let id): prefs.customAnimation(id, imp: imp)?.beats
         }
     }
@@ -85,7 +81,6 @@ extension Antics {
     /// What `imp` acts out for `ref`: its own version or the shared one if there is, at its tempo.
     static func steps(for ref: AnimationRef, prefs: ImpPreferences, imp: UUID?) -> [AnticStep] {
         let raw: [AnticStep] = switch ref {
-        case .preset(let r): prefs.replacement(for: r, imp: imp).map { $0.beats.map(AnticStep.init) } ?? steps(for: r)
         case .custom(let id): prefs.customAnimation(id, imp: imp)?.beats.map(AnticStep.init) ?? []
         }
         return paced(raw, tempo: prefs.imps.first { $0.id == imp }?.traits.tempo ?? 1)

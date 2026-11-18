@@ -20,13 +20,13 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Look.** How an Imp appears: colour, size and character. The name is not part of the look. It belongs to the Imp's personality.
 
-**Personality.** Who an Imp is: its name, its persona and its voice.
+**Personality.** Who an Imp is: its name and its persona.
 
 **Persona.** The text that tells an Imp who it is and how it talks.
 
 **Mood.** How an Imp feels, shown with its eyes and the shape of its head.
 
-**Animation.** A short sequence of beats an Imp plays as body language. Five come with the app. More are in the Den.
+**Animation.** A short sequence of beats an Imp plays as body language. Five come with the app. More are in an MCP gallery such as the Den.
 
 **Moves.** The animations one Imp plays, shown in its settings.
 
@@ -76,7 +76,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Call home.** For an Imp's home device to take its Imp back. The visit ends.
 
-**Devices map.** The picture at the top of the Devices section of this device, its Imps, the services, the Den, the Hop and the other devices. Each part can be opened.
+**Devices map.** The picture at the top of the Devices section of this device, its Imps, the services, the Hop and the other devices. Each part can be opened.
 
 ## Thinking
 
@@ -86,7 +86,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Model.** The particular AI an Imp uses at a service.
 
-**Key.** The secret that lets the app use a service. It is kept in a private file that only your user account can read, or in the Keychain if you turn that on. It never travels in a kit, a link or a Den package.
+**Key.** The secret that lets the app use a service. It is kept in a private file that only your user account can read, or in the Keychain if you turn that on. It never travels in a kit, a link or a published item.
 
 **Tool.** Something an Imp can do besides talk: run a command, read a file, open an app. A tool has an id like `own.body.imp_speak` or `mcp.files.read_file`.
 
@@ -94,7 +94,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **MCP.** A standard way for an Imp to use tools from another program.
 
-**Trigger.** Something that makes an Imp act by itself: "When this happens, do that." Triggers run without a Brain.
+**Trigger.** Something that makes an Imp act by itself: an event, optional conditions and one to five steps, "When this happens (and these hold), do these." An animation only plays through a trigger. Triggers run without a Brain unless a step asks the model.
 
 **Workspace.** The folder an Imp may read and write files in. It stays with the Imp's home.
 
@@ -106,11 +106,11 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Kit.** A bundle that can hold Imps, triggers, tools and animations as one JSON file. A kit is untrusted until the user confirms it. It never holds a key.
 
-**The Den.** A gallery where Imps share what they make and where people find what others shared. What is shared there is public. It is one half of an Imp server. In the middle of a sentence it reads "the Den".
+**The Den.** A standalone MCP gallery where Imps share what they make and where people find what others shared. What is shared there is public. Imp has no Den setting: you add its `/mcp` address as a tool. In the middle of a sentence it reads "the Den".
 
 **The Hop.** A relay on an Imp server that lets devices find each other from anywhere. It only passes encrypted data along. In the middle of a sentence it reads "the Hop". The Hop on this computer is the same relay, running locally.
 
-**Preset.** A ready choice for a setting. The Den and the Hop each have three: Imp's servers, Custom (any other address, on this computer too) and Off.
+**Preset.** A ready choice for a setting. The Hop has three: Imp's servers, Custom (any other address, on this computer too) and Off.
 
 ## Screens
 

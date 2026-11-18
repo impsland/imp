@@ -46,13 +46,9 @@ import Testing
     }
 
     /// The iPhone gives each Imp room past its square (`ImpFigure.stageBleed`: 45 % above, 30 % left, 45 % right,
-    /// 10 % below): the worst a made animation can do has to fit in it. Built-in ones fit in the square.
+    /// 10 % below): the worst a made animation can do has to fit in it.
     @Test func theWorstAnImpCanDoFitsTheRoomItIsGiven() {
         let room = CGRect(x: -30, y: -45, width: 175, height: 155)
-        for reaction in Reaction.allCases {
-            let r = Self.reach(Antics.steps(for: reaction))
-            #expect(CGRect(x: 0, y: 0, width: 100, height: 100).contains(r), "\(reaction.rawValue): \(r)")
-        }
         let wild = ImpTraits(horns: 30, tilt: 12, tempo: 1.6)
         for move in AnimationBeat.moves {
             for tilt in [-30.0, 30] {

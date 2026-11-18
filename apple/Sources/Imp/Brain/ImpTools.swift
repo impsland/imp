@@ -37,16 +37,12 @@ final class OwnToolHost {
         return g
     }
 
-    /// Animations it may play now, by the name it calls them: its own and the shared made ones,
-    /// then the built-in ones that are switched on. Some need its favourite colour.
+    /// Animations it may play now, by the name it calls them: its own and the shared made ones.
     var playable: [(name: String, ref: AnimationRef)] {
-        guard let app, let p = profile else { return [] }
-        let favorite = p.isFavorite(p.hue)
-        let made = app.prefs.originals(for: id).filter { $0.isEnabled && (!$0.favoriteColorOnly || favorite) }.map { ($0.title, AnimationRef.custom($0.id)) }
-        let builtIn = Reaction.allCases.filter { app.prefs.isEnabled($0) }
-            .map { ($0.rawValue, AnimationRef.preset($0)) }
+        guard let app else { return [] }
+        let made = app.prefs.originals(for: id).filter { $0.isEnabled }.map { ($0.title, AnimationRef.custom($0.id)) }
         var seen = Set<String>()
-        return (made + builtIn).filter { seen.insert($0.0.lowercased()).inserted }
+        return made.filter { seen.insert($0.0.lowercased()).inserted }
     }
 
     /// The others it can talk to: out on the desktop, not itself.
@@ -107,9 +103,8 @@ final class OwnToolHost {
             case OwnTools.showAnimation: return try showAnimation(args)
             case OwnTools.removeAnimation: return try removeAnimation(args)
             case OwnTools.setTraits: return setTraits(args)
-            case OwnTools.denSearch, OwnTools.denGet, OwnTools.denAdd, OwnTools.denShare, OwnTools.denUnshare, OwnTools.denAccount:
-                guard let app else { throw ToolArgumentError("You're not here.") }
-                return try await DenTools(app: app, imp: id).call(name, args)
+            case OwnTools.addKit: return try await addKit(args)
+            case OwnTools.exportKit: return try exportKit(args)
             default: throw ToolArgumentError("Unknown tool \(name).")
             }
         } catch let error as ToolArgumentError {
@@ -150,34 +145,25 @@ final class OwnToolHost {
     private func makeAnimation(_ args: JSONValue) throws -> String {
         guard let app else { throw ToolArgumentError("You're not here.") }
         var problems: [String] = []
-        var json = args
-        if case .object(var o) = json {
-            // A name that's already one of its made animations (or the shared ones) changes that one.
-            if o["name"] == nil, let r = o["replaces"]?.string { o["name"] = .string(Reaction(rawValue: r)?.title ?? r) }
-            json = .object(o)
-        }
+        let json = args
         guard var made = MadeAnimation(kit: json, problems: &problems) else {
             throw ToolArgumentError(problems.isEmpty ? "Give it `beats`." : problems.joined(separator: " "))
         }
         let everyone = args["for"]?.string?.lowercased() == "everyone"
         let owner: UUID? = everyone ? nil : id
-        let existing = made.replaces.flatMap { r in (everyone ? app.prefs.animationLibrary : app.prefs.ownAnimations(of: id)).first { $0.replaces == r } }
-            ?? (everyone ? app.prefs.animationLibrary : app.prefs.ownAnimations(of: id))
-                .first { $0.replaces == nil && made.replaces == nil && $0.title.caseInsensitiveCompare(made.title) == .orderedSame }
+        let existing = (everyone ? app.prefs.animationLibrary : app.prefs.ownAnimations(of: id))
+            .first { $0.title.caseInsensitiveCompare(made.title) == .orderedSame }
         if let existing {
             made.id = existing.id
-            if args["starts"] == nil { made.triggers = existing.triggers }
             if args["symbol"] == nil { made.symbol = existing.symbol }
-        } else if made.replaces == nil {
+        } else {
             made.name = app.prefs.uniqueAnimationName(made.name, imp: owner)
         }
         app.prefs.save(made, for: owner)
-        let ref: AnimationRef = made.replaces.map { .preset($0) } ?? .custom(made.id)
+        let ref = AnimationRef.custom(made.id)
         if let imp, !imp.isBusy { app.reactions.play(ref, by: imp) } else { _ = imp?.act([ref]) }
         var reply = "\(existing == nil ? "Made" : "Changed") “\(made.title)”"
-            + (made.replaces.map { " (plays instead of the built-in \($0.rawValue))" } ?? "")
             + (everyone ? " for every Imp" : " for you") + ": \(made.beats.count) beats, \(String(format: "%.1f", made.duration)) s."
-        if !made.triggers.isEmpty { reply += " Starts on: \(made.triggers.map(\.rawValue).sorted().joined(separator: ", "))." }
         if !problems.isEmpty { reply += " Note: \(problems.joined(separator: " "))" }
         return reply
     }
@@ -187,7 +173,7 @@ final class OwnToolHost {
         guard let name = args["name"]?.string, !name.trimmingCharacters(in: .whitespaces).isEmpty else {
             let mine = app.prefs.ownAnimations(of: id), shared = app.prefs.animationLibrary
             func list(_ items: [MadeAnimation]) -> String {
-                items.isEmpty ? "none" : items.map { a in a.title + (a.replaces.map { " (replaces \($0.rawValue))" } ?? "") }.joined(separator: ", ")
+                items.isEmpty ? "none" : items.map(\.title).joined(separator: ", ")
             }
             return "Your own animations: \(list(mine)). Shared with every Imp: \(list(shared)). "
                 + "Your character: \((profile?.traits ?? .plain).summary) \(JSONValue.object(["traits": (profile?.traits ?? .plain).kitJSONValue]).jsonString)."
@@ -197,14 +183,10 @@ final class OwnToolHost {
         }
         var o: [String: JSONValue] = ["beats": .array(beats.map(\.kitJSONValue))]
         switch ref {
-        case .preset(let r):
-            o["name"] = .string(r.rawValue)
-            if let made = app.prefs.replacement(for: r, imp: id) { o["changed"] = .string(made.about.isEmpty ? "yes" : made.about) }
         case .custom(let cid):
             if let a = app.prefs.customAnimation(cid, imp: id) {
                 o["name"] = .string(a.title)
                 if !a.about.isEmpty { o["about"] = .string(a.about) }
-                if !a.triggers.isEmpty { o["starts"] = .array(a.triggers.map { .string($0.rawValue) }) }
             }
         }
         return JSONValue.object(o).jsonString
@@ -214,12 +196,14 @@ final class OwnToolHost {
         guard let app else { throw ToolArgumentError("You're not here.") }
         let name = args["name"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let candidates = app.prefs.ownAnimations(of: id) + app.prefs.animationLibrary
-        guard let found = candidates.first(where: { $0.title.caseInsensitiveCompare(name) == .orderedSame || $0.replaces?.rawValue == name }) else {
-            throw ToolArgumentError("No made animation called \(name) (built-in ones can be switched off in Settings, not removed).")
+        guard let found = candidates.first(where: { $0.title.caseInsensitiveCompare(name) == .orderedSame }) else {
+            throw ToolArgumentError("No made animation called \(name).")
         }
-        let users = found.replaces == nil ? app.prefs.shortcuts.filter { $0.animation == .custom(found.id) } : []
+        let users = app.prefs.shortcuts.filter { s in
+            s.steps.contains { $0.animationName?.caseInsensitiveCompare(found.title) == .orderedSame }
+        }
         app.prefs.removeAnimation(found.id)
-        var reply = "Removed “\(found.title)”." + (found.replaces.map { " The built-in \($0.rawValue) plays again." } ?? "")
+        var reply = "Removed “\(found.title)”."
         if !users.isEmpty {
             reply += " These triggers played it and now play nothing: \(users.map { "“\($0.name)” (\($0.id.uuidString))" }.joined(separator: ", ")). "
                 + "Change or remove them, or tell the user."
@@ -326,26 +310,27 @@ final class OwnToolHost {
         return all.map(describe).joined(separator: "\n")
     }
 
-    /// A trigger as the model reads it, naming the animation it plays the way the tools do.
-    private func describe(_ s: Shortcut) -> String {
-        s.toolDescription(animationName: s.animation.flatMap { app?.prefs.animationName($0, imp: id) })
-    }
+    /// A trigger as the model reads it.
+    private func describe(_ s: Shortcut) -> String { s.toolDescription() }
 
     private func addTrigger(_ args: JSONValue) throws -> String {
         guard let app else { return "" }
         let old = args["id"]?.string == nil ? nil : try find(args)
         // Names as imp_play_animations lists them (switched-off and locked ones too: a trigger may wait for them).
-        var s = try Shortcut(tool: args, imp: id, replacing: old) { [prefs = app.prefs, id] in prefs.ref(named: $0, imp: id) }
-        if s.command == .play && s.animation == nil { throw ToolArgumentError("`do` play needs the `animation` to play.") }
-        let everyImp = args["every_imp"]?.bool == true
+        var s = try Shortcut(tool: args, imp: id, replacing: old)
+        let everyImp = args["for"]?.string?.lowercased() == "every_imp" || args["every_imp"]?.bool == true
         s.id = app.prefs.saveTrigger(s, for: everyImp ? .everyImp : .imp(id))
         s = app.prefs.shortcuts.first { $0.id == s.id } ?? s
         var reply = "\(old == nil ? "Added" : "Changed") \(describe(s))"
-        if s.command.usesAnimation, case .custom(let made)? = s.animation {
-            if everyImp, app.prefs.owner(ofAnimation: made) == .some(id) {
-                reply += "\nNote: that animation is yours alone, so the other Imps play nothing: make it `for` everyone if they should."
-            } else if app.prefs.customAnimation(made, imp: id)?.isEnabled == false {
-                reply += "\nNote: that animation is switched off, so nothing plays until the user switches it on (Animations in settings)."
+        for name in s.steps.compactMap(\.animationName) {
+            if let ref = app.prefs.ref(named: name, imp: id), case .custom(let made) = ref {
+                if everyImp, app.prefs.owner(ofAnimation: made) == .some(id) {
+                    reply += "\nNote: “\(name)” is yours alone, so the other Imps play nothing: make it `for` everyone if they should."
+                } else if app.prefs.customAnimation(made, imp: id)?.isEnabled == false {
+                    reply += "\nNote: “\(name)” is switched off, so nothing plays until the user switches it on (Animations in settings)."
+                }
+            } else {
+                reply += "\nNote: there is no animation called “\(name)” yet, so nothing plays until there is."
             }
         }
         if let keys = s.keys {
@@ -355,7 +340,7 @@ final class OwnToolHost {
                 reply += "\nNote: “\(other.name)” uses the same keys and comes first."
             }
         }
-        if s.trigger.kind == .website || s.conditions.contains(where: { $0.kind == .website }), !BrowserBridge.shared.isConnected {
+        if s.trigger.event == .website || s.conditions.contains(where: { $0.state == .website }), !BrowserBridge.shared.isConnected {
             reply += "\nIt needs the Imp browser extension, which isn't connected: tell the user to add it (Tools › Browser in its settings)."
         }
         return reply
@@ -402,12 +387,88 @@ final class OwnToolHost {
             p.mcpServers.append(server)
         }
         if let i = p.imps.firstIndex(where: { $0.id == id }), !p.imps[i].servers.contains(server.id) { p.imps[i].servers.append(server.id) }
-        app.prefs = p
+        app.changeByPerson(p)
         var reply = "Added “\(server.name)” (id \(server.id.uuidString)). Its tools are yours from the next message on."
         if !server.missingSecrets.isEmpty {
             reply += " It still needs: \(server.missingSecrets.joined(separator: ", ")). Open its settings (imp_open_settings, page tools, tool \(server.id.uuidString)) and ask the user to fill them in."
         }
         return reply
+    }
+
+    // MARK: Kits
+
+    /// Opens the kit review for a kit the model passes along (or fetches from an address). Nothing is
+    /// added until the person confirms there.
+    private func addKit(_ args: JSONValue) async throws -> String {
+        guard let app else { throw ToolArgumentError("You're not here.") }
+        let text: String, origin: String
+        if let kit = args["kit"], kit != .null {
+            text = kit.string ?? kit.jsonString
+            origin = String(localized: "Offered by your Imp")
+        } else if let address = args["url"]?.string, !address.isEmpty {
+            let source = try KitSource.web(address)
+            guard case .remote(let url) = source else { throw ToolArgumentError("Give a `url` that starts with https://.") }
+            text = try await KitLoader.fetch(url)
+            origin = url.host ?? url.absoluteString
+        } else {
+            throw ToolArgumentError("Give `kit` (the document) or `url`.")
+        }
+        let kit = try Kit.parse(text)
+        HomeWindow.shared.showKit(app, KitFlow.offered(json: text, imp: id, origin: origin))
+        return "Opened the review for the user; nothing is added until they confirm there. It holds:\n" + kit.readableSummary
+    }
+
+    /// The kit document of one thing (or several): the same export the share buttons use, without chats
+    /// and without keys.
+    private func exportKit(_ args: JSONValue) throws -> String {
+        guard let app else { throw ToolArgumentError("You're not here.") }
+        func name(_ key: String) -> String? {
+            let text = args[key]?.string?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            return text.isEmpty ? nil : text
+        }
+        var kit = Kit(name: name("name") ?? "")
+        var picked = 0
+        if let wanted = name("imp") {
+            guard let imp = app.prefs.imps.first(where: { $0.name.caseInsensitiveCompare(wanted) == .orderedSame }) else {
+                throw ToolArgumentError("No Imp called \(wanted).")
+            }
+            // Public: no chats, no memory, and nothing about which service it uses.
+            var own = ImpExport.kit([imp.id], model: app, name: imp.name)
+            for i in own.imps.indices { own.imps[i].brain = nil }
+            kit.imps = own.imps
+            kit.servers = own.servers
+            if kit.name.isEmpty { kit.name = imp.name }
+            picked += 1
+        }
+        if let wanted = name("animation") {
+            guard let made = (app.prefs.ownAnimations(of: id) + app.prefs.animationLibrary)
+                .first(where: { $0.title.caseInsensitiveCompare(wanted) == .orderedSame }) else { throw ToolArgumentError("No animation called \(wanted).") }
+            if !kit.animations.contains(where: { $0.id == made.id }) { kit.animations.append(made.normalized) }
+            if kit.name.isEmpty { kit.name = made.title }
+            picked += 1
+        }
+        if let wanted = name("trigger") {
+            guard let trigger = app.prefs.triggers(for: id).first(where: { $0.displayName.caseInsensitiveCompare(wanted) == .orderedSame }) else {
+                throw ToolArgumentError("No trigger called \(wanted).")
+            }
+            let one = app.prefs.kit(sharing: trigger, named: trigger.displayName, imp: id)
+            kit.triggers += one.triggers
+            for made in one.animations where !kit.animations.contains(where: { $0.id == made.id }) { kit.animations.append(made) }
+            if kit.name.isEmpty { kit.name = trigger.displayName }
+            picked += 1
+        }
+        if let wanted = name("tool") {
+            guard let server = app.prefs.mcpServers.first(where: { $0.name.caseInsensitiveCompare(wanted) == .orderedSame }) else {
+                throw ToolArgumentError("No extra tool called \(wanted) (see imp_list_tools).")
+            }
+            if !kit.servers.contains(where: { $0.id == server.id }) { kit.servers.append(server) }
+            if kit.name.isEmpty { kit.name = server.name }
+            picked += 1
+        }
+        guard picked > 0 else { throw ToolArgumentError("Name what to export: `imp`, `animation`, `trigger` or `tool`.") }
+        let text = kit.stamped.json(pretty: false)
+        guard text.utf8.count <= Kit.maxBytes else { throw ToolArgumentError("That is too big for a kit (\(Kit.maxBytes / 1024) KB at most).") }
+        return text
     }
 
     private func removeTool(_ args: JSONValue) throws -> String {

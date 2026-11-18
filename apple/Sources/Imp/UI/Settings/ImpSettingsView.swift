@@ -51,7 +51,6 @@ struct ImpSettingsView: View {
             router.impPanel = nil
             move { nav.open(panel) }
         }
-        .environment(\.publishContext, PublishContext(model: model, imp: id))
         .tint(Color.imp(profile.hue))
         .onReceive(NSWorkspace.shared.notificationCenter.publisher(for: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification)) { _ in
             voiceOver = NSWorkspace.shared.isVoiceOverEnabled

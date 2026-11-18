@@ -19,7 +19,7 @@ extension Kit {
             if !imp.animations.isEmpty { line += "; \(imp.animations.count) animations" }
             lines.append(line)
         }
-        for trigger in triggers { lines.append("Trigger \(clip(trigger.name, 60)): \(clip(trigger.prompt))") }
+        for trigger in triggers { lines.append("Trigger \(clip(trigger.name, 60)): \(clip(trigger.steps.map(\.summary).joined(separator: "; ")))") }
         for server in servers {
             let how = server.transport == .stdio ? "runs a command on the Mac: \(clip(server.commandLine, 100))" : "remote tool at \(clip(server.url, 100))"
             lines.append("Tool \(clip(server.name, 60)) \(how)")
@@ -27,6 +27,7 @@ extension Kit {
         for animation in animations {
             lines.append("Animation \(clip(animation.title, 60)): \(animation.beats.count) beats, \(String(format: "%.1f", animation.duration)) s")
         }
+        for skill in skills { lines.append("Skill \(skill.name), installed by the person with: \(skill.command)") }
         if !problems.isEmpty { lines.append("Skipped: \(problems.count) items could not be read") }
         return lines.joined(separator: "\n")
     }

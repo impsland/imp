@@ -55,7 +55,7 @@ Run `imp --help` to see every command, or `imp <command> --help` to see one.
 | `imp config set-key`, `imp config show` | Saves an API key in the system keychain, or shows the settings |
 | `imp qr` | Shows a code to scan with Imp on a Mac or an iPhone |
 | `imp link` | Keeps this computer online as one of your devices |
-| `imp serve` | Runs the Den and the Hop. See `server/README.md` |
+| `imp serve` | Runs the Hop. See `server/README.md` |
 
 ## In the chat
 

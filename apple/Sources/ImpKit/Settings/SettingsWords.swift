@@ -8,7 +8,6 @@ extension AttentionItem {
         switch reason {
         case .noBrains: return String(localized: "brains.empty")
         case .noBrain(let imp): return said("settings.attention.imp_no_brain", imp.name)
-        case .denNotSet: return String(localized: "settings.attention.den_off")
         case .hopNotSet: return String(localized: "settings.attention.hop_off")
         case .deviceOffline(let name): return said("settings.attention.device_offline", name)
         }
@@ -18,7 +17,6 @@ extension AttentionItem {
     public var symbol: String {
         switch reason {
         case .noBrains, .noBrain: "lightbulb.slash"
-        case .denNotSet: "tray.full"
         case .hopNotSet: "arrow.triangle.swap"
         case .deviceOffline: "wifi.slash"
         }
@@ -31,7 +29,6 @@ extension SettingsNode {
         case .thisDevice: String(localized: "settings.map.this_device")
         case .brains: String(localized: "settings.map.brains")
         case .tools: String(localized: "settings.map.tools")
-        case .den: String(localized: "settings.map.den")
         case .hop: String(localized: isLocal ? "settings.map.hop_local" : "settings.map.hop")
         case .desktop, .phone: name
         }
@@ -43,7 +40,6 @@ extension SettingsNode {
         case .phone: "iphone.gen3"
         case .brains: "brain"
         case .tools: "wrench.and.screwdriver"
-        case .den: "tray.full"
         case .hop: "arrow.triangle.swap"
         }
     }

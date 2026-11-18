@@ -31,7 +31,6 @@ Which screens and states exist on which platform. Keep this table current.
 | Sleeping Imp | Earlier | Earlier | Planned | Planned | Planned |
 | Waking Imp | Earlier | Earlier | Planned | Planned | Planned |
 | Offline | Earlier | Earlier | Planned | Planned | Planned |
-| Only the Den set up | To build | To build | Planned | Planned | Planned |
 | Only the Hop set up | To build | To build | Planned | Planned | Planned |
 | No servers set up | To build | To build | Planned | Planned | Planned |
 | Error sentences | Earlier | Earlier | Planned | Planned | Planned |
@@ -59,9 +58,9 @@ The first run uses the same model (`FirstRunModel`) and words, with Remote and L
 
 ## The phone leaves out
 
-- **Animations.** The phone page only listed the five built-in animations. They are made, assigned and found in The Den on the Mac, and nothing on the page changed what a phone user sees. Removed. Reactions have no on/off setting on the phone.
+- **Animations.** There are no built-in animations. Animations are made and assigned on the Mac (or added from a kit), and nothing on the page changed what a phone user sees. Removed. Reactions have no on/off setting on the phone.
 - **Tools** (MCP) in the app's settings. Tools run on a computer. The phone's Imps use the tools of a trusted linked device through the "Mine" switch on that device. A pocket Imp's own tools (Message another Imp, Play animations, its MCP servers) are in its own settings, each with a switch. Talking between Imps: the phone has no Between-Imps settings. Whether a message waits for the answer is always up to the Imp (`wait`, the Mac's Decides), and a pocket Imp's "What it's good at" is in its Personality.
-- **Sharing** (The Den). Sharing, finding and taking animations happen on the Mac. A pocket Imp has no Den tools, so the phone has no Den address to set.
+- **Sharing** (The Den). Sharing, finding and taking animations happen on the Mac. A pocket Imp has no gallery tools.
 - The bubble's Background (Solid or Translucent) is the Mac's: it blurs the desktop behind the bubble's own panel, and the phone's bubble sits over the app's stage.
 - The Window setting (the smallest window) is the Mac's: the phone's app fills the screen.
 - Permissions, Bubble and Backup are the Mac's. The phone asks for each permission when it needs it.

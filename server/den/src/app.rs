@@ -9,7 +9,7 @@ use axum::body::Body;
 use axum::extract::{ConnectInfo, DefaultBodyLimit, Request, State};
 use axum::http::header::{
     CACHE_CONTROL, CONTENT_LENGTH, CONTENT_TYPE, ETAG, IF_NONE_MATCH, REFERRER_POLICY, RETRY_AFTER,
-    X_CONTENT_TYPE_OPTIONS, X_FRAME_OPTIONS,
+    WWW_AUTHENTICATE, X_CONTENT_TYPE_OPTIONS, X_FRAME_OPTIONS,
 };
 use axum::http::{HeaderName, HeaderValue, Method, StatusCode};
 use axum::middleware::{self, Next};
@@ -38,7 +38,12 @@ pub fn router(den: Arc<Den>) -> Router {
         .route("/healthz", axum::routing::get(healthz))
         .merge(api::routes())
         .merge(web::routes())
-        .nest_service("/mcp", mcp::service(Arc::clone(&den)))
+        .merge(crate::oauth_http::routes())
+        .merge(
+            Router::new()
+                .nest_service("/mcp", mcp::service(Arc::clone(&den)))
+                .layer(middleware::from_fn_with_state(Arc::clone(&den), mcp::guard)),
+        )
         .fallback(|| async { Error::NotFound })
         .layer(DefaultBodyLimit::max(MAX_BODY))
         .layer(middleware::from_fn(timeout))
@@ -124,6 +129,13 @@ async fn finish(State(den): State<Arc<Den>>, req: Request, next: Next) -> Respon
         );
         let body =
             serde_json::to_vec(&error.problem(&den.config.public.origin)).unwrap_or_default();
+        if parts.status == StatusCode::UNAUTHORIZED
+            && let Ok(value) = HeaderValue::from_str(&crate::oauth_http::challenge_header(
+                &den.config.public.origin,
+            ))
+        {
+            parts.headers.insert(WWW_AUTHENTICATE, value);
+        }
         response = Response::from_parts(parts, Body::from(body));
     }
 

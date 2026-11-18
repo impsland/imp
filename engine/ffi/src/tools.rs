@@ -123,6 +123,8 @@ pub enum BuiltInTool {
     ImpRemoveTrigger,
     ImpListTools,
     ImpAddTool,
+    ImpAddKit,
+    ImpExportKit,
     ImpRemoveTool,
     ImpOpenSettings,
     ImpMessage,
@@ -130,12 +132,6 @@ pub enum BuiltInTool {
     ComputerObserve,
     ComputerAct,
     ComputerVerify,
-    DenSearch,
-    DenGet,
-    DenAdd,
-    DenShare,
-    DenUnshare,
-    DenAccount,
 }
 
 /// The name the model calls a built-in tool.

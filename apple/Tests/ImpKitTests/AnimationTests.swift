@@ -2,184 +2,39 @@ import Foundation
 import Testing
 @testable import ImpKit
 
-/// The whole catalog the Den seeds (`spec/animations/catalog.json`), of which the apps bundle only five.
-private func catalogData() throws -> Data {
-    let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
-        .deletingLastPathComponent().deletingLastPathComponent()
-    return try Data(contentsOf: root.appendingPathComponent("spec/animations/catalog.json"))
-}
+private func beat() -> [AnimationBeat] { [AnimationBeat(duration: 0.5)] }
 
-@Suite struct AnimationRuleTests {
-    /// The gestures are started by the Den's animations (installed as made ones), one each. The catalog says which.
-    @Test func everyInteractionHasItsOwnFeeling() throws {
-        let catalog = AnimationCatalog.parse(try catalogData())
-        let handling = catalog.filter { $0.starts.contains { $0.isExclusive && $0 != .favoriteColor } }
-        #expect(handling.count == 14)
-        for e in handling { #expect(e.starts.count == 1, "\(e.id)") }
-        for t in AnimationTrigger.allCases where t.isExclusive {
-            #expect(catalog.filter { $0.starts.contains(t) }.count == 1, "\(t)")
-        }
-        // Pressing and carrying are always noticed. Cursor games follow the Mouse games switch.
-        #expect(!AnimationTrigger.hold.watchesCursor && !AnimationTrigger.pickUp.watchesCursor)
-        #expect(AnimationTrigger.stroke.watchesCursor && AnimationTrigger.stare.watchesCursor)
+@Suite struct AnimationLibraryTests {
+    @Test func cursorEventsAreTheOnesThatWatchTheCursor() {
+        // Pressing and carrying are noticed on the Imp itself. The rest of the pointer's doings watch it from afar.
+        #expect(!TriggerEvent.hold.watchesCursor && !TriggerEvent.drag.watchesCursor && !TriggerEvent.poke.watchesCursor)
+        #expect(TriggerEvent.stroke.watchesCursor && TriggerEvent.near.watchesCursor && TriggerEvent.away.watchesCursor)
     }
 
-    /// The Imp answers quickly: no animation of the catalog lasts a second (docs/ux/motion.md).
-    @Test func everyAnimationIsShorterThanASecond() throws {
-        let root = try JSONDecoder().decode(JSONValue.self, from: try catalogData())
-        let list = try #require(root["animations"]?.array)
-        #expect(list.count > 50)
-        for item in list {
-            let beats = item["beats"]?.array ?? []
-            let total = beats.reduce(0.0) { $0 + ($1["duration"]?.double ?? 0) }
-            #expect(total > 0 && total < 1, "\(item["id"]?.string ?? "?") lasts \(total) s")
-        }
-    }
-
-    @Test func everyAnimationPlaysSomehow() {
-        #expect(Reaction.allCases.count == 5 && Set(AnimationCatalog.bundled.map(\.id)) == Set(Reaction.allCases.map(\.rawValue)))
-        for r in Reaction.allCases {
-            // Untriggered ones are expressions and gestures, there for the troupe and for you to assign.
-            #expect(!r.defaultTriggers.isEmpty || [.expressions, .gestures].contains(r.family), "\(r) never plays")
-            #expect(!r.title.isEmpty && !r.summary.isEmpty && !r.beats.isEmpty)
-        }
-    }
-
-    /// Out of the box every gesture starts exactly one animation, one of the five bundled ones, so an offline Imp is lively.
-    /// A quiet moment keeps its routines.
-    @Test func everyGestureHasOneBundledAnimationOutOfTheBox() {
+    @Test func freshPreferencesHaveNoAnimations() {
         let p = ImpPreferences()
-        let bundled = Set(AnimationCatalog.bundled.map(\.id))
-        #expect(bundled.count == 5)
-        for t in AnimationTrigger.allCases where t.isExclusive {
-            #expect(p.animations(for: t).count == 1, "\(t)")
-            #expect(p.animation(for: t).map { bundled.contains($0.rawValue) } == true, "\(t)")
-        }
-        #expect(p.animations(for: .idle) == [.smile])
+        #expect(p.animationLibrary.isEmpty)
+        #expect(p.ref(named: "Angry", imp: nil) == nil)
     }
 
-    @Test func aDenAnimationReplacesTheDefaultAndRemovingItBringsItBack() {
+    @Test func aMadeAnimationIsFoundByNameAndRemovingItForgetsIt() {
         var p = ImpPreferences()
-        let before = p.animation(for: .poke)
-        #expect(before != nil)
-        let angry = MadeAnimation(name: "Angry", triggers: [.poke], beats: [AnimationBeat(duration: 1)])
+        let angry = MadeAnimation(name: "Angry", beats: beat())
         p.save(angry, for: nil)
-        #expect(p.ref(for: .poke, imp: nil) == .custom(angry.id))
-        #expect(p.animation(for: .poke) == nil, "the default stepped aside, one animation at a time")
-        for t in AnimationTrigger.allCases where t.isExclusive && t != .poke { #expect(p.animation(for: t) != nil, "\(t)") }
+        #expect(p.ref(named: "angry", imp: nil) == .custom(angry.id))
         p.removeAnimation(angry.id)
-        #expect(p.animation(for: .poke) == before)
-        #expect(p.ref(for: .poke, imp: nil) == before.map { .preset($0) })
-        #expect(p.animations.isEmpty, "back to the default: nothing stored")
+        #expect(p.ref(named: "Angry", imp: nil) == nil)
+        #expect(p.animationLibrary.isEmpty)
     }
 
-    @Test func gesturesMoveWhenReassigned() {
+    @Test func nothingStartsAnAnimationButATrigger() throws {
         var p = ImpPreferences()
-        p.setTrigger(.poke, true, for: .wow)
-        #expect(p.animation(for: .poke) == .wow)
-        p.setTrigger(.poke, true, for: .sad)
-        #expect(p.animation(for: .poke) == .sad)
-        #expect(!p.rule(for: .wow).triggers.contains(.poke))
-        // Shared triggers stay shared.
-        p.setTrigger(.idle, true, for: .sad)
-        #expect(p.animations(for: .idle).contains(.sad) && p.animations(for: .idle).contains(.smile))
-    }
-
-    @Test func switchedOffAnimationsDontPlay() {
-        var p = ImpPreferences()
-        p.setTrigger(.poke, true, for: .wow)
-        p.setEnabled(false, for: .wow)
-        #expect(p.animation(for: .poke) == nil)
-        #expect(!p.isEnabled(.wow))
-        p.setEnabled(false, for: .smile)
-        #expect(p.animations(for: .idle).isEmpty)
-        p.resetAnimations()
-        #expect(p.isEnabled(.smile) && p.isEnabled(.wow) && p.animations.isEmpty)
-        p.setEnabled(false, for: .sad)
-        p.setEnabled(true, for: .sad)
-        #expect(p.animations.isEmpty, "back to the default: nothing stored")
-    }
-
-    @Test func rulesSurviveARoundTrip() throws {
-        var p = ImpPreferences()
-        p.setTrigger(.circle, true, for: .wow)
-        p.setEnabled(false, for: .sleep)
+        let a = MadeAnimation(name: "A", beats: beat())
+        p.save(a, for: nil)
+        p.setEnabled(false, animation: a.id)
         let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(p))
-        #expect(back.animation(for: .circle) == .wow && !back.isEnabled(.sleep))
-    }
-
-    /// By design the troupe answers a bundled reaction with the same one (a removed animation's special answer is gone).
-    @Test func theTroupeCatchesWhatItSees() {
-        #expect(Contagion.response(to: .reacted(.sad)) == .sad)
-        #expect(Contagion.response(to: .reacted(.sleep)) == .sleep)
-        #expect(Contagion.response(to: .reacted(.greet)) == .greet)
-        #expect(Contagion.response(to: .annoyed) == .wow)
-    }
-}
-
-@Suite struct FavoriteAnimationTests {
-    /// The Den's favourite-colour animations are installed as made ones that play only in the favourite colour.
-    @Test func theyUnlockWithTheFavouriteColourAndPlayWhenQuiet() throws {
-        let root = try JSONDecoder().decode(JSONValue.self, from: try catalogData())
-        let special = (root["animations"]?.array ?? []).filter { $0["favoriteColor"]?.bool == true }
-        #expect(special.count == 5)
-
-        var p = ImpPreferences()
-        let glow = MadeAnimation(name: "Glow", triggers: [.idle], favoriteColorOnly: true, beats: [AnimationBeat(duration: 1)])
-        let delight = MadeAnimation(name: "Delight", triggers: [.favoriteColor], beats: [AnimationBeat(duration: 1)])
-        p.save(glow, for: nil)
-        p.save(delight, for: nil)
-        let imp = p.imps[0].id
-        #expect(p.refs(for: .idle, imp: imp).contains(.custom(glow.id)))
-        #expect(!p.isUnlocked(.custom(glow.id), imp: imp, wearingFavorite: false))
-        #expect(p.isUnlocked(.custom(glow.id), imp: imp, wearingFavorite: true))
-        #expect(p.isUnlocked(.custom(delight.id), imp: imp, wearingFavorite: false))
-        #expect(p.ref(for: .favoriteColor, imp: imp) == .custom(delight.id))
-        #expect(p.animation(for: .favoriteColor) == nil, "nothing bundled finds the colour")
-    }
-}
-
-@Suite struct CursorWatchTests {
-    @Test func theCursorIsWatchedOnlyWhenSomeAnimationNeedsIt() {
-        var p = ImpPreferences()
-        #expect(p.watchesCursor, "the bundled defaults hold cursor games")
-        p.mouseGames = false
-        #expect(!p.watchesCursor)
-        p.mouseGames = true
-        p.stopCursorGames()
-        #expect(!p.watchesCursor)
-        let stroke = MadeAnimation(name: "Pet", triggers: [.stroke], beats: [AnimationBeat(duration: 1)])
-        p.save(stroke, for: nil)
-        #expect(p.watchesCursor, "an installed animation that strokes needs it")
-        p.mouseGames = false
-        #expect(!p.watchesCursor)
-        p.mouseGames = true
-        p.setEnabled(false, animation: stroke.id)
-        #expect(!p.watchesCursor, "everything that watches the cursor is off")
-        p.setEnabled(true, animation: stroke.id)
-        p.setTrigger(.stroke, false, animation: stroke.id)
-        #expect(!p.watchesCursor, "it no longer has a trigger that needs the cursor")
-        p.setTrigger(.swish, true, for: .sad)
-        #expect(p.watchesCursor)
-        p.setEnabled(false, for: .sad)
-        #expect(!p.watchesCursor)
-    }
-
-    @Test func clicksAndCarryingDontNeedIt() {
-        var p = ImpPreferences()
-        p.stopCursorGames()
-        p.setTrigger(.poke, true, for: .wow)
-        p.setTrigger(.pickUp, true, for: .wow)
-        #expect(!p.watchesCursor)
-    }
-}
-
-private extension ImpPreferences {
-    /// Takes every cursor game away from the built-in animations.
-    mutating func stopCursorGames() {
-        for t in AnimationTrigger.allCases where t.watchesCursor {
-            for r in Reaction.allCases { setTrigger(t, false, for: r) }
-        }
+        #expect(back.animationLibrary.map(\.id) == [a.id])
+        #expect(!back.watchesCursor, "no trigger, nothing to watch for")
     }
 }
 
@@ -303,16 +158,6 @@ private extension ImpPreferences {
     }
 }
 
-@Suite struct GestureTests {
-    @Test func theGreetingNodsWhenTheCursorRestsAndCanBeGivenMore() {
-        var p = ImpPreferences()
-        let gestures = Reaction.allCases.filter { $0.family == .gestures }
-        #expect(gestures == [.greet], "the one bundled answer is a greeting")
-        #expect(p.rule(for: .greet).triggers == [.linger, .stare] && p.isEnabled(.greet), "it nods when the cursor rests by it")
-        p.setTrigger(.idle, true, for: .greet)
-        #expect(p.animations(for: .idle).contains(.greet))
-    }
-}
 
 @Suite struct BodyClockTests {
     @Test func eachImpKeepsItsOwnStableRhythm() {

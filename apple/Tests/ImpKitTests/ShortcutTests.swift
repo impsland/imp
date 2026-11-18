@@ -20,20 +20,29 @@ import Testing
 }
 
 @Suite struct ShortcutTests {
-    @Test func shortcutsSavedBeforeTheClipboardChoiceStillUseIt() throws {
-        let old = #"{"id":"\#(UUID().uuidString)","name":"Translate","isEnabled":true,"prompt":"Into French"}"#
-        let s = try JSONDecoder().decode(Shortcut.self, from: Data(old.utf8))
-        #expect(s.name == "Translate" && s.usesClipboard && s.isRunnable)
+    @Test func anAskNeedsWordsOrTheClipboard() throws {
+        var s = Shortcut(name: "Plan", steps: [Step(.ask, value: "  ")])
+        #expect(!s.isValid && !s.steps[0].isRunnable)
+        s.steps = [Step(.ask, value: "Plan my day.")]
+        s.hotkey = Hotkey(keyCode: 79)
+        #expect(s.isValid)
+        let back = try JSONDecoder().decode(Shortcut.self, from: JSONEncoder().encode(s))
+        #expect(back == s && !back.steps[0].handsOverClipboard)
+        #expect(Step(.ask, clipboard: true).isRunnable)
+        #expect(Briefing.shortcut("Plan my day.", clip: nil).content == "Plan my day.")
     }
 
-    @Test func anInstructionAloneNeedsWords() throws {
-        var s = Shortcut(name: "Plan", prompt: "  ", usesClipboard: false)
-        #expect(!s.isRunnable)
-        s.prompt = "Plan my day."
-        #expect(s.isRunnable)
+    @Test func stepsKeepTheirOrderThroughACodableRoundTrip() throws {
+        let steps = [Step(.play, value: "Wiggle"), Step(.say, value: "Ouch!"), Step(.sleep), Step(.say, value: "Zzz", aloud: true)]
+        let s = Shortcut(name: "Ouch", trigger: Trigger(.poke), steps: steps)
         let back = try JSONDecoder().decode(Shortcut.self, from: JSONEncoder().encode(s))
-        #expect(!back.usesClipboard && back == s)
-        // Sent as is: no clipboard, no "here's what I copied".
-        #expect(Briefing.shortcut(s.prompt, clip: nil).content == "Plan my day.")
+        #expect(back.steps == steps && back.steps.map(\.act) == [.play, .say, .sleep, .say])
+        #expect(s.isValid && s.runsLocally)
+    }
+
+    @Test func atMostFiveSteps() {
+        let six = Array(repeating: Step(.say, value: "x"), count: 6)
+        #expect(!Shortcut(name: "A", trigger: Trigger(.poke), steps: six).isValid)
+        #expect(Shortcut(name: "A", trigger: Trigger(.poke), steps: Array(six.prefix(5))).isValid)
     }
 }

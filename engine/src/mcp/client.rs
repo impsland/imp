@@ -11,6 +11,7 @@ use crate::chat::ToolSpec;
 use crate::tools::ToolEntry;
 use serde_json::Value;
 use std::process::Stdio;
+use std::rc::Rc;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
@@ -32,6 +33,37 @@ pub enum McpError {
     Network(String),
     #[error("{}", protocol::status_text(*.0))]
     Status(u16),
+    /// The server wants a signed-in person (401), or more permission (403 `insufficient_scope`).
+    #[error("the MCP server needs you to sign in")]
+    Unauthorized {
+        resource_metadata: Option<String>,
+        scope: Option<String>,
+        insufficient_scope: bool,
+    },
+    /// The server speaks a revision Imp does not, or the sign-in did not work. The text is a sentence.
+    #[error("{0}")]
+    Protocol(String),
+}
+
+/// What the HTTP transport asks of whoever keeps the sign-ins (see `auth`). It sees the server by
+/// its address.
+pub trait McpSignIn {
+    /// The access token to send to `server_url`, refreshed when it is about to run out or when
+    /// `force_refresh` says the server refused it. Nothing when there is none.
+    fn token<'a>(
+        &'a self,
+        server_url: &'a str,
+        force_refresh: bool,
+    ) -> BoxFuture<'a, Result<Option<String>, McpError>>;
+
+    /// The server demanded a sign-in that a refresh did not fix. Do it (it may take minutes and
+    /// may open a browser) and store the result, so that `token` has it. `Ok` means try again.
+    fn sign_in<'a>(
+        &'a self,
+        server_name: &'a str,
+        server_url: &'a str,
+        challenge: &'a McpError,
+    ) -> BoxFuture<'a, Result<(), McpError>>;
 }
 
 /// Pairs of names and secret values, such as environment variables or HTTP headers. `Debug` shows
@@ -90,6 +122,8 @@ pub struct McpClient {
     link: Link,
     next_id: AtomicU64,
     timeout: Duration,
+    /// Who signs in when the server demands it, and the server's address.
+    sign_in: Option<(Rc<dyn McpSignIn>, String)>,
 }
 
 impl McpClient {
@@ -125,6 +159,7 @@ impl McpClient {
                 _child: child,
             },
             timeout,
+            None,
         )
         .await
     }
@@ -137,35 +172,64 @@ impl McpClient {
         headers: &McpSecrets,
         timeout: Duration,
     ) -> Result<Self, McpError> {
-        let link = Link::Http(http::Http::new(url, headers)?);
-        Self::start(name, link, timeout).await
+        Self::connect_http_with(name, url, headers, timeout, None).await
+    }
+
+    /// Like [`Self::connect_http`], with `auth` keeping the server's sign-in: it supplies the
+    /// bearer token, and when the server answers 401 it signs in (outside `timeout`) and tries once more.
+    pub async fn connect_http_with(
+        name: &str,
+        url: &str,
+        headers: &McpSecrets,
+        timeout: Duration,
+        auth: Option<Rc<dyn McpSignIn>>,
+    ) -> Result<Self, McpError> {
+        let link = Link::Http(http::Http::new(url, headers, auth.clone())?);
+        let sign_in = auth.map(|a| (a, url.to_string()));
+        Self::start(name, link, timeout, sign_in).await
     }
 
     /// Connects as the spec says.
     pub async fn connect(spec: &McpServerSpec, timeout: Duration) -> Result<Self, McpError> {
+        Self::connect_with(spec, timeout, None).await
+    }
+
+    /// Like [`Self::connect`], with sign-in for HTTP servers.
+    pub async fn connect_with(
+        spec: &McpServerSpec,
+        timeout: Duration,
+        auth: Option<Rc<dyn McpSignIn>>,
+    ) -> Result<Self, McpError> {
         match &spec.endpoint {
             McpEndpoint::Command { command, args, env } => {
                 Self::connect_stdio(&spec.name, command, args, env, timeout).await
             }
             McpEndpoint::Http { url, headers } => {
-                Self::connect_http(&spec.name, url, headers, timeout).await
+                Self::connect_http_with(&spec.name, url, headers, timeout, auth).await
             }
         }
     }
 
-    async fn start(name: &str, link: Link, timeout: Duration) -> Result<Self, McpError> {
+    async fn start(
+        name: &str,
+        link: Link,
+        timeout: Duration,
+        sign_in: Option<(Rc<dyn McpSignIn>, String)>,
+    ) -> Result<Self, McpError> {
         let client = Self {
             name: name.to_string(),
             link,
             next_id: AtomicU64::new(1),
             timeout,
+            sign_in,
         };
         let id = client.next_id();
         let result = client
             .exchange(id, &protocol::initialize_request(id))
             .await?;
+        let version = protocol::checked_version(&result).map_err(McpError::Protocol)?;
         if let Link::Http(http) = &client.link {
-            http.set_protocol(&protocol::negotiated_version(&result));
+            http.set_protocol(&version);
         }
         client.notify(&protocol::initialized_notification()).await?;
         Ok(client)
@@ -215,6 +279,20 @@ impl McpClient {
     /// notifications and answers to other requests are skipped. A `ping` from the server is answered
     /// with an empty result, and any other request is answered with "Method not found".
     async fn exchange(&self, id: u64, message: &Value) -> Result<Value, McpError> {
+        match self.exchange_once(id, message).await {
+            // The server wants a sign-in that a refresh did not fix. Signing in may take minutes,
+            // so it is outside the time limit. Then the request goes once more.
+            Err(demand @ McpError::Unauthorized { .. }) if self.sign_in.is_some() => {
+                if let Some((auth, url)) = &self.sign_in {
+                    auth.sign_in(&self.name, url, &demand).await?;
+                }
+                self.exchange_once(id, message).await
+            }
+            other => other,
+        }
+    }
+
+    async fn exchange_once(&self, id: u64, message: &Value) -> Result<Value, McpError> {
         match &self.link {
             Link::Stdio { pipes, .. } => self.exchange_stdio(pipes, id, message).await,
             Link::Http(http) => tokio::time::timeout(self.timeout, http.post(message, Some(id)))
@@ -296,11 +374,20 @@ impl McpHost {
     /// Connects to every server. Those that fail are skipped, each with a plain sentence in the
     /// second part of the result.
     pub async fn connect(specs: &[McpServerSpec], timeout: Duration) -> (Self, Vec<String>) {
+        Self::connect_with(specs, timeout, None).await
+    }
+
+    /// Like [`Self::connect`], with sign-in for servers that ask for it.
+    pub async fn connect_with(
+        specs: &[McpServerSpec],
+        timeout: Duration,
+        auth: Option<Rc<dyn McpSignIn>>,
+    ) -> (Self, Vec<String>) {
         let mut clients = Vec::new();
         let mut listed: Vec<(String, Vec<McpTool>)> = Vec::new();
         let mut problems = Vec::new();
         for spec in specs {
-            let client = match McpClient::connect(spec, timeout).await {
+            let client = match McpClient::connect_with(spec, timeout, auth.clone()).await {
                 Ok(c) => c,
                 Err(e) => {
                     problems.push(format!(

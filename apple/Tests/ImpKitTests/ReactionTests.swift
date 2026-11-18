@@ -8,7 +8,7 @@ import Testing
 
     /// Feeds a path sampled at 60 Hz. Returns the first gesture (and when it came).
     private func first(_ g: inout MouseGestures, frames: Int, from start: Int = 0,
-                       _ path: (Int) -> CGPoint) -> (AnimationTrigger, Double)? {
+                       _ path: (Int) -> CGPoint) -> (TriggerEvent, Double)? {
         for i in start..<(start + frames) {
             let t = Double(i) / 60
             if let found = g.move(to: path(i), at: t, center: center, radius: r) { return (found, t) }
@@ -80,17 +80,17 @@ import Testing
         #expect(found?.0 == .stroke)
     }
 
-    @Test func restingOnTheFaceIsAStareAndBesideItALinger() {
+    @Test func restingOnTheFaceOrBesideItIsNear() {
         var g = MouseGestures()
         _ = g.move(to: CGPoint(x: center.x + 5, y: center.y), at: 0, center: center, radius: r)
         #expect(g.rest(at: 1.0, center: center, radius: r) == nil, "too soon: you may just be about to drag it")
-        #expect(g.rest(at: MouseGestures.stareAfter, center: center, radius: r) == .stare)
+        #expect(g.rest(at: MouseGestures.stareAfter, center: center, radius: r) == .near)
         #expect(g.rest(at: 5, center: center, radius: r) == nil, "once per rest")
 
         var h = MouseGestures()
         _ = h.move(to: CGPoint(x: center.x + r * 2, y: center.y), at: 0, center: center, radius: r)
         #expect(h.rest(at: 2, center: center, radius: r) == nil)
-        #expect(h.rest(at: MouseGestures.lingerAfter, center: center, radius: r) == .linger)
+        #expect(h.rest(at: MouseGestures.lingerAfter, center: center, radius: r) == .near)
 
         var far = MouseGestures()
         _ = far.move(to: CGPoint(x: center.x + r * 6, y: center.y), at: 0, center: center, radius: r)

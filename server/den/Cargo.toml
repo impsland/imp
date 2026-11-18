@@ -21,7 +21,7 @@ workspace = true
 mimalloc.workspace = true
 imp-shared.workspace = true
 altcha.workspace = true
-axum.workspace = true
+axum = { workspace = true, features = ["form"] }
 base64.workspace = true
 hex.workspace = true
 hmac.workspace = true

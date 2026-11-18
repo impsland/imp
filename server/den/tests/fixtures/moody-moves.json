@@ -1,4 +1,5 @@
 {
+  "format": 1,
   "app": "1.9.0",
   "name": "Moody moves",
   "about": "Four hand-made animations and one sleepy Imp. A long Stretch replaces the yawn, a Shrug and a Nervous laugh add some attitude, and a Victory dance breaks out now and then when the Imp is idle. Pip is a slow, heavy-lidded Imp with its own Slow blink. Animations only move the Imp; they add no tools and run nothing.",
@@ -27,7 +28,6 @@
     {
       "name": "Victory dance",
       "about": "A little hop-hop-spin when nothing is going on.",
-      "starts": ["idle"],
       "beats": [
         { "duration": 0.25, "mood": "excited", "hop": true, "tilt": -10, "glyph": "notes" },
         { "duration": 0.25, "mood": "excited", "hop": true, "tilt": 10 },
@@ -39,7 +39,6 @@
     {
       "name": "Nervous laugh",
       "about": "Heh. Heh heh. Sorry.",
-      "starts": ["poke"],
       "beats": [
         { "duration": 0.3, "mood": "scared", "glyph": "sweat", "look": [-0.5, 0] },
         { "duration": 0.15, "mood": "giggly", "hop": true, "tilt": -4 },
@@ -59,7 +58,6 @@
         {
           "name": "Slow blink",
           "about": "A long, trusting blink.",
-          "starts": ["idle"],
           "beats": [
             { "duration": 0.8, "mood": "content", "look": [0, 0.2] },
             { "duration": 0.6, "mood": "sleepy" },

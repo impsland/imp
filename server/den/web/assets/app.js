@@ -9,8 +9,8 @@ const KINDS = [
 ];
 const KIND_NAMES = { imp: 'Imp', animation: 'Animation', trigger: 'Trigger', tool: 'Tool', kit: 'Kit' };
 const PAGE_SIZE = 24;
-const HANDLE_RE = /^[a-z0-9][a-z0-9-]{1,30}[a-z0-9]$/;
-const SLUG_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
+const HANDLE_RE = /^[a-z0-9](?:[a-z0-9-]{1,30})[a-z0-9]$/;
+const SLUG_RE = /^[a-z0-9](?:[a-z0-9-]{0,46}[a-z0-9])?$/;
 
 const main = document.getElementById('main');
 const live = document.getElementById('live');
@@ -211,7 +211,7 @@ const kitCache = new Map();
 function fetchKit(handle, slug) {
   const key = `${handle}/${slug}`;
   if (!kitCache.has(key)) {
-    const p = api(`/items/${enc(handle)}/${enc(slug)}/kit.json`);
+    const p = api(`/items/${enc(handle)}/${enc(slug)}/document.json`);
     p.catch(() => kitCache.delete(key));
     kitCache.set(key, p);
   }
@@ -276,14 +276,14 @@ function tagLinks(tags) {
 }
 
 function itemCard(item) {
-  const holder = h('div', { class: 'card-art' }, kindIcon(item.kind));
-  if (item.kind === 'imp') observeAvatar(holder, item);
+  const holder = h('div', { class: 'card-art' }, kindIcon(item.type));
+  if (item.type === 'imp') observeAvatar(holder, item);
   const name = String(item.name || item.slug);
   return h('li', { class: 'card' },
     holder,
     h('div', { class: 'card-body' },
       h('h3', { class: 'card-title' }, link(itemPath(item.handle, item.slug), { class: 'card-link', text: name })),
-      h('p', { class: 'badges' }, kindBadge(item.kind), item.runs_programs ? warningBadge(false) : null),
+      h('p', { class: 'badges' }, kindBadge(item.type), item.runs_programs ? warningBadge(false) : null),
       item.summary ? h('p', { class: 'card-summary', text: item.summary }) : null,
       tagLinks(item.tags),
       h('p', { class: 'card-meta muted' },
@@ -296,22 +296,54 @@ function itemCard(item) {
         formatDate(item.updated_at))));
 }
 
+// ---------------------------------------------------------------- connect
+
+function base64url(text) {
+  const bytes = new TextEncoder().encode(text);
+  let bin = '';
+  bytes.forEach((b) => { bin += String.fromCharCode(b); });
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function copyButton(label, getText) {
+  if (!(navigator.clipboard && navigator.clipboard.writeText)) return null;
+  const btn = h('button', { type: 'button', class: 'btn small ghost', text: label, onclick: async () => {
+    try { await navigator.clipboard.writeText(getText()); btn.textContent = 'Copied'; } catch { btn.textContent = 'Could not copy'; }
+    setTimeout(() => { btn.textContent = label; }, 2000);
+  } });
+  return btn;
+}
+
+function connectPanel() {
+  const mcpUrl = `${location.origin}/mcp`;
+  const kit = { format: 1, name: 'Den', mcpServers: { den: { url: mcpUrl } } };
+  const addHref = `imp://add?kit=${base64url(JSON.stringify(kit))}`;
+  const snippet = JSON.stringify({ mcpServers: { den: { url: mcpUrl } } }, null, 2);
+  return h('section', { class: 'panel connect', 'aria-labelledby': 'connect-title' },
+    h('h2', { id: 'connect-title', text: 'Connect to the Den' }),
+    h('p', null, link(addHref, { class: 'btn primary', text: 'Add to Imp', 'data-route': null, rel: 'noopener' })),
+    h('p', { class: 'muted', text: 'Other MCP hosts (Claude, ChatGPT, editors, agents) add this server address:' }),
+    h('pre', { class: 'snippet' }, h('code', { text: snippet })),
+    h('p', null, copyButton('Copy MCP config', () => snippet), ' ', copyButton('Copy address', () => mcpUrl)),
+    h('p', { class: 'muted small', text: 'Searching and downloading need no account. Publishing happens through MCP: your host or Imp asks you to sign in, which opens in your browser.' }));
+}
+
 // ---------------------------------------------------------------- gallery
 
 function readFilters() {
   const q = new URLSearchParams(location.search);
-  const kind = q.get('kind') || '';
+  const kind = q.get('type') || '';
   return {
     kind: KINDS.some(([k]) => k === kind) ? kind : '',
     tag: (q.get('tag') || '').slice(0, 40),
     q: (q.get('q') || '').slice(0, 100),
-    sort: q.get('sort') === 'popular' ? 'popular' : 'new',
+    sort: ['popular', 'name'].includes(q.get('sort')) ? q.get('sort') : 'new',
   };
 }
 
 function filterUrl(f) {
   const q = new URLSearchParams();
-  if (f.kind) q.set('kind', f.kind);
+  if (f.kind) q.set('type', f.kind);
   if (f.tag) q.set('tag', f.tag);
   if (f.q) q.set('q', f.q);
   if (f.sort !== 'new') q.set('sort', f.sort);
@@ -335,14 +367,14 @@ async function renderGallery(token) {
     h('div', { class: 'hero-text' },
       h('p', { class: 'eyebrow', text: 'The Den' }),
       h('h1', { id: 'hero-title', text: 'What Imps make, shared' }),
-      h('p', { class: 'lede' }, 'Whole Imps, animations, triggers and tools from people and from agents. Press ',
-        h('b', { text: 'Add to Imp' }), ' and your Mac shows you everything before it adds a thing.'),
+      h('p', { class: 'lede' }, 'Whole Imps, animations, triggers, tools and kits from people and from agents. Press ',
+        h('b', { text: 'Open in Imp' }), ' on anything below and Imp shows you everything before it adds a thing.'),
       statsEl),
     h('div', { class: 'hero-art', 'aria-hidden': 'true' }, h('div', { class: 'arch' }), heroSvg, h('div', { class: 'pedestal' })));
 
   const search = h('input', { type: 'search', id: 'q', name: 'q', value: filters.q, maxlength: 100, autocomplete: 'off', placeholder: 'Search the Den' });
   const sort = h('select', { id: 'sort', name: 'sort' },
-    h('option', { value: 'new', text: 'Newest' }), h('option', { value: 'popular', text: 'Most added' }));
+    h('option', { value: 'new', text: 'Newest' }), h('option', { value: 'popular', text: 'Most added' }), h('option', { value: 'name', text: 'Name' }));
   sort.value = filters.sort;
   const kindButtons = KINDS.map(([value, label]) => h('button', {
     type: 'button', class: 'chip', 'data-kind': value, 'aria-pressed': String(filters.kind === value), text: label,
@@ -352,7 +384,7 @@ async function renderGallery(token) {
   const form = h('form', { class: 'filters', role: 'search', 'aria-label': 'Search the gallery', onsubmit: (e) => { e.preventDefault(); filters.q = search.value.trim(); apply(); } },
     h('div', { class: 'field grow' }, h('label', { for: 'q', text: 'Search' }), search),
     h('div', { class: 'field' }, h('label', { for: 'sort', text: 'Sort' }), sort),
-    h('div', { class: 'kinds', role: 'group', 'aria-label': 'Kind' }, kindButtons));
+    h('div', { class: 'kinds', role: 'group', 'aria-label': 'Type' }, kindButtons));
 
   const grid = h('ul', { class: 'grid', 'aria-label': 'Items' });
   const status = h('p', { class: 'status muted', role: 'status', 'aria-live': 'polite' });
@@ -360,7 +392,7 @@ async function renderGallery(token) {
   const more = h('button', { type: 'button', class: 'btn', hidden: true, text: 'Load more', onclick: () => loadPage(true) });
   const results = h('section', { 'aria-label': 'Results' }, tagBar, grid, errorHost, status, h('p', { class: 'more' }, more));
 
-  show(hero, form, results);
+  show(hero, connectPanel(), form, results);
 
   let debounce = 0;
   search.addEventListener('input', () => {
@@ -397,7 +429,7 @@ async function renderGallery(token) {
     more.disabled = true;
     status.textContent = 'Loading…';
     const q = new URLSearchParams({ limit: String(PAGE_SIZE), sort: filters.sort });
-    if (filters.kind) q.set('kind', filters.kind);
+    if (filters.kind) q.set('type', filters.kind);
     if (filters.tag) q.set('tag', filters.tag);
     if (filters.q) q.set('q', filters.q);
     if (append && cursor) q.set('cursor', cursor);
@@ -411,7 +443,7 @@ async function renderGallery(token) {
       more.hidden = !cursor;
       more.disabled = false;
       const count = grid.children.length;
-      status.textContent = count ? `Showing ${plural(count, 'item', 'items')}${cursor ? '' : '. That is everything.'}` : 'Nothing matches yet. Try fewer words or another kind.';
+      status.textContent = count ? `Showing ${plural(count, 'item', 'items')}${cursor ? '' : '. That is everything.'}` : 'Nothing matches yet. Try fewer words or another type.';
     } catch (e) {
       if (mine !== listToken || token !== routeToken) return;
       status.textContent = '';
@@ -425,7 +457,7 @@ async function renderGallery(token) {
   loadStats().then((s) => {
     if (token !== routeToken) return;
     statsEl.textContent = `${statsLine(s)} Counts update about once a minute.`;
-    const byKind = s.by_kind || {};
+    const byKind = s.by_type || {};
     kindButtons.forEach((b) => {
       const k = b.getAttribute('data-kind');
       if (k && typeof byKind[k] === 'number') b.title = plural(byKind[k], 'item', 'items');
@@ -752,6 +784,7 @@ function renderKit(kit, host) {
     (Array.isArray(entry.raw.triggers) ? entry.raw.triggers : []).slice(0, 50).forEach((t, i) => triggers.push(triggerCard(t, i, entry.name)));
   });
 
+  const skills = Array.isArray(kit.skills) ? kit.skills.filter((k) => k && typeof k.name === 'string' && typeof k.source === 'string').slice(0, 20) : [];
   const servers = kit.mcpServers && typeof kit.mcpServers === 'object' && !Array.isArray(kit.mcpServers) ? Object.entries(kit.mcpServers).slice(0, 20) : [];
 
   const stage = imps.length || animEntries.length ? buildStage(imps) : null;
@@ -765,6 +798,14 @@ function renderKit(kit, host) {
   if (servers.length) {
     parts.push(section('Tools', 'tools-title', 'Tools an Imp borrows from MCP servers.', h('ul', { class: 'cards-list' }, servers.map(([name, cfg]) => toolCard(name, cfg)))));
   }
+  if (skills.length) {
+    parts.push(section('Skills', 'skills-title', 'Skills are installed with the skills tool. Imp never runs these commands for you.',
+      h('ul', { class: 'cards-list' }, skills.map((k) => {
+        const cmd = `npx skills add ${k.source}`;
+        return h('li', { class: 'tool' }, h('h3', { text: k.name }),
+          h('p', null, h('code', { text: cmd })), h('p', null, copyButton('Copy command', () => cmd)));
+      }))));
+  }
   if (!parts.length) parts.push(h('p', { class: 'muted', text: 'This kit has nothing Imp can show here.' }));
 
   const body = h('div', { class: stage ? 'kit-body with-stage' : 'kit-body' }, stage ? stage.el : null, h('div', { class: 'kit-main' }, parts));
@@ -773,10 +814,10 @@ function renderKit(kit, host) {
 
 // ---------------------------------------------------------------- item page
 
-function absoluteKitUrl(item) {
-  const fallback = `${location.origin}/items/${enc(item.handle)}/${enc(item.slug)}/kit.json`;
+function absoluteDocumentUrl(item) {
+  const fallback = `${location.origin}/items/${enc(item.handle)}/${enc(item.slug)}/document.json`;
   try {
-    const u = new URL(item.kit_url || fallback, location.origin);
+    const u = new URL(item.document_url || fallback, location.origin);
     return u.protocol === 'https:' || u.protocol === 'http:' ? u.href : fallback;
   } catch {
     return fallback;
@@ -827,9 +868,9 @@ async function renderItem(handle, slug, token) {
 
   const name = String(item.name || item.slug);
   document.title = `${name} by @${item.handle} - The Den`;
-  const kitUrl = absoluteKitUrl(item);
-  const addHref = `imp://add?url=${enc(kitUrl)}`;
-  const addBtn = h('a', { class: 'btn primary', href: addHref, rel: 'noopener' }, 'Add to Imp');
+  const docUrl = absoluteDocumentUrl(item);
+  const openHref = typeof item.open_url === 'string' && item.open_url.startsWith('imp://') ? item.open_url : `imp://add?url=${enc(docUrl)}`;
+  const addBtn = h('a', { class: 'btn primary', href: openHref, rel: 'noopener' }, 'Open in Imp');
   addBtn.addEventListener('click', () => {
     fetch(`/items/${enc(item.handle)}/${enc(item.slug)}/installs`, { method: 'POST', keepalive: true }).catch(() => {});
   });
@@ -839,12 +880,27 @@ async function renderItem(handle, slug, token) {
     reportBtn.setAttribute('aria-expanded', String(!form.hidden));
     if (!form.hidden) form.querySelector('textarea').focus();
   } });
+  const flash = (btn, label, text) => { btn.textContent = text; setTimeout(() => { btn.textContent = label; }, 2000); };
+  const docText = async () => {
+    const res = await fetch(`/items/${enc(item.handle)}/${enc(item.slug)}/document.json`);
+    if (!res.ok) throw new Error('document');
+    return res.text();
+  };
   const copyBtn = navigator.clipboard && navigator.clipboard.writeText
-    ? h('button', { type: 'button', class: 'btn ghost', text: 'Copy kit address', onclick: async () => {
-      try { await navigator.clipboard.writeText(kitUrl); copyBtn.textContent = 'Copied'; } catch { copyBtn.textContent = 'Could not copy'; }
-      setTimeout(() => { copyBtn.textContent = 'Copy kit address'; }, 2000);
+    ? h('button', { type: 'button', class: 'btn ghost', text: 'Copy JSON', onclick: async () => {
+      try { await navigator.clipboard.writeText(await docText()); flash(copyBtn, 'Copy JSON', 'Copied'); } catch { flash(copyBtn, 'Copy JSON', 'Could not copy'); }
     } })
     : null;
+  const exportBtn = h('button', { type: 'button', class: 'btn ghost', text: 'Export JSON', onclick: async () => {
+    try {
+      const url = URL.createObjectURL(new Blob([await docText()], { type: 'application/json' }));
+      const a = h('a', { href: url, download: `${item.handle}-${item.slug}.json` });
+      document.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    } catch { flash(exportBtn, 'Export JSON', 'Could not export'); }
+  } });
   const kitHost = h('div', { class: 'kit-host' }, loading('Loading the kit…'));
 
   show(
@@ -852,7 +908,7 @@ async function renderItem(handle, slug, token) {
       link('/', { text: 'Gallery' }), ' / ', link(accountPath(item.handle), { text: `@${item.handle}` }), ' / ', h('span', { text: name })),
     h('header', { class: 'item-head' },
       h('div', null,
-        h('p', { class: 'badges' }, kindBadge(item.kind)),
+        h('p', { class: 'badges' }, kindBadge(item.type)),
         h('h1', { text: name }),
         item.summary ? h('p', { class: 'lede', text: item.summary }) : null,
         h('p', { class: 'meta muted' },
@@ -865,16 +921,16 @@ async function renderItem(handle, slug, token) {
     item.runs_programs
       ? h('div', { class: 'notice warn', role: 'note' },
         h('strong', null, h('span', { 'aria-hidden': 'true', text: '⚠ ' }), 'Runs programs on your Mac: review it in Imp before adding.'),
-        h('p', { text: 'This kit starts programs on your computer. Imp lists every command before it adds anything. Read them, and only add it if you trust who made it.' }))
+        h('p', { text: 'This item starts programs on your computer. Imp lists every command before it adds anything. Read them, and only add it if you trust who made it.' }))
       : null,
     h('div', { class: 'actions' }, addBtn,
-      h('a', { class: 'btn ghost', href: kitUrl, download: `${item.slug}.json`, text: 'Download kit.json' }), copyBtn, reportBtn),
-    h('p', { class: 'muted small', text: 'Add to Imp opens the Imp app on your Mac. Install counts update about once a minute.' }),
+      exportBtn, copyBtn, reportBtn),
+    h('p', { class: 'muted small', text: 'Open in Imp opens the Imp app. Install counts update about once a minute.' }),
     form,
     h('details', { class: 'tech' },
       h('summary', { text: 'Technical details' }),
       h('dl', { class: 'facts' },
-        h('div', null, h('dt', { text: 'Kit address' }), h('dd', null, h('code', { text: kitUrl }))),
+        h('div', null, h('dt', { text: 'Document address' }), h('dd', null, h('code', { text: docUrl }))),
         item.sha256 ? h('div', null, h('dt', { text: 'SHA-256' }), h('dd', null, h('code', { text: String(item.sha256) }))) : null,
         typeof item.size === 'number' ? h('div', null, h('dt', { text: 'Size' }), h('dd', { text: `${number.format(item.size)} bytes` })) : null,
         item.created_at ? h('div', null, h('dt', { text: 'First shared' }), h('dd', null, formatDate(item.created_at))) : null)),

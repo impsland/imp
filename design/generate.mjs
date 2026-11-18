@@ -5,12 +5,11 @@
  *   design/tokens.json             colours, spacing, radii, type, sizes, motion and behaviour numbers
  *   design/components.json         the Pebble components, as token references
  *   design/strings/*.json          every word a user reads, one stable key each, in en, es and zh-Hans
- *   spec/animations/catalog.json   the animations. The five marked "bundled" are compiled into the Apple apps.
- *   spec/presets/*.json            the starter kit and the service presets, compiled into the Apple apps
+ *   spec/presets/*.json            the service presets, compiled into the Apple apps
  *
  * It writes Swift for the Apple apps, CSS for the browser extension, Kotlin and XML for Android,
- * XAML, C# and .resw for Windows, CSS and gettext for Linux, Rust for the terminal app and the Den's
- * animation catalog, and the tables in the docs. The list of outputs is near the end of this file.
+ * XAML, C# and .resw for Windows, CSS and gettext for Linux, Rust for the terminal app, and the tables in the docs.
+ * The list of outputs is near the end of this file.
  *
  * Usage:
  *
@@ -290,7 +289,7 @@ function lengthOf(ref, platform) {
 }
 
 // =============================================================================================
-// Apple: Swift tokens, String Catalogs, bundled animations and presets
+// Apple: Swift tokens, String Catalogs and presets
 // =============================================================================================
 
 const SWIFT_WEIGHTS = { 400: 'regular', 500: 'medium', 600: 'semibold', 700: 'bold', 800: 'heavy' }
@@ -453,49 +452,8 @@ function swiftRawString(text, source) {
   return `#"""\n${text}\n"""#`
 }
 
-/** The five animations the apps carry, cut from the catalog the Den seeds from. */
-function bundledAnimations() {
-  const source = 'spec/animations/catalog.json'
-  const catalog = readJson(source)
-  const bundled = catalog.animations.filter((animation) => animation.bundled === true)
-  if (bundled.length !== 5) fail(`${source}: ${bundled.length} animations are bundled, expected exactly 5`)
-  const ids = catalog.animations.map((animation) => animation.id)
-  if (new Set(ids).size !== ids.length) fail(`${source}: an id is used twice`)
-  const defaults = catalog.defaults ?? {}
-  for (const [trigger, id] of Object.entries(defaults)) {
-    if (!bundled.some((animation) => animation.id === id)) fail(`${source}: the default for ${trigger} is ${id}, which is not bundled`)
-  }
-  const json = JSON.stringify({ name: catalog.name, defaults, animations: bundled }, null, 2)
-  return `// ${generatedFrom(source)}\n\n` +
-    `extension AnimationCatalog {\n` +
-    `    /// The bundled animations as catalog JSON. Compiled in, so no resource bundle has to be found at run time.\n` +
-    `    static let bundledJSON = ${swiftRawString(json, source)}\n}\n`
-}
-
-/**
- * server/den/src/catalog.generated.rs: the whole catalog the Den seeds from, compiled in. A copy inside the
- * crate, so the Den can be published to crates.io (a package cannot reach outside its folder).
- */
-function denCatalog() {
-  const source = 'spec/animations/catalog.json'
-  const text = read(source).trimEnd()
-  JSON.parse(text)
-  if (text.includes('"###')) fail(`${source} cannot hold "### (it ends the Rust raw string)`)
-  return `// ${generatedFrom(source)}\n\n` +
-    `/// The animation catalog as the repository keeps it (the apps read the same file).\n` +
-    `pub const CATALOG: &str = r###"${text}"###;\n`
-}
-
-/** The presets the apps offer, as data: the starter kit (read by the same parser as any kit) and the services. */
+/** The presets the apps offer, as data: the services. */
 function bundledPresets() {
-  const kitSource = 'spec/presets/starter-kit.json'
-  const kitText = read(kitSource)
-  const kit = JSON.parse(kitText)
-  if (!Array.isArray(kit.triggers) || kit.triggers.length === 0) fail(`${kitSource}: needs a list of triggers`)
-  for (const trigger of kit.triggers) {
-    if (!trigger.name || !trigger.when?.kind) fail(`${kitSource}: every trigger needs a name and a when.kind`)
-  }
-
   const servicesSource = 'spec/presets/services.json'
   const servicesText = read(servicesSource)
   const services = JSON.parse(servicesText)
@@ -511,8 +469,6 @@ function bundledPresets() {
   return `// ${generatedFrom('spec/presets')}\n\n` +
     `/// The presets as their JSON files. Compiled in, so no resource bundle has to be found at run time.\n` +
     `enum Presets {\n` +
-    `    /// ${kitSource}: a kit, read by \`Kit.parse\` like any other.\n` +
-    `    static let starterKitJSON = ${swiftRawString(kitText.trimEnd(), kitSource)}\n\n` +
     `    /// ${servicesSource}: the services offered when adding one.\n` +
     `    static let servicesJSON = ${swiftRawString(servicesText.trimEnd(), servicesSource)}\n}\n`
 }
@@ -1173,7 +1129,6 @@ function platformReadmes() {
 const outputs = [
   // Apple
   ['apple/Sources/ImpDesign/Tokens.generated.swift', swiftTokens()],
-  ['apple/Sources/ImpKit/Reactions/AnimationCatalog.generated.swift', bundledAnimations()],
   ['apple/Sources/ImpKit/Settings/Presets.generated.swift', bundledPresets()],
   ['apple/Resources/Localization/Localizable.xcstrings', stringCatalog('apple/Resources/Localization/Localizable.xcstrings')],
   ['apple/iOS/Imp/Localizable.xcstrings', stringCatalog('apple/iOS/Imp/Localizable.xcstrings')],
@@ -1198,8 +1153,6 @@ const outputs = [
   // Terminal
   ['chat/src/theme.generated.rs', rustTheme()],
   ['chat/src/strings.generated.rs', rustStrings()],
-  // Server
-  ['server/den/src/catalog.generated.rs', denCatalog()],
   // Docs
   ['docs/design/components.md', componentsDoc()],
   ...platformReadmes(),

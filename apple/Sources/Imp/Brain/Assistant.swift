@@ -35,6 +35,48 @@ final class Assistant {
             Task { @MainActor in self?.toolStatus = status }
         }
         Task { [hub] in await hub.setStatusHandler(update) }
+        // A tool call that needs a sign-in opens the browser sheet; the person can cancel it.
+        let signIn: @Sendable (MCPServerConfig) async throws -> Void = { [weak self] server in
+            guard let self else { throw MCPSignInError.cancelled }
+            try await self.signInOnly(to: server)
+        }
+        Task { [hub] in await hub.setSignIn(signIn) }
+    }
+
+    // MARK: Signing in to tool servers
+
+    /// The servers (by id) the person is signed in to. Only checks that a sign-in is saved: the
+    /// token itself is not read, so the Keychain (if used) never asks for a password here.
+    private(set) var signedIn: Set<UUID> = []
+    @ObservationIgnored private let presenter = WebAuthPresenter()
+
+    func refreshSignedIn() {
+        signedIn = Set(servers.filter { $0.transport == .http && MCPAuthStore.standard.hasAuth(for: $0.url.trimmingCharacters(in: .whitespaces)) }.map(\.id))
+    }
+
+    /// Shows the browser sheet for `server` and keeps the sign-in. Throws when cancelled or failed.
+    @MainActor func signIn(to server: MCPServerConfig) async throws {
+        try await signInOnly(to: server)
+        await hub.reconnect(server.id)
+    }
+
+    /// The sheet and the saved sign-in, without connecting again (the hub does that itself).
+    @MainActor func signInOnly(to server: MCPServerConfig) async throws {
+        let url = server.url.trimmingCharacters(in: .whitespaces)
+        defer { refreshSignedIn() }
+        try await MCPSignIn(presenter: presenter).signIn(to: url)
+    }
+
+    func signInAndReconnect(_ server: MCPServerConfig) async -> String? {
+        do { try await signIn(to: server); return nil }
+        catch MCPSignInError.cancelled { return nil }
+        catch { return error.localizedDescription }
+    }
+
+    func signOut(of server: MCPServerConfig) async {
+        await MCPSignIn(presenter: presenter).signOut(of: server.url.trimmingCharacters(in: .whitespaces))
+        refreshSignedIn()
+        await hub.reconnect(server.id)
     }
 
     private static func account(_ id: UUID) -> String { "service.\(id.uuidString)" }
@@ -128,21 +170,30 @@ final class Assistant {
 
     var hasTools: Bool { servers.contains(where: \.isEnabled) }
 
+    /// Servers the person just added or switched on. The next `configure` lets those, and only
+    /// those, open the sign-in sheet if they ask for one.
+    var signInRequests: Set<UUID> = []
+
     func configure(ai: AIConfig, servers: [MCPServerConfig], keychain: Bool, limits: RequestLimits = .standard) {
         self.ai = ai
         self.limits = limits
         if persists {
             if configured, keychain != inKeychain { moveKeys(toKeychain: keychain) }
             inKeychain = keychain
+            MCPAuthStore.standard.setInKeychain(keychain)   // tokens of tool servers follow the same rule
             let inFile = file.all()
             keyed = Set(ai.services.map(\.id).filter {
                 keychain ? Keychain.contains(Self.account($0)) : inFile[Self.account($0)] != nil
             })
         }
         configured = true
-        guard servers != self.servers else { return }
+        // Only servers the person just turned on may open the sign-in sheet (`AppModel.changeByPerson`).
+        let signInNow = signInRequests
+        signInRequests = []
+        guard servers != self.servers else { refreshSignedIn(); return }
         self.servers = servers
-        Task { [hub] in await hub.update(servers) }
+        refreshSignedIn()
+        Task { [hub] in await hub.update(servers, signInNow: signInNow) }
     }
 
     func client(for service: Service) throws -> OpenAIClient {

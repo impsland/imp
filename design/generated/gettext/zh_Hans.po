@@ -35,11 +35,6 @@ msgctxt "anim.help.name"
 msgid "A name so you can find it again."
 msgstr "一个名字，方便以后找到它。"
 
-#. Help of when a move plays.
-msgctxt "anim.help.plays"
-msgid "When this move happens."
-msgstr "这个动作什么时候出现。"
-
 #. Help of the shape setting.
 msgctxt "anim.help.shape"
 msgid "Squash or stretch the body, like a ball."
@@ -55,45 +50,25 @@ msgctxt "anim.help.tilt"
 msgid "How far the Imp leans to the side."
 msgstr "Imp 向一侧倾斜多少。"
 
-#. Heading of the five bundled animations.
-msgctxt "animations.built_in"
-msgid "Built in"
-msgstr "内置项"
-
 #. Button.
 msgctxt "animations.find"
 msgid "Browse"
 msgstr "浏览"
 
-#. Heading of animations that came from The Den.
+#. Heading of the animations you made or added.
 msgctxt "animations.from_den"
-msgid "Den"
-msgstr "Den"
-
-#. Shown when The Den is not set up.
-msgctxt "animations.needs_den"
-msgid "Set up The Den to find more."
-msgstr "设置 Den 后可以找到更多。"
+msgid "Made"
+msgstr "自制"
 
 #. Button and sheet title: make a new animation of your own.
 msgctxt "animations.new"
 msgid "New"
 msgstr "新建"
 
-#. Button.
-msgctxt "animations.restore"
-msgid "Restore"
-msgstr "恢复"
-
 #. Placeholder of the search field on the Animations page.
 msgctxt "animations.search"
 msgid "Search"
 msgstr "搜索"
-
-#. Group title.
-msgctxt "animations.title"
-msgid "Animations"
-msgstr "动画效果"
 
 #. Row.
 msgctxt "app.language"
@@ -470,46 +445,6 @@ msgstr "重新尝试"
 msgctxt "common.undo"
 msgid "Undo"
 msgstr "撤销"
-
-#. Help of the Den kind.
-msgctxt "den.help.kind"
-msgid "Pick what kind of thing to look for."
-msgstr "选择要找哪一类东西。"
-
-#. Help of the Den public note.
-msgctxt "den.help.public"
-msgid "Anyone can add it. Chats, memory and keys are never included."
-msgstr "任何人都可以添加。聊天、记忆和密钥永远不会包含在内。"
-
-#. Help of the Den search.
-msgctxt "den.help.search"
-msgid "Type a word to find things."
-msgstr "输入一个词来查找内容。"
-
-#. Help of the Den server.
-msgctxt "den.help.server"
-msgid "Where people share Imps, animations, triggers and tools."
-msgstr "大家分享 Imp、动画、触发器和工具的地方。"
-
-#. Help of the Den name.
-msgctxt "den.help.slug"
-msgid "A short name for the web address. Use small letters and dashes."
-msgstr "网址里用的短名字。用小写字母和短横线。"
-
-#. Help of the Den sort.
-msgctxt "den.help.sort"
-msgid "Show the most loved first, or the newest first."
-msgstr "先显示最受欢迎的，或最新的。"
-
-#. Help of the Den summary.
-msgctxt "den.help.summary"
-msgid "One sentence so people know what it is."
-msgstr "用一句话让大家知道这是什么。"
-
-#. Help of the Den tags.
-msgctxt "den.help.tags"
-msgid "Words that help people find it. Separate them with commas."
-msgstr "帮大家找到它的词，用逗号分开。"
 
 #. Help of Copy Link in Link a device.
 msgctxt "devices.copy_link.help"
@@ -1356,8 +1291,8 @@ msgstr "动画效果"
 
 #. Summary line of the Personality row.
 msgctxt "imp_settings.summary.personality"
-msgid "Name and voice"
-msgstr "名字与声音"
+msgid "Name and persona"
+msgstr "名字与人设"
 
 #. Summary line of the Tools row.
 msgctxt "imp_settings.summary.tools"
@@ -1404,11 +1339,6 @@ msgstr "套件里这台 Mac 用不了的东西，所以被略过。"
 msgctxt "kit.help.tools"
 msgid "Tools can run things on your Mac. Read them first."
 msgstr "工具可以在你的 Mac 上运行东西。请先看一看。"
-
-#. Where a kit in the kit review came from: the starter kit that ships with Imp.
-msgctxt "kit.origin.starter"
-msgid "Imp's starter kit"
-msgstr "Imp 自带入门套件"
 
 #. Status line when Local Network access is off for Imp.
 msgctxt "link.localnet.off"
@@ -1830,55 +1760,15 @@ msgctxt "menu.imp.visit_tip"
 msgid "{name} visits {device} and can come back."
 msgstr "{name} 去 {device} 做客，还可以回来。"
 
-#. Row: change a built-in move.
-msgctxt "moves.builtin"
-msgid "Moves"
-msgstr "动作"
-
-#. Button: change a built-in move.
-msgctxt "moves.change"
-msgid "Change"
-msgstr "更改"
-
 #. Empty state of the moves panel.
 msgctxt "moves.empty"
 msgid "No special moves yet."
 msgstr "还没有特别的动作。"
 
-#. Row: how it follows the cursor.
-msgctxt "moves.follow_how"
-msgid "Follow"
-msgstr "跟随"
-
-#. Help of the built-in moves row.
-msgctxt "moves.help.builtin"
-msgid "Pick one of the moves every Imp has and make a version only for this Imp."
-msgstr "选一个所有 Imp 都有的动作，为这个 Imp 做一个专属版本。"
-
-#. Help of the follow section.
-msgctxt "moves.help.follow"
-msgid "Choose what this Imp does when you move your mouse pointer: stay still, look at it, or run after it."
-msgstr "选择你移动鼠标指针时这个 Imp 做什么：不动、看着它，或跟着它跑。"
-
-#. Help of the follow mode picker.
-msgctxt "moves.help.follow_how"
-msgid "Off: it stays still. Eyes: only its eyes look at the pointer. Hop: it jumps after the pointer. Glide: it slides after the pointer."
-msgstr "关：它不动。眼睛：只有眼睛看着指针。蹦跳：它跳着追指针。滑行：它滑着追指针。"
-
 #. Help of the own animations list.
 msgctxt "moves.help.own"
 msgid "Moves made for only this Imp. They play instead of the shared ones."
 msgstr "只为这个 Imp 做的动作。它们会代替共用的动作。"
-
-#. Help of the follow speed slider.
-msgctxt "moves.help.speed"
-msgid "How fast it goes after the pointer. Only for Hop and Glide."
-msgstr "它追指针有多快。只对蹦跳和滑行有用。"
-
-#. Panel title.
-msgctxt "moves.title"
-msgid "Moves"
-msgstr "动作"
 
 #. Field label: what the Imp is good at, which other Imps read to know whom to ask.
 msgctxt "personality.about"
@@ -1909,16 +1799,6 @@ msgstr "告诉它要做谁，比如和气的海盗或安静的帮手。它就会
 msgctxt "personality.help.rules"
 msgid "The hidden rules that tell it how to answer. Most people never change them."
 msgstr "告诉它怎么回答的隐藏规则。大多数人从不修改。"
-
-#. Help of the voice section.
-msgctxt "personality.help.voice"
-msgid "What shows on your screen while this Imp talks out loud."
-msgstr "这个 Imp 大声说话时，你的屏幕上会出现什么。"
-
-#. Help of the voice look picker.
-msgctxt "personality.help.voice_look"
-msgid "Pick the picture shown while it talks: Glow is a glowing edge, Smoke is a puff of smoke, Both shows the two, Players is a small player with play and pause."
-msgstr "选择它说话时显示的画面：发光是发亮的边，烟雾是一团烟，两者是两个都显示，播放器是带播放和暂停的小播放器。"
 
 #. Field label.
 msgctxt "personality.name"
@@ -1964,16 +1844,6 @@ msgstr "自定义"
 msgctxt "personality.title"
 msgid "Personality"
 msgstr "个性设置"
-
-#. Field label.
-msgctxt "personality.voice"
-msgid "Voice"
-msgstr "声音"
-
-#. Row: how the voice shows.
-msgctxt "personality.voice_look"
-msgid "Shows as"
-msgstr "显示为"
 
 #. Card title: about the app.
 msgctxt "phone.about.title"
@@ -2620,31 +2490,6 @@ msgctxt "servers.address_hint"
 msgid "Start with https://"
 msgstr "以 https:// 开头"
 
-#. Short explanation of The Den.
-msgctxt "servers.den.about"
-msgid "Where Imps share animations, triggers and Imps. Shared items are public."
-msgstr "Imp 在这里共享动画、触发器和 Imp。共享的内容是公开的。"
-
-#. Shows which Den is in use.
-msgctxt "servers.den.in_use"
-msgid "Using the Den at {address}"
-msgstr "正在使用 {address} 上的 Den"
-
-#. Shown on a screen that needs The Den when none is set.
-msgctxt "servers.den.needed"
-msgid "This needs a Den. Set one in Settings."
-msgstr "这需要有 Den。请到设置里添加。"
-
-#. Under Off on the Den card.
-msgctxt "servers.den.off_note"
-msgid "Sharing and finding in The Den are off."
-msgstr "在 Den 中的分享和查找已关闭。"
-
-#. Section title.
-msgctxt "servers.den.title"
-msgid "Den"
-msgstr "Den"
-
 #. Short explanation of The Hop.
 msgctxt "servers.hop.about"
 msgid "Lets your devices find each other. It only passes encrypted data."
@@ -2705,7 +2550,7 @@ msgctxt "servers.state_fail"
 msgid "Cannot reach it. Check the address."
 msgstr "无法连接上，请检查地址。"
 
-#. A check of a server set to This computer found nothing answering there. {server} is The Den or The Hop.
+#. A check of a server set to This computer found nothing answering there. {server} is The Hop.
 msgctxt "servers.state_fail_local"
 msgid "{server} isn't running on this computer. Start it first."
 msgstr "此电脑上没有运行 {server}。请先启动它。"
@@ -2759,11 +2604,6 @@ msgstr "应用看起来的样子。"
 msgctxt "settings.app.system.info"
 msgid "How the app starts and which language it speaks."
 msgstr "应用如何启动，以及使用哪种语言。"
-
-#. Item.
-msgctxt "settings.attention.den_off"
-msgid "The Den is not set up."
-msgstr "Den 尚未设置。"
 
 #. Item: a linked device cannot be reached.
 msgctxt "settings.attention.device_offline"
@@ -3090,11 +2930,6 @@ msgctxt "settings.map.brains"
 msgid "Brains"
 msgstr "大脑"
 
-#. Node: The Den.
-msgctxt "settings.map.den"
-msgid "Den"
-msgstr "Den"
-
 #. Node: The Hop.
 msgctxt "settings.map.hop"
 msgid "Hop"
@@ -3340,16 +3175,6 @@ msgctxt "settings.tool.variables.info"
 msgid "Secret values the tool needs to run."
 msgstr "这个工具运行时需要的秘密值。"
 
-#. Share sheet choice: publish in The Den. What is shared there is public.
-msgctxt "share.den"
-msgid "Den"
-msgstr "Den"
-
-#. Shown when The Den is not set up.
-msgctxt "share.den_needs_setup"
-msgid "Set up The Den to share there."
-msgstr "先设置 Den，才能在那里共享。"
-
 #. Share sheet choice: a kit file.
 msgctxt "share.file"
 msgid "File"
@@ -3409,11 +3234,6 @@ msgstr "使用本机模型的 Imp 仍然可以工作，其他的会等你重新�
 msgctxt "state.offline.title"
 msgid "You are offline"
 msgstr "你现在已离线"
-
-#. Button.
-msgctxt "state.servers.set_up_den"
-msgid "Set up Den"
-msgstr "设置 Den"
 
 #. Button.
 msgctxt "state.servers.set_up_hop"
@@ -3545,6 +3365,21 @@ msgctxt "tools.mcp_failed"
 msgid "Could not start"
 msgstr "启动失败"
 
+#. Status of an MCP server that asks the person to sign in.
+msgctxt "tools.mcp_needs_signin"
+msgid "Sign-in needed"
+msgstr "需要登录"
+
+#. Button on an MCP server in the Tools list: opens the server's sign-in page.
+msgctxt "tools.mcp_sign_in"
+msgid "Sign in"
+msgstr "登录"
+
+#. Button on an MCP server in the Tools list: forgets the sign-in.
+msgctxt "tools.mcp_sign_out"
+msgid "Sign out"
+msgstr "退出登录"
+
 #. Status of an MCP server.
 msgctxt "tools.mcp_starting"
 msgid "Starting"
@@ -3610,6 +3445,21 @@ msgctxt "triggers.add"
 msgid "Add"
 msgstr "添加"
 
+#. Menu title that adds a condition.
+msgctxt "triggers.cond.add"
+msgid "Add"
+msgstr "添加"
+
+#. Menu title when a trigger has no conditions.
+msgctxt "triggers.cond.always"
+msgid "Always"
+msgstr "总是"
+
+#. Help of the button that removes a condition.
+msgctxt "triggers.cond.remove"
+msgid "Remove this condition"
+msgstr "移除此条件"
+
 #. Action on a trigger.
 msgctxt "triggers.delete"
 msgid "Delete trigger"
@@ -3635,25 +3485,60 @@ msgctxt "triggers.empty"
 msgid "No triggers yet. Add one and {name} acts on its own."
 msgstr "还没有触发器。添加一个，{name} 就会自己行动。"
 
+#. Trigger editor row: the steps.
+msgctxt "triggers.f.do"
+msgid "Do"
+msgstr "执行"
+
+#. Trigger editor row: which Imp.
+msgctxt "triggers.f.for"
+msgid "For"
+msgstr "适用于"
+
+#. Trigger editor row: the conditions.
+msgctxt "triggers.f.only_if"
+msgid "Only if"
+msgstr "仅当"
+
+#. Trigger editor row: the event.
+msgctxt "triggers.f.when"
+msgid "When"
+msgstr "当"
+
+#. Row of the trigger editor: how the Imp follows the cursor.
+msgctxt "triggers.follow"
+msgid "Follow"
+msgstr "跟随"
+
+#. Event submenu: pointer gestures on the Imp.
+msgctxt "triggers.gestures"
+msgid "Gestures"
+msgstr "手势"
+
+#. Event menu group: things the Mac does.
+msgctxt "triggers.group.mac"
+msgid "Mac"
+msgstr "Mac"
+
+#. Event menu group: things about time.
+msgctxt "triggers.group.time"
+msgid "Time"
+msgstr "时间"
+
+#. Event menu group: things the person does.
+msgctxt "triggers.group.you"
+msgid "You"
+msgstr "你"
+
 #. Help of the trigger action.
 msgctxt "triggers.help.do"
-msgid "What the Imp does when it goes off."
-msgstr "触发时 Imp 要做什么。"
+msgid "The steps the Imp runs, in order, when it goes off."
+msgstr "触发时 Imp 按顺序执行的步骤。"
 
 #. Help for the For choice in the trigger editor.
 msgctxt "triggers.help.for"
 msgid "Which Imp does the job. A change here is for this Imp alone unless you pick Every Imp."
 msgstr "由哪个 Imp 来做。除非选择所有 Imp，这里的更改只对这个 Imp 生效。"
-
-#. Help of the trigger input.
-msgctxt "triggers.help.input"
-msgid "What the Imp gets to look at when it goes off, like the clipboard."
-msgstr "触发时 Imp 能看到什么，比如剪贴板。"
-
-#. Help of the instruction field.
-msgctxt "triggers.help.instruction"
-msgid "Tell the Imp in your own words what to do."
-msgstr "用你自己的话告诉 Imp 要做什么。"
 
 #. Help of the triggers list.
 msgctxt "triggers.help.list"
@@ -3665,20 +3550,35 @@ msgctxt "triggers.help.name"
 msgid "A name so you can find it again."
 msgstr "一个名字，方便以后找到它。"
 
-#. Help for the starter kit button.
-msgctxt "triggers.help.starter"
-msgid "The triggers Imp comes with: clicks, falling asleep and waking up. You see them before anything is added."
-msgstr "Imp 自带的触发器：点击、入睡和醒来。添加之前你会先看到它们。"
+#. Help of the conditions row.
+msgctxt "triggers.help.only_if"
+msgid "Every condition has to hold at that moment, like the battery being low or the time being late."
+msgstr "触发的那一刻所有条件都必须满足，比如电量低或时间很晚。"
+
+#. Info of the trigger editor.
+msgctxt "triggers.help.sheet"
+msgid "When the event happens and every condition holds, the steps run in order."
+msgstr "事件发生且所有条件都满足时，按顺序执行各个步骤。"
+
+#. Help of the follow speed slider of a follow trigger.
+msgctxt "triggers.help.speed"
+msgid "How fast it goes after the pointer. Only for Hop and Glide."
+msgstr "它追指针有多快。只对蹦跳和滑行有用。"
 
 #. Help of the trigger conditions.
 msgctxt "triggers.help.when"
 msgid "What has to happen to set it off, like a time, an app or a low battery."
 msgstr "要发生什么才会触发，比如时间、某个应用或电量低。"
 
-#. Field: the instruction.
-msgctxt "triggers.instruction"
-msgid "Task"
-msgstr "指令"
+#. Hint under an animation: it plays on an event only through a trigger.
+msgctxt "triggers.hint.animation"
+msgid "To play it on an event, add a trigger."
+msgstr "要在某个事件时播放它，请添加触发器。"
+
+#. Button that opens a new trigger that plays the animation.
+msgctxt "triggers.hint.button"
+msgid "Add trigger"
+msgstr "添加触发器"
 
 #. Menu item on a shared trigger: make this Imp's own version. The other Imps keep the shared one.
 msgctxt "triggers.just_for"
@@ -3689,6 +3589,66 @@ msgstr "只给 {name} 用"
 msgctxt "triggers.new"
 msgid "New"
 msgstr "新建"
+
+#. Name of the open-something choice for screen readers.
+msgctxt "triggers.open"
+msgid "Open"
+msgstr "打开"
+
+#. Open step: the chat.
+msgctxt "triggers.open.chat"
+msgid "Chat"
+msgstr "聊天"
+
+#. Open step: listening.
+msgctxt "triggers.open.listen"
+msgid "Listen"
+msgstr "聆听"
+
+#. Open step: settings.
+msgctxt "triggers.open.settings"
+msgid "Settings"
+msgstr "设置"
+
+#. Open step: the text box.
+msgctxt "triggers.open.text_box"
+msgid "Text box"
+msgstr "文本框"
+
+#. Problem: an ask step with nothing to ask.
+msgctxt "triggers.problem.ask"
+msgid "Write what the Imp should do, or hand over the clipboard."
+msgstr "请写下 Imp 该做什么，或附带剪贴板。"
+
+#. Problem: a keys trigger has no keys.
+msgctxt "triggers.problem.keys"
+msgid "Record the keys that set it off."
+msgstr "请录制触发它的按键。"
+
+#. Problem: a step names an animation the Imp does not have.
+msgctxt "triggers.problem.missing"
+msgid "This Imp has no animation called “{name}”."
+msgstr "这个 Imp 没有名为“{name}”的动画。"
+
+#. Problem: no steps.
+msgctxt "triggers.problem.no_steps"
+msgid "Add at least one step."
+msgstr "至少添加一个步骤。"
+
+#. Problem: a play step with no animation.
+msgctxt "triggers.problem.play"
+msgid "Pick the animation to play."
+msgstr "请选择要播放的动画。"
+
+#. Problem: a say step with no text.
+msgctxt "triggers.problem.say"
+msgid "Write what the Imp says."
+msgstr "请写下 Imp 要说的话。"
+
+#. Problem: too many steps.
+msgctxt "triggers.problem.too_many"
+msgid "A trigger has five steps at most."
+msgstr "一个触发器最多有五个步骤。"
 
 #. Choice in the trigger editor: the change is for this Imp only.
 msgctxt "triggers.scope.just"
@@ -3705,20 +3665,70 @@ msgctxt "triggers.scope.note_version"
 msgid "Saves a version for {name} only. The other Imps keep the shared one."
 msgstr "只为 {name} 保存一个版本。其他 Imp 保留共享的那个。"
 
-#. One trigger as a sentence. The event and the action are short phrases.
-msgctxt "triggers.sentence"
-msgid "When {event}, {action}."
-msgstr "当{event}时，{action}。"
-
 #. Menu item on this Imp's trigger: share it with every Imp.
 msgctxt "triggers.share_every"
 msgid "Share to all"
 msgstr "共享给所有"
 
-#. Button in the empty triggers list: review and add the starter kit.
-msgctxt "triggers.starter"
-msgid "Starter kit"
-msgstr "入门套件"
+#. Menu title that adds a step.
+msgctxt "triggers.step.add"
+msgid "Add a step"
+msgstr "添加步骤"
+
+#. Toggle of a say step: also speak it.
+msgctxt "triggers.step.aloud"
+msgid "Aloud"
+msgstr "朗读"
+
+#. Animation menu of a sleep or wake step: no animation.
+msgctxt "triggers.step.anim_none"
+msgid "The usual way"
+msgstr "默认方式"
+
+#. Placeholder of the instruction of an ask step.
+msgctxt "triggers.step.ask_ph"
+msgid "What should it do? Say it in your own words."
+msgstr "它该做什么？用你自己的话说。"
+
+#. Toggle of an ask step: hand over the clipboard.
+msgctxt "triggers.step.clipboard"
+msgid "With clipboard"
+msgstr "附带剪贴板"
+
+#. Help of the button that moves a step down.
+msgctxt "triggers.step.down"
+msgid "Move down"
+msgstr "下移"
+
+#. Animation menu when the Imp has none.
+msgctxt "triggers.step.no_animations"
+msgid "No animations yet"
+msgstr "还没有动画"
+
+#. Animation menu when none is picked yet.
+msgctxt "triggers.step.pick_animation"
+msgid "Pick an animation"
+msgstr "选择动画"
+
+#. Help of the button that removes a step.
+msgctxt "triggers.step.remove"
+msgid "Remove step"
+msgstr "移除步骤"
+
+#. Placeholder of the text of a say step.
+msgctxt "triggers.step.say_ph"
+msgid "What it says"
+msgstr "它说的话"
+
+#. Label of the follow speed.
+msgctxt "triggers.step.speed"
+msgid "Speed"
+msgstr "速度"
+
+#. Help of the button that moves a step up.
+msgctxt "triggers.step.up"
+msgid "Move up"
+msgstr "上移"
 
 #. Screen reader name of a trigger switch.
 msgctxt "triggers.switch"
@@ -3744,6 +3754,81 @@ msgstr "只属于 {name} 的版本将被删除。"
 msgctxt "triggers.use_shared.title"
 msgid "Use the shared “{name}” again?"
 msgstr "重新使用共享的“{name}”？"
+
+#. Placeholder of the app field.
+msgctxt "triggers.v.any_app"
+msgid "Any app"
+msgstr "任何应用"
+
+#. Condition: the Imp is asleep.
+msgctxt "triggers.v.asleep"
+msgid "Asleep"
+msgstr "睡着"
+
+#. Near event: no wait.
+msgctxt "triggers.v.at_once"
+msgid "Right away"
+msgstr "立即"
+
+#. Condition: the Imp is awake.
+msgctxt "triggers.v.awake"
+msgid "Awake"
+msgstr "醒着"
+
+#. Name of a two-way choice for screen readers.
+msgctxt "triggers.v.choice"
+msgid "Choice"
+msgstr "选项"
+
+#. Name of the clicks choice for screen readers.
+msgctxt "triggers.v.clicks"
+msgid "Clicks"
+msgstr "点击次数"
+
+#. Network event: comes back.
+msgctxt "triggers.v.comes_online"
+msgid "Comes back"
+msgstr "恢复"
+
+#. Network event: goes away.
+msgctxt "triggers.v.goes_offline"
+msgid "Goes away"
+msgstr "断开"
+
+#. Network condition: offline.
+msgctxt "triggers.v.offline"
+msgid "Offline"
+msgstr "离线"
+
+#. Charger condition: on battery.
+msgctxt "triggers.v.on_battery"
+msgid "On battery"
+msgstr "使用电池"
+
+#. Charger condition: plugged in.
+msgctxt "triggers.v.on_charger"
+msgid "On the charger"
+msgstr "正在充电"
+
+#. Network condition: online.
+msgctxt "triggers.v.online"
+msgid "Online"
+msgstr "在线"
+
+#. Help of the open apps menu.
+msgctxt "triggers.v.pick_app"
+msgid "Pick an open app"
+msgstr "选择已打开的应用"
+
+#. Charger event: plugged in.
+msgctxt "triggers.v.plugged"
+msgid "Plugged in"
+msgstr "接上电源"
+
+#. Charger event: unplugged.
+msgctxt "triggers.v.unplugged"
+msgid "Unplugged"
+msgstr "拔掉电源"
 
 #. Switch on the iPhone: voices in new replies.
 msgctxt "voice.autoplay"

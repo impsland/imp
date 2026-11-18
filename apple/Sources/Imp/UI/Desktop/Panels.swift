@@ -200,7 +200,7 @@ final class Panels {
 
     private var mayFollow: Bool {
         model.followCursor != nil && impPanel.isVisible && travelTimer == nil && impTarget == nil
-            && FollowMath.moves(model.profile.follow, reduceMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
+            && FollowMath.moves(model.followMode, reduceMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
     }
 
     private var center: CGPoint { CGPoint(x: impPanel.frame.midX, y: impPanel.frame.midY) }
@@ -233,12 +233,12 @@ final class Panels {
 
     private func followCursor() async {
         let side = Double(impPanel.frame.width)
-        let speed = model.profile.followSpeed
+        let speed = model.followSpeed
         defer { savePosition() }
         var last = CACurrentMediaTime()
         while !Task.isCancelled, mayFollow, let cursor = model.followCursor {
             let goal = FollowMath.keepVisible(cursor, side: side, in: visibleFrame(around: cursor))
-            if model.profile.follow == .hop {
+            if model.followMode == .hop {
                 guard let leg = FollowMath.hopLeg(center: center, cursor: goal, side: side, speed: speed) else { return }
                 let began = CACurrentMediaTime()
                 var k = 0.0
@@ -273,13 +273,13 @@ final class Panels {
             stopTravel()                    // caught mid-air
             reactions.pressed(model)
         case .held:
-            reactions.handle(.hold, by: model, held: true)
+            reactions.handle(.hold, by: model)
             model.felt(.cuddle)
         case .unheld:
-            reactions.release(.hold, by: model)
+            break
         case .lifted:
             model.followBlockedUntil = Date().addingTimeInterval(4)
-            reactions.handle(.pickUp, by: model, held: true)
+            reactions.handle(.drag, by: model)
         case .carried(let speed):
             model.followBlockedUntil = Date().addingTimeInterval(4)
             doorSigns.carried(to: NSEvent.mouseLocation)
@@ -293,12 +293,11 @@ final class Panels {
         case .shaken:
             reactions.handle(.shake, by: model)
             model.felt(.shake)
-        case .dropped(let distance):
+        case .dropped:
             model.followBlockedUntil = Date().addingTimeInterval(4)
             doorSigns.hide()
             steady?.cancel()
             model.carryLean = 0
-            reactions.release(.pickUp, by: model)
             // Let go over the app's window: it goes home, where it was dropped.
             let router = HomeWindow.shared.router
             if ImpDrag.onDrop(isFree: true, pointerInWindow: HomeWindow.shared.isOver(NSEvent.mouseLocation)) == .sendHome {
@@ -311,8 +310,6 @@ final class Panels {
             restOrigin = nil                // the user placed Imp, so don't slide it back
             savePosition()
             model.felt(.drop)
-            // A new spot: say hello to anyone there, else land and look around.
-            if distance > 40 && model.app.stage.arrived(model) { return }
             reactions.handle(.drop, by: model)
         }
     }
@@ -369,7 +366,6 @@ final class Panels {
               let exit = Toss.desktopExit(cursor: cursor, velocity: velocity, screens: NSScreen.screens.map(\.frame)) else { return false }
         doorSigns.hide()
         steady?.cancel()
-        app.reactions.release(.pickUp, by: model)
         let speed = Double(abs(velocity.dx))
         switch app.link.door(of: model.id, side: exit.side, height: exit.height) {
         case .bounce(let why):

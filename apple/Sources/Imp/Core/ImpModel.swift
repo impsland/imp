@@ -46,6 +46,9 @@ final class ImpModel {
     @ObservationIgnored var onFollow: (() -> Void)?
     /// You have hold of it, or just did: it doesn't run after the cursor until then.
     @ObservationIgnored var followBlockedUntil = Date.distantPast
+    /// How it follows the cursor now: set by a follow trigger (not saved), else the base mode.
+    var followMode = ImpPreferences.baseFollow.mode
+    var followSpeed = ImpPreferences.baseFollow.speed
 
     @ObservationIgnored var onBubbleChange: (() -> Void)?
     @ObservationIgnored var onScaleChange: (() -> Void)?
@@ -473,18 +476,15 @@ final class ImpModel {
         setActivity(nil)
     }
 
-    /// Clicks on this Imp (`count` in a row): stops whatever it's doing, else one click opens the bubble
-    /// and two or more run the Imp's click triggers (the starter kit's two clicks open its settings).
+    /// Clicks on this Imp (`count` in a row): stops whatever it's doing, else runs the click trigger that
+    /// answers to that many clicks. With none (or only disabled ones) a click does nothing.
     func clicked(_ count: Int) {
         if visit != nil { return clickedVisitor() }
         touch()
         app.focus(self)
         if app.finishListening(for: self) { return }
         if [.thinking, .tools].contains(activity) { cancel(); react(.surprised, for: 0.6); return }
-        // One click opens the bubble at once. Two or more run what the Imp's triggers say.
-        guard count > 1 else { return bubble?.phase == .typing ? dismissBubble() : startTyping() }
-        guard let shortcut = prefs.clickShortcut(count, on: id, in: app.senses.state) else { return }
-        perform(shortcut)
+        app.fire(.click(count), at: self)
     }
 
     /// Opens this Imp's settings in the app's window.
@@ -570,39 +570,72 @@ final class ImpModel {
         bubble = b
     }
 
-    /// A trigger went off: opens what it opens, or hands its instruction to the model, with what's
-    /// on the clipboard (or `clip`, from a URL command) unless it sends the instruction alone.
-    /// `happened`: what set it off on the Mac (nil: the user did, with keys, clicks or a menu).
-    func perform(_ shortcut: Shortcut, clip given: Clip? = nil, happened: String? = nil) {
-        if shortcut.runsLocally { return runLocal(shortcut) }
-        touch()
-        app.focus(self)
-        switch shortcut.command {
-        case .type: return bubble?.phase == .typing ? dismissBubble() : startTyping()
-        case .talk: return talk()
-        case .chat: return isChatting ? closeChat() : openChat()
-        case .settings: return openSettings()
-        case .sleep, .wakeUp, .play: return
-        case .ask: break
-        }
-        if let given { return start(.shortcut(shortcut, given, happened: happened)) }
-        guard shortcut.usesClipboard else { return start(.shortcut(shortcut, nil, happened: happened)) }
-        guard let clip = Pasteboard.clip() else {
-            // Something on the Mac set it off: go ahead without a clip rather than complain.
-            return happened == nil ? nothingCopied(shortcut) : start(.shortcut(shortcut, nil, happened: happened))
-        }
-        start(.shortcut(shortcut, clip, happened: happened))
+    /// A trigger went off: runs its steps in order, at once (an `ask` hands its work to the model
+    /// and the next steps don't wait for it). `clip` is what a URL command handed over; `happened`
+    /// is what set it off on the Mac (nil: the user did, with keys, clicks or a menu).
+    /// `byPerson`: the person did it (keys, a click, a gesture, a menu); the default is that nothing
+    /// is said to have happened.
+    func perform(_ shortcut: Shortcut, clip given: Clip? = nil, happened: String? = nil, byPerson: Bool? = nil) {
+        let person = byPerson ?? (happened == nil)
+        if person { touch() }
+        if person || shortcut.askStep != nil { app.focus(self) }
+        for step in shortcut.steps { run(step, of: shortcut, clip: given, happened: happened, byPerson: person) }
     }
 
-    /// A trigger that acts on the body alone: no brain, no model call, just the Imp.
-    func runLocal(_ shortcut: Shortcut) {
-        switch shortcut.command {
-        case .sleep: fallAsleep(playing: shortcut.animation)
-        case .wakeUp: wakeUp(playing: shortcut.animation)
-        case .play: if let ref = shortcut.animation { life.perform(ref) }
-        default: break
+    /// One step of a trigger.
+    private func run(_ step: Step, of shortcut: Shortcut, clip given: Clip?, happened: String?, byPerson: Bool) {
+        switch step.act {
+        case .ask:
+            if let given { return start(.shortcut(shortcut, prompt: step.text, given, happened: happened)) }
+            guard step.handsOverClipboard else { return start(.shortcut(shortcut, prompt: step.text, nil, happened: happened)) }
+            guard let clip = Pasteboard.clip() else {
+                // Something on the Mac set it off: go ahead without a clip rather than complain.
+                return byPerson ? nothingCopied(shortcut) : start(.shortcut(shortcut, prompt: step.text, nil, happened: happened))
+            }
+            start(.shortcut(shortcut, prompt: step.text, clip, happened: happened))
+        case .say:
+            say(step.text, aloud: step.speaksAloud)
+        case .play:
+            if let ref = animation(step) { app.reactions.play(ref, by: self, evenIfBusy: true) }
+        case .sleep:
+            fallAsleep(playing: animation(step))
+        case .wake:
+            wakeUp(playing: animation(step))
+        case .follow:
+            followMode = step.followMode
+            followSpeed = step.followSpeed
+        case .open:
+            switch step.target {
+            case .textBox: bubble?.phase == .typing ? dismissBubble() : startTyping()
+            case .listen: talk()
+            case .chat: isChatting ? closeChat() : openChat()
+            case .settings: openSettings()
+            case nil: break
+            }
         }
     }
+
+    /// The animation a `play`, `sleep` or `wake` step names, if it names one this Imp has.
+    private func animation(_ step: Step) -> AnimationRef? {
+        step.animationName.flatMap { prefs.ref(named: $0, imp: id) }
+    }
+
+    /// A `say` step: the text in the bubble, and out loud when asked.
+    func say(_ text: String, aloud: Bool) {
+        guard !text.isEmpty else { return }
+        show(Bubble(text: text, phase: .result))
+        if aloud { Speaker.shared.say(text, language: nil) }
+    }
+
+    /// A follow trigger made or switched on applies its way of following at once.
+    func applyFollow(_ shortcut: Shortcut) {
+        guard let f = shortcut.followSetting else { return }
+        followMode = f.mode
+        followSpeed = f.speed
+    }
+
+    /// Back to the base way of following the cursor.
+    func resetFollow() { followMode = ImpPreferences.baseFollow.mode; followSpeed = ImpPreferences.baseFollow.speed }
 
     /// Falls asleep, playing `ref` on the way if there is one.
     func fallAsleep(playing ref: AnimationRef?) {
@@ -699,9 +732,7 @@ final class ImpModel {
         felt(.poke)
         // The first click opened a text box. A poking spree isn't a conversation.
         stopWaitingForUser()
-        guard let ref = prefs.ref(for: .poke, imp: id) else { return }
-        cancel()
-        app.reactions.play(ref, by: self)
+        app.fire(gesture: .poke, at: self)
     }
 
     // MARK: Pipeline
@@ -715,7 +746,7 @@ final class ImpModel {
         case spoken
         /// A trigger's instruction, with what was copied (nil: the instruction alone) and what set
         /// it off on the Mac (nil: the user did).
-        case shortcut(Shortcut, Clip?, happened: String?)
+        case shortcut(Shortcut, prompt: String, Clip?, happened: String?)
         /// Another Imp's message (`imp_message`). `id`: the id its turn is filed under, the question's id when it came
         /// from another device (so the asker's copy and this one are one exchange, see `AskedTalks`).
         case message(from: ChatTurn.Sender, text: String, place: ImpTalk.Place, conversation: String?, id: UUID?)
@@ -800,14 +831,14 @@ final class ImpModel {
                 turn = Briefing.message(words)
                 heading = words
                 ask = ChatTurn(request: words, via: .spoken)
-            case .shortcut(let shortcut, let clip, let happened):
+            case .shortcut(let shortcut, let prompt, let clip, let happened):
                 title = shortcut.name
                 var path: String?
                 if case .image(let picture)? = clip { path = save(picture) }
-                turn = happened.map { Briefing.trigger(shortcut.prompt, name: shortcut.name, happened: $0, clip: clip, imagePath: path) }
-                    ?? Briefing.shortcut(shortcut.prompt, clip: clip, imagePath: path)
+                turn = happened.map { Briefing.trigger(prompt, name: shortcut.name, happened: $0, clip: clip, imagePath: path) }
+                    ?? Briefing.shortcut(prompt, clip: clip, imagePath: path)
                 heading = shortcut.name
-                let instruction = shortcut.prompt.trimmingCharacters(in: .whitespacesAndNewlines)
+                let instruction = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
                 var copied: String?
                 if case .text(let text)? = clip { copied = text }
                 ask = ChatTurn(request: shortcut.name, via: .shortcut, instruction: instruction.isEmpty ? nil : instruction,
@@ -907,7 +938,6 @@ final class ImpModel {
         log.error("\(what, privacy: .public) failed: \(String(describing: error), privacy: .public)")
         pendingActs = []
         react(.error, for: 2.2)
-        app.stage.broadcast(.failed, from: self)
         // Setup problems point at the Brain tab and stay until dealt with.
         let needsSetup = switch error as? APIError {
         case .missingKey?, .keyDenied?, .noService?, .noModel?, .needsBrain?: true
@@ -927,7 +957,6 @@ final class ImpModel {
         captionTask?.cancel()
         // Body language the model chose takes the place of the usual happy bounce.
         if pendingActs.isEmpty { react(.happy, for: 1.0) } else { play(pendingActs); pendingActs = [] }
-        app.stage.broadcast(.answered, from: self)
         let streaming = bubble?.isStreaming == true ? bubble : nil
         // The turn's id when it has none yet: media the chat already autoplayed won't play again here.
         var answer = Bubble(id: streaming?.id ?? work?.ask.id ?? UUID(), title: title, text: text, phase: .result, steps: finishedSteps)
@@ -1213,10 +1242,12 @@ extension ImpModel {
         app.link.felt(id, feeling)
     }
 
-    /// A click: stops what it is doing, else a text box opens to ask it something.
+    /// A click on a visitor: stops what it is doing, else does what an enabled one-click trigger that
+    /// opens a text box says (a visitor's home does the rest). With no such trigger a click does nothing.
     private func clickedVisitor() {
         touch()
         if [.thinking, .tools].contains(activity) { cancel(); react(.surprised, for: 0.6); return }
+        guard prefs.clickShortcut(1, on: id, in: app.state(for: self))?.steps.first?.target == .textBox else { return }
         if bubble?.phase == .typing { return dismissBubble() }
         startTyping()
     }

@@ -100,6 +100,23 @@ pub fn tools_call_request(id: u64, name: &str, arguments: Value) -> Value {
     )
 }
 
+/// The revisions Imp speaks, newest first.
+pub const SUPPORTED_VERSIONS: &[&str] = &[PROTOCOL_VERSION, "2025-03-26", "2024-11-05"];
+
+/// The version to speak after `initialize`, or the sentence to show when the server picked a
+/// revision Imp does not speak (the client must then disconnect).
+pub fn checked_version(initialize_result: &Value) -> Result<String, String> {
+    let version = negotiated_version(initialize_result);
+    if SUPPORTED_VERSIONS.contains(&version.as_str()) {
+        Ok(version)
+    } else {
+        Err(format!(
+            "This server speaks MCP {version}; Imp speaks {}.",
+            SUPPORTED_VERSIONS.join(", ")
+        ))
+    }
+}
+
 /// The version to speak after `initialize`: the one the server picked, or ours.
 pub fn negotiated_version(initialize_result: &Value) -> String {
     initialize_result["protocolVersion"]
@@ -346,6 +363,19 @@ impl EventStream {
 mod tests {
     use super::*;
     use serde_json::json;
+
+    #[test]
+    fn unsupported_revisions_are_refused() {
+        assert_eq!(
+            checked_version(&json!({ "protocolVersion": "2025-03-26" })).unwrap(),
+            "2025-03-26"
+        );
+        assert_eq!(checked_version(&json!({})).unwrap(), PROTOCOL_VERSION);
+        assert_eq!(
+            checked_version(&json!({ "protocolVersion": "2025-11-25" })).unwrap_err(),
+            "This server speaks MCP 2025-11-25; Imp speaks 2025-06-18, 2025-03-26, 2024-11-05."
+        );
+    }
 
     #[test]
     fn requests_carry_ids_and_methods() {

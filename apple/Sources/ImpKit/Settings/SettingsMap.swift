@@ -10,7 +10,7 @@ public enum SettingsGroup: String, CaseIterable, Sendable, Identifiable {
 
 /// One element of the settings map: this device, a connected service, a server or another device.
 public struct SettingsNode: Equatable, Identifiable, Sendable {
-    public enum Kind: Sendable { case thisDevice, brains, tools, den, hop, desktop, phone }
+    public enum Kind: Sendable { case thisDevice, brains, tools, hop, desktop, phone }
     /// Ready, needs setup and off are the three for what the person sets up. Offline is a linked
     /// device that is set up but cannot be reached now.
     public enum State: Sendable { case ready, needsSetup, off, offline }
@@ -41,7 +41,6 @@ public struct SettingsNode: Equatable, Identifiable, Sendable {
     public var group: SettingsGroup {
         switch kind {
         case .brains, .thisDevice, .tools: .brains
-        case .den: .sharing
         case .hop, .desktop, .phone: .devices
         }
     }
@@ -58,7 +57,7 @@ public struct Sleeper: Equatable, Sendable {
 
 public struct AttentionItem: Equatable, Identifiable, Sendable {
     public enum Reason: Equatable, Sendable {
-        case noBrains, noBrain(Sleeper), denNotSet, hopNotSet, deviceOffline(String)
+        case noBrains, noBrain(Sleeper), hopNotSet, deviceOffline(String)
     }
     public var reason: Reason
     public var group: SettingsGroup
@@ -78,7 +77,6 @@ public enum SettingsMap {
                                    imps: imps(on: DeviceMap.thisMacID), sleeping: sleeping))
         result.append(SettingsNode(id: "brains", kind: .brains, name: "", state: prefs.ai.services.isEmpty ? .needsSetup : .ready))
         result.append(SettingsNode(id: "tools", kind: .tools, name: "", state: prefs.mcpServers.contains { $0.isEnabled } ? .ready : .off))
-        result.append(SettingsNode(id: "den", kind: .den, name: "", state: serverState(prefs.den, .den)))
         result.append(SettingsNode(id: "hop", kind: .hop, name: "", state: serverState(prefs.hop, .hop),
                                    isLocal: ServerKind.isOnThisDevice(prefs.hop)))
         for node in map.nodes where node.kind == .mac || node.kind == .phone {
@@ -106,8 +104,8 @@ public enum SettingsMap {
         attention(nodes).filter { $0.group == group }
     }
 
-    /// What needs fixing, in a calm order: Brains, then the servers, then devices. Each item belongs
-    /// to the section that fixes it: Brains, Sharing (the Den) or Devices (the Hop and linked devices).
+    /// What needs fixing, in a calm order: Brains, then the Hop, then devices. Each item belongs
+    /// to the section that fixes it: Brains or Devices (the Hop and linked devices).
     public static func attention(_ nodes: [SettingsNode]) -> [AttentionItem] {
         var items: [AttentionItem] = []
         if nodes.contains(where: { $0.kind == .brains && $0.state == .needsSetup }) {
@@ -116,11 +114,8 @@ public enum SettingsMap {
         for imp in nodes.filter({ $0.kind == .thisDevice }).flatMap(\.sleeping) {
             items.append(AttentionItem(reason: .noBrain(imp), group: .brains))
         }
-        for kind in [SettingsNode.Kind.den, .hop] {
-            if nodes.contains(where: { $0.kind == kind && ($0.state == .off || $0.state == .needsSetup) }) {
-                items.append(kind == .den ? AttentionItem(reason: .denNotSet, group: .sharing)
-                                          : AttentionItem(reason: .hopNotSet, group: .devices))
-            }
+        if nodes.contains(where: { $0.kind == .hop && ($0.state == .off || $0.state == .needsSetup) }) {
+            items.append(AttentionItem(reason: .hopNotSet, group: .devices))
         }
         for node in nodes where (node.kind == .desktop || node.kind == .phone) && node.state == .offline {
             items.append(AttentionItem(reason: .deviceOffline(node.name), group: .devices))

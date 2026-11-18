@@ -70,7 +70,7 @@ final class AppModel {
     init(persist: Bool = true) {
         store = persist ? PreferencesStore() : nil
         assistant = Assistant(usesKeychain: persist)
-        let loaded = store?.load() ?? .firstLaunch
+        let loaded = store?.load() ?? ImpPreferences()
         prefs = loaded
         store?.save(loaded)
         syncTroupe()
@@ -136,38 +136,60 @@ final class AppModel {
         }
     }
 
-    /// Something happened to `imp`'s body (left alone for a while, the cursor came close or went
-    /// away). Triggers that act on the body run at once, with no brain. The ones that ask the model
-    /// wait their turn, as for any other event.
-    func fireBody(_ event: MacEvent, on imp: ImpModel) {
-        for s in prefs.bodyShortcuts(of: imp.id, on: event, in: senses.state) {
-            if s.runsLocally { imp.runLocal(s); continue }
-            guard !isHidden, Date().timeIntervalSince(lastFired[s.id] ?? .distantPast) >= Self.rest,
-                  imp.isAvailable, !hiddenImps.contains(imp.id), !isAway(imp.id) else { continue }
-            lastFired[s.id] = Date()
-            imp.perform(s, happened: event.description)
-        }
+    /// How the Mac and `imp` are right now, for a trigger's conditions (`asleep` is the Imp's own).
+    func state(for imp: ImpModel) -> MacState {
+        var s = senses.state
+        s.asleep = imp.asleep
+        return s
     }
 
-    /// Something happened on the Mac: every trigger it sets off goes to its Imp, if that Imp is free
-    /// (never in the middle of work, or while you're typing or talking to it). Each one rests a
-    /// minute before it may go off again, and nothing goes off while the Imps are hidden.
+    /// Something happened to `imp` itself (left alone, the cursor came close or went away, it was
+    /// clicked or handled): every enabled trigger of that Imp that it sets off runs, in list order.
+    func fire(_ event: MacEvent, at imp: ImpModel) {
+        let state = state(for: imp)
+        for s in prefs.triggers(for: imp.id) where s.fires(on: event, in: state) { run(s, on: imp, because: event) }
+    }
+
+    /// The person did a pointer gesture to `imp`: it becomes the trigger event of that name.
+    func fire(gesture: TriggerEvent, at imp: ImpModel) {
+        guard gesture.isGesture else { return }
+        fire(.gesture(gesture), at: imp)
+    }
+
+    /// Something happened on the Mac: every trigger it sets off runs on its Imp, all of them, in list
+    /// order. A trigger that asks the model rests a minute before it may go off again, and nothing
+    /// goes off while the Imps are hidden.
     func fire(_ event: MacEvent) {
         defer { if case .busy(let load) = event { lastLoad = load } }
         guard !isHidden else { return }
-        let state = senses.state
-        for s in prefs.liveShortcuts where s.fires(on: event, in: state) {
+        for s in prefs.liveShortcuts where s.trigger.matches(event) {
             if case .busy = event, lastLoad >= s.trigger.percent { continue }     // still over the line: not news
-            guard Date().timeIntervalSince(lastFired[s.id] ?? .distantPast) >= Self.rest,
-                  let imp = performer(for: s), prefs.runs(s, on: imp.id),
-                  imp.isAvailable, !hiddenImps.contains(imp.id), !isAway(imp.id) else { continue }
-            lastFired[s.id] = Date()
-            imp.perform(s, happened: event.description)
+            // Following the cursor is every Imp's own: it goes to each Imp that runs the trigger.
+            let targets = s.steps.allSatisfy({ $0.act == .follow })
+                ? imps.filter { prefs.runs(s, on: $0.id) && (s.performer ?? $0.id) == $0.id }
+                : [performer(for: s)].compactMap { $0 }.filter { prefs.runs(s, on: $0.id) }
+            for imp in targets where s.conditions.allSatisfy({ $0.holds(in: state(for: imp)) }) { run(s, on: imp, because: event) }
         }
     }
 
-    /// Seconds a trigger rests after going off on its own.
-    static let rest: TimeInterval = 60
+    /// Runs a trigger that went off on `imp`, unless it must wait: one that asks the model rests
+    /// (`Shortcut.rest`) and, like anything that talks or opens something, waits for an Imp that is
+    /// free, when the Mac set it off rather than the person.
+    private func run(_ s: Shortcut, on imp: ImpModel, because event: MacEvent) {
+        guard !hiddenImps.contains(imp.id), !isAway(imp.id),
+              s.mayRun(lastFired: lastFired[s.id], isFree: imp.isAvailable) else { return }
+        if s.restsAfterGoingOff { lastFired[s.id] = Date() }
+        imp.perform(s, happened: event.description, byPerson: s.trigger.event.isPersonal)
+    }
+
+    /// Saves a change the person made here (the Tools list, a reviewed kit, `imp_add_tool`): the tool
+    /// servers it newly turns on, or edits, may open their sign-in sheet at once. Other changes (the app
+    /// starting, an Imp moving between devices) never do; those servers wait for Sign in in Tools.
+    func changeByPerson(_ p: ImpPreferences) {
+        let before = Dictionary(uniqueKeysWithValues: prefs.liveServers.map { ($0.id, $0) })
+        assistant.signInRequests.formUnion(p.liveServers.filter { before[$0.id] != $0 }.map(\.id))
+        prefs = p
+    }
 
     private func apply(_ p: ImpPreferences, previous old: ImpPreferences) {
         scheduleSave()
@@ -178,6 +200,15 @@ final class AppModel {
         // Configuring asks the Keychain about every service: only when what it reads has changed.
         if p.ai != old.ai || p.liveServers != old.liveServers || p.keysInKeychain != old.keysInKeychain || p.requests != old.requests {
             assistant.configure(ai: p.ai, servers: p.liveServers, keychain: p.keysInKeychain, limits: p.requests)
+        }
+        if p.shortcuts != old.shortcuts, started {
+            for imp in imps {
+                switch p.followChange(from: old, for: imp.id) {
+                case .apply(let s)?: imp.applyFollow(s)
+                case .reset?: imp.resetFollow()
+                case nil: break
+                }
+            }
         }
         if p.imps != old.imps {
             noticeFavoriteColors(p.imps, before: old.imps)
@@ -271,8 +302,6 @@ final class AppModel {
     // MARK: Animations
 
     /// Plays an animation on an Imp wherever it is: out on the desktop, or resting in the window.
-    func perform(_ reaction: Reaction, on id: UUID) { perform(.preset(reaction), on: id) }
-
     func perform(_ ref: AnimationRef, on id: UUID) {
         if let imp = imp(id) {
             reactions.play(ref, by: imp)
@@ -297,7 +326,6 @@ final class AppModel {
             guard Date().timeIntervalSince(favoriteAt[imp.id] ?? .distantPast) > 2.5 else { continue }
             favoriteAt[imp.id] = Date()
             if !imp.knowsFavorite, let i = prefs.imps.firstIndex(where: { $0.id == imp.id }) { prefs.imps[i].knowsFavorite = true }
-            if let ref = prefs.ref(for: .favoriteColor, imp: imp.id) { perform(ref, on: imp.id) }
         }
     }
 
@@ -594,7 +622,6 @@ final class AppModel {
         prefs = p
         try? FileManager.default.removeItem(at: Workspace.directory(for: id))
         ChatHistory.deleteFolder(for: id)
-        if persists { DenAccounts(inKeychain: prefs.keysInKeychain).forget(imp: id) }
     }
 
     /// Calls an Imp in and removes it for good (never the last one). Returns the Imp that took
@@ -669,7 +696,7 @@ final class AppModel {
     func trigger(_ action: Shortcut, on chosen: ImpModel? = nil, text: String? = nil, trying: Bool = false) {
         guard let imp = chosen ?? performer(for: action) else { return HomeWindow.shared.show(self) }
         setHidden(imp.id, false)                           // show the Imp if it was hidden, so its work is visible
-        let happened = trying && action.trigger.kind.isAmbient
+        let happened = trying && action.trigger.event.isAmbient
             ? "(A test run from Settings: imagine it just happened: \(action.triggerSummary).)" : nil
         imp.perform(action, clip: text.map(Clip.text), happened: happened)
     }

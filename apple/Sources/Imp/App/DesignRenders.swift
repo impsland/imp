@@ -70,45 +70,6 @@ enum IconRenderer {
         renderSheet(frames, columns: 7, cell: 140, to: url)
     }
 
-    /// `Imp --render-animation <reaction> <file.png> [trait preset]`: a filmstrip of an animation as the
-    /// desktop Imp plays it (springs, hops, glyphs), every 80 ms, each frame outlined so clipping shows.
-    static func renderAnimation(_ reaction: Reaction, traits: ImpTraits, to url: URL) {
-        let puppet = Puppet()
-        let performance = Performance(key: reaction.rawValue, steps: Antics.paced(Antics.steps(for: reaction), tempo: traits.tempo),
-                                      at: Date(timeIntervalSinceReferenceDate: 0))
-        var frames: [(Face, Motion, Performance.Beat?)] = []
-        let fps = 60.0, every = 5
-        var i = 0
-        while Double(i) / fps < performance.duration + 0.5 {
-            let date = Date(timeIntervalSinceReferenceDate: Double(i) / fps)
-            let beat = performance.beat(at: date)
-            let cue = Puppet.Cue(mood: beat?.step.mood ?? .idle, step: beat?.step, hue: 0.57, hopSince: beat?.hopSince,
-                                 stepElapsed: beat?.elapsed, traits: traits)
-            let (face, motion) = puppet.frame(cue, at: Double(i) / fps)
-            if i % every == 0 { frames.append((face, motion, beat)) }
-            i += 1
-        }
-        let columns = 10, cell: CGFloat = 112
-        let sheet = Grid(horizontalSpacing: 4, verticalSpacing: 4) {
-            ForEach(Array(stride(from: 0, to: frames.count, by: columns)), id: \.self) { start in
-                GridRow {
-                    ForEach(start..<min(start + columns, frames.count), id: \.self) { k in
-                        let (face, motion, beat) = frames[k]
-                        Canvas { ctx, size in
-                            ImpRenderer.draw(&ctx, size: size, face: face, motion: motion, glyph: beat?.glyph?.glyph,
-                                             glyphAge: beat?.glyph?.age ?? 0, glyphFade: (beat?.glyph?.remaining ?? 0) / 0.5)
-                        }
-                        .frame(width: cell, height: cell)
-                        .border(Color.black.opacity(0.25), width: 1)
-                    }
-                }
-            }
-        }
-        .padding(10)
-        .background(Color(red: 0.99, green: 0.98, blue: 0.96))
-        write(render(sheet, scale: 2), to: url)
-    }
-
     /// `Imp --render-turns <file.png> [cell]`: every head turn, yaw × pitch, to check the horns.
     static func renderTurns(to url: URL, cell: CGFloat) {
         let steps = [-1.0, -0.5, 0, 0.5, 1]
@@ -166,14 +127,14 @@ enum IconRenderer {
             return
         }
         let model = AppModel(persist: false)          // review renders never write the user's preferences
-        model.prefs = .firstLaunch
+        model.prefs = ImpPreferences()
         for _ in 1..<max(1, sampleImps) { model.addImp() }
         let ids = model.prefs.imps.map(\.id)
         let chosen = ids[min(max(select, 0), ids.count - 1)]
         if sampleImps > 1, let i = model.prefs.imps.indices.dropFirst().first {
             // Something to look at: a trigger and an extra tool.
             var a = Shortcut(name: "Translate", hotkey: Hotkey(keyCode: UInt32(kVK_ANSI_T), modifiers: Hotkey.control | Hotkey.option),
-                              prompt: "Translate this into English.")
+                              steps: [Step(.ask, value: "Translate this into English.", clipboard: true)])
             a.performer = model.prefs.imps[i].id
             model.prefs.shortcuts = [a]
             let files = MCPExamples.all[0]
@@ -197,7 +158,6 @@ enum IconRenderer {
             router.screen = .general
             router.settingsSection = SettingsGroup(rawValue: String(s.dropFirst(8))) ?? .app
             if router.settingsSection == .devices {
-                model.prefs.den = "den.example.org"
                 model.prefs.hop = "hop.example.org:4677"
                 // Dot is out on the iPhone, where Cinder and Noodle live, and Bumble is at home.
                 let phone = UUID()
@@ -232,11 +192,11 @@ enum IconRenderer {
                                                   isNew: true, hub: model.assistant.hub) { _ in }
             .background { Backdrop() })
         case "animation-editor", "animation-details":
-            AnyView(AnimationEditor(model: model, draft: .replacing(.greet, owner: nil, model: model, previewImp: chosen),
+            AnyView(AnimationEditor(model: model, draft: .new(owner: nil, model: model, previewImp: chosen),
                                     page: screen == "animation-details" ? .details : .edit)
                 .background { Backdrop() })
         case "add-shortcut", "edit-shortcut":
-            AnyView(ShortcutSheet(model: model, imp: chosen, shortcut: model.prefs.shortcuts.first ?? Shortcut(name: "", prompt: "", performer: chosen),
+            AnyView(ShortcutSheet(model: model, imp: chosen, shortcut: model.prefs.shortcuts.first ?? Shortcut(name: "", performer: chosen, steps: [Step(.ask, value: "")]),
                                   isNew: screen == "add-shortcut", scope: .onlyThisImp, save: { _, _ in }, duplicate: { _ in }, delete: {})
                 .background { Backdrop() })
         default: AnyView(HomeView(model: model, router: router))
@@ -276,7 +236,7 @@ enum IconRenderer {
     /// `Imp --render-kit <file.png> [entry]`: the sheet for adding a kit (its review, or the text box).
     static func renderKit(to url: URL, entry: Bool) {
         let model = AppModel(persist: false)
-        model.prefs = .firstLaunch
+        model.prefs = ImpPreferences()
         model.addImp()
         let first = model.prefs.imps[0]
         let json = #"""
@@ -302,7 +262,7 @@ enum IconRenderer {
             "Weather": { "url": "https://mcp.example.com/weather" }
           } }
         """#
-        model.prefs.shortcuts.append(Shortcut(name: "Mine", hotkey: Hotkey(keyCode: UInt32(kVK_ANSI_S), modifiers: Hotkey.control | Hotkey.command), prompt: "x"))
+        model.prefs.shortcuts.append(Shortcut(name: "Mine", hotkey: Hotkey(keyCode: UInt32(kVK_ANSI_S), modifiers: Hotkey.control | Hotkey.command), steps: [Step(.ask, value: "x")]))
         let flow = KitFlow(imp: first.id, text: entry ? "" : json)
         if !entry, let kit = try? Kit.parse(json) {
             flow.review = KitReview(kit: kit, origin: "example.com", existing: model.prefs.shortcuts, services: model.prefs.ai.services, target: nil)

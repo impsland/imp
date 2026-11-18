@@ -6,8 +6,8 @@ import Testing
     @Test func roundTrip() throws {
         var p = ImpPreferences()
         p.ai.brain.model = "x/y"
-        p.shortcuts = [Shortcut(name: "Translate", hotkey: Hotkey(keyCode: 79), prompt: "Translate into English.")]
-        p.shortcuts[0].prompt = "custom"
+        p.shortcuts = [Shortcut(name: "Translate", hotkey: Hotkey(keyCode: 79), steps: [Step(.ask, value: "Translate into English.")])]
+        p.shortcuts[0].steps = [Step(.ask, value: "custom")]
         let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(p))
         #expect(back == p)
     }
@@ -129,7 +129,7 @@ import Testing
         let store = PreferencesStore(defaults: defaults)
         var p = ImpPreferences()
         p.ai.add(Service(name: "Local", baseURL: "http://localhost:1234/v1"))
-        p.shortcuts = [Shortcut(name: "Translate", prompt: "Translate into English.")]
+        p.shortcuts = [Shortcut(name: "Translate", hotkey: Hotkey(keyCode: 79), steps: [Step(.ask, value: "Translate into English.")])]
         store.save(p)
         #expect(store.load() == p)
     }
@@ -140,6 +140,13 @@ import Testing
         defaults.set(Data(#"{"api":{"providers":[]}}"#.utf8), forKey: PreferencesStore.key)
         let loaded = PreferencesStore(defaults: defaults).load()
         #expect(loaded.imps == ImpPreferences().imps)
-        #expect(loaded.shortcuts.map(\.name) == ImpPreferences.firstLaunch.shortcuts.map(\.name), "a fresh install: the starter kit")
+        #expect(loaded.shortcuts.isEmpty, "a fresh install has no triggers")
+    }
+
+    @Test func aFreshInstallHasNoTriggers() {
+        let (defaults, suite) = scratch()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        #expect(ImpPreferences().shortcuts.isEmpty)
+        #expect(PreferencesStore(defaults: defaults).load().shortcuts.isEmpty)
     }
 }

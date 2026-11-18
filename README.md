@@ -105,7 +105,7 @@ ollama serve
 | 📱 [Imps on other devices](docs/connecting/phone.md) | iPhone, Macs, doors, visits, trust, linking |
 | 🎮 [Games](docs/guide/games.md) | Embers and Echo on the iPhone |
 | 🤝 [Sharing setups](docs/sharing/setups.md) | Kits, import and export, limits |
-| 🌍 [The Den](docs/sharing/den.md) | The gallery of shared Imps |
+| 🌍 [The Den](docs/sharing/den.md) | The Den, a standalone MCP gallery of shared Imps |
 | ⌨️ [Terminal app](docs/apps/cli.md) | The `imp` command line app |
 | 🛠️ [Building](docs/development/building.md) | `make` targets, the iPhone app, text and design |
 | 🧪 [Testing](docs/apps/testing.md) | Tests, snapshots, live tests |
@@ -121,7 +121,7 @@ Build the site locally with `make docs` (output in `docs/.vitepress/dist`), or s
 | `apple/` | The Mac app, the iPhone app, shared Swift code (`ImpKit`, `ImpDesign`), tests and scripts |
 | `engine/` | The portable Rust core (`imp-engine`) and its bindings |
 | `chat/` | The `imp` terminal app |
-| `server/` | The Den, the Hop and their shared code, with Docker files |
+| `server/` | The Den (a standalone MCP service), the Hop and their shared code, with Docker files |
 | `extension/` | The browser extension |
 | `spec/` | The protocol and the JSON fixtures every platform passes |
 | `design/` | Design tokens, components and words, generated for each platform |

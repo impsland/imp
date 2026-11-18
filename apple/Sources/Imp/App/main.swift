@@ -39,13 +39,6 @@ if let i = args.firstIndex(of: "--render-transition"), args.indices.contains(i +
     MainActor.assumeIsolated { IconRenderer.renderTransition(from: from, to: to, to: URL(fileURLWithPath: args[i + 3])) }
     exit(0)
 }
-if let i = args.firstIndex(of: "--render-animation"), args.indices.contains(i + 2),
-   let reaction = Reaction(rawValue: args[i + 1]) {
-    let preset: String? = args.indices.contains(i + 3) ? args[i + 3] : nil
-    let traits: ImpTraits = ImpTraits.presets.first { $0.id == preset }?.traits ?? ImpTraits.plain
-    MainActor.assumeIsolated { IconRenderer.renderAnimation(reaction, traits: traits, to: URL(fileURLWithPath: args[i + 2])) }
-    exit(0)
-}
 if let url = argument(after: "--render-turns") {
     let cell = args.last.flatMap(Double.init) ?? 160
     MainActor.assumeIsolated { IconRenderer.renderTurns(to: url, cell: cell) }

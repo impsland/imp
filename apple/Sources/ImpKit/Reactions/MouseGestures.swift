@@ -48,7 +48,7 @@ public struct MouseGestures {
     public init() {}
 
     /// Feeds a cursor position. `center` and `radius` describe the Imp's head on screen.
-    public mutating func move(to p: CGPoint, at t: TimeInterval, center c: CGPoint, radius r: CGFloat) -> AnimationTrigger? {
+    public mutating func move(to p: CGPoint, at t: TimeInterval, center c: CGPoint, radius r: CGFloat) -> TriggerEvent? {
         if let last, t - last.t > Self.pause { reset() }
         defer { last = Sample(p: p, t: t) }
         restReported = false
@@ -73,14 +73,14 @@ public struct MouseGestures {
 
     /// Call while the cursor may be resting (a few times a second). Reports a stare (resting on
     /// the face) or a linger (resting just beside it), once per rest.
-    public mutating func rest(at t: TimeInterval, center c: CGPoint, radius r: CGFloat) -> AnimationTrigger? {
+    public mutating func rest(at t: TimeInterval, center c: CGPoint, radius r: CGFloat) -> TriggerEvent? {
         guard let last, !restReported, !heldOff else { return nil }
         let still = t - last.t
         let d = hypot(last.p.x - c.x, last.p.y - c.y)
-        let gesture: AnimationTrigger? = if d < r * 0.9 && still >= Self.stareAfter {
-            .stare
+        let gesture: TriggerEvent? = if d < r * 0.9 && still >= Self.stareAfter {
+            .near
         } else if d > r * 1.25 && d < r * 3.2 && still >= Self.lingerAfter {
-            .linger
+            .near
         } else {
             nil
         }
@@ -107,12 +107,12 @@ public struct MouseGestures {
     // MARK: Gestures
 
     /// Arrived on its head from at least six head-widths away within 0.15 s.
-    private func rushed(d: CGFloat, at t: TimeInterval, center c: CGPoint, r: CGFloat) -> AnimationTrigger? {
+    private func rushed(d: CGFloat, at t: TimeInterval, center c: CGPoint, r: CGFloat) -> TriggerEvent? {
         guard d < r * 1.3, let from = trail.first(where: { t - $0.t <= 0.15 }) else { return nil }
         return hypot(from.p.x - c.x, from.p.y - c.y) > r * 6 ? .rush : nil
     }
 
-    private mutating func circling(angle a: Double, inRange: Bool, at t: TimeInterval) -> AnimationTrigger? {
+    private mutating func circling(angle a: Double, inRange: Bool, at t: TimeInterval) -> TriggerEvent? {
         guard inRange else { lastAngle = nil; spins = []; return nil }
         if let l = lastAngle { spins.append((t, remainder(a - l, 2 * .pi))) }
         lastAngle = a
@@ -120,7 +120,7 @@ public struct MouseGestures {
         return abs(spins.reduce(0) { $0 + $1.delta }) >= Self.turnsForDizzy * 2 * .pi ? .circle : nil
     }
 
-    private mutating func waving(_ p: CGPoint, at t: TimeInterval, inFront: Bool, r: CGFloat) -> AnimationTrigger? {
+    private mutating func waving(_ p: CGPoint, at t: TimeInterval, inFront: Bool, r: CGFloat) -> TriggerEvent? {
         guard inFront else { swish.reset(); return nil }
         swish.add(p.x, at: t, minSwing: max(24, r * 0.6))
         guard swish.count >= 3 else { return nil }
@@ -129,7 +129,7 @@ public struct MouseGestures {
         return h < 0.6 * w && w > r * 1.6 ? .swish : nil
     }
 
-    private mutating func dangling(_ p: CGPoint, at t: TimeInterval, above: Bool, r: CGFloat) -> AnimationTrigger? {
+    private mutating func dangling(_ p: CGPoint, at t: TimeInterval, above: Bool, r: CGFloat) -> TriggerEvent? {
         guard above else { bob.reset(); return nil }
         bob.add(p.y, at: t, minSwing: max(12, r * 0.3))
         guard bob.count >= 3 else { return nil }
@@ -138,7 +138,7 @@ public struct MouseGestures {
     }
 
     /// Tickling (quick jiggles) or petting (slow strokes), on the head.
-    private mutating func onHead(_ p: CGPoint, at t: TimeInterval, r: CGFloat, inside: Bool) -> AnimationTrigger? {
+    private mutating func onHead(_ p: CGPoint, at t: TimeInterval, r: CGFloat, inside: Bool) -> TriggerEvent? {
         guard inside, let last else {
             strokeX.reset(); strokeY.reset(); tickle.reset(); petting = false
             return nil

@@ -10,7 +10,7 @@ import Testing
         var prefs = ImpPreferences()
         let pip = prefs.addNewcomer(), bob = prefs.addNewcomer()
         for i in prefs.imps.indices { prefs.imps[i].isActive = true }
-        let shared = Shortcut(name: "Translate", hotkey: Hotkey(parsing: "ctrl+cmd+T"), prompt: "Translate it.")
+        let shared = Shortcut(name: "Translate", hotkey: Hotkey(parsing: "ctrl+cmd+T"), steps: [Step(.ask, value: "Translate it.")])
         prefs.shortcuts = [shared]
         return (prefs, pip, bob, shared)
     }
@@ -20,18 +20,18 @@ import Testing
     @Test func anEditForOneImpLeavesTheOthersAndTheSharedOneAlone() throws {
         var (prefs, pip, bob, shared) = troupe()
         var edited = shared
-        edited.prompt = "Translate it into French."
+        edited.steps = [Step(.ask, value: "Translate it into French.")]
         let id = prefs.saveTrigger(edited, for: .imp(pip))
         #expect(id != shared.id)
         #expect(prefs.sharedShortcuts == [shared], "the shared one is untouched")
         #expect(prefs.triggers(for: bob) == [shared], "Bob keeps the shared one")
         let mine = try #require(prefs.triggers(for: pip).first)
-        #expect(prefs.triggers(for: pip).count == 1 && mine.prompt == "Translate it into French.")
+        #expect(prefs.triggers(for: pip).count == 1 && mine.steps.first?.text == "Translate it into French.")
         #expect(mine.performer == pip && mine.overrides == shared.id)
         #expect(prefs.scope(of: mine, for: pip) == .changed)
         #expect(prefs.scope(of: shared, for: bob) == .everyImp)
         // Editing it again changes Pip's version in place.
-        edited.prompt = "Into German."
+        edited.steps = [Step(.ask, value: "Into German.")]
         #expect(prefs.saveTrigger(edited, for: .imp(pip)) == id)
         #expect(prefs.shortcuts.count == 2)
     }
@@ -66,19 +66,19 @@ import Testing
     @Test func everyImpIsAnExplicitChoice() throws {
         var (prefs, pip, bob, shared) = troupe()
         var bobs = shared
-        bobs.prompt = "Bob's way."
+        bobs.steps = [Step(.ask, value: "Bob's way.")]
         prefs.saveTrigger(bobs, for: .imp(bob))
         var pips = shared
-        pips.prompt = "For everyone now."
+        pips.steps = [Step(.ask, value: "For everyone now.")]
         let id = prefs.saveTrigger(pips, for: .imp(pip))
         var promoted = try #require(prefs.shortcuts.first { $0.id == id })
         promoted.name = "Translate better"
         #expect(prefs.saveTrigger(promoted, for: .everyImp) == shared.id, "written into the shared one")
-        #expect(prefs.sharedShortcuts.map(\.prompt) == ["For everyone now."])
+        #expect(prefs.sharedShortcuts.map { $0.steps.first?.text } == ["For everyone now."])
         #expect(prefs.shortcuts(of: pip).isEmpty, "Pip's version went into it")
-        #expect(prefs.triggers(for: bob).map(\.prompt) == ["Bob's way."], "Bob's own version stays")
+        #expect(prefs.triggers(for: bob).map { $0.steps.first?.text } == ["Bob's way."], "Bob's own version stays")
         // An Imp's own trigger shared with every Imp.
-        let own = Shortcut(name: "Mine", prompt: "x", performer: pip)
+        let own = Shortcut(name: "Mine", performer: pip, steps: [Step(.ask, value: "x")])
         prefs.saveTrigger(own, for: .imp(pip))
         prefs.saveTrigger(own, for: .everyImp)
         #expect(prefs.sharedShortcuts.contains { $0.id == own.id })
@@ -87,17 +87,17 @@ import Testing
     @Test func deletingASharedTriggerLeavesTheImpsVersions() {
         var (prefs, pip, bob, shared) = troupe()
         var edited = shared
-        edited.prompt = "Mine."
+        edited.steps = [Step(.ask, value: "Mine.")]
         prefs.saveTrigger(edited, for: .imp(pip))
         prefs.removeSharedTrigger(shared.id)
         #expect(prefs.triggers(for: bob).isEmpty)
-        #expect(prefs.triggers(for: pip).map(\.prompt) == ["Mine."])
+        #expect(prefs.triggers(for: pip).map { $0.steps.first?.text } == ["Mine."])
         #expect(prefs.triggers(for: pip).first.map { prefs.scope(of: $0, for: pip) } == .onlyThisImp)
     }
 
     @Test func anotherImpsTriggerIsCopiedNeverTaken() {
         var (prefs, pip, bob, _) = troupe()
-        let bobs = Shortcut(name: "Bob's", prompt: "x", performer: bob)
+        let bobs = Shortcut(name: "Bob's", performer: bob, steps: [Step(.ask, value: "x")])
         prefs.shortcuts.append(bobs)
         prefs.saveTrigger(bobs, for: .imp(pip))
         #expect(prefs.shortcuts(of: bob) == [bobs])
@@ -107,11 +107,11 @@ import Testing
     @Test func keysRunTheVersionOfTheImpTheyGoTo() throws {
         var (prefs, pip, bob, shared) = troupe()
         var edited = shared
-        edited.prompt = "Pip's way."
+        edited.steps = [Step(.ask, value: "Pip's way.")]
         prefs.saveTrigger(edited, for: .imp(pip))
         let keys = try #require(shared.keys)
         let toPip = try #require(prefs.keyed(keys, focus: pip))
-        #expect(toPip.imp == pip && toPip.shortcut.prompt == "Pip's way.")
+        #expect(toPip.imp == pip && toPip.shortcut.steps.first?.text == "Pip's way.")
         let toBob = try #require(prefs.keyed(keys, focus: bob))
         #expect(toBob.imp == bob && toBob.shortcut.id == shared.id)
     }
@@ -119,19 +119,19 @@ import Testing
     @Test func clicksUseTheImpsVersion() {
         var prefs = ImpPreferences()
         let pip = prefs.addNewcomer(), bob = prefs.addNewcomer()
-        let click = Shortcut(name: "Type", prompt: "", usesClipboard: false, trigger: .clicks(1), command: .type)
+        let click = Shortcut(name: "Type", trigger: Trigger(.click, value: "1"), steps: [Step(.open, value: "text_box")])
         prefs.shortcuts = [click]
         var chat = click
-        chat.command = .chat
+        chat.steps = [Step(.open, value: "chat")]
         prefs.saveTrigger(chat, for: .imp(pip))
-        #expect(prefs.clickShortcut(1, on: pip, in: nil)?.command == .chat)
-        #expect(prefs.clickShortcut(1, on: bob, in: nil)?.command == .type)
+        #expect(prefs.clickShortcut(1, on: pip, in: nil)?.steps.first?.target == .chat)
+        #expect(prefs.clickShortcut(1, on: bob, in: nil)?.steps.first?.target == .textBox)
     }
 
     // MARK: New Imps
 
     @Test func aNewImpStartsFromTheSharedSetNotFromAnotherImp() {
-        var prefs = ImpPreferences.firstLaunch
+        var prefs = ImpPreferences()
         let pip = prefs.addNewcomer()
         let service = Service(name: "Own", baseURL: "http://localhost:1/v1", model: "m")
         prefs.ai.add(service)
@@ -141,7 +141,7 @@ import Testing
         let i = prefs.imps.firstIndex { $0.id == pip }!
         prefs.imps[i].brain = Brain(service: service.id)
         prefs.imps[i].servers = [server.id]
-        prefs.saveTrigger(Shortcut(name: "Pip's", prompt: "x"), for: .imp(pip))
+        prefs.saveTrigger(Shortcut(name: "Pip's", hotkey: Hotkey(keyCode: 79), steps: [Step(.ask, value: "x")]), for: .imp(pip))
         prefs.save(MadeAnimation(name: "Pip's dance", beats: [AnimationBeat(duration: 1)]), for: pip)
         prefs.save(MadeAnimation(name: "Everyone's dance", beats: [AnimationBeat(duration: 1)]), for: nil)
 
@@ -160,7 +160,7 @@ import Testing
     @Test func anAnimationChangedForOneImpLeavesTheSharedOne() throws {
         var prefs = ImpPreferences()
         let pip = prefs.addNewcomer(), bob = prefs.addNewcomer()
-        let shared = MadeAnimation(name: "Dance", triggers: [.poke], beats: [AnimationBeat(duration: 1)])
+        let shared = MadeAnimation(name: "Dance", beats: [AnimationBeat(duration: 1)])
         let sharedID = prefs.save(shared, for: nil)
         var mine = try #require(prefs.animationLibrary.first)
         mine.beats = [AnimationBeat(duration: 2)]
@@ -171,28 +171,11 @@ import Testing
         #expect(prefs.originals(for: pip).map(\.id) == [id])
         #expect(prefs.customAnimation(sharedID, imp: pip)?.duration == 2, "a trigger playing the shared one plays Pip's version")
         #expect(prefs.scope(ofAnimation: id, for: pip) == .changed)
-        #expect(prefs.ref(for: .poke, imp: pip) == .custom(id) && prefs.ref(for: .poke, imp: bob) == .custom(sharedID))
+        #expect(prefs.customAnimation(sharedID, imp: bob)?.id == sharedID)
         // Removing the shared one leaves Pip's as its own.
         prefs.removeAnimation(sharedID)
         #expect(prefs.originals(for: pip).map(\.id) == [id] && prefs.scope(ofAnimation: id, for: pip) == .onlyThisImp)
         #expect(prefs.originals(for: bob).isEmpty)
-    }
-
-    @Test func anImpsVersionOfABuiltInOneSwitchesForThatImpAlone() {
-        var prefs = ImpPreferences()
-        let pip = prefs.addNewcomer(), bob = prefs.addNewcomer()
-        let version = MadeAnimation(name: "", replaces: .smile, beats: [AnimationBeat(duration: 1)])
-        let id = prefs.save(version, for: pip)
-        prefs.setEnabled(false, animation: id)
-        #expect(prefs.isEnabled(.smile), "the built-in one stays on for every Imp")
-        #expect(!prefs.isEnabled(.preset(.smile), imp: pip) && prefs.isEnabled(.preset(.smile), imp: bob))
-        #expect(!prefs.refs(for: .idle, imp: pip).contains(.preset(.smile)))
-        #expect(prefs.refs(for: .idle, imp: bob).contains(.preset(.smile)))
-        // Its starts are the built-in one's, and can't be changed from the Imp's version.
-        let before = prefs.rule(for: .smile)
-        prefs.setTrigger(.poke, true, animation: id)
-        #expect(prefs.rule(for: .smile) == before)
-        #expect(prefs.rule(ofMade: prefs.imps.first { $0.id == pip }!.animations[0], owner: pip).triggers == before.triggers)
     }
 
     @Test func movingAnImpsAnimationToEveryImpIsExplicit() throws {
@@ -206,66 +189,103 @@ import Testing
     }
 }
 
-/// The starter kit is data, read and added like any kit.
-@Suite struct StarterKitTests {
-    @Test func itIsAKitWithTheStarterTriggers() throws {
-        let kit = try Kit.starter()
-        #expect(kit.problems.isEmpty)
-        #expect(kit.triggers.map(\.name) == ["Type", "Settings", "Fall asleep", "Wake up"])
-        #expect(kit.triggers.map(\.command) == [.type, .settings, .sleep, .wakeUp])
-        #expect(kit.triggers.allSatisfy { $0.performer == nil && !$0.usesClipboard })
+/// A first launch has no triggers and no animations: everything is made or added by the user.
+@Suite struct FirstLaunchTests {
+    @Test func aFirstLaunchHasNoTriggersAndNoAnimations() {
+        let fresh = ImpPreferences()
+        #expect(fresh.shortcuts.isEmpty && fresh.animationLibrary.isEmpty)
+        #expect(ImpPreferences().shortcuts.isEmpty)
+        let defaults = UserDefaults(suiteName: "FirstLaunchTests-\(UUID().uuidString)")!
+        #expect(PreferencesStore(defaults: defaults).load().shortcuts.isEmpty)
     }
 
-    @Test func bareSettingsHaveNothingAndAFirstLaunchHasTheStarterKitForEveryImp() throws {
-        #expect(ImpPreferences().shortcuts.isEmpty && ImpPreferences().animationLibrary.isEmpty)
-        let fresh = ImpPreferences.firstLaunch
-        #expect(fresh.shortcuts.map(\.name) == (try Kit.starter()).triggers.map(\.name))
-        #expect(fresh.shortcuts.allSatisfy { $0.performer == nil })
+    @Test func exportingSharedTriggersOfAFreshLaunchIsEmpty() {
+        let kit = Kit.exporting(imps: [], from: ImpPreferences(), shared: true)
+        #expect(kit.triggers.isEmpty)
     }
 
-    @Test func aRemovedStarterTriggerIsNotPutBack() throws {
-        var prefs = ImpPreferences.firstLaunch
-        prefs.removeSharedTrigger(prefs.shortcuts[0].id)
-        let data = try JSONEncoder().encode(prefs)
-        let back = try JSONDecoder().decode(ImpPreferences.self, from: data)
-        #expect(back.shortcuts.map(\.name) == ["Settings", "Fall asleep", "Wake up"])
-    }
-
-    @Test func exportingLeavesTheStarterTriggersOutUnlessChanged() {
-        var prefs = ImpPreferences.firstLaunch
-        prefs.shortcuts[0].prompt = "Changed"
-        let kit = Kit.exporting(imps: [], from: prefs, shared: true)
-        #expect(kit.triggers.map(\.name) == ["Type"])
-    }
-
-    @Test func aKitTriggerRoundTripsEveryCommand() throws {
-        for command in Shortcut.Command.allCases {
-            let s = Shortcut(name: command.rawValue, prompt: command == .ask ? "Do it" : "", usesClipboard: false,
-                             trigger: .clicks(3), command: command)
+    @Test func aKitTriggerRoundTripsEveryStep() throws {
+        let steps = [Step(.ask, value: "Do it", clipboard: true), Step(.say, value: "Hi", aloud: true), Step(.play, value: "Wiggle"),
+                     Step(.sleep, value: "Nod"), Step(.wake), Step(.follow, value: "glide", speed: 1.5), Step(.open, value: "chat")]
+        for step in steps {
+            let s = Shortcut(name: step.act.rawValue, trigger: Trigger(.click, value: "3"), steps: [step, Step(.say, value: "Done")])
             let back = try Kit.parse(Kit(triggers: [s]).json())
-            #expect(back.triggers.first?.command == command)
+            #expect(back.triggers.first?.steps == s.steps)
+            #expect(back.triggers.first?.trigger == s.trigger)
         }
     }
 }
 
 /// An Imp changing its own version through its tools keeps it a version of the shared one.
 @Suite struct TriggerToolScopeTests {
+    private func args(_ id: UUID? = nil, seconds: Double, everyImp: Bool = false) -> JSONValue {
+        var o: [String: JSONValue] = ["on": .string("idle"), "value": .number(seconds), "do": .array([.object(["act": .string("sleep")])])]
+        if let id { o["id"] = .string(id.uuidString) }
+        if everyImp { o["for"] = .string("every_imp") }
+        return .object(o)
+    }
+
     @Test func anImpsToolEditKeepsItsVersionAVersion() throws {
         var prefs = ImpPreferences()
         let pip = prefs.addNewcomer(), bob = prefs.addNewcomer()
-        let shared = Shortcut(name: "Nap", prompt: "", usesClipboard: false, trigger: Trigger(.idle, number: 60), command: .sleep)
+        let shared = Shortcut(name: "Nap", trigger: Trigger(.idle, value: "60"), steps: [Step(.sleep)])
         prefs.shortcuts = [shared]
         // The Imp changes the shared one without every_imp: its own version.
-        var edit = try Shortcut(tool: .object(["id": .string(shared.id.uuidString), "when": .object(["kind": .string("idle"), "number": .number(90)]),
-                                               "do": .string("sleep")]), imp: pip, replacing: shared)
+        var edit = try Shortcut(tool: args(shared.id, seconds: 90), imp: pip, replacing: shared)
         let id = prefs.saveTrigger(edit, for: .imp(pip))
         #expect(prefs.sharedShortcuts == [shared] && prefs.triggers(for: bob) == [shared])
         // And again, now on its version.
         let version = try #require(prefs.shortcuts.first { $0.id == id })
-        edit = try Shortcut(tool: .object(["id": .string(id.uuidString), "when": .object(["kind": .string("idle"), "number": .number(120)]),
-                                           "do": .string("sleep")]), imp: pip, replacing: version)
+        edit = try Shortcut(tool: args(id, seconds: 120), imp: pip, replacing: version)
         prefs.saveTrigger(edit, for: .imp(pip))
-        #expect(prefs.triggers(for: pip).count == 1 && prefs.triggers(for: pip)[0].trigger.number == 120)
+        #expect(prefs.triggers(for: pip).count == 1 && prefs.triggers(for: pip)[0].trigger.idleSeconds == 120)
         #expect(prefs.scope(of: prefs.triggers(for: pip)[0], for: pip) == .changed)
+    }
+
+    @Test func everyImpInTheArgumentsGivesASharedTrigger() throws {
+        let pip = UUID()
+        let mine = try Shortcut(tool: args(seconds: 30), imp: pip)
+        #expect(mine.performer == pip)
+        let shared = try Shortcut(tool: args(seconds: 30, everyImp: true), imp: pip)
+        #expect(shared.performer == nil)
+        var prefs = ImpPreferences()
+        prefs.shortcuts = [shared]
+        #expect(prefs.sharedShortcuts.map(\.id) == [shared.id])
+    }
+}
+
+/// The 60 s rest (`Shortcut.mayRun`): only a trigger that asks the model and was set off by something other than the person.
+@Suite struct TriggerRestTests {
+    let now = Date()
+    private func trigger(_ event: TriggerEvent, _ steps: [Step]) -> Shortcut {
+        Shortcut(name: "T", hotkey: event == .keys ? Hotkey(keyCode: 79) : nil, trigger: Trigger(event), steps: steps)
+    }
+
+    @Test func onlyAskingTriggersSetOffByTheMacRest() {
+        let recent = now.addingTimeInterval(-10), old = now.addingTimeInterval(-61)
+        let ask = [Step(.ask, value: "x")], say = [Step(.say, value: "x")]
+        for e in [TriggerEvent.start, .every, .idle, .battery, .app] {
+            let t = trigger(e, ask)
+            #expect(t.restsAfterGoingOff)
+            #expect(!t.mayRun(lastFired: recent, isFree: true, now: now))
+            #expect(t.mayRun(lastFired: old, isFree: true, now: now))
+            #expect(t.mayRun(lastFired: nil, isFree: true, now: now))
+            #expect(!trigger(e, say).restsAfterGoingOff && trigger(e, say).mayRun(lastFired: recent, isFree: true, now: now))
+        }
+        for e in [TriggerEvent.keys, .click, .poke, .stroke, .near, .away] {
+            let t = trigger(e, ask)
+            #expect(!t.restsAfterGoingOff && t.mayRun(lastFired: recent, isFree: false, now: now), "\(e) is the person's own doing")
+        }
+    }
+
+    @Test func gesturesMapFromMacEvents() {
+        for g in TriggerEvent.gestures {
+            #expect(Trigger(g).matches(.gesture(g)))
+            #expect(!Trigger(g).matches(.gesture(g == .poke ? .hold : .poke)))
+            #expect(!Trigger(g).matches(.away))
+        }
+        #expect(Trigger(.click, value: "2").matches(.click(2)) && !Trigger(.click, value: "2").matches(.click(1)))
+        #expect(Trigger(.near, value: "3").matches(.near(from: 2, to: 3)) && !Trigger(.near, value: "3").matches(.near(from: 3, to: 4)))
+        #expect(Trigger(.away).matches(.away))
     }
 }

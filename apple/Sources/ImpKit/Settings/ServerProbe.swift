@@ -2,20 +2,13 @@ import Foundation
 import ImpCore
 import Network
 
-/// The "Check" button of a server setting: whether the Den or the Hop answers at its address.
+/// The "Check" button of a server setting: whether the Hop answers at its address.
 public enum ServerProbe {
     /// How long to wait before saying it cannot be reached.
     public static let timeout: TimeInterval = 6
 
     public static func reachable(_ kind: ServerKind, _ text: String) async -> Bool {
         switch kind {
-        case .den:
-            // The core says which page tells whether a Den is up.
-            guard let page = serversDenHealthUrl(text: text).flatMap({ URL(string: $0) }) else { return false }
-            var request = URLRequest(url: page, timeoutInterval: timeout)
-            request.httpMethod = "GET"
-            guard let (_, response) = try? await URLSession.shared.data(for: request) else { return false }
-            return (response as? HTTPURLResponse)?.statusCode == 200
         case .hop:
             guard let server = HopServer(text), let port = NWEndpoint.Port(rawValue: server.port) else { return false }
             return await connects(host: server.host, port: port)

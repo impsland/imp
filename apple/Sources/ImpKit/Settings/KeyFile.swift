@@ -34,16 +34,21 @@ public struct KeyFile: Sendable {
         }
         do {
             try fm.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+            #if os(iOS)
+            let protection: [FileAttributeKey: Any] = [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication]
+            #else
+            let protection: [FileAttributeKey: Any] = [:]
+            #endif
             let data = try JSONEncoder().encode(keys)
             // Created private, so the keys are never readable by others, not even for a moment.
             if !fm.fileExists(atPath: url.path) {
-                fm.createFile(atPath: url.path, contents: nil, attributes: [.posixPermissions: 0o600])
+                fm.createFile(atPath: url.path, contents: nil, attributes: protection.merging([.posixPermissions: 0o600]) { $1 })
             }
             let handle = try FileHandle(forWritingTo: url)
             defer { try? handle.close() }
             try handle.truncate(atOffset: 0)
             try handle.write(contentsOf: data)
-            try fm.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
+            try fm.setAttributes(protection.merging([.posixPermissions: 0o600]) { $1 }, ofItemAtPath: url.path)
             return true
         } catch {
             return false

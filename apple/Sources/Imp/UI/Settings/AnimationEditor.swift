@@ -24,13 +24,6 @@ struct AnimationDraft: Identifiable {
                               previewImp: previewImp ?? owner)
     }
 
-    /// A new version of a built-in animation, starting from its beats exactly as they are.
-    @MainActor static func replacing(_ reaction: Reaction, owner: UUID?, model: AppModel, previewImp: UUID? = nil) -> AnimationDraft {
-        let beats = reaction.beats
-        return AnimationDraft(made: MadeAnimation(name: "", about: reaction.summary, symbol: reaction.symbol, replaces: reaction, beats: beats),
-                              owner: owner, isNew: true, previewImp: previewImp ?? owner)
-    }
-
     init(made: MadeAnimation, owner: UUID?, isNew: Bool, previewImp: UUID? = nil) {
         self.made = made; self.owner = owner; self.isNew = isNew; self.previewImp = previewImp ?? owner
     }
@@ -39,7 +32,7 @@ struct AnimationDraft: Identifiable {
 /// The animation editor, laid out like an editor: the stage on the left (drag on it to turn the
 /// face), the picked beat's pose on the right, and the timeline along the bottom (drag a beat to
 /// move it, drag its right edge to make it longer or shorter, click the ruler to play from there).
-/// The name, icon and who it's for come after, on Save. Every built-in animation opens here too
+/// The name, icon and who it's for come after, on Save. Every made animation opens here too
 /// (as a new version of itself), so nothing is simplified on the way in.
 struct AnimationEditor: View {
     let model: AppModel
@@ -103,7 +96,6 @@ struct AnimationEditor: View {
 
     private var title: LocalizedStringKey {
         if page == .details { return draft.isNew ? "Almost done" : "Details" }
-        if let r = animation.replaces { return draft.isNew ? "Your own \(r.title)" : "Change \(r.title)" }
         return draft.isNew ? "animations.new" : "Change \(animation.title)"
     }
 
@@ -119,12 +111,12 @@ struct AnimationEditor: View {
         switch page {
         case .edit:
             if !draft.isNew {
-                Button(animation.replaces == nil ? "Delete" : "Restore Original", role: .destructive) {
+                Button("Delete", role: .destructive) {
                     model.prefs.removeAnimation(animation.id)
                     dismiss()
                 }
                 .buttonStyle(.imp(.destructive, small: true))
-                .help(animation.replaces == nil ? "Removes this animation" : "Removes your version: the built-in one plays again")
+                .help("Removes this animation")
             }
             if draft.isNew {
                 Button("Save…") { withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { page = .details } }
@@ -146,7 +138,7 @@ struct AnimationEditor: View {
     }
 
     private var canSave: Bool {
-        !beats.isEmpty && (animation.replaces != nil || !animation.name.trimmingCharacters(in: .whitespaces).isEmpty)
+        !beats.isEmpty && !animation.name.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
     // MARK: The editor
@@ -435,15 +427,8 @@ struct AnimationEditor: View {
                                 : InfoTip(verbatim: String(localized: "\(actor?.callName ?? "") plays it with its own character: \(traits.summary.lowercased()).")))
             }
             VStack(alignment: .leading, spacing: Spacing.medium) {
-                if let r = animation.replaces {
-                    FieldRow("Plays", info: "anim.help.plays") {
-                        Label("Instead of \(r.title)", systemImage: "arrow.triangle.swap")
-                            .font(Typeface.caption).foregroundStyle(Tone.text)
-                    }
-                } else {
-                    FieldRow("common.name", info: "anim.help.name") {
-                        TextField("What is it called?", text: $draft.made.name).impField()
-                    }
+                FieldRow("common.name", info: "anim.help.name") {
+                    TextField("What is it called?", text: $draft.made.name).impField()
                 }
                 FieldRow("About", info: "anim.help.about") {
                     TextField("What it looks like, in a few words", text: $draft.made.about).impField()
@@ -455,7 +440,7 @@ struct AnimationEditor: View {
                         return String(localized: "\(imp.callName) only")
                     }, symbol: { $0 == nil ? "person.3.fill" : "person.fill" })
                 }
-                FieldRow("Icon", info: "anim.help.icon") { IconPicker(symbol: $draft.made.symbol, extra: animation.replaces?.symbol) }
+                FieldRow("Icon", info: "anim.help.icon") { IconPicker(symbol: $draft.made.symbol, extra: nil) }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -465,9 +450,7 @@ struct AnimationEditor: View {
 
     private func save() {
         var a = draft.made
-        if a.replaces == nil {
-            a.name = model.prefs.uniqueAnimationName(a.name, imp: draft.owner, except: a.id)
-        }
+        a.name = model.prefs.uniqueAnimationName(a.name, imp: draft.owner, except: a.id)
         withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { _ = model.prefs.save(a, for: draft.owner) }
         dismiss()
     }

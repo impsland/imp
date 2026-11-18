@@ -11,7 +11,6 @@
 #   DEVICE    the iPhone for `make ios-device`, by name or UDID (default: the only one connected)
 #   TEAM      the Apple Developer Team ID for `make ios-device` (default: found in Xcode)
 #   CONFIG    Release or Debug for `make ios-device` (default: Release)
-#   IMP_SERVER  the Den's URL for `make test-server` (default: http://localhost:8080)
 #   IMP_HOP     the Hop's host:port for `make test-server` (default: this Mac's .local name, port 4677).
 #               Not localhost: a linking code never gives out a loopback Hop, see engine/src/link/card.rs.
 
@@ -25,7 +24,6 @@ SWIFT_PACKAGE := --package-path apple
 VERSION ?= $(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" apple/Resources/Info.plist)
 RECORD ?= 0
 CONFIG ?= Release
-IMP_SERVER ?= http://localhost:8080
 IMP_HOP ?= $(shell scutil --get LocalHostName 2> /dev/null || hostname -s).local:4677
 
 # apple.sh reads SWIFT from the environment.
@@ -96,10 +94,9 @@ test-live: core ## Run the tests against the real API in .env
 	IMP_LIVE_TESTS=1 cargo test -p imp-engine --locked --test live -- --nocapture --test-threads=1
 
 # Plays a Mac, an iPhone and an Imp against a Den and a Hop that are already running (see server/README.md).
-# The Den tests are in Swift, the Hop tests in Rust (chat/tests/hop_live.rs). Run the Hop with
+# The Hop tests are in Rust (chat/tests/hop_live.rs). Run the Hop with
 # HOP_PER_IP_PER_MINUTE raised, for example 100000, or repeated runs hit its rate limit.
-test-server: core ## Run the tests against a running Den and Hop [IMP_SERVER=... IMP_HOP=...]
-	IMP_SERVER="$(IMP_SERVER)" $(SWIFT) test $(SWIFT_PACKAGE) --filter ServerLiveTests
+test-server: core ## Run the tests against a running Hop [IMP_HOP=...]
 	IMP_HOP="$(IMP_HOP)" cargo test -p imp-chat --locked --test hop_live -- --ignored
 
 ##@ iPhone app

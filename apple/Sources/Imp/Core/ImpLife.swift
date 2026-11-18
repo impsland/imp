@@ -4,8 +4,8 @@ import ImpKit
 import Observation
 import os
 
-/// Imp's "inner life": wakes up smoothly, notices when the cursor's been still, and fills quiet moments with
-/// small routines (glances, humming, ideas, head turns, dozing off…). Ticks with all the others, at 10 Hz
+/// Imp's "inner life": wakes up smoothly, plays the animation it is asked to, and reports what happens to
+/// its body (left alone, the cursor near or away) to the triggers. Nothing starts on its own. Ticks with all the others, at 10 Hz
 /// while anything moves and slower at rest (see `LifeTicker`), off the render loop, so drawing never mutates
 /// state.
 @MainActor @Observable
@@ -23,9 +23,6 @@ final class ImpLife {
     @ObservationIgnored private(set) var tickState = TickState.busy
 
     @ObservationIgnored private weak var model: ImpModel?
-    /// Each Imp's first routine comes at its own moment, so a troupe doesn't start in unison.
-    @ObservationIgnored private var nextAnticAt = Date().addingTimeInterval(.random(in: 5...12))
-    @ObservationIgnored private var lastName = ""
     /// The animation holds its last beat until then (see `sustain`).
     @ObservationIgnored private var sustainedUntil = Date.distantPast
     /// Turns the time since it was last touched, and where the cursor is, into events for the triggers.
@@ -89,7 +86,6 @@ final class ImpLife {
         stepIndex = 0
         stepStarted = Date()
         sustainedUntil = .distantPast
-        lastName = a.name
         if a.steps.first?.hop == true { hop(at: stepStarted) }
     }
 
@@ -120,13 +116,13 @@ final class ImpLife {
         if model.visit?.isAwake != false {
             let idleFor = now.timeIntervalSince(model.lastActivity)
             let reach = hypot(mouse.x - model.impCenter.x, mouse.y - model.impCenter.y)
-            for event in [idleWatch.advance(to: idleFor), proximity.update(distance: reach)].compactMap({ $0 }) {
-                model.app.fireBody(event, on: model)
+            for event in [idleWatch.advance(to: idleFor), proximity.update(distance: reach, now: now.timeIntervalSinceReferenceDate)].compactMap({ $0 }) {
+                model.app.fire(event, at: model)
             }
         }
 
         // Going after the cursor, if that is how this Imp is set: hops and glides stop with Reduce Motion.
-        let goes = FollowMath.moves(model.profile.follow, reduceMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
+        let goes = FollowMath.moves(model.followMode, reduceMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
             && model.visit == nil && model.isFree(at: now) && now >= model.followBlockedUntil && !model.app.isAway(model.id)
         model.followCursor = goes ? mouse : nil
         if goes { model.onFollow?() }
@@ -142,32 +138,11 @@ final class ImpLife {
                     // Still being petted, held or carried: stay in the last beat.
                 } else {
                     antic = nil
-                    nextAnticAt = now.addingTimeInterval(.random(in: 6...14))
                 }
             }
         }
 
-        // Asleep: nothing else happens until something wakes it.
-        if model.mood(at: now) == .sleepy { return }
-
-        // Only play when nothing else is going on.
-        let free = model.isFree(at: now) && model.prefs.antics
-        // A start time that passed while Imp was busy must not fire the instant it's free again.
-        nextAnticAt = AnticPacing.nextStart(nextAnticAt, now: now, free: free)
-        // Tricks and reactions only give way to real work. Idle antics also to the mouse.
-        let interrupted = antic.map { a in
-            a.sticky ? model.isBusy : (!free || mouseIdle < 1)
-        } ?? false
-        if let a = antic, !a.isWake, interrupted {
-            antic = nil                                   // the user is back: follow the cursor again
-            nextAnticAt = now.addingTimeInterval(.random(in: 3...6))
-        }
-        guard free, antic == nil, mouseIdle >= Self.quietAfter, now >= nextAnticAt else { return }
-        if let routine = pick(model: model) {
-            play(routine)
-        } else {
-            nextAnticAt = now.addingTimeInterval(.random(in: 6...14))    // nothing allowed right now
-        }
+        // Animations never start on their own: whatever plays was asked for by a trigger, a tool, or the person.
     }
 
     // MARK: Animations
@@ -175,10 +150,7 @@ final class ImpLife {
     /// Plays an animation on request: a word you typed, a mouse game, a click, another Imp, a
     /// preview. With `facing`, the whole routine is aimed that way (a nod toward a friend
     /// instead of toward you). Requested animations aren't interrupted by the mouse.
-    func perform(_ reaction: Reaction, facing: CGPoint? = nil) { perform(.preset(reaction), facing: facing) }
-
     func perform(_ ref: AnimationRef, facing: CGPoint? = nil) {
-        guard isUnlocked(ref) else { return }
         let user = CGPoint(x: 0, y: 0.1)
         let steps = steps(for: ref)
         guard !steps.isEmpty else { return }
@@ -200,34 +172,9 @@ final class ImpLife {
         play(Antic(name: "home", steps: beats.map(AnticStep.init), sticky: true))
     }
 
-    /// Whether this Imp may play `ref` now: the animations that unlock with a favourite colour
-    /// only while it wears it.
-    func isUnlocked(_ ref: AnimationRef) -> Bool {
-        guard let model else { return false }
-        return model.prefs.isUnlocked(ref, imp: model.id, wearingFavorite: model.profile.isFavorite(model.profile.hue))
-    }
-
-    /// The beats it plays for `ref`: its own version of it, a shared one, or the built-in one, at its own tempo.
+    /// The beats it plays for `ref`: its own version of it or a shared one, at its own tempo.
     func steps(for ref: AnimationRef) -> [AnticStep] {
         guard let model else { return [] }
         return Antics.steps(for: ref, prefs: model.prefs, imp: model.id)
-    }
-
-    // MARK: Routines
-
-    /// A routine for a quiet moment, from the animations the user lets play then (weighted,
-    /// and never the same one twice in a row).
-    private func pick(model: ImpModel) -> Antic? {
-        var pool = model.prefs.refs(for: .idle, imp: model.id).filter(isUnlocked)
-        if pool.count > 1 { pool.removeAll { $0.key == lastName } }
-        func weight(_ ref: AnimationRef) -> Int { ref.preset?.idleWeight ?? 1 }
-        let total = pool.reduce(0) { $0 + weight($1) }
-        guard total > 0 else { return nil }
-        var r = Int.random(in: 0..<total)
-        for ref in pool {
-            if r < weight(ref) { return Antic(name: ref.key, steps: steps(for: ref)) }
-            r -= weight(ref)
-        }
-        return nil
     }
 }

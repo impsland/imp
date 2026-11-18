@@ -8,10 +8,10 @@ import SwiftUI
 private enum PreviewSettings {
     static func model(brain: Bool) -> (AppModel, UUID) {
         let model = AppModel(persist: false)
-        model.prefs = .firstLaunch
+        model.prefs = ImpPreferences()
         if brain { model.prefs.ai.add(Service(name: "Ollama", baseURL: "http://localhost:11434/v1", model: "llama3.2")) }
         let id = model.prefs.imps[0].id
-        var trigger = Shortcut(name: "Translate", hotkey: nil, prompt: "Translate this into English.")
+        var trigger = Shortcut(name: "Translate", hotkey: nil, steps: [Step(.ask, value: "Translate this into English.", clipboard: true)])
         trigger.performer = id
         model.prefs.shortcuts = [trigger]
         return (model, id)

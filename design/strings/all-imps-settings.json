@@ -23,12 +23,6 @@
     "es": "Herramientas",
     "zh-Hans": "工具"
   },
-  "settings.map.den": {
-    "note": "Node: The Den.",
-    "en": "Den",
-    "es": "Den",
-    "zh-Hans": "Den"
-  },
   "settings.map.hop": {
     "note": "Node: The Hop.",
     "en": "Hop",
@@ -100,12 +94,6 @@
     "en": "{name} has no Brain.",
     "es": "{name} no tiene cerebro.",
     "zh-Hans": "{name} 还没有大脑。"
-  },
-  "settings.attention.den_off": {
-    "note": "Item.",
-    "en": "The Den is not set up.",
-    "es": "Den no está configurado.",
-    "zh-Hans": "Den 尚未设置。"
   },
   "settings.attention.hop_off": {
     "note": "Item.",
@@ -205,18 +193,6 @@
       "other": "{count} 个 Imp 在使用"
     }
   },
-  "servers.den.title": {
-    "note": "Section title.",
-    "en": "Den",
-    "es": "Den",
-    "zh-Hans": "Den"
-  },
-  "servers.den.about": {
-    "note": "Short explanation of The Den.",
-    "en": "Where Imps share animations, triggers and Imps. Shared items are public.",
-    "es": "Donde los Imps comparten animaciones, disparadores e Imps. Lo compartido es público.",
-    "zh-Hans": "Imp 在这里共享动画、触发器和 Imp。共享的内容是公开的。"
-  },
   "servers.hop.title": {
     "note": "Section title.",
     "en": "Hop",
@@ -278,7 +254,7 @@
     "zh-Hans": "可以连接"
   },
   "servers.state_fail_local": {
-    "note": "A check of a server set to This computer found nothing answering there. {server} is The Den or The Hop.",
+    "note": "A check of a server set to This computer found nothing answering there. {server} is The Hop.",
     "en": "{server} isn't running on this computer. Start it first.",
     "es": "{server} no se está ejecutando en este equipo. Inícialo primero.",
     "zh-Hans": "此电脑上没有运行 {server}。请先启动它。",
@@ -292,15 +268,6 @@
     "es": "No se puede conectar. Revisa la dirección.",
     "zh-Hans": "无法连接上，请检查地址。"
   },
-  "servers.den.in_use": {
-    "note": "Shows which Den is in use.",
-    "args": {
-      "address": "string"
-    },
-    "en": "Using the Den at {address}",
-    "es": "Usando el Den en {address}",
-    "zh-Hans": "正在使用 {address} 上的 Den"
-  },
   "servers.hop.in_use": {
     "note": "Shows which Hop is in use.",
     "args": {
@@ -309,12 +276,6 @@
     "en": "Using the Hop at {address}",
     "es": "Usando el Hop en {address}",
     "zh-Hans": "正在使用 {address} 上的 Hop"
-  },
-  "servers.den.needed": {
-    "note": "Shown on a screen that needs The Den when none is set.",
-    "en": "This needs a Den. Set one in Settings.",
-    "es": "Esto necesita un Den. Configura uno en Ajustes.",
-    "zh-Hans": "这需要有 Den。请到设置里添加。"
   },
   "servers.hop.needed": {
     "note": "Shown on a screen that needs The Hop when none is set.",
@@ -328,41 +289,17 @@
     "es": "Apagado",
     "zh-Hans": "已关闭"
   },
-  "animations.title": {
-    "note": "Group title.",
-    "en": "Animations",
-    "es": "Animaciones",
-    "zh-Hans": "动画效果"
-  },
-  "animations.built_in": {
-    "note": "Heading of the five bundled animations.",
-    "en": "Built in",
-    "es": "Integradas",
-    "zh-Hans": "内置项"
-  },
   "animations.from_den": {
-    "note": "Heading of animations that came from The Den.",
-    "en": "Den",
-    "es": "Den",
-    "zh-Hans": "Den"
-  },
-  "animations.restore": {
-    "note": "Button.",
-    "en": "Restore",
-    "es": "Restaurar",
-    "zh-Hans": "恢复"
+    "note": "Heading of the animations you made or added.",
+    "en": "Made",
+    "es": "Hechas",
+    "zh-Hans": "自制"
   },
   "animations.find": {
     "note": "Button.",
     "en": "Browse",
     "es": "Explorar",
     "zh-Hans": "浏览"
-  },
-  "animations.needs_den": {
-    "note": "Shown when The Den is not set up.",
-    "en": "Set up The Den to find more.",
-    "es": "Configura Den para encontrar más.",
-    "zh-Hans": "设置 Den 后可以找到更多。"
   },
   "voice.title": {
     "note": "Group title.",
@@ -1035,12 +972,6 @@
     "en": "Not checked yet",
     "es": "Sin comprobar",
     "zh-Hans": "还没有检查过"
-  },
-  "servers.den.off_note": {
-    "note": "Under Off on the Den card.",
-    "en": "Sharing and finding in The Den are off.",
-    "es": "Compartir y buscar en Den está desactivado.",
-    "zh-Hans": "在 Den 中的分享和查找已关闭。"
   },
   "servers.hop.off_note": {
     "note": "Under Off on the Hop card.",

@@ -29,7 +29,7 @@ pub use chat::{
 };
 pub use mcp::McpTool;
 #[cfg(feature = "io")]
-pub use mcp::{McpClient, McpEndpoint, McpHost, McpSecrets, McpServerSpec};
+pub use mcp::{McpClient, McpEndpoint, McpError, McpHost, McpSecrets, McpServerSpec, McpSignIn};
 pub use retry::{LimitRange, RequestLimits, RetryNotice, RetryPolicy, Retryable};
 pub use talk::{PairLog, TalkStore, Threading};
 pub use tools::{ToolEntry, ToolSelection};

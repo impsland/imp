@@ -264,30 +264,22 @@ struct RowSlider: View {
     }
 }
 
-/// Sharing this Imp: in The Den when it is set up, or as a file.
+/// Sharing this Imp: as a file. To publish it on an MCP gallery such as the Den, ask the Imp (imp_export_kit).
 struct ShareImpSheet: View {
     let model: AppModel
     let id: UUID
-    @State private var publishing = false
 
     private var name: String { model.profile(id)?.callName ?? ImpProfile.stranger }
-    private var denReady: Bool { ServerSetup(den: model.prefs.den, hop: model.prefs.hop).den != nil }
 
     var body: some View {
         SheetScaffold(icon: "square.and.arrow.up", title: LocalizedStringKey(words("share.title", name)), info: LocalizedStringKey("share.note")) {
             Card {
-                shareRow("share.den", symbol: "globe") { publishing = true }
-                    .disabled(!denReady)
-                if !denReady { StatusText(text: "share.den_needs_setup", symbol: "info.circle") }
                 shareRow("share.file", symbol: "square.and.arrow.down") {
                     ImpExport.save([id], model: model, name: name, fileName: name)
                 }
             }
         } footer: {
             EmptyView()
-        }
-        .sheet(isPresented: $publishing) {
-            DenPublishSheet(context: PublishContext(model: model, imp: id), kit: ImpExport.kit([id], model: model, name: name))
         }
     }
 

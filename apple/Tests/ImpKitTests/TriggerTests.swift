@@ -4,7 +4,7 @@ import Testing
 
 @Suite struct TriggerTests {
     @Test func batteryGoesOffOnceWhenItCrossesTheLine() {
-        let t = Trigger(.battery, number: 20)
+        let t = Trigger(.battery, value: "20")
         #expect(t.matches(.battery(from: 21, to: 19)))
         #expect(t.matches(.battery(from: 20, to: 19)))
         #expect(!t.matches(.battery(from: 19, to: 18)), "already below: no new alarm")
@@ -12,24 +12,24 @@ import Testing
     }
 
     @Test func appsMatchByNameOrBundleID() {
-        #expect(Trigger(.app, text: "safari").matches(.app(name: "Safari", bundleID: "com.apple.Safari")))
-        #expect(Trigger(.app, text: "com.apple.Safari").matches(.app(name: "Safari", bundleID: "com.apple.Safari")))
-        #expect(Trigger(.app, text: "").matches(.app(name: "Notes", bundleID: "com.apple.Notes")), "empty: any app")
-        #expect(!Trigger(.app, text: "Chrome").matches(.app(name: "Safari", bundleID: "com.apple.Safari")))
+        #expect(Trigger(.app, value: "safari").matches(.app(name: "Safari", bundleID: "com.apple.Safari")))
+        #expect(Trigger(.app, value: "com.apple.Safari").matches(.app(name: "Safari", bundleID: "com.apple.Safari")))
+        #expect(Trigger(.app, value: "").matches(.app(name: "Notes", bundleID: "com.apple.Notes")), "empty: any app")
+        #expect(!Trigger(.app, value: "Chrome").matches(.app(name: "Safari", bundleID: "com.apple.Safari")))
     }
 
     @Test func websitesMatchPartOfTheAddress() {
-        let amazon = Trigger(.website, text: "amazon.com")
+        let amazon = Trigger(.website, value: "amazon.com")
         #expect(amazon.matches(.page(url: "https://www.amazon.com/dp/B0", title: "")))
-        #expect(Trigger(.website, text: "https://amazon.com").matches(.page(url: "https://www.amazon.com/", title: "")))
+        #expect(Trigger(.website, value: "https://amazon.com").matches(.page(url: "https://www.amazon.com/", title: "")))
         #expect(!amazon.matches(.page(url: "https://example.com/?q=amazon", title: "")))
         #expect(!amazon.matches(.app(name: "Amazon", bundleID: "")))
     }
 
     @Test func clockTriggers() {
-        #expect(Trigger(.time, number: 9 * 60 + 5).matches(.minute(ofDay: 545, absolute: 1)))
-        #expect(Trigger(.every, number: 30).matches(.minute(ofDay: 0, absolute: 90)))
-        #expect(!Trigger(.every, number: 30).matches(.minute(ofDay: 0, absolute: 91)))
+        #expect(Trigger(.at, value: "09:05").matches(.minute(ofDay: 545, absolute: 1)))
+        #expect(Trigger(.every, value: "30").matches(.minute(ofDay: 0, absolute: 90)))
+        #expect(!Trigger(.every, value: "30").matches(.minute(ofDay: 0, absolute: 91)))
         #expect(Trigger.minuteOfDay(parsing: "21:30") == 1290)
         #expect(Trigger.minuteOfDay(parsing: "9pm") == 1260)
         #expect(Trigger.minuteOfDay(parsing: "12am") == 0)
@@ -41,66 +41,77 @@ import Testing
     @Test func conditionsHoldInState() {
         var state = MacState(battery: 15, charging: false, frontApp: "Safari", frontAppID: "com.apple.Safari",
                              page: "https://amazon.com/cart", cpu: 40, minuteOfDay: 23 * 60)
-        #expect(Trigger(.battery, number: 20).holds(in: state))
-        #expect(Trigger(.charger, flag: false).holds(in: state))
-        #expect(Trigger(.app, text: "Safari").holds(in: state))
-        #expect(Trigger(.website, text: "amazon").holds(in: state))
-        #expect(!Trigger(.busy, number: 80).holds(in: state))
-        #expect(Trigger(.hours, number: 22 * 60, until: 7 * 60).holds(in: state), "a window across midnight")
+        #expect(Condition(.battery, value: "20").holds(in: state))
+        #expect(Condition(.charger, value: "unplugged").holds(in: state))
+        #expect(Condition(.app, value: "Safari").holds(in: state))
+        #expect(Condition(.website, value: "amazon").holds(in: state))
+        #expect(!Condition(.busy, value: "80").holds(in: state))
+        let night = Condition(.hours, value: "22:00-07:00")
+        #expect(night.holds(in: state), "a window across midnight")
         state.minuteOfDay = 12 * 60
-        #expect(!Trigger(.hours, number: 22 * 60, until: 7 * 60).holds(in: state))
-        #expect(!Trigger(.wake).holds(in: state), "an event is never a state")
-        #expect(!Trigger(.battery, number: 20).holds(in: MacState()), "no battery: doesn't hold")
+        #expect(!night.holds(in: state))
+        #expect(!Condition(.battery, value: "20").holds(in: MacState()), "no battery: doesn't hold")
+        #expect(Condition(.asleep, value: "true").holds(in: MacState(asleep: true)))
+        #expect(!Condition(.asleep, value: "true").holds(in: MacState(asleep: false)))
+        #expect(Condition(.asleep, value: "false").holds(in: MacState(asleep: false)))
     }
 
     @Test func aShortcutFiresOnlyWhenEveryConditionHolds() {
-        let s = Shortcut(name: "Stop shopping", prompt: "Stop me", usesClipboard: false,
-                         trigger: Trigger(.website, text: "amazon"), conditions: [Trigger(.battery, number: 30)])
+        let s = Shortcut(name: "Stop shopping", trigger: Trigger(.website, value: "amazon"), conditions: [Condition(.battery, value: "30")],
+                         steps: [Step(.ask, value: "Stop me")])
         let visit = MacEvent.page(url: "https://amazon.com", title: "Amazon")
         #expect(s.fires(on: visit, in: MacState(battery: 10)))
         #expect(!s.fires(on: visit, in: MacState(battery: 80)))
         var off = s
         off.isEnabled = false
         #expect(!off.fires(on: visit, in: MacState(battery: 10)))
-        let keys = Shortcut(name: "K", prompt: "x", trigger: .keys)
+        let keys = Shortcut(name: "K", trigger: .keys, steps: [Step(.ask, value: "x")])
         #expect(!keys.fires(on: .wake, in: MacState()), "keys and clicks aren't Mac events")
     }
 
-    @Test func shortcutsSavedBeforeTriggersAreKeysThatAsk() throws {
-        let old = #"{"id":"\#(UUID().uuidString)","name":"Translate","isEnabled":true,"prompt":"Into French","hotkey":{"keyCode":17,"modifiers":4352}}"#
-        let s = try JSONDecoder().decode(Shortcut.self, from: Data(old.utf8))
-        #expect(s.trigger == .keys && s.command == .ask && s.conditions.isEmpty && s.keys != nil)
-        var clicked = s
-        clicked.trigger = .clicks(2)
-        #expect(clicked.keys == nil, "keys only listen while they're the trigger")
-        let back = try JSONDecoder().decode(Shortcut.self, from: JSONEncoder().encode(clicked))
-        #expect(back == clicked)
+    @Test func clicksMatchTheirCountOnly() {
+        #expect(Trigger.click(2).matches(.click(2)) && !Trigger.click(2).matches(.click(1)))
+        #expect(Trigger(.click).matches(.click(1)), "no value: one click")
     }
 }
 
 @Suite struct ClickTriggerTests {
-    @Test func freshSettingsClickToTypeAndDoubleClickForSettings() {
-        let p = ImpPreferences.firstLaunch
-        let imp = p.imps[0].id
-        #expect(p.clickShortcut(1, on: imp, in: nil)?.command == .type)
-        #expect(p.clickShortcut(2, on: imp, in: nil)?.command == .settings)
-        #expect(p.clickShortcut(3, on: imp, in: nil) == nil)
-        #expect(p.mostClicks(on: imp) == 2)
+    private func open(_ target: String, name: String = "Type", performer: UUID? = nil, clicks: Int = 1) -> Shortcut {
+        Shortcut(name: name, performer: performer, trigger: .click(clicks), steps: [Step(.open, value: target)])
     }
 
-    @Test func anImpsOwnClickWinsOverTheShared() {
-        var p = ImpPreferences.firstLaunch
+    @Test func freshSettingsAnswerToNoClicks() {
+        let p = ImpPreferences()
         let imp = p.imps[0].id
-        p.shortcuts.append(Shortcut(name: "Chat", prompt: "", performer: imp, usesClipboard: false, trigger: .clicks(1), command: .chat))
-        #expect(p.clickShortcut(1, on: imp, in: nil)?.command == .chat)
-        #expect(p.clickShortcut(1, on: UUID(), in: nil)?.command == .type, "others still type")
+        #expect(p.clickShortcut(1, on: imp, in: nil) == nil)
+        #expect(p.clickShortcut(2, on: imp, in: nil) == nil)
+        #expect(p.mostClicks(on: imp) == 0)
+    }
+
+    @Test func aDisabledClickTriggerIsNotAnswered() {
+        var p = ImpPreferences()
+        let imp = p.imps[0].id
+        var s = open("text_box")
+        s.isEnabled = false
+        p.shortcuts = [s]
+        #expect(p.clickShortcut(1, on: imp, in: nil) == nil)
+        #expect(p.mostClicks(on: imp) == 0)
+    }
+
+    @Test func anImpsOwnClickComesFirstAndTheSharedOnesStillApply() {
+        var p = ImpPreferences()
+        let imp = p.imps[0].id
+        p.shortcuts = [open("text_box"), open("chat", name: "Chat", performer: imp)]
+        #expect(p.clickShortcut(1, on: imp, in: nil)?.steps.first?.target == .chat)
+        #expect(p.clickShortcut(1, on: UUID(), in: nil)?.steps.first?.target == .textBox, "others still type")
+        #expect(p.triggers(for: imp).map(\.name) == ["Chat", "Type"], "both run, its own first")
     }
 
     @Test func clickConditionsNeedState() {
         var p = ImpPreferences()
         let imp = p.imps[0].id
-        p.shortcuts = [Shortcut(name: "Night", prompt: "Good night", performer: imp, usesClipboard: false,
-                                trigger: .clicks(1), conditions: [Trigger(.hours, number: 22 * 60, until: 6 * 60)])]
+        p.shortcuts = [Shortcut(name: "Night", performer: imp, trigger: .click(1), conditions: [Condition(.hours, value: "22:00-06:00")],
+                                steps: [Step(.say, value: "Good night")])]
         #expect(p.clickShortcut(1, on: imp, in: nil) == nil)
         #expect(p.clickShortcut(1, on: imp, in: MacState(minuteOfDay: 23 * 60)) != nil)
         #expect(p.clickShortcut(1, on: imp, in: MacState(minuteOfDay: 12 * 60)) == nil)
@@ -112,31 +123,32 @@ import Testing
 
     @Test func theTranslateShortcutFromTheExample() throws {
         let args = try JSONValue(jsonString: #"""
-        {"name":"Translate picture","when":{"kind":"keys","keys":"ctrl+cmd+T"},"with_clipboard":true,
-         "prompt":"Translate the text in the image into Chinese and show the new image."}
+        {"name":"Translate picture","on":"keys","value":"ctrl+cmd+T",
+         "do":[{"act":"ask","value":"Translate the text in the image into Chinese and show the new image.","clipboard":true}]}
         """#)
         let s = try Shortcut(tool: args, imp: imp)
-        #expect(s.trigger.kind == .keys && s.usesClipboard && s.performer == imp && s.command == .ask)
+        #expect(s.trigger.event == .keys && s.steps.first?.handsOverClipboard == true && s.performer == imp && s.askStep != nil)
         #expect(s.hotkey == Hotkey(keyCode: 17, modifiers: Hotkey.control | Hotkey.command))
         #expect(s.hotkey?.displayString == "⌃⌘T")
     }
 
-    @Test func eventsWithConditions() throws {
+    @Test func eventsWithConditionsAndSeveralSteps() throws {
         let args = try JSONValue(jsonString: #"""
-        {"when":{"kind":"battery","number":20},"only_if":[{"kind":"hours","text":"9:00-18:00"},{"kind":"charger","flag":false}],
-         "prompt":"Suggest how to save power.","every_imp":true}
+        {"on":"battery","value":20,"if":[{"state":"hours","value":"9:00-18:00"},{"state":"charger","value":"unplugged"}],
+         "do":[{"act":"say","value":"Low!","aloud":true},{"act":"ask","value":"Suggest how to save power."}],"for":"every_imp"}
         """#)
         let s = try Shortcut(tool: args, imp: imp)
-        #expect(s.trigger == Trigger(.battery, number: 20) && s.performer == nil && !s.usesClipboard)
-        #expect(s.conditions == [Trigger(.hours, number: 540, until: 1080), Trigger(.charger, flag: false)])
+        #expect(s.trigger == Trigger(.battery, value: "20") && s.performer == nil && s.askStep?.handsOverClipboard == false)
+        #expect(s.conditions == [Condition(.hours, value: "09:00-18:00"), Condition(.charger, value: "unplugged")])
+        #expect(s.steps.map(\.act) == [.say, .ask] && s.steps[0].speaksAloud, "in the order given")
         #expect(s.name == "Battery below 20 %")
     }
 
     @Test func changingKeepsTheIDAndTheSwitch() throws {
-        var old = Shortcut(name: "Old", prompt: "x", performer: imp, trigger: .clicks(3))
+        var old = Shortcut(name: "Old", performer: imp, trigger: .click(3), steps: [Step(.say, value: "x")])
         old.isEnabled = false
-        let s = try Shortcut(tool: JSONValue(jsonString: #"{"when":{"kind":"clicks","number":2},"do":"chat"}"#), imp: imp, replacing: old)
-        #expect(s.id == old.id && !s.isEnabled && s.name == "Old" && s.command == .chat && s.trigger == .clicks(2))
+        let s = try Shortcut(tool: JSONValue(jsonString: #"{"on":"click","value":2,"do":[{"act":"open","value":"chat"}]}"#), imp: imp, replacing: old)
+        #expect(s.id == old.id && !s.isEnabled && s.name == "Old" && s.steps.first?.target == .chat && s.trigger == .click(2))
     }
 
     @Test func mistakesComeBackInWords() throws {
@@ -144,12 +156,14 @@ import Testing
             do { _ = try Shortcut(tool: JSONValue(jsonString: json), imp: imp); return nil }
             catch { return error.localizedDescription }
         }
-        #expect(error(#"{"prompt":"x"}"#)?.contains("when") == true)
-        #expect(error(#"{"when":{"kind":"sometimes"},"prompt":"x"}"#)?.contains("Unknown") == true)
-        #expect(error(#"{"when":{"kind":"keys","keys":"T"},"prompt":"x"}"#)?.contains("⌘") == true, "a bare letter would steal typing")
-        #expect(error(#"{"when":{"kind":"clicks","number":7},"prompt":"x"}"#) != nil)
-        #expect(error(#"{"when":{"kind":"wake"},"only_if":[{"kind":"wake"}],"prompt":"x"}"#)?.contains("condition") == true)
-        #expect(error(#"{"when":{"kind":"wake"}}"#)?.contains("prompt") == true, "asking needs something to ask")
+        #expect(error(#"{"do":[{"act":"say","value":"x"}]}"#) != nil, "no event")
+        #expect(error(#"{"on":"sometimes","do":[{"act":"say","value":"x"}]}"#) != nil)
+        #expect(error(#"{"on":"keys","value":"T","do":[{"act":"say","value":"x"}]}"#)?.contains("⌘") == true, "a bare letter would steal typing")
+        #expect(error(#"{"on":"click","value":7,"do":[{"act":"say","value":"x"}]}"#) != nil)
+        #expect(error(#"{"on":"wake"}"#)?.contains("do") == true, "needs steps")
+        #expect(error(#"{"on":"wake","do":[{"act":"say"}]}"#) != nil, "a say needs its text")
+        let six = String(repeating: #"{"act":"sleep"},"#, count: 6).dropLast()
+        #expect(error(#"{"on":"wake","do":["# + six + "]}") != nil, "five steps at most")
     }
 
     @Test func hotkeysFromWords() {

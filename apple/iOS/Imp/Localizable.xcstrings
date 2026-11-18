@@ -5897,30 +5897,6 @@
         }
       }
     },
-    "anim.help.plays" : {
-      "comment" : "Help of when a move plays.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "When this move happens."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuándo ocurre."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这个动作什么时候出现。"
-          }
-        }
-      }
-    },
     "anim.help.shape" : {
       "comment" : "Help of the shape setting.",
       "extractionState" : "manual",
@@ -5993,30 +5969,6 @@
         }
       }
     },
-    "animations.built_in" : {
-      "comment" : "Heading of the five bundled animations.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Built in"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Integradas"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "内置项"
-          }
-        }
-      }
-    },
     "animations.find" : {
       "comment" : "Button.",
       "extractionState" : "manual",
@@ -6042,49 +5994,25 @@
       }
     },
     "animations.from_den" : {
-      "comment" : "Heading of animations that came from The Den.",
+      "comment" : "Heading of the animations you made or added.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Den"
+            "value" : "Made"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Den"
+            "value" : "Hechas"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Den"
-          }
-        }
-      }
-    },
-    "animations.needs_den" : {
-      "comment" : "Shown when The Den is not set up.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Set up The Den to find more."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configura Den para encontrar más."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "设置 Den 后可以找到更多。"
+            "value" : "自制"
           }
         }
       }
@@ -6113,30 +6041,6 @@
         }
       }
     },
-    "animations.restore" : {
-      "comment" : "Button.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Restore"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Restaurar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "恢复"
-          }
-        }
-      }
-    },
     "animations.search" : {
       "comment" : "Placeholder of the search field on the Animations page.",
       "extractionState" : "manual",
@@ -6157,30 +6061,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "搜索"
-          }
-        }
-      }
-    },
-    "animations.title" : {
-      "comment" : "Group title.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Animations"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Animaciones"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "动画效果"
           }
         }
       }
@@ -8011,198 +7891,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "撤销"
-          }
-        }
-      }
-    },
-    "den.help.kind" : {
-      "comment" : "Help of the Den kind.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pick what kind of thing to look for."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elige qué tipo de cosa buscar."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选择要找哪一类东西。"
-          }
-        }
-      }
-    },
-    "den.help.public" : {
-      "comment" : "Help of the Den public note.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anyone can add it. Chats, memory and keys are never included."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cualquiera puede añadirlo. Los chats, la memoria y las claves nunca se incluyen."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "任何人都可以添加。聊天、记忆和密钥永远不会包含在内。"
-          }
-        }
-      }
-    },
-    "den.help.search" : {
-      "comment" : "Help of the Den search.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Type a word to find things."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escribe una palabra para buscar."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "输入一个词来查找内容。"
-          }
-        }
-      }
-    },
-    "den.help.server" : {
-      "comment" : "Help of the Den server.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Where people share Imps, animations, triggers and tools."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Donde la gente comparte Imps, animaciones, disparadores y herramientas."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "大家分享 Imp、动画、触发器和工具的地方。"
-          }
-        }
-      }
-    },
-    "den.help.slug" : {
-      "comment" : "Help of the Den name.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A short name for the web address. Use small letters and dashes."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un nombre corto para la dirección web. Usa minúsculas y guiones."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "网址里用的短名字。用小写字母和短横线。"
-          }
-        }
-      }
-    },
-    "den.help.sort" : {
-      "comment" : "Help of the Den sort.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show the most loved first, or the newest first."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Muestra primero lo más querido, o lo más nuevo."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "先显示最受欢迎的，或最新的。"
-          }
-        }
-      }
-    },
-    "den.help.summary" : {
-      "comment" : "Help of the Den summary.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "One sentence so people know what it is."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una frase para que la gente sepa qué es."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用一句话让大家知道这是什么。"
-          }
-        }
-      }
-    },
-    "den.help.tags" : {
-      "comment" : "Help of the Den tags.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Words that help people find it. Separate them with commas."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Palabras que ayudan a encontrarlo. Sepáralas con comas."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "帮大家找到它的词，用逗号分开。"
           }
         }
       }
@@ -12336,19 +12024,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Name and voice"
+            "value" : "Name and persona"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nombre y voz"
+            "value" : "Nombre y personalidad"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "名字与声音"
+            "value" : "名字与人设"
           }
         }
       }
@@ -12595,30 +12283,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "工具可以在你的 Mac 上运行东西。请先看一看。"
-          }
-        }
-      }
-    },
-    "kit.origin.starter" : {
-      "comment" : "Where a kit in the kit review came from: the starter kit that ships with Imp.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp's starter kit"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kit inicial de Imp"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp 自带入门套件"
           }
         }
       }
@@ -14639,54 +14303,6 @@
         }
       }
     },
-    "moves.builtin" : {
-      "comment" : "Row: change a built-in move.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Moves"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Movimientos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "动作"
-          }
-        }
-      }
-    },
-    "moves.change" : {
-      "comment" : "Button: change a built-in move.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Change"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambiar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更改"
-          }
-        }
-      }
-    },
     "moves.empty" : {
       "comment" : "Empty state of the moves panel.",
       "extractionState" : "manual",
@@ -14711,102 +14327,6 @@
         }
       }
     },
-    "moves.follow_how" : {
-      "comment" : "Row: how it follows the cursor.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Follow"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seguir"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "跟随"
-          }
-        }
-      }
-    },
-    "moves.help.builtin" : {
-      "comment" : "Help of the built-in moves row.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pick one of the moves every Imp has and make a version only for this Imp."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elige uno de los movimientos que tienen todos los Imps y haz una versión solo para este."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选一个所有 Imp 都有的动作，为这个 Imp 做一个专属版本。"
-          }
-        }
-      }
-    },
-    "moves.help.follow" : {
-      "comment" : "Help of the follow section.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose what this Imp does when you move your mouse pointer: stay still, look at it, or run after it."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elige qué hace este Imp cuando mueves el puntero del ratón: quedarse quieto, mirarlo o correr tras él."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选择你移动鼠标指针时这个 Imp 做什么：不动、看着它，或跟着它跑。"
-          }
-        }
-      }
-    },
-    "moves.help.follow_how" : {
-      "comment" : "Help of the follow mode picker.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Off: it stays still. Eyes: only its eyes look at the pointer. Hop: it jumps after the pointer. Glide: it slides after the pointer."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desactivado: se queda quieto. Ojos: solo sus ojos miran el puntero. Saltito: salta tras el puntero. Deslizarse: se desliza tras el puntero."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关：它不动。眼睛：只有眼睛看着指针。蹦跳：它跳着追指针。滑行：它滑着追指针。"
-          }
-        }
-      }
-    },
     "moves.help.own" : {
       "comment" : "Help of the own animations list.",
       "extractionState" : "manual",
@@ -14827,54 +14347,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "只为这个 Imp 做的动作。它们会代替共用的动作。"
-          }
-        }
-      }
-    },
-    "moves.help.speed" : {
-      "comment" : "Help of the follow speed slider.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "How fast it goes after the pointer. Only for Hop and Glide."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Qué tan rápido va tras el puntero. Solo para Saltito y Deslizarse."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "它追指针有多快。只对蹦跳和滑行有用。"
-          }
-        }
-      }
-    },
-    "moves.title" : {
-      "comment" : "Panel title.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Moves"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Movimientos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "动作"
           }
         }
       }
@@ -15019,54 +14491,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "告诉它怎么回答的隐藏规则。大多数人从不修改。"
-          }
-        }
-      }
-    },
-    "personality.help.voice" : {
-      "comment" : "Help of the voice section.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "What shows on your screen while this Imp talks out loud."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se ve en tu pantalla mientras este Imp habla en voz alta."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这个 Imp 大声说话时，你的屏幕上会出现什么。"
-          }
-        }
-      }
-    },
-    "personality.help.voice_look" : {
-      "comment" : "Help of the voice look picker.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pick the picture shown while it talks: Glow is a glowing edge, Smoke is a puff of smoke, Both shows the two, Players is a small player with play and pause."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elige el dibujo que sale mientras habla: Brillo es un borde que brilla, Humo es una nube de humo, Ambos muestra los dos y Reproductores es un reproductor pequeño con play y pausa."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选择它说话时显示的画面：发光是发亮的边，烟雾是一团烟，两者是两个都显示，播放器是带播放和暂停的小播放器。"
           }
         }
       }
@@ -15283,54 +14707,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "个性设置"
-          }
-        }
-      }
-    },
-    "personality.voice" : {
-      "comment" : "Field label.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Voice"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Voz"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "声音"
-          }
-        }
-      }
-    },
-    "personality.voice_look" : {
-      "comment" : "Row: how the voice shows.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shows as"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se muestra"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示为"
           }
         }
       }
@@ -18431,126 +17807,6 @@
         }
       }
     },
-    "servers.den.about" : {
-      "comment" : "Short explanation of The Den.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Where Imps share animations, triggers and Imps. Shared items are public."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Donde los Imps comparten animaciones, disparadores e Imps. Lo compartido es público."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp 在这里共享动画、触发器和 Imp。共享的内容是公开的。"
-          }
-        }
-      }
-    },
-    "servers.den.in_use" : {
-      "comment" : "Shows which Den is in use.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Using the Den at %1$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usando el Den en %1$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在使用 %1$@ 上的 Den"
-          }
-        }
-      }
-    },
-    "servers.den.needed" : {
-      "comment" : "Shown on a screen that needs The Den when none is set.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This needs a Den. Set one in Settings."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esto necesita un Den. Configura uno en Ajustes."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这需要有 Den。请到设置里添加。"
-          }
-        }
-      }
-    },
-    "servers.den.off_note" : {
-      "comment" : "Under Off on the Den card.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sharing and finding in The Den are off."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compartir y buscar en Den está desactivado."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在 Den 中的分享和查找已关闭。"
-          }
-        }
-      }
-    },
-    "servers.den.title" : {
-      "comment" : "Section title.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den"
-          }
-        }
-      }
-    },
     "servers.hop.about" : {
       "comment" : "Short explanation of The Hop.",
       "extractionState" : "manual",
@@ -18840,7 +18096,7 @@
       }
     },
     "servers.state_fail_local" : {
-      "comment" : "A check of a server set to This computer found nothing answering there. {server} is The Den or The Hop.",
+      "comment" : "A check of a server set to This computer found nothing answering there. {server} is The Hop.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -19099,30 +18355,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "应用如何启动，以及使用哪种语言。"
-          }
-        }
-      }
-    },
-    "settings.attention.den_off" : {
-      "comment" : "Item.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The Den is not set up."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den no está configurado."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den 尚未设置。"
           }
         }
       }
@@ -20687,30 +19919,6 @@
         }
       }
     },
-    "settings.map.den" : {
-      "comment" : "Node: The Den.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den"
-          }
-        }
-      }
-    },
     "settings.map.hop" : {
       "comment" : "Node: The Hop.",
       "extractionState" : "manual",
@@ -21887,54 +21095,6 @@
         }
       }
     },
-    "share.den" : {
-      "comment" : "Share sheet choice: publish in The Den. What is shared there is public.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den"
-          }
-        }
-      }
-    },
-    "share.den_needs_setup" : {
-      "comment" : "Shown when The Den is not set up.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Set up The Den to share there."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configura Den para compartir allí."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "先设置 Den，才能在那里共享。"
-          }
-        }
-      }
-    },
     "share.file" : {
       "comment" : "Share sheet choice: a kit file.",
       "extractionState" : "manual",
@@ -22219,30 +21379,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你现在已离线"
-          }
-        }
-      }
-    },
-    "state.servers.set_up_den" : {
-      "comment" : "Button.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Set up Den"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configurar Den"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "设置 Den"
           }
         }
       }
@@ -22871,6 +22007,78 @@
         }
       }
     },
+    "tools.mcp_needs_signin" : {
+      "comment" : "Status of an MCP server that asks the person to sign in.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign-in needed"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta iniciar sesión"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要登录"
+          }
+        }
+      }
+    },
+    "tools.mcp_sign_in" : {
+      "comment" : "Button on an MCP server in the Tools list: opens the server's sign-in page.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sesión"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录"
+          }
+        }
+      }
+    },
+    "tools.mcp_sign_out" : {
+      "comment" : "Button on an MCP server in the Tools list: forgets the sign-in.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign out"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar sesión"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出登录"
+          }
+        }
+      }
+    },
     "tools.mcp_starting" : {
       "comment" : "Status of an MCP server.",
       "extractionState" : "manual",
@@ -23183,6 +22391,78 @@
         }
       }
     },
+    "triggers.cond.add" : {
+      "comment" : "Menu title that adds a condition.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加"
+          }
+        }
+      }
+    },
+    "triggers.cond.always" : {
+      "comment" : "Menu title when a trigger has no conditions.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Always"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siempre"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "总是"
+          }
+        }
+      }
+    },
+    "triggers.cond.remove" : {
+      "comment" : "Help of the button that removes a condition.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove this condition"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar esta condición"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除此条件"
+          }
+        }
+      }
+    },
     "triggers.delete" : {
       "comment" : "Action on a trigger.",
       "extractionState" : "manual",
@@ -23303,6 +22583,222 @@
         }
       }
     },
+    "triggers.f.do" : {
+      "comment" : "Trigger editor row: the steps.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "执行"
+          }
+        }
+      }
+    },
+    "triggers.f.for" : {
+      "comment" : "Trigger editor row: which Imp.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "适用于"
+          }
+        }
+      }
+    },
+    "triggers.f.only_if" : {
+      "comment" : "Trigger editor row: the conditions.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only if"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo si"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅当"
+          }
+        }
+      }
+    },
+    "triggers.f.when" : {
+      "comment" : "Trigger editor row: the event.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当"
+          }
+        }
+      }
+    },
+    "triggers.follow" : {
+      "comment" : "Row of the trigger editor: how the Imp follows the cursor.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Follow"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seguir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟随"
+          }
+        }
+      }
+    },
+    "triggers.gestures" : {
+      "comment" : "Event submenu: pointer gestures on the Imp.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestures"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手势"
+          }
+        }
+      }
+    },
+    "triggers.group.mac" : {
+      "comment" : "Event menu group: things the Mac does.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac"
+          }
+        }
+      }
+    },
+    "triggers.group.time" : {
+      "comment" : "Event menu group: things about time.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiempo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时间"
+          }
+        }
+      }
+    },
+    "triggers.group.you" : {
+      "comment" : "Event menu group: things the person does.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tú"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你"
+          }
+        }
+      }
+    },
     "triggers.help.do" : {
       "comment" : "Help of the trigger action.",
       "extractionState" : "manual",
@@ -23310,19 +22806,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "What the Imp does when it goes off."
+            "value" : "The steps the Imp runs, in order, when it goes off."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lo que hace el Imp cuando se activa."
+            "value" : "Los pasos que el Imp ejecuta, en orden, cuando se activa."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触发时 Imp 要做什么。"
+            "value" : "触发时 Imp 按顺序执行的步骤。"
           }
         }
       }
@@ -23347,54 +22843,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "由哪个 Imp 来做。除非选择所有 Imp，这里的更改只对这个 Imp 生效。"
-          }
-        }
-      }
-    },
-    "triggers.help.input" : {
-      "comment" : "Help of the trigger input.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "What the Imp gets to look at when it goes off, like the clipboard."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lo que el Imp puede mirar cuando se activa, como el portapapeles."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "触发时 Imp 能看到什么，比如剪贴板。"
-          }
-        }
-      }
-    },
-    "triggers.help.instruction" : {
-      "comment" : "Help of the instruction field.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tell the Imp in your own words what to do."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dile al Imp con tus palabras qué hacer."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用你自己的话告诉 Imp 要做什么。"
           }
         }
       }
@@ -23447,26 +22895,74 @@
         }
       }
     },
-    "triggers.help.starter" : {
-      "comment" : "Help for the starter kit button.",
+    "triggers.help.only_if" : {
+      "comment" : "Help of the conditions row.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The triggers Imp comes with: clicks, falling asleep and waking up. You see them before anything is added."
+            "value" : "Every condition has to hold at that moment, like the battery being low or the time being late."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los disparadores que trae Imp: clics, dormirse y despertar. Los ves antes de añadir nada."
+            "value" : "Todas las condiciones tienen que cumplirse en ese momento, como poca batería o una hora tardía."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 自带的触发器：点击、入睡和醒来。添加之前你会先看到它们。"
+            "value" : "触发的那一刻所有条件都必须满足，比如电量低或时间很晚。"
+          }
+        }
+      }
+    },
+    "triggers.help.sheet" : {
+      "comment" : "Info of the trigger editor.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When the event happens and every condition holds, the steps run in order."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando ocurre el evento y se cumplen todas las condiciones, los pasos se ejecutan en orden."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "事件发生且所有条件都满足时，按顺序执行各个步骤。"
+          }
+        }
+      }
+    },
+    "triggers.help.speed" : {
+      "comment" : "Help of the follow speed slider of a follow trigger.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How fast it goes after the pointer. Only for Hop and Glide."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qué tan rápido va tras el puntero. Solo para Saltito y Deslizarse."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它追指针有多快。只对蹦跳和滑行有用。"
           }
         }
       }
@@ -23495,26 +22991,50 @@
         }
       }
     },
-    "triggers.instruction" : {
-      "comment" : "Field: the instruction.",
+    "triggers.hint.animation" : {
+      "comment" : "Hint under an animation: it plays on an event only through a trigger.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Task"
+            "value" : "To play it on an event, add a trigger."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tarea"
+            "value" : "Para reproducirla en un evento, añade un disparador."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "指令"
+            "value" : "要在某个事件时播放它，请添加触发器。"
+          }
+        }
+      }
+    },
+    "triggers.hint.button" : {
+      "comment" : "Button that opens a new trigger that plays the animation.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add trigger"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir disparador"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加触发器"
           }
         }
       }
@@ -23563,6 +23083,294 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新建"
+          }
+        }
+      }
+    },
+    "triggers.open" : {
+      "comment" : "Name of the open-something choice for screen readers.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开"
+          }
+        }
+      }
+    },
+    "triggers.open.chat" : {
+      "comment" : "Open step: the chat.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聊天"
+          }
+        }
+      }
+    },
+    "triggers.open.listen" : {
+      "comment" : "Open step: listening.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escuchar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聆听"
+          }
+        }
+      }
+    },
+    "triggers.open.settings" : {
+      "comment" : "Open step: settings.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置"
+          }
+        }
+      }
+    },
+    "triggers.open.text_box" : {
+      "comment" : "Open step: the text box.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Text box"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuadro de texto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文本框"
+          }
+        }
+      }
+    },
+    "triggers.problem.ask" : {
+      "comment" : "Problem: an ask step with nothing to ask.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Write what the Imp should do, or hand over the clipboard."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escribe lo que debe hacer el Imp, o entrega el portapapeles."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请写下 Imp 该做什么，或附带剪贴板。"
+          }
+        }
+      }
+    },
+    "triggers.problem.keys" : {
+      "comment" : "Problem: a keys trigger has no keys.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Record the keys that set it off."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Graba las teclas que lo activan."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请录制触发它的按键。"
+          }
+        }
+      }
+    },
+    "triggers.problem.missing" : {
+      "comment" : "Problem: a step names an animation the Imp does not have.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This Imp has no animation called “%1$@”."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este Imp no tiene ninguna animación llamada «%1$@»."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个 Imp 没有名为“%1$@”的动画。"
+          }
+        }
+      }
+    },
+    "triggers.problem.no_steps" : {
+      "comment" : "Problem: no steps.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add at least one step."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade al menos un paso."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "至少添加一个步骤。"
+          }
+        }
+      }
+    },
+    "triggers.problem.play" : {
+      "comment" : "Problem: a play step with no animation.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick the animation to play."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige la animación que se reproduce."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请选择要播放的动画。"
+          }
+        }
+      }
+    },
+    "triggers.problem.say" : {
+      "comment" : "Problem: a say step with no text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Write what the Imp says."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escribe lo que dice el Imp."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请写下 Imp 要说的话。"
+          }
+        }
+      }
+    },
+    "triggers.problem.too_many" : {
+      "comment" : "Problem: too many steps.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A trigger has five steps at most."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un disparador tiene cinco pasos como máximo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一个触发器最多有五个步骤。"
           }
         }
       }
@@ -23639,30 +23447,6 @@
         }
       }
     },
-    "triggers.sentence" : {
-      "comment" : "One trigger as a sentence. The event and the action are short phrases.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "When %1$@, %2$@."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuando %1$@, %2$@."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "当%1$@时，%2$@。"
-          }
-        }
-      }
-    },
     "triggers.share_every" : {
       "comment" : "Menu item on this Imp's trigger: share it with every Imp.",
       "extractionState" : "manual",
@@ -23687,26 +23471,290 @@
         }
       }
     },
-    "triggers.starter" : {
-      "comment" : "Button in the empty triggers list: review and add the starter kit.",
+    "triggers.step.add" : {
+      "comment" : "Menu title that adds a step.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Starter kit"
+            "value" : "Add a step"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kit inicial"
+            "value" : "Añadir un paso"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "入门套件"
+            "value" : "添加步骤"
+          }
+        }
+      }
+    },
+    "triggers.step.aloud" : {
+      "comment" : "Toggle of a say step: also speak it.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aloud"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En voz alta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "朗读"
+          }
+        }
+      }
+    },
+    "triggers.step.anim_none" : {
+      "comment" : "Animation menu of a sleep or wake step: no animation.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The usual way"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo habitual"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认方式"
+          }
+        }
+      }
+    },
+    "triggers.step.ask_ph" : {
+      "comment" : "Placeholder of the instruction of an ask step.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What should it do? Say it in your own words."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Qué debe hacer? Dilo con tus palabras."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它该做什么？用你自己的话说。"
+          }
+        }
+      }
+    },
+    "triggers.step.clipboard" : {
+      "comment" : "Toggle of an ask step: hand over the clipboard.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "With clipboard"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con el portapapeles"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附带剪贴板"
+          }
+        }
+      }
+    },
+    "triggers.step.down" : {
+      "comment" : "Help of the button that moves a step down.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move down"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bajar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下移"
+          }
+        }
+      }
+    },
+    "triggers.step.no_animations" : {
+      "comment" : "Animation menu when the Imp has none.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No animations yet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay animaciones"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有动画"
+          }
+        }
+      }
+    },
+    "triggers.step.pick_animation" : {
+      "comment" : "Animation menu when none is picked yet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick an animation"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige una animación"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择动画"
+          }
+        }
+      }
+    },
+    "triggers.step.remove" : {
+      "comment" : "Help of the button that removes a step.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove step"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar paso"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除步骤"
+          }
+        }
+      }
+    },
+    "triggers.step.say_ph" : {
+      "comment" : "Placeholder of the text of a say step.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What it says"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que dice"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它说的话"
+          }
+        }
+      }
+    },
+    "triggers.step.speed" : {
+      "comment" : "Label of the follow speed.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speed"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velocidad"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "速度"
+          }
+        }
+      }
+    },
+    "triggers.step.up" : {
+      "comment" : "Help of the button that moves a step up.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move up"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上移"
           }
         }
       }
@@ -23827,6 +23875,366 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重新使用共享的“%1$@”？"
+          }
+        }
+      }
+    },
+    "triggers.v.any_app" : {
+      "comment" : "Placeholder of the app field.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Any app"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cualquier app"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "任何应用"
+          }
+        }
+      }
+    },
+    "triggers.v.asleep" : {
+      "comment" : "Condition: the Imp is asleep.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asleep"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dormido"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "睡着"
+          }
+        }
+      }
+    },
+    "triggers.v.at_once" : {
+      "comment" : "Near event: no wait.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Right away"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enseguida"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立即"
+          }
+        }
+      }
+    },
+    "triggers.v.awake" : {
+      "comment" : "Condition: the Imp is awake.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Awake"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Despierto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "醒着"
+          }
+        }
+      }
+    },
+    "triggers.v.choice" : {
+      "comment" : "Name of a two-way choice for screen readers.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choice"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opción"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选项"
+          }
+        }
+      }
+    },
+    "triggers.v.clicks" : {
+      "comment" : "Name of the clicks choice for screen readers.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clicks"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clics"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击次数"
+          }
+        }
+      }
+    },
+    "triggers.v.comes_online" : {
+      "comment" : "Network event: comes back.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comes back"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vuelve"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复"
+          }
+        }
+      }
+    },
+    "triggers.v.goes_offline" : {
+      "comment" : "Network event: goes away.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Goes away"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se va"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "断开"
+          }
+        }
+      }
+    },
+    "triggers.v.offline" : {
+      "comment" : "Network condition: offline.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin conexión"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "离线"
+          }
+        }
+      }
+    },
+    "triggers.v.on_battery" : {
+      "comment" : "Charger condition: on battery.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On battery"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con batería"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用电池"
+          }
+        }
+      }
+    },
+    "triggers.v.on_charger" : {
+      "comment" : "Charger condition: plugged in.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On the charger"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con el cargador"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在充电"
+          }
+        }
+      }
+    },
+    "triggers.v.online" : {
+      "comment" : "Network condition: online.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Online"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con conexión"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在线"
+          }
+        }
+      }
+    },
+    "triggers.v.pick_app" : {
+      "comment" : "Help of the open apps menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick an open app"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige una app abierta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择已打开的应用"
+          }
+        }
+      }
+    },
+    "triggers.v.plugged" : {
+      "comment" : "Charger event: plugged in.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plugged in"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se conecta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接上电源"
+          }
+        }
+      }
+    },
+    "triggers.v.unplugged" : {
+      "comment" : "Charger event: unplugged.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unplugged"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se desconecta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拔掉电源"
           }
         }
       }

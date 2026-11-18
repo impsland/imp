@@ -24,6 +24,7 @@ struct ToolsPanel: View {
     @State private var editing: Draft?
     @State private var forgetting: MCPServerConfig?
     @State private var adding = false
+    @State private var signInProblems: [UUID: String] = [:]
     @Environment(\.impTint) private var tint
 
     struct Draft: Identifiable {
@@ -151,6 +152,7 @@ struct ToolsPanel: View {
         switch model.assistant.toolStatus[server.id] {
         case .ready?: (Tone.good, String(localized: "tools.mcp_connected"))
         case .failed?: (Tone.danger, String(localized: "tools.mcp_failed"))
+        case .needsSignIn?: (Tone.muted, String(localized: "tools.mcp_needs_signin"))
         default: (Tone.muted, String(localized: "tools.mcp_starting"))
         }
     }
@@ -187,9 +189,25 @@ struct ToolsPanel: View {
 
     private func serverActions(_ server: MCPServerConfig) -> some View {
         HStack(spacing: Spacing.snug) {
+            if server.transport == .http { signInButton(server) }
             ShareKitButton(kit: Kit(name: server.name, servers: [server]), help: "Share “\(server.name)” as a kit. Keys are left out.")
             HoverIconButton(systemName: "pencil", help: "Edit “\(server.name)”") { editing = Draft(server: server, isNew: false) }
             HoverIconButton(systemName: "trash", help: "Remove “\(server.name)” for every Imp", tint: Tone.muted) { forgetting = server }
+        }
+    }
+
+    /// "Sign in" for a server that asks for it, "Sign out" once the person is signed in.
+    @ViewBuilder private func signInButton(_ server: MCPServerConfig) -> some View {
+        let assistant = model.assistant
+        if case .needsSignIn? = assistant.toolStatus[server.id] {
+            Button { Task { signInProblems[server.id] = await assistant.signInAndReconnect(server) } } label: { Text("tools.mcp_sign_in") }
+                .buttonStyle(.secondary)
+        } else if assistant.signedIn.contains(server.id) {
+            Button { Task { await assistant.signOut(of: server) } } label: { Text("tools.mcp_sign_out") }
+                .buttonStyle(.secondary)
+        }
+        if let problem = signInProblems[server.id] {
+            Text(verbatim: problem).font(Typeface.small).foregroundStyle(Tone.danger)
         }
     }
 
@@ -216,7 +234,10 @@ struct ToolsPanel: View {
         case .own(let g): Binding(get: { imp.uses(g) }, set: { imp.setUses(g, $0) })
         case .server(let id):
             Binding(get: { imp.servers.contains(id) }, set: { use in
-                if use { if !imp.servers.contains(id) { imp.servers.append(id) } } else { imp.servers.removeAll { $0 == id } }
+                var p = model.prefs
+                guard let i = p.imps.firstIndex(where: { $0.id == imp.id }) else { return }
+                if use { if !p.imps[i].servers.contains(id) { p.imps[i].servers.append(id) } } else { p.imps[i].servers.removeAll { $0 == id } }
+                model.changeByPerson(p)
             })
         }
     }
@@ -285,7 +306,7 @@ struct ToolsPanel: View {
         var p = model.prefs
         p.mcpServers.append(contentsOf: added)
         if let i = p.imps.firstIndex(where: { $0.id == imp.id }) { p.imps[i].servers.append(contentsOf: added.map(\.id)) }
-        model.prefs = p
+        model.changeByPerson(p)
     }
 }
 
@@ -323,8 +344,10 @@ struct AddToolsSheet: View {
     private static var tileWidth: CGFloat { Sizing.menuTitle + Spacing.page }
 
     private func add(_ server: MCPServerConfig) {
-        model.prefs.mcpServers.append(server)
-        if let i = model.prefs.imps.firstIndex(where: { $0.id == imp.id }) { model.prefs.imps[i].servers.append(server.id) }
+        var p = model.prefs
+        p.mcpServers.append(server)
+        if let i = p.imps.firstIndex(where: { $0.id == imp.id }) { p.imps[i].servers.append(server.id) }
+        model.changeByPerson(p)
     }
 
     private func open(_ server: MCPServerConfig, from example: MCPServerConfig? = nil) {

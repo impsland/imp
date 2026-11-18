@@ -5,6 +5,9 @@
 //! (see `client`) and an HTTP client (see `http`). Both only move text and ask `protocol` what it
 //! means. `setup` reads what a person pastes to add a server, and MCP config files.
 
+pub mod auth;
+#[cfg(feature = "io")]
+pub mod auth_flow;
 #[cfg(feature = "io")]
 mod client;
 #[cfg(feature = "io")]
@@ -13,5 +16,5 @@ pub mod protocol;
 pub mod setup;
 
 #[cfg(feature = "io")]
-pub use client::{McpClient, McpEndpoint, McpError, McpHost, McpSecrets, McpServerSpec};
+pub use client::{McpClient, McpEndpoint, McpError, McpHost, McpSecrets, McpServerSpec, McpSignIn};
 pub use protocol::{McpTool, exposed_name};

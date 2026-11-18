@@ -42,10 +42,9 @@ import ImpCore
     @Test func theNamesSwiftRunsAreTheCoresBuiltInTools() {
         let swiftNames = Set([
             OwnTools.play, OwnTools.move, OwnTools.speak, OwnTools.status, OwnTools.page, OwnTools.listTriggers,
-            OwnTools.addTrigger, OwnTools.removeTrigger, OwnTools.listTools, OwnTools.addTool, OwnTools.removeTool,
+            OwnTools.addTrigger, OwnTools.removeTrigger, OwnTools.listTools, OwnTools.addTool, OwnTools.addKit, OwnTools.exportKit, OwnTools.removeTool,
             OwnTools.openSettings, OwnTools.message, OwnTools.openFile, OwnTools.makeAnimation, OwnTools.showAnimation, OwnTools.removeAnimation,
-            OwnTools.setTraits, OwnTools.denSearch, OwnTools.denGet, OwnTools.denAdd, OwnTools.denShare, OwnTools.denUnshare,
-            OwnTools.denAccount,
+            OwnTools.setTraits,
         ]).union(ComputerTools.all)
         #expect(swiftNames == Set(ToolRegistry.builtIn.map(\.name)))
         #expect(Set(ToolRegistry.builtIn.map(\.group)) == Set(ImpToolGroup.allCases.map { ToolRegistry.ownGroupID($0) }))
@@ -126,29 +125,43 @@ import ImpCore
 
     @Test func profileSelection() {
         var imp = ImpProfile.imp
-        #expect(imp.toolSelection.groupsOff == ["own.computer", "own.den"])
+        #expect(imp.toolSelection.groupsOff == ["own.computer"])
         #expect(imp.toolSelection.toolsOff.isEmpty)
         imp.setUses(.body, false)
         imp.setUses(.computer, true)
         imp.setUses(tool: ToolRegistry.ownID(.senses, tool: OwnTools.page), false)
         imp.setUses(tool: "mcp.speech.say", false)
-        #expect(imp.toolSelection.groupsOff == ["own.body", "own.den"])
+        #expect(imp.toolSelection.groupsOff == ["own.body"])
         #expect(imp.toolSelection.toolsOff == ["own.senses.browser_page", "mcp.speech.say"])
         #expect(!imp.uses(tool: "mcp.speech.say"))
         imp.setUses(tool: "mcp.speech.say", true)
         #expect(imp.uses(tool: "mcp.speech.say"))
     }
 
+    @Test func aGroupThatNoLongerExistsIsSkipped() throws {
+        var object = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(ImpProfile.imp)) as? [String: Any])
+        object["ownToolsOn"] = ["computer", "den"]
+        let loaded = try JSONDecoder().decode(ImpProfile.self, from: JSONSerialization.data(withJSONObject: object))
+        #expect(loaded.uses(.computer))
+    }
+
+    @Test func theKitToolsAreInTheSetupGroup() {
+        #expect(ToolRegistry.entry(named: "imp_add_kit")?.group == ToolRegistry.ownGroupID(.setup))
+        #expect(ToolRegistry.entry(named: "imp_export_kit")?.group == ToolRegistry.ownGroupID(.setup))
+        let add = OwnTools.specs([.setup], animations: [], imps: [], browser: false).first { $0.name == OwnTools.addKit }
+        #expect(add?.description.contains("This Imp reads kit format \(Kit.format)") == true)
+    }
+
     @Test func savedChoicesCarryOver() throws {
         // A profile saved before single tools could be switched: only group choices.
         var old = ImpProfile.imp
         old.setUses(.senses, false)
-        old.setUses(.den, true)
+        old.setUses(.computer, true)
         var object = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(old)) as? [String: Any])
         object["toolsOff"] = nil
         let loaded = try JSONDecoder().decode(ImpProfile.self, from: JSONSerialization.data(withJSONObject: object))
         #expect(!loaded.uses(.senses))
-        #expect(loaded.uses(.den))
+        #expect(loaded.uses(.computer))
         #expect(loaded.disabledTools.isEmpty)
         var changed = loaded
         changed.setUses(tool: "own.body.imp_speak", false)

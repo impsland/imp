@@ -13,17 +13,18 @@ Ask out loud or type. Answers show up in a speech bubble. The full chat lives in
 
 ## Triggers
 
-When something happens, Imp gets your instruction together with what happened, and its model decides
-what to do. Triggers can fire on:
+A trigger is an event, optional conditions and one to five steps: when it happens (and the conditions
+hold), the Imp runs the steps in order. It is the only way an Imp does anything by itself. An event can be:
 
-- **Keys**: a keyboard shortcut you set. A shortcut can also take in what you copied (text or a picture).
-- **Clicks** on an Imp. One click opens its chat bubble. In the starter setup, a double click opens its
-  settings. Two or more clicks run the Imp's click triggers, so you can make a double click talk or do nothing.
-- **Your Mac**: the battery runs low, the charger is plugged in, an app comes to the front, a website
-  opens, a time of day arrives, every few minutes, you come back to your desk, the Mac wakes, gets busy
-  or hot, or the network drops.
+- **You**: keys you set, clicks on the Imp (one click opens its chat bubble, two or three run your click triggers), a gesture with the pointer (4 quick clicks, press and hold, drag, let go, shake, stroke, tickle, circle, swish, rush, bob above its head), the pointer coming close or moving away.
+- **Time**: the Imp starts, a time of day, every few minutes, nobody has touched it for a while, you come back to your desk, the Mac wakes.
+- **Your Mac**: an app comes to the front, a website opens, the battery runs low, the charger is plugged in or out, the processor is busy, the Mac runs hot, the network drops or returns.
 
-Add conditions such as *only if on battery* or *only between 22:00 and 07:00*.
+Add conditions such as *only if on battery*, *only between 22:00 and 07:00*, *only Monday to Friday* or *only while it is asleep*.
+
+A step can ask the Imp's model (with what you copied, if you like), say something (aloud too), play one of its animations, fall asleep, wake up, follow the cursor, or open the text box, the chat, the settings or listening. Example: *poke → play Wiggle, say "Ouch!"*. Add them in Settings, Triggers.
+
+A new Imp has no triggers to start with. Steps that act on the Imp's body need no model at all: fall asleep, wake up, play an animation, or **follow the cursor**. Follow takes a mode (Off, Eyes, Hop or Glide) and a speed. Without a follow trigger an Imp's eyes follow the cursor and its body stays. To have it hop after your cursor, add a trigger *Imp starts → follow the cursor, Hop*, or just tell it "follow my cursor". With Reduce Motion on, Hop and Glide become Eyes. This is for the Mac: the iPhone has no cursor.
 
 ## Long memory and chats you never lose
 
@@ -52,7 +53,6 @@ per Imp, in the Imp's **Tools** tab.
 to preview the face, a list of beats on a timeline (each beat is a pose held for a while, with a mood, tilt,
 hop, symbol and an optional move that can play either way round).
 
-- ✎ on a built-in animation makes your own version, which plays instead of it.
 - An animation is for every Imp, or for one Imp alone. The one Imp's wins over a shared one.
 - Imps make animations too: they use `imp_make_animation`, `imp_show_animation` and `imp_remove_animation`.
 
@@ -95,7 +95,14 @@ a friend's device, and keep thinking at home. Read [Imps on other devices](/conn
 
 ## More tools with MCP
 
-Connect Model Context Protocol servers, local or on the web.
+Connect Model Context Protocol servers, local or on the web. A web server that asks you to sign in (the Den,
+for one) works too: in **Tools**, the server shows **Sign in**, which opens its own sign-in page in a browser
+sheet, and **Sign out** once you have. When you add a server or switch it on and it asks you to sign in, the sheet opens
+at once and you can cancel it; Imp never opens it by itself (at start-up, on a background reconnect, or when an Imp arrives from another device), and the server then shows
+**Sign-in needed**. Until you sign in, an Imp sees one stand-in tool for the server: when you ask it to use
+the server, the sheet opens and the real tools replace the stand-in. On iPhone the sheet opens only while
+Imp is in front. The sign-in is kept with your API keys, in a private file by default or in the
+Keychain if you switch that on.
 
 ## A whole troupe
 

@@ -5,8 +5,11 @@ use super::*;
 pub(super) struct Limits {
     pub(super) reads: KeyedLimiter<IpKey>,
     pub(super) challenges: KeyedLimiter<IpKey>,
+    /// Posts of the sign-in page.
     pub(super) attempts: KeyedLimiter<IpKey>,
     pub(super) accounts: KeyedLimiter<IpKey>,
+    pub(super) registrations: KeyedLimiter<IpKey>,
+    pub(super) tokens: KeyedLimiter<IpKey>,
     pub(super) reports: KeyedLimiter<IpKey>,
     pub(super) installs: KeyedLimiter<IpKey>,
     pub(super) writes_by_ip: KeyedLimiter<IpKey>,
@@ -20,6 +23,8 @@ impl Limits {
             challenges: KeyedLimiter::per_minute(20),
             attempts: KeyedLimiter::per_minute(20),
             accounts: KeyedLimiter::per_day(3),
+            registrations: KeyedLimiter::per_hour(20),
+            tokens: KeyedLimiter::per_hour(60),
             reports: KeyedLimiter::per_hour(10),
             installs: KeyedLimiter::per_hour(120),
             writes_by_ip: KeyedLimiter::per_hour(30),
@@ -32,6 +37,8 @@ impl Limits {
         self.challenges.sweep();
         self.attempts.sweep();
         self.accounts.sweep();
+        self.registrations.sweep();
+        self.tokens.sweep();
         self.reports.sweep();
         self.installs.sweep();
         self.writes_by_ip.sweep();

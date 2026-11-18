@@ -50,6 +50,19 @@ pub fn tag_problem(tag: &str) -> Option<&'static str> {
     }
 }
 
+/// Percent-encodes `s` for a query value: everything but letters, digits and `-._~`.
+pub fn percent_encode(s: &str) -> String {
+    let mut out = String::new();
+    for b in s.bytes() {
+        if b.is_ascii_alphanumeric() || matches!(b, b'-' | b'.' | b'_' | b'~') {
+            out.push(char::from(b));
+        } else {
+            out.push_str(&format!("%{b:02X}"));
+        }
+    }
+    out
+}
+
 /// Checks `summary` and `tags` of a published item.
 pub fn label_problems(summary: &str, tags: &[String]) -> Vec<Violation> {
     let mut out = Vec::new();
@@ -94,6 +107,14 @@ mod tests {
         assert!(handle_problem("Abc").is_some());
         assert!(handle_problem("admin").is_some());
         assert!(handle_problem(&"a".repeat(33)).is_some());
+    }
+
+    #[test]
+    fn query_values_are_percent_encoded() {
+        assert_eq!(
+            percent_encode("https://den.test/items/a/b/document.json"),
+            "https%3A%2F%2Fden.test%2Fitems%2Fa%2Fb%2Fdocument.json"
+        );
     }
 
     #[test]

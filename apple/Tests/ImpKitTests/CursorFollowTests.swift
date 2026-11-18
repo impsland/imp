@@ -3,28 +3,69 @@ import Foundation
 import Testing
 @testable import ImpKit
 
+extension FollowChange { var isApply: Bool { if case .apply = self { true } else { false } } }
+
 @Suite struct CursorFollowTests {
     private let side = 112.0
 
-    @Test func eyesIsTheDefaultAndOffFollowsNothing() {
-        let p = ImpProfile.imp
-        #expect(p.follow == .eyes)
+    @Test func modesAndTheirEffects() {
         #expect(FollowMode.eyes.title == "Eyes")
-        #expect(p.followSpeed == 1)
         #expect(!FollowMode.off.eyesFollow)
         #expect(FollowMode.eyes.eyesFollow && !FollowMode.eyes.movesBody)
         #expect(FollowMode.hop.movesBody && FollowMode.glide.movesBody)
+        #expect(ImpPreferences.baseFollow.mode == .eyes && ImpPreferences.baseFollow.speed == 1)
     }
 
-    @Test func settingsRoundTripPerImp() throws {
-        var p = ImpProfile.imp
-        p.follow = .glide
-        p.followSpeed = 9
-        #expect(p.followSpeed == FollowMath.speedRange.upperBound, "clamped")
-        let back = try JSONDecoder().decode(ImpProfile.self, from: JSONEncoder().encode(p))
-        #expect(back.follow == .glide)
-        p.follow = .off
-        #expect(try JSONDecoder().decode(ImpProfile.self, from: JSONEncoder().encode(p)).follow == .off)
+    @Test func aFollowTriggerRoundTripsThroughAKit() throws {
+        let s = Shortcut(name: "Hop", trigger: Trigger(.start), steps: [Step(.follow, value: "hop", speed: 1.5)])
+        #expect(s.steps[0].act.isLocal && !s.steps[0].act.usesAnimation)
+        let text = Kit(triggers: [s]).json()
+        #expect(text.contains(#""follow""#) && text.contains(#""hop""#) && text.contains("1.5"))
+        let back = try #require(try Kit.parse(text).triggers.first)
+        #expect(back.steps == s.steps && back.followSetting?.mode == .hop && back.followSetting?.speed == 1.5)
+        let coded = try JSONDecoder().decode(Shortcut.self, from: JSONEncoder().encode(s))
+        #expect(coded.followSetting?.mode == .hop && coded.followSetting?.speed == 1.5)
+        let fast = Shortcut(name: "x", trigger: Trigger(.start), steps: [Step(.follow, value: "hop", speed: 9)])
+        #expect(fast.followSetting?.mode == .hop && fast.followSetting?.speed == FollowMath.speedRange.upperBound)
+    }
+
+    @Test func theModelAddsAFollowTrigger() throws {
+        let args = try JSONDecoder().decode(JSONValue.self, from: Data(#"{"on": "start", "do": [{"act": "follow", "value": "glide", "speed": 0.5}]}"#.utf8))
+        let s = try Shortcut(tool: args, imp: UUID())
+        #expect(s.followSetting?.mode == .glide && s.followSetting?.speed == FollowMath.speedRange.lowerBound)
+        let slow = try JSONDecoder().decode(JSONValue.self, from: Data(#"{"on": "start", "do": [{"act": "follow", "value": "glide", "speed": 0.1}]}"#.utf8))
+        #expect(throws: ToolArgumentError.self) { try Shortcut(tool: slow, imp: UUID()) }
+        let bad = try JSONDecoder().decode(JSONValue.self, from: Data(#"{"on": "start", "do": [{"act": "follow", "value": "zoom"}]}"#.utf8))
+        #expect(throws: ToolArgumentError.self) { try Shortcut(tool: bad, imp: UUID()) }
+    }
+
+    @Test func followTriggersDecideTheRuntimeMode() {
+        let imp = UUID()
+        let empty = ImpPreferences()
+        var p = empty
+        let start = Shortcut(name: "f", performer: imp, trigger: Trigger(.start), steps: [Step(.follow, value: "hop")])
+        let app = Shortcut(name: "g", performer: imp, trigger: Trigger(.app, value: "Safari"), steps: [Step(.follow, value: "glide")])
+        p.shortcuts = [start]
+        // New start trigger: applies at once.
+        #expect(p.followChange(from: empty, for: imp) == .apply(start))
+        // A trigger of another kind waits for its event.
+        var q = empty; q.shortcuts = [app]
+        #expect(q.followChange(from: empty, for: imp) == nil)
+        // Nothing changed: nothing to do.
+        #expect(p.followChange(from: p, for: imp) == nil)
+        // Switching it off (last one): back to the base mode.
+        var off = p; off.setTrigger(start.id, enabled: false, for: imp)
+        #expect(off.followChange(from: p, for: imp) == .reset)
+        // Switching it on again applies it.
+        #expect(p.followChange(from: off, for: imp)?.isApply == true)
+        // Removing the last one resets, but not while another remains.
+        var gone = p; gone.removeTrigger(start.id, for: imp)
+        #expect(gone.followChange(from: p, for: imp) == .reset)
+        var two = p; two.shortcuts.append(app)
+        var one = two; one.removeTrigger(start.id, for: imp)
+        #expect(one.followChange(from: two, for: imp) == nil)
+        // Another Imp is not touched.
+        #expect(p.followChange(from: empty, for: UUID()) == nil)
     }
 
     @Test func reduceMotionTurnsHopsAndGlidesIntoEyes() {

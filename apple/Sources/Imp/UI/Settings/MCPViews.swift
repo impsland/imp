@@ -166,6 +166,9 @@ struct ServerEditor: View {
         case .failed(let message):
             testState = .failed
             notice = .error(message)
+        case .needsSignIn:
+            testState = .idle
+            notice = .error(String(localized: "tools.mcp_needs_signin"))
         case .connecting:
             testState = .idle
         }

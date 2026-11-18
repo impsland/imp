@@ -9,12 +9,7 @@ struct Performance: Equatable {
     let started: Date
     let steps: [AnticStep]
 
-    /// A built-in animation as it came.
-    init(_ reaction: Reaction, at date: Date = Date()) {
-        self.init(key: reaction.rawValue, steps: Antics.steps(for: reaction), at: date)
-    }
-
-    /// What `imp` plays for `ref`: its own version, a shared one, or the built-in one, at its tempo.
+    /// What `imp` plays for `ref`: its own version or a shared one, at its tempo.
     init(_ ref: AnimationRef, prefs: ImpPreferences, imp: UUID?, at date: Date = Date()) {
         self.init(key: ref.key, steps: Antics.steps(for: ref, prefs: prefs, imp: imp), at: date)
     }

@@ -78,14 +78,13 @@ pub fn mcp_id(server: &str, tool: &str) -> String {
 }
 
 /// The built-in tool groups in the order the Tools tab lists them, each with whether an Imp has the
-/// group before anyone chooses. Computer control and sharing in the Den (which is public) are opt-in.
-pub const GROUPS: [(&str, bool); 6] = [
+/// group before anyone chooses. Computer control is opt-in.
+pub const GROUPS: [(&str, bool); 5] = [
     ("body", true),
     ("senses", true),
     ("setup", true),
     ("troupe", true),
     ("computer", false),
-    ("den", false),
 ];
 
 /// Declares every built-in tool once: the variant the apps dispatch on, its group and the name the
@@ -142,6 +141,8 @@ built_in_tools! {
     ImpRemoveTrigger = ("setup", "imp_remove_trigger"),
     ImpListTools = ("setup", "imp_list_tools"),
     ImpAddTool = ("setup", "imp_add_tool"),
+    ImpAddKit = ("setup", "imp_add_kit"),
+    ImpExportKit = ("setup", "imp_export_kit"),
     ImpRemoveTool = ("setup", "imp_remove_tool"),
     ImpOpenSettings = ("setup", "imp_open_settings"),
     ImpMessage = ("troupe", "imp_message"),
@@ -149,12 +150,6 @@ built_in_tools! {
     ComputerObserve = ("computer", "computer_observe"),
     ComputerAct = ("computer", "computer_act"),
     ComputerVerify = ("computer", "computer_verify"),
-    DenSearch = ("den", "den_search"),
-    DenGet = ("den", "den_get"),
-    DenAdd = ("den", "den_add"),
-    DenShare = ("den", "den_share"),
-    DenUnshare = ("den", "den_unshare"),
-    DenAccount = ("den", "den_account"),
 }
 
 /// Every built-in tool as a registry entry, in listing order.
@@ -335,7 +330,9 @@ mod tests {
             assert!(BUILT_IN.iter().any(|(bg, _)| *bg == g), "{g} has no tools");
         }
         assert_eq!(group_of("imp_speak"), Some("body"));
-        assert_eq!(group_of("den_get"), Some("den"));
+        assert_eq!(group_of("imp_add_kit"), Some("setup"));
+        assert_eq!(group_of("imp_export_kit"), Some("setup"));
+        assert_eq!(group_of("den_get"), None);
         assert_eq!(group_of("nope"), None);
         assert_eq!(
             built_in_named("computer_act").unwrap().id,

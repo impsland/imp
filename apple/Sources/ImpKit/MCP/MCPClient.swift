@@ -13,7 +13,10 @@ public actor MCPClient {
     private var ended: MCPError?
     private var onEnded: (@Sendable (MCPError) -> Void)?
 
-    public init(config: MCPServerConfig) throws { transport = try makeTransport(for: config) }
+    public init(config: MCPServerConfig, auth: MCPAuthStore? = nil) throws { transport = try makeTransport(for: config, auth: auth) }
+    init(config: MCPServerConfig, auth: MCPAuthStore?, session: URLSession) throws {
+        transport = try makeTransport(for: config, auth: auth, session: session)
+    }
     init(transport: any MCPTransport) { self.transport = transport }
 
     /// Starts the transport and performs the initialize handshake.
@@ -24,7 +27,7 @@ public actor MCPClient {
             self.transportEnded()
         }
         let result = try await request("initialize", timeout: 30) { mcpInitializeRequest(id: $0) }
-        transport.initialized(protocolVersion: try protocolCall { try mcpNegotiatedVersion(initializeResultJson: result) })
+        transport.initialized(protocolVersion: try protocolCall { try mcpCheckedVersion(initializeResultJson: result) })
         try await transport.send(mcpInitializedNotification())
     }
 

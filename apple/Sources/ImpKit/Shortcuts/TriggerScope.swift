@@ -52,14 +52,14 @@ extension ImpPreferences {
     /// `state` decides the conditions (nil: ignore triggers that have any).
     public func clickShortcut(_ count: Int, on imp: UUID, in state: MacState?) -> Shortcut? {
         triggers(for: imp).first { s in
-            s.isEnabled && s.trigger.kind == .clicks && s.trigger.clicks == count
+            s.isEnabled && s.trigger.event == .click && s.trigger.clicks == count
                 && (state.map { st in s.conditions.allSatisfy { $0.holds(in: st) } } ?? s.conditions.isEmpty)
         }
     }
 
     /// The most clicks in a row anything on `imp` answers to (a click waits for more only if needed).
     public func mostClicks(on imp: UUID) -> Int {
-        triggers(for: imp).filter { $0.isEnabled && $0.trigger.kind == .clicks }.map(\.trigger.clicks).max() ?? 0
+        triggers(for: imp).filter { $0.isEnabled && $0.trigger.event == .click }.map(\.trigger.clicks).max() ?? 0
     }
 
     /// Whether a first click on `imp` waits to see if more follow: only when a trigger answers to two or more.

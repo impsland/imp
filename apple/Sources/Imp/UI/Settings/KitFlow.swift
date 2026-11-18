@@ -17,11 +17,6 @@ final class KitFlow: Identifiable {
     var review: KitReview?
     /// Read as soon as the sheet opens (a link): the one thing a link may do is show this review.
     private var pending: KitSource?
-    private var pendingDen: (client: DenClient, id: DenItemID)?
-    /// Looking through the Den instead of pasting.
-    var browsing = false
-    /// The kind of thing the Den browser starts on (nil: everything), for a screen that wants only animations.
-    var browseKind: String?
     private var origin: String?
     private var fileName: String?
     private var settingText = false
@@ -30,8 +25,6 @@ final class KitFlow: Identifiable {
 
     /// Opened from the triggers every Imp shares: what it adds is for every Imp to begin with.
     let forEveryImp: Bool
-    /// Runs once the user has confirmed and something was added (the Den counts an install).
-    var onAdded: (() -> Void)?
     /// A pocket Imp from another device asking to move in for good: Add answers yes, and leaving the
     /// review any other way answers no.
     var adoption: ((Bool) -> Void)?
@@ -64,29 +57,16 @@ final class KitFlow: Identifiable {
         return flow
     }
 
-    /// From the Den: the kit is downloaded, checked against the checksum the Den lists, and only then
-    /// shown in the review. Nothing is added before the user confirms there.
-    static func den(_ id: DenItemID, client: DenClient, imp: UUID?, forEveryImp: Bool = false) -> KitFlow {
-        let flow = KitFlow(imp: imp, text: id.description, forEveryImp: forEveryImp)
-        flow.pendingDen = (client, id)
-        flow.onAdded = { Task { try? await client.countInstall(id) } }
-        return flow
-    }
-
-    /// The starter kit (`Kit.starterJSON`), shown in the same review as any other kit, for every Imp to begin with.
-    static func starter(imp: UUID?) -> KitFlow {
-        let flow = KitFlow(imp: imp, text: Kit.starterJSON, forEveryImp: true)
-        flow.pending = .text(Kit.starterJSON)
-        flow.origin = String(localized: "kit.origin.starter")
+    /// From the model's `imp_add_kit`: a kit document (or a single trigger or MCP snippet) it passes
+    /// along. Only the review opens: nothing is added until the person confirms there.
+    static func offered(json: String, imp: UUID?, origin: String) -> KitFlow {
+        let flow = KitFlow(imp: imp, text: json)
+        flow.pending = .text(json)
+        flow.origin = origin
         return flow
     }
 
     func autoload(_ model: AppModel) async {
-        if let den = pendingDen {
-            pendingDen = nil
-            await read(den: den.id, client: den.client, model: model)
-            return
-        }
         guard let source = pending else { return }
         pending = nil
         await read(source, model: model)
@@ -110,20 +90,6 @@ final class KitFlow: Identifiable {
             fileName = url.lastPathComponent
             limit = Kit.maxFileBytes
             await read(.text(string), model: model)
-        } catch {
-            self.error = error.localizedDescription
-        }
-    }
-
-    func read(den id: DenItemID, client: DenClient, model: AppModel) async {
-        browsing = false
-        error = nil
-        isLoading = true
-        defer { isLoading = false }
-        do {
-            let download = try await client.download(id)
-            let host = client.base.host ?? client.base.absoluteString
-            try present(json: download.text, from: String(localized: "\(id.description) on \(host)"), model: model)
         } catch {
             self.error = error.localizedDescription
         }

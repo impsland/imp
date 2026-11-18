@@ -1,63 +1,13 @@
-import CryptoKit
 import Foundation
 import Testing
 @testable import ImpKit
 
-private func sha(_ text: String) -> String {
-    SHA256.hash(data: Data(text.utf8)).map { String(format: "%02x", $0) }.joined()
-}
-
-private let waveKit = #"{"name":"Wave","animations":[{"name":"Wave","beats":[{"duration":0.4,"mood":"happy","tilt":10}]}]}"#
-
-/// Installing from the Den: the bytes downloaded must hash to the checksum the Den lists.
-extension DenClientTests {
-    private func serve(kit: String, listed: String?) {
-        let item: String = listed.map { #"{"handle":"pip-3x9k","slug":"wave","kind":"animation","sha256":"\#($0)"}"# }
-            ?? #"{"handle":"pip-3x9k","slug":"wave","kind":"animation"}"#
-        DenStub.handler = { request in
-            request.url?.path.hasSuffix("kit.json") == true ? Self.json(kit) : Self.json(item)
-        }
-    }
-
-    @Test func aMatchingChecksumInstalls() async throws {
-        serve(kit: waveKit, listed: sha(waveKit))
-        let download = try await client().download(DenItemID("pip-3x9k/wave")!)
-        #expect(download.text == waveKit)
-        #expect(try Kit.parse(download.text).animations.count == 1)
-    }
-
-    @Test func theChecksumMayBeInCapitals() async throws {
-        serve(kit: waveKit, listed: sha(waveKit).uppercased())
-        _ = try await client().download(DenItemID("pip-3x9k/wave")!)
-    }
-
-    @Test func aChangedDownloadIsRejected() async throws {
-        serve(kit: waveKit.replacingOccurrences(of: "Wave", with: "Wavy"), listed: sha(waveKit))
-        let error = try await #require(throws: DenError.self) { _ = try await client().download(DenItemID("pip-3x9k/wave")!) }
-        #expect(error == DenError.checksum)
-    }
-
-    @Test func noChecksumOrAMalformedOneIsRejected() async throws {
-        for listed in [nil, "", "abc", String(repeating: "z", count: 64), String(repeating: "a", count: 63)] {
-            serve(kit: waveKit, listed: listed)
-            let error = try await #require(throws: DenError.self) { _ = try await client().download(DenItemID("pip-3x9k/wave")!) }
-            #expect(error == DenError.noChecksum)
-        }
-    }
-
-    @Test func anUnknownKindIsTreatedAsAKit() throws {
-        let item = try JSONDecoder().decode(DenItem.self, from: Data(#"{"handle":"pip-3x9k","slug":"x","kind":"<script>"}"#.utf8))
-        #expect(item.kind == "kit")
-    }
-}
-
-/// The review lists what a kit can do, read from the kit itself.
 @Suite struct KitPermissionsTests {
     @Test func listsCommandsTriggersAndComputerControl() throws {
         let json = """
         {"name":"Pack","imps":[{"name":"Bo","tools":{"computer":true}}],
          "mcpServers":{"files":{"command":"npx","args":["-y","@modelcontextprotocol/server-filesystem"]},"web":{"url":"https://mcp.example.org/x"}},
-         "triggers":[{"name":"Summarize","prompt":"Summarize it","when":{"kind":"battery","number":20}}]}
+         "triggers":[{"name":"Summarize","do": [{"act": "ask", "value": "Summarize it"}],"on": "battery", "value": 20}]}
         """
         let permissions = try Kit.parse(json).permissions
         let text = permissions.lines.map(\.text).joined(separator: "\n")
@@ -75,7 +25,9 @@ extension DenClientTests {
     }
 }
 
-/// The eight kits the old registry held now live as fixtures, and go through the same parser and
+private let waveKit = #"{"name":"Wave","animations":[{"name":"Wave","beats":[{"duration":0.4,"mood":"happy","tilt":10}]}]}"#
+
+/// The kits in spec/fixtures/kits, and go through the same parser and
 /// permission lines the review uses. None may lose an item or carry a secret.
 @Suite struct FixtureKitTests {
     static let folder = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()

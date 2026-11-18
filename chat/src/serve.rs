@@ -1,63 +1,29 @@
-//! `imp serve`: the Den, the Hop or both in one process, for a computer that wants to be its own server.
+//! `imp serve`: the Hop on this computer, for a computer that wants to be its own relay.
 //!
-//! The Hop keeps nothing on disk and does not need the Den. The Den keeps its data in a SQLite file in the
-//! data folder. Its secret is made once, stored in the same folder with permissions only the owner can use,
-//! and never printed.
+//! The Hop keeps nothing on disk. The Den is a separate service (`den`, see `server/README.md`) and
+//! is not part of `imp`.
 
 use crate::{CliError, Result};
 use std::future::Future;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use tokio::net::TcpListener;
-use tokio::sync::watch;
 
-/// The usual Den port, as in `server/README.md`.
-pub const DEFAULT_DEN_PORT: u16 = 8080;
 /// The usual Hop port, as in `server/README.md`.
 pub const DEFAULT_HOP_PORT: u16 = 4677;
 
-const SECRET_FILE: &str = "den-secret";
-const DATABASE_FILE: &str = "den.db";
-
-/// Which services to run.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Services {
-    Both,
-    DenOnly,
-    HopOnly,
-}
-
-impl Services {
-    pub fn den(self) -> bool {
-        self != Self::HopOnly
-    }
-
-    pub fn hop(self) -> bool {
-        self != Self::DenOnly
-    }
-}
-
-/// What to run and where.
+/// Where to listen.
 #[derive(Debug, Clone)]
 pub struct ServeOptions {
-    pub services: Services,
-    pub data_dir: PathBuf,
     pub host: IpAddr,
-    pub den_port: u16,
     pub hop_port: u16,
-    /// The address people use to reach the Den. Made from the host and port if left out.
-    pub public_url: Option<String>,
 }
 
-impl ServeOptions {
-    pub fn new(data_dir: PathBuf) -> Self {
+impl Default for ServeOptions {
+    fn default() -> Self {
         Self {
-            services: Services::Both,
-            data_dir,
             host: IpAddr::V4(Ipv4Addr::LOCALHOST),
-            den_port: DEFAULT_DEN_PORT,
             hop_port: DEFAULT_HOP_PORT,
-            public_url: None,
         }
     }
 }
@@ -69,141 +35,29 @@ pub fn default_data_dir() -> Result<PathBuf> {
     })
 }
 
-/// Reads the Den secret from the data folder, or makes one the first time.
-pub fn load_or_create_secret(dir: &Path) -> Result<String> {
-    let path = dir.join(SECRET_FILE);
-    if let Ok(text) = std::fs::read_to_string(&path) {
-        let secret = text.trim().to_owned();
-        if secret.len() >= imp_den::config::MIN_SECRET_BYTES {
-            return Ok(secret);
-        }
-        return Err(CliError(format!(
-            "The secret in {} is too short. Remove the file to make a new one.",
-            path.display()
-        )));
-    }
-    let secret = hex::encode(rand::random::<[u8; 32]>());
-    write_private(&path, &secret)?;
-    Ok(secret)
-}
-
-fn write_private(path: &Path, text: &str) -> Result<()> {
-    use std::io::Write;
-    let mut options = std::fs::OpenOptions::new();
-    options.write(true).create_new(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    let mut file = options.open(path)?;
-    file.write_all(text.as_bytes())?;
-    Ok(())
-}
-
-/// The Den, ready to serve on an open port.
-struct DenPart {
-    listener: TcpListener,
-    config: imp_den::config::Config,
-}
-
-/// The chosen listeners are open and the Den is configured, but nothing is served yet.
+/// The Hop's listener is open, but nothing is served yet.
 pub struct Bound {
-    pub den_addr: Option<SocketAddr>,
-    pub hop_addr: Option<SocketAddr>,
-    /// The address the Den gives out as its own. Only there when the Den runs.
-    pub public_url: Option<String>,
-    den: Option<DenPart>,
-    hop: Option<TcpListener>,
+    pub hop_addr: SocketAddr,
+    hop: TcpListener,
 }
 
-/// Opens the ports of the chosen services and, for the Den, prepares the data folder and secret.
-/// A port of 0 picks a free one.
+/// Opens the Hop's port. A port of 0 picks a free one.
 pub async fn bind(options: &ServeOptions) -> Result<Bound> {
-    let mut bound = Bound {
-        den_addr: None,
-        hop_addr: None,
-        public_url: None,
-        den: None,
-        hop: None,
-    };
-    if options.services.den() {
-        std::fs::create_dir_all(&options.data_dir)?;
-        let secret = load_or_create_secret(&options.data_dir)?;
-        let listener = listen(SocketAddr::new(options.host, options.den_port), "Den").await?;
-        let addr = listener.local_addr()?;
-        let public_url = options
-            .public_url
-            .clone()
-            .unwrap_or_else(|| format!("http://{}", url_authority(options.host, addr.port())));
-        let public = imp_den::config::PublicUrl::parse(&public_url)
-            .map_err(|e| CliError(format!("That public address is not usable: {e}")))?;
-        let database = options
-            .data_dir
-            .join(DATABASE_FILE)
-            .to_string_lossy()
-            .into_owned();
-        let config = imp_den::config::Config {
-            addr,
-            database,
-            secret,
-            public,
-            trusted_proxies: Default::default(),
-            altcha_cost: imp_den::config::DEFAULT_ALTCHA_COST,
-            json_logs: false,
-        };
-        bound.den_addr = Some(addr);
-        bound.public_url = Some(public_url);
-        bound.den = Some(DenPart { listener, config });
-    }
-    if options.services.hop() {
-        let listener = listen(SocketAddr::new(options.host, options.hop_port), "Hop").await?;
-        bound.hop_addr = Some(listener.local_addr()?);
-        bound.hop = Some(listener);
-    }
-    Ok(bound)
-}
-
-fn url_authority(host: IpAddr, port: u16) -> String {
-    match host {
-        IpAddr::V4(a) if a.is_loopback() || a.is_unspecified() => format!("localhost:{port}"),
-        IpAddr::V4(a) => format!("{a}:{port}"),
-        IpAddr::V6(a) => format!("[{a}]:{port}"),
-    }
-}
-
-async fn listen(addr: SocketAddr, what: &str) -> Result<TcpListener> {
-    TcpListener::bind(addr)
+    let addr = SocketAddr::new(options.host, options.hop_port);
+    let hop = TcpListener::bind(addr)
         .await
-        .map_err(|e| CliError(format!("Cannot listen for the {what} on {addr}: {e}")))
+        .map_err(|e| CliError(format!("Cannot listen for the Hop on {addr}: {e}")))?;
+    Ok(Bound {
+        hop_addr: hop.local_addr()?,
+        hop,
+    })
 }
 
 impl Bound {
-    /// Serves the chosen services until `shutdown` completes, then lets open work finish.
+    /// Serves the Hop until `shutdown` completes, then lets open work finish.
     pub async fn run(self, shutdown: impl Future<Output = ()> + Send + 'static) -> Result<()> {
-        let (stop, stopped) = watch::channel(false);
-        tokio::spawn(async move {
-            shutdown.await;
-            let _ = stop.send(true);
-        });
-        let wait = |mut rx: watch::Receiver<bool>| async move {
-            let _ = rx.wait_for(|stopped| *stopped).await;
-        };
-        let hop_stop = wait(stopped.clone());
-        let den_stop = wait(stopped);
-        let hop = async {
-            if let Some(listener) = self.hop {
-                imp_hop::run(listener, imp_hop::Config::default(), hop_stop).await;
-            }
-        };
-        let den = async {
-            match self.den {
-                Some(part) => imp_den::serve(part.config, part.listener, den_stop).await,
-                None => Ok(()),
-            }
-        };
-        let (den, ()) = tokio::join!(den, hop);
-        den.map_err(CliError)
+        imp_hop::run(self.hop, imp_hop::Config::default(), shutdown).await;
+        Ok(())
     }
 }
 
@@ -212,60 +66,6 @@ mod tests {
     use super::*;
     use tokio::io::{AsyncReadExt, AsyncWriteExt};
     use tokio::net::TcpStream;
-
-    fn temp_dir(name: &str) -> PathBuf {
-        let dir = std::env::temp_dir().join(format!("imp-serve-{name}-{}", std::process::id()));
-        let _ = std::fs::remove_dir_all(&dir);
-        dir
-    }
-
-    #[test]
-    fn the_secret_is_made_once_and_kept_private() {
-        let dir = temp_dir("secret");
-        std::fs::create_dir_all(&dir).unwrap();
-        let first = load_or_create_secret(&dir).unwrap();
-        assert_eq!(first.len(), 64);
-        assert_eq!(load_or_create_secret(&dir).unwrap(), first);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            let mode = std::fs::metadata(dir.join(SECRET_FILE))
-                .unwrap()
-                .permissions()
-                .mode();
-            assert_eq!(mode & 0o777, 0o600);
-        }
-        std::fs::write(dir.join(SECRET_FILE), "short").unwrap();
-        assert!(load_or_create_secret(&dir).is_err());
-        let _ = std::fs::remove_dir_all(&dir);
-    }
-
-    #[test]
-    fn public_addresses() {
-        assert_eq!(
-            url_authority(IpAddr::V4(Ipv4Addr::LOCALHOST), 8080),
-            "localhost:8080"
-        );
-        assert_eq!(
-            url_authority(IpAddr::V4(Ipv4Addr::new(192, 168, 1, 5)), 9),
-            "192.168.1.5:9"
-        );
-    }
-
-    async fn get(addr: SocketAddr, path: &str) -> String {
-        let mut s = TcpStream::connect(addr).await.unwrap();
-        let request =
-            format!("GET {path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n");
-        s.write_all(request.as_bytes()).await.unwrap();
-        let mut body = String::new();
-        s.read_to_string(&mut body).await.unwrap();
-        body
-    }
-
-    async fn assert_den_answers(addr: SocketAddr) {
-        let reply = get(addr, "/healthz").await;
-        assert!(reply.starts_with("HTTP/1.1 200"), "{reply}");
-    }
 
     /// The Hop answers a hello with its 32 byte nonce.
     async fn assert_hop_answers(addr: SocketAddr) {
@@ -276,70 +76,21 @@ mod tests {
         s.read_exact(&mut nonce).await.unwrap();
     }
 
-    fn local_options(name: &str, services: Services) -> ServeOptions {
-        let mut options = ServeOptions::new(temp_dir(name));
-        options.services = services;
-        options.den_port = 0;
-        options.hop_port = 0;
-        options
-    }
-
-    async fn stop(
-        task: tokio::task::JoinHandle<Result<()>>,
-        stop: tokio::sync::oneshot::Sender<()>,
-    ) {
-        let _ = stop.send(());
-        task.await.unwrap().unwrap();
-    }
-
-    fn start(
-        bound: Bound,
-    ) -> (
-        tokio::task::JoinHandle<Result<()>>,
-        tokio::sync::oneshot::Sender<()>,
-    ) {
+    #[tokio::test]
+    async fn serves_a_hop_and_stops() {
+        let options = ServeOptions {
+            hop_port: 0,
+            ..ServeOptions::default()
+        };
+        let bound = bind(&options).await.unwrap();
+        let addr = bound.hop_addr;
+        assert!(addr.ip().is_loopback());
         let (tx, rx) = tokio::sync::oneshot::channel::<()>();
         let task = tokio::spawn(bound.run(async move {
             let _ = rx.await;
         }));
-        (task, tx)
-    }
-
-    #[tokio::test]
-    async fn serves_a_den_and_a_hop_and_stops() {
-        let options = local_options("both", Services::Both);
-        let bound = bind(&options).await.unwrap();
-        let (den_addr, hop_addr) = (bound.den_addr.unwrap(), bound.hop_addr.unwrap());
-        assert!(den_addr.ip().is_loopback() && hop_addr.ip().is_loopback());
-        let (task, tx) = start(bound);
-        assert_den_answers(den_addr).await;
-        assert_hop_answers(hop_addr).await;
-        stop(task, tx).await;
-        assert!(options.data_dir.join(DATABASE_FILE).exists());
-        let _ = std::fs::remove_dir_all(&options.data_dir);
-    }
-
-    #[tokio::test]
-    async fn serves_only_a_den_and_stops() {
-        let options = local_options("den-only", Services::DenOnly);
-        let bound = bind(&options).await.unwrap();
-        assert!(bound.hop_addr.is_none());
-        let den_addr = bound.den_addr.unwrap();
-        let (task, tx) = start(bound);
-        assert_den_answers(den_addr).await;
-        stop(task, tx).await;
-        let _ = std::fs::remove_dir_all(&options.data_dir);
-    }
-
-    #[tokio::test]
-    async fn serves_only_a_hop_and_stops_without_touching_the_data_folder() {
-        let options = local_options("hop-only", Services::HopOnly);
-        let bound = bind(&options).await.unwrap();
-        assert!(bound.den_addr.is_none() && bound.public_url.is_none());
-        let hop_addr = bound.hop_addr.unwrap();
-        let (task, tx) = start(bound);
-        assert_hop_answers(hop_addr).await;
-        stop(task, tx).await;
-        assert!(!options.data_dir.exists());
+        assert_hop_answers(addr).await;
+        let _ = tx.send(());
+        task.await.unwrap().unwrap();
     }
 }

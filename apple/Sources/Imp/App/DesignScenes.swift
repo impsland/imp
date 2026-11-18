@@ -22,6 +22,7 @@ enum DesignScene: String, CaseIterable {
     case impMoves = "imp-moves"
     case impLookNarrow = "imp-look-narrow"
     case impTriggerEditor = "imp-trigger-editor"
+    case impTriggerSteps = "imp-trigger-steps"
     case appWide = "all-imps-app"
     case appNarrow = "all-imps-app-narrow"
     case allNothing = "all-imps-nothing"
@@ -53,6 +54,7 @@ enum DesignScene: String, CaseIterable {
         case .impPersonality, .impLook, .impTools, .impTriggers, .impMoves: CGSize(width: 760, height: 720)
         case .impLookNarrow: CGSize(width: 380, height: 720)
         case .impTriggerEditor: CGSize(width: 520, height: 720)
+        case .impTriggerSteps: CGSize(width: 520, height: 900)
         case .appWide: CGSize(width: 900, height: 720)
         case .appNarrow: CGSize(width: 560, height: 720)
         case .allNothing: CGSize(width: 760, height: 640)
@@ -83,6 +85,7 @@ enum DesignScene: String, CaseIterable {
         case .impTriggers: impSettings(brain: true, open: .triggers)
         case .impMoves: impSettings(brain: true, open: .moves)
         case .impTriggerEditor: triggerEditor()
+        case .impTriggerSteps: triggerEditor(poke: true)
         case .appWide, .appNarrow: general(.app)
         case .allNothing: general(.brains, setUp: false)
         case .firstRunService: firstRun { _ in }
@@ -147,7 +150,7 @@ enum DesignScene: String, CaseIterable {
     /// The Imps of every scene: the same ids, names and colours.
     @MainActor private static func model(imps: Int, brain: Bool = true) -> AppModel {
         let model = AppModel(persist: false)
-        model.prefs = .firstLaunch
+        model.prefs = ImpPreferences()
         for _ in 1..<max(1, imps) { model.addImp() }
         let ids = ["00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000003"]
         for (i, hue) in [0.08, 0.57, 0.33].enumerated() where model.prefs.imps.indices.contains(i) {
@@ -192,10 +195,15 @@ enum DesignScene: String, CaseIterable {
         return AnyView(HomeView(model: model, router: router))
     }
 
-    @MainActor private func triggerEditor() -> AnyView {
+    @MainActor private func triggerEditor(poke: Bool = false) -> AnyView {
         let model = Self.model(imps: 1)
         let id = model.prefs.imps[0].id
-        var trigger = Shortcut(name: "Translate", hotkey: nil, prompt: "Translate this into English.")
+        var trigger = Shortcut(name: "Translate", hotkey: nil, steps: [Step(.ask, value: "Translate this into English.", clipboard: true)])
+        if poke {
+            model.prefs.imps[0].animations = [MadeAnimation(name: "Wiggle", beats: [])]
+            trigger = Shortcut(name: "Ouch", trigger: Trigger(.poke), conditions: [Condition(.hours, value: "09:00-18:00")],
+                               steps: [Step(.play, value: "Wiggle"), Step(.say, value: "Ouch!", aloud: true)])
+        }
         trigger.performer = id
         return AnyView(ShortcutSheet(model: model, imp: id, shortcut: trigger, isNew: false, scope: .onlyThisImp, save: { _, _ in }, duplicate: { _ in }, delete: {})
             .environment(\.impTint, Color.imp(model.prefs.imps[0].hue))
@@ -206,7 +214,7 @@ enum DesignScene: String, CaseIterable {
     @MainActor private func impSettings(brain: Bool, open: ImpSetting? = nil) -> AnyView {
         let model = Self.model(imps: 1, brain: brain)
         let id = model.prefs.imps[0].id
-        var trigger = Shortcut(name: "Translate", hotkey: nil, prompt: "Translate this into English.")
+        var trigger = Shortcut(name: "Translate", hotkey: nil, steps: [Step(.ask, value: "Translate this into English.", clipboard: true)])
         trigger.performer = id
         model.prefs.shortcuts = [trigger]
         model.sampleChats[id] = Self.sampleChats()
@@ -233,7 +241,6 @@ enum DesignScene: String, CaseIterable {
     @MainActor private func general(_ group: SettingsGroup, setUp: Bool = true) -> AnyView {
         let model = Self.model(imps: 2, brain: setUp)
         if !setUp {
-            model.prefs.den = ""
             model.prefs.hop = ""
         }
         let router = HomeRouter()

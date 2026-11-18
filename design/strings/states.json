@@ -69,12 +69,6 @@
     "es": "Se cortó el enlace con {device}. Se reconectará solo.",
     "zh-Hans": "与 {device} 的连接断开了，会自动重新连接。"
   },
-  "state.servers.set_up_den": {
-    "note": "Button.",
-    "en": "Set up Den",
-    "es": "Configurar Den",
-    "zh-Hans": "设置 Den"
-  },
   "state.servers.set_up_hop": {
     "note": "Button.",
     "en": "Set up Hop",

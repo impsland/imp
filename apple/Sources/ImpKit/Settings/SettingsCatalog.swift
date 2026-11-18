@@ -61,13 +61,13 @@ public enum SettingID: String, CaseIterable, Sendable {
     // Brains
     case brainsServices = "brains_services", brainsKeychain = "brains_keychain", brainsWait = "brains_wait"
     case brainsRetries = "brains_retries", brainsFirstWait = "brains_first_wait", brainsLonger = "brains_longer"
+    // Sharing
+    case sharingImport = "sharing_import"
     // Devices
     case devicesHop = "devices_hop"
     case devicesLink = "devices_link", devicesPair = "devices_pair", devicesForgetAll = "devices_forget_all"
-    // Sharing
-    case sharingDen = "sharing_den"
     // Animations
-    case animationsMade = "animations_made", animationsBuiltIn = "animations_built_in"
+    case animationsMade = "animations_made"
     // Privacy
     case privacyListening = "privacy_listening", privacyComputer = "privacy_computer"
     // Backup
@@ -77,7 +77,6 @@ public enum SettingID: String, CaseIterable, Sendable {
     case brainSends = "brain_sends", brainTools = "brain_tools", brainNewChat = "brain_new_chat", brainCurrentChat = "brain_current_chat"
     // Per Imp: personality
     case personalityName = "personality_name", personalityPersona = "personality_persona", personalityAbout = "personality_about"
-    case personalityVoice = "personality_voice", personalityVoiceLook = "personality_voice_look"
     case personalityRules = "personality_rules"
     // Per Imp: look
     case lookColour = "look_colour", lookSize = "look_size", lookCharacter = "look_character"
@@ -86,7 +85,7 @@ public enum SettingID: String, CaseIterable, Sendable {
     // Per Imp: triggers
     case triggersList = "triggers_list"
     // Per Imp: moves
-    case movesFollowHow = "moves_follow_how", movesSpeed = "moves_speed", movesOwn = "moves_own", movesBuiltIn = "moves_builtin"
+    case movesOwn = "moves_own"
 
     /// Page, the key of the title on screen, and what the model is told. One row each.
     private struct Entry {
@@ -119,13 +118,12 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .brainsRetries: Entry(page: .brains, title: "settings.brains.retries.title", hint: "how many times to try again when a request fails")
         case .brainsFirstWait: Entry(page: .brains, title: "settings.brains.first_wait.title", hint: "how long to wait for the first word of an answer")
         case .brainsLonger: Entry(page: .brains, title: "settings.brains.longer.title", hint: "wait longer for slow thinking models")
+        case .sharingImport: Entry(page: .sharing, title: "sharing.import", hint: "import a kit from a file, a link or the clipboard, shared Imps and animations, MCP gallery")
         case .devicesHop: Entry(page: .devices, title: "servers.hop.title", hint: "the Hop server that links devices, on this computer or elsewhere")
         case .devicesLink: Entry(page: .devices, title: "settings.devices.link.title", hint: "link the iPhone or another Mac, devices, pairing")
         case .devicesPair: Entry(page: .devices, title: "settings.devices.pair.title", hint: "pair a new device with a code or QR")
         case .devicesForgetAll: Entry(page: .devices, title: "settings.devices.forget_all.title", hint: "unlink every device")
-        case .sharingDen: Entry(page: .sharing, title: "servers.den.title", hint: "the Den server where animations, triggers and Imps are shared and found")
         case .animationsMade: Entry(page: .animations, title: "animations.from_den", hint: "animations made or got from the Den, edit, rename, delete")
-        case .animationsBuiltIn: Entry(page: .animations, title: "animations.built_in", hint: "the animations that come with Imp, restore, switch off")
         case .privacyListening: Entry(page: .privacy, title: "settings.privacy.core.title", hint: "microphone, speech recognition, what Imp may listen to")
         case .privacyComputer: Entry(page: .privacy, title: "settings.privacy.computer.title", hint: "permissions to see the screen, control the computer, accessibility, files")
         case .backupExport: Entry(page: .backup, title: "settings.backup.export.title", hint: "save a copy of all Imps and settings to a file")
@@ -139,8 +137,6 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .personalityName: Entry(page: .personality, title: "personality.name", hint: "the Imp's name and what it calls you")
         case .personalityAbout: Entry(page: .personality, title: "personality.about", hint: "what the Imp is good at, its description for the other Imps")
         case .personalityPersona: Entry(page: .personality, title: "personality.persona", hint: "who the Imp is, its character description and instructions")
-        case .personalityVoice: Entry(page: .personality, title: "personality.voice", hint: "how the Imp sounds, the spoken voice")
-        case .personalityVoiceLook: Entry(page: .personality, title: "personality.voice_look", hint: "how the Imp's voice looks while it speaks")
         case .personalityRules: Entry(page: .personality, title: "Reply rules", hint: "how long and in what style it answers")
         case .lookColour: Entry(page: .look, title: "look.colour", hint: "the Imp's colour or hue")
         case .lookSize: Entry(page: .look, title: "look.size", hint: "how big the Imp is")
@@ -150,10 +146,7 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .toolsBrowser: Entry(page: .tools, title: "Browser", hint: "let the Imp use the web browser, browser extension")
         case .toolsExtra: Entry(page: .tools, title: "tools.mcp", hint: "extra tools (MCP servers) and their keys or variables")
         case .triggersList: Entry(page: .triggers, title: "triggers.title", hint: "things the Imp does by itself when something happens or on a shortcut")
-        case .movesFollowHow: Entry(page: .moves, title: "moves.follow_how", hint: "whether and how the Imp follows the mouse cursor")
-        case .movesSpeed: Entry(page: .moves, title: "Speed", hint: "how fast the Imp moves")
         case .movesOwn: Entry(page: .moves, title: "Its own animations", hint: "animations made for just this Imp")
-        case .movesBuiltIn: Entry(page: .moves, title: "moves.builtin", hint: "which built-in moves this Imp does")
         }
     }
 

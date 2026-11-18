@@ -11,18 +11,13 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `anim.help.icon` | The picture shown for this move in lists. | El dibujo de este movimiento en las listas. | 这个动作在列表里显示的图案。 |
 | `anim.help.length` | How long the move lasts. | Cuánto dura el movimiento. | 这个动作会持续多久。 |
 | `anim.help.name` | A name so you can find it again. | Un nombre para encontrarlo después. | 一个名字，方便以后找到它。 |
-| `anim.help.plays` | When this move happens. | Cuándo ocurre. | 这个动作什么时候出现。 |
 | `anim.help.shape` | Squash or stretch the body, like a ball. | Aplasta o estira el cuerpo, como una pelota. | 把身体压扁或拉长，像个球。 |
 | `anim.help.symbol` | A small picture that pops up beside the Imp. | Un dibujo pequeño que aparece junto al Imp. | 在 Imp 旁边冒出来的小图案。 |
 | `anim.help.tilt` | How far the Imp leans to the side. | Cuánto se inclina el Imp hacia un lado. | Imp 向一侧倾斜多少。 |
-| `animations.built_in` | Built in | Integradas | 内置项 |
 | `animations.find` | Browse | Explorar | 浏览 |
-| `animations.from_den` | Den | Den | Den |
-| `animations.needs_den` | Set up The Den to find more. | Configura Den para encontrar más. | 设置 Den 后可以找到更多。 |
+| `animations.from_den` | Made | Hechas | 自制 |
 | `animations.new` | New | Nueva | 新建 |
-| `animations.restore` | Restore | Restaurar | 恢复 |
 | `animations.search` | Search | Buscar | 搜索 |
-| `animations.title` | Animations | Animaciones | 动画效果 |
 | `app.language` | Language | Idioma | 界面语言 |
 | `app.login` | Autostart | Autoinicio | 自动启动 |
 | `app.login_note` | Open Imp when you sign in. | Abre Imp cuando inicias sesión. | 登录时自动打开 Imp。 |
@@ -98,14 +93,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `common.step` | Step {number} of {total}, {name} | Paso {number} de {total}, {name} | 第 {number} 步，共 {total} 步，{name} |
 | `common.try_again` | Try again | Reintentar | 重新尝试 |
 | `common.undo` | Undo | Deshacer | 撤销 |
-| `den.help.kind` | Pick what kind of thing to look for. | Elige qué tipo de cosa buscar. | 选择要找哪一类东西。 |
-| `den.help.public` | Anyone can add it. Chats, memory and keys are never included. | Cualquiera puede añadirlo. Los chats, la memoria y las claves nunca se incluyen. | 任何人都可以添加。聊天、记忆和密钥永远不会包含在内。 |
-| `den.help.search` | Type a word to find things. | Escribe una palabra para buscar. | 输入一个词来查找内容。 |
-| `den.help.server` | Where people share Imps, animations, triggers and tools. | Donde la gente comparte Imps, animaciones, disparadores y herramientas. | 大家分享 Imp、动画、触发器和工具的地方。 |
-| `den.help.slug` | A short name for the web address. Use small letters and dashes. | Un nombre corto para la dirección web. Usa minúsculas y guiones. | 网址里用的短名字。用小写字母和短横线。 |
-| `den.help.sort` | Show the most loved first, or the newest first. | Muestra primero lo más querido, o lo más nuevo. | 先显示最受欢迎的，或最新的。 |
-| `den.help.summary` | One sentence so people know what it is. | Una frase para que la gente sepa qué es. | 用一句话让大家知道这是什么。 |
-| `den.help.tags` | Words that help people find it. Separate them with commas. | Palabras que ayudan a encontrarlo. Sepáralas con comas. | 帮大家找到它的词，用逗号分开。 |
 | `devices.copy_link.help` | For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while. | Para un dispositivo que no puede escanear: pega el enlace en Escanear código en el otro dispositivo. Mantenlo en privado. Permite que un dispositivo se vincule con este Mac durante un rato. | 适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。 |
 | `devices.empty` | No devices yet. Link an iPhone or another Mac and your Imps can visit it. | Aún no hay dispositivos. Vincula un iPhone u otro Mac y tus Imps podrán visitarlo. | 还没有设备。连接一台 iPhone 或另一台 Mac，你的 Imp 就能去做客。 |
 | `devices.list.info` | Devices linked with this one. Mine lets a device act for you. | Dispositivos vinculados con este. Mío permite que un dispositivo actúe por ti. | 与这台设备连接的设备。“我的”让设备可以代表你行事。 |
@@ -274,7 +261,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `imp_settings.summary.brain_set` | {service}, {model} | {service}, {model} | {service}，{model} |
 | `imp_settings.summary.look` | Colour and size | Color y tamaño | 颜色与大小 |
 | `imp_settings.summary.moves` | Animations | Animaciones | 动画效果 |
-| `imp_settings.summary.personality` | Name and voice | Nombre y voz | 名字与声音 |
+| `imp_settings.summary.personality` | Name and persona | Nombre y personalidad | 名字与人设 |
 | `imp_settings.summary.tools` | {on} of {total} on | {on} de {total} | 已开启 {on}/{total} |
 | `imp_settings.summary.triggers` | one: {count} trigger / other: {count} triggers | one: {count} disparador / other: {count} disparadores | other: {count} 个触发器 |
 | `imp_settings.this_imp` | this Imp | este Imp | 此 Imp |
@@ -284,7 +271,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `kit.help.paste` | Paste a kit, a web address or an imp:// link, or drop a file. You look at it first. | Pega un kit, una dirección web o un enlace imp://, o suelta un archivo. Primero lo revisas. | 粘贴一个套件、网址或 imp:// 链接，或放入文件。你会先查看。 |
 | `kit.help.skipped` | Things in the kit this Mac cannot use, so they are left out. | Cosas del kit que este Mac no puede usar, por eso se dejan fuera. | 套件里这台 Mac 用不了的东西，所以被略过。 |
 | `kit.help.tools` | Tools can run things on your Mac. Read them first. | Las herramientas pueden ejecutar cosas en tu Mac. Léelas primero. | 工具可以在你的 Mac 上运行东西。请先看一看。 |
-| `kit.origin.starter` | Imp's starter kit | Kit inicial de Imp | Imp 自带入门套件 |
 | `link.localnet.off` | Local Network is off for Imp | Red local desactivada | Imp 的本地网络已被关闭 |
 | `link.localnet.open` | Open Settings | Abrir Ajustes | 打开设置 |
 | `link.localnet.open_mac` | Open System Settings | Abrir Ajustes del Sistema | 打开“系统设置” |
@@ -369,24 +355,14 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `menu.imp.type_help` | Type to {name} | Escribir a {name} | 给 {name} 打字 |
 | `menu.imp.visit_none` | Visit another device | Visitar otro dispositivo | 去别的设备做客吧 |
 | `menu.imp.visit_tip` | {name} visits {device} and can come back. | {name} visita {device} y puede volver. | {name} 去 {device} 做客，还可以回来。 |
-| `moves.builtin` | Moves | Movimientos | 动作 |
-| `moves.change` | Change | Cambiar | 更改 |
 | `moves.empty` | No special moves yet. | Sin movimientos aún. | 还没有特别的动作。 |
-| `moves.follow_how` | Follow | Seguir | 跟随 |
-| `moves.help.builtin` | Pick one of the moves every Imp has and make a version only for this Imp. | Elige uno de los movimientos que tienen todos los Imps y haz una versión solo para este. | 选一个所有 Imp 都有的动作，为这个 Imp 做一个专属版本。 |
-| `moves.help.follow` | Choose what this Imp does when you move your mouse pointer: stay still, look at it, or run after it. | Elige qué hace este Imp cuando mueves el puntero del ratón: quedarse quieto, mirarlo o correr tras él. | 选择你移动鼠标指针时这个 Imp 做什么：不动、看着它，或跟着它跑。 |
-| `moves.help.follow_how` | Off: it stays still. Eyes: only its eyes look at the pointer. Hop: it jumps after the pointer. Glide: it slides after the pointer. | Desactivado: se queda quieto. Ojos: solo sus ojos miran el puntero. Saltito: salta tras el puntero. Deslizarse: se desliza tras el puntero. | 关：它不动。眼睛：只有眼睛看着指针。蹦跳：它跳着追指针。滑行：它滑着追指针。 |
 | `moves.help.own` | Moves made for only this Imp. They play instead of the shared ones. | Movimientos hechos solo para este Imp. Se usan en lugar de los compartidos. | 只为这个 Imp 做的动作。它们会代替共用的动作。 |
-| `moves.help.speed` | How fast it goes after the pointer. Only for Hop and Glide. | Qué tan rápido va tras el puntero. Solo para Saltito y Deslizarse. | 它追指针有多快。只对蹦跳和滑行有用。 |
-| `moves.title` | Moves | Movimientos | 动作 |
 | `personality.about` | What it's good at | En qué destaca | 擅长什么 |
 | `personality.about_hint` | Researching on the web, fixing code… | Investigar en la web, arreglar código… | 上网查资料、修代码…… |
 | `personality.help.about` | One or two lines. The other Imps read it to know whom to ask for what. | Una o dos líneas. Los otros Imps la leen para saber a quién pedirle cada cosa. | 一两行字。其他 Imp 会读它，来决定什么事该问谁。 |
 | `personality.help.name` | What you call this Imp. Say its name and it answers. | Cómo llamas a este Imp. Di su nombre y responde. | 你怎么称呼这个 Imp。叫它的名字，它就会回答。 |
 | `personality.help.persona` | Tell it who to be, like a kind pirate or a quiet helper. It will talk that way. | Dile quién ser, como un pirata amable o un ayudante callado. Hablará así. | 告诉它要做谁，比如和气的海盗或安静的帮手。它就会那样说话。 |
 | `personality.help.rules` | The hidden rules that tell it how to answer. Most people never change them. | Las reglas ocultas que le dicen cómo responder. Casi nadie las cambia. | 告诉它怎么回答的隐藏规则。大多数人从不修改。 |
-| `personality.help.voice` | What shows on your screen while this Imp talks out loud. | Se ve en tu pantalla mientras este Imp habla en voz alta. | 这个 Imp 大声说话时，你的屏幕上会出现什么。 |
-| `personality.help.voice_look` | Pick the picture shown while it talks: Glow is a glowing edge, Smoke is a puff of smoke, Both shows the two, Players is a small player with play and pause. | Elige el dibujo que sale mientras habla: Brillo es un borde que brilla, Humo es una nube de humo, Ambos muestra los dos y Reproductores es un reproductor pequeño con play y pausa. | 选择它说话时显示的画面：发光是发亮的边，烟雾是一团烟，两者是两个都显示，播放器是带播放和暂停的小播放器。 |
 | `personality.name` | Name | Nombre | 名称 |
 | `personality.name_empty` | Give your Imp a name. | Dale un nombre a tu Imp. | 给你的 Imp 起个名字吧。 |
 | `personality.name_hint` | Part of who {name} is. You can change it any time. | Parte de quién es {name}. Puedes cambiarlo cuando quieras. | 这是 {name} 个性的一部分，随时可以修改。 |
@@ -396,8 +372,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `personality.rules.edit` | Edit… | Editar… | 编辑… |
 | `personality.rules.own` | Your own | Propias | 自定义 |
 | `personality.title` | Personality | Personalidad | 个性设置 |
-| `personality.voice` | Voice | Voz | 声音 |
-| `personality.voice_look` | Shows as | Se muestra | 显示为 |
 | `phone.about.title` | About | Acerca de | 关于 |
 | `phone.app.speech` | Language and voices | Idioma y voces | 语言与语音 |
 | `phone.appearance.auto` | Auto | Auto | 自动 |
@@ -527,11 +501,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `scope.only` | Only {name} | Solo {name} | 仅 {name} |
 | `servers.address` | Address | Dirección | 地址 |
 | `servers.address_hint` | Start with https:// | Empieza con https:// | 以 https:// 开头 |
-| `servers.den.about` | Where Imps share animations, triggers and Imps. Shared items are public. | Donde los Imps comparten animaciones, disparadores e Imps. Lo compartido es público. | Imp 在这里共享动画、触发器和 Imp。共享的内容是公开的。 |
-| `servers.den.in_use` | Using the Den at {address} | Usando el Den en {address} | 正在使用 {address} 上的 Den |
-| `servers.den.needed` | This needs a Den. Set one in Settings. | Esto necesita un Den. Configura uno en Ajustes. | 这需要有 Den。请到设置里添加。 |
-| `servers.den.off_note` | Sharing and finding in The Den are off. | Compartir y buscar en Den está desactivado. | 在 Den 中的分享和查找已关闭。 |
-| `servers.den.title` | Den | Den | Den |
 | `servers.hop.about` | Lets your devices find each other. It only passes encrypted data. | Permite que tus dispositivos se encuentren. Solo transmite datos cifrados. | 让你的设备能够找到彼此，只转发加密数据。 |
 | `servers.hop.in_use` | Using the Hop at {address} | Usando el Hop en {address} | 正在使用 {address} 上的 Hop |
 | `servers.hop.needed` | Linking from anywhere needs a Hop. Add one in Settings under Devices. Devices on the same network still find each other. | Enlazar desde cualquier lugar necesita un Hop. Añade uno en Ajustes, en Dispositivos. Los dispositivos de la misma red se siguen encontrando. | 随时随地连接需要 Hop。请在“设置”的“设备”里添加。同一网络里的设备仍然可以找到彼此。 |
@@ -555,7 +524,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.app.control_ink.white` | White | Blanco | 白色 |
 | `settings.app.look.info` | How the app looks. | Cómo se ve la app. | 应用看起来的样子。 |
 | `settings.app.system.info` | How the app starts and which language it speaks. | Cómo arranca la app y en qué idioma habla. | 应用如何启动，以及使用哪种语言。 |
-| `settings.attention.den_off` | The Den is not set up. | Den no está configurado. | Den 尚未设置。 |
 | `settings.attention.device_offline` | {device} is offline. | {device} sin conexión. | {device} 已离线。 |
 | `settings.attention.hop_off` | The Hop is not set up. | Hop no está configurado. | Hop 尚未设置。 |
 | `settings.attention.imp_no_brain` | {name} has no Brain. | {name} no tiene cerebro. | {name} 还没有大脑。 |
@@ -621,7 +589,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.group.talking` | Talking | Conversar | 对话 |
 | `settings.group.voice` | Voice | Voz | 语音 |
 | `settings.map.brains` | Brains | Cerebros | 大脑 |
-| `settings.map.den` | Den | Den | Den |
 | `settings.map.hop` | Hop | Hop | Hop |
 | `settings.map.hop_local` | The Hop on this computer | Hop en este equipo | 这台电脑上的 Hop |
 | `settings.map.not_seen` | Cannot see each other yet | Aún no se ven entre sí | 彼此暂时看不到 |
@@ -671,8 +638,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.tool.headers.info` | Extra lines sent with each request, like a password. | Líneas extra enviadas con cada petición, como una contraseña. | 随每个请求发送的额外内容，比如口令。 |
 | `settings.tool.name.info` | A name you pick for this tool. | Un nombre a tu gusto. | 你给这个工具取的名字。 |
 | `settings.tool.variables.info` | Secret values the tool needs to run. | Valores secretos que la herramienta necesita. | 这个工具运行时需要的秘密值。 |
-| `share.den` | Den | Den | Den |
-| `share.den_needs_setup` | Set up The Den to share there. | Configura Den para compartir allí. | 先设置 Den，才能在那里共享。 |
 | `share.file` | File | Archivo | 文件 |
 | `share.note` | Its look, personality, tools and triggers are shared. Keys, memory and chats never are. | Se comparten su aspecto, personalidad, herramientas y disparadores. Las claves, la memoria y los chats nunca. | 会共享它的外观、个性、工具和触发器。密钥、记忆和聊天永远不会共享。 |
 | `share.title` | Share {name} | Compartir {name} | 共享 {name} |
@@ -685,7 +650,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `state.offline.imp` | {name} cannot reach its Brain. It wakes up when you are back online. | {name} no puede llegar a su cerebro. Despertará cuando vuelvas a tener conexión. | {name} 连不上它的大脑。重新联网后它就会醒来。 |
 | `state.offline.note` | Imps that use a model on this device still work. The others wait until you are back online. | Los Imps que usan un modelo de este dispositivo siguen funcionando. Los demás esperan a que vuelvas a tener conexión. | 使用本机模型的 Imp 仍然可以工作，其他的会等你重新联网。 |
 | `state.offline.title` | You are offline | No tienes conexión | 你现在已离线 |
-| `state.servers.set_up_den` | Set up Den | Configurar Den | 设置 Den |
 | `state.servers.set_up_hop` | Set up Hop | Configurar Hop | 设置 Hop |
 | `state.sleeping.action` | Give {name} a Brain | Dar cerebro a {name} | 给 {name} 一个大脑 |
 | `state.sleeping.note` | With no Brain, it cannot think. Its triggers still work. | Sin cerebro, no puede pensar. Sus disparadores siguen funcionando. | 没有大脑就无法思考。它的触发器仍然有效。 |
@@ -712,6 +676,9 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tools.mcp` | MCP | MCP | MCP |
 | `tools.mcp_connected` | Connected | Conectado | 已连接 |
 | `tools.mcp_failed` | Could not start | No se pudo iniciar | 启动失败 |
+| `tools.mcp_needs_signin` | Sign-in needed | Falta iniciar sesión | 需要登录 |
+| `tools.mcp_sign_in` | Sign in | Iniciar sesión | 登录 |
+| `tools.mcp_sign_out` | Sign out | Cerrar sesión | 退出登录 |
 | `tools.mcp_starting` | Starting | Iniciando | 正在启动 |
 | `tools.new_server` | New | Nuevo | 新建 |
 | `tools.optional` | Optional | Opcional | 可选项 |
@@ -725,33 +692,83 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tools.shared_setup` | Every Imp that uses this tool gets this setup. Each Imp switches it on or off for itself. | Todos los Imps que usan esta herramienta reciben esta configuración. Cada Imp la activa o desactiva por su cuenta. | 使用这个工具的每个 Imp 都会得到这套设置。每个 Imp 各自开启或关闭它。 |
 | `tools.title` | Tools | Herramientas | 工具 |
 | `triggers.add` | Add | Añadir | 添加 |
+| `triggers.cond.add` | Add | Añadir | 添加 |
+| `triggers.cond.always` | Always | Siempre | 总是 |
+| `triggers.cond.remove` | Remove this condition | Quitar esta condición | 移除此条件 |
 | `triggers.delete` | Delete trigger | Eliminar disparador | 删除这个触发器 |
 | `triggers.delete_every` | Delete for every Imp | Eliminar para todos | 为所有 Imp 删除 |
 | `triggers.delete_every.title` | Delete “{name}” for every Imp? | ¿Eliminar “{name}” para todos? | 为所有 Imp 删除“{name}”？ |
 | `triggers.edit` | Edit trigger | Editar disparador | 编辑触发器 |
 | `triggers.empty` | No triggers yet. Add one and {name} acts on its own. | Aún no hay disparadores. Añade uno y {name} actuará por su cuenta. | 还没有触发器。添加一个，{name} 就会自己行动。 |
-| `triggers.help.do` | What the Imp does when it goes off. | Lo que hace el Imp cuando se activa. | 触发时 Imp 要做什么。 |
+| `triggers.f.do` | Do | Hacer | 执行 |
+| `triggers.f.for` | For | Para | 适用于 |
+| `triggers.f.only_if` | Only if | Solo si | 仅当 |
+| `triggers.f.when` | When | Cuando | 当 |
+| `triggers.follow` | Follow | Seguir | 跟随 |
+| `triggers.gestures` | Gestures | Gestos | 手势 |
+| `triggers.group.mac` | Mac | Mac | Mac |
+| `triggers.group.time` | Time | Tiempo | 时间 |
+| `triggers.group.you` | You | Tú | 你 |
+| `triggers.help.do` | The steps the Imp runs, in order, when it goes off. | Los pasos que el Imp ejecuta, en orden, cuando se activa. | 触发时 Imp 按顺序执行的步骤。 |
 | `triggers.help.for` | Which Imp does the job. A change here is for this Imp alone unless you pick Every Imp. | Qué Imp hace el trabajo. Un cambio aquí es solo para este Imp, salvo que elijas Todos los Imps. | 由哪个 Imp 来做。除非选择所有 Imp，这里的更改只对这个 Imp 生效。 |
-| `triggers.help.input` | What the Imp gets to look at when it goes off, like the clipboard. | Lo que el Imp puede mirar cuando se activa, como el portapapeles. | 触发时 Imp 能看到什么，比如剪贴板。 |
-| `triggers.help.instruction` | Tell the Imp in your own words what to do. | Dile al Imp con tus palabras qué hacer. | 用你自己的话告诉 Imp 要做什么。 |
 | `triggers.help.list` | A trigger wakes the Imp up by itself when something happens, like a time or a low battery. | Un disparador despierta al Imp solo cuando pasa algo, como una hora o poca batería. | 触发器会在发生某件事时自动叫醒 Imp，比如到了某个时间或电量低。 |
 | `triggers.help.name` | A name so you can find it again. | Un nombre para encontrarlo después. | 一个名字，方便以后找到它。 |
-| `triggers.help.starter` | The triggers Imp comes with: clicks, falling asleep and waking up. You see them before anything is added. | Los disparadores que trae Imp: clics, dormirse y despertar. Los ves antes de añadir nada. | Imp 自带的触发器：点击、入睡和醒来。添加之前你会先看到它们。 |
+| `triggers.help.only_if` | Every condition has to hold at that moment, like the battery being low or the time being late. | Todas las condiciones tienen que cumplirse en ese momento, como poca batería o una hora tardía. | 触发的那一刻所有条件都必须满足，比如电量低或时间很晚。 |
+| `triggers.help.sheet` | When the event happens and every condition holds, the steps run in order. | Cuando ocurre el evento y se cumplen todas las condiciones, los pasos se ejecutan en orden. | 事件发生且所有条件都满足时，按顺序执行各个步骤。 |
+| `triggers.help.speed` | How fast it goes after the pointer. Only for Hop and Glide. | Qué tan rápido va tras el puntero. Solo para Saltito y Deslizarse. | 它追指针有多快。只对蹦跳和滑行有用。 |
 | `triggers.help.when` | What has to happen to set it off, like a time, an app or a low battery. | Lo que tiene que pasar para activarlo, como una hora, una app o poca batería. | 要发生什么才会触发，比如时间、某个应用或电量低。 |
-| `triggers.instruction` | Task | Tarea | 指令 |
+| `triggers.hint.animation` | To play it on an event, add a trigger. | Para reproducirla en un evento, añade un disparador. | 要在某个事件时播放它，请添加触发器。 |
+| `triggers.hint.button` | Add trigger | Añadir disparador | 添加触发器 |
 | `triggers.just_for` | Just for {name} | Solo para {name} | 只给 {name} 用 |
 | `triggers.new` | New | Nuevo | 新建 |
+| `triggers.open` | Open | Abrir | 打开 |
+| `triggers.open.chat` | Chat | Chat | 聊天 |
+| `triggers.open.listen` | Listen | Escuchar | 聆听 |
+| `triggers.open.settings` | Settings | Ajustes | 设置 |
+| `triggers.open.text_box` | Text box | Cuadro de texto | 文本框 |
+| `triggers.problem.ask` | Write what the Imp should do, or hand over the clipboard. | Escribe lo que debe hacer el Imp, o entrega el portapapeles. | 请写下 Imp 该做什么，或附带剪贴板。 |
+| `triggers.problem.keys` | Record the keys that set it off. | Graba las teclas que lo activan. | 请录制触发它的按键。 |
+| `triggers.problem.missing` | This Imp has no animation called “{name}”. | Este Imp no tiene ninguna animación llamada «{name}». | 这个 Imp 没有名为“{name}”的动画。 |
+| `triggers.problem.no_steps` | Add at least one step. | Añade al menos un paso. | 至少添加一个步骤。 |
+| `triggers.problem.play` | Pick the animation to play. | Elige la animación que se reproduce. | 请选择要播放的动画。 |
+| `triggers.problem.say` | Write what the Imp says. | Escribe lo que dice el Imp. | 请写下 Imp 要说的话。 |
+| `triggers.problem.too_many` | A trigger has five steps at most. | Un disparador tiene cinco pasos como máximo. | 一个触发器最多有五个步骤。 |
 | `triggers.scope.just` | Just {name} | Solo {name} | 仅 {name} |
 | `triggers.scope.note_every` | Changes it for every Imp. | Lo cambia para todos los Imps. | 会对所有 Imp 生效。 |
 | `triggers.scope.note_version` | Saves a version for {name} only. The other Imps keep the shared one. | Guarda una versión solo para {name}. Los demás Imps conservan la compartida. | 只为 {name} 保存一个版本。其他 Imp 保留共享的那个。 |
-| `triggers.sentence` | When {event}, {action}. | Cuando {event}, {action}. | 当{event}时，{action}。 |
 | `triggers.share_every` | Share to all | Para todos | 共享给所有 |
-| `triggers.starter` | Starter kit | Kit inicial | 入门套件 |
+| `triggers.step.add` | Add a step | Añadir un paso | 添加步骤 |
+| `triggers.step.aloud` | Aloud | En voz alta | 朗读 |
+| `triggers.step.anim_none` | The usual way | Lo habitual | 默认方式 |
+| `triggers.step.ask_ph` | What should it do? Say it in your own words. | ¿Qué debe hacer? Dilo con tus palabras. | 它该做什么？用你自己的话说。 |
+| `triggers.step.clipboard` | With clipboard | Con el portapapeles | 附带剪贴板 |
+| `triggers.step.down` | Move down | Bajar | 下移 |
+| `triggers.step.no_animations` | No animations yet | Aún no hay animaciones | 还没有动画 |
+| `triggers.step.pick_animation` | Pick an animation | Elige una animación | 选择动画 |
+| `triggers.step.remove` | Remove step | Quitar paso | 移除步骤 |
+| `triggers.step.say_ph` | What it says | Lo que dice | 它说的话 |
+| `triggers.step.speed` | Speed | Velocidad | 速度 |
+| `triggers.step.up` | Move up | Subir | 上移 |
 | `triggers.switch` | Trigger: {sentence} | Disparador: {sentence} | 触发器：{sentence} |
 | `triggers.title` | Triggers | Disparadores | 触发器 |
 | `triggers.use_shared` | Use shared | Usar común | 使用共享 |
 | `triggers.use_shared.message` | The version only {name} has goes. | Se quita la versión de {name}. | 只属于 {name} 的版本将被删除。 |
 | `triggers.use_shared.title` | Use the shared “{name}” again? | ¿Volver a usar “{name}” compartido? | 重新使用共享的“{name}”？ |
+| `triggers.v.any_app` | Any app | Cualquier app | 任何应用 |
+| `triggers.v.asleep` | Asleep | Dormido | 睡着 |
+| `triggers.v.at_once` | Right away | Enseguida | 立即 |
+| `triggers.v.awake` | Awake | Despierto | 醒着 |
+| `triggers.v.choice` | Choice | Opción | 选项 |
+| `triggers.v.clicks` | Clicks | Clics | 点击次数 |
+| `triggers.v.comes_online` | Comes back | Vuelve | 恢复 |
+| `triggers.v.goes_offline` | Goes away | Se va | 断开 |
+| `triggers.v.offline` | Offline | Sin conexión | 离线 |
+| `triggers.v.on_battery` | On battery | Con batería | 使用电池 |
+| `triggers.v.on_charger` | On the charger | Con el cargador | 正在充电 |
+| `triggers.v.online` | Online | Con conexión | 在线 |
+| `triggers.v.pick_app` | Pick an open app | Elige una app abierta | 选择已打开的应用 |
+| `triggers.v.plugged` | Plugged in | Se conecta | 接上电源 |
+| `triggers.v.unplugged` | Unplugged | Se desconecta | 拔掉电源 |
 | `voice.autoplay` | Autoplay | Automático | 自动播放 |
 | `voice.autoplay_note` | A voice an Imp marks to play starts by itself in a new reply. Otherwise you tap it. | Una voz que un Imp marca para sonar empieza sola en una respuesta nueva. Si no, la tocas. | Imp 标记为自动播放的语音会在新回复中自动开始。关闭后需要你点一下。 |
 | `voice.listen` | Listen | Escuchar | 聆听 |

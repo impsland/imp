@@ -21,10 +21,13 @@ pub enum Error {
     Forbidden(String),
     NotFound,
     MethodNotAllowed,
+    AccountDeactivated,
     HandleTaken,
+    Duplicate(String),
     TooLarge,
     UnsupportedMedia,
     Invalid(Vec<Violation>),
+    UnsupportedFormat(String),
     Challenge(String),
     Quota(String),
     RateLimited(Duration),
@@ -44,13 +47,17 @@ impl Error {
         match self {
             Error::BadRequest(_) => StatusCode::BAD_REQUEST,
             Error::Unauthorized => StatusCode::UNAUTHORIZED,
-            Error::Forbidden(_) | Error::Quota(_) => StatusCode::FORBIDDEN,
+            Error::Forbidden(_) | Error::Quota(_) | Error::AccountDeactivated => {
+                StatusCode::FORBIDDEN
+            }
             Error::NotFound => StatusCode::NOT_FOUND,
             Error::MethodNotAllowed => StatusCode::METHOD_NOT_ALLOWED,
-            Error::HandleTaken => StatusCode::CONFLICT,
+            Error::HandleTaken | Error::Duplicate(_) => StatusCode::CONFLICT,
             Error::TooLarge => StatusCode::PAYLOAD_TOO_LARGE,
             Error::UnsupportedMedia => StatusCode::UNSUPPORTED_MEDIA_TYPE,
-            Error::Invalid(_) | Error::Challenge(_) => StatusCode::UNPROCESSABLE_ENTITY,
+            Error::Invalid(_) | Error::UnsupportedFormat(_) | Error::Challenge(_) => {
+                StatusCode::UNPROCESSABLE_ENTITY
+            }
             Error::RateLimited(_) => StatusCode::TOO_MANY_REQUESTS,
             Error::Timeout => StatusCode::SERVICE_UNAVAILABLE,
             Error::Internal => StatusCode::INTERNAL_SERVER_ERROR,
@@ -65,10 +72,13 @@ impl Error {
             Error::Forbidden(_) => ("forbidden", "Not allowed"),
             Error::NotFound => ("not-found", "Not found"),
             Error::MethodNotAllowed => ("method-not-allowed", "Method not allowed"),
+            Error::AccountDeactivated => ("account-deactivated", "Account deactivated"),
             Error::HandleTaken => ("handle-taken", "Handle taken"),
+            Error::Duplicate(_) => ("duplicate", "Duplicate"),
             Error::TooLarge => ("payload-too-large", "Request too large"),
             Error::UnsupportedMedia => ("unsupported-media-type", "Unsupported media type"),
             Error::Invalid(_) => ("validation-failed", "Validation failed"),
+            Error::UnsupportedFormat(_) => ("unsupported-format", "Unsupported format"),
             Error::Challenge(_) => ("challenge-failed", "Challenge failed"),
             Error::Quota(_) => ("quota-exceeded", "Quota exceeded"),
             Error::RateLimited(_) => ("rate-limited", "Too many requests"),
@@ -80,11 +90,17 @@ impl Error {
     /// The `detail` member of the problem document: one sentence for the client.
     pub fn detail(&self) -> String {
         match self {
-            Error::BadRequest(d) | Error::Forbidden(d) | Error::Challenge(d) | Error::Quota(d) => {
-                d.clone()
-            }
+            Error::BadRequest(d)
+            | Error::Forbidden(d)
+            | Error::Challenge(d)
+            | Error::Quota(d)
+            | Error::UnsupportedFormat(d) => d.clone(),
             Error::Unauthorized => {
-                "Send the account token as `Authorization: Bearer <token>`.".to_owned()
+                "Sign in: send a valid access token as `Authorization: Bearer <token>`.".to_owned()
+            }
+            Error::AccountDeactivated => "This account is deactivated.".to_owned(),
+            Error::Duplicate(existing) => {
+                format!("The Den already has this exact document as {existing}.")
             }
             Error::NotFound => "There is nothing here.".to_owned(),
             Error::MethodNotAllowed => "This path doesn't take that method.".to_owned(),
@@ -110,8 +126,16 @@ impl Error {
             "status": self.status().as_u16(),
             "detail": self.detail(),
         });
-        if let (Error::Invalid(violations), Some(map)) = (self, doc.as_object_mut()) {
-            map.insert("errors".to_owned(), json!(violations));
+        if let Some(map) = doc.as_object_mut() {
+            match self {
+                Error::Invalid(violations) => {
+                    map.insert("errors".to_owned(), json!(violations));
+                }
+                Error::Duplicate(existing) => {
+                    map.insert("existing".to_owned(), json!(existing));
+                }
+                _ => {}
+            }
         }
         doc
     }
@@ -135,19 +159,12 @@ pub struct Pending(pub Error);
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
         let mut response = self.status().into_response();
-        match &self {
-            Error::RateLimited(wait) => {
-                response.headers_mut().insert(
-                    header::RETRY_AFTER,
-                    HeaderValue::from(retry_after(*wait).max(1)),
-                );
-            }
-            Error::Unauthorized => {
-                response
-                    .headers_mut()
-                    .insert(header::WWW_AUTHENTICATE, HeaderValue::from_static("Bearer"));
-            }
-            _ => {}
+        // `WWW-Authenticate` of a 401 names the public address, so the outer layer adds it.
+        if let Error::RateLimited(wait) = &self {
+            response.headers_mut().insert(
+                header::RETRY_AFTER,
+                HeaderValue::from(retry_after(*wait).max(1)),
+            );
         }
         response.extensions_mut().insert(Pending(self));
         response
@@ -168,6 +185,13 @@ mod tests {
             (Error::NotFound, 404, "not-found"),
             (Error::MethodNotAllowed, 405, "method-not-allowed"),
             (Error::HandleTaken, 409, "handle-taken"),
+            (Error::Duplicate("a/b".into()), 409, "duplicate"),
+            (Error::AccountDeactivated, 403, "account-deactivated"),
+            (
+                Error::UnsupportedFormat("x".into()),
+                422,
+                "unsupported-format",
+            ),
             (Error::TooLarge, 413, "payload-too-large"),
             (Error::UnsupportedMedia, 415, "unsupported-media-type"),
             (Error::invalid("/a", "x"), 422, "validation-failed"),
@@ -197,9 +221,10 @@ mod tests {
     }
 
     #[test]
-    fn unauthorized_challenges_with_bearer() {
-        let response = Error::Unauthorized.into_response();
-        assert_eq!(response.headers()[header::WWW_AUTHENTICATE], "Bearer");
+    fn a_duplicate_names_the_existing_item() {
+        let doc = Error::Duplicate("a-b-c/x".into()).problem("https://den.test");
+        assert_eq!(doc["existing"], "a-b-c/x");
+        assert!(doc["detail"].as_str().unwrap().contains("a-b-c/x"));
     }
 
     #[test]

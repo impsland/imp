@@ -21,19 +21,19 @@ struct ServerCard: View {
     }
 
     var body: some View {
-        Card(kind == .den ? "servers.den.title" : "servers.hop.title", icon: kind.symbol,
-             info: kind == .den ? "servers.den.about" : "servers.hop.about") {
+        Card("servers.hop.title", icon: kind.symbol,
+             info: "servers.hop.about") {
             HStack(spacing: Spacing.cozy) {
                 stateIcon
                 Button { check() } label: { StatefulLabel("common.check", symbol: "checkmark.circle", state: checkState) }
                     .buttonStyle(.imp(.secondary, small: true)).disabled(!setting.canCheck)
             }
         } content: {
-            ImpSegmented(kind == .den ? "servers.den.title" : "servers.hop.title",
+            ImpSegmented("servers.hop.title",
                          selection: Binding(get: { setting.choice }, set: { text = setting.pick($0) }),
                          options: ServerChoice.allCases, title: \.title, symbol: \.symbol, fills: true)
             if setting.showsAddress {
-                TextField(String(kind == .den ? "den.example.com" : "hop.example.com:4677"),
+                TextField(String("hop.example.com:4677"),
                           text: Binding(get: { setting.text }, set: { setting.edit($0); text = $0 }))
                     .impField(mono: true).autocorrectionDisabled()
                     .focused($typing)
@@ -61,7 +61,7 @@ struct ServerCard: View {
 
     private var appearance: (String, Color, String) {
         switch setting.status {
-        case .off: ("circle", Tone.muted, String(localized: kind == .den ? "servers.den.off_note" : "servers.hop.off_note"))
+        case .off: ("circle", Tone.muted, String(localized: "servers.hop.off_note"))
         case .problem(let problem): ("exclamationmark.triangle.fill", Tone.warnText, problem)
         case .ready: ("circle.fill", Tone.good, String(localized: setting.choice == .imps ? "servers.preset.imp_note" : "servers.state_unchecked"))
         case .checking: ("hourglass", Tone.muted, String(localized: "servers.state_checking"))
@@ -73,7 +73,7 @@ struct ServerCard: View {
     /// Why a check failed. On This computer it is almost always that nothing runs the server here yet.
     private var failure: String {
         guard ServerKind.isOnThisDevice(setting.text) else { return String(localized: "servers.state_fail") }
-        return words("servers.state_fail_local", String(localized: kind == .den ? "servers.den.title" : "servers.hop.title"))
+        return words("servers.state_fail_local", String(localized: "servers.hop.title"))
     }
 
     /// Check carries the result of the last check on its own icon.
@@ -97,7 +97,7 @@ struct ServerCard: View {
 }
 
 extension ServerKind {
-    var symbol: String { self == .den ? "tray.full.fill" : "arrow.triangle.swap" }
+    var symbol: String { "arrow.triangle.swap" }
 }
 
 extension ServerChoice {
@@ -115,12 +115,5 @@ extension ServerChoice {
         case .custom: String(localized: "servers.preset.custom")
         case .off: String(localized: "servers.preset.off")
         }
-    }
-}
-
-/// What a screen that needs the Den says while there is none: no blank screen and no spinner.
-struct DenNeeded: View {
-    var body: some View {
-        StatusText(text: "servers.den.needed", symbol: "exclamationmark.triangle.fill", color: Tone.warnText)
     }
 }

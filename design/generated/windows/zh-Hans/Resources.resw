@@ -11,18 +11,13 @@
   <data name="anim.help.icon" xml:space="preserve"><value>这个动作在列表里显示的图案。</value><comment>Help of the move icon.</comment></data>
   <data name="anim.help.length" xml:space="preserve"><value>这个动作会持续多久。</value><comment>Help of the move length.</comment></data>
   <data name="anim.help.name" xml:space="preserve"><value>一个名字，方便以后找到它。</value><comment>Help of the move name.</comment></data>
-  <data name="anim.help.plays" xml:space="preserve"><value>这个动作什么时候出现。</value><comment>Help of when a move plays.</comment></data>
   <data name="anim.help.shape" xml:space="preserve"><value>把身体压扁或拉长，像个球。</value><comment>Help of the shape setting.</comment></data>
   <data name="anim.help.symbol" xml:space="preserve"><value>在 Imp 旁边冒出来的小图案。</value><comment>Help of the symbol setting.</comment></data>
   <data name="anim.help.tilt" xml:space="preserve"><value>Imp 向一侧倾斜多少。</value><comment>Help of the tilt setting.</comment></data>
-  <data name="animations.built_in" xml:space="preserve"><value>内置项</value><comment>Heading of the five bundled animations.</comment></data>
   <data name="animations.find" xml:space="preserve"><value>浏览</value><comment>Button.</comment></data>
-  <data name="animations.from_den" xml:space="preserve"><value>Den</value><comment>Heading of animations that came from The Den.</comment></data>
-  <data name="animations.needs_den" xml:space="preserve"><value>设置 Den 后可以找到更多。</value><comment>Shown when The Den is not set up.</comment></data>
+  <data name="animations.from_den" xml:space="preserve"><value>自制</value><comment>Heading of the animations you made or added.</comment></data>
   <data name="animations.new" xml:space="preserve"><value>新建</value><comment>Button and sheet title: make a new animation of your own.</comment></data>
-  <data name="animations.restore" xml:space="preserve"><value>恢复</value><comment>Button.</comment></data>
   <data name="animations.search" xml:space="preserve"><value>搜索</value><comment>Placeholder of the search field on the Animations page.</comment></data>
-  <data name="animations.title" xml:space="preserve"><value>动画效果</value><comment>Group title.</comment></data>
   <data name="app.language" xml:space="preserve"><value>界面语言</value><comment>Row.</comment></data>
   <data name="app.login" xml:space="preserve"><value>自动启动</value><comment>Switch (desktop).</comment></data>
   <data name="app.login_note" xml:space="preserve"><value>登录时自动打开 Imp。</value><comment>Note under the switch.</comment></data>
@@ -98,14 +93,6 @@
   <data name="common.step" xml:space="preserve"><value>第 {number} 步，共 {total} 步，{name}</value><comment>Screen reader name of one step of a short flow. The name is the step's own title.</comment></data>
   <data name="common.try_again" xml:space="preserve"><value>重新尝试</value><comment>Button that repeats something that failed.</comment></data>
   <data name="common.undo" xml:space="preserve"><value>撤销</value><comment>Button on a bar that undoes what just happened.</comment></data>
-  <data name="den.help.kind" xml:space="preserve"><value>选择要找哪一类东西。</value><comment>Help of the Den kind.</comment></data>
-  <data name="den.help.public" xml:space="preserve"><value>任何人都可以添加。聊天、记忆和密钥永远不会包含在内。</value><comment>Help of the Den public note.</comment></data>
-  <data name="den.help.search" xml:space="preserve"><value>输入一个词来查找内容。</value><comment>Help of the Den search.</comment></data>
-  <data name="den.help.server" xml:space="preserve"><value>大家分享 Imp、动画、触发器和工具的地方。</value><comment>Help of the Den server.</comment></data>
-  <data name="den.help.slug" xml:space="preserve"><value>网址里用的短名字。用小写字母和短横线。</value><comment>Help of the Den name.</comment></data>
-  <data name="den.help.sort" xml:space="preserve"><value>先显示最受欢迎的，或最新的。</value><comment>Help of the Den sort.</comment></data>
-  <data name="den.help.summary" xml:space="preserve"><value>用一句话让大家知道这是什么。</value><comment>Help of the Den summary.</comment></data>
-  <data name="den.help.tags" xml:space="preserve"><value>帮大家找到它的词，用逗号分开。</value><comment>Help of the Den tags.</comment></data>
   <data name="devices.copy_link.help" xml:space="preserve"><value>适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。</value><comment>Help of Copy Link in Link a device.</comment></data>
   <data name="devices.empty" xml:space="preserve"><value>还没有设备。连接一台 iPhone 或另一台 Mac，你的 Imp 就能去做客。</value><comment>Empty state of the devices card.</comment></data>
   <data name="devices.list.info" xml:space="preserve"><value>与这台设备连接的设备。“我的”让设备可以代表你行事。</value><comment>Help on the Devices card.</comment></data>
@@ -274,7 +261,7 @@
   <data name="imp_settings.summary.brain_set" xml:space="preserve"><value>{service}，{model}</value><comment>Summary line of the Brain row: service and model.</comment></data>
   <data name="imp_settings.summary.look" xml:space="preserve"><value>颜色与大小</value><comment>Summary line of the Look row.</comment></data>
   <data name="imp_settings.summary.moves" xml:space="preserve"><value>动画效果</value><comment>Summary line of the Moves row.</comment></data>
-  <data name="imp_settings.summary.personality" xml:space="preserve"><value>名字与声音</value><comment>Summary line of the Personality row.</comment></data>
+  <data name="imp_settings.summary.personality" xml:space="preserve"><value>名字与人设</value><comment>Summary line of the Personality row.</comment></data>
   <data name="imp_settings.summary.tools" xml:space="preserve"><value>已开启 {on}/{total}</value><comment>Summary line of the Tools row.</comment></data>
   <data name="imp_settings.summary.triggers.other" xml:space="preserve"><value>{count} 个触发器</value><comment>Summary line of the Triggers row.</comment></data>
   <data name="imp_settings.this_imp" xml:space="preserve"><value>此 Imp</value><comment>Stands in for the Imp's name while its name is empty.</comment></data>
@@ -284,7 +271,6 @@
   <data name="kit.help.paste" xml:space="preserve"><value>粘贴一个套件、网址或 imp:// 链接，或放入文件。你会先查看。</value><comment>Help of the kit paste field.</comment></data>
   <data name="kit.help.skipped" xml:space="preserve"><value>套件里这台 Mac 用不了的东西，所以被略过。</value><comment>Help of skipped items.</comment></data>
   <data name="kit.help.tools" xml:space="preserve"><value>工具可以在你的 Mac 上运行东西。请先看一看。</value><comment>Help of the kit tools.</comment></data>
-  <data name="kit.origin.starter" xml:space="preserve"><value>Imp 自带入门套件</value><comment>Where a kit in the kit review came from: the starter kit that ships with Imp.</comment></data>
   <data name="link.localnet.off" xml:space="preserve"><value>Imp 的本地网络已被关闭</value><comment>Status line when Local Network access is off for Imp.</comment></data>
   <data name="link.localnet.open" xml:space="preserve"><value>打开设置</value><comment>Button on the iPhone that opens the app's page in Settings.</comment></data>
   <data name="link.localnet.open_mac" xml:space="preserve"><value>打开“系统设置”</value><comment>Button on the Mac that opens System Settings, Local Network.</comment></data>
@@ -369,24 +355,14 @@
   <data name="menu.imp.type_help" xml:space="preserve"><value>给 {name} 打字</value><comment>Tooltip of the Type button in an Imp's menu.</comment></data>
   <data name="menu.imp.visit_none" xml:space="preserve"><value>去别的设备做客吧</value><comment>Greyed Imp menu item when no other device is around.</comment></data>
   <data name="menu.imp.visit_tip" xml:space="preserve"><value>{name} 去 {device} 做客，还可以回来。</value><comment>Tip on the Imp menu item that sends it to visit a device.</comment></data>
-  <data name="moves.builtin" xml:space="preserve"><value>动作</value><comment>Row: change a built-in move.</comment></data>
-  <data name="moves.change" xml:space="preserve"><value>更改</value><comment>Button: change a built-in move.</comment></data>
   <data name="moves.empty" xml:space="preserve"><value>还没有特别的动作。</value><comment>Empty state of the moves panel.</comment></data>
-  <data name="moves.follow_how" xml:space="preserve"><value>跟随</value><comment>Row: how it follows the cursor.</comment></data>
-  <data name="moves.help.builtin" xml:space="preserve"><value>选一个所有 Imp 都有的动作，为这个 Imp 做一个专属版本。</value><comment>Help of the built-in moves row.</comment></data>
-  <data name="moves.help.follow" xml:space="preserve"><value>选择你移动鼠标指针时这个 Imp 做什么：不动、看着它，或跟着它跑。</value><comment>Help of the follow section.</comment></data>
-  <data name="moves.help.follow_how" xml:space="preserve"><value>关：它不动。眼睛：只有眼睛看着指针。蹦跳：它跳着追指针。滑行：它滑着追指针。</value><comment>Help of the follow mode picker.</comment></data>
   <data name="moves.help.own" xml:space="preserve"><value>只为这个 Imp 做的动作。它们会代替共用的动作。</value><comment>Help of the own animations list.</comment></data>
-  <data name="moves.help.speed" xml:space="preserve"><value>它追指针有多快。只对蹦跳和滑行有用。</value><comment>Help of the follow speed slider.</comment></data>
-  <data name="moves.title" xml:space="preserve"><value>动作</value><comment>Panel title.</comment></data>
   <data name="personality.about" xml:space="preserve"><value>擅长什么</value><comment>Field label: what the Imp is good at, which other Imps read to know whom to ask.</comment></data>
   <data name="personality.about_hint" xml:space="preserve"><value>上网查资料、修代码……</value><comment>Placeholder of the field about what the Imp is good at.</comment></data>
   <data name="personality.help.about" xml:space="preserve"><value>一两行字。其他 Imp 会读它，来决定什么事该问谁。</value><comment>Help of the field about what the Imp is good at.</comment></data>
   <data name="personality.help.name" xml:space="preserve"><value>你怎么称呼这个 Imp。叫它的名字，它就会回答。</value><comment>Help of the name field.</comment></data>
   <data name="personality.help.persona" xml:space="preserve"><value>告诉它要做谁，比如和气的海盗或安静的帮手。它就会那样说话。</value><comment>Help of the persona field.</comment></data>
   <data name="personality.help.rules" xml:space="preserve"><value>告诉它怎么回答的隐藏规则。大多数人从不修改。</value><comment>Help of the reply rules switch.</comment></data>
-  <data name="personality.help.voice" xml:space="preserve"><value>这个 Imp 大声说话时，你的屏幕上会出现什么。</value><comment>Help of the voice section.</comment></data>
-  <data name="personality.help.voice_look" xml:space="preserve"><value>选择它说话时显示的画面：发光是发亮的边，烟雾是一团烟，两者是两个都显示，播放器是带播放和暂停的小播放器。</value><comment>Help of the voice look picker.</comment></data>
   <data name="personality.name" xml:space="preserve"><value>名称</value><comment>Field label.</comment></data>
   <data name="personality.name_empty" xml:space="preserve"><value>给你的 Imp 起个名字吧。</value><comment>Error when the name is empty.</comment></data>
   <data name="personality.name_hint" xml:space="preserve"><value>这是 {name} 个性的一部分，随时可以修改。</value><comment>Hint under the name field.</comment></data>
@@ -396,8 +372,6 @@
   <data name="personality.rules.edit" xml:space="preserve"><value>编辑…</value><comment>Button that opens the reply rules in a sheet.</comment></data>
   <data name="personality.rules.own" xml:space="preserve"><value>自定义</value><comment>State of the reply rules when the user changed them.</comment></data>
   <data name="personality.title" xml:space="preserve"><value>个性设置</value><comment>Panel title.</comment></data>
-  <data name="personality.voice" xml:space="preserve"><value>声音</value><comment>Field label.</comment></data>
-  <data name="personality.voice_look" xml:space="preserve"><value>显示为</value><comment>Row: how the voice shows.</comment></data>
   <data name="phone.about.title" xml:space="preserve"><value>关于</value><comment>Card title: about the app.</comment></data>
   <data name="phone.app.speech" xml:space="preserve"><value>语言与语音</value><comment>Card title in the iPhone's App settings: the app's language and whether voices play by themselves.</comment></data>
   <data name="phone.appearance.auto" xml:space="preserve"><value>自动</value><comment>Appearance choice: follow the system.</comment></data>
@@ -527,11 +501,6 @@
   <data name="scope.only" xml:space="preserve"><value>仅 {name}</value><comment>Under a trigger or animation only this Imp has.</comment></data>
   <data name="servers.address" xml:space="preserve"><value>地址</value><comment>Field label.</comment></data>
   <data name="servers.address_hint" xml:space="preserve"><value>以 https:// 开头</value><comment>Hint in the address field.</comment></data>
-  <data name="servers.den.about" xml:space="preserve"><value>Imp 在这里共享动画、触发器和 Imp。共享的内容是公开的。</value><comment>Short explanation of The Den.</comment></data>
-  <data name="servers.den.in_use" xml:space="preserve"><value>正在使用 {address} 上的 Den</value><comment>Shows which Den is in use.</comment></data>
-  <data name="servers.den.needed" xml:space="preserve"><value>这需要有 Den。请到设置里添加。</value><comment>Shown on a screen that needs The Den when none is set.</comment></data>
-  <data name="servers.den.off_note" xml:space="preserve"><value>在 Den 中的分享和查找已关闭。</value><comment>Under Off on the Den card.</comment></data>
-  <data name="servers.den.title" xml:space="preserve"><value>Den</value><comment>Section title.</comment></data>
   <data name="servers.hop.about" xml:space="preserve"><value>让你的设备能够找到彼此，只转发加密数据。</value><comment>Short explanation of The Hop.</comment></data>
   <data name="servers.hop.in_use" xml:space="preserve"><value>正在使用 {address} 上的 Hop</value><comment>Shows which Hop is in use.</comment></data>
   <data name="servers.hop.needed" xml:space="preserve"><value>随时随地连接需要 Hop。请在“设置”的“设备”里添加。同一网络里的设备仍然可以找到彼此。</value><comment>Shown on a screen that needs The Hop when none is set.</comment></data>
@@ -544,7 +513,7 @@
   <data name="servers.preset.off" xml:space="preserve"><value>关闭</value><comment>Server choice: no server.</comment></data>
   <data name="servers.state_checking" xml:space="preserve"><value>正在检查…</value><comment>State while a server is checked.</comment></data>
   <data name="servers.state_fail" xml:space="preserve"><value>无法连接上，请检查地址。</value><comment>State of a server that does not answer.</comment></data>
-  <data name="servers.state_fail_local" xml:space="preserve"><value>此电脑上没有运行 {server}。请先启动它。</value><comment>A check of a server set to This computer found nothing answering there. {server} is The Den or The Hop.</comment></data>
+  <data name="servers.state_fail_local" xml:space="preserve"><value>此电脑上没有运行 {server}。请先启动它。</value><comment>A check of a server set to This computer found nothing answering there. {server} is The Hop.</comment></data>
   <data name="servers.state_help" xml:space="preserve"><value>{address}：{state}</value><comment>Help of the status dot of a server: its address and state.</comment></data>
   <data name="servers.state_ok" xml:space="preserve"><value>可以连接</value><comment>State of a server that answers.</comment></data>
   <data name="servers.state_unchecked" xml:space="preserve"><value>还没有检查过</value><comment>Under the address of a server that is set but was not checked yet.</comment></data>
@@ -555,7 +524,6 @@
   <data name="settings.app.control_ink.white" xml:space="preserve"><value>白色</value><comment>Choice: white on coloured controls.</comment></data>
   <data name="settings.app.look.info" xml:space="preserve"><value>应用看起来的样子。</value><comment>Settings text.</comment></data>
   <data name="settings.app.system.info" xml:space="preserve"><value>应用如何启动，以及使用哪种语言。</value><comment>Settings text.</comment></data>
-  <data name="settings.attention.den_off" xml:space="preserve"><value>Den 尚未设置。</value><comment>Item.</comment></data>
   <data name="settings.attention.device_offline" xml:space="preserve"><value>{device} 已离线。</value><comment>Item: a linked device cannot be reached.</comment></data>
   <data name="settings.attention.hop_off" xml:space="preserve"><value>Hop 尚未设置。</value><comment>Item.</comment></data>
   <data name="settings.attention.imp_no_brain" xml:space="preserve"><value>{name} 还没有大脑。</value><comment>Item: an Imp sleeps.</comment></data>
@@ -621,7 +589,6 @@
   <data name="settings.group.talking" xml:space="preserve"><value>对话</value><comment>Settings text.</comment></data>
   <data name="settings.group.voice" xml:space="preserve"><value>语音</value><comment>Group title. It was called Talking.</comment></data>
   <data name="settings.map.brains" xml:space="preserve"><value>大脑</value><comment>Node: the connected AI services.</comment></data>
-  <data name="settings.map.den" xml:space="preserve"><value>Den</value><comment>Node: The Den.</comment></data>
   <data name="settings.map.hop" xml:space="preserve"><value>Hop</value><comment>Node: The Hop.</comment></data>
   <data name="settings.map.hop_local" xml:space="preserve"><value>这台电脑上的 Hop</value><comment>Node: a Hop that runs on this computer.</comment></data>
   <data name="settings.map.not_seen" xml:space="preserve"><value>彼此暂时看不到</value><comment>Dashed line between two devices that cannot reach each other.</comment></data>
@@ -671,8 +638,6 @@
   <data name="settings.tool.headers.info" xml:space="preserve"><value>随每个请求发送的额外内容，比如口令。</value><comment>Settings text.</comment></data>
   <data name="settings.tool.name.info" xml:space="preserve"><value>你给这个工具取的名字。</value><comment>Settings text.</comment></data>
   <data name="settings.tool.variables.info" xml:space="preserve"><value>这个工具运行时需要的秘密值。</value><comment>Settings text.</comment></data>
-  <data name="share.den" xml:space="preserve"><value>Den</value><comment>Share sheet choice: publish in The Den. What is shared there is public.</comment></data>
-  <data name="share.den_needs_setup" xml:space="preserve"><value>先设置 Den，才能在那里共享。</value><comment>Shown when The Den is not set up.</comment></data>
   <data name="share.file" xml:space="preserve"><value>文件</value><comment>Share sheet choice: a kit file.</comment></data>
   <data name="share.note" xml:space="preserve"><value>会共享它的外观、个性、工具和触发器。密钥、记忆和聊天永远不会共享。</value><comment>Note on the share sheet about what travels.</comment></data>
   <data name="share.title" xml:space="preserve"><value>共享 {name}</value><comment>Title of the share sheet.</comment></data>
@@ -685,7 +650,6 @@
   <data name="state.offline.imp" xml:space="preserve"><value>{name} 连不上它的大脑。重新联网后它就会醒来。</value><comment>Shown for one Imp whose Brain is out of reach.</comment></data>
   <data name="state.offline.note" xml:space="preserve"><value>使用本机模型的 Imp 仍然可以工作，其他的会等你重新联网。</value><comment>Note in the offline state.</comment></data>
   <data name="state.offline.title" xml:space="preserve"><value>你现在已离线</value><comment>Title of the offline state.</comment></data>
-  <data name="state.servers.set_up_den" xml:space="preserve"><value>设置 Den</value><comment>Button.</comment></data>
   <data name="state.servers.set_up_hop" xml:space="preserve"><value>设置 Hop</value><comment>Button.</comment></data>
   <data name="state.sleeping.action" xml:space="preserve"><value>给 {name} 一个大脑</value><comment>Button in the sleeping state.</comment></data>
   <data name="state.sleeping.note" xml:space="preserve"><value>没有大脑就无法思考。它的触发器仍然有效。</value><comment>Note in the sleeping state.</comment></data>
@@ -712,6 +676,9 @@
   <data name="tools.mcp" xml:space="preserve"><value>MCP</value><comment>Badge for a tool group that comes from an MCP server.</comment></data>
   <data name="tools.mcp_connected" xml:space="preserve"><value>已连接</value><comment>Status of an MCP server.</comment></data>
   <data name="tools.mcp_failed" xml:space="preserve"><value>启动失败</value><comment>Status of an MCP server.</comment></data>
+  <data name="tools.mcp_needs_signin" xml:space="preserve"><value>需要登录</value><comment>Status of an MCP server that asks the person to sign in.</comment></data>
+  <data name="tools.mcp_sign_in" xml:space="preserve"><value>登录</value><comment>Button on an MCP server in the Tools list: opens the server's sign-in page.</comment></data>
+  <data name="tools.mcp_sign_out" xml:space="preserve"><value>退出登录</value><comment>Button on an MCP server in the Tools list: forgets the sign-in.</comment></data>
   <data name="tools.mcp_starting" xml:space="preserve"><value>正在启动</value><comment>Status of an MCP server.</comment></data>
   <data name="tools.new_server" xml:space="preserve"><value>新建</value><comment>Title of a tool server that has no name or address yet.</comment></data>
   <data name="tools.optional" xml:space="preserve"><value>可选项</value><comment>Placeholder of a field that may be left empty.</comment></data>
@@ -725,33 +692,83 @@
   <data name="tools.shared_setup" xml:space="preserve"><value>使用这个工具的每个 Imp 都会得到这套设置。每个 Imp 各自开启或关闭它。</value><comment>In the extra tool editor: its setup is shared, while each Imp switches it on or off for itself.</comment></data>
   <data name="tools.title" xml:space="preserve"><value>工具</value><comment>Panel title.</comment></data>
   <data name="triggers.add" xml:space="preserve"><value>添加</value><comment>Button that adds a trigger.</comment></data>
+  <data name="triggers.cond.add" xml:space="preserve"><value>添加</value><comment>Menu title that adds a condition.</comment></data>
+  <data name="triggers.cond.always" xml:space="preserve"><value>总是</value><comment>Menu title when a trigger has no conditions.</comment></data>
+  <data name="triggers.cond.remove" xml:space="preserve"><value>移除此条件</value><comment>Help of the button that removes a condition.</comment></data>
   <data name="triggers.delete" xml:space="preserve"><value>删除这个触发器</value><comment>Action on a trigger.</comment></data>
   <data name="triggers.delete_every" xml:space="preserve"><value>为所有 Imp 删除</value><comment>Destructive action on a shared trigger: delete it for every Imp.</comment></data>
   <data name="triggers.delete_every.title" xml:space="preserve"><value>为所有 Imp 删除“{name}”？</value><comment>Confirmation before deleting a shared trigger for every Imp.</comment></data>
   <data name="triggers.edit" xml:space="preserve"><value>编辑触发器</value><comment>Action on a trigger.</comment></data>
   <data name="triggers.empty" xml:space="preserve"><value>还没有触发器。添加一个，{name} 就会自己行动。</value><comment>Empty state of the triggers list.</comment></data>
-  <data name="triggers.help.do" xml:space="preserve"><value>触发时 Imp 要做什么。</value><comment>Help of the trigger action.</comment></data>
+  <data name="triggers.f.do" xml:space="preserve"><value>执行</value><comment>Trigger editor row: the steps.</comment></data>
+  <data name="triggers.f.for" xml:space="preserve"><value>适用于</value><comment>Trigger editor row: which Imp.</comment></data>
+  <data name="triggers.f.only_if" xml:space="preserve"><value>仅当</value><comment>Trigger editor row: the conditions.</comment></data>
+  <data name="triggers.f.when" xml:space="preserve"><value>当</value><comment>Trigger editor row: the event.</comment></data>
+  <data name="triggers.follow" xml:space="preserve"><value>跟随</value><comment>Row of the trigger editor: how the Imp follows the cursor.</comment></data>
+  <data name="triggers.gestures" xml:space="preserve"><value>手势</value><comment>Event submenu: pointer gestures on the Imp.</comment></data>
+  <data name="triggers.group.mac" xml:space="preserve"><value>Mac</value><comment>Event menu group: things the Mac does.</comment></data>
+  <data name="triggers.group.time" xml:space="preserve"><value>时间</value><comment>Event menu group: things about time.</comment></data>
+  <data name="triggers.group.you" xml:space="preserve"><value>你</value><comment>Event menu group: things the person does.</comment></data>
+  <data name="triggers.help.do" xml:space="preserve"><value>触发时 Imp 按顺序执行的步骤。</value><comment>Help of the trigger action.</comment></data>
   <data name="triggers.help.for" xml:space="preserve"><value>由哪个 Imp 来做。除非选择所有 Imp，这里的更改只对这个 Imp 生效。</value><comment>Help for the For choice in the trigger editor.</comment></data>
-  <data name="triggers.help.input" xml:space="preserve"><value>触发时 Imp 能看到什么，比如剪贴板。</value><comment>Help of the trigger input.</comment></data>
-  <data name="triggers.help.instruction" xml:space="preserve"><value>用你自己的话告诉 Imp 要做什么。</value><comment>Help of the instruction field.</comment></data>
   <data name="triggers.help.list" xml:space="preserve"><value>触发器会在发生某件事时自动叫醒 Imp，比如到了某个时间或电量低。</value><comment>Help of the triggers list.</comment></data>
   <data name="triggers.help.name" xml:space="preserve"><value>一个名字，方便以后找到它。</value><comment>Help of the trigger name.</comment></data>
-  <data name="triggers.help.starter" xml:space="preserve"><value>Imp 自带的触发器：点击、入睡和醒来。添加之前你会先看到它们。</value><comment>Help for the starter kit button.</comment></data>
+  <data name="triggers.help.only_if" xml:space="preserve"><value>触发的那一刻所有条件都必须满足，比如电量低或时间很晚。</value><comment>Help of the conditions row.</comment></data>
+  <data name="triggers.help.sheet" xml:space="preserve"><value>事件发生且所有条件都满足时，按顺序执行各个步骤。</value><comment>Info of the trigger editor.</comment></data>
+  <data name="triggers.help.speed" xml:space="preserve"><value>它追指针有多快。只对蹦跳和滑行有用。</value><comment>Help of the follow speed slider of a follow trigger.</comment></data>
   <data name="triggers.help.when" xml:space="preserve"><value>要发生什么才会触发，比如时间、某个应用或电量低。</value><comment>Help of the trigger conditions.</comment></data>
-  <data name="triggers.instruction" xml:space="preserve"><value>指令</value><comment>Field: the instruction.</comment></data>
+  <data name="triggers.hint.animation" xml:space="preserve"><value>要在某个事件时播放它，请添加触发器。</value><comment>Hint under an animation: it plays on an event only through a trigger.</comment></data>
+  <data name="triggers.hint.button" xml:space="preserve"><value>添加触发器</value><comment>Button that opens a new trigger that plays the animation.</comment></data>
   <data name="triggers.just_for" xml:space="preserve"><value>只给 {name} 用</value><comment>Menu item on a shared trigger: make this Imp's own version. The other Imps keep the shared one.</comment></data>
   <data name="triggers.new" xml:space="preserve"><value>新建</value><comment>Title of the sheet that adds a trigger.</comment></data>
+  <data name="triggers.open" xml:space="preserve"><value>打开</value><comment>Name of the open-something choice for screen readers.</comment></data>
+  <data name="triggers.open.chat" xml:space="preserve"><value>聊天</value><comment>Open step: the chat.</comment></data>
+  <data name="triggers.open.listen" xml:space="preserve"><value>聆听</value><comment>Open step: listening.</comment></data>
+  <data name="triggers.open.settings" xml:space="preserve"><value>设置</value><comment>Open step: settings.</comment></data>
+  <data name="triggers.open.text_box" xml:space="preserve"><value>文本框</value><comment>Open step: the text box.</comment></data>
+  <data name="triggers.problem.ask" xml:space="preserve"><value>请写下 Imp 该做什么，或附带剪贴板。</value><comment>Problem: an ask step with nothing to ask.</comment></data>
+  <data name="triggers.problem.keys" xml:space="preserve"><value>请录制触发它的按键。</value><comment>Problem: a keys trigger has no keys.</comment></data>
+  <data name="triggers.problem.missing" xml:space="preserve"><value>这个 Imp 没有名为“{name}”的动画。</value><comment>Problem: a step names an animation the Imp does not have.</comment></data>
+  <data name="triggers.problem.no_steps" xml:space="preserve"><value>至少添加一个步骤。</value><comment>Problem: no steps.</comment></data>
+  <data name="triggers.problem.play" xml:space="preserve"><value>请选择要播放的动画。</value><comment>Problem: a play step with no animation.</comment></data>
+  <data name="triggers.problem.say" xml:space="preserve"><value>请写下 Imp 要说的话。</value><comment>Problem: a say step with no text.</comment></data>
+  <data name="triggers.problem.too_many" xml:space="preserve"><value>一个触发器最多有五个步骤。</value><comment>Problem: too many steps.</comment></data>
   <data name="triggers.scope.just" xml:space="preserve"><value>仅 {name}</value><comment>Choice in the trigger editor: the change is for this Imp only.</comment></data>
   <data name="triggers.scope.note_every" xml:space="preserve"><value>会对所有 Imp 生效。</value><comment>Below the For choice when the change goes to every Imp.</comment></data>
   <data name="triggers.scope.note_version" xml:space="preserve"><value>只为 {name} 保存一个版本。其他 Imp 保留共享的那个。</value><comment>Below the For choice when a shared trigger is saved for one Imp.</comment></data>
-  <data name="triggers.sentence" xml:space="preserve"><value>当{event}时，{action}。</value><comment>One trigger as a sentence. The event and the action are short phrases.</comment></data>
   <data name="triggers.share_every" xml:space="preserve"><value>共享给所有</value><comment>Menu item on this Imp's trigger: share it with every Imp.</comment></data>
-  <data name="triggers.starter" xml:space="preserve"><value>入门套件</value><comment>Button in the empty triggers list: review and add the starter kit.</comment></data>
+  <data name="triggers.step.add" xml:space="preserve"><value>添加步骤</value><comment>Menu title that adds a step.</comment></data>
+  <data name="triggers.step.aloud" xml:space="preserve"><value>朗读</value><comment>Toggle of a say step: also speak it.</comment></data>
+  <data name="triggers.step.anim_none" xml:space="preserve"><value>默认方式</value><comment>Animation menu of a sleep or wake step: no animation.</comment></data>
+  <data name="triggers.step.ask_ph" xml:space="preserve"><value>它该做什么？用你自己的话说。</value><comment>Placeholder of the instruction of an ask step.</comment></data>
+  <data name="triggers.step.clipboard" xml:space="preserve"><value>附带剪贴板</value><comment>Toggle of an ask step: hand over the clipboard.</comment></data>
+  <data name="triggers.step.down" xml:space="preserve"><value>下移</value><comment>Help of the button that moves a step down.</comment></data>
+  <data name="triggers.step.no_animations" xml:space="preserve"><value>还没有动画</value><comment>Animation menu when the Imp has none.</comment></data>
+  <data name="triggers.step.pick_animation" xml:space="preserve"><value>选择动画</value><comment>Animation menu when none is picked yet.</comment></data>
+  <data name="triggers.step.remove" xml:space="preserve"><value>移除步骤</value><comment>Help of the button that removes a step.</comment></data>
+  <data name="triggers.step.say_ph" xml:space="preserve"><value>它说的话</value><comment>Placeholder of the text of a say step.</comment></data>
+  <data name="triggers.step.speed" xml:space="preserve"><value>速度</value><comment>Label of the follow speed.</comment></data>
+  <data name="triggers.step.up" xml:space="preserve"><value>上移</value><comment>Help of the button that moves a step up.</comment></data>
   <data name="triggers.switch" xml:space="preserve"><value>触发器：{sentence}</value><comment>Screen reader name of a trigger switch.</comment></data>
   <data name="triggers.title" xml:space="preserve"><value>触发器</value><comment>Panel title.</comment></data>
   <data name="triggers.use_shared" xml:space="preserve"><value>使用共享</value><comment>Button that removes this Imp's version of a shared trigger, so the shared one applies again.</comment></data>
   <data name="triggers.use_shared.message" xml:space="preserve"><value>只属于 {name} 的版本将被删除。</value><comment>Under the confirmation: the Imp's own version is removed.</comment></data>
   <data name="triggers.use_shared.title" xml:space="preserve"><value>重新使用共享的“{name}”？</value><comment>Confirmation before removing this Imp's version of a shared trigger.</comment></data>
+  <data name="triggers.v.any_app" xml:space="preserve"><value>任何应用</value><comment>Placeholder of the app field.</comment></data>
+  <data name="triggers.v.asleep" xml:space="preserve"><value>睡着</value><comment>Condition: the Imp is asleep.</comment></data>
+  <data name="triggers.v.at_once" xml:space="preserve"><value>立即</value><comment>Near event: no wait.</comment></data>
+  <data name="triggers.v.awake" xml:space="preserve"><value>醒着</value><comment>Condition: the Imp is awake.</comment></data>
+  <data name="triggers.v.choice" xml:space="preserve"><value>选项</value><comment>Name of a two-way choice for screen readers.</comment></data>
+  <data name="triggers.v.clicks" xml:space="preserve"><value>点击次数</value><comment>Name of the clicks choice for screen readers.</comment></data>
+  <data name="triggers.v.comes_online" xml:space="preserve"><value>恢复</value><comment>Network event: comes back.</comment></data>
+  <data name="triggers.v.goes_offline" xml:space="preserve"><value>断开</value><comment>Network event: goes away.</comment></data>
+  <data name="triggers.v.offline" xml:space="preserve"><value>离线</value><comment>Network condition: offline.</comment></data>
+  <data name="triggers.v.on_battery" xml:space="preserve"><value>使用电池</value><comment>Charger condition: on battery.</comment></data>
+  <data name="triggers.v.on_charger" xml:space="preserve"><value>正在充电</value><comment>Charger condition: plugged in.</comment></data>
+  <data name="triggers.v.online" xml:space="preserve"><value>在线</value><comment>Network condition: online.</comment></data>
+  <data name="triggers.v.pick_app" xml:space="preserve"><value>选择已打开的应用</value><comment>Help of the open apps menu.</comment></data>
+  <data name="triggers.v.plugged" xml:space="preserve"><value>接上电源</value><comment>Charger event: plugged in.</comment></data>
+  <data name="triggers.v.unplugged" xml:space="preserve"><value>拔掉电源</value><comment>Charger event: unplugged.</comment></data>
   <data name="voice.autoplay" xml:space="preserve"><value>自动播放</value><comment>Switch on the iPhone: voices in new replies.</comment></data>
   <data name="voice.autoplay_note" xml:space="preserve"><value>Imp 标记为自动播放的语音会在新回复中自动开始。关闭后需要你点一下。</value><comment>Note under the switch.</comment></data>
   <data name="voice.listen" xml:space="preserve"><value>聆听</value><comment>Switch.</comment></data>

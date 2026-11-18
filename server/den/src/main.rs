@@ -68,13 +68,6 @@ async fn serve() -> ExitCode {
     };
     tracing::info!(addr = %config.addr, public = %config.public.origin, "den listening");
 
-    match imp_den::catalog::seed(&pool).await {
-        Ok(changed) => tracing::info!(changed, "animation catalog seeded"),
-        Err(e) => {
-            tracing::error!("cannot seed the animation catalog: {e}");
-            return ExitCode::FAILURE;
-        }
-    }
     let den = Den::new(config, pool).await;
     let (stop, stopped) = watch::channel(false);
     let upkeep = tokio::spawn(std::sync::Arc::clone(&den).maintain(stopped));

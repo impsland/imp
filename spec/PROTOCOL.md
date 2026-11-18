@@ -5,7 +5,7 @@ workspace and ship in one Docker image.
 
 | service | purpose | speaks |
 |---------|---------|--------|
-| Den | Accounts, and a place where Imps share kits (whole Imps, animations, triggers, tools). | HTTPS JSON API at the root, an MCP endpoint at `/mcp`, a small web gallery. |
+| Den | A standalone gallery where anyone shares Imps, animations, triggers, tools and kits. | A read-only HTTPS JSON API, an MCP endpoint at `/mcp` (the only way to publish), OAuth 2.1 for accounts, a small web gallery. |
 | Hop | A blind relay that lets one device reach another (the host) from anywhere. | A short binary handshake over TCP, then spliced bytes. |
 
 The code is the source of truth: `server/den/src`, `server/hop/src` and `engine/src/link/hop.rs`.
@@ -27,8 +27,10 @@ client for a wrong address. The vectors are in `spec/fixtures/server-addresses.j
 
 | thing | form | notes |
 |-------|------|-------|
-| Kit and chat file | No version field. | A kit is recognised by its shape, a chat file by its `chat` object (see `docs/sharing/kits.md`). |
-| MCP | Protocol revision `2026-07-28`. | Streamable HTTP. |
+| Item and kit document | `"format": 1` (an integer) at the top level. | See [Document format](#document-format) and [Compatibility](#compatibility). |
+| Chat file | No version field. | Recognised by its `chat` object. |
+| Den MCP | Protocol revision `2026-07-28`, older revisions negotiated (see [MCP](#mcp)). | Streamable HTTP, stateless. |
+| Den API | `"api": 1` in `GET /version`. | Paths never change meaning. A breaking change gets new paths and a new `api` number. |
 | Hop and device link | No version on the wire. | A change an older side would misread changes the labels, so the older side fails cleanly (see `docs/connecting/link.md`). The Hop and the apps are released together. |
 
 Test vectors for the parts that clients share are in `spec/fixtures` (see its `README.md`). The Hop
@@ -169,12 +171,263 @@ listens on `HOP_ADDR` (default `0.0.0.0:4677`).
 A live link pings every 20 seconds and is dropped after 45 seconds of silence (`PING_INTERVAL` and
 `SILENCE_LIMIT` in `engine/src/link/mod.rs`). So a live session is never idle.
 
-## Den API
+## Den
 
-Base URL: `https://<host>`. Requests and answers are UTF-8 JSON (`application/json`). Request bodies
-are limited to 600 KB, and a request that takes over 15 seconds ends with a `timeout` error.
+The Den is a standalone service. The apps carry no Den code: they reach it with the generic MCP client
+every Imp already has, as a remote MCP server (`https://<host>/mcp`) added like any other tool (see
+[Connecting a client](#connecting-a-client)). Any other MCP host (Claude, ChatGPT, editors, agents) uses
+it the same way.
 
-Browsers may call the API with `GET` and `HEAD` from any origin (CORS).
+Three interfaces, one database:
+
+| interface | who | can |
+|-----------|-----|-----|
+| MCP at `/mcp` | Imp and any MCP host | Search, get, download. With an account: publish, delete own items, delete the account. **Publishing happens only here.** |
+| HTTPS JSON API | Browsers, scripts, monitors | Read only (search, get, download, accounts, stats), plus counting installs and reporting items. |
+| Web gallery at `/` | People | Browse, view (drawn from the JSON), open in Imp, copy JSON, export JSON. |
+
+Base URL: `https://<host>`. Requests and answers are UTF-8 JSON (`application/json`). Request bodies are
+limited to 300 KB, and a request that takes over 15 seconds ends with a `timeout` error. Browsers may
+call the read API with `GET` and `HEAD` from any origin (CORS). Every answer carries `X-Request-Id`.
+Rate-limited answers carry `Retry-After`. An answer with no other cache header carries
+`Cache-Control: no-store`.
+
+### Items
+
+There are four item types and the kit. Every one is a small JSON **document** in the kit format the apps
+already import (`docs/sharing/kits.md`), with `format` at the top level. One importer reads all of them.
+
+| type | the document holds | size |
+|------|--------------------|------|
+| `imp` | Exactly one entry in `imps` (with its own animations and triggers inside it), plus the `mcpServers` that Imp lists, and nothing else. | at most 64 KB |
+| `animation` | Exactly one entry in `animations`, nothing else. | at most 64 KB |
+| `trigger` | Exactly one entry in `triggers`, plus at most the one animation it plays in `animations`. | at most 64 KB |
+| `tool` | Exactly one entry in `mcpServers`, nothing else. | at most 64 KB |
+| `kit` | A bundle: any of `imps`, `animations`, `triggers`, `mcpServers`, and `skills`. At least one entry. | at most 256 KB |
+
+Every document may also have `name` (1 to 80 characters, required on the Den) and `about` (at most 4000).
+Skills are not a type. A kit names them, and Imp never stores or uploads skill files:
+
+```json
+"skills": [ { "name": "pdf", "source": "anthropics/skills/skills/pdf" } ]
+```
+
+`name` is 1 to 64 characters of `a-z`, `0-9` and inner `-`. `source` is what
+`npx skills add <source>` takes: `owner/repo`, `owner/repo/path`, or an `https://` URL, at most 200
+characters with no spaces, quotes or shell characters. At most 20 skills per kit. Clients show each
+skill with its `npx skills add <source>` command and never run it on their own.
+
+Items are addressed as `{handle}/{slug}`. A slug has 1 to 48 characters and follows the handle rules.
+The type is given when publishing and must match the document. A publish whose document does not match
+its type answers `422 validation-failed`.
+
+#### Document checks
+
+A document is checked with the same limits as Imp. A failed check answers `422 validation-failed` with up
+to 25 problems.
+
+| rule | limit |
+|------|-------|
+| `format` | Required, an integer the Den supports (see [Compatibility](#compatibility)). |
+| Imps | Each needs a name. Traits must be inside their ranges. An Imp holds no chats (a chat is private). |
+| Triggers | At most 50 in a document, and at most 50 in each Imp. Each an object with an `on` from the event list, an optional `name` of at most 60 characters, an optional `if` list of objects with a known `state`, and a `do` list of 1 to 5 objects with a known `act`. Unknown events, states and acts fail with a pointer to the field. |
+| Tools (`mcpServers`) | At most 20. Names have 1 to 64 characters. A `command` (with optional `args`) or a `url`, never both and never neither. An Imp's `mcpServers` names must exist in the document's own `mcpServers`. |
+| Secrets | Values in `env` and `headers` must be empty strings. |
+| Tool `url` | `https://` or `http://`. No user name or password. No query parameter whose name contains `key`, `token`, `secret`, `password`, `auth`, `sig` or `credential`. |
+| Animations | At most 50 per document, counting those inside Imps. Name of 1 to 40 characters. 1 to 24 beats, each 0.05 to 6 s, at most 20 s in total. Known moods, glyphs and moves. Other beat fields in range. A `starts` field is refused: nothing starts an animation but a trigger's `play` step. |
+| Skills | Only in a `kit`. The rules above. |
+
+Items whose document has a tool with a `command`, or a kit with skills, are marked `runs_programs` and
+shown with a warning.
+
+The document is stored compact with sorted keys and served as stored. Its `sha256` is taken over that
+text.
+
+### Spam and abuse
+
+- **Exact duplicates.** The `sha256` of a stored document is unique across the Den. Publishing a document
+  that some visible item already has answers `409 duplicate` with that item's address in `detail` and in
+  `existing`. Publishing the same document again to the same item changes nothing and answers `200`
+  without a new revision.
+- **Quotas per account.** At most 100 items, at most 2 MB of documents in total, at most 20 new items per
+  day. Over a quota answers `403 quota-exceeded`.
+- **Rate limits** (per IP use the IPv4 address or the IPv6 /64):
+
+| what | limit |
+|------|-------|
+| Reads (API and MCP reads) | 240 per minute per IP |
+| Challenges | 20 per minute per IP |
+| Sign-in page posts | 20 per minute per IP |
+| Accounts created | 3 per day per IP |
+| Client registrations | 20 per hour per IP |
+| Token requests | 60 per hour per IP |
+| Writes (publish, delete item, delete account) | 30 per hour per account and 30 per hour per IP |
+| Reports | 10 per hour per IP |
+| Installs | 120 per hour per IP |
+
+- **Reports.** An item reported from 5 different IPs is hidden until the operator looks at it.
+- **Operator.** `den admin` on the server (there is no HTTP admin surface) can hide, unhide and remove
+  items, and **deactivate**, **reactivate** and **remove** accounts. A deactivated account cannot sign in,
+  its tokens stop working at once, and its items are hidden. Removing an account deletes it and everything
+  it shared.
+- `X-Forwarded-For` is honoured only when the connection comes from a configured proxy
+  (`DEN_TRUSTED_PROXIES`).
+
+### Accounts and ownership
+
+An account is a handle. There is no e-mail and no password. The Den is its own OAuth 2.1 authorization
+server, as the MCP authorization specification describes, so every MCP host that supports remote servers
+can sign in with no Den-specific code.
+
+**Why OAuth and not request signatures.** Per-request signatures (for example Ed25519 over each request,
+RFC 9421) keep the private key on the client, but no MCP host can sign requests, so only a client with
+Den-specific code could publish and the model could never do it. OAuth 2.1 with PKCE is what MCP hosts
+already implement. Its tokens are short-lived, bound to the Den's `/mcp` (RFC 8707), stored by the Den only
+as SHA-256 hashes, and revocable. Refresh tokens rotate, and reusing an old one revokes the whole grant.
+
+**The account key** is the only long-lived secret: `dak_` followed by 43 base64url characters (256 random
+bits). It is shown once when the account is made and is needed only to connect another MCP host to the
+same account. The Den stores its SHA-256.
+
+#### Endpoints
+
+| method | path | what |
+|--------|------|------|
+| `GET` | `/.well-known/oauth-protected-resource` and `/.well-known/oauth-protected-resource/mcp` | RFC 9728: `{ "resource": "<host>/mcp", "authorization_servers": ["<host>"], "scopes_supported": ["publish"], "bearer_methods_supported": ["header"] }` |
+| `GET` | `/.well-known/oauth-authorization-server` | RFC 8414 metadata: `issuer`, `authorization_endpoint` (`/oauth/authorize`), `token_endpoint` (`/oauth/token`), `registration_endpoint` (`/oauth/register`), `revocation_endpoint` (`/oauth/revoke`), `response_types_supported: ["code"]`, `grant_types_supported: ["authorization_code", "refresh_token"]`, `code_challenge_methods_supported: ["S256"]`, `token_endpoint_auth_methods_supported: ["none"]`, `scopes_supported: ["publish"]`. |
+| `POST` | `/oauth/register` | RFC 7591 dynamic registration of a public client. Body `{ "client_name", "redirect_uris" }`. Answers `201` with `client_id`. |
+| `GET` | `/oauth/authorize` | The sign-in page (below). Takes `response_type=code`, `client_id`, `redirect_uri`, `code_challenge`, `code_challenge_method=S256`, `state`, optional `scope` and `resource`. |
+| `POST` | `/oauth/authorize` | The page's form. Redirects to `redirect_uri` with `code` and `state`. |
+| `POST` | `/oauth/token` | Form body. `grant_type=authorization_code` (with `code`, `redirect_uri`, `client_id`, `code_verifier`) or `grant_type=refresh_token` (with `refresh_token`, `client_id`). Answers `{ "access_token", "token_type": "Bearer", "expires_in", "refresh_token", "scope" }`. Errors follow RFC 6749 (`invalid_grant` and so on). |
+| `POST` | `/oauth/revoke` | RFC 7009. Answers `200`. |
+
+Rules:
+
+- Redirect URIs: `https://` URLs, loopback `http://127.0.0.1`, `http://[::1]` or `http://localhost` with
+  any port (RFC 8252), or a private-use scheme with a dot in it (for example `app.imp:/oauth`). Exact match
+  at authorize and token time, except that the port of a loopback URI may differ.
+- A code lives 60 seconds and works once. PKCE `S256` is required. `plain` is refused.
+- Access tokens: `dat_` + 43 base64url characters, valid for 1 hour, audience `<host>/mcp`.
+  Refresh tokens: `drt_` + 43 base64url characters, valid for 90 days, rotated on every use.
+- Handles have 3 to 32 characters: lowercase letters, digits and inner hyphens. Reserved: `me`, `admin`,
+  `root`, `imp`, `den`, `hop`, `system`, `support`.
+
+#### The sign-in page and ALTCHA
+
+A model cannot solve a proof-of-work, so it never sees one. The MCP host opens the sign-in page in a
+browser for the person, and deterministic code solves the challenge there:
+
+1. The page names the client (`client_name`) and where it sends the person back (the redirect host).
+2. **New account:** the person picks a handle. The page fetches an [ALTCHA](https://altcha.org) v2 challenge
+   (PBKDF2-SHA256, signed by the Den) from `GET /challenge` and solves it with the browser's WebCrypto in a
+   Web Worker, then posts the handle and the solution. The Den creates the account, shows the account key
+   once with a Copy button, and continues to the client.
+3. **Existing account:** the person pastes the account key.
+4. The page never runs third-party code, sets no cookie and keeps nothing in the browser.
+
+A challenge expires 10 minutes after it is issued, and each solved challenge is accepted once. The
+solution is the base64 of `{ "challenge": { "parameters", "signature" }, "solution": { "counter",
+"derivedKey" } }`, at most 4096 characters.
+
+How each kind of client gets there:
+
+| client | how the page opens | redirect |
+|--------|--------------------|----------|
+| Imp on iPhone and iPad (the app is the MCP host) | `ASWebAuthenticationSession`, an in-app browser sheet. | `app.imp:/oauth` |
+| Imp on the Mac | `ASWebAuthenticationSession`. | `app.imp:/oauth` |
+| Imp in the terminal (`imp`) | The default browser, or the URL printed for the person to open. | A one-shot loopback listener, `http://127.0.0.1:<port>/oauth` |
+| Other MCP hosts (Claude, ChatGPT, editors), with or without a shell | The host's own OAuth flow. | Whatever the host registers. |
+
+Nothing in this flow shows a system password or Keychain prompt. Imp keeps the tokens with its API keys:
+in a private file by default, in the Keychain only when the person turns that on (see
+`docs/sharing/den.md`).
+
+### MCP
+
+`/mcp` is a stateless MCP server: Streamable HTTP, JSON responses, no sessions. The Host and Origin
+headers are checked against the Den's public address.
+
+Reads need no account. A write without a valid access token answers HTTP `401` with
+`WWW-Authenticate: Bearer resource_metadata="<host>/.well-known/oauth-protected-resource/mcp", scope="publish"`,
+which makes the MCP host start the sign-in. A token of a deactivated account answers `401` the same way.
+
+| tool | needs an account | what |
+|------|------------------|------|
+| `search_items` | no | Arguments: `type` (`imp`, `animation`, `trigger`, `tool`, `kit`), `q` (keyword, case-insensitive, matched on name, summary, about and tags), `tag`, `handle`, `sort` (`new`, `popular`, `name`), `limit` (1 to 50, default 20), `cursor`. Answers `{ "items": [summary], "next_cursor" }`. |
+| `get_item` | no | `handle`, `slug`. An item with its stats. |
+| `download_item` | no | `handle`, `slug`. `{ "item": summary, "document": {...} }`, the document ready to import. Counts one install. |
+| `publish_item` | yes | `type`, `slug`, `summary`, `tags`, `document`. Creates the item under the signed-in handle or updates it (revision plus 1). |
+| `delete_item` | yes | `slug`. Deletes one of your items. `{ "deleted": true }`. |
+| `my_account` | yes | `{ "handle", "created_at", "items": [summary], "quota": { "items", "items_left", "bytes_left", "new_today_left" } }`. |
+| `delete_account` | yes | `confirm` must be the handle. Deletes the account and everything it shared, and revokes its tokens. |
+
+A failed tool call returns `isError: true` with the same problem document as the API, so the model can
+read `detail`. Search arguments outside their rules answer `invalid-request`.
+
+**Protocol revision.** The Den fully supports `2026-07-28`, where each request carries the revision and the
+client's capabilities in `_meta` with the standard headers (`MCP-Protocol-Version`, `Mcp-Method`, and
+`Mcp-Name` for named calls) and there is no `initialize` (SEP-2567). Clients of the older revisions
+`2025-11-25` and `2025-06-18` still start with `initialize`: the Den answers it with the revision the client
+asked for when it supports it, and otherwise with `2025-11-25`, the newest revision that has an
+`initialize`. A client that does not support that answer must disconnect and say which revisions each side
+speaks. `serverInfo.version` is the Den's release.
+
+### Read API
+
+| method | path | what |
+|--------|------|------|
+| `GET` | `/version` | `{ "den": "<release>", "api": 1, "formats": [1], "mcp": ["2026-07-28", "2025-11-25", "2025-06-18"] }` |
+| `GET` | `/challenge` | A fresh ALTCHA challenge, `{ "parameters": {...}, "signature" }`. For the sign-in page. |
+| `GET` | `/items` | Search. Query: `type`, `q`, `tag`, `handle`, `sort`, `limit`, `cursor`, as for `search_items`. |
+| `GET` | `/items/{handle}/{slug}` | An item. |
+| `GET` | `/items/{handle}/{slug}/document.json` | The document as stored. Has an `ETag`. |
+| `POST` | `/items/{handle}/{slug}/installs` | Counts one install. `202`. |
+| `POST` | `/items/{handle}/{slug}/reports` | Body `{ "reason" }`, 1 to 500 characters. `202`. |
+| `GET` | `/accounts/{handle}` | `{ "handle", "created_at", "items": [summary] }` (at most 100). |
+| `GET` | `/stats` | `{ "accounts", "items", "installs", "by_type": { "imp", "animation", "trigger", "tool", "kit" } }` |
+| `GET` | `/healthz` | `200 ok` when the database answers. |
+
+There is no `PUT` or `DELETE` in the API. Any other method on an API path answers `405`.
+
+### Shapes
+
+Timestamps are RFC 3339 UTC strings.
+
+An item **summary**: `handle`, `slug`, `type`, `name`, `summary`, `tags`, `format`, `runs_programs`,
+`installs`, `revision`, `created_at`, `updated_at`.
+
+An **item** is a summary plus `about`, `sha256`, `size` (bytes), `document_url`, `open_url` (an
+`imp://add?url=...` link that opens it in Imp) and `counts` (`{ "imps", "animations", "triggers",
+"tools", "skills" }`).
+
+A summary is one line of 1 to 120 characters. Each item has 1 to 5 distinct tags of 1 to 24 characters
+from `a-z`, `0-9` and `-`.
+
+### Compatibility
+
+Every document has `format`, an integer. Format 1 is the one described here.
+
+- Adding an optional field never changes the format. Readers ignore fields they don't know.
+- A change an older reader would misread raises the format by one.
+- Writers (the apps' export, the Den) always write the newest format they know.
+- A reader reads every format up to its own and refuses a newer one. A file without `format` is read as
+  format 1 by the apps. The Den requires `format`.
+- The Den stores each document in the format it was published in and never rewrites it.
+
+| combination | result |
+|-------------|--------|
+| App format = document format | Installs. |
+| App newer than the document | Installs. The app reads every older format. |
+| App older than the document | Refused before anything changes: "This needs a newer Imp. It is kit format 2, and this Imp reads up to format 1. Update Imp and try again." |
+| Den older than the document being published | `422 unsupported-format`: "This Den reads kit format 1 at most." |
+| Any app, any Den, MCP revisions overlap | Works. |
+| MCP revisions don't overlap | The client stops at `initialize` and names both sides' revisions. |
+| A breaking change to a tool | The tool gets a new name, and the old one keeps working for at least one release. |
+
+Imp states its format to its model in the description of `imp_add_kit`, so a model can pick items the
+Imp can install.
+
+### Errors
 
 Errors use `application/problem+json` (RFC 9457):
 
@@ -183,211 +436,48 @@ Errors use `application/problem+json` (RFC 9457):
   "detail": "Try again in 40 seconds." }
 ```
 
-Every answer carries `X-Request-Id`. Rate-limited answers also carry `Retry-After`. An answer with no
-other cache header carries `Cache-Control: no-store`.
-
-### Accounts without sign-up
-
-An account is a handle and a bearer token. Anyone, an Imp included, can create one. The caller solves an
-[ALTCHA](https://altcha.org) v2 proof-of-work challenge (PBKDF2-SHA256, signed by the Den). That is
-cheap for one Imp and expensive for a spammer.
-
-- A challenge expires 10 minutes after it is issued (`expiresAt`).
-- Each solved challenge is accepted once.
-- The `altcha` field is the base64 of this JSON, at most 4096 characters long:
-  `{ "challenge": { "parameters", "signature" }, "solution": { "counter", "derivedKey" } }`.
-- The token is shown once. The Den stores only its SHA-256 hash.
-
-| method | path | auth | what |
-|--------|------|------|------|
-| `GET` | `/challenge` | none | A fresh ALTCHA challenge. |
-| `POST` | `/accounts` | ALTCHA | Body `{ "handle", "altcha" }`. Answers `201 { "handle", "token", "created_at" }`. |
-| `GET` | `/accounts/{handle}` | none | The account and its visible items (at most 100). |
-| `DELETE` | `/accounts/me` | token | Deletes the account and everything it shared. Answers `204`. |
-
-Handles have 3 to 32 characters: lowercase letters, digits and inner hyphens. These handles are
-reserved: `me`, `admin`, `root`, `imp`, `den`, `hop`, `system` and `support`.
-
-Tokens are `den_` followed by 43 base64url characters. Send one as `Authorization: Bearer <token>`.
-
-### Items
-
-An item is a kit, the JSON that Imp already exports and imports (`Kit.swift`). Items are addressed as
-`{handle}/{slug}`. A slug has 1 to 48 characters and follows the handle character rules.
-
-| method | path | auth | what |
-|--------|------|------|------|
-| `GET` | `/items` | none | List. Query: `kind`, `tag`, `q`, `sort`, `limit`, `cursor` (see below). |
-| `PUT` | `/items/{handle}/{slug}` | owner | Body `{ "summary", "tags", "kit" }`. Answers `201` when new, `200` when updated (revision plus 1). |
-| `GET` | `/items/{handle}/{slug}` | none | Details and stats. |
-| `GET` | `/items/{handle}/{slug}/kit.json` | none | The kit itself, as Imp downloads it. Has an `ETag`. |
-| `DELETE` | `/items/{handle}/{slug}` | owner | Answers `204`. |
-| `POST` | `/items/{handle}/{slug}/installs` | none | Counts one install. Answers `202`. |
-| `POST` | `/items/{handle}/{slug}/reports` | none | Body `{ "reason" }`. Answers `202`. |
-| `GET` | `/stats` | none | Totals. |
-| `GET` | `/healthz` | none | `200 ok` when the database answers. For monitors. |
-
-The owner is the account whose token is sent. Using another handle in the path answers `403`.
-
-List query parameters:
-
-| parameter | rule |
-|-----------|------|
-| `kind` | One of `imp`, `animation`, `trigger`, `tool`, `kit`. |
-| `tag` | Exactly one tag. |
-| `q` | Case-insensitive substring match on name, summary and about. At most 100 characters. |
-| `sort` | `new` (default) or `popular`. |
-| `limit` | 1 to 50. Default 20. |
-| `cursor` | The `next_cursor` of the previous page. |
-
-An unknown `kind` or `sort`, a `limit` outside 1 to 50, a bad `tag`, a long `q` or a bad `cursor`
-answers `400`.
-
-#### Kind
-
-The kind comes from what is inside the kit. Tools that an Imp lists by name count with that Imp, not
-as loose tools.
-
-| kind | when |
-|------|------|
-| `imp` | Exactly one Imp and nothing else at the top level. |
-| `animation` | Only top-level animations. |
-| `trigger` | Only top-level triggers. |
-| `tool` | Only loose tools (MCP servers no Imp lists). |
-| `kit` | Anything else. |
-
-#### Kit checks
-
-A kit is checked on the way in with the same limits as Imp. A failed check answers
-`422 validation-failed` with up to 25 problems.
-
-| rule | limit |
-|------|-------|
-| Size, after compacting | At most 512 KB. |
-| Kit `name` | Required, 1 to 80 characters. |
-| `about` | Text of at most 4000 characters. |
-| Content | At least one Imp, trigger, tool or animation. |
-| Imps | At most 20. Each needs a name. |
-| Triggers | At most 50 at the top level, and at most 50 in each Imp. |
-| Tools (`mcpServers`) | At most 20. Names have 1 to 64 characters. |
-| Animations | At most 50 per kit, counting those inside Imps. |
-| One animation | Name of 1 to 40 characters. 1 to 24 beats. Each beat lasts 0.05 to 6 s. The total is at most 20 s. |
-| Animation values | Known moods, glyphs and moves. Other beat fields must be in range. |
-| Traits | Each trait must be inside its range. |
-| Chats | An Imp must hold none. A chat is private. |
-| Tool references | An Imp's `mcpServers` names must exist in the kit's own `mcpServers`. |
-| Tool form | A `command` (with optional `args`) or a `url`, never both and never neither. |
-| Secrets | Values in `env` and `headers` must be empty strings. |
-| Tool `url` | Starts with `https://` or `http://`. No user name or password. No query parameter whose name contains `key`, `token`, `secret`, `password`, `auth`, `sig` or `credential`. |
-
-Items whose kit has a tool with a `command` are marked `runs_programs` and shown with a warning.
-
-The kit is stored compact with sorted keys and served as stored. The `ETag` is the kit's SHA-256 and
-its revision. An account can share at most 100 items. A new item beyond that answers
-`403 quota-exceeded`.
-
-A summary is one line of 1 to 120 characters. Each item has 1 to 5 distinct tags. A tag has 1 to 24
-characters from `a-z`, `0-9` and `-`.
-
-### Shapes
-
-Timestamps are RFC 3339 UTC strings.
-
-An item summary has these fields:
-
-`handle`, `slug`, `kind`, `name`, `summary`, `tags`, `runs_programs`, `installs`, `revision`,
-`created_at`, `updated_at`.
-
-An item is a summary plus `about`, `sha256` (of the kit text), `size` (bytes), `kit_url` and
-`counts` (`{ "imps", "animations", "triggers", "tools" }`).
-
-| call | answer |
-|------|--------|
-| `GET /challenge` | An ALTCHA challenge, `{ "parameters": {...}, "signature" }`, as the widget wants it. |
-| `POST /accounts` | `201 { "handle", "token", "created_at" }` |
-| `GET /accounts/{handle}` | `{ "handle", "created_at", "items": [item summary] }` |
-| `GET /items` | `{ "items": [item summary], "next_cursor": string or null }`. Pass `next_cursor` back as `cursor`. |
-| `GET /items/{handle}/{slug}` | An item. |
-| `PUT /items/{handle}/{slug}` | An item. A new one also gets a `Location` header. |
-| `GET /stats` | `{ "accounts", "items", "installs", "by_kind": { "imp", "animation", "trigger", "tool", "kit" } }` |
-
-`installs` and `reports` answer `202` with no body. A report `reason` has 1 to 500 characters.
-
-### Errors
-
-The problem `type` is `https://<host>/problems/<name>`. Unknown paths and methods answer with the same
-shape.
-
 | name | status | notes |
 |------|--------|-------|
 | `invalid-request` | 400 | |
-| `unauthorized` | 401 | Has `WWW-Authenticate: Bearer`. |
+| `unauthorized` | 401 | Has `WWW-Authenticate` as above. |
 | `forbidden` | 403 | |
 | `quota-exceeded` | 403 | |
+| `account-deactivated` | 403 | Shown on the sign-in page. |
 | `not-found` | 404 | |
 | `method-not-allowed` | 405 | |
 | `handle-taken` | 409 | |
-| `payload-too-large` | 413 | Body over 600 KB. |
+| `duplicate` | 409 | Adds `"existing": "<handle>/<slug>"`. |
+| `payload-too-large` | 413 | |
 | `unsupported-media-type` | 415 | |
-| `validation-failed` | 422 | Adds `"errors": [{ "pointer", "detail" }]`, with JSON pointers into the request. |
+| `validation-failed` | 422 | Adds `"errors": [{ "pointer", "detail" }]`, with JSON pointers into the document. |
+| `unsupported-format` | 422 | |
 | `challenge-failed` | 422 | |
 | `rate-limited` | 429 | Has `Retry-After`. |
 | `internal` | 500 | Never shows internals. |
 | `timeout` | 503 | |
 
-### Previews
+### Previews and caching
 
-Nothing is rendered on the server. An Imp is a hue, a scale and a few traits, and an animation is a
-list of beats. So the browser draws and plays both from the kit's JSON, as the apps do. This keeps the
-Den small and leaves no image pipeline to attack.
+Nothing is rendered on the server. The browser draws Imps and plays animations from the document's
+JSON, as the apps do.
 
-### Stats and caching
-
-- Installs are counted at most once per item per client address per day. They are gathered in memory
-  and written in batches every minute. Popularity lags by about a minute and costs no write per
-  request.
-- Lists, item details, account pages and stats are cached for 30 seconds (`Cache-Control: public,
-  max-age=30`).
-- Kits are cached by revision (`ETag`, `Cache-Control: public, max-age=300`). A matching
+- Installs are counted at most once per item per client address per day, batched in memory and written
+  every minute.
+- Lists, items, account pages and stats are cached for 30 seconds (`Cache-Control: public, max-age=30`).
+- Documents are cached by revision (`ETag`, `Cache-Control: public, max-age=300`). A matching
   `If-None-Match` answers `304`.
 
-### Abuse limits
+### Connecting a client
 
-Per-IP limits use the IPv4 address or the IPv6 /64.
+The mechanism is the MCP client that is built into every Imp app, the same one that runs any other tool.
+There is no Den setting.
 
-| what | limit |
-|------|-------|
-| Reads (lists, items, kits, accounts, stats and every token check) | 240 per minute per IP |
-| Challenges | 20 per minute per IP |
-| Account creation attempts | 20 per minute per IP |
-| Accounts created | 3 per day per IP |
-| Reports | 10 per hour per IP |
-| Installs | 120 per hour per IP |
-| Writes (publish, delete item, delete account) | 30 per hour per account and 30 per hour per IP |
-| Items | 100 per account |
+- **Imp (Mac, iPhone, terminal):** add a tool with the URL `https://<host>/mcp`, in an Imp's Tools, or
+  with `imp_add_tool`, or from the gallery's **Add to Imp** link (an `imp://add` link to a one-tool kit,
+  reviewed like any kit). The first write opens the sign-in page.
+- **Other hosts:** add a remote MCP server with the same URL.
 
-Other protections:
-
-- ALTCHA on account creation, single use and short lived.
-- An item reported from 5 different IPs is hidden until an operator looks at it. The operator uses
-  `den admin` on the server. There is no HTTP admin surface.
-- `X-Forwarded-For` is honoured only when the connection comes from a configured proxy
-  (`DEN_TRUSTED_PROXIES`).
-
-### MCP
-
-`/mcp` is a stateless MCP server: Streamable HTTP, protocol revision `2026-07-28`, JSON responses, no
-sessions. The Host and Origin headers are checked against the Den's public address.
-
-| tool | what |
-|------|------|
-| `search_items` | Same as `GET /items`. |
-| `get_item` | Same as `GET /items/{handle}/{slug}`. |
-| `get_kit` | The kit JSON of an item. |
-| `get_challenge` | A challenge, plus instructions to solve it. |
-| `create_account` | Same as `POST /accounts`. |
-| `publish_item` | Same as `PUT /items/{handle}/{slug}`. Takes `handle`, `slug`, `summary`, `tags` and `kit`. |
-| `delete_item` | Same as `DELETE /items/{handle}/{slug}`. Returns `{ "deleted": true }`. |
-
-Writes take the account token in the MCP client's `Authorization` header, exactly as the REST API
-does. A failed tool call returns the same problem document as the REST API.
+Installing goes through two generic tools. The model calls the Den's `download_item` and then Imp's own
+`imp_add_kit` with the document. Imp shows the usual kit review, and **nothing is added until the person
+confirms.** Publishing is the reverse: `imp_export_kit` gives the document of an Imp, animation, trigger or
+tool, and the Den's `publish_item` shares it.

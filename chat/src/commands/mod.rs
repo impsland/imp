@@ -14,7 +14,6 @@ use crate::cli::{Cli, Command, ConfigAction};
 use crate::config::Config;
 use crate::link::SeedFile;
 use crate::link::device::{Device, DeviceOptions};
-use crate::serve::Services;
 use crate::{CliError, Result};
 use std::io::{BufRead, Write};
 use std::path::PathBuf;
@@ -73,33 +72,8 @@ pub async fn run(cli: Cli, io: &mut Io<'_>) -> Result<()> {
             plain,
             offline,
         } => chat::run(&path, imp.as_deref(), plain, offline, io).await,
-        Command::Serve {
-            den_only,
-            hop_only,
-            host,
-            den_port,
-            hop_port,
-            public_url,
-            data_dir,
-        } => {
-            let services = match (den_only, hop_only) {
-                (true, _) => Services::DenOnly,
-                (_, true) => Services::HopOnly,
-                _ => Services::Both,
-            };
-            let data_dir = match data_dir {
-                Some(dir) => dir,
-                None if services.den() => crate::serve::default_data_dir()?,
-                None => PathBuf::new(),
-            };
-            let options = crate::serve::ServeOptions {
-                services,
-                data_dir,
-                host,
-                den_port,
-                hop_port,
-                public_url,
-            };
+        Command::Serve { host, hop_port } => {
+            let options = crate::serve::ServeOptions { host, hop_port };
             serve::run(&options, io).await
         }
         Command::Qr {

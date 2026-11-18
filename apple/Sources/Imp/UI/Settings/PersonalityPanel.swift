@@ -2,7 +2,7 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// Who the Imp is: its name, its persona and how its voice shows. The name is part of the personality,
+/// Who the Imp is: its name, its persona and what it is good at. The name is part of the personality,
 /// not of the look.
 struct PersonalityPanel: View {
     @Bindable var model: AppModel
@@ -52,30 +52,6 @@ struct PersonalityPanel: View {
                 .accessibilityLabel(Text("personality.about"))
         }
         .settingAnchor(.personalityAbout)
-
-        PanelSection("personality.voice", icon: "waveform", info: "personality.help.voice") {
-            Row("personality.voice_look", icon: "speaker.wave.2.fill", info: "personality.help.voice_look") {
-                ImpSegmented("personality.voice_look", selection: $model.prefs.voiceStyle,
-                             options: [VoiceStyle.both, .glow, .orb, .players],
-                             title: { style in
-                    switch style {
-                    case .both: String(localized: "Both")
-                    case .glow: String(localized: "Glow")
-                    case .orb: String(localized: "Smoke")
-                    case .players: String(localized: "Players")
-                    }
-                }, symbol: { style in
-                    switch style {
-                    case .both: "square.stack.fill"
-                    case .glow: "sun.max.fill"
-                    case .orb: "smoke.fill"
-                    case .players: "play.rectangle.fill"
-                    }
-                })
-            }
-            .settingAnchor(.personalityVoiceLook)
-        }
-        .settingAnchor(.personalityVoice)
     }
 
     /// The rest of the system prompt: most people never need it, but it is all theirs to change. One row

@@ -36,7 +36,7 @@ Nine sections, each with a one-word name and a few cards of icon rows. A card ha
 | Brains | Services: the list of Brains and the default for new Imps. Keys: the keychain. Requests: wait, retries, first wait, longer waits. |
 | Devices | This Mac with Link, the linked devices (Forget all in the header) and The Hop in the compact server card. |
 | Sharing | The Gallery (Browse, Import) and The Den in the compact server card. |
-| Animations | The search, made ones (shared, or the selected Imp's own) with New animation and Find more in their header, the built-in ones with Restore in their header. |
+| Animations | The search, made ones (shared, or the selected Imp's own) with New animation and Find more in their header |
 | Permissions | Listening: microphone and speech. Computer control: screen recording and accessibility. |
 | Backup | Keep: export and import. Reset: start again. Reset is last and asks first. |
 
@@ -104,23 +104,49 @@ A Brain service is one generic list entry: a name, an address, a key and a model
 
 ## Animations
 
-Five animations are built in, so offline users and users with local models work without a download. A larger set is in The Den. They come from the same catalog, so the two lists cannot drift apart. The Den seeds the catalog when it starts. ![Animations](./images/all-imps-animations.png)
+A larger set is in The Den. Imp has no animations of its own to start with: every one is made by the person or an Imp, or comes in a kit. ![Animations](./images/all-imps-animations.png)
 
-The page is simple: the search, the made ones with New animation and Find more (when a Den is set up) in their card's header, and the built-in ones with Restore as an icon in their card's header. Without a Den, a last line says so beside the button that sets one up. The animation editor sheet stays. Made animations are shared by every Imp unless they are one Imp's own: the page shows the shared ones and the selected Imp's own, each own one tagged with its Imp. Saving a shared animation for one Imp makes that Imp's version and leaves the shared one (see [Scope](/ux/imp-settings#scope-this-imp-or-every-imp)). A switch on an Imp's own version of a built-in animation is for that Imp alone. Each row shows what starts the animation as small symbols, not words: lit when that trigger is live, dim when it is off (the words are the hover help and the VoiceOver label). A bolt button opens the list of what starts it, a long multi-select list.
+The page is simple: the search, the made ones with New animation and Find more (when a Den is set up) in their card's header. Without a Den, a last line says so beside the button that sets one up. The animation editor sheet stays. Made animations are shared by every Imp unless they are one Imp's own: the page shows the shared ones and the selected Imp's own, each own one tagged with its Imp. Saving a shared animation for one Imp makes that Imp's version and leaves the shared one (see [Scope](/ux/imp-settings#scope-this-imp-or-every-imp)). Each row shows what starts the animation as small symbols, not words: lit when that trigger is live, dim when it is off (the words are the hover help and the VoiceOver label). An animation no trigger plays shows a bolt button that opens a new trigger with a Play step for it ("To play it on an event, add a trigger"). A gesture with no trigger starts nothing: the Imp just shows its mood. To play an animation at a gesture, add a trigger such as "poke → play Wiggle".
 
-Every gesture has a built-in animation out of the box, so an offline Imp is never still. Pokes, swishes, rushes, shakes, drops, dangling and circling start Wow. Strokes, tickles, holding, carrying, the favourite colour and coming back start Smile. Resting the cursor beside or on its face starts Nod hello. A quiet moment starts Smile. These defaults are the `defaults` of the catalog. An animation from The Den or one you make for a gesture takes it over, and a gesture has one animation at a time. Remove that animation and the built-in one comes back.
+## Presets for The Den and The Hop
+
+The Den and The Hop are one component, the compact server card (`ServerCard`, with its state in `ServerSetting`), on Devices, on Sharing and in the Den browser. Its header carries a status icon (the address and the state are its tooltip) and Check, a button that shows its own progress, tick or cross. Under it the choice is a row of buttons with symbols (no dropdown) and, for Custom only, the address field. A failed check or an address that is not valid floats as a notice (`.impNotice`). Nothing is ever inserted into the page.
+
+Most people use the default servers. Each of The Den and The Hop has three choices:
+
+| Choice | Meaning |
+| --- | --- |
+| Imp's servers | The default, run by the Imp project. |
+| Custom | An address the user types. It must start with https://. |
+| Off | No server. |
+
+A server the person runs on this computer is a Custom address (`localhost:4677`, `http://localhost:8080`). There is no separate choice for it. On the same Wi-Fi devices link without a Hop, and a Hop on this computer only helps away from home when the router forwards its port. A "Check" button tests the choice and shows `servers.state_ok` or `servers.state_fail`, or `servers.state_fail_local` when nothing answers at a local address. Before a check the state is `servers.preset.imp_note` for Imp's servers and `servers.state_unchecked` otherwise. Off says what goes missing (`servers.den.off_note`, `servers.hop.off_note`). A check is for the address it started with: changing the address drops it. For a Den it asks the `/healthz` page, which must answer. For a Hop it opens a connection to the address. The Mac and the iPhone both have it.
+
+![Pairing a device](./images/all-imps-pair.png) What happens when only one of the two is set up is on [States](/ux/states).
+
+## Brains
+
+![Brains](./images/all-imps-brains.png)
+
+A Brain service is one generic list entry: a name, an address, a key and a model. "Add a service" offers the same two choices as the first run, Remote (a service with the user's own key) and Local (a model on this computer), and the address stays editable for any other compatible service. A hosted model from the project is not built. If it comes, it is one more entry in the same list.
+
+## Animations
+
+A larger set is in The Den. Imp has no animations of its own to start with: every one is made by the person or an Imp, or comes in a kit. ![Animations](./images/all-imps-animations.png)
+
+The page is simple: the search, the made ones with New animation and Find more (when a Den is set up) in their card's header. Without a Den, a last line says so beside the button that sets one up. The animation editor sheet stays. Made animations are shared by every Imp unless they are one Imp's own: the page shows the shared ones and the selected Imp's own, each own one tagged with its Imp. Saving a shared animation for one Imp makes that Imp's version and leaves the shared one (see [Scope](/ux/imp-settings#scope-this-imp-or-every-imp)). Each row shows what starts the animation as small symbols, not words: lit when that trigger is live, dim when it is off (the words are the hover help and the VoiceOver label). An animation no trigger plays shows a bolt button that opens a new trigger with a Play step for it.
+
+No gesture has an animation out of the box: there are no built-in animations. An animation that you or your Imp make (ask it, for example "wiggle when I poke you"), or one added from a kit, plays only through a trigger such as "poke → play Wiggle".
 
 ## Presets: where they come from
 
-Imp ships presets as data, never as literals in code, and reads each the way it reads the same data from elsewhere.
+Imp ships its service presets as data, never as literals in code, and reads each the way it reads the same data from elsewhere.
 
 | Preset | Data | Read by | Offered |
 | --- | --- | --- | --- |
-| Starter triggers (clicks, falling asleep, waking up) | `spec/presets/starter-kit.json`, a kit | `Kit.parse` and the kit's Add, as a kit from The Den or a file | Added for every Imp on the first launch. Again only through Add the starter kit in Triggers, which opens the kit review. A changed or deleted one is never put back on its own. |
 | Service choices (Remote, Local) | `spec/presets/services.json` | `ServicePreset.all` | The first run and "Add a service". |
-| Built-in animations and the gestures they start | `spec/animations/catalog.json` | `AnimationCatalog` | Always there. Restore defaults gives them back their starts. |
 
-`node design/generate.mjs` compiles the first two into the apps like the third, and `--check` fails when they are out of date.
+`node design/generate.mjs` compiles it into the apps, and `--check` fails when it is out of date.
 
 ## App
 
@@ -179,14 +205,10 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 <!-- strings: settings brains servers animations voice privacy app devices sharing -->
 | Key | English |
 | --- | --- |
-| `animations.built_in` | Built in |
 | `animations.find` | Browse |
-| `animations.from_den` | Den |
-| `animations.needs_den` | Set up The Den to find more. |
+| `animations.from_den` | Made |
 | `animations.new` | New |
-| `animations.restore` | Restore |
 | `animations.search` | Search |
-| `animations.title` | Animations |
 | `app.language` | Language |
 | `app.login` | Autostart |
 | `app.login_note` | Open Imp when you sign in. |
@@ -227,11 +249,6 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `privacy.trust_note` | Only for your own devices. Their Imps may use tools on this one. |
 | `servers.address` | Address |
 | `servers.address_hint` | Start with https:// |
-| `servers.den.about` | Where Imps share animations, triggers and Imps. Shared items are public. |
-| `servers.den.in_use` | Using the Den at {address} |
-| `servers.den.needed` | This needs a Den. Set one in Settings. |
-| `servers.den.off_note` | Sharing and finding in The Den are off. |
-| `servers.den.title` | Den |
 | `servers.hop.about` | Lets your devices find each other. It only passes encrypted data. |
 | `servers.hop.in_use` | Using the Hop at {address} |
 | `servers.hop.needed` | Linking from anywhere needs a Hop. Add one in Settings under Devices. Devices on the same network still find each other. |
@@ -255,7 +272,6 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `settings.app.control_ink.white` | White |
 | `settings.app.look.info` | How the app looks. |
 | `settings.app.system.info` | How the app starts and which language it speaks. |
-| `settings.attention.den_off` | The Den is not set up. |
 | `settings.attention.device_offline` | {device} is offline. |
 | `settings.attention.hop_off` | The Hop is not set up. |
 | `settings.attention.imp_no_brain` | {name} has no Brain. |
@@ -321,7 +337,6 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `settings.group.talking` | Talking |
 | `settings.group.voice` | Voice |
 | `settings.map.brains` | Brains |
-| `settings.map.den` | Den |
 | `settings.map.hop` | Hop |
 | `settings.map.hop_local` | The Hop on this computer |
 | `settings.map.not_seen` | Cannot see each other yet |

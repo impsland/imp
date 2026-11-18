@@ -38,11 +38,11 @@ final class ImpMenu: NSObject, NSMenuDelegate {
         menu.addItem(.separator())
 
         // Its triggers that ask it something, to run right now (clicks are right here already).
-        let own = app.prefs.triggers(for: imp.id).filter { $0.isEnabled && $0.command == .ask && $0.trigger.kind != .clicks }
+        let own = app.prefs.triggers(for: imp.id).filter { $0.isEnabled && $0.askStep != nil && $0.trigger.event != .click }
         if !own.isEmpty {
             menu.addItem(.sectionHeader(title: String(localized: "Triggers")))
             for action in own {
-                let mi = add(menu, action.name, symbol: action.trigger.kind == .keys ? action.symbol : action.trigger.kind.symbol,
+                let mi = add(menu, action.name, symbol: action.trigger.event == .keys ? action.symbol : action.trigger.event.symbol,
                              action: #selector(run(_:)))
                 mi.representedObject = action.id
                 if let key = action.keys, let equivalent = key.keyEquivalent {

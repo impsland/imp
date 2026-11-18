@@ -12,30 +12,28 @@ import Testing
 
     @Test func nothingToFixIsEmpty() {
         let nodes = [node(.thisDevice, .ready), node(.brains, .ready), node(.tools, .off),
-                     node(.den, .ready), node(.hop, .ready), node(.desktop, .ready, name: "Studio")]
+                     node(.hop, .ready), node(.desktop, .ready, name: "Studio")]
         #expect(SettingsMap.attention(nodes).isEmpty)
     }
 
     @Test func eachProblemBecomesOneItemThatOpensItsGroup() {
         let nodes = [node(.thisDevice, .ready, sleeping: [pip, moss]), node(.brains, .needsSetup),
-                     node(.den, .off), node(.hop, .needsSetup), node(.phone, .offline, name: "Anna's iPhone")]
+                     node(.hop, .needsSetup), node(.phone, .offline, name: "Anna's iPhone")]
         let items = SettingsMap.attention(nodes)
-        #expect(items.map(\.reason) == [.noBrains, .noBrain(pip), .noBrain(moss), .denNotSet, .hopNotSet, .deviceOffline("Anna's iPhone")])
-        #expect(items.map(\.group) == [.brains, .brains, .brains, .sharing, .devices, .devices])
+        #expect(items.map(\.reason) == [.noBrains, .noBrain(pip), .noBrain(moss), .hopNotSet, .deviceOffline("Anna's iPhone")])
+        #expect(items.map(\.group) == [.brains, .brains, .brains, .devices, .devices])
     }
 
     @Test func offToolsAndAnOffDeviceAreNotProblems() {
         #expect(SettingsMap.attention([node(.tools, .off), node(.desktop, .off, name: "Studio")]).isEmpty)
     }
 
-    @Test func nothingSetUpListsBrainsDenAndHop() {
+    @Test func nothingSetUpListsBrainsAndHop() {
         var prefs = ImpPreferences()
-        prefs.den = ""
         prefs.hop = ""
         let map = DeviceMap.build(thisMac: "Mac", peers: [], server: "", imps: prefs.imps, mcpServers: [])
         let nodes = SettingsMap.nodes(prefs: prefs, map: map)
         #expect(nodes.first { $0.kind == .brains }?.state == .needsSetup)
-        #expect(nodes.first { $0.kind == .den }?.state == .off)
         #expect(nodes.first { $0.kind == .hop }?.state == .off)
         #expect(nodes.first { $0.kind == .thisDevice }?.sleeping.count == prefs.imps.count)
     }
@@ -71,21 +69,19 @@ import Testing
         #expect(SettingsGroup(rawValue: "overview") == nil)
     }
 
-    @Test func theDenBelongsToSharingAndTheHopToDevices() {
-        #expect(node(.den, .off).group == .sharing)
+    @Test func theHopBelongsToDevices() {
         #expect(node(.hop, .off).group == .devices)
         #expect(node(.desktop, .offline).group == .devices && node(.phone, .offline).group == .devices)
         #expect(node(.brains, .ready).group == .brains && node(.tools, .off).group == .brains)
-        #expect(SettingID.sharingDen.page == .sharing && SettingID.devicesHop.page == .devices)
+        #expect(SettingID.devicesHop.page == .devices)
     }
 
     @Test func eachSectionShowsOnlyWhatIsFixedThere() {
-        let nodes = [node(.thisDevice, .ready, sleeping: [pip]), node(.brains, .ready), node(.den, .off),
+        let nodes = [node(.thisDevice, .ready, sleeping: [pip]), node(.brains, .ready),
                      node(.hop, .needsSetup), node(.phone, .offline, name: "Anna's iPhone")]
         #expect(SettingsMap.attention(nodes, in: .brains).map(\.reason) == [.noBrain(pip)])
-        #expect(SettingsMap.attention(nodes, in: .sharing).map(\.reason) == [.denNotSet])
         #expect(SettingsMap.attention(nodes, in: .devices).map(\.reason) == [.hopNotSet, .deviceOffline("Anna's iPhone")])
-        for group in SettingsGroup.allCases where ![.brains, .sharing, .devices].contains(group) {
+        for group in SettingsGroup.allCases where ![.brains, .devices].contains(group) {
             #expect(SettingsMap.attention(nodes, in: group).isEmpty, "\(group)")
         }
         // Nothing is lost: every item shows in exactly one section.
@@ -93,9 +89,9 @@ import Testing
     }
 
     @Test func aSectionIsMarkedOnlyWhenSomethingInItNeedsAFix() {
-        let nodes = [node(.thisDevice, .ready, sleeping: [pip]), node(.brains, .ready), node(.den, .off), node(.hop, .ready)]
+        let nodes = [node(.thisDevice, .ready, sleeping: [pip]), node(.brains, .ready), node(.hop, .ready)]
         let marked = SettingsMap.attentionGroups(SettingsMap.attention(nodes))
-        #expect(marked == [.brains, .sharing])
+        #expect(marked == [.brains])
         #expect(SettingsMap.attentionGroups([]).isEmpty)
     }
 

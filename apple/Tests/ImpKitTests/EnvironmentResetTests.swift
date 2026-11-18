@@ -72,7 +72,7 @@ struct FactoryResetTests {
         #expect(defaults.data(forKey: PreferencesStore.key) == nil)
         #expect(defaults.string(forKey: "NSWindow Frame ImpHome") == nil)
         #expect(!FileManager.default.fileExists(atPath: root.appendingPathComponent("Imp").path))
-        #expect(PreferencesStore(defaults: defaults).load().shortcuts.map(\.name) == ImpPreferences.firstLaunch.shortcuts.map(\.name))
+        #expect(PreferencesStore(defaults: defaults).load().shortcuts.map(\.name) .isEmpty)
         try? FileManager.default.removeItem(at: root)
     }
 }

@@ -56,7 +56,7 @@ key is copied, so you never type it again). It lives in your pocket.
 - It thinks on the iPhone, using a service you give it (address, model and key) and any web (HTTP) tool servers.
 - Keys and header values are kept in the phone's Keychain.
 - It works with no Mac linked, or while yours is out of reach. A pocket Imp has no shell, no computer control, no
-  triggers, no Mac senses and no Den tools. It can message your other Imps, play its animations and use the tool
+  triggers, no Mac senses and no gallery tools. It can message your other Imps, play its animations and use the tool
   servers you gave it.
 - Throw it to another iPhone and it visits there.
 - **Move to** `<Mac>…` (in its menu, while a Mac is connected) moves it home for good, with its chats, looks,
@@ -136,7 +136,7 @@ Devices also try each other's addresses on port 47824, so a VPN such as Tailscal
 Without a VPN, set a **Hop** in the Devices sheet (or the Mac's Devices card). A device waits at that Hop, a blind
 relay, and the others use it when nothing closer answers. The Hop can't read what passes through it.
 
-To run your own Hop or Den, see `server/README.md` in the repository.
+To run your own Hop, see `server/README.md` in the repository.
 
 ## When the link drops
 

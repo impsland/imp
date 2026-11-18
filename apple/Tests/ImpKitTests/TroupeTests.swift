@@ -4,13 +4,12 @@ import Testing
 
 @Suite struct TroupeTests {
     @Test func defaultsToOneRedImpWaitingInTheWindow() {
-        let p = ImpPreferences.firstLaunch
+        let p = ImpPreferences()
         #expect(p.imps.count == 1)
         #expect(p.imps[0].id == ImpProfile.defaultID && p.imps[0].hue == 0 && p.imps[0].brain == nil)
         #expect(!p.imps[0].isActive)
-        // It chats and has a shell, and nothing else: no borrowed tools, and no triggers but the starter
-        // kit's, which every Imp shares: two clicks (one types, two open settings) and the body triggers.
-        #expect(p.shortcuts.filter { !$0.runsLocally || $0.trigger.kind == .clicks }.map(\.trigger) == [.clicks(1), .clicks(2)])
+        // It chats and has a shell, and nothing else: no borrowed tools and no triggers.
+        #expect(p.shortcuts.isEmpty)
         #expect(p.shortcuts.allSatisfy { $0.performer == nil })
         #expect(p.imps[0].servers.isEmpty)
         #expect(p.imps[0].usesShell)
@@ -21,7 +20,7 @@ import Testing
         p.imps[0].isActive = true
         let pip = ImpProfile.newcomer(joining: p.imps)
         p.imps.append(pip)
-        var action = Shortcut(name: "Translate", hotkey: Hotkey(keyCode: 79), prompt: "Translate into English.")
+        var action = Shortcut(name: "Translate", hotkey: Hotkey(keyCode: 79), steps: [Step(.ask, value: "Translate into English.", clipboard: true)])
         #expect(p.performer(of: action, fallback: ImpProfile.defaultID) == ImpProfile.defaultID)
         action.performer = pip.id
         #expect(p.performer(of: action, fallback: ImpProfile.defaultID) == pip.id)
@@ -36,7 +35,7 @@ import Testing
         let server = MCPServerConfig(name: "Files", transport: .stdio, command: "npx")
         p.mcpServers = [server]
         p.imps[0].servers = [server.id]
-        var translate = Shortcut(name: "Translate", hotkey: Hotkey(keyCode: 79), prompt: "Translate into English.")   // F18
+        var translate = Shortcut(name: "Translate", hotkey: Hotkey(keyCode: 79), steps: [Step(.ask, value: "Translate into English.", clipboard: true)])   // F18
         translate.performer = ImpProfile.defaultID
         p.shortcuts = [translate]
         #expect(p.liveShortcuts.isEmpty && p.liveServers.isEmpty)
@@ -120,19 +119,12 @@ import Testing
         var pip = ImpProfile.newcomer(joining: p.imps)
         pip.usesShell = false
         p.imps.append(pip)
-        var action = Shortcut(name: "Translate", hotkey: Hotkey(keyCode: 79), prompt: "Translate into English.")
+        var action = Shortcut(name: "Translate", hotkey: Hotkey(keyCode: 79), steps: [Step(.ask, value: "Translate into English.", clipboard: true)])
         action.performer = pip.id
         p.shortcuts = [action]
         #expect(try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(p)) == p)
     }
 
-
-    @Test func contagionIsResponseNotCopy() {
-        #expect(Contagion.response(to: .reacted(.sad)) == .sad)
-        #expect(Contagion.response(to: .reacted(.greet)) == .greet)
-        #expect(Contagion.response(to: .answered) == .smile)
-        #expect(Contagion.response(to: .failed) == .wow)
-    }
 }
 
 @Suite struct ToolSetTests {

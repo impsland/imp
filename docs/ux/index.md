@@ -53,7 +53,7 @@ Views are written by hand with each platform's own tools. Only tokens and string
 - No semicolon inside a sentence. No long dash. Use a comma, a hyphen or a new sentence.
 - An error says what happened and what to do next. It never shows a raw error name and never a blank bubble.
 - Use the words from the glossary. It is "Brain", not "model settings". It is "Imp", not "agent" or "bot".
-- The Den and The Hop are names. In the middle of a sentence they read "the Den" and "the Hop" in English.
+- The Hop is a name. In the middle of a sentence it reads "the Hop" in English.
 
 ## The common words
 

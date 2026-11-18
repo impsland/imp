@@ -49,7 +49,8 @@ public enum ControlInk: String, Codable, CaseIterable, Sendable, Identifiable {
 public struct ImpPreferences: Codable, Hashable, Sendable {
     public var ai = AIConfig()
     /// Triggers: when something happens, an Imp does something. Each is shared by every Imp
-    /// (`performer` nil) or belongs to one Imp (see `SettingScope`). None until a kit or the person adds some.
+    /// (`performer` nil) or belongs to one Imp (see `SettingScope`). None until the person (or the Imp, on
+    /// request) adds some: nothing the Imp does in answer to a click, a key or the Mac is built in.
     public var shortcuts: [Shortcut] = []
     /// The MCP server library. Each Imp picks the ones it uses (`ImpProfile.servers`).
     public var mcpServers: [MCPServerConfig] = []
@@ -65,8 +66,6 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     public var antics = true
     /// Mouse games: circle Imp, swish in front of its face, stroke its head.
     public var mouseGames = true
-    /// Animations the user switched off or gave other triggers (the rest use their defaults).
-    public var animations: AnimationRules = [:]
     /// The first run (waking an Imp with a Brain) was shown once. Stored only once set: unset reads as the default.
     private var firstRunShown: Bool?
     public var firstRunSeen: Bool {
@@ -157,15 +156,8 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { keychain = newValue }
     }
     private var keychain: Bool?
-    /// The Den the user chose, a host name or URL such as `den.example.com`. Imp's own Den until
-    /// they change it. Empty: no Den (see `DenServer`). Independent of `hop`.
-    public var den: String {
-        get { denAddress ?? ServerKind.den.defaultAddress }
-        set { denAddress = newValue }
-    }
-    private var denAddress: String?
     /// The Hop the user chose, as `host:port`. Imp's own Hop until they change it. Empty: no Hop
-    /// (see `HopServer`). Independent of `den`.
+    /// (see `HopServer`).
     public var hop: String {
         get { hopAddress ?? ServerKind.hop.defaultAddress }
         set { hopAddress = newValue }
@@ -182,8 +174,8 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     /// The troupe. Always at least one: the little red Imp, waiting in the app's window.
     public var imps: [ImpProfile] = [.waiting]
 
-    /// Bare settings: one waiting Imp and nothing else. A fresh install starts from `firstLaunch`,
-    /// which adds the starter kit. Decoding saved settings never goes through here.
+    /// Bare settings: one waiting Imp and nothing else, with no triggers and no animations. A fresh
+    /// install starts from here. Decoding saved settings never goes through here.
     public init() {}
 
     /// Keeps the Brain the first run checked: its service (one already there for the same address is reused),

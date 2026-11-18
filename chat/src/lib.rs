@@ -16,6 +16,7 @@ pub mod config;
 pub mod folders;
 pub mod keys;
 pub mod link;
+pub mod mcp_auth;
 pub mod mentions;
 pub mod project;
 pub mod qr;

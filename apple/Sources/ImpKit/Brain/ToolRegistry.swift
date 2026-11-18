@@ -77,6 +77,8 @@ public enum ToolRegistry {
         OwnTools.removeTrigger: String(localized: "Remove a trigger"),
         OwnTools.listTools: String(localized: "List extra tools"),
         OwnTools.addTool: String(localized: "Add an extra tool"),
+        OwnTools.addKit: String(localized: "Offer a kit to add"),
+        OwnTools.exportKit: String(localized: "Export a kit to publish"),
         OwnTools.removeTool: String(localized: "Remove an extra tool"),
         OwnTools.openSettings: String(localized: "Open Settings"),
         OwnTools.message: String(localized: "Message another Imp"),
@@ -84,12 +86,6 @@ public enum ToolRegistry {
         ComputerTools.observe: String(localized: "Look at the screen"),
         ComputerTools.act: String(localized: "Click, type and scroll"),
         ComputerTools.verify: String(localized: "Check what happened"),
-        OwnTools.denSearch: String(localized: "Search the Den"),
-        OwnTools.denGet: String(localized: "Look at something in the Den"),
-        OwnTools.denAdd: String(localized: "Take something from the Den"),
-        OwnTools.denShare: String(localized: "Share in the Den"),
-        OwnTools.denUnshare: String(localized: "Take back from the Den"),
-        OwnTools.denAccount: String(localized: "Use its Den account"),
     ]
 
     private static func entry(_ e: ImpCore.ToolEntry) -> ToolEntry {

@@ -3,11 +3,13 @@
 //! session id the server gives after `initialize` goes back on every later request, and a DELETE
 //! with it ends the session. What the headers and bodies mean is decided in `protocol`.
 
-use super::client::{McpError, McpSecrets};
+use super::auth;
+use super::client::{McpError, McpSecrets, McpSignIn};
 use super::protocol::{self, Incoming};
 use futures_util::StreamExt;
 use reqwest::header::{CONTENT_TYPE, HeaderMap, HeaderName, HeaderValue};
 use serde_json::Value;
+use std::rc::Rc;
 use std::sync::Mutex;
 use std::time::Duration;
 
@@ -17,6 +19,7 @@ pub(super) struct Http {
     /// Valid headers, built once. Their values are marked sensitive so they never show in logs.
     headers: HeaderMap,
     state: Mutex<State>,
+    auth: Option<Rc<dyn McpSignIn>>,
 }
 
 /// What the server and the client agreed on so far.
@@ -27,7 +30,11 @@ struct State {
 }
 
 impl Http {
-    pub(super) fn new(url: &str, headers: &McpSecrets) -> Result<Self, McpError> {
+    pub(super) fn new(
+        url: &str,
+        headers: &McpSecrets,
+        auth: Option<Rc<dyn McpSignIn>>,
+    ) -> Result<Self, McpError> {
         let mut map = HeaderMap::new();
         for (name, value) in &headers.0 {
             let invalid = || McpError::Network(format!("the header {name} is not valid"));
@@ -47,6 +54,7 @@ impl Http {
             url: url.to_string(),
             headers: map,
             state: Mutex::new(State::default()),
+            auth,
         })
     }
 
@@ -81,6 +89,14 @@ impl Http {
         request
     }
 
+    /// The access token for the next request, from the sign-in the client was given.
+    async fn token(&self, force_refresh: bool) -> Result<Option<String>, McpError> {
+        match &self.auth {
+            Some(auth) => auth.token(&self.url, force_refresh).await,
+            None => Ok(None),
+        }
+    }
+
     /// Ends the session with a DELETE, as the Streamable HTTP transport says. Without a session
     /// there is nothing to end.
     pub(super) async fn end(&self) -> Result<(), McpError> {
@@ -105,14 +121,48 @@ impl Http {
         message: &Value,
         wait_for: Option<u64>,
     ) -> Result<Value, McpError> {
-        let (session, version) = self.remembered();
-        let pairs = protocol::post_headers(session.as_deref(), version.as_deref());
-        let response = self
-            .with_headers(self.client.post(&self.url), &pairs)
-            .body(message.to_string())
-            .send()
-            .await
-            .map_err(|e| McpError::Network(e.without_url().to_string()))?;
+        let mut forced = false;
+        let response = loop {
+            let (session, version) = self.remembered();
+            let pairs = protocol::post_headers(session.as_deref(), version.as_deref());
+            let mut request = self
+                .with_headers(self.client.post(&self.url), &pairs)
+                .body(message.to_string());
+            if let Some(token) = self.token(forced).await? {
+                let mut value = HeaderValue::from_str(&format!("Bearer {token}"))
+                    .map_err(|_| McpError::Network("the access token is not valid".into()))?;
+                value.set_sensitive(true);
+                request = request.header(reqwest::header::AUTHORIZATION, value);
+            }
+            let response = request
+                .send()
+                .await
+                .map_err(|e| McpError::Network(e.without_url().to_string()))?;
+            let status = response.status().as_u16();
+            if status == 401 || status == 403 {
+                let challenge = response
+                    .headers()
+                    .get_all(reqwest::header::WWW_AUTHENTICATE)
+                    .iter()
+                    .filter_map(|v| v.to_str().ok())
+                    .find_map(auth::parse_challenge);
+                if status == 403 && challenge.as_ref().is_none_or(|c| !c.insufficient_scope) {
+                    return Err(McpError::Status(status));
+                }
+                // One retry with a refreshed token, when there is a sign-in to refresh from.
+                if self.auth.is_some() && !forced && status == 401 {
+                    forced = true;
+                    continue;
+                }
+                let c = challenge.unwrap_or_default();
+                return Err(McpError::Unauthorized {
+                    resource_metadata: c.resource_metadata,
+                    scope: c.scope,
+                    insufficient_scope: c.insufficient_scope,
+                });
+            }
+            break response;
+        };
         if let Some(id) = response
             .headers()
             .get(protocol::SESSION_HEADER)

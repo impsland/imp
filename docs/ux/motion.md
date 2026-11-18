@@ -43,7 +43,7 @@ Animation must never be the only way to learn something. A state also has a word
 
 ## Imp animations
 
-Every animation the Imp plays, bundled or from the Den (`spec/animations/catalog.json`), lasts under 1 s in total, and so does every built-in gesture reaction on the iPhone. People expect a quick answer from the Imp. A test (`AnimationTests`) fails when a catalog animation reaches one second.
+Animations the Imp makes on request should stay short (under about 1 s) unless the person asks for a longer one, and so does every gesture reaction on the iPhone. People expect a quick answer from the Imp.
 
 ## Behavior timings
 

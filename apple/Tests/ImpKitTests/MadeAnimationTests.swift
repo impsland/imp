@@ -13,47 +13,24 @@ import Testing
         return (p, p.imps[0].id, pip.id)
     }
 
-    @Test func anImpsOwnVersionWinsOverTheSharedOneWhichWinsOverTheBuiltIn() {
+    @Test func aSharedAnimationIsFoundByEveryImpAndAnImpsOwnOnlyByThatImp() {
         var (p, imp, pip) = Self.troupe()
-        #expect(p.replacement(for: .smile, imp: pip) == nil)
-        let shared = MadeAnimation(name: "", replaces: .smile, beats: Self.beats)
-        p.save(shared, for: nil)
-        #expect(p.replacement(for: .smile, imp: pip)?.id == shared.id && p.replacement(for: .smile, imp: imp)?.id == shared.id)
-        let own = MadeAnimation(name: "", replaces: .smile, beats: [AnimationBeat(duration: 1)])
-        p.save(own, for: pip)
-        #expect(p.replacement(for: .smile, imp: pip)?.id == own.id)
-        #expect(p.replacement(for: .smile, imp: imp)?.id == shared.id, "the others keep the shared one")
-        p.removeAnimation(own.id)
-        #expect(p.replacement(for: .smile, imp: pip)?.id == shared.id)
-    }
-
-    @Test func aSharedAnimationTakesAGestureFromTheBuiltInOne() {
-        var (p, _, pip) = Self.troupe()
-        p.setTrigger(.poke, true, for: .wow)
-        let wave = MadeAnimation(name: "Wave", triggers: [.poke], beats: Self.beats)
+        let wave = MadeAnimation(name: "Wave", beats: Self.beats)
         p.save(wave, for: nil)
-        #expect(p.ref(for: .poke, imp: pip) == .custom(wave.id))
-        #expect(p.animation(for: .poke) == nil, "the gasp gave it up")
-        p.setTrigger(.poke, true, for: .wow)
-        #expect(p.ref(for: .poke, imp: pip) == .preset(.wow))
-        #expect(p.animationLibrary[0].triggers.isEmpty)
-    }
-
-    @Test func anImpsOwnGestureOnlyChangesThatImp() {
-        var (p, imp, pip) = Self.troupe()
-        p.setTrigger(.poke, true, for: .wow)
-        let mine = MadeAnimation(name: "Grumble", triggers: [.poke], beats: Self.beats)
+        #expect(p.ref(named: "Wave", imp: pip) == .custom(wave.id) && p.ref(named: "Wave", imp: imp) == .custom(wave.id))
+        let mine = MadeAnimation(name: "Grumble", beats: Self.beats)
         p.save(mine, for: pip)
-        #expect(p.ref(for: .poke, imp: pip) == .custom(mine.id))
-        #expect(p.ref(for: .poke, imp: imp) == .preset(.wow))
-        #expect(p.refs(for: .idle, imp: pip).contains(.preset(.smile)))
+        #expect(p.ref(named: "Grumble", imp: pip) == .custom(mine.id))
+        #expect(p.ref(named: "Grumble", imp: imp) == nil, "the others don't have it")
+        p.removeAnimation(mine.id)
+        #expect(p.ref(named: "Grumble", imp: pip) == nil)
     }
 
-    @Test func madeAnimationsMayWatchTheCursor() {
+    @Test func onlyTriggersWatchTheCursor() {
         var p = ImpPreferences()
-        for r in Reaction.allCases { p.setEnabled(false, for: r) }
-        #expect(!p.watchesCursor)
-        p.save(MadeAnimation(name: "Spin", triggers: [.circle], beats: Self.beats), for: nil)
+        p.save(MadeAnimation(name: "Spin", beats: Self.beats), for: nil)
+        #expect(!p.watchesCursor, "an animation never starts by itself")
+        p.shortcuts = [Shortcut(name: "Dizzy", trigger: Trigger(.circle), steps: [Step(.play, value: "Spin")])]
         #expect(p.watchesCursor)
     }
 
@@ -66,7 +43,7 @@ import Testing
         #expect(problems.count == 2, "\(problems)")
         let long = MadeAnimation(name: "Long", beats: Array(repeating: AnimationBeat(duration: 5), count: 30)).normalized
         #expect(long.beats.count == MadeAnimation.maxBeats && long.duration <= MadeAnimation.maxDuration + 0.001)
-        #expect(MadeAnimation(kit: try! JSONValue(jsonString: #"{"replaces": "teleport", "beats": [{"duration": 1}]}"#), problems: &problems) == nil)
+        #expect(MadeAnimation(kit: try! JSONValue(jsonString: #"{"beats": []}"#), problems: &problems) == nil)
     }
 
     @Test func traitsAreClampedAndOnlyStoredWhenSet() throws {
@@ -92,8 +69,8 @@ import Testing
     @Test func aKitCarriesAnimationsAndAnImpsCharacter() throws {
         var (p, _, pip) = Self.troupe()
         p.imps[1].traits = ImpTraits(lids: 0.3, tempo: 0.8)
-        p.save(MadeAnimation(name: "Slow blink", triggers: [.idle], beats: Self.beats), for: pip)
-        p.save(MadeAnimation(name: "", replaces: .sleep, beats: Self.beats), for: pip)
+        p.save(MadeAnimation(name: "Slow blink", beats: Self.beats), for: pip)
+        p.save(MadeAnimation(name: "Yawn", beats: Self.beats), for: pip)
         var kit = Kit.exporting(imps: [pip], from: p)
         kit.animations = [MadeAnimation(name: "Shrug", about: "A shrug.", beats: Self.beats)]
         let text = kit.json()
@@ -101,7 +78,7 @@ import Testing
         let back = try Kit.parse(text)
         #expect(back.animations.map(\.name) == ["Shrug"])
         #expect(back.imps[0].traits == p.imps[1].traits.normalized)
-        #expect(back.imps[0].animations.map(\.title) == ["Slow blink", Reaction.sleep.title] && back.imps[0].animations[1].replaces == .sleep)
+        #expect(back.imps[0].animations.map(\.title) == ["Slow blink", "Yawn"])
 
         var other = ImpPreferences()
         let added = other.add(back, imps: Set(back.imps.map(\.id)), triggers: [], servers: [], animations: Set(back.animations.map(\.id)), for: nil)

@@ -4,31 +4,27 @@ use std::sync::Arc;
 
 use axum::Router;
 use axum::extract::State;
-use axum::http::header::{CACHE_CONTROL, CONTENT_TYPE, ETAG, IF_NONE_MATCH, LOCATION};
+use axum::http::header::{CACHE_CONTROL, CONTENT_TYPE, ETAG, IF_NONE_MATCH};
 use axum::http::{HeaderMap, HeaderValue, StatusCode};
 use axum::response::{IntoResponse, Response};
-use axum::routing::{delete, get, post};
+use axum::routing::{get, post};
 use serde::{Deserialize, Serialize};
 
-use crate::den::{Caller, Den, ListQuery, PutItem};
+use crate::den::{Caller, Den, ListQuery};
 use crate::error::Error;
 use crate::extract::{Json, Path, Query};
 
 const LISTS: &str = "public, max-age=30";
-const KITS: &str = "public, max-age=300";
+const DOCUMENTS: &str = "public, max-age=300";
 
 pub fn routes() -> Router<Arc<Den>> {
     Router::new()
+        .route("/version", get(version))
         .route("/challenge", get(challenge))
-        .route("/accounts", post(create_account))
-        .route("/accounts/me", delete(delete_account))
         .route("/accounts/{handle}", get(account))
         .route("/items", get(list))
-        .route(
-            "/items/{handle}/{slug}",
-            get(item).put(put_item).delete(delete_item),
-        )
-        .route("/items/{handle}/{slug}/kit.json", get(kit))
+        .route("/items/{handle}/{slug}", get(item))
+        .route("/items/{handle}/{slug}/document.json", get(document))
         .route("/items/{handle}/{slug}/installs", post(install))
         .route("/items/{handle}/{slug}/reports", post(report))
         .route("/stats", get(stats))
@@ -52,27 +48,22 @@ fn reply<T: Serialize>(
     Ok(response)
 }
 
+/// What this Den speaks, so clients can check before they rely on it.
+async fn version() -> Result<Response, Error> {
+    reply(
+        StatusCode::OK,
+        &serde_json::json!({
+            "den": env!("CARGO_PKG_VERSION"),
+            "api": 1,
+            "formats": [crate::kit::MAX_FORMAT],
+            "mcp": crate::mcp::PROTOCOL_VERSIONS,
+        }),
+        Some(LISTS),
+    )
+}
+
 async fn challenge(State(den): State<Arc<Den>>, caller: Caller) -> Result<Response, Error> {
     reply(StatusCode::OK, &den.challenge(&caller)?, None)
-}
-
-#[derive(Deserialize)]
-struct NewAccount {
-    handle: String,
-    altcha: String,
-}
-
-async fn create_account(
-    State(den): State<Arc<Den>>,
-    caller: Caller,
-    Json(body): Json<NewAccount>,
-) -> Result<Response, Error> {
-    reply(
-        StatusCode::CREATED,
-        &den.create_account(&caller, &body.handle, &body.altcha)
-            .await?,
-        None,
-    )
 }
 
 async fn account(
@@ -85,11 +76,6 @@ async fn account(
         &den.account(&caller, &handle).await?,
         Some(LISTS),
     )
-}
-
-async fn delete_account(State(den): State<Arc<Den>>, caller: Caller) -> Result<StatusCode, Error> {
-    den.delete_account(&caller).await?;
-    Ok(StatusCode::NO_CONTENT)
 }
 
 async fn list(
@@ -116,37 +102,6 @@ async fn item(
     )
 }
 
-async fn put_item(
-    State(den): State<Arc<Den>>,
-    caller: Caller,
-    Path((handle, slug)): Path<(String, String)>,
-    Json(body): Json<PutItem>,
-) -> Result<Response, Error> {
-    let (created, item) = den.put_item(&caller, &handle, &slug, body).await?;
-    let mut response = reply(
-        if created {
-            StatusCode::CREATED
-        } else {
-            StatusCode::OK
-        },
-        &item,
-        None,
-    )?;
-    if created && let Ok(location) = HeaderValue::from_str(&format!("/items/{handle}/{slug}")) {
-        response.headers_mut().insert(LOCATION, location);
-    }
-    Ok(response)
-}
-
-async fn delete_item(
-    State(den): State<Arc<Den>>,
-    caller: Caller,
-    Path((handle, slug)): Path<(String, String)>,
-) -> Result<StatusCode, Error> {
-    den.delete_item(&caller, &handle, &slug).await?;
-    Ok(StatusCode::NO_CONTENT)
-}
-
 /// Whether `If-None-Match` lists `etag` (or `*`).
 fn matches(headers: &HeaderMap, etag: &str) -> bool {
     headers
@@ -159,13 +114,13 @@ fn matches(headers: &HeaderMap, etag: &str) -> bool {
         })
 }
 
-async fn kit(
+async fn document(
     State(den): State<Arc<Den>>,
     caller: Caller,
     headers: HeaderMap,
     Path((handle, slug)): Path<(String, String)>,
 ) -> Result<Response, Error> {
-    let doc = den.kit(&caller, &handle, &slug).await?;
+    let doc = den.document(&caller, &handle, &slug).await?;
     let etag = HeaderValue::from_str(&doc.etag).map_err(|_| Error::Internal)?;
     let mut response = if matches(&headers, &doc.etag) {
         StatusCode::NOT_MODIFIED.into_response()
@@ -178,7 +133,7 @@ async fn kit(
     response.headers_mut().insert(ETAG, etag);
     response
         .headers_mut()
-        .insert(CACHE_CONTROL, HeaderValue::from_static(KITS));
+        .insert(CACHE_CONTROL, HeaderValue::from_static(DOCUMENTS));
     Ok(response)
 }
 

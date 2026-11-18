@@ -57,3 +57,10 @@ required-features = ["io"]
 [[test]]
 name = "live_troupe"
 required-features = ["io"]
+
+[dev-dependencies]
+altcha.workspace = true
+
+[[test]]
+name = "mcp_oauth"
+required-features = ["io"]

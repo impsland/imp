@@ -25,6 +25,12 @@ use uuid::Uuid;
 /// How long an MCP server may take to start and to answer one request.
 const MCP_TIMEOUT: Duration = Duration::from_secs(60);
 
+/// The sign-in for MCP servers that ask for it.
+fn sign_in() -> Option<Rc<dyn imp_engine::McpSignIn>> {
+    crate::mcp_auth::default_path()
+        .map(|p| Rc::new(crate::mcp_auth::ChatSignIn::new(p)) as Rc<dyn imp_engine::McpSignIn>)
+}
+
 /// What the model is told it is.
 pub fn system_prompt(name: &str, imp: &ImpConfig) -> String {
     format!(
@@ -413,7 +419,7 @@ impl Session {
                 &keys::real_env,
             ));
         }
-        let (mcp, problems) = McpHost::connect(&specs, MCP_TIMEOUT).await;
+        let (mcp, problems) = McpHost::connect_with(&specs, MCP_TIMEOUT, sign_in()).await;
         let mcp = Rc::new(mcp);
         let offered = mcp.tools();
         let targets = self

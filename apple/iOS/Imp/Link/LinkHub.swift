@@ -198,7 +198,7 @@ final class LinkHub {
     }
 
     /// Sets (or clears, with empty text) the Hop this iPhone waits at. False for text that isn't an address.
-    /// The phone has no use for the Den: sharing is done on the Mac.
+    /// Only the Hop matters to the phone.
     @discardableResult
     func setHop(_ text: String) -> Bool {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)

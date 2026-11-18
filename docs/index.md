@@ -14,7 +14,7 @@ Using Imp across devices and sharing:
 
 - [Imps on other devices](/connecting/phone) covers the iPhone, doors, visits and trust.
 - [Sharing setups](/sharing/setups) explains kits: import, export and review.
-- [The Den](/sharing/den) is the gallery of shared Imps.
+- [The Den](/sharing/den) is a standalone MCP gallery of shared Imps.
 
 Ideas and how they work:
 

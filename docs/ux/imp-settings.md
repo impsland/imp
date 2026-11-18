@@ -10,7 +10,7 @@ No tabs and no boxed blocks. The Imp is large in the centre. The settings sit ar
 | --- | --- | --- |
 | Above the head | Brain | The Brain panel. |
 | Left | Look | Colour, size and character, with the live Imp as the preview. |
-| Right | Personality | Name, persona and voice. |
+| Right | Personality | Name and persona. |
 | Lower left | Tools | The list of tools. |
 | Lower right | Triggers | The list of triggers. |
 | Below | Moves | The Imp's animations. |
@@ -83,7 +83,7 @@ Every change is kept as it is made, as in the iPhone's own Settings. There is no
 
 ## Scope: this Imp or every Imp
 
-Triggers and made animations are either shared by every Imp or one Imp's own. These are the settings an Imp's page shows that are not only its own. Everything else on the page (look, personality, its Brain choice, which tools it may use, following) belongs to the Imp alone, and a server's or a service's own settings (address, key, model) are the app's, shown as such.
+Triggers and made animations are either shared by every Imp or one Imp's own. These are the settings an Imp's page shows that are not only its own. Everything else on the page (look, personality, its Brain choice, which tools it may use) belongs to the Imp alone, and a server's or a service's own settings (address, key, model) are the app's, shown as such.
 
 Each item has one of three scopes, and its row says which under its title, with a symbol:
 
@@ -122,9 +122,9 @@ Rejected: sharing a Character on its own. It would be a second thing to learn an
 
 ![Personality](./images/imp-personality.png)
 
-The name moves here, with the persona and the voice. The name is part of who the Imp is, not part of how it looks. An empty name shows `personality.name_empty` and is not saved.
+The name moves here, with the persona. The name is part of who the Imp is, not part of how it looks. An empty name shows `personality.name_empty` and is not saved.
 
-Between the persona and the voice is **What it's good at** (`personality.about`): one or two lines, at most 200 characters, with an info text (`personality.help.about`) saying the other Imps read it to know whom to ask. It is empty by default. It goes to the other Imps with the Imp's abilities (shell, browser, the names of its tool servers, which the Mac works out), on this Mac and on linked devices.
+After the persona comes **What it's good at** (`personality.about`): one or two lines, at most 200 characters, with an info text (`personality.help.about`) saying the other Imps read it to know whom to ask. It is empty by default. It goes to the other Imps with the Imp's abilities (shell, browser, the names of its tool servers, which the Mac works out), on this Mac and on linked devices.
 
 ## Brain
 
@@ -159,21 +159,35 @@ Empty state: `tools.empty` and the button `tools.add`.
 
 ![The trigger editor](./images/imp-trigger-editor.png)
 
-A trigger is shown as a sentence: "When {event}, {action}." Each has a switch and its scope under it (see [Scope](#scope-this-imp-or-every-imp)). Triggers run without a Brain, so they work even while the Imp sleeps. The list shows this Imp's own triggers first, then the shared ones it has no version of.
+A trigger is **one event, optional conditions and one to five steps** (the contract is in [Kits](/sharing/kits#triggers)). A row is one line, "event · conditions → steps", for example "4 quick clicks · Between 9:00 AM and 6:00 PM → play “Wiggle” · say “Ouch!” (aloud)", with the symbol of its first step on the tile. Each has a switch and its scope under it (see [Scope](#scope-this-imp-or-every-imp)). Triggers run without a Brain unless a step asks the model, so they work even while the Imp sleeps. The list shows this Imp's own triggers first, then the shared ones it has no version of.
 
-`triggers.add` opens the editor (`triggers.new`) directly, with the When and Do menus. The editor's For choice starts on `triggers.scope.just` for every trigger, shared ones included, so saving changes this Imp only. `scope.every_imp` sends the change to every Imp, and a line under the choice says what saving does (`triggers.scope.note_version`, `triggers.scope.note_every`).
+`triggers.add` opens the editor (`triggers.new`) directly. The editor, on a copy that changes nothing until Add or Save:
+
+| Part | What it offers |
+|------|----------------|
+| Name (`common.name`) | Optional; the event's summary when empty. |
+| When (`triggers.f.when`) | One event from a menu in three groups. **You** (`triggers.group.you`): Keys (a key recorder), Clicks on the Imp (1 to 3), Gestures (`triggers.gestures`: 4 quick clicks, press and hold, drag, let go, shake while carrying, stroke, tickle, circle, swish, rush, bob), Cursor comes close (seconds it rests, 0 to an hour), Cursor moves away. **Time** (`triggers.group.time`): Imp starts, Every day at (a time), Every few minutes (1 to 1440), Left alone (5 seconds to a day), You come back (minutes away), Mac wakes up. **Mac** (`triggers.group.mac`): App in front (text with a menu of open apps), Website (text), Battery low (percent), Charger (plugged in or unplugged), Mac is busy (percent), Mac runs hot, Network (goes away or comes back). The value control follows the event. |
+| Only if (`triggers.f.only_if`) | A list of conditions that must all hold, empty ("Always", `triggers.cond.always`) by default. Each has a state menu (battery, charger, app, website, busy, hot, network, time of day, days, asleep) and a value control: percent, plugged or on battery, text, offline or online, two times (hours may wrap past midnight), seven weekday buttons (one stays on), asleep or awake. Each has a remove button (`triggers.cond.remove`); the menu adds one. |
+| Do (`triggers.f.do`) | One to five steps, run in order. Each step is a card with an action menu, move up and down, remove, and its controls. **Ask the Imp**: a multi-line instruction and With clipboard. **Say something**: text and Aloud. **Play an animation**: a menu of this Imp's animations by name. **Fall asleep** and **Wake up**: the same menu, optional. **Follow the cursor**: Off, Eyes, Hop or Glide and a speed slider from 0.5 to 2, off unless Hop or Glide. **Open something**: Text box, Listen, Chat or Settings. The Add a step menu (`triggers.step.add`) is gone at five steps. |
+| For (`triggers.f.for`) | `triggers.scope.just` or `scope.every_imp`; it starts on this Imp for every trigger, shared ones included, so saving changes this Imp only. A line under the choice says what saving does (`triggers.scope.note_version`, `triggers.scope.note_every`). |
+
+Messages in the warning colour say what is missing (`triggers.problem.*`: no keys recorded, no steps, an ask with nothing to ask, a say with no text, a play with no animation, an animation this Imp does not have). While something is missing, Save is off, and so is Try now.
 
 The trailing action of a row follows its scope: an own trigger can be deleted (`triggers.delete`), a changed one goes back to the shared one (`triggers.use_shared`), and a shared one has no delete on its row. Its menu has `triggers.delete_every`, which asks first.
 
-**The starter kit.** A fresh install starts with the triggers of the starter kit, shared by every Imp: one click opens the text box, two clicks open the settings, a quiet while puts the Imp to sleep and the cursor coming close wakes it. Nothing in the app makes triggers of its own: the kit is data (`spec/presets/starter-kit.json`), read and added by the same code as a kit from The Den or a file. It is added once, on the first launch. A starter trigger the person changes or deletes is never put back on its own. To get them again, `triggers.starter` (in the empty list, and in the kit menu of the panel) opens the usual kit review with the starter kit, where nothing is added before Add.
+An animation never starts by itself, only through a trigger. On the Animations and Moves lists, an animation no trigger plays shows "Only when tried" and a bolt button (`triggers.hint.animation`: "To play it on an event, add a trigger.") that opens a new trigger with a Play step for it.
 
-Empty state: `triggers.empty`, with `triggers.starter`.
+**No default triggers.** A fresh install has no triggers: an Imp does what a trigger says only after the person (or the Imp) adds one. A click opens the chat bubble without any. Everything else comes from a kit, from the Imp itself (`imp_add_trigger`) or from Add. Example: "poke → play Wiggle, say Ouch".
+
+**Following the cursor** is a step. When it runs, the Imp follows that way until another follow step runs. Without one, the Imp is in the base mode: Eyes (its face looks at the cursor, its body stays). To follow from the start, add the trigger "Imp starts, Follow the cursor, Hop"; a Start trigger also goes off at once when it is added or switched on. Removing or switching off an Imp's last follow step returns it to Eyes. The mode is not saved: it is set again by its trigger when the Imp starts. Reduce Motion turns Hop and Glide into Eyes. It runs without a Brain. The iPhone has no cursor, so there it does nothing.
+
+Empty state: `triggers.empty`.
 
 ## Moves
 
 ![Moves](./images/imp-moves.png)
 
-The animations the Imp plays: how it follows the cursor, and its own animations. Its own are new ones only it plays, and its own versions of built-in or shared ones (`scope.changed`). A version of a built-in animation has its own switch, for this Imp alone, and keeps the built-in one's starts. The animation editor's For choice offers Every Imp and this Imp only, and saving a shared animation for this Imp makes this Imp's version, as for triggers.
+The animations only this Imp plays, and its own versions of shared ones (`scope.changed`). The animation editor's For choice offers Every Imp and this Imp only, and saving a shared animation for this Imp makes this Imp's version, as for triggers.
 
 ## Share and Goodbye
 
@@ -195,7 +209,6 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | MCP server not started | `tools.mcp_failed` and `error.tool_failed`. |
 | No triggers | `triggers.empty`. |
 | Name empty | `personality.name_empty`. |
-| Share needs The Den | `share.den_needs_setup`. |
 
 ## Words
 
@@ -245,7 +258,7 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `imp_settings.summary.brain_set` | {service}, {model} |
 | `imp_settings.summary.look` | Colour and size |
 | `imp_settings.summary.moves` | Animations |
-| `imp_settings.summary.personality` | Name and voice |
+| `imp_settings.summary.personality` | Name and persona |
 | `imp_settings.summary.tools` | {on} of {total} on |
 | `imp_settings.summary.triggers` | one: {count} trigger / other: {count} triggers |
 | `imp_settings.this_imp` | this Imp |
@@ -291,24 +304,14 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `memory.size.m` | {count}M |
 | `memory.tools.info` | Also sends what the tools did and returned. Off is smaller and cheaper. |
 | `memory.tools.title` | Tool results |
-| `moves.builtin` | Moves |
-| `moves.change` | Change |
 | `moves.empty` | No special moves yet. |
-| `moves.follow_how` | Follow |
-| `moves.help.builtin` | Pick one of the moves every Imp has and make a version only for this Imp. |
-| `moves.help.follow` | Choose what this Imp does when you move your mouse pointer: stay still, look at it, or run after it. |
-| `moves.help.follow_how` | Off: it stays still. Eyes: only its eyes look at the pointer. Hop: it jumps after the pointer. Glide: it slides after the pointer. |
 | `moves.help.own` | Moves made for only this Imp. They play instead of the shared ones. |
-| `moves.help.speed` | How fast it goes after the pointer. Only for Hop and Glide. |
-| `moves.title` | Moves |
 | `personality.about` | What it's good at |
 | `personality.about_hint` | Researching on the web, fixing code… |
 | `personality.help.about` | One or two lines. The other Imps read it to know whom to ask for what. |
 | `personality.help.name` | What you call this Imp. Say its name and it answers. |
 | `personality.help.persona` | Tell it who to be, like a kind pirate or a quiet helper. It will talk that way. |
 | `personality.help.rules` | The hidden rules that tell it how to answer. Most people never change them. |
-| `personality.help.voice` | What shows on your screen while this Imp talks out loud. |
-| `personality.help.voice_look` | Pick the picture shown while it talks: Glow is a glowing edge, Smoke is a puff of smoke, Both shows the two, Players is a small player with play and pause. |
 | `personality.name` | Name |
 | `personality.name_empty` | Give your Imp a name. |
 | `personality.name_hint` | Part of who {name} is. You can change it any time. |
@@ -318,13 +321,9 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `personality.rules.edit` | Edit… |
 | `personality.rules.own` | Your own |
 | `personality.title` | Personality |
-| `personality.voice` | Voice |
-| `personality.voice_look` | Shows as |
 | `scope.changed` | Changed for {name} |
 | `scope.every_imp` | Every Imp |
 | `scope.only` | Only {name} |
-| `share.den` | Den |
-| `share.den_needs_setup` | Set up The Den to share there. |
 | `share.file` | File |
 | `share.note` | Its look, personality, tools and triggers are shared. Keys, memory and chats never are. |
 | `share.title` | Share {name} |
@@ -348,6 +347,9 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `tools.mcp` | MCP |
 | `tools.mcp_connected` | Connected |
 | `tools.mcp_failed` | Could not start |
+| `tools.mcp_needs_signin` | Sign-in needed |
+| `tools.mcp_sign_in` | Sign in |
+| `tools.mcp_sign_out` | Sign out |
 | `tools.mcp_starting` | Starting |
 | `tools.new_server` | New |
 | `tools.optional` | Optional |
@@ -361,33 +363,83 @@ Share opens a sheet (the note `share.note` is its ⓘ). The user can share it in
 | `tools.shared_setup` | Every Imp that uses this tool gets this setup. Each Imp switches it on or off for itself. |
 | `tools.title` | Tools |
 | `triggers.add` | Add |
+| `triggers.cond.add` | Add |
+| `triggers.cond.always` | Always |
+| `triggers.cond.remove` | Remove this condition |
 | `triggers.delete` | Delete trigger |
 | `triggers.delete_every` | Delete for every Imp |
 | `triggers.delete_every.title` | Delete “{name}” for every Imp? |
 | `triggers.edit` | Edit trigger |
 | `triggers.empty` | No triggers yet. Add one and {name} acts on its own. |
-| `triggers.help.do` | What the Imp does when it goes off. |
+| `triggers.f.do` | Do |
+| `triggers.f.for` | For |
+| `triggers.f.only_if` | Only if |
+| `triggers.f.when` | When |
+| `triggers.follow` | Follow |
+| `triggers.gestures` | Gestures |
+| `triggers.group.mac` | Mac |
+| `triggers.group.time` | Time |
+| `triggers.group.you` | You |
+| `triggers.help.do` | The steps the Imp runs, in order, when it goes off. |
 | `triggers.help.for` | Which Imp does the job. A change here is for this Imp alone unless you pick Every Imp. |
-| `triggers.help.input` | What the Imp gets to look at when it goes off, like the clipboard. |
-| `triggers.help.instruction` | Tell the Imp in your own words what to do. |
 | `triggers.help.list` | A trigger wakes the Imp up by itself when something happens, like a time or a low battery. |
 | `triggers.help.name` | A name so you can find it again. |
-| `triggers.help.starter` | The triggers Imp comes with: clicks, falling asleep and waking up. You see them before anything is added. |
+| `triggers.help.only_if` | Every condition has to hold at that moment, like the battery being low or the time being late. |
+| `triggers.help.sheet` | When the event happens and every condition holds, the steps run in order. |
+| `triggers.help.speed` | How fast it goes after the pointer. Only for Hop and Glide. |
 | `triggers.help.when` | What has to happen to set it off, like a time, an app or a low battery. |
-| `triggers.instruction` | Task |
+| `triggers.hint.animation` | To play it on an event, add a trigger. |
+| `triggers.hint.button` | Add trigger |
 | `triggers.just_for` | Just for {name} |
 | `triggers.new` | New |
+| `triggers.open` | Open |
+| `triggers.open.chat` | Chat |
+| `triggers.open.listen` | Listen |
+| `triggers.open.settings` | Settings |
+| `triggers.open.text_box` | Text box |
+| `triggers.problem.ask` | Write what the Imp should do, or hand over the clipboard. |
+| `triggers.problem.keys` | Record the keys that set it off. |
+| `triggers.problem.missing` | This Imp has no animation called “{name}”. |
+| `triggers.problem.no_steps` | Add at least one step. |
+| `triggers.problem.play` | Pick the animation to play. |
+| `triggers.problem.say` | Write what the Imp says. |
+| `triggers.problem.too_many` | A trigger has five steps at most. |
 | `triggers.scope.just` | Just {name} |
 | `triggers.scope.note_every` | Changes it for every Imp. |
 | `triggers.scope.note_version` | Saves a version for {name} only. The other Imps keep the shared one. |
-| `triggers.sentence` | When {event}, {action}. |
 | `triggers.share_every` | Share to all |
-| `triggers.starter` | Starter kit |
+| `triggers.step.add` | Add a step |
+| `triggers.step.aloud` | Aloud |
+| `triggers.step.anim_none` | The usual way |
+| `triggers.step.ask_ph` | What should it do? Say it in your own words. |
+| `triggers.step.clipboard` | With clipboard |
+| `triggers.step.down` | Move down |
+| `triggers.step.no_animations` | No animations yet |
+| `triggers.step.pick_animation` | Pick an animation |
+| `triggers.step.remove` | Remove step |
+| `triggers.step.say_ph` | What it says |
+| `triggers.step.speed` | Speed |
+| `triggers.step.up` | Move up |
 | `triggers.switch` | Trigger: {sentence} |
 | `triggers.title` | Triggers |
 | `triggers.use_shared` | Use shared |
 | `triggers.use_shared.message` | The version only {name} has goes. |
 | `triggers.use_shared.title` | Use the shared “{name}” again? |
+| `triggers.v.any_app` | Any app |
+| `triggers.v.asleep` | Asleep |
+| `triggers.v.at_once` | Right away |
+| `triggers.v.awake` | Awake |
+| `triggers.v.choice` | Choice |
+| `triggers.v.clicks` | Clicks |
+| `triggers.v.comes_online` | Comes back |
+| `triggers.v.goes_offline` | Goes away |
+| `triggers.v.offline` | Offline |
+| `triggers.v.on_battery` | On battery |
+| `triggers.v.on_charger` | On the charger |
+| `triggers.v.online` | Online |
+| `triggers.v.pick_app` | Pick an open app |
+| `triggers.v.plugged` | Plugged in |
+| `triggers.v.unplugged` | Unplugged |
 <!-- /strings -->
 
 ## Opening a setting from a chat

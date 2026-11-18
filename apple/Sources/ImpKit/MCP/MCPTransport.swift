@@ -10,6 +10,11 @@ public enum MCPError: LocalizedError, Sendable {
     case http(Int, String)
     /// A message the protocol could not make or read, as the core words it.
     case protocolError(String)
+    /// The server wants a sign-in (HTTP 401, or 403 asking for more permission). The challenge is
+    /// what its `WWW-Authenticate` header said, as the core read it.
+    case needsSignIn(url: String, challenge: McpChallenge?)
+    /// The person did not sign in to the server (or could not): what to tell the model.
+    case signInRequired(server: String)
 
     public var errorDescription: String? {
         switch self {
@@ -21,6 +26,9 @@ public enum MCPError: LocalizedError, Sendable {
         case .http(let status, let m):
             m.isEmpty ? mcpStatusText(status: UInt16(clamping: status)) : mcpStatusText(status: UInt16(clamping: status)) + ". " + m
         case .protocolError(let m): m
+        case .needsSignIn: String(localized: "The MCP server asks you to sign in.")
+        case .signInRequired(let server):
+            String(localized: "The person has not signed in to \(server). Ask them to sign in: Tools, then \(server), then Sign in.")
         }
     }
 }
@@ -45,7 +53,7 @@ extension MCPTransport {
 }
 
 /// Builds the transport a config asks for.
-func makeTransport(for config: MCPServerConfig) throws -> any MCPTransport {
+func makeTransport(for config: MCPServerConfig, auth: MCPAuthStore? = nil, session: URLSession = .shared) throws -> any MCPTransport {
     switch config.transport {
     case .stdio:
         guard !config.command.trimmingCharacters(in: .whitespaces).isEmpty else {
@@ -61,6 +69,6 @@ func makeTransport(for config: MCPServerConfig) throws -> any MCPTransport {
               ["http", "https"].contains(url.scheme), url.host != nil else {
             throw MCPError.badConfig(String(localized: "Bad URL for \(config.name)."))
         }
-        return HTTPTransport(url: url, headers: config.headers)
+        return HTTPTransport(url: url, headers: config.headers, session: session, auth: auth)
     }
 }

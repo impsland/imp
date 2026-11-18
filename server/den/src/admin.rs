@@ -5,7 +5,7 @@ use std::process::ExitCode;
 
 use sqlx::{Row, SqlitePool};
 
-const USAGE: &str = "usage: den admin reported | hide <handle>/<slug> | unhide <handle>/<slug> | remove <handle>/<slug> | remove-account <handle> | backup <file>";
+const USAGE: &str = "usage: den admin reported | deactivate <handle> | reactivate <handle> | hide <handle>/<slug> | unhide <handle>/<slug> | remove <handle>/<slug> | remove-account <handle> | backup <file>";
 
 /// Runs one `den admin` command, prints its message, and exits with failure on any error.
 pub async fn run(path: &str, args: &[String]) -> ExitCode {
@@ -75,6 +75,31 @@ async fn execute(path: &str, args: &[String]) -> Result<String, String> {
                 .await
                 .map_err(failed)?;
             found(gone.rows_affected(), &format!("removed {handle}/{slug}"))
+        }
+        "deactivate" | "reactivate" => {
+            let handle = args
+                .get(1)
+                .filter(|h| !h.is_empty())
+                .ok_or_else(|| USAGE.to_owned())?;
+            let off = command == "deactivate";
+            let mut tx = pool.begin().await.map_err(failed)?;
+            let changed = sqlx::query("UPDATE accounts SET deactivated = ?2 WHERE handle = ?1")
+                .bind(handle)
+                .bind(off)
+                .execute(&mut *tx)
+                .await
+                .map_err(failed)?;
+            sqlx::query("UPDATE items SET suspended = ?2 WHERE handle = ?1")
+                .bind(handle)
+                .bind(off)
+                .execute(&mut *tx)
+                .await
+                .map_err(failed)?;
+            tx.commit().await.map_err(failed)?;
+            found(
+                changed.rows_affected(),
+                &format!("{command}d account {handle}"),
+            )
         }
         "remove-account" => {
             let handle = args

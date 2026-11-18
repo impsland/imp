@@ -17,7 +17,7 @@ An adapter or a view never holds a rule of its own. When a platform needs a rule
 engine/        imp-engine, the portable core (Rust)
 engine/ffi/    imp-ffi, the bindings the apps call the core through (UniFFI)
 chat/          imp, the command line app
-server/        the Den (den/), the Hop (hop/) and their shared code (shared/), with the Docker files
+server/        the Den (den/, a standalone MCP service), the Hop (hop/) and their shared code (shared/), with the Docker files
 spec/          PROTOCOL.md and fixtures/, the JSON vectors every platform passes
 apple/         the Mac and iPhone apps: Package.swift, Sources/, Tests/, iOS/, Resources/, scripts/
 extension/     the browser extension

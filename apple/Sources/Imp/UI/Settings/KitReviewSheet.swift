@@ -33,6 +33,7 @@ struct KitReviewSheet: View {
             if !kit.triggers.isEmpty { triggersSection }
             if !kit.looseServers.isEmpty { serversSection }
             if !kit.animations.isEmpty { animationsSection }
+            if !kit.skills.isEmpty { skillsSection }
             if !kit.problems.isEmpty { problemsCard }
         } footer: {
             if review.needsTarget {
@@ -99,6 +100,34 @@ struct KitReviewSheet: View {
         case .trigger: "bolt.fill"
         case .tools: "wrench.and.screwdriver.fill"
         }
+    }
+
+    /// Skills the kit names: each with the command that installs it. Nothing here runs it.
+    private var skillsSection: some View {
+        VStack(alignment: .leading, spacing: Spacing.snug) {
+            SectionHeader(info: "Skills are installed by you, in Terminal. Imp never runs the command.", minHeight: nil) {
+                HStack(spacing: Spacing.snug) {
+                    Image(systemName: "sparkles").foregroundStyle(Tone.muted)
+                    Text("Skills").font(Typeface.cardTitle).foregroundStyle(Tone.text)
+                }
+            }
+            ForEach(kit.skills) { skill in
+                HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
+                    VStack(alignment: .leading, spacing: Spacing.hairline) {
+                        Text(verbatim: skill.name).font(Typeface.body).foregroundStyle(Tone.text)
+                        Text(verbatim: skill.command).font(Typeface.mono).foregroundStyle(Tone.muted)
+                            .textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer(minLength: Spacing.small)
+                    Button { Pasteboard.write(text: skill.command) } label: { FitLabel("Copy", systemImage: "doc.on.doc") }
+                        .buttonStyle(.imp(.secondary, small: true))
+                        .help("Copy the command")
+                }
+            }
+        }
+        .padding(Spacing.medium)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Tone.card))
     }
 
     /// Code that would run on this Mac, said plainly.
@@ -200,19 +229,16 @@ struct KitReviewSheet: View {
     private func triggerCard(_ trigger: Shortcut) -> some View {
         VStack(alignment: .leading, spacing: Spacing.snug) {
             Text(trigger.displayName).font(Typeface.cardTitle).lineLimit(1)
-            Label(trigger.triggerSummary, systemImage: trigger.trigger.kind.symbol)
+            // "event · conditions → steps"
+            Label(trigger.triggerSummary, systemImage: trigger.symbol)
                 .font(Typeface.caption).foregroundStyle(Tone.text).lineLimit(2)
-            if trigger.command != .ask {
-                Text(trigger.command.title).font(Typeface.body).foregroundStyle(Tone.muted)
-            } else if !trigger.prompt.isEmpty {
-                Text(trigger.prompt).font(Typeface.body).foregroundStyle(Tone.muted)
-                    .lineLimit(4).fixedSize(horizontal: false, vertical: true)
-            }
+            Text("→ " + trigger.steps.map(\.shownSummary).joined(separator: " · ")).font(Typeface.body).foregroundStyle(Tone.muted)
+                .lineLimit(4).fixedSize(horizontal: false, vertical: true)
             let warnings = review.warnings(for: trigger.id)
-            if (trigger.command == .ask && trigger.usesClipboard) || !warnings.isEmpty {
+            if trigger.steps.contains(where: \.handsOverClipboard) || !warnings.isEmpty {
                 FlowLayout(spacing: Spacing.snug, lineSpacing: Spacing.snug) {
                     ForEach(warnings) { badge($0) }
-                    if trigger.command == .ask && trigger.usesClipboard {
+                    if trigger.steps.contains(where: \.handsOverClipboard) {
                         Badge("Sends your clipboard", symbol: "doc.on.clipboard").help("It sends what you copied along with the instruction.")
                     }
                 }
@@ -245,7 +271,7 @@ struct KitReviewSheet: View {
 
     private var animationsSection: some View {
         KitSection(icon: "wand.and.stars", title: "Animations",
-                   info: "Moves replace built-in animations. They run nothing on your Mac.") {
+                   info: "Animations only move the Imp. They run nothing on your Mac.") {
             ForEach(kit.animations) { animation in
                 SelectableCard(isOn: review.binding(animation: animation.id)) { animationCard(animation) }
             }
@@ -263,8 +289,6 @@ struct KitReviewSheet: View {
                 FlowLayout(spacing: Spacing.snug, lineSpacing: Spacing.snug) {
                     Badge(verbatim: String(format: "%.1f s", a.duration), symbol: "timer")
                     Badge("\(a.beats.count) beats", symbol: "metronome.fill")
-                    if let r = a.replaces { Badge("Instead of \(r.title)", symbol: "arrow.triangle.swap") }
-                    ForEach(AnimationTrigger.allCases.filter(a.triggers.contains)) { t in Badge(verbatim: t.title, symbol: t.symbol) }
                 }
             }
         }
@@ -300,9 +324,8 @@ struct KitReviewSheet: View {
                 for chat in imported.chats { history.adopt(chat) }
             }
         }
-        withImpAnimation(ImpDesign.Motion.expand, reduceMotion: reduceMotion) { model.prefs = prefs }
+        withImpAnimation(ImpDesign.Motion.expand, reduceMotion: reduceMotion) { model.changeByPerson(prefs) }
         router.kitFlow = nil
-        flow.onAdded?()
         // New Imps hatch on the stage first. Then, if a tool needs keys, its form opens.
         let needing = added.needingSecrets.first
         let target = review.target ?? flow.imp ?? added.imps.first?.id

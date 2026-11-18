@@ -4,11 +4,5 @@
     "en": "Nothing yet",
     "es": "Nada todavía",
     "zh-Hans": "暂时还没有"
-  },
-  "kit.origin.starter": {
-    "note": "Where a kit in the kit review came from: the starter kit that ships with Imp.",
-    "en": "Imp's starter kit",
-    "es": "Kit inicial de Imp",
-    "zh-Hans": "Imp 自带入门套件"
   }
 }

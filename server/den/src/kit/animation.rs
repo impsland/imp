@@ -79,6 +79,12 @@ pub(super) fn check_animation(anim: &Value, at: &str, problems: &mut Problems) {
         problems.add(at, "must be an object");
         return;
     };
+    if anim.contains_key("starts") {
+        problems.add(
+            &format!("{at}/starts"),
+            "animations no longer start by themselves; use a trigger with a `play` step",
+        );
+    }
     match anim.get("name").and_then(Value::as_str).map(str::trim) {
         Some(n) if !n.is_empty() && n.chars().count() <= 40 => {}
         _ => problems.add(

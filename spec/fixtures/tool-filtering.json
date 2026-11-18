@@ -2,7 +2,7 @@
   "description": "Tool ids and which tools are offered. An id is own.<group>.<tool> for a built-in tool and mcp.<server>.<tool> for a tool of an MCP server, where <server> is the server's name with anything outside letters, digits, underscore and hyphen turned into an underscore. A group id is the id without its last part. A tool is offered when neither its group nor its id is switched off. A tool without an id is never switched off. Calling a tool that is not offered is refused.",
   "ids": [
     { "kind": "own", "group": "body", "tool": "imp_speak", "id": "own.body.imp_speak", "groupID": "own.body" },
-    { "kind": "own", "group": "den", "tool": "den_search", "id": "own.den.den_search", "groupID": "own.den" },
+    { "kind": "own", "group": "setup", "tool": "imp_add_kit", "id": "own.setup.imp_add_kit", "groupID": "own.setup" },
     { "kind": "mcp", "server": "files", "tool": "read_file", "id": "mcp.files.read_file", "groupID": "mcp.files" },
     { "kind": "mcp", "server": "My Speech!", "tool": "say.text", "id": "mcp.My_Speech_.say.text", "groupID": "mcp.My_Speech_" }
   ],

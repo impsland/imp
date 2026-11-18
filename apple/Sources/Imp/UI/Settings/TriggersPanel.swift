@@ -11,7 +11,6 @@ struct TriggersPanel: View {
     let id: UUID
     @State private var draft: Draft?
     @State private var deleting: Shortcut?
-    @State private var starter: KitFlow?
     @Environment(\.impTint) private var tint
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -31,7 +30,6 @@ struct TriggersPanel: View {
         PanelList("triggers.title", icon: "bolt.fill", info: "triggers.help.list", accessory: {
             HStack(spacing: Spacing.small) {
                 HoverIconButton(systemName: "square.and.arrow.down", help: "Import kit…") { HomeWindow.shared.router.kitFlow = KitFlow(imp: id) }
-                HoverIconButton(systemName: "shippingbox", help: "triggers.starter") { HomeWindow.shared.router.kitFlow = .starter(imp: id) }
                 Button { start(.keys, .ask) } label: { FitLabel("triggers.add", systemImage: "plus") }
                     .buttonStyle(.imp(.secondary, small: true))
             }
@@ -40,9 +38,6 @@ struct TriggersPanel: View {
                 VStack(alignment: .leading, spacing: Spacing.small) {
                     Text(words("triggers.empty", name)).font(Typeface.body).foregroundStyle(Tone.muted)
                         .fixedSize(horizontal: false, vertical: true)
-                    Button { HomeWindow.shared.router.kitFlow = .starter(imp: id) } label: { FitLabel("triggers.starter", systemImage: "shippingbox") }
-                        .buttonStyle(.imp(.secondary, small: true))
-                        .help(Text("triggers.help.starter"))
                 }
                 .padding(.horizontal, Spacing.small)
             } else {
@@ -78,7 +73,7 @@ struct TriggersPanel: View {
         if model.prefs.shortcuts.contains(where: { $0.id == shortcut.id }) {
             let sentence = shortcut.sentence
             HStack(spacing: Spacing.small) {
-                IconTile(systemName: shortcut.trigger.kind.symbol).opacity(shortcut.isEnabled ? 1 : Opacity.dimmed)
+                IconTile(systemName: shortcut.symbol).opacity(shortcut.isEnabled ? 1 : Opacity.dimmed)
                 Button { draft = Draft(shortcut: shortcut, isNew: false) } label: {
                     VStack(alignment: .leading, spacing: Spacing.hairline) {
                         Text(verbatim: sentence).font(Typeface.body).foregroundStyle(Tone.text)
@@ -107,7 +102,7 @@ struct TriggersPanel: View {
             .contextMenu {
                 Section {
                     Button("triggers.edit") { draft = Draft(shortcut: shortcut, isNew: false) }
-                    Button("Try Now") { model.trigger(shortcut, on: model.imp(id), trying: true) }.disabled(!shortcut.isRunnable)
+                    Button("Try Now") { model.trigger(shortcut, on: model.imp(id), trying: true) }.disabled(!shortcut.isValid)
                     Button("Duplicate") { duplicate(shortcut) }
                     if shortcut.performer == nil {
                         Button(words("triggers.just_for", name)) { move(shortcut, to: .imp(id)) }
@@ -129,8 +124,8 @@ struct TriggersPanel: View {
     }
 
     /// Opens a new trigger straight in the full editor, which has the "When" and "Do" choices itself.
-    private func start(_ event: Trigger.Kind, _ command: Shortcut.Command) {
-        var s = Shortcut(name: "", prompt: "", usesClipboard: command == .ask, trigger: Trigger(event), command: command)
+    private func start(_ event: TriggerEvent, _ act: Step.Act) {
+        var s = Shortcut(name: "", trigger: .starter(event), steps: [Step(act, value: act == .open ? "chat" : act == .follow ? "eyes" : "")])
         s.performer = id
         s.id = UUID()
         draft = Draft(shortcut: s, isNew: true)
@@ -150,9 +145,8 @@ struct TriggersPanel: View {
 
     private func save(_ shortcut: Shortcut, for target: ScopeTarget) {
         var s = shortcut
-        if s.name.trimmingCharacters(in: .whitespaces).isEmpty { s.name = s.suggestedName ?? String(localized: "Untitled") }
-        if s.trigger.kind != .keys { s.hotkey = nil }
-        if s.command != .ask { s.usesClipboard = false }
+        if s.name.trimmingCharacters(in: .whitespaces).isEmpty { s.name = String(s.trigger.summary.prefix(Shortcut.maxNameLength)) }
+        if s.trigger.event != .keys { s.hotkey = nil }
         model.prefs.saveTrigger(s, for: target)
         draft = nil
     }
@@ -218,22 +212,9 @@ extension SettingScope {
 
 extension Shortcut {
     var displayName: String { name.trimmingCharacters(in: .whitespaces).isEmpty ? String(localized: "Untitled") : name }
-
-    /// A name from the instruction's first words (or what it opens, or when), for one saved without a
-    /// name. Nil when there is nothing to go on yet.
-    var suggestedName: String? {
-        if command != .ask { return command.title }
-        let words = prompt.split(whereSeparator: \.isWhitespace).prefix(4).joined(separator: " ")
-        let trimmed = words.trimmingCharacters(in: .punctuationCharacters)
-        if !trimmed.isEmpty { return trimmed }
-        return trigger.kind == .keys ? nil : trigger.summary
-    }
 }
 
 extension Shortcut {
-    /// "When <event>, <action>": a trigger as one sentence.
-    var sentence: String {
-        let action = command == .ask ? displayName : command.title.lowercased()
-        return words("triggers.sentence", trigger.kind == .keys ? triggerSummary : trigger.summary, action)
-    }
+    /// A trigger as one line: "4 quick clicks · Between 9:00 AM and 6:00 PM → play “Wiggle” · say “Ouch!”".
+    var sentence: String { triggerSummary + " → " + summary }
 }

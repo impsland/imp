@@ -20,7 +20,7 @@ import Testing
         }
 
         var playable: [String] {
-            prefs.originals(for: imp).filter(\.isEnabled).map(\.title) + Reaction.allCases.filter { prefs.isEnabled($0) }.map(\.rawValue)
+            prefs.originals(for: imp).filter(\.isEnabled).map(\.title)
         }
 
         nonisolated func tools() async -> [ToolSpec] {
@@ -44,11 +44,9 @@ import Testing
                 prefs.save(made, for: imp)
                 return "Made “\(made.title)” for you."
             case OwnTools.addTrigger:
-                let prefs = self.prefs, imp = self.imp
-                let s = try Shortcut(tool: args, imp: imp) { prefs.ref(named: $0, imp: imp) }
-                if s.command == .play && s.animation == nil { throw ToolArgumentError("`do` play needs the `animation` to play.") }
+                let s = try Shortcut(tool: args, imp: imp)
                 self.prefs.shortcuts.append(s)
-                return "Added " + s.toolDescription(animationName: s.animation.flatMap { prefs.animationName($0, imp: imp) })
+                return "Added " + s.toolDescription()
             case OwnTools.listTriggers:
                 return prefs.shortcuts.map { $0.toolDescription() }.joined(separator: "\n")
             case OwnTools.play: return "Playing."
@@ -78,7 +76,8 @@ import Testing
         let prefs = await host.prefs, imp = host.imp
         let made = try #require(prefs.ownAnimations(of: imp).first, "no animation made")
         let trigger = try #require(prefs.shortcuts.first, "no trigger made")
-        #expect(trigger.command == .play && trigger.animation == .custom(made.id) && trigger.trigger.kind == .website)
+        #expect(trigger.trigger.event == .website && trigger.steps.map(\.act) == [.play])
+        #expect(trigger.steps.first?.animationName.flatMap { prefs.ref(named: $0, imp: imp) } == .custom(made.id))
         #expect(!calls.contains { $0.result.hasPrefix("Error") && $0.name == OwnTools.addTrigger && $0.result.contains("Unknown animation") })
     }
 

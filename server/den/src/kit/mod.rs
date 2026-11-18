@@ -1,5 +1,6 @@
-//! Kit validation: the same limits and rules as Imp itself (`Kit.swift`), applied to a kit before
-//! the Den keeps it. Animation/trait and tool rules live in the submodules.
+//! Document validation: the same limits and rules as Imp itself (`Kit.swift`), applied to a document
+//! before the Den keeps it. Animation/trait, tool and skill rules live in the submodules.
+//! The vocabulary the rules need (moods, glyphs, moves, trait ranges) is written out in `animation`.
 
 use std::collections::HashSet;
 
@@ -7,21 +8,30 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use sha2::{Digest, Sha256};
 
-use crate::error::Violation;
+use crate::error::{Error, Violation};
 
 mod animation;
+mod skills;
 mod tools;
+mod trigger;
 
 use animation::{check_animation, check_traits};
+use skills::{MAX_SKILLS, check_skills};
 use tools::{check_server, url_problem};
 
-pub const MAX_BYTES: usize = 512 * 1024;
+/// The newest document `format` this Den reads.
+pub const MAX_FORMAT: i64 = 1;
+/// Largest document of an `imp`, `animation`, `trigger` or `tool`.
+pub const MAX_ITEM_BYTES: usize = 64 * 1024;
+/// Largest document of a `kit`.
+pub const MAX_KIT_BYTES: usize = 256 * 1024;
 const MAX_IMPS: usize = 20;
 const MAX_TRIGGERS: usize = 50;
 const MAX_SERVERS: usize = 20;
 const MAX_ANIMATIONS: usize = 50;
 const MAX_PROBLEMS: usize = 25;
 
+/// The type of an item.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Kind {
@@ -33,6 +43,14 @@ pub enum Kind {
 }
 
 impl Kind {
+    pub const ALL: [Kind; 5] = [
+        Kind::Imp,
+        Kind::Animation,
+        Kind::Trigger,
+        Kind::Tool,
+        Kind::Kit,
+    ];
+
     pub fn as_str(self) -> &'static str {
         match self {
             Kind::Imp => "imp",
@@ -44,15 +62,16 @@ impl Kind {
     }
 
     pub fn parse(s: &str) -> Option<Self> {
-        [
-            Kind::Imp,
-            Kind::Animation,
-            Kind::Trigger,
-            Kind::Tool,
-            Kind::Kit,
-        ]
-        .into_iter()
-        .find(|k| k.as_str() == s)
+        Self::ALL.into_iter().find(|k| k.as_str() == s)
+    }
+
+    /// The largest document of this type, in bytes.
+    pub fn max_bytes(self) -> usize {
+        if self == Kind::Kit {
+            MAX_KIT_BYTES
+        } else {
+            MAX_ITEM_BYTES
+        }
     }
 }
 
@@ -62,17 +81,19 @@ pub struct Counts {
     pub animations: usize,
     pub triggers: usize,
     pub tools: usize,
+    #[serde(default)]
+    pub skills: usize,
 }
 
-/// A kit that passed, ready to store.
+/// A document that passed, ready to store.
 #[derive(Debug)]
 pub struct Checked {
     pub name: String,
     pub about: String,
-    pub kind: Kind,
+    pub format: i64,
     pub runs_programs: bool,
     pub counts: Counts,
-    /// The kit as kept, compact.
+    /// The document as kept: compact, with sorted keys.
     pub text: String,
     pub sha256: String,
 }
@@ -98,13 +119,71 @@ pub(super) fn pointer_part(s: &str) -> String {
     s.replace('~', "~0").replace('/', "~1")
 }
 
-pub fn check(mut kit: Value) -> Result<Checked, Vec<Violation>> {
+/// The document as compact JSON with the keys of every object in sorted order.
+pub fn canonical(value: &Value) -> String {
+    fn write(value: &Value, out: &mut String) {
+        match value {
+            Value::Object(map) => {
+                let mut keys: Vec<&String> = map.keys().collect();
+                keys.sort();
+                out.push('{');
+                for (i, key) in keys.into_iter().enumerate() {
+                    if i > 0 {
+                        out.push(',');
+                    }
+                    out.push_str(&Value::String(key.clone()).to_string());
+                    out.push(':');
+                    write(&map[key], out);
+                }
+                out.push('}');
+            }
+            Value::Array(items) => {
+                out.push('[');
+                for (i, item) in items.iter().enumerate() {
+                    if i > 0 {
+                        out.push(',');
+                    }
+                    write(item, out);
+                }
+                out.push(']');
+            }
+            other => out.push_str(&other.to_string()),
+        }
+    }
+    let mut out = String::new();
+    write(value, &mut out);
+    out
+}
+
+fn invalid(pointer: &str, detail: &str) -> Error {
+    Error::invalid(pointer, detail)
+}
+
+/// Checks `doc` as an item of type `kind`. A failure is `validation-failed` (with up to 25 problems) or
+/// `unsupported-format`.
+pub fn check(doc: Value, kind: Kind) -> Result<Checked, Error> {
     let mut problems = Problems(Vec::new());
-    let Some(root) = kit.as_object_mut() else {
-        return Err(vec![Violation {
-            pointer: String::new(),
-            detail: "a kit is a JSON object".to_owned(),
-        }]);
+    let Some(root) = doc.as_object() else {
+        return Err(invalid("", "a document is a JSON object"));
+    };
+
+    let format = match root.get("format") {
+        None | Some(Value::Null) => {
+            problems.add("/format", "required: the integer 1");
+            0
+        }
+        Some(v) => match v.as_i64() {
+            Some(n) if n > MAX_FORMAT => {
+                return Err(Error::UnsupportedFormat(format!(
+                    "This Den reads kit format {MAX_FORMAT} at most."
+                )));
+            }
+            Some(n) if n >= 1 => n,
+            _ => {
+                problems.add("/format", "must be a whole number, 1 or more");
+                0
+            }
+        },
     };
 
     let name = match root.get("name").and_then(Value::as_str).map(str::trim) {
@@ -155,11 +234,11 @@ pub fn check(mut kit: Value) -> Result<Checked, Vec<Violation>> {
         "animations",
         &mut problems,
     );
+    let skills = list(root, "skills", MAX_SKILLS, "skills", &mut problems);
+    check_skills(skills, &mut problems);
 
     for (i, trigger) in triggers.iter().enumerate() {
-        if !trigger.is_object() {
-            problems.add(&format!("/triggers/{i}"), "must be an object");
-        }
+        trigger::check_trigger(trigger, &format!("/triggers/{i}"), &mut problems);
     }
     let mut all_animations = animations.len();
     let mut all_triggers = triggers.len();
@@ -201,8 +280,11 @@ pub fn check(mut kit: Value) -> Result<Checked, Vec<Violation>> {
         }
         if let Some(own) = imp.get("triggers").filter(|t| !t.is_null()) {
             match own.as_array() {
-                Some(own) if own.len() <= MAX_TRIGGERS && own.iter().all(Value::is_object) => {
-                    all_triggers += own.len()
+                Some(own) if own.len() <= MAX_TRIGGERS => {
+                    all_triggers += own.len();
+                    for (n, trig) in own.iter().enumerate() {
+                        trigger::check_trigger(trig, &format!("{at}/triggers/{n}"), &mut problems);
+                    }
                 }
                 _ => problems.add(
                     &format!("{at}/triggers"),
@@ -240,7 +322,7 @@ pub fn check(mut kit: Value) -> Result<Checked, Vec<Violation>> {
     if all_animations > MAX_ANIMATIONS {
         problems.add(
             "/animations",
-            format!("{all_animations} animations, at most {MAX_ANIMATIONS} per kit"),
+            format!("{all_animations} animations, at most {MAX_ANIMATIONS} per document"),
         );
     }
 
@@ -253,49 +335,136 @@ pub fn check(mut kit: Value) -> Result<Checked, Vec<Violation>> {
         animations: all_animations,
         triggers: all_triggers,
         tools: server_names.len(),
+        skills: skills.len(),
     };
-    if counts.imps + counts.animations + counts.triggers + counts.tools == 0
-        && problems.0.is_empty()
-    {
-        problems.add(
-            "",
-            "a kit needs at least one Imp, trigger, tool or animation",
-        );
-    }
-    let kind = match (imps.len(), animations.len(), triggers.len(), loose_tools) {
-        (1, 0, 0, 0) => Kind::Imp,
-        (0, a, 0, 0) if a > 0 => Kind::Animation,
-        (0, 0, t, 0) if t > 0 => Kind::Trigger,
-        (0, 0, 0, t) if t > 0 => Kind::Tool,
-        _ => Kind::Kit,
-    };
-    let runs_programs = servers.is_some_and(|m| m.values().any(|s| s.get("command").is_some()));
+    check_shape(
+        kind,
+        &Shape {
+            imps: imps.len(),
+            animations: animations.len(),
+            triggers: triggers.len(),
+            tools: server_names.len(),
+            loose_tools,
+            skills: skills.len(),
+        },
+        &mut problems,
+    );
+    let runs_programs = !skills.is_empty()
+        || servers.is_some_and(|m| m.values().any(|s| s.get("command").is_some()));
 
     if !problems.0.is_empty() {
-        return Err(problems.0);
+        return Err(Error::Invalid(problems.0));
     }
-    let text = serde_json::to_string(&kit).map_err(|_| {
-        vec![Violation {
-            pointer: String::new(),
-            detail: "can't be written as JSON".to_owned(),
-        }]
-    })?;
-    if text.len() > MAX_BYTES {
-        return Err(vec![Violation {
-            pointer: String::new(),
-            detail: format!("larger than {} KB", MAX_BYTES / 1024),
-        }]);
+    let text = canonical(&doc);
+    if text.len() > kind.max_bytes() {
+        return Err(invalid(
+            "",
+            &format!(
+                "a {} is at most {} KB, this one is {} KB",
+                kind.as_str(),
+                kind.max_bytes() / 1024,
+                text.len().div_ceil(1024)
+            ),
+        ));
     }
     let sha256 = hex::encode(Sha256::digest(text.as_bytes()));
     Ok(Checked {
         name,
         about,
-        kind,
+        format,
         runs_programs,
         counts,
         text,
         sha256,
     })
+}
+
+/// How many of each thing sit at the top level of a document.
+struct Shape {
+    imps: usize,
+    animations: usize,
+    triggers: usize,
+    tools: usize,
+    /// Tools no Imp of the document lists.
+    loose_tools: usize,
+    skills: usize,
+}
+
+/// A document must be what its type says (see the table in `spec/PROTOCOL.md`).
+fn check_shape(kind: Kind, s: &Shape, problems: &mut Problems) {
+    let only = |problems: &mut Problems, key: &str, n: usize, why: &str| {
+        if n > 0 {
+            problems.add(&format!("/{key}"), why.to_owned());
+        }
+    };
+    let exactly_one = |problems: &mut Problems, key: &str, n: usize, what: &str| {
+        if n != 1 {
+            problems.add(
+                &format!("/{key}"),
+                format!("{what} holds exactly one entry here, this has {n}"),
+            );
+        }
+    };
+    let no = |kind: Kind| format!("a {} holds no such entries", kind.as_str());
+    match kind {
+        Kind::Imp => {
+            exactly_one(problems, "imps", s.imps, "an imp");
+            only(
+                problems,
+                "animations",
+                s.animations,
+                "an imp's animations go inside the Imp",
+            );
+            only(
+                problems,
+                "triggers",
+                s.triggers,
+                "an imp's triggers go inside the Imp",
+            );
+            only(problems, "skills", s.skills, "skills belong in a kit");
+            only(
+                problems,
+                "mcpServers",
+                s.loose_tools,
+                "an imp holds only the tools that Imp lists",
+            );
+        }
+        Kind::Animation => {
+            exactly_one(problems, "animations", s.animations, "an animation");
+            only(problems, "imps", s.imps, &no(kind));
+            only(problems, "triggers", s.triggers, &no(kind));
+            only(problems, "mcpServers", s.tools, &no(kind));
+            only(problems, "skills", s.skills, "skills belong in a kit");
+        }
+        Kind::Trigger => {
+            exactly_one(problems, "triggers", s.triggers, "a trigger");
+            if s.animations > 1 {
+                problems.add(
+                    "/animations",
+                    "a trigger holds at most the one animation it plays",
+                );
+            }
+            only(problems, "imps", s.imps, &no(kind));
+            only(problems, "mcpServers", s.tools, &no(kind));
+            only(problems, "skills", s.skills, "skills belong in a kit");
+        }
+        Kind::Tool => {
+            exactly_one(problems, "mcpServers", s.tools, "a tool");
+            only(problems, "imps", s.imps, &no(kind));
+            only(problems, "animations", s.animations, &no(kind));
+            only(problems, "triggers", s.triggers, &no(kind));
+            only(problems, "skills", s.skills, "skills belong in a kit");
+        }
+        Kind::Kit => {
+            if s.imps + s.animations + s.triggers + s.tools + s.skills == 0 && problems.0.is_empty()
+            {
+                problems.add(
+                    "",
+                    "a kit needs at least one Imp, animation, trigger, tool or skill",
+                );
+            }
+        }
+    }
 }
 
 /// An optional list, at most `max` long. Anything else is a problem and counts as empty.
@@ -324,104 +493,4 @@ fn list<'a>(
 }
 
 #[cfg(test)]
-mod tests {
-    use serde_json::json;
-
-    use super::*;
-
-    fn problems_of(kit: Value) -> Vec<String> {
-        check(kit)
-            .expect_err("kit should fail")
-            .into_iter()
-            .map(|v| format!("{} {}", v.pointer, v.detail))
-            .collect()
-    }
-
-    fn animation(beats: Value) -> Value {
-        json!({ "name": "n", "animations": [{ "name": "a", "beats": beats }] })
-    }
-
-    #[test]
-    fn kinds() {
-        let tool =
-            json!({ "name": "n", "mcpServers": { "s": { "url": "https://x.example/mcp" } } });
-        assert_eq!(check(tool).expect("tool").kind, Kind::Tool);
-        let imp = json!({ "name": "n", "imps": [{ "name": "Pip" }] });
-        assert_eq!(check(imp).expect("imp").kind, Kind::Imp);
-        let two = json!({ "name": "n", "imps": [{ "name": "Pip" }, { "name": "Pop" }] });
-        assert_eq!(check(two).expect("kit").kind, Kind::Kit);
-        let anim = animation(json!([{ "duration": 1.0 }]));
-        assert_eq!(check(anim).expect("animation").kind, Kind::Animation);
-    }
-
-    #[test]
-    fn imp_with_its_own_tool_is_still_an_imp() {
-        let kit = json!({ "name": "n", "imps": [{ "name": "Pip", "mcpServers": ["s"] }],
-            "mcpServers": { "s": { "command": "npx", "args": ["x"] } } });
-        let checked = check(kit).expect("imp");
-        assert_eq!(checked.kind, Kind::Imp);
-        assert!(checked.runs_programs);
-    }
-
-    #[test]
-    fn secrets_are_refused() {
-        let env = json!({ "name": "n", "mcpServers": { "s": { "command": "x", "env": { "API_KEY": "sk-1" } } } });
-        assert!(problems_of(env)[0].contains("/mcpServers/s/env/API_KEY"));
-        let query = json!({ "name": "n", "mcpServers": { "s": { "url": "https://x.example/mcp?api_key=1" } } });
-        assert!(problems_of(query)[0].contains("looks like a secret"));
-        let user =
-            json!({ "name": "n", "mcpServers": { "s": { "url": "https://u:p@x.example/" } } });
-        assert!(problems_of(user)[0].contains("user name"));
-        let empty = json!({ "name": "n", "mcpServers": { "s": { "command": "x", "env": { "API_KEY": "" } } } });
-        assert!(check(empty).is_ok());
-    }
-
-    #[test]
-    fn animations_are_checked() {
-        assert!(
-            problems_of(animation(json!([])))
-                .iter()
-                .any(|p| p.contains("1 to 24 beats"))
-        );
-        assert!(
-            problems_of(animation(json!([{ "duration": 0.01 }])))
-                .iter()
-                .any(|p| p.contains("duration"))
-        );
-        assert!(
-            problems_of(animation(json!([{ "duration": 1, "mood": "grumpy" }])))
-                .iter()
-                .any(|p| p.contains("mood"))
-        );
-        assert!(
-            problems_of(animation(json!([{ "duration": 1, "times": 9 }])))
-                .iter()
-                .any(|p| p.contains("times"))
-        );
-        let long = json!(
-            (0..5)
-                .map(|_| json!({ "duration": 5.0 }))
-                .collect::<Vec<_>>()
-        );
-        assert!(
-            problems_of(animation(long))
-                .iter()
-                .any(|p| p.contains("at most 20"))
-        );
-    }
-
-    #[test]
-    fn limits_and_basics() {
-        assert!(problems_of(json!([])).len() == 1);
-        assert!(problems_of(json!({ "triggers": [{}] }))[0].contains("/name"));
-        assert!(problems_of(json!({ "name": "n" }))[0].contains("at least one"));
-        let imps: Vec<Value> = (0..21)
-            .map(|i| json!({ "name": format!("i{i}") }))
-            .collect();
-        assert!(problems_of(json!({ "name": "n", "imps": imps }))[0].contains("at most 20"));
-        let chats = json!({ "name": "n", "imps": [{ "name": "p", "chats": [{ "title": "x" }] }] });
-        assert!(problems_of(chats)[0].contains("private"));
-        let traits = json!({ "name": "n", "imps": [{ "name": "p", "traits": { "lids": 0.9 } }] });
-        assert!(problems_of(traits)[0].contains("lids"));
-    }
-}
+mod tests;

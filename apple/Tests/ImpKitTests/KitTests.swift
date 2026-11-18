@@ -6,10 +6,10 @@ import Testing
     static let full = #"""
     {"name": "Morning helper", "about": "Starts the day.",
       "triggers": [
-        { "name": "Summarize", "when": {"kind": "keys", "keys": "ctrl+cmd+S"}, "prompt": "Summarize this.", "with_clipboard": true },
-        { "name": "Low battery", "when": {"kind": "battery", "number": 15}, "only_if": [{"kind": "app", "text": "Safari"}, {"kind": "hours", "text": "22:00-07:00"}],
-          "do": "chat" },
-        { "name": "Nine", "when": {"kind": "time", "text": "9:05"}, "prompt": "Plan my day." }
+        { "name": "Summarize", "on": "keys", "value": "ctrl+cmd+S", "do": [{"act": "ask", "value": "Summarize this.", "clipboard": true}] },
+        { "name": "Low battery", "on": "battery", "value": 15, "if": [{"state": "app", "value": "Safari"}, {"state": "hours", "value": "22:00-07:00"}],
+          "do": [{"act": "open", "value": "chat"}] },
+        { "name": "Nine", "on": "at", "value": "9:05", "do": [{"act": "ask", "value": "Plan my day."}] }
       ],
       "mcpServers": {
         "Memory": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-memory"] },
@@ -22,7 +22,7 @@ import Testing
         let kit = try Kit.parse(#"""
         {"name": "Pack", "about": "Hi",
           "registry": { "author": "someone", "tags": ["a", "b"], "summary": "One line." },
-          "triggers": [ { "name": "Hi", "when": { "kind": "wake" }, "prompt": "Hello" } ] }
+          "triggers": [ { "name": "Hi", "on": "wake", "do": [{"act": "ask", "value": "Hello"}] } ] }
         """#)
         #expect(kit.name == "Pack" && kit.triggers.count == 1 && kit.problems.isEmpty)
         let withImp = try Kit.parse(#"""
@@ -36,8 +36,8 @@ import Testing
         let kit = try Kit.parse(Self.full)
         #expect(kit.name == "Morning helper" && kit.about == "Starts the day.")
         #expect(kit.triggers.map(\.name) == ["Summarize", "Low battery", "Nine"])
-        #expect(kit.triggers[0].keys == Hotkey(parsing: "ctrl+cmd+S") && kit.triggers[0].usesClipboard)
-        #expect(kit.triggers[1].trigger.kind == .battery && kit.triggers[1].conditions.count == 2 && kit.triggers[1].command == .chat)
+        #expect(kit.triggers[0].keys == Hotkey(parsing: "ctrl+cmd+S") && kit.triggers[0].steps == [Step(.ask, value: "Summarize this.", clipboard: true)])
+        #expect(kit.triggers[1].trigger == Trigger(.battery, value: "15") && kit.triggers[1].conditions.count == 2 && kit.triggers[1].steps.first?.target == .chat)
         #expect(kit.triggers[2].trigger.minuteOfDay == 9 * 60 + 5)
         #expect(kit.servers.map(\.name) == ["GitHub", "Memory", "Remote"])
         #expect(kit.problems.isEmpty)
@@ -46,9 +46,9 @@ import Testing
     @Test func badItemsDoNotSinkTheKit() throws {
         let kit = try Kit.parse(#"""
         {"triggers": [
-            {"name": "Good", "when": {"kind": "wake"}, "prompt": "Hi"},
-            {"name": "Bad kind", "when": {"kind": "teleport"}, "prompt": "x"},
-            {"name": "No when", "prompt": "x"}],
+            {"name": "Good", "on": "wake", "do": [{"act": "ask", "value": "Hi"}]},
+            {"name": "Bad kind", "on": "teleport", "do": [{"act": "ask", "value": "x"}]},
+            {"name": "No when", "do": [{"act": "ask", "value": "x"}]}],
          "mcpServers": {"Fine": {"command": "uvx mcp-server-fetch"}, "Broken": {"args": ["x"]}, "Text": "npx foo"}}
         """#)
         #expect(kit.triggers.map(\.name) == ["Good"])
@@ -59,7 +59,7 @@ import Testing
     }
 
     @Test func aKitOfOnlyBadItemsIsAnError() {
-        #expect(throws: KitError.self) { try Kit.parse(#"{"triggers": [{"when": {"kind": "teleport"}}]}"#) }
+        #expect(throws: KitError.self) { try Kit.parse(#"{"triggers": [{"on": "teleport"}]}"#) }
         #expect(throws: KitError.empty) { try Kit.parse(#"{"name": "Nothing", "triggers": []}"#) }
     }
 
@@ -73,9 +73,9 @@ import Testing
     }
 
     @Test func readsASingleTriggerOrAList() throws {
-        let one = try Kit.parse(#"{"name": "Hello", "when": {"kind": "start"}, "prompt": "Say hi."}"#)
+        let one = try Kit.parse(#"{"name": "Hello", "on": "start", "do": [{"act": "ask", "value": "Say hi."}]}"#)
         #expect(one.triggers.count == 1 && one.triggers[0].performer == nil && one.servers.isEmpty)
-        let list = try Kit.parse(#"[{"when": {"kind": "wake"}, "prompt": "a"}, {"when": {"kind": "hot"}, "prompt": "b"}, {"nope": 1}]"#)
+        let list = try Kit.parse(#"[{"on": "wake", "do": [{"act": "ask", "value": "a"}]}, {"on": "hot", "do": [{"act": "ask", "value": "b"}]}, {"nope": 1}]"#)
         #expect(list.triggers.count == 2 && list.problems.count == 1)
     }
 
@@ -88,7 +88,7 @@ import Testing
     @Test func capsSizeAndCounts() throws {
         let big = #"{"name": ""# + String(repeating: "a", count: Kit.maxBytes) + #""}"#
         #expect(throws: KitError.tooLarge) { try Kit.parse(big) }
-        let triggers = Array(repeating: #"{"when": {"kind": "wake"}, "prompt": "x"}"#, count: Kit.maxTriggers + 1).joined(separator: ",")
+        let triggers = Array(repeating: #"{"on": "wake", "do": [{"act": "ask", "value": "x"}]}"#, count: Kit.maxTriggers + 1).joined(separator: ",")
         #expect(throws: KitError.tooMany("triggers", Kit.maxTriggers)) { try Kit.parse("[\(triggers)]") }
         let servers = (0...Kit.maxServers).map { #""s\#($0)": {"command": "x\#($0)"}"# }.joined(separator: ",")
         #expect(throws: KitError.tooMany("tools", Kit.maxServers)) { try Kit.parse(#"{"mcpServers": {\#(servers)}}"#) }
@@ -96,7 +96,7 @@ import Testing
 
     @Test func warnsAboutCodeSecretsAndKeys() throws {
         let kit = try Kit.parse(Kit.parse(Self.full).json())      // as shared: secrets blanked
-        let taken = Shortcut(name: "Mine", hotkey: Hotkey(parsing: "ctrl+cmd+S"), prompt: "x")
+        let taken = Shortcut(name: "Mine", hotkey: Hotkey(parsing: "ctrl+cmd+S"), steps: [Step(.ask, value: "x")])
         let warnings = kit.warnings(existing: [taken])
         let code = warnings.filter { $0.kind == .runsCommand }
         #expect(code.count == 2 && code.allSatisfy(\.isCaution))
@@ -109,7 +109,7 @@ import Testing
 
     @Test func warnsAboutKeysUsedTwiceInOneKit() throws {
         let kit = try Kit.parse(#"""
-        [{"when": {"kind": "keys", "keys": "ctrl+opt+K"}, "prompt": "a"}, {"when": {"kind": "keys", "keys": "⌃⌥K"}, "prompt": "b"}]
+        [{"on": "keys", "value": "ctrl+opt+K", "do": [{"act": "ask", "value": "a"}]}, {"on": "keys", "value": "⌃⌥K", "do": [{"act": "ask", "value": "b"}]}]
         """#)
         #expect(kit.warnings().filter { $0.kind == .keysInUse }.map(\.item) == [kit.triggers[1].id])
     }
@@ -136,8 +136,8 @@ import Testing
             #expect(back.name == kit.name && back.about == kit.about && back.problems.isEmpty)
             #expect(back.triggers.count == kit.triggers.count)
             for (a, b) in zip(kit.triggers, back.triggers) {
-                #expect(a.name == b.name && a.hotkey == b.hotkey && a.prompt == b.prompt && a.usesClipboard == b.usesClipboard)
-                #expect(a.trigger == b.trigger && a.conditions == b.conditions && a.command == b.command)
+                #expect(a.name == b.name && a.hotkey == b.hotkey && a.steps == b.steps)
+                #expect(a.trigger == b.trigger && a.conditions == b.conditions)
             }
             #expect(back.servers.count == kit.servers.count)
             for (a, b) in zip(kit.servers, back.servers) {
@@ -148,18 +148,28 @@ import Testing
     }
 
     @Test func everyKindOfTriggerRoundTrips() throws {
-        let kinds = Trigger.Kind.allCases.filter { $0 != .keys && $0 != .hours }
-        var shortcuts = kinds.map { Shortcut(name: "\($0)", prompt: "p", usesClipboard: false, trigger: .starter($0)) }
-        shortcuts.append(Shortcut(name: "off", prompt: "q", usesClipboard: false, trigger: Trigger(.offline, flag: false)))
-        shortcuts.append(Shortcut(name: "keys", hotkey: Hotkey(parsing: "⌃⌥⇧⌘Space"), prompt: "k"))
-        shortcuts.append(Shortcut(name: "dash", hotkey: Hotkey(parsing: "⌘⌥-"), prompt: "d", conditions: Trigger.Kind.allCases.filter(\.isCondition).map { .starter($0) }))
+        let events = TriggerEvent.allCases.filter { $0 != .keys }
+        let say = [Step(.say, value: "p")]
+        var shortcuts = events.map { e in
+            var t = Trigger.starter(e)
+            if e == .app { t.value = "Safari" } else if e == .website { t.value = "example.com" }
+            return Shortcut(name: "\(e)", trigger: t, steps: say)
+        }
+        shortcuts.append(Shortcut(name: "off", trigger: Trigger(.network, value: "online"), steps: say))
+        shortcuts.append(Shortcut(name: "keys", hotkey: Hotkey(parsing: "⌃⌥⇧⌘Space"), steps: say))
+        let conditions: [Condition] = TriggerState.allCases.map { st in
+            var c = Condition.starter(st)
+            if st == .app { c.value = "Safari" } else if st == .website { c.value = "example.com" }
+            return c
+        }
+        shortcuts.append(Shortcut(name: "dash", hotkey: Hotkey(parsing: "⌘⌥-"), conditions: conditions, steps: say))
         let back = try Kit.parse(Kit(triggers: shortcuts).json()).triggers
         #expect(back.count == shortcuts.count)
         for (a, b) in zip(shortcuts, back) { #expect(a.trigger == b.trigger && a.conditions == b.conditions && a.hotkey == b.hotkey, "\(a.name)") }
     }
 
     @Test func exportIsOrderedAndReadable() {
-        let kit = Kit(name: "K", triggers: [Shortcut(name: "T", prompt: "Do it", trigger: .clicks(2))],
+        let kit = Kit(name: "K", triggers: [Shortcut(name: "T", trigger: .click(2), steps: [Step(.ask, value: "Do it")])],
                       servers: [MCPServerConfig(name: "S", transport: .stdio, command: "npx", arguments: ["-y", "pkg"], environment: ["KEY": "secret"])])
         let text = kit.json()
         #expect(text.hasPrefix("{\n  \"name\": \"K\","))
@@ -168,11 +178,11 @@ import Testing
     }
 
     @Test func linkOnlyWhenShort() throws {
-        let small = Kit(triggers: [Shortcut(name: "T", prompt: "Hi", trigger: .clicks(2))])
+        let small = Kit(triggers: [Shortcut(name: "T", trigger: .click(2), steps: [Step(.ask, value: "Hi")])])
         let link = try #require(small.link)
         #expect(link.hasPrefix("imp://add?kit=") && !link.dropFirst(14).contains(where: { "+/=".contains($0) }))
         #expect(try Kit.parse(try KitSource.link(link).textValue).triggers.first?.name == "T")
-        let huge = Kit(triggers: [Shortcut(name: "T", prompt: String(repeating: "word ", count: 600), trigger: .clicks(2))])
+        let huge = Kit(triggers: [Shortcut(name: "T", trigger: .click(2), steps: [Step(.ask, value: String(repeating: "word ", count: 600))])])
         #expect(huge.link == nil)
     }
 
@@ -190,7 +200,7 @@ import Testing
     @Test func readsImpLinks() throws {
         #expect(try KitSource.link("imp://add?url=https%3A%2F%2Fexample.com%2Fkit.json") == .remote(URL(string: "https://example.com/kit.json")!))
         #expect(throws: KitError.self) { try KitSource.link("imp://add?url=http%3A%2F%2Fexample.com%2Fkit.json") }
-        let json = #"{"triggers":[{"when":{"kind":"wake"},"prompt":"é?&+/"}]}"#
+        let json = #"{"triggers":[{"on": "wake","do": [{"act": "ask", "value": "é?&+/"}]}]}"#
         let b64 = Kit.base64URL(Data(json.utf8))
         #expect(try KitSource.link("imp://add?kit=\(b64)") == .text(json))
         #expect(try KitSource(input: "imp://add?kit=\(b64)") == .text(json))
@@ -237,7 +247,7 @@ import Testing
 
 extension KitTests {
     static func troupe() -> (prefs: ImpPreferences, pip: ImpProfile) {
-        var prefs = ImpPreferences.firstLaunch
+        var prefs = ImpPreferences()
         let service = Service(name: "Local", baseURL: "http://localhost:1234/v1", model: "llama-3")
         prefs.ai.add(service)
         var notes = MCPServerConfig(name: "Notes", transport: .stdio, command: "npx", arguments: ["-y", "notes"], environment: ["TOKEN": "sekrit"])
@@ -253,8 +263,8 @@ extension KitTests {
         pip.sendsToolCalls = false
         pip.servers = [notes.id]
         prefs.imps = [.waiting, pip]
-        prefs.shortcuts.append(Shortcut(name: "Pip's key", hotkey: Hotkey(parsing: "ctrl+cmd+P"), prompt: "Hello", performer: pip.id))
-        prefs.shortcuts.append(Shortcut(name: "Everyone", prompt: "Shared", usesClipboard: false, trigger: .starter(.wake)))
+        prefs.shortcuts.append(Shortcut(name: "Pip's key", hotkey: Hotkey(parsing: "ctrl+cmd+P"), performer: pip.id, steps: [Step(.ask, value: "Hello")]))
+        prefs.shortcuts.append(Shortcut(name: "Everyone", trigger: .starter(.wake), steps: [Step(.ask, value: "Shared")]))
         return (prefs, pip)
     }
 
@@ -369,11 +379,10 @@ extension KitTests {
         #expect(back.link == nil)
     }
 
-    @Test func exportAllCarriesSharedTriggersButNotTheStarterKit() throws {
+    @Test func exportAllCarriesSharedTriggers() throws {
         let (prefs, _) = Self.troupe()
-        #expect(prefs.sharedShortcuts.contains { $0.trigger.kind == .clicks })     // the starter kit's exist…
         let kit = Kit.exporting(imps: Set(prefs.imps.map(\.id)), from: prefs, shared: true)
-        #expect(kit.imps.count == 2 && kit.triggers.map(\.name) == ["Everyone"])  // …and aren't exported
+        #expect(kit.imps.count == 2 && kit.triggers.map(\.name) == ["Everyone"])
         let back = try Kit.parse(kit.json())
         #expect(back.imps.map(\.name) == ["Pip", "Pip"] && back.triggers.map(\.name) == ["Everyone"])
         // Servers only the Imps use are the kit's tools, once.
@@ -395,7 +404,7 @@ extension KitTests {
         {"future": {"x": 1}, "imps": [
           { "name": "Bare", "mood": "grumpy", "tools": {"body": false, "telepathy": true}, "brain": {"model": "m", "extra": 1} },
           { "personality": "no name" },
-          { "name": "Wired", "mcpServers": ["Gone"], "triggers": [{"when": {"kind": "teleport"}}] } ] }
+          { "name": "Wired", "mcpServers": ["Gone"], "triggers": [{"on": "teleport"}] } ] }
         """#)
         let bare = kit.imps[0]
         #expect(bare.hue == 0 && bare.scale == 1 && bare.personality == "" && bare.instructions == nil && bare.usesShell && bare.sendsToolCalls)
@@ -418,7 +427,7 @@ extension KitTests {
     // MARK: Shape
 
     @Test func aKitCarriesNoVersionNumber() throws {
-        let plain = Kit(triggers: [Shortcut(name: "T", prompt: "Hi", trigger: .clicks(2))])
+        let plain = Kit(triggers: [Shortcut(name: "T", trigger: .click(2), steps: [Step(.ask, value: "Hi")])])
         #expect(!plain.json().contains("\"imp\""))
         let (prefs, pip) = Self.troupe()
         let withImp = Kit.exporting(imps: [pip.id], from: prefs)

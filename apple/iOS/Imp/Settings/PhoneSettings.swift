@@ -15,8 +15,8 @@ enum PhonePrefs {
 }
 
 /// The sections of the phone's settings, always one tap away, each one of the Mac's sections. Animations,
-/// Tools and Sharing are not here: they are made, given out and shared in the Den on the Mac, and nothing in
-/// them changes what this phone does. Imps hatched here have no Den tools (docs/ux/parity.md).
+/// Tools and Sharing are not here: they are made, given out and shared on the Mac, and nothing in
+/// them changes what this phone does. (docs/ux/parity.md)
 enum PhoneSection: String, CaseIterable, Identifiable {
     case brains, devices, app
     var id: String { rawValue }

@@ -118,6 +118,7 @@ struct PocketToolsPanel: View {
                         if let problem { IssueBadge(text: problem) }
                     }
                 }
+                McpSignInRow(url: value.url)
                 // The headers' own small header: their title, and Add on the trailing side.
                 SectionHeader("tools.headers", font: Typeface.caption, color: Tone.muted, minHeight: nil) {
                     HoverIconButton(systemName: "plus", help: "tools.header_add") { addHeader(server) }

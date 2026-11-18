@@ -1,7 +1,7 @@
 import Foundation
 
-/// One server setting (The Den or The Hop) as a value: the four choices, the address, and the check.
-/// The Devices and Sharing pages show it through the same card, so it is tested once here.
+/// One server setting (The Hop) as a value: the choices, the address, and the check.
+/// The Devices page shows it through a card, so it is tested once here.
 public struct ServerSetting: Equatable, Sendable {
     /// What the card says about the server, one state at a time.
     public enum Status: Equatable, Sendable {
@@ -44,11 +44,8 @@ public struct ServerSetting: Equatable, Sendable {
 
     /// The address in use, or nil (off, or not an address).
     public var inUse: String? {
-        guard kind.problem(with: text) == nil else { return nil }
-        switch kind {
-        case .den: return DenServer(text).map { $0.url.absoluteString }
-        case .hop: return HopServer(text)?.address
-        }
+        return HopServer(text)?.address
+        HopServer(text)?.address
     }
 
     public var status: Status {

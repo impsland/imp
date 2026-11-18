@@ -335,13 +335,13 @@ final class DeviceLink {
             own(imp)?.newChat()
         case .felt(let imp, let feeling):
             guard let model = own(imp) else { return }
-            let trigger: AnimationTrigger = switch feeling {
+            let trigger: TriggerEvent = switch feeling {
             case .poke: .poke
             case .cuddle: .hold
             case .shake: .shake
             case .drop: .drop
             }
-            app.reactions.play(trigger, by: model)
+            app.reactions.handle(trigger, by: model)
         case .file(let transfer, let imp, let ref):
             guard let model = own(imp) else {
                 return fail(file: transfer, String(localized: "That Imp isn't on this device."), to: device)

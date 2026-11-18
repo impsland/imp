@@ -46,41 +46,26 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     public var usesShell = true
     /// Its own tools it may not use. Groups that are on by default stay on until listed here.
     /// Optional, so older profiles load.
-    private var ownToolsOff: [ImpToolGroup]?
+    /// Stored as the groups' names, so a group that no longer exists (the old "den") is skipped, not fatal.
+    private var ownToolsOff: [String]?
     /// Its own tools that are off by default (`ImpToolGroup.isOnByDefault`) and it may use.
-    private var ownToolsOn: [ImpToolGroup]?
+    private var ownToolsOn: [String]?
     /// Single tools switched off, by registry id (`own.body.imp_speak`, `mcp.files.read_file`).
     /// Optional, so older profiles load. Whole groups are `ownToolsOff` and `servers`.
     private var toolsOff: [String]?
     /// Storage for `animations` and `traits` (optional, so older profiles load).
     var ownAnimations: [MadeAnimation]?
     var character: ImpTraits?
-    /// Storage for `follow` and `followSpeed` (optional, so older profiles load).
-    private var following: FollowMode?
-    private var followRate: Double?
-
-    /// How it follows the cursor. Eyes unless the user picks another way.
-    public var follow: FollowMode {
-        get { following ?? .eyes }
-        set { following = newValue == .eyes ? nil : newValue }
-    }
-
-    /// How quickly it follows (0.5 to 2, 1 is normal), in hops and glides.
-    public var followSpeed: Double {
-        get { FollowMath.clampedSpeed(followRate ?? FollowMath.defaultSpeed) }
-        set { followRate = newValue == FollowMath.defaultSpeed ? nil : FollowMath.clampedSpeed(newValue) }
-    }
-
     /// Whether it may use one group of its own tools (animations, its senses, setting itself up…).
     public func uses(_ group: ImpToolGroup) -> Bool {
-        group.isOnByDefault ? !(ownToolsOff ?? []).contains(group) : (ownToolsOn ?? []).contains(group)
+        group.isOnByDefault ? !(ownToolsOff ?? []).contains(group.rawValue) : (ownToolsOn ?? []).contains(group.rawValue)
     }
 
     public mutating func setUses(_ group: ImpToolGroup, _ on: Bool) {
-        func update(_ list: [ImpToolGroup]?, _ member: Bool) -> [ImpToolGroup]? {
+        func update(_ list: [String]?, _ member: Bool) -> [String]? {
             var set = Set(list ?? [])
-            if member { set.insert(group) } else { set.remove(group) }
-            return set.isEmpty ? nil : ImpToolGroup.allCases.filter(set.contains)
+            if member { set.insert(group.rawValue) } else { set.remove(group.rawValue) }
+            return set.isEmpty ? nil : ImpToolGroup.allCases.map(\.rawValue).filter(set.contains)
         }
         if group.isOnByDefault { ownToolsOff = update(ownToolsOff, !on) } else { ownToolsOn = update(ownToolsOn, on) }
     }

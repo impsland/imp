@@ -283,5 +283,16 @@ async fn a_refused_request_is_a_plain_error() {
         .await
         .err()
         .unwrap();
-    assert_eq!(error.to_string(), "the MCP server answered with status 401");
+    // A 401 is a typed demand to sign in, even without a challenge header.
+    assert!(
+        matches!(
+            error,
+            imp_engine::McpError::Unauthorized {
+                resource_metadata: None,
+                ..
+            }
+        ),
+        "{error:?}"
+    );
+    assert_eq!(error.to_string(), "the MCP server needs you to sign in");
 }

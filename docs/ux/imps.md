@@ -53,7 +53,7 @@ A confirmation dialog on every drop. It would remove the feeling of picking the 
 | Action | Result |
 | --- | --- |
 | One click, or one tap | Opens the Imp's message bubble (on the phone, its chat) at once. |
-| Two clicks (Mac) | Run the Imp's triggers for two clicks. The starter kit's "Settings" trigger opens the Imp's settings. |
+| Two clicks (Mac) | Run the Imp's triggers for two clicks, if it has any. |
 | Right click, or touch and hold | Opens the Imp's context menu. |
 | Drag | Moves the Imp. |
 

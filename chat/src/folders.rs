@@ -19,7 +19,7 @@ pub const MAC_FOLDER: &str = "imp-chat";
 pub const SHARED_FOLDER: &str = "imp";
 
 /// What `imp` itself made in the shared folder: its settings, link, conversations between Imps, folder
-/// trust, and what `imp serve` keeps. Everything else there is the Mac app's.
+/// trust. Everything else there is the Mac app's.
 pub const OURS: &[&str] = &[
     "config.toml",
     "link-book",
@@ -27,10 +27,6 @@ pub const OURS: &[&str] = &[
     "link.lock",
     "talks",
     "trusted_folders.json",
-    "den-secret",
-    "den.db",
-    "den.db-wal",
-    "den.db-shm",
 ];
 
 /// What became of the move from the shared folder.

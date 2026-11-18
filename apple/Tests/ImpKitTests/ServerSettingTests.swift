@@ -2,28 +2,28 @@ import Foundation
 import Testing
 @testable import ImpKit
 
-/// The state behind the Den and Hop cards: the choices, the address and the check.
+/// The state behind the Hop card: the choices, the address and the check.
 @Suite struct ServerSettingTests {
     @Test func theChoiceFollowsTheAddress() {
         #expect(ServerSetting(kind: .hop, text: ServerKind.hop.defaultAddress).choice == .imps)
         #expect(ServerSetting(kind: .hop, text: ServerKind.hop.localAddress).choice == .custom)
-        #expect(ServerSetting(kind: .den, text: "").choice == .off)
+        #expect(ServerSetting(kind: .hop, text: "").choice == .off)
         let custom = ServerSetting(kind: .hop, text: "hop.example.com:4677")
         #expect(custom.choice == .custom && custom.showsAddress)
     }
 
     @Test func pickingFillsTheAddressAndCustomKeepsWhatWasTyped() {
-        var s = ServerSetting(kind: .den, text: ServerKind.den.defaultAddress)
+        var s = ServerSetting(kind: .hop, text: ServerKind.hop.defaultAddress)
         let off = s.pick(.off)
         #expect(off == "" && s.status == .off && !s.canCheck)
         let imps = s.pick(.imps)
-        #expect(imps == ServerKind.den.defaultAddress)
+        #expect(imps == ServerKind.hop.defaultAddress)
         let custom = s.pick(.custom)
         #expect(custom == "" && s.choice == .custom, "a preset's address is not kept as a custom one")
-        s.edit("den.example.com")
+        s.edit("hop.example.com:4677")
         let typed = s.pick(.custom)
-        #expect(typed == "den.example.com")
-        s.edit(ServerKind.den.defaultAddress)
+        #expect(typed == "hop.example.com:4677")
+        s.edit(ServerKind.hop.defaultAddress)
         #expect(s.choice == .custom, "custom stays picked while typing")
     }
 
@@ -56,7 +56,7 @@ import Testing
     }
 
     @Test func aWrongAddressSaysWhy() {
-        let s = ServerSetting(kind: .den, text: "not an address at all ://")
+        let s = ServerSetting(kind: .hop, text: "not an address at all ://")
         guard case .problem(let sentence) = s.status else { Issue.record("expected a problem"); return }
         #expect(!sentence.isEmpty && !s.canCheck && s.inUse == nil)
     }

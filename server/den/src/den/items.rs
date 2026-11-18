@@ -1,11 +1,18 @@
-//! Items: list, read, publish, delete, install, report and stats.
+//! Items: list, read, download, publish, delete, install, report and stats.
 
-use super::cursor::{decode_cursor, encode_cursor};
+use super::cursor::{Cursor, decode_cursor, encode_cursor};
 use super::*;
 
-pub(super) const SUMMARY_COLUMNS: &str = "id, handle, slug, kind, name, summary, tags, runs_programs, installs, revision, created_at, updated_at";
-const DETAIL_COLUMNS: &str = "id, handle, slug, kind, name, summary, tags, runs_programs, installs, revision, \
+pub(super) const SUMMARY_COLUMNS: &str = "id, handle, slug, type, format, name, summary, tags, runs_programs, installs, revision, created_at, updated_at";
+const DETAIL_COLUMNS: &str = "id, handle, slug, type, format, name, summary, tags, runs_programs, installs, revision, \
                               created_at, updated_at, about, sha256, size, counts";
+
+/// What an account has used of its quota.
+pub(super) struct Usage {
+    pub(super) items: i64,
+    pub(super) bytes: i64,
+    pub(super) new_today: i64,
+}
 
 impl Den {
     pub async fn list(&self, caller: &Caller, query: ListQuery) -> Result<Arc<ItemList>, Error> {
@@ -15,13 +22,14 @@ impl Den {
             .as_deref()
             .map(|k| {
                 Kind::parse(k)
-                    .ok_or_else(|| bad("`kind` is not one of imp, animation, trigger, tool, kit."))
+                    .ok_or_else(|| bad("`type` is one of imp, animation, trigger, tool, kit."))
             })
             .transpose()?;
         let sort = match query.sort.as_deref() {
             None | Some("new") => Sort::New,
             Some("popular") => Sort::Popular,
-            Some(_) => return Err(bad("`sort` is `new` or `popular`.")),
+            Some("name") => Sort::Name,
+            Some(_) => return Err(bad("`sort` is `new`, `popular` or `name`.")),
         };
         let limit = query.limit.unwrap_or(20);
         if !(1..=50).contains(&limit) {
@@ -31,6 +39,14 @@ impl Den {
             && meta::tag_problem(tag).is_some()
         {
             return Err(bad("`tag` is a single tag of a-z, 0-9 and dashes."));
+        }
+        if let Some(handle) = &query.handle
+            && !(handle.len() <= 32
+                && handle
+                    .bytes()
+                    .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-'))
+        {
+            return Err(bad("`handle` is an account handle."));
         }
         let text = query.q.as_deref().map(str::trim).filter(|q| !q.is_empty());
         if text.is_some_and(|q| q.chars().count() > 100) {
@@ -43,11 +59,12 @@ impl Den {
             .transpose()?;
 
         let cache_key = format!(
-            "{:?}|{:?}|{:?}|{}|{limit}|{:?}",
+            "{:?}|{:?}|{:?}|{:?}|{}|{limit}|{:?}",
             kind,
             query.tag,
+            query.handle,
             text,
-            u8::from(sort == Sort::Popular),
+            query.sort.as_deref().unwrap_or("new"),
             query.cursor
         );
         if let Some(hit) = self.lists.get(&cache_key) {
@@ -55,15 +72,18 @@ impl Den {
         }
 
         let mut sql = QueryBuilder::<Sqlite>::new(format!(
-            "SELECT {SUMMARY_COLUMNS} FROM items WHERE hidden = 0"
+            "SELECT {SUMMARY_COLUMNS} FROM items WHERE {VISIBLE}"
         ));
         if let Some(kind) = kind {
-            sql.push(" AND kind = ").push_bind(kind.as_str());
+            sql.push(" AND type = ").push_bind(kind.as_str());
         }
         if let Some(tag) = &query.tag {
             sql.push(" AND EXISTS (SELECT 1 FROM json_each(items.tags) WHERE value = ")
                 .push_bind(tag.clone())
                 .push(")");
+        }
+        if let Some(handle) = &query.handle {
+            sql.push(" AND handle = ").push_bind(handle.clone());
         }
         if let Some(text) = text {
             let like = format!(
@@ -76,14 +96,18 @@ impl Den {
             sql.push(" ESCAPE '\\' OR summary LIKE ")
                 .push_bind(like.clone());
             sql.push(" ESCAPE '\\' OR about LIKE ")
-                .push_bind(like)
-                .push(" ESCAPE '\\')");
+                .push_bind(like.clone());
+            sql.push(
+                " ESCAPE '\\' OR EXISTS (SELECT 1 FROM json_each(items.tags) WHERE value LIKE ",
+            )
+            .push_bind(like)
+            .push(" ESCAPE '\\'))");
         }
-        match (sort, cursor) {
-            (Sort::New, Some((_, id))) => {
+        match cursor {
+            Some(Cursor::New { id }) => {
                 sql.push(" AND id < ").push_bind(id);
             }
-            (Sort::Popular, Some((installs, id))) => {
+            Some(Cursor::Popular { installs, id }) => {
                 sql.push(" AND (installs < ").push_bind(installs);
                 sql.push(" OR (installs = ")
                     .push_bind(installs)
@@ -91,20 +115,29 @@ impl Den {
                     .push_bind(id)
                     .push("))");
             }
-            (_, None) => {}
+            Some(Cursor::Name { name, id }) => {
+                sql.push(" AND (name COLLATE NOCASE > ")
+                    .push_bind(name.clone());
+                sql.push(" OR (name COLLATE NOCASE = ")
+                    .push_bind(name)
+                    .push(" AND id > ")
+                    .push_bind(id)
+                    .push("))");
+            }
+            None => {}
         }
         sql.push(match sort {
             Sort::New => " ORDER BY id DESC",
             Sort::Popular => " ORDER BY installs DESC, id DESC",
+            Sort::Name => " ORDER BY name COLLATE NOCASE ASC, id ASC",
         });
         sql.push(" LIMIT ").push_bind(i64::from(limit) + 1);
         let rows = sql.build().fetch_all(&self.pool).await?;
         let mut items = rows.iter().map(summary_of).collect::<Result<Vec<_>, _>>()?;
-        let next_cursor = if items.len() > usize::try_from(limit).unwrap_or(usize::MAX) {
-            items.truncate(usize::try_from(limit).unwrap_or(usize::MAX));
-            items
-                .last()
-                .map(|last| encode_cursor(sort, last.installs, last.id))
+        let limit = usize::try_from(limit).unwrap_or(usize::MAX);
+        let next_cursor = if items.len() > limit {
+            items.truncate(limit);
+            items.last().map(|last| encode_cursor(sort, last))
         } else {
             None
         };
@@ -125,7 +158,7 @@ impl Den {
         sql.push_bind(handle);
         sql.push(" AND slug = ");
         sql.push_bind(slug);
-        sql.push(" AND (hidden = 0 OR ");
+        sql.push(format!(" AND ({VISIBLE} OR "));
         sql.push_bind(include_hidden);
         sql.push(")");
         let row = sql
@@ -133,15 +166,17 @@ impl Den {
             .fetch_optional(&self.pool)
             .await?
             .ok_or(Error::NotFound)?;
+        let document_url = format!(
+            "{}/items/{handle}/{slug}/document.json",
+            self.config.public.origin
+        );
         Ok(Item {
             summary: summary_of(&row)?,
             about: row.try_get("about")?,
             sha256: row.try_get("sha256")?,
             size: row.try_get("size")?,
-            kit_url: format!(
-                "{}/items/{handle}/{slug}/kit.json",
-                self.config.public.origin
-            ),
+            open_url: format!("imp://add?url={}", meta::percent_encode(&document_url)),
+            document_url,
             counts: parse_json(&row.try_get::<String, _>("counts")?)?,
         })
     }
@@ -151,36 +186,81 @@ impl Den {
         self.fetch_item(handle, slug, false).await
     }
 
-    pub async fn kit(&self, caller: &Caller, handle: &str, slug: &str) -> Result<KitDoc, Error> {
-        gate(&self.limits.reads, &caller.ip)?;
-        let row = sqlx::query("SELECT kit, sha256, revision FROM items WHERE handle = ?1 AND slug = ?2 AND hidden = 0")
-            .bind(handle)
-            .bind(slug)
-            .fetch_optional(&self.pool)
-            .await?
-            .ok_or(Error::NotFound)?;
-        let sha256: String = row.try_get("sha256")?;
-        let revision: i64 = row.try_get("revision")?;
-        Ok(KitDoc {
-            text: row.try_get("kit")?,
-            etag: format!("\"{sha256}-{revision}\""),
+    async fn stored_document(&self, handle: &str, slug: &str) -> Result<StoredDocument, Error> {
+        let row = sqlx::query(sqlx::AssertSqlSafe(format!(
+            "SELECT document, sha256 FROM items WHERE handle = ?1 AND slug = ?2 AND {VISIBLE}"
+        )))
+        .bind(handle)
+        .bind(slug)
+        .fetch_optional(&self.pool)
+        .await?
+        .ok_or(Error::NotFound)?;
+        // The document never changes without its sha256 changing, so the sha256 is the validator.
+        Ok(StoredDocument {
+            text: row.try_get("document")?,
+            etag: format!("\"{}\"", row.try_get::<String, _>("sha256")?),
         })
     }
 
-    pub async fn put_item(
+    /// The document as stored.
+    pub async fn document(
         &self,
         caller: &Caller,
         handle: &str,
         slug: &str,
-        body: PutItem,
-    ) -> Result<(bool, Item), Error> {
-        let owner = self.authorize_write(caller).await?;
-        if owner != handle {
-            return Err(Error::Forbidden(
-                "You can only publish under your own handle.".to_owned(),
-            ));
+    ) -> Result<StoredDocument, Error> {
+        gate(&self.limits.reads, &caller.ip)?;
+        self.stored_document(handle, slug).await
+    }
+
+    /// The summary and the document of an item, and one install counted.
+    pub async fn download(
+        &self,
+        caller: &Caller,
+        handle: &str,
+        slug: &str,
+    ) -> Result<Download, Error> {
+        gate(&self.limits.reads, &caller.ip)?;
+        let item = self.fetch_item(handle, slug, false).await?;
+        let stored = self.stored_document(handle, slug).await?;
+        if self.limits.installs.check(&caller.ip).is_ok() {
+            self.installs.count(item.summary.id, &caller.ip);
         }
+        Ok(Download {
+            item: item.summary,
+            document: parse_json(&stored.text)?,
+        })
+    }
+
+    pub(super) async fn usage(&self, handle: &str) -> Result<Usage, Error> {
+        let row = sqlx::query(
+            "SELECT COUNT(*) AS items, COALESCE(SUM(size), 0) AS bytes, \
+             (SELECT COUNT(*) FROM new_items WHERE handle = ?1 AND created_at > ?2) AS new_today \
+             FROM items WHERE handle = ?1",
+        )
+        .bind(handle)
+        .bind(now() - 86_400)
+        .fetch_one(&self.pool)
+        .await?;
+        Ok(Usage {
+            items: row.try_get("items")?,
+            bytes: row.try_get("bytes")?,
+            new_today: row.try_get("new_today")?,
+        })
+    }
+
+    /// Creates the signed-in account's item `slug`, or updates it (revision plus one).
+    pub async fn publish(&self, caller: &Caller, body: PublishItem) -> Result<Published, Error> {
+        let handle = self.authorize_write(caller).await?;
+        let slug = body.slug.as_str();
         let mut problems: Vec<Violation> = Vec::new();
+        let kind = Kind::parse(&body.kind);
+        if kind.is_none() {
+            problems.push(Violation {
+                pointer: "/type".to_owned(),
+                detail: "must be one of imp, animation, trigger, tool, kit".to_owned(),
+            });
+        }
         if let Some(problem) = meta::slug_problem(slug) {
             problems.push(Violation {
                 pointer: "/slug".to_owned(),
@@ -188,103 +268,197 @@ impl Den {
             });
         }
         problems.extend(meta::label_problems(&body.summary, &body.tags));
-        let checked = match kit::check(body.kit) {
-            Ok(checked) => Some(checked),
-            Err(found) => {
-                problems.extend(found.into_iter().map(|v| Violation {
-                    pointer: format!("/kit{}", v.pointer),
-                    detail: v.detail,
-                }));
+        // A model sometimes sends the document as text.
+        let document = match body.document {
+            Value::String(text) => serde_json::from_str(&text).unwrap_or(Value::String(text)),
+            other => other,
+        };
+        let checked = match kind.map(|kind| kit::check(document, kind)) {
+            Some(Ok(checked)) => Some(checked),
+            Some(Err(Error::Invalid(found))) => {
+                problems.extend(found);
                 None
             }
+            Some(Err(other)) => return Err(other),
+            None => None,
         };
-        let Some(checked) = checked.filter(|_| problems.is_empty()) else {
+        let (Some(kind), Some(checked), true) = (kind, checked, problems.is_empty()) else {
+            problems.truncate(25);
             return Err(Error::Invalid(problems));
         };
+        let summary = body.summary.trim();
         let tags = serde_json::to_string(&body.tags).map_err(|_| Error::Internal)?;
         let counts = serde_json::to_string(&checked.counts).map_err(|_| Error::Internal)?;
+        let size = i64::try_from(checked.text.len()).unwrap_or(i64::MAX);
         let stamp_now = now();
 
         let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await?;
-        let existing =
-            sqlx::query_scalar::<_, i64>("SELECT id FROM items WHERE handle = ?1 AND slug = ?2")
-                .bind(handle)
-                .bind(slug)
-                .fetch_optional(&mut *tx)
-                .await?;
-        let created = existing.is_none();
-        match existing {
-            Some(id) => {
+        let existing = sqlx::query(
+            "SELECT id, sha256, type, summary, tags, size FROM items WHERE handle = ?1 AND slug = ?2",
+        )
+        .bind(&handle)
+        .bind(slug)
+        .fetch_optional(&mut *tx)
+        .await?;
+
+        if let Some(row) = &existing
+            && row.try_get::<String, _>("sha256")? == checked.sha256
+        {
+            // The same document again to the same item: no new revision.
+            let same_labels = row.try_get::<String, _>("type")? == kind.as_str()
+                && row.try_get::<String, _>("summary")? == summary
+                && row.try_get::<String, _>("tags")? == tags;
+            if !same_labels {
+                sqlx::query("UPDATE items SET type = ?1, summary = ?2, tags = ?3, updated_at = ?4 WHERE id = ?5")
+                    .bind(kind.as_str())
+                    .bind(summary)
+                    .bind(&tags)
+                    .bind(stamp_now)
+                    .bind(row.try_get::<i64, _>("id")?)
+                    .execute(&mut *tx)
+                    .await?;
+            }
+            tx.commit().await?;
+            if !same_labels {
+                self.forget_cached();
+            }
+            return Ok(Published::Unchanged(
+                self.fetch_item(&handle, slug, true).await?,
+            ));
+        }
+
+        let twin = sqlx::query(sqlx::AssertSqlSafe(format!(
+            "SELECT handle, slug FROM items WHERE sha256 = ?1 AND {VISIBLE} \
+             AND NOT (handle = ?2 AND slug = ?3) LIMIT 1"
+        )))
+        .bind(&checked.sha256)
+        .bind(&handle)
+        .bind(slug)
+        .fetch_optional(&mut *tx)
+        .await?;
+        if let Some(twin) = twin {
+            return Err(Error::Duplicate(format!(
+                "{}/{}",
+                twin.try_get::<String, _>("handle")?,
+                twin.try_get::<String, _>("slug")?
+            )));
+        }
+
+        let used = {
+            let row = sqlx::query(
+                "SELECT COUNT(*) AS items, COALESCE(SUM(size), 0) AS bytes, \
+                 (SELECT COUNT(*) FROM new_items WHERE handle = ?1 AND created_at > ?2) AS new_today \
+                 FROM items WHERE handle = ?1",
+            )
+            .bind(&handle)
+            .bind(stamp_now - 86_400)
+            .fetch_one(&mut *tx)
+            .await?;
+            Usage {
+                items: row.try_get("items")?,
+                bytes: row.try_get("bytes")?,
+                new_today: row.try_get("new_today")?,
+            }
+        };
+        let old_size = match &existing {
+            Some(row) => row.try_get::<i64, _>("size")?,
+            None => 0,
+        };
+        if used.bytes - old_size + size > MAX_BYTES_PER_ACCOUNT {
+            return Err(Error::Quota(format!(
+                "An account can keep at most {} MB of documents.",
+                MAX_BYTES_PER_ACCOUNT / (1024 * 1024)
+            )));
+        }
+        let outcome = match existing {
+            Some(row) => {
                 sqlx::query(
-                    "UPDATE items SET kind = ?1, name = ?2, about = ?3, summary = ?4, tags = ?5, kit = ?6, counts = ?7, \
-                     sha256 = ?8, size = ?9, revision = revision + 1, runs_programs = ?10, updated_at = ?11 WHERE id = ?12",
+                    "UPDATE items SET type = ?1, format = ?2, name = ?3, about = ?4, summary = ?5, tags = ?6, \
+                     document = ?7, counts = ?8, sha256 = ?9, size = ?10, revision = revision + 1, \
+                     runs_programs = ?11, updated_at = ?12 WHERE id = ?13",
                 )
-                .bind(checked.kind.as_str())
+                .bind(kind.as_str())
+                .bind(checked.format)
                 .bind(&checked.name)
                 .bind(&checked.about)
-                .bind(body.summary.trim())
+                .bind(summary)
                 .bind(&tags)
                 .bind(&checked.text)
                 .bind(&counts)
                 .bind(&checked.sha256)
-                .bind(i64::try_from(checked.text.len()).unwrap_or(i64::MAX))
+                .bind(size)
                 .bind(checked.runs_programs)
                 .bind(stamp_now)
-                .bind(id)
+                .bind(row.try_get::<i64, _>("id")?)
                 .execute(&mut *tx)
                 .await?;
+                false
             }
             None => {
-                let owned =
-                    sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM items WHERE handle = ?1")
-                        .bind(handle)
-                        .fetch_one(&mut *tx)
-                        .await?;
-                if owned >= MAX_ITEMS_PER_ACCOUNT {
+                if used.items >= MAX_ITEMS_PER_ACCOUNT {
                     return Err(Error::Quota(format!(
                         "An account can share at most {MAX_ITEMS_PER_ACCOUNT} items."
                     )));
                 }
+                if used.new_today >= MAX_NEW_ITEMS_PER_DAY {
+                    return Err(Error::Quota(format!(
+                        "An account can share at most {MAX_NEW_ITEMS_PER_DAY} new items a day."
+                    )));
+                }
                 sqlx::query(
-                    "INSERT INTO items (handle, slug, kind, name, about, summary, tags, kit, counts, sha256, size, revision, \
-                     runs_programs, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 1, ?12, ?13, ?13)",
+                    "INSERT INTO items (handle, slug, type, format, name, about, summary, tags, document, counts, \
+                     sha256, size, revision, runs_programs, created_at, updated_at) \
+                     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, 1, ?13, ?14, ?14)",
                 )
-                .bind(handle)
+                .bind(&handle)
                 .bind(slug)
-                .bind(checked.kind.as_str())
+                .bind(kind.as_str())
+                .bind(checked.format)
                 .bind(&checked.name)
                 .bind(&checked.about)
-                .bind(body.summary.trim())
+                .bind(summary)
                 .bind(&tags)
                 .bind(&checked.text)
                 .bind(&counts)
                 .bind(&checked.sha256)
-                .bind(i64::try_from(checked.text.len()).unwrap_or(i64::MAX))
+                .bind(size)
                 .bind(checked.runs_programs)
                 .bind(stamp_now)
                 .execute(&mut *tx)
                 .await?;
+                sqlx::query("INSERT INTO new_items (handle, created_at) VALUES (?1, ?2)")
+                    .bind(&handle)
+                    .bind(stamp_now)
+                    .execute(&mut *tx)
+                    .await?;
+                true
             }
-        }
+        };
         tx.commit().await?;
         self.forget_cached();
-        Ok((created, self.fetch_item(handle, slug, true).await?))
+        let item = self.fetch_item(&handle, slug, true).await?;
+        Ok(if outcome {
+            Published::Created(item)
+        } else {
+            Published::Updated(item)
+        })
     }
 
+    /// Deletes one of the signed-in account's items. `handle`, when given, must be the account's own.
     pub async fn delete_item(
         &self,
         caller: &Caller,
-        handle: &str,
+        handle: Option<&str>,
         slug: &str,
     ) -> Result<(), Error> {
         let owner = self.authorize_write(caller).await?;
-        if owner != handle {
+        if handle.is_some_and(|h| h != owner) {
             return Err(Error::Forbidden(
                 "You can only delete your own items.".to_owned(),
             ));
         }
         let gone = sqlx::query("DELETE FROM items WHERE handle = ?1 AND slug = ?2")
-            .bind(handle)
+            .bind(&owner)
             .bind(slug)
             .execute(&self.pool)
             .await?;
@@ -296,9 +470,9 @@ impl Den {
     }
 
     async fn visible_id(&self, handle: &str, slug: &str) -> Result<i64, Error> {
-        sqlx::query_scalar::<_, i64>(
-            "SELECT id FROM items WHERE handle = ?1 AND slug = ?2 AND hidden = 0",
-        )
+        sqlx::query_scalar::<_, i64>(sqlx::AssertSqlSafe(format!(
+            "SELECT id FROM items WHERE handle = ?1 AND slug = ?2 AND {VISIBLE}"
+        )))
         .bind(handle)
         .bind(slug)
         .fetch_optional(&self.pool)
@@ -359,44 +533,48 @@ impl Den {
         if let Some(hit) = self.stats.get(&()) {
             return Ok(hit);
         }
-        let row = sqlx::query(
-            "SELECT (SELECT COUNT(*) FROM accounts) AS accounts, \
-             (SELECT COUNT(*) FROM items WHERE hidden = 0) AS items, \
-             (SELECT COALESCE(SUM(installs), 0) FROM items WHERE hidden = 0) AS installs",
-        )
+        let row = sqlx::query(sqlx::AssertSqlSafe(format!(
+            "SELECT (SELECT COUNT(*) FROM accounts WHERE deactivated = 0) AS accounts, \
+             (SELECT COUNT(*) FROM items WHERE {VISIBLE}) AS items, \
+             (SELECT COALESCE(SUM(installs), 0) FROM items WHERE {VISIBLE}) AS installs"
+        )))
         .fetch_one(&self.pool)
         .await?;
-        let mut by_kind = ByKind::default();
-        let kinds =
-            sqlx::query("SELECT kind, COUNT(*) AS n FROM items WHERE hidden = 0 GROUP BY kind")
-                .fetch_all(&self.pool)
-                .await?;
-        for kind in kinds {
-            let n: i64 = kind.try_get("n")?;
-            match kind.try_get::<String, _>("kind")?.as_str() {
-                "imp" => by_kind.imp = n,
-                "animation" => by_kind.animation = n,
-                "trigger" => by_kind.trigger = n,
-                "tool" => by_kind.tool = n,
-                _ => by_kind.kit += n,
+        let mut by_type = ByType::default();
+        let types = sqlx::query(sqlx::AssertSqlSafe(format!(
+            "SELECT type, COUNT(*) AS n FROM items WHERE {VISIBLE} GROUP BY type"
+        )))
+        .fetch_all(&self.pool)
+        .await?;
+        for row in types {
+            let n: i64 = row.try_get("n")?;
+            match Kind::parse(&row.try_get::<String, _>("type")?) {
+                Some(Kind::Imp) => by_type.imp = n,
+                Some(Kind::Animation) => by_type.animation = n,
+                Some(Kind::Trigger) => by_type.trigger = n,
+                Some(Kind::Tool) => by_type.tool = n,
+                Some(Kind::Kit) => by_type.kit = n,
+                None => {}
             }
         }
         let stats = Arc::new(Stats {
             accounts: row.try_get("accounts")?,
             items: row.try_get("items")?,
             installs: row.try_get("installs")?,
-            by_kind,
+            by_type,
         });
         self.stats.insert((), Arc::clone(&stats));
         Ok(stats)
     }
 }
+
 pub(super) fn summary_of(row: &SqliteRow) -> Result<ItemSummary, Error> {
     Ok(ItemSummary {
         id: row.try_get("id")?,
         handle: row.try_get("handle")?,
         slug: row.try_get("slug")?,
-        kind: row.try_get("kind")?,
+        kind: row.try_get("type")?,
+        format: row.try_get("format")?,
         name: row.try_get("name")?,
         summary: row.try_get("summary")?,
         tags: parse_json(&row.try_get::<String, _>("tags")?)?,

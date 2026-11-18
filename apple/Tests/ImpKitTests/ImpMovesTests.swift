@@ -98,20 +98,22 @@ import Testing
         var p = ImpPreferences()
         let imp = p.imps[0].id
         #expect(!p.waitsForMoreClicks(on: imp), "no triggers: a click opens the bubble at once")
-        p.shortcuts = [Shortcut(name: "Chat", prompt: "", usesClipboard: false, trigger: .clicks(1), command: .chat)]
+        p.shortcuts = [Shortcut(name: "Chat", trigger: .click(1), steps: [Step(.open, value: "chat")])]
         #expect(!p.waitsForMoreClicks(on: imp), "one click alone needs no second")
-        p.shortcuts[0].trigger = .clicks(2)
+        p.shortcuts[0].trigger = .click(2)
         #expect(p.waitsForMoreClicks(on: imp))
         p.shortcuts[0].isEnabled = false
         #expect(!p.waitsForMoreClicks(on: imp), "a switched-off trigger waits for nothing")
     }
 
-    @Test func aFreshInstallAnswersToTwoClicksWithTheSettingsAndNewImpsShareIt() {
-        var p = ImpPreferences.firstLaunch
+    @Test func aFreshInstallAnswersToNoClicksAndNewImpsShareASharedOne() {
+        var p = ImpPreferences()
+        #expect(!p.waitsForMoreClicks(on: p.imps[0].id))
+        p.shortcuts = [Shortcut(name: "Settings", trigger: .click(2), steps: [Step(.open, value: "settings")])]
         #expect(p.waitsForMoreClicks(on: p.imps[0].id))
         let newcomer = ImpProfile(name: "Newcomer", hue: 0.3, favoriteHue: 0.3, personality: "")
         p.imps.append(newcomer)
-        #expect(p.clickShortcut(2, on: newcomer.id, in: nil)?.command == .settings)
+        #expect(p.clickShortcut(2, on: newcomer.id, in: nil)?.steps.first?.target == .settings)
     }
 
     // MARK: Hidden on the phone

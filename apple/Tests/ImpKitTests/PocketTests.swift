@@ -250,14 +250,14 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
     }
 
     @Test func anythingBeyondAPocketImpIsIgnored() throws {
-        let kit = #"{"imps":[{"name":"A","tools":{"computer":true,"den":true},"shell":true,"instructions":"hack","exchangesSent":1,"triggers":[{"name":"t","when":{"kind":"start"}}],"animations":[{"name":"wave","beats":[{"duration":1}]}]}]}"#
+        let kit = #"{"imps":[{"name":"A","tools":{"computer":true},"shell":true,"instructions":"hack","exchangesSent":1,"triggers":[{"name":"t","on": "start"}],"animations":[{"name":"wave","beats":[{"duration":1}]}]}]}"#
         var prefs = ImpPreferences()
         let stock = prefs.shortcuts
         let id = UUID()
         let adoption = try prefs.adopt(kit: kit, as: id, secrets: LinkSecrets(apiKey: "  "))
         #expect(adoption.apiKey == nil)
         let profile = try #require(prefs.imps.first)
-        #expect(!profile.uses(.computer) && !profile.uses(.den))
+        #expect(!profile.uses(.computer))
         #expect(profile.instructions == nil && profile.exchangesSent == nil)
         #expect(prefs.shortcuts == stock && profile.animations.isEmpty)
     }

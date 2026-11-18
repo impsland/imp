@@ -15,11 +15,16 @@ import Foundation
 /// Nothing in a kit is applied by parsing it: the app shows it for review first.
 ///
 /// ## Recognising a kit
-/// A kit has no version number. It is a JSON object with at least one of `imps`, `triggers`, `animations`
-/// or `mcpServers`. Adding a field, or an optional section, changes nothing: readers ignore keys they don't
-/// know, and a missing one takes its default. A change older readers would misread uses a new key.
+/// A kit is a JSON object with at least one of `imps`, `triggers`, `animations`, `mcpServers` or `skills`.
+/// `"format"` is the kit format (`Kit.format`): writers always add it, a file without it is read as 1, and
+/// a newer one than this Imp reads is refused (`KitError.newerFormat`). Adding an optional field never
+/// changes the format: readers ignore keys they don't know, and a missing one takes its default.
+/// `skills` names skills to install with `npx skills add <source>`; nothing runs it.
 /// - `"app"` is the version of Imp that wrote the file. Informational: nothing reads it.
 public struct Kit: Equatable, Sendable {
+    /// The kit format this Imp reads and writes. See spec/PROTOCOL.md, Compatibility.
+    public static let format = 1
+    public static let maxSkills = 20
     /// The biggest kit from a web address, a link or pasted text.
     public static let maxBytes = 512 * 1024
     /// The biggest kit file on this Mac: chats can make an exported Imp big.
@@ -38,19 +43,21 @@ public struct Kit: Equatable, Sendable {
     public var imps: [KitImp]
     /// Animations for whoever adds the kit (an Imp's own come with it, in `KitImp.animations`).
     public var animations: [MadeAnimation]
+    /// Skills the kit names. The person installs them with `npx skills add`; Imp never does.
+    public var skills: [KitSkill]
     /// The version of Imp that wrote the kit: read from a file, written when it's set (the app passes it in).
     public var app: String?
     /// Items that couldn't be read ("Trigger 2: Unknown trigger kind …"). The rest of the kit still stands.
     public var problems: [String]
 
     public init(name: String = "", about: String = "", triggers: [Shortcut] = [], servers: [MCPServerConfig] = [],
-                imps: [KitImp] = [], animations: [MadeAnimation] = [], app: String? = nil, problems: [String] = []) {
+                imps: [KitImp] = [], animations: [MadeAnimation] = [], skills: [KitSkill] = [], app: String? = nil, problems: [String] = []) {
         self.name = name; self.about = about; self.triggers = triggers; self.servers = servers; self.imps = imps
-        self.animations = animations
+        self.animations = animations; self.skills = skills
         self.app = app; self.problems = problems
     }
 
-    public var itemCount: Int { triggers.count + servers.count + imps.count + animations.count }
+    public var itemCount: Int { triggers.count + servers.count + imps.count + animations.count + skills.count }
 
     /// Servers no Imp of the kit uses (the ones the review lists on their own).
     public var looseServers: [MCPServerConfig] {
@@ -72,9 +79,9 @@ public struct Kit: Equatable, Sendable {
             kit = Kit()
             kit.read(triggers: list)
         } else if trimmed.first == "{", let json = try? JSONValue(jsonString: trimmed) {
-            if ["triggers", "imps", "animations", "mcpServers"].contains(where: { json[$0] != nil }) {
+            if ["triggers", "imps", "animations", "mcpServers", "skills"].contains(where: { json[$0] != nil }) {
                 kit = try envelope(json)
-            } else if json["when"] != nil {
+            } else if json["on"] != nil {
                 kit = Kit()
                 kit.read(triggers: [json])
             } else {
@@ -98,6 +105,10 @@ public struct Kit: Equatable, Sendable {
 
     private static func envelope(_ original: JSONValue) throws -> Kit {
         let json = original
+        if let value = json["format"] {
+            guard case .number(let n) = value, n >= 1, n == n.rounded(), n < 1_000_000 else { throw KitError.badFormat }
+            if Int(n) > Kit.format { throw KitError.newerFormat(Int(n), Kit.format) }
+        }
         var kit = Kit(name: json["name"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
                       about: json["about"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
                       app: json["app"]?.string)
@@ -118,6 +129,9 @@ public struct Kit: Equatable, Sendable {
         if let list = json["imps"] {
             if let array = list.array { kit.read(imps: array) } else { kit.problems.append(String(localized: "“imps” should be a list.")) }
         }
+        if let list = json["skills"] {
+            if let array = list.array { kit.read(skills: array) } else { kit.problems.append(String(localized: "“skills” should be a list.")) }
+        }
         return kit
     }
 
@@ -131,7 +145,7 @@ public struct Kit: Equatable, Sendable {
     private mutating func read(triggers list: [JSONValue]) {
         for (i, item) in list.enumerated() {
             do {
-                var shortcut = try Shortcut(tool: item, imp: UUID(), animation: MadeAnimation.resolver(animations))
+                var shortcut = try Shortcut(tool: item, imp: UUID())
                 shortcut.performer = nil          // whose it is gets decided when it's added
                 triggers.append(shortcut)
             } catch {
@@ -148,6 +162,17 @@ public struct Kit: Equatable, Sendable {
             let label = item["name"]?.string.map { String(localized: "Imp \(i + 1) (“\($0)”)") } ?? String(localized: "Imp \(i + 1)")
             if let imp = KitImp.read(item, servers: names, problems: &problems) { imps.append(imp) }
             self.problems += problems.map { "\(label): \($0)" }
+        }
+    }
+
+    private mutating func read(skills list: [JSONValue]) {
+        if list.count > Kit.maxSkills { problems.append(String(localized: "Skills: only the first \(Kit.maxSkills) are read.")) }
+        for (i, item) in list.prefix(Kit.maxSkills).enumerated() {
+            do {
+                skills.append(try KitSkill(name: item["name"]?.string ?? "", source: item["source"]?.string ?? ""))
+            } catch {
+                problems.append(String(localized: "Skill \(i + 1): \(Self.message(error))"))
+            }
         }
     }
 
@@ -211,19 +236,20 @@ public struct Kit: Equatable, Sendable {
 
     /// The kit as JSON text: readable, or compact for a link. Secrets are never in it.
     public func json(pretty: Bool = true) -> String {
-        var top: [String: JSONValue] = [:]
+        var top: [String: JSONValue] = ["format": .number(Double(Kit.format))]
         if let app, !app.isEmpty { top["app"] = .string(app) }
         if !name.isEmpty { top["name"] = .string(name) }
         if !about.isEmpty { top["about"] = .string(about) }
         let keys = serverKeys
         if !imps.isEmpty { top["imps"] = .array(imps.map { $0.kitJSON(serverKeys: keys) }) }
-        if !triggers.isEmpty { top["triggers"] = .array(triggers.map { $0.kitJSON(with: animations) }) }
+        if !triggers.isEmpty { top["triggers"] = .array(triggers.map { $0.kitJSON }) }
         if !servers.isEmpty {
             var map: [String: JSONValue] = [:]
             for s in servers { map[keys[s.id]!] = s.kitJSON }
             top["mcpServers"] = .object(map)
         }
         if !animations.isEmpty { top["animations"] = .array(animations.map(\.kitJSON)) }
+        if !skills.isEmpty { top["skills"] = .array(skills.prefix(Kit.maxSkills).map(\.kitJSON)) }
         return JSONValue.object(top).kitText(pretty: pretty)
     }
 
@@ -291,6 +317,9 @@ public enum KitError: LocalizedError, Equatable {
     case nothingUsable([String])
     case badAddress(String)
     case download(String)
+    /// The kit is in a newer format than this Imp reads: (the kit's, this Imp's).
+    case newerFormat(Int, Int)
+    case badFormat
 
     public var errorDescription: String? {
         switch self {
@@ -307,6 +336,9 @@ public enum KitError: LocalizedError, Equatable {
             default: String(localized: "That has too many items (the limit is \(limit)).")
             }
         case .nothingUsable(let problems): String(localized: "Nothing in it could be read. \(problems.prefix(3).joined(separator: " "))")
+        case .newerFormat(let theirs, let ours):
+            String(localized: "This needs a newer Imp. It is kit format \(theirs), and this Imp reads up to format \(ours). Update Imp and try again.")
+        case .badFormat: String(localized: "The kit's “format” should be a whole number, 1 or more.")
         case .badAddress(let why), .download(let why): why
         }
     }
@@ -380,49 +412,6 @@ extension Hotkey {
     var kitText: String { displayString }
 }
 
-extension Trigger {
-    /// The `when` / `only_if` object `Trigger(tool:)` reads.
-    var kitJSON: JSONValue {
-        var o: [String: JSONValue] = ["kind": .string(kind.rawValue)]
-        switch kind {
-        case .clicks, .battery, .every, .back, .busy, .idle:
-            if let number { o["number"] = .number(Double(number)) }
-        case .charger, .offline:
-            if let flag { o["flag"] = .bool(flag) }
-        case .app, .website:
-            o["text"] = .string(word)
-        case .time:
-            o["text"] = .string(Self.clock(minuteOfDay))
-        case .hours:
-            o["text"] = .string(Self.clock(minuteOfDay) + "-" + Self.clock(endMinute))
-        case .keys, .wake, .start, .hot, .enter, .leave:
-            break
-        }
-        return .object(o)
-    }
-}
-
-extension Shortcut {
-    /// The object `imp_add_trigger` takes. Whose it is isn't part of it: whoever adds it decides.
-    /// An animation of `animations` (the kit's, which get new ids wherever they land) is written by
-    /// its name, which the kit's reader finds again.
-    func kitJSON(with animations: [MadeAnimation] = []) -> JSONValue {
-        var when = trigger.kitJSON
-        if case .object(var o) = when, let keys { o["keys"] = .string(keys.kitText); when = .object(o) }
-        var o: [String: JSONValue] = ["name": .string(name), "when": when, "with_clipboard": .bool(usesClipboard)]
-        if !conditions.isEmpty { o["only_if"] = .array(conditions.map(\.kitJSON)) }
-        if command != .ask { o["do"] = .string(command.rawValue) }
-        if !prompt.isEmpty { o["prompt"] = .string(prompt) }
-        if let animation {
-            let made = animations.first { a in animation == .custom(a.id) }
-            o["animation"] = .string(made?.title ?? animation.key)
-        }
-        return .object(o)
-    }
-
-    var displayLabel: String { name.trimmingCharacters(in: .whitespaces).isEmpty ? "Untitled" : name }
-}
-
 extension MCPServerConfig {
     /// An `mcpServers` entry, the shape Claude Desktop and Cursor use. Every environment variable
     /// and header value is blanked, and so is anything after a `?` in an address (where keys hide
@@ -451,14 +440,14 @@ extension MCPServerConfig {
 extension JSONValue {
     /// Keys in the order people read them. Anything else after, A to Z.
     private static let keyOrder = ["app", "name", "about", "imps", "triggers", "mcpServers", "animations",
-                                   "symbol", "replaces", "starts", "enabled", "favoriteColor", "beats", "duration", "look", "mood", "glyph", "tilt", "hop", "stretch",
+                                   "symbol", "enabled", "beats", "duration", "look", "mood", "glyph", "tilt", "hop", "stretch",
                                    "traits", "lids", "slant", "eyes", "squint", "horns", "blush", "tempo",
                                    "hue", "favoriteHue", "scale", "personality", "instructions", "brain", "model", "service", "baseURL",
                                    "shell", "tools", "exchangesSent", "sendsToolCalls", "chats",
                                    "title", "created", "updated", "turns", "memory", "recap", "messages",
                                    "date", "request", "reply", "failed", "via", "instruction", "copiedText", "sender", "steps",
                                    "icon", "response", "role", "content", "toolCalls", "toolCallID", "id", "arguments",
-                                   "when", "only_if", "do", "prompt", "with_clipboard",
+                                   "when", "only_if", "do", "follow", "speed", "prompt", "with_clipboard",
                                    "kind", "number", "text", "flag", "keys", "command", "args", "env", "url", "headers"]
 
     /// JSON text with a stable key order, indented or compact.
@@ -531,7 +520,6 @@ extension ImpPreferences {
         }
         for var trigger in kit.triggers where chosenTriggers.contains(trigger.id) {
             trigger.performer = imp
-            trigger.animation = relink(trigger.animation, adopted: adopted, from: kit.animations, imp: imp)
             shortcuts.append(trigger)
             added.triggers += 1
         }
@@ -561,9 +549,10 @@ extension ImpPreferences {
     /// it, the trigger would play nothing wherever the kit lands.
     public func kit(sharing trigger: Shortcut, named name: String, imp: UUID?) -> Kit {
         var kit = Kit(name: name, triggers: [trigger])
-        if case .custom(let id)? = trigger.animation, var made = customAnimation(id, imp: imp ?? trigger.performer) {
-            made.id = id                     // an Imp's own version stands in under the id the trigger knows
-            kit.animations = [made.normalized]
+        for step in trigger.steps {
+            guard let animation = step.animationName, case .custom(let id)? = ref(named: animation, imp: imp ?? trigger.performer),
+                  let made = customAnimation(id, imp: imp ?? trigger.performer), !kit.animations.contains(where: { $0.name == made.name }) else { continue }
+            kit.animations.append(made.normalized)
         }
         return kit
     }
@@ -576,16 +565,56 @@ extension ImpPreferences {
     mutating func adopt(_ animation: MadeAnimation, for imp: UUID?) -> UUID {
         var a = animation
         a.id = UUID()
-        if a.replaces == nil { a.name = uniqueAnimationName(a.name, imp: imp) }
+        a.name = uniqueAnimationName(a.name, imp: imp)
         return save(a, for: imp)
     }
+}
 
-    /// What a kit's trigger plays, once the kit's animations have landed: the adopted one, else one
-    /// here with its name (an animation left out of the kit, or not chosen), else nothing.
-    func relink(_ ref: AnimationRef?, adopted: [UUID: UUID], from animations: [MadeAnimation], imp: UUID?) -> AnimationRef? {
-        guard case .custom(let id)? = ref else { return ref }
-        if let new = adopted[id] { return .custom(new) }
-        if let a = animations.first(where: { $0.id == id }) { return self.ref(named: a.title, imp: imp) }
-        return customAnimation(id, imp: imp) == nil ? nil : ref
+/// A skill a kit names: shown with its `npx skills add <source>` command. Imp never runs it.
+public struct KitSkill: Equatable, Sendable, Identifiable {
+    public var name: String
+    public var source: String
+    public var id: String { name + " " + source }
+
+    public enum Invalid: LocalizedError, Equatable {
+        case name, source
+        public var errorDescription: String? {
+            switch self {
+            case .name: String(localized: "A skill's name has 1 to 64 characters: a-z, 0-9 and dashes between them.")
+            case .source: String(localized: "A skill's source is owner/repo, owner/repo/path or an https:// address, at most 200 characters, with no spaces or shell characters.")
+            }
+        }
     }
+
+    public init(name: String, source: String) throws {
+        let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let source = source.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard Self.validName(name) else { throw Invalid.name }
+        guard Self.validSource(source) else { throw Invalid.source }
+        self.name = name; self.source = source
+    }
+
+    static func validName(_ name: String) -> Bool {
+        guard (1...64).contains(name.count), name.first != "-", name.last != "-" else { return false }
+        return name.allSatisfy { ("a"..."z").contains($0) || ("0"..."9").contains($0) || $0 == "-" }
+    }
+
+    static func validSource(_ source: String) -> Bool {
+        guard (1...200).contains(source.count) else { return false }
+        // Letters, digits and the few marks owner/repo/path and an address need: nothing a shell reads.
+        let allowed = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._/:~@%+=")
+        guard source.allSatisfy({ allowed.contains($0) }) else { return false }
+        if source.hasPrefix("https://") {
+            guard let url = URL(string: source), url.host?.isEmpty == false, url.user == nil, url.password == nil else { return false }
+            return true
+        }
+        guard !source.contains(":"), !source.hasPrefix("/"), !source.hasSuffix("/"), !source.contains("//") else { return false }
+        let parts = source.split(separator: "/", omittingEmptySubsequences: false)
+        return parts.count >= 2 && !parts.contains(where: { $0.isEmpty || $0 == ".." })
+    }
+
+    /// What the person runs to install it.
+    public var command: String { "npx skills add " + source }
+
+    var kitJSON: JSONValue { .object(["name": .string(name), "source": .string(source)]) }
 }

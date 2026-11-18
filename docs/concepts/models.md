@@ -40,7 +40,7 @@ Secrets are never in it (a service is named and given a base URL, the key stays 
   "brain": { "model": "openai/gpt-6-luna", "service": { "name": "OpenAI", "baseURL": "https://openrouter.ai/api/v1" } },
   "shell": false,
   "tools": { "body": true, "senses": true, "setup": false, "troupe": false, "computer": false },
-  "toolsOff": ["own.den.den_search"],
+  "toolsOff": ["own.body.imp_speak"],
   "exchangesSent": 20,
   "sendsToolCalls": true,
   "mcpServers": ["Memory", "Time"],
@@ -118,7 +118,7 @@ A trigger makes an Imp act on its own. In kits and in the `imp_add_trigger` tool
 - `when` is what starts it: `{ "kind": "wake" }`, `{ "kind": "time", "text": "17:30" }` and the other
   kinds listed by the `imp_add_trigger` tool. `only_if` is a list of conditions that must all hold.
 - `do` is the action (`ask` sends `prompt` to the Imp as if typed).
-- A kit that holds only triggers is a valid kit of kind `trigger` on the Den.
+- A kit that holds only triggers is a valid kit, and a gallery such as the Den lists it as kind `trigger`.
 
 ## Chat turn
 
