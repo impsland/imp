@@ -76,6 +76,18 @@ struct HomeView: View {
         } message: {
             Text("goodbye.message")
         }
+        // Several picked Imps at once: asked once, for all of them.
+        .confirmationDialog(words("goodbye.many.title", router.sayingMany?.count ?? 0),
+                            isPresented: Binding(get: { router.sayingMany != nil }, set: { if !$0 { router.sayingMany = nil } }),
+                            titleVisibility: .visible) {
+            Button(role: .destructive) { if let ids = router.sayingMany { HomeActions(model: model, router: router).sayGoodbye(ids) } } label: {
+                Text("goodbye.confirm")
+            }
+            Button(role: .cancel) { router.sayingMany = nil } label: { Text("goodbye.many.cancel") }
+        } message: {
+            Text(verbatim: (router.sayingMany ?? []).compactMap { model.profile($0)?.name }.formatted(.list(type: .and)) + "\n\n"
+                 + String(localized: "goodbye.many.message"))
+        }
         // An Imp away on another device is never out of reach: a click on it, or Call Home in its menu, asks this.
         .confirmationDialog(callHomeTitle, isPresented: Binding(get: { router.callingHome != nil }, set: { if !$0 { router.callingHome = nil } }),
                             titleVisibility: .visible) {

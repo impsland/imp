@@ -14,6 +14,54 @@
     "es": "Ocultos ({count})",
     "zh-Hans": "已隐藏（{count}）"
   },
+  "menu.canvas.select_all": {
+    "note": "Button on empty space in the window that picks every Imp there, to act on them together. Keep it short: it sits under an icon.",
+    "en": "Select All",
+    "es": "Seleccionar todo",
+    "zh-Hans": "全选"
+  },
+  "menu.group.title": {
+    "note": "Title of the menu of several Imps picked together.",
+    "args": {
+      "count": "int"
+    },
+    "en": "{count} Imps",
+    "es": "{count} Imps",
+    "zh-Hans": "{count} 个 Imp"
+  },
+  "menu.group.hide_help": {
+    "note": "Tooltip of Hide in the menu of several Imps.",
+    "en": "They hide until you show them again. Their triggers rest meanwhile.",
+    "es": "Se esconden hasta que los vuelvas a mostrar. Mientras, sus disparadores descansan.",
+    "zh-Hans": "它们会藏起来，直到你再次显示。在此期间它们的触发器暂停。"
+  },
+  "menu.group.free_help": {
+    "note": "Tooltip of Free in the menu of several Imps.",
+    "en": "They step out onto the desktop, right where they stand.",
+    "es": "Salen al escritorio, justo donde están.",
+    "zh-Hans": "它们走到桌面上，就在各自站着的地方。"
+  },
+  "menu.group.kit_help": {
+    "note": "Tooltip of Copy kit in the menu of several Imps.",
+    "en": "Copies one kit with all of them, to share or keep.",
+    "es": "Copia un kit con todos ellos, para compartir o guardar.",
+    "zh-Hans": "把它们全部复制为一个套件，用于分享或保存。"
+  },
+  "menu.group.goodbye": {
+    "note": "Menu item that deletes several picked Imps. It asks first.",
+    "args": {
+      "count": "int"
+    },
+    "en": "Goodbye to {count} Imps…",
+    "es": "Adiós a {count} Imps…",
+    "zh-Hans": "向 {count} 个 Imp 告别…"
+  },
+  "menu.group.goodbye_off": {
+    "note": "Tooltip of the dimmed Goodbye item when every Imp is picked.",
+    "en": "One Imp always stays. Leave at least one out of the group.",
+    "es": "Siempre se queda un Imp. Deja al menos uno fuera del grupo.",
+    "zh-Hans": "总要留下一个 Imp。请至少留一个不选。"
+  },
   "menu.canvas.settings": {
     "note": "Menu item that opens the app-wide settings.",
     "en": "Settings",
@@ -193,6 +241,75 @@
     "en": "Type to {name}",
     "es": "Escribir a {name}",
     "zh-Hans": "给 {name} 打字"
+  },
+  "menu.imp.visit": {
+    "note": "Small heading in an Imp's menu over the linked devices it can visit.",
+    "en": "Visit",
+    "es": "Visitar",
+    "zh-Hans": "去做客"
+  },
+  "menu.imp.chat": {
+    "note": "Button in an Imp's menu that opens its chat. Keep it short: it sits under an icon.",
+    "en": "Chat",
+    "es": "Chat",
+    "zh-Hans": "对话"
+  },
+  "menu.imp.chat_help": {
+    "note": "Tooltip of the Chat button in an Imp's menu.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Everything you and {name} said",
+    "es": "Todo lo que habéis dicho tú y {name}",
+    "zh-Hans": "你和 {name} 说过的所有话"
+  },
+  "menu.imp.hide_help": {
+    "note": "Tooltip of the Hide button in an Imp's menu.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} hides until you show it again. Its triggers rest meanwhile.",
+    "es": "{name} se esconde hasta que lo vuelvas a mostrar. Mientras, sus disparadores descansan.",
+    "zh-Hans": "{name} 会藏起来，直到你再次显示它。在此期间它的触发器暂停。"
+  },
+  "menu.imp.home": {
+    "note": "Button in a desktop Imp's menu that sends it back into the app's window. Keep it short: it sits under an icon.",
+    "en": "Home",
+    "es": "A casa",
+    "zh-Hans": "回家"
+  },
+  "menu.imp.home_help": {
+    "note": "Tooltip of the Home button in a desktop Imp's menu.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} goes back into the Imps' window, and its triggers rest.",
+    "es": "{name} vuelve a la ventana de los Imps y sus disparadores descansan.",
+    "zh-Hans": "{name} 回到 Imp 窗口，它的触发器暂停。"
+  },
+  "menu.imp.free": {
+    "note": "Button in the menu of an Imp in the app's window that lets it out onto the desktop. Keep it short: it sits under an icon.",
+    "en": "Free",
+    "es": "Soltar",
+    "zh-Hans": "放出"
+  },
+  "menu.imp.free_help": {
+    "note": "Tooltip of the Free button in the menu of an Imp in the app's window.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name} steps out onto the desktop, right where it stands.",
+    "es": "{name} sale al escritorio, justo donde está.",
+    "zh-Hans": "{name} 走到桌面上，就在它站着的地方。"
+  },
+  "menu.imp.settings_help": {
+    "note": "Tooltip of the Settings button in an Imp's menu.",
+    "args": {
+      "name": "string"
+    },
+    "en": "{name}'s settings",
+    "es": "Ajustes de {name}",
+    "zh-Hans": "{name} 的设置"
   },
   "menu.canvas.devices": {
     "note": "Menu item that opens Devices.",

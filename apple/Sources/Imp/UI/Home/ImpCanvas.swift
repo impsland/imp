@@ -9,8 +9,22 @@ struct ImpCanvas: View {
     @Bindable var model: AppModel
     @Bindable var router: HomeRouter
     @FocusState private var focus: UUID?
+    /// The box being drawn on empty space to pick Imps, while the drag lasts.
+    @State private var box: CGRect?
+    /// The picks the box adds to (⌘ or ⇧ held when it started), else none.
+    @State private var boxBase: Set<UUID> = []
 
     private var onCanvas: [UUID] { model.prefs.imps.map(\.id).filter(model.isOnCanvas) }
+
+    /// Where each Imp's figure is drawn, for the box that picks them.
+    private func centres(_ ids: [UUID], in size: CGSize) -> [UUID: CGPoint] {
+        var out: [UUID: CGPoint] = [:]
+        for id in ids {
+            guard let imp = model.profile(id) else { continue }
+            out[id] = CanvasLayout.point(of: router.places[id] ?? CGPoint(x: 0.5, y: 0.5), in: size, figure: Panels.baseSize * imp.scale)
+        }
+        return out
+    }
 
     var body: some View {
         let ids = onCanvas
@@ -19,7 +33,37 @@ struct ImpCanvas: View {
                 // Empty space: a right click here opens the canvas menu.
                 Color.clear
                     .contentShape(Rectangle())
-                    .contextMenu { CanvasMenu(model: model, router: router) }
+                    // A right click here opens the canvas menu, an AppKit menu for its row of buttons. Other clicks pass.
+                    .overlay {
+                        SecondaryClickMenu { [model, router] in
+                            let menu = CanvasEmptyMenu(model: model, router: router)
+                            router.openMenu = menu      // menu item targets are weak: keep it alive while open
+                            return menu.make()
+                        }
+                    }
+                    // A click on empty space lets the group go. A drag draws a box that picks the Imps inside it.
+                    .onTapGesture { router.clearPicks() }
+                    .gesture(DragGesture(minimumDistance: 4, coordinateSpace: .named(CanvasImp.space))
+                        .onChanged { drag in
+                            let adding = NSEvent.modifierFlags.contains(.command) || NSEvent.modifierFlags.contains(.shift)
+                            if box == nil { boxBase = adding ? router.picked.union([router.selection].compactMap { $0 }) : [] }
+                            let rect = ImpPicks.box(from: drag.startLocation, to: drag.location)
+                            box = rect
+                            let inside = ImpPicks.inside(rect, centres: centres(ids, in: geo.size))
+                            router.picked = boxBase.union(inside)
+                            if let first = ids.first(where: router.picked.contains), !(router.selection.map(router.picked.contains) ?? false) {
+                                router.selection = first
+                            }
+                        }
+                        .onEnded { _ in box = nil })
+                if let box {
+                    RoundedRectangle(cornerRadius: Radius.tile, style: .continuous)
+                        .fill(Tone.accent.opacity(Opacity.tintFill))
+                        .frame(width: box.width, height: box.height)
+                        .position(x: box.midX, y: box.midY)
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                }
                 if model.prefs.imps.isEmpty {
                     EmptyCanvas(action: { HomeActions(model: model, router: router).newImp() })
                 }
@@ -40,6 +84,8 @@ struct ImpCanvas: View {
             }
         }
         .onChange(of: focus) { _, id in if let id { router.selection = id } }
+        .onExitCommand { router.clearPicks() }
+        .onCommand(#selector(NSText.selectAll(_:))) { router.pickAll(ids) }
     }
 }
 
@@ -79,7 +125,7 @@ private struct CanvasImp: View {
             let side = Panels.baseSize * imp.scale
             let centre = CanvasLayout.point(of: router.places[id] ?? CGPoint(x: 0.5, y: 0.5), in: size, figure: side)
             let drawn = dragged ?? centre
-            let selected = router.selection == id
+            let selected = router.isPicked(id)
             let tint = Color.imp(imp.hue)
             VStack(spacing: Spacing.hairline) {
                 figure(imp, side: side)
@@ -90,6 +136,23 @@ private struct CanvasImp: View {
                     .frame(width: side * Self.nameReach, height: CanvasLayout.nameRoom - Spacing.hairline)
             }
             .impAnimation(ImpDesign.Motion.quick, value: selected)
+            // A right click opens the Imp's own menu: the same card as on the desktop.
+            .overlay {
+                SecondaryClickMenu { [model, router, id] in
+                    // On one of a group: the group's menu. On any other Imp: that Imp's, and the group is let go.
+                    let group = ImpPicks.group(of: id, picked: router.picked, order: model.prefs.imps.map(\.id))
+                    if group.count > 1 {
+                        let menu = CanvasGroupMenu(model: model, router: router, ids: group)
+                        router.openMenu = menu      // menu item targets are weak: keep it alive while open
+                        return menu.make()
+                    }
+                    router.clearPicks()
+                    router.select(id)
+                    let menu = CanvasImpMenu(model: model, router: router, id: id)
+                    router.openMenu = menu
+                    return menu.make()
+                }
+            }
             .scaleEffect(popped || reduceMotion ? 1 : 0.2, anchor: .center)
             .opacity(popped ? 1 : 0)
             .position(x: drawn.x, y: drawn.y + CanvasLayout.nameRoom / 2)
@@ -98,8 +161,14 @@ private struct CanvasImp: View {
                 .onEnded { _ in drop(side: side) })
             .gesture(TapGesture(count: 2).onEnded { actions.click(id, count: 2) },
                      including: model.prefs.waitsForMoreClicks(on: id) ? .all : .subviews)
-            .onTapGesture { viaKeyboard = false; actions.click(id, count: 1) }
-            .contextMenu { ImpContextMenu(model: model, router: router, id: id) }
+            .onTapGesture {
+                viaKeyboard = false
+                // ⌘- or ⇧-click: in or out of the group, and nothing else.
+                let keys = NSEvent.modifierFlags
+                if keys.contains(.command) || keys.contains(.shift) { return router.togglePick(id) }
+                router.clearPicks()
+                actions.click(id, count: 1)
+            }
             .focusable()
             .focused(focus, equals: id)
             .focusEffectDisabled()

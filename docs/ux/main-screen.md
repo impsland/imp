@@ -56,33 +56,37 @@ Nothing on the canvas animates for decoration unless an Imp writes a background 
 
 ## Menus
 
-Right click on empty space (or touch and hold on a phone). One level, no submenus:
+Right click on empty space (or touch and hold on a phone). On the Mac it is one grid of buttons (see the card below):
 
 1. New Imp (`menu.canvas.new_imp`, Command N)
 2. Hidden (n) (`menu.canvas.show_hidden`), only when some are hidden. The number is how many
-3. Settings (`menu.canvas.settings`, Command comma)
+3. Select All (`menu.canvas.select_all`), only when two or more are in the window
+4. Settings (`menu.canvas.settings`, Command comma)
 
 The background choices are not in this menu. They are one click away in Settings, so the right click stays short. The corner buttons do the same as these items.
 
-Right click on an Imp in the window (or touch and hold on a phone), also one level:
+Right click (or Control-click) on an Imp, in the window or on the desktop, opens the same menu. It starts with a card (`ImpMenuCard`):
 
-1. Settings (`menu.imp.settings`, Command I)
-2. Hide (`menu.imp.hide`)
-3. Copy kit (`menu.imp.copy_kit`) and Copy link (`menu.imp.copy_link`), desktop only. Copy link is off when no link can be made
-4. Let out or Send home (`menu.imp.let_out`, `menu.imp.send_home`)
-5. Goodbye (`menu.imp.goodbye`), last and apart. It asks first. It is off when there is only one Imp
+1. The Imp in a circle of its colour, centred by its drawing (horns included), its name and its status
+2. Six buttons in a 2 × 3 grid, an icon over a short word: Talk, Type, Chat (`menu.imp.talk`, `menu.imp.type`, `menu.imp.chat`), then Hide, Home or Free, Settings (`menu.imp.hide`, `menu.imp.home`, `menu.imp.free`, `menu.imp.settings`). On the desktop the fifth button is Home: the Imp goes back into the window. In the window it is Free: the Imp steps out where it stands. Talk, Type and Chat on an Imp in the window let it out first, because its bubble lives on the desktop
+3. Its size: three buttons with a small, a medium and a large dot. The chosen one is filled with the Imp's colour
+4. Its colour: a dot for each colour, the chosen one with a tick
 
-The Imp in its own window on the desktop has a longer menu:
+The buttons close the menu and then act. Size and colour change at once and leave the menu open, so both can be picked in one go.
 
-1. Chat, and Settings (`menu.imp.settings`)
-2. Triggers, Colour and Size
-3. Hide (`menu.imp.hide`)
-4. Visit {name} (`menu.imp.send_to`), one item for each linked device. Without a linked device it shows Visit another device (`menu.imp.visit_none`)
-5. Send home (`menu.imp.send_home`)
+Every right-click menu is one card of buttons (`MenuCard`), never a list of text items: big pebbles in a grid for the main actions (`MenuGrid`, three to a row, two when there are four), pills two to a row under a small heading for things to choose from (`MenuPills`), and one wide button in the danger colour for what can't be undone (`MenuDangerButton`), last. Under the Imp's card:
+
+- In the window: Copy kit and Copy link as pills (Copy link is off when no link can be made), then Goodbye (`menu.imp.goodbye`) as the wide button. It asks first, and it is off when there is only one Imp
+- On the desktop: Stop and Copy Last Reply while there is something to stop or copy, its triggers that ask it something (Triggers), and Visit (`menu.imp.visit`): a pill for each linked device, or a dimmed Visit another device (`menu.imp.visit_none`)
+- A visiting Imp's card has Chat, New Chat and Hide, then Stop and Copy, the devices its doors lead to, and Send home
+- Several Imps picked together: Hide, Free and Copy kit, size and colour, Brain as pills (Shared or a service, applied at once, the menu stays open), then Goodbye to {count} Imps… as the wide button
+- Empty space: New Imp, Hidden (n) when some are hidden, Select All when there are two or more, and Settings, as one grid
+
+The menu bar's Imps menu keeps a plain list for the chosen Imp (Settings, Hide, Copy kit, Copy link, Let out or Send home, Goodbye), because a menu bar menu cannot hold a card.
 
 Move to {name} (`menu.imp.move_to`) is in the phone's menu only. It is for an Imp hatched on the phone.
 
-There is no Talk in this menu: a click or tap already opens the chat. The Imp's talks with other Imps are an icon in its chat's bar (`menu.imp.talks`), shown only when there are some.
+The Imp's talks with other Imps are an icon in its chat's bar (`menu.imp.talks`), shown only when there are some.
 
 The items are the same on every platform. Each platform shows them in its own menu style and with its own shortcuts. See [Platforms](/ux/platforms).
 
@@ -95,6 +99,7 @@ The items are the same on every platform. Each platform shows them in its own me
 - **A sheet over the room.** A tap on an Imp opens its sheet at half height. The room stays alive above it: the Imp flies up into the free room and waits there in its glow, and every Imp can still be touched, carried and thrown. A tap on another Imp turns the sheet into that Imp's. Talk bubbles stay in the room you can see: over the talker's head, or under it or beside it when there is no room above, never under the top bar, the home indicator or a half sheet, and never over another bubble. A bubble, the thinking dots and the name tag keep the same distance from an Imp whatever its size, measured from its drawing (its horns, its base), not from its square. Pulled up, or lifted by the keyboard, the sheet covers the room and the room rests, and the sheet's bar shows the Imp instead. With Reduce Motion the Imp is not moved. See [The room never leaves](/design/room).
 - **One sheet, always the same.** There is one sheet over the room, whatever it shows (an Imp's chat, the settings, an Imp's settings, its Brain), and it looks and behaves the same however it was reached: from the room or from inside another sheet. It always has its grab bar. Going from one thing to another (Settings while a chat is open, a tap on an Imp while Settings is open) changes the sheet's content in place and never puts it away to bring another. Something new starts at half height when it can rest there (a chat, the settings, an Imp's settings, where the Imp in the room above is the live preview of its look) and at full height only when it needs the screen (waking the first Imp). Going from one Imp's chat to another's keeps the height.
 - **Touch and hold on an Imp.** Its bubble and name tag go away the moment the press is recognised, the phone gives one tick, and the Imp's menu comes up from the bottom under its name. Moving the finger drags the Imp instead. The items are icon first and short: Talk, Talks, Imp Settings, Hide, Send to a device, Move to a Mac, then Send home or Goodbye last with the destructive style. Every item is also a VoiceOver action on the Imp.
+- **Select.** Select (`checkmark.circle`) in that menu, after Hide, starts picking several Imps with this one picked. A tap on an Imp then picks it or lets it go (it opens no chat) with one light tick, and a picked Imp wears a tick in its own colour. The room's top bar gives way to Cancel, "N selected" and Select All. A bar at the bottom acts on all the picked Imps: Hide, Send home (only when a visitor is picked, and only visitors go) and Goodbye (only Imps hatched here), which asks once with the names listed. The phone keeps no "one Imp stays" rule, so Goodbye may take every Imp hatched here. Picking ends with Cancel, after an action, when nothing is picked any more, or when a sheet or a game opens. The Imps keep floating meanwhile. For VoiceOver each Imp reports whether it is selected and offers Select or Deselect as its action.
 
 ### The bar menu
 
@@ -149,26 +154,42 @@ The menu bar extra opens a compact panel on the app surface. At the top are four
 | `menu.canvas.devices` | Devices |
 | `menu.canvas.new_imp` | New Imp |
 | `menu.canvas.reset_background` | Reset Background |
+| `menu.canvas.select_all` | Select All |
 | `menu.canvas.settings` | Settings |
 | `menu.canvas.show_hidden` | Hidden ({count}) |
+| `menu.group.free_help` | They step out onto the desktop, right where they stand. |
+| `menu.group.goodbye` | Goodbye to {count} Imps… |
+| `menu.group.goodbye_off` | One Imp always stays. Leave at least one out of the group. |
+| `menu.group.hide_help` | They hide until you show them again. Their triggers rest meanwhile. |
+| `menu.group.kit_help` | Copies one kit with all of them, to share or keep. |
+| `menu.group.title` | {count} Imps |
 | `menu.imp.call_home` | Call Home |
 | `menu.imp.call_home_ask` | Call Home… |
+| `menu.imp.chat` | Chat |
+| `menu.imp.chat_help` | Everything you and {name} said |
 | `menu.imp.copy_kit` | Copy kit |
 | `menu.imp.copy_link` | Copy link |
+| `menu.imp.free` | Free |
+| `menu.imp.free_help` | {name} steps out onto the desktop, right where it stands. |
 | `menu.imp.goodbye` | Goodbye |
 | `menu.imp.hide` | Hide |
+| `menu.imp.hide_help` | {name} hides until you show it again. Its triggers rest meanwhile. |
+| `menu.imp.home` | Home |
+| `menu.imp.home_help` | {name} goes back into the Imps' window, and its triggers rest. |
 | `menu.imp.let_out` | Let out |
 | `menu.imp.move_tip` | {name} lives on {device} from now on. |
 | `menu.imp.move_to` | Move to {name} |
 | `menu.imp.send_home` | Send home |
 | `menu.imp.send_to` | Visit {name} |
 | `menu.imp.settings` | Settings |
+| `menu.imp.settings_help` | {name}'s settings |
 | `menu.imp.share` | Share |
 | `menu.imp.talk` | Talk |
 | `menu.imp.talk_help` | Talk to {name} |
 | `menu.imp.talks` | Talks |
 | `menu.imp.type` | Type |
 | `menu.imp.type_help` | Type to {name} |
+| `menu.imp.visit` | Visit |
 | `menu.imp.visit_none` | Visit another device |
 | `menu.imp.visit_tip` | {name} visits {device} and can come back. |
 <!-- /strings -->

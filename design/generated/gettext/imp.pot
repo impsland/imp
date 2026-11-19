@@ -995,6 +995,21 @@ msgctxt "goodbye.confirm"
 msgid "Say goodbye"
 msgstr ""
 
+#. Safe button of the goodbye dialog for several Imps.
+msgctxt "goodbye.many.cancel"
+msgid "Keep them"
+msgstr ""
+
+#. Message of the goodbye dialog for several Imps, under their names.
+msgctxt "goodbye.many.message"
+msgid "Their looks, Brain settings, tools, triggers and chats go with them. This can't be undone."
+msgstr ""
+
+#. Title of the dialog that asks before several Imps are deleted.
+msgctxt "goodbye.many.title"
+msgid "Say goodbye to {count} Imps?"
+msgstr ""
+
 #. Message of the goodbye dialog.
 msgctxt "goodbye.message"
 msgid "Its look, Brain settings, tools, triggers and chats go with it. This can't be undone."
@@ -1627,6 +1642,11 @@ msgctxt "menu.canvas.reset_background"
 msgid "Reset Background"
 msgstr ""
 
+#. Button on empty space in the window that picks every Imp there, to act on them together. Keep it short: it sits under an icon.
+msgctxt "menu.canvas.select_all"
+msgid "Select All"
+msgstr ""
+
 #. Menu item that opens the app-wide settings.
 msgctxt "menu.canvas.settings"
 msgid "Settings"
@@ -1635,6 +1655,36 @@ msgstr ""
 #. Menu item that brings every hidden Imp back.
 msgctxt "menu.canvas.show_hidden"
 msgid "Hidden ({count})"
+msgstr ""
+
+#. Tooltip of Free in the menu of several Imps.
+msgctxt "menu.group.free_help"
+msgid "They step out onto the desktop, right where they stand."
+msgstr ""
+
+#. Menu item that deletes several picked Imps. It asks first.
+msgctxt "menu.group.goodbye"
+msgid "Goodbye to {count} Imps…"
+msgstr ""
+
+#. Tooltip of the dimmed Goodbye item when every Imp is picked.
+msgctxt "menu.group.goodbye_off"
+msgid "One Imp always stays. Leave at least one out of the group."
+msgstr ""
+
+#. Tooltip of Hide in the menu of several Imps.
+msgctxt "menu.group.hide_help"
+msgid "They hide until you show them again. Their triggers rest meanwhile."
+msgstr ""
+
+#. Tooltip of Copy kit in the menu of several Imps.
+msgctxt "menu.group.kit_help"
+msgid "Copies one kit with all of them, to share or keep."
+msgstr ""
+
+#. Title of the menu of several Imps picked together.
+msgctxt "menu.group.title"
+msgid "{count} Imps"
 msgstr ""
 
 #. Button: take back one of our Imps from the device that holds it.
@@ -1647,6 +1697,16 @@ msgctxt "menu.imp.call_home_ask"
 msgid "Call Home…"
 msgstr ""
 
+#. Button in an Imp's menu that opens its chat. Keep it short: it sits under an icon.
+msgctxt "menu.imp.chat"
+msgid "Chat"
+msgstr ""
+
+#. Tooltip of the Chat button in an Imp's menu.
+msgctxt "menu.imp.chat_help"
+msgid "Everything you and {name} said"
+msgstr ""
+
 #. Menu item that copies an Imp as a kit.
 msgctxt "menu.imp.copy_kit"
 msgid "Copy kit"
@@ -1657,6 +1717,16 @@ msgctxt "menu.imp.copy_link"
 msgid "Copy link"
 msgstr ""
 
+#. Button in the menu of an Imp in the app's window that lets it out onto the desktop. Keep it short: it sits under an icon.
+msgctxt "menu.imp.free"
+msgid "Free"
+msgstr ""
+
+#. Tooltip of the Free button in the menu of an Imp in the app's window.
+msgctxt "menu.imp.free_help"
+msgid "{name} steps out onto the desktop, right where it stands."
+msgstr ""
+
 #. Menu item that says goodbye to an Imp for good. A dialog asks first.
 msgctxt "menu.imp.goodbye"
 msgid "Goodbye"
@@ -1665,6 +1735,21 @@ msgstr ""
 #. Menu item that hides an Imp. It then peeks out now and then.
 msgctxt "menu.imp.hide"
 msgid "Hide"
+msgstr ""
+
+#. Tooltip of the Hide button in an Imp's menu.
+msgctxt "menu.imp.hide_help"
+msgid "{name} hides until you show it again. Its triggers rest meanwhile."
+msgstr ""
+
+#. Button in a desktop Imp's menu that sends it back into the app's window. Keep it short: it sits under an icon.
+msgctxt "menu.imp.home"
+msgid "Home"
+msgstr ""
+
+#. Tooltip of the Home button in a desktop Imp's menu.
+msgctxt "menu.imp.home_help"
+msgid "{name} goes back into the Imps' window, and its triggers rest."
 msgstr ""
 
 #. Menu item (desktop only) that lets an Imp out onto the desktop.
@@ -1697,6 +1782,11 @@ msgctxt "menu.imp.settings"
 msgid "Settings"
 msgstr ""
 
+#. Tooltip of the Settings button in an Imp's menu.
+msgctxt "menu.imp.settings_help"
+msgid "{name}'s settings"
+msgstr ""
+
 #. Menu item that shares an Imp.
 msgctxt "menu.imp.share"
 msgid "Share"
@@ -1725,6 +1815,11 @@ msgstr ""
 #. Tooltip of the Type button in an Imp's menu.
 msgctxt "menu.imp.type_help"
 msgid "Type to {name}"
+msgstr ""
+
+#. Small heading in an Imp's menu over the linked devices it can visit.
+msgctxt "menu.imp.visit"
+msgid "Visit"
 msgstr ""
 
 #. Greyed Imp menu item when no other device is around.
@@ -2215,6 +2310,31 @@ msgstr ""
 #. iPhone: what VoiceOver says for a key field while its value is hidden.
 msgctxt "phone.secret.hidden"
 msgid "Entered, hidden"
+msgstr ""
+
+#. iPhone: top bar button that picks every Imp on the stage.
+msgctxt "phone.select.all"
+msgid "Select All"
+msgstr ""
+
+#. iPhone: VoiceOver action that takes a picked Imp out of the picks.
+msgctxt "phone.select.deselect"
+msgid "Deselect"
+msgstr ""
+
+#. iPhone: toast after several picked Imps were hidden.
+msgctxt "phone.select.hidden"
+msgid "{count} Imps are hidden."
+msgstr ""
+
+#. iPhone: menu item that starts picking several Imps, with this one picked first.
+msgctxt "phone.select.menu"
+msgid "Select"
+msgstr ""
+
+#. iPhone: title of the bar while Imps are being picked.
+msgctxt "phone.select.title"
+msgid "{count} selected"
 msgstr ""
 
 #. Example address of a Hop.
@@ -3052,14 +3172,39 @@ msgctxt "settings.talking.between.title"
 msgid "Between Imps"
 msgstr ""
 
+#. An option of the listening language: it finds out which language you spoke.
+msgctxt "settings.talking.language.auto"
+msgid "Automatic"
+msgstr ""
+
 #. Tooltip of a settings row.
 msgctxt "settings.talking.language.info"
-msgid "The language you speak to it. It listens in this one."
+msgid "The language you speak to it. Automatic listens for a few at once and keeps the one you spoke."
 msgstr ""
 
 #. Settings text.
 msgctxt "settings.talking.language.title"
 msgid "Language"
+msgstr ""
+
+#. Option: Automatic listens for the languages set on the Mac.
+msgctxt "settings.talking.languages.device"
+msgid "My Mac's languages"
+msgstr ""
+
+#. Tooltip of a settings row.
+msgctxt "settings.talking.languages.info"
+msgid "Up to three languages. It listens in all of them at once, on this Mac, and keeps the one you spoke. The one you spoke last time wins a close call."
+msgstr ""
+
+#. Heading of the list of languages to pick, at most three.
+msgctxt "settings.talking.languages.pick"
+msgid "Or pick up to three"
+msgstr ""
+
+#. Settings text: the languages Automatic listens for.
+msgctxt "settings.talking.languages.title"
+msgid "Listens for"
 msgstr ""
 
 #. Settings text.

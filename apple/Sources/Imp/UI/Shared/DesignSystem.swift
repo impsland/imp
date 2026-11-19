@@ -114,8 +114,14 @@ extension TopBar where Trailing == EmptyView {
 /// the buttons first. So the body is a scroll view sized to the room left after the header and footer.
 /// As the content grows (a prompt box appearing, conditions added), the sheet grows with it until that
 /// room runs out, then the body scrolls while the header and the buttons stay in view.
+///
+/// The footer of every sheet follows one rule: Cancel on the leading edge, the main action (Save, Add, Done…)
+/// on the trailing edge, and any other actions beside Cancel. A sheet passes `cancel` and the frame adds the
+/// button, so it is the same everywhere. Cancel leaves things as they were when the sheet opened.
 struct SheetFrame<Header: View, Content: View, Footer: View>: View {
     var width: CGFloat = Sizing.sheetWidth
+    /// Undoes what the sheet changed, if anything, and closes it. Nil for a sheet with no Cancel.
+    var cancel: (() -> Void)? = nil
     @ViewBuilder var header: Header
     @ViewBuilder var content: Content
     @ViewBuilder var footer: Footer
@@ -139,8 +145,15 @@ struct SheetFrame<Header: View, Content: View, Footer: View>: View {
             .scrollBounceBehavior(.basedOnSize)
             .scrollIndicators(.automatic)
             .frame(height: bodyHeight)
-            // A lone footer button is centred. With more, the last one (the main action) sits at the trailing edge.
-            ActionRow { footer }
+            // Cancel first, at the leading edge. The last one (the main action) sits at the trailing edge.
+            ActionRow {
+                if let cancel {
+                    Button("common.cancel", action: cancel)
+                        .buttonStyle(.secondary)
+                        .accessibilityIdentifier("sheet.cancel")
+                }
+                footer
+            }
                 // A button in the footer sits as far from the bottom as from the left.
                 .padding(.horizontal, Spacing.page)
                 .padding(.top, Spacing.medium)
@@ -176,6 +189,8 @@ struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
     let title: LocalizedStringKey
     var info: LocalizedStringKey?
     var width: CGFloat = Sizing.sheetWidth
+    /// What Cancel does: undo the sheet's changes, then close it. Escape and the close button do the same.
+    var cancel: (() -> Void)? = nil
     @ViewBuilder var accessory: Accessory
     @ViewBuilder var content: Content
     @ViewBuilder var footer: Footer
@@ -183,7 +198,7 @@ struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        SheetFrame(width: width) {
+        SheetFrame(width: width, cancel: cancel ?? { dismiss() }) {
             HStack(spacing: Spacing.cozy) {
                 IconTile(systemName: icon, filled: true, side: Sizing.sheetIcon)
                     .contentTransition(.symbolEffect(.replace))
@@ -192,8 +207,8 @@ struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
                 Spacer(minLength: Spacing.small)
                 accessory
                 if let info { InfoTip(info) }
-                // The close button in the corner. Escape also closes the sheet, through the cancel shortcut.
-                HoverIconButton(systemName: "xmark", help: "common.close") { dismiss() }
+                // The close button in the corner: the same as Cancel. Escape also cancels, through the cancel shortcut.
+                HoverIconButton(systemName: "xmark", help: "common.close") { (cancel ?? { dismiss() })() }
                     .keyboardShortcut(.cancelAction)
             }
             // The icon tile sits one page inset from the top and the left. Close is centred on the tile, as far from the
@@ -212,8 +227,8 @@ struct SheetScaffold<Content: View, Accessory: View, Footer: View>: View {
 
 extension SheetScaffold where Accessory == EmptyView {
     init(icon: String, title: LocalizedStringKey, info: LocalizedStringKey? = nil, width: CGFloat = Sizing.sheetWidth,
-         @ViewBuilder content: () -> Content, @ViewBuilder footer: () -> Footer) {
-        self.init(icon: icon, title: title, info: info, width: width, accessory: { EmptyView() }, content: content, footer: footer)
+         cancel: (() -> Void)? = nil, @ViewBuilder content: () -> Content, @ViewBuilder footer: () -> Footer) {
+        self.init(icon: icon, title: title, info: info, width: width, cancel: cancel, accessory: { EmptyView() }, content: content, footer: footer)
     }
 }
 

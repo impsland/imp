@@ -135,8 +135,10 @@ A row of actions (a sheet's footer, a card's last row) that is always balanced.
 | --- | --- |
 | `gap` | `spacing.small` (8 px) |
 
-- A lone action is centred, or spans the row when it is a wide button. It is never left at one side with empty room on the other.
-- With more than one, the main action (the last) holds the trailing edge and the others start at the leading edge: Test, then Save.
+- A sheet's footer is never a lone button. Cancel holds the leading edge and the main action (Save, Add, Done, Review) the trailing edge, the platform's order of Cancel and OK. Any other actions sit beside Cancel: Cancel, Test, then Save.
+- Cancel leaves things as they were when the sheet opened, even in a sheet whose changes apply at once (it puts them back). The close button and Escape do the same as Cancel.
+- A sheet that is only to read still has two: Cancel, and its one useful action (Copy JSON) as the main one.
+- On a card's last row, a lone action is centred, or spans the row when it is a wide button. It is never left at one side with empty room on the other.
 - An action on a card or a section (Add, Reset, Restore, Find more, Change) is not a row of its own: it sits in that card's header, on the trailing side before the help tip, as an icon button or a small labelled button.
 - An action on the whole sheet (Goodbye) is an icon button in a corner of the sheet's bar, never a big button at the bottom.
 

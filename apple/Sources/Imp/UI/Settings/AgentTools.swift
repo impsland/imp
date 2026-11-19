@@ -44,14 +44,18 @@ struct AgentToolsButton: View {
 }
 
 /// What the Imp may do by itself in one section: each group with its switch, and each of its tools with
-/// one. A tool that is off is never offered to the model. Changes apply at once, as on the page.
+/// one. A tool that is off is never offered to the model. Changes apply at once, as on the page, and Cancel
+/// puts back the switches as they were when the sheet opened.
 struct AgentToolsSheet: View {
     @Binding var imp: ImpProfile
     let groups: [ImpToolGroup]
     @Environment(\.dismiss) private var dismiss
+    /// The Imp as it was when the sheet opened, for Cancel.
+    @State private var before: ImpProfile?
 
     var body: some View {
-        SheetScaffold(icon: SectionAction.agent, title: LocalizedStringKey(words("agent.title", imp.callName)), info: "agent.help") {
+        SheetScaffold(icon: SectionAction.agent, title: LocalizedStringKey(words("agent.title", imp.callName)), info: "agent.help",
+                      cancel: { if let before { imp = before }; dismiss() }) {
             VStack(alignment: .leading, spacing: Spacing.medium) {
                 ForEach(groups) { group in groupCard(group) }
             }
@@ -60,6 +64,7 @@ struct AgentToolsSheet: View {
                 .buttonStyle(.primary)
                 .keyboardShortcut(.defaultAction)
         }
+        .onAppear { if before == nil { before = imp } }
     }
 
     private func groupCard(_ group: ImpToolGroup) -> some View {

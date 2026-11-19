@@ -871,6 +871,36 @@
     "es": "Idioma",
     "zh-Hans": "使用语言"
   },
+  "settings.talking.language.auto": {
+    "note": "An option of the listening language: it finds out which language you spoke.",
+    "en": "Automatic",
+    "es": "Automático",
+    "zh-Hans": "自动"
+  },
+  "settings.talking.languages.title": {
+    "note": "Settings text: the languages Automatic listens for.",
+    "en": "Listens for",
+    "es": "Escucha en",
+    "zh-Hans": "聆听语言"
+  },
+  "settings.talking.languages.info": {
+    "note": "Tooltip of a settings row.",
+    "en": "Up to three languages. It listens in all of them at once, on this Mac, and keeps the one you spoke. The one you spoke last time wins a close call.",
+    "es": "Hasta tres idiomas. Escucha en todos a la vez, en este Mac, y se queda con el que hablaste. Si hay duda, gana el que usaste la última vez.",
+    "zh-Hans": "最多三种语言。它会在这台 Mac 上同时聆听这些语言，并采用你说的那一种。难以分辨时，以你上次说的语言为准。"
+  },
+  "settings.talking.languages.device": {
+    "note": "Option: Automatic listens for the languages set on the Mac.",
+    "en": "My Mac's languages",
+    "es": "Los idiomas de mi Mac",
+    "zh-Hans": "我的 Mac 的语言"
+  },
+  "settings.talking.languages.pick": {
+    "note": "Heading of the list of languages to pick, at most three.",
+    "en": "Or pick up to three",
+    "es": "O elige hasta tres",
+    "zh-Hans": "或选择最多三种"
+  },
   "settings.talking.between.title": {
     "note": "Settings text.",
     "en": "Between Imps",
@@ -1053,9 +1083,9 @@
   },
   "settings.talking.language.info": {
     "note": "Tooltip of a settings row.",
-    "en": "The language you speak to it. It listens in this one.",
-    "es": "El idioma en que le hablas. Escucha en este.",
-    "zh-Hans": "你对它说话用的语言，它按此语言聆听。"
+    "en": "The language you speak to it. Automatic listens for a few at once and keeps the one you spoke.",
+    "es": "El idioma en que le hablas. Automático escucha varios a la vez y se queda con el que hablaste.",
+    "zh-Hans": "你对它说话用的语言。选“自动”时，它会同时聆听几种语言，并采用你说的那一种。"
   },
   "settings.talking.talk_in.info": {
     "note": "Tooltip of a settings row.",

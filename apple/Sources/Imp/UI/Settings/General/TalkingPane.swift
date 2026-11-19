@@ -11,11 +11,22 @@ struct TalkingPane: View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             Card("settings.talking.listening.title", icon: "mic.fill", info: "settings.talking.listening.info") {
                 Row("settings.talking.language.title", icon: "character.bubble.fill", info: "settings.talking.language.info") {
-                    ImpPicker("settings.talking.language.title", selection: $model.prefs.dictationLocale, options: [""] + Self.locales) { id in
-                        id.isEmpty ? String(localized: "Same as my Mac") : (Locale.current.localizedString(forIdentifier: id) ?? id)
+                    ImpPicker("settings.talking.language.title", selection: $model.prefs.dictationLocale,
+                              options: ["", ListeningLanguages.automatic] + Self.locales) { id in
+                        switch id {
+                        case "": String(localized: "Same as my Mac")
+                        case ListeningLanguages.automatic: String(localized: "settings.talking.language.auto")
+                        default: Self.name(id)
+                        }
                     }
                 }
                 .settingAnchor(.talkingListeningLanguage)
+                if model.prefs.dictationLocale == ListeningLanguages.automatic {
+                    Row("settings.talking.languages.title", icon: "globe", info: "settings.talking.languages.info") {
+                        languages
+                    }
+                    .settingAnchor(.talkingListeningLanguages)
+                }
             }
 
             Card("settings.talking.between.title", icon: "person.2.fill", info: "settings.talking.between.info") {
@@ -45,6 +56,31 @@ struct TalkingPane: View {
             }
         }
     }
+
+    /// The languages Automatic listens for: the person's picks (up to three), or the Mac's own.
+    private var languages: some View {
+        let picked = model.prefs.dictationLanguages
+        let title = picked.isEmpty ? String(localized: "settings.talking.languages.device")
+            : picked.map(Self.name).formatted(.list(type: .and, width: .narrow))
+        return CompactMenu(verbatim: title, symbol: "globe") {
+            Button { model.prefs.dictationLanguages = [] } label: {
+                if picked.isEmpty { Label("settings.talking.languages.device", systemImage: "checkmark") } else { Text("settings.talking.languages.device") }
+            }
+            Section("settings.talking.languages.pick") {
+                ForEach(Self.locales, id: \.self) { id in
+                    let on = picked.contains(id)
+                    Button {
+                        model.prefs.dictationLanguages = on ? picked.filter { $0 != id } : picked + [id]
+                    } label: {
+                        if on { Label(Self.name(id), systemImage: "checkmark") } else { Text(verbatim: Self.name(id)) }
+                    }
+                    .disabled(!on && picked.count >= ListeningLanguages.maxLanguages)
+                }
+            }
+        }
+    }
+
+    static func name(_ id: String) -> String { Locale.current.localizedString(forIdentifier: id) ?? id }
 
     static let locales: [String] = SFSpeechRecognizer.supportedLocales().map(\.identifier)
         .sorted { (Locale.current.localizedString(forIdentifier: $0) ?? $0) < (Locale.current.localizedString(forIdentifier: $1) ?? $1) }

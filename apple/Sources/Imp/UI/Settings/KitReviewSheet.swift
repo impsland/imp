@@ -17,7 +17,7 @@ struct KitReviewSheet: View {
     private var tint: Color { kit.imps.first.map { Color.imp($0.hue) } ?? inherited }
 
     var body: some View {
-        SheetFrame {
+        SheetFrame(cancel: { router.kitFlow = nil }) {
             HStack {
                 Spacer()
                 HoverIconButton(systemName: "xmark", help: "common.close") { router.kitFlow = nil }

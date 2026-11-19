@@ -62,6 +62,8 @@ struct RootView: View {
     @State private var hidden = PhoneHidden()
     /// A round of Embers is on (see `EmbersPlaying`).
     @State private var playing = false
+    /// Imps are being picked together: the picking bar takes the top bar's place.
+    @State private var picking = false
     @State private var toast: String?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
@@ -118,6 +120,7 @@ struct RootView: View {
                     // A keyboard in a sheet is not the room's business: it would lay the stage out again as it came.
                     .keyboardIgnored()
                     .onPreferenceChange(EmbersPlaying.self) { playing = $0 }
+                    .onPreferenceChange(PhonePicking.self) { picking = $0 }
                 VStack {
                     StatusPill(hub: hub, hiddenCount: hidden.set.onFloor(in: PhoneStage.everyone(hub, pocket).map(\.imp.id)).count,
                                devices: { router.open(.settings(devices: true)) }, hatch: hatchNew,
@@ -126,10 +129,11 @@ struct RootView: View {
                     Spacer()
                 }
                 .keyboardIgnored()
-                .opacity(playing ? 0 : 1)
+                .opacity(playing || picking ? 0 : 1)
                 .offset(y: playing ? -Spacing.medium : 0)
-                .allowsHitTesting(!playing)
+                .allowsHitTesting(!playing && !picking)
                 .impAnimation(ImpDesign.Motion.spring, value: playing)
+                .impAnimation(ImpDesign.Motion.fade, value: picking)
             }
         }
         .impAnimation(ImpDesign.Motion.scene, value: onStage)
@@ -181,6 +185,8 @@ struct RootView: View {
         #if DEBUG
         .task {
             if CommandLine.arguments.contains("-hatch") { hatchNew() }
+            // Three Imps in the room and no sheet over it, for the UI test of picking several.
+            if CommandLine.arguments.contains("-hatchThree") { for _ in 0..<3 { pocket.hatchReady() } }
             // For the UI tests on a device: the app's settings, or the first Imp hatched here in its settings.
             if CommandLine.arguments.contains("-openSettings") { router.open(.settings(devices: false)) }
             if CommandLine.arguments.contains("-editImp"), let first = pocket.imps.first { router.open(.edit(first.id, brain: false)) }

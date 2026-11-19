@@ -32,7 +32,7 @@ Nine sections, each with a one-word name and a few cards of icon rows. A card ha
 | --- | --- |
 | App | Look: Appearance (Auto, Light, Dark), On colour (White, Black). System: start at login, language. Window: the size of the home window (Small, Medium, Large, Full). |
 | Bubble | Look: Background (Solid or Translucent, and the amount when translucent), with a live preview over a light, a dark and a picture swatch. Showing: hide after, text box lines, chat size. Media: autoplay, audio look. |
-| Talking | Listening: language. Between Imps: talk in, threads, waiting, window. |
+| Talking | Listening: language (Same as my Mac, Automatic, or one language) and, with Automatic, the languages it listens for. Between Imps: talk in, threads, waiting, window. |
 | Brains | Services: the list of Brains and the default for new Imps. Keys: the keychain. Requests: wait, retries, first wait, longer waits. |
 | Devices | This Mac with Link, the linked devices (Forget all in the header) and The Hop in the compact server card. |
 | Sharing | The Gallery (Browse, Import) and The Den in the compact server card. |
@@ -41,6 +41,17 @@ Nine sections, each with a one-word name and a few cards of icon rows. A card ha
 | Backup | Keep: export and import. Reset: start again. Reset is last and asks first. |
 
 ![App settings](./images/all-imps-app.png)
+
+### Talking: Listening in more than one language
+
+Automatic (`ListeningLanguages`) is for people who talk to their Imps in more than one language. There is no step that guesses the language first, so nothing waits and no words are lost:
+
+- The microphone feeds one Apple recognizer for each language at the same time, at most three. They are the person's picks in Listens for, or else the Mac's own preferred languages, one locale per language.
+- The bubble shows the live words of the language heard last time (kept on the Mac, not in the settings). While that one has no words yet, it shows the first that has some.
+- When the person stops, each recognizer's final words are scored: the recognizer's confidence in its words, and how much the words read as that language (the system's text language check). The best wins. The language heard last time wins a close call (`switchMargin`), so a short "yes" or a name never flips the language, and short phrases work from the first word.
+- Everything runs on the Mac where the language allows it, as with one language. No model is downloaded and nothing more is sent anywhere.
+
+Ear (an on-device spoken-language model) was considered and not used: its license requires a license check that sends an install ID and the app's details to its maker on every model load, with no opt-out, which Imp's privacy promise rules out.
 
 ### Between Imps: Waiting
 
@@ -369,8 +380,13 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `settings.service.name.info` | A name you pick for this brain. |
 | `settings.talking.between.info` | How Imps talk to each other. |
 | `settings.talking.between.title` | Between Imps |
-| `settings.talking.language.info` | The language you speak to it. It listens in this one. |
+| `settings.talking.language.auto` | Automatic |
+| `settings.talking.language.info` | The language you speak to it. Automatic listens for a few at once and keeps the one you spoke. |
 | `settings.talking.language.title` | Language |
+| `settings.talking.languages.device` | My Mac's languages |
+| `settings.talking.languages.info` | Up to three languages. It listens in all of them at once, on this Mac, and keeps the one you spoke. The one you spoke last time wins a close call. |
+| `settings.talking.languages.pick` | Or pick up to three |
+| `settings.talking.languages.title` | Listens for |
 | `settings.talking.listening.info` | How Imps hear you. |
 | `settings.talking.listening.title` | Listening |
 | `settings.talking.talk_in.info` | Which chat a message from one Imp to another lands in. |

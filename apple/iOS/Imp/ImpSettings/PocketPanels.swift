@@ -149,11 +149,14 @@ struct PocketPersonalityPanel: View {
     }
 }
 
-/// What a pocket Imp may do by itself: its built-in tools, each with a switch.
+/// What a pocket Imp may do by itself: its built-in tools, each with a switch. Cancel puts the switches back
+/// as they were when the sheet opened, Done keeps them.
 struct PocketAgentTools: View {
     @Bindable var draft: PocketDraft
     let tools: [ToolEntry]
     @Environment(\.dismiss) private var dismiss
+    /// The switches when the sheet opened, for Cancel.
+    @State private var before: Set<String>?
 
     var body: some View {
         NavigationStack {
@@ -173,9 +176,18 @@ struct PocketAgentTools: View {
             .navigationTitle(Text(verbatim: words("agent.title", draft.name.trimmed)))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("common.cancel") {
+                        if let before { draft.toolsOff = before }
+                        dismiss()
+                    }
+                    .accessibilityIdentifier("agent.cancel")
+                }
                 ToolbarItem(placement: .confirmationAction) { Button("common.done") { dismiss() }.accessibilityIdentifier("agent.done") }
             }
         }
         .presentationDetents([.medium])
+        // A swipe down keeps the switches, as Done does.
+        .onAppear { if before == nil { before = draft.toolsOff } }
     }
 }

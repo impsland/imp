@@ -198,6 +198,8 @@ final class HomeRouter {
     /// The canvas's view, to find where things on it are on screen. (Not observed: the window moves
     /// without SwiftUI knowing, so positions are worked out when they're needed, never stored.)
     @ObservationIgnored weak var canvasAnchor: NSView?
+    /// The right-click menu of an Imp on the canvas while it is open (its items' targets are weak).
+    @ObservationIgnored var openMenu: AnyObject?
     /// Where each Imp stands on the canvas: its centre, as a fraction of the canvas's width and height.
     /// Kept while the app runs.
     var places: [UUID: CGPoint] = [:]
@@ -240,6 +242,31 @@ final class HomeRouter {
     }
 
     func select(_ imp: UUID) { selection = imp }
+
+    // MARK: Several Imps at once
+
+    /// The Imps picked together (`ImpPicks`): ⌘- or ⇧-click, a box drawn on empty space, Select All.
+    /// Fewer than two is no group.
+    var picked: Set<UUID> = []
+    /// The Imps the window asks about before they all say goodbye (see `HomeView`).
+    var sayingMany: [UUID]?
+
+    /// Whether an Imp shows as chosen: one of the group, or the one Imp chosen when there is no group.
+    func isPicked(_ id: UUID) -> Bool { picked.count > 1 ? picked.contains(id) : selection == id }
+
+    /// A ⌘- or ⇧-click on an Imp: in or out of the group. The keyboard stays on the last one added.
+    func togglePick(_ id: UUID) {
+        picked = ImpPicks.toggle(id, in: picked, selection: selection)
+        if picked.contains(id) { selection = id } else if let other = picked.first { selection = other }
+    }
+
+    func pickAll(_ ids: [UUID]) {
+        picked = Set(ids)
+        if let selection, picked.contains(selection) { return }
+        selection = ids.first
+    }
+
+    func clearPicks() { if !picked.isEmpty { picked = [] } }
 
     // MARK: Undo
 

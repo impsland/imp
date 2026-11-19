@@ -72,14 +72,15 @@ struct TalkSheet: View {
                 }
             }
         }, footer: {
-            if mode == .json, !isEmpty {
-                Button(copied ? "Copied" : "Copy JSON") {
-                    Pasteboard.write(text: json)
-                    copied = true
-                    Task { try? await Task.sleep(for: .seconds(2)); copied = false }
-                }
-                .buttonStyle(.quiet)
+            // Only to read: Cancel closes it, and the main action copies what it shows as JSON.
+            Button(copied ? "Copied" : "Copy JSON") {
+                Pasteboard.write(text: json)
+                copied = true
+                Task { try? await Task.sleep(for: .seconds(2)); copied = false }
             }
+            .buttonStyle(.primary)
+            .keyboardShortcut(.defaultAction)
+            .disabled(!loaded || isEmpty)
         })
         .task {
             if let id = request.chat {

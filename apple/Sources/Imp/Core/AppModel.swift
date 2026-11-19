@@ -1,6 +1,7 @@
 import AppKit
 import ImpKit
 import Observation
+@preconcurrency import Speech
 import os
 
 /// The app: preferences, the services every Imp shares (models and tools, the microphone,
@@ -730,8 +731,22 @@ final class AppModel {
         if let other = listener, other !== imp { other.cancel() }
         listener = imp
         defer { if listener === imp { listener = nil } }
-        return try await dictation.listen(localeID: prefs.dictationLocale)
+        guard prefs.dictationLocale == ListeningLanguages.automatic else {
+            return try await dictation.listen(localeID: prefs.dictationLocale)
+        }
+        // Automatic: several languages at once, the one heard last time first (it shows while listening and wins ties).
+        let sticky = UserDefaults.standard.string(forKey: Self.lastHeardLanguage)
+        let ids = ListeningLanguages.candidates(chosen: prefs.dictationLanguages, preferred: Locale.preferredLanguages,
+                                                supported: Self.speechLocales, region: Locale.current.region?.identifier, sticky: sticky)
+        let heard = try await dictation.listen(localeIDs: ids)
+        UserDefaults.standard.set(heard.locale, forKey: Self.lastHeardLanguage)
+        return heard.text
     }
+
+    /// The language Automatic heard last time. Kept on this Mac, outside the settings: it changes as you talk.
+    static let lastHeardLanguage = "dictation.lastHeardLanguage"
+    /// Every locale dictation can listen in.
+    static var speechLocales: [String] { SFSpeechRecognizer.supportedLocales().map(\.identifier) }
 
     func stopListening(for imp: ImpModel) {
         if listener === imp, dictation.isRunning { dictation.cancel() }

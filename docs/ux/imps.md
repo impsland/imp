@@ -55,6 +55,8 @@ A confirmation dialog on every drop. It would remove the feeling of picking the 
 | One click, or one tap | Opens the Imp's message bubble (on the phone, its chat) at once. |
 | Two clicks (Mac) | Run the Imp's triggers for two clicks, if it has any. |
 | Right click, or touch and hold | Opens the Imp's context menu. |
+| ⌘-click or ⇧-click (Mac) | Puts the Imp in the group of picked Imps, or takes it out. |
+| Drag on empty space (Mac) | Draws a box. The Imps whose middle is inside it are picked. |
 | Drag | Moves the Imp. |
 
 There is no double click setting. Two or more clicks are Triggers ("2 clicks on the Imp"), so they can open the settings, talk, run a prompt or anything else, per Imp or for every Imp. A first click waits for a second only when some trigger of that Imp answers to two or more clicks. Without one, a click opens the bubble with no delay. The phone has no double tap: a tap opens the chat at once, and the touch-and-hold menu has Settings. There is no settings button on the Imp.
@@ -67,6 +69,12 @@ The selected Imp (the one a click or the keyboard last chose, and the one the me
 
 - the floor under it glows more (`Opacity.glow`, against a faint glow for the others),
 - its name sits in a capsule tinted with its colour (the others have a plain name on a dark scrim).
+
+### Several Imps at once
+
+On the Mac several Imps in the window can be picked together (`ImpPicks`): ⌘-click or ⇧-click adds or removes one (the first one adds to the Imp already chosen), a box drawn on empty space picks the Imps inside it (with ⌘ or ⇧ held it adds to them), and Select All (the empty-space menu, or ⌘A while an Imp has the keyboard) picks every one. Each picked Imp shows as selected. A plain click on an Imp, a click on empty space or Escape lets the group go.
+
+A right click on any picked Imp opens the group's menu: a card with their faces, "{count} Imps" and their names, then Hide, Free and Copy kit (one kit with all of them), their size and their colour (a choice shows only when every Imp has it). Under it, Brain sets one Brain for all (Shared, or one of the services), and Goodbye to {count} Imps… asks once, naming them, and is off when every Imp is picked: one Imp always stays. A right click on an Imp outside the group opens that Imp's own menu and lets the group go. Hide and Free can be undone from the Undo bar, all at once.
 
 Keyboard focus is shown apart, with the focus ring (`focusRing`), and only when focus came from the keyboard (Tab or the arrow keys), never from a click. Moving between states is animated, and with Reduce Motion it just happens.
 

@@ -40,6 +40,26 @@ struct HomeActions {
         model.imp(id)?.talk()
     }
 
+    /// Opens a text box beside the Imp. One at home steps out first, as for Talk.
+    func type(_ id: UUID) {
+        guard let imp = model.profile(id), imp.awayOn == nil else { return askCallHome(id) }
+        if !imp.isActive { model.setActive(id, true, at: slot(of: imp)?.origin) }
+        model.imp(id)?.startTyping()
+    }
+
+    /// Opens the chat beside the Imp. One at home steps out first, as for Talk.
+    func chat(_ id: UUID) {
+        guard let imp = model.profile(id), imp.awayOn == nil else { return askCallHome(id) }
+        if !imp.isActive { model.setActive(id, true, at: slot(of: imp)?.origin) }
+        model.imp(id)?.openChat()
+    }
+
+    /// A new size or colour, from the Imp's menu.
+    func restyle(_ id: UUID, _ change: (inout ImpProfile) -> Void) {
+        guard let i = model.prefs.imps.firstIndex(where: { $0.id == id }) else { return }
+        change(&model.prefs.imps[i])
+    }
+
     func openImpSettings(_ id: UUID) {
         router.select(id)
         router.openSettings(id)
@@ -151,6 +171,63 @@ struct HomeActions {
     }
 
     var canSayGoodbye: Bool { model.prefs.imps.count > 1 }
+
+    // MARK: Several Imps at once
+
+    /// Hides them all. Undo brings them all back.
+    func hide(_ ids: [UUID]) {
+        guard let first = ids.first else { return }
+        withAnimation(ImpDesign.Motion.fade.reducedAware(Self.reduceMotion)) { for id in ids { model.setHidden(id, true) } }
+        offerUndo(.hide, first) { for id in ids { bringBack(id) } }
+    }
+
+    /// Lets out every one still at home, each where it stands. Undo takes them all back in.
+    func free(_ ids: [UUID]) {
+        let home = ids.compactMap(model.profile).filter { !$0.isActive && $0.awayOn == nil }
+        guard let first = home.first else { return }
+        for imp in home { model.setActive(imp.id, true, at: slot(of: imp)?.origin) }
+        router.clearPicks()
+        offerUndo(.letOut, first.id) { for imp in home { model.setActive(imp.id, false) } }
+    }
+
+    /// One kit with all of them.
+    func copyKit(_ ids: [UUID]) {
+        let name = words("menu.group.title", ids.count)
+        KitSharing.copy(ImpExport.kit(Set(ids), model: model, name: name))
+    }
+
+    /// The same Brain for all: nil is the shared one, else a service with its own model.
+    func setBrain(_ ids: [UUID], _ brain: Brain?) {
+        var p = model.prefs
+        for i in p.imps.indices where ids.contains(p.imps[i].id) { p.imps[i].brain = brain }
+        model.changeByPerson(p)
+    }
+
+    /// A new size or colour for all of them.
+    func restyle(_ ids: [UUID], _ change: (inout ImpProfile) -> Void) {
+        for i in model.prefs.imps.indices where ids.contains(model.prefs.imps[i].id) { change(&model.prefs.imps[i]) }
+    }
+
+    func canSayGoodbye(to ids: [UUID]) -> Bool { ImpPicks.canSayGoodbye(to: ids.count, of: model.prefs.imps.count) }
+
+    /// Goodbye asks first, once for all of them (see `HomeView`).
+    func askGoodbye(_ ids: [UUID]) {
+        if ids.count == 1, let id = ids.first { return askGoodbye(id) }
+        router.sayingMany = ids
+    }
+
+    /// Say goodbye to all of them for good. One Imp always stays.
+    func sayGoodbye(_ ids: [UUID]) {
+        router.sayingMany = nil
+        guard canSayGoodbye(to: ids) else { return }
+        var next: UUID?
+        for id in ids {
+            next = model.sayGoodbye(id) ?? next
+            router.places[id] = nil
+        }
+        router.clearPicks()
+        if let next { router.select(next) }
+    }
 
     /// "Let out" while it is at home, "Send home" once it is out, "Call Home…" while it is on another device.
     func releaseTitle(_ id: UUID) -> String {

@@ -202,6 +202,9 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `games.stat.waves` | Perfect waves | Olas perfectas | 完美的波次 |
 | `goodbye.cancel` | Keep {name} | Conservar {name} | 留下 {name} |
 | `goodbye.confirm` | Say goodbye | Decir adiós | 告别吧 |
+| `goodbye.many.cancel` | Keep them | Conservarlos | 留下它们 |
+| `goodbye.many.message` | Their looks, Brain settings, tools, triggers and chats go with them. This can't be undone. | Su aspecto, los ajustes de su cerebro, sus herramientas, disparadores y chats se van con ellos. No se puede deshacer. | 它们的外观、大脑设置、工具、触发器和聊天都会一起消失。此操作无法撤销。 |
+| `goodbye.many.title` | Say goodbye to {count} Imps? | ¿Decirles adiós a {count} Imps? | 要向 {count} 个 Imp 说再见吗？ |
 | `goodbye.message` | Its look, Brain settings, tools, triggers and chats go with it. This can't be undone. | Su aspecto, los ajustes de su cerebro, sus herramientas, disparadores y chats se van con él. No se puede deshacer. | 它的外观、大脑设置、工具、触发器和聊天都会一起消失。此操作无法撤销。 |
 | `goodbye.title` | Say goodbye to {name}? | ¿Decirle adiós a {name}? | 要向 {name} 说再见吗？ |
 | `home.canvas.hint` | Imps move around here. Press Tab to go from one Imp to the next. | Los Imps se mueven por aquí. Pulsa Tab para ir de un Imp al siguiente. | Imp 在这里走动。按 Tab 键可在各个 Imp 之间切换。 |
@@ -328,26 +331,42 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `menu.canvas.devices` | Devices | Equipos | 设备 |
 | `menu.canvas.new_imp` | New Imp | Nuevo Imp | 新建 Imp |
 | `menu.canvas.reset_background` | Reset Background | Restablecer fondo | 重置背景 |
+| `menu.canvas.select_all` | Select All | Seleccionar todo | 全选 |
 | `menu.canvas.settings` | Settings | Ajustes | 应用设置 |
 | `menu.canvas.show_hidden` | Hidden ({count}) | Ocultos ({count}) | 已隐藏（{count}） |
+| `menu.group.free_help` | They step out onto the desktop, right where they stand. | Salen al escritorio, justo donde están. | 它们走到桌面上，就在各自站着的地方。 |
+| `menu.group.goodbye` | Goodbye to {count} Imps… | Adiós a {count} Imps… | 向 {count} 个 Imp 告别… |
+| `menu.group.goodbye_off` | One Imp always stays. Leave at least one out of the group. | Siempre se queda un Imp. Deja al menos uno fuera del grupo. | 总要留下一个 Imp。请至少留一个不选。 |
+| `menu.group.hide_help` | They hide until you show them again. Their triggers rest meanwhile. | Se esconden hasta que los vuelvas a mostrar. Mientras, sus disparadores descansan. | 它们会藏起来，直到你再次显示。在此期间它们的触发器暂停。 |
+| `menu.group.kit_help` | Copies one kit with all of them, to share or keep. | Copia un kit con todos ellos, para compartir o guardar. | 把它们全部复制为一个套件，用于分享或保存。 |
+| `menu.group.title` | {count} Imps | {count} Imps | {count} 个 Imp |
 | `menu.imp.call_home` | Call Home | Traer | 叫回家 |
 | `menu.imp.call_home_ask` | Call Home… | Traer… | 叫回家… |
+| `menu.imp.chat` | Chat | Chat | 对话 |
+| `menu.imp.chat_help` | Everything you and {name} said | Todo lo que habéis dicho tú y {name} | 你和 {name} 说过的所有话 |
 | `menu.imp.copy_kit` | Copy kit | Copiar kit | 复制套件 |
 | `menu.imp.copy_link` | Copy link | Copiar enlace | 复制链接 |
+| `menu.imp.free` | Free | Soltar | 放出 |
+| `menu.imp.free_help` | {name} steps out onto the desktop, right where it stands. | {name} sale al escritorio, justo donde está. | {name} 走到桌面上，就在它站着的地方。 |
 | `menu.imp.goodbye` | Goodbye | Adiós | 再见 |
 | `menu.imp.hide` | Hide | Ocultar | 隐藏 |
+| `menu.imp.hide_help` | {name} hides until you show it again. Its triggers rest meanwhile. | {name} se esconde hasta que lo vuelvas a mostrar. Mientras, sus disparadores descansan. | {name} 会藏起来，直到你再次显示它。在此期间它的触发器暂停。 |
+| `menu.imp.home` | Home | A casa | 回家 |
+| `menu.imp.home_help` | {name} goes back into the Imps' window, and its triggers rest. | {name} vuelve a la ventana de los Imps y sus disparadores descansan. | {name} 回到 Imp 窗口，它的触发器暂停。 |
 | `menu.imp.let_out` | Let out | Soltar | 放出来 |
 | `menu.imp.move_tip` | {name} lives on {device} from now on. | {name} vive en {device} desde ahora. | {name} 从现在起住在 {device}。 |
 | `menu.imp.move_to` | Move to {name} | Mover a {name} | 搬到 {name} |
 | `menu.imp.send_home` | Send home | Enviar a casa | 送回家 |
 | `menu.imp.send_to` | Visit {name} | Visitar {name} | 去 {name} 做客 |
 | `menu.imp.settings` | Settings | Ajustes | Imp 设置 |
+| `menu.imp.settings_help` | {name}'s settings | Ajustes de {name} | {name} 的设置 |
 | `menu.imp.share` | Share | Compartir | 共享 |
 | `menu.imp.talk` | Talk | Hablar | 说话 |
 | `menu.imp.talk_help` | Talk to {name} | Hablar con {name} | 和 {name} 说话 |
 | `menu.imp.talks` | Talks | Charlas | 对话 |
 | `menu.imp.type` | Type | Escribir | 输入 |
 | `menu.imp.type_help` | Type to {name} | Escribir a {name} | 给 {name} 打字 |
+| `menu.imp.visit` | Visit | Visitar | 去做客 |
 | `menu.imp.visit_none` | Visit another device | Visitar otro dispositivo | 去别的设备做客吧 |
 | `menu.imp.visit_tip` | {name} visits {device} and can come back. | {name} visita {device} y puede volver. | {name} 去 {device} 做客，还可以回来。 |
 | `moves.animations` | Animations | Animaciones | 动画 |
@@ -446,6 +465,11 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.requests.title` | Waiting | Espera | 等待 |
 | `phone.scan.code` | Scan | Escanear | 扫描 |
 | `phone.secret.hidden` | Entered, hidden | Oculta | 已输入，已隐藏 |
+| `phone.select.all` | Select All | Seleccionar todo | 全选 |
+| `phone.select.deselect` | Deselect | Quitar de la selección | 取消选择 |
+| `phone.select.hidden` | {count} Imps are hidden. | {count} Imps están ocultos. | 已隐藏 {count} 个 Imp。 |
+| `phone.select.menu` | Select | Seleccionar | 选择 |
+| `phone.select.title` | {count} selected | {count} seleccionados | 已选 {count} 个 |
 | `phone.server.placeholder_hop` | hop.example.com:4677 | hop.example.com:4677 | hop.example.com:4677 |
 | `phone.shake.dir.any` | Any | Cualquiera | 任意 |
 | `phone.shake.dir.sides` | Left or right | Izq. o der. | 向左或向右 |
@@ -613,8 +637,13 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.service.name.info` | A name you pick for this brain. | Un nombre a tu gusto. | 你给这个大脑取的名字。 |
 | `settings.talking.between.info` | How Imps talk to each other. | Cómo hablan los Imps entre sí. | Imp 彼此之间如何交谈。 |
 | `settings.talking.between.title` | Between Imps | Entre Imps | Imp 彼此之间 |
-| `settings.talking.language.info` | The language you speak to it. It listens in this one. | El idioma en que le hablas. Escucha en este. | 你对它说话用的语言，它按此语言聆听。 |
+| `settings.talking.language.auto` | Automatic | Automático | 自动 |
+| `settings.talking.language.info` | The language you speak to it. Automatic listens for a few at once and keeps the one you spoke. | El idioma en que le hablas. Automático escucha varios a la vez y se queda con el que hablaste. | 你对它说话用的语言。选“自动”时，它会同时聆听几种语言，并采用你说的那一种。 |
 | `settings.talking.language.title` | Language | Idioma | 使用语言 |
+| `settings.talking.languages.device` | My Mac's languages | Los idiomas de mi Mac | 我的 Mac 的语言 |
+| `settings.talking.languages.info` | Up to three languages. It listens in all of them at once, on this Mac, and keeps the one you spoke. The one you spoke last time wins a close call. | Hasta tres idiomas. Escucha en todos a la vez, en este Mac, y se queda con el que hablaste. Si hay duda, gana el que usaste la última vez. | 最多三种语言。它会在这台 Mac 上同时聆听这些语言，并采用你说的那一种。难以分辨时，以你上次说的语言为准。 |
+| `settings.talking.languages.pick` | Or pick up to three | O elige hasta tres | 或选择最多三种 |
+| `settings.talking.languages.title` | Listens for | Escucha en | 聆听语言 |
 | `settings.talking.listening.info` | How Imps hear you. | Cómo te oyen los Imps. | Imp 如何听你说话。 |
 | `settings.talking.listening.title` | Listening | Escuchar | 聆听方式 |
 | `settings.talking.talk_in.info` | Which chat a message from one Imp to another lands in. | En qué chat llega un mensaje de un Imp a otro. | 一个 Imp 发给另一个 Imp 的消息落在哪个聊天里。 |

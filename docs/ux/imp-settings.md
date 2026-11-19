@@ -239,6 +239,9 @@ Share opens the save panel at once, with no sheet before it: the Imp is saved as
 | `computer.help.senses` | Reads the battery, processor, network and open apps, and the page open in the browser. |
 | `goodbye.cancel` | Keep {name} |
 | `goodbye.confirm` | Say goodbye |
+| `goodbye.many.cancel` | Keep them |
+| `goodbye.many.message` | Their looks, Brain settings, tools, triggers and chats go with them. This can't be undone. |
+| `goodbye.many.title` | Say goodbye to {count} Imps? |
 | `goodbye.message` | Its look, Brain settings, tools, triggers and chats go with it. This can't be undone. |
 | `goodbye.title` | Say goodbye to {name}? |
 | `imp_settings.brain_marker.asleep` | {name} is asleep. Give it a Brain. |

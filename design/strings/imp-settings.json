@@ -129,6 +129,27 @@
     "es": "Conservar {name}",
     "zh-Hans": "留下 {name}"
   },
+  "goodbye.many.title": {
+    "note": "Title of the dialog that asks before several Imps are deleted.",
+    "args": {
+      "count": "int"
+    },
+    "en": "Say goodbye to {count} Imps?",
+    "es": "¿Decirles adiós a {count} Imps?",
+    "zh-Hans": "要向 {count} 个 Imp 说再见吗？"
+  },
+  "goodbye.many.message": {
+    "note": "Message of the goodbye dialog for several Imps, under their names.",
+    "en": "Their looks, Brain settings, tools, triggers and chats go with them. This can't be undone.",
+    "es": "Su aspecto, los ajustes de su cerebro, sus herramientas, disparadores y chats se van con ellos. No se puede deshacer.",
+    "zh-Hans": "它们的外观、大脑设置、工具、触发器和聊天都会一起消失。此操作无法撤销。"
+  },
+  "goodbye.many.cancel": {
+    "note": "Safe button of the goodbye dialog for several Imps.",
+    "en": "Keep them",
+    "es": "Conservarlos",
+    "zh-Hans": "留下它们"
+  },
   "look.title": {
     "note": "Panel title.",
     "en": "Look",

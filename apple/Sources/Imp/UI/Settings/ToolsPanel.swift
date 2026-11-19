@@ -234,15 +234,18 @@ struct ToolsPanel: View {
     }
 }
 
-/// "Add tools": ready-made MCP servers, or a local program or web server of your own.
+/// "Add tools": ready-made MCP servers, or a local program or web server of your own. A ready-made one is
+/// added at once; Cancel takes back the ones added since the sheet opened.
 struct AddToolsSheet: View {
     @Bindable var model: AppModel
     @Binding var imp: ImpProfile
     let edit: (ToolsPanel.Draft) -> Void
     @Environment(\.dismiss) private var dismiss
+    /// The servers this sheet added, for Cancel.
+    @State private var added: [UUID] = []
 
     var body: some View {
-        SheetScaffold(icon: "wrench.and.screwdriver.fill", title: "tools.add") {
+        SheetScaffold(icon: "wrench.and.screwdriver.fill", title: "tools.add", cancel: { takeBack(); dismiss() }) {
             EvenGrid(minWidth: Self.tileWidth, spacing: Spacing.small) {
                 ForEach(MCPExamples.examples, id: \.server.name) { example in
                     let added = model.prefs.mcpServers.contains { $0.commandLine == example.server.commandLine }
@@ -261,8 +264,21 @@ struct AddToolsSheet: View {
                 }
             }
         } footer: {
-            EmptyView()
+            Button("common.done") { dismiss() }
+                .buttonStyle(.primary)
+                .keyboardShortcut(.defaultAction)
         }
+    }
+
+    /// Removes the servers this sheet added, from the library and from the Imp.
+    private func takeBack() {
+        guard !added.isEmpty else { return }
+        let gone = Set(added)
+        var p = model.prefs
+        p.mcpServers.removeAll { gone.contains($0.id) }
+        if let i = p.imps.firstIndex(where: { $0.id == imp.id }) { p.imps[i].servers.removeAll { gone.contains($0) } }
+        model.changeByPerson(p)
+        added = []
     }
 
     private static var tileWidth: CGFloat { Sizing.menuTitle + Spacing.page }
@@ -272,6 +288,7 @@ struct AddToolsSheet: View {
         p.mcpServers.append(server)
         if let i = p.imps.firstIndex(where: { $0.id == imp.id }) { p.imps[i].servers.append(server.id) }
         model.changeByPerson(p)
+        added.append(server.id)
     }
 
     private func open(_ server: MCPServerConfig, from example: MCPServerConfig? = nil) {

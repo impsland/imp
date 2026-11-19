@@ -205,6 +205,9 @@
   <data name="games.stat.waves" xml:space="preserve"><value>Olas perfectas</value><comment>Results stat: waves of embers caught whole, out of all waves.</comment></data>
   <data name="goodbye.cancel" xml:space="preserve"><value>Conservar {name}</value><comment>Safe button of the goodbye dialog.</comment></data>
   <data name="goodbye.confirm" xml:space="preserve"><value>Decir adiós</value><comment>Destructive button of the goodbye dialog.</comment></data>
+  <data name="goodbye.many.cancel" xml:space="preserve"><value>Conservarlos</value><comment>Safe button of the goodbye dialog for several Imps.</comment></data>
+  <data name="goodbye.many.message" xml:space="preserve"><value>Su aspecto, los ajustes de su cerebro, sus herramientas, disparadores y chats se van con ellos. No se puede deshacer.</value><comment>Message of the goodbye dialog for several Imps, under their names.</comment></data>
+  <data name="goodbye.many.title" xml:space="preserve"><value>¿Decirles adiós a {count} Imps?</value><comment>Title of the dialog that asks before several Imps are deleted.</comment></data>
   <data name="goodbye.message" xml:space="preserve"><value>Su aspecto, los ajustes de su cerebro, sus herramientas, disparadores y chats se van con él. No se puede deshacer.</value><comment>Message of the goodbye dialog.</comment></data>
   <data name="goodbye.title" xml:space="preserve"><value>¿Decirle adiós a {name}?</value><comment>Title of the dialog that asks before an Imp is deleted.</comment></data>
   <data name="home.canvas.hint" xml:space="preserve"><value>Los Imps se mueven por aquí. Pulsa Tab para ir de un Imp al siguiente.</value><comment>Screen reader hint for the main canvas.</comment></data>
@@ -332,26 +335,42 @@
   <data name="menu.canvas.devices" xml:space="preserve"><value>Equipos</value><comment>Menu item that opens Devices.</comment></data>
   <data name="menu.canvas.new_imp" xml:space="preserve"><value>Nuevo Imp</value><comment>Menu item that hatches a new Imp.</comment></data>
   <data name="menu.canvas.reset_background" xml:space="preserve"><value>Restablecer fondo</value><comment>File menu item: puts the plain background back (the Imps make the others).</comment></data>
+  <data name="menu.canvas.select_all" xml:space="preserve"><value>Seleccionar todo</value><comment>Button on empty space in the window that picks every Imp there, to act on them together. Keep it short: it sits under an icon.</comment></data>
   <data name="menu.canvas.settings" xml:space="preserve"><value>Ajustes</value><comment>Menu item that opens the app-wide settings.</comment></data>
   <data name="menu.canvas.show_hidden" xml:space="preserve"><value>Ocultos ({count})</value><comment>Menu item that brings every hidden Imp back.</comment></data>
+  <data name="menu.group.free_help" xml:space="preserve"><value>Salen al escritorio, justo donde están.</value><comment>Tooltip of Free in the menu of several Imps.</comment></data>
+  <data name="menu.group.goodbye" xml:space="preserve"><value>Adiós a {count} Imps…</value><comment>Menu item that deletes several picked Imps. It asks first.</comment></data>
+  <data name="menu.group.goodbye_off" xml:space="preserve"><value>Siempre se queda un Imp. Deja al menos uno fuera del grupo.</value><comment>Tooltip of the dimmed Goodbye item when every Imp is picked.</comment></data>
+  <data name="menu.group.hide_help" xml:space="preserve"><value>Se esconden hasta que los vuelvas a mostrar. Mientras, sus disparadores descansan.</value><comment>Tooltip of Hide in the menu of several Imps.</comment></data>
+  <data name="menu.group.kit_help" xml:space="preserve"><value>Copia un kit con todos ellos, para compartir o guardar.</value><comment>Tooltip of Copy kit in the menu of several Imps.</comment></data>
+  <data name="menu.group.title" xml:space="preserve"><value>{count} Imps</value><comment>Title of the menu of several Imps picked together.</comment></data>
   <data name="menu.imp.call_home" xml:space="preserve"><value>Traer</value><comment>Button: take back one of our Imps from the device that holds it.</comment></data>
   <data name="menu.imp.call_home_ask" xml:space="preserve"><value>Traer…</value><comment>Menu item for an Imp away on another device: asks before calling it home.</comment></data>
+  <data name="menu.imp.chat" xml:space="preserve"><value>Chat</value><comment>Button in an Imp's menu that opens its chat. Keep it short: it sits under an icon.</comment></data>
+  <data name="menu.imp.chat_help" xml:space="preserve"><value>Todo lo que habéis dicho tú y {name}</value><comment>Tooltip of the Chat button in an Imp's menu.</comment></data>
   <data name="menu.imp.copy_kit" xml:space="preserve"><value>Copiar kit</value><comment>Menu item that copies an Imp as a kit.</comment></data>
   <data name="menu.imp.copy_link" xml:space="preserve"><value>Copiar enlace</value><comment>Menu item that copies a link to an Imp's kit.</comment></data>
+  <data name="menu.imp.free" xml:space="preserve"><value>Soltar</value><comment>Button in the menu of an Imp in the app's window that lets it out onto the desktop. Keep it short: it sits under an icon.</comment></data>
+  <data name="menu.imp.free_help" xml:space="preserve"><value>{name} sale al escritorio, justo donde está.</value><comment>Tooltip of the Free button in the menu of an Imp in the app's window.</comment></data>
   <data name="menu.imp.goodbye" xml:space="preserve"><value>Adiós</value><comment>Menu item that says goodbye to an Imp for good. A dialog asks first.</comment></data>
   <data name="menu.imp.hide" xml:space="preserve"><value>Ocultar</value><comment>Menu item that hides an Imp. It then peeks out now and then.</comment></data>
+  <data name="menu.imp.hide_help" xml:space="preserve"><value>{name} se esconde hasta que lo vuelvas a mostrar. Mientras, sus disparadores descansan.</value><comment>Tooltip of the Hide button in an Imp's menu.</comment></data>
+  <data name="menu.imp.home" xml:space="preserve"><value>A casa</value><comment>Button in a desktop Imp's menu that sends it back into the app's window. Keep it short: it sits under an icon.</comment></data>
+  <data name="menu.imp.home_help" xml:space="preserve"><value>{name} vuelve a la ventana de los Imps y sus disparadores descansan.</value><comment>Tooltip of the Home button in a desktop Imp's menu.</comment></data>
   <data name="menu.imp.let_out" xml:space="preserve"><value>Soltar</value><comment>Menu item (desktop only) that lets an Imp out onto the desktop.</comment></data>
   <data name="menu.imp.move_tip" xml:space="preserve"><value>{name} vive en {device} desde ahora.</value><comment>Tip on the Imp menu item that moves it to a Mac for good.</comment></data>
   <data name="menu.imp.move_to" xml:space="preserve"><value>Mover a {name}</value><comment>Imp menu item that moves the Imp to a Mac for good.</comment></data>
   <data name="menu.imp.send_home" xml:space="preserve"><value>Enviar a casa</value><comment>Menu item (desktop only) that puts a free Imp back in the window.</comment></data>
   <data name="menu.imp.send_to" xml:space="preserve"><value>Visitar {name}</value><comment>Imp menu item that sends the Imp to visit a device. It comes back.</comment></data>
   <data name="menu.imp.settings" xml:space="preserve"><value>Ajustes</value><comment>Menu item that opens the settings of one Imp.</comment></data>
+  <data name="menu.imp.settings_help" xml:space="preserve"><value>Ajustes de {name}</value><comment>Tooltip of the Settings button in an Imp's menu.</comment></data>
   <data name="menu.imp.share" xml:space="preserve"><value>Compartir</value><comment>Menu item that shares an Imp.</comment></data>
   <data name="menu.imp.talk" xml:space="preserve"><value>Hablar</value><comment>Menu item that opens the Imp's message bubble.</comment></data>
   <data name="menu.imp.talk_help" xml:space="preserve"><value>Hablar con {name}</value><comment>Tooltip of the Talk button in an Imp's menu.</comment></data>
   <data name="menu.imp.talks" xml:space="preserve"><value>Charlas</value><comment>Tip and title of the button in an Imp's chat that opens what it said with other Imps.</comment></data>
   <data name="menu.imp.type" xml:space="preserve"><value>Escribir</value><comment>Button in an Imp's menu that opens the typing box.</comment></data>
   <data name="menu.imp.type_help" xml:space="preserve"><value>Escribir a {name}</value><comment>Tooltip of the Type button in an Imp's menu.</comment></data>
+  <data name="menu.imp.visit" xml:space="preserve"><value>Visitar</value><comment>Small heading in an Imp's menu over the linked devices it can visit.</comment></data>
   <data name="menu.imp.visit_none" xml:space="preserve"><value>Visitar otro dispositivo</value><comment>Greyed Imp menu item when no other device is around.</comment></data>
   <data name="menu.imp.visit_tip" xml:space="preserve"><value>{name} visita {device} y puede volver.</value><comment>Tip on the Imp menu item that sends it to visit a device.</comment></data>
   <data name="moves.animations" xml:space="preserve"><value>Animaciones</value><comment>Header of the list of an Imp's own animations.</comment></data>
@@ -450,6 +469,11 @@
   <data name="phone.requests.title" xml:space="preserve"><value>Espera</value><comment>Card title on the iPhone settings page for brains.</comment></data>
   <data name="phone.scan.code" xml:space="preserve"><value>Escanear</value><comment>Button that opens the camera to scan a link code.</comment></data>
   <data name="phone.secret.hidden" xml:space="preserve"><value>Oculta</value><comment>iPhone: what VoiceOver says for a key field while its value is hidden.</comment></data>
+  <data name="phone.select.all" xml:space="preserve"><value>Seleccionar todo</value><comment>iPhone: top bar button that picks every Imp on the stage.</comment></data>
+  <data name="phone.select.deselect" xml:space="preserve"><value>Quitar de la selección</value><comment>iPhone: VoiceOver action that takes a picked Imp out of the picks.</comment></data>
+  <data name="phone.select.hidden" xml:space="preserve"><value>{count} Imps están ocultos.</value><comment>iPhone: toast after several picked Imps were hidden.</comment></data>
+  <data name="phone.select.menu" xml:space="preserve"><value>Seleccionar</value><comment>iPhone: menu item that starts picking several Imps, with this one picked first.</comment></data>
+  <data name="phone.select.title" xml:space="preserve"><value>{count} seleccionados</value><comment>iPhone: title of the bar while Imps are being picked.</comment></data>
   <data name="phone.server.placeholder_hop" xml:space="preserve"><value>hop.example.com:4677</value><comment>Example address of a Hop.</comment></data>
   <data name="phone.shake.dir.any" xml:space="preserve"><value>Cualquiera</value><comment>Segment: any direction.</comment></data>
   <data name="phone.shake.dir.sides" xml:space="preserve"><value>Izq. o der.</value><comment>Segment: left or right.</comment></data>
@@ -617,8 +641,13 @@
   <data name="settings.service.name.info" xml:space="preserve"><value>Un nombre a tu gusto.</value><comment>Settings text.</comment></data>
   <data name="settings.talking.between.info" xml:space="preserve"><value>Cómo hablan los Imps entre sí.</value><comment>Settings text.</comment></data>
   <data name="settings.talking.between.title" xml:space="preserve"><value>Entre Imps</value><comment>Settings text.</comment></data>
-  <data name="settings.talking.language.info" xml:space="preserve"><value>El idioma en que le hablas. Escucha en este.</value><comment>Tooltip of a settings row.</comment></data>
+  <data name="settings.talking.language.auto" xml:space="preserve"><value>Automático</value><comment>An option of the listening language: it finds out which language you spoke.</comment></data>
+  <data name="settings.talking.language.info" xml:space="preserve"><value>El idioma en que le hablas. Automático escucha varios a la vez y se queda con el que hablaste.</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.talking.language.title" xml:space="preserve"><value>Idioma</value><comment>Settings text.</comment></data>
+  <data name="settings.talking.languages.device" xml:space="preserve"><value>Los idiomas de mi Mac</value><comment>Option: Automatic listens for the languages set on the Mac.</comment></data>
+  <data name="settings.talking.languages.info" xml:space="preserve"><value>Hasta tres idiomas. Escucha en todos a la vez, en este Mac, y se queda con el que hablaste. Si hay duda, gana el que usaste la última vez.</value><comment>Tooltip of a settings row.</comment></data>
+  <data name="settings.talking.languages.pick" xml:space="preserve"><value>O elige hasta tres</value><comment>Heading of the list of languages to pick, at most three.</comment></data>
+  <data name="settings.talking.languages.title" xml:space="preserve"><value>Escucha en</value><comment>Settings text: the languages Automatic listens for.</comment></data>
   <data name="settings.talking.listening.info" xml:space="preserve"><value>Cómo te oyen los Imps.</value><comment>Settings text.</comment></data>
   <data name="settings.talking.listening.title" xml:space="preserve"><value>Escuchar</value><comment>Settings text.</comment></data>
   <data name="settings.talking.talk_in.info" xml:space="preserve"><value>En qué chat llega un mensaje de un Imp a otro.</value><comment>Tooltip of a settings row.</comment></data>

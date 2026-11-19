@@ -18,6 +18,7 @@
 		11562AAF9BF028748223D25B /* PocketToolsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7237C199DA3C4E0C6C9D47F8 /* PocketToolsPanel.swift */; };
 		11FFEBB47FE0BB391204D124 /* IssueBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6C79866A4273D398450529 /* IssueBadge.swift */; };
 		120F363469D4AEC723B21473 /* ImpFigure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5051E3D1AB49B80B5BE06CC1 /* ImpFigure.swift */; };
+		150524892102508DC50DB777 /* PhoneSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FB3666BAFA7176923A95A2 /* PhoneSelect.swift */; };
 		16658C47766CD63B6BE73596 /* PhoneDevicesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE45252DD9BCAD14AD35BA1 /* PhoneDevicesSection.swift */; };
 		18891DF73CDD218974DAEB95 /* SpeechBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA5D82CCFC83F4CD980ADB0F /* SpeechBubble.swift */; };
 		1DEAD9F87BA4E7A32FFCDF00 /* PocketStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8710DB1B265BCCBA13421566 /* PocketStore.swift */; };
@@ -101,6 +102,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		04FB3666BAFA7176923A95A2 /* PhoneSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneSelect.swift; sourceTree = "<group>"; };
 		0D2E54D6D3896160943BF9DC /* SoftLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftLight.swift; sourceTree = "<group>"; };
 		0DC695E7AE998FA6BF5BA85B /* ImpPhone.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ImpPhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		10193FB32C2FF1FBBDF36113 /* BubbleSizes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleSizes.swift; sourceTree = "<group>"; };
@@ -399,6 +401,7 @@
 				5051E3D1AB49B80B5BE06CC1 /* ImpFigure.swift */,
 				CC80349F644CCEA609733B2A /* PhoneBackground.swift */,
 				CD0AD477B00E68D68AC1AFBE /* PhoneHidden.swift */,
+				04FB3666BAFA7176923A95A2 /* PhoneSelect.swift */,
 				53AA4BF5359EE139B7D3FAEA /* PhoneStage.swift */,
 				DA5D82CCFC83F4CD980ADB0F /* SpeechBubble.swift */,
 				2353EF82D19F007D953D9A14 /* SpeechMedia.swift */,
@@ -591,6 +594,7 @@
 				EAF290675BD6BDB45644C78D /* PhoneBrainsSection.swift in Sources */,
 				16658C47766CD63B6BE73596 /* PhoneDevicesSection.swift in Sources */,
 				6F4B6CCDC829CEDCD380A8B7 /* PhoneHidden.swift in Sources */,
+				150524892102508DC50DB777 /* PhoneSelect.swift in Sources */,
 				FB78B470E4BB7E1DBF1498D8 /* PhoneServerCards.swift in Sources */,
 				06F103700CE173EDD57B0E3E /* PhoneSettings.swift in Sources */,
 				FF17C834FCFD996C1DF2C98F /* PhoneStage.swift in Sources */,
@@ -678,7 +682,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 31;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -693,7 +697,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 3.1.0;
+				MARKETING_VERSION = 3.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -814,7 +818,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 31;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -835,7 +839,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 3.1.0;
+				MARKETING_VERSION = 3.2.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

@@ -77,14 +77,17 @@ struct PersonalityPanel: View {
 }
 
 /// The reply rules in a sheet of their own: the whole built-in prompt to change, and the way back to it.
-/// Changes apply as they are typed, like the rest of the panel.
+/// Changes apply as they are typed, like the rest of the panel. Cancel puts back the rules the sheet opened with.
 private struct ReplyRulesSheet: View {
     @Binding var imp: ImpProfile
     @Environment(\.dismiss) private var dismiss
+    /// The rules when the sheet opened (nil inside: the built-in ones), for Cancel. Set on appear.
+    @State private var before: String??
 
     var body: some View {
         SheetScaffold(icon: "list.bullet.rectangle", title: "Reply rules", info: "personality.help.rules",
-                      width: Sizing.sheetWidth + Spacing.vast) {
+                      width: Sizing.sheetWidth + Spacing.vast,
+                      cancel: { if let before { imp.instructions = before }; dismiss() }) {
             // Text equal to the built-in prompt is stored as nil, so the built-in one stays in use.
             EditorWell(text: Binding(get: { imp.effectiveInstructions },
                                      set: { imp.instructions = $0 == Briefing.display ? nil : $0 }),
@@ -97,5 +100,6 @@ private struct ReplyRulesSheet: View {
             Button("common.done") { dismiss() }
                 .buttonStyle(.primary).keyboardShortcut(.defaultAction)
         }
+        .onAppear { if before == nil { before = .some(imp.instructions) } }
     }
 }

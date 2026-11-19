@@ -3,8 +3,8 @@ import ImpKit
 import SwiftUI
 
 /// The first run on the Mac: a sheet over the window with the Imp (asleep, stirring, awake) on top, the one
-/// page below (`FirstRunFlow`) and one primary button at the bottom. The top bar has Close. Close leaves the
-/// Imp asleep, a calm state of its own: there is no "later".
+/// page below (`FirstRunFlow`) and, at the bottom, Cancel and the primary button. The top bar has Close, which
+/// does the same as Cancel: the Imp stays asleep, a calm state of its own.
 struct FirstRunSheet: View {
     @Bindable var flow: FirstRunModel
     let hue: Double
@@ -17,7 +17,7 @@ struct FirstRunSheet: View {
     private var name: String { flow.impName }
 
     var body: some View {
-        SheetFrame(width: Sizing.sheetWidth) {
+        SheetFrame(width: Sizing.sheetWidth, cancel: close) {
             header
         } content: {
             FirstRunFlow(flow: flow)

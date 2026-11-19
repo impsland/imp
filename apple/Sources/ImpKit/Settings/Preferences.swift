@@ -170,8 +170,16 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { backgroundHTML = newValue == RoomBackground.defaultHTML ? nil : newValue }
     }
     private var backgroundHTML: String?
-    /// BCP-47 identifier for dictation. Empty = system language.
+    /// BCP-47 identifier for dictation. Empty = system language. `ListeningLanguages.automatic` listens in
+    /// several at once and keeps the one that fits (`dictationLanguages`).
     public var dictationLocale = ""
+    /// The languages Automatic listens in, at most `ListeningLanguages.maxLanguages`. Empty: the device's own.
+    public var dictationLanguages: [String] {
+        get { dictationLanguageList ?? [] }
+        set { dictationLanguageList = newValue.isEmpty ? nil : Array(newValue.prefix(ListeningLanguages.maxLanguages)) }
+    }
+    /// Optional, so settings saved before it still load.
+    private var dictationLanguageList: [String]?
     /// The troupe. Always at least one: the little red Imp, waiting in the app's window.
     public var imps: [ImpProfile] = [.waiting]
 

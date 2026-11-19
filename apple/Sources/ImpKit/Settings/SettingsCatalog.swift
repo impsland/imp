@@ -57,7 +57,8 @@ public enum SettingID: String, CaseIterable, Sendable {
     case bubbleAutoplay = "bubble_autoplay", bubbleAudio = "bubble_audio"
     case bubbleBackground = "bubble_background", bubbleAmount = "bubble_amount"
     // Talking
-    case talkingListeningLanguage = "talking_listening_language", talkingTalkIn = "talking_talk_in"
+    case talkingListeningLanguage = "talking_listening_language", talkingListeningLanguages = "talking_listening_languages"
+    case talkingTalkIn = "talking_talk_in"
     case talkingThreads = "talking_threads", talkingWindow = "talking_window", talkingWaiting = "talking_waiting"
     // Brains
     case brainsServices = "brains_services", brainsKeychain = "brains_keychain", brainsWait = "brains_wait"
@@ -109,7 +110,8 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .bubbleAudio: Entry(page: .bubble, title: "settings.bubble.audio.title", hint: "when replies are read aloud, volume of speech, sound in the bubble")
         case .bubbleBackground: Entry(page: .bubble, title: "settings.bubble.background.title", hint: "a solid or see-through background for the speech bubble on the desktop")
         case .bubbleAmount: Entry(page: .bubble, title: "settings.bubble.amount.title", hint: "how see-through the speech bubble is")
-        case .talkingListeningLanguage: Entry(page: .talking, title: "settings.talking.language.title", hint: "the language you speak to the Imp, dictation, microphone language")
+        case .talkingListeningLanguage: Entry(page: .talking, title: "settings.talking.language.title", hint: "the language you speak to the Imp, dictation, microphone language, automatic language detection")
+        case .talkingListeningLanguages: Entry(page: .talking, title: "settings.talking.languages.title", hint: "languages automatic listens for, detect the spoken language, several languages")
         case .talkingTalkIn: Entry(page: .talking, title: "settings.talking.talk_in.title", hint: "where Imps talk to each other, in the bubble or in their own chat")
         case .talkingThreads: Entry(page: .talking, title: "settings.talking.threads.title", hint: "separate chats or one running conversation")
         case .talkingWaiting: Entry(page: .talking, title: "settings.talking.waiting.title", hint: "whether an Imp waits for another Imp's answer or goes on")

@@ -28,6 +28,7 @@ enum DesignScene: String, CaseIterable {
     case firstRunError = "first-run-error"
     case barMenu = "bar-menu"
     case barMenuEs = "bar-menu-es"
+    case impMenu = "imp-menu"
     case allPair = "all-imps-pair"
     case allBubble = "all-imps-bubble"
     case allTalking = "all-imps-talking"
@@ -55,6 +56,7 @@ enum DesignScene: String, CaseIterable {
         case .allNothing: CGSize(width: 760, height: 640)
         case .firstRunService, .firstRunError: CGSize(width: Sizing.sheetWidth, height: 660)
         case .barMenu, .barMenuEs: CGSize(width: 420, height: 360)
+        case .impMenu: CGSize(width: 1480, height: 600)
         case .allPair: CGSize(width: 560, height: 420)
         case .allDevicesNarrow: CGSize(width: 380, height: 720)
         case .allBubble, .allTalking, .allBrains, .allDevices, .allSharing, .allAnimations, .allPrivacy, .allBackup: CGSize(width: 760, height: 720)
@@ -85,6 +87,7 @@ enum DesignScene: String, CaseIterable {
         case .firstRunService: firstRun { _ in }
         case .firstRunError: firstRun { $0.continueFromService() }
         case .barMenu, .barMenuEs: barMenu()
+        case .impMenu: impMenu()
         case .allPair: pairing()
         case .allBubble: general(.bubble)
         case .allTalking: general(.talking)
@@ -132,6 +135,56 @@ enum DesignScene: String, CaseIterable {
             .background(Tone.raised, in: RoundedRectangle(cornerRadius: Radius.large, style: .continuous))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.gray))
+    }
+
+    /// An Imp's right-click menu card on a mid-grey desktop: on the desktop (Home), in the window (Free), and for
+    /// three Imps picked together.
+    @MainActor private func impMenu() -> AnyView {
+        let model = Self.model(imps: 2)
+        let imps = model.prefs.imps
+        let raised = RoundedRectangle(cornerRadius: Radius.large, style: .continuous)
+        return AnyView(HStack(alignment: .top, spacing: Spacing.wide) {
+            ImpMenuCard(ready: true, name: imps[0].name, status: String(localized: "Awake"), hue: imps[0].hue,
+                        scale: 1, place: .desktop) { _ in } extra: {
+                MenuPills(items: [MenuItem(id: "stop", icon: "stop.circle", title: String(localized: "Stop")) {}])
+                MenuPills(title: String(localized: "Triggers"), items: [
+                    MenuItem(id: "t1", icon: "globe", title: "Translate") {},
+                    MenuItem(id: "t2", icon: "text.badge.checkmark", title: "Proofread") {},
+                    MenuItem(id: "t3", icon: "sun.max", title: "Morning") {},
+                ])
+                MenuPills(title: String(localized: "menu.imp.visit"), items: [MenuItem(id: "p", icon: "iphone.gen3", title: "iPhone") {}])
+            }
+            .background(Tone.raised, in: raised)
+            ImpMenuCard(ready: false, name: imps[1].name, status: String(localized: "Needs a brain"), hue: imps[1].hue,
+                        scale: 0.75, place: .home) { _ in } extra: {
+                MenuPills(items: [MenuItem(id: "kit", icon: "shippingbox.fill", title: String(localized: "menu.imp.copy_kit")) {},
+                                  MenuItem(id: "link", icon: "link", title: String(localized: "menu.imp.copy_link"), enabled: false) {}])
+                MenuDangerButton(item: MenuItem(id: "bye", icon: "trash", title: String(localized: "menu.imp.goodbye")) {})
+            }
+            .background(Tone.raised, in: raised)
+            GroupMenuCard(names: imps.map(\.name) + ["Pip"], hues: imps.map(\.hue) + [0.33], scales: [1, 1, 1]) { _ in } extra: {
+                MenuPills(title: String(localized: "brain.title"), items: [
+                    MenuItem(id: "shared", icon: "person.3.fill", title: String(localized: "brain.use_app"), on: true) {},
+                    MenuItem(id: "ollama", icon: "brain", title: "Ollama") {},
+                ])
+                MenuDangerButton(item: MenuItem(id: "bye", icon: "trash", title: words("menu.group.goodbye", 3)) {})
+            }
+            .background(Tone.raised, in: raised)
+            MenuCard {
+                MenuGrid(items: [
+                    MenuItem(id: "new", icon: "plus", title: String(localized: "menu.canvas.new_imp")) {},
+                    MenuItem(id: "hidden", icon: "eye.fill", title: words("menu.canvas.show_hidden", 2)) {},
+                    MenuItem(id: "all", icon: "checkmark.circle.fill", title: String(localized: "menu.canvas.select_all")) {},
+                    MenuItem(id: "settings", icon: "gearshape.fill", title: String(localized: "menu.canvas.settings")) {},
+                ])
+            }
+            .fixedSize()
+            .background(Tone.raised, in: raised)
+        }
+        .fixedSize()
+        .padding(Spacing.wide)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.gray))
     }
 
     /// The link-a-device sheet with a fixed invite, so the QR code is the same every time.

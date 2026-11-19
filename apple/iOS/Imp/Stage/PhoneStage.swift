@@ -39,8 +39,85 @@ struct PhoneStage: View {
     @State private var menuFor: UUID?
     /// The Imp whose menu is open.
     @State private var menuImp: UUID?
+    /// Whether Imps are being picked together (Select in an Imp's menu), and which ones are picked so far.
+    @State private var picking = false
+    @State private var picked: Set<UUID> = []
+    /// Several Imps hatched here, waiting for "Goodbye" to be confirmed once for all.
+    @State private var sayingGoodbye: [LinkImp]?
 
     var body: some View {
+        menus
+        .onChange(of: staged) {
+            engine.reconcile(roster)
+            hub.setStage(staged)
+        }
+        .onChange(of: everyone.map(\.id)) { _, ids in hidden.forget(except: ids) }
+        .onChange(of: motionInterval, initial: true) { _, interval in
+            if let interval { motion.start(interval: interval) } else { motion.stop() }
+        }
+        // Back in front or uncovered: one lively frame to catch up, then the pace follows the Imps.
+        .onChange(of: scenePhase == .active && !veiled) { _, shown in if shown { engine.pacer.wake() } }
+        .onChange(of: guest) { engine.pacer.wake() }
+        .onChange(of: cover) { engine.pacer.wake() }
+        .onChange(of: scenePhase, initial: true) { _, phase in
+            // A voice doesn't go on talking from a phone that's been put away.
+            if phase == .background { StageVoice.shared.interrupt() }
+            // Echo's sound and haptic engines run only while the app is in front.
+            if phase == .active { engine.echo?.resume() } else { engine.echo?.rest() }
+        }
+    }
+
+    /// The room with picking over it and the questions the Imps' menus lead to. Split from `body` so the compiler
+    /// can type-check each part.
+    private var questions: some View {
+        room
+        .overlay { pickingBars }
+        .impAnimation(ImpDesign.Motion.fade, value: picking)
+        .preference(key: PhonePicking.self, value: picking)
+        .onChange(of: staged) { prunePicks() }
+        .onChange(of: covered) { if covered { endPicking() } }
+        .onChange(of: engine.isBlocking) { if engine.isBlocking { endPicking() } }
+        .goodbyeToMany($sayingGoodbye) { imps in
+            for imp in imps { pocket.delete(imp.id) }
+            Haptics.notify(.success)
+            endPicking()
+        }
+        .confirmationDialog(asking?.title ?? "", isPresented: Binding(get: { asking != nil }, set: { if !$0 { asking = nil } }),
+                            titleVisibility: .visible, presenting: asking) { ask in
+            ForEach(ask.choices) { device in
+                Button(words("menu.imp.send_to", device.name)) { sendShaken(ask.imp, to: device.id, side: nil) }
+            }
+        } message: { Text($0.message) }
+    }
+
+    /// The Imp's menu and the questions it leads to.
+    private var menus: some View {
+        questions
+        .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in motion.configure() }
+        .confirmationDialog(menuImp.flatMap { engine.bodies[$0]?.imp.name } ?? "",
+                            isPresented: Binding(get: { menuImp != nil }, set: { if !$0 { menuImp = nil; menuFor = nil } }),
+                            titleVisibility: .visible, presenting: menuImp.flatMap { engine.bodies[$0] }) { body in
+            let source: any ChatSource = pocket.contains(body.imp.id) ? pocket : hub
+            menu(for: body, source: source, awake: source.availability(body.imp.id) == .ready)
+        }
+        .confirmationDialog(deleting.map { words("phone.stage.delete.title", $0.name) } ?? "",
+                            isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }),
+                            titleVisibility: .visible, presenting: deleting) { imp in
+            Button("Delete", role: .destructive) { pocket.delete(imp.id) }
+        } message: { _ in
+            Text("phone.stage.delete.body")
+        }
+        .confirmationDialog(moving.map { words("phone.stage.move.title", $0.imp.name, $0.mac.name) } ?? "",
+                            isPresented: Binding(get: { moving != nil }, set: { if !$0 { moving = nil } }),
+                            titleVisibility: .visible, presenting: moving) { move in
+            Button("Move") { engine.sendGently(move.imp.id, to: move.mac.id, moves: true) }
+        } message: { move in
+            Text(words("phone.stage.move.body", move.imp.name, move.mac.name))
+        }
+    }
+
+    /// The room itself: the Imps and what sits on the floor. Split from `body` so the compiler can type-check each half.
+    private var room: some View {
         // The stage runs edge to edge, so the screen's safe area (notch, Dynamic Island, home
         // indicator) is measured outside it, for what has to stay clear of them.
         GeometryReader { screen in
@@ -85,7 +162,7 @@ struct PhoneStage: View {
                                 }
                             }
                             DoorLabels(engine: engine, frame: date).zIndex(2)
-                            GameLayer(engine: engine, date: date, size: geo.size, insets: screen.safeAreaInsets)
+                            GameLayer(engine: engine, date: date, size: geo.size, insets: screen.safeAreaInsets, offersGames: !picking)
                                 .zIndex(3)
                         }
                         .impAnimation(ImpDesign.Motion.fade, value: engine.isPlaying)
@@ -107,51 +184,6 @@ struct PhoneStage: View {
                 .allowsHitTesting(!floor.isEmpty)
         }
         .overlay(alignment: .bottom) { ShakeReceiptBar(hub: hub).padding(.bottom, Sizing.receiptLift) }
-        .confirmationDialog(asking?.title ?? "", isPresented: Binding(get: { asking != nil }, set: { if !$0 { asking = nil } }),
-                            titleVisibility: .visible, presenting: asking) { ask in
-            ForEach(ask.choices) { device in
-                Button(words("menu.imp.send_to", device.name)) { sendShaken(ask.imp, to: device.id, side: nil) }
-            }
-        } message: { Text($0.message) }
-        .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in motion.configure() }
-        .confirmationDialog(menuImp.flatMap { engine.bodies[$0]?.imp.name } ?? "",
-                            isPresented: Binding(get: { menuImp != nil }, set: { if !$0 { menuImp = nil; menuFor = nil } }),
-                            titleVisibility: .visible, presenting: menuImp.flatMap { engine.bodies[$0] }) { body in
-            let source: any ChatSource = pocket.contains(body.imp.id) ? pocket : hub
-            menu(for: body, source: source, awake: source.availability(body.imp.id) == .ready)
-        }
-        .confirmationDialog(deleting.map { words("phone.stage.delete.title", $0.name) } ?? "",
-                            isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }),
-                            titleVisibility: .visible, presenting: deleting) { imp in
-            Button("Delete", role: .destructive) { pocket.delete(imp.id) }
-        } message: { _ in
-            Text("phone.stage.delete.body")
-        }
-        .confirmationDialog(moving.map { words("phone.stage.move.title", $0.imp.name, $0.mac.name) } ?? "",
-                            isPresented: Binding(get: { moving != nil }, set: { if !$0 { moving = nil } }),
-                            titleVisibility: .visible, presenting: moving) { move in
-            Button("Move") { engine.sendGently(move.imp.id, to: move.mac.id, moves: true) }
-        } message: { move in
-            Text(words("phone.stage.move.body", move.imp.name, move.mac.name))
-        }
-        .onChange(of: staged) {
-            engine.reconcile(roster)
-            hub.setStage(staged)
-        }
-        .onChange(of: everyone.map(\.id)) { _, ids in hidden.forget(except: ids) }
-        .onChange(of: motionInterval, initial: true) { _, interval in
-            if let interval { motion.start(interval: interval) } else { motion.stop() }
-        }
-        // Back in front or uncovered: one lively frame to catch up, then the pace follows the Imps.
-        .onChange(of: scenePhase == .active && !veiled) { _, shown in if shown { engine.pacer.wake() } }
-        .onChange(of: guest) { engine.pacer.wake() }
-        .onChange(of: cover) { engine.pacer.wake() }
-        .onChange(of: scenePhase, initial: true) { _, phase in
-            // A voice doesn't go on talking from a phone that's been put away.
-            if phase == .background { StageVoice.shared.interrupt() }
-            // Echo's sound and haptic engines run only while the app is in front.
-            if phase == .active { engine.echo?.resume() } else { engine.echo?.rest() }
-        }
     }
 
     // MARK: The sheet over the room
@@ -314,7 +346,7 @@ struct PhoneStage: View {
             .frame(width: side, height: side)
             .background {
                 // The Imp's own light around it.
-                Halo(color: Color.imp(b.imp.hue), opacity: !awake ? 0 : id == guest ? Opacity.glow : Opacity.tintFill)
+                Halo(color: Color.imp(b.imp.hue), opacity: !awake ? 0 : id == guest || picked.contains(id) ? Opacity.glow : Opacity.tintFill)
                     .frame(width: side * 2.3, height: side * 2.3)
             }
             // The dots and the name are placed from the drawing (its horns, its base), not from its square, so they
@@ -337,6 +369,9 @@ struct PhoneStage: View {
                         .transition(.opacity)
                 }
             }
+            .overlay(alignment: .topTrailing) {
+                if picking { PickBadge(hue: b.imp.hue, picked: picked.contains(id)).transition(.scale.combined(with: .opacity)) }
+            }
             .opacity(awake || engine.isBlocking ? 1 : Opacity.dimmed)
             .contentShape(Circle().inset(by: side * 0.08))
             // A press that holds still starts before the menu does: the bubble goes first. Movement
@@ -345,15 +380,28 @@ struct PhoneStage: View {
             // longest duration, and its end would open the chat over the menu).
             .simultaneousGesture(
                 LongPressGesture(minimumDuration: 0.25, maximumDistance: 10)
-                    .onEnded { _ in if !engine.isBlocking { lifted(id) } }
-                    .exclusively(before: TapGesture().onEnded { if !engine.isBlocking, menuImp == nil { menuFor = nil; onChat(id) } }))
+                    .onEnded { _ in
+                        // A press that lingers still counts as a pick while picking, not as a menu.
+                        if picking { togglePick(id) } else if !engine.isBlocking { lifted(id) }
+                    }
+                    .exclusively(before: TapGesture().onEnded {
+                        guard !engine.isBlocking, menuImp == nil else { return }
+                        menuFor = nil
+                        if picking { togglePick(id) } else { onChat(id) }
+                    }))
             .gesture(DragGesture(minimumDistance: 3, coordinateSpace: .named("stage"))
                 .onChanged { menuFor = nil; engine.dragChanged(id, at: $0.location) }
                 .onEnded { engine.dragEnded(id, at: $0.location, predicted: $0.predictedEndLocation) })
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(Text(b.imp.name))
-            .accessibilityAddTraits(.isButton)
-            .accessibilityActions { menu(for: b, source: source, awake: awake) }
+            .accessibilityAddTraits(picking && picked.contains(id) ? [.isButton, .isSelected] : .isButton)
+            .accessibilityActions {
+                if picking {
+                    Button { togglePick(id) } label: { Text(picked.contains(id) ? "phone.select.deselect" : "phone.select.menu") }
+                } else {
+                    menu(for: b, source: source, awake: awake)
+                }
+            }
             // It floats while nobody holds it. One that sleeps hangs still.
             .floating(BodyClock(id), reach: Self.floatReach, on: awake && b.phase != .dragging)
             .position(x: b.pos.x, y: b.pos.y)
@@ -387,6 +435,8 @@ struct PhoneStage: View {
             Button { onEdit(id) } label: { Label("menu.imp.settings", systemImage: "slider.horizontal.3") }
         }
         Button { hide(b.imp) } label: { Label("menu.imp.hide", systemImage: "eye.slash") }
+        Button { startPicking(with: id) } label: { Label("phone.select.menu", systemImage: "checkmark.circle") }
+            .accessibilityIdentifier("imp.select")
         Section {
         ForEach(hub.connectedPeers) { device in
             if hub.way(of: id, to: device.id, preferring: .right) != nil {
@@ -404,6 +454,81 @@ struct PhoneStage: View {
         } else {
             Button(role: .destructive) { hub.sendHome(id) } label: { Label("menu.imp.send_home", systemImage: "house") }
         }
+    }
+
+    // MARK: Picking several
+
+    /// The bars over the room while picking, inside the safe area: the room's own top bar steps aside for them.
+    @ViewBuilder private var pickingBars: some View {
+        if picking {
+            VStack(spacing: 0) {
+                PickTopBar(count: picked.count, everyone: picked.count >= roster.count, cancel: endPicking, selectAll: pickAll)
+                Spacer(minLength: 0).allowsHitTesting(false)
+                PickBottomBar(canSendHome: !pickedVisitors.isEmpty, canSayGoodbye: !pickedOwn.isEmpty,
+                              hide: hidePicked, sendHome: sendPickedHome, sayGoodbye: askGoodbyeToPicked)
+            }
+            .transition(.opacity)
+        }
+    }
+
+    /// Picked Imps in the stage's order, so dialogs and toasts read the same every time.
+    private var pickedInOrder: [UUID] { engine.order.filter(picked.contains) }
+    /// The picked Imps hatched here, which can say goodbye, and the picked visitors, which can go home.
+    private var pickedOwn: [LinkImp] { pickedInOrder.compactMap { id in pocket.contains(id) ? engine.bodies[id]?.imp : nil } }
+    private var pickedVisitors: [UUID] { pickedInOrder.filter { !pocket.contains($0) && hub.visit($0) != nil } }
+
+    /// Select in the menu: picking starts with that Imp picked. The Imps keep floating while picking: the engine
+    /// has no calm state, and a paused room would also stop the Imps that are being tapped.
+    private func startPicking(with id: UUID) {
+        picked = [id]
+        withAnimation(ImpDesign.Motion.fade.reducedAware(engine.reduceMotion)) { picking = true }
+        Haptics.selection()
+    }
+
+    private func endPicking() {
+        guard picking else { return }
+        withAnimation(ImpDesign.Motion.fade.reducedAware(engine.reduceMotion)) { picking = false }
+        picked = []
+        sayingGoodbye = nil
+    }
+
+    /// A tap: picks the Imp or lets it go. With nothing left picked there is nothing to act on, so picking ends.
+    private func togglePick(_ id: UUID) {
+        picked = ImpPicks.toggle(id, in: picked, selection: nil)
+        Haptics.selection()
+        if picked.isEmpty { endPicking() }
+    }
+
+    private func pickAll() {
+        picked = Set(roster.map(\.id))
+        Haptics.selection()
+    }
+
+    /// An Imp that left the room (sent, said goodbye to, hidden) is no longer picked.
+    private func prunePicks() {
+        guard picking else { return }
+        let here = Set(roster.map(\.id))
+        if !picked.isSubset(of: here) { picked.formIntersection(here) }
+        if picked.isEmpty { endPicking() }
+    }
+
+    private func hidePicked() {
+        let imps = pickedInOrder.compactMap { engine.bodies[$0]?.imp }
+        guard !imps.isEmpty else { return }
+        withAnimation(ImpDesign.Motion.fade.reducedAware(engine.reduceMotion)) { for imp in imps { hidden.hide(imp.id) } }
+        hub.toast = imps.count == 1 ? words("imp.hide.undo", imps[0].name) : words("phone.select.hidden", imps.count)
+        endPicking()
+    }
+
+    private func sendPickedHome() {
+        for id in pickedVisitors { hub.sendHome(id) }
+        endPicking()
+    }
+
+    /// One Imp goes through the single dialog; several are asked once, for all of them.
+    private func askGoodbyeToPicked() {
+        let imps = pickedOwn
+        if imps.count == 1 { deleting = imps[0] } else if imps.count > 1 { sayingGoodbye = imps }
     }
 
     // MARK: Wiring

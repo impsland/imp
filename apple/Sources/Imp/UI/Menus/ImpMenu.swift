@@ -3,14 +3,15 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The menu you get by right-clicking an Imp: everything about *that* Imp and nothing else.
-/// (App-wide things live in the menu bar menu.)
+/// The menu you get by right-clicking an Imp on the desktop: everything about *that* Imp and nothing else.
+/// (App-wide things live in the menu bar menu.) It is one card of buttons (`MenuCard`): the top is
+/// `ImpMenuCard`, the same as in the app's window, and what only sometimes applies sits under it as pills.
 @MainActor
-final class ImpMenu: NSObject, NSMenuDelegate {
+final class ImpMenu {
     private let app: AppModel
     private let imp: ImpModel
-    /// The header button's action, run once the menu has closed (see `menuDidClose`).
-    private var pending: (@MainActor @Sendable () -> Void)?
+    /// Holds the menu's actions until it has closed (the menu's own targets are weak).
+    private let card = CardMenu()
 
     init(app: AppModel, imp: ImpModel) {
         self.app = app
@@ -18,179 +19,134 @@ final class ImpMenu: NSObject, NSMenuDelegate {
     }
 
     func make() -> NSMenu {
-        if let visit = imp.visit { return makeVisitor(visit) }
-        let menu = NSMenu()
-        menu.appearance = NSApp.appearance
-        menu.delegate = self
-        let name = imp.profile.name
-        let header = NSMenuItem()
-        header.view = headerView(closing: menu)
-        menu.addItem(header)
-        menu.addItem(.separator())
-
-        // Right now: only when this Imp has something to stop or grab.
-        let result = imp.bubble?.phase == .result ? imp.bubble : nil
-        if imp.isBusy { add(menu, String(localized: "Stop"), symbol: "stop.circle", action: #selector(stop)) }
-        if result != nil { add(menu, String(localized: "Copy Last Reply"), symbol: "doc.on.doc", action: #selector(copyLast)) }
-        add(menu, String(localized: "Chat"), symbol: "bubble.left.and.bubble.right", action: #selector(openChat))
-            .toolTip = String(localized: "Everything you and \(name) said, with the tools it used.")
-        add(menu, String(localized: "menu.imp.settings"), symbol: "slider.horizontal.3", action: #selector(openSettings))
-        menu.addItem(.separator())
-
-        // Its triggers that ask it something, to run right now (clicks are right here already).
-        let own = app.prefs.triggers(for: imp.id).filter { $0.isEnabled && $0.askStep != nil && $0.trigger.event != .click }
-        if !own.isEmpty {
-            menu.addItem(.sectionHeader(title: String(localized: "Triggers")))
-            for action in own {
-                let mi = add(menu, action.name, symbol: action.trigger.event == .keys ? action.symbol : action.trigger.event.symbol,
-                             action: #selector(run(_:)))
-                mi.representedObject = action.id
-                if let key = action.keys, let equivalent = key.keyEquivalent {
-                    mi.keyEquivalent = equivalent
-                    mi.keyEquivalentModifierMask = key.modifierFlags
-                }
-            }
-            menu.addItem(.separator())
-        }
-
-        menu.addItem(submenu(String(localized: "Colour"), symbol: "paintpalette", items: ImpProfile.colors.map { c in
-            (c.name, abs(imp.profile.hue - c.hue) < 0.005, NSNumber(value: c.hue), StatusIcon.swatch(hue: c.hue))
-        }, action: #selector(setColour(_:))))
-        menu.addItem(submenu(String(localized: "Size"), symbol: "arrow.up.left.and.arrow.down.right", items: Panels.sizes.map { title, scale in
-            (title, abs(imp.profile.scale - scale) < 0.01, NSNumber(value: scale), nil)
-        }, action: #selector(setSize(_:))))
-        menu.addItem(.separator())
-        add(menu, String(localized: "Hide \(name)"), symbol: "eye.slash", action: #selector(hide))
-            .toolTip = String(localized: "\(name) hides until you show it again from the menu bar (Show) or click it in the Imps' window. Its triggers rest meanwhile.")
-        if app.link.isLinked {
-            let around = app.link.connectedPeers
-            for peer in around {
-                let item = add(menu, words("menu.imp.send_to", peer.name),
-                               symbol: peer.kind == .mac ? "desktopcomputer" : "iphone.gen3", action: #selector(sendToDevice(_:)))
-                item.representedObject = peer.id
-                item.toolTip = words("menu.imp.visit_tip", name, peer.name)
-            }
-            if around.isEmpty {
-                let item = add(menu, String(localized: "menu.imp.visit_none"), symbol: "iphone.gen3", action: #selector(sendToDevice(_:)))
-                item.toolTip = String(localized: "Open Imp on a linked device first (same network as this Mac, or the same server).")
-                item.action = nil                                  // greyed out until a device is around
-            }
-        }
-        add(menu, String(localized: "menu.imp.send_home"), symbol: "house", action: #selector(sendHome))
-            .toolTip = String(localized: "\(name) goes back into the Imps' window, and its triggers rest.")
-        return menu
-    }
-
-    /// A visiting Imp's menu: its brain is at its home, so there is no Colour, Size or triggers here.
-    private func makeVisitor(_ visit: Visiting) -> NSMenu {
-        let menu = NSMenu()
-        menu.appearance = NSApp.appearance
-        menu.delegate = self
-        let name = visit.look.name
-        menu.addItem(.sectionHeader(title: visit.isAwake ? String(localized: "\(name), visiting from \(visit.homeName)")
-                                                         : String(localized: "\(name) is asleep: \(visit.homeName) is away")))
-        if imp.isBusy { add(menu, String(localized: "Stop"), symbol: "stop.circle", action: #selector(stop)) }
-        if imp.bubble?.phase == .result { add(menu, String(localized: "Copy Last Reply"), symbol: "doc.on.doc", action: #selector(copyLast)) }
-        add(menu, String(localized: "Chat"), symbol: "bubble.left.and.bubble.right", action: #selector(openChat))
-            .toolTip = String(localized: "Everything you and \(name) said, with the tools it used.")
-        let fresh = add(menu, String(localized: "New Chat"), symbol: "plus.bubble", action: #selector(newChat))
-        if !visit.isAwake { fresh.action = nil }
-        menu.addItem(.separator())
-        // Only the devices its doors lead to: back where it came from, or on to the others.
-        let doors = Set([LinkSide.left, .right].flatMap { app.link.bands(of: imp.id, side: $0).map(\.device) })
-        for peer in app.link.connectedPeers where doors.contains(peer.id) {
-            let item = add(menu, words("menu.imp.send_to", peer.name),
-                           symbol: peer.kind == .mac ? "desktopcomputer" : "iphone.gen3", action: #selector(sendToDevice(_:)))
-            item.representedObject = peer.id
-            item.toolTip = words("menu.imp.visit_tip", name, peer.name)
-        }
-        // Out of sight here, still visiting: it comes back with Show (the menu bar, or the Imps' window).
-        add(menu, String(localized: "Hide \(name)"), symbol: "eye.slash", action: #selector(hide))
-            .toolTip = String(localized: "\(name) hides until you show it again from the menu bar (Show). It keeps visiting meanwhile.")
-        add(menu, String(localized: "menu.imp.send_home"), symbol: "house", action: #selector(sendVisitorHome))
-            .toolTip = String(localized: "\(name) flies back to \(visit.homeName). If it is away, \(name) goes now and \(visit.homeName) hears when it is back.")
-        return menu
-    }
-
-    // MARK: Building
-
-    @discardableResult
-    private func add(_ menu: NSMenu, _ title: String, symbol: String, action: Selector) -> NSMenuItem {
-        let mi = menu.addItem(withTitle: title, action: action, keyEquivalent: "")
-        mi.target = self
-        mi.image = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)
-        return mi
-    }
-
-    private func submenu(_ title: String, symbol: String, items: [(String, Bool, NSNumber, NSImage?)], action: Selector) -> NSMenuItem {
-        let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
-        item.image = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)
-        let sub = NSMenu()
-        for (name, on, value, image) in items {
-            let mi = sub.addItem(withTitle: name, action: action, keyEquivalent: "")
-            mi.target = self
-            mi.state = on ? .on : .off
-            mi.representedObject = value
-            mi.image = image
-        }
-        item.submenu = sub
-        return item
-    }
-
-    private func headerView(closing menu: NSMenu) -> NSView {
-        // Remember what to do, then close the menu. `menuDidClose` does it.
-        let run = { [weak self, weak menu] (action: @escaping @MainActor @Sendable () -> Void) in
-            self?.pending = action
-            menu?.cancelTracking()
-        }
+        if let visit = imp.visit { return card.make(visitorCard(visit)) }
         let status = imp.isReady ? String(localized: "Awake") : String(localized: "Needs a brain")
-        let header = MenuHeader(
-            ready: imp.isReady, name: imp.profile.name, hue: imp.profile.hue, status: status,
-            talk: { [weak self] in run { self?.imp.talk() } },
-            type: { [weak self] in run { self?.imp.startTyping() } })
-        let host = MenuRowHost(rootView: header)
-        host.frame.size = host.fittingSize
-        host.autoresizingMask = [.width]
-        return host
+        return card.make(ImpMenuCard(ready: imp.isReady, name: imp.profile.name, status: status, hue: imp.profile.hue,
+                                     scale: imp.profile.scale, place: .desktop) { [weak self] action in
+            self?.run(action)
+        } extra: {
+            extras
+        })
     }
 
-    func menuDidClose(_ menu: NSMenu) {
-        guard let action = pending else { return }
-        pending = nil
-        DispatchQueue.main.async(execute: action)
+    private func run(_ action: ImpMenuAction) {
+        let imp = imp
+        switch action {
+        case .talk: card.later { imp.talk() }
+        case .type: card.later { imp.startTyping() }
+        case .chat: card.later { imp.openChat() }
+        case .hide: card.later { [app] in app.setHidden(imp.id, true) }
+        case .move: card.later { [app] in Self.sendHome(imp.id, app: app) }
+        case .settings: card.later { imp.openSettings() }
+        case .size(let scale): set { $0.scale = scale }
+        case .colour(let hue): set { $0.hue = hue }
+        }
     }
 
-    // MARK: Actions
+    /// Stop and Copy while there is something to stop or copy, the triggers that ask it something, and the
+    /// devices it can visit.
+    @ViewBuilder private var extras: some View {
+        let now = rightNow
+        if !now.isEmpty { MenuPills(items: now) }
+        let own = triggers
+        if !own.isEmpty { MenuPills(title: String(localized: "Triggers"), items: own) }
+        if app.link.isLinked { MenuPills(title: String(localized: "menu.imp.visit"), items: visits(doors: nil)) }
+    }
 
-    private var index: Int? { app.prefs.imps.firstIndex { $0.id == imp.id } }
+    private var rightNow: [MenuItem] {
+        var items: [MenuItem] = []
+        let imp = imp
+        if imp.isBusy {
+            items.append(MenuItem(id: "stop", icon: "stop.circle", title: String(localized: "Stop")) { [card] in card.later { imp.dismissBubble() } })
+        }
+        if imp.bubble?.phase == .result {
+            items.append(MenuItem(id: "copy", icon: "doc.on.doc", title: String(localized: "Copy Last Reply")) { [card] in
+                card.later { imp.copyBubble() }
+            })
+        }
+        return items
+    }
 
-    @objc private func stop() { imp.dismissBubble() }
-    @objc private func copyLast() { imp.copyBubble() }
-    @objc private func openChat() { imp.openChat() }
-    @objc private func newChat() { imp.startNewChat() }
-    @objc private func sendVisitorHome() { app.sendHome(visitor: imp.id) }
-    @objc private func hide() { app.setHidden(imp.id, true) }
-    @objc private func sendToDevice(_ sender: NSMenuItem) {
-        guard let device = sender.representedObject as? UUID else { return }
-        app.send(imp.id, to: device)
+    /// Its own triggers that ask it something, to run right now (clicks are right here already).
+    private var triggers: [MenuItem] {
+        let imp = imp
+        return app.prefs.triggers(for: imp.id).filter { $0.isEnabled && $0.askStep != nil && $0.trigger.event != .click }.map { action in
+            MenuItem(id: action.id.uuidString, icon: action.trigger.event == .keys ? action.symbol : action.trigger.event.symbol,
+                     title: action.name) { [app, card] in
+                card.later { app.trigger(action, on: imp, trying: true) }
+            }
+        }
     }
-    @objc private func setSize(_ sender: NSMenuItem) {
-        guard let i = index, let scale = (sender.representedObject as? NSNumber)?.doubleValue else { return }
-        app.prefs.imps[i].scale = scale
+
+    /// One pill per linked device it can go to (`doors`: only these, for a visitor), or a dimmed one while none is around.
+    private func visits(doors: Set<UUID>?) -> [MenuItem] {
+        let imp = imp
+        let name = imp.visit?.look.name ?? imp.profile.name
+        let around = app.link.connectedPeers.filter { doors?.contains($0.id) ?? true }
+        guard !around.isEmpty else {
+            guard doors == nil else { return [] }
+            return [MenuItem(id: "none", icon: "iphone.gen3", title: String(localized: "menu.imp.visit_none"),
+                             help: String(localized: "Open Imp on a linked device first (same network as this Mac, or the same server)."),
+                             enabled: false) {}]
+        }
+        return around.map { peer in
+            MenuItem(id: peer.id.uuidString, icon: peer.kind == .mac ? "desktopcomputer" : "iphone.gen3", title: peer.name,
+                     help: words("menu.imp.visit_tip", name, peer.name)) { [app, card] in
+                card.later { app.send(imp.id, to: peer.id) }
+            }
+        }
     }
-    @objc private func setColour(_ sender: NSMenuItem) {
-        guard let i = index, let hue = (sender.representedObject as? NSNumber)?.doubleValue else { return }
-        app.prefs.imps[i].hue = hue
+
+    /// A visiting Imp's menu: its brain is at its home, so there is no size, colour or triggers here.
+    private func visitorCard(_ visit: Visiting) -> some View {
+        let imp = imp
+        let name = visit.look.name
+        let status = visit.isAwake ? String(localized: "\(name), visiting from \(visit.homeName)")
+                                   : String(localized: "\(name) is asleep: \(visit.homeName) is away")
+        let doors = Set([LinkSide.left, .right].flatMap { app.link.bands(of: imp.id, side: $0).map(\.device) })
+        let visits = visits(doors: doors)
+        let now = rightNow
+        let buttons = visitorButtons(visit)
+        return MenuCard {
+            ImpMenuHeader(ready: visit.isAwake, name: name, status: status, hue: visit.look.hue)
+            MenuGrid(items: buttons)
+            if !now.isEmpty { MenuPills(items: now) }
+            if !visits.isEmpty { MenuPills(title: String(localized: "menu.imp.visit"), items: visits) }
+            MenuPills(items: [MenuItem(id: "home", icon: "house.fill", title: String(localized: "menu.imp.send_home"),
+                                       help: String(localized: "\(name) flies back to \(visit.homeName). If it is away, \(name) goes now and \(visit.homeName) hears when it is back.")) { [app, card] in
+                card.later { app.sendHome(visitor: imp.id) }
+            }])
+        }
+        .environment(\.impTint, Color.imp(visit.look.hue))
     }
+
+    /// A visitor's big buttons: Chat, New Chat and Hide.
+    func visitorButtons(_ visit: Visiting) -> [MenuItem] {
+        let imp = imp
+        let name = visit.look.name
+        return [
+            MenuItem(id: "chat", icon: "bubble.left.and.bubble.right.fill", title: String(localized: "menu.imp.chat"),
+                     help: words("menu.imp.chat_help", name)) { [card] in card.later { imp.openChat() } },
+            MenuItem(id: "new", icon: "plus.bubble.fill", title: String(localized: "New Chat"), enabled: visit.isAwake) { [card] in
+                card.later { imp.startNewChat() }
+            },
+            MenuItem(id: "hide", icon: "eye.slash.fill", title: String(localized: "menu.imp.hide"),
+                     help: String(localized: "\(name) hides until you show it again from the menu bar (Show). It keeps visiting meanwhile.")) { [app, card] in
+                card.later { app.setHidden(imp.id, true) }
+            },
+        ]
+    }
+
+    /// Size and colour change while the menu stays open, so both can be picked in one go.
+    private func set(_ change: (inout ImpProfile) -> Void) {
+        guard let i = app.prefs.imps.firstIndex(where: { $0.id == imp.id }) else { return }
+        change(&app.prefs.imps[i])
+    }
+
     /// Back into the app's window: flies home if the window is open, else just steps inside. Undo is in the window.
-    @objc private func sendHome() {
+    private static func sendHome(_ id: UUID, app: AppModel) {
         let home = HomeWindow.shared
-        HomeActions(model: app, router: home.router).toggleActive(imp.id)
-        if !home.isVisible { home.show(app, imp: imp.id) }
-    }
-    @objc private func openSettings() { imp.openSettings() }
-    @objc private func run(_ sender: NSMenuItem) {
-        guard let id = sender.representedObject as? UUID, let action = app.prefs.shortcuts.first(where: { $0.id == id }) else { return }
-        app.trigger(action, on: imp, trying: true)
+        HomeActions(model: app, router: home.router).toggleActive(id)
+        if !home.isVisible { home.show(app, imp: id) }
     }
 }

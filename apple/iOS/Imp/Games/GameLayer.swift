@@ -14,11 +14,13 @@ struct GameLayer: View {
     /// The stage's size (the layers lay out from the safe area now and no longer need it).
     let size: CGSize
     let insets: EdgeInsets
+    /// Whether the game buttons show in the corners. Not while Imps are being picked: the picking bar is there.
+    var offersGames = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         let _ = engine.reduceMotion = reduceMotion
-        let offer = engine.round == nil && engine.echo == nil && !engine.order.isEmpty
+        let offer = offersGames && engine.round == nil && engine.echo == nil && !engine.order.isEmpty
         let lesson = engine.round.map { $0.phase == .fling || $0.phase == .rules } ?? false
         ZStack {
             if let echo = engine.echo {

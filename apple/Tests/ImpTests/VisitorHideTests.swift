@@ -31,8 +31,10 @@ import ImpKit
 
     @Test func aVisitorsMenuOffersHide() {
         let (app, pip) = appWithVisitor()
-        let menu = ImpMenu(app: app, imp: pip).make()
-        #expect(menu.items.contains { $0.image != nil && $0.title == String(localized: "Hide \(pip.visit!.look.name)") })
+        let menu = ImpMenu(app: app, imp: pip)
+        // The menu is one card of buttons; Hide is one of its big buttons.
+        #expect(menu.make().items.count == 1)
+        #expect(menu.visitorButtons(pip.visit!).contains { $0.id == "hide" && $0.enabled })
     }
 }
 

@@ -807,5 +807,41 @@
     "en": "Taps in your hand when you pick something, when an Imp comes or goes, and when something works or fails.",
     "es": "Toques en la mano al elegir algo, cuando un Imp llega o se va, y cuando algo sale bien o falla.",
     "zh-Hans": "选择内容、Imp 到来或离开、操作成功或失败时，手中会有轻触反馈。"
+  },
+  "phone.select.menu": {
+    "note": "iPhone: menu item that starts picking several Imps, with this one picked first.",
+    "en": "Select",
+    "es": "Seleccionar",
+    "zh-Hans": "选择"
+  },
+  "phone.select.deselect": {
+    "note": "iPhone: VoiceOver action that takes a picked Imp out of the picks.",
+    "en": "Deselect",
+    "es": "Quitar de la selección",
+    "zh-Hans": "取消选择"
+  },
+  "phone.select.title": {
+    "note": "iPhone: title of the bar while Imps are being picked.",
+    "args": {
+      "count": "int"
+    },
+    "en": "{count} selected",
+    "es": "{count} seleccionados",
+    "zh-Hans": "已选 {count} 个"
+  },
+  "phone.select.all": {
+    "note": "iPhone: top bar button that picks every Imp on the stage.",
+    "en": "Select All",
+    "es": "Seleccionar todo",
+    "zh-Hans": "全选"
+  },
+  "phone.select.hidden": {
+    "note": "iPhone: toast after several picked Imps were hidden.",
+    "args": {
+      "count": "int"
+    },
+    "en": "{count} Imps are hidden.",
+    "es": "{count} Imps están ocultos.",
+    "zh-Hans": "已隐藏 {count} 个 Imp。"
   }
 }

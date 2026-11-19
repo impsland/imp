@@ -174,6 +174,58 @@ final class PhoneScreensUITests: XCTestCase {
         // Nothing of the test stays behind, not even in its sandbox.
         launch(reset: true).terminate()
     }
+
+    /// Picking several Imps: touch and hold opens the menu, Select starts it with that Imp picked, a tap on another
+    /// picks it, and the bars show the count and what can be done.
+    func testPickingSeveralImps() {
+        let app = launch(["-hatchThree"], reset: true)
+        // The room's Imps are elements with the Imp's name as the label and the button trait.
+        let imps = app.buttons.matching(NSPredicate(format: "identifier == '' AND label != ''"))
+        let room = app.windows.firstMatch
+        XCTAssertTrue(element(app, "stage.settings").waitForExistence(timeout: 10), "the room is up")
+        sleep(2)
+        shot(app, "pick-0-room")
+
+        // Imps float, so find one by its place on the screen: the first element that is an Imp (not a bar button).
+        let candidates = (0..<imps.count).map { imps.element(boundBy: $0) }
+            .filter { $0.frame.width > 40 && $0.frame.minY > 120 && $0.frame.height > 40 }
+        XCTAssertGreaterThanOrEqual(candidates.count, 2, "two Imps to pick from")
+        let first = candidates[0], second = candidates[1]
+        first.press(forDuration: 0.8)
+        // A confirmation dialog can list a button twice in the tree (the popover and its copy): take the first.
+        let select = app.buttons.matching(identifier: "imp.select").firstMatch
+        XCTAssertTrue(select.waitForExistence(timeout: 4), "the menu offers Select")
+        shot(app, "pick-1-menu")
+        select.tap()
+
+        XCTAssertTrue(element(app, "pick.cancel").waitForExistence(timeout: 4), "Cancel is in the top bar")
+        XCTAssertEqual(element(app, "pick.title").label, "1 selected")
+        XCTAssertTrue(element(app, "pick.hide").exists, "Hide is in the bottom bar")
+        XCTAssertTrue(element(app, "pick.goodbye").exists, "Goodbye is offered for Imps hatched here")
+        XCTAssertFalse(element(app, "pick.home").exists, "no visitor is picked, so no Send home")
+
+        // A tap now picks, it does not open a chat.
+        second.tap()
+        XCTAssertTrue(NSPredicate(format: "label == '2 selected'").evaluate(with: element(app, "pick.title")), "a tap picks a second Imp")
+        XCTAssertFalse(element(app, "sheet.close").exists, "a tap while picking opens no chat")
+        shot(app, "pick-2-two")
+
+        tap(app, "pick.all")
+        XCTAssertTrue(NSPredicate(format: "label == '3 selected'").evaluate(with: element(app, "pick.title")), "Select All picks all three")
+
+        tap(app, "pick.goodbye")
+        XCTAssertTrue(app.staticTexts["Say goodbye to 3 Imps?"].waitForExistence(timeout: 4), "Goodbye asks once for all")
+        shot(app, "pick-3-goodbye")
+        // Newer iPhones show this dialog as a popover with no Cancel button: a tap outside it keeps them.
+        let keep = app.buttons["Keep them"]
+        if keep.exists { keep.tap() } else { app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12)).tap() }
+        XCTAssertFalse(app.staticTexts["Say goodbye to 3 Imps?"].waitForExistence(timeout: 2), "the Imps are kept")
+
+        tap(app, "pick.cancel")
+        XCTAssertFalse(element(app, "pick.cancel").waitForExistence(timeout: 2), "Cancel leaves picking")
+        XCTAssertTrue(element(app, "stage.settings").exists, "the room's own top bar is back")
+        _ = room
+    }
 }
 
 extension PhoneScreensUITests {

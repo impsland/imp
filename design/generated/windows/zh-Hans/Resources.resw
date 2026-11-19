@@ -202,6 +202,9 @@
   <data name="games.stat.waves" xml:space="preserve"><value>完美的波次</value><comment>Results stat: waves of embers caught whole, out of all waves.</comment></data>
   <data name="goodbye.cancel" xml:space="preserve"><value>留下 {name}</value><comment>Safe button of the goodbye dialog.</comment></data>
   <data name="goodbye.confirm" xml:space="preserve"><value>告别吧</value><comment>Destructive button of the goodbye dialog.</comment></data>
+  <data name="goodbye.many.cancel" xml:space="preserve"><value>留下它们</value><comment>Safe button of the goodbye dialog for several Imps.</comment></data>
+  <data name="goodbye.many.message" xml:space="preserve"><value>它们的外观、大脑设置、工具、触发器和聊天都会一起消失。此操作无法撤销。</value><comment>Message of the goodbye dialog for several Imps, under their names.</comment></data>
+  <data name="goodbye.many.title" xml:space="preserve"><value>要向 {count} 个 Imp 说再见吗？</value><comment>Title of the dialog that asks before several Imps are deleted.</comment></data>
   <data name="goodbye.message" xml:space="preserve"><value>它的外观、大脑设置、工具、触发器和聊天都会一起消失。此操作无法撤销。</value><comment>Message of the goodbye dialog.</comment></data>
   <data name="goodbye.title" xml:space="preserve"><value>要向 {name} 说再见吗？</value><comment>Title of the dialog that asks before an Imp is deleted.</comment></data>
   <data name="home.canvas.hint" xml:space="preserve"><value>Imp 在这里走动。按 Tab 键可在各个 Imp 之间切换。</value><comment>Screen reader hint for the main canvas.</comment></data>
@@ -328,26 +331,42 @@
   <data name="menu.canvas.devices" xml:space="preserve"><value>设备</value><comment>Menu item that opens Devices.</comment></data>
   <data name="menu.canvas.new_imp" xml:space="preserve"><value>新建 Imp</value><comment>Menu item that hatches a new Imp.</comment></data>
   <data name="menu.canvas.reset_background" xml:space="preserve"><value>重置背景</value><comment>File menu item: puts the plain background back (the Imps make the others).</comment></data>
+  <data name="menu.canvas.select_all" xml:space="preserve"><value>全选</value><comment>Button on empty space in the window that picks every Imp there, to act on them together. Keep it short: it sits under an icon.</comment></data>
   <data name="menu.canvas.settings" xml:space="preserve"><value>应用设置</value><comment>Menu item that opens the app-wide settings.</comment></data>
   <data name="menu.canvas.show_hidden" xml:space="preserve"><value>已隐藏（{count}）</value><comment>Menu item that brings every hidden Imp back.</comment></data>
+  <data name="menu.group.free_help" xml:space="preserve"><value>它们走到桌面上，就在各自站着的地方。</value><comment>Tooltip of Free in the menu of several Imps.</comment></data>
+  <data name="menu.group.goodbye" xml:space="preserve"><value>向 {count} 个 Imp 告别…</value><comment>Menu item that deletes several picked Imps. It asks first.</comment></data>
+  <data name="menu.group.goodbye_off" xml:space="preserve"><value>总要留下一个 Imp。请至少留一个不选。</value><comment>Tooltip of the dimmed Goodbye item when every Imp is picked.</comment></data>
+  <data name="menu.group.hide_help" xml:space="preserve"><value>它们会藏起来，直到你再次显示。在此期间它们的触发器暂停。</value><comment>Tooltip of Hide in the menu of several Imps.</comment></data>
+  <data name="menu.group.kit_help" xml:space="preserve"><value>把它们全部复制为一个套件，用于分享或保存。</value><comment>Tooltip of Copy kit in the menu of several Imps.</comment></data>
+  <data name="menu.group.title" xml:space="preserve"><value>{count} 个 Imp</value><comment>Title of the menu of several Imps picked together.</comment></data>
   <data name="menu.imp.call_home" xml:space="preserve"><value>叫回家</value><comment>Button: take back one of our Imps from the device that holds it.</comment></data>
   <data name="menu.imp.call_home_ask" xml:space="preserve"><value>叫回家…</value><comment>Menu item for an Imp away on another device: asks before calling it home.</comment></data>
+  <data name="menu.imp.chat" xml:space="preserve"><value>对话</value><comment>Button in an Imp's menu that opens its chat. Keep it short: it sits under an icon.</comment></data>
+  <data name="menu.imp.chat_help" xml:space="preserve"><value>你和 {name} 说过的所有话</value><comment>Tooltip of the Chat button in an Imp's menu.</comment></data>
   <data name="menu.imp.copy_kit" xml:space="preserve"><value>复制套件</value><comment>Menu item that copies an Imp as a kit.</comment></data>
   <data name="menu.imp.copy_link" xml:space="preserve"><value>复制链接</value><comment>Menu item that copies a link to an Imp's kit.</comment></data>
+  <data name="menu.imp.free" xml:space="preserve"><value>放出</value><comment>Button in the menu of an Imp in the app's window that lets it out onto the desktop. Keep it short: it sits under an icon.</comment></data>
+  <data name="menu.imp.free_help" xml:space="preserve"><value>{name} 走到桌面上，就在它站着的地方。</value><comment>Tooltip of the Free button in the menu of an Imp in the app's window.</comment></data>
   <data name="menu.imp.goodbye" xml:space="preserve"><value>再见</value><comment>Menu item that says goodbye to an Imp for good. A dialog asks first.</comment></data>
   <data name="menu.imp.hide" xml:space="preserve"><value>隐藏</value><comment>Menu item that hides an Imp. It then peeks out now and then.</comment></data>
+  <data name="menu.imp.hide_help" xml:space="preserve"><value>{name} 会藏起来，直到你再次显示它。在此期间它的触发器暂停。</value><comment>Tooltip of the Hide button in an Imp's menu.</comment></data>
+  <data name="menu.imp.home" xml:space="preserve"><value>回家</value><comment>Button in a desktop Imp's menu that sends it back into the app's window. Keep it short: it sits under an icon.</comment></data>
+  <data name="menu.imp.home_help" xml:space="preserve"><value>{name} 回到 Imp 窗口，它的触发器暂停。</value><comment>Tooltip of the Home button in a desktop Imp's menu.</comment></data>
   <data name="menu.imp.let_out" xml:space="preserve"><value>放出来</value><comment>Menu item (desktop only) that lets an Imp out onto the desktop.</comment></data>
   <data name="menu.imp.move_tip" xml:space="preserve"><value>{name} 从现在起住在 {device}。</value><comment>Tip on the Imp menu item that moves it to a Mac for good.</comment></data>
   <data name="menu.imp.move_to" xml:space="preserve"><value>搬到 {name}</value><comment>Imp menu item that moves the Imp to a Mac for good.</comment></data>
   <data name="menu.imp.send_home" xml:space="preserve"><value>送回家</value><comment>Menu item (desktop only) that puts a free Imp back in the window.</comment></data>
   <data name="menu.imp.send_to" xml:space="preserve"><value>去 {name} 做客</value><comment>Imp menu item that sends the Imp to visit a device. It comes back.</comment></data>
   <data name="menu.imp.settings" xml:space="preserve"><value>Imp 设置</value><comment>Menu item that opens the settings of one Imp.</comment></data>
+  <data name="menu.imp.settings_help" xml:space="preserve"><value>{name} 的设置</value><comment>Tooltip of the Settings button in an Imp's menu.</comment></data>
   <data name="menu.imp.share" xml:space="preserve"><value>共享</value><comment>Menu item that shares an Imp.</comment></data>
   <data name="menu.imp.talk" xml:space="preserve"><value>说话</value><comment>Menu item that opens the Imp's message bubble.</comment></data>
   <data name="menu.imp.talk_help" xml:space="preserve"><value>和 {name} 说话</value><comment>Tooltip of the Talk button in an Imp's menu.</comment></data>
   <data name="menu.imp.talks" xml:space="preserve"><value>对话</value><comment>Tip and title of the button in an Imp's chat that opens what it said with other Imps.</comment></data>
   <data name="menu.imp.type" xml:space="preserve"><value>输入</value><comment>Button in an Imp's menu that opens the typing box.</comment></data>
   <data name="menu.imp.type_help" xml:space="preserve"><value>给 {name} 打字</value><comment>Tooltip of the Type button in an Imp's menu.</comment></data>
+  <data name="menu.imp.visit" xml:space="preserve"><value>去做客</value><comment>Small heading in an Imp's menu over the linked devices it can visit.</comment></data>
   <data name="menu.imp.visit_none" xml:space="preserve"><value>去别的设备做客吧</value><comment>Greyed Imp menu item when no other device is around.</comment></data>
   <data name="menu.imp.visit_tip" xml:space="preserve"><value>{name} 去 {device} 做客，还可以回来。</value><comment>Tip on the Imp menu item that sends it to visit a device.</comment></data>
   <data name="moves.animations" xml:space="preserve"><value>动画</value><comment>Header of the list of an Imp's own animations.</comment></data>
@@ -446,6 +465,11 @@
   <data name="phone.requests.title" xml:space="preserve"><value>等待</value><comment>Card title on the iPhone settings page for brains.</comment></data>
   <data name="phone.scan.code" xml:space="preserve"><value>扫描</value><comment>Button that opens the camera to scan a link code.</comment></data>
   <data name="phone.secret.hidden" xml:space="preserve"><value>已输入，已隐藏</value><comment>iPhone: what VoiceOver says for a key field while its value is hidden.</comment></data>
+  <data name="phone.select.all" xml:space="preserve"><value>全选</value><comment>iPhone: top bar button that picks every Imp on the stage.</comment></data>
+  <data name="phone.select.deselect" xml:space="preserve"><value>取消选择</value><comment>iPhone: VoiceOver action that takes a picked Imp out of the picks.</comment></data>
+  <data name="phone.select.hidden" xml:space="preserve"><value>已隐藏 {count} 个 Imp。</value><comment>iPhone: toast after several picked Imps were hidden.</comment></data>
+  <data name="phone.select.menu" xml:space="preserve"><value>选择</value><comment>iPhone: menu item that starts picking several Imps, with this one picked first.</comment></data>
+  <data name="phone.select.title" xml:space="preserve"><value>已选 {count} 个</value><comment>iPhone: title of the bar while Imps are being picked.</comment></data>
   <data name="phone.server.placeholder_hop" xml:space="preserve"><value>hop.example.com:4677</value><comment>Example address of a Hop.</comment></data>
   <data name="phone.shake.dir.any" xml:space="preserve"><value>任意</value><comment>Segment: any direction.</comment></data>
   <data name="phone.shake.dir.sides" xml:space="preserve"><value>向左或向右</value><comment>Segment: left or right.</comment></data>
@@ -613,8 +637,13 @@
   <data name="settings.service.name.info" xml:space="preserve"><value>你给这个大脑取的名字。</value><comment>Settings text.</comment></data>
   <data name="settings.talking.between.info" xml:space="preserve"><value>Imp 彼此之间如何交谈。</value><comment>Settings text.</comment></data>
   <data name="settings.talking.between.title" xml:space="preserve"><value>Imp 彼此之间</value><comment>Settings text.</comment></data>
-  <data name="settings.talking.language.info" xml:space="preserve"><value>你对它说话用的语言，它按此语言聆听。</value><comment>Tooltip of a settings row.</comment></data>
+  <data name="settings.talking.language.auto" xml:space="preserve"><value>自动</value><comment>An option of the listening language: it finds out which language you spoke.</comment></data>
+  <data name="settings.talking.language.info" xml:space="preserve"><value>你对它说话用的语言。选“自动”时，它会同时聆听几种语言，并采用你说的那一种。</value><comment>Tooltip of a settings row.</comment></data>
   <data name="settings.talking.language.title" xml:space="preserve"><value>使用语言</value><comment>Settings text.</comment></data>
+  <data name="settings.talking.languages.device" xml:space="preserve"><value>我的 Mac 的语言</value><comment>Option: Automatic listens for the languages set on the Mac.</comment></data>
+  <data name="settings.talking.languages.info" xml:space="preserve"><value>最多三种语言。它会在这台 Mac 上同时聆听这些语言，并采用你说的那一种。难以分辨时，以你上次说的语言为准。</value><comment>Tooltip of a settings row.</comment></data>
+  <data name="settings.talking.languages.pick" xml:space="preserve"><value>或选择最多三种</value><comment>Heading of the list of languages to pick, at most three.</comment></data>
+  <data name="settings.talking.languages.title" xml:space="preserve"><value>聆听语言</value><comment>Settings text: the languages Automatic listens for.</comment></data>
   <data name="settings.talking.listening.info" xml:space="preserve"><value>Imp 如何听你说话。</value><comment>Settings text.</comment></data>
   <data name="settings.talking.listening.title" xml:space="preserve"><value>聆听方式</value><comment>Settings text.</comment></data>
   <data name="settings.talking.talk_in.info" xml:space="preserve"><value>一个 Imp 发给另一个 Imp 的消息落在哪个聊天里。</value><comment>Tooltip of a settings row.</comment></data>

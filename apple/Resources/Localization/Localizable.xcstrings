@@ -24008,6 +24008,78 @@
         }
       }
     },
+    "goodbye.many.cancel" : {
+      "comment" : "Safe button of the goodbye dialog for several Imps.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep them"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conservarlos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "留下它们"
+          }
+        }
+      }
+    },
+    "goodbye.many.message" : {
+      "comment" : "Message of the goodbye dialog for several Imps, under their names.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Their looks, Brain settings, tools, triggers and chats go with them. This can't be undone."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su aspecto, los ajustes de su cerebro, sus herramientas, disparadores y chats se van con ellos. No se puede deshacer."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它们的外观、大脑设置、工具、触发器和聊天都会一起消失。此操作无法撤销。"
+          }
+        }
+      }
+    },
+    "goodbye.many.title" : {
+      "comment" : "Title of the dialog that asks before several Imps are deleted.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Say goodbye to %1$lld Imps?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Decirles adiós a %1$lld Imps?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要向 %1$lld 个 Imp 说再见吗？"
+          }
+        }
+      }
+    },
     "goodbye.message" : {
       "comment" : "Message of the goodbye dialog.",
       "extractionState" : "manual",
@@ -27062,6 +27134,30 @@
         }
       }
     },
+    "menu.canvas.select_all" : {
+      "comment" : "Button on empty space in the window that picks every Imp there, to act on them together. Keep it short: it sits under an icon.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select All"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleccionar todo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全选"
+          }
+        }
+      }
+    },
     "menu.canvas.settings" : {
       "comment" : "Menu item that opens the app-wide settings.",
       "extractionState" : "manual",
@@ -27106,6 +27202,150 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已隐藏（%1$lld）"
+          }
+        }
+      }
+    },
+    "menu.group.free_help" : {
+      "comment" : "Tooltip of Free in the menu of several Imps.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "They step out onto the desktop, right where they stand."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salen al escritorio, justo donde están."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它们走到桌面上，就在各自站着的地方。"
+          }
+        }
+      }
+    },
+    "menu.group.goodbye" : {
+      "comment" : "Menu item that deletes several picked Imps. It asks first.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Goodbye to %1$lld Imps…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adiós a %1$lld Imps…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "向 %1$lld 个 Imp 告别…"
+          }
+        }
+      }
+    },
+    "menu.group.goodbye_off" : {
+      "comment" : "Tooltip of the dimmed Goodbye item when every Imp is picked.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One Imp always stays. Leave at least one out of the group."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siempre se queda un Imp. Deja al menos uno fuera del grupo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "总要留下一个 Imp。请至少留一个不选。"
+          }
+        }
+      }
+    },
+    "menu.group.hide_help" : {
+      "comment" : "Tooltip of Hide in the menu of several Imps.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "They hide until you show them again. Their triggers rest meanwhile."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se esconden hasta que los vuelvas a mostrar. Mientras, sus disparadores descansan."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它们会藏起来，直到你再次显示。在此期间它们的触发器暂停。"
+          }
+        }
+      }
+    },
+    "menu.group.kit_help" : {
+      "comment" : "Tooltip of Copy kit in the menu of several Imps.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copies one kit with all of them, to share or keep."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia un kit con todos ellos, para compartir o guardar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把它们全部复制为一个套件，用于分享或保存。"
+          }
+        }
+      }
+    },
+    "menu.group.title" : {
+      "comment" : "Title of the menu of several Imps picked together.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld Imps"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld Imps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld 个 Imp"
           }
         }
       }
@@ -27158,6 +27398,54 @@
         }
       }
     },
+    "menu.imp.chat" : {
+      "comment" : "Button in an Imp's menu that opens its chat. Keep it short: it sits under an icon.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对话"
+          }
+        }
+      }
+    },
+    "menu.imp.chat_help" : {
+      "comment" : "Tooltip of the Chat button in an Imp's menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Everything you and %1$@ said"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo lo que habéis dicho tú y %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你和 %1$@ 说过的所有话"
+          }
+        }
+      }
+    },
     "menu.imp.copy_kit" : {
       "comment" : "Menu item that copies an Imp as a kit.",
       "extractionState" : "manual",
@@ -27206,6 +27494,54 @@
         }
       }
     },
+    "menu.imp.free" : {
+      "comment" : "Button in the menu of an Imp in the app's window that lets it out onto the desktop. Keep it short: it sits under an icon.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soltar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放出"
+          }
+        }
+      }
+    },
+    "menu.imp.free_help" : {
+      "comment" : "Tooltip of the Free button in the menu of an Imp in the app's window.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ steps out onto the desktop, right where it stands."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ sale al escritorio, justo donde está."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 走到桌面上，就在它站着的地方。"
+          }
+        }
+      }
+    },
     "menu.imp.goodbye" : {
       "comment" : "Menu item that says goodbye to an Imp for good. A dialog asks first.",
       "extractionState" : "manual",
@@ -27250,6 +27586,78 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "隐藏"
+          }
+        }
+      }
+    },
+    "menu.imp.hide_help" : {
+      "comment" : "Tooltip of the Hide button in an Imp's menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ hides until you show it again. Its triggers rest meanwhile."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ se esconde hasta que lo vuelvas a mostrar. Mientras, sus disparadores descansan."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 会藏起来，直到你再次显示它。在此期间它的触发器暂停。"
+          }
+        }
+      }
+    },
+    "menu.imp.home" : {
+      "comment" : "Button in a desktop Imp's menu that sends it back into the app's window. Keep it short: it sits under an icon.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A casa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回家"
+          }
+        }
+      }
+    },
+    "menu.imp.home_help" : {
+      "comment" : "Tooltip of the Home button in a desktop Imp's menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ goes back into the Imps' window, and its triggers rest."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ vuelve a la ventana de los Imps y sus disparadores descansan."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 回到 Imp 窗口，它的触发器暂停。"
           }
         }
       }
@@ -27398,6 +27806,30 @@
         }
       }
     },
+    "menu.imp.settings_help" : {
+      "comment" : "Tooltip of the Settings button in an Imp's menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@'s settings"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes de %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 的设置"
+          }
+        }
+      }
+    },
     "menu.imp.share" : {
       "comment" : "Menu item that shares an Imp.",
       "extractionState" : "manual",
@@ -27538,6 +27970,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "给 %1$@ 打字"
+          }
+        }
+      }
+    },
+    "menu.imp.visit" : {
+      "comment" : "Small heading in an Imp's menu over the linked devices it can visit.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visit"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visitar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "去做客"
           }
         }
       }
@@ -29890,6 +30346,126 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已输入，已隐藏"
+          }
+        }
+      }
+    },
+    "phone.select.all" : {
+      "comment" : "iPhone: top bar button that picks every Imp on the stage.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select All"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleccionar todo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全选"
+          }
+        }
+      }
+    },
+    "phone.select.deselect" : {
+      "comment" : "iPhone: VoiceOver action that takes a picked Imp out of the picks.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deselect"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar de la selección"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消选择"
+          }
+        }
+      }
+    },
+    "phone.select.hidden" : {
+      "comment" : "iPhone: toast after several picked Imps were hidden.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld Imps are hidden."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld Imps están ocultos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已隐藏 %1$lld 个 Imp。"
+          }
+        }
+      }
+    },
+    "phone.select.menu" : {
+      "comment" : "iPhone: menu item that starts picking several Imps, with this one picked first.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleccionar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择"
+          }
+        }
+      }
+    },
+    "phone.select.title" : {
+      "comment" : "iPhone: title of the bar while Imps are being picked.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld selected"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld seleccionados"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已选 %1$lld 个"
           }
         }
       }
@@ -33902,6 +34478,30 @@
         }
       }
     },
+    "settings.talking.language.auto" : {
+      "comment" : "An option of the listening language: it finds out which language you spoke.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatic"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automático"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动"
+          }
+        }
+      }
+    },
     "settings.talking.language.info" : {
       "comment" : "Tooltip of a settings row.",
       "extractionState" : "manual",
@@ -33909,19 +34509,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The language you speak to it. It listens in this one."
+            "value" : "The language you speak to it. Automatic listens for a few at once and keeps the one you spoke."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El idioma en que le hablas. Escucha en este."
+            "value" : "El idioma en que le hablas. Automático escucha varios a la vez y se queda con el que hablaste."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你对它说话用的语言，它按此语言聆听。"
+            "value" : "你对它说话用的语言。选“自动”时，它会同时聆听几种语言，并采用你说的那一种。"
           }
         }
       }
@@ -33946,6 +34546,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用语言"
+          }
+        }
+      }
+    },
+    "settings.talking.languages.device" : {
+      "comment" : "Option: Automatic listens for the languages set on the Mac.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My Mac's languages"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los idiomas de mi Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我的 Mac 的语言"
+          }
+        }
+      }
+    },
+    "settings.talking.languages.info" : {
+      "comment" : "Tooltip of a settings row.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Up to three languages. It listens in all of them at once, on this Mac, and keeps the one you spoke. The one you spoke last time wins a close call."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hasta tres idiomas. Escucha en todos a la vez, en este Mac, y se queda con el que hablaste. Si hay duda, gana el que usaste la última vez."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最多三种语言。它会在这台 Mac 上同时聆听这些语言，并采用你说的那一种。难以分辨时，以你上次说的语言为准。"
+          }
+        }
+      }
+    },
+    "settings.talking.languages.pick" : {
+      "comment" : "Heading of the list of languages to pick, at most three.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Or pick up to three"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O elige hasta tres"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "或选择最多三种"
+          }
+        }
+      }
+    },
+    "settings.talking.languages.title" : {
+      "comment" : "Settings text: the languages Automatic listens for.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listens for"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escucha en"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聆听语言"
           }
         }
       }

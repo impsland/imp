@@ -80,7 +80,7 @@ struct ImpPebble: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: Spacing.cozy) {
-                ImpPortrait(face: MenuHeader.portrait(ready: true, hue: profile.hue), shadow: false)
+                ImpPortrait(face: ImpBadge.portrait(ready: true, hue: profile.hue), shadow: false)
                     .frame(width: Sizing.sheetIcon, height: Sizing.sheetIcon)
                 Text(profile.name).font(Typeface.label).foregroundStyle(Tone.text).lineLimit(1)
                 Spacer(minLength: Spacing.small)
