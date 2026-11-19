@@ -14,12 +14,6 @@
     "es": "Ocultos ({count})",
     "zh-Hans": "已隐藏（{count}）"
   },
-  "menu.canvas.background": {
-    "note": "Menu with the background choices.",
-    "en": "Background",
-    "es": "Fondo",
-    "zh-Hans": "桌面背景"
-  },
   "menu.canvas.settings": {
     "note": "Menu item that opens the app-wide settings.",
     "en": "Settings",
@@ -91,54 +85,6 @@
     "en": "Goodbye",
     "es": "Adiós",
     "zh-Hans": "再见"
-  },
-  "background.theme": {
-    "note": "Background choice: the wall of the dungeon, the default.",
-    "en": "Theme",
-    "es": "Tema",
-    "zh-Hans": "主题"
-  },
-  "background.colour": {
-    "note": "Background choice: one colour.",
-    "en": "Colour",
-    "es": "Color",
-    "zh-Hans": "颜色"
-  },
-  "background.picture": {
-    "note": "Background choice: one picture that fills the window.",
-    "en": "Picture",
-    "es": "Imagen",
-    "zh-Hans": "图片"
-  },
-  "background.tile": {
-    "note": "Background choice: a seamless pattern that repeats.",
-    "en": "Tile",
-    "es": "Mosaico",
-    "zh-Hans": "平铺"
-  },
-  "background.choose_picture": {
-    "note": "Opens a file chooser for a picture or a tile.",
-    "en": "Choose a picture…",
-    "es": "Elegir una imagen…",
-    "zh-Hans": "选择一张图片…"
-  },
-  "background.choose_colour": {
-    "note": "Opens the colour chooser.",
-    "en": "Choose a colour…",
-    "es": "Elegir un color…",
-    "zh-Hans": "选择一种颜色…"
-  },
-  "background.tile_hint": {
-    "note": "Hint under the Tile choice.",
-    "en": "A tile repeats to fill the window. Pick a seamless pattern.",
-    "es": "Un mosaico se repite para llenar la ventana. Elige un patrón continuo.",
-    "zh-Hans": "平铺会重复铺满窗口。请选择可无缝衔接的图案。"
-  },
-  "background.picture_failed": {
-    "note": "Error when the chosen file is not a usable picture.",
-    "en": "That picture could not be used. Pick another one.",
-    "es": "No se pudo usar esa imagen. Elige otra.",
-    "zh-Hans": "这张图片无法使用，请换一张。"
   },
   "menu.bar.imps": {
     "note": "Menu bar button that opens the Imps' home window.",
@@ -303,5 +249,11 @@
     "en": "Visit another device",
     "es": "Visitar otro dispositivo",
     "zh-Hans": "去别的设备做客吧"
+  },
+  "menu.canvas.reset_background": {
+    "note": "File menu item: puts the plain background back (the Imps make the others).",
+    "en": "Reset Background",
+    "es": "Restablecer fondo",
+    "zh-Hans": "重置背景"
   }
 }

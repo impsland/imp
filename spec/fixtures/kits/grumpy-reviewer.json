@@ -29,10 +29,12 @@
       },
       "shell": false,
       "tools": {
-        "body": true,
+        "personality": true,
+        "look": true,
+        "moves": true,
         "senses": false,
-        "setup": false,
-        "troupe": false,
+        "triggers": false,
+        "tools": false,
         "computer": false
       },
       "exchangesSent": 12,

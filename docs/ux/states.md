@@ -10,11 +10,19 @@ Every empty, sleeping, waking, offline, error and partly set up state, with its 
 | Hidden Imps | None hidden | `home.hidden.empty` |
 | Tools | No tools | `tools.empty` |
 | Triggers | No triggers | `triggers.empty` |
-| Moves | No special moves | `moves.empty` |
+| Moves | No animations | `moves.empty` |
 | Brains | No Brains | `brains.empty` |
+| Devices | No linked devices | `devices.empty` |
+| Memory | No chats | `memory.empty` |
+| Animations | None made | `sheets.animations.nothing_yet` |
+| iPhone: Brains, Talks, an Imp's Tools | Nothing yet | `phone.brains.empty`, `phone.talks.empty`, `tools.empty` |
 | Needs attention | Nothing to fix | Nothing is shown: no mark in the rail and no notice. |
 
 An empty state has a short title, at most one line of hint text, and at most one button. The main screen's empty state (`home.empty.*`) follows this rule.
+
+### Empty lists
+
+Every empty list is drawn by one component, `EmptyState`: the list's picture, large and quiet, then one short line under it ("No triggers yet."), centred across. A list that is the whole page (Triggers, Moves, Tools, the iPhone's Talks and an Imp's Tools) also centres it down the page, in the room left under the list's header. A list inside a card (Devices, Memory, Brains, Animations) centres it in the card. The actions stay in the list's header, so an empty list never has a second Add. The line says only what is missing: what to do is the header's button and the "?" help.
 
 ## A sleeping Imp
 
@@ -77,7 +85,6 @@ An error is a plain sentence. It says what happened and what to do next. It name
 | Saving failed | `error.save` |
 | Sharing failed | `error.share` |
 | A tool server did not start | `error.tool_failed` |
-| A background picture cannot be used | `background.picture_failed` |
 | Another device did not take an Imp | `imp.transfer.failed` |
 | A linked device dropped | `state.link_lost` |
 | A server cannot be reached | `servers.state_fail` |

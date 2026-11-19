@@ -30,7 +30,7 @@ private struct SettingsCommand: View {
     }
 }
 
-/// The File menu: what a right click on the canvas offers, and the canvas's background.
+/// The File menu: what a right click on the canvas offers, and putting the plain background back.
 private struct CanvasCommands: View {
     let model: AppModel
 
@@ -45,19 +45,8 @@ private struct CanvasCommands: View {
         if model.hiddenCount > 0 {
             Button(words("menu.canvas.show_hidden", model.hiddenCount)) { actions.showHidden() }
         }
-        Menu("menu.canvas.background") {
-            Picker("menu.canvas.background", selection: Binding(get: { model.prefs.background.kind }, set: { actions.setBackground($0) })) {
-                Text("background.theme").tag(CanvasBackground.Kind.theme)
-                Text("background.colour").tag(CanvasBackground.Kind.colour)
-                Text("background.picture").tag(CanvasBackground.Kind.picture)
-                Text("background.tile").tag(CanvasBackground.Kind.tile)
-            }
-            .pickerStyle(.inline)
-            .labelsHidden()
-            Divider()
-            Button("background.choose_colour") { actions.chooseColour() }
-            Button("background.choose_picture") { actions.choosePicture() }
-        }
+        Button("menu.canvas.reset_background") { actions.resetBackground() }
+            .disabled(model.prefs.background == RoomBackground.defaultHTML)
     }
 }
 

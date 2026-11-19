@@ -10,7 +10,6 @@ struct AppPane: View {
     @Environment(\.postNotice) private var postNotice
     private var actions: HomeActions { HomeActions(model: model, router: router) }
     private var status: SystemStatus { .shared }
-    private var kind: CanvasBackground.Kind { model.prefs.background.kind }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
@@ -37,7 +36,6 @@ struct AppPane: View {
                                  options: ControlInk.allCases, title: { String(localized: $0.title) }, symbol: { $0.symbol })
                 }
                 .settingAnchor(.appControlInk)
-                background
             }
 
             Card("app.system", icon: "gearshape.fill", info: "settings.app.system.info") {
@@ -60,35 +58,6 @@ struct AppPane: View {
                 }
                 .settingAnchor(.appWindowSize)
             }
-        }
-        .impAnimation(ImpDesign.Motion.expand, value: kind)
-    }
-
-    /// The choice on one row. Below it, only when the kind needs it, the action that finishes it.
-    @ViewBuilder private var background: some View {
-        Row("menu.canvas.background", icon: "photo.fill") {
-            ImpSegmented("menu.canvas.background", selection: Binding(get: { kind }, set: { actions.setBackground($0) }),
-                         options: BackgroundGroup.kinds, title: BackgroundGroup.title, symbol: BackgroundGroup.symbol)
-        }
-        .settingAnchor(.appBackground)
-        if let follow = BackgroundGroup.follow(kind) {
-            HStack(spacing: Spacing.small) {
-                Spacer(minLength: Spacing.medium)
-                switch follow {
-                case .colour:
-                    Circle().fill(Color(.sRGB, red: model.prefs.background.colour.red, green: model.prefs.background.colour.green,
-                                        blue: model.prefs.background.colour.blue))
-                        .frame(width: Sizing.iconTile, height: Sizing.iconTile)
-                        .accessibilityHidden(true)
-                    Button { actions.chooseColour() } label: { FitLabel("background.choose_colour", systemImage: "paintpalette") }
-                        .buttonStyle(.imp(.secondary, small: true))
-                case .picture:
-                    Button { actions.choosePicture() } label: { FitLabel("background.choose_picture", systemImage: "photo") }
-                        .buttonStyle(.imp(.secondary, small: true))
-                }
-            }
-            .frame(minHeight: Sizing.hit)
-            .transition(.opacity)
         }
     }
 }

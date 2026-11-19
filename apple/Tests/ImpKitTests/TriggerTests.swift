@@ -190,18 +190,19 @@ import Testing
         for name in all { #expect(OwnTools.group(of: name) != nil, "\(name) has a group") }
         let quiet = OwnTools.specs([.senses], animations: [], imps: [], browser: false).map(\.name)
         #expect(quiet == [OwnTools.status])
-        #expect(OwnTools.specs([.troupe], animations: [], imps: [], browser: false).isEmpty, "nobody to talk to")
+        let nobody = OwnTools.specs([.personality], animations: [], imps: [], browser: false).map(\.name)
+        #expect(!nobody.contains(OwnTools.message) && !nobody.contains(OwnTools.openFile), "nobody to talk to")
         #expect(all.allSatisfy { ToolSet.functionName($0) == $0 }, "valid function names")
     }
 
     @Test func profilesSwitchGroupsOff() throws {
         var p = ImpProfile.imp
         #expect(p.ownTools == Set(ImpToolGroup.allCases.filter(\.isOnByDefault)) && !p.uses(.computer))
-        p.setUses(.setup, false)
-        #expect(!p.uses(.setup) && p.uses(.body))
+        p.setUses(.triggers, false)
+        #expect(!p.uses(.triggers) && p.uses(.personality))
         let back = try JSONDecoder().decode(ImpProfile.self, from: JSONEncoder().encode(p))
         #expect(back == p)
-        p.setUses(.setup, true)
+        p.setUses(.triggers, true)
         #expect(p == ImpProfile.imp)
     }
 }

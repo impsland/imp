@@ -23,6 +23,19 @@ public struct Step: Codable, Hashable, Sendable {
 
         public var title: String {
             switch self {
+            case .ask: String(localized: "trigger.step.ask")
+            case .say: String(localized: "trigger.step.say")
+            case .play: String(localized: "trigger.step.play")
+            case .sleep: String(localized: "trigger.step.sleep")
+            case .wake: String(localized: "trigger.step.wake")
+            case .follow: String(localized: "trigger.step.follow")
+            case .open: String(localized: "trigger.step.open")
+            }
+        }
+
+        /// What it does, in a few more words: the tooltip of its tile.
+        public var hint: String {
+            switch self {
             case .ask: String(localized: "Ask the Imp")
             case .say: String(localized: "Say something")
             case .play: String(localized: "Play an animation")

@@ -1518,7 +1518,7 @@ fn what_a_command_says_is_set_apart_and_lines_up() {
         Note::heading("pip"),
         Note::field("model", "m"),
         Note::field("personality", "Kind."),
-        Note::check(true, "own.troupe.imp_message"),
+        Note::check(true, "own.personality.imp_message"),
         Note::check(false, "mcp.files.delete"),
         Note::info("Use `/model NAME` to change it."),
     ]);
@@ -1536,7 +1536,7 @@ fn what_a_command_says_is_set_apart_and_lines_up() {
         kind.find("Kind."),
         "values line up\n{text}"
     );
-    assert!(text.contains("✓ own.troupe.imp_message"), "{text}");
+    assert!(text.contains("✓ own.personality.imp_message"), "{text}");
     assert!(text.contains("· mcp.files.delete"), "{text}");
     assert!(text.contains("Use /model NAME to change it."), "{text}");
     let last = rows.iter().rposition(|r| r.contains("change it")).unwrap();

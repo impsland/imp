@@ -3,7 +3,7 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// Ready-made extra tools (MCP servers) offered as starting points on the Tools tab.
+/// Ready-made tools (MCP servers) offered as starting points on the Tools tab.
 enum MCPExamples {
     struct Example {
         let server: MCPServerConfig
@@ -42,7 +42,7 @@ enum MCPExamples {
     static var all: [MCPServerConfig] { examples.map(\.server) }
 }
 
-/// Edits a copy of an extra tool. Nothing reconnects until Save. Paste fills it from a setup
+/// Edits a copy of a tool (an MCP server). Nothing reconnects until Save. Paste fills it from a setup
 /// snippet (JSON config, command or URL) on the clipboard.
 struct ServerEditor: View {
     @State var draft: MCPServerConfig
@@ -67,7 +67,7 @@ struct ServerEditor: View {
 
     var body: some View {
         SheetScaffold(icon: draft.transport == .stdio ? "terminal.fill" : "globe",
-                      title: isNew ? "Add an extra tool" : "Edit “\(draft.name)”",
+                      title: isNew ? "tools.new_server_title" : "Edit “\(draft.name)”",
                       info: "An MCP server, on this Mac or on the web. Paste fills the form from what you copied.",
                       width: Sizing.sheetWidth + Spacing.vast) {
             Button { paste() } label: { FitLabel("Paste setup", systemImage: "doc.on.clipboard") }

@@ -702,8 +702,8 @@ mod tests {
     #[test]
     fn an_imp_without_the_talk_tool_talks_to_nobody_and_tools_pass_through() {
         let tool = MapTool {
-            id: "own.body".into(),
-            title: "Body".into(),
+            id: "own.personality".into(),
+            title: "Personality".into(),
             symbol: "figure".into(),
             source: ToolSource::Own,
         };

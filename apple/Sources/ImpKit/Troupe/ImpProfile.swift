@@ -50,7 +50,7 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     private var ownToolsOff: [String]?
     /// Its own tools that are off by default (`ImpToolGroup.isOnByDefault`) and it may use.
     private var ownToolsOn: [String]?
-    /// Single tools switched off, by registry id (`own.body.imp_speak`, `mcp.files.read_file`).
+    /// Single tools switched off, by registry id (`own.personality.imp_speak`, `mcp.files.read_file`).
     /// Optional, so older profiles load. Whole groups are `ownToolsOff` and `servers`.
     private var toolsOff: [String]?
     /// Storage for `animations` and `traits` (optional, so older profiles load).

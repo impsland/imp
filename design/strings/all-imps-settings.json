@@ -159,10 +159,10 @@
     "zh-Hans": "默认"
   },
   "brains.empty": {
-    "note": "Empty state of the Brains list.",
-    "en": "No Brains yet. Add a model on this computer or a service with your key.",
-    "es": "Aún no hay cerebros. Añade un modelo en este equipo o un servicio con tu clave.",
-    "zh-Hans": "还没有大脑。可以添加这台电脑上的模型，或使用你自己密钥的服务。"
+    "note": "Empty state of the list of Brains.",
+    "en": "No Brains yet.",
+    "es": "Aún no hay cerebros.",
+    "zh-Hans": "还没有大脑。"
   },
   "brains.local": {
     "note": "Choice when adding a Brain.",
@@ -1076,10 +1076,10 @@
     "zh-Hans": "设备"
   },
   "devices.empty": {
-    "note": "Empty state of the devices card.",
-    "en": "No devices yet. Link an iPhone or another Mac and your Imps can visit it.",
-    "es": "Aún no hay dispositivos. Vincula un iPhone u otro Mac y tus Imps podrán visitarlo.",
-    "zh-Hans": "还没有设备。连接一台 iPhone 或另一台 Mac，你的 Imp 就能去做客。"
+    "note": "Empty state of the list of linked devices.",
+    "en": "No devices yet.",
+    "es": "Aún no hay dispositivos.",
+    "zh-Hans": "还没有设备。"
   },
   "devices.this.info": {
     "note": "Help on the This Mac card: the dot is The Hop.",

@@ -50,7 +50,7 @@ import Testing
         #expect(Set(ids).count == ids.count)
         for id in ids { #expect(id.range(of: #"^[a-z]+(_[a-z]+)+$"#, options: .regularExpression) != nil, "\(id)") }
         for page in SettingsPlace.allCases { #expect(!page.settings.isEmpty, "\(page)") }
-        #expect(SettingsPlace.allCases.count == 15)
+        #expect(SettingsPlace.allCases.count == 16)
     }
 
     @Test func settingsAreOnTheRightKindOfPage() {

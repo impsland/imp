@@ -56,10 +56,7 @@ import Testing
     @Test func settingsAreTheSurfaceWhateverTheCanvasShows() {
         for appearance in Self.appearances {
             let model = AppModel(persist: false)
-            var background = model.prefs.background
-            background.kind = .colour
-            background.colour.red = 1; background.colour.green = 0; background.colour.blue = 0
-            model.prefs.background = background
+            model.prefs.background = "<html><body style='margin:0;background:red'></body></html>"
             let router = HomeRouter()
             router.screen = .general
             let size = CGSize(width: 780, height: 640)

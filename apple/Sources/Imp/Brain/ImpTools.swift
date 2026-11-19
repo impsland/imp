@@ -32,9 +32,13 @@ final class OwnToolHost {
     /// Which groups exist for this request. What the Imp has switched off is `ToolSet`'s business
     /// (`ToolSelection`), not this: here only what can't work right now is left out.
     private var groups: Set<ImpToolGroup> {
-        var g = Set(ImpToolGroup.allCases)
-        if !messaging { g.remove(.troupe) }
-        return g
+        Set(ImpToolGroup.allCases)
+    }
+
+    /// Whether the tool is offered now: while it answers another Imp, messaging and opening files are left out.
+    private func offered(_ name: String) -> Bool {
+        guard let group = OwnTools.group(of: name), groups.contains(group) else { return false }
+        return messaging || (name != OwnTools.message && name != OwnTools.openFile)
     }
 
     /// Animations it may play now, by the name it calls them: its own and the shared made ones.
@@ -62,7 +66,7 @@ final class OwnToolHost {
         // What each Imp it can message says about itself. What a device sent is untrusted: sanitized again.
         let profiles = names.here.map { ImpAbilities.profile(name: $0.name, about: $0.imp.profile.about, abilities: app?.abilities(of: $0.imp.profile) ?? []) }
             + names.away.map { ImpAbilities.profile(name: $0.name, about: $0.imp.imp.about, abilities: $0.imp.imp.abilities) }
-        return OwnTools.specs(groups, animations: playable.map(\.name), imps: names.here.map(\.name), pocket: names.away.map(\.name),
+        return OwnTools.specs(groups, animations: playable.map(\.name), imps: messaging ? names.here.map(\.name) : [], pocket: messaging ? names.away.map(\.name) : [],
                               browser: BrowserBridge.shared.isConnected, talk: app?.prefs.impTalk ?? .own,
                               conversation: app?.prefs.talkThreading == .decides,
                               profiles: profiles, waiting: app?.prefs.talkWaiting ?? .decides)
@@ -71,7 +75,7 @@ final class OwnToolHost {
     /// Like `call`, but a tool can hand pictures back too (`imp_open_file`).
     func run(_ name: String, arguments: String) async throws -> ToolOutput {
         guard name == OwnTools.openFile else { return ToolOutput(try await call(name, arguments: arguments)) }
-        guard let group = OwnTools.group(of: name), groups.contains(group) else { throw ToolArgumentError("Unknown tool \(name).") }
+        guard offered(name) else { throw ToolArgumentError("Unknown tool \(name).") }
         let args = (try? JSONValue(jsonString: arguments.isEmpty ? "{}" : arguments)) ?? [:]
         do {
             return try OpenFile.open(args["file"]?.string ?? "", imp: id)
@@ -81,7 +85,7 @@ final class OwnToolHost {
     }
 
     func call(_ name: String, arguments: String) async throws -> String {
-        guard let group = OwnTools.group(of: name), groups.contains(group) else { throw ToolArgumentError("Unknown tool \(name).") }
+        guard offered(name) else { throw ToolArgumentError("Unknown tool \(name).") }
         let args = (try? JSONValue(jsonString: arguments.isEmpty ? "{}" : arguments)) ?? [:]
         do {
             switch name {
@@ -103,6 +107,8 @@ final class OwnToolHost {
             case OwnTools.showAnimation: return try showAnimation(args)
             case OwnTools.removeAnimation: return try removeAnimation(args)
             case OwnTools.setTraits: return setTraits(args)
+            case OwnTools.showBackground: return RoomBackground.shown(app?.prefs.background)
+            case OwnTools.setBackground: return try setBackground(args)
             case OwnTools.addKit: return try await addKit(args)
             case OwnTools.exportKit: return try exportKit(args)
             default: throw ToolArgumentError("Unknown tool \(name).")
@@ -220,6 +226,19 @@ final class OwnToolHost {
         for (k, path) in keys { if let v = args[k].flatMap(Self.number) { t[keyPath: path] = v } }
         app.prefs.imps[i].traits = t
         return "Your character now: \(t.normalized.summary)."
+    }
+
+    /// Replaces the page behind the Imps in the home window, or puts the plain one back.
+    private func setBackground(_ args: JSONValue) throws -> String {
+        guard let app else { throw ToolArgumentError("You're not here.") }
+        if args["reset"]?.bool == true {
+            app.prefs.background = RoomBackground.defaultHTML
+            return "The background is the plain one again."
+        }
+        let html = args["html"]?.string ?? ""
+        if let problem = RoomBackground.problem(html) { throw ToolArgumentError(problem) }
+        app.prefs.background = html
+        return "The background is set: it shows behind every Imp in the home window now."
     }
 
     private func move(_ args: JSONValue) async throws -> String {
@@ -365,7 +384,7 @@ final class OwnToolHost {
 
     private func listTools() -> String {
         guard let app, let p = profile else { return "" }
-        guard !app.prefs.mcpServers.isEmpty else { return "No extra tools yet." }
+        guard !app.prefs.mcpServers.isEmpty else { return "No MCP tools yet." }
         return app.prefs.mcpServers.map { s in
             let using = p.servers.contains(s.id)
             let status = app.assistant.toolStatus[s.id].map { "\($0)" } ?? "not running"
@@ -459,7 +478,7 @@ final class OwnToolHost {
         }
         if let wanted = name("tool") {
             guard let server = app.prefs.mcpServers.first(where: { $0.name.caseInsensitiveCompare(wanted) == .orderedSame }) else {
-                throw ToolArgumentError("No extra tool called \(wanted) (see imp_list_tools).")
+                throw ToolArgumentError("No MCP tool called \(wanted) (see imp_list_tools).")
             }
             if !kit.servers.contains(where: { $0.id == server.id }) { kit.servers.append(server) }
             if kit.name.isEmpty { kit.name = server.name }
@@ -474,7 +493,7 @@ final class OwnToolHost {
     private func removeTool(_ args: JSONValue) throws -> String {
         guard let app, let key = args["id"]?.string,
               let server = app.prefs.mcpServers.first(where: { $0.id.uuidString.caseInsensitiveCompare(key) == .orderedSame || $0.name.caseInsensitiveCompare(key) == .orderedSame })
-        else { throw ToolArgumentError("No extra tool with that id (see imp_list_tools).") }
+        else { throw ToolArgumentError("No MCP tool with that id (see imp_list_tools).") }
         if args["everywhere"]?.bool == true {
             app.prefs.removeServer(server.id)
             return "Removed “\(server.name)” for every Imp."
@@ -489,13 +508,13 @@ final class OwnToolHost {
         var server: MCPServerConfig?
         if let key = args["tool"]?.string {
             guard let found = app.prefs.mcpServers.first(where: { $0.id.uuidString.caseInsensitiveCompare(key) == .orderedSame }) else {
-                throw ToolArgumentError("No extra tool with id \(key).")
+                throw ToolArgumentError("No MCP tool with id \(key).")
             }
             server = found
         }
         let named = args["imp"]?.string
         let target = SettingsTarget(setting: args["setting"]?.string, page: args["page"]?.string, imp: named)
-            ?? (server == nil ? nil : SettingsTarget(setting: .toolsExtra))
+            ?? (server == nil ? nil : SettingsTarget(setting: .toolsServers))
         guard let target else { throw ToolArgumentError("Say which `setting` or `page` to open.") }
         var owner = id
         if let named, target.page.isPerImp {

@@ -24,7 +24,7 @@ import Testing
         }
 
         nonisolated func tools() async -> [ToolSpec] {
-            await OwnTools.specs([.body, .setup], animations: playable, imps: [], browser: true)
+            await OwnTools.specs([.moves, .triggers, .tools], animations: playable, imps: [], browser: true)
         }
 
         func call(_ name: String, arguments: String) async throws -> String {

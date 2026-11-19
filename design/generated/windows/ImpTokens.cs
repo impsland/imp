@@ -82,7 +82,7 @@ public static class ImpSizes
     public const double Column = 760;
     /// <summary>The width of a sheet on a desktop.</summary>
     public const double SheetWidth = 560;
-    /// <summary>A setting's round marker around the Imp.</summary>
+    /// <summary>A round tile: an animation's preview, the Imp on the phone's settings.</summary>
     public const double Marker = 44;
     /// <summary>The Imp drawn in a row or a card.</summary>
     public const double ImpPortrait = 40;

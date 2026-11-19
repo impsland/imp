@@ -28,8 +28,10 @@ extension Step {
     }
 }
 
-/// Adding or editing a trigger, on a copy: its name, its event (and only if…), its steps, and for whom.
-/// Nothing changes until Add or Save.
+/// Adding or editing a trigger, on a copy. It reads top to bottom as the trigger runs: the sentence it
+/// makes so far, then three numbered blocks joined by a line (When, Only if, Do), then its name and
+/// whom it is for. The event comes from a gallery of tiles, a step is added with one click on its tile,
+/// and what is missing is said beside the block it belongs to. Nothing changes until Add or Save.
 struct ShortcutSheet: View {
     @Environment(\.impTint) private var tint
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -44,6 +46,8 @@ struct ShortcutSheet: View {
     let duplicate: (Shortcut) -> Void
     let delete: () -> Void
     @State private var confirmingDelete = false
+    /// The gallery of events is open.
+    @State private var pickingEvent = false
     /// Who the change is for: this Imp, unless Every Imp is picked.
     @State private var target: ScopeTarget
 
@@ -56,36 +60,24 @@ struct ShortcutSheet: View {
 
     var body: some View {
         SheetScaffold(icon: shortcut.trigger.event.symbol, title: isNew ? "triggers.new" : "triggers.edit",
-                      info: "triggers.help.sheet") {
-            HoverIconButton(systemName: "play.fill", help: "Try now", tint: tint) { model.trigger(shortcut, on: model.imp(imp), trying: true) }
-                .disabled(!shortcut.isValid)
-        } content: {
+                      info: "triggers.help.sheet", width: Sizing.sheetWidth + Spacing.vast) {
             VStack(alignment: .leading, spacing: Spacing.medium) {
-                FieldRow("common.name", info: "triggers.help.name") {
-                    TextField("common.name", text: $shortcut.name, prompt: Text(verbatim: shortcut.trigger.summary)).impField()
+                sentence
+                VStack(alignment: .leading, spacing: 0) {
+                    block(1, "triggers.f.when", info: "triggers.help.when") { when }
+                    block(2, "triggers.f.only_if", info: "triggers.help.only_if") { conditions }
+                    block(3, "triggers.f.do", info: "triggers.help.do", last: true) { steps }
                 }
-                whenRow
-                conditionsRow
-                stepsRow
-                FieldRow("triggers.f.for", info: "triggers.help.for") {
-                    EvenGrid(minWidth: Sizing.menuTitle, spacing: Spacing.snug) {
-                        ChoiceChip(title: LocalizedStringKey(words("triggers.scope.just", impName)), icon: SettingScope.onlyThisImp.symbol,
-                                   picked: target != .everyImp) { target = .imp(imp) }
-                        ChoiceChip(title: "scope.every_imp", icon: SettingScope.everyImp.symbol, picked: target == .everyImp) { target = .everyImp }
-                    }
-                }
-                ForEach(messages, id: \.self) { m in
-                    Label { Text(verbatim: m).fixedSize(horizontal: false, vertical: true) } icon: { Image(systemName: "exclamationmark.triangle.fill") }
-                        .font(Typeface.small).foregroundStyle(Tone.warnText)
-                }
+                details
             }
-            .padding(Spacing.roomy)
-            .impCard(radius: Radius.medium)
         } footer: {
             if !isNew {
                 HoverIconButton(systemName: scope == .changed ? "arrow.uturn.backward" : "trash", help: "Delete", tint: Tone.danger) { confirmingDelete = true }
                 HoverIconButton(systemName: "plus.square.on.square", help: "Duplicate") { duplicate(shortcut) }
             }
+            Button { model.trigger(shortcut, on: model.imp(imp), trying: true) } label: { FitLabel("triggers.try", systemImage: "play.fill") }
+                .buttonStyle(.secondary)
+                .disabled(!shortcut.isValid)
             Button(isNew ? "Add" : "Save") { save(shortcut, target) }
                 .buttonStyle(.primary)
                 .keyboardShortcut(.defaultAction)
@@ -96,53 +88,99 @@ struct ShortcutSheet: View {
         }
     }
 
-    /// A part of the form that needs the whole width: its name above it.
-    private func section<Content: View>(_ title: LocalizedStringKey, info: LocalizedStringKey, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.snug) {
-            HStack(spacing: Spacing.hairline) {
-                Text(title).font(Typeface.caption).foregroundStyle(Tone.muted).lineLimit(1).fixedSize()
-                InfoTip(info)
-            }
-            content()
-        }
-    }
-
     private var impName: String { model.profile(imp)?.callName ?? ImpProfile.stranger }
 
     private func animate(_ change: () -> Void) { withImpAnimation(ImpDesign.Motion.expand, reduceMotion: reduceMotion, change) }
 
-    // MARK: When
+    // MARK: The sentence
 
-    private var whenRow: some View {
-        section("triggers.f.when", info: "triggers.help.when") {
-            VStack(alignment: .leading, spacing: Spacing.snug) {
-                CompactMenu(verbatim: shortcut.trigger.event.title, symbol: shortcut.trigger.event.symbol) {
-                    Section("triggers.group.you") {
-                        eventButton(.keys); eventButton(.click)
-                        Menu("triggers.gestures") { ForEach(TriggerEvent.gestures) { eventButton($0) } }
-                        eventButton(.near); eventButton(.away)
-                    }
-                    Section("triggers.group.time") {
-                        ForEach([TriggerEvent.start, .at, .every, .idle, .back, .wake]) { eventButton($0) }
-                    }
-                    Section("triggers.group.mac") {
-                        ForEach([TriggerEvent.app, .website, .battery, .charger, .busy, .hot, .network]) { eventButton($0) }
-                    }
-                }
-                let kind = ValueKind(event: shortcut.trigger.event)
-                if kind != .none {
-                    ValueControl(kind: kind, value: Binding(get: { shortcut.trigger.value }, set: { shortcut.trigger.value = $0 }),
-                                 hotkey: $shortcut.hotkey)
-                }
-                if let w = keyWarning {
-                    Text(verbatim: w).font(Typeface.small).foregroundStyle(Tone.warnText).fixedSize(horizontal: false, vertical: true)
+    /// The trigger as one line, as it reads in the list. It changes with every edit.
+    private var sentence: some View {
+        HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
+            Image(systemName: "bolt.fill").font(.icon(.small)).foregroundStyle(LegibleTint(tint)).accessibilityHidden(true)
+            Text(verbatim: shortcut.steps.isEmpty ? shortcut.triggerSummary + " → …" : shortcut.sentence)
+                .font(Typeface.body).foregroundStyle(Tone.text)
+                .fixedSize(horizontal: false, vertical: true)
+                .contentTransition(.opacity)
+        }
+        .padding(Spacing.cozy)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous).fill(Tone.well))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text(verbatim: shortcut.sentence))
+    }
+
+    // MARK: Blocks
+
+    /// One numbered part of the trigger. A line joins its number to the next one's, so the three read as one flow.
+    private func block<Content: View>(_ number: Int, _ title: LocalizedStringKey, info: LocalizedStringKey, last: Bool = false,
+                                      @ViewBuilder content: () -> Content) -> some View {
+        HStack(alignment: .top, spacing: Spacing.cozy) {
+            VStack(spacing: Spacing.tight) {
+                Text(verbatim: "\(number)").font(Typeface.label.monospacedDigit()).foregroundStyle(OnTint(tint))
+                    .frame(width: Sizing.mark + Spacing.tight, height: Sizing.mark + Spacing.tight)
+                    .background(Circle().fill(TintFill(tint)))
+                    .accessibilityHidden(true)
+                if !last {
+                    Capsule().fill(Tone.well).frame(width: Stroke.focus).frame(maxHeight: .infinity)
+                        .accessibilityHidden(true)
                 }
             }
+            VStack(alignment: .leading, spacing: Spacing.snug) {
+                HStack(spacing: Spacing.hairline) {
+                    Text(title).font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1).fixedSize()
+                        .accessibilityAddTraits(.isHeader)
+                    InfoTip(info)
+                }
+                .frame(minHeight: Sizing.mark + Spacing.tight)
+                content()
+            }
+            .padding(.bottom, last ? 0 : Spacing.roomy)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
-    private func eventButton(_ e: TriggerEvent) -> some View {
-        Button { animate { shortcut.trigger = .starter(e) } } label: { Label(e.title, systemImage: e.symbol) }
+    /// What is missing, in the warning colour, under the part it is about.
+    private func problem(_ text: String) -> some View {
+        Label { Text(verbatim: text).fixedSize(horizontal: false, vertical: true) } icon: { Image(systemName: "exclamationmark.triangle.fill") }
+            .font(Typeface.small).foregroundStyle(Tone.warnText)
+    }
+
+    // MARK: When
+
+    private var when: some View {
+        VStack(alignment: .leading, spacing: Spacing.snug) {
+            Button { pickingEvent = true } label: {
+                HStack(spacing: Spacing.cozy) {
+                    IconTile(systemName: shortcut.trigger.event.symbol, filled: true)
+                    VStack(alignment: .leading, spacing: Spacing.hairline) {
+                        Text(verbatim: shortcut.trigger.event.title).font(Typeface.body).foregroundStyle(Tone.text).lineLimit(1)
+                        Text(verbatim: shortcut.trigger.event.hint).font(Typeface.small).foregroundStyle(Tone.muted).lineLimit(1)
+                    }
+                    Spacer(minLength: Spacing.small)
+                    Image(systemName: "chevron.up.chevron.down").font(.icon(.small, weight: .bold)).foregroundStyle(Tone.muted)
+                }
+                .padding(.horizontal, Spacing.cozy).padding(.vertical, Spacing.small)
+                .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous).fill(Tone.card))
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text(verbatim: shortcut.trigger.event.title))
+            .accessibilityHint(Text("triggers.pick_event"))
+            .impPopover(isPresented: $pickingEvent, arrowEdge: .bottom) {
+                EventGallery(picked: shortcut.trigger.event) { e in
+                    pickingEvent = false
+                    if e != shortcut.trigger.event { animate { shortcut.trigger = .starter(e) } }
+                }
+            }
+            let kind = ValueKind(event: shortcut.trigger.event)
+            if kind != .none {
+                ValueControl(kind: kind, value: Binding(get: { shortcut.trigger.value }, set: { shortcut.trigger.value = $0 }),
+                             hotkey: $shortcut.hotkey)
+            }
+            if shortcut.trigger.event == .keys, shortcut.hotkey == nil { problem(String(localized: "triggers.problem.keys")) }
+            if let w = keyWarning { problem(w) }
+        }
     }
 
     // MARK: Only if
@@ -152,37 +190,42 @@ struct ShortcutSheet: View {
                 set: { if shortcut.conditions.indices.contains(i) { shortcut.conditions[i] = $0 } })
     }
 
-    private var conditionsRow: some View {
-        section("triggers.f.only_if", info: "triggers.help.only_if") {
-            VStack(alignment: .leading, spacing: Spacing.snug) {
-                ForEach(shortcut.conditions.indices, id: \.self) { i in
-                    let c = condition(at: i)
-                    VStack(alignment: .leading, spacing: Spacing.snug) {
-                        HStack(spacing: Spacing.small) {
-                            CompactMenu(verbatim: c.wrappedValue.state.title, symbol: "line.3.horizontal.decrease") {
-                                ForEach(TriggerState.allCases) { s in
-                                    Button(s.title) { animate { if shortcut.conditions.indices.contains(i) { shortcut.conditions[i] = .starter(s) } } }
-                                }
+    private var conditions: some View {
+        VStack(alignment: .leading, spacing: Spacing.snug) {
+            ForEach(shortcut.conditions.indices, id: \.self) { i in
+                let c = condition(at: i)
+                let kind = ValueKind(state: c.wrappedValue.state)
+                HStack(alignment: .center, spacing: Spacing.small) {
+                    CompactMenu(verbatim: c.wrappedValue.state.title, symbol: c.wrappedValue.state.symbol) {
+                        ForEach(TriggerState.allCases) { s in
+                            Button { animate { if shortcut.conditions.indices.contains(i) { shortcut.conditions[i] = .starter(s) } } } label: {
+                                Label(s.title, systemImage: s.symbol)
                             }
-                            Spacer(minLength: 0)
-                            HoverIconButton(systemName: "minus.circle", help: "triggers.cond.remove") {
-                                animate { if shortcut.conditions.indices.contains(i) { shortcut.conditions.remove(at: i) } }
-                            }
-                        }
-                        let kind = ValueKind(state: c.wrappedValue.state)
-                        if kind != .none {
-                            ValueControl(kind: kind, value: Binding(get: { c.wrappedValue.value }, set: { c.wrappedValue.value = $0 }),
-                                         hotkey: .constant(nil), asCondition: true)
                         }
                     }
-                    .padding(Spacing.cozy)
-                    .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous).fill(Tone.well))
+                    .fixedSize()
+                    if kind != .none {
+                        ValueControl(kind: kind, value: Binding(get: { c.wrappedValue.value }, set: { c.wrappedValue.value = $0 }),
+                                     hotkey: .constant(nil), asCondition: true)
+                    }
+                    Spacer(minLength: 0)
+                    HoverIconButton(systemName: "xmark", help: "triggers.cond.remove") {
+                        animate { if shortcut.conditions.indices.contains(i) { shortcut.conditions.remove(at: i) } }
+                    }
                 }
-                CompactMenu(title: shortcut.conditions.isEmpty ? "triggers.cond.always" : "triggers.cond.add", symbol: "plus") {
+                .padding(.horizontal, Spacing.cozy).padding(.vertical, Spacing.tight)
+                .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous).fill(Tone.card))
+            }
+            HStack(spacing: Spacing.small) {
+                if shortcut.conditions.isEmpty {
+                    Text("triggers.cond.always").font(Typeface.body).foregroundStyle(Tone.muted)
+                }
+                CompactMenu(title: "triggers.cond.add", symbol: "plus") {
                     ForEach(TriggerState.allCases) { s in
-                        Button(s.title) { animate { shortcut.conditions.append(.starter(s)) } }
+                        Button { animate { shortcut.conditions.append(.starter(s)) } } label: { Label(s.title, systemImage: s.symbol) }
                     }
                 }
+                .fixedSize()
             }
         }
     }
@@ -194,18 +237,23 @@ struct ShortcutSheet: View {
                 set: { if shortcut.steps.indices.contains(i) { shortcut.steps[i] = $0 } })
     }
 
-    private var stepsRow: some View {
-        section("triggers.f.do", info: "triggers.help.do") {
-            VStack(alignment: .leading, spacing: Spacing.snug) {
-                ForEach(shortcut.steps.indices, id: \.self) { i in stepCard(i) }
-                if shortcut.steps.count < Step.maxPerTrigger {
-                    CompactMenu(title: "triggers.step.add", symbol: "plus") {
-                        ForEach(Step.Act.allCases) { a in
-                            Button { animate { shortcut.steps.append(Self.fresh(a)) } } label: { Label(a.title, systemImage: a.symbol) }
-                        }
+    private var steps: some View {
+        VStack(alignment: .leading, spacing: Spacing.snug) {
+            ForEach(shortcut.steps.indices, id: \.self) { i in stepCard(i) }
+            if shortcut.steps.count < Step.maxPerTrigger {
+                // One click adds a step: every kind is a tile, so nothing hides in a menu.
+                if !shortcut.steps.isEmpty {
+                    Text("triggers.step.then").font(Typeface.small).foregroundStyle(Tone.muted)
+                }
+                EvenGrid(minWidth: Sizing.menuTitle * 0.75, spacing: Spacing.snug) {
+                    ForEach(Step.Act.allCases) { a in
+                        ChoiceChip(verbatim: a.title, icon: a.symbol, picked: false) { animate { shortcut.steps.append(Self.fresh(a)) } }
+                            .help(a.hint)
+                            .accessibilityLabel(words("triggers.step.add_one", a.title))
                     }
                 }
             }
+            if shortcut.steps.isEmpty { problem(String(localized: "triggers.problem.no_steps")) }
         }
     }
 
@@ -213,24 +261,32 @@ struct ShortcutSheet: View {
 
     private func stepCard(_ i: Int) -> some View {
         let s = step(at: i)
+        let issue = problem(of: s.wrappedValue)
         return VStack(alignment: .leading, spacing: Spacing.snug) {
             HStack(spacing: Spacing.small) {
+                Text(verbatim: "\(i + 1)").font(Typeface.small.monospacedDigit()).foregroundStyle(Tone.muted)
+                    .frame(minWidth: Spacing.medium)
+                    .accessibilityHidden(true)
                 CompactMenu(verbatim: s.wrappedValue.act.title, symbol: s.wrappedValue.act.symbol) {
                     ForEach(Step.Act.allCases) { a in
                         Button { animate { if shortcut.steps.indices.contains(i) { shortcut.steps[i] = Self.fresh(a) } } } label: { Label(a.title, systemImage: a.symbol) }
                     }
                 }
+                .fixedSize()
                 Spacer(minLength: 0)
-                HoverIconButton(systemName: "arrow.up", help: "triggers.step.up") { move(i, by: -1) }.disabled(i == 0)
-                HoverIconButton(systemName: "arrow.down", help: "triggers.step.down") { move(i, by: 1) }.disabled(i >= shortcut.steps.count - 1)
-                HoverIconButton(systemName: "minus.circle", help: "triggers.step.remove") {
+                if shortcut.steps.count > 1 {
+                    HoverIconButton(systemName: "arrow.up", help: "triggers.step.up") { move(i, by: -1) }.disabled(i == 0)
+                    HoverIconButton(systemName: "arrow.down", help: "triggers.step.down") { move(i, by: 1) }.disabled(i >= shortcut.steps.count - 1)
+                }
+                HoverIconButton(systemName: "xmark", help: "triggers.step.remove") {
                     animate { if shortcut.steps.indices.contains(i) { shortcut.steps.remove(at: i) } }
                 }
             }
             stepControls(s)
+            if let issue { problem(issue) }
         }
         .padding(Spacing.cozy)
-        .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous).fill(Tone.well))
+        .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous).fill(Tone.card))
     }
 
     private func move(_ i: Int, by d: Int) {
@@ -247,20 +303,24 @@ struct ShortcutSheet: View {
             Toggle("triggers.step.clipboard", isOn: Binding(get: { s.wrappedValue.clipboard == true }, set: { s.wrappedValue.clipboard = $0 ? true : nil }))
                 .toggleStyle(ImpToggleButtonStyle())
         case .say:
-            TextField("triggers.step.say_ph", text: text).impField()
-            Toggle("triggers.step.aloud", isOn: Binding(get: { s.wrappedValue.aloud == true }, set: { s.wrappedValue.aloud = $0 ? true : nil }))
-                .toggleStyle(ImpToggleButtonStyle())
+            HStack(spacing: Spacing.small) {
+                TextField("triggers.step.say_ph", text: text).impField()
+                Toggle("triggers.step.aloud", isOn: Binding(get: { s.wrappedValue.aloud == true }, set: { s.wrappedValue.aloud = $0 ? true : nil }))
+                    .toggleStyle(ImpToggleButtonStyle())
+                    .fixedSize()
+            }
         case .play, .sleep, .wake:
             animationMenu(text, optional: s.wrappedValue.act != .play)
         case .follow:
             let mode = Binding(get: { s.wrappedValue.followMode }, set: { s.wrappedValue.value = $0.rawValue })
             ImpSegmented("triggers.follow", selection: mode, options: FollowMode.allCases, title: \.title, symbol: \.symbol)
-            Row("triggers.step.speed", info: "triggers.help.speed") {
-                RowSlider(value: Binding(get: { s.wrappedValue.followSpeed }, set: { s.wrappedValue.speed = FollowMath.clampedSpeed($0) }),
-                          range: FollowMath.speedRange, step: 0.1, label: "triggers.step.speed",
-                          shown: String(format: "%.1f×", s.wrappedValue.followSpeed), resets: FollowMath.defaultSpeed)
+            if mode.wrappedValue.movesBody {
+                Row("triggers.step.speed", info: "triggers.help.speed") {
+                    RowSlider(value: Binding(get: { s.wrappedValue.followSpeed }, set: { s.wrappedValue.speed = FollowMath.clampedSpeed($0) }),
+                              range: FollowMath.speedRange, step: 0.1, label: "triggers.step.speed",
+                              shown: String(format: "%.1f×", s.wrappedValue.followSpeed), resets: FollowMath.defaultSpeed)
+                }
             }
-            .disabled(!mode.wrappedValue.movesBody)
         case .open:
             let target = Binding(get: { s.wrappedValue.target ?? .chat }, set: { s.wrappedValue.value = $0.rawValue })
             ImpSegmented("triggers.open", selection: target, options: Step.Target.allCases, title: { Self.title($0) },
@@ -290,28 +350,47 @@ struct ShortcutSheet: View {
                 ForEach(all) { a in Button { name.wrappedValue = a.title } label: { Label(a.title, systemImage: a.symbol) } }
             }
         }
+        .fixedSize()
+    }
+
+    // MARK: Name and scope
+
+    /// The optional name and whom the trigger is for, set apart under the three blocks.
+    private var details: some View {
+        VStack(alignment: .leading, spacing: Spacing.small) {
+            FieldRow("common.name", info: "triggers.help.name") {
+                TextField("common.name", text: $shortcut.name, prompt: Text(verbatim: shortcut.trigger.summary)).impField()
+            }
+            FieldRow("triggers.f.for", info: "triggers.help.for") {
+                VStack(alignment: .leading, spacing: Spacing.tight) {
+                    ImpSegmented("triggers.f.for", selection: Binding(get: { target == .everyImp }, set: { target = $0 ? .everyImp : .imp(imp) }),
+                                 options: [false, true],
+                                 title: { $0 ? String(localized: "scope.every_imp") : words("triggers.scope.just", impName) },
+                                 symbol: { $0 ? SettingScope.everyImp.symbol : SettingScope.onlyThisImp.symbol }, fills: false)
+                    if scope != .onlyThisImp || target == .everyImp {
+                        Text(target == .everyImp ? String(localized: "triggers.scope.note_every") : words("triggers.scope.note_version", impName))
+                            .font(Typeface.small).foregroundStyle(Tone.muted).fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+        }
+        .padding(Spacing.medium)
+        .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous).fill(Tone.well))
     }
 
     // MARK: Checks
 
-    /// What is missing or off, in plain words. While there is something missing, Save is off.
-    private var messages: [String] {
-        var out: [String] = []
-        if shortcut.trigger.event == .keys, shortcut.hotkey == nil { out.append(String(localized: "triggers.problem.keys")) }
-        if shortcut.steps.isEmpty { out.append(String(localized: "triggers.problem.no_steps")) }
-        if shortcut.steps.count > Step.maxPerTrigger { out.append(String(localized: "triggers.problem.too_many")) }
-        for s in shortcut.steps {
-            switch s.act {
-            case .ask where !s.isRunnable: out.append(String(localized: "triggers.problem.ask"))
-            case .say where !s.isRunnable: out.append(String(localized: "triggers.problem.say"))
-            case .play where !s.isRunnable: out.append(String(localized: "triggers.problem.play"))
-            case .play, .sleep, .wake:
-                if let n = s.animationName, model.prefs.ref(named: n, imp: imp) == nil { out.append(words("triggers.problem.missing", n)) }
-            default: break
-            }
+    /// What is missing in one step, in plain words. While anything is missing, Save and Try are off.
+    private func problem(of s: Step) -> String? {
+        switch s.act {
+        case .ask where !s.isRunnable: return String(localized: "triggers.problem.ask")
+        case .say where !s.isRunnable: return String(localized: "triggers.problem.say")
+        case .play where !s.isRunnable: return String(localized: "triggers.problem.play")
+        case .play, .sleep, .wake:
+            if let n = s.animationName, model.prefs.ref(named: n, imp: imp) == nil { return words("triggers.problem.missing", n) }
+            return nil
+        default: return nil
         }
-        var seen = Set<String>()
-        return out.filter { seen.insert($0).inserted }
     }
 
     /// Keys macOS or another of your triggers already uses (only the first in the list runs).
@@ -320,6 +399,40 @@ struct ShortcutSheet: View {
         if model.failedHotkeys.contains(hk) { return String(localized: "\(hk.displayString) is taken by macOS or another app. Pick other keys.") }
         let other = model.prefs.shortcuts.first { $0.id != shortcut.id && $0.keys == hk && $0.isEnabled }
         return other.map { String(localized: "“\($0.displayName)” uses the same keys and comes first, so this one won't go off.") }
+    }
+}
+
+/// Every event as a tile, in three groups (You, Time, Mac), the chosen one lit. A tile's hint is its tooltip.
+struct EventGallery: View {
+    let picked: TriggerEvent
+    let pick: (TriggerEvent) -> Void
+
+    private static let groups: [(LocalizedStringKey, [TriggerEvent])] = [
+        ("triggers.group.you", [.keys, .click] + TriggerEvent.gestures + [.near, .away]),
+        ("triggers.group.time", [.start, .at, .every, .idle, .back, .wake]),
+        ("triggers.group.mac", [.app, .website, .battery, .charger, .busy, .hot, .network]),
+    ]
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: Spacing.medium) {
+                ForEach(Self.groups.indices, id: \.self) { g in
+                    let (title, events) = Self.groups[g]
+                    VStack(alignment: .leading, spacing: Spacing.snug) {
+                        Text(title).font(Typeface.caption).foregroundStyle(Tone.muted).accessibilityAddTraits(.isHeader)
+                        EvenGrid(minWidth: Sizing.menuTitle * 0.85, spacing: Spacing.snug) {
+                            ForEach(events) { e in
+                                ChoiceChip(verbatim: e.title, icon: e.symbol, picked: e == picked) { pick(e) }
+                                    .help(e.hint)
+                                    .accessibilityHint(Text(verbatim: e.hint))
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(Spacing.medium)
+        }
+        .frame(width: Sizing.sheetWidth, height: Sizing.sheetWidth * 0.9)
     }
 }
 

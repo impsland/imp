@@ -35,7 +35,7 @@ pub struct ImpConfig {
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub mcp_servers: BTreeMap<String, McpServerConfig>,
     /// Ids of tools that are switched off for this Imp, such as `mcp.files.delete`
-    /// or `own.troupe.imp_message`.
+    /// or `own.personality.imp_message`.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tools_off: Vec<String>,
 }

@@ -44,8 +44,8 @@ key, and create the trigger, then show you how it works.
 ## Body and senses
 
 Imp plays its animations as body language: it hops, slides or bounces around the screen, speaks out loud,
-reads how the Mac is doing, and messages the other Imps. Each group of these tools can be switched off
-per Imp, in the Imp's **Tools** tab.
+reads how the Mac is doing, and messages the other Imps. Each of these tools can be switched off per Imp,
+behind the wand button of the section it belongs to (Moves, Personality, Look, Triggers, Tools, Computer).
 
 ## Make your own animations
 
@@ -55,24 +55,36 @@ hop, symbol and an optional move that can play either way round).
 
 - An animation is for every Imp, or for one Imp alone. The one Imp's wins over a shared one.
 - Imps make animations too: they use `imp_make_animation`, `imp_show_animation` and `imp_remove_animation`.
+- **Export as Sticker…** (the smiling-face button on an animation, or its right-click menu) saves it as an animated
+  sticker, `.tgs`: the Imp acting it out in its colour and character, as vectors (Lottie), 512 × 512 at 60 frames a
+  second, at most 3 seconds and 64 KB. A longer animation plays up to twice as fast and stops at 3 seconds; the save
+  panel says so.
 
 The format, with every mood, glyph and move, is in the [Kit format reference](/sharing/kits#animations-and-traits).
 
 ## A character of its own
 
-Each Imp's **Moves** tab sets how it always looks and moves: lids, brows, eye size, squint, horns, blush,
+Each Imp's **Look** section sets how it always looks and moves: lids, brows, eye size, squint, horns, blush,
 head tilt and tempo. Start from a preset (such as Tired, Grumpy, Worried, Sly, Lazy or Jittery) or use the
-sliders. The look shows in every mood and animation. The Imp can set it itself (`imp_set_traits`), and the
-tab lists the animations only that Imp plays. The ranges are in the [Kit format reference](/sharing/kits#animations-and-traits).
+sliders. The look shows in every mood and animation. The Imp can set it itself (`imp_set_traits`), and its
+**Moves** section lists the animations only that Imp plays. The ranges are in the [Kit format reference](/sharing/kits#animations-and-traits).
+
+## Backgrounds
+
+Ask any Imp for a background ("floating clouds", "a starry sky", "a poker room with a seat for each of us") and it
+draws one behind all the Imps: a small web page with CSS, SVG or a canvas, animated if you like
+(`imp_set_background`, and `imp_show_background` to build on the one there now). It starts as one plain colour.
+The Mac's canvas and the iPhone's room each have their own. File › Reset Background puts the plain one back on the
+Mac. Each Imp may be stopped from changing it with the wand in its **Look** section.
 
 ## Computer control (optional, off by default)
 
-Switch it on per Imp in its **Tools** tab and the Imp can operate any app, such as a browser or Photoshop.
+Switch it on per Imp in its **Computer** section and the Imp can operate any app, such as a browser or Photoshop.
 It looks at the window (a screenshot plus the accessibility tree), clicks, types, uses shortcuts and menus,
 scrolls and draws, then checks the result.
 
 It needs two permissions: **Screen & System Audio Recording** and **Accessibility** (Device Control & Data
-Access). The Tools tab shows what is missing, with buttons. If it still doesn't work after granting, remove
+Access). The Imp's Computer section shows what is missing, with buttons. If it still doesn't work after granting, remove
 Imp from the list, add it again (+), then restart Imp.
 
 Try the element tree without a model:

@@ -253,7 +253,7 @@ object ImpSizing {
     val column = 720.dp
     /** The width of a sheet on a desktop. */
     val sheetWidth = 560.dp
-    /** A setting's round marker around the Imp. */
+    /** A round tile: an animation's preview, the Imp on the phone's settings. */
     val marker = 56.dp
     /** The Imp drawn in a row or a card. */
     val impPortrait = 48.dp

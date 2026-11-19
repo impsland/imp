@@ -34,7 +34,7 @@ extension ImpPreferences {
     /// Adds a new Imp by the one rule for new Imps, and returns its id. It gets a name nobody has, the
     /// red every Imp hatches in, a fresh personality and a secret favourite colour, and waits at home. It
     /// has nothing of its own: it follows the default Brain, gets every shared trigger and animation, has
-    /// the built-in tools at their defaults and no extra tools. Nothing is copied from another Imp.
+    /// the built-in tools at their defaults and no MCP tools. Nothing is copied from another Imp.
     @discardableResult
     public mutating func addNewcomer() -> UUID {
         var profile = ImpProfile.newcomer(joining: imps)

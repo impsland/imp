@@ -2,8 +2,8 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The Tools panel: first the Imp's own tools, each with a switch (as on the Mac), then the MCP servers it can use.
-/// "Add tools" sits in the section's header. Inside a server, "Add a header" is a plus in the header of its
+/// The Tools panel: the MCP servers the Imp can use, as on the Mac. Its built-in tools live in the
+/// sections they belong to. "Add" sits in the section's header. Inside a server, "Add a header" is a plus in the header of its
 /// headers. No action is left alone under a list.
 struct PocketToolsPanel: View {
     @Bindable var draft: PocketDraft
@@ -16,29 +16,14 @@ struct PocketToolsPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
-            PocketCard(title: "tools.own", tip: String(localized: "tools.own.info")) {
-                VStack(spacing: 0) {
-                    ForEach(PocketDraft.ownTools) { tool in
-                        Toggle(isOn: Binding(get: { draft.uses(tool) }, set: { draft.setUses(tool, $0) })) {
-                            Label { Text(verbatim: tool.title) } icon: {
-                                Image(systemName: tool.name == OwnTools.message ? "bubble.left.and.bubble.right" : "figure.dance")
-                                    .font(.icon(.large)).foregroundStyle(Tone.muted)
-                                    .frame(width: Sizing.mark)
-                            }
-                            .font(Typeface.body).foregroundStyle(Tone.text)
-                        }
-                        .toggleStyle(.impSwitch)
-                        .frame(minHeight: Sizing.hit)
-                        .accessibilityIdentifier("tools.\(tool.name)")
-                    }
-                }
-                .selectionHaptic(draft.toolsOff)
-            }
             // Add is an action on the list, so it sits in the list's header, as on the Mac.
-            SectionHeader("tools.mcp", info: "tools.help.mcp", font: Typeface.label, minHeight: nil) {
+            SectionHeader("tools.title", info: "tools.help.mcp", font: Typeface.label, minHeight: nil) {
                 Button { addServer() } label: { FitLabel("tools.add", systemImage: "plus") }
                     .buttonStyle(.imp(.secondary, small: true))
                     .disabled(draft.servers.count >= PocketImp.maxServers)
+            }
+            if draft.servers.isEmpty {
+                EmptyState("tools.empty", symbol: ImpSetting.tools.symbol, fills: true)
             }
             ForEach($draft.servers) { $server in
                 serverCard($server)

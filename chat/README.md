@@ -353,7 +353,7 @@ The guide to Imps that a project shares, such as a reviewer and a researcher, wi
 
 When you have more than one Imp, each can send a message to the others with the `imp_message` tool, as in the
 Mac and iPhone apps. The other Imp answers with its own model and personality, without tools of its own. The
-chat shows the message (`⇢`) and the answer (`⇠`). The tool id is `own.troupe.imp_message`, so `tools_off` can
+chat shows the message (`⇢`) and the answer (`⇠`). The tool id is `own.personality.imp_message`, so `tools_off` can
 switch it off.
 
 While the chat is online (see below), the Imps on your Mac's and iPhone's screens can be messaged too, and

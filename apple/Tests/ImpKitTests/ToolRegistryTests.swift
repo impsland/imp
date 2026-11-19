@@ -44,7 +44,7 @@ import ImpCore
             OwnTools.play, OwnTools.move, OwnTools.speak, OwnTools.status, OwnTools.page, OwnTools.listTriggers,
             OwnTools.addTrigger, OwnTools.removeTrigger, OwnTools.listTools, OwnTools.addTool, OwnTools.addKit, OwnTools.exportKit, OwnTools.removeTool,
             OwnTools.openSettings, OwnTools.message, OwnTools.openFile, OwnTools.makeAnimation, OwnTools.showAnimation, OwnTools.removeAnimation,
-            OwnTools.setTraits,
+            OwnTools.setTraits, OwnTools.showBackground, OwnTools.setBackground,
         ]).union(ComputerTools.all)
         #expect(swiftNames == Set(ToolRegistry.builtIn.map(\.name)))
         #expect(Set(ToolRegistry.builtIn.map(\.group)) == Set(ImpToolGroup.allCases.map { ToolRegistry.ownGroupID($0) }))
@@ -84,8 +84,8 @@ import ImpCore
     }
 
     @Test func refusalIsReadable() async {
-        let tools = Self.catalog([.init(id: "own.body.imp_speak", name: "imp_speak", group: "own.body")])
-        let set = ToolSet([Listed(catalogTools: tools)], selection: ToolSelection(toolsOff: ["own.body.imp_speak"]))
+        let tools = Self.catalog([.init(id: "own.personality.imp_speak", name: "imp_speak", group: "own.personality")])
+        let set = ToolSet([Listed(catalogTools: tools)], selection: ToolSelection(toolsOff: ["own.personality.imp_speak"]))
         do {
             _ = try await set.call("imp_speak", arguments: "{}")
             Issue.record("A switched-off tool ran")
@@ -107,7 +107,7 @@ import ImpCore
         for entry in all {
             let group = OwnTools.group(of: entry.name)
             #expect(group != nil, "\(entry.name) has no group")
-            #expect(entry.id == ToolRegistry.ownID(group ?? .body, tool: entry.name))
+            #expect(entry.id == ToolRegistry.ownID(group ?? .moves, tool: entry.name))
             #expect(!entry.title.isEmpty)
         }
         for group in ImpToolGroup.allCases { #expect(!ToolRegistry.tools(in: group).isEmpty, "\(group) has no tools") }
@@ -127,11 +127,11 @@ import ImpCore
         var imp = ImpProfile.imp
         #expect(imp.toolSelection.groupsOff == ["own.computer"])
         #expect(imp.toolSelection.toolsOff.isEmpty)
-        imp.setUses(.body, false)
+        imp.setUses(.moves, false)
         imp.setUses(.computer, true)
         imp.setUses(tool: ToolRegistry.ownID(.senses, tool: OwnTools.page), false)
         imp.setUses(tool: "mcp.speech.say", false)
-        #expect(imp.toolSelection.groupsOff == ["own.body"])
+        #expect(imp.toolSelection.groupsOff == ["own.moves"])
         #expect(imp.toolSelection.toolsOff == ["own.senses.browser_page", "mcp.speech.say"])
         #expect(!imp.uses(tool: "mcp.speech.say"))
         imp.setUses(tool: "mcp.speech.say", true)
@@ -145,10 +145,10 @@ import ImpCore
         #expect(loaded.uses(.computer))
     }
 
-    @Test func theKitToolsAreInTheSetupGroup() {
-        #expect(ToolRegistry.entry(named: "imp_add_kit")?.group == ToolRegistry.ownGroupID(.setup))
-        #expect(ToolRegistry.entry(named: "imp_export_kit")?.group == ToolRegistry.ownGroupID(.setup))
-        let add = OwnTools.specs([.setup], animations: [], imps: [], browser: false).first { $0.name == OwnTools.addKit }
+    @Test func theKitToolsAreInTheToolsGroup() {
+        #expect(ToolRegistry.entry(named: "imp_add_kit")?.group == ToolRegistry.ownGroupID(.tools))
+        #expect(ToolRegistry.entry(named: "imp_export_kit")?.group == ToolRegistry.ownGroupID(.tools))
+        let add = OwnTools.specs([.tools], animations: [], imps: [], browser: false).first { $0.name == OwnTools.addKit }
         #expect(add?.description.contains("This Imp reads kit format \(Kit.format)") == true)
     }
 
@@ -164,8 +164,8 @@ import ImpCore
         #expect(loaded.uses(.computer))
         #expect(loaded.disabledTools.isEmpty)
         var changed = loaded
-        changed.setUses(tool: "own.body.imp_speak", false)
+        changed.setUses(tool: "own.personality.imp_speak", false)
         let back = try JSONDecoder().decode(ImpProfile.self, from: JSONEncoder().encode(changed))
-        #expect(back.disabledTools == ["own.body.imp_speak"])
+        #expect(back.disabledTools == ["own.personality.imp_speak"])
     }
 }

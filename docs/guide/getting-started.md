@@ -63,7 +63,7 @@ ollama serve
 > [!NOTE]
 > Imp runs the commands it writes **without asking first**. They start in the Imp's own workspace folder
 > and stop after two minutes if they are still running. To switch the shell off for one Imp, open its
-> **Tools** tab and turn off **Commands**. macOS still asks before Imp may use the microphone or control
+> **Computer** section and turn off **Commands**. macOS still asks before Imp may use the microphone or control
 > other apps.
 
 ## Next steps

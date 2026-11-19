@@ -128,7 +128,7 @@ async fn the_tool_is_described_called_and_can_be_switched_off() {
         serde_json::json!(["to", "text"])
     );
     let entry = tools[0].entry.as_ref().unwrap();
-    assert_eq!(entry.id, "own.troupe.imp_message");
+    assert_eq!(entry.id, "own.personality.imp_message");
     let mut off = ToolSelection::all();
     off.tools_off.insert(entry.id.clone());
     assert!(!off.allows(Some(entry)));

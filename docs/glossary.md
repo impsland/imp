@@ -88,7 +88,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Key.** The secret that lets the app use a service. It is kept in a private file that only your user account can read, or in the Keychain if you turn that on. It never travels in a kit, a link or a published item.
 
-**Tool.** Something an Imp can do besides talk: run a command, read a file, open an app. A tool has an id like `own.body.imp_speak` or `mcp.files.read_file`.
+**Tool.** Something an Imp can do besides talk: run a command, read a file, open an app. A tool has an id like `own.personality.imp_speak` or `mcp.files.read_file`.
 
 **Tool group.** A set of tools that share a switch. A built-in group is `own.<group>`. An MCP server is a group `mcp.<server>`. A tool that is off is never offered to the Brain.
 
@@ -114,7 +114,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 ## Screens
 
-**Imp Settings.** The settings of one Imp. The Imp is in the middle and the settings are markers around it.
+**Imp Settings.** The settings of one Imp, laid out like Settings: a rail of sections (Brain, Personality, Look, Moves, Triggers, Tools, Computer) and the chosen section beside it.
 
 **Marker.** A tappable thing around the Imp in Imp Settings: Brain, Look, Personality, Tools, Triggers and Moves.
 

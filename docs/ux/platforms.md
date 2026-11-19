@@ -69,7 +69,7 @@ Menus use the platform's own style: `NSMenu` on macOS, a popup menu on iPhone an
 
 The sections of the app Settings are a rail on both platforms: vertical beside the content on a desktop window, a horizontal bar above it on the phone. Light and dark appearance follow the system on both.
 
-The panel of a marker is a side panel on a desktop window wide enough to hold it. Below `narrowWindowPoints` and on phones it is a sheet. The plain list replaces the markers on narrow windows, at accessibility text sizes and with a screen reader.
+An Imp's settings have the same layout as Settings: a rail of sections on the leading side and the chosen section beside it. Below `narrowWindowPoints` the rail shows its icons alone. On phones the sections are a list and a section opens in place.
 
 ## Language and text
 

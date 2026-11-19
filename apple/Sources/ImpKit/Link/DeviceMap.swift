@@ -109,7 +109,7 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
             var tools: [Tool]
         }
         let entries = imps.map {
-            Entry(id: $0.id, name: $0.name, hue: $0.hue, awayOn: $0.awayOn, canTalk: $0.uses(.troupe),
+            Entry(id: $0.id, name: $0.name, hue: $0.hue, awayOn: $0.awayOn, canTalk: $0.uses(.personality),
                   tools: tools(of: $0, servers: mcpServers))
         }
         let encoder = JSONEncoder()

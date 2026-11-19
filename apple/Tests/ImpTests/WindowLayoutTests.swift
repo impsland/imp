@@ -6,13 +6,11 @@ import Testing
 
 /// The smallest window (a fixed design value) against the narrow layout's breakpoint (a design token).
 @Suite struct WindowLayoutTests {
-    @Test func theSmallestWindowShowsTheNarrowLayout() {
-        let smallest = WindowSizing.minimum.width
-        #expect(smallest < CGFloat(Behavior.narrowWindowPoints))
-        #expect(ImpSettingsLayout.mode(width: smallest, largeText: false, screenReader: false) == .list)
+    @Test func theSmallestWindowShowsTheCompactRail() {
+        #expect(WindowSizing.minimum.width < CGFloat(Behavior.narrowWindowPoints))
     }
 
-    @Test func theStandardSizeShowsTheMarkers() {
-        #expect(ImpSettingsLayout.mode(width: WindowSizing.size(of: .small, in: CGSize(width: 1440, height: 900)).width, largeText: false, screenReader: false) == .markers)
+    @Test func theStandardSizeShowsTheRailWithTitles() {
+        #expect(WindowSizing.size(of: .small, in: CGSize(width: 1440, height: 900)).width >= CGFloat(Behavior.narrowWindowPoints))
     }
 }

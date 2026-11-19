@@ -136,11 +136,11 @@ async fn tools_imps_and_unknown_commands() {
     let dir = folder("tools");
     let mut s = session(&dir).await;
     // Two Imps: the message tool is there and can be switched off by id.
-    assert!(said(&run(&mut s, "/tools").await).contains("own.troupe.imp_message"));
-    run(&mut s, "/tools off own.troupe.imp_message").await;
-    assert!(said(&run(&mut s, "/tools").await).contains("off  own.troupe.imp_message"));
+    assert!(said(&run(&mut s, "/tools").await).contains("own.personality.imp_message"));
+    run(&mut s, "/tools off own.personality.imp_message").await;
+    assert!(said(&run(&mut s, "/tools").await).contains("off  own.personality.imp_message"));
     assert!(said(&run(&mut s, "/tools off nope").await).starts_with("! "));
-    run(&mut s, "/tools on own.troupe.imp_message").await;
+    run(&mut s, "/tools on own.personality.imp_message").await;
     assert!(
         Config::load(&s.path).unwrap().imps["slashtest"]
             .tools_off

@@ -87,7 +87,7 @@ pub fn tool_built_in_named(name: String) -> Option<ToolEntry> {
     tools::built_in_named(&name).map(Into::into)
 }
 
-/// The built-in groups (`body`, `den`...) in listing order.
+/// The built-in groups (`moves`, `den`...) in listing order.
 #[uniffi::export]
 pub fn tool_group_names() -> Vec<String> {
     tools::GROUPS.iter().map(|(g, _)| g.to_string()).collect()
@@ -132,6 +132,8 @@ pub enum BuiltInTool {
     ComputerObserve,
     ComputerAct,
     ComputerVerify,
+    ImpShowBackground,
+    ImpSetBackground,
 }
 
 /// The name the model calls a built-in tool.

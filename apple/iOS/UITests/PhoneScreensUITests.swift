@@ -130,10 +130,17 @@ final class PhoneScreensUITests: XCTestCase {
         // Kept at once: the hub shows the new size.
         XCTAssertTrue(app.staticTexts["75%"].waitForExistence(timeout: 4), "the size was kept")
 
-        tap(app, "imp.tools")
+        // The built-in tool is behind the wand in Personality. Tools holds only MCP servers.
+        tap(app, "imp.personality")
+        tap(app, "agent.tools")
         let message = element(app, "tools.imp_message")
-        XCTAssertTrue(message.waitForExistence(timeout: 4), "Message another Imp has a switch")
-        XCTAssertTrue(element(app, "tools.imp_play_animations").exists, "Play animations has a switch")
+        XCTAssertTrue(message.waitForExistence(timeout: 4), "Message Imps has a switch")
+        XCTAssertFalse(element(app, "tools.imp_play_animations").exists, "a pocket Imp plays no animations")
+        shot(app, "08-agent-tools")
+        tap(app, "agent.done")
+        tap(app, "sheet.back")
+        tap(app, "imp.tools")
+        XCTAssertFalse(element(app, "tools.imp_message").exists, "Tools lists no built-in tools")
         shot(app, "08-tools")
         tap(app, "sheet.back")
 

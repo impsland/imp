@@ -11,7 +11,7 @@ pub struct ToolEntry {
     pub id: String,
     /// What the model calls it.
     pub name: String,
-    /// The group's id (`own.body`, `mcp.files`).
+    /// The group's id (`own.personality`, `mcp.files`).
     pub group: String,
     pub title: String,
 }
@@ -79,11 +79,13 @@ pub fn mcp_id(server: &str, tool: &str) -> String {
 
 /// The built-in tool groups in the order the Tools tab lists them, each with whether an Imp has the
 /// group before anyone chooses. Computer control is opt-in.
-pub const GROUPS: [(&str, bool); 5] = [
-    ("body", true),
+pub const GROUPS: [(&str, bool); 7] = [
+    ("personality", true),
+    ("look", true),
+    ("moves", true),
+    ("triggers", true),
+    ("tools", true),
     ("senses", true),
-    ("setup", true),
-    ("troupe", true),
     ("computer", false),
 ];
 
@@ -108,7 +110,7 @@ macro_rules! built_in_tools {
                 }
             }
 
-            /// Its group (`body`, `den`...).
+            /// Its group (`moves`, `den`...).
             pub fn group(self) -> &'static str {
                 match self {
                     $(Self::$variant => $group,)*
@@ -127,26 +129,28 @@ macro_rules! built_in_tools {
 }
 
 built_in_tools! {
-    ImpPlayAnimations = ("body", "imp_play_animations"),
-    ImpMove = ("body", "imp_move"),
-    ImpSpeak = ("body", "imp_speak"),
-    ImpMakeAnimation = ("body", "imp_make_animation"),
-    ImpShowAnimation = ("body", "imp_show_animation"),
-    ImpRemoveAnimation = ("body", "imp_remove_animation"),
-    ImpSetTraits = ("body", "imp_set_traits"),
+    ImpSpeak = ("personality", "imp_speak"),
+    ImpMessage = ("personality", "imp_message"),
+    ImpOpenFile = ("personality", "imp_open_file"),
+    ImpOpenSettings = ("personality", "imp_open_settings"),
+    ImpSetTraits = ("look", "imp_set_traits"),
+    ImpShowBackground = ("look", "imp_show_background"),
+    ImpSetBackground = ("look", "imp_set_background"),
+    ImpPlayAnimations = ("moves", "imp_play_animations"),
+    ImpShowAnimation = ("moves", "imp_show_animation"),
+    ImpMakeAnimation = ("moves", "imp_make_animation"),
+    ImpRemoveAnimation = ("moves", "imp_remove_animation"),
+    ImpMove = ("moves", "imp_move"),
+    ImpListTriggers = ("triggers", "imp_list_triggers"),
+    ImpAddTrigger = ("triggers", "imp_add_trigger"),
+    ImpRemoveTrigger = ("triggers", "imp_remove_trigger"),
+    ImpListTools = ("tools", "imp_list_tools"),
+    ImpAddTool = ("tools", "imp_add_tool"),
+    ImpRemoveTool = ("tools", "imp_remove_tool"),
+    ImpAddKit = ("tools", "imp_add_kit"),
+    ImpExportKit = ("tools", "imp_export_kit"),
     MacStatus = ("senses", "mac_status"),
     BrowserPage = ("senses", "browser_page"),
-    ImpListTriggers = ("setup", "imp_list_triggers"),
-    ImpAddTrigger = ("setup", "imp_add_trigger"),
-    ImpRemoveTrigger = ("setup", "imp_remove_trigger"),
-    ImpListTools = ("setup", "imp_list_tools"),
-    ImpAddTool = ("setup", "imp_add_tool"),
-    ImpAddKit = ("setup", "imp_add_kit"),
-    ImpExportKit = ("setup", "imp_export_kit"),
-    ImpRemoveTool = ("setup", "imp_remove_tool"),
-    ImpOpenSettings = ("setup", "imp_open_settings"),
-    ImpMessage = ("troupe", "imp_message"),
-    ImpOpenFile = ("troupe", "imp_open_file"),
     ComputerObserve = ("computer", "computer_observe"),
     ComputerAct = ("computer", "computer_act"),
     ComputerVerify = ("computer", "computer_verify"),
@@ -165,7 +169,7 @@ pub fn built_in_named(name: &str) -> Option<ToolEntry> {
         .map(|(g, t)| ToolEntry::own(g, t))
 }
 
-/// The group (`body`, `den`...) of the built-in tool the model calls `name`.
+/// The group (`moves`, `den`...) of the built-in tool the model calls `name`.
 pub fn group_of(name: &str) -> Option<&'static str> {
     BUILT_IN.iter().find(|(_, t)| *t == name).map(|(g, _)| *g)
 }
@@ -329,9 +333,9 @@ mod tests {
         for (g, _) in GROUPS {
             assert!(BUILT_IN.iter().any(|(bg, _)| *bg == g), "{g} has no tools");
         }
-        assert_eq!(group_of("imp_speak"), Some("body"));
-        assert_eq!(group_of("imp_add_kit"), Some("setup"));
-        assert_eq!(group_of("imp_export_kit"), Some("setup"));
+        assert_eq!(group_of("imp_speak"), Some("personality"));
+        assert_eq!(group_of("imp_add_kit"), Some("tools"));
+        assert_eq!(group_of("imp_export_kit"), Some("tools"));
         assert_eq!(group_of("den_get"), None);
         assert_eq!(group_of("nope"), None);
         assert_eq!(
@@ -339,7 +343,7 @@ mod tests {
             "own.computer.computer_act"
         );
         assert!(
-            group_on_by_default("body")
+            group_on_by_default("personality")
                 && !group_on_by_default("computer")
                 && !group_on_by_default("x")
         );

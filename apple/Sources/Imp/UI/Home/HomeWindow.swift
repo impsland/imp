@@ -184,8 +184,11 @@ final class HomeRouter {
     var screen: Screen = .home
     /// The Imp that has the keyboard on the canvas. The menu bar's Imp menu acts on it.
     var selection: UUID?
-    /// The panel an Imp's settings should open on: the page takes it when it shows.
+    /// The section an Imp's settings should open on: the page takes it when it shows.
     var impPanel: ImpSetting?
+    /// The section of an Imp's settings that is chosen in the rail. Kept while the app runs, so the next
+    /// Imp's settings open on the same section.
+    var impSection: ImpSetting = .brain
     /// The setting that is lit for a moment after something opened it. The page scrolls to it.
     var highlightedSetting: SettingID?
     @ObservationIgnored private var highlightTask: Task<Void, Never>?
@@ -210,8 +213,6 @@ final class HomeRouter {
     var kitFlow: KitFlow? { didSet { if oldValue !== kitFlow { oldValue?.abandon() } } }
     /// A talk between two Imps being read (a sheet).
     var talk: TalkRequest?
-    /// A picture that could not be used as the background: the window says so.
-    var pictureFailed = false
     /// The Imp being woken up by the first run (a sheet).
     var firstRun: UUID?
 

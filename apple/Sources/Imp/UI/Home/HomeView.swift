@@ -15,11 +15,11 @@ struct HomeView: View {
 
     var body: some View {
         ZStack {
-            // The canvas shows the background the user chose. Every settings page sits on the app's one flat
-            // surface, whatever the canvas shows (a picture, a tile or a colour would only make text harder to read).
-            if router.screen == .home {
-                CanvasBackdrop(background: model.prefs.background).transition(.opacity)
-            } else {
+            // The canvas shows the page the Imps drew. Every settings page sits on the app's one flat surface,
+            // whatever the canvas shows. The canvas stays underneath (kept as a still picture, its page paused), so
+            // coming back home shows it at once.
+            CanvasBackdrop(html: model.prefs.background, live: router.isAwake && router.screen == .home)
+            if router.screen != .home {
                 Backdrop().transition(.opacity)
             }
             Group {
@@ -86,7 +86,6 @@ struct HomeView: View {
         } message: {
             Text(words("imp.call_home.message", callHomeDevice))
         }
-        .alert(Text("background.picture_failed"), isPresented: $router.pictureFailed) {}
         .environment(\.stageAwake, router.isAwake)
         .environment(\.tintInk, model.prefs.controlInk.tintInk)
         .tint(Color.imp)

@@ -42,7 +42,10 @@ final class PocketDraft {
     /// The settings this iPhone has. Triggers and Moves live on the Mac.
     static let settings: [ImpSetting] = [.brain, .personality, .look, .tools]
     /// The Imp's own tools this iPhone has, each with a switch: messaging the other Imps, and playing its animations.
-    static let ownTools: [ToolEntry] = [OwnTools.message, OwnTools.play].compactMap(ToolRegistry.entry(named:))
+    /// The built-in tools a pocket Imp has (it plays no animations, so only messages to the other Imps).
+    static let ownTools: [ToolEntry] = [OwnTools.message].compactMap(ToolRegistry.entry(named:))
+    /// The built-in tools behind the wand in Look: the page behind the Imps in the room.
+    static let lookTools: [ToolEntry] = [OwnTools.showBackground, OwnTools.setBackground].compactMap(ToolRegistry.entry(named:))
 
     let id: UUID
     var name: String
@@ -89,10 +92,10 @@ final class PocketDraft {
         if on { toolsOff.remove(tool.id) } else { toolsOff.insert(tool.id) }
     }
 
-    /// The tools it has on, of all it has: its own and the servers that are ready.
+    /// Its MCP servers that are ready, of all it has.
     var toolCount: (on: Int, all: Int) {
         let real = servers.filter { !$0.isBlank }
-        return (Self.ownTools.filter(uses).count + real.filter { serverProblem($0) == nil }.count, Self.ownTools.count + real.count)
+        return (real.filter { serverProblem($0) == nil }.count, real.count)
     }
 
     // MARK: The Brain

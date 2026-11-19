@@ -163,7 +163,7 @@ struct PocketEditor: View {
         case .look: return "\(Int((draft.scale * 100).rounded()))%"
         // Who it is: its name lives in Personality.
         case .personality: return draft.name.trimmed.isEmpty ? nil : draft.name.trimmed
-        case .triggers, .moves: return nil
+        case .triggers, .moves, .computer: return nil
         }
     }
 
@@ -191,7 +191,7 @@ struct PocketEditor: View {
                     case .personality: PocketPersonalityPanel(draft: draft)
                     case .look: PocketLookPanel(draft: draft, showsImp: !roomInView)
                     case .tools: PocketToolsPanel(draft: draft, proxy: proxy, removing: $removing)
-                    case .triggers, .moves: EmptyView()
+                    case .triggers, .moves, .computer: EmptyView()
                     }
                 }
                 .padding(.horizontal, Spacing.page).padding(.top, Spacing.small).padding(.bottom, Spacing.large)

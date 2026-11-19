@@ -5,6 +5,31 @@ msgstr ""
 "Language: zh_Hans\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#. Tooltip of the wand button in a section header: opens what the Imp may do there by itself.
+msgctxt "agent.button"
+msgid "What {name} may do by itself"
+msgstr "{name} 可以自己做的事"
+
+#. Help of that sheet.
+msgctxt "agent.help"
+msgid "The things it can do by itself here. A tool that is off is never offered to its Brain."
+msgstr "它在这里可以自己做的事。关闭的工具不会提供给它的大脑。"
+
+#. Spoken value of the wand button: every tool there is off.
+msgctxt "agent.off"
+msgid "Off"
+msgstr "关"
+
+#. Spoken value of the wand button: some tools are on.
+msgctxt "agent.on"
+msgid "On"
+msgstr "开"
+
+#. Title of the sheet with the Imp's own tools of one section.
+msgctxt "agent.title"
+msgid "What {name} may do"
+msgstr "{name} 可以做的事"
+
 #. Help of the move description.
 msgctxt "anim.help.about"
 msgid "One sentence about what it does."
@@ -140,46 +165,6 @@ msgctxt "app.window.title"
 msgid "Window"
 msgstr "窗口"
 
-#. Opens the colour chooser.
-msgctxt "background.choose_colour"
-msgid "Choose a colour…"
-msgstr "选择一种颜色…"
-
-#. Opens a file chooser for a picture or a tile.
-msgctxt "background.choose_picture"
-msgid "Choose a picture…"
-msgstr "选择一张图片…"
-
-#. Background choice: one colour.
-msgctxt "background.colour"
-msgid "Colour"
-msgstr "颜色"
-
-#. Background choice: one picture that fills the window.
-msgctxt "background.picture"
-msgid "Picture"
-msgstr "图片"
-
-#. Error when the chosen file is not a usable picture.
-msgctxt "background.picture_failed"
-msgid "That picture could not be used. Pick another one."
-msgstr "这张图片无法使用，请换一张。"
-
-#. Background choice: the wall of the dungeon, the default.
-msgctxt "background.theme"
-msgid "Theme"
-msgstr "主题"
-
-#. Background choice: a seamless pattern that repeats.
-msgctxt "background.tile"
-msgid "Tile"
-msgstr "平铺"
-
-#. Hint under the Tile choice.
-msgctxt "background.tile_hint"
-msgid "A tile repeats to fill the window. Pick a seamless pattern."
-msgstr "平铺会重复铺满窗口。请选择可无缝衔接的图案。"
-
 #. Button that adds a Brain service.
 msgctxt "brain.add_service"
 msgid "Add"
@@ -300,10 +285,10 @@ msgctxt "brains.default"
 msgid "Default"
 msgstr "默认"
 
-#. Empty state of the Brains list.
+#. Empty state of the list of Brains.
 msgctxt "brains.empty"
-msgid "No Brains yet. Add a model on this computer or a service with your key."
-msgstr "还没有大脑。可以添加这台电脑上的模型，或使用你自己密钥的服务。"
+msgid "No Brains yet."
+msgstr "还没有大脑。"
 
 #. Choice when adding a Brain.
 msgctxt "brains.local"
@@ -446,15 +431,35 @@ msgctxt "common.undo"
 msgid "Undo"
 msgstr "撤销"
 
+#. Header of the Computer section of an Imp.
+msgctxt "computer.access"
+msgid "Access"
+msgstr "访问"
+
+#. Help of the Computer section.
+msgctxt "computer.help.access"
+msgid "What the Imp may reach on this Mac."
+msgstr "Imp 可以在这台 Mac 上使用的东西。"
+
+#. Help of the Computer control switch.
+msgctxt "computer.help.control"
+msgid "Sees and operates other apps. Needs the Screen & System Audio Recording and Accessibility permissions."
+msgstr "查看并操作其他应用。需要“屏幕与系统音频录制”和“辅助功能”权限。"
+
+#. Help of the Senses switch.
+msgctxt "computer.help.senses"
+msgid "Reads the battery, processor, network and open apps, and the page open in the browser."
+msgstr "读取电池、处理器、网络和打开的应用，以及浏览器中打开的页面。"
+
 #. Help of Copy Link in Link a device.
 msgctxt "devices.copy_link.help"
 msgid "For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while."
 msgstr "适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。"
 
-#. Empty state of the devices card.
+#. Empty state of the list of linked devices.
 msgctxt "devices.empty"
-msgid "No devices yet. Link an iPhone or another Mac and your Imps can visit it."
-msgstr "还没有设备。连接一台 iPhone 或另一台 Mac，你的 Imp 就能去做客。"
+msgid "No devices yet."
+msgstr "还没有设备。"
 
 #. Help on the Devices card.
 msgctxt "devices.list.info"
@@ -1209,11 +1214,6 @@ msgctxt "imp_settings.brain_marker.asleep"
 msgid "{name} is asleep. Give it a Brain."
 msgstr "{name} 睡着了。给它一个大脑吧。"
 
-#. Screen reader label of the lit Brain marker.
-msgctxt "imp_settings.brain_marker.awake"
-msgid "Brain: {service}, {model}"
-msgstr "大脑：{service}，{model}"
-
 #. Icon button label in the top corner.
 msgctxt "imp_settings.goodbye"
 msgid "Goodbye"
@@ -1224,15 +1224,20 @@ msgctxt "imp_settings.goodbye.a11y"
 msgid "Say goodbye to {name}"
 msgstr "向 {name} 说再见"
 
-#. Screen reader name of the plain list of settings.
+#. Spoken name of the rail of sections of one Imp's settings.
 msgctxt "imp_settings.list.label"
-msgid "All settings for {name}"
-msgstr "{name} 的所有设置"
+msgid "Settings for {name}"
+msgstr "{name} 的设置"
 
 #. Marker above the Imp's head and panel title.
 msgctxt "imp_settings.marker.brain"
 msgid "Brain"
 msgstr "大脑"
+
+#. Section of an Imp's settings: what it may reach on this Mac (commands, senses, computer control).
+msgctxt "imp_settings.marker.computer"
+msgid "Computer"
+msgstr "电脑"
 
 #. Marker left of the Imp: colour, size and character.
 msgctxt "imp_settings.marker.look"
@@ -1268,42 +1273,6 @@ msgstr "共享"
 msgctxt "imp_settings.share.a11y"
 msgid "Share {name}"
 msgstr "共享 {name}"
-
-#. Summary line of the Brain row when the Imp has no Brain.
-msgctxt "imp_settings.summary.brain_none"
-msgid "Asleep"
-msgstr "沉睡"
-
-#. Summary line of the Brain row: service and model.
-msgctxt "imp_settings.summary.brain_set"
-msgid "{service}, {model}"
-msgstr "{service}，{model}"
-
-#. Summary line of the Look row.
-msgctxt "imp_settings.summary.look"
-msgid "Colour and size"
-msgstr "颜色与大小"
-
-#. Summary line of the Moves row.
-msgctxt "imp_settings.summary.moves"
-msgid "Animations"
-msgstr "动画效果"
-
-#. Summary line of the Personality row.
-msgctxt "imp_settings.summary.personality"
-msgid "Name and persona"
-msgstr "名字与人设"
-
-#. Summary line of the Tools row.
-msgctxt "imp_settings.summary.tools"
-msgid "{on} of {total} on"
-msgstr "已开启 {on}/{total}"
-
-#. Summary line of the Triggers row.
-msgctxt "imp_settings.summary.triggers"
-msgid "{count} trigger"
-msgid_plural "{count} triggers"
-msgstr[0] "{count} 个触发器"
 
 #. Stands in for the Imp's name while its name is empty.
 msgctxt "imp_settings.this_imp"
@@ -1515,6 +1484,11 @@ msgctxt "look.title"
 msgid "Look"
 msgstr "外观"
 
+#. Empty state of the list of chats.
+msgctxt "memory.empty"
+msgid "No chats yet."
+msgstr "还没有聊天。"
+
 #. Choice for Sends: the last N messages.
 msgctxt "memory.last"
 msgid "Last {count}"
@@ -1635,11 +1609,6 @@ msgctxt "menu.bar.state.out"
 msgid "Out"
 msgstr "在外面"
 
-#. Menu with the background choices.
-msgctxt "menu.canvas.background"
-msgid "Background"
-msgstr "桌面背景"
-
 #. Menu item that opens Devices.
 msgctxt "menu.canvas.devices"
 msgid "Devices"
@@ -1649,6 +1618,11 @@ msgstr "设备"
 msgctxt "menu.canvas.new_imp"
 msgid "New Imp"
 msgstr "新建 Imp"
+
+#. File menu item: puts the plain background back (the Imps make the others).
+msgctxt "menu.canvas.reset_background"
+msgid "Reset Background"
+msgstr "重置背景"
 
 #. Menu item that opens the app-wide settings.
 msgctxt "menu.canvas.settings"
@@ -1760,20 +1734,25 @@ msgctxt "menu.imp.visit_tip"
 msgid "{name} visits {device} and can come back."
 msgstr "{name} 去 {device} 做客，还可以回来。"
 
-#. Empty state of the moves panel.
+#. Header of the list of an Imp's own animations.
+msgctxt "moves.animations"
+msgid "Animations"
+msgstr "动画"
+
+#. Empty state of the animations list.
 msgctxt "moves.empty"
-msgid "No special moves yet."
-msgstr "还没有特别的动作。"
+msgid "No animations yet."
+msgstr "还没有动画。"
 
 #. Help of the own animations list.
 msgctxt "moves.help.own"
 msgid "Moves made for only this Imp. They play instead of the shared ones."
 msgstr "只为这个 Imp 做的动作。它们会代替共用的动作。"
 
-#. Field label: what the Imp is good at, which other Imps read to know whom to ask.
+#. Field label: a short description of the Imp, which other Imps read to know whom to ask.
 msgctxt "personality.about"
-msgid "What it's good at"
-msgstr "擅长什么"
+msgid "Description"
+msgstr "描述"
 
 #. Placeholder of the field about what the Imp is good at.
 msgctxt "personality.about_hint"
@@ -1905,10 +1884,10 @@ msgctxt "phone.brains.default"
 msgid "New Imps start with {name}'s Brain."
 msgstr "新的 Imp 会沿用 {name} 的大脑。"
 
-#. Brains section of the iPhone settings, when no Imp was hatched on this iPhone yet.
+#. Empty state of the phone's list of Imps and their Brains.
 msgctxt "phone.brains.empty"
-msgid "Imps you hatch on this iPhone show here, each with the Brain it thinks with."
-msgstr "你在这台 iPhone 上孵化的 Imp 会显示在这里，并附上各自使用的大脑。"
+msgid "No Imps yet."
+msgstr "还没有 Imp。"
 
 #. Button beside an Imp without a Brain (iPhone settings): opens its Brain to set one up.
 msgctxt "phone.brains.set_up"
@@ -2390,10 +2369,10 @@ msgctxt "phone.status.looking"
 msgid "Looking…"
 msgstr "正在查找…"
 
-#. The talks side of an Imp's sheet when it has not talked with another Imp yet.
+#. Empty state of the list of talks between Imps.
 msgctxt "phone.talks.empty"
-msgid "No talks yet"
-msgstr "还没有对话"
+msgid "No talks yet."
+msgstr "还没有对话。"
 
 #. iPhone: how many question and answer pairs a talk has, read out for its count.
 msgctxt "phone.talks.exchanges"
@@ -3175,21 +3154,6 @@ msgctxt "settings.tool.variables.info"
 msgid "Secret values the tool needs to run."
 msgstr "这个工具运行时需要的秘密值。"
 
-#. Share sheet choice: a kit file.
-msgctxt "share.file"
-msgid "File"
-msgstr "文件"
-
-#. Note on the share sheet about what travels.
-msgctxt "share.note"
-msgid "Its look, personality, tools and triggers are shared. Keys, memory and chats never are."
-msgstr "会共享它的外观、个性、工具和触发器。密钥、记忆和聊天永远不会共享。"
-
-#. Title of the share sheet.
-msgctxt "share.title"
-msgid "Share {name}"
-msgstr "共享 {name}"
-
 #. Button on the Sharing page: look through The Den.
 msgctxt "sharing.browse"
 msgid "Browse"
@@ -3210,10 +3174,10 @@ msgctxt "sharing.import"
 msgid "Import"
 msgstr "导入"
 
-#. Shown in the animations list when you have made none.
+#. Empty state of a list of animations.
 msgctxt "sheets.animations.nothing_yet"
-msgid "Nothing yet"
-msgstr "暂时还没有"
+msgid "No animations yet."
+msgstr "还没有动画。"
 
 #. A linked device disappeared.
 msgctxt "state.link_lost"
@@ -3265,15 +3229,170 @@ msgctxt "state.waking"
 msgid "Waking up…"
 msgstr "正在醒来…"
 
+#. Why a sticker cannot be made: the animation has no beats.
+msgctxt "sticker.error.empty"
+msgid "The animation is empty."
+msgstr "这个动画是空的。"
+
+#. Title of the alert when a sticker cannot be made.
+msgctxt "sticker.error.title"
+msgid "Couldn’t make the sticker"
+msgstr "无法制作贴纸"
+
+#. Why a sticker cannot be made: even simplified it is over the 64 KB limit.
+msgctxt "sticker.error.too_big"
+msgid "It is still {kb} KB when simplified. A sticker may be 64 KB: try fewer beats or simpler moves."
+msgstr "简化后仍有 {kb} KB。贴纸最多 64 KB：试试更少的节拍或更简单的动作。"
+
+#. Action on an animation: saves it as an animated sticker file (.tgs).
+msgctxt "sticker.export"
+msgid "Export as Sticker…"
+msgstr "导出为贴纸…"
+
+#. Message in the save panel of a sticker.
+msgctxt "sticker.note"
+msgid "An animated sticker (.tgs): 512 × 512, 60 frames a second, vector only."
+msgstr "动画贴纸（.tgs）：512 × 512，每秒 60 帧，仅矢量。"
+
+#. Added to the save panel message when the animation was sped up to fit 3 seconds.
+msgctxt "sticker.note.faster"
+msgid "It plays {speed}× faster to fit 3 seconds."
+msgstr "加快 {speed} 倍播放，以控制在 3 秒内。"
+
+#. Added to the save panel message when the animation was cut at 3 seconds.
+msgctxt "sticker.note.trimmed"
+msgid "It stops at 3 seconds."
+msgstr "在 3 秒处结束。"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.act"
+msgid "Click and type"
+msgstr "点击和输入"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.add_kit"
+msgid "Add kits"
+msgstr "添加套件"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.add_tool"
+msgid "Add"
+msgstr "添加"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.add_trigger"
+msgid "Add"
+msgstr "添加"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.browser_page"
+msgid "Browser page"
+msgstr "浏览器页面"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.export_kit"
+msgid "Export kits"
+msgstr "导出套件"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.list_tools"
+msgid "List"
+msgstr "列出"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.list_triggers"
+msgid "List"
+msgstr "列出"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.mac_status"
+msgid "Mac status"
+msgstr "Mac 状态"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.make_animation"
+msgid "Make"
+msgstr "制作"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.message"
+msgid "Message Imps"
+msgstr "给 Imp 发消息"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.move"
+msgid "Move around"
+msgstr "四处移动"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.observe"
+msgid "See the screen"
+msgstr "查看屏幕"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.open_file"
+msgid "Open files"
+msgstr "打开文件"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.open_settings"
+msgid "Open settings"
+msgstr "打开设置"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.play"
+msgid "Play"
+msgstr "播放"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.remove_animation"
+msgid "Remove"
+msgstr "删除"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.remove_tool"
+msgid "Remove"
+msgstr "删除"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.remove_trigger"
+msgid "Remove"
+msgstr "删除"
+
+#. Short name of a built-in tool in the Look section: writes the HTML background behind the Imps.
+msgctxt "tool.set_background"
+msgid "Set background"
+msgstr "设置背景"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.set_traits"
+msgid "Change its look"
+msgstr "改变外观"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.show_animation"
+msgid "View"
+msgstr "查看"
+
+#. Short name of a built-in tool in the Look section: reads the HTML background behind the Imps.
+msgctxt "tool.show_background"
+msgid "View background"
+msgstr "查看背景"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.speak"
+msgid "Speak aloud"
+msgstr "朗读"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.verify"
+msgid "Check results"
+msgstr "检查结果"
+
 #. Button that adds tools.
 msgctxt "tools.add"
 msgid "Add"
 msgstr "添加"
-
-#. Badge for a built-in tool group.
-msgctxt "tools.built_in"
-msgid "Built in"
-msgstr "内置项"
 
 #. Screen reader action.
 msgctxt "tools.collapse"
@@ -3282,8 +3401,8 @@ msgstr "隐藏 {group} 中的工具"
 
 #. Empty state of the tools list.
 msgctxt "tools.empty"
-msgid "No tools yet. Add some from a kit or an MCP server."
-msgstr "还没有工具。可以从套件或 MCP 服务器添加。"
+msgid "No tools yet."
+msgstr "还没有工具。"
 
 #. Screen reader action.
 msgctxt "tools.expand"
@@ -3335,11 +3454,6 @@ msgctxt "tools.help.browser"
 msgid "Lets the Imp look at pages and use the browser you opened for it."
 msgstr "让 Imp 查看网页，并使用你为它打开的浏览器。"
 
-#. Help of the built-in tools list.
-msgctxt "tools.help.built_in"
-msgid "Things the Imp can already do, like look at your screen. Switch off any it should not use."
-msgstr "Imp 本来就会做的事，比如看你的屏幕。把不该用的关掉。"
-
 #. Help of the extra tools list.
 msgctxt "tools.help.mcp"
 msgid "Extra tools added from outside. Each one gives the Imp new things to do."
@@ -3349,11 +3463,6 @@ msgstr "从外面加进来的额外工具。每个都让 Imp 多会一些事。"
 msgctxt "tools.help.server"
 msgid "A program or website that gives the Imp more tools."
 msgstr "给 Imp 提供更多工具的程序或网站。"
-
-#. Badge for a tool group that comes from an MCP server.
-msgctxt "tools.mcp"
-msgid "MCP"
-msgstr "MCP"
 
 #. Status of an MCP server.
 msgctxt "tools.mcp_connected"
@@ -3390,20 +3499,15 @@ msgctxt "tools.new_server"
 msgid "New"
 msgstr "新建"
 
+#. Title of the sheet that adds an MCP server.
+msgctxt "tools.new_server_title"
+msgid "New tool"
+msgstr "新工具"
+
 #. Placeholder of a field that may be left empty.
 msgctxt "tools.optional"
 msgid "Optional"
 msgstr "可选项"
-
-#. Card title in an iPhone Imp's Tools: the tools the Imp has by itself (messaging other Imps, playing animations), each with a switch.
-msgctxt "tools.own"
-msgid "Built in"
-msgstr "内置"
-
-#. Help of the Built in tools card on the iPhone.
-msgctxt "tools.own.info"
-msgid "What the Imp can do by itself. Switch off what it shouldn't use."
-msgstr "Imp 自带的能力。关闭不希望它使用的功能。"
 
 #. Problem on a tool server with no address.
 msgctxt "tools.problem.address"
@@ -3440,10 +3544,120 @@ msgctxt "tools.title"
 msgid "Tools"
 msgstr "工具"
 
-#. Button that adds a trigger.
-msgctxt "triggers.add"
-msgid "Add"
-msgstr "添加"
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.at"
+msgid "Daily at"
+msgstr "每天定时"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.away"
+msgid "Cursor away"
+msgstr "光标离开"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.circle"
+msgid "Circle"
+msgstr "绕圈"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.click"
+msgid "Click"
+msgstr "点击"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.dangle"
+msgid "Bob"
+msgstr "晃动"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.drag"
+msgid "Drag"
+msgstr "拖动"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.drop"
+msgid "Drop"
+msgstr "放下"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.every"
+msgid "Repeat"
+msgstr "重复"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.hold"
+msgid "Hold"
+msgstr "按住"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.near"
+msgid "Cursor near"
+msgstr "光标靠近"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.poke"
+msgid "Poke"
+msgstr "戳"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.rush"
+msgid "Rush"
+msgstr "冲过来"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.shake"
+msgid "Shake"
+msgstr "摇晃"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.stroke"
+msgid "Stroke"
+msgstr "抚摸"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.swish"
+msgid "Swish"
+msgstr "掠过"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.tickle"
+msgid "Tickle"
+msgstr "挠痒"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.ask"
+msgid "Ask"
+msgstr "询问"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.follow"
+msgid "Follow"
+msgstr "跟随"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.open"
+msgid "Open"
+msgstr "打开"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.play"
+msgid "Play"
+msgstr "播放"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.say"
+msgid "Say"
+msgstr "说"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.sleep"
+msgid "Sleep"
+msgstr "睡觉"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.wake"
+msgid "Wake"
+msgstr "醒来"
 
 #. Menu title that adds a condition.
 msgctxt "triggers.cond.add"
@@ -3482,8 +3696,8 @@ msgstr "编辑触发器"
 
 #. Empty state of the triggers list.
 msgctxt "triggers.empty"
-msgid "No triggers yet. Add one and {name} acts on its own."
-msgstr "还没有触发器。添加一个，{name} 就会自己行动。"
+msgid "No triggers yet."
+msgstr "还没有触发器。"
 
 #. Trigger editor row: the steps.
 msgctxt "triggers.f.do"
@@ -3509,11 +3723,6 @@ msgstr "当"
 msgctxt "triggers.follow"
 msgid "Follow"
 msgstr "跟随"
-
-#. Event submenu: pointer gestures on the Imp.
-msgctxt "triggers.gestures"
-msgid "Gestures"
-msgstr "手势"
 
 #. Event menu group: things the Mac does.
 msgctxt "triggers.group.mac"
@@ -3615,6 +3824,11 @@ msgctxt "triggers.open.text_box"
 msgid "Text box"
 msgstr "文本框"
 
+#. Spoken hint of the event button in the trigger editor.
+msgctxt "triggers.pick_event"
+msgid "Opens the list of events."
+msgstr "打开事件列表。"
+
 #. Problem: an ask step with nothing to ask.
 msgctxt "triggers.problem.ask"
 msgid "Write what the Imp should do, or hand over the clipboard."
@@ -3670,10 +3884,10 @@ msgctxt "triggers.share_every"
 msgid "Share to all"
 msgstr "共享给所有"
 
-#. Menu title that adds a step.
-msgctxt "triggers.step.add"
-msgid "Add a step"
-msgstr "添加步骤"
+#. Spoken label of a step tile.
+msgctxt "triggers.step.add_one"
+msgid "Add a step: {name}"
+msgstr "添加步骤：{name}"
 
 #. Toggle of a say step: also speak it.
 msgctxt "triggers.step.aloud"
@@ -3725,6 +3939,11 @@ msgctxt "triggers.step.speed"
 msgid "Speed"
 msgstr "速度"
 
+#. Small word above the step tiles once a trigger has a step.
+msgctxt "triggers.step.then"
+msgid "Then"
+msgstr "然后"
+
 #. Help of the button that moves a step up.
 msgctxt "triggers.step.up"
 msgid "Move up"
@@ -3739,6 +3958,11 @@ msgstr "触发器：{sentence}"
 msgctxt "triggers.title"
 msgid "Triggers"
 msgstr "触发器"
+
+#. Button in the trigger editor that runs the trigger once now.
+msgctxt "triggers.try"
+msgid "Try"
+msgstr "试一下"
 
 #. Button that removes this Imp's version of a shared trigger, so the shared one applies again.
 msgctxt "triggers.use_shared"

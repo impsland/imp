@@ -1,6 +1,6 @@
 import Foundation
 
-/// One group in the Tools list: a built-in group (`own.body`) or an MCP server (`mcp.files`), with
+/// One group in the Tools list: a built-in group (`own.personality`) or an MCP server (`mcp.files`), with
 /// its tools and how many of them an Imp may use. The count is what the registry's own filter
 /// leaves on, so a tool that is off is never counted and never offered.
 public struct ToolGroupState: Identifiable, Equatable, Sendable {

@@ -56,7 +56,7 @@ public struct KitPermissions: Equatable, Sendable {
         ToolRegistry.tools(in: group).map(\.id)
     }
 
-    /// An extra tool's ID: `mcp.<server>.<tool>`. A kit can't know a server's tool names before it runs.
+    /// An MCP tool's ID: `mcp.<server>.<tool>`. A kit can't know a server's tool names before it runs.
     static func mcpID(_ server: String, _ tool: String) -> String {
         ToolRegistry.mcpID(server: server, tool: tool)
     }

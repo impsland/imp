@@ -48,6 +48,7 @@
 		6F4B6CCDC829CEDCD380A8B7 /* PhoneHidden.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0AD477B00E68D68AC1AFBE /* PhoneHidden.swift */; };
 		7111C93069366E5EC047E1EE /* PocketEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FB36350F39A09BB2FEEF16 /* PocketEditor.swift */; };
 		7A9D2DBAD9B544A4CC6A5526 /* DevicesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506007DB685956244438C720 /* DevicesSheet.swift */; };
+		7D1D19EB43C342E37096B687 /* ImpPen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689E459398D22037E7D4BBF2 /* ImpPen.swift */; };
 		81E8A27F77D5519B91EC0977 /* FirstRunPhoneFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75429333D8816180164775B /* FirstRunPhoneFlow.swift */; };
 		826369A99BB16A469039CF4D /* EchoFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBA00ECBA0781D35825508C /* EchoFeedback.swift */; };
 		848910E13A84D80E6B1039E8 /* PhoneSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 975BA420957EF15542EF8161 /* PhoneSnapshotTests.swift */; };
@@ -65,6 +66,7 @@
 		D0C4765E1BF5338C3C911B88 /* PocketDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14593FAE38A1F30FF803BE9 /* PocketDraft.swift */; };
 		D9B7FE1719E7FD951CE923C4 /* ReplyBlocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC6DAEC6034DB822FEE38DF /* ReplyBlocks.swift */; };
 		DC3786EBFC4A7E01E3DBC0A9 /* SpeechMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2353EF82D19F007D953D9A14 /* SpeechMedia.swift */; };
+		DD23542551D0DA956E99A31E /* PhoneBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC80349F644CCEA609733B2A /* PhoneBackground.swift */; };
 		E023BDAE5F8692C1889E5684 /* FirstRunPhone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5573855A49B86BA50342FF8D /* FirstRunPhone.swift */; };
 		E2A456E0593C3BDC40D21A98 /* EchoLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE13A23106BA33A8D58626D4 /* EchoLayer.swift */; };
 		E8BA8DE233B42D3C55E93B74 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86EC44471EB3D16C062A1ABF /* Geometry.swift */; };
@@ -133,6 +135,7 @@
 		58A85E5C1FDD8C554EB50819 /* ChatSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSheet.swift; sourceTree = "<group>"; };
 		5A7D2F37C84A4B750CDB3F71 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		66FB36350F39A09BB2FEEF16 /* PocketEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketEditor.swift; sourceTree = "<group>"; };
+		689E459398D22037E7D4BBF2 /* ImpPen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpPen.swift; sourceTree = "<group>"; };
 		691B235BD86ADF6741E6047A /* ImpPhoneSnapshotTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ImpPhoneSnapshotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7237C199DA3C4E0C6C9D47F8 /* PocketToolsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketToolsPanel.swift; sourceTree = "<group>"; };
 		7240F8717F287F52695EE995 /* Talks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talks.swift; sourceTree = "<group>"; };
@@ -156,6 +159,7 @@
 		C75429333D8816180164775B /* FirstRunPhoneFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunPhoneFlow.swift; sourceTree = "<group>"; };
 		CA842034E0C413C23C9E4305 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		CB667F35A19A58EFCAAF5CB6 /* Extras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extras.swift; sourceTree = "<group>"; };
+		CC80349F644CCEA609733B2A /* PhoneBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneBackground.swift; sourceTree = "<group>"; };
 		CD0AD477B00E68D68AC1AFBE /* PhoneHidden.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneHidden.swift; sourceTree = "<group>"; };
 		CE13A23106BA33A8D58626D4 /* EchoLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoLayer.swift; sourceTree = "<group>"; };
 		D46D53A16721318B46B95A3F /* McpSignInRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = McpSignInRow.swift; sourceTree = "<group>"; };
@@ -264,6 +268,7 @@
 				B6297667BC85BA102DF6A825 /* Face.swift */,
 				86EC44471EB3D16C062A1ABF /* Geometry.swift */,
 				E850DCFCD50F8C2C190C14FC /* Horn.swift */,
+				689E459398D22037E7D4BBF2 /* ImpPen.swift */,
 				2A5E56E2B80612481500C8FE /* ImpRenderer.swift */,
 				1440D33050877E677E46BC2E /* Motion.swift */,
 				5A7D2F37C84A4B750CDB3F71 /* Palette.swift */,
@@ -392,6 +397,7 @@
 			children = (
 				10193FB32C2FF1FBBDF36113 /* BubbleSizes.swift */,
 				5051E3D1AB49B80B5BE06CC1 /* ImpFigure.swift */,
+				CC80349F644CCEA609733B2A /* PhoneBackground.swift */,
 				CD0AD477B00E68D68AC1AFBE /* PhoneHidden.swift */,
 				53AA4BF5359EE139B7D3FAEA /* PhoneStage.swift */,
 				DA5D82CCFC83F4CD980ADB0F /* SpeechBubble.swift */,
@@ -567,6 +573,7 @@
 				52455C5A7F08DCE4CAFFF975 /* Haptics.swift in Sources */,
 				E8F42E3DB6AFD272B99A32B1 /* Horn.swift in Sources */,
 				120F363469D4AEC723B21473 /* ImpFigure.swift in Sources */,
+				7D1D19EB43C342E37096B687 /* ImpPen.swift in Sources */,
 				1FDEBF1B0CAAE0F84003E309 /* ImpPhoneApp.swift in Sources */,
 				5160526D57D45232F430B758 /* ImpRenderer.swift in Sources */,
 				11FFEBB47FE0BB391204D124 /* IssueBadge.swift in Sources */,
@@ -580,6 +587,7 @@
 				3DEB2BEE904FC2E55AD6181E /* Palette.swift in Sources */,
 				AE1DFD9644628E88D62348A5 /* Performance.swift in Sources */,
 				10A8FEAAED3994CB9F8B6877 /* PhoneAppSection.swift in Sources */,
+				DD23542551D0DA956E99A31E /* PhoneBackground.swift in Sources */,
 				EAF290675BD6BDB45644C78D /* PhoneBrainsSection.swift in Sources */,
 				16658C47766CD63B6BE73596 /* PhoneDevicesSection.swift in Sources */,
 				6F4B6CCDC829CEDCD380A8B7 /* PhoneHidden.swift in Sources */,
@@ -670,7 +678,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 29;
+				CURRENT_PROJECT_VERSION = 30;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -685,7 +693,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 3.0.0;
+				MARKETING_VERSION = 3.1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -806,7 +814,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 29;
+				CURRENT_PROJECT_VERSION = 30;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -827,7 +835,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 3.0.0;
+				MARKETING_VERSION = 3.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

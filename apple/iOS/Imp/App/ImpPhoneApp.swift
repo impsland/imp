@@ -64,6 +64,7 @@ struct RootView: View {
     @State private var playing = false
     @State private var toast: String?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.scenePhase) private var scenePhase
 
     private var onStage: Bool { !hub.links.isEmpty || !hub.visits.isEmpty || !pocket.imps.isEmpty }
 
@@ -101,6 +102,11 @@ struct RootView: View {
     var body: some View {
         ZStack {
             Backdrop()
+            // The page the Imps drew behind the room (`PhoneBackground`), once there is a room.
+            if onStage {
+                HTMLBackdrop(html: PhoneBackground.shared.html, plain: RoomBackground.defaultHTML, live: scenePhase == .active)
+                    .transition(.opacity)
+            }
             if !onStage {
                 PairingView(hub: hub, wake: hatchFirstImp)
                     .transition(.opacity)

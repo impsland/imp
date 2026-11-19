@@ -19,12 +19,23 @@ public struct PocketTalk: Sendable {
     /// Sends a message without waiting: returns the receipt at once, the answer comes later as a turn of its own.
     /// Nil: every message waits.
     public var later: (@Sendable (_ to: String, _ text: String) async throws -> String)?
+    /// The page behind the Imps in the room: reads it, and sets it (nil: the plain one). Nil: no background tools.
+    public var background: Background?
+
+    public struct Background: Sendable {
+        public var read: @Sendable () async -> String
+        public var write: @Sendable (_ html: String?) async -> Void
+        public init(read: @escaping @Sendable () async -> String, write: @escaping @Sendable (String?) async -> Void) {
+            self.read = read; self.write = write
+        }
+    }
 
     public init(others: [String] = [], send: (@Sendable (String, String) async throws -> String)? = nil,
                 animations: [String] = [], play: (@Sendable ([String]) async -> Void)? = nil,
-                profiles: [ImpCore.TroupeTargetProfile] = [], later: (@Sendable (String, String) async throws -> String)? = nil) {
+                profiles: [ImpCore.TroupeTargetProfile] = [], later: (@Sendable (String, String) async throws -> String)? = nil,
+                background: Background? = nil) {
         self.others = others; self.send = send; self.animations = animations; self.play = play
-        self.profiles = profiles; self.later = later
+        self.profiles = profiles; self.later = later; self.background = background
     }
 }
 
@@ -181,6 +192,7 @@ struct PocketTools: ToolProvider {
         if talk.send != nil, !talk.others.isEmpty {
             specs.append(OwnTools.messageSpec(imps: talk.others, desktop: false, profiles: talk.profiles, waiting: .decides))
         }
+        if talk.background != nil { specs.append(contentsOf: OwnTools.backgroundSpecs(where: "the room on the iPhone")) }
         return specs
     }
 
@@ -206,6 +218,19 @@ struct PocketTools: ToolProvider {
             // The phone has no setting for it: the Imp chooses with `wait` (`TalkWaiting.decides`).
             if !TalkWaiting.decides.waits(asked: args["wait"]?.bool), let later = talk.later { return try await later(other, text) }
             return "\(other) says: \(try await send(other, text))"
+        case OwnTools.showBackground:
+            guard let background = talk.background else { throw ToolArgumentError("Unknown tool \(name).") }
+            return RoomBackground.shown(await background.read())
+        case OwnTools.setBackground:
+            guard let background = talk.background else { throw ToolArgumentError("Unknown tool \(name).") }
+            if args["reset"]?.bool == true {
+                await background.write(nil)
+                return "The background is the plain one again."
+            }
+            let html = args["html"]?.string ?? ""
+            if let problem = RoomBackground.problem(html) { throw ToolArgumentError(problem) }
+            await background.write(html)
+            return "The background is set: it shows behind every Imp in the room now."
         default:
             throw ToolArgumentError("Unknown tool \(name).")
         }

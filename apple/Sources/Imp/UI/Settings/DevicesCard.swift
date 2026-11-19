@@ -51,13 +51,7 @@ struct DevicesCard: View {
         } content: {
             if link.status?.localNetworkBlocked == true { LocalNetworkNotice() }
             if peers.isEmpty {
-                VStack(spacing: Spacing.small) {
-                    Image(systemName: "laptopcomputer.and.iphone").font(.icon(.large)).foregroundStyle(Tone.muted)
-                    Text("devices.empty").font(Typeface.body).foregroundStyle(Tone.muted)
-                        .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, Spacing.large)
+                EmptyState("devices.empty", symbol: "laptopcomputer.and.iphone")
             } else {
                 VStack(spacing: Spacing.snug) {
                     ForEach(peers) { peer in peerRow(peer) }

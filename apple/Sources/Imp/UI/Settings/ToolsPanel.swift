@@ -14,9 +14,9 @@ extension AppModel {
     }
 }
 
-/// One list of everything the Imp can do: the built-in groups from the core registry, then the MCP
-/// servers as groups. A group has a switch and "n of m on", and opens to its tools. A tool that is off
-/// is never offered to the model: the count and the offer both come from the registry's one filter.
+/// The Imp's tools: the MCP servers it may use, each a group with a switch and "n of m on" that opens
+/// to its tools. A tool that is off is never offered to the model: the count and the offer both come
+/// from the registry's one filter. The built-in tools live in the sections they belong to.
 struct ToolsPanel: View {
     @Bindable var model: AppModel
     @Binding var imp: ImpProfile
@@ -36,26 +36,16 @@ struct ToolsPanel: View {
     private var servers: [MCPServerConfig] { model.prefs.mcpServers }
 
     var body: some View {
-        PanelList("tools.built_in", icon: "wrench.and.screwdriver.fill", info: "tools.help.built_in") {
-            VStack(spacing: Spacing.snug) {
-                ForEach(ToolGroups.own(for: imp)) { group in
-                    groupRow(group)
-                }
-                commandsRow
-                browserRow
-            }
-        }
-        .settingAnchor(.toolsBuiltIn)
-        PanelList("tools.mcp", icon: "puzzlepiece.extension.fill", info: "tools.help.mcp", accessory: {
+        PanelList("tools.title", icon: "puzzlepiece.extension.fill", info: "tools.help.mcp", accessory: {
             HStack(spacing: Spacing.small) {
-                HoverIconButton(systemName: "shippingbox", help: "Import kit…") { HomeWindow.shared.router.kitFlow = KitFlow(imp: imp.id) }
+                ImportKitButton(imp: imp.id)
+                AgentToolsButton(imp: $imp, groups: [.tools])
                 Button { adding = true } label: { FitLabel("tools.add", systemImage: "plus") }
                     .buttonStyle(.imp(.secondary, small: true))
             }
         }) {
             if servers.isEmpty {
-                Text("tools.empty").font(Typeface.body).foregroundStyle(Tone.muted)
-                    .fixedSize(horizontal: false, vertical: true).padding(.horizontal, Spacing.small)
+                EmptyState("tools.empty", symbol: ImpSetting.tools.symbol, fills: true)
             } else {
                 let groups = ToolGroups.mcp(for: imp, servers: servers, tools: model.mcpToolNames)
                 VStack(spacing: Spacing.snug) {
@@ -65,7 +55,7 @@ struct ToolsPanel: View {
                 }
             }
         }
-        .settingAnchor(.toolsExtra)
+        .settingAnchor(.toolsServers)
         .sheet(isPresented: $adding) { AddToolsSheet(model: model, imp: $imp, edit: { editing = $0 }) }
         .sheet(item: $editing) { draft in
             ServerEditor(draft: draft.server, isNew: draft.isNew, hub: model.assistant.hub) { saved in
@@ -106,7 +96,6 @@ struct ToolsPanel: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(words(isOpen ? "tools.collapse" : "tools.expand", title))
-                if !isServer(group) { groupInfo(group) }
                 Toggle(isOn: groupBinding(group)) { Text(verbatim: title) }
                     .labelsHidden().toggleStyle(.impSwitchBare)
                     .accessibilityLabel(words("tools.group_switch", title))
@@ -115,14 +104,6 @@ struct ToolsPanel: View {
         }
         .pebble()
         .impAnimation(ImpDesign.Motion.expand, value: isOpen)
-    }
-
-    /// What the group lets the Imp do: the registry's own sentence for a built-in group.
-    @ViewBuilder private func groupInfo(_ group: ToolGroupState) -> some View {
-        switch group.source {
-        case .own(let g): InfoTip(verbatim: g.summary)
-        case .server: InfoTip("tools.help.server")
-        }
     }
 
     /// One short line under the name: a dot and a word for a server (plus the count), the count for
@@ -159,7 +140,6 @@ struct ToolsPanel: View {
 
     private func toolRows(_ group: ToolGroupState) -> some View {
         VStack(alignment: .leading, spacing: Spacing.snug) {
-            if group.tools.isEmpty, case .own = group.source { Text("tools.empty").font(Typeface.small).foregroundStyle(Tone.muted) }
             ForEach(group.tools) { tool in
                 let name = tool.title.isEmpty ? tool.name : tool.title
                 HStack(spacing: Spacing.small) {
@@ -171,7 +151,6 @@ struct ToolsPanel: View {
                 }
                 .frame(minHeight: Sizing.hit)
             }
-            if case .own(.computer) = group.source, group.isOn { computerPermissions }
             if case .server(let id) = group.source, let server = servers.first(where: { $0.id == id }) {
                 if group.isOn, case .failed? = model.assistant.toolStatus[server.id] {
                     Text(words("error.tool_failed", server.name)).font(Typeface.small).foregroundStyle(Tone.danger)
@@ -182,10 +161,7 @@ struct ToolsPanel: View {
         }
         .padding(.leading, Spacing.wide)
         .opacity(group.isOn ? 1 : Opacity.disabled)
-        .disabled(!group.isOn && !isServer(group))
     }
-
-    private func isServer(_ group: ToolGroupState) -> Bool { if case .server = group.source { true } else { false } }
 
     private func serverActions(_ server: MCPServerConfig) -> some View {
         HStack(spacing: Spacing.snug) {
@@ -239,58 +215,6 @@ struct ToolsPanel: View {
                 if use { if !p.imps[i].servers.contains(id) { p.imps[i].servers.append(id) } } else { p.imps[i].servers.removeAll { $0 == id } }
                 model.changeByPerson(p)
             })
-        }
-    }
-
-    /// Running commands on this Mac (the shell) is one switch, not a list of tools.
-    private var commandsRow: some View {
-        Row("Commands", icon: "terminal.fill", info: "Runs commands on your Mac with your permissions, without asking first.") {
-            HStack(spacing: Spacing.small) {
-                HoverIconButton(systemName: "folder", help: "Show \(imp.callName)'s folder. Commands start there.") {
-                    let folder = Workspace.directory(for: imp.id)
-                    try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-                    NSWorkspace.shared.open(folder)
-                }
-                Toggle(isOn: $imp.usesShell) { Text("Commands") }.labelsHidden().toggleStyle(.impSwitchBare)
-            }
-        }
-        .settingAnchor(.toolsCommands)
-        .pebble()
-    }
-
-    private var browserRow: some View {
-        let bridge = BrowserBridge.shared
-        return Row("Browser", icon: "globe", info: "tools.help.browser") {
-            HStack(spacing: Spacing.small) {
-                if let page = bridge.page, bridge.isConnected {
-                    StatusText(text: "Connected to \(page.browser)", symbol: "checkmark.circle.fill", color: Tone.good)
-                } else if bridge.isConnected {
-                    StatusText(text: "Connected", symbol: "checkmark.circle.fill", color: Tone.good)
-                } else {
-                    StatusText(text: "Not connected", symbol: "circle.dashed")
-                }
-                HoverIconButton(systemName: "folder", help: "Show the extension's folder") { ExtensionFolder.reveal() }
-            }
-        }
-        .settingAnchor(.toolsBrowser)
-        .pebble()
-    }
-
-    /// What computer control still needs from macOS, with the buttons to grant it.
-    @ViewBuilder private var computerPermissions: some View {
-        let status = SystemStatus.shared
-        let missing = Permission.computerControl.filter { !status.isGranted($0) }
-        if missing.isEmpty {
-            StatusText(text: "Permissions granted", symbol: "checkmark.circle.fill", color: Tone.good)
-        } else {
-            ForEach(missing) { p in
-                HStack(spacing: Spacing.small) {
-                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Tone.warnText).font(.icon(.small))
-                    Text("\(p.title) is off").font(Typeface.small).foregroundStyle(Tone.text)
-                    Spacer(minLength: Spacing.small)
-                    Button("Allow…") { p.request() }.buttonStyle(.imp(.primary, small: true))
-                }
-            }
         }
     }
 
@@ -356,7 +280,7 @@ struct AddToolsSheet: View {
     }
 }
 
-/// A big, plain button for adding something (an extra tool).
+/// A big, plain button for adding something (a tool).
 struct AddToolTile: View {
     let icon: String
     let title: Text

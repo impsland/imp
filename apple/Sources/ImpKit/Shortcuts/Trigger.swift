@@ -64,9 +64,44 @@ public enum TriggerEvent: String, Codable, CaseIterable, Sendable, Identifiable 
     /// Happens to the Imp itself, not on the Mac: needs no Mac state.
     public var isBodily: Bool { self == .idle || self == .near || self == .away }
 
+    /// One or two words, for its tile and its menu.
     public var title: String {
         switch self {
         case .keys: String(localized: "Keys")
+        case .click: String(localized: "trigger.event.click")
+        case .poke: String(localized: "trigger.event.poke")
+        case .hold: String(localized: "trigger.event.hold")
+        case .drag: String(localized: "trigger.event.drag")
+        case .drop: String(localized: "trigger.event.drop")
+        case .shake: String(localized: "trigger.event.shake")
+        case .stroke: String(localized: "trigger.event.stroke")
+        case .tickle: String(localized: "trigger.event.tickle")
+        case .circle: String(localized: "trigger.event.circle")
+        case .swish: String(localized: "trigger.event.swish")
+        case .rush: String(localized: "trigger.event.rush")
+        case .dangle: String(localized: "trigger.event.dangle")
+        case .near: String(localized: "trigger.event.near")
+        case .away: String(localized: "trigger.event.away")
+        case .start: String(localized: "Imp starts")
+        case .at: String(localized: "trigger.event.at")
+        case .every: String(localized: "trigger.event.every")
+        case .idle: String(localized: "Left alone")
+        case .back: String(localized: "You come back")
+        case .wake: String(localized: "Mac wakes up")
+        case .app: String(localized: "App in front")
+        case .website: String(localized: "Website")
+        case .battery: String(localized: "Battery low")
+        case .charger: String(localized: "Charger")
+        case .busy: String(localized: "Mac is busy")
+        case .hot: String(localized: "Mac runs hot")
+        case .network: String(localized: "Network")
+        }
+    }
+
+    /// What it means, in a few more words: the tooltip of its tile.
+    public var hint: String {
+        switch self {
+        case .keys: String(localized: "A shortcut on the keyboard")
         case .click: String(localized: "Clicks on the Imp")
         case .poke: String(localized: "4 quick clicks")
         case .hold: String(localized: "Press and hold it")
@@ -81,19 +116,19 @@ public enum TriggerEvent: String, Codable, CaseIterable, Sendable, Identifiable 
         case .dangle: String(localized: "Bob the cursor above it")
         case .near: String(localized: "Cursor comes close")
         case .away: String(localized: "Cursor moves away")
-        case .start: String(localized: "Imp starts")
+        case .start: String(localized: "The Imp starts, or the trigger is switched on")
         case .at: String(localized: "Every day at")
-        case .every: String(localized: "Every few minutes")
+        case .every: String(localized: "Again and again, every few minutes")
         case .idle: String(localized: "Left alone")
         case .back: String(localized: "You come back")
         case .wake: String(localized: "Mac wakes up")
-        case .app: String(localized: "App in front")
-        case .website: String(localized: "Website")
-        case .battery: String(localized: "Battery low")
-        case .charger: String(localized: "Charger")
+        case .app: String(localized: "An app comes to the front")
+        case .website: String(localized: "A website opens in the browser")
+        case .battery: String(localized: "The battery runs low")
+        case .charger: String(localized: "The charger is plugged in or out")
         case .busy: String(localized: "Mac is busy")
         case .hot: String(localized: "Mac runs hot")
-        case .network: String(localized: "Network")
+        case .network: String(localized: "The network goes away or comes back")
         }
     }
 
@@ -163,6 +198,21 @@ public enum TriggerState: String, Codable, CaseIterable, Sendable, Identifiable 
         case .hours: String(localized: "Time of day")
         case .days: String(localized: "Days")
         case .asleep: String(localized: "Asleep")
+        }
+    }
+
+    public var symbol: String {
+        switch self {
+        case .battery: "battery.25percent"
+        case .charger: "powerplug"
+        case .app: "macwindow"
+        case .website: "globe"
+        case .busy: "cpu"
+        case .hot: "thermometer.high"
+        case .network: "wifi"
+        case .hours: "clock"
+        case .days: "calendar"
+        case .asleep: "moon.zzz"
         }
     }
 
@@ -273,7 +323,7 @@ public struct Trigger: Codable, Hashable, Sendable {
         switch event {
         case .keys: String(localized: "Keys")
         case .click: clicks == 1 ? String(localized: "1 click on the Imp") : String(localized: "\(clicks) clicks on the Imp")
-        case .poke, .hold, .drag, .drop, .shake, .stroke, .tickle, .circle, .swish, .rush, .dangle: event.title
+        case .poke, .hold, .drag, .drop, .shake, .stroke, .tickle, .circle, .swish, .rush, .dangle: event.hint
         case .near: nearSeconds == 0 ? String(localized: "The cursor comes close") : String(localized: "The cursor rests beside it for \(Self.seconds(nearSeconds))")
         case .away: String(localized: "The cursor moves away")
         case .start: String(localized: "Imp starts")

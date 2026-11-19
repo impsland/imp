@@ -6,6 +6,8 @@ import SwiftUI
 /// shows at once, without animation, and is kept as it is made.
 struct PocketLookPanel: View {
     @Bindable var draft: PocketDraft
+    /// What the Imp may do by itself here (the room's background) is open.
+    @State private var agentTools = false
     /// Off while the Imp itself is in view in the room above a half sheet: it shows every change there.
     var showsImp = true
 
@@ -16,7 +18,12 @@ struct PocketLookPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             if showsImp { stage }
-            PocketCard(title: "look.colour") {
+            PocketCard(title: "look.colour", accessory: {
+                Button { agentTools = true } label: { Image(systemName: "wand.and.sparkles") }
+                    .buttonStyle(.quiet)
+                    .accessibilityLabel(Text(verbatim: words("agent.button", draft.name.trimmed)))
+                    .accessibilityIdentifier("agent.tools")
+            }) {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: Sizing.hit), spacing: 0)], spacing: 0) {
                     ForEach(Array(PocketDraft.hues.enumerated()), id: \.offset) { index, hue in
                         swatch(hue, index: index)
@@ -54,6 +61,7 @@ struct PocketLookPanel: View {
                 TraitSlider(label: "look.pace", value: t.tempo, range: 0.6...1.6, shown: String(format: "%.1f×", draft.traits.tempo))
             }
         }
+        .sheet(isPresented: $agentTools) { PocketAgentTools(draft: draft, tools: PocketDraft.lookTools) }
     }
 
     /// The Imp at its size in the room (the stage's own measure), on a floor as tall as the biggest one. It follows the
@@ -90,13 +98,17 @@ struct PocketLookPanel: View {
     }
 }
 
-/// The Personality panel: who the Imp is. Its name, and how it talks.
+/// The Personality panel: who the Imp is (its name and description in one block) and how it talks. The
+/// wand in the Persona header opens what it may do by itself, as on the Mac.
 struct PocketPersonalityPanel: View {
     @Bindable var draft: PocketDraft
     @FocusState private var focused: Bool
+    /// What the Imp may do by itself here is open.
+    @State private var agentTools = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
+            // Who it is, in one block: the name and a short description the other Imps read.
             PocketCard(title: "personality.name") {
                 TextField("personality.name", text: $draft.name)
                     .impField()
@@ -105,8 +117,23 @@ struct PocketPersonalityPanel: View {
                     .accessibilityIdentifier("personality.name")
                 if let problem = draft.nameProblem { IssueBadge(text: problem) }
                 else if draft.name.trimmed.isEmpty { IssueBadge(text: String(localized: "personality.name_empty")) }
+                Titled(title: "personality.about", tip: InfoTip("personality.help.about")) {
+                    TextArea("personality.about", text: $draft.about, placeholder: "personality.about_hint", minLines: 2, maxLines: 4)
+                        .focused($focused)
+                        .submitLabel(.done)
+                        .onChange(of: draft.about) { _, text in
+                            guard text.contains("\n") else { return }
+                            draft.about = text.replacingOccurrences(of: "\n", with: "")
+                            focused = false
+                        }
+                }
             }
-            PocketCard(title: "personality.persona") {
+            PocketCard(title: "personality.persona", accessory: {
+                Button { agentTools = true } label: { Image(systemName: "wand.and.sparkles") }
+                    .buttonStyle(.quiet)
+                    .accessibilityLabel(Text(verbatim: words("agent.button", draft.name.trimmed)))
+                    .accessibilityIdentifier("agent.tools")
+            }) {
                 TextArea("personality.persona", text: $draft.personality, placeholder: "phone.persona.placeholder", minLines: 3, maxLines: 8)
                     .focused($focused)
                     .submitLabel(.done)
@@ -117,16 +144,38 @@ struct PocketPersonalityPanel: View {
                         focused = false
                     }
             }
-            PocketCard(title: "personality.about", tip: String(localized: "personality.help.about")) {
-                TextArea("personality.about", text: $draft.about, placeholder: "personality.about_hint", minLines: 2, maxLines: 4)
-                    .focused($focused)
-                    .submitLabel(.done)
-                    .onChange(of: draft.about) { _, text in
-                        guard text.contains("\n") else { return }
-                        draft.about = text.replacingOccurrences(of: "\n", with: "")
-                        focused = false
+        }
+        .sheet(isPresented: $agentTools) { PocketAgentTools(draft: draft, tools: PocketDraft.ownTools) }
+    }
+}
+
+/// What a pocket Imp may do by itself: its built-in tools, each with a switch.
+struct PocketAgentTools: View {
+    @Bindable var draft: PocketDraft
+    let tools: [ToolEntry]
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(tools) { tool in
+                    Toggle(isOn: Binding(get: { draft.uses(tool) }, set: { draft.setUses(tool, $0) })) {
+                        Text(verbatim: tool.title).font(Typeface.body).foregroundStyle(Tone.text)
                     }
+                    .toggleStyle(.impSwitch)
+                    .frame(minHeight: Sizing.hit)
+                    .accessibilityIdentifier("tools.\(tool.name)")
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(Spacing.page)
+            .selectionHaptic(draft.toolsOff)
+            .navigationTitle(Text(verbatim: words("agent.title", draft.name.trimmed)))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) { Button("common.done") { dismiss() }.accessibilityIdentifier("agent.done") }
             }
         }
+        .presentationDetents([.medium])
     }
 }

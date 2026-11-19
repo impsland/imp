@@ -28,44 +28,8 @@ struct HomeActions {
 
     // MARK: The background
 
-    func setBackground(_ kind: CanvasBackground.Kind) {
-        if kind.usesImage, model.prefs.background.image == nil {
-            choosePicture(becoming: kind)
-        } else {
-            model.prefs.background.kind = kind
-        }
-    }
-
-    /// Asks for a picture. `kind` is what the background becomes: the current picture or tile choice if it is one already.
-    func choosePicture(becoming kind: CanvasBackground.Kind? = nil) {
-        let panel = NSOpenPanel()
-        panel.allowedContentTypes = [.image]
-        panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = false
-        panel.message = String(localized: "background.tile_hint")
-        Task { @MainActor in
-            guard await panel.begin() == .OK, let url = panel.url else { return }
-            adopt(url, becoming: kind ?? (model.prefs.background.kind.usesImage ? model.prefs.background.kind : .picture))
-        }
-    }
-
-    /// Copies the picture in and uses it. A file that can't be used changes nothing.
-    func adopt(_ url: URL, becoming kind: CanvasBackground.Kind) {
-        do {
-            let name = try BackgroundFiles.adopt(url, replacing: model.prefs.background.image)
-            model.prefs.background.image = name
-            model.prefs.background.kind = kind
-        } catch {
-            router.pictureFailed = true
-        }
-    }
-
-    func chooseColour() {
-        model.prefs.background.kind = .colour
-        BackgroundColourPanel.shared.show(current: model.prefs.background.colour) { colour in
-            model.prefs.background.colour = colour
-        }
-    }
+    /// Puts the plain background back (the Imps make the others).
+    func resetBackground() { model.prefs.background = RoomBackground.defaultHTML }
 
     // MARK: An Imp
 
@@ -210,29 +174,5 @@ struct HomeActions {
     private func kit(_ id: UUID) -> Kit? {
         guard let imp = model.profile(id) else { return nil }
         return ImpExport.kit([id], model: model, name: imp.callName)
-    }
-}
-
-/// The system colour panel, for the canvas's colour.
-@MainActor
-final class BackgroundColourPanel: NSObject {
-    static let shared = BackgroundColourPanel()
-    private var onChange: ((CanvasBackground.Colour) -> Void)?
-
-    func show(current: CanvasBackground.Colour, onChange: @escaping (CanvasBackground.Colour) -> Void) {
-        self.onChange = onChange
-        let panel = NSColorPanel.shared
-        panel.setTarget(nil)
-        panel.color = NSColor(srgbRed: current.red, green: current.green, blue: current.blue, alpha: 1)
-        panel.showsAlpha = false
-        panel.isContinuous = true
-        panel.setTarget(self)
-        panel.setAction(#selector(changed(_:)))
-        panel.orderFront(nil)
-    }
-
-    @objc private func changed(_ panel: NSColorPanel) {
-        guard let c = panel.color.usingColorSpace(.sRGB) else { return }
-        onChange?(CanvasBackground.Colour(red: c.redComponent, green: c.greenComponent, blue: c.blueComponent))
     }
 }

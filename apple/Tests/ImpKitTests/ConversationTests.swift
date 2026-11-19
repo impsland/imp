@@ -47,7 +47,7 @@ import Testing
 
     @Test func theToolOffersTheChoiceOnlyWhenTheSenderDecides() {
         func argument(_ on: Bool) -> JSONValue? {
-            OwnTools.specs([.troupe], animations: [], imps: ["Pip"], browser: false, conversation: on).first?.inputSchema["properties"]?["conversation"]
+            OwnTools.specs([.personality], animations: [], imps: ["Pip"], browser: false, conversation: on).first { $0.name == OwnTools.message }?.inputSchema["properties"]?["conversation"]
         }
         #expect(argument(true) != nil && argument(false) == nil)
     }

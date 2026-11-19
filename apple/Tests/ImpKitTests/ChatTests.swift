@@ -296,7 +296,7 @@ private func toolExchange(_ ask: String = "Make it sound nicer", file: String = 
         #expect(ImpTalk.decides.place(asked: "shared") == .shared && ImpTalk.decides.place(asked: nil) == .own)
         #expect(ImpPreferences().impTalk == .own)
         func chatArgument(_ talk: ImpTalk) -> Bool {
-            let spec = OwnTools.specs([.troupe], animations: [], imps: ["Pip"], browser: false, talk: talk).first
+            let spec = OwnTools.specs([.personality], animations: [], imps: ["Pip"], browser: false, talk: talk).first { $0.name == OwnTools.message }
             return spec?.inputSchema["properties"]?["chat"] != nil
         }
         #expect(chatArgument(.decides) && !chatArgument(.own) && !chatArgument(.shared))

@@ -2,8 +2,8 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// Who the Imp is: its name, its persona and what it is good at. The name is part of the personality,
-/// not of the look.
+/// Who the Imp is: its name and description in one block, then its persona and reply rules. The Imp's
+/// own abilities here (speaking aloud, messaging the other Imps…) open from the Persona header.
 struct PersonalityPanel: View {
     @Bindable var model: AppModel
     @Binding var imp: ImpProfile
@@ -14,7 +14,7 @@ struct PersonalityPanel: View {
 
     private var nameIsEmpty: Bool { name.trimmingCharacters(in: .whitespaces).isEmpty }
 
-    /// What it's good at, cut to `ImpProfile.maxAboutLength` as it's typed. Empty is stored as nothing.
+    /// The description, cut to `ImpProfile.maxAboutLength` as it's typed. Empty is stored as nothing.
     private var aboutText: Binding<String> {
         Binding(get: { imp.about ?? "" },
                 set: { imp.about = $0.isEmpty ? nil : String($0.prefix(ImpProfile.maxAboutLength)) })
@@ -23,35 +23,37 @@ struct PersonalityPanel: View {
     private static var wellHeight: CGFloat { Sizing.control * 4 }
 
     var body: some View {
-        PanelSection("personality.name", icon: "signature", info: "personality.help.name") {
-            // An empty field says what it needs in its own prompt, with a red ring and mark. No line under
-            // the field is kept free for a message that rarely appears.
-            TextField("personality.name", text: $name, prompt: nameIsEmpty ? Text("personality.name_empty") : nil)
-                .impField(problem: nameIsEmpty ? String(localized: "personality.name_empty") : nil)
-                .accessibilityLabel(Text("personality.name"))
-                .onChange(of: name) { _, new in
-                    // An empty name is not saved: the Imp keeps the one it had.
-                    if !new.trimmingCharacters(in: .whitespaces).isEmpty { imp.name = new }
-                }
+        // Who it is, in one block: the name and a short description the other Imps read.
+        PanelSection {
+            FieldRow("personality.name", info: "personality.help.name") {
+                // An empty field says what it needs in its own prompt, with a red ring and mark.
+                TextField("personality.name", text: $name, prompt: nameIsEmpty ? Text("personality.name_empty") : nil)
+                    .impField(problem: nameIsEmpty ? String(localized: "personality.name_empty") : nil)
+                    .accessibilityLabel(Text("personality.name"))
+                    .onChange(of: name) { _, new in
+                        // An empty name is not saved: the Imp keeps the one it had.
+                        if !new.trimmingCharacters(in: .whitespaces).isEmpty { imp.name = new }
+                    }
+            }
+            .settingAnchor(.personalityName)
+            FieldRow("personality.about", info: "personality.help.about") {
+                TextField("personality.about", text: aboutText, prompt: Text("personality.about_hint"), axis: .vertical)
+                    .lineLimit(1...2)
+                    .impField()
+                    .accessibilityLabel(Text("personality.about"))
+            }
+            .settingAnchor(.personalityAbout)
         }
-        .settingAnchor(.personalityName)
         .onAppear { if !loaded { name = imp.name; loaded = true } }
 
-        PanelSection("personality.persona", icon: "theatermasks.fill", info: "personality.help.persona") {
+        PanelSection("personality.persona", icon: "theatermasks.fill", info: "personality.help.persona",
+                     accessory: { AgentToolsButton(imp: $imp, groups: [.personality]) }) {
             EditorWell(text: $imp.personality,
                        placeholder: "A grumpy librarian who loves puns? A cheerful cheerleader?",
                        height: Self.wellHeight)
             instructions
         }
         .settingAnchor(.personalityPersona)
-
-        PanelSection("personality.about", icon: "sparkle.magnifyingglass", info: "personality.help.about") {
-            TextField("personality.about", text: aboutText, prompt: Text("personality.about_hint"), axis: .vertical)
-                .lineLimit(1...2)
-                .impField()
-                .accessibilityLabel(Text("personality.about"))
-        }
-        .settingAnchor(.personalityAbout)
     }
 
     /// The rest of the system prompt: most people never need it, but it is all theirs to change. One row

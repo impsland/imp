@@ -95,15 +95,15 @@ import Testing
         var a = imp("A")
         a.servers = [files.id, disabled.id]
         var b = imp("B")
-        b.setUses(.troupe, false)
+        b.setUses(.personality, false)
         let map = DeviceMap.build(thisMac: "Mac", peers: [], server: "", imps: [a, b], mcpServers: [files, disabled])
         let tools = map.imp(a.id)!.tools
-        #expect(tools.contains { $0.id == "own.body" })
+        #expect(tools.contains { $0.id == "own.personality" })
         #expect(!tools.contains { $0.id == "own.computer" })
         #expect(tools.filter { $0.source == .mcp }.map(\.title) == ["Files"])
         #expect(map.imp(a.id)?.talksTo.map(\.id) == [b.id])
         #expect(map.imp(b.id)?.talksTo.isEmpty == true)
-        #expect(map.imp(b.id)?.tools.contains { $0.id == "own.troupe" } == false)
+        #expect(map.imp(b.id)?.tools.contains { $0.id == "own.personality" } == false)
     }
 
     /// A line between two see-through tiles is drawn only where it crosses neither, nor a label.

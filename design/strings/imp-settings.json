@@ -36,68 +36,13 @@
     "zh-Hans": "动作"
   },
   "imp_settings.list.label": {
-    "note": "Screen reader name of the plain list of settings.",
+    "note": "Spoken name of the rail of sections of one Imp's settings.",
     "args": {
       "name": "string"
     },
-    "en": "All settings for {name}",
-    "es": "Todos los ajustes de {name}",
-    "zh-Hans": "{name} 的所有设置"
-  },
-  "imp_settings.summary.brain_none": {
-    "note": "Summary line of the Brain row when the Imp has no Brain.",
-    "en": "Asleep",
-    "es": "Dormido",
-    "zh-Hans": "沉睡"
-  },
-  "imp_settings.summary.brain_set": {
-    "note": "Summary line of the Brain row: service and model.",
-    "args": {
-      "service": "string",
-      "model": "string"
-    },
-    "en": "{service}, {model}",
-    "es": "{service}, {model}",
-    "zh-Hans": "{service}，{model}"
-  },
-  "imp_settings.summary.look": {
-    "note": "Summary line of the Look row.",
-    "en": "Colour and size",
-    "es": "Color y tamaño",
-    "zh-Hans": "颜色与大小"
-  },
-  "imp_settings.summary.personality": {
-    "note": "Summary line of the Personality row.",
-    "en": "Name and persona",
-    "es": "Nombre y personalidad",
-    "zh-Hans": "名字与人设"
-  },
-  "imp_settings.summary.tools": {
-    "note": "Summary line of the Tools row.",
-    "args": {
-      "on": "int",
-      "total": "int"
-    },
-    "en": "{on} of {total} on",
-    "es": "{on} de {total}",
-    "zh-Hans": "已开启 {on}/{total}"
-  },
-  "imp_settings.summary.triggers": {
-    "note": "Summary line of the Triggers row.",
-    "args": {
-      "count": "int"
-    },
-    "en": {
-      "one": "{count} trigger",
-      "other": "{count} triggers"
-    },
-    "es": {
-      "one": "{count} disparador",
-      "other": "{count} disparadores"
-    },
-    "zh-Hans": {
-      "other": "{count} 个触发器"
-    }
+    "en": "Settings for {name}",
+    "es": "Ajustes de {name}",
+    "zh-Hans": "{name} 的设置"
   },
   "imp_settings.value.asleep": {
     "note": "Short value in the settings list when the Imp has no Brain.",
@@ -115,12 +60,6 @@
     "es": "{on}/{total}",
     "zh-Hans": "{on}/{total}"
   },
-  "imp_settings.summary.moves": {
-    "note": "Summary line of the Moves row.",
-    "en": "Animations",
-    "es": "Animaciones",
-    "zh-Hans": "动画效果"
-  },
   "imp_settings.brain_marker.asleep": {
     "note": "Screen reader label of the unlit Brain marker.",
     "args": {
@@ -129,16 +68,6 @@
     "en": "{name} is asleep. Give it a Brain.",
     "es": "{name} está dormido. Dale un cerebro.",
     "zh-Hans": "{name} 睡着了。给它一个大脑吧。"
-  },
-  "imp_settings.brain_marker.awake": {
-    "note": "Screen reader label of the lit Brain marker.",
-    "args": {
-      "service": "string",
-      "model": "string"
-    },
-    "en": "Brain: {service}, {model}",
-    "es": "Cerebro: {service}, {model}",
-    "zh-Hans": "大脑：{service}，{model}"
   },
   "imp_settings.share": {
     "note": "Icon button label in the top corner.",
@@ -199,27 +128,6 @@
     "en": "Keep {name}",
     "es": "Conservar {name}",
     "zh-Hans": "留下 {name}"
-  },
-  "share.title": {
-    "note": "Title of the share sheet.",
-    "args": {
-      "name": "string"
-    },
-    "en": "Share {name}",
-    "es": "Compartir {name}",
-    "zh-Hans": "共享 {name}"
-  },
-  "share.note": {
-    "note": "Note on the share sheet about what travels.",
-    "en": "Its look, personality, tools and triggers are shared. Keys, memory and chats never are.",
-    "es": "Se comparten su aspecto, personalidad, herramientas y disparadores. Las claves, la memoria y los chats nunca.",
-    "zh-Hans": "会共享它的外观、个性、工具和触发器。密钥、记忆和聊天永远不会共享。"
-  },
-  "share.file": {
-    "note": "Share sheet choice: a kit file.",
-    "en": "File",
-    "es": "Archivo",
-    "zh-Hans": "文件"
   },
   "look.title": {
     "note": "Panel title.",
@@ -480,18 +388,6 @@
     "es": "Ocultar herramientas de {group}",
     "zh-Hans": "隐藏 {group} 中的工具"
   },
-  "tools.built_in": {
-    "note": "Badge for a built-in tool group.",
-    "en": "Built in",
-    "es": "Integradas",
-    "zh-Hans": "内置项"
-  },
-  "tools.mcp": {
-    "note": "Badge for a tool group that comes from an MCP server.",
-    "en": "MCP",
-    "es": "MCP",
-    "zh-Hans": "MCP"
-  },
   "tools.mcp_connected": {
     "note": "Status of an MCP server.",
     "en": "Connected",
@@ -512,9 +408,9 @@
   },
   "tools.empty": {
     "note": "Empty state of the tools list.",
-    "en": "No tools yet. Add some from a kit or an MCP server.",
-    "es": "Aún no hay herramientas. Añade algunas desde un kit o un servidor MCP.",
-    "zh-Hans": "还没有工具。可以从套件或 MCP 服务器添加。"
+    "en": "No tools yet.",
+    "es": "Aún no hay herramientas.",
+    "zh-Hans": "还没有工具。"
   },
   "tools.add": {
     "note": "Button that adds tools.",
@@ -537,12 +433,6 @@
     "es": "Disparador: {sentence}",
     "zh-Hans": "触发器：{sentence}"
   },
-  "triggers.add": {
-    "note": "Button that adds a trigger.",
-    "en": "Add",
-    "es": "Añadir",
-    "zh-Hans": "添加"
-  },
   "triggers.edit": {
     "note": "Action on a trigger.",
     "en": "Edit trigger",
@@ -557,18 +447,15 @@
   },
   "triggers.empty": {
     "note": "Empty state of the triggers list.",
-    "args": {
-      "name": "string"
-    },
-    "en": "No triggers yet. Add one and {name} acts on its own.",
-    "es": "Aún no hay disparadores. Añade uno y {name} actuará por su cuenta.",
-    "zh-Hans": "还没有触发器。添加一个，{name} 就会自己行动。"
+    "en": "No triggers yet.",
+    "es": "Aún no hay disparadores.",
+    "zh-Hans": "还没有触发器。"
   },
   "moves.empty": {
-    "note": "Empty state of the moves panel.",
-    "en": "No special moves yet.",
-    "es": "Sin movimientos aún.",
-    "zh-Hans": "还没有特别的动作。"
+    "note": "Empty state of the animations list.",
+    "en": "No animations yet.",
+    "es": "Aún no hay animaciones.",
+    "zh-Hans": "还没有动画。"
   },
   "imp_settings.this_imp": {
     "note": "Stands in for the Imp's name while its name is empty.",
@@ -743,12 +630,6 @@
     "en": "Moves made for only this Imp. They play instead of the shared ones.",
     "es": "Movimientos hechos solo para este Imp. Se usan en lugar de los compartidos.",
     "zh-Hans": "只为这个 Imp 做的动作。它们会代替共用的动作。"
-  },
-  "tools.help.built_in": {
-    "note": "Help of the built-in tools list.",
-    "en": "Things the Imp can already do, like look at your screen. Switch off any it should not use.",
-    "es": "Cosas que el Imp ya sabe hacer, como mirar tu pantalla. Apaga las que no deba usar.",
-    "zh-Hans": "Imp 本来就会做的事，比如看你的屏幕。把不该用的关掉。"
   },
   "tools.help.mcp": {
     "note": "Help of the extra tools list.",
@@ -1177,23 +1058,11 @@
     "es": "{count}M",
     "zh-Hans": "{count}M"
   },
-  "tools.own": {
-    "note": "Card title in an iPhone Imp's Tools: the tools the Imp has by itself (messaging other Imps, playing animations), each with a switch.",
-    "en": "Built in",
-    "es": "Integradas",
-    "zh-Hans": "内置"
-  },
-  "tools.own.info": {
-    "note": "Help of the Built in tools card on the iPhone.",
-    "en": "What the Imp can do by itself. Switch off what it shouldn't use.",
-    "es": "Lo que el Imp puede hacer por sí solo. Desactiva lo que no deba usar.",
-    "zh-Hans": "Imp 自带的能力。关闭不希望它使用的功能。"
-  },
   "personality.about": {
-    "note": "Field label: what the Imp is good at, which other Imps read to know whom to ask.",
-    "en": "What it's good at",
-    "es": "En qué destaca",
-    "zh-Hans": "擅长什么"
+    "note": "Field label: a short description of the Imp, which other Imps read to know whom to ask.",
+    "en": "Description",
+    "es": "Descripción",
+    "zh-Hans": "描述"
   },
   "personality.about_hint": {
     "note": "Placeholder of the field about what the Imp is good at.",
@@ -1279,12 +1148,6 @@
     "es": "Mac",
     "zh-Hans": "Mac"
   },
-  "triggers.gestures": {
-    "note": "Event submenu: pointer gestures on the Imp.",
-    "en": "Gestures",
-    "es": "Gestos",
-    "zh-Hans": "手势"
-  },
   "triggers.cond.always": {
     "note": "Menu title when a trigger has no conditions.",
     "en": "Always",
@@ -1302,12 +1165,6 @@
     "en": "Remove this condition",
     "es": "Quitar esta condición",
     "zh-Hans": "移除此条件"
-  },
-  "triggers.step.add": {
-    "note": "Menu title that adds a step.",
-    "en": "Add a step",
-    "es": "Añadir un paso",
-    "zh-Hans": "添加步骤"
   },
   "triggers.step.remove": {
     "note": "Help of the button that removes a step.",
@@ -1551,5 +1408,404 @@
     "en": "Add trigger",
     "es": "Añadir disparador",
     "zh-Hans": "添加触发器"
+  },
+  "imp_settings.marker.computer": {
+    "note": "Section of an Imp's settings: what it may reach on this Mac (commands, senses, computer control).",
+    "en": "Computer",
+    "es": "Ordenador",
+    "zh-Hans": "电脑"
+  },
+  "moves.animations": {
+    "note": "Header of the list of an Imp's own animations.",
+    "en": "Animations",
+    "es": "Animaciones",
+    "zh-Hans": "动画"
+  },
+  "tools.new_server_title": {
+    "note": "Title of the sheet that adds an MCP server.",
+    "en": "New tool",
+    "es": "Nueva herramienta",
+    "zh-Hans": "新工具"
+  },
+  "agent.button": {
+    "note": "Tooltip of the wand button in a section header: opens what the Imp may do there by itself.",
+    "args": {
+      "name": "string"
+    },
+    "en": "What {name} may do by itself",
+    "es": "Lo que {name} puede hacer por su cuenta",
+    "zh-Hans": "{name} 可以自己做的事"
+  },
+  "agent.title": {
+    "note": "Title of the sheet with the Imp's own tools of one section.",
+    "args": {
+      "name": "string"
+    },
+    "en": "What {name} may do",
+    "es": "Lo que {name} puede hacer",
+    "zh-Hans": "{name} 可以做的事"
+  },
+  "agent.help": {
+    "note": "Help of that sheet.",
+    "en": "The things it can do by itself here. A tool that is off is never offered to its Brain.",
+    "es": "Lo que puede hacer por su cuenta aquí. Una herramienta apagada nunca se ofrece a su Cerebro.",
+    "zh-Hans": "它在这里可以自己做的事。关闭的工具不会提供给它的大脑。"
+  },
+  "agent.on": {
+    "note": "Spoken value of the wand button: some tools are on.",
+    "en": "On",
+    "es": "Activado",
+    "zh-Hans": "开"
+  },
+  "agent.off": {
+    "note": "Spoken value of the wand button: every tool there is off.",
+    "en": "Off",
+    "es": "Desactivado",
+    "zh-Hans": "关"
+  },
+  "computer.access": {
+    "note": "Header of the Computer section of an Imp.",
+    "en": "Access",
+    "es": "Acceso",
+    "zh-Hans": "访问"
+  },
+  "computer.help.access": {
+    "note": "Help of the Computer section.",
+    "en": "What the Imp may reach on this Mac.",
+    "es": "Lo que el Imp puede usar en este Mac.",
+    "zh-Hans": "Imp 可以在这台 Mac 上使用的东西。"
+  },
+  "computer.help.senses": {
+    "note": "Help of the Senses switch.",
+    "en": "Reads the battery, processor, network and open apps, and the page open in the browser.",
+    "es": "Lee la batería, el procesador, la red y las apps abiertas, y la página abierta en el navegador.",
+    "zh-Hans": "读取电池、处理器、网络和打开的应用，以及浏览器中打开的页面。"
+  },
+  "computer.help.control": {
+    "note": "Help of the Computer control switch.",
+    "en": "Sees and operates other apps. Needs the Screen & System Audio Recording and Accessibility permissions.",
+    "es": "Ve y maneja otras apps. Necesita los permisos de Grabación de pantalla y audio del sistema y de Accesibilidad.",
+    "zh-Hans": "查看并操作其他应用。需要“屏幕与系统音频录制”和“辅助功能”权限。"
+  },
+  "triggers.try": {
+    "note": "Button in the trigger editor that runs the trigger once now.",
+    "en": "Try",
+    "es": "Probar",
+    "zh-Hans": "试一下"
+  },
+  "triggers.pick_event": {
+    "note": "Spoken hint of the event button in the trigger editor.",
+    "en": "Opens the list of events.",
+    "es": "Abre la lista de eventos.",
+    "zh-Hans": "打开事件列表。"
+  },
+  "triggers.step.then": {
+    "note": "Small word above the step tiles once a trigger has a step.",
+    "en": "Then",
+    "es": "Después",
+    "zh-Hans": "然后"
+  },
+  "triggers.step.add_one": {
+    "note": "Spoken label of a step tile.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Add a step: {name}",
+    "es": "Añadir un paso: {name}",
+    "zh-Hans": "添加步骤：{name}"
+  },
+  "trigger.event.click": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Click",
+    "es": "Clic",
+    "zh-Hans": "点击"
+  },
+  "trigger.event.poke": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Poke",
+    "es": "Toques",
+    "zh-Hans": "戳"
+  },
+  "trigger.event.hold": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Hold",
+    "es": "Mantener",
+    "zh-Hans": "按住"
+  },
+  "trigger.event.drag": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Drag",
+    "es": "Arrastrar",
+    "zh-Hans": "拖动"
+  },
+  "trigger.event.drop": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Drop",
+    "es": "Soltar",
+    "zh-Hans": "放下"
+  },
+  "trigger.event.shake": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Shake",
+    "es": "Sacudir",
+    "zh-Hans": "摇晃"
+  },
+  "trigger.event.stroke": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Stroke",
+    "es": "Acariciar",
+    "zh-Hans": "抚摸"
+  },
+  "trigger.event.tickle": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Tickle",
+    "es": "Cosquillas",
+    "zh-Hans": "挠痒"
+  },
+  "trigger.event.circle": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Circle",
+    "es": "Rodear",
+    "zh-Hans": "绕圈"
+  },
+  "trigger.event.swish": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Swish",
+    "es": "Barrido",
+    "zh-Hans": "掠过"
+  },
+  "trigger.event.rush": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Rush",
+    "es": "Embestida",
+    "zh-Hans": "冲过来"
+  },
+  "trigger.event.dangle": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Bob",
+    "es": "Balanceo",
+    "zh-Hans": "晃动"
+  },
+  "trigger.event.near": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Cursor near",
+    "es": "Cursor cerca",
+    "zh-Hans": "光标靠近"
+  },
+  "trigger.event.away": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Cursor away",
+    "es": "Cursor lejos",
+    "zh-Hans": "光标离开"
+  },
+  "trigger.event.at": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Daily at",
+    "es": "Cada día a las",
+    "zh-Hans": "每天定时"
+  },
+  "trigger.event.every": {
+    "note": "Short name of a trigger event, on its tile.",
+    "en": "Repeat",
+    "es": "Repetir",
+    "zh-Hans": "重复"
+  },
+  "trigger.step.ask": {
+    "note": "Short name of a trigger step, on its tile and menu.",
+    "en": "Ask",
+    "es": "Preguntar",
+    "zh-Hans": "询问"
+  },
+  "trigger.step.say": {
+    "note": "Short name of a trigger step, on its tile and menu.",
+    "en": "Say",
+    "es": "Decir",
+    "zh-Hans": "说"
+  },
+  "trigger.step.play": {
+    "note": "Short name of a trigger step, on its tile and menu.",
+    "en": "Play",
+    "es": "Reproducir",
+    "zh-Hans": "播放"
+  },
+  "trigger.step.sleep": {
+    "note": "Short name of a trigger step, on its tile and menu.",
+    "en": "Sleep",
+    "es": "Dormir",
+    "zh-Hans": "睡觉"
+  },
+  "trigger.step.wake": {
+    "note": "Short name of a trigger step, on its tile and menu.",
+    "en": "Wake",
+    "es": "Despertar",
+    "zh-Hans": "醒来"
+  },
+  "trigger.step.follow": {
+    "note": "Short name of a trigger step, on its tile and menu.",
+    "en": "Follow",
+    "es": "Seguir",
+    "zh-Hans": "跟随"
+  },
+  "trigger.step.open": {
+    "note": "Short name of a trigger step, on its tile and menu.",
+    "en": "Open",
+    "es": "Abrir",
+    "zh-Hans": "打开"
+  },
+  "tool.play": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Play",
+    "es": "Reproducir",
+    "zh-Hans": "播放"
+  },
+  "tool.move": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Move around",
+    "es": "Moverse",
+    "zh-Hans": "四处移动"
+  },
+  "tool.speak": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Speak aloud",
+    "es": "Hablar en voz alta",
+    "zh-Hans": "朗读"
+  },
+  "tool.make_animation": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Make",
+    "es": "Crear",
+    "zh-Hans": "制作"
+  },
+  "tool.show_animation": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "View",
+    "es": "Ver",
+    "zh-Hans": "查看"
+  },
+  "tool.remove_animation": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Remove",
+    "es": "Quitar",
+    "zh-Hans": "删除"
+  },
+  "tool.set_traits": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Change its look",
+    "es": "Cambiar su aspecto",
+    "zh-Hans": "改变外观"
+  },
+  "tool.mac_status": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Mac status",
+    "es": "Estado del Mac",
+    "zh-Hans": "Mac 状态"
+  },
+  "tool.browser_page": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Browser page",
+    "es": "Página del navegador",
+    "zh-Hans": "浏览器页面"
+  },
+  "tool.list_triggers": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "List",
+    "es": "Listar",
+    "zh-Hans": "列出"
+  },
+  "tool.add_trigger": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Add",
+    "es": "Añadir",
+    "zh-Hans": "添加"
+  },
+  "tool.remove_trigger": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Remove",
+    "es": "Quitar",
+    "zh-Hans": "删除"
+  },
+  "tool.list_tools": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "List",
+    "es": "Listar",
+    "zh-Hans": "列出"
+  },
+  "tool.add_tool": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Add",
+    "es": "Añadir",
+    "zh-Hans": "添加"
+  },
+  "tool.remove_tool": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Remove",
+    "es": "Quitar",
+    "zh-Hans": "删除"
+  },
+  "tool.add_kit": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Add kits",
+    "es": "Añadir kits",
+    "zh-Hans": "添加套件"
+  },
+  "tool.export_kit": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Export kits",
+    "es": "Exportar kits",
+    "zh-Hans": "导出套件"
+  },
+  "tool.open_settings": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Open settings",
+    "es": "Abrir ajustes",
+    "zh-Hans": "打开设置"
+  },
+  "tool.message": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Message Imps",
+    "es": "Escribir a Imps",
+    "zh-Hans": "给 Imp 发消息"
+  },
+  "tool.open_file": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Open files",
+    "es": "Abrir archivos",
+    "zh-Hans": "打开文件"
+  },
+  "tool.observe": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "See the screen",
+    "es": "Ver la pantalla",
+    "zh-Hans": "查看屏幕"
+  },
+  "tool.act": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Click and type",
+    "es": "Hacer clic y escribir",
+    "zh-Hans": "点击和输入"
+  },
+  "tool.verify": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Check results",
+    "es": "Comprobar resultados",
+    "zh-Hans": "检查结果"
+  },
+  "tool.show_background": {
+    "note": "Short name of a built-in tool in the Look section: reads the HTML background behind the Imps.",
+    "en": "View background",
+    "es": "Ver fondo",
+    "zh-Hans": "查看背景"
+  },
+  "tool.set_background": {
+    "note": "Short name of a built-in tool in the Look section: writes the HTML background behind the Imps.",
+    "en": "Set background",
+    "es": "Cambiar fondo",
+    "zh-Hans": "设置背景"
+  },
+  "memory.empty": {
+    "note": "Empty state of the list of chats.",
+    "en": "No chats yet.",
+    "es": "Aún no hay chats.",
+    "zh-Hans": "还没有聊天。"
   }
 }

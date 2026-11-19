@@ -2,9 +2,10 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// Colour, size and character in one panel, all sliders. The Imp in the middle is the preview, so
-/// nothing is drawn twice. Only the whole Imp is shared in The Den: the look travels with it.
+/// Colour, size and character in one section, all sliders, under the live Imp as the preview. Only the
+/// whole Imp is shared: the look travels with it. The Imp may change its own character (`look` tools).
 struct LookPanel: View {
+    let model: AppModel
     @Binding var imp: ImpProfile
     @Environment(\.impTint) private var tint
 
@@ -14,6 +15,10 @@ struct LookPanel: View {
     }
 
     var body: some View {
+        SettingsImp(model: model, profile: imp, asleep: !model.isReady(imp.id))
+            .frame(width: Self.preview, height: Self.preview)
+            .frame(maxWidth: .infinity)
+            .accessibilityHidden(true)
         PanelSection("look.body", icon: "paintpalette.fill", info: "look.help.body") {
             Row("look.colour", icon: "paintpalette", info: "look.help.colour") { colour }
             .settingAnchor(.lookColour)
@@ -29,9 +34,14 @@ struct LookPanel: View {
         .settingAnchor(.lookCharacter)
     }
 
+    private static var preview: CGFloat { Sizing.marker * 3 }
+
     private var resetButton: some View {
-        HoverIconButton(systemName: "arrow.counterclockwise", help: "look.reset", action: reset)
-            .disabled(isDefault)
+        HStack(spacing: Spacing.small) {
+            HoverIconButton(systemName: "arrow.counterclockwise", help: "look.reset", action: reset)
+                .disabled(isDefault)
+            AgentToolsButton(imp: $imp, groups: [.look])
+        }
     }
 
     // MARK: Colour

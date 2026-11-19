@@ -5,6 +5,11 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 
 | Key | English | Spanish | Chinese (Simplified) |
 | --- | --- | --- | --- |
+| `agent.button` | What {name} may do by itself | Lo que {name} puede hacer por su cuenta | {name} 可以自己做的事 |
+| `agent.help` | The things it can do by itself here. A tool that is off is never offered to its Brain. | Lo que puede hacer por su cuenta aquí. Una herramienta apagada nunca se ofrece a su Cerebro. | 它在这里可以自己做的事。关闭的工具不会提供给它的大脑。 |
+| `agent.off` | Off | Desactivado | 关 |
+| `agent.on` | On | Activado | 开 |
+| `agent.title` | What {name} may do | Lo que {name} puede hacer | {name} 可以做的事 |
 | `anim.help.about` | One sentence about what it does. | Una frase sobre lo que hace. | 用一句话说明它的作用。 |
 | `anim.help.beats` | Each chip is one moment of the move. Drag to move it or stretch it. | Cada ficha es un momento del movimiento. Arrastra para moverla o estirarla. | 每个小块是动作中的一个瞬间。拖动来移动或拉长它。 |
 | `anim.help.hop` | How high the Imp jumps in this beat. | Qué tan alto salta el Imp en este tiempo. | Imp 在这一拍里跳多高。 |
@@ -32,14 +37,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `app.window.size` | Size | Tamaño | 尺寸 |
 | `app.window.small` | Small | Pequeña | 小 |
 | `app.window.title` | Window | Ventana | 窗口 |
-| `background.choose_colour` | Choose a colour… | Elegir un color… | 选择一种颜色… |
-| `background.choose_picture` | Choose a picture… | Elegir una imagen… | 选择一张图片… |
-| `background.colour` | Colour | Color | 颜色 |
-| `background.picture` | Picture | Imagen | 图片 |
-| `background.picture_failed` | That picture could not be used. Pick another one. | No se pudo usar esa imagen. Elige otra. | 这张图片无法使用，请换一张。 |
-| `background.theme` | Theme | Tema | 主题 |
-| `background.tile` | Tile | Mosaico | 平铺 |
-| `background.tile_hint` | A tile repeats to fill the window. Pick a seamless pattern. | Un mosaico se repite para llenar la ventana. Elige un patrón continuo. | 平铺会重复铺满窗口。请选择可无缝衔接的图案。 |
 | `brain.add_service` | Add | Añadir | 添加 |
 | `brain.check_ok` | {name} is awake. | {name} despertó. | {name} 醒了。 |
 | `brain.checking` | Checking… | Comprobando… | 正在检查… |
@@ -64,7 +61,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `brain.zzz` | Zzz, {name} is asleep | Zzz, {name} está dormido | Zzz，{name} 睡着了 |
 | `brains.add` | Add | Añadir | 添加 |
 | `brains.default` | Default | Por defecto | 默认 |
-| `brains.empty` | No Brains yet. Add a model on this computer or a service with your key. | Aún no hay cerebros. Añade un modelo en este equipo o un servicio con tu clave. | 还没有大脑。可以添加这台电脑上的模型，或使用你自己密钥的服务。 |
+| `brains.empty` | No Brains yet. | Aún no hay cerebros. | 还没有大脑。 |
 | `brains.local` | A model on this computer | Un modelo en este equipo | 这台电脑上的一个模型 |
 | `brains.used_by` | one: Used by {count} Imp / other: Used by {count} Imps | one: Lo usa {count} Imp / other: Lo usan {count} Imps | other: {count} 个 Imp 在使用 |
 | `brains.with_key` | A service with your key | Un servicio con tu clave | 需要你自己密钥的服务 |
@@ -93,8 +90,12 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `common.step` | Step {number} of {total}, {name} | Paso {number} de {total}, {name} | 第 {number} 步，共 {total} 步，{name} |
 | `common.try_again` | Try again | Reintentar | 重新尝试 |
 | `common.undo` | Undo | Deshacer | 撤销 |
+| `computer.access` | Access | Acceso | 访问 |
+| `computer.help.access` | What the Imp may reach on this Mac. | Lo que el Imp puede usar en este Mac. | Imp 可以在这台 Mac 上使用的东西。 |
+| `computer.help.control` | Sees and operates other apps. Needs the Screen & System Audio Recording and Accessibility permissions. | Ve y maneja otras apps. Necesita los permisos de Grabación de pantalla y audio del sistema y de Accesibilidad. | 查看并操作其他应用。需要“屏幕与系统音频录制”和“辅助功能”权限。 |
+| `computer.help.senses` | Reads the battery, processor, network and open apps, and the page open in the browser. | Lee la batería, el procesador, la red y las apps abiertas, y la página abierta en el navegador. | 读取电池、处理器、网络和打开的应用，以及浏览器中打开的页面。 |
 | `devices.copy_link.help` | For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while. | Para un dispositivo que no puede escanear: pega el enlace en Escanear código en el otro dispositivo. Mantenlo en privado. Permite que un dispositivo se vincule con este Mac durante un rato. | 适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。 |
-| `devices.empty` | No devices yet. Link an iPhone or another Mac and your Imps can visit it. | Aún no hay dispositivos. Vincula un iPhone u otro Mac y tus Imps podrán visitarlo. | 还没有设备。连接一台 iPhone 或另一台 Mac，你的 Imp 就能去做客。 |
+| `devices.empty` | No devices yet. | Aún no hay dispositivos. | 还没有设备。 |
 | `devices.list.info` | Devices linked with this one. Mine lets a device act for you. | Dispositivos vinculados con este. Mío permite que un dispositivo actúe por ti. | 与这台设备连接的设备。“我的”让设备可以代表你行事。 |
 | `devices.reach.away` | Away | No disponible | 不在线 |
 | `devices.reach.direct` | Direct, on the local network | Directo, en la red local | 直连，走本地网络 |
@@ -245,11 +246,11 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `imp.state.waking` | Waking up | Despertando | 正在醒来 |
 | `imp.transfer.failed` | {device} did not take {name}. It stays here. | {device} no aceptó a {name}. Se queda aquí. | {device} 没有接收 {name}。它留在这里。 |
 | `imp_settings.brain_marker.asleep` | {name} is asleep. Give it a Brain. | {name} está dormido. Dale un cerebro. | {name} 睡着了。给它一个大脑吧。 |
-| `imp_settings.brain_marker.awake` | Brain: {service}, {model} | Cerebro: {service}, {model} | 大脑：{service}，{model} |
 | `imp_settings.goodbye` | Goodbye | Adiós | 再见 |
 | `imp_settings.goodbye.a11y` | Say goodbye to {name} | Decirle adiós a {name} | 向 {name} 说再见 |
-| `imp_settings.list.label` | All settings for {name} | Todos los ajustes de {name} | {name} 的所有设置 |
+| `imp_settings.list.label` | Settings for {name} | Ajustes de {name} | {name} 的设置 |
 | `imp_settings.marker.brain` | Brain | Cerebro | 大脑 |
+| `imp_settings.marker.computer` | Computer | Ordenador | 电脑 |
 | `imp_settings.marker.look` | Look | Aspecto | 外观 |
 | `imp_settings.marker.moves` | Moves | Movimientos | 动作 |
 | `imp_settings.marker.personality` | Personality | Personalidad | 个性设置 |
@@ -257,13 +258,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `imp_settings.marker.triggers` | Triggers | Disparadores | 触发器 |
 | `imp_settings.share` | Share | Compartir | 共享 |
 | `imp_settings.share.a11y` | Share {name} | Compartir {name} | 共享 {name} |
-| `imp_settings.summary.brain_none` | Asleep | Dormido | 沉睡 |
-| `imp_settings.summary.brain_set` | {service}, {model} | {service}, {model} | {service}，{model} |
-| `imp_settings.summary.look` | Colour and size | Color y tamaño | 颜色与大小 |
-| `imp_settings.summary.moves` | Animations | Animaciones | 动画效果 |
-| `imp_settings.summary.personality` | Name and persona | Nombre y personalidad | 名字与人设 |
-| `imp_settings.summary.tools` | {on} of {total} on | {on} de {total} | 已开启 {on}/{total} |
-| `imp_settings.summary.triggers` | one: {count} trigger / other: {count} triggers | one: {count} disparador / other: {count} disparadores | other: {count} 个触发器 |
 | `imp_settings.this_imp` | this Imp | este Imp | 此 Imp |
 | `imp_settings.value.asleep` | Asleep | Dormido | 睡着了 |
 | `imp_settings.value.tools` | {on}/{total} | {on}/{total} | {on}/{total} |
@@ -306,6 +300,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `look.squint` | Squint | Entornar | 眯眼 |
 | `look.swatch` | Colour {index} of {count} | Color {index} de {count} | 第 {index} 种颜色，共 {count} 种 |
 | `look.title` | Look | Aspecto | 外观 |
+| `memory.empty` | No chats yet. | Aún no hay chats. | 还没有聊天。 |
 | `memory.last` | Last {count} | Últimos {count} | 最近 {count} 条 |
 | `memory.new_chat.info` | How big a chat gets before the Imp suggests a recap or a new chat. | Cuánto crece un chat antes de que el Imp sugiera un resumen o un chat nuevo. | 聊天达到多大时 Imp 会建议总结或开始新聊天。 |
 | `memory.new_chat.title` | New chat at | Chat nuevo en | 新聊天上限 |
@@ -330,9 +325,9 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `menu.bar.state.hidden` | Hidden | Oculto | 已隐藏 |
 | `menu.bar.state.home` | At home | En casa | 在家 |
 | `menu.bar.state.out` | Out | Fuera | 在外面 |
-| `menu.canvas.background` | Background | Fondo | 桌面背景 |
 | `menu.canvas.devices` | Devices | Equipos | 设备 |
 | `menu.canvas.new_imp` | New Imp | Nuevo Imp | 新建 Imp |
+| `menu.canvas.reset_background` | Reset Background | Restablecer fondo | 重置背景 |
 | `menu.canvas.settings` | Settings | Ajustes | 应用设置 |
 | `menu.canvas.show_hidden` | Hidden ({count}) | Ocultos ({count}) | 已隐藏（{count}） |
 | `menu.imp.call_home` | Call Home | Traer | 叫回家 |
@@ -355,9 +350,10 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `menu.imp.type_help` | Type to {name} | Escribir a {name} | 给 {name} 打字 |
 | `menu.imp.visit_none` | Visit another device | Visitar otro dispositivo | 去别的设备做客吧 |
 | `menu.imp.visit_tip` | {name} visits {device} and can come back. | {name} visita {device} y puede volver. | {name} 去 {device} 做客，还可以回来。 |
-| `moves.empty` | No special moves yet. | Sin movimientos aún. | 还没有特别的动作。 |
+| `moves.animations` | Animations | Animaciones | 动画 |
+| `moves.empty` | No animations yet. | Aún no hay animaciones. | 还没有动画。 |
 | `moves.help.own` | Moves made for only this Imp. They play instead of the shared ones. | Movimientos hechos solo para este Imp. Se usan en lugar de los compartidos. | 只为这个 Imp 做的动作。它们会代替共用的动作。 |
-| `personality.about` | What it's good at | En qué destaca | 擅长什么 |
+| `personality.about` | Description | Descripción | 描述 |
 | `personality.about_hint` | Researching on the web, fixing code… | Investigar en la web, arreglar código… | 上网查资料、修代码…… |
 | `personality.help.about` | One or two lines. The other Imps read it to know whom to ask for what. | Una o dos líneas. Los otros Imps la leen para saber a quién pedirle cada cosa. | 一两行字。其他 Imp 会读它，来决定什么事该问谁。 |
 | `personality.help.name` | What you call this Imp. Say its name and it answers. | Cómo llamas a este Imp. Di su nombre y responde. | 你怎么称呼这个 Imp。叫它的名字，它就会回答。 |
@@ -384,7 +380,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.brain.model_auto_detail` | The first model that chats, chosen when it wakes. | El primer modelo que conversa, elegido al despertar. | 唤醒时自动选择第一个能聊天的模型。 |
 | `phone.brain.model_use` | Use “{name}” | Usar «{name}» | 使用“{name}” |
 | `phone.brains.default` | New Imps start with {name}'s Brain. | Los Imps nuevos empiezan con el cerebro de {name}. | 新的 Imp 会沿用 {name} 的大脑。 |
-| `phone.brains.empty` | Imps you hatch on this iPhone show here, each with the Brain it thinks with. | Los Imps que hagas nacer en este iPhone aparecen aquí, cada uno con el cerebro con el que piensa. | 你在这台 iPhone 上孵化的 Imp 会显示在这里，并附上各自使用的大脑。 |
+| `phone.brains.empty` | No Imps yet. | Aún no hay Imps. | 还没有 Imp。 |
 | `phone.brains.set_up` | Set up | Configurar | 设置 |
 | `phone.callhome` | Call home | Traer | 叫回家 |
 | `phone.callhome.label` | Call {name} home | Traer a {name} | 把 {name} 叫回家 |
@@ -481,7 +477,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.status.hint` | Opens Devices | Abre Dispositivos | 打开设备列表 |
 | `phone.status.internet` | Through the internet | Por internet | 经由互联网 |
 | `phone.status.looking` | Looking… | Buscando… | 正在查找… |
-| `phone.talks.empty` | No talks yet | Sin charlas | 还没有对话 |
+| `phone.talks.empty` | No talks yet. | Aún no hay conversaciones. | 还没有对话。 |
 | `phone.talks.exchanges` | {count} exchanges | {count} intercambios | {count} 次往来 |
 | `phone.talks.one` | Talk | Charla | 对话 |
 | `phone.talks.started_by_imp` | Started by this Imp | Iniciada por este Imp | 由此 Imp 发起 |
@@ -638,14 +634,11 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.tool.headers.info` | Extra lines sent with each request, like a password. | Líneas extra enviadas con cada petición, como una contraseña. | 随每个请求发送的额外内容，比如口令。 |
 | `settings.tool.name.info` | A name you pick for this tool. | Un nombre a tu gusto. | 你给这个工具取的名字。 |
 | `settings.tool.variables.info` | Secret values the tool needs to run. | Valores secretos que la herramienta necesita. | 这个工具运行时需要的秘密值。 |
-| `share.file` | File | Archivo | 文件 |
-| `share.note` | Its look, personality, tools and triggers are shared. Keys, memory and chats never are. | Se comparten su aspecto, personalidad, herramientas y disparadores. Las claves, la memoria y los chats nunca. | 会共享它的外观、个性、工具和触发器。密钥、记忆和聊天永远不会共享。 |
-| `share.title` | Share {name} | Compartir {name} | 共享 {name} |
 | `sharing.browse` | Browse | Explorar | 浏览 |
 | `sharing.gallery` | Gallery | Galería | 图库 |
 | `sharing.gallery.info` | Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp. | Encuentra animaciones, disparadores e Imps que otros compartieron, o importa un kit. Para compartir los tuyos, usa el botón de compartir de un Imp. | 查找他人分享的动画、触发器和 Imp，或导入你的套件。要分享你的，请使用 Imp 上的分享按钮。 |
 | `sharing.import` | Import | Importar | 导入 |
-| `sheets.animations.nothing_yet` | Nothing yet | Nada todavía | 暂时还没有 |
+| `sheets.animations.nothing_yet` | No animations yet. | Aún no hay animaciones. | 还没有动画。 |
 | `state.link_lost` | The link to {device} dropped. It reconnects on its own. | Se cortó el enlace con {device}. Se reconectará solo. | 与 {device} 的连接断开了，会自动重新连接。 |
 | `state.offline.imp` | {name} cannot reach its Brain. It wakes up when you are back online. | {name} no puede llegar a su cerebro. Despertará cuando vuelvas a tener conexión. | {name} 连不上它的大脑。重新联网后它就会醒来。 |
 | `state.offline.note` | Imps that use a model on this device still work. The others wait until you are back online. | Los Imps que usan un modelo de este dispositivo siguen funcionando. Los demás esperan a que vuelvas a tener conexión. | 使用本机模型的 Imp 仍然可以工作，其他的会等你重新联网。 |
@@ -656,10 +649,41 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `state.sleeping.title` | {name} is asleep | {name} está dormido | {name} 睡着了 |
 | `state.visiting_asleep` | {name} is asleep because {home} is not connected. | {name} duerme porque {home} no está conectado. | {home} 未连接，所以 {name} 睡着了。 |
 | `state.waking` | Waking up… | Despertando… | 正在醒来… |
+| `sticker.error.empty` | The animation is empty. | La animación está vacía. | 这个动画是空的。 |
+| `sticker.error.title` | Couldn’t make the sticker | No se pudo crear el sticker | 无法制作贴纸 |
+| `sticker.error.too_big` | It is still {kb} KB when simplified. A sticker may be 64 KB: try fewer beats or simpler moves. | Simplificado sigue ocupando {kb} KB. Un sticker puede ocupar 64 KB: prueba con menos pasos o movimientos más sencillos. | 简化后仍有 {kb} KB。贴纸最多 64 KB：试试更少的节拍或更简单的动作。 |
+| `sticker.export` | Export as Sticker… | Exportar como sticker… | 导出为贴纸… |
+| `sticker.note` | An animated sticker (.tgs): 512 × 512, 60 frames a second, vector only. | Un sticker animado (.tgs): 512 × 512, 60 fotogramas por segundo, solo vectores. | 动画贴纸（.tgs）：512 × 512，每秒 60 帧，仅矢量。 |
+| `sticker.note.faster` | It plays {speed}× faster to fit 3 seconds. | Se reproduce {speed}× más rápido para caber en 3 segundos. | 加快 {speed} 倍播放，以控制在 3 秒内。 |
+| `sticker.note.trimmed` | It stops at 3 seconds. | Se detiene a los 3 segundos. | 在 3 秒处结束。 |
+| `tool.act` | Click and type | Hacer clic y escribir | 点击和输入 |
+| `tool.add_kit` | Add kits | Añadir kits | 添加套件 |
+| `tool.add_tool` | Add | Añadir | 添加 |
+| `tool.add_trigger` | Add | Añadir | 添加 |
+| `tool.browser_page` | Browser page | Página del navegador | 浏览器页面 |
+| `tool.export_kit` | Export kits | Exportar kits | 导出套件 |
+| `tool.list_tools` | List | Listar | 列出 |
+| `tool.list_triggers` | List | Listar | 列出 |
+| `tool.mac_status` | Mac status | Estado del Mac | Mac 状态 |
+| `tool.make_animation` | Make | Crear | 制作 |
+| `tool.message` | Message Imps | Escribir a Imps | 给 Imp 发消息 |
+| `tool.move` | Move around | Moverse | 四处移动 |
+| `tool.observe` | See the screen | Ver la pantalla | 查看屏幕 |
+| `tool.open_file` | Open files | Abrir archivos | 打开文件 |
+| `tool.open_settings` | Open settings | Abrir ajustes | 打开设置 |
+| `tool.play` | Play | Reproducir | 播放 |
+| `tool.remove_animation` | Remove | Quitar | 删除 |
+| `tool.remove_tool` | Remove | Quitar | 删除 |
+| `tool.remove_trigger` | Remove | Quitar | 删除 |
+| `tool.set_background` | Set background | Cambiar fondo | 设置背景 |
+| `tool.set_traits` | Change its look | Cambiar su aspecto | 改变外观 |
+| `tool.show_animation` | View | Ver | 查看 |
+| `tool.show_background` | View background | Ver fondo | 查看背景 |
+| `tool.speak` | Speak aloud | Hablar en voz alta | 朗读 |
+| `tool.verify` | Check results | Comprobar resultados | 检查结果 |
 | `tools.add` | Add | Añadir | 添加 |
-| `tools.built_in` | Built in | Integradas | 内置项 |
 | `tools.collapse` | Hide the tools in {group} | Ocultar herramientas de {group} | 隐藏 {group} 中的工具 |
-| `tools.empty` | No tools yet. Add some from a kit or an MCP server. | Aún no hay herramientas. Añade algunas desde un kit o un servidor MCP. | 还没有工具。可以从套件或 MCP 服务器添加。 |
+| `tools.empty` | No tools yet. | Aún no hay herramientas. | 还没有工具。 |
 | `tools.expand` | Show the tools in {group} | Ver herramientas de {group} | 显示 {group} 中的工具 |
 | `tools.group_count` | {on} of {total} on | {on} de {total} | 已开启 {on}/{total} |
 | `tools.group_off` | Off | Apagado | 已关闭 |
@@ -670,10 +694,8 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tools.header_value` | Value | Valor | 值 |
 | `tools.headers` | Headers | Cabeceras | 请求头 |
 | `tools.help.browser` | Lets the Imp look at pages and use the browser you opened for it. | Deja al Imp ver páginas y usar el navegador que le abriste. | 让 Imp 查看网页，并使用你为它打开的浏览器。 |
-| `tools.help.built_in` | Things the Imp can already do, like look at your screen. Switch off any it should not use. | Cosas que el Imp ya sabe hacer, como mirar tu pantalla. Apaga las que no deba usar. | Imp 本来就会做的事，比如看你的屏幕。把不该用的关掉。 |
 | `tools.help.mcp` | Extra tools added from outside. Each one gives the Imp new things to do. | Herramientas extra añadidas de fuera. Cada una da al Imp cosas nuevas que hacer. | 从外面加进来的额外工具。每个都让 Imp 多会一些事。 |
 | `tools.help.server` | A program or website that gives the Imp more tools. | Un programa o sitio web que da más herramientas al Imp. | 给 Imp 提供更多工具的程序或网站。 |
-| `tools.mcp` | MCP | MCP | MCP |
 | `tools.mcp_connected` | Connected | Conectado | 已连接 |
 | `tools.mcp_failed` | Could not start | No se pudo iniciar | 启动失败 |
 | `tools.mcp_needs_signin` | Sign-in needed | Falta iniciar sesión | 需要登录 |
@@ -681,9 +703,8 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tools.mcp_sign_out` | Sign out | Cerrar sesión | 退出登录 |
 | `tools.mcp_starting` | Starting | Iniciando | 正在启动 |
 | `tools.new_server` | New | Nuevo | 新建 |
+| `tools.new_server_title` | New tool | Nueva herramienta | 新工具 |
 | `tools.optional` | Optional | Opcional | 可选项 |
-| `tools.own` | Built in | Integradas | 内置 |
-| `tools.own.info` | What the Imp can do by itself. Switch off what it shouldn't use. | Lo que el Imp puede hacer por sí solo. Desactiva lo que no deba usar. | Imp 自带的能力。关闭不希望它使用的功能。 |
 | `tools.problem.address` | Add the server's address. | Falta la dirección. | 请填写服务器的地址。 |
 | `tools.remove_header` | Remove header | Quitar cabecera | 移除请求头 |
 | `tools.remove_server` | Remove server | Quitar servidor | 移除服务器 |
@@ -691,7 +712,29 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tools.server_name` | Name | Nombre | 名称 |
 | `tools.shared_setup` | Every Imp that uses this tool gets this setup. Each Imp switches it on or off for itself. | Todos los Imps que usan esta herramienta reciben esta configuración. Cada Imp la activa o desactiva por su cuenta. | 使用这个工具的每个 Imp 都会得到这套设置。每个 Imp 各自开启或关闭它。 |
 | `tools.title` | Tools | Herramientas | 工具 |
-| `triggers.add` | Add | Añadir | 添加 |
+| `trigger.event.at` | Daily at | Cada día a las | 每天定时 |
+| `trigger.event.away` | Cursor away | Cursor lejos | 光标离开 |
+| `trigger.event.circle` | Circle | Rodear | 绕圈 |
+| `trigger.event.click` | Click | Clic | 点击 |
+| `trigger.event.dangle` | Bob | Balanceo | 晃动 |
+| `trigger.event.drag` | Drag | Arrastrar | 拖动 |
+| `trigger.event.drop` | Drop | Soltar | 放下 |
+| `trigger.event.every` | Repeat | Repetir | 重复 |
+| `trigger.event.hold` | Hold | Mantener | 按住 |
+| `trigger.event.near` | Cursor near | Cursor cerca | 光标靠近 |
+| `trigger.event.poke` | Poke | Toques | 戳 |
+| `trigger.event.rush` | Rush | Embestida | 冲过来 |
+| `trigger.event.shake` | Shake | Sacudir | 摇晃 |
+| `trigger.event.stroke` | Stroke | Acariciar | 抚摸 |
+| `trigger.event.swish` | Swish | Barrido | 掠过 |
+| `trigger.event.tickle` | Tickle | Cosquillas | 挠痒 |
+| `trigger.step.ask` | Ask | Preguntar | 询问 |
+| `trigger.step.follow` | Follow | Seguir | 跟随 |
+| `trigger.step.open` | Open | Abrir | 打开 |
+| `trigger.step.play` | Play | Reproducir | 播放 |
+| `trigger.step.say` | Say | Decir | 说 |
+| `trigger.step.sleep` | Sleep | Dormir | 睡觉 |
+| `trigger.step.wake` | Wake | Despertar | 醒来 |
 | `triggers.cond.add` | Add | Añadir | 添加 |
 | `triggers.cond.always` | Always | Siempre | 总是 |
 | `triggers.cond.remove` | Remove this condition | Quitar esta condición | 移除此条件 |
@@ -699,13 +742,12 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `triggers.delete_every` | Delete for every Imp | Eliminar para todos | 为所有 Imp 删除 |
 | `triggers.delete_every.title` | Delete “{name}” for every Imp? | ¿Eliminar “{name}” para todos? | 为所有 Imp 删除“{name}”？ |
 | `triggers.edit` | Edit trigger | Editar disparador | 编辑触发器 |
-| `triggers.empty` | No triggers yet. Add one and {name} acts on its own. | Aún no hay disparadores. Añade uno y {name} actuará por su cuenta. | 还没有触发器。添加一个，{name} 就会自己行动。 |
+| `triggers.empty` | No triggers yet. | Aún no hay disparadores. | 还没有触发器。 |
 | `triggers.f.do` | Do | Hacer | 执行 |
 | `triggers.f.for` | For | Para | 适用于 |
 | `triggers.f.only_if` | Only if | Solo si | 仅当 |
 | `triggers.f.when` | When | Cuando | 当 |
 | `triggers.follow` | Follow | Seguir | 跟随 |
-| `triggers.gestures` | Gestures | Gestos | 手势 |
 | `triggers.group.mac` | Mac | Mac | Mac |
 | `triggers.group.time` | Time | Tiempo | 时间 |
 | `triggers.group.you` | You | Tú | 你 |
@@ -726,6 +768,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `triggers.open.listen` | Listen | Escuchar | 聆听 |
 | `triggers.open.settings` | Settings | Ajustes | 设置 |
 | `triggers.open.text_box` | Text box | Cuadro de texto | 文本框 |
+| `triggers.pick_event` | Opens the list of events. | Abre la lista de eventos. | 打开事件列表。 |
 | `triggers.problem.ask` | Write what the Imp should do, or hand over the clipboard. | Escribe lo que debe hacer el Imp, o entrega el portapapeles. | 请写下 Imp 该做什么，或附带剪贴板。 |
 | `triggers.problem.keys` | Record the keys that set it off. | Graba las teclas que lo activan. | 请录制触发它的按键。 |
 | `triggers.problem.missing` | This Imp has no animation called “{name}”. | Este Imp no tiene ninguna animación llamada «{name}». | 这个 Imp 没有名为“{name}”的动画。 |
@@ -737,7 +780,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `triggers.scope.note_every` | Changes it for every Imp. | Lo cambia para todos los Imps. | 会对所有 Imp 生效。 |
 | `triggers.scope.note_version` | Saves a version for {name} only. The other Imps keep the shared one. | Guarda una versión solo para {name}. Los demás Imps conservan la compartida. | 只为 {name} 保存一个版本。其他 Imp 保留共享的那个。 |
 | `triggers.share_every` | Share to all | Para todos | 共享给所有 |
-| `triggers.step.add` | Add a step | Añadir un paso | 添加步骤 |
+| `triggers.step.add_one` | Add a step: {name} | Añadir un paso: {name} | 添加步骤：{name} |
 | `triggers.step.aloud` | Aloud | En voz alta | 朗读 |
 | `triggers.step.anim_none` | The usual way | Lo habitual | 默认方式 |
 | `triggers.step.ask_ph` | What should it do? Say it in your own words. | ¿Qué debe hacer? Dilo con tus palabras. | 它该做什么？用你自己的话说。 |
@@ -748,9 +791,11 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `triggers.step.remove` | Remove step | Quitar paso | 移除步骤 |
 | `triggers.step.say_ph` | What it says | Lo que dice | 它说的话 |
 | `triggers.step.speed` | Speed | Velocidad | 速度 |
+| `triggers.step.then` | Then | Después | 然后 |
 | `triggers.step.up` | Move up | Subir | 上移 |
 | `triggers.switch` | Trigger: {sentence} | Disparador: {sentence} | 触发器：{sentence} |
 | `triggers.title` | Triggers | Disparadores | 触发器 |
+| `triggers.try` | Try | Probar | 试一下 |
 | `triggers.use_shared` | Use shared | Usar común | 使用共享 |
 | `triggers.use_shared.message` | The version only {name} has goes. | Se quita la versión de {name}. | 只属于 {name} 的版本将被删除。 |
 | `triggers.use_shared.title` | Use the shared “{name}” again? | ¿Volver a usar “{name}” compartido? | 重新使用共享的“{name}”？ |

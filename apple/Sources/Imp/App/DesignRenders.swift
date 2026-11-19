@@ -114,8 +114,8 @@ enum IconRenderer {
 
     /// `Imp --render-home <screen> <file.png> [imps=N] [select=N] [out=N] [hidden=1] [width=W] [height=H]`: the real
     /// app window (live controls) rendered offscreen for design review. Screens: a scene (`canvas-empty`, `canvas-imps`,
-    /// `canvas-picture`, `imp-brain`, `imp-sleeping`, `imp-list`, `all-imps-nothing`, `all-imps-sharing`,
-    /// `first-run-service`, `first-run-error`, `imp-brain-open`, `imp-narrow-open`, `all-imps-app`, `all-imps-app-narrow`: the same fixed states the snapshot tests check, at one pixel to the point,
+    /// `imp-brain`, `imp-sleeping`, `imp-computer`, `imp-agent-tools`, `all-imps-nothing`, `all-imps-sharing`,
+    /// `first-run-service`, `first-run-error`, `all-imps-app`, `all-imps-app-narrow`: the same fixed states the snapshot tests check, at one pixel to the point,
     /// see `DesignScene`), or `home`, `imp` (one Imp's settings), `general-<group>` (`general-` alone is the first page), or the `add-service` / `pair-phone` / `add-tool` / `add-shortcut` / `edit-shortcut` / `animation-editor` / `animation-details` sheets (and `talk`, the talk viewer with a made-up talk). `hidden=1`: the desktop Imps are hidden.
     static func renderHome(screen: String, to url: URL, width: CGFloat = 780, height: CGFloat = 600, sampleImps: Int = 1, select: Int = 0, out: Int? = nil, away: Int? = nil, hidden: Bool = false) {
         if let bubble = BubbleScene(rawValue: screen.replacingOccurrences(of: "-light", with: "")) {
@@ -132,7 +132,7 @@ enum IconRenderer {
         let ids = model.prefs.imps.map(\.id)
         let chosen = ids[min(max(select, 0), ids.count - 1)]
         if sampleImps > 1, let i = model.prefs.imps.indices.dropFirst().first {
-            // Something to look at: a trigger and an extra tool.
+            // Something to look at: a trigger and a tool.
             var a = Shortcut(name: "Translate", hotkey: Hotkey(keyCode: UInt32(kVK_ANSI_T), modifiers: Hotkey.control | Hotkey.option),
                               steps: [Step(.ask, value: "Translate this into English.", clipboard: true)])
             a.performer = model.prefs.imps[i].id
@@ -245,7 +245,7 @@ enum IconRenderer {
             { "name": "Pip", "hue": 0.57, "favoriteHue": 0.9, "scale": 1,
               "personality": "A dry-witted morning companion. Short answers, one gentle joke, never before coffee.",
               "brain": { "model": "openai/gpt-6-luna", "service": { "name": "OpenAI", "baseURL": "https://openrouter.ai/api/v1" } },
-              "shell": true, "tools": { "body": true, "senses": true, "setup": false, "troupe": true, "computer": true },
+              "shell": true, "tools": { "personality": true, "look": true, "moves": true, "triggers": false, "tools": false, "senses": true, "computer": true },
               "mcpServers": ["Notes"],
               "triggers": [ { "name": "Good morning", "when": {"kind": "start"}, "prompt": "Greet me and say what's on today." } ],
               "chats": [ { "title": "Plan the week", "turns": [ { "request": "Plan my week", "reply": "Mon: focus. Tue: calls." } ] },

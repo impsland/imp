@@ -6,6 +6,8 @@ import SwiftUI
 /// projected, so the horn foreshortens, slides and hides exactly like part of the head.
 struct Horn {
     /// Slices outside the head and facing the viewer: drawn over the head.
+    /// Which horn: −1 left, 1 right.
+    let side: Double
     let front: Path
     /// Slices behind the dome or still inside the skin: drawn first, so the head covers them.
     let back: Path
@@ -25,6 +27,7 @@ struct Horn {
     static let embed = 0.5
 
     init(side: Double, head: Head, pose: Pose, face f: Face, wiggle: Double) {
+        self.side = side
         // Rooted on the shoulder of the dome, set well out to the side.
         let root = Vec3.onBall(lon: side * 0.9, lat: -0.6)
         // Lean out along the surface normal, then curl back up toward the middle at the tip.
@@ -110,20 +113,22 @@ struct Horn {
     }
 
     /// Draws this layer of the horn: `front` after the head, the rest before it.
-    func draw(in ctx: inout GraphicsContext, head: Head, front layer: Bool, palette: Palette) {
+    func draw<P: ImpPen>(in ctx: inout P, head: Head, front layer: Bool, palette: Palette) {
         let shape = layer ? front : back
         guard !shape.isEmpty else { return }
+        var ctx = ctx
+        ctx.penTag = "horn\(side < 0 ? "-left" : "-right")\(layer ? "-front" : "-back")"
         if layer && facing > 0.01 {
             // Soft contact shadow where the horn sits on the skin.
             var shadow = ctx
-            shadow.clip(to: head.path)
-            shadow.opacity = facing
+            shadow.penClip(head.path)
+            shadow.penOpacity = facing
             let r = baseR * 1.7
-            shadow.fill(Path(ellipseIn: CGRect(x: base.x - r, y: base.y - r * 0.55, width: 2 * r, height: 2 * r)),
-                        with: .radialGradient(Gradient(colors: [Color(red: 0.4, green: 0.03, blue: 0.05).opacity(0.18), .clear]),
-                                              center: CGPoint(x: base.x, y: base.y + r * 0.45), startRadius: 0, endRadius: r))
+            shadow.penFill(Path(ellipseIn: CGRect(x: base.x - r, y: base.y - r * 0.55, width: 2 * r, height: 2 * r)),
+                        .radial(Gradient(colors: [Color(red: 0.4, green: 0.03, blue: 0.05).opacity(0.18), .clear]),
+                                              center: CGPoint(x: base.x, y: base.y + r * 0.45), radius: r))
         }
-        ctx.fill(shape, with: .radialGradient(Gradient(colors: [palette.hornLight, palette.hornDark]),
-                                              center: light, startRadius: 0, endRadius: baseR * 1.7))
+        ctx.penFill(shape, .radial(Gradient(colors: [palette.hornLight, palette.hornDark]),
+                                              center: light, radius: baseR * 1.7))
     }
 }

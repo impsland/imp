@@ -402,13 +402,13 @@ extension KitTests {
     @Test func readsDefaultsAndIgnoresUnknownFields() throws {
         let kit = try Kit.parse(#"""
         {"future": {"x": 1}, "imps": [
-          { "name": "Bare", "mood": "grumpy", "tools": {"body": false, "telepathy": true}, "brain": {"model": "m", "extra": 1} },
+          { "name": "Bare", "mood": "grumpy", "tools": {"personality": false, "telepathy": true}, "brain": {"model": "m", "extra": 1} },
           { "personality": "no name" },
           { "name": "Wired", "mcpServers": ["Gone"], "triggers": [{"on": "teleport"}] } ] }
         """#)
         let bare = kit.imps[0]
         #expect(bare.hue == 0 && bare.scale == 1 && bare.personality == "" && bare.instructions == nil && bare.usesShell && bare.sendsToolCalls)
-        #expect(bare.uses(.senses) && !bare.uses(.body) && !bare.uses(.computer))
+        #expect(bare.uses(.senses) && !bare.uses(.personality) && !bare.uses(.computer))
         #expect(bare.brain == KitBrain(model: "m"))
         #expect(kit.imps.count == 2 && kit.imps[1].name == "Wired")
         #expect(kit.problems.count == 3 && kit.problems.contains { $0.hasPrefix("Imp 2:") } && kit.problems.contains { $0.contains("“Gone”") })

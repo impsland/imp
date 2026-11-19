@@ -8,7 +8,7 @@ import SwiftUI
 /// they work while the Imp sleeps. New ones start as a draft: nothing is added until you say so.
 struct TriggersPanel: View {
     @Bindable var model: AppModel
-    let id: UUID
+    @Binding var imp: ImpProfile
     @State private var draft: Draft?
     @State private var deleting: Shortcut?
     @Environment(\.impTint) private var tint
@@ -21,7 +21,8 @@ struct TriggersPanel: View {
         var id: UUID { shortcut.id }
     }
 
-    private var name: String { model.profile(id)?.callName ?? ImpProfile.stranger }
+    private var id: UUID { imp.id }
+    private var name: String { imp.callName }
     /// This Imp's own triggers first, then the shared ones it has no version of.
     private var all: [Shortcut] { model.prefs.triggers(for: id) }
     private func scope(_ shortcut: Shortcut) -> SettingScope { model.prefs.scope(of: shortcut, for: id) }
@@ -29,17 +30,14 @@ struct TriggersPanel: View {
     var body: some View {
         PanelList("triggers.title", icon: "bolt.fill", info: "triggers.help.list", accessory: {
             HStack(spacing: Spacing.small) {
-                HoverIconButton(systemName: "square.and.arrow.down", help: "Import kit…") { HomeWindow.shared.router.kitFlow = KitFlow(imp: id) }
-                Button { start(.keys, .ask) } label: { FitLabel("triggers.add", systemImage: "plus") }
+                ImportKitButton(imp: id)
+                AgentToolsButton(imp: $imp, groups: [.triggers])
+                Button { start(.click) } label: { FitLabel("New", systemImage: "plus") }
                     .buttonStyle(.imp(.secondary, small: true))
             }
         }) {
             if all.isEmpty {
-                VStack(alignment: .leading, spacing: Spacing.small) {
-                    Text(words("triggers.empty", name)).font(Typeface.body).foregroundStyle(Tone.muted)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .padding(.horizontal, Spacing.small)
+                EmptyState("triggers.empty", symbol: ImpSetting.triggers.symbol, fills: true)
             } else {
                 VStack(spacing: Spacing.snug) {
                     ForEach(all) { shortcut in
@@ -123,9 +121,10 @@ struct TriggersPanel: View {
         }
     }
 
-    /// Opens a new trigger straight in the full editor, which has the "When" and "Do" choices itself.
-    private func start(_ event: TriggerEvent, _ act: Step.Act) {
-        var s = Shortcut(name: "", trigger: .starter(event), steps: [Step(act, value: act == .open ? "chat" : act == .follow ? "eyes" : "")])
+    /// Opens a new trigger straight in the editor: an event and no steps yet, so the first thing to do is
+    /// pick one from the step tiles.
+    private func start(_ event: TriggerEvent) {
+        var s = Shortcut(name: "", trigger: .starter(event), steps: [])
         s.performer = id
         s.id = UUID()
         draft = Draft(shortcut: s, isNew: true)

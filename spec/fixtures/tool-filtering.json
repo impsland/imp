@@ -1,8 +1,8 @@
 {
   "description": "Tool ids and which tools are offered. An id is own.<group>.<tool> for a built-in tool and mcp.<server>.<tool> for a tool of an MCP server, where <server> is the server's name with anything outside letters, digits, underscore and hyphen turned into an underscore. A group id is the id without its last part. A tool is offered when neither its group nor its id is switched off. A tool without an id is never switched off. Calling a tool that is not offered is refused.",
   "ids": [
-    { "kind": "own", "group": "body", "tool": "imp_speak", "id": "own.body.imp_speak", "groupID": "own.body" },
-    { "kind": "own", "group": "setup", "tool": "imp_add_kit", "id": "own.setup.imp_add_kit", "groupID": "own.setup" },
+    { "kind": "own", "group": "personality", "tool": "imp_speak", "id": "own.personality.imp_speak", "groupID": "own.personality" },
+    { "kind": "own", "group": "tools", "tool": "imp_add_kit", "id": "own.tools.imp_add_kit", "groupID": "own.tools" },
     { "kind": "mcp", "server": "files", "tool": "read_file", "id": "mcp.files.read_file", "groupID": "mcp.files" },
     { "kind": "mcp", "server": "My Speech!", "tool": "say.text", "id": "mcp.My_Speech_.say.text", "groupID": "mcp.My_Speech_" }
   ],
@@ -10,7 +10,7 @@
     {
       "name": "nothing switched off",
       "tools": [
-        { "id": "own.body.imp_speak", "name": "imp_speak", "group": "own.body" },
+        { "id": "own.personality.imp_speak", "name": "imp_speak", "group": "own.personality" },
         { "id": "mcp.files.read_file", "name": "files__read_file", "group": "mcp.files" },
         { "name": "shell" }
       ],
@@ -21,29 +21,29 @@
     {
       "name": "one tool off",
       "tools": [
-        { "id": "own.body.imp_speak", "name": "imp_speak", "group": "own.body" },
-        { "id": "own.body.imp_move", "name": "imp_move", "group": "own.body" },
+        { "id": "own.personality.imp_speak", "name": "imp_speak", "group": "own.personality" },
+        { "id": "own.personality.imp_message", "name": "imp_message", "group": "own.personality" },
         { "name": "shell" }
       ],
       "groupsOff": [],
-      "toolsOff": ["own.body.imp_speak"],
-      "offered": ["imp_move", "shell"]
+      "toolsOff": ["own.personality.imp_speak"],
+      "offered": ["imp_message", "shell"]
     },
     {
       "name": "a whole group off",
       "tools": [
-        { "id": "own.body.imp_speak", "name": "imp_speak", "group": "own.body" },
-        { "id": "own.body.imp_move", "name": "imp_move", "group": "own.body" },
+        { "id": "own.personality.imp_speak", "name": "imp_speak", "group": "own.personality" },
+        { "id": "own.personality.imp_message", "name": "imp_message", "group": "own.personality" },
         { "id": "own.senses.mac_status", "name": "mac_status", "group": "own.senses" }
       ],
-      "groupsOff": ["own.body"],
+      "groupsOff": ["own.personality"],
       "toolsOff": [],
       "offered": ["mac_status"]
     },
     {
       "name": "the duplicate speech server off, the built-in speech kept",
       "tools": [
-        { "id": "own.body.imp_speak", "name": "imp_speak", "group": "own.body" },
+        { "id": "own.personality.imp_speak", "name": "imp_speak", "group": "own.personality" },
         { "id": "mcp.speech.say", "name": "speech__say", "group": "mcp.speech" },
         { "id": "mcp.speech.voices", "name": "speech__voices", "group": "mcp.speech" }
       ],
@@ -64,19 +64,19 @@
     {
       "name": "a tool id that matches nothing changes nothing",
       "tools": [
-        { "id": "own.body.imp_speak", "name": "imp_speak", "group": "own.body" }
+        { "id": "own.personality.imp_speak", "name": "imp_speak", "group": "own.personality" }
       ],
       "groupsOff": ["own.nothing"],
-      "toolsOff": ["own.body.imp_sing"],
+      "toolsOff": ["own.personality.imp_sing"],
       "offered": ["imp_speak"]
     },
     {
       "name": "everything off",
       "tools": [
-        { "id": "own.body.imp_speak", "name": "imp_speak", "group": "own.body" },
+        { "id": "own.personality.imp_speak", "name": "imp_speak", "group": "own.personality" },
         { "id": "mcp.files.read_file", "name": "files__read_file", "group": "mcp.files" }
       ],
-      "groupsOff": ["own.body", "mcp.files"],
+      "groupsOff": ["own.personality", "mcp.files"],
       "toolsOff": [],
       "offered": []
     }

@@ -429,7 +429,7 @@ impl ToolHost for ImpMessageHost {
             return Vec::new();
         }
         vec![HostTool {
-            entry: Some(ToolEntry::own("troupe", TOOL_NAME)),
+            entry: Some(ToolEntry::own("personality", TOOL_NAME)),
             spec: self.spec(),
         }]
     }

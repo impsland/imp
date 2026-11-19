@@ -3,7 +3,7 @@ import ImpKit
 import SwiftUI
 
 extension ImpSetting {
-    /// The marker's name, and the panel's name in the bar.
+    /// The section's name in the rail.
     var title: LocalizedStringResource {
         switch self {
         case .brain: "imp_settings.marker.brain"
@@ -12,157 +12,8 @@ extension ImpSetting {
         case .tools: "imp_settings.marker.tools"
         case .triggers: "imp_settings.marker.triggers"
         case .moves: "imp_settings.marker.moves"
+        case .computer: "imp_settings.marker.computer"
         }
-    }
-}
-
-/// What a setting shows about itself, in as few marks as possible: a count on its marker, one short
-/// value in the list, and the whole sentence for the tooltip and the screen reader.
-struct SettingState {
-    var summary: String
-    /// A short value for the list row ("17/26", a model name).
-    var value: String?
-    /// A count on the marker (tools on, triggers).
-    var badge: Int?
-    /// The Brain's lantern: unlit while the Imp sleeps. Every other setting is always lit.
-    var lit = true
-}
-
-/// A setting around the Imp: a round tile with its picture and a one-word title. The Brain's tile is a
-/// lantern, lit when the Brain works and unlit (calm, not a warning) when the Imp sleeps. The picked
-/// marker is filled with the Imp's colour.
-struct SettingMarker: View {
-    let setting: ImpSetting
-    let profile: ImpProfile
-    let state: SettingState
-    let picked: Bool
-    let action: () -> Void
-    @Environment(\.impTint) private var tint
-    @Environment(\.isFocused) private var focused
-    @State private var hover = false
-
-    private static let hoverScale = 1.06
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: Spacing.snug) {
-                tile
-                Text(setting.title).font(Typeface.label).foregroundStyle(Tone.text).lineLimit(1)
-            }
-            .frame(maxWidth: .infinity, minHeight: Sizing.hit)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .onHover { hover = $0 }
-        .impAnimation(ImpDesign.Motion.hover, value: hover)
-        .help(Text(verbatim: state.summary))
-        .accessibilityLabel(Text(setting.title))
-        .accessibilityValue(a11yValue)
-        .accessibilityAddTraits(picked ? .isSelected : [])
-    }
-
-    /// The icon is a third of the tile, so it is always well inside the round fill.
-    private var tile: some View {
-        Image(systemName: setting == .brain && !state.lit ? "lightbulb" : setting.symbol)
-            .font(.icon(.big))
-            .foregroundStyle(picked ? AnyShapeStyle(OnTint(tint)) : AnyShapeStyle(state.lit ? AnyShapeStyle(LegibleTint()) : AnyShapeStyle(Tone.muted)))
-            .frame(width: Sizing.marker, height: Sizing.marker)
-            .background(Circle().fill(fill))
-            .focusRing(Circle(), shown: focused)
-            .overlay(alignment: .topTrailing) {
-                if let badge = state.badge, badge > 0 { CountBadge(count: badge) }
-            }
-            .scaleEffect(hover ? Self.hoverScale : 1)
-            .accessibilityHidden(true)
-    }
-
-    private var fill: AnyShapeStyle {
-        if picked { return AnyShapeStyle(TintFill(tint)) }
-        return AnyShapeStyle(hover ? Tone.cardHover : Tone.card)
-    }
-
-    private var a11yValue: String {
-        guard setting == .brain, !state.lit else { return state.summary }
-        return words("imp_settings.brain_marker.asleep", profile.callName)
-    }
-}
-
-/// A small number on a marker.
-struct CountBadge: View {
-    let count: Int
-
-    var body: some View {
-        Text(verbatim: "\(count)")
-            .font(Typeface.small.weight(.bold).monospacedDigit())
-            .foregroundStyle(Tone.onAccent)
-            .padding(.horizontal, Spacing.snug).padding(.vertical, Spacing.hairline)
-            .frame(minWidth: Spacing.large)
-            .background(Capsule().fill(Tone.accent))
-            .offset(x: Spacing.snug, y: -Spacing.tight)
-    }
-}
-
-/// A setting as a row of the plain list: its own pebble with an icon bead, its title, one short value
-/// and a chevron.
-struct SettingListRow: View {
-    let setting: ImpSetting
-    let profile: ImpProfile
-    let state: SettingState
-    let action: () -> Void
-    @Environment(\.isFocused) private var focused
-    @State private var hover = false
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: Spacing.medium) {
-                IconTile(systemName: setting == .brain && !state.lit ? "lightbulb" : setting.symbol)
-                    .opacity(state.lit ? 1 : Opacity.dimmed)
-                Text(setting.title).font(Typeface.body).foregroundStyle(Tone.text).lineLimit(1)
-                Spacer(minLength: Spacing.small)
-                if let value = state.value {
-                    Text(verbatim: value).font(Typeface.small).foregroundStyle(Tone.muted).lineLimit(1)
-                }
-                Image(systemName: "chevron.right").font(.icon(.small, weight: .bold)).foregroundStyle(Tone.faint)
-                    .accessibilityHidden(true)
-            }
-            .padding(.horizontal, Spacing.medium).padding(.vertical, Spacing.small)
-            .frame(maxWidth: .infinity, minHeight: Sizing.control, alignment: .leading)
-            .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous).fill(hover ? Tone.cardHover : Tone.card))
-            .focusRing(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous), shown: focused)
-            .contentShape(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous))
-        }
-        .buttonStyle(.plain)
-        .onHover { hover = $0 }
-        .impAnimation(ImpDesign.Motion.hover, value: hover)
-        .help(Text(verbatim: state.summary))
-        .accessibilityLabel(Text(setting.title))
-        .accessibilityValue(setting == .brain && !state.lit ? words("imp_settings.brain_marker.asleep", profile.callName) : state.summary)
-    }
-}
-
-/// An open panel: a scrolling column of cards on the shared surface, under the window's one bar. It
-/// has no header of its own: the bar names it, and beside the stage its marker is lit.
-struct SettingsPanelFrame<Content: View>: View {
-    let setting: ImpSetting
-    @ViewBuilder var content: Content
-
-    var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                VStack(alignment: .leading, spacing: Spacing.medium) { content }
-                    .padding(.horizontal, Spacing.large)
-                    .padding(.top, Spacing.hairline)
-                    .padding(.bottom, Spacing.page)
-                    .frame(maxWidth: Sizing.column, alignment: .leading)
-                    .frame(maxWidth: .infinity)
-                    .scrollsToHighlightedSetting(proxy)
-            }
-            .id(setting)
-            .scrollContentBackground(.hidden)
-        }
-        .impControls()
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(Text(setting.title))
     }
 }
 
@@ -261,40 +112,5 @@ struct RowSlider: View {
         }
         .frame(minWidth: Sizing.hit * 4, maxWidth: Sizing.hit * 7)
         .onTapGesture(count: 2) { if let resets { value = resets } }
-    }
-}
-
-/// Sharing this Imp: as a file. To publish it on an MCP gallery such as the Den, ask the Imp (imp_export_kit).
-struct ShareImpSheet: View {
-    let model: AppModel
-    let id: UUID
-
-    private var name: String { model.profile(id)?.callName ?? ImpProfile.stranger }
-
-    var body: some View {
-        SheetScaffold(icon: "square.and.arrow.up", title: LocalizedStringKey(words("share.title", name)), info: LocalizedStringKey("share.note")) {
-            Card {
-                shareRow("share.file", symbol: "square.and.arrow.down") {
-                    ImpExport.save([id], model: model, name: name, fileName: name)
-                }
-            }
-        } footer: {
-            EmptyView()
-        }
-    }
-
-    private func shareRow(_ title: LocalizedStringKey, symbol: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: Spacing.medium) {
-                IconTile(systemName: symbol)
-                Text(title).font(Typeface.body).foregroundStyle(Tone.text).lineLimit(1)
-                Spacer(minLength: Spacing.small)
-                Image(systemName: "chevron.right").font(.icon(.small, weight: .bold)).foregroundStyle(Tone.faint)
-                    .accessibilityHidden(true)
-            }
-            .frame(maxWidth: .infinity, minHeight: Sizing.control, alignment: .leading)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
     }
 }

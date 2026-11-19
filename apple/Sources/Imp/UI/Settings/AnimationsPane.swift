@@ -78,7 +78,7 @@ struct AnimationsPane: View {
                     .help("Make an animation of your own, beat by beat")
             } content: {
                 if made.isEmpty {
-                    StatusText(text: "sheets.animations.nothing_yet")
+                    EmptyState("sheets.animations.nothing_yet", symbol: "wand.and.stars")
                 } else {
                     VStack(spacing: 0) {
                         ForEach(Array(made.enumerated()), id: \.element.0.id) { i, item in
@@ -110,7 +110,11 @@ struct AnimationsPane: View {
             finish: finish,
             edit: { editing = AnimationDraft(made: a, owner: owner, isNew: false, previewImp: imp) },
             setEnabled: { on in model.prefs.setEnabled(on, animation: a.id) },
-            addTrigger: add)
+            addTrigger: add,
+            exportSticker: { [model] in
+                let maker = (owner ?? imp).flatMap(model.profile) ?? .imp
+                StickerExport.save(a.beats, name: a.title, hue: maker.hue, traits: maker.traits)
+            })
         .equatable()
     }
 
@@ -202,6 +206,8 @@ struct AnimationRow: View, Equatable {
     let setEnabled: @MainActor (Bool) -> Void
     /// Opens a new trigger that plays it. Not part of the comparison, like the other actions.
     var addTrigger: (@MainActor () -> Void)?
+    /// Saves it as an animated sticker (`.tgs`, see `StickerExport`).
+    var exportSticker: (@MainActor () -> Void)?
 
     /// Compares the plain values and which optional actions are set, never the closures themselves.
     nonisolated static func == (a: Self, b: Self) -> Bool {
@@ -246,6 +252,7 @@ struct AnimationRow: View, Equatable {
             Button("Try") { play() }
             Button("Change…") { edit() }
             if let addTrigger { Button("triggers.hint.button") { addTrigger() } }
+            if let exportSticker { Button("sticker.export") { exportSticker() } }
         }
     }
 
@@ -281,6 +288,7 @@ struct AnimationRow: View, Equatable {
 
     private var controls: some View {
         HStack(spacing: Spacing.small) {
+            if let exportSticker { HoverIconButton(systemName: "face.smiling.inverse", help: "sticker.export", action: exportSticker) }
             HoverIconButton(systemName: "pencil", help: "Change \(item.title)", action: edit)
             Toggle(switchLabel, isOn: Binding(get: { item.isEnabled }, set: { setEnabled($0) }))
                 .labelsHidden().toggleStyle(.impSwitchBare)

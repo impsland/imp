@@ -3,15 +3,15 @@ import ImpCore
 
 /// One tool as the registry knows it: a stable id, the name the model calls it by, and its group.
 ///
-/// Ids: `own.<group>.<tool>` for the built-in tools (for instance `own.body.imp_speak`) and
+/// Ids: `own.<group>.<tool>` for the built-in tools (for instance `own.personality.imp_speak`) and
 /// `mcp.<server>.<tool>` for tools of an MCP server (`<server>` is its name with anything outside
 /// letters, digits, `_` and `-` turned into `_`). A group is the id without the last part:
-/// `own.body`, `mcp.files`. The ids are what saved choices and Den packages refer to.
+/// `own.personality`, `mcp.files`. The ids are what saved choices and Den packages refer to.
 public struct ToolEntry: Hashable, Sendable, Identifiable, Codable {
     public var id: String
     /// What the model calls it (the function name it is offered under).
     public var name: String
-    /// The group's id (`own.body`, `mcp.files`).
+    /// The group's id (`own.personality`, `mcp.files`).
     public var group: String
     /// A few plain words for the Tools tab. Empty for tools of a server (they show their own name).
     public var title: String
@@ -60,32 +60,34 @@ public enum ToolRegistry {
 
     public static func mcpID(server name: String, tool: String) -> String { ImpCore.toolMcpId(server: name, tool: tool) }
 
-    /// The words the Tools tab shows for each built-in tool, by the name the model calls it. The ids,
+    /// The words a section's agent sheet shows for each built-in tool (short: the section says what they act on), by the name the model calls it. The ids,
     /// groups and order come from the core.
     private static let titles: [String: String] = [
-        OwnTools.play: String(localized: "Play animations"),
-        OwnTools.move: String(localized: "Move around the screen"),
-        OwnTools.speak: String(localized: "Speak out loud"),
-        OwnTools.makeAnimation: String(localized: "Make an animation"),
-        OwnTools.showAnimation: String(localized: "Look at an animation"),
-        OwnTools.removeAnimation: String(localized: "Remove an animation"),
-        OwnTools.setTraits: String(localized: "Change its character"),
-        OwnTools.status: String(localized: "Read the Mac's state"),
-        OwnTools.page: String(localized: "Read the browser page"),
-        OwnTools.listTriggers: String(localized: "List its triggers"),
-        OwnTools.addTrigger: String(localized: "Add a trigger"),
-        OwnTools.removeTrigger: String(localized: "Remove a trigger"),
-        OwnTools.listTools: String(localized: "List extra tools"),
-        OwnTools.addTool: String(localized: "Add an extra tool"),
-        OwnTools.addKit: String(localized: "Offer a kit to add"),
-        OwnTools.exportKit: String(localized: "Export a kit to publish"),
-        OwnTools.removeTool: String(localized: "Remove an extra tool"),
-        OwnTools.openSettings: String(localized: "Open Settings"),
-        OwnTools.message: String(localized: "Message another Imp"),
-        OwnTools.openFile: String(localized: "Open a shared file"),
-        ComputerTools.observe: String(localized: "Look at the screen"),
-        ComputerTools.act: String(localized: "Click, type and scroll"),
-        ComputerTools.verify: String(localized: "Check what happened"),
+        OwnTools.play: String(localized: "tool.play"),
+        OwnTools.move: String(localized: "tool.move"),
+        OwnTools.speak: String(localized: "tool.speak"),
+        OwnTools.makeAnimation: String(localized: "tool.make_animation"),
+        OwnTools.showAnimation: String(localized: "tool.show_animation"),
+        OwnTools.removeAnimation: String(localized: "tool.remove_animation"),
+        OwnTools.setTraits: String(localized: "tool.set_traits"),
+        OwnTools.showBackground: String(localized: "tool.show_background"),
+        OwnTools.setBackground: String(localized: "tool.set_background"),
+        OwnTools.status: String(localized: "tool.mac_status"),
+        OwnTools.page: String(localized: "tool.browser_page"),
+        OwnTools.listTriggers: String(localized: "tool.list_triggers"),
+        OwnTools.addTrigger: String(localized: "tool.add_trigger"),
+        OwnTools.removeTrigger: String(localized: "tool.remove_trigger"),
+        OwnTools.listTools: String(localized: "tool.list_tools"),
+        OwnTools.addTool: String(localized: "tool.add_tool"),
+        OwnTools.addKit: String(localized: "tool.add_kit"),
+        OwnTools.exportKit: String(localized: "tool.export_kit"),
+        OwnTools.removeTool: String(localized: "tool.remove_tool"),
+        OwnTools.openSettings: String(localized: "tool.open_settings"),
+        OwnTools.message: String(localized: "tool.message"),
+        OwnTools.openFile: String(localized: "tool.open_file"),
+        ComputerTools.observe: String(localized: "tool.observe"),
+        ComputerTools.act: String(localized: "tool.act"),
+        ComputerTools.verify: String(localized: "tool.verify"),
     ]
 
     private static func entry(_ e: ImpCore.ToolEntry) -> ToolEntry {

@@ -9,18 +9,16 @@ import SwiftUI
 enum DesignScene: String, CaseIterable {
     case canvasEmpty = "canvas-empty"
     case canvasImps = "canvas-imps"
-    case canvasPicture = "canvas-picture"
     case impBrain = "imp-brain"
     case impSleeping = "imp-sleeping"
-    case impList = "imp-list"
-    case impBrainOpen = "imp-brain-open"
-    case impNarrowOpen = "imp-narrow-open"
     case impPersonality = "imp-personality"
     case impLook = "imp-look"
-    case impTools = "imp-tools"
-    case impTriggers = "imp-triggers"
     case impMoves = "imp-moves"
+    case impTriggers = "imp-triggers"
+    case impTools = "imp-tools"
+    case impComputer = "imp-computer"
     case impLookNarrow = "imp-look-narrow"
+    case impAgentTools = "imp-agent-tools"
     case impTriggerEditor = "imp-trigger-editor"
     case impTriggerSteps = "imp-trigger-steps"
     case appWide = "all-imps-app"
@@ -46,15 +44,12 @@ enum DesignScene: String, CaseIterable {
 
     var size: CGSize {
         switch self {
-        case .canvasEmpty, .canvasImps, .canvasPicture: CGSize(width: 780, height: 640)
-        case .impBrain, .impSleeping: CGSize(width: 760, height: 600)
-        case .impList: CGSize(width: 440, height: 640)
-        case .impBrainOpen: CGSize(width: 1100, height: 720)
-        case .impNarrowOpen: CGSize(width: 600, height: 720)
-        case .impPersonality, .impLook, .impTools, .impTriggers, .impMoves: CGSize(width: 760, height: 720)
+        case .canvasEmpty, .canvasImps: CGSize(width: 780, height: 640)
+        case .impBrain, .impSleeping, .impPersonality, .impLook, .impMoves, .impTriggers, .impTools, .impComputer: CGSize(width: 760, height: 720)
         case .impLookNarrow: CGSize(width: 380, height: 720)
-        case .impTriggerEditor: CGSize(width: 520, height: 720)
-        case .impTriggerSteps: CGSize(width: 520, height: 900)
+        case .impAgentTools: CGSize(width: Sizing.sheetWidth, height: 560)
+        case .impTriggerEditor: CGSize(width: 600, height: 760)
+        case .impTriggerSteps: CGSize(width: 600, height: 960)
         case .appWide: CGSize(width: 900, height: 720)
         case .appNarrow: CGSize(width: 560, height: 720)
         case .allNothing: CGSize(width: 760, height: 640)
@@ -70,20 +65,19 @@ enum DesignScene: String, CaseIterable {
         let content: AnyView = switch self {
         case .canvasEmpty:
             AnyView(ZStack {
-                CanvasBackdrop(background: CanvasBackground())
+                CanvasBackdrop(html: RoomBackground.defaultHTML)
                 EmptyCanvas(action: {})
             })
-        case .canvasImps: canvas(background: nil)
-        case .canvasPicture: canvas(background: .picture)
-        case .impBrain: impSettings(brain: true)
-        case .impSleeping: impSettings(brain: false)
-        case .impList: impSettings(brain: true)
-        case .impBrainOpen, .impNarrowOpen: impSettings(brain: true, open: .brain)
+        case .canvasImps: canvas()
+        case .impBrain: impSettings(brain: true, open: .brain)
+        case .impSleeping: impSettings(brain: false, open: .brain)
         case .impPersonality: impSettings(brain: true, open: .personality)
         case .impLook, .impLookNarrow: impSettings(brain: true, open: .look)
-        case .impTools: impSettings(brain: true, open: .tools)
-        case .impTriggers: impSettings(brain: true, open: .triggers)
         case .impMoves: impSettings(brain: true, open: .moves)
+        case .impTriggers: impSettings(brain: true, open: .triggers)
+        case .impTools: impSettings(brain: true, open: .tools)
+        case .impComputer: impSettings(brain: true, open: .computer)
+        case .impAgentTools: agentTools()
         case .impTriggerEditor: triggerEditor()
         case .impTriggerSteps: triggerEditor(poke: true)
         case .appWide, .appNarrow: general(.app)
@@ -164,29 +158,8 @@ enum DesignScene: String, CaseIterable {
         return model
     }
 
-    @MainActor private static func picture() -> String {
-        let name = "design-scene.png"
-        let image = NSImage(size: CGSize(width: 96, height: 96), flipped: false) { rect in
-            NSColor(srgbRed: 0.16, green: 0.2, blue: 0.34, alpha: 1).setFill()
-            rect.fill()
-            NSColor(srgbRed: 0.3, green: 0.4, blue: 0.62, alpha: 1).setFill()
-            for i in stride(from: 0.0, to: 96.0, by: 24.0) { NSRect(x: i, y: 0, width: 8, height: 96).fill() }
-            return true
-        }
-        if let tiff = image.tiffRepresentation, let png = NSBitmapImageRep(data: tiff)?.representation(using: .png, properties: [:]),
-           let url = BackgroundFiles.url(of: name) {
-            try? FileManager.default.createDirectory(at: BackgroundFiles.folder, withIntermediateDirectories: true)
-            try? png.write(to: url)
-        }
-        return name
-    }
-
-    @MainActor private func canvas(background: CanvasBackground.Kind?) -> AnyView {
+    @MainActor private func canvas() -> AnyView {
         let model = Self.model(imps: 3)
-        if let background {
-            model.prefs.background.kind = background
-            model.prefs.background.image = Self.picture()
-        }
         let router = HomeRouter()
         // Where each Imp stands, so the picture does not depend on arrival order.
         for (imp, place) in zip(model.prefs.imps, [CGPoint(x: 0.22, y: 0.4), CGPoint(x: 0.5, y: 0.62), CGPoint(x: 0.78, y: 0.4)]) {
@@ -206,6 +179,18 @@ enum DesignScene: String, CaseIterable {
         }
         trigger.performer = id
         return AnyView(ShortcutSheet(model: model, imp: id, shortcut: trigger, isNew: false, scope: .onlyThisImp, save: { _, _ in }, duplicate: { _ in }, delete: {})
+            .environment(\.impTint, Color.imp(model.prefs.imps[0].hue))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background { SettingsBackdrop() })
+    }
+
+    /// What an Imp may do by itself in Moves: the sheet behind the wand.
+    @MainActor private func agentTools() -> AnyView {
+        let model = Self.model(imps: 1, brain: true)
+        let id = model.prefs.imps[0].id
+        let imp = Binding(get: { model.profile(id) ?? .imp },
+                          set: { new in if let i = model.prefs.imps.firstIndex(where: { $0.id == id }) { model.prefs.imps[i] = new } })
+        return AnyView(AgentToolsSheet(imp: imp, groups: [.moves])
             .environment(\.impTint, Color.imp(model.prefs.imps[0].hue))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background { SettingsBackdrop() })
@@ -265,7 +250,7 @@ enum DesignScene: String, CaseIterable {
 private struct SettingsBackdrop: View {
     var body: some View {
         ZStack {
-            CanvasBackdrop(background: CanvasBackground())
+            CanvasBackdrop(html: RoomBackground.defaultHTML)
             Tone.veil
         }
     }

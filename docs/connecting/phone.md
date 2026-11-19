@@ -69,7 +69,7 @@ key is copied, so you never type it again). It lives in your pocket.
   name on your network, so it still works when the Mac's Wi-Fi address changes), paste the key and tap Wake.
   The model is picked for you, or choose one from the list.
 - In its **Tools**, switch **Message another Imp** and **Play animations** on or off, and add tool servers.
-- In its **Personality**, **What it's good at** is a line or two the other Imps read to know whom to ask. Its tool
+- In its **Personality**, **Description** is a line or two the other Imps read to know whom to ask. Its tool
   servers' names go with it as what it can do (no commands on the phone).
 - Hold a pocket Imp to open its settings. Changes are kept as you make them.
 

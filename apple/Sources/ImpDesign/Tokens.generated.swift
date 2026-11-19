@@ -333,7 +333,7 @@ public enum Sizing {
         #endif
     }
 
-    /// A setting's round marker around the Imp.
+    /// A round tile: an animation's preview, the Imp on the phone's settings.
     public static var marker: CGFloat {
         #if os(iOS)
         48
@@ -707,7 +707,7 @@ public enum Behavior {
     public static let peekShowSeconds = 1.5
     /// A peek waits until the user has not typed for this long.
     public static let peekQuietSeconds = 10
-    /// Below this width Imp Settings shows its plain list under the Imp.
+    /// Below this width a settings rail shows its icons alone.
     public static let narrowWindowPoints = 520
     /// The height of the strip along the top of a desktop window that drags the window.
     public static let dragStripPoints = 28

@@ -163,12 +163,13 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { hopAddress = newValue }
     }
     private var hopAddress: String?
-    /// What the home window's canvas looks like behind the Imps (see `CanvasBackground`).
-    public var background: CanvasBackground {
-        get { canvasBackground ?? CanvasBackground() }
-        set { canvasBackground = newValue }
+    /// The HTML document behind the Imps in the home window (see `RoomBackground`). The Imps set it.
+    /// Setting the default (or nil) stores nothing.
+    public var background: String {
+        get { backgroundHTML ?? RoomBackground.defaultHTML }
+        set { backgroundHTML = newValue == RoomBackground.defaultHTML ? nil : newValue }
     }
-    private var canvasBackground: CanvasBackground?
+    private var backgroundHTML: String?
     /// BCP-47 identifier for dictation. Empty = system language.
     public var dictationLocale = ""
     /// The troupe. Always at least one: the little red Imp, waiting in the app's window.

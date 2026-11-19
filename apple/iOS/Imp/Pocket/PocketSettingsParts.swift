@@ -11,6 +11,7 @@ extension ImpSetting {
         case .tools: "imp_settings.marker.tools"
         case .triggers: "imp_settings.marker.triggers"
         case .moves: "imp_settings.marker.moves"
+        case .computer: "imp_settings.marker.computer"
         }
     }
 }

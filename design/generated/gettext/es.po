@@ -5,6 +5,31 @@ msgstr ""
 "Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#. Tooltip of the wand button in a section header: opens what the Imp may do there by itself.
+msgctxt "agent.button"
+msgid "What {name} may do by itself"
+msgstr "Lo que {name} puede hacer por su cuenta"
+
+#. Help of that sheet.
+msgctxt "agent.help"
+msgid "The things it can do by itself here. A tool that is off is never offered to its Brain."
+msgstr "Lo que puede hacer por su cuenta aquí. Una herramienta apagada nunca se ofrece a su Cerebro."
+
+#. Spoken value of the wand button: every tool there is off.
+msgctxt "agent.off"
+msgid "Off"
+msgstr "Desactivado"
+
+#. Spoken value of the wand button: some tools are on.
+msgctxt "agent.on"
+msgid "On"
+msgstr "Activado"
+
+#. Title of the sheet with the Imp's own tools of one section.
+msgctxt "agent.title"
+msgid "What {name} may do"
+msgstr "Lo que {name} puede hacer"
+
 #. Help of the move description.
 msgctxt "anim.help.about"
 msgid "One sentence about what it does."
@@ -140,46 +165,6 @@ msgctxt "app.window.title"
 msgid "Window"
 msgstr "Ventana"
 
-#. Opens the colour chooser.
-msgctxt "background.choose_colour"
-msgid "Choose a colour…"
-msgstr "Elegir un color…"
-
-#. Opens a file chooser for a picture or a tile.
-msgctxt "background.choose_picture"
-msgid "Choose a picture…"
-msgstr "Elegir una imagen…"
-
-#. Background choice: one colour.
-msgctxt "background.colour"
-msgid "Colour"
-msgstr "Color"
-
-#. Background choice: one picture that fills the window.
-msgctxt "background.picture"
-msgid "Picture"
-msgstr "Imagen"
-
-#. Error when the chosen file is not a usable picture.
-msgctxt "background.picture_failed"
-msgid "That picture could not be used. Pick another one."
-msgstr "No se pudo usar esa imagen. Elige otra."
-
-#. Background choice: the wall of the dungeon, the default.
-msgctxt "background.theme"
-msgid "Theme"
-msgstr "Tema"
-
-#. Background choice: a seamless pattern that repeats.
-msgctxt "background.tile"
-msgid "Tile"
-msgstr "Mosaico"
-
-#. Hint under the Tile choice.
-msgctxt "background.tile_hint"
-msgid "A tile repeats to fill the window. Pick a seamless pattern."
-msgstr "Un mosaico se repite para llenar la ventana. Elige un patrón continuo."
-
 #. Button that adds a Brain service.
 msgctxt "brain.add_service"
 msgid "Add"
@@ -300,10 +285,10 @@ msgctxt "brains.default"
 msgid "Default"
 msgstr "Por defecto"
 
-#. Empty state of the Brains list.
+#. Empty state of the list of Brains.
 msgctxt "brains.empty"
-msgid "No Brains yet. Add a model on this computer or a service with your key."
-msgstr "Aún no hay cerebros. Añade un modelo en este equipo o un servicio con tu clave."
+msgid "No Brains yet."
+msgstr "Aún no hay cerebros."
 
 #. Choice when adding a Brain.
 msgctxt "brains.local"
@@ -447,15 +432,35 @@ msgctxt "common.undo"
 msgid "Undo"
 msgstr "Deshacer"
 
+#. Header of the Computer section of an Imp.
+msgctxt "computer.access"
+msgid "Access"
+msgstr "Acceso"
+
+#. Help of the Computer section.
+msgctxt "computer.help.access"
+msgid "What the Imp may reach on this Mac."
+msgstr "Lo que el Imp puede usar en este Mac."
+
+#. Help of the Computer control switch.
+msgctxt "computer.help.control"
+msgid "Sees and operates other apps. Needs the Screen & System Audio Recording and Accessibility permissions."
+msgstr "Ve y maneja otras apps. Necesita los permisos de Grabación de pantalla y audio del sistema y de Accesibilidad."
+
+#. Help of the Senses switch.
+msgctxt "computer.help.senses"
+msgid "Reads the battery, processor, network and open apps, and the page open in the browser."
+msgstr "Lee la batería, el procesador, la red y las apps abiertas, y la página abierta en el navegador."
+
 #. Help of Copy Link in Link a device.
 msgctxt "devices.copy_link.help"
 msgid "For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while."
 msgstr "Para un dispositivo que no puede escanear: pega el enlace en Escanear código en el otro dispositivo. Mantenlo en privado. Permite que un dispositivo se vincule con este Mac durante un rato."
 
-#. Empty state of the devices card.
+#. Empty state of the list of linked devices.
 msgctxt "devices.empty"
-msgid "No devices yet. Link an iPhone or another Mac and your Imps can visit it."
-msgstr "Aún no hay dispositivos. Vincula un iPhone u otro Mac y tus Imps podrán visitarlo."
+msgid "No devices yet."
+msgstr "Aún no hay dispositivos."
 
 #. Help on the Devices card.
 msgctxt "devices.list.info"
@@ -1213,11 +1218,6 @@ msgctxt "imp_settings.brain_marker.asleep"
 msgid "{name} is asleep. Give it a Brain."
 msgstr "{name} está dormido. Dale un cerebro."
 
-#. Screen reader label of the lit Brain marker.
-msgctxt "imp_settings.brain_marker.awake"
-msgid "Brain: {service}, {model}"
-msgstr "Cerebro: {service}, {model}"
-
 #. Icon button label in the top corner.
 msgctxt "imp_settings.goodbye"
 msgid "Goodbye"
@@ -1228,15 +1228,20 @@ msgctxt "imp_settings.goodbye.a11y"
 msgid "Say goodbye to {name}"
 msgstr "Decirle adiós a {name}"
 
-#. Screen reader name of the plain list of settings.
+#. Spoken name of the rail of sections of one Imp's settings.
 msgctxt "imp_settings.list.label"
-msgid "All settings for {name}"
-msgstr "Todos los ajustes de {name}"
+msgid "Settings for {name}"
+msgstr "Ajustes de {name}"
 
 #. Marker above the Imp's head and panel title.
 msgctxt "imp_settings.marker.brain"
 msgid "Brain"
 msgstr "Cerebro"
+
+#. Section of an Imp's settings: what it may reach on this Mac (commands, senses, computer control).
+msgctxt "imp_settings.marker.computer"
+msgid "Computer"
+msgstr "Ordenador"
 
 #. Marker left of the Imp: colour, size and character.
 msgctxt "imp_settings.marker.look"
@@ -1272,43 +1277,6 @@ msgstr "Compartir"
 msgctxt "imp_settings.share.a11y"
 msgid "Share {name}"
 msgstr "Compartir {name}"
-
-#. Summary line of the Brain row when the Imp has no Brain.
-msgctxt "imp_settings.summary.brain_none"
-msgid "Asleep"
-msgstr "Dormido"
-
-#. Summary line of the Brain row: service and model.
-msgctxt "imp_settings.summary.brain_set"
-msgid "{service}, {model}"
-msgstr "{service}, {model}"
-
-#. Summary line of the Look row.
-msgctxt "imp_settings.summary.look"
-msgid "Colour and size"
-msgstr "Color y tamaño"
-
-#. Summary line of the Moves row.
-msgctxt "imp_settings.summary.moves"
-msgid "Animations"
-msgstr "Animaciones"
-
-#. Summary line of the Personality row.
-msgctxt "imp_settings.summary.personality"
-msgid "Name and persona"
-msgstr "Nombre y personalidad"
-
-#. Summary line of the Tools row.
-msgctxt "imp_settings.summary.tools"
-msgid "{on} of {total} on"
-msgstr "{on} de {total}"
-
-#. Summary line of the Triggers row.
-msgctxt "imp_settings.summary.triggers"
-msgid "{count} trigger"
-msgid_plural "{count} triggers"
-msgstr[0] "{count} disparador"
-msgstr[1] "{count} disparadores"
 
 #. Stands in for the Imp's name while its name is empty.
 msgctxt "imp_settings.this_imp"
@@ -1520,6 +1488,11 @@ msgctxt "look.title"
 msgid "Look"
 msgstr "Aspecto"
 
+#. Empty state of the list of chats.
+msgctxt "memory.empty"
+msgid "No chats yet."
+msgstr "Aún no hay chats."
+
 #. Choice for Sends: the last N messages.
 msgctxt "memory.last"
 msgid "Last {count}"
@@ -1640,11 +1613,6 @@ msgctxt "menu.bar.state.out"
 msgid "Out"
 msgstr "Fuera"
 
-#. Menu with the background choices.
-msgctxt "menu.canvas.background"
-msgid "Background"
-msgstr "Fondo"
-
 #. Menu item that opens Devices.
 msgctxt "menu.canvas.devices"
 msgid "Devices"
@@ -1654,6 +1622,11 @@ msgstr "Equipos"
 msgctxt "menu.canvas.new_imp"
 msgid "New Imp"
 msgstr "Nuevo Imp"
+
+#. File menu item: puts the plain background back (the Imps make the others).
+msgctxt "menu.canvas.reset_background"
+msgid "Reset Background"
+msgstr "Restablecer fondo"
 
 #. Menu item that opens the app-wide settings.
 msgctxt "menu.canvas.settings"
@@ -1765,20 +1738,25 @@ msgctxt "menu.imp.visit_tip"
 msgid "{name} visits {device} and can come back."
 msgstr "{name} visita {device} y puede volver."
 
-#. Empty state of the moves panel.
+#. Header of the list of an Imp's own animations.
+msgctxt "moves.animations"
+msgid "Animations"
+msgstr "Animaciones"
+
+#. Empty state of the animations list.
 msgctxt "moves.empty"
-msgid "No special moves yet."
-msgstr "Sin movimientos aún."
+msgid "No animations yet."
+msgstr "Aún no hay animaciones."
 
 #. Help of the own animations list.
 msgctxt "moves.help.own"
 msgid "Moves made for only this Imp. They play instead of the shared ones."
 msgstr "Movimientos hechos solo para este Imp. Se usan en lugar de los compartidos."
 
-#. Field label: what the Imp is good at, which other Imps read to know whom to ask.
+#. Field label: a short description of the Imp, which other Imps read to know whom to ask.
 msgctxt "personality.about"
-msgid "What it's good at"
-msgstr "En qué destaca"
+msgid "Description"
+msgstr "Descripción"
 
 #. Placeholder of the field about what the Imp is good at.
 msgctxt "personality.about_hint"
@@ -1910,10 +1888,10 @@ msgctxt "phone.brains.default"
 msgid "New Imps start with {name}'s Brain."
 msgstr "Los Imps nuevos empiezan con el cerebro de {name}."
 
-#. Brains section of the iPhone settings, when no Imp was hatched on this iPhone yet.
+#. Empty state of the phone's list of Imps and their Brains.
 msgctxt "phone.brains.empty"
-msgid "Imps you hatch on this iPhone show here, each with the Brain it thinks with."
-msgstr "Los Imps que hagas nacer en este iPhone aparecen aquí, cada uno con el cerebro con el que piensa."
+msgid "No Imps yet."
+msgstr "Aún no hay Imps."
 
 #. Button beside an Imp without a Brain (iPhone settings): opens its Brain to set one up.
 msgctxt "phone.brains.set_up"
@@ -2395,10 +2373,10 @@ msgctxt "phone.status.looking"
 msgid "Looking…"
 msgstr "Buscando…"
 
-#. The talks side of an Imp's sheet when it has not talked with another Imp yet.
+#. Empty state of the list of talks between Imps.
 msgctxt "phone.talks.empty"
-msgid "No talks yet"
-msgstr "Sin charlas"
+msgid "No talks yet."
+msgstr "Aún no hay conversaciones."
 
 #. iPhone: how many question and answer pairs a talk has, read out for its count.
 msgctxt "phone.talks.exchanges"
@@ -3180,21 +3158,6 @@ msgctxt "settings.tool.variables.info"
 msgid "Secret values the tool needs to run."
 msgstr "Valores secretos que la herramienta necesita."
 
-#. Share sheet choice: a kit file.
-msgctxt "share.file"
-msgid "File"
-msgstr "Archivo"
-
-#. Note on the share sheet about what travels.
-msgctxt "share.note"
-msgid "Its look, personality, tools and triggers are shared. Keys, memory and chats never are."
-msgstr "Se comparten su aspecto, personalidad, herramientas y disparadores. Las claves, la memoria y los chats nunca."
-
-#. Title of the share sheet.
-msgctxt "share.title"
-msgid "Share {name}"
-msgstr "Compartir {name}"
-
 #. Button on the Sharing page: look through The Den.
 msgctxt "sharing.browse"
 msgid "Browse"
@@ -3215,10 +3178,10 @@ msgctxt "sharing.import"
 msgid "Import"
 msgstr "Importar"
 
-#. Shown in the animations list when you have made none.
+#. Empty state of a list of animations.
 msgctxt "sheets.animations.nothing_yet"
-msgid "Nothing yet"
-msgstr "Nada todavía"
+msgid "No animations yet."
+msgstr "Aún no hay animaciones."
 
 #. A linked device disappeared.
 msgctxt "state.link_lost"
@@ -3270,15 +3233,170 @@ msgctxt "state.waking"
 msgid "Waking up…"
 msgstr "Despertando…"
 
+#. Why a sticker cannot be made: the animation has no beats.
+msgctxt "sticker.error.empty"
+msgid "The animation is empty."
+msgstr "La animación está vacía."
+
+#. Title of the alert when a sticker cannot be made.
+msgctxt "sticker.error.title"
+msgid "Couldn’t make the sticker"
+msgstr "No se pudo crear el sticker"
+
+#. Why a sticker cannot be made: even simplified it is over the 64 KB limit.
+msgctxt "sticker.error.too_big"
+msgid "It is still {kb} KB when simplified. A sticker may be 64 KB: try fewer beats or simpler moves."
+msgstr "Simplificado sigue ocupando {kb} KB. Un sticker puede ocupar 64 KB: prueba con menos pasos o movimientos más sencillos."
+
+#. Action on an animation: saves it as an animated sticker file (.tgs).
+msgctxt "sticker.export"
+msgid "Export as Sticker…"
+msgstr "Exportar como sticker…"
+
+#. Message in the save panel of a sticker.
+msgctxt "sticker.note"
+msgid "An animated sticker (.tgs): 512 × 512, 60 frames a second, vector only."
+msgstr "Un sticker animado (.tgs): 512 × 512, 60 fotogramas por segundo, solo vectores."
+
+#. Added to the save panel message when the animation was sped up to fit 3 seconds.
+msgctxt "sticker.note.faster"
+msgid "It plays {speed}× faster to fit 3 seconds."
+msgstr "Se reproduce {speed}× más rápido para caber en 3 segundos."
+
+#. Added to the save panel message when the animation was cut at 3 seconds.
+msgctxt "sticker.note.trimmed"
+msgid "It stops at 3 seconds."
+msgstr "Se detiene a los 3 segundos."
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.act"
+msgid "Click and type"
+msgstr "Hacer clic y escribir"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.add_kit"
+msgid "Add kits"
+msgstr "Añadir kits"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.add_tool"
+msgid "Add"
+msgstr "Añadir"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.add_trigger"
+msgid "Add"
+msgstr "Añadir"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.browser_page"
+msgid "Browser page"
+msgstr "Página del navegador"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.export_kit"
+msgid "Export kits"
+msgstr "Exportar kits"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.list_tools"
+msgid "List"
+msgstr "Listar"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.list_triggers"
+msgid "List"
+msgstr "Listar"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.mac_status"
+msgid "Mac status"
+msgstr "Estado del Mac"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.make_animation"
+msgid "Make"
+msgstr "Crear"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.message"
+msgid "Message Imps"
+msgstr "Escribir a Imps"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.move"
+msgid "Move around"
+msgstr "Moverse"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.observe"
+msgid "See the screen"
+msgstr "Ver la pantalla"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.open_file"
+msgid "Open files"
+msgstr "Abrir archivos"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.open_settings"
+msgid "Open settings"
+msgstr "Abrir ajustes"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.play"
+msgid "Play"
+msgstr "Reproducir"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.remove_animation"
+msgid "Remove"
+msgstr "Quitar"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.remove_tool"
+msgid "Remove"
+msgstr "Quitar"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.remove_trigger"
+msgid "Remove"
+msgstr "Quitar"
+
+#. Short name of a built-in tool in the Look section: writes the HTML background behind the Imps.
+msgctxt "tool.set_background"
+msgid "Set background"
+msgstr "Cambiar fondo"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.set_traits"
+msgid "Change its look"
+msgstr "Cambiar su aspecto"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.show_animation"
+msgid "View"
+msgstr "Ver"
+
+#. Short name of a built-in tool in the Look section: reads the HTML background behind the Imps.
+msgctxt "tool.show_background"
+msgid "View background"
+msgstr "Ver fondo"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.speak"
+msgid "Speak aloud"
+msgstr "Hablar en voz alta"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.verify"
+msgid "Check results"
+msgstr "Comprobar resultados"
+
 #. Button that adds tools.
 msgctxt "tools.add"
 msgid "Add"
 msgstr "Añadir"
-
-#. Badge for a built-in tool group.
-msgctxt "tools.built_in"
-msgid "Built in"
-msgstr "Integradas"
 
 #. Screen reader action.
 msgctxt "tools.collapse"
@@ -3287,8 +3405,8 @@ msgstr "Ocultar herramientas de {group}"
 
 #. Empty state of the tools list.
 msgctxt "tools.empty"
-msgid "No tools yet. Add some from a kit or an MCP server."
-msgstr "Aún no hay herramientas. Añade algunas desde un kit o un servidor MCP."
+msgid "No tools yet."
+msgstr "Aún no hay herramientas."
 
 #. Screen reader action.
 msgctxt "tools.expand"
@@ -3340,11 +3458,6 @@ msgctxt "tools.help.browser"
 msgid "Lets the Imp look at pages and use the browser you opened for it."
 msgstr "Deja al Imp ver páginas y usar el navegador que le abriste."
 
-#. Help of the built-in tools list.
-msgctxt "tools.help.built_in"
-msgid "Things the Imp can already do, like look at your screen. Switch off any it should not use."
-msgstr "Cosas que el Imp ya sabe hacer, como mirar tu pantalla. Apaga las que no deba usar."
-
 #. Help of the extra tools list.
 msgctxt "tools.help.mcp"
 msgid "Extra tools added from outside. Each one gives the Imp new things to do."
@@ -3354,11 +3467,6 @@ msgstr "Herramientas extra añadidas de fuera. Cada una da al Imp cosas nuevas q
 msgctxt "tools.help.server"
 msgid "A program or website that gives the Imp more tools."
 msgstr "Un programa o sitio web que da más herramientas al Imp."
-
-#. Badge for a tool group that comes from an MCP server.
-msgctxt "tools.mcp"
-msgid "MCP"
-msgstr "MCP"
 
 #. Status of an MCP server.
 msgctxt "tools.mcp_connected"
@@ -3395,20 +3503,15 @@ msgctxt "tools.new_server"
 msgid "New"
 msgstr "Nuevo"
 
+#. Title of the sheet that adds an MCP server.
+msgctxt "tools.new_server_title"
+msgid "New tool"
+msgstr "Nueva herramienta"
+
 #. Placeholder of a field that may be left empty.
 msgctxt "tools.optional"
 msgid "Optional"
 msgstr "Opcional"
-
-#. Card title in an iPhone Imp's Tools: the tools the Imp has by itself (messaging other Imps, playing animations), each with a switch.
-msgctxt "tools.own"
-msgid "Built in"
-msgstr "Integradas"
-
-#. Help of the Built in tools card on the iPhone.
-msgctxt "tools.own.info"
-msgid "What the Imp can do by itself. Switch off what it shouldn't use."
-msgstr "Lo que el Imp puede hacer por sí solo. Desactiva lo que no deba usar."
 
 #. Problem on a tool server with no address.
 msgctxt "tools.problem.address"
@@ -3445,10 +3548,120 @@ msgctxt "tools.title"
 msgid "Tools"
 msgstr "Herramientas"
 
-#. Button that adds a trigger.
-msgctxt "triggers.add"
-msgid "Add"
-msgstr "Añadir"
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.at"
+msgid "Daily at"
+msgstr "Cada día a las"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.away"
+msgid "Cursor away"
+msgstr "Cursor lejos"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.circle"
+msgid "Circle"
+msgstr "Rodear"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.click"
+msgid "Click"
+msgstr "Clic"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.dangle"
+msgid "Bob"
+msgstr "Balanceo"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.drag"
+msgid "Drag"
+msgstr "Arrastrar"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.drop"
+msgid "Drop"
+msgstr "Soltar"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.every"
+msgid "Repeat"
+msgstr "Repetir"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.hold"
+msgid "Hold"
+msgstr "Mantener"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.near"
+msgid "Cursor near"
+msgstr "Cursor cerca"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.poke"
+msgid "Poke"
+msgstr "Toques"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.rush"
+msgid "Rush"
+msgstr "Embestida"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.shake"
+msgid "Shake"
+msgstr "Sacudir"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.stroke"
+msgid "Stroke"
+msgstr "Acariciar"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.swish"
+msgid "Swish"
+msgstr "Barrido"
+
+#. Short name of a trigger event, on its tile.
+msgctxt "trigger.event.tickle"
+msgid "Tickle"
+msgstr "Cosquillas"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.ask"
+msgid "Ask"
+msgstr "Preguntar"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.follow"
+msgid "Follow"
+msgstr "Seguir"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.open"
+msgid "Open"
+msgstr "Abrir"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.play"
+msgid "Play"
+msgstr "Reproducir"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.say"
+msgid "Say"
+msgstr "Decir"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.sleep"
+msgid "Sleep"
+msgstr "Dormir"
+
+#. Short name of a trigger step, on its tile and menu.
+msgctxt "trigger.step.wake"
+msgid "Wake"
+msgstr "Despertar"
 
 #. Menu title that adds a condition.
 msgctxt "triggers.cond.add"
@@ -3487,8 +3700,8 @@ msgstr "Editar disparador"
 
 #. Empty state of the triggers list.
 msgctxt "triggers.empty"
-msgid "No triggers yet. Add one and {name} acts on its own."
-msgstr "Aún no hay disparadores. Añade uno y {name} actuará por su cuenta."
+msgid "No triggers yet."
+msgstr "Aún no hay disparadores."
 
 #. Trigger editor row: the steps.
 msgctxt "triggers.f.do"
@@ -3514,11 +3727,6 @@ msgstr "Cuando"
 msgctxt "triggers.follow"
 msgid "Follow"
 msgstr "Seguir"
-
-#. Event submenu: pointer gestures on the Imp.
-msgctxt "triggers.gestures"
-msgid "Gestures"
-msgstr "Gestos"
 
 #. Event menu group: things the Mac does.
 msgctxt "triggers.group.mac"
@@ -3620,6 +3828,11 @@ msgctxt "triggers.open.text_box"
 msgid "Text box"
 msgstr "Cuadro de texto"
 
+#. Spoken hint of the event button in the trigger editor.
+msgctxt "triggers.pick_event"
+msgid "Opens the list of events."
+msgstr "Abre la lista de eventos."
+
 #. Problem: an ask step with nothing to ask.
 msgctxt "triggers.problem.ask"
 msgid "Write what the Imp should do, or hand over the clipboard."
@@ -3675,10 +3888,10 @@ msgctxt "triggers.share_every"
 msgid "Share to all"
 msgstr "Para todos"
 
-#. Menu title that adds a step.
-msgctxt "triggers.step.add"
-msgid "Add a step"
-msgstr "Añadir un paso"
+#. Spoken label of a step tile.
+msgctxt "triggers.step.add_one"
+msgid "Add a step: {name}"
+msgstr "Añadir un paso: {name}"
 
 #. Toggle of a say step: also speak it.
 msgctxt "triggers.step.aloud"
@@ -3730,6 +3943,11 @@ msgctxt "triggers.step.speed"
 msgid "Speed"
 msgstr "Velocidad"
 
+#. Small word above the step tiles once a trigger has a step.
+msgctxt "triggers.step.then"
+msgid "Then"
+msgstr "Después"
+
 #. Help of the button that moves a step up.
 msgctxt "triggers.step.up"
 msgid "Move up"
@@ -3744,6 +3962,11 @@ msgstr "Disparador: {sentence}"
 msgctxt "triggers.title"
 msgid "Triggers"
 msgstr "Disparadores"
+
+#. Button in the trigger editor that runs the trigger once now.
+msgctxt "triggers.try"
+msgid "Try"
+msgstr "Probar"
 
 #. Button that removes this Imp's version of a shared trigger, so the shared one applies again.
 msgctxt "triggers.use_shared"

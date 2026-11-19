@@ -42,13 +42,8 @@ struct TalksPane: View {
             } else {
                 ScrollView {
                     if threads.isEmpty {
-                        VStack(spacing: Spacing.cozy) {
-                            Image(systemName: "bubble.left.and.bubble.right")
-                                .font(.icon(.huge, weight: .light)).foregroundStyle(LegibleTint())
-                            Text("phone.talks.empty").font(Typeface.cardTitle).foregroundStyle(Tone.text)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, Spacing.vast).padding(.horizontal, Spacing.page)
+                        EmptyState("phone.talks.empty", symbol: "bubble.left.and.bubble.right", fills: true)
+                            .padding(.horizontal, Spacing.page)
                     } else {
                         LazyVStack(spacing: Spacing.small) {
                             ForEach(threads) { thread in

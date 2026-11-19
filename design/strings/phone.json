@@ -402,10 +402,10 @@
     "zh-Hans": "新建"
   },
   "phone.talks.empty": {
-    "note": "The talks side of an Imp's sheet when it has not talked with another Imp yet.",
-    "en": "No talks yet",
-    "es": "Sin charlas",
-    "zh-Hans": "还没有对话"
+    "note": "Empty state of the list of talks between Imps.",
+    "en": "No talks yet.",
+    "es": "Aún no hay conversaciones.",
+    "zh-Hans": "还没有对话。"
   },
   "phone.talks.one": {
     "note": "iPhone: the bar's subtitle while one talk is open (the list says Talks).",
@@ -701,10 +701,10 @@
     "zh-Hans": "正在准备建立连接…"
   },
   "phone.brains.empty": {
-    "note": "Brains section of the iPhone settings, when no Imp was hatched on this iPhone yet.",
-    "en": "Imps you hatch on this iPhone show here, each with the Brain it thinks with.",
-    "es": "Los Imps que hagas nacer en este iPhone aparecen aquí, cada uno con el cerebro con el que piensa.",
-    "zh-Hans": "你在这台 iPhone 上孵化的 Imp 会显示在这里，并附上各自使用的大脑。"
+    "note": "Empty state of the phone's list of Imps and their Brains.",
+    "en": "No Imps yet.",
+    "es": "Aún no hay Imps.",
+    "zh-Hans": "还没有 Imp。"
   },
   "phone.brains.default": {
     "note": "Under the list of Imps in the iPhone's Brains settings: a new Imp (the + button) starts with this Imp's service, model and key.",

@@ -13,8 +13,7 @@ struct PhoneBrainsSection: View {
         VStack(spacing: Spacing.medium) {
             Card("settings.group.brains", icon: "lightbulb", info: "settings.brains.services.info") {
                 if pocket.imps.isEmpty {
-                    Text("phone.brains.empty").font(Typeface.body).foregroundStyle(Tone.muted)
-                        .fixedSize(horizontal: false, vertical: true)
+                    EmptyState("phone.brains.empty", symbol: "lightbulb")
                 } else {
                     VStack(alignment: .leading, spacing: 0) {
                         ForEach(pocket.imps, id: \.id) { imp in row(imp) }

@@ -13,7 +13,7 @@ The path feels like waking the Imp up, not like filling in a form. An Imp withou
 
 **Moving.** The top bar has Back (leading icon, hidden on step 1), the step indicator in the centre and Close (trailing icon). Back goes one step back. The indicator jumps to a step already completed, never forward past an unmet requirement: step 2 needs models loaded for the address and key as they are now. Nothing jumps while a request runs. Close dismisses at any time and leaves the Imp asleep, a calm valid state. There is no "Later" and no "skipped" screen. What the user typed survives every move between steps. Return presses the one primary button, Esc closes.
 
-The Imp on top reacts: asleep, stirring while it checks, awake once it works. Steps change with the `scene` motion (a plain fade with Reduce Motion). Focus goes to the first empty field. The Brain marker and the "Give {name} a Brain" button on a sleeping Imp open the flow again at any time.
+The Imp on top reacts: asleep, stirring while it checks, awake once it works. Steps change with the `scene` motion (a plain fade with Reduce Motion). Focus goes to the first empty field. The Brain section and the "Give {name} a Brain" button on a sleeping Imp open the flow again at any time.
 
 ## Why
 

@@ -1,8 +1,56 @@
 {
   "sheets.animations.nothing_yet": {
-    "note": "Shown in the animations list when you have made none.",
-    "en": "Nothing yet",
-    "es": "Nada todavía",
-    "zh-Hans": "暂时还没有"
+    "note": "Empty state of a list of animations.",
+    "en": "No animations yet.",
+    "es": "Aún no hay animaciones.",
+    "zh-Hans": "还没有动画。"
+  },
+  "sticker.export": {
+    "note": "Action on an animation: saves it as an animated sticker file (.tgs).",
+    "en": "Export as Sticker…",
+    "es": "Exportar como sticker…",
+    "zh-Hans": "导出为贴纸…"
+  },
+  "sticker.note": {
+    "note": "Message in the save panel of a sticker.",
+    "en": "An animated sticker (.tgs): 512 × 512, 60 frames a second, vector only.",
+    "es": "Un sticker animado (.tgs): 512 × 512, 60 fotogramas por segundo, solo vectores.",
+    "zh-Hans": "动画贴纸（.tgs）：512 × 512，每秒 60 帧，仅矢量。"
+  },
+  "sticker.note.faster": {
+    "note": "Added to the save panel message when the animation was sped up to fit 3 seconds.",
+    "args": {
+      "speed": "string"
+    },
+    "en": "It plays {speed}× faster to fit 3 seconds.",
+    "es": "Se reproduce {speed}× más rápido para caber en 3 segundos.",
+    "zh-Hans": "加快 {speed} 倍播放，以控制在 3 秒内。"
+  },
+  "sticker.note.trimmed": {
+    "note": "Added to the save panel message when the animation was cut at 3 seconds.",
+    "en": "It stops at 3 seconds.",
+    "es": "Se detiene a los 3 segundos.",
+    "zh-Hans": "在 3 秒处结束。"
+  },
+  "sticker.error.title": {
+    "note": "Title of the alert when a sticker cannot be made.",
+    "en": "Couldn’t make the sticker",
+    "es": "No se pudo crear el sticker",
+    "zh-Hans": "无法制作贴纸"
+  },
+  "sticker.error.empty": {
+    "note": "Why a sticker cannot be made: the animation has no beats.",
+    "en": "The animation is empty.",
+    "es": "La animación está vacía.",
+    "zh-Hans": "这个动画是空的。"
+  },
+  "sticker.error.too_big": {
+    "note": "Why a sticker cannot be made: even simplified it is over the 64 KB limit.",
+    "args": {
+      "kb": "int"
+    },
+    "en": "It is still {kb} KB when simplified. A sticker may be 64 KB: try fewer beats or simpler moves.",
+    "es": "Simplificado sigue ocupando {kb} KB. Un sticker puede ocupar 64 KB: prueba con menos pasos o movimientos más sencillos.",
+    "zh-Hans": "简化后仍有 {kb} KB。贴纸最多 64 KB：试试更少的节拍或更简单的动作。"
   }
 }

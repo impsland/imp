@@ -5,6 +5,7 @@
 
     },
     "%@ (now %@)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -623,7 +624,24 @@
         }
       }
     },
+    "%@ needs the user to sign in before its tools are available. Call this when the user wants to use %@; it opens the sign-in page." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ necesita que el usuario inicie sesión antes de que sus herramientas estén disponibles. Llámala cuando el usuario quiera usar %2$@; abre la página de inicio de sesión."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 需要用户先登录，其工具才可用。当用户想使用 %2$@ 时调用此工具；它会打开登录页面。"
+          }
+        }
+      }
+    },
     "%@ on %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1146,6 +1164,7 @@
       }
     },
     "%lld clicks" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -1392,6 +1411,7 @@
       }
     },
     "%lld installs" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2246,6 +2266,7 @@
       }
     },
     "A short wave hello" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2257,6 +2278,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一个简短的挥手问候"
+          }
+        }
+      }
+    },
+    "A shortcut on the keyboard" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un atajo de teclado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "键盘快捷键"
+          }
+        }
+      }
+    },
+    "A skill's name has 1 to 64 characters: a-z, 0-9 and dashes between them." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "A skill's name has 1 to 64 characters: a-z, 0-9 and dashes between them."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El nombre de una habilidad tiene de 1 a 64 caracteres: a-z, 0-9 y guiones entre ellos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "技能名称为 1 到 64 个字符:a-z、0-9,中间可用短横线。"
+          }
+        }
+      }
+    },
+    "A skill's source is owner/repo, owner/repo/path or an https:// address, at most 200 characters, with no spaces or shell characters." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "A skill's source is owner/repo, owner/repo/path or an https:// address, at most 200 characters, with no spaces or shell characters."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El origen de una habilidad es propietario/repo, propietario/repo/ruta o una dirección https://, de 200 caracteres como máximo, sin espacios ni caracteres de shell."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "技能来源为 owner/repo、owner/repo/路径或 https:// 地址,最多 200 个字符,不含空格和 shell 字符。"
           }
         }
       }
@@ -2273,6 +2354,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "触发器可以运行工具和 Mac 命令。请先阅读。"
+          }
+        }
+      }
+    },
+    "A website opens in the browser" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se abre un sitio web en el navegador"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "浏览器中打开某个网站"
           }
         }
       }
@@ -2499,6 +2596,7 @@
       }
     },
     "Add a trigger" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2515,6 +2613,7 @@
       }
     },
     "Add an extra tool" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2580,6 +2679,7 @@
       }
     },
     "Adds and removes its own triggers and extra tools when you ask." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2591,6 +2691,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "按你的要求添加或移除自己的触发器和额外工具。"
+          }
+        }
+      }
+    },
+    "Again and again, every few minutes" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una y otra vez, cada pocos minutos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每隔几分钟重复一次"
           }
         }
       }
@@ -2661,6 +2777,7 @@
       }
     },
     "Always" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2772,7 +2889,24 @@
         }
       }
     },
+    "An app comes to the front" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una app pasa al frente"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "某个应用来到最前面"
+          }
+        }
+      }
+    },
     "Animation" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2838,6 +2972,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "动画"
+          }
+        }
+      }
+    },
+    "Animations only move the Imp. They run nothing on your Mac." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las animaciones solo mueven al Imp. No ejecutan nada en tu Mac."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动画只会让 Imp 动起来，不会在你的 Mac 上运行任何东西。"
           }
         }
       }
@@ -2925,6 +3075,7 @@
       }
     },
     "Any app" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3005,6 +3156,7 @@
       }
     },
     "Anyone can add it. Chats, memory and keys are never included." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3113,6 +3265,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在询问 %@…"
+          }
+        }
+      }
+    },
+    "Asleep" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dormido"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "睡着"
           }
         }
       }
@@ -3264,6 +3432,7 @@
       }
     },
     "Back" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3392,7 +3561,24 @@
         }
       }
     },
+    "Bad URL." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dirección no válida."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地址无效。"
+          }
+        }
+      }
+    },
     "Battery" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3599,6 +3785,7 @@
       }
     },
     "Body language" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3906,6 +4093,7 @@
       }
     },
     "Carry it" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3954,6 +4142,7 @@
       }
     },
     "Change its character" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3982,6 +4171,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已更改"
+          }
+        }
+      }
+    },
+    "Changes its own character and the background behind the Imps." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambia su propio carácter y el fondo detrás de los Imps."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "改变自己的性格外观，以及 Imp 身后的背景。"
+          }
+        }
+      }
+    },
+    "Changes its own character." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambia su propio carácter."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "改变自己的性格外观。"
           }
         }
       }
@@ -4116,6 +4338,7 @@
       }
     },
     "Check what happened" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4179,9 +4402,6 @@
           }
         }
       }
-    },
-    "Choice" : {
-
     },
     "Choose" : {
       "extractionState" : "stale",
@@ -4409,6 +4629,7 @@
       }
     },
     "Click, type and scroll" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4456,10 +4677,8 @@
         }
       }
     },
-    "Clicks" : {
-
-    },
     "Clicks go to the Imp you click and everything else to the one you talked to last" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4541,6 +4760,7 @@
       }
     },
     "Come back after a break" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4557,6 +4777,7 @@
       }
     },
     "Comes back" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4974,6 +5195,22 @@
         }
       }
     },
+    "Copy the command" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar el comando"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拷贝命令"
+          }
+        }
+      }
+    },
     "Couldn't load it: %@" : {
       "localizations" : {
         "es" : {
@@ -5184,6 +5421,22 @@
         }
       }
     },
+    "Days" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Días"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日期"
+          }
+        }
+      }
+    },
     "Default" : {
       "localizations" : {
         "es" : {
@@ -5312,6 +5565,22 @@
         }
       }
     },
+    "Delete this trigger?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar este disparador?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除这个触发器？"
+          }
+        }
+      }
+    },
     "Delete “%@”?" : {
       "localizations" : {
         "es" : {
@@ -5409,6 +5678,7 @@
       }
     },
     "Do" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -5474,6 +5744,7 @@
       }
     },
     "Downloads it and shows what it does. Nothing is added yet." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -5501,6 +5772,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "将 Imp 拖到“应用程序”"
+          }
+        }
+      }
+    },
+    "Drag it" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrastrarlo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拖动它"
           }
         }
       }
@@ -5878,6 +6165,7 @@
       }
     },
     "Every condition must be true when it goes off, like the battery being low or the time being late." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -5926,6 +6214,7 @@
       }
     },
     "Every few minutes" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -5958,6 +6247,7 @@
       }
     },
     "Everything" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -6001,6 +6291,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "兴奋"
+          }
+        }
+      }
+    },
+    "Export a kit to publish" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Export a kit to publish"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportar un kit para publicar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导出要发布的套件"
           }
         }
       }
@@ -6541,6 +6854,7 @@
       }
     },
     "Goes away" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -7313,6 +7627,7 @@
       }
     },
     "Imp couldn't keep the account's key safe." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -7604,6 +7919,7 @@
       }
     },
     "Input" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -7637,6 +7953,7 @@
       }
     },
     "Instruction only" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -7717,6 +8034,7 @@
       }
     },
     "Its favourite colour" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -7749,6 +8067,7 @@
       }
     },
     "Its own animations" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -7976,6 +8295,7 @@
       }
     },
     "Kind" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -7992,6 +8312,7 @@
       }
     },
     "Kits" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8182,6 +8503,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "让 %@ 出来才能继续此聊天"
+          }
+        }
+      }
+    },
+    "Let go of it" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soltarlo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "松开它"
           }
         }
       }
@@ -8432,6 +8769,7 @@
       }
     },
     "List extra tools" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8448,6 +8786,7 @@
       }
     },
     "List its triggers" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8495,6 +8834,38 @@
         }
       }
     },
+    "Lists, adds and removes MCP servers and kits." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lista, añade y quita servidores MCP y kits."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "列出、添加和删除 MCP 服务器与套件。"
+          }
+        }
+      }
+    },
+    "Lists, adds and removes its triggers." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lista, añade y quita sus disparadores."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "列出、添加和删除它的触发器。"
+          }
+        }
+      }
+    },
     "Local program" : {
       "localizations" : {
         "es" : {
@@ -8512,6 +8883,7 @@
       }
     },
     "Locked. It only does this in the colour it loves. You can still watch a preview." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8578,6 +8950,7 @@
       }
     },
     "Look at an animation" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8594,6 +8967,7 @@
       }
     },
     "Look at the screen" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8723,6 +9097,7 @@
       }
     },
     "Made by you" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8739,6 +9114,7 @@
       }
     },
     "Make an animation" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8867,6 +9243,7 @@
       }
     },
     "Message another Imp" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8900,6 +9277,7 @@
       }
     },
     "Messages the other Imps on your desktop and hears their answers." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8980,6 +9358,7 @@
       }
     },
     "Missing animation" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9109,6 +9488,7 @@
       }
     },
     "Move around the screen" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9159,7 +9539,6 @@
       }
     },
     "Moves" : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9581,6 +9960,7 @@
       }
     },
     "Newest" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9662,6 +10042,7 @@
       }
     },
     "No chats yet." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9855,6 +10236,7 @@
       }
     },
     "None" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9919,6 +10301,7 @@
       }
     },
     "Nothing found." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10059,6 +10442,51 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关闭时密钥存于私有文件。开启时使用钥匙串，可能会要求输入密码。"
+          }
+        }
+      }
+    },
+    "Offer a kit to add" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Offer a kit to add"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ofrecer un kit para añadir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提供要添加的套件"
+          }
+        }
+      }
+    },
+    "Offered by your Imp" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Offered by your Imp"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ofrecido por tu Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由你的 Imp 提供"
           }
         }
       }
@@ -10240,6 +10668,7 @@
       }
     },
     "Only if" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10256,6 +10685,7 @@
       }
     },
     "Only looks and text. No tools or commands." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10351,6 +10781,22 @@
         }
       }
     },
+    "Open Imp and sign in to %@ in Tools" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre Imp e inicia sesión en %@ en Herramientas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 Imp，在“工具”中登录 %@"
+          }
+        }
+      }
+    },
     "Open Imp on a linked device first (same network as this Mac, or the same server)." : {
       "localizations" : {
         "es" : {
@@ -10363,6 +10809,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请先在已关联的设备上打开 Imp（与这台 Mac 处于同一网络或同一服务器）。"
+          }
+        }
+      }
+    },
+    "Open Imp to sign in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre Imp para iniciar sesión."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 Imp 登录。"
           }
         }
       }
@@ -10400,6 +10862,7 @@
       }
     },
     "Open a shared file" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10416,6 +10879,7 @@
       }
     },
     "Open a text box" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10432,6 +10896,7 @@
       }
     },
     "Open its settings" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10443,6 +10908,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开它的设置"
+          }
+        }
+      }
+    },
+    "Open something" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir algo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开某样东西"
           }
         }
       }
@@ -10465,6 +10946,7 @@
       }
     },
     "Open the chat" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10595,6 +11077,7 @@
       }
     },
     "Other Imps" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10853,7 +11336,24 @@
         }
       }
     },
+    "Personality" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalidad"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性格"
+          }
+        }
+      }
+    },
     "Pick an open app" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10967,6 +11467,7 @@
       }
     },
     "Play animations" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11064,6 +11565,7 @@
       }
     },
     "Plays animations, moves around the screen and speaks aloud." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11080,6 +11582,7 @@
       }
     },
     "Plays as it wakes up. Without one, it stretches awake the usual way." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11113,6 +11616,7 @@
       }
     },
     "Plays while it dozes off. It sleeps either way." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11124,6 +11628,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打瞌睡时播放。不管有没有，它都会睡着。"
+          }
+        }
+      }
+    },
+    "Plays, shows, makes and removes animations, and moves around the screen." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reproduce, muestra, crea y quita animaciones, y se mueve por la pantalla."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放、查看、制作和删除动画，并在屏幕上移动。"
           }
         }
       }
@@ -11145,6 +11665,7 @@
       }
     },
     "Plugged in" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11209,6 +11730,7 @@
       }
     },
     "Popular" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11241,6 +11763,7 @@
       }
     },
     "Power" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11369,6 +11892,7 @@
       }
     },
     "Processor" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11401,6 +11925,7 @@
       }
     },
     "Publish" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11417,6 +11942,7 @@
       }
     },
     "Published: %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11449,6 +11975,7 @@
       }
     },
     "Put it down" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11598,6 +12125,7 @@
       }
     },
     "Read the Mac's state" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11614,6 +12142,7 @@
       }
     },
     "Read the browser page" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11629,7 +12158,24 @@
         }
       }
     },
+    "Reads the battery, processor, network and open apps, and the page open in the browser." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lee la batería, el procesador, la red y las apps abiertas, y la página abierta en el navegador."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "读取电池、处理器、网络和打开的应用，以及浏览器中打开的页面。"
+          }
+        }
+      }
+    },
     "Reads the battery, processor, network and open apps. With the browser extension, it also knows the page you're on." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11790,6 +12336,7 @@
       }
     },
     "Reduce Motion is on, so %@ only follows with its eyes." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11856,6 +12403,7 @@
       }
     },
     "Remove a trigger" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11872,6 +12420,7 @@
       }
     },
     "Remove an animation" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11888,6 +12437,7 @@
       }
     },
     "Remove an extra tool" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11952,6 +12502,7 @@
       }
     },
     "Remove this condition" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12146,6 +12697,7 @@
       }
     },
     "Responds in its own way" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12162,6 +12714,7 @@
       }
     },
     "Responds to what you copied" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12194,6 +12747,7 @@
       }
     },
     "Rest the cursor beside it" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12210,6 +12764,7 @@
       }
     },
     "Rest the cursor on its face" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12732,6 +13287,22 @@
         }
       }
     },
+    "Say something" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decir algo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "说点什么"
+          }
+        }
+      }
+    },
     "Scan Code…" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -12814,6 +13385,7 @@
       }
     },
     "Search" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12846,6 +13418,7 @@
       }
     },
     "Search what other people shared." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12951,6 +13524,7 @@
       }
     },
     "Sends what you copied along with your instruction" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12983,6 +13557,7 @@
       }
     },
     "Sends your instruction and what happened" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13114,6 +13689,7 @@
       }
     },
     "Setup" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13210,6 +13786,7 @@
       }
     },
     "Share %@'s animations as a kit" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13237,6 +13814,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "作为套件共享"
+          }
+        }
+      }
+    },
+    "Share as a kit" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir como kit"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "作为套件分享"
           }
         }
       }
@@ -13290,7 +13883,20 @@
       }
     },
     "Shared ones play for every Imp. One made for a single Imp plays only for it and wins over a shared one." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las compartidas suenan para todos los Imps. Una hecha para un solo Imp suena solo para él y gana a la compartida."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享的动画对所有 Imp 播放。为单个 Imp 制作的只为它播放，并优先于共享的。"
+          }
+        }
+      }
     },
     "Sharpening horns…" : {
       "localizations" : {
@@ -13471,6 +14077,7 @@
       }
     },
     "Show more" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13617,6 +14224,54 @@
         }
       }
     },
+    "Sign-in was cancelled." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se canceló el inicio de sesión."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录已取消。"
+          }
+        }
+      }
+    },
+    "Signed in to %@, but its tools could not be listed." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesión iniciada en %@, pero no se pudieron listar sus herramientas."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已登录 %@，但无法列出其工具。"
+          }
+        }
+      }
+    },
+    "Signed in to %@. Its tools are now available: %@." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesión iniciada en %1$@. Sus herramientas ya están disponibles: %2$@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已登录 %1$@。其工具现已可用：%2$@。"
+          }
+        }
+      }
+    },
     "Size" : {
       "localizations" : {
         "es" : {
@@ -13629,6 +14284,94 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "大小"
+          }
+        }
+      }
+    },
+    "Skill %lld: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Skill %lld: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Habilidad %lld: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "技能 %lld:%@"
+          }
+        }
+      }
+    },
+    "Skills" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Skills"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Habilidades"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "技能"
+          }
+        }
+      }
+    },
+    "Skills are installed by you, in Terminal. Imp never runs the command." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Skills are installed by you, in Terminal. Imp never runs the command."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las habilidades las instalas tú, en Terminal. Imp nunca ejecuta el comando."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "技能由你在“终端”中安装。Imp 从不运行该命令。"
+          }
+        }
+      }
+    },
+    "Skills: only the first %lld are read." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Skills: only the first %lld are read."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Habilidades: solo se leen las primeras %lld."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "技能:只读取前 %lld 个。"
           }
         }
       }
@@ -13763,6 +14506,7 @@
       }
     },
     "Sort" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13795,6 +14539,7 @@
       }
     },
     "Speak out loud" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13806,6 +14551,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "大声说话"
+          }
+        }
+      }
+    },
+    "Speaks aloud, messages the other Imps, opens their files and opens settings for you." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Habla en voz alta, escribe a los otros Imps, abre sus archivos y te abre los ajustes."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "朗读、给其他 Imp 发消息、打开它们的文件，并为你打开设置。"
           }
         }
       }
@@ -13859,6 +14620,7 @@
       }
     },
     "Speed" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13956,6 +14718,7 @@
       }
     },
     "Start listening" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14249,6 +15012,7 @@
       }
     },
     "Tags (separated by commas)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14828,6 +15592,7 @@
       }
     },
     "That name can't be used." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14908,6 +15673,7 @@
       }
     },
     "That's too big to share (%lld KB at most)." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14968,6 +15734,7 @@
       }
     },
     "The Den" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14995,6 +15762,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "由 Imp 决定"
+          }
+        }
+      }
+    },
+    "The Imp starts, or the trigger is switched on" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El Imp arranca, o se activa el disparador"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 启动，或触发器被打开"
+          }
+        }
+      }
+    },
+    "The MCP server asks you to sign in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El servidor MCP pide iniciar sesión."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MCP 服务器要求登录。"
           }
         }
       }
@@ -15079,6 +15878,22 @@
         }
       }
     },
+    "The battery runs low" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La batería se agota"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "电池电量低"
+          }
+        }
+      }
+    },
     "The beat after (→)" : {
       "localizations" : {
         "es" : {
@@ -15127,6 +15942,22 @@
         }
       }
     },
+    "The charger is plugged in or out" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se enchufa o desenchufa el cargador"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插上或拔下充电器"
+          }
+        }
+      }
+    },
     "The code holds a key only this Mac and the scanning device share. What they say is encrypted." : {
       "localizations" : {
         "es" : {
@@ -15171,6 +16002,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "光标移开"
+          }
+        }
+      }
+    },
+    "The cursor rests beside it for %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El cursor se queda a su lado %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "光标在它旁边停留 %@"
           }
         }
       }
@@ -15255,6 +16102,28 @@
         }
       }
     },
+    "The kit's “format” should be a whole number, 1 or more." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "The kit's “format” should be a whole number, 1 or more."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El “format” del kit debe ser un número entero, 1 o más."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "套件的“format”应为 1 或更大的整数。"
+          }
+        }
+      }
+    },
     "The language of Imp's menus and settings. Imps answer in the language you write." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -15320,6 +16189,22 @@
         }
       }
     },
+    "The network goes away or comes back" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La red se va o vuelve"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "网络断开或恢复"
+          }
+        }
+      }
+    },
     "The other way round" : {
       "localizations" : {
         "es" : {
@@ -15353,6 +16238,22 @@
         }
       }
     },
+    "The person has not signed in to %@. Ask them to sign in: Tools, then %@, then Sign in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La persona no ha iniciado sesión en %@. Pídele que inicie sesión: Herramientas, luego %@, luego Iniciar sesión."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用户尚未登录 %@。请让他们登录：工具，然后 %@，然后登录。"
+          }
+        }
+      }
+    },
     "The server answered %lld." : {
       "localizations" : {
         "es" : {
@@ -15369,6 +16270,38 @@
         }
       }
     },
+    "The server does not say how to sign in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El servidor no indica cómo iniciar sesión."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器没有说明如何登录。"
+          }
+        }
+      }
+    },
+    "The server does not say who signs people in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El servidor no indica quién inicia la sesión."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器没有说明由谁负责登录。"
+          }
+        }
+      }
+    },
     "The server turned this Mac away, so your devices can't reach it from afar." : {
       "localizations" : {
         "es" : {
@@ -15381,6 +16314,118 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "服务器拒绝了这台 Mac，所以你的设备无法从远处连接它。"
+          }
+        }
+      }
+    },
+    "The sign-in address is not valid." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La dirección de inicio de sesión no es válida."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录地址无效。"
+          }
+        }
+      }
+    },
+    "The sign-in could not be saved." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo guardar el inicio de sesión."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法保存登录信息。"
+          }
+        }
+      }
+    },
+    "The sign-in service does not answer." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El servicio de inicio de sesión no responde."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录服务没有响应。"
+          }
+        }
+      }
+    },
+    "The sign-in service does not let Imp register." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El servicio de inicio de sesión no deja que Imp se registre."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录服务不允许 Imp 注册。"
+          }
+        }
+      }
+    },
+    "The sign-in sheet could not open." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo abrir la hoja de inicio de sesión."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法打开登录页面。"
+          }
+        }
+      }
+    },
+    "The sign-in to %@ failed: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falló el inicio de sesión en %1$@: %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录 %1$@ 失败：%2$@"
+          }
+        }
+      }
+    },
+    "The sign-in to %@ was cancelled. Its tools are not available." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se canceló el inicio de sesión en %@. Sus herramientas no están disponibles."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已取消登录 %@。其工具不可用。"
           }
         }
       }
@@ -15402,6 +16447,7 @@
       }
     },
     "The usual wake-up" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -15734,6 +16780,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这不是可以打开的文件。"
+          }
+        }
+      }
+    },
+    "This needs a newer Imp. It is kit format %lld, and this Imp reads up to format %lld. Update Imp and try again." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "This needs a newer Imp. It is kit format %1$lld, and this Imp reads up to format %2$lld. Update Imp and try again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto necesita un Imp más reciente. Es el formato de kit %lld, y este Imp lee hasta el formato %lld. Actualiza Imp e inténtalo de nuevo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这需要更新版本的 Imp。它是套件格式 %lld,而当前 Imp 最高读取格式 %lld。请更新 Imp 后重试。"
           }
         }
       }
@@ -16178,6 +17246,7 @@
       }
     },
     "Try again in %lld seconds." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16194,6 +17263,7 @@
       }
     },
     "Try now" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16452,6 +17522,7 @@
       }
     },
     "Unknown start “%@”." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16463,6 +17534,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未知的开始方式“%@”。"
+          }
+        }
+      }
+    },
+    "Unknown tool." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herramienta desconocida."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知工具。"
           }
         }
       }
@@ -16534,6 +17621,7 @@
       }
     },
     "Unplugged" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16776,6 +17864,7 @@
       }
     },
     "Website open" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16879,6 +17968,7 @@
       }
     },
     "What is it, in a sentence" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16911,6 +18001,7 @@
       }
     },
     "What it plays when this goes off." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16943,6 +18034,7 @@
       }
     },
     "What people will see it can do" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16959,6 +18051,7 @@
       }
     },
     "What should %@ do with it?" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16975,6 +18068,7 @@
       }
     },
     "What should %@ do?" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -16991,6 +18085,7 @@
       }
     },
     "What starts %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17055,6 +18150,7 @@
       }
     },
     "When" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17071,6 +18167,7 @@
       }
     },
     "When it goes off, %@ acts on the instruction with its tools." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17087,6 +18184,7 @@
       }
     },
     "When it's quiet" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17120,6 +18218,7 @@
       }
     },
     "Where people share Imps, animations, triggers and tools." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17217,6 +18316,7 @@
       }
     },
     "With clipboard" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17458,6 +18558,7 @@
       }
     },
     "above %lld %%" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17474,6 +18575,7 @@
       }
     },
     "after %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17490,6 +18592,7 @@
       }
     },
     "after %@ away" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17538,6 +18641,7 @@
       }
     },
     "below %lld %%" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17602,6 +18706,7 @@
       }
     },
     "friendly, desk" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17650,6 +18755,7 @@
       }
     },
     "my-package" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17808,6 +18914,9 @@
           }
         }
       }
+    },
+    "triggers.open.%@" : {
+
     },
     "worried brows" : {
       "localizations" : {
@@ -18009,6 +19118,28 @@
         }
       }
     },
+    "“skills” should be a list." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "“skills” should be a list."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“skills” debe ser una lista."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“skills”应为列表。"
+          }
+        }
+      }
+    },
     "“triggers” should be a list." : {
       "localizations" : {
         "es" : {
@@ -18059,586 +19190,122 @@
         }
       }
     },
-    "Animations only move the Imp. They run nothing on your Mac." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las animaciones solo mueven al Imp. No ejecutan nada en tu Mac."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "动画只会让 Imp 动起来，不会在你的 Mac 上运行任何东西。"
-          }
-        }
-      }
-    },
-    "Skills" : {
+    "agent.button" : {
+      "comment" : "Tooltip of the wand button in a section header: opens what the Imp may do there by itself.",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Skills"
+            "state" : "translated",
+            "value" : "What %1$@ may do by itself"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Habilidades"
+            "value" : "Lo que %1$@ puede hacer por su cuenta"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "技能"
+            "value" : "%1$@ 可以自己做的事"
           }
         }
       }
     },
-    "Skills are installed by you, in Terminal. Imp never runs the command." : {
+    "agent.help" : {
+      "comment" : "Help of that sheet.",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Skills are installed by you, in Terminal. Imp never runs the command."
+            "state" : "translated",
+            "value" : "The things it can do by itself here. A tool that is off is never offered to its Brain."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Las habilidades las instalas tú, en Terminal. Imp nunca ejecuta el comando."
+            "value" : "Lo que puede hacer por su cuenta aquí. Una herramienta apagada nunca se ofrece a su Cerebro."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "技能由你在“终端”中安装。Imp 从不运行该命令。"
+            "value" : "它在这里可以自己做的事。关闭的工具不会提供给它的大脑。"
           }
         }
       }
     },
-    "Offered by your Imp" : {
+    "agent.off" : {
+      "comment" : "Spoken value of the wand button: every tool there is off.",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Offered by your Imp"
+            "state" : "translated",
+            "value" : "Off"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ofrecido por tu Imp"
+            "value" : "Desactivado"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "由你的 Imp 提供"
+            "value" : "关"
           }
         }
       }
     },
-    "Offer a kit to add" : {
+    "agent.on" : {
+      "comment" : "Spoken value of the wand button: some tools are on.",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Offer a kit to add"
+            "state" : "translated",
+            "value" : "On"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ofrecer un kit para añadir"
+            "value" : "Activado"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "提供要添加的套件"
+            "value" : "开"
           }
         }
       }
     },
-    "Export a kit to publish" : {
+    "agent.title" : {
+      "comment" : "Title of the sheet with the Imp's own tools of one section.",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Export a kit to publish"
+            "state" : "translated",
+            "value" : "What %1$@ may do"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exportar un kit para publicar"
+            "value" : "Lo que %1$@ puede hacer"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "导出要发布的套件"
-          }
-        }
-      }
-    },
-    "A skill's name has 1 to 64 characters: a-z, 0-9 and dashes between them." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "A skill's name has 1 to 64 characters: a-z, 0-9 and dashes between them."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El nombre de una habilidad tiene de 1 a 64 caracteres: a-z, 0-9 y guiones entre ellos."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "技能名称为 1 到 64 个字符:a-z、0-9,中间可用短横线。"
-          }
-        }
-      }
-    },
-    "A skill's source is owner/repo, owner/repo/path or an https:// address, at most 200 characters, with no spaces or shell characters." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "A skill's source is owner/repo, owner/repo/path or an https:// address, at most 200 characters, with no spaces or shell characters."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El origen de una habilidad es propietario/repo, propietario/repo/ruta o una dirección https://, de 200 caracteres como máximo, sin espacios ni caracteres de shell."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "技能来源为 owner/repo、owner/repo/路径或 https:// 地址,最多 200 个字符,不含空格和 shell 字符。"
-          }
-        }
-      }
-    },
-    "Skill %lld: %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Skill %lld: %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Habilidad %lld: %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "技能 %lld:%@"
-          }
-        }
-      }
-    },
-    "Skills: only the first %lld are read." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Skills: only the first %lld are read."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Habilidades: solo se leen las primeras %lld."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "技能:只读取前 %lld 个。"
-          }
-        }
-      }
-    },
-    "“skills” should be a list." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "“skills” should be a list."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "“skills” debe ser una lista."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "“skills”应为列表。"
-          }
-        }
-      }
-    },
-    "The kit's “format” should be a whole number, 1 or more." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "The kit's “format” should be a whole number, 1 or more."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El “format” del kit debe ser un número entero, 1 o más."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "套件的“format”应为 1 或更大的整数。"
-          }
-        }
-      }
-    },
-    "This needs a newer Imp. It is kit format %lld, and this Imp reads up to format %lld. Update Imp and try again." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "This needs a newer Imp. It is kit format %1$lld, and this Imp reads up to format %2$lld. Update Imp and try again."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esto necesita un Imp más reciente. Es el formato de kit %lld, y este Imp lee hasta el formato %lld. Actualiza Imp e inténtalo de nuevo."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这需要更新版本的 Imp。它是套件格式 %lld,而当前 Imp 最高读取格式 %lld。请更新 Imp 后重试。"
-          }
-        }
-      }
-    },
-    "The MCP server asks you to sign in." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El servidor MCP pide iniciar sesión."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MCP 服务器要求登录。"
-          }
-        }
-      }
-    },
-    "The person has not signed in to %@. Ask them to sign in: Tools, then %@, then Sign in." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La persona no ha iniciado sesión en %@. Pídele que inicie sesión: Herramientas, luego %@, luego Iniciar sesión."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用户尚未登录 %@。请让他们登录：工具，然后 %@，然后登录。"
-          }
-        }
-      }
-    },
-    "Sign-in was cancelled." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se canceló el inicio de sesión."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登录已取消。"
-          }
-        }
-      }
-    },
-    "The server does not say who signs people in." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El servidor no indica quién inicia la sesión."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务器没有说明由谁负责登录。"
-          }
-        }
-      }
-    },
-    "The sign-in address is not valid." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La dirección de inicio de sesión no es válida."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登录地址无效。"
-          }
-        }
-      }
-    },
-    "The sign-in could not be saved." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo guardar el inicio de sesión."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无法保存登录信息。"
-          }
-        }
-      }
-    },
-    "Bad URL." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dirección no válida."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "地址无效。"
-          }
-        }
-      }
-    },
-    "The server does not say how to sign in." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El servidor no indica cómo iniciar sesión."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务器没有说明如何登录。"
-          }
-        }
-      }
-    },
-    "The sign-in service does not answer." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El servicio de inicio de sesión no responde."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登录服务没有响应。"
-          }
-        }
-      }
-    },
-    "The sign-in service does not let Imp register." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El servicio de inicio de sesión no deja que Imp se registre."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登录服务不允许 Imp 注册。"
-          }
-        }
-      }
-    },
-    "The sign-in sheet could not open." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo abrir la hoja de inicio de sesión."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无法打开登录页面。"
-          }
-        }
-      }
-    },
-    "%@ needs the user to sign in before its tools are available. Call this when the user wants to use %@; it opens the sign-in page." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ necesita que el usuario inicie sesión antes de que sus herramientas estén disponibles. Llámala cuando el usuario quiera usar %2$@; abre la página de inicio de sesión."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ 需要用户先登录，其工具才可用。当用户想使用 %2$@ 时调用此工具；它会打开登录页面。"
-          }
-        }
-      }
-    },
-    "Signed in to %@. Its tools are now available: %@." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sesión iniciada en %1$@. Sus herramientas ya están disponibles: %2$@."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已登录 %1$@。其工具现已可用：%2$@。"
-          }
-        }
-      }
-    },
-    "Signed in to %@, but its tools could not be listed." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sesión iniciada en %@, pero no se pudieron listar sus herramientas."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已登录 %@，但无法列出其工具。"
-          }
-        }
-      }
-    },
-    "The sign-in to %@ was cancelled. Its tools are not available." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se canceló el inicio de sesión en %@. Sus herramientas no están disponibles."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已取消登录 %@。其工具不可用。"
-          }
-        }
-      }
-    },
-    "The sign-in to %@ failed: %@" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falló el inicio de sesión en %1$@: %2$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登录 %1$@ 失败：%2$@"
-          }
-        }
-      }
-    },
-    "Open Imp and sign in to %@ in Tools" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abre Imp e inicia sesión en %@ en Herramientas"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开 Imp，在“工具”中登录 %@"
-          }
-        }
-      }
-    },
-    "Open Imp to sign in." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abre Imp para iniciar sesión."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开 Imp 登录。"
-          }
-        }
-      }
-    },
-    "Unknown tool." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Herramienta desconocida."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未知工具。"
+            "value" : "%1$@ 可以做的事"
           }
         }
       }
@@ -19291,198 +19958,6 @@
         }
       }
     },
-    "background.choose_colour" : {
-      "comment" : "Opens the colour chooser.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose a colour…"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elegir un color…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选择一种颜色…"
-          }
-        }
-      }
-    },
-    "background.choose_picture" : {
-      "comment" : "Opens a file chooser for a picture or a tile.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose a picture…"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elegir una imagen…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选择一张图片…"
-          }
-        }
-      }
-    },
-    "background.colour" : {
-      "comment" : "Background choice: one colour.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Colour"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Color"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "颜色"
-          }
-        }
-      }
-    },
-    "background.picture" : {
-      "comment" : "Background choice: one picture that fills the window.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Picture"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imagen"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "图片"
-          }
-        }
-      }
-    },
-    "background.picture_failed" : {
-      "comment" : "Error when the chosen file is not a usable picture.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "That picture could not be used. Pick another one."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo usar esa imagen. Elige otra."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这张图片无法使用，请换一张。"
-          }
-        }
-      }
-    },
-    "background.theme" : {
-      "comment" : "Background choice: the wall of the dungeon, the default.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Theme"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tema"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "主题"
-          }
-        }
-      }
-    },
-    "background.tile" : {
-      "comment" : "Background choice: a seamless pattern that repeats.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tile"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mosaico"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "平铺"
-          }
-        }
-      }
-    },
-    "background.tile_hint" : {
-      "comment" : "Hint under the Tile choice.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A tile repeats to fill the window. Pick a seamless pattern."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un mosaico se repite para llenar la ventana. Elige un patrón continuo."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "平铺会重复铺满窗口。请选择可无缝衔接的图案。"
-          }
-        }
-      }
-    },
     "brain.add_service" : {
       "comment" : "Button that adds a Brain service.",
       "extractionState" : "manual",
@@ -20060,25 +20535,25 @@
       }
     },
     "brains.empty" : {
-      "comment" : "Empty state of the Brains list.",
+      "comment" : "Empty state of the list of Brains.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No Brains yet. Add a model on this computer or a service with your key."
+            "value" : "No Brains yet."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay cerebros. Añade un modelo en este equipo o un servicio con tu clave."
+            "value" : "Aún no hay cerebros."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有大脑。可以添加这台电脑上的模型，或使用你自己密钥的服务。"
+            "value" : "还没有大脑。"
           }
         }
       }
@@ -20785,6 +21260,102 @@
         }
       }
     },
+    "computer.access" : {
+      "comment" : "Header of the Computer section of an Imp.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Access"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acceso"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "访问"
+          }
+        }
+      }
+    },
+    "computer.help.access" : {
+      "comment" : "Help of the Computer section.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What the Imp may reach on this Mac."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que el Imp puede usar en este Mac."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 可以在这台 Mac 上使用的东西。"
+          }
+        }
+      }
+    },
+    "computer.help.control" : {
+      "comment" : "Help of the Computer control switch.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sees and operates other apps. Needs the Screen & System Audio Recording and Accessibility permissions."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ve y maneja otras apps. Necesita los permisos de Grabación de pantalla y audio del sistema y de Accesibilidad."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看并操作其他应用。需要“屏幕与系统音频录制”和“辅助功能”权限。"
+          }
+        }
+      }
+    },
+    "computer.help.senses" : {
+      "comment" : "Help of the Senses switch.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reads the battery, processor, network and open apps, and the page open in the browser."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lee la batería, el procesador, la red y las apps abiertas, y la página abierta en el navegador."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "读取电池、处理器、网络和打开的应用，以及浏览器中打开的页面。"
+          }
+        }
+      }
+    },
     "devices.copy_link.help" : {
       "comment" : "Help of Copy Link in Link a device.",
       "extractionState" : "manual",
@@ -20810,25 +21381,25 @@
       }
     },
     "devices.empty" : {
-      "comment" : "Empty state of the devices card.",
+      "comment" : "Empty state of the list of linked devices.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No devices yet. Link an iPhone or another Mac and your Imps can visit it."
+            "value" : "No devices yet."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay dispositivos. Vincula un iPhone u otro Mac y tus Imps podrán visitarlo."
+            "value" : "Aún no hay dispositivos."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有设备。连接一台 iPhone 或另一台 Mac，你的 Imp 就能去做客。"
+            "value" : "还没有设备。"
           }
         }
       }
@@ -24523,30 +25094,6 @@
         }
       }
     },
-    "imp_settings.brain_marker.awake" : {
-      "comment" : "Screen reader label of the lit Brain marker.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Brain: %1$@, %2$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cerebro: %1$@, %2$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "大脑：%1$@，%2$@"
-          }
-        }
-      }
-    },
     "imp_settings.goodbye" : {
       "comment" : "Icon button label in the top corner.",
       "extractionState" : "manual",
@@ -24596,25 +25143,25 @@
       }
     },
     "imp_settings.list.label" : {
-      "comment" : "Screen reader name of the plain list of settings.",
+      "comment" : "Spoken name of the rail of sections of one Imp's settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "All settings for %1$@"
+            "value" : "Settings for %1$@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Todos los ajustes de %1$@"
+            "value" : "Ajustes de %1$@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 的所有设置"
+            "value" : "%1$@ 的设置"
           }
         }
       }
@@ -24639,6 +25186,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "大脑"
+          }
+        }
+      }
+    },
+    "imp_settings.marker.computer" : {
+      "comment" : "Section of an Imp's settings: what it may reach on this Mac (commands, senses, computer control).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Computer"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordenador"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "电脑"
           }
         }
       }
@@ -24807,204 +25378,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "共享 %1$@"
-          }
-        }
-      }
-    },
-    "imp_settings.summary.brain_none" : {
-      "comment" : "Summary line of the Brain row when the Imp has no Brain.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Asleep"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dormido"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沉睡"
-          }
-        }
-      }
-    },
-    "imp_settings.summary.brain_set" : {
-      "comment" : "Summary line of the Brain row: service and model.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@, %2$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@, %2$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@，%2$@"
-          }
-        }
-      }
-    },
-    "imp_settings.summary.look" : {
-      "comment" : "Summary line of the Look row.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Colour and size"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Color y tamaño"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "颜色与大小"
-          }
-        }
-      }
-    },
-    "imp_settings.summary.moves" : {
-      "comment" : "Summary line of the Moves row.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Animations"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Animaciones"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "动画效果"
-          }
-        }
-      }
-    },
-    "imp_settings.summary.personality" : {
-      "comment" : "Summary line of the Personality row.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Name and persona"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nombre y personalidad"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "名字与人设"
-          }
-        }
-      }
-    },
-    "imp_settings.summary.tools" : {
-      "comment" : "Summary line of the Tools row.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld of %2$lld on"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld de %2$lld"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已开启 %1$lld/%2$lld"
-          }
-        }
-      }
-    },
-    "imp_settings.summary.triggers" : {
-      "comment" : "Summary line of the Triggers row.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%1$lld trigger"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%1$lld triggers"
-                }
-              }
-            }
-          }
-        },
-        "es" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%1$lld disparador"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%1$lld disparadores"
-                }
-              }
-            }
-          }
-        },
-        "zh-Hans" : {
-          "variations" : {
-            "plural" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%1$lld 个触发器"
-                }
-              }
-            }
           }
         }
       }
@@ -26017,6 +26390,30 @@
         }
       }
     },
+    "memory.empty" : {
+      "comment" : "Empty state of the list of chats.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No chats yet."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay chats."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有聊天。"
+          }
+        }
+      }
+    },
     "memory.last" : {
       "comment" : "Choice for Sends: the last N messages.",
       "extractionState" : "manual",
@@ -26593,30 +26990,6 @@
         }
       }
     },
-    "menu.canvas.background" : {
-      "comment" : "Menu with the background choices.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Background"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fondo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "桌面背景"
-          }
-        }
-      }
-    },
     "menu.canvas.devices" : {
       "comment" : "Menu item that opens Devices.",
       "extractionState" : "manual",
@@ -26661,6 +27034,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新建 Imp"
+          }
+        }
+      }
+    },
+    "menu.canvas.reset_background" : {
+      "comment" : "File menu item: puts the plain background back (the Imps make the others).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset Background"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restablecer fondo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置背景"
           }
         }
       }
@@ -27193,26 +27590,50 @@
         }
       }
     },
-    "moves.empty" : {
-      "comment" : "Empty state of the moves panel.",
+    "moves.animations" : {
+      "comment" : "Header of the list of an Imp's own animations.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No special moves yet."
+            "value" : "Animations"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sin movimientos aún."
+            "value" : "Animaciones"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有特别的动作。"
+            "value" : "动画"
+          }
+        }
+      }
+    },
+    "moves.empty" : {
+      "comment" : "Empty state of the animations list.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No animations yet."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay animaciones."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有动画。"
           }
         }
       }
@@ -27242,25 +27663,25 @@
       }
     },
     "personality.about" : {
-      "comment" : "Field label: what the Imp is good at, which other Imps read to know whom to ask.",
+      "comment" : "Field label: a short description of the Imp, which other Imps read to know whom to ask.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "What it's good at"
+            "value" : "Description"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En qué destaca"
+            "value" : "Descripción"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "擅长什么"
+            "value" : "描述"
           }
         }
       }
@@ -27890,25 +28311,25 @@
       }
     },
     "phone.brains.empty" : {
-      "comment" : "Brains section of the iPhone settings, when no Imp was hatched on this iPhone yet.",
+      "comment" : "Empty state of the phone's list of Imps and their Brains.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imps you hatch on this iPhone show here, each with the Brain it thinks with."
+            "value" : "No Imps yet."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los Imps que hagas nacer en este iPhone aparecen aquí, cada uno con el cerebro con el que piensa."
+            "value" : "Aún no hay Imps."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你在这台 iPhone 上孵化的 Imp 会显示在这里，并附上各自使用的大脑。"
+            "value" : "还没有 Imp。"
           }
         }
       }
@@ -30218,25 +30639,25 @@
       }
     },
     "phone.talks.empty" : {
-      "comment" : "The talks side of an Imp's sheet when it has not talked with another Imp yet.",
+      "comment" : "Empty state of the list of talks between Imps.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No talks yet"
+            "value" : "No talks yet."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sin charlas"
+            "value" : "Aún no hay conversaciones."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有对话"
+            "value" : "还没有对话。"
           }
         }
       }
@@ -33985,78 +34406,6 @@
         }
       }
     },
-    "share.file" : {
-      "comment" : "Share sheet choice: a kit file.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "File"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Archivo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "文件"
-          }
-        }
-      }
-    },
-    "share.note" : {
-      "comment" : "Note on the share sheet about what travels.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Its look, personality, tools and triggers are shared. Keys, memory and chats never are."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se comparten su aspecto, personalidad, herramientas y disparadores. Las claves, la memoria y los chats nunca."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "会共享它的外观、个性、工具和触发器。密钥、记忆和聊天永远不会共享。"
-          }
-        }
-      }
-    },
-    "share.title" : {
-      "comment" : "Title of the share sheet.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Share %1$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compartir %1$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "共享 %1$@"
-          }
-        }
-      }
-    },
     "sharing.browse" : {
       "comment" : "Button on the Sharing page: look through The Den.",
       "extractionState" : "manual",
@@ -34154,25 +34503,25 @@
       }
     },
     "sheets.animations.nothing_yet" : {
-      "comment" : "Shown in the animations list when you have made none.",
+      "comment" : "Empty state of a list of animations.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nothing yet"
+            "value" : "No animations yet."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nada todavía"
+            "value" : "Aún no hay animaciones."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "暂时还没有"
+            "value" : "还没有动画。"
           }
         }
       }
@@ -34417,8 +34766,224 @@
         }
       }
     },
-    "tools.add" : {
-      "comment" : "Button that adds tools.",
+    "sticker.error.empty" : {
+      "comment" : "Why a sticker cannot be made: the animation has no beats.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The animation is empty."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La animación está vacía."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个动画是空的。"
+          }
+        }
+      }
+    },
+    "sticker.error.title" : {
+      "comment" : "Title of the alert when a sticker cannot be made.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t make the sticker"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo crear el sticker"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法制作贴纸"
+          }
+        }
+      }
+    },
+    "sticker.error.too_big" : {
+      "comment" : "Why a sticker cannot be made: even simplified it is over the 64 KB limit.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It is still %1$lld KB when simplified. A sticker may be 64 KB: try fewer beats or simpler moves."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplificado sigue ocupando %1$lld KB. Un sticker puede ocupar 64 KB: prueba con menos pasos o movimientos más sencillos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "简化后仍有 %1$lld KB。贴纸最多 64 KB：试试更少的节拍或更简单的动作。"
+          }
+        }
+      }
+    },
+    "sticker.export" : {
+      "comment" : "Action on an animation: saves it as an animated sticker file (.tgs).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export as Sticker…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportar como sticker…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导出为贴纸…"
+          }
+        }
+      }
+    },
+    "sticker.note" : {
+      "comment" : "Message in the save panel of a sticker.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An animated sticker (.tgs): 512 × 512, 60 frames a second, vector only."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un sticker animado (.tgs): 512 × 512, 60 fotogramas por segundo, solo vectores."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动画贴纸（.tgs）：512 × 512，每秒 60 帧，仅矢量。"
+          }
+        }
+      }
+    },
+    "sticker.note.faster" : {
+      "comment" : "Added to the save panel message when the animation was sped up to fit 3 seconds.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It plays %1$@× faster to fit 3 seconds."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se reproduce %1$@× más rápido para caber en 3 segundos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加快 %1$@ 倍播放，以控制在 3 秒内。"
+          }
+        }
+      }
+    },
+    "sticker.note.trimmed" : {
+      "comment" : "Added to the save panel message when the animation was cut at 3 seconds.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It stops at 3 seconds."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se detiene a los 3 segundos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 3 秒处结束。"
+          }
+        }
+      }
+    },
+    "tool.act" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Click and type"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer clic y escribir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击和输入"
+          }
+        }
+      }
+    },
+    "tool.add_kit" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add kits"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir kits"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加套件"
+          }
+        }
+      }
+    },
+    "tool.add_tool" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34441,26 +35006,554 @@
         }
       }
     },
-    "tools.built_in" : {
-      "comment" : "Badge for a built-in tool group.",
+    "tool.add_trigger" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Built in"
+            "value" : "Add"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Integradas"
+            "value" : "Añadir"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内置项"
+            "value" : "添加"
+          }
+        }
+      }
+    },
+    "tool.browser_page" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Browser page"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Página del navegador"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "浏览器页面"
+          }
+        }
+      }
+    },
+    "tool.export_kit" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export kits"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportar kits"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导出套件"
+          }
+        }
+      }
+    },
+    "tool.list_tools" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "List"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "列出"
+          }
+        }
+      }
+    },
+    "tool.list_triggers" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "List"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "列出"
+          }
+        }
+      }
+    },
+    "tool.mac_status" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac status"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estado del Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac 状态"
+          }
+        }
+      }
+    },
+    "tool.make_animation" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Make"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "制作"
+          }
+        }
+      }
+    },
+    "tool.message" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message Imps"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escribir a Imps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "给 Imp 发消息"
+          }
+        }
+      }
+    },
+    "tool.move" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move around"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moverse"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "四处移动"
+          }
+        }
+      }
+    },
+    "tool.observe" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See the screen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver la pantalla"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看屏幕"
+          }
+        }
+      }
+    },
+    "tool.open_file" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open files"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir archivos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开文件"
+          }
+        }
+      }
+    },
+    "tool.open_settings" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open settings"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir ajustes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开设置"
+          }
+        }
+      }
+    },
+    "tool.play" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reproducir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放"
+          }
+        }
+      }
+    },
+    "tool.remove_animation" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除"
+          }
+        }
+      }
+    },
+    "tool.remove_tool" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除"
+          }
+        }
+      }
+    },
+    "tool.remove_trigger" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除"
+          }
+        }
+      }
+    },
+    "tool.set_background" : {
+      "comment" : "Short name of a built-in tool in the Look section: writes the HTML background behind the Imps.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set background"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar fondo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置背景"
+          }
+        }
+      }
+    },
+    "tool.set_traits" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change its look"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar su aspecto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "改变外观"
+          }
+        }
+      }
+    },
+    "tool.show_animation" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看"
+          }
+        }
+      }
+    },
+    "tool.show_background" : {
+      "comment" : "Short name of a built-in tool in the Look section: reads the HTML background behind the Imps.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View background"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver fondo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看背景"
+          }
+        }
+      }
+    },
+    "tool.speak" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speak aloud"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hablar en voz alta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "朗读"
+          }
+        }
+      }
+    },
+    "tool.verify" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check results"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprobar resultados"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查结果"
+          }
+        }
+      }
+    },
+    "tools.add" : {
+      "comment" : "Button that adds tools.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加"
           }
         }
       }
@@ -34496,19 +35589,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No tools yet. Add some from a kit or an MCP server."
+            "value" : "No tools yet."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay herramientas. Añade algunas desde un kit o un servidor MCP."
+            "value" : "Aún no hay herramientas."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有工具。可以从套件或 MCP 服务器添加。"
+            "value" : "还没有工具。"
           }
         }
       }
@@ -34753,30 +35846,6 @@
         }
       }
     },
-    "tools.help.built_in" : {
-      "comment" : "Help of the built-in tools list.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Things the Imp can already do, like look at your screen. Switch off any it should not use."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cosas que el Imp ya sabe hacer, como mirar tu pantalla. Apaga las que no deba usar."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp 本来就会做的事，比如看你的屏幕。把不该用的关掉。"
-          }
-        }
-      }
-    },
     "tools.help.mcp" : {
       "comment" : "Help of the extra tools list.",
       "extractionState" : "manual",
@@ -34821,30 +35890,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "给 Imp 提供更多工具的程序或网站。"
-          }
-        }
-      }
-    },
-    "tools.mcp" : {
-      "comment" : "Badge for a tool group that comes from an MCP server.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MCP"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MCP"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MCP"
           }
         }
       }
@@ -35017,6 +36062,30 @@
         }
       }
     },
+    "tools.new_server_title" : {
+      "comment" : "Title of the sheet that adds an MCP server.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New tool"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nueva herramienta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新工具"
+          }
+        }
+      }
+    },
     "tools.optional" : {
       "comment" : "Placeholder of a field that may be left empty.",
       "extractionState" : "manual",
@@ -35037,54 +36106,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "可选项"
-          }
-        }
-      }
-    },
-    "tools.own" : {
-      "comment" : "Card title in an iPhone Imp's Tools: the tools the Imp has by itself (messaging other Imps, playing animations), each with a switch.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Built in"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Integradas"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "内置"
-          }
-        }
-      }
-    },
-    "tools.own.info" : {
-      "comment" : "Help of the Built in tools card on the iPhone.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "What the Imp can do by itself. Switch off what it shouldn't use."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lo que el Imp puede hacer por sí solo. Desactiva lo que no deba usar."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp 自带的能力。关闭不希望它使用的功能。"
           }
         }
       }
@@ -35257,26 +36278,554 @@
         }
       }
     },
-    "triggers.add" : {
-      "comment" : "Button that adds a trigger.",
+    "trigger.event.at" : {
+      "comment" : "Short name of a trigger event, on its tile.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add"
+            "value" : "Daily at"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añadir"
+            "value" : "Cada día a las"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加"
+            "value" : "每天定时"
+          }
+        }
+      }
+    },
+    "trigger.event.away" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor away"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor lejos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "光标离开"
+          }
+        }
+      }
+    },
+    "trigger.event.circle" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Circle"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rodear"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "绕圈"
+          }
+        }
+      }
+    },
+    "trigger.event.click" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Click"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clic"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击"
+          }
+        }
+      }
+    },
+    "trigger.event.dangle" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bob"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balanceo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "晃动"
+          }
+        }
+      }
+    },
+    "trigger.event.drag" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drag"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrastrar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拖动"
+          }
+        }
+      }
+    },
+    "trigger.event.drop" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drop"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soltar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放下"
+          }
+        }
+      }
+    },
+    "trigger.event.every" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repeat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repetir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重复"
+          }
+        }
+      }
+    },
+    "trigger.event.hold" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantener"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住"
+          }
+        }
+      }
+    },
+    "trigger.event.near" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor near"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor cerca"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "光标靠近"
+          }
+        }
+      }
+    },
+    "trigger.event.poke" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poke"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toques"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "戳"
+          }
+        }
+      }
+    },
+    "trigger.event.rush" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rush"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Embestida"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "冲过来"
+          }
+        }
+      }
+    },
+    "trigger.event.shake" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shake"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sacudir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摇晃"
+          }
+        }
+      }
+    },
+    "trigger.event.stroke" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stroke"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acariciar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "抚摸"
+          }
+        }
+      }
+    },
+    "trigger.event.swish" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Swish"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barrido"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "掠过"
+          }
+        }
+      }
+    },
+    "trigger.event.tickle" : {
+      "comment" : "Short name of a trigger event, on its tile.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tickle"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cosquillas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "挠痒"
+          }
+        }
+      }
+    },
+    "trigger.step.ask" : {
+      "comment" : "Short name of a trigger step, on its tile and menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ask"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preguntar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "询问"
+          }
+        }
+      }
+    },
+    "trigger.step.follow" : {
+      "comment" : "Short name of a trigger step, on its tile and menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Follow"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seguir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟随"
+          }
+        }
+      }
+    },
+    "trigger.step.open" : {
+      "comment" : "Short name of a trigger step, on its tile and menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开"
+          }
+        }
+      }
+    },
+    "trigger.step.play" : {
+      "comment" : "Short name of a trigger step, on its tile and menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reproducir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放"
+          }
+        }
+      }
+    },
+    "trigger.step.say" : {
+      "comment" : "Short name of a trigger step, on its tile and menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Say"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "说"
+          }
+        }
+      }
+    },
+    "trigger.step.sleep" : {
+      "comment" : "Short name of a trigger step, on its tile and menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sleep"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dormir"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "睡觉"
+          }
+        }
+      }
+    },
+    "trigger.step.wake" : {
+      "comment" : "Short name of a trigger step, on its tile and menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wake"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Despertar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "醒来"
           }
         }
       }
@@ -35456,19 +37005,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No triggers yet. Add one and %1$@ acts on its own."
+            "value" : "No triggers yet."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay disparadores. Añade uno y %1$@ actuará por su cuenta."
+            "value" : "Aún no hay disparadores."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有触发器。添加一个，%1$@ 就会自己行动。"
+            "value" : "还没有触发器。"
           }
         }
       }
@@ -35589,30 +37138,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "跟随"
-          }
-        }
-      }
-    },
-    "triggers.gestures" : {
-      "comment" : "Event submenu: pointer gestures on the Imp.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gestures"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gestos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手势"
           }
         }
       }
@@ -36097,6 +37622,30 @@
         }
       }
     },
+    "triggers.pick_event" : {
+      "comment" : "Spoken hint of the event button in the trigger editor.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens the list of events."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre la lista de eventos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开事件列表。"
+          }
+        }
+      }
+    },
     "triggers.problem.ask" : {
       "comment" : "Problem: an ask step with nothing to ask.",
       "extractionState" : "manual",
@@ -36361,26 +37910,26 @@
         }
       }
     },
-    "triggers.step.add" : {
-      "comment" : "Menu title that adds a step.",
+    "triggers.step.add_one" : {
+      "comment" : "Spoken label of a step tile.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add a step"
+            "value" : "Add a step: %1$@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añadir un paso"
+            "value" : "Añadir un paso: %1$@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加步骤"
+            "value" : "添加步骤：%1$@"
           }
         }
       }
@@ -36625,6 +38174,30 @@
         }
       }
     },
+    "triggers.step.then" : {
+      "comment" : "Small word above the step tiles once a trigger has a step.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Then"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Después"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "然后"
+          }
+        }
+      }
+    },
     "triggers.step.up" : {
       "comment" : "Help of the button that moves a step up.",
       "extractionState" : "manual",
@@ -36693,6 +38266,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "触发器"
+          }
+        }
+      }
+    },
+    "triggers.try" : {
+      "comment" : "Button in the trigger editor that runs the trigger once now.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Probar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "试一下"
           }
         }
       }

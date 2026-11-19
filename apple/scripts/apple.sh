@@ -519,9 +519,9 @@ CASK
 
 DESIGN_IMAGES_DIR="docs/ux/images"
 DESIGN_SCENES=(
-  canvas-empty canvas-imps canvas-picture
-  imp-brain imp-sleeping imp-list imp-brain-open imp-narrow-open imp-personality imp-look imp-tools
-  imp-triggers imp-moves imp-look-narrow imp-trigger-editor
+  canvas-empty canvas-imps
+  imp-brain imp-sleeping imp-personality imp-look imp-moves imp-triggers imp-tools imp-computer
+  imp-look-narrow imp-agent-tools imp-trigger-editor imp-trigger-steps
   all-imps-app all-imps-app-narrow all-imps-nothing
   first-run-service first-run-error
   bar-menu bar-menu-es

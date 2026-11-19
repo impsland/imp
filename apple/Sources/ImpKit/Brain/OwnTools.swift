@@ -5,14 +5,18 @@ import ImpCore
 /// how the model acts out its answers, notices the Mac, sets itself up and talks to the troupe.
 /// Nothing is hard-wired: a trigger hands the model what happened, and the model picks the tools.
 public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable {
-    /// Animations, moving around the screen, speaking out loud.
-    case body
+    /// Speaking aloud, messages to the other Imps, opening their files and opening settings.
+    case personality
+    /// Changing its own character.
+    case look
+    /// Animations (playing, showing, making, removing) and moving around the screen.
+    case moves
+    /// Its own triggers: adding, listing, removing them.
+    case triggers
+    /// MCP servers and kits: adding, listing, removing, exporting them.
+    case tools
     /// The Mac's state (battery, processor, apps…) and the page open in the browser.
     case senses
-    /// Its own triggers and extra tools (MCP servers): adding, listing, removing them.
-    case setup
-    /// Messages to the other Imps.
-    case troupe
     /// Operating other apps through screenshots and accessibility (`ComputerTools`). Off until switched on.
     case computer
 
@@ -23,30 +27,36 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
 
     public var title: String {
         switch self {
-        case .body: String(localized: "Body language")
+        case .personality: String(localized: "Personality")
+        case .look: String(localized: "Look")
+        case .moves: String(localized: "Moves")
+        case .triggers: String(localized: "Triggers")
+        case .tools: String(localized: "Tools")
         case .senses: String(localized: "Senses")
-        case .setup: String(localized: "Setup")
-        case .troupe: String(localized: "Other Imps")
         case .computer: String(localized: "Computer control")
         }
     }
 
     public var symbol: String {
         switch self {
-        case .body: "figure.dance"
+        case .personality: "theatermasks.fill"
+        case .look: "paintpalette.fill"
+        case .moves: "figure.dance"
+        case .triggers: "bolt.fill"
+        case .tools: "wrench.and.screwdriver.fill"
         case .senses: "sensor.fill"
-        case .setup: "wand.and.stars"
-        case .troupe: "person.3.fill"
         case .computer: "cursorarrow.click.2"
         }
     }
 
     public var summary: String {
         switch self {
-        case .body: String(localized: "Plays animations, moves around the screen and speaks aloud.")
-        case .senses: String(localized: "Reads the battery, processor, network and open apps. With the browser extension, it also knows the page you're on.")
-        case .setup: String(localized: "Adds and removes its own triggers and extra tools when you ask.")
-        case .troupe: String(localized: "Messages the other Imps on your desktop and hears their answers.")
+        case .personality: String(localized: "Speaks aloud, messages the other Imps, opens their files and opens settings for you.")
+        case .look: String(localized: "Changes its own character and the background behind the Imps.")
+        case .moves: String(localized: "Plays, shows, makes and removes animations, and moves around the screen.")
+        case .triggers: String(localized: "Lists, adds and removes its triggers.")
+        case .tools: String(localized: "Lists, adds and removes MCP servers and kits.")
+        case .senses: String(localized: "Reads the battery, processor, network and open apps, and the page open in the browser.")
         case .computer: String(localized: "Sees and operates other apps. Needs the Screen & System Audio Recording and Accessibility permissions.")
         }
     }
@@ -74,6 +84,8 @@ public enum OwnTools {
     public static let showAnimation = toolBuiltInName(tool: .impShowAnimation)
     public static let removeAnimation = toolBuiltInName(tool: .impRemoveAnimation)
     public static let setTraits = toolBuiltInName(tool: .impSetTraits)
+    public static let showBackground = toolBuiltInName(tool: .impShowBackground)
+    public static let setBackground = toolBuiltInName(tool: .impSetBackground)
 
     /// Which group a tool belongs to.
     public static func group(of tool: String) -> ImpToolGroup? {
@@ -186,12 +198,64 @@ public enum OwnTools {
                                "required": ["file"]])
     }
 
+    /// Reading and writing the background behind the Imps (`RoomBackground`). `place` says where it shows.
+    public static func backgroundSpecs(where place: String) -> [ToolSpec] {
+        [
+            ToolSpec(
+                name: showBackground,
+                description: "The HTML page drawn behind you and the other Imps in \(place). Read it before changing it, to build on what is there.",
+                inputSchema: ["type": "object", "properties": [:]]),
+            ToolSpec(
+                name: setBackground,
+                description: "Replace the background behind you and the other Imps in \(place) with your own HTML page: a scene, a pattern, "
+                    + "a gentle animation (floating clouds, a starry sky, a poker table with a seat for each Imp…). It fills the whole window "
+                    + "under every Imp at any size, and is never clicked or scrolled, so make it decoration, not a page to use. One self-contained "
+                    + "document, at most \(RoomBackground.maxBytes / 1024) KB: inline CSS, SVG, canvas and JavaScript. https pictures and fonts may load. "
+                    + "It cannot navigate, open windows or play sound. Keep motion slow and soft, and stop it under `prefers-reduced-motion`. "
+                    + "Match light and dark with `prefers-color-scheme` if the user did not ask for colours. `reset`: the plain background again. "
+                    + "Every Imp shares it, so ask before replacing one the user asked for.",
+                inputSchema: ["type": "object",
+                              "properties": ["html": ["type": "string", "description": "A whole HTML document."],
+                                             "reset": ["type": "boolean", "description": "Go back to the plain background (one colour)."]]]),
+        ]
+    }
+
     /// The tools for `groups`. `animations`: names it may play right now, `imps`: the others it can message.
     public static func specs(_ groups: Set<ImpToolGroup>, animations: [String], imps: [String], pocket: [String] = [], browser: Bool,
                              talk: ImpTalk = .own, conversation: Bool = false,
                              profiles: [ImpCore.TroupeTargetProfile] = [], waiting: TalkWaiting = .decides) -> [ToolSpec] {
         var specs: [ToolSpec] = []
-        if groups.contains(.body) {
+        if groups.contains(.personality) {
+            specs.append(ToolSpec(
+                name: speak,
+                description: "Say something out loud with the Mac's voice (your reply still shows in the bubble). Keep it short.",
+                inputSchema: ["type": "object",
+                              "properties": ["text": ["type": "string"],
+                                             "language": ["type": "string", "description": "BCP-47 code, e.g. en-US, zh-CN. Default: the text's own."]],
+                              "required": ["text"]]))
+            if !imps.isEmpty || !pocket.isEmpty {
+                specs.append(messageSpec(imps: imps, pocket: pocket, talk: talk, conversation: conversation,
+                                          profiles: profiles, waiting: waiting))
+                specs.append(openFileSpec)
+            }
+            specs.append(ToolSpec(
+                name: openSettings,
+                description: "Your other tools change your triggers, animations, character and MCP tools. Any other setting "
+                    + "is the user's to change: open the exact place with this tool and tell them what to set. Give `setting` (the exact setting) or `page`. With `tool`: an extra "
+                    + "tool's id, to edit it (e.g. to fill in an API key). `imp` is another Imp's name for its pages (default: you). "
+                    + "Pages and their settings: " + SettingsPlace.overview + ".",
+                inputSchema: ["type": "object",
+                              "properties": ["setting": ["type": "string", "enum": .array(SettingID.allCases.map { .string($0.rawValue) })],
+                                             "page": ["type": "string", "enum": .array(SettingsPlace.allCases.map { .string($0.rawValue) })],
+                                             "tool": ["type": "string"],
+                                             "imp": ["type": "string"]],
+                              "anyOf": [["required": ["setting"]], ["required": ["page"]], ["required": ["tool"]]]]))
+        }
+        if groups.contains(.look) {
+            specs.append(contentsOf: animatorSpecs(animations).filter { $0.name == setTraits })
+            specs.append(contentsOf: backgroundSpecs(where: "the home window on the Mac"))
+        }
+        if groups.contains(.moves) {
             specs.append(playSpec(animations: animations))
             var targets = "Where to go: a named place (\(places.joined(separator: ", "))), or x/y as fractions of the screen "
                 + "(0…1, from its top-left corner)."
@@ -206,29 +270,9 @@ public enum OwnTools {
                                              "element": ["type": "string", "description": "Visible text (or a CSS selector) of an element in the browser page."],
                                              "style": ["type": "string", "enum": .array(moveStyles.map { .string($0) }),
                                                        "description": "hop: one leap; slide: glide; bounce: a few bounces like a ball; jump: a big, quick leap."]]]))
-            specs.append(contentsOf: animatorSpecs(animations))
-            specs.append(ToolSpec(
-                name: speak,
-                description: "Say something out loud with the Mac's voice (your reply still shows in the bubble). Keep it short.",
-                inputSchema: ["type": "object",
-                              "properties": ["text": ["type": "string"],
-                                             "language": ["type": "string", "description": "BCP-47 code, e.g. en-US, zh-CN. Default: the text's own."]],
-                              "required": ["text"]]))
+            specs.append(contentsOf: animatorSpecs(animations).filter { $0.name != setTraits })
         }
-        if groups.contains(.senses) {
-            specs.append(ToolSpec(
-                name: status,
-                description: "How the Mac is right now: battery and charger, processor load, heat, memory, network, the app "
-                    + "in front and the apps that are open, time away from the keyboard, the time, the screen, and the page in the browser.",
-                inputSchema: ["type": "object", "properties": [:]]))
-            if browser {
-                specs.append(ToolSpec(
-                    name: page,
-                    description: "The page in the browser's active tab: its address and title, and with `read` its visible text.",
-                    inputSchema: ["type": "object", "properties": ["read": ["type": "boolean"]]]))
-            }
-        }
-        if groups.contains(.setup) {
+        if groups.contains(.triggers) {
             specs.append(ToolSpec(
                 name: listTriggers,
                 description: "Your triggers, in the shape \(addTrigger) takes, plus id, enabled and for (me or every_imp).",
@@ -260,13 +304,15 @@ public enum OwnTools {
                     + "is switched off for you alone, unless `every_imp` removes it for every Imp.",
                 inputSchema: ["type": "object", "properties": ["id": ["type": "string"], "every_imp": ["type": "boolean"]],
                               "required": ["id"]]))
+        }
+        if groups.contains(.tools) {
             specs.append(ToolSpec(
                 name: listTools,
-                description: "The extra tools (MCP servers) in the library, whether you use each, and whether it's running.",
+                description: "The MCP servers in the library, whether you use each, and whether it's running.",
                 inputSchema: ["type": "object", "properties": [:]]))
             specs.append(ToolSpec(
                 name: addTool,
-                description: "Add an extra tool (an MCP server) and start using it, when the user asks for something you "
+                description: "Add an MCP server and start using it, when the user asks for something you "
                     + "can't do yet and a server can. Local: `command` is the whole command line (e.g. \"npx -y @scope/server\"), "
                     + "with `env`. Remote: `url`, with `headers`. Leave secrets empty (\"\"): then open its settings "
                     + "(imp_open_settings with page tools and the tool's id) and ask the user to fill them in. Its tools are "
@@ -276,8 +322,13 @@ public enum OwnTools {
                                              "env": ["type": "object", "additionalProperties": ["type": "string"]],
                                              "headers": ["type": "object", "additionalProperties": ["type": "string"]]]]))
             specs.append(ToolSpec(
+                name: removeTool,
+                description: "Stop using an MCP server (by id). With `everywhere`, remove it from the library for every Imp.",
+                inputSchema: ["type": "object", "properties": ["id": ["type": "string"], "everywhere": ["type": "boolean"]],
+                              "required": ["id"]]))
+            specs.append(ToolSpec(
                 name: addKit,
-                description: "Offer the user a kit: Imps, animations, triggers or extra tools packaged as one document. "
+                description: "Offer the user a kit: Imps, animations, triggers or MCP tools packaged as one document. "
                     + "This Imp reads kit format \(Kit.format). Opens the usual review and nothing is added until the user "
                     + "confirms there. Give `kit` (the kit document, an object or its text: anything an MCP gallery's download "
                     + "returned, or a single trigger or MCP snippet) or `url` (an https address of one). To install something from an "
@@ -298,31 +349,22 @@ public enum OwnTools {
                               "properties": ["imp": ["type": "string", "description": "An Imp's name."],
                                              "animation": ["type": "string", "description": "An animation's name."],
                                              "trigger": ["type": "string", "description": "A trigger's name."],
-                                             "tool": ["type": "string", "description": "An extra tool's name."],
+                                             "tool": ["type": "string", "description": "An MCP server's name."],
                                              "name": ["type": "string", "description": "A name for the kit when several are given."]],
                               "anyOf": [["required": ["imp"]], ["required": ["animation"]], ["required": ["trigger"]], ["required": ["tool"]]]]))
-            specs.append(ToolSpec(
-                name: removeTool,
-                description: "Stop using an extra tool (by id). With `everywhere`, remove it from the library for every Imp.",
-                inputSchema: ["type": "object", "properties": ["id": ["type": "string"], "everywhere": ["type": "boolean"]],
-                              "required": ["id"]]))
-            specs.append(ToolSpec(
-                name: openSettings,
-                description: "Your other tools change your triggers, animations, character and extra tools. Any other setting "
-                    + "is the user's to change: open the exact place with this tool and tell them what to set. Give `setting` (the exact setting) or `page`. With `tool`: an extra "
-                    + "tool's id, to edit it (e.g. to fill in an API key). `imp` is another Imp's name for its pages (default: you). "
-                    + "Pages and their settings: " + SettingsPlace.overview + ".",
-                inputSchema: ["type": "object",
-                              "properties": ["setting": ["type": "string", "enum": .array(SettingID.allCases.map { .string($0.rawValue) })],
-                                             "page": ["type": "string", "enum": .array(SettingsPlace.allCases.map { .string($0.rawValue) })],
-                                             "tool": ["type": "string"],
-                                             "imp": ["type": "string"]],
-                              "anyOf": [["required": ["setting"]], ["required": ["page"]], ["required": ["tool"]]]]))
         }
-        if groups.contains(.troupe), !imps.isEmpty || !pocket.isEmpty {
-            specs.append(messageSpec(imps: imps, pocket: pocket, talk: talk, conversation: conversation,
-                                      profiles: profiles, waiting: waiting))
-            specs.append(openFileSpec)
+        if groups.contains(.senses) {
+            specs.append(ToolSpec(
+                name: status,
+                description: "How the Mac is right now: battery and charger, processor load, heat, memory, network, the app "
+                    + "in front and the apps that are open, time away from the keyboard, the time, the screen, and the page in the browser.",
+                inputSchema: ["type": "object", "properties": [:]]))
+            if browser {
+                specs.append(ToolSpec(
+                    name: page,
+                    description: "The page in the browser's active tab: its address and title, and with `read` its visible text.",
+                    inputSchema: ["type": "object", "properties": ["read": ["type": "boolean"]]]))
+            }
         }
         return specs
     }

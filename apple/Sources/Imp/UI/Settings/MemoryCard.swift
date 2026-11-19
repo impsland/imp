@@ -124,7 +124,7 @@ struct MemoryCard: View {
             }
         }) {
             if chats.isEmpty {
-                StatusText(text: "No chats yet.").padding(.horizontal, Spacing.small)
+                EmptyState("memory.empty", symbol: "bubble.left.and.bubble.right")
             } else {
                 VStack(spacing: Spacing.snug) {
                     let shown = showsAll ? chats : Array(chats.prefix(Self.shortList))

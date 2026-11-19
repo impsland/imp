@@ -100,14 +100,14 @@ extension BrainTests {
 
     @Test func computerControlIsOptIn() throws {
         var p = ImpProfile.imp
-        #expect(!p.uses(.computer) && !p.ownTools.contains(.computer) && p.uses(.body))
+        #expect(!p.uses(.computer) && !p.ownTools.contains(.computer) && p.uses(.personality))
         p.setUses(.computer, true)
         #expect(p.uses(.computer) && p.ownTools.contains(.computer))
         let back = try JSONDecoder().decode(ImpProfile.self, from: JSONEncoder().encode(p))
         #expect(back.uses(.computer) && back == p)
-        p.setUses(.setup, false)
-        #expect(p.uses(.computer) && !p.uses(.setup))
-        p.setUses(.computer, false); p.setUses(.setup, true)
+        p.setUses(.triggers, false)
+        #expect(p.uses(.computer) && !p.uses(.triggers))
+        p.setUses(.computer, false); p.setUses(.triggers, true)
         #expect(p == ImpProfile.imp)
     }
 

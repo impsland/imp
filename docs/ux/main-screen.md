@@ -36,22 +36,23 @@ The window background is the canvas. Nothing is drawn around it.
 
 ## Background
 
-The user can change the background in Settings, App. The canvas shows the chosen background. Settings screens, sheets and the Imp's settings always sit on the plain app surface, whatever the canvas shows, so text is always easy to read. The choices:
+The canvas (the room on the iPhone) shows one HTML document behind the Imps. There is no setting for it: you ask any Imp ("float some clouds by", "a starry sky", "a poker room with a seat for each of us") and it writes the page with `imp_set_background`. `imp_show_background` gives it the page that is there now, to change rather than start over. The default is one plain colour, the app surface in light and in dark (`RoomBackground.defaultHTML`), so there is always a page to start from. File › Reset Background (`menu.canvas.reset_background`) puts it back.
 
-| Choice | What it does |
+The page is drawn full-window under every Imp in a web view of its own (`HTMLBackdrop`). A web view is a process of its own (tens of megabytes), and a moving page keeps a core busy, so it lives only while it has to:
+
+| Page | What runs |
 | --- | --- |
-| Theme | The flat app surface. This is the default. |
-| Colour | One colour. |
-| Picture | One picture that fills the window. |
-| Tile | A seamless pattern that repeats. |
+| The plain one | Nothing: the app surface under it already looks the same. |
+| A still one (a starry sky with no motion) | It is loaded once, kept as a picture, and its web view closes. It is drawn again only for a new page, a new window size (once the resize stops) or a change between light and dark. |
+| A moving one (clouds drifting) | Its web view plays it while the canvas is on screen and the app can be seen. On a settings screen, in a hidden window, in the background on the iPhone, in Low Power Mode or with Reduce Motion, the last picture stands still in its place and the web view closes. Its scripts get 30 frames a second. |
 
-Picture and Tile come from a file the user picks. The app copies the file into its own storage, so moving the original does not break the background. A file that cannot be used shows `background.picture_failed` and keeps the old background.
+A page counts as moving when it has CSS animations or transitions, or when two pictures of it taken 0.7 seconds apart differ. It is never clicked, scrolled or focused, VoiceOver skips it, it keeps nothing between launches, opens no windows, cannot navigate away from itself and plays no sound by itself. It may load pictures and fonts from the web. It may be at most 256 KB. The plain surface shows until it has drawn. Settings screens, sheets and the Imp's settings sit on the plain app surface whatever the page shows, so text is always easy to read.
 
-![A picture as the canvas](./images/canvas-picture.png)
+The background is the device's: the Mac's Imps share the canvas on the Mac, and the iPhone's Imps share the room on the iPhone. Both tools are in each Imp's Look section (behind the wand), so an Imp that should not change it can have them switched off.
 
 ## Efficiency
 
-Nothing on the canvas animates for decoration. There are no floating sparks and no setting for them. Loops pause when the window is hidden, when an Imp is still, with Reduce Motion and in Low Power Mode.
+Nothing on the canvas animates for decoration unless an Imp writes a background that does. The web view honours Reduce Motion (`prefers-reduced-motion`) and is throttled while the window is hidden. Loops pause when the window is hidden, when an Imp is still, with Reduce Motion and in Low Power Mode.
 
 ## Menus
 
@@ -116,14 +117,6 @@ The menu bar extra opens a compact panel on the app surface. At the top are four
 <!-- strings: home menu background -->
 | Key | English |
 | --- | --- |
-| `background.choose_colour` | Choose a colour… |
-| `background.choose_picture` | Choose a picture… |
-| `background.colour` | Colour |
-| `background.picture` | Picture |
-| `background.picture_failed` | That picture could not be used. Pick another one. |
-| `background.theme` | Theme |
-| `background.tile` | Tile |
-| `background.tile_hint` | A tile repeats to fill the window. Pick a seamless pattern. |
 | `home.canvas.hint` | Imps move around here. Press Tab to go from one Imp to the next. |
 | `home.canvas.label` | The Imps' home |
 | `home.corner.devices` | Devices |
@@ -153,9 +146,9 @@ The menu bar extra opens a compact panel on the app surface. At the top are four
 | `menu.bar.state.hidden` | Hidden |
 | `menu.bar.state.home` | At home |
 | `menu.bar.state.out` | Out |
-| `menu.canvas.background` | Background |
 | `menu.canvas.devices` | Devices |
 | `menu.canvas.new_imp` | New Imp |
+| `menu.canvas.reset_background` | Reset Background |
 | `menu.canvas.settings` | Settings |
 | `menu.canvas.show_hidden` | Hidden ({count}) |
 | `menu.imp.call_home` | Call Home |

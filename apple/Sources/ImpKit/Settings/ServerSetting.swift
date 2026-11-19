@@ -45,7 +45,6 @@ public struct ServerSetting: Equatable, Sendable {
     /// The address in use, or nil (off, or not an address).
     public var inUse: String? {
         return HopServer(text)?.address
-        HopServer(text)?.address
     }
 
     public var status: Status {

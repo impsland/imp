@@ -13,8 +13,8 @@ packages:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "3.0.0"
-    CURRENT_PROJECT_VERSION: "29"
+    MARKETING_VERSION: "3.1.0"
+    CURRENT_PROJECT_VERSION: "30"
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
     # Xcode runs on Apple silicon only, so the Simulator is arm64 too, like the core built for it.
@@ -34,6 +34,7 @@ targets:
           - Face.swift
           - Geometry.swift
           - Horn.swift
+          - ImpPen.swift
           - ImpRenderer.swift
           - Motion.swift
           - Palette.swift

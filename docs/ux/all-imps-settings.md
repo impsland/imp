@@ -30,7 +30,7 @@ Nine sections, each with a one-word name and a few cards of icon rows. A card ha
 
 | Page | Cards and rows |
 | --- | --- |
-| App | Look: Appearance (Auto, Light, Dark), On colour (White, Black) and Background (Theme, Colour, Picture, Tile). System: start at login, language. Window: the size of the home window (Small, Medium, Large, Full). |
+| App | Look: Appearance (Auto, Light, Dark), On colour (White, Black). System: start at login, language. Window: the size of the home window (Small, Medium, Large, Full). |
 | Bubble | Look: Background (Solid or Translucent, and the amount when translucent), with a live preview over a light, a dark and a picture swatch. Showing: hide after, text box lines, chat size. Media: autoplay, audio look. |
 | Talking | Listening: language. Between Imps: talk in, threads, waiting, window. |
 | Brains | Services: the list of Brains and the default for new Imps. Keys: the keychain. Requests: wait, retries, first wait, longer waits. |
@@ -104,7 +104,11 @@ A Brain service is one generic list entry: a name, an address, a key and a model
 
 ## Animations
 
-A larger set is in The Den. Imp has no animations of its own to start with: every one is made by the person or an Imp, or comes in a kit. ![Animations](./images/all-imps-animations.png)
+A larger set is in The Den. Imp has no animations of its own to start with: every one is made by the person or an Imp, or comes in a kit. Each row has **Export as Sticker…** (`sticker.export`), which saves it as a `.tgs` animated sticker (see [Stickers](#stickers)). ![Animations](./images/all-imps-animations.png)
+
+### Stickers
+
+A sticker is the Imp acting the animation out, recorded from the same drawing code as the screen (`ImpPen`, `VectorPen`) and written as Lottie shape layers (`LottieWriter`), gzipped: 512 × 512, 60 frames a second, at most 3 seconds and 64 KB, with no pictures, expressions, masks, mattes, effects, text or repeaters. SF Symbols over the head become vector shapes. Each part of the Imp (an eye, a horn, a note) is its own track, keyframed only where a straight line between frames would not do. To fit 64 KB the keyframes grow sparser, step by step. A longer animation plays up to twice as fast, then stops at 3 seconds, and the save panel says so (`sticker.note.*`). One that does not fit even then says why (`sticker.error.too_big`).
 
 The page is simple: the search, the made ones with New animation and Find more (when a Den is set up) in their card's header. Without a Den, a last line says so beside the button that sets one up. The animation editor sheet stays. Made animations are shared by every Imp unless they are one Imp's own: the page shows the shared ones and the selected Imp's own, each own one tagged with its Imp. Saving a shared animation for one Imp makes that Imp's version and leaves the shared one (see [Scope](/ux/imp-settings#scope-this-imp-or-every-imp)). Each row shows what starts the animation as small symbols, not words: lit when that trigger is live, dim when it is off (the words are the hover help and the VoiceOver label). An animation no trigger plays shows a bolt button that opens a new trigger with a Play step for it ("To play it on an event, add a trigger"). A gesture with no trigger starts nothing: the Imp just shows its mood. To play an animation at a gesture, add a trigger such as "poke → play Wiggle".
 
@@ -150,7 +154,7 @@ Imp ships its service presets as data, never as literals in code, and reads each
 
 ## App
 
-Two cards. **Look** holds Appearance (Auto, Light, Dark), On colour and Background. **System** holds start at login and language. What a double click on an Imp does is no longer a setting here: it is a Triggers entry ("2 clicks on the Imp"). Backup and Reset are on their own page. The canvas has no floating decoration and no setting for it.
+Two cards. **Look** holds Appearance (Auto, Light, Dark) and On colour. **System** holds start at login and language. What a double click on an Imp does is no longer a setting here: it is a Triggers entry ("2 clicks on the Imp"). Backup and Reset are on their own page. The canvas has no floating decoration and no setting for it.
 
 **Window** is one row, Size, with four segmented buttons that have symbols: Small (560 by 520 pt), Medium (780 by 640, the default and the size the window first opens at), Large (1,040 by 780) and Full (the whole visible screen). Choosing one resizes the home window at once, animated, keeping its top left corner where it is and moving it just enough to stay on the screen. No size is larger than the screen's visible area. Dragging the edges still works, and the row keeps showing the last size chosen. The smallest the window can be (440 by 480 pt) is a fixed design value, not a setting, and lies below the narrow breakpoint. Every screen in the window adapts to any size above it: nothing has a fixed layout size. The pure logic is `WindowSizing`.
 
@@ -158,7 +162,7 @@ Where the layout changes is a design token: below `narrowWindowPoints` (520 pt) 
 
 On colour is what is drawn on coloured controls (a filled button, the chosen segment, a switch that is on): White or Black, for every Imp and every screen. White is the default, because black is hard to see on most colours. The choice is always honoured. When it would not read on an Imp's colour (white on yellow or green, black on navy), the control shows the nearest deeper or lighter shade of that colour on which it has 4.5 to 1. The Imp itself keeps its colour. See [Accessibility](/ux/accessibility).
 
-Background is one segmented choice with a symbol on each kind (Theme, Colour, Picture, Tile). The symbols show when the row is narrow. Theme is the flat app surface. The action that finishes a choice shows right under it, only for the kinds that need it: a swatch and "Choose a colour…" for Colour, "Choose a picture…" for Picture and Tile. It was a dropdown that hid the follow-up step.
+There is no Background setting. The canvas behind the Imps is an HTML page the Imps write when you ask them (see [Main screen](/ux/main-screen#background)). File › Reset Background puts the plain one back. Rejected: the Theme, Colour, Picture and Tile choice. It could only show what you already had as a file, while an Imp can draw clouds, a starry sky or a poker table, and animate it.
 
 ## iPhone
 
@@ -182,7 +186,7 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 
 ## Choices, help and rows
 
-- A few short options seen at a glance are a segmented control with symbols (Appearance, Background, audio look). Sentence-like options are a dropdown, so they are never cramped. The Den and Hop server choice is a row of buttons instead (see Presets for The Den and The Hop). Long or open lists are a dropdown (language, models, locales, token sizes).
+- A few short options seen at a glance are a segmented control with symbols (Appearance, audio look). Sentence-like options are a dropdown, so they are never cramped. The Den and Hop server choice is a row of buttons instead (see Presets for The Den and The Hop). Long or open lists are a dropdown (language, models, locales, token sizes).
 - No paragraph of help is shown on a page. Every setting has an icon and a "?" help. It opens a compact popover as wide as its words, with one or two short sentences.
 - Controls adapt on narrow widths. A row moves its control under its title. A segmented choice falls back from words to icons to a menu.
 - A field and an action that works on its value are one control: the action sits inside the field at its trailing edge (`fieldAction`, see [Components](/design/components)), never as a button beside it. A page's own action (New, Add) goes in the header of its card or list, never on a field's line.
@@ -202,7 +206,7 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 
 ## Words
 
-<!-- strings: settings brains servers animations voice privacy app devices sharing -->
+<!-- strings: settings brains servers animations voice privacy app devices sharing sticker -->
 | Key | English |
 | --- | --- |
 | `animations.find` | Browse |
@@ -225,12 +229,12 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `app.window.title` | Window |
 | `brains.add` | Add |
 | `brains.default` | Default |
-| `brains.empty` | No Brains yet. Add a model on this computer or a service with your key. |
+| `brains.empty` | No Brains yet. |
 | `brains.local` | A model on this computer |
 | `brains.used_by` | one: Used by {count} Imp / other: Used by {count} Imps |
 | `brains.with_key` | A service with your key |
 | `devices.copy_link.help` | For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while. |
-| `devices.empty` | No devices yet. Link an iPhone or another Mac and your Imps can visit it. |
+| `devices.empty` | No devices yet. |
 | `devices.list.info` | Devices linked with this one. Mine lets a device act for you. |
 | `devices.reach.away` | Away |
 | `devices.reach.direct` | Direct, on the local network |
@@ -390,6 +394,13 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `sharing.gallery` | Gallery |
 | `sharing.gallery.info` | Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp. |
 | `sharing.import` | Import |
+| `sticker.error.empty` | The animation is empty. |
+| `sticker.error.title` | Couldn’t make the sticker |
+| `sticker.error.too_big` | It is still {kb} KB when simplified. A sticker may be 64 KB: try fewer beats or simpler moves. |
+| `sticker.export` | Export as Sticker… |
+| `sticker.note` | An animated sticker (.tgs): 512 × 512, 60 frames a second, vector only. |
+| `sticker.note.faster` | It plays {speed}× faster to fit 3 seconds. |
+| `sticker.note.trimmed` | It stops at 3 seconds. |
 | `voice.autoplay` | Autoplay |
 | `voice.autoplay_note` | A voice an Imp marks to play starts by itself in a new reply. Otherwise you tap it. |
 | `voice.listen` | Listen |

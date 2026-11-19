@@ -59,7 +59,7 @@ These numbers are shared by every platform.
 | `peekIntervalMaxSeconds` | 90 | The longest wait before a hidden Imp peeks out. |
 | `peekShowSeconds` | 1.5 | How long a peeking Imp stays visible. |
 | `peekQuietSeconds` | 10 | A peek waits until the user has not typed for this long. |
-| `narrowWindowPoints` | 520 | Below this width Imp Settings shows its plain list under the Imp. |
+| `narrowWindowPoints` | 520 | Below this width a settings rail shows its icons alone. |
 | `dragStripPoints` | 28 | The height of the strip along the top of a desktop window that drags the window. |
 | `localProbeTimeoutSeconds` | 2 | How long the first run waits for one local model server to answer before it moves to the next. |
 | `modelListTimeoutSeconds` | 8 | How long the first run waits for a service to list its models before it says so and lets the model be typed. |

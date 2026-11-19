@@ -14,13 +14,13 @@ enum SoftLight {
     }
 
     /// A round glow fully faded at `radius`. `squash` flattens it vertically (a shadow on the floor).
-    static func glow(_ ctx: inout GraphicsContext, at center: CGPoint, radius r: CGFloat, color: Color, opacity: Double,
+    static func glow<P: ImpPen>(_ ctx: inout P, at center: CGPoint, radius r: CGFloat, color: Color, opacity: Double,
                      squash: CGFloat = 1) {
         guard r > 0, opacity > 0 else { return }
         var g = ctx
-        g.translateBy(x: center.x, y: center.y)
-        g.scaleBy(x: 1, y: squash)
-        g.fill(Path(ellipseIn: CGRect(x: -r, y: -r, width: 2 * r, height: 2 * r)),
-               with: .radialGradient(falloff(color, opacity), center: .zero, startRadius: 0, endRadius: r))
+        g.penTranslate(center.x, center.y)
+        g.penScale(1, squash)
+        g.penFill(Path(ellipseIn: CGRect(x: -r, y: -r, width: 2 * r, height: 2 * r)),
+               .radial(falloff(color, opacity), center: .zero, radius: r))
     }
 }

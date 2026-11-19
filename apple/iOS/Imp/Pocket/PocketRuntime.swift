@@ -301,7 +301,8 @@ final class PocketRuntime {
         }, animations: Self.animations, play: nil, profiles: profiles, later: { [weak self] to, text in
             guard let self else { throw CancellationError() }
             return try await self.deliverLater(text, to: to, from: id, among: named, depth: depth)
-        })
+        }, background: PocketTalk.Background(read: { await PhoneBackground.shared.html },
+                                             write: { html in await PhoneBackground.shared.set(html) }))
     }
 
     /// The Imps `id` can message: those of this iPhone, the ones on the screen its body is on, the ones

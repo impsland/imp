@@ -35,13 +35,7 @@ struct PhoneDevicesSection: View {
         } content: {
             if hub.node.status.localNetworkBlocked { LocalNetworkNotice(blocked: true) }
             if hub.links.isEmpty {
-                VStack(spacing: Spacing.small) {
-                    Image(systemName: "laptopcomputer.and.iphone").font(.icon(.large)).foregroundStyle(Tone.muted)
-                    Text("devices.empty").font(Typeface.body).foregroundStyle(Tone.muted)
-                        .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, Spacing.large)
+                EmptyState("devices.empty", symbol: "laptopcomputer.and.iphone")
             } else {
                 ForEach(hub.links) { link in deviceRow(link.device) }
             }

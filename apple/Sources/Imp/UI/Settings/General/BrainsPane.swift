@@ -16,7 +16,7 @@ struct BrainsPane: View {
                         .buttonStyle(.imp(.secondary, small: true))
                 } content: {
                     if model.prefs.ai.services.isEmpty {
-                        StatusText(text: "brains.empty")
+                        EmptyState("brains.empty", symbol: "lightbulb")
                     }
                 }
                 .settingAnchor(.brainsServices)

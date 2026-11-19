@@ -4,7 +4,7 @@ import Foundation
 /// a tool or a link uses.
 public enum SettingsPlace: String, CaseIterable, Sendable {
     case app, bubble, talking, brains, devices, sharing, animations, privacy, backup
-    case brain, personality, look, tools, triggers, moves
+    case brain, personality, look, moves, triggers, tools, computer
 
     /// The app-wide group this page is, if it is one.
     public var group: SettingsGroup? { SettingsGroup(rawValue: rawValue) }
@@ -30,6 +30,7 @@ public enum SettingsPlace: String, CaseIterable, Sendable {
         case .tools: "wrench.and.screwdriver.fill"
         case .triggers: "bolt.fill"
         case .moves: "figure.dance"
+        case .computer: "desktopcomputer"
         default: group?.symbol ?? "gearshape"
         }
     }
@@ -38,7 +39,7 @@ public enum SettingsPlace: String, CaseIterable, Sendable {
     public var onPhone: Bool {
         switch self {
         case .app, .talking, .brains, .devices, .sharing, .animations, .brain, .personality, .look, .tools: true
-        case .bubble, .privacy, .backup, .triggers, .moves: false
+        case .bubble, .privacy, .backup, .triggers, .moves, .computer: false
         }
     }
 
@@ -49,7 +50,7 @@ public enum SettingsPlace: String, CaseIterable, Sendable {
 /// Every setting on a settings screen. The raw value is its stable name for tools and links.
 public enum SettingID: String, CaseIterable, Sendable {
     // App
-    case appAppearance = "app_appearance", appControlInk = "app_control_ink", appBackground = "app_background"
+    case appAppearance = "app_appearance", appControlInk = "app_control_ink"
     case appLogin = "app_login", appLanguage = "app_language", appWindowSize = "app_window_size"
     // Bubble
     case bubbleHideAfter = "bubble_hide_after", bubbleLines = "bubble_lines", bubbleSize = "bubble_size"
@@ -80,12 +81,14 @@ public enum SettingID: String, CaseIterable, Sendable {
     case personalityRules = "personality_rules"
     // Per Imp: look
     case lookColour = "look_colour", lookSize = "look_size", lookCharacter = "look_character"
-    // Per Imp: tools
-    case toolsBuiltIn = "tools_built_in", toolsCommands = "tools_commands", toolsBrowser = "tools_browser", toolsExtra = "tools_extra"
-    // Per Imp: triggers
-    case triggersList = "triggers_list"
     // Per Imp: moves
     case movesOwn = "moves_own"
+    // Per Imp: triggers
+    case triggersList = "triggers_list"
+    // Per Imp: tools
+    case toolsServers = "tools_servers"
+    // Per Imp: computer
+    case computerCommands = "computer_commands", computerBrowser = "computer_browser", computerControl = "computer_control"
 
     /// Page, the key of the title on screen, and what the model is told. One row each.
     private struct Entry {
@@ -96,7 +99,6 @@ public enum SettingID: String, CaseIterable, Sendable {
         switch self {
         case .appAppearance: Entry(page: .app, title: "settings.app.appearance.title", hint: "light or dark mode, theme, colours of the app")
         case .appControlInk: Entry(page: .app, title: "settings.app.control_ink.title", hint: "white or black text, icons and switches on coloured buttons and controls")
-        case .appBackground: Entry(page: .app, title: "menu.canvas.background", hint: "the desktop home's backdrop picture or colour")
         case .appLogin: Entry(page: .app, title: "app.login", hint: "start Imp when the Mac starts, launch at login")
         case .appLanguage: Entry(page: .app, title: "app.language", hint: "the language the app is shown in")
         case .appWindowSize: Entry(page: .app, title: "app.window.size", hint: "the size of the app's window, small, medium, large, full screen")
@@ -135,18 +137,18 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .brainNewChat: Entry(page: .brain, title: "memory.new_chat.title", hint: "the size at which a long chat gets a suggestion to recap or start a new chat")
         case .brainCurrentChat: Entry(page: .brain, title: "Current chat", hint: "let the Imp see the chat it is in")
         case .personalityName: Entry(page: .personality, title: "personality.name", hint: "the Imp's name and what it calls you")
-        case .personalityAbout: Entry(page: .personality, title: "personality.about", hint: "what the Imp is good at, its description for the other Imps")
+        case .personalityAbout: Entry(page: .personality, title: "personality.about", hint: "the Imp's short description, what it is good at, for the other Imps")
         case .personalityPersona: Entry(page: .personality, title: "personality.persona", hint: "who the Imp is, its character description and instructions")
         case .personalityRules: Entry(page: .personality, title: "Reply rules", hint: "how long and in what style it answers")
         case .lookColour: Entry(page: .look, title: "look.colour", hint: "the Imp's colour or hue")
         case .lookSize: Entry(page: .look, title: "look.size", hint: "how big the Imp is")
         case .lookCharacter: Entry(page: .look, title: "look.character", hint: "the Imp's traits: horns, tail, eyes, ears and other features")
-        case .toolsBuiltIn: Entry(page: .tools, title: "tools.built_in", hint: "which built-in abilities the Imp may use")
-        case .toolsCommands: Entry(page: .tools, title: "Commands", hint: "let the Imp run commands on the Mac, shell, terminal")
-        case .toolsBrowser: Entry(page: .tools, title: "Browser", hint: "let the Imp use the web browser, browser extension")
-        case .toolsExtra: Entry(page: .tools, title: "tools.mcp", hint: "extra tools (MCP servers) and their keys or variables")
+        case .movesOwn: Entry(page: .moves, title: "moves.animations", hint: "animations made for just this Imp, and what the Imp may do with animations by itself")
         case .triggersList: Entry(page: .triggers, title: "triggers.title", hint: "things the Imp does by itself when something happens or on a shortcut")
-        case .movesOwn: Entry(page: .moves, title: "Its own animations", hint: "animations made for just this Imp")
+        case .toolsServers: Entry(page: .tools, title: "tools.title", hint: "MCP servers the Imp may use, and their keys or variables")
+        case .computerCommands: Entry(page: .computer, title: "Commands", hint: "let the Imp run commands on the Mac, shell, terminal")
+        case .computerBrowser: Entry(page: .computer, title: "Browser", hint: "the browser extension, whether it is connected")
+        case .computerControl: Entry(page: .computer, title: "Computer control", hint: "let the Imp see and operate other apps, and the permissions it needs")
         }
     }
 
