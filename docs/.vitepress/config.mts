@@ -86,6 +86,7 @@ export default defineConfig({
           { text: 'Imps', link: '/ux/imps' },
           { text: 'Imp Settings', link: '/ux/imp-settings' },
           { text: 'All Imps settings', link: '/ux/all-imps-settings' },
+          { text: 'Devices', link: '/ux/devices' },
           { text: 'First run', link: '/ux/first-run' },
           { text: 'States', link: '/ux/states' },
           { text: 'Motion', link: '/ux/motion' },

@@ -1,0 +1,339 @@
+{
+  "devices.state.connected": {
+    "note": "State word of a device on the Devices map.",
+    "en": "Connected",
+    "es": "Conectado",
+    "zh-Hans": "已连接"
+  },
+  "devices.state.connecting": {
+    "note": "State word of a device on the Devices map.",
+    "en": "Connecting",
+    "es": "Conectando",
+    "zh-Hans": "正在连接"
+  },
+  "devices.state.offline": {
+    "note": "State word of a linked device that cannot be reached now.",
+    "en": "Away",
+    "es": "Ausente",
+    "zh-Hans": "不在线"
+  },
+  "devices.node.this_mac_label": {
+    "note": "Screen reader name of this Mac's node.",
+    "en": "{name}, this Mac",
+    "es": "{name}, este Mac",
+    "zh-Hans": "{name}，这台 Mac",
+    "args": {
+      "name": "string"
+    }
+  },
+  "devices.node.label_empty": {
+    "note": "Screen reader label of a device on the map without Imps.",
+    "en": "{name}, {state}",
+    "es": "{name}, {state}",
+    "zh-Hans": "{name}，{state}",
+    "args": {
+      "name": "string",
+      "state": "string"
+    }
+  },
+  "devices.node.label": {
+    "note": "Screen reader label of a device on the map: its state and the Imps in it.",
+    "en": "{name}, {state}. Imps: {imps}",
+    "es": "{name}, {state}. Imps: {imps}",
+    "zh-Hans": "{name}，{state}。Imp：{imps}",
+    "args": {
+      "name": "string",
+      "state": "string",
+      "imps": "string"
+    }
+  },
+  "devices.map.summary": {
+    "note": "Screen reader summary of the Devices map.",
+    "en": "Map of your devices: {devices} linked, {ours} Imps of this Mac, {visitors} Imps of other devices.",
+    "es": "Mapa de tus dispositivos: {devices} vinculados, {ours} Imps de este Mac, {visitors} Imps de otros dispositivos.",
+    "zh-Hans": "设备地图：已链接 {devices} 台设备，这台 Mac 的 Imp {ours} 个，其他设备的 Imp {visitors} 个。",
+    "args": {
+      "devices": "string",
+      "ours": "string",
+      "visitors": "string"
+    }
+  },
+  "devices.route.local_at": {
+    "note": "How a channel goes: the local network, and the address.",
+    "en": "On the local network at {address}",
+    "es": "En la red local en {address}",
+    "zh-Hans": "通过本地网络，地址 {address}",
+    "args": {
+      "address": "string"
+    }
+  },
+  "devices.route.local": {
+    "note": "How a channel goes: the local network.",
+    "en": "On the local network",
+    "es": "En la red local",
+    "zh-Hans": "通过本地网络"
+  },
+  "devices.route.hop_at": {
+    "note": "How a channel goes: through the Hop, and its address.",
+    "en": "Through the Hop at {address}",
+    "es": "A través del Hop en {address}",
+    "zh-Hans": "通过 Hop，地址 {address}",
+    "args": {
+      "address": "string"
+    }
+  },
+  "devices.route.hop": {
+    "note": "How a channel goes: through the Hop.",
+    "en": "Through the Hop",
+    "es": "A través del Hop",
+    "zh-Hans": "通过 Hop"
+  },
+  "devices.route.tag_local": {
+    "note": "Small label on a line of the map that goes over the local network.",
+    "en": "Wi-Fi",
+    "es": "Wi-Fi",
+    "zh-Hans": "Wi-Fi"
+  },
+  "devices.unknown_device": {
+    "note": "A device this Mac is not linked with.",
+    "en": "a device not linked with this Mac",
+    "es": "un dispositivo no vinculado con este Mac",
+    "zh-Hans": "未与这台 Mac 链接的设备"
+  },
+  "devices.this_mac_badge": {
+    "note": "Badge on the node of this Mac on the Devices map.",
+    "en": "This Mac",
+    "es": "Este Mac",
+    "zh-Hans": "这台 Mac"
+  },
+  "devices.edge.label": {
+    "note": "Screen reader label of a line between two devices.",
+    "en": "{from} to {to}. {route}. {state}",
+    "es": "{from} con {to}. {route}. {state}",
+    "zh-Hans": "{from} 到 {to}。{route}。{state}",
+    "args": {
+      "from": "string",
+      "to": "string",
+      "route": "string",
+      "state": "string"
+    }
+  },
+  "devices.tether.label": {
+    "note": "Screen reader label of the line from an Imp to the device it thinks on.",
+    "en": "{imp} is on {node} and thinks on {home}",
+    "es": "{imp} está en {node} y piensa en {home}",
+    "zh-Hans": "{imp} 在 {node} 上，在 {home} 上思考",
+    "args": {
+      "imp": "string",
+      "node": "string",
+      "home": "string"
+    }
+  },
+  "devices.chip.label_ours": {
+    "note": "Screen reader label of one of this Mac's Imps on the map.",
+    "en": "{name}, an Imp of this Mac, on {node}",
+    "es": "{name}, un Imp de este Mac, en {node}",
+    "zh-Hans": "{name}，这台 Mac 的 Imp，在 {node} 上",
+    "args": {
+      "name": "string",
+      "node": "string"
+    }
+  },
+  "devices.chip.label_visitor": {
+    "note": "Screen reader label of another device's Imp on the map.",
+    "en": "{name}, an Imp from another device, on {node}",
+    "es": "{name}, un Imp de otro dispositivo, en {node}",
+    "zh-Hans": "{name}，来自其他设备的 Imp，在 {node} 上",
+    "args": {
+      "name": "string",
+      "node": "string"
+    }
+  },
+  "devices.inspector.reach": {
+    "note": "Inspector card: how a device is reached.",
+    "en": "How it is reached",
+    "es": "Cómo se llega",
+    "zh-Hans": "连接方式"
+  },
+  "devices.inspector.holds": {
+    "note": "Inspector card: this Mac's Imps a device holds.",
+    "en": "Imps of this Mac it holds",
+    "es": "Imps de este Mac que tiene",
+    "zh-Hans": "它持有的这台 Mac 的 Imp"
+  },
+  "devices.inspector.through_hop": {
+    "note": "Inspector card of the Hop: devices reached through it.",
+    "en": "Reached through it",
+    "es": "Alcanzados por él",
+    "zh-Hans": "通过它连接的设备"
+  },
+  "devices.reach.none": {
+    "note": "This Mac cannot be reached by other devices now.",
+    "en": "Not reachable",
+    "es": "No accesible",
+    "zh-Hans": "无法访问"
+  },
+  "devices.reach.last_seen": {
+    "note": "Label of the last known address of a device.",
+    "en": "Last known address",
+    "es": "Última dirección conocida",
+    "zh-Hans": "最近已知地址"
+  },
+  "devices.forget.one": {
+    "note": "Button: forget the selected device.",
+    "en": "Forget this device…",
+    "es": "Olvidar este dispositivo…",
+    "zh-Hans": "忘记此设备…"
+  },
+  "devices.call_all_home": {
+    "note": "Button: call every Imp a device holds home.",
+    "en": "Call all home",
+    "es": "Traerlos a todos",
+    "zh-Hans": "全部叫回家"
+  },
+  "devices.tools.title": {
+    "note": "Inspector card: the tools Imps may use for a device.",
+    "en": "Tools Imps may use from this device",
+    "es": "Herramientas que los Imps pueden usar desde este dispositivo",
+    "zh-Hans": "Imp 可为此设备使用的工具"
+  },
+  "devices.tools.info": {
+    "note": "Help of the per-device tool limits.",
+    "en": "When this device asks one of your Imps, the Imp can use the tools that are on here. Switch off what it should not touch for this device.",
+    "es": "Cuando este dispositivo le pide algo a uno de tus Imps, el Imp puede usar las herramientas activadas aquí. Desactiva lo que no debe tocar para este dispositivo.",
+    "zh-Hans": "当此设备向你的某个 Imp 提问时，Imp 可以使用这里开启的工具。关掉不希望它为此设备使用的工具。"
+  },
+  "devices.tools.not_mine": {
+    "note": "Shown when a device is not Mine.",
+    "en": "Imps answer this device without tools. Turn on Mine to choose what they may use.",
+    "es": "Los Imps responden a este dispositivo sin herramientas. Activa Mío para elegir lo que pueden usar.",
+    "zh-Hans": "Imp 回答此设备时不使用工具。打开“我的”后可选择它们能用什么。"
+  },
+  "devices.tools.commands": {
+    "note": "Name of the tool that runs commands.",
+    "en": "Commands",
+    "es": "Comandos",
+    "zh-Hans": "命令"
+  },
+  "devices.imp.settings": {
+    "note": "Button: open an Imp's settings.",
+    "en": "Its settings",
+    "es": "Sus ajustes",
+    "zh-Hans": "它的设置"
+  },
+  "devices.imp.talks": {
+    "note": "Inspector card: the Imps an Imp can message.",
+    "en": "Can message",
+    "es": "Puede escribir a",
+    "zh-Hans": "可以给谁发消息"
+  },
+  "devices.imp.talks.info": {
+    "note": "Help: who an Imp can message. Selecting an Imp on the map lights them.",
+    "en": "The Imps this one can message. They are lit on the map while it is selected.",
+    "es": "Los Imps a los que este puede escribir. Se iluminan en el mapa mientras está seleccionado.",
+    "zh-Hans": "这个 Imp 可以给哪些 Imp 发消息。选中它时，它们会在地图上高亮。"
+  },
+  "devices.imp.tools": {
+    "note": "Inspector card: an Imp's tools.",
+    "en": "Its tools",
+    "es": "Sus herramientas",
+    "zh-Hans": "它的工具"
+  },
+  "devices.visitor.send_home": {
+    "note": "Button: send a visiting Imp home.",
+    "en": "Send home",
+    "es": "Enviar a casa",
+    "zh-Hans": "送回家"
+  },
+  "devices.channel.title": {
+    "note": "Title of a line between two devices.",
+    "en": "{from} and {to}",
+    "es": "{from} y {to}",
+    "zh-Hans": "{from} 与 {to}",
+    "args": {
+      "from": "string",
+      "to": "string"
+    }
+  },
+  "devices.tether.tools": {
+    "note": "Inspector card: the tools an Imp may use on the device it is on.",
+    "en": "Tools it may use there",
+    "es": "Herramientas que puede usar allí",
+    "zh-Hans": "它在那里可用的工具"
+  },
+  "devices.tether.tools.info": {
+    "note": "Help: the tools are the device's limits.",
+    "en": "What the Imp may use while this device asks it. Change it on the device.",
+    "es": "Lo que el Imp puede usar cuando este dispositivo le pide algo. Se cambia en el dispositivo.",
+    "zh-Hans": "此设备向 Imp 提问时，Imp 可使用的工具。请在该设备上修改。"
+  },
+  "home.corner.devices.away": {
+    "note": "Screen reader value of the Devices corner button when a linked device cannot be reached. A warning mark shows on the button.",
+    "en": "a linked device is away",
+    "es": "un dispositivo vinculado está ausente",
+    "zh-Hans": "有已链接的设备不在线"
+  },
+  "devices.hop.pill": {
+    "note": "The Hop pill under the code in the Link sheet when a Hop is set. {host} is its address.",
+    "en": "Hop: {host}",
+    "es": "Hop: {host}",
+    "zh-Hans": "Hop：{host}",
+    "args": {
+      "host": "string"
+    }
+  },
+  "devices.hop.add": {
+    "note": "The Hop pill under the code in the Link sheet when no Hop is set; opens its settings.",
+    "en": "Add a Hop",
+    "es": "Añadir un Hop",
+    "zh-Hans": "添加 Hop"
+  },
+  "devices.place.body": {
+    "note": "Where an Imp's body is, as a tag on a device row.",
+    "en": "On",
+    "es": "En",
+    "zh-Hans": "在"
+  },
+  "devices.place.mind": {
+    "note": "Where an Imp thinks, as a tag on a device row.",
+    "en": "Thinks on",
+    "es": "Piensa en",
+    "zh-Hans": "思考于"
+  },
+  "devices.tools.toggle": {
+    "note": "Tooltip of the button that opens or closes a list of tool switches.",
+    "en": "Show or hide the switches",
+    "es": "Mostrar u ocultar los interruptores",
+    "zh-Hans": "显示或隐藏开关"
+  },
+  "devices.tools.locked": {
+    "note": "Row in a device's sheet when the device is not Mine, so it gets no tools.",
+    "en": "No tools until Mine",
+    "es": "Sin herramientas hasta ser Mío",
+    "zh-Hans": "设为“我的”之前没有工具"
+  },
+  "devices.reach.yes": {
+    "note": "Status of this Mac when other devices can reach it.",
+    "en": "Reachable",
+    "es": "Accesible",
+    "zh-Hans": "可访问"
+  },
+  "devices.hop.state.off": {
+    "note": "The Hop's state when none is set.",
+    "en": "Off",
+    "es": "Desactivado",
+    "zh-Hans": "已关闭"
+  },
+  "devices.hop.state.needs_address": {
+    "note": "The Hop's state when what is set is not an address yet.",
+    "en": "Needs an address",
+    "es": "Necesita una dirección",
+    "zh-Hans": "需要地址"
+  },
+  "devices.hop.state.idle": {
+    "note": "The Hop's state when an address is set and nothing goes through it.",
+    "en": "Not in use",
+    "es": "Sin uso",
+    "zh-Hans": "未使用"
+  }
+}

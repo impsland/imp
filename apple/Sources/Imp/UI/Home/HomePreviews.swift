@@ -8,7 +8,7 @@ import SwiftUI
 private enum PreviewHome {
     static func model(imps: Int) -> AppModel {
         let model = AppModel(persist: false)
-        for _ in 0..<max(0, imps - 1) { model.addImp() }
+        for _ in 0..<max(0, imps) { model.addImp() }
         for (i, hue) in [0.08, 0.57, 0.33, 0.8].enumerated() where model.prefs.imps.indices.contains(i) {
             model.prefs.imps[i].hue = hue
             model.prefs.imps[i].name = ["Dot", "Bumble", "Pip", "Mo"][i]
@@ -25,7 +25,7 @@ private enum PreviewHome {
 #Preview("Empty canvas") {
     ZStack {
         CanvasBackdrop(html: RoomBackground.defaultHTML)
-        EmptyCanvas(action: {})
+        EmptyCanvas(hatch: {}, link: {})
     }
     .frame(width: WindowSizing.minimum.width, height: WindowSizing.minimum.height)
 }

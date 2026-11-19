@@ -11,7 +11,7 @@ extension ImpSetting {
         case .personality: "imp_settings.marker.personality"
         case .tools: "imp_settings.marker.tools"
         case .triggers: "imp_settings.marker.triggers"
-        case .moves: "imp_settings.marker.moves"
+        case .animations: "imp_settings.marker.animations"
         case .computer: "imp_settings.marker.computer"
         }
     }

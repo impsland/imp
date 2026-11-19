@@ -22,6 +22,7 @@ struct ServiceRow: View {
                 }
                 HoverIconButton(systemName: "trash", help: "Remove this service", tint: Tone.danger, action: remove)
             }
+            Group {
             FieldRow("common.name", info: "settings.service.name.info") {
                 TextField("common.name", text: $service.name).impField()
             }
@@ -36,6 +37,8 @@ struct ServiceRow: View {
                     try await model.assistant.client(for: service).models(timeout: Double(Behavior.modelListTimeoutSeconds))
                 }
             }
+            }
+            .fieldLabelColumn()
             HStack(spacing: Spacing.small) {
                 Text(verbatim: String.localizedStringWithFormat(NSLocalizedString("brains.used_by", comment: ""), usedBy))
                     .font(Typeface.small).foregroundStyle(Tone.muted).lineLimit(1)
@@ -127,6 +130,8 @@ struct KeyField: View {
                     FieldAction(systemName: "trash", help: "Remove key", action: remove)
                 }
             }
+            // A local service needs no key: the field and its actions stay, dimmed and out of reach, so nothing moves.
+            .disabled(service.isLocal && !saved)
         }
     }
 
@@ -142,8 +147,9 @@ struct KeyField: View {
 
 /// The service choice (Remote or Local) and the address, name and key of a service, as ONE component: the
 /// "Add a service" sheet and the first run both show it. A choice fills the address (still freely editable,
-/// so any OpenAI-compatible service works), each links to its key or model page, and Local is marked when
-/// it answers on this computer. Nothing is focused by itself. `extra` adds fields under the key.
+/// so any OpenAI-compatible service works), the chosen one links to its key or model page, and Local is marked
+/// when it answers on this computer. The key stays in place for Local, disabled. Nothing is focused by itself.
+/// `extra` adds fields under the key.
 struct ServiceFields<Extra: View>: View {
     let choice: ServicePreset?
     let found: (ServicePreset) -> Bool
@@ -176,13 +182,14 @@ struct ServiceFields<Extra: View>: View {
                     TextField(namePlaceholder, text: name).impField().onSubmit(submit)
                 }
             }
-            if showsKey {
-                FieldRow("firstrun.service.key", info: "firstrun.service.note") {
-                    SecureField("Paste the key here", text: $key).impField().onSubmit(submit)
-                }
+            // Always there, so choosing Local moves nothing: dimmed, out of the focus order, and it says why.
+            FieldRow("firstrun.service.key", info: "firstrun.service.note") {
+                SecureField(showsKey ? "Paste the key here" : "firstrun.service.key_local", text: $key).impField().onSubmit(submit)
+                    .disabled(!showsKey)
             }
             extra
         }
+        .fieldLabelColumn()
         .noInitialFocus()
     }
 }
@@ -196,21 +203,23 @@ extension ServiceFields where Extra == EmptyView {
     }
 }
 
-/// Remote and Local as two tiles, side by side when they fit.
+/// Remote and Local as one neutral segmented choice across the full width. A dot in the Local segment says it
+/// answers on this computer: it hangs outside the words, so it appearing moves nothing.
 struct ServicePresetGrid: View {
     let choice: ServicePreset?
     let found: (ServicePreset) -> Bool
     let pick: (ServicePreset) -> Void
-
     var body: some View {
-        EvenGrid(minWidth: Sizing.menuTitle, spacing: Spacing.snug) {
-            ForEach(ServicePreset.all) { preset in
-                PresetTile(symbol: preset.symbol, title: preset.title, detail: "", picked: choice == preset,
-                           found: found(preset), foundHelp: String(localized: "firstrun.service.found"),
-                           link: preset.link, linkHelp: preset.link.absoluteString) { pick(preset) }
-                    .help(preset.baseURL)
-            }
-        }
+        // Read here, in the body, so a server found later redraws the dot.
+        let answering = ServicePreset.all.filter(found)
+        ImpSegmented("firstrun.service.kind",
+                     selection: Binding(get: { choice }, set: { if let preset = $0 { pick(preset) } }),
+                     options: ServicePreset.all.map { Optional($0) }, title: { $0?.title ?? "" }, symbol: { $0?.symbol ?? "" },
+                     fills: true, badge: { option in option.flatMap { answering.contains($0) ? "firstrun.service.found" : nil } })
+            // Neutral, not the Imp's colour: the selected segment is filled with the text colour (the same
+            // fill and ink rules as any tint, so it reads in light and dark). The tint is for the main action.
+            .environment(\.impTint, Tone.text)
+            .frame(maxWidth: .infinity)
     }
 }
 

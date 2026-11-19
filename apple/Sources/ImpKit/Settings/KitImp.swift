@@ -11,7 +11,7 @@ import ImpCore
 ///       "personality": "…", "instructions": "…",                       // instructions: omitted = built-in
 ///       "brain": { "model": "openai/gpt-6-luna", "service": { "name": "OpenAI", "baseURL": "https://openrouter.ai/api/v1" } },
 ///       "shell": true,
-///       "tools": { "personality": true, "look": true, "moves": true, "triggers": true, "tools": true, "senses": true, "computer": false },
+///       "tools": { "personality": true, "look": true, "animations": true, "triggers": true, "tools": true, "senses": true, "computer": false },
 ///       "exchangesSent": 20, "sendsToolCalls": true,
 ///       "mcpServers": ["Notes"],                                        // names in the kit's top-level mcpServers
 ///       "triggers": [ { …as in a kit… } ],

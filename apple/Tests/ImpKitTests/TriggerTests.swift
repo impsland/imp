@@ -81,7 +81,7 @@ import Testing
     }
 
     @Test func freshSettingsAnswerToNoClicks() {
-        let p = ImpPreferences()
+        let p = ImpPreferences.withWaitingImp()
         let imp = p.imps[0].id
         #expect(p.clickShortcut(1, on: imp, in: nil) == nil)
         #expect(p.clickShortcut(2, on: imp, in: nil) == nil)
@@ -89,7 +89,7 @@ import Testing
     }
 
     @Test func aDisabledClickTriggerIsNotAnswered() {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         let imp = p.imps[0].id
         var s = open("text_box")
         s.isEnabled = false
@@ -99,7 +99,7 @@ import Testing
     }
 
     @Test func anImpsOwnClickComesFirstAndTheSharedOnesStillApply() {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         let imp = p.imps[0].id
         p.shortcuts = [open("text_box"), open("chat", name: "Chat", performer: imp)]
         #expect(p.clickShortcut(1, on: imp, in: nil)?.steps.first?.target == .chat)
@@ -108,7 +108,7 @@ import Testing
     }
 
     @Test func clickConditionsNeedState() {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         let imp = p.imps[0].id
         p.shortcuts = [Shortcut(name: "Night", performer: imp, trigger: .click(1), conditions: [Condition(.hours, value: "22:00-06:00")],
                                 steps: [Step(.say, value: "Good night")])]

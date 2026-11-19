@@ -16,12 +16,12 @@ import Testing
         #expect(SettingsMap.attention(nodes).isEmpty)
     }
 
-    @Test func eachProblemBecomesOneItemThatOpensItsGroup() {
+    @Test func eachProblemBecomesOneItemThatOpensItsPlace() {
         let nodes = [node(.thisDevice, .ready, sleeping: [pip, moss]), node(.brains, .needsSetup),
                      node(.hop, .needsSetup), node(.phone, .offline, name: "Anna's iPhone")]
         let items = SettingsMap.attention(nodes)
-        #expect(items.map(\.reason) == [.noBrains, .noBrain(pip), .noBrain(moss), .hopNotSet, .deviceOffline("Anna's iPhone")])
-        #expect(items.map(\.group) == [.brains, .brains, .brains, .devices, .devices])
+        #expect(items.map(\.reason) == [.noBrains, .noBrain(pip), .noBrain(moss), .deviceOffline("Anna's iPhone")])
+        #expect(items.map(\.destination) == [.settings(.brains), .settings(.brains), .settings(.brains), .devices])
     }
 
     @Test func offToolsAndAnOffDeviceAreNotProblems() {
@@ -29,7 +29,7 @@ import Testing
     }
 
     @Test func nothingSetUpListsBrainsAndHop() {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.hop = ""
         let map = DeviceMap.build(thisMac: "Mac", peers: [], server: "", imps: prefs.imps, mcpServers: [])
         let nodes = SettingsMap.nodes(prefs: prefs, map: map)
@@ -39,7 +39,7 @@ import Testing
     }
 
     @Test func aHopOnThisComputerIsNamedAsSuch() {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.hop = ServerKind.hop.localAddress
         let map = DeviceMap.build(thisMac: "Mac", peers: [], server: prefs.hop, imps: prefs.imps, mcpServers: [])
         let hop = SettingsMap.nodes(prefs: prefs, map: map).first { $0.kind == .hop }
@@ -47,7 +47,7 @@ import Testing
     }
 
     @Test func peersCarryReachAndToolAccess() {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.ai.add(Service(name: "S", baseURL: "http://localhost:1/v1", model: "m"))
         let phone = DeviceMap.Peer(id: UUID(), name: "Anna's iPhone", kind: .phone, reach: .away)
         let mac = DeviceMap.Peer(id: UUID(), name: "Studio", kind: .mac, reach: .direct, isTrusted: true)
@@ -63,40 +63,53 @@ import Testing
 
     @Test func theRailListsEverySectionOnceWithNoOverview() {
         let all = SettingsGroup.allCases
-        #expect(all == [.app, .bubble, .talking, .brains, .devices, .sharing, .animations, .privacy, .backup])
+        #expect(all == [.app, .bubble, .talking, .brains, .sharing, .privacy, .backup])
         #expect(Set(all).count == all.count)
         #expect(all.allSatisfy { !$0.symbol.isEmpty && !$0.title.isEmpty })
         #expect(SettingsGroup(rawValue: "overview") == nil)
     }
 
-    @Test func theHopBelongsToDevices() {
-        #expect(node(.hop, .off).group == .devices)
-        #expect(node(.desktop, .offline).group == .devices && node(.phone, .offline).group == .devices)
-        #expect(node(.brains, .ready).group == .brains && node(.tools, .off).group == .brains)
+    @Test func theHopAndLinkedDevicesBelongToTheDevicesScreen() {
+        #expect(node(.hop, .off).destination == .devices)
+        #expect(node(.desktop, .offline).destination == .devices && node(.phone, .offline).destination == .devices)
+        #expect(node(.brains, .ready).destination == .settings(.brains) && node(.tools, .off).destination == .settings(.brains))
         #expect(SettingID.devicesHop.page == .devices)
     }
 
-    @Test func eachSectionShowsOnlyWhatIsFixedThere() {
-        let nodes = [node(.thisDevice, .ready, sleeping: [pip]), node(.brains, .ready),
-                     node(.hop, .needsSetup), node(.phone, .offline, name: "Anna's iPhone")]
-        #expect(SettingsMap.attention(nodes, in: .brains).map(\.reason) == [.noBrain(pip)])
-        #expect(SettingsMap.attention(nodes, in: .devices).map(\.reason) == [.hopNotSet, .deviceOffline("Anna's iPhone")])
-        for group in SettingsGroup.allCases where ![.brains, .devices].contains(group) {
-            #expect(SettingsMap.attention(nodes, in: group).isEmpty, "\(group)")
-        }
-        // Nothing is lost: every item shows in exactly one section.
-        #expect(SettingsGroup.allCases.flatMap { SettingsMap.attention(nodes, in: $0) }.count == SettingsMap.attention(nodes).count)
+    @Test func devicesIsItsOwnScreenNotASectionNorAnImpsPage() {
+        #expect(SettingsPlace.devices.group == nil && !SettingsPlace.devices.isPerImp)
+        #expect(SettingID.devicesHop.isPerImp == false)
+        #expect(SettingsGroup(rawValue: "devices") == nil)
+        #expect(SettingsTarget(setting: nil, page: "devices")?.imp == nil)
     }
 
-    @Test func aSectionIsMarkedOnlyWhenSomethingInItNeedsAFix() {
+    @Test func noHopIsNotAFault() {
+        let nodes = [node(.thisDevice, .ready), node(.brains, .ready), node(.hop, .off), node(.hop, .needsSetup)]
+        #expect(SettingsMap.attention(nodes).isEmpty)
+    }
+
+    @Test func eachPlaceShowsOnlyWhatIsFixedThere() {
+        let nodes = [node(.thisDevice, .ready, sleeping: [pip]), node(.brains, .ready),
+                     node(.hop, .needsSetup), node(.phone, .offline, name: "Anna's iPhone")]
+        #expect(SettingsMap.attention(nodes, at: .settings(.brains)).map(\.reason) == [.noBrain(pip)])
+        #expect(SettingsMap.attention(nodes, at: .devices).map(\.reason) == [.deviceOffline("Anna's iPhone")])
+        for group in SettingsGroup.allCases where group != .brains {
+            #expect(SettingsMap.attention(nodes, at: .settings(group)).isEmpty, "\(group)")
+        }
+        // Nothing is lost: every item shows in exactly one place.
+        let places = SettingsGroup.allCases.map(AttentionDestination.settings) + [.devices]
+        #expect(places.flatMap { SettingsMap.attention(nodes, at: $0) }.count == SettingsMap.attention(nodes).count)
+    }
+
+    @Test func aPlaceIsMarkedOnlyWhenSomethingInItNeedsAFix() {
         let nodes = [node(.thisDevice, .ready, sleeping: [pip]), node(.brains, .ready), node(.hop, .ready)]
-        let marked = SettingsMap.attentionGroups(SettingsMap.attention(nodes))
-        #expect(marked == [.brains])
-        #expect(SettingsMap.attentionGroups([]).isEmpty)
+        #expect(SettingsMap.marked(SettingsMap.attention(nodes)) == [.settings(.brains)])
+        #expect(SettingsMap.marked(SettingsMap.attention(nodes + [node(.phone, .offline)])) == [.settings(.brains), .devices])
+        #expect(SettingsMap.marked([]).isEmpty)
     }
 
     @Test func whiteOnColouredControlsIsTheDefaultAndTheChoiceIsKept() throws {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         #expect(prefs.controlInk == .white)
         prefs.controlInk = .black
         let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(prefs))

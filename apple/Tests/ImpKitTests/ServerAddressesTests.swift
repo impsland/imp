@@ -43,7 +43,7 @@ import Testing
     // MARK: The Mac's preferences
 
     @Test func theMacKeepsTheHop() throws {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         #expect(prefs.hop == ServerKind.hop.defaultAddress)
         prefs.hop = "hop.example.com:9000"
         let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(prefs))
@@ -51,7 +51,7 @@ import Testing
     }
 
     @Test func oldSavedAddressesAreIgnored() throws {
-        var saved = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(ImpPreferences())) as? [String: Any])
+        var saved = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(ImpPreferences.withWaitingImp())) as? [String: Any])
         saved["serverAddress"] = "old.example.com"
         saved["denAddress"] = "den.example.com"
         let json = try JSONSerialization.data(withJSONObject: saved)

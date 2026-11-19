@@ -17,17 +17,11 @@
     "es": "Sin Imps aún",
     "zh-Hans": "还没有 Imp"
   },
-  "home.empty.hint": {
-    "note": "Empty main screen, one line under the title.",
-    "en": "Hatch your first Imp to get started.",
-    "es": "Haz nacer a tu primer Imp para empezar.",
-    "zh-Hans": "孵化你的第一个 Imp，就可以开始了。"
-  },
   "home.empty.new_imp": {
-    "note": "The one prompt in the middle of an empty main screen.",
-    "en": "New",
-    "es": "Nuevo",
-    "zh-Hans": "新建"
+    "note": "Button on the empty main screen: hatch the first Imp.",
+    "en": "Hatch",
+    "es": "Incubar",
+    "zh-Hans": "孵化"
   },
   "home.hidden.title": {
     "note": "The element on the floor that holds hidden Imps. The number is how many.",
@@ -87,7 +81,7 @@
     "zh-Hans": "已隐藏"
   },
   "home.corner.devices": {
-    "note": "Help and screen reader name of the corner button that opens the Devices settings.",
+    "note": "Help and screen reader name of the corner button that opens the Devices screen.",
     "en": "Devices",
     "es": "Equipos",
     "zh-Hans": "设备"
@@ -108,5 +102,23 @@
     "zh-Hans": {
       "other": "已连接 {count} 台"
     }
+  },
+  "home.empty.new_imp.help": {
+    "note": "Tooltip of the hatch button on the empty main screen.",
+    "en": "Hatch an Imp and give it a Brain",
+    "es": "Haz nacer un Imp y dale un cerebro",
+    "zh-Hans": "孵化一个 Imp，并给它一个大脑"
+  },
+  "home.empty.link": {
+    "note": "Button on the empty main screen: link another device.",
+    "en": "Link a device",
+    "es": "Vincular un dispositivo",
+    "zh-Hans": "连接设备"
+  },
+  "home.empty.link.help": {
+    "note": "Tooltip of the link button on the empty main screen.",
+    "en": "Link a device and bring an Imp from it",
+    "es": "Vincula un dispositivo y trae un Imp de él",
+    "zh-Hans": "连接设备，并从它带来一个 Imp"
   }
 }

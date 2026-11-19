@@ -9,6 +9,7 @@ import ImpKit
     @Test func pipAsksBoWithoutWaitingAndReadsTheAnswerWhenItWakes() async throws {
         let v = try #require(TroupeLiveEnv.values)
         let app = AppModel(persist: false)
+        app.prefs.imps = [.waiting]
         var service = Service(name: "Live", baseURL: v["OPENAI_BASE_URL"] ?? "", model: v["OPENAI_MODEL"] ?? "")
         service.model = v["OPENAI_MODEL"] ?? ""
         app.prefs.ai.add(service)

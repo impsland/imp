@@ -39,7 +39,7 @@ Secrets are never in it (a service is named and given a base URL, the key stays 
   "personality": "You are Dawn, a tiny, cheerful morning Imp…",
   "brain": { "model": "openai/gpt-6-luna", "service": { "name": "OpenAI", "baseURL": "https://openrouter.ai/api/v1" } },
   "shell": false,
-  "tools": { "personality": true, "look": true, "moves": true, "triggers": false, "tools": false, "senses": true, "computer": false },
+  "tools": { "personality": true, "look": true, "animations": true, "triggers": false, "tools": false, "senses": true, "computer": false },
   "toolsOff": ["own.personality.imp_speak"],
   "exchangesSent": 20,
   "sendsToolCalls": true,
@@ -53,7 +53,7 @@ Secrets are never in it (a service is named and given a base URL, the key stays 
 - `traits` are the character of the face, each clamped to a range: `lids` 0 to 0.6, `slant` -1 to 1,
   `eyes` -0.4 to 0.4, `squint` -1 to 1, `horns` -30 to 30, `blush` 0 to 1, `tilt` -12 to 12, `tempo`
   0.6 to 1.6. Missing means the neutral value (all 0, `tempo` 1).
-- `tools` switches whole groups (`personality`, `look`, `moves`, `triggers`, `tools`, `senses`, `computer`). `toolsOff` lists single
+- `tools` switches whole groups (`personality`, `look`, `animations`, `triggers`, `tools`, `senses`, `computer`). `toolsOff` lists single
   tool ids (see below). `mcpServers` names servers defined in the kit's own `mcpServers` object.
 - On the device link the same Imp's looks travel as `LinkImp`: `{ "id", "name", "hue", "scale",
   "traits" }` and nothing else.

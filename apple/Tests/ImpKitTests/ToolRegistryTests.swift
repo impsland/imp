@@ -107,7 +107,7 @@ import ImpCore
         for entry in all {
             let group = OwnTools.group(of: entry.name)
             #expect(group != nil, "\(entry.name) has no group")
-            #expect(entry.id == ToolRegistry.ownID(group ?? .moves, tool: entry.name))
+            #expect(entry.id == ToolRegistry.ownID(group ?? .animations, tool: entry.name))
             #expect(!entry.title.isEmpty)
         }
         for group in ImpToolGroup.allCases { #expect(!ToolRegistry.tools(in: group).isEmpty, "\(group) has no tools") }
@@ -127,11 +127,11 @@ import ImpCore
         var imp = ImpProfile.imp
         #expect(imp.toolSelection.groupsOff == ["own.computer"])
         #expect(imp.toolSelection.toolsOff.isEmpty)
-        imp.setUses(.moves, false)
+        imp.setUses(.animations, false)
         imp.setUses(.computer, true)
         imp.setUses(tool: ToolRegistry.ownID(.senses, tool: OwnTools.page), false)
         imp.setUses(tool: "mcp.speech.say", false)
-        #expect(imp.toolSelection.groupsOff == ["own.moves"])
+        #expect(imp.toolSelection.groupsOff == ["own.animations"])
         #expect(imp.toolSelection.toolsOff == ["own.senses.browser_page", "mcp.speech.say"])
         #expect(!imp.uses(tool: "mcp.speech.say"))
         imp.setUses(tool: "mcp.speech.say", true)

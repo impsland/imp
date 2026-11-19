@@ -220,7 +220,7 @@ import Testing
 
     @Test func addsChosenItemsForOneImpOrEveryImp() throws {
         let a = ImpProfile(name: "A", hue: 0.1, favoriteHue: 0.1, personality: ""), b = ImpProfile(name: "B", hue: 0.5, favoriteHue: 0.5, personality: "")
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.imps = [a, b]
         let kit = try Kit.parse(Kit.parse(Self.full).json())
         let base = prefs.shortcuts.count
@@ -247,7 +247,7 @@ import Testing
 
 extension KitTests {
     static func troupe() -> (prefs: ImpPreferences, pip: ImpProfile) {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         let service = Service(name: "Local", baseURL: "http://localhost:1234/v1", model: "llama-3")
         prefs.ai.add(service)
         var notes = MCPServerConfig(name: "Notes", transport: .stdio, command: "npx", arguments: ["-y", "notes"], environment: ["TOKEN": "sekrit"])
@@ -262,7 +262,7 @@ extension KitTests {
         pip.exchangesSent = 7
         pip.sendsToolCalls = false
         pip.servers = [notes.id]
-        prefs.imps = [.waiting, pip]
+        prefs.imps = [.imp, pip]
         prefs.shortcuts.append(Shortcut(name: "Pip's key", hotkey: Hotkey(parsing: "ctrl+cmd+P"), performer: pip.id, steps: [Step(.ask, value: "Hello")]))
         prefs.shortcuts.append(Shortcut(name: "Everyone", trigger: .starter(.wake), steps: [Step(.ask, value: "Shared")]))
         return (prefs, pip)
@@ -303,7 +303,7 @@ extension KitTests {
     @Test func importsToAnotherMacWithFreshServersAndSecretsBlank() throws {
         let (prefs, pip) = Self.troupe()
         let kit = try Kit.parse(Kit.exporting(imps: [pip.id], from: prefs).json())
-        var other = ImpPreferences()
+        var other = ImpPreferences.withWaitingImp()
         let added = other.add(kit, imps: Set(kit.imps.map(\.id)), triggers: [], servers: [], for: nil)
         let new = try #require(other.imps.last)
         #expect(new.name == "Pip 2" && other.imps.count == 2)          // the first Imp of a Mac is Pip too
@@ -318,7 +318,7 @@ extension KitTests {
         let kit = try Kit.parse(Kit.exporting(imps: [pip.id], from: prefs).json())
         #expect(kit.imps[0].brain == KitBrain(model: "qwen-2", serviceName: "Local", baseURL: "http://localhost:1234/v1"))
         // A different Mac with the same service under another name, a slash and other case.
-        var other = ImpPreferences()
+        var other = ImpPreferences.withWaitingImp()
         other.ai.add(Service(name: "My LM Studio", baseURL: "HTTP://localhost:1234/v1/", model: "qwen-2"))
         #expect(kit.warnings(services: other.ai.services).allSatisfy { $0.kind != .brainMissing })
         other.add(kit, imps: Set(kit.imps.map(\.id)), triggers: [], servers: [], for: nil)
@@ -412,7 +412,7 @@ extension KitTests {
         #expect(bare.brain == KitBrain(model: "m"))
         #expect(kit.imps.count == 2 && kit.imps[1].name == "Wired")
         #expect(kit.problems.count == 3 && kit.problems.contains { $0.hasPrefix("Imp 2:") } && kit.problems.contains { $0.contains("“Gone”") })
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.add(kit, imps: Set(kit.imps.map(\.id)), triggers: [], servers: [], for: nil)
         #expect(prefs.imps.suffix(2).map(\.name) == ["Bare", "Wired"] && prefs.imps[1].brain == Brain(service: nil, model: "m"))
     }

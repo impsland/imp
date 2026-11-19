@@ -20,7 +20,7 @@ The Imp on top reacts: asleep, stirring while it checks, awake once it works. St
 - "Wake the Imp" is a story people understand at once. Nothing says "configuration".
 - Two named steps show where the user is and what each asks. The indicator makes them interactive instead of a label.
 - Remote or Local is the one question a newcomer can answer. Both fill an address that stays editable, so any OpenAI-compatible API works, LM Studio included, without a list of products to read.
-- Closing is safe. A sleeping Imp is a calm state, and its triggers still work.
+- Closing is safe. No Imp is a calm state, and so is a sleeping one whose triggers still work.
 - The service choice and the address and key fields are one component with the "Add a service" sheet, so the two cannot drift apart. "Add a service" offers the same two choices and nothing more.
 - The flow ends when the Imp is awake. The Imp is then ready to talk to where it lives (its bubble on the Mac, its chat on the iPhone).
 
@@ -33,6 +33,17 @@ A long wizard with a page for each setting. It feels like a form. A "Later" butt
 The steps and words are the same, with both choices. Local is a server on another computer, because an iPhone cannot look at its own localhost, so its address is filled with a host to replace (`firstrun.service.host_note`). The first screen has two halves. On top, one sleeping Imp says what it needs in its own speech bubble (the stage's bubble, its tail pointing at it). It leans as the phone tips, stirs at a touch and hops when tapped. Under it, "Meet Imp" (`phone.start.title`) and one sentence about what Imp is. In the thumb zone, two ways to begin, in order of weight: a wide main button that wakes it (`firstrun.wake`) with one line on what that needs (`phone.start.wake_note`), and a card that links a device (`phone.start.link_title`, with what it brings in one line, opening its own sheet with this iPhone's code, Scan a Code, Paste Link and this iPhone's name). There is no separate Hatch: waking makes the first Imp, and `+` in the room makes the next ones. The parts fade in one after the other, once, and only fade with Reduce Motion. The very first Imp is hatched by the main button and meets the flow in one sheet with the live Imp on top (Close leaves it asleep). The sheet wears the Imp's colour. Any later Imp without a Brain is dimmed, with no words over it. "Wake {name} up" in its chat opens the Imp's settings on the Brain, the same form in place, not this sheet. On the iPhone the flow is one screen with no step numbers: Remote or Local, then the address, the key and the model together, and one button. A blank model is picked for you (the first one that chats). The list button beside the field shows the service's models to choose from, and any name can be typed. An Imp keeps its Brain the moment it wakes. The key field never offers a password manager.
 
 ![The service step](./images/first-run-service.png)
+
+## On the Mac
+
+There is no premade Imp. A fresh install has an empty troupe, and nothing is hatched before it has a Brain. On the first launch, with no Imp and the first run not yet seen (`firstRunSeen`), the home window opens on its empty canvas with the first run over it, once. The sheet mirrors the iPhone's start: a preview Imp on top that is not in the settings (a free name, the colour every Imp hatches in), drawn asleep, stirring while the Brain is checked and awake when it works. Under it, one short line (`firstrun.asleep_bubble`) and the one page (Remote or Local across the full width, address, key, model). A dot in the Local segment, with a tooltip (`firstrun.service.found`), marks a model server answering on this Mac; it hangs outside the words, so nothing shifts when it appears.
+
+Two ways to begin, in the footer, which is the same as every sheet's: Cancel and the secondary action on the leading side, the main action trailing, all the same height and pill style.
+
+1. **Give it a Brain.** The main button `firstrun.wake`. Its width is that of its longest wording, so it never changes as the Imp stirs or an error shows. On success the Imp is hatched together with the Brain (`FirstRunTarget.newImp`, kept by `ImpPreferences.keep`): it never exists without one. It pops onto the canvas awake and the sheet closes. The key is stored only on success.
+2. **Bring one from another device.** The compact `firstrun.link` button (tooltip `firstrun.link.help`) opens the Link sheet over this one. When an Imp arrives from the linked device the sheet closes, since it has nothing left to do.
+
+Cancel and Close create nothing: the app is left with no Imp and its empty canvas, never a sleeping Imp. The empty canvas (`home.empty.*`) offers the same two beginnings as icon buttons: hatch (this sheet) and link a device. Later "New Imp" with no Brain anywhere to give it opens the same sheet; with a Brain it hatches at once, as before. The same page, for an existing Imp that has no Brain (`FirstRunTarget.existing`), is shown in place in its Brain panel and adopts the Brain for that Imp.
 
 ## Errors in this path
 
@@ -75,11 +86,15 @@ Every error is a plain sentence that says what to do next. It shows in place and
 | `firstrun.error.empty_key` | Paste your key to continue. |
 | `firstrun.error.key_not_saved` | Imp could not save the key. Try again. |
 | `firstrun.error.no_model` | Pick a model to continue. |
+| `firstrun.link` | From a device |
+| `firstrun.link.help` | Link a device and bring an Imp from it instead |
 | `firstrun.model.search` | Search or type a model |
 | `firstrun.service.address` | Address |
-| `firstrun.service.found` | Found here |
+| `firstrun.service.found` | Found on this Mac |
 | `firstrun.service.host_note` | Use the address of your computer on this network. |
 | `firstrun.service.key` | Your key |
+| `firstrun.service.key_local` | Not needed for local models |
+| `firstrun.service.kind` | Kind of service |
 | `firstrun.service.loading` | Loading models… |
 | `firstrun.service.local` | Local |
 | `firstrun.service.note` | Any OpenAI-compatible API. Your key stays on this device. |

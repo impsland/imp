@@ -110,8 +110,8 @@ final class AppModel {
     /// An Imp's models are set up well enough to chat (activated or not).
     func isReady(_ id: UUID) -> Bool { assistant.isReady(profile(id)?.brain) }
 
-    /// The focused Imp (or, with none out, the first one) can talk to its models.
-    var isReady: Bool { isReady(focused?.id ?? prefs.imps[0].id) }
+    /// The focused Imp (or, with none out, the first one) can talk to its models. With no Imp, nothing is ready.
+    var isReady: Bool { (focused?.id ?? prefs.imps.first?.id).map(isReady) ?? false }
 
     func start() {
         started = true
@@ -334,10 +334,6 @@ final class AppModel {
 
     /// Keeps one `ImpModel` per activated profile, reusing existing ones so nothing flickers.
     private func syncTroupe() {
-        if prefs.imps.isEmpty {
-            prefs.imps = [.waiting]
-            return                                         // the didSet above re-enters with a valid troupe
-        }
         let wanted = prefs.imps.filter(\.isActive).map(\.id)
         guard wanted != imps.map(\.id) else { return }
         let gone = imps.filter { !wanted.contains($0.id) }
@@ -598,13 +594,17 @@ final class AppModel {
         BrowserBridge.shared.setTroupe(troupe)
     }
 
-    /// Keeps the Brain the first run checked, for the Imp it woke: its key goes to the key store and nowhere else.
-    /// Throws `KeyNotSaved` when the key store refuses the key, and then nothing is changed.
-    func adoptFirstRunBrain(_ brain: FirstRunBrain, for imp: UUID) throws {
+    /// Keeps the Brain the first run checked, for the Imp it woke (or hatches the new Imp with it): its key goes
+    /// to the key store and nowhere else. Throws `KeyNotSaved` when the key store refuses the key, and then
+    /// nothing is changed, no Imp included. Returns the Imp.
+    @discardableResult
+    func adoptFirstRunBrain(_ brain: FirstRunBrain, for target: FirstRunTarget) throws -> UUID {
         var p = prefs
-        let service = p.adopt(brain, for: imp)
-        if !brain.key.isEmpty, !assistant.setKey(brain.key, for: service) { throw KeyNotSaved() }
+        let imp = p.keep(brain, for: target)
+        let service = p.ai.brain.service
+        if !brain.key.isEmpty, let service, !assistant.setKey(brain.key, for: service) { throw KeyNotSaved() }
         prefs = p
+        return imp
     }
 
     /// Removes a service everywhere, its saved key included.
@@ -613,9 +613,8 @@ final class AppModel {
         assistant.setKey("", for: id)
     }
 
-    /// Removes an Imp for good (never the last one), with its shortcuts.
+    /// Removes an Imp for good, with its shortcuts. Having none is a calm state: the last one may go too.
     func removeImp(_ id: UUID) {
-        guard prefs.imps.count > 1 else { return }
         if isAway(id) || isThrowing(id) { link.callHome(id) }
         var p = prefs
         p.imps.removeAll { $0.id == id }
@@ -625,16 +624,16 @@ final class AppModel {
         ChatHistory.deleteFolder(for: id)
     }
 
-    /// Calls an Imp in and removes it for good (never the last one). Returns the Imp that took
-    /// its place in the line, to show next.
+    /// Calls an Imp in and removes it for good. Returns the Imp that took its place in the line, to show
+    /// next, or nil when none is left (or `id` is not an Imp).
     @discardableResult
     func sayGoodbye(_ id: UUID) -> UUID? {
-        guard prefs.imps.count > 1, let i = prefs.imps.firstIndex(where: { $0.id == id }) else { return nil }
+        guard let i = prefs.imps.firstIndex(where: { $0.id == id }) else { return nil }
         setActive(id, false)
         removeImp(id)
         link.asked.forget(imp: id)
         let ids = prefs.imps.map(\.id)
-        return ids[min(i, ids.count - 1)]
+        return ids.isEmpty ? nil : ids[min(i, ids.count - 1)]
     }
 
     /// Back to the very first launch: every Imp, service, key, borrowed tool, trigger, chat and

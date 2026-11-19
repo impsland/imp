@@ -3,9 +3,9 @@ import Testing
 
 @Suite("Imp Settings sections")
 struct ImpSettingTests {
-    @Test("The rail reads Brain, Personality, Look, Moves, Triggers, Tools, Computer")
+    @Test("The rail reads Brain, Personality, Look, Animations, Triggers, Tools, Computer")
     func order() {
-        #expect(ImpSetting.allCases == [.brain, .personality, .look, .moves, .triggers, .tools, .computer])
+        #expect(ImpSetting.allCases == [.brain, .personality, .look, .animations, .triggers, .tools, .computer])
     }
 
     @Test("A page name from a tool or a link finds its section")

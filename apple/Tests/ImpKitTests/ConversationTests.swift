@@ -11,7 +11,7 @@ import Testing
     }
 
     @Test func defaultsLiveInPreferences() {
-        let p = ImpPreferences()
+        let p = ImpPreferences.withWaitingImp()
         #expect(p.talkThreading == .decides && p.talkWindowMinutes == 60)
         #expect(ImpProfile.newChatChoices == [50_000, 100_000, 250_000, 500_000, 750_000, 1_000_000])
         var q = p

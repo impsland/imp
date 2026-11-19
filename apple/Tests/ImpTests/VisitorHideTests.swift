@@ -10,6 +10,7 @@ import ImpKit
     private func appWithVisitor() -> (AppModel, ImpModel) {
         _ = NSApplication.shared
         let app = AppModel(persist: false)
+        app.prefs.imps = [.waiting]
         let look = LinkImp(id: UUID(), name: "Pip", hue: 0.3, scale: 1, traits: .plain)
         app.welcome(Visiting(look: look, homeID: UUID(), homeName: "iPhone",
                              wakefulness: .visiting(homeConnected: true, homeSaysReady: true), side: .left, from: UUID()),
@@ -44,6 +45,7 @@ import ImpKit
     @Test func theOnlyImpAwayOnAGoneDeviceCanBeCalledHome() {
         _ = NSApplication.shared
         let app = AppModel(persist: false)
+        app.prefs.imps = [.waiting]
         let id = app.prefs.imps[0].id
         app.setActive(id, true)
         app.held(id, by: UUID())

@@ -4,12 +4,15 @@ import SwiftUI
 
 /// The first run on the Mac: a sheet over the window with the Imp (asleep, stirring, awake) on top, the one
 /// page below (`FirstRunFlow`) and, at the bottom, Cancel and the primary button. The top bar has Close, which
-/// does the same as Cancel: the Imp stays asleep, a calm state of its own.
+/// does the same as Cancel. For a new Imp (not in the settings yet) that leaves the app with no Imp; for one that
+/// has no Brain it stays asleep, a calm state of its own.
+/// `linkDevice` is the second way to begin, for a new Imp: bring one from another device.
 struct FirstRunSheet: View {
     @Bindable var flow: FirstRunModel
     let hue: Double
     let traits: ImpTraits
     let clock: BodyClock
+    var linkDevice: (() -> Void)?
     /// Close, or the end: the sheet goes away.
     let close: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -22,7 +25,13 @@ struct FirstRunSheet: View {
         } content: {
             FirstRunFlow(flow: flow)
         } footer: {
-            FirstRunPrimaryButton(flow: flow)
+            if let linkDevice {
+                Button(action: linkDevice) { Label("firstrun.link", systemImage: "iphone.and.arrow.forward") }
+                    .buttonStyle(.quiet)
+                    .disabled(flow.path.isBusy)
+                    .help(Text("firstrun.link.help"))
+            }
+            FirstRunPrimaryButton(flow: flow, wide: false)
         }
         .impAnimation(ImpDesign.Motion.scene, value: flow.path.imp)
         .onChange(of: flow.path.step) { _, step in if step == .done { close() } }

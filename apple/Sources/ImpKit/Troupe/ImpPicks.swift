@@ -33,6 +33,6 @@ public enum ImpPicks {
         CGRect(x: min(start.x, end.x), y: min(start.y, end.y), width: abs(end.x - start.x), height: abs(end.y - start.y))
     }
 
-    /// Whether `count` Imps may go: one Imp always stays.
-    public static func canSayGoodbye(to count: Int, of total: Int) -> Bool { count > 0 && count < total }
+    /// Whether `count` Imps may go: any of them, all of them too (having no Imp is a calm state).
+    public static func canSayGoodbye(to count: Int, of total: Int) -> Bool { count > 0 && count <= total }
 }

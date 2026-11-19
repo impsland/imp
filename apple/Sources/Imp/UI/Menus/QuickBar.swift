@@ -16,7 +16,7 @@ struct QuickBar: View {
     let buttons: [Item]
 
     var body: some View {
-        HStack(spacing: Spacing.snug) {
+        HStack(spacing: MenuMetrics.inset) {
             ForEach(Array(buttons.enumerated()), id: \.offset) { _, b in
                 QuickButton(icon: b.icon, title: b.title, action: b.action)
                     .disabled(!b.enabled)
@@ -46,19 +46,19 @@ struct QuickButton: View {
         Button(action: action) {
             // One line if the words fit, else two, and the icon alone only when not even that fits.
             ViewThatFits(in: .horizontal) {
-                VStack(spacing: Spacing.tight) {
-                    Image(systemName: icon).font(.icon(.large, weight: .semibold))
+                VStack(spacing: 0) {
+                    MenuGlyph(name: icon)
                     title.font(Typeface.small.weight(.medium)).lineLimit(1).fixedSize()
                 }
-                .padding(Spacing.snug)
-                VStack(spacing: Spacing.tight) {
-                    Image(systemName: icon).font(.icon(.large, weight: .semibold))
+                .padding(MenuMetrics.inset)
+                VStack(spacing: 0) {
+                    MenuGlyph(name: icon)
                     title.font(Typeface.small.weight(.medium)).lineLimit(2).multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(Spacing.snug)
-                Image(systemName: icon).font(.icon(.large, weight: .semibold))
-                    .padding(Spacing.snug)
+                .padding(MenuMetrics.inset)
+                MenuGlyph(name: icon)
+                    .padding(MenuMetrics.inset)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .frame(minHeight: Sizing.hit)

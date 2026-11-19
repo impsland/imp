@@ -331,7 +331,7 @@ struct KitReviewSheet: View {
         let target = review.target ?? flow.imp ?? added.imps.first?.id
         router.hatch(added.imps.map(\.id)) { [model, router] in
             guard let needing else { return }
-            let imp = target ?? router.selection ?? model.prefs.imps[0].id
+            guard let imp = target ?? router.selection ?? model.prefs.imps.first?.id else { return }
             HomeWindow.shared.show(model, settingsFor: imp, panel: .tools)
             Task {
                 try? await Task.sleep(for: .milliseconds(450))

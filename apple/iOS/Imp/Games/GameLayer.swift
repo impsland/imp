@@ -30,7 +30,7 @@ struct GameLayer: View {
                 Sparks(round: round, reduceMotion: reduceMotion)
                     .allowsHitTesting(false)
                 if round.isOver {
-                    GameResultCard(result: round.result(best: engine.best), insets: insets,
+                    GameResultCard(result: round.result(best: engine.best(imps: round.imps)), insets: insets,
                                    again: { engine.startGame() }, done: { engine.endGame() }, howTo: { engine.startGame(tutorial: true) })
                         .transition(GameCard.transition(reduceMotion: reduceMotion))
                 } else {
@@ -375,7 +375,7 @@ extension GameRound {
                                     points: Self.cleanBonus,
                                     note: cleanStreak > 1 ? Self.plural("games.prize.in_a_row", cleanStreak) : nil))
         }
-        return GameResult(title: String(localized: "games.embers"), score: score, best: best, isRecord: isRecord, stats: stats, prizes: prizes)
+        return GameResult(title: String(localized: "games.embers"), score: score, best: best, imps: imps, isRecord: isRecord, stats: stats, prizes: prizes)
     }
 
     private static func plural(_ key: String, _ count: Int) -> String {

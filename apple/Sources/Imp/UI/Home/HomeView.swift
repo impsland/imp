@@ -43,6 +43,9 @@ struct HomeView: View {
                 case .general:
                     GeneralSettingsView(model: model, router: router)
                         .transition(slide)
+                case .devices:
+                    DevicesScreen(model: model, router: router)
+                        .transition(slide)
                 }
             }
         }
@@ -53,11 +56,14 @@ struct HomeView: View {
                 .tint(tint)
         }
         .sheet(isPresented: Binding(get: { router.firstRun != nil }, set: { if !$0 { router.firstRun = nil } })) {
-            if let id = router.firstRun, let profile = model.profile(id) {
-                FirstRunHost(app: model, id: id) { router.firstRun = nil }
+            if let target = router.firstRun, let profile = target.profile(in: model.prefs.imps) {
+                FirstRunHost(app: model, target: target, hatched: { router.hatch([$0]) }) { router.firstRun = nil }
                     .environment(\.impTint, Color.imp(profile.hue))
                     .tint(Color.imp(profile.hue))
             }
+        }
+        .sheet(isPresented: $router.linkingDevice) {
+            LinkDeviceSheet(model: model, mode: .show)
         }
         .sheet(item: $router.talk) { talk in
             let tint = model.profile(talk.imp).map { Color.imp($0.hue) } ?? Color.imp
@@ -189,13 +195,22 @@ struct CornerButtons: View {
         }
     }
 
+    /// The Devices corner. One mark at a time: a warning when a linked device cannot be reached now,
+    /// else a green dot while any is connected.
     private var devices: some View {
         let connected = model.link.connectedPeers.count
+        let away = model.link.peers.contains { !$0.isConnected }
         return HoverIconButton(systemName: "laptopcomputer.and.iphone", help: "home.corner.devices", tint: Tone.muted) {
-            router.open(group: .devices)
+            router.openDevices()
         }
         .overlay(alignment: .topTrailing) {
-            if connected > 0 {
+            if away {
+                Image(systemName: "exclamationmark.triangle.fill").font(.icon(.tiny))
+                    .foregroundStyle(Tone.warnText)
+                    .padding(CornerInset.slack)
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+            } else if connected > 0 {
                 Circle().fill(Tone.good)
                     .frame(width: Spacing.small, height: Spacing.small)
                     .padding(CornerInset.slack)
@@ -203,10 +218,12 @@ struct CornerButtons: View {
                     .accessibilityHidden(true)
             }
         }
-        .accessibilityValue(connected > 0
-            ? Text(verbatim: String.localizedStringWithFormat(NSLocalizedString("home.corner.devices.connected", comment: ""), connected))
-            : Text(verbatim: ""))
-        .impAnimation(ImpDesign.Motion.fade, value: connected > 0)
+        .accessibilityValue(away
+            ? Text("home.corner.devices.away")
+            : connected > 0
+                ? Text(verbatim: String.localizedStringWithFormat(NSLocalizedString("home.corner.devices.connected", comment: ""), connected))
+                : Text(verbatim: ""))
+        .impAnimation(ImpDesign.Motion.fade, value: away ? 2 : connected > 0 ? 1 : 0)
     }
 }
 

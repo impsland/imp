@@ -30,7 +30,8 @@ import Testing
 
     @Test func oneImpAlwaysStays() {
         #expect(ImpPicks.canSayGoodbye(to: 2, of: 3))
-        #expect(!ImpPicks.canSayGoodbye(to: 3, of: 3))
+        #expect(ImpPicks.canSayGoodbye(to: 3, of: 3), "every Imp may go: having none is fine")
+        #expect(!ImpPicks.canSayGoodbye(to: 4, of: 3))
         #expect(!ImpPicks.canSayGoodbye(to: 0, of: 3))
     }
 }

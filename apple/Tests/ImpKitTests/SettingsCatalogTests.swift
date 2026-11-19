@@ -50,7 +50,7 @@ import Testing
         #expect(Set(ids).count == ids.count)
         for id in ids { #expect(id.range(of: #"^[a-z]+(_[a-z]+)+$"#, options: .regularExpression) != nil, "\(id)") }
         for page in SettingsPlace.allCases { #expect(!page.settings.isEmpty, "\(page)") }
-        #expect(SettingsPlace.allCases.count == 16)
+        #expect(SettingsPlace.allCases.count == 15)
     }
 
     @Test func settingsAreOnTheRightKindOfPage() {
@@ -82,10 +82,10 @@ import Testing
         #expect(SettingsTarget(setting: nil, page: "Backup") == SettingsTarget(page: .backup))
         // A setting wins over the page. An unknown setting falls back to the page.
         #expect(SettingsTarget(setting: "brain_source", page: "look")?.page == .brain)
-        #expect(SettingsTarget(setting: "nonsense", page: "moves")?.page == .moves)
+        #expect(SettingsTarget(setting: "nonsense", page: "animations")?.page == .animations)
         #expect(SettingsTarget(setting: nil, page: nil) == nil)
         #expect(SettingsTarget(setting: "nonsense", page: "nowhere") == nil)
         #expect(SettingsTarget(setting: .backupReset).spoken.contains("cannot change settings yourself"))
-        #expect(SettingsTarget(page: .moves).notOnThisDevice.contains("on the Mac"))
+        #expect(SettingsTarget(page: .animations).notOnThisDevice.contains("on the Mac"))
     }
 }

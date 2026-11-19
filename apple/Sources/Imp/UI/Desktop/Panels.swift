@@ -191,7 +191,7 @@ final class Panels {
 
     // MARK: Following the cursor
     //
-    // Set on the Imp's Moves tab: off, eyes (nothing here), or hops or glides after the cursor.
+    // Set by a trigger's follow step: off, eyes (nothing here), or hops or glides after the cursor.
     // The inner life decides a few times a second whether it may go (`ImpModel.followCursor`), and
     // this moves the window, frame by frame, until it is close enough or told to stop. The maths is
     // `FollowMath`. Reduce Motion, a mode of Off or Eyes, being held, or a bubble all stop it.

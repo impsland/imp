@@ -20,7 +20,8 @@ Each page has the same parts:
 | [Main screen](/ux/main-screen) | The calm canvas, the window, the one quiet button, menus and the background. |
 | [Imps](/ux/imps) | Moving an Imp, letting it out, sending it home, clicks, the phone icon and peeking. |
 | [Imp Settings](/ux/imp-settings) | The settings of one Imp, with the Imp in the middle. |
-| [All Imps settings](/ux/all-imps-settings) | The app-wide settings: nine sections, each one click from any other. |
+| [All Imps settings](/ux/all-imps-settings) | The app-wide settings: seven sections, each one click from any other. |
+| [Devices](/ux/devices) | The map of the devices and where every Imp is, what is selected, linking a device and the tools each device may use. |
 | [First run](/ux/first-run) | From the first launch to the first answer. |
 | [States](/ux/states) | Empty, error, sleeping, waking, offline and partly set up servers. |
 | [Motion](/ux/motion) | Timings, springs and what Reduce Motion does. |

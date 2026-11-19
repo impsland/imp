@@ -87,6 +87,35 @@ import Testing
         #expect(map.residents(of: DeviceMap.thisMacID).map(\.name) == ["Bumble", "Cinder"])
     }
 
+    /// A relay channel names the Hop's address as set, a local one the device's first known route; the nodes list
+    /// every route.
+    @Test func channelsSayTheAddressTheyGoThrough() {
+        var local = phone
+        local.routes = LinkRoutes(hosts: ["studio.local", "fe80::1"], port: 47824)
+        let map = DeviceMap.build(thisMac: "Mac", thisRoutes: LinkRoutes(hosts: ["10.0.0.2"], port: 47825), peers: [local, mac],
+                                  server: " IMP.example.org:4000 ", imps: [], mcpServers: [])
+        #expect(map.channels.first { $0.to == phone.id.uuidString }?.address == "studio.local:47824")
+        #expect(map.channels.first { $0.to == mac.id.uuidString }?.address == "imp.example.org:4000")
+        #expect(map.node(DeviceMap.thisMacID)?.addresses == ["10.0.0.2:47825"])
+        #expect(map.node(phone.id.uuidString)?.addresses == ["studio.local:47824", "[fe80::1]:47824"])
+        #expect(map.node(DeviceMap.serverID)?.addresses == ["imp.example.org:4000"])
+        let bare = DeviceMap.build(thisMac: "Mac", peers: [phone], server: "", imps: [], mcpServers: [])
+        #expect(bare.channels[0].address == nil && bare.node(DeviceMap.thisMacID)?.addresses == [])
+    }
+
+    /// Imps know the node they think on: this Mac for its own, the linked device for the ones hatched there,
+    /// nothing for a device we aren't linked with.
+    @Test func impsKnowTheirHomeNode() {
+        let bumble = imp("Bumble")
+        let cinder = LinkImp(id: UUID(), name: "Cinder", hue: 0.1, scale: 1, traits: .plain)
+        let stranger = LinkImp(id: UUID(), name: "Stranger", hue: 0.3, scale: 1, traits: .plain)
+        let map = DeviceMap.build(thisMac: "Mac", peers: [phone], server: "", imps: [bumble], mcpServers: [],
+                                  visitors: [LinkStaged(imp: cinder, home: phone.id), LinkStaged(imp: stranger, home: UUID())])
+        let here = map.residents(of: DeviceMap.thisMacID)
+        #expect(here.map(\.home) == [DeviceMap.thisMacID, phone.id.uuidString, nil])
+        #expect(map.imp(bumble.id)?.talksTo.map(\.home) == [phone.id.uuidString, nil])
+    }
+
     @Test func toolsAndTalk() {
         let files = MCPServerConfig(name: "Files", transport: .stdio, command: "x")
         let off = MCPServerConfig(name: "Off", transport: .stdio, command: "x")
@@ -104,18 +133,5 @@ import Testing
         #expect(map.imp(a.id)?.talksTo.map(\.id) == [b.id])
         #expect(map.imp(b.id)?.talksTo.isEmpty == true)
         #expect(map.imp(b.id)?.tools.contains { $0.id == "own.personality" } == false)
-    }
-
-    /// A line between two see-through tiles is drawn only where it crosses neither, nor a label.
-    @Test func linesStopAtTilesAndLabels() {
-        let left = CGRect(x: 0, y: 0, width: 10, height: 10), label = CGRect(x: 45, y: 0, width: 10, height: 10)
-        let right = CGRect(x: 90, y: 0, width: 10, height: 10)
-        let pieces = DeviceMap.pieces(from: CGPoint(x: 5, y: 5), to: CGPoint(x: 95, y: 5), outside: [left, label, right])
-        #expect(pieces.map { [$0.0.x, $0.1.x] } == [[10, 45], [55, 90]])
-        // A box the line misses changes nothing, and overlapping boxes make one gap.
-        let away = CGRect(x: 40, y: 50, width: 10, height: 10)
-        #expect(DeviceMap.pieces(from: CGPoint(x: 0, y: 0), to: CGPoint(x: 100, y: 0), outside: [away]).count == 1)
-        let overlapping = [CGRect(x: 20, y: -5, width: 20, height: 10), CGRect(x: 30, y: -5, width: 20, height: 10)]
-        #expect(DeviceMap.pieces(from: CGPoint(x: 0, y: 0), to: CGPoint(x: 100, y: 0), outside: overlapping).map { [$0.0.x, $0.1.x] } == [[0, 20], [50, 100]])
     }
 }

@@ -294,7 +294,7 @@ private func toolExchange(_ ask: String = "Make it sound nicer", file: String = 
     @Test func theModelPicksTheChatOnlyWhenItDecides() {
         #expect(ImpTalk.own.place(asked: "shared") == .own && ImpTalk.shared.place(asked: "own") == .shared)
         #expect(ImpTalk.decides.place(asked: "shared") == .shared && ImpTalk.decides.place(asked: nil) == .own)
-        #expect(ImpPreferences().impTalk == .own)
+        #expect(ImpPreferences.withWaitingImp().impTalk == .own)
         func chatArgument(_ talk: ImpTalk) -> Bool {
             let spec = OwnTools.specs([.personality], animations: [], imps: ["Pip"], browser: false, talk: talk).first { $0.name == OwnTools.message }
             return spec?.inputSchema["properties"]?["chat"] != nil

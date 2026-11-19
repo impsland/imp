@@ -95,7 +95,7 @@ import Testing
     // MARK: Clicks
 
     @Test func aSecondClickIsOnlyWaitedForWhenATriggerNeedsIt() {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         let imp = p.imps[0].id
         #expect(!p.waitsForMoreClicks(on: imp), "no triggers: a click opens the bubble at once")
         p.shortcuts = [Shortcut(name: "Chat", trigger: .click(1), steps: [Step(.open, value: "chat")])]
@@ -107,7 +107,7 @@ import Testing
     }
 
     @Test func aFreshInstallAnswersToNoClicksAndNewImpsShareASharedOne() {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         #expect(!p.waitsForMoreClicks(on: p.imps[0].id))
         p.shortcuts = [Shortcut(name: "Settings", trigger: .click(2), steps: [Step(.open, value: "settings")])]
         #expect(p.waitsForMoreClicks(on: p.imps[0].id))

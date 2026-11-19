@@ -47,7 +47,7 @@ struct ImpMenuCard<Extra: View>: View {
                 MenuItem(id: "settings", icon: "slider.horizontal.3", title: String(localized: "menu.imp.settings"),
                          help: words("menu.imp.settings_help", name)) { run(.settings) },
             ])
-            VStack(spacing: Spacing.snug) {
+            VStack(spacing: MenuMetrics.inset) {
                 SizeRow(scale: scale, hue: hue) { scale = $0; run(.size($0)) }
                 ColourRow(hue: hue) { hue = $0; run(.colour($0)) }
             }
@@ -107,7 +107,7 @@ struct SizeRow: View {
     private static let dots: [CGFloat] = [6, 10, 15]
 
     var body: some View {
-        HStack(spacing: Spacing.snug) {
+        HStack(spacing: MenuMetrics.inset) {
             ForEach(Array(Panels.sizes.enumerated()), id: \.offset) { index, size in
                 let picked = scale.map { abs($0 - size.1) < 0.01 } ?? false
                 let dot = Self.dots[min(index, Self.dots.count - 1)]
@@ -151,7 +151,7 @@ struct ColourRow: View {
                                 Image(systemName: "checkmark").font(.icon(.tiny, weight: .heavy)).foregroundStyle(OnTint(tint))
                             }
                         }
-                        .frame(maxWidth: .infinity, minHeight: Self.swatch + Spacing.small)
+                        .frame(maxWidth: .infinity, minHeight: Self.swatch + MenuMetrics.inset)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -213,7 +213,7 @@ struct GroupMenuCard<Extra: View>: View {
                 MenuItem(id: "kit", icon: "shippingbox.fill", title: String(localized: "menu.imp.copy_kit"),
                          help: String(localized: "menu.group.kit_help")) { run(.kit) },
             ])
-            VStack(spacing: Spacing.snug) {
+            VStack(spacing: MenuMetrics.inset) {
                 SizeRow(scale: scale, hue: hue ?? hues.first ?? 0) { scale = $0; run(.size($0)) }
                 ColourRow(hue: hue) { hue = $0; run(.colour($0)) }
             }

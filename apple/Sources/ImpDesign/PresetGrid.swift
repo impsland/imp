@@ -1,11 +1,7 @@
 import SwiftUI
 
-// Preset choices laid out evenly: the same grid on the Mac and on the iPhone. `EvenGrid` makes every
-// row span the full width with equal items (ten that need two rows go five and five). `PresetTile` is a
-// preset that picks on a tap and has a small arrow that opens its page (the service choices, Remote and
-// Local, in the first run and in Add a service):
-//
-//     EvenGrid(minWidth: Sizing.menuTitle, spacing: Spacing.snug) { ForEach(presets) { PresetTile(...) } }
+// Choices laid out evenly: the same grid on the Mac and on the iPhone. `EvenGrid` makes every row span the
+// full width with equal items (ten that need two rows go five and five).
 
 /// Lays children out in rows that always fill the full width. Rows are balanced (ten items that
 /// need two rows go five and five, never nine and one), and a shorter row stretches its items so
@@ -62,82 +58,5 @@ public struct EvenGrid: Layout {
             }
             y += row.height + spacing
         }
-    }
-}
-
-/// One preset choice as a tile: its symbol, a title ("Remote", "Local"), and a detail (the service it
-/// fills in), with a small ↗ in its corner that opens `link` (where to get a key or a model) without
-/// choosing it. Picked, it fills with the Imp's colour. `found` adds a dot: it answers on this computer.
-public struct PresetTile: View {
-    let symbol: String
-    let title: String
-    let detail: String
-    let picked: Bool
-    let found: Bool
-    let foundHelp: String
-    let link: URL
-    let linkHelp: String
-    let action: () -> Void
-    @Environment(\.impTint) private var tint
-    @Environment(\.openURL) private var openURL
-    @State private var hover = false
-    @State private var hoverLink = false
-
-    public init(symbol: String, title: String, detail: String, picked: Bool, found: Bool = false, foundHelp: String = "",
-                link: URL, linkHelp: String, action: @escaping () -> Void) {
-        self.symbol = symbol; self.title = title; self.detail = detail; self.picked = picked
-        self.found = found; self.foundHelp = foundHelp; self.link = link; self.linkHelp = linkHelp; self.action = action
-    }
-
-    public var body: some View {
-        let shape = RoundedRectangle(cornerRadius: Radius.tile, style: .continuous)
-        Button(action: action) {
-            HStack(spacing: Spacing.cozy) {
-                Image(systemName: symbol)
-                    .font(.icon(.large, weight: .semibold))
-                    // A bare symbol on the tile's own fill: the tile is already the shape, a second one inside it is noise.
-                    .frame(width: Sizing.iconTile, height: Sizing.iconTile)
-                VStack(alignment: .leading, spacing: Spacing.hairline) {
-                    HStack(spacing: Spacing.snug) {
-                        Text(verbatim: title).font(Typeface.cardTitle).lineLimit(1)
-                        if found {
-                            Circle().fill(Tone.good).frame(width: Spacing.snug, height: Spacing.snug)
-                                .help(foundHelp).accessibilityLabel(foundHelp)
-                        }
-                    }
-                    if !detail.isEmpty {
-                        Text(verbatim: detail).font(Typeface.small).lineLimit(1)
-                            .foregroundStyle(picked ? AnyShapeStyle(OnTint(tint)) : AnyShapeStyle(Tone.muted))
-                    }
-                }
-                Spacer(minLength: Sizing.mark)
-            }
-            .padding(Spacing.cozy)
-            .frame(maxWidth: .infinity, minHeight: Sizing.hit, alignment: .leading)
-            .contentShape(shape)
-        }
-        .buttonStyle(.plain)
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(picked ? .isSelected : [])
-        .overlay(alignment: .topTrailing) {
-            Button { openURL(link) } label: {
-                Image(systemName: "arrow.up.right")
-                    .font(.icon(.small, weight: .bold))
-                    .frame(width: Sizing.mark, height: Sizing.mark)
-                    .background(Circle().fill(hoverLink ? Tone.cardHover : Color.clear))
-                    .contentShape(Circle())
-            }
-            .buttonStyle(.plain)
-            .padding(Spacing.snug)
-            .onHover { hoverLink = $0 }
-            .help(linkHelp)
-            .accessibilityLabel(linkHelp)
-        }
-        .foregroundStyle(picked ? AnyShapeStyle(OnTint(tint)) : AnyShapeStyle(Tone.text))
-        .background(shape.fill(picked ? AnyShapeStyle(TintFill(tint)) : AnyShapeStyle(hover ? Tone.cardHover : Tone.card)))
-        .onHover { hover = $0 }
-        .impAnimation(Motion.hover, value: hover)
-        .impAnimation(Motion.hover, value: hoverLink)
-        .impAnimation(Motion.quick, value: picked)
     }
 }

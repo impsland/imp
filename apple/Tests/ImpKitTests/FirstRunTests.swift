@@ -105,6 +105,7 @@ import Testing
 
     @Test func aBrainIsKeptAsTheDefaultAndNeverTakesTheKeyAlong() throws {
         var prefs = ImpPreferences()
+        prefs.imps = [.imp]
         let imp = prefs.imps[0].id
         let brain = FirstRunBrain(name: "OpenRouter", baseURL: "https://openrouter.ai/api/v1", model: "some/model", key: "fake-key", isLocal: false)
         let id = prefs.adopt(brain, for: imp)
@@ -116,6 +117,7 @@ import Testing
 
     @Test func theSameAddressIsReusedNotAddedTwice() {
         var prefs = ImpPreferences()
+        prefs.imps = [.imp]
         let imp = prefs.imps[0].id
         var brain = FirstRunBrain(name: "Ollama", baseURL: "http://localhost:11434/v1", model: "a", key: "", isLocal: true)
         let first = prefs.adopt(brain, for: imp)
@@ -206,15 +208,21 @@ private actor Seen {
     func add(_ text: String) { all.append(text) }
 }
 
+@MainActor final class PrefsBox {
+    var prefs: ImpPreferences
+    init(_ prefs: ImpPreferences) { self.prefs = prefs }
+}
+
 @MainActor @Suite struct FirstRunModelTests {
     private let server = LocalServer(name: "Ollama", baseURL: "http://localhost:11434/v1", models: ["llama3", "qwen3"])
 
     private func make(mac: Bool = true, found: [LocalServer] = [], models: [String] = ["m1", "m2"],
                       check: @escaping @Sendable (FirstRunBrain) async throws -> Void = { _ in },
                       adopted: Adopted = Adopted(),
-                      keep: @escaping @MainActor (FirstRunBrain) throws -> Void = { _ in }) -> FirstRunModel {
+                      target: FirstRunTarget = .existing(UUID()),
+                      keep: @escaping @MainActor (FirstRunBrain, FirstRunTarget) throws -> Void = { _, _ in }) -> FirstRunModel {
         let services = FirstRunServices(find: { found }, models: { _, _ in models }, check: check)
-        return FirstRunModel(impName: "Imp", onThisComputer: mac, services: services, awakeBeat: .zero) { adopted.brains.append($0); try keep($0) }
+        return FirstRunModel(impName: "Imp", target: target, onThisComputer: mac, services: services, awakeBeat: .zero) { adopted.brains.append($0); try keep($0, $1) }
     }
 
     private func settle(_ model: FirstRunModel, until done: @MainActor () -> Bool) async {
@@ -348,8 +356,8 @@ private actor Seen {
     @Test func withoutPreselectingTheModelStaysBlankUntilItWakes() async {
         let adopted = Adopted()
         let services = FirstRunServices(find: { [] }, models: { _, _ in ["text-embedding-3", "chat-1", "chat-2"] }, check: { _ in })
-        let model = FirstRunModel(impName: "Imp", onThisComputer: false, services: services, awakeBeat: .zero,
-                                  preselectsModel: false) { adopted.brains.append($0) }
+        let model = FirstRunModel(impName: "Imp", target: .existing(UUID()), onThisComputer: false, services: services, awakeBeat: .zero,
+                                  preselectsModel: false) { brain, _ in adopted.brains.append(brain) }
         model.key = "fake-key"
         model.listModels()
         await settle(model) { model.path.step == .model }
@@ -371,7 +379,7 @@ private actor Seen {
 
     @Test func aFailedModelListKeepsWhatWasTyped() async {
         let services = FirstRunServices(find: { [] }, models: { _, _ in throw APIError.http(status: 401, message: "no") }, check: { _ in })
-        let model = FirstRunModel(impName: "Imp", onThisComputer: true, services: services) { _ in }
+        let model = FirstRunModel(impName: "Imp", target: .existing(UUID()), onThisComputer: true, services: services) { _, _ in }
         model.key = "fake-key"
         model.continueFromService()
         await settle(model) { model.problem != nil }
@@ -383,7 +391,7 @@ private actor Seen {
         let services = FirstRunServices(find: { [] },
                                         models: { _, _ in throw APIError.http(status: 404, message: "no list") },
                                         check: { _ in })
-        let model = FirstRunModel(impName: "Imp", onThisComputer: true, services: services, awakeBeat: .zero) { adopted.brains.append($0) }
+        let model = FirstRunModel(impName: "Imp", target: .existing(UUID()), onThisComputer: true, services: services, awakeBeat: .zero) { brain, _ in adopted.brains.append(brain) }
         model.address = "http://127.0.0.1:9/v1"
         model.continueFromService()
         await settle(model) { model.problem != nil }
@@ -451,12 +459,66 @@ private actor Seen {
     }
 
     @Test func aKeyThatCannotBeSavedFailsInPlainWordsAndKeepsWhatWasTyped() async {
-        let model = make(keep: { _ in throw KeyNotSaved() })
+        let model = make(keep: { _, _ in throw KeyNotSaved() })
         await atModels(model)
         model.check()
         await settle(model) { model.path.step == .failed }
         #expect(model.problem == .keyNotSaved && model.problem?.key == "firstrun.error.key_not_saved")
         #expect(model.key == "fake-key" && model.model == "m1")
+    }
+
+    @Test func aNewImpIsHatchedOnlyWhenItsBrainWorks() async {
+        let box = PrefsBox(ImpPreferences())
+        #expect(box.prefs.imps.isEmpty, "a fresh install has no Imp")
+        let target = FirstRunTarget.newImp(box.prefs.nextImp())
+        let model = make(check: { _ in throw APIError.http(status: 401, message: "no") }, target: target, keep: { box.prefs.keep($0, for: $1) })
+        await atModels(model)
+        model.check()
+        await settle(model) { model.path.step == .failed }
+        #expect(box.prefs.imps.isEmpty && box.prefs.ai.services.isEmpty, "a failed check hatches nothing")
+    }
+
+    @Test func cancellingTheFirstRunCreatesNothing() async throws {
+        let box = PrefsBox(ImpPreferences())
+        let model = make(check: { _ in try await Task.sleep(for: .seconds(5)) }, target: .newImp(box.prefs.nextImp()),
+                         keep: { box.prefs.keep($0, for: $1) })
+        await atModels(model)
+        model.check()
+        model.cancel()
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(box.prefs.imps.isEmpty && box.prefs.ai.services.isEmpty)
+    }
+
+    @Test func successForANewImpHatchesExactlyOneImpHoldingTheBrain() async {
+        let box = PrefsBox(ImpPreferences())
+        let profile = box.prefs.nextImp()
+        let model = make(target: .newImp(profile), keep: { box.prefs.keep($0, for: $1) })
+        await atModels(model)
+        model.check()
+        await settle(model) { model.path.step == .done }
+        #expect(box.prefs.imps.map(\.id) == [profile.id] && box.prefs.imps[0].name == profile.name)
+        #expect(box.prefs.ai.services.count == 1 && box.prefs.ai.brain.service == box.prefs.ai.services[0].id)
+        #expect(box.prefs.ai.model() == "m1" && box.prefs.imps[0].brain == nil)
+    }
+
+    @Test func aKeyThatCannotBeSavedHatchesNothing() async {
+        let box = PrefsBox(ImpPreferences())
+        let model = make(target: .newImp(box.prefs.nextImp()), keep: { _, _ in throw KeyNotSaved() })
+        await atModels(model)
+        model.check()
+        await settle(model) { model.path.step == .failed }
+        #expect(box.prefs.imps.isEmpty && model.problem == .keyNotSaved)
+    }
+
+    @Test func anExistingImpAdoptsTheBrainWithoutHatchingAnother() async {
+        var start = ImpPreferences()
+        start.imps = [.imp]
+        let box = PrefsBox(start)
+        let model = make(target: .existing(ImpProfile.defaultID), keep: { box.prefs.keep($0, for: $1) })
+        await atModels(model)
+        model.check()
+        await settle(model) { model.path.step == .done }
+        #expect(box.prefs.imps.count == 1 && box.prefs.ai.services.count == 1)
     }
 
     @Test func theKeyNeverAppearsInAProblemSentence() async {

@@ -75,15 +75,25 @@ msgctxt "anim.help.tilt"
 msgid "How far the Imp leans to the side."
 msgstr "Imp 向一侧倾斜多少。"
 
+#. Empty state of the animations list.
+msgctxt "animations.empty"
+msgid "No animations yet."
+msgstr "还没有动画。"
+
 #. Button.
 msgctxt "animations.find"
 msgid "Browse"
 msgstr "浏览"
 
-#. Heading of the animations you made or added.
-msgctxt "animations.from_den"
-msgid "Made"
-msgstr "自制"
+#. Help of the animations list.
+msgctxt "animations.help.list"
+msgid "Animations made for only this Imp come first. The shared ones follow: changing one changes it for every Imp."
+msgstr "先是只为这个 Imp 做的动画，后面是共用的动画：修改共用的动画会影响所有 Imp。"
+
+#. Header of the list of the animations an Imp plays.
+msgctxt "animations.list"
+msgid "Animations"
+msgstr "动画"
 
 #. Button and sheet title: make a new animation of your own.
 msgctxt "animations.new"
@@ -451,20 +461,140 @@ msgctxt "computer.help.senses"
 msgid "Reads the battery, processor, network and open apps, and the page open in the browser."
 msgstr "读取电池、处理器、网络和打开的应用，以及浏览器中打开的页面。"
 
+#. Button: call every Imp a device holds home.
+msgctxt "devices.call_all_home"
+msgid "Call all home"
+msgstr "全部叫回家"
+
+#. Title of a line between two devices.
+msgctxt "devices.channel.title"
+msgid "{from} and {to}"
+msgstr "{from} 与 {to}"
+
+#. Screen reader label of one of this Mac's Imps on the map.
+msgctxt "devices.chip.label_ours"
+msgid "{name}, an Imp of this Mac, on {node}"
+msgstr "{name}，这台 Mac 的 Imp，在 {node} 上"
+
+#. Screen reader label of another device's Imp on the map.
+msgctxt "devices.chip.label_visitor"
+msgid "{name}, an Imp from another device, on {node}"
+msgstr "{name}，来自其他设备的 Imp，在 {node} 上"
+
 #. Help of Copy Link in Link a device.
 msgctxt "devices.copy_link.help"
 msgid "For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while."
 msgstr "适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。"
+
+#. Screen reader label of a line between two devices.
+msgctxt "devices.edge.label"
+msgid "{from} to {to}. {route}. {state}"
+msgstr "{from} 到 {to}。{route}。{state}"
 
 #. Empty state of the list of linked devices.
 msgctxt "devices.empty"
 msgid "No devices yet."
 msgstr "还没有设备。"
 
+#. Button: forget the selected device.
+msgctxt "devices.forget.one"
+msgid "Forget this device…"
+msgstr "忘记此设备…"
+
+#. The Hop pill under the code in the Link sheet when no Hop is set; opens its settings.
+msgctxt "devices.hop.add"
+msgid "Add a Hop"
+msgstr "添加 Hop"
+
+#. The Hop pill under the code in the Link sheet when a Hop is set. {host} is its address.
+msgctxt "devices.hop.pill"
+msgid "Hop: {host}"
+msgstr "Hop：{host}"
+
+#. The Hop's state when an address is set and nothing goes through it.
+msgctxt "devices.hop.state.idle"
+msgid "Not in use"
+msgstr "未使用"
+
+#. The Hop's state when what is set is not an address yet.
+msgctxt "devices.hop.state.needs_address"
+msgid "Needs an address"
+msgstr "需要地址"
+
+#. The Hop's state when none is set.
+msgctxt "devices.hop.state.off"
+msgid "Off"
+msgstr "已关闭"
+
+#. Button: open an Imp's settings.
+msgctxt "devices.imp.settings"
+msgid "Its settings"
+msgstr "它的设置"
+
+#. Inspector card: the Imps an Imp can message.
+msgctxt "devices.imp.talks"
+msgid "Can message"
+msgstr "可以给谁发消息"
+
+#. Help: who an Imp can message. Selecting an Imp on the map lights them.
+msgctxt "devices.imp.talks.info"
+msgid "The Imps this one can message. They are lit on the map while it is selected."
+msgstr "这个 Imp 可以给哪些 Imp 发消息。选中它时，它们会在地图上高亮。"
+
+#. Inspector card: an Imp's tools.
+msgctxt "devices.imp.tools"
+msgid "Its tools"
+msgstr "它的工具"
+
+#. Inspector card: this Mac's Imps a device holds.
+msgctxt "devices.inspector.holds"
+msgid "Imps of this Mac it holds"
+msgstr "它持有的这台 Mac 的 Imp"
+
+#. Inspector card: how a device is reached.
+msgctxt "devices.inspector.reach"
+msgid "How it is reached"
+msgstr "连接方式"
+
+#. Inspector card of the Hop: devices reached through it.
+msgctxt "devices.inspector.through_hop"
+msgid "Reached through it"
+msgstr "通过它连接的设备"
+
 #. Help on the Devices card.
 msgctxt "devices.list.info"
 msgid "Devices linked with this one. Mine lets a device act for you."
 msgstr "与这台设备连接的设备。“我的”让设备可以代表你行事。"
+
+#. Screen reader summary of the Devices map.
+msgctxt "devices.map.summary"
+msgid "Map of your devices: {devices} linked, {ours} Imps of this Mac, {visitors} Imps of other devices."
+msgstr "设备地图：已链接 {devices} 台设备，这台 Mac 的 Imp {ours} 个，其他设备的 Imp {visitors} 个。"
+
+#. Screen reader label of a device on the map: its state and the Imps in it.
+msgctxt "devices.node.label"
+msgid "{name}, {state}. Imps: {imps}"
+msgstr "{name}，{state}。Imp：{imps}"
+
+#. Screen reader label of a device on the map without Imps.
+msgctxt "devices.node.label_empty"
+msgid "{name}, {state}"
+msgstr "{name}，{state}"
+
+#. Screen reader name of this Mac's node.
+msgctxt "devices.node.this_mac_label"
+msgid "{name}, this Mac"
+msgstr "{name}，这台 Mac"
+
+#. Where an Imp's body is, as a tag on a device row.
+msgctxt "devices.place.body"
+msgid "On"
+msgstr "在"
+
+#. Where an Imp thinks, as a tag on a device row.
+msgctxt "devices.place.mind"
+msgid "Thinks on"
+msgstr "思考于"
 
 #. Help on a linked device: not reachable now.
 msgctxt "devices.reach.away"
@@ -476,10 +606,50 @@ msgctxt "devices.reach.direct"
 msgid "Direct, on the local network"
 msgstr "直连，走本地网络"
 
+#. Label of the last known address of a device.
+msgctxt "devices.reach.last_seen"
+msgid "Last known address"
+msgstr "最近已知地址"
+
+#. This Mac cannot be reached by other devices now.
+msgctxt "devices.reach.none"
+msgid "Not reachable"
+msgstr "无法访问"
+
 #. Help on a linked device: reached through the server.
 msgctxt "devices.reach.server"
 msgid "Through the server"
 msgstr "经由服务器中转"
+
+#. Status of this Mac when other devices can reach it.
+msgctxt "devices.reach.yes"
+msgid "Reachable"
+msgstr "可访问"
+
+#. How a channel goes: through the Hop.
+msgctxt "devices.route.hop"
+msgid "Through the Hop"
+msgstr "通过 Hop"
+
+#. How a channel goes: through the Hop, and its address.
+msgctxt "devices.route.hop_at"
+msgid "Through the Hop at {address}"
+msgstr "通过 Hop，地址 {address}"
+
+#. How a channel goes: the local network.
+msgctxt "devices.route.local"
+msgid "On the local network"
+msgstr "通过本地网络"
+
+#. How a channel goes: the local network, and the address.
+msgctxt "devices.route.local_at"
+msgid "On the local network at {address}"
+msgstr "通过本地网络，地址 {address}"
+
+#. Small label on a line of the map that goes over the local network.
+msgctxt "devices.route.tag_local"
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
 
 #. Button and tab: read another device's code with this Mac's camera, or paste its link.
 msgctxt "devices.scan"
@@ -491,13 +661,43 @@ msgctxt "devices.show"
 msgid "Show code"
 msgstr "显示代码"
 
+#. State word of a device on the Devices map.
+msgctxt "devices.state.connected"
+msgid "Connected"
+msgstr "已连接"
+
+#. State word of a device on the Devices map.
+msgctxt "devices.state.connecting"
+msgid "Connecting"
+msgstr "正在连接"
+
+#. State word of a linked device that cannot be reached now.
+msgctxt "devices.state.offline"
+msgid "Away"
+msgstr "不在线"
+
+#. Screen reader label of the line from an Imp to the device it thinks on.
+msgctxt "devices.tether.label"
+msgid "{imp} is on {node} and thinks on {home}"
+msgstr "{imp} 在 {node} 上，在 {home} 上思考"
+
+#. Inspector card: the tools an Imp may use on the device it is on.
+msgctxt "devices.tether.tools"
+msgid "Tools it may use there"
+msgstr "它在那里可用的工具"
+
+#. Help: the tools are the device's limits.
+msgctxt "devices.tether.tools.info"
+msgid "What the Imp may use while this device asks it. Change it on the device."
+msgstr "此设备向 Imp 提问时，Imp 可使用的工具。请在该设备上修改。"
+
 #. Help on the This Mac card: the dot is The Hop.
 msgctxt "devices.this.info"
 msgid "Link another device here. The dot shows whether The Hop lets devices find each other from anywhere."
 msgstr "在这里连接另一台设备。圆点表示 The Hop 是否让设备能从任何地方互相找到。"
 
-#. Title of the card for this Mac on the Devices page.
-msgctxt "devices.this_mac"
+#. Badge on the node of this Mac on the Devices map.
+msgctxt "devices.this_mac_badge"
 msgid "This Mac"
 msgstr "这台 Mac"
 
@@ -505,6 +705,46 @@ msgstr "这台 Mac"
 msgctxt "devices.title"
 msgid "Devices"
 msgstr "设备"
+
+#. Name of the tool that runs commands.
+msgctxt "devices.tools.commands"
+msgid "Commands"
+msgstr "命令"
+
+#. Help of the per-device tool limits.
+msgctxt "devices.tools.info"
+msgid "When this device asks one of your Imps, the Imp can use the tools that are on here. Switch off what it should not touch for this device."
+msgstr "当此设备向你的某个 Imp 提问时，Imp 可以使用这里开启的工具。关掉不希望它为此设备使用的工具。"
+
+#. Row in a device's sheet when the device is not Mine, so it gets no tools.
+msgctxt "devices.tools.locked"
+msgid "No tools until Mine"
+msgstr "设为“我的”之前没有工具"
+
+#. Shown when a device is not Mine.
+msgctxt "devices.tools.not_mine"
+msgid "Imps answer this device without tools. Turn on Mine to choose what they may use."
+msgstr "Imp 回答此设备时不使用工具。打开“我的”后可选择它们能用什么。"
+
+#. Inspector card: the tools Imps may use for a device.
+msgctxt "devices.tools.title"
+msgid "Tools Imps may use from this device"
+msgstr "Imp 可为此设备使用的工具"
+
+#. Tooltip of the button that opens or closes a list of tool switches.
+msgctxt "devices.tools.toggle"
+msgid "Show or hide the switches"
+msgstr "显示或隐藏开关"
+
+#. A device this Mac is not linked with.
+msgctxt "devices.unknown_device"
+msgid "a device not linked with this Mac"
+msgstr "未与这台 Mac 链接的设备"
+
+#. Button: send a visiting Imp home.
+msgctxt "devices.visitor.send_home"
+msgid "Send home"
+msgstr "送回家"
 
 #. The key was refused.
 msgctxt "error.brain.key"
@@ -826,6 +1066,16 @@ msgctxt "firstrun.error.no_model"
 msgid "Pick a model to continue."
 msgstr "请选择一个模型再继续。"
 
+#. Footer button of the first run on the Mac: bring an Imp from another device instead.
+msgctxt "firstrun.link"
+msgid "From a device"
+msgstr "来自设备"
+
+#. Tooltip of that button: opens the Link sheet.
+msgctxt "firstrun.link.help"
+msgid "Link a device and bring an Imp from it instead"
+msgstr "连接设备，改为从它带来一个 Imp"
+
 #. Placeholder of the model field. It filters the list, or takes a name typed by hand.
 msgctxt "firstrun.model.search"
 msgid "Search or type a model"
@@ -836,10 +1086,10 @@ msgctxt "firstrun.service.address"
 msgid "Address"
 msgstr "地址"
 
-#. Marks a local preset that answers on this computer.
+#. Tooltip of the dot in Local when a model server answers on this Mac.
 msgctxt "firstrun.service.found"
-msgid "Found here"
-msgstr "在这里找到"
+msgid "Found on this Mac"
+msgstr "在这台 Mac 上找到"
 
 #. Quiet line on the phone under a local preset: the address is the computer's.
 msgctxt "firstrun.service.host_note"
@@ -850,6 +1100,16 @@ msgstr "请填写你电脑在这个网络里的地址。"
 msgctxt "firstrun.service.key"
 msgid "Your key"
 msgstr "你的密钥"
+
+#. Placeholder of the disabled key field when a local model is chosen.
+msgctxt "firstrun.service.key_local"
+msgid "Not needed for local models"
+msgstr "本地模型不需要"
+
+#. Screen reader name of the Remote or Local choice.
+msgctxt "firstrun.service.kind"
+msgid "Kind of service"
+msgstr "服务类型"
 
 #. Shown while the models of the service are loaded.
 msgctxt "firstrun.service.loading"
@@ -891,10 +1151,16 @@ msgctxt "games.again"
 msgid "Again"
 msgstr "再来一次"
 
-#. Results card: the best score, under the score.
+#. Results card: the best score for games with this many Imps, under the score. The imps argument is the phrase 'with 3 Imps' (games.best_imps).
 msgctxt "games.best"
-msgid "Best {count}"
-msgstr "最高 {count}"
+msgid "Best {count} {imps}"
+msgstr "{imps}最高分 {count}"
+
+#. Part of the best line on the results card: how many Imps played, e.g. 'with 3 Imps'. It ends the sentence 'Best 40 with 3 Imps' (zh-Hans: starts it).
+msgctxt "games.best_imps"
+msgid "with {count} Imp"
+msgid_plural "with {count} Imps"
+msgstr[0] "{count} 个 Imp 的"
 
 #. Name of the Echo game, the title of its results card.
 msgctxt "games.echo"
@@ -1028,10 +1294,15 @@ msgctxt "home.canvas.label"
 msgid "The Imps' home"
 msgstr "Imp 的家园"
 
-#. Help and screen reader name of the corner button that opens the Devices settings.
+#. Help and screen reader name of the corner button that opens the Devices screen.
 msgctxt "home.corner.devices"
 msgid "Devices"
 msgstr "设备"
+
+#. Screen reader value of the Devices corner button when a linked device cannot be reached. A warning mark shows on the button.
+msgctxt "home.corner.devices.away"
+msgid "a linked device is away"
+msgstr "有已链接的设备不在线"
 
 #. Screen reader value of the Devices corner button: how many linked devices are connected now. A dot on the button shows when any is.
 msgctxt "home.corner.devices.connected"
@@ -1044,15 +1315,25 @@ msgctxt "home.corner.show_hidden"
 msgid "Hidden"
 msgstr "已隐藏"
 
-#. Empty main screen, one line under the title.
-msgctxt "home.empty.hint"
-msgid "Hatch your first Imp to get started."
-msgstr "孵化你的第一个 Imp，就可以开始了。"
+#. Button on the empty main screen: link another device.
+msgctxt "home.empty.link"
+msgid "Link a device"
+msgstr "连接设备"
 
-#. The one prompt in the middle of an empty main screen.
+#. Tooltip of the link button on the empty main screen.
+msgctxt "home.empty.link.help"
+msgid "Link a device and bring an Imp from it"
+msgstr "连接设备，并从它带来一个 Imp"
+
+#. Button on the empty main screen: hatch the first Imp.
 msgctxt "home.empty.new_imp"
-msgid "New"
-msgstr "新建"
+msgid "Hatch"
+msgstr "孵化"
+
+#. Tooltip of the hatch button on the empty main screen.
+msgctxt "home.empty.new_imp.help"
+msgid "Hatch an Imp and give it a Brain"
+msgstr "孵化一个 Imp，并给它一个大脑"
 
 #. Empty main screen, title.
 msgctxt "home.empty.title"
@@ -1244,6 +1525,11 @@ msgctxt "imp_settings.list.label"
 msgid "Settings for {name}"
 msgstr "{name} 的设置"
 
+#. Marker below the Imp: its animations.
+msgctxt "imp_settings.marker.animations"
+msgid "Animations"
+msgstr "动画"
+
 #. Marker above the Imp's head and panel title.
 msgctxt "imp_settings.marker.brain"
 msgid "Brain"
@@ -1258,11 +1544,6 @@ msgstr "电脑"
 msgctxt "imp_settings.marker.look"
 msgid "Look"
 msgstr "外观"
-
-#. Marker below the Imp: its animations.
-msgctxt "imp_settings.marker.moves"
-msgid "Moves"
-msgstr "动作"
 
 #. Marker right of the Imp: name, persona and voice.
 msgctxt "imp_settings.marker.personality"
@@ -1664,11 +1945,6 @@ msgctxt "menu.group.goodbye"
 msgid "Goodbye to {count} Imps…"
 msgstr "向 {count} 个 Imp 告别…"
 
-#. Tooltip of the dimmed Goodbye item when every Imp is picked.
-msgctxt "menu.group.goodbye_off"
-msgid "One Imp always stays. Leave at least one out of the group."
-msgstr "总要留下一个 Imp。请至少留一个不选。"
-
 #. Tooltip of Hide in the menu of several Imps.
 msgctxt "menu.group.hide_help"
 msgid "They hide until you show them again. Their triggers rest meanwhile."
@@ -1828,21 +2104,6 @@ msgstr "去别的设备做客吧"
 msgctxt "menu.imp.visit_tip"
 msgid "{name} visits {device} and can come back."
 msgstr "{name} 去 {device} 做客，还可以回来。"
-
-#. Header of the list of an Imp's own animations.
-msgctxt "moves.animations"
-msgid "Animations"
-msgstr "动画"
-
-#. Empty state of the animations list.
-msgctxt "moves.empty"
-msgid "No animations yet."
-msgstr "还没有动画。"
-
-#. Help of the own animations list.
-msgctxt "moves.help.own"
-msgid "Moves made for only this Imp. They play instead of the shared ones."
-msgstr "只为这个 Imp 做的动作。它们会代替共用的动作。"
 
 #. Field label: a short description of the Imp, which other Imps read to know whom to ask.
 msgctxt "personality.about"
@@ -2579,11 +2840,6 @@ msgctxt "scope.only"
 msgid "Only {name}"
 msgstr "仅 {name}"
 
-#. Field label.
-msgctxt "servers.address"
-msgid "Address"
-msgstr "地址"
-
 #. Hint in the address field.
 msgctxt "servers.address_hint"
 msgid "Start with https://"
@@ -2594,16 +2850,6 @@ msgctxt "servers.hop.about"
 msgid "Lets your devices find each other. It only passes encrypted data."
 msgstr "让你的设备能够找到彼此，只转发加密数据。"
 
-#. Shows which Hop is in use.
-msgctxt "servers.hop.in_use"
-msgid "Using the Hop at {address}"
-msgstr "正在使用 {address} 上的 Hop"
-
-#. Shown on a screen that needs The Hop when none is set.
-msgctxt "servers.hop.needed"
-msgid "Linking from anywhere needs a Hop. Add one in Settings under Devices. Devices on the same network still find each other."
-msgstr "随时随地连接需要 Hop。请在“设置”的“设备”里添加。同一网络里的设备仍然可以找到彼此。"
-
 #. Under Off on the Hop card.
 msgctxt "servers.hop.off_note"
 msgid "Only devices on the same network find each other."
@@ -2613,11 +2859,6 @@ msgstr "只有同一网络中的设备能互相找到。"
 msgctxt "servers.hop.title"
 msgid "Hop"
 msgstr "Hop"
-
-#. Shown next to a server choice that is off.
-msgctxt "servers.off"
-msgid "Off"
-msgstr "已关闭"
 
 #. Server choice: an address the user types.
 msgctxt "servers.preset.custom"
@@ -2708,11 +2949,6 @@ msgstr "应用如何启动，以及使用哪种语言。"
 msgctxt "settings.attention.device_offline"
 msgid "{device} is offline."
 msgstr "{device} 已离线。"
-
-#. Item.
-msgctxt "settings.attention.hop_off"
-msgid "The Hop is not set up."
-msgstr "Hop 尚未设置。"
 
 #. Item: an Imp sleeps.
 msgctxt "settings.attention.imp_no_brain"
@@ -2954,11 +3190,6 @@ msgctxt "settings.devices.link.title"
 msgid "Link"
 msgstr "关联"
 
-#. Hover help of the Mine switch of a linked device.
-msgctxt "settings.devices.mine.help"
-msgid "On for your own devices, off for a friend's"
-msgstr "自己的设备打开，朋友的设备关闭"
-
 #. Help beside the Mine switch of a linked device: what turning it on allows, and when to leave it off.
 msgctxt "settings.devices.mine.info"
 msgid "Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools."
@@ -2968,11 +3199,6 @@ msgstr "如果这台设备是你自己的，就打开它。这样它上面的 Im
 msgctxt "settings.devices.pair.title"
 msgid "Link"
 msgstr "关联"
-
-#. Group title.
-msgctxt "settings.group.animations"
-msgid "Animations"
-msgstr "动画效果"
 
 #. Group title.
 msgctxt "settings.group.app"
@@ -2993,11 +3219,6 @@ msgstr "大脑"
 msgctxt "settings.group.bubble"
 msgid "Bubble"
 msgstr "气泡"
-
-#. Settings text.
-msgctxt "settings.group.devices"
-msgid "Devices"
-msgstr "设备"
 
 #. Group title.
 msgctxt "settings.group.privacy"
@@ -3299,25 +3520,45 @@ msgctxt "settings.tool.variables.info"
 msgid "Secret values the tool needs to run."
 msgstr "这个工具运行时需要的秘密值。"
 
-#. Button on the Sharing page: look through The Den.
-msgctxt "sharing.browse"
-msgid "Browse"
-msgstr "浏览"
-
-#. Title of the card on Sharing with Browse and Import.
-msgctxt "sharing.gallery"
-msgid "Gallery"
-msgstr "图库"
-
-#. Help on the Gallery card.
-msgctxt "sharing.gallery.info"
-msgid "Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp."
-msgstr "查找他人分享的动画、触发器和 Imp，或导入你的套件。要分享你的，请使用 Imp 上的分享按钮。"
+#. Help of the Animations list on the Sharing page.
+msgctxt "sharing.animations.info"
+msgid "Every animation, shared or an Imp's own. Try one, change it, save it as a sticker or share it as a kit."
+msgstr "所有动画，无论共用还是某个 Imp 自己的。可以试播、修改、存为贴纸或分享为套件。"
 
 #. Button on the Sharing page: bring in a kit from a link or file.
 msgctxt "sharing.import"
 msgid "Import"
 msgstr "导入"
+
+#. Beside the header of a Sharing list that has nothing in it yet.
+msgctxt "sharing.none"
+msgid "None yet"
+msgstr "暂无"
+
+#. Help of the button that opens an item in its Imp's settings.
+msgctxt "sharing.open_in"
+msgid "Open in {name}'s settings"
+msgstr "在 {name} 的设置中打开"
+
+#. Help of the button that shares a whole list as one kit.
+msgctxt "sharing.share_all"
+msgid "Share all as a kit"
+msgstr "全部分享为套件"
+
+#. Help of the Tools list on the Sharing page.
+msgctxt "sharing.tools.info"
+msgid "Every tool added from outside, with a dot for each Imp that uses it. Keys are left out when you share one."
+msgstr "所有从外部添加的工具，每个使用它的 Imp 对应一个圆点。分享时不包含密钥。"
+
+#. Under a tool on the Sharing page that no Imp uses.
+msgctxt "sharing.tools.unused"
+msgid "No Imp uses it"
+msgstr "没有 Imp 使用它"
+
+#. Help of the Triggers list on the Sharing page.
+msgctxt "sharing.triggers.info"
+msgid "Every trigger, shared or an Imp's own. Share one as a kit, or open it in the settings of its Imp to change it."
+msgstr "所有触发器，无论共用还是某个 Imp 自己的。可以把其中一个分享为套件，或在它所属 Imp 的设置里打开并修改。"
 
 #. Empty state of a list of animations.
 msgctxt "sheets.animations.nothing_yet"
@@ -3608,6 +3849,11 @@ msgstr "从外面加进来的额外工具。每个都让 Imp 多会一些事。"
 msgctxt "tools.help.server"
 msgid "A program or website that gives the Imp more tools."
 msgstr "给 Imp 提供更多工具的程序或网站。"
+
+#. Spoken name of the choice between a web server and a local program, in the sheet that adds a tool.
+msgctxt "tools.kind"
+msgid "Kind of tool"
+msgstr "工具类型"
 
 #. Status of an MCP server.
 msgctxt "tools.mcp_connected"

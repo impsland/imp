@@ -14,7 +14,7 @@ import Testing
 
     @Test func aSwitchedOffToolIsNotCounted() throws {
         var imp = ImpProfile.imp
-        let body = try #require(ToolGroups.own(for: imp).first { $0.id == ToolRegistry.ownGroupID(.moves) })
+        let body = try #require(ToolGroups.own(for: imp).first { $0.id == ToolRegistry.ownGroupID(.animations) })
         imp.setUses(tool: body.tools[0].id, false)
         let after = try #require(ToolGroups.own(for: imp).first { $0.id == body.id })
         #expect(after.on == body.on - 1)
@@ -23,8 +23,8 @@ import Testing
 
     @Test func aSwitchedOffGroupCountsNone() throws {
         var imp = ImpProfile.imp
-        imp.setUses(.moves, false)
-        let body = try #require(ToolGroups.own(for: imp).first { $0.id == ToolRegistry.ownGroupID(.moves) })
+        imp.setUses(.animations, false)
+        let body = try #require(ToolGroups.own(for: imp).first { $0.id == ToolRegistry.ownGroupID(.animations) })
         #expect(!body.isOn)
         #expect(body.on == 0)
         #expect(body.total > 0)

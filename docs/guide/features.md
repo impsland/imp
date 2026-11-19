@@ -45,7 +45,7 @@ key, and create the trigger, then show you how it works.
 
 Imp plays its animations as body language: it hops, slides or bounces around the screen, speaks out loud,
 reads how the Mac is doing, and messages the other Imps. Each of these tools can be switched off per Imp,
-behind the wand button of the section it belongs to (Moves, Personality, Look, Triggers, Tools, Computer).
+behind the wand button of the section it belongs to (Animations, Personality, Look, Triggers, Tools, Computer).
 
 ## Make your own animations
 
@@ -67,7 +67,7 @@ The format, with every mood, glyph and move, is in the [Kit format reference](/s
 Each Imp's **Look** section sets how it always looks and moves: lids, brows, eye size, squint, horns, blush,
 head tilt and tempo. Start from a preset (such as Tired, Grumpy, Worried, Sly, Lazy or Jittery) or use the
 sliders. The look shows in every mood and animation. The Imp can set it itself (`imp_set_traits`), and its
-**Moves** section lists the animations only that Imp plays. The ranges are in the [Kit format reference](/sharing/kits#animations-and-traits).
+**Animations** section lists the animations that Imp plays: its own, then the shared ones. The ranges are in the [Kit format reference](/sharing/kits#animations-and-traits).
 
 ## Backgrounds
 

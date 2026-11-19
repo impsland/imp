@@ -4,7 +4,7 @@ import Testing
 
 @Suite struct PreferencesTests {
     @Test func roundTrip() throws {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         p.ai.brain.model = "x/y"
         p.shortcuts = [Shortcut(name: "Translate", hotkey: Hotkey(keyCode: 79), steps: [Step(.ask, value: "Translate into English.")])]
         p.shortcuts[0].steps = [Step(.ask, value: "custom")]
@@ -13,7 +13,7 @@ import Testing
     }
 
     @Test func settingsSavedBeforeMediaAutoplayStillLoad() throws {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         p.ai.brain.model = "kept"
         var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(p)) as! [String: Any]
         json.removeValue(forKey: "mediaAutoplay")                    // a key this version never wrote
@@ -28,7 +28,7 @@ import Testing
     @Test func defaultsToSolid() {
         let a = BubbleAppearance()
         #expect(a.style == .solid && a.opacity == BubbleAppearance.defaultOpacity)
-        #expect(ImpPreferences().bubbleAppearance == a)
+        #expect(ImpPreferences.withWaitingImp().bubbleAppearance == a)
     }
 
     @Test func opacityIsClamped() {
@@ -41,10 +41,10 @@ import Testing
     }
 
     @Test func roundTripsAndLoadsWithoutTheField() throws {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         p.bubbleAppearance = BubbleAppearance(style: .translucent, opacity: 0.6)
         #expect(try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(p)).bubbleAppearance == p.bubbleAppearance)
-        var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(ImpPreferences())) as! [String: Any]
+        var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(ImpPreferences.withWaitingImp())) as! [String: Any]
         json.removeValue(forKey: "bubbleLook")
         let old = try JSONDecoder().decode(ImpPreferences.self, from: JSONSerialization.data(withJSONObject: json))
         #expect(old.bubbleAppearance == BubbleAppearance())
@@ -127,7 +127,7 @@ import Testing
         let (defaults, suite) = scratch()
         defer { defaults.removePersistentDomain(forName: suite) }
         let store = PreferencesStore(defaults: defaults)
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         p.ai.add(Service(name: "Local", baseURL: "http://localhost:1234/v1"))
         p.shortcuts = [Shortcut(name: "Translate", hotkey: Hotkey(keyCode: 79), steps: [Step(.ask, value: "Translate into English.")])]
         store.save(p)
@@ -139,14 +139,14 @@ import Testing
         defer { defaults.removePersistentDomain(forName: suite) }
         defaults.set(Data(#"{"api":{"providers":[]}}"#.utf8), forKey: PreferencesStore.key)
         let loaded = PreferencesStore(defaults: defaults).load()
-        #expect(loaded.imps == ImpPreferences().imps)
+        #expect(loaded.imps.isEmpty, "a fresh install has no Imp until one is hatched with a Brain")
         #expect(loaded.shortcuts.isEmpty, "a fresh install has no triggers")
     }
 
     @Test func aFreshInstallHasNoTriggers() {
         let (defaults, suite) = scratch()
         defer { defaults.removePersistentDomain(forName: suite) }
-        #expect(ImpPreferences().shortcuts.isEmpty)
+        #expect(ImpPreferences.withWaitingImp().shortcuts.isEmpty)
         #expect(PreferencesStore(defaults: defaults).load().shortcuts.isEmpty)
     }
 }

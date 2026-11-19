@@ -19,8 +19,10 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `anim.help.shape` | Squash or stretch the body, like a ball. | Aplasta o estira el cuerpo, como una pelota. | 把身体压扁或拉长，像个球。 |
 | `anim.help.symbol` | A small picture that pops up beside the Imp. | Un dibujo pequeño que aparece junto al Imp. | 在 Imp 旁边冒出来的小图案。 |
 | `anim.help.tilt` | How far the Imp leans to the side. | Cuánto se inclina el Imp hacia un lado. | Imp 向一侧倾斜多少。 |
+| `animations.empty` | No animations yet. | Aún no hay animaciones. | 还没有动画。 |
 | `animations.find` | Browse | Explorar | 浏览 |
-| `animations.from_den` | Made | Hechas | 自制 |
+| `animations.help.list` | Animations made for only this Imp come first. The shared ones follow: changing one changes it for every Imp. | Primero van las animaciones hechas solo para este Imp. Siguen las compartidas: cambiar una la cambia para todos los Imps. | 先是只为这个 Imp 做的动画，后面是共用的动画：修改共用的动画会影响所有 Imp。 |
+| `animations.list` | Animations | Animaciones | 动画 |
 | `animations.new` | New | Nueva | 新建 |
 | `animations.search` | Search | Buscar | 搜索 |
 | `app.language` | Language | Idioma | 界面语言 |
@@ -94,17 +96,63 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `computer.help.access` | What the Imp may reach on this Mac. | Lo que el Imp puede usar en este Mac. | Imp 可以在这台 Mac 上使用的东西。 |
 | `computer.help.control` | Sees and operates other apps. Needs the Screen & System Audio Recording and Accessibility permissions. | Ve y maneja otras apps. Necesita los permisos de Grabación de pantalla y audio del sistema y de Accesibilidad. | 查看并操作其他应用。需要“屏幕与系统音频录制”和“辅助功能”权限。 |
 | `computer.help.senses` | Reads the battery, processor, network and open apps, and the page open in the browser. | Lee la batería, el procesador, la red y las apps abiertas, y la página abierta en el navegador. | 读取电池、处理器、网络和打开的应用，以及浏览器中打开的页面。 |
+| `devices.call_all_home` | Call all home | Traerlos a todos | 全部叫回家 |
+| `devices.channel.title` | {from} and {to} | {from} y {to} | {from} 与 {to} |
+| `devices.chip.label_ours` | {name}, an Imp of this Mac, on {node} | {name}, un Imp de este Mac, en {node} | {name}，这台 Mac 的 Imp，在 {node} 上 |
+| `devices.chip.label_visitor` | {name}, an Imp from another device, on {node} | {name}, un Imp de otro dispositivo, en {node} | {name}，来自其他设备的 Imp，在 {node} 上 |
 | `devices.copy_link.help` | For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while. | Para un dispositivo que no puede escanear: pega el enlace en Escanear código en el otro dispositivo. Mantenlo en privado. Permite que un dispositivo se vincule con este Mac durante un rato. | 适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。 |
+| `devices.edge.label` | {from} to {to}. {route}. {state} | {from} con {to}. {route}. {state} | {from} 到 {to}。{route}。{state} |
 | `devices.empty` | No devices yet. | Aún no hay dispositivos. | 还没有设备。 |
+| `devices.forget.one` | Forget this device… | Olvidar este dispositivo… | 忘记此设备… |
+| `devices.hop.add` | Add a Hop | Añadir un Hop | 添加 Hop |
+| `devices.hop.pill` | Hop: {host} | Hop: {host} | Hop：{host} |
+| `devices.hop.state.idle` | Not in use | Sin uso | 未使用 |
+| `devices.hop.state.needs_address` | Needs an address | Necesita una dirección | 需要地址 |
+| `devices.hop.state.off` | Off | Desactivado | 已关闭 |
+| `devices.imp.settings` | Its settings | Sus ajustes | 它的设置 |
+| `devices.imp.talks` | Can message | Puede escribir a | 可以给谁发消息 |
+| `devices.imp.talks.info` | The Imps this one can message. They are lit on the map while it is selected. | Los Imps a los que este puede escribir. Se iluminan en el mapa mientras está seleccionado. | 这个 Imp 可以给哪些 Imp 发消息。选中它时，它们会在地图上高亮。 |
+| `devices.imp.tools` | Its tools | Sus herramientas | 它的工具 |
+| `devices.inspector.holds` | Imps of this Mac it holds | Imps de este Mac que tiene | 它持有的这台 Mac 的 Imp |
+| `devices.inspector.reach` | How it is reached | Cómo se llega | 连接方式 |
+| `devices.inspector.through_hop` | Reached through it | Alcanzados por él | 通过它连接的设备 |
 | `devices.list.info` | Devices linked with this one. Mine lets a device act for you. | Dispositivos vinculados con este. Mío permite que un dispositivo actúe por ti. | 与这台设备连接的设备。“我的”让设备可以代表你行事。 |
+| `devices.map.summary` | Map of your devices: {devices} linked, {ours} Imps of this Mac, {visitors} Imps of other devices. | Mapa de tus dispositivos: {devices} vinculados, {ours} Imps de este Mac, {visitors} Imps de otros dispositivos. | 设备地图：已链接 {devices} 台设备，这台 Mac 的 Imp {ours} 个，其他设备的 Imp {visitors} 个。 |
+| `devices.node.label` | {name}, {state}. Imps: {imps} | {name}, {state}. Imps: {imps} | {name}，{state}。Imp：{imps} |
+| `devices.node.label_empty` | {name}, {state} | {name}, {state} | {name}，{state} |
+| `devices.node.this_mac_label` | {name}, this Mac | {name}, este Mac | {name}，这台 Mac |
+| `devices.place.body` | On | En | 在 |
+| `devices.place.mind` | Thinks on | Piensa en | 思考于 |
 | `devices.reach.away` | Away | No disponible | 不在线 |
 | `devices.reach.direct` | Direct, on the local network | Directo, en la red local | 直连，走本地网络 |
+| `devices.reach.last_seen` | Last known address | Última dirección conocida | 最近已知地址 |
+| `devices.reach.none` | Not reachable | No accesible | 无法访问 |
 | `devices.reach.server` | Through the server | A través del servidor | 经由服务器中转 |
+| `devices.reach.yes` | Reachable | Accesible | 可访问 |
+| `devices.route.hop` | Through the Hop | A través del Hop | 通过 Hop |
+| `devices.route.hop_at` | Through the Hop at {address} | A través del Hop en {address} | 通过 Hop，地址 {address} |
+| `devices.route.local` | On the local network | En la red local | 通过本地网络 |
+| `devices.route.local_at` | On the local network at {address} | En la red local en {address} | 通过本地网络，地址 {address} |
+| `devices.route.tag_local` | Wi-Fi | Wi-Fi | Wi-Fi |
 | `devices.scan` | Scan code | Escanear código | 扫描代码 |
 | `devices.show` | Show code | Ver código | 显示代码 |
+| `devices.state.connected` | Connected | Conectado | 已连接 |
+| `devices.state.connecting` | Connecting | Conectando | 正在连接 |
+| `devices.state.offline` | Away | Ausente | 不在线 |
+| `devices.tether.label` | {imp} is on {node} and thinks on {home} | {imp} está en {node} y piensa en {home} | {imp} 在 {node} 上，在 {home} 上思考 |
+| `devices.tether.tools` | Tools it may use there | Herramientas que puede usar allí | 它在那里可用的工具 |
+| `devices.tether.tools.info` | What the Imp may use while this device asks it. Change it on the device. | Lo que el Imp puede usar cuando este dispositivo le pide algo. Se cambia en el dispositivo. | 此设备向 Imp 提问时，Imp 可使用的工具。请在该设备上修改。 |
 | `devices.this.info` | Link another device here. The dot shows whether The Hop lets devices find each other from anywhere. | Vincula otro dispositivo aquí. El punto indica si The Hop permite que se encuentren desde cualquier lugar. | 在这里连接另一台设备。圆点表示 The Hop 是否让设备能从任何地方互相找到。 |
-| `devices.this_mac` | This Mac | Este Mac | 这台 Mac |
+| `devices.this_mac_badge` | This Mac | Este Mac | 这台 Mac |
 | `devices.title` | Devices | Dispositivos | 设备 |
+| `devices.tools.commands` | Commands | Comandos | 命令 |
+| `devices.tools.info` | When this device asks one of your Imps, the Imp can use the tools that are on here. Switch off what it should not touch for this device. | Cuando este dispositivo le pide algo a uno de tus Imps, el Imp puede usar las herramientas activadas aquí. Desactiva lo que no debe tocar para este dispositivo. | 当此设备向你的某个 Imp 提问时，Imp 可以使用这里开启的工具。关掉不希望它为此设备使用的工具。 |
+| `devices.tools.locked` | No tools until Mine | Sin herramientas hasta ser Mío | 设为“我的”之前没有工具 |
+| `devices.tools.not_mine` | Imps answer this device without tools. Turn on Mine to choose what they may use. | Los Imps responden a este dispositivo sin herramientas. Activa Mío para elegir lo que pueden usar. | Imp 回答此设备时不使用工具。打开“我的”后可选择它们能用什么。 |
+| `devices.tools.title` | Tools Imps may use from this device | Herramientas que los Imps pueden usar desde este dispositivo | Imp 可为此设备使用的工具 |
+| `devices.tools.toggle` | Show or hide the switches | Mostrar u ocultar los interruptores | 显示或隐藏开关 |
+| `devices.unknown_device` | a device not linked with this Mac | un dispositivo no vinculado con este Mac | 未与这台 Mac 链接的设备 |
+| `devices.visitor.send_home` | Send home | Enviar a casa | 送回家 |
 | `error.brain.key` | {service} did not accept the key. Check it and try again. | {service} no aceptó la clave. Revísala e inténtalo de nuevo. | {service} 不接受这个密钥。请检查后重试。 |
 | `error.brain.local` | No model answered. Make sure it is running, then try again. | Ningún modelo respondió. Comprueba que esté en marcha e inténtalo de nuevo. | 没有模型回应。请确认它正在运行，然后重试。 |
 | `error.brain.model` | {service} does not have the model {model}. Pick another one. | {service} no tiene el modelo {model}. Elige otro. | {service} 没有模型 {model}。请换一个。 |
@@ -169,11 +217,15 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `firstrun.error.empty_key` | Paste your key to continue. | Pega tu clave para continuar. | 请粘贴你的密钥后再继续。 |
 | `firstrun.error.key_not_saved` | Imp could not save the key. Try again. | Imp no pudo guardar la clave. | Imp 无法保存密钥。请再试一次。 |
 | `firstrun.error.no_model` | Pick a model to continue. | Elige un modelo para continuar. | 请选择一个模型再继续。 |
+| `firstrun.link` | From a device | Desde un dispositivo | 来自设备 |
+| `firstrun.link.help` | Link a device and bring an Imp from it instead | Vincula un dispositivo y trae un Imp de él | 连接设备，改为从它带来一个 Imp |
 | `firstrun.model.search` | Search or type a model | Busca o escribe un modelo | 搜索或输入模型名 |
 | `firstrun.service.address` | Address | Dirección | 地址 |
-| `firstrun.service.found` | Found here | Hallado aquí | 在这里找到 |
+| `firstrun.service.found` | Found on this Mac | Encontrado en este Mac | 在这台 Mac 上找到 |
 | `firstrun.service.host_note` | Use the address of your computer on this network. | Usa la dirección de tu equipo en esta red. | 请填写你电脑在这个网络里的地址。 |
 | `firstrun.service.key` | Your key | Tu clave | 你的密钥 |
+| `firstrun.service.key_local` | Not needed for local models | No hace falta para modelos locales | 本地模型不需要 |
+| `firstrun.service.kind` | Kind of service | Tipo de servicio | 服务类型 |
 | `firstrun.service.loading` | Loading models… | Cargando modelos… | 正在加载模型… |
 | `firstrun.service.local` | Local | Local | 本地 |
 | `firstrun.service.note` | Any OpenAI-compatible API. Your key stays on this device. | Cualquier API compatible con OpenAI. Tu clave se queda en este dispositivo. | 任何兼容 OpenAI 的 API。密钥只保存在这台设备上。 |
@@ -182,7 +234,8 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `firstrun.step.service` | Service | Servicio | 服务 |
 | `firstrun.wake` | Wake {name} up | Despertar {name} | 叫醒 {name} |
 | `games.again` | Again | Otra vez | 再来一次 |
-| `games.best` | Best {count} | Récord {count} | 最高 {count} |
+| `games.best` | Best {count} {imps} | Récord {count} {imps} | {imps}最高分 {count} |
+| `games.best_imps` | one: with {count} Imp / other: with {count} Imps | one: con {count} Imp / other: con {count} Imps | other: {count} 个 Imp 的 |
 | `games.echo` | Echo | Eco | 回响 |
 | `games.embers` | Embers | Brasas | 余烬 |
 | `games.how_to` | How to play | Cómo se juega | 游戏玩法 |
@@ -210,10 +263,13 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `home.canvas.hint` | Imps move around here. Press Tab to go from one Imp to the next. | Los Imps se mueven por aquí. Pulsa Tab para ir de un Imp al siguiente. | Imp 在这里走动。按 Tab 键可在各个 Imp 之间切换。 |
 | `home.canvas.label` | The Imps' home | El hogar de Imps | Imp 的家园 |
 | `home.corner.devices` | Devices | Equipos | 设备 |
+| `home.corner.devices.away` | a linked device is away | un dispositivo vinculado está ausente | 有已链接的设备不在线 |
 | `home.corner.devices.connected` | one: {count} connected / other: {count} connected | one: {count} conectado / other: {count} conectados | other: 已连接 {count} 台 |
 | `home.corner.show_hidden` | Hidden | Ocultos | 已隐藏 |
-| `home.empty.hint` | Hatch your first Imp to get started. | Haz nacer a tu primer Imp para empezar. | 孵化你的第一个 Imp，就可以开始了。 |
-| `home.empty.new_imp` | New | Nuevo | 新建 |
+| `home.empty.link` | Link a device | Vincular un dispositivo | 连接设备 |
+| `home.empty.link.help` | Link a device and bring an Imp from it | Vincula un dispositivo y trae un Imp de él | 连接设备，并从它带来一个 Imp |
+| `home.empty.new_imp` | Hatch | Incubar | 孵化 |
+| `home.empty.new_imp.help` | Hatch an Imp and give it a Brain | Haz nacer un Imp y dale un cerebro | 孵化一个 Imp，并给它一个大脑 |
 | `home.empty.title` | No Imps yet | Sin Imps aún | 还没有 Imp |
 | `home.hidden.bring_back` | Bring back {name} | Recuperar a {name} | 让 {name} 回来 |
 | `home.hidden.empty` | No hidden Imps | Sin Imps ocultos | 没有隐藏的 Imp |
@@ -252,10 +308,10 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `imp_settings.goodbye` | Goodbye | Adiós | 再见 |
 | `imp_settings.goodbye.a11y` | Say goodbye to {name} | Decirle adiós a {name} | 向 {name} 说再见 |
 | `imp_settings.list.label` | Settings for {name} | Ajustes de {name} | {name} 的设置 |
+| `imp_settings.marker.animations` | Animations | Animaciones | 动画 |
 | `imp_settings.marker.brain` | Brain | Cerebro | 大脑 |
 | `imp_settings.marker.computer` | Computer | Ordenador | 电脑 |
 | `imp_settings.marker.look` | Look | Aspecto | 外观 |
-| `imp_settings.marker.moves` | Moves | Movimientos | 动作 |
 | `imp_settings.marker.personality` | Personality | Personalidad | 个性设置 |
 | `imp_settings.marker.tools` | Tools | Herramientas | 工具 |
 | `imp_settings.marker.triggers` | Triggers | Disparadores | 触发器 |
@@ -336,7 +392,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `menu.canvas.show_hidden` | Hidden ({count}) | Ocultos ({count}) | 已隐藏（{count}） |
 | `menu.group.free_help` | They step out onto the desktop, right where they stand. | Salen al escritorio, justo donde están. | 它们走到桌面上，就在各自站着的地方。 |
 | `menu.group.goodbye` | Goodbye to {count} Imps… | Adiós a {count} Imps… | 向 {count} 个 Imp 告别… |
-| `menu.group.goodbye_off` | One Imp always stays. Leave at least one out of the group. | Siempre se queda un Imp. Deja al menos uno fuera del grupo. | 总要留下一个 Imp。请至少留一个不选。 |
 | `menu.group.hide_help` | They hide until you show them again. Their triggers rest meanwhile. | Se esconden hasta que los vuelvas a mostrar. Mientras, sus disparadores descansan. | 它们会藏起来，直到你再次显示。在此期间它们的触发器暂停。 |
 | `menu.group.kit_help` | Copies one kit with all of them, to share or keep. | Copia un kit con todos ellos, para compartir o guardar. | 把它们全部复制为一个套件，用于分享或保存。 |
 | `menu.group.title` | {count} Imps | {count} Imps | {count} 个 Imp |
@@ -369,9 +424,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `menu.imp.visit` | Visit | Visitar | 去做客 |
 | `menu.imp.visit_none` | Visit another device | Visitar otro dispositivo | 去别的设备做客吧 |
 | `menu.imp.visit_tip` | {name} visits {device} and can come back. | {name} visita {device} y puede volver. | {name} 去 {device} 做客，还可以回来。 |
-| `moves.animations` | Animations | Animaciones | 动画 |
-| `moves.empty` | No animations yet. | Aún no hay animaciones. | 还没有动画。 |
-| `moves.help.own` | Moves made for only this Imp. They play instead of the shared ones. | Movimientos hechos solo para este Imp. Se usan en lugar de los compartidos. | 只为这个 Imp 做的动作。它们会代替共用的动作。 |
 | `personality.about` | Description | Descripción | 描述 |
 | `personality.about_hint` | Researching on the web, fixing code… | Investigar en la web, arreglar código… | 上网查资料、修代码…… |
 | `personality.help.about` | One or two lines. The other Imps read it to know whom to ask for what. | Una o dos líneas. Los otros Imps la leen para saber a quién pedirle cada cosa. | 一两行字。其他 Imp 会读它，来决定什么事该问谁。 |
@@ -519,14 +571,10 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `scope.changed` | Changed for {name} | Cambiado para {name} | 为 {name} 修改 |
 | `scope.every_imp` | Every Imp | Todos los Imps | 所有 Imp |
 | `scope.only` | Only {name} | Solo {name} | 仅 {name} |
-| `servers.address` | Address | Dirección | 地址 |
 | `servers.address_hint` | Start with https:// | Empieza con https:// | 以 https:// 开头 |
 | `servers.hop.about` | Lets your devices find each other. It only passes encrypted data. | Permite que tus dispositivos se encuentren. Solo transmite datos cifrados. | 让你的设备能够找到彼此，只转发加密数据。 |
-| `servers.hop.in_use` | Using the Hop at {address} | Usando el Hop en {address} | 正在使用 {address} 上的 Hop |
-| `servers.hop.needed` | Linking from anywhere needs a Hop. Add one in Settings under Devices. Devices on the same network still find each other. | Enlazar desde cualquier lugar necesita un Hop. Añade uno en Ajustes, en Dispositivos. Los dispositivos de la misma red se siguen encontrando. | 随时随地连接需要 Hop。请在“设置”的“设备”里添加。同一网络里的设备仍然可以找到彼此。 |
 | `servers.hop.off_note` | Only devices on the same network find each other. | Solo se encuentran los dispositivos de la misma red. | 只有同一网络中的设备能互相找到。 |
 | `servers.hop.title` | Hop | Hop | Hop |
-| `servers.off` | Off | Apagado | 已关闭 |
 | `servers.preset.custom` | Custom | A medida | 自定义 |
 | `servers.preset.imp` | Imp's servers | Servidores Imp | Imp 的服务器 |
 | `servers.preset.imp_note` | The default, run by the Imp project. | El predeterminado, del proyecto Imp. | 默认选项，由 Imp 项目运营。 |
@@ -545,7 +593,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.app.look.info` | How the app looks. | Cómo se ve la app. | 应用看起来的样子。 |
 | `settings.app.system.info` | How the app starts and which language it speaks. | Cómo arranca la app y en qué idioma habla. | 应用如何启动，以及使用哪种语言。 |
 | `settings.attention.device_offline` | {device} is offline. | {device} sin conexión. | {device} 已离线。 |
-| `settings.attention.hop_off` | The Hop is not set up. | Hop no está configurado. | Hop 尚未设置。 |
 | `settings.attention.imp_no_brain` | {name} has no Brain. | {name} no tiene cerebro. | {name} 还没有大脑。 |
 | `settings.backup.export.title` | Export | Exportar | 导出 |
 | `settings.backup.import.title` | Import | Importar | 导入 |
@@ -594,15 +641,12 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.devices.forget_all.title` | Forget all | Olvidar todo | 全部忘记 |
 | `settings.devices.link.info` | Link another device so your Imps can visit it. | Vincula otro dispositivo para que tus Imps puedan visitarlo. | 连接另一台设备，让你的 Imp 去做客。 |
 | `settings.devices.link.title` | Link | Enlazar | 关联 |
-| `settings.devices.mine.help` | On for your own devices, off for a friend's | Activado en tus dispositivos, apagado en el de un amigo | 自己的设备打开，朋友的设备关闭 |
 | `settings.devices.mine.info` | Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools. | Actívalo en un dispositivo que sea tuyo. Así sus Imps pueden escribir a los Imps de aquí, los Imps le responden con sus herramientas, puede abrir los archivos de cualquier Imp y un Imp que le lances va sin preguntar. Actívalo en los dos dispositivos para que los Imps hablen en ambos sentidos. Déjalo apagado en el de un amigo: los Imps le siguen respondiendo, pero sin herramientas. | 如果这台设备是你自己的，就打开它。这样它上面的 Imp 可以给这里的 Imp 发消息，Imp 回答它时会使用工具，它能打开任何 Imp 的文件，把 Imp 扔给它时也不会先询问。两台设备都打开，Imp 才能互相对话。朋友的设备请保持关闭：Imp 仍会回答它，但不使用工具。 |
 | `settings.devices.pair.title` | Link | Enlazar | 关联 |
-| `settings.group.animations` | Animations | Animaciones | 动画效果 |
 | `settings.group.app` | App | App | App |
 | `settings.group.backup` | Backup | Copia | 备份 |
 | `settings.group.brains` | Brains | Cerebros | 大脑 |
 | `settings.group.bubble` | Bubble | Burbuja | 气泡 |
-| `settings.group.devices` | Devices | Equipos | 设备 |
 | `settings.group.privacy` | Permissions | Permisos | 隐私权限 |
 | `settings.group.servers` | Servers | Servidores | 服务器 |
 | `settings.group.sharing` | Sharing | Compartir | 共享 |
@@ -663,10 +707,14 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.tool.headers.info` | Extra lines sent with each request, like a password. | Líneas extra enviadas con cada petición, como una contraseña. | 随每个请求发送的额外内容，比如口令。 |
 | `settings.tool.name.info` | A name you pick for this tool. | Un nombre a tu gusto. | 你给这个工具取的名字。 |
 | `settings.tool.variables.info` | Secret values the tool needs to run. | Valores secretos que la herramienta necesita. | 这个工具运行时需要的秘密值。 |
-| `sharing.browse` | Browse | Explorar | 浏览 |
-| `sharing.gallery` | Gallery | Galería | 图库 |
-| `sharing.gallery.info` | Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp. | Encuentra animaciones, disparadores e Imps que otros compartieron, o importa un kit. Para compartir los tuyos, usa el botón de compartir de un Imp. | 查找他人分享的动画、触发器和 Imp，或导入你的套件。要分享你的，请使用 Imp 上的分享按钮。 |
+| `sharing.animations.info` | Every animation, shared or an Imp's own. Try one, change it, save it as a sticker or share it as a kit. | Todas las animaciones, compartidas o propias de un Imp. Pruébalas, cámbialas, guárdalas como sticker o compártelas como kit. | 所有动画，无论共用还是某个 Imp 自己的。可以试播、修改、存为贴纸或分享为套件。 |
 | `sharing.import` | Import | Importar | 导入 |
+| `sharing.none` | None yet | Nada aún | 暂无 |
+| `sharing.open_in` | Open in {name}'s settings | Abrir en los ajustes de {name} | 在 {name} 的设置中打开 |
+| `sharing.share_all` | Share all as a kit | Compartir todo como kit | 全部分享为套件 |
+| `sharing.tools.info` | Every tool added from outside, with a dot for each Imp that uses it. Keys are left out when you share one. | Todas las herramientas añadidas de fuera, con un punto por cada Imp que la usa. Al compartir una, las claves no se incluyen. | 所有从外部添加的工具，每个使用它的 Imp 对应一个圆点。分享时不包含密钥。 |
+| `sharing.tools.unused` | No Imp uses it | Ningún Imp la usa | 没有 Imp 使用它 |
+| `sharing.triggers.info` | Every trigger, shared or an Imp's own. Share one as a kit, or open it in the settings of its Imp to change it. | Todos los disparadores, compartidos o propios de un Imp. Comparte uno como kit, o ábrelo en los ajustes de su Imp para cambiarlo. | 所有触发器，无论共用还是某个 Imp 自己的。可以把其中一个分享为套件，或在它所属 Imp 的设置里打开并修改。 |
 | `sheets.animations.nothing_yet` | No animations yet. | Aún no hay animaciones. | 还没有动画。 |
 | `state.link_lost` | The link to {device} dropped. It reconnects on its own. | Se cortó el enlace con {device}. Se reconectará solo. | 与 {device} 的连接断开了，会自动重新连接。 |
 | `state.offline.imp` | {name} cannot reach its Brain. It wakes up when you are back online. | {name} no puede llegar a su cerebro. Despertará cuando vuelvas a tener conexión. | {name} 连不上它的大脑。重新联网后它就会醒来。 |
@@ -725,6 +773,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tools.help.browser` | Lets the Imp look at pages and use the browser you opened for it. | Deja al Imp ver páginas y usar el navegador que le abriste. | 让 Imp 查看网页，并使用你为它打开的浏览器。 |
 | `tools.help.mcp` | Extra tools added from outside. Each one gives the Imp new things to do. | Herramientas extra añadidas de fuera. Cada una da al Imp cosas nuevas que hacer. | 从外面加进来的额外工具。每个都让 Imp 多会一些事。 |
 | `tools.help.server` | A program or website that gives the Imp more tools. | Un programa o sitio web que da más herramientas al Imp. | 给 Imp 提供更多工具的程序或网站。 |
+| `tools.kind` | Kind of tool | Tipo de herramienta | 工具类型 |
 | `tools.mcp_connected` | Connected | Conectado | 已连接 |
 | `tools.mcp_failed` | Could not start | No se pudo iniciar | 启动失败 |
 | `tools.mcp_needs_signin` | Sign-in needed | Falta iniciar sesión | 需要登录 |

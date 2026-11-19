@@ -180,10 +180,16 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     }
     /// Optional, so settings saved before it still load.
     private var dictationLanguageList: [String]?
-    /// The troupe. Always at least one: the little red Imp, waiting in the app's window.
-    public var imps: [ImpProfile] = [.waiting]
+    /// The tool groups switched off for each linked device (see `DeviceToolLimits`). Stored only once set.
+    public var deviceToolLimits: DeviceToolLimits {
+        get { toolLimits ?? DeviceToolLimits() }
+        set { toolLimits = newValue }
+    }
+    private var toolLimits: DeviceToolLimits?
+    /// The troupe. It may be empty: an Imp is hatched with its first Brain (see `FirstRunTarget`).
+    public var imps: [ImpProfile] = []
 
-    /// Bare settings: one waiting Imp and nothing else, with no triggers and no animations. A fresh
+    /// Bare settings: no Imps and nothing else, with no triggers and no animations. A fresh
     /// install starts from here. Decoding saved settings never goes through here.
     public init() {}
 
@@ -229,11 +235,3 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     }
 }
 
-extension ImpProfile {
-    /// The first Imp of a fresh install: deactivated, so it waits in the app's window to be let out.
-    public static var waiting: ImpProfile {
-        var p = ImpProfile.imp
-        p.isActive = false
-        return p
-    }
-}

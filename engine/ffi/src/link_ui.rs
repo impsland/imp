@@ -3,7 +3,7 @@
 
 use crate::link::{LinkError, from_json, json};
 use imp_engine::link::lanes::{self, Admission};
-use imp_engine::link::map::{self, DeviceMap, MapImp, MapPeer};
+use imp_engine::link::map::{self, DeviceMap, MapImp, MapPeer, MapRoutes};
 use imp_engine::link::messages::{LinkEntry, LinkSide, LinkStaged};
 use imp_engine::link::shake::{
     self, Decision, Direction, Sensitivity, ShakeImp, ShakePeer, ShakeSettings,
@@ -427,20 +427,28 @@ pub fn link_shake_decide(
     })
 }
 
-/// The Devices map. Peers, Imps and visitors come as JSON, and so does the map that comes back.
+/// The Devices map. Routes, peers, Imps and visitors come as JSON, and so does the map that comes back.
+/// `this_routes` is empty before the node is open.
 #[uniffi::export]
 pub fn link_device_map(
     this_device: String,
+    this_routes: String,
     peers: String,
     server: String,
     imps: String,
     visitors: String,
 ) -> Result<String, LinkError> {
+    let this_routes: Option<MapRoutes> = if this_routes.trim().is_empty() {
+        None
+    } else {
+        Some(from_json(&this_routes)?)
+    };
     let peers: Vec<MapPeer> = from_json(&peers)?;
     let imps: Vec<MapImp> = from_json(&imps)?;
     let visitors: Vec<LinkStaged> = from_json(&visitors)?;
     Ok(json(&DeviceMap::build(
         &this_device,
+        this_routes.as_ref(),
         &peers,
         &server,
         &imps,

@@ -10,7 +10,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
     /// Changing its own character.
     case look
     /// Animations (playing, showing, making, removing) and moving around the screen.
-    case moves
+    case animations
     /// Its own triggers: adding, listing, removing them.
     case triggers
     /// MCP servers and kits: adding, listing, removing, exporting them.
@@ -29,7 +29,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
         switch self {
         case .personality: String(localized: "Personality")
         case .look: String(localized: "Look")
-        case .moves: String(localized: "Moves")
+        case .animations: String(localized: "Animations")
         case .triggers: String(localized: "Triggers")
         case .tools: String(localized: "Tools")
         case .senses: String(localized: "Senses")
@@ -41,7 +41,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
         switch self {
         case .personality: "theatermasks.fill"
         case .look: "paintpalette.fill"
-        case .moves: "figure.dance"
+        case .animations: "figure.dance"
         case .triggers: "bolt.fill"
         case .tools: "wrench.and.screwdriver.fill"
         case .senses: "sensor.fill"
@@ -53,7 +53,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
         switch self {
         case .personality: String(localized: "Speaks aloud, messages the other Imps, opens their files and opens settings for you.")
         case .look: String(localized: "Changes its own character and the background behind the Imps.")
-        case .moves: String(localized: "Plays, shows, makes and removes animations, and moves around the screen.")
+        case .animations: String(localized: "Plays, shows, makes and removes animations, and moves around the screen.")
         case .triggers: String(localized: "Lists, adds and removes its triggers.")
         case .tools: String(localized: "Lists, adds and removes MCP servers and kits.")
         case .senses: String(localized: "Reads the battery, processor, network and open apps, and the page open in the browser.")
@@ -211,6 +211,8 @@ public enum OwnTools {
                     + "a gentle animation (floating clouds, a starry sky, a poker table with a seat for each Imp…). It fills the whole window "
                     + "under every Imp at any size, and is never clicked or scrolled, so make it decoration, not a page to use. One self-contained "
                     + "document, at most \(RoomBackground.maxBytes / 1024) KB: inline CSS, SVG, canvas and JavaScript. https pictures and fonts may load. "
+                    + "The page must paint the whole window itself (full-size sky or colour on html and body, `position: fixed` or `absolute` for every "
+                    + "scene element); what it leaves transparent shows the app's plain surface. "
                     + "It cannot navigate, open windows or play sound. Keep motion slow and soft, and stop it under `prefers-reduced-motion`. "
                     + "Match light and dark with `prefers-color-scheme` if the user did not ask for colours. `reset`: the plain background again. "
                     + "Every Imp shares it, so ask before replacing one the user asked for.",
@@ -255,7 +257,7 @@ public enum OwnTools {
             specs.append(contentsOf: animatorSpecs(animations).filter { $0.name == setTraits })
             specs.append(contentsOf: backgroundSpecs(where: "the home window on the Mac"))
         }
-        if groups.contains(.moves) {
+        if groups.contains(.animations) {
             specs.append(playSpec(animations: animations))
             var targets = "Where to go: a named place (\(places.joined(separator: ", "))), or x/y as fractions of the screen "
                 + "(0…1, from its top-left corner)."

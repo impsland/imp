@@ -82,7 +82,7 @@ pub fn mcp_id(server: &str, tool: &str) -> String {
 pub const GROUPS: [(&str, bool); 7] = [
     ("personality", true),
     ("look", true),
-    ("moves", true),
+    ("animations", true),
     ("triggers", true),
     ("tools", true),
     ("senses", true),
@@ -110,7 +110,7 @@ macro_rules! built_in_tools {
                 }
             }
 
-            /// Its group (`moves`, `den`...).
+            /// Its group (`animations`, `den`...).
             pub fn group(self) -> &'static str {
                 match self {
                     $(Self::$variant => $group,)*
@@ -136,11 +136,11 @@ built_in_tools! {
     ImpSetTraits = ("look", "imp_set_traits"),
     ImpShowBackground = ("look", "imp_show_background"),
     ImpSetBackground = ("look", "imp_set_background"),
-    ImpPlayAnimations = ("moves", "imp_play_animations"),
-    ImpShowAnimation = ("moves", "imp_show_animation"),
-    ImpMakeAnimation = ("moves", "imp_make_animation"),
-    ImpRemoveAnimation = ("moves", "imp_remove_animation"),
-    ImpMove = ("moves", "imp_move"),
+    ImpPlayAnimations = ("animations", "imp_play_animations"),
+    ImpShowAnimation = ("animations", "imp_show_animation"),
+    ImpMakeAnimation = ("animations", "imp_make_animation"),
+    ImpRemoveAnimation = ("animations", "imp_remove_animation"),
+    ImpMove = ("animations", "imp_move"),
     ImpListTriggers = ("triggers", "imp_list_triggers"),
     ImpAddTrigger = ("triggers", "imp_add_trigger"),
     ImpRemoveTrigger = ("triggers", "imp_remove_trigger"),
@@ -169,7 +169,7 @@ pub fn built_in_named(name: &str) -> Option<ToolEntry> {
         .map(|(g, t)| ToolEntry::own(g, t))
 }
 
-/// The group (`moves`, `den`...) of the built-in tool the model calls `name`.
+/// The group (`animations`, `den`...) of the built-in tool the model calls `name`.
 pub fn group_of(name: &str) -> Option<&'static str> {
     BUILT_IN.iter().find(|(_, t)| *t == name).map(|(g, _)| *g)
 }

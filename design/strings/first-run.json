@@ -63,10 +63,10 @@
     "zh-Hans": "地址"
   },
   "firstrun.service.found": {
-    "note": "Marks a local preset that answers on this computer.",
-    "en": "Found here",
-    "es": "Hallado aquí",
-    "zh-Hans": "在这里找到"
+    "note": "Tooltip of the dot in Local when a model server answers on this Mac.",
+    "en": "Found on this Mac",
+    "es": "Encontrado en este Mac",
+    "zh-Hans": "在这台 Mac 上找到"
   },
   "firstrun.service.host_note": {
     "note": "Quiet line on the phone under a local preset: the address is the computer's.",
@@ -124,5 +124,29 @@
     "en": "Local",
     "es": "Local",
     "zh-Hans": "本地"
+  },
+  "firstrun.service.key_local": {
+    "note": "Placeholder of the disabled key field when a local model is chosen.",
+    "en": "Not needed for local models",
+    "es": "No hace falta para modelos locales",
+    "zh-Hans": "本地模型不需要"
+  },
+  "firstrun.service.kind": {
+    "note": "Screen reader name of the Remote or Local choice.",
+    "en": "Kind of service",
+    "es": "Tipo de servicio",
+    "zh-Hans": "服务类型"
+  },
+  "firstrun.link": {
+    "note": "Footer button of the first run on the Mac: bring an Imp from another device instead.",
+    "en": "From a device",
+    "es": "Desde un dispositivo",
+    "zh-Hans": "来自设备"
+  },
+  "firstrun.link.help": {
+    "note": "Tooltip of that button: opens the Link sheet.",
+    "en": "Link a device and bring an Imp from it instead",
+    "es": "Vincula un dispositivo y trae un Imp de él",
+    "zh-Hans": "连接设备，改为从它带来一个 Imp"
   }
 }

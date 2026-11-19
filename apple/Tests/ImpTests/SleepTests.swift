@@ -10,6 +10,7 @@ import ImpKit
     /// A Mac with one service that needs no key: an Imp that uses it can think.
     private func appWithLocalService() -> (AppModel, Service) {
         let app = AppModel(persist: false)
+        app.prefs.imps = [.waiting]
         let local = Service(name: "Studio", baseURL: "http://localhost:1234/v1", model: "qwen")
         app.prefs.ai.add(local)
         app.assistant.configure(ai: app.prefs.ai, servers: [], keychain: false)
@@ -18,6 +19,7 @@ import ImpKit
 
     @Test func anImpWithoutABrainSleepsThroughAReaction() {
         let app = AppModel(persist: false)
+        app.prefs.imps = [.waiting]
         let imp = ImpModel(id: app.prefs.imps[0].id, app: app)
         #expect(!imp.isReady)
         imp.react(.happy, for: 5)
@@ -81,6 +83,7 @@ import ImpKit
     /// wake-up trigger leaves it asleep.
     @Test func anImpWithoutABrainRefusesAtOnceAndStaysAsleep() {
         let app = AppModel(persist: false)
+        app.prefs.imps = [.waiting]
         let imp = ImpModel(id: app.prefs.imps[0].id, app: app)
         imp.startTyping()
         let bubble = imp.bubble

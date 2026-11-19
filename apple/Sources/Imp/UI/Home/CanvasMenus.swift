@@ -130,7 +130,6 @@ final class CanvasGroupMenu {
         let actions = HomeActions(model: model, router: router)
         let card = card, ids = ids
         let imps = ids.compactMap(model.profile)
-        let canGo = actions.canSayGoodbye(to: ids)
         return card.make(GroupMenuCard(names: imps.map(\.name), hues: imps.map(\.hue), scales: imps.map(\.scale)) { action in
             switch action {
             case .hide: card.later { actions.hide(ids) }
@@ -143,7 +142,7 @@ final class CanvasGroupMenu {
             GroupBrainPills(services: model.prefs.ai.services,
                             current: Self.brain(of: imps)) { actions.setBrain(ids, $0) }
             MenuDangerButton(item: MenuItem(id: "goodbye", icon: "trash", title: words("menu.group.goodbye", ids.count),
-                                            help: canGo ? "" : String(localized: "menu.group.goodbye_off"), enabled: canGo) {
+                                            enabled: actions.canSayGoodbye(to: ids)) {
                 card.later { actions.askGoodbye(ids) }
             })
         })

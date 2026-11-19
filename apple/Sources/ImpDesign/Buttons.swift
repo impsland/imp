@@ -153,3 +153,61 @@ public struct WideButtonStyle: ButtonStyle {
         }
     }
 }
+
+/// A button whose icon sits above its words, for a row of equal choices (a card's Done, Again and
+/// How to play). It takes a `Label`; `.primary` is filled with the tint (the one main action),
+/// `.secondary` is a soft pebble, like `WideButtonStyle`. The words wrap onto more lines, centred, rather
+/// than being cut or shrunk, so nothing truncates in a longer language; the button grows with Dynamic
+/// Type, and in a row (`fixedSize(horizontal: false, vertical: true)`) the buttons share one height.
+public struct StackedButtonStyle: ButtonStyle {
+    public var primary: Bool
+
+    public init(primary: Bool = false) { self.primary = primary }
+
+    public func makeBody(configuration: Configuration) -> some View {
+        Stacked(configuration: configuration, primary: primary)
+    }
+
+    private struct Stacked: View {
+        let configuration: Configuration
+        let primary: Bool
+        @Environment(\.impTint) private var tint
+        @Environment(\.isEnabled) private var enabled
+        @Environment(\.isFocused) private var focused
+        @Environment(\.accessibilityReduceMotion) private var reduceMotion
+        @ScaledMetric private var height = Sizing.hit * 2
+
+        var body: some View {
+            configuration.label
+                .labelStyle(StackedLabelStyle())
+                .foregroundStyle(primary ? AnyShapeStyle(OnTint(tint)) : AnyShapeStyle(Tone.text))
+                .padding(.horizontal, Spacing.small).padding(.vertical, Spacing.medium)
+                .frame(maxWidth: .infinity, minHeight: height, maxHeight: .infinity)
+                .background(shape.fill(primary ? AnyShapeStyle(TintFill(tint)) : AnyShapeStyle(Tone.card)))
+                .focusRing(shape, shown: focused)
+                .contentShape(shape)
+                .opacity(enabled ? (configuration.isPressed ? 0.8 : 1) : Opacity.disabled)
+                .scaleEffect(configuration.isPressed && !reduceMotion ? 0.98 : 1)
+        }
+
+        private var shape: RoundedRectangle { RoundedRectangle(cornerRadius: Radius.tile, style: .continuous) }
+    }
+}
+
+/// The icon over its title, both centred; the title wraps onto as many lines as it needs, never shrunk or cut.
+private struct StackedLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        VStack(spacing: Spacing.snug) {
+            configuration.icon.font(.icon(.large, weight: .semibold))
+            configuration.title
+                .font(Typeface.label)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+}
+
+extension ButtonStyle where Self == StackedButtonStyle {
+    public static var stackedPrimary: StackedButtonStyle { StackedButtonStyle(primary: true) }
+    public static var stackedSecondary: StackedButtonStyle { StackedButtonStyle() }
+}

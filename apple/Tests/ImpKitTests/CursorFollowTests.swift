@@ -41,7 +41,7 @@ extension FollowChange { var isApply: Bool { if case .apply = self { true } else
 
     @Test func followTriggersDecideTheRuntimeMode() {
         let imp = UUID()
-        let empty = ImpPreferences()
+        let empty = ImpPreferences.withWaitingImp()
         var p = empty
         let start = Shortcut(name: "f", performer: imp, trigger: Trigger(.start), steps: [Step(.follow, value: "hop")])
         let app = Shortcut(name: "g", performer: imp, trigger: Trigger(.app, value: "Safari"), steps: [Step(.follow, value: "glide")])

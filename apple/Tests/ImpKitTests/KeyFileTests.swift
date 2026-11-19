@@ -19,7 +19,7 @@ import Testing
     }
 
     @Test func theKeychainIsOptIn() throws {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         #expect(!p.keysInKeychain)
         p.keysInKeychain = true
         let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(p))

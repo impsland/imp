@@ -9,9 +9,10 @@ import ImpKit
         .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
 
     private static let sources: [String: String] = {
-        let root = repo.appendingPathComponent("apple/Sources/Imp/UI/Settings")
-        let files = (FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil)?.allObjects as? [URL] ?? [])
-            .filter { $0.pathExtension == "swift" }
+        // Settings lives in two places: the app-wide and per-Imp pages, and the Devices screen with its Link sheet.
+        let files = ["apple/Sources/Imp/UI/Settings", "apple/Sources/Imp/UI/Devices"].flatMap { path in
+            (FileManager.default.enumerator(at: repo.appendingPathComponent(path), includingPropertiesForKeys: nil)?.allObjects as? [URL] ?? [])
+        }.filter { $0.pathExtension == "swift" }
         return Dictionary(uniqueKeysWithValues: files.compactMap { url in
             (try? String(contentsOf: url, encoding: .utf8)).map { (url.lastPathComponent, $0) }
         })
@@ -37,8 +38,8 @@ import ImpKit
 
     @Test func everySettingRowIsInTheCatalog() {
         let titles = Set(SettingID.allCases.map(\.titleKey))
-        let files = ["AppPane", "BubblePane", "TalkingPane", "BrainsPane", "DevicesPane", "SharingPane", "BackupPane", "DevicesCard", "ServerRows", "PermissionsPage", "BrainPanel", "MemoryCard",
-                     "PersonalityPanel", "LookPanel", "ToolsPanel", "MovesPanel", "TriggersPanel", "AnimationsPane"]
+        let files = ["AppPane", "BubblePane", "TalkingPane", "BrainsPane", "SharingPane", "BackupPane", "ServerRows", "DevicesScreen", "ThisMacPage", "LinkedDevicePage", "HopSheet", "LinkDeviceSheet", "PermissionsPage", "BrainPanel", "MemoryCard",
+                     "PersonalityPanel", "LookPanel", "ToolsPanel", "AnimationsPanel", "TriggersPanel"]
         for file in files {
             let source = Self.sources[file + ".swift"] ?? ""
             #expect(!source.isEmpty, "\(file) not found")

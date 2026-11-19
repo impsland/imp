@@ -37,8 +37,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         model.start()
         // With nobody out on the desktop, say hello from the app's window.
         if model.imps.isEmpty { HomeWindow.shared.show(model) }
-        // A new user with no Brain: the Imp is asleep, and the first run offers to wake it.
-        if !model.prefs.firstRunSeen, !model.isReady { HomeWindow.shared.showFirstRun(model, imp: model.prefs.imps[0].id) }
+        // A new user has no Imp yet: the first run offers to hatch one with a Brain, once.
+        if !model.prefs.firstRunSeen, model.prefs.imps.isEmpty { HomeWindow.shared.showFirstRun(model) }
         log.info("Imp is awake")
     }
 

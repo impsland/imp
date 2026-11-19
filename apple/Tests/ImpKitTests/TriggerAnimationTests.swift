@@ -5,7 +5,7 @@ import Testing
 /// A trigger plays a made animation by its name, and kits bring the animation along wherever they land.
 @Suite struct TriggerAnimationTests {
     static func troupe() -> (prefs: ImpPreferences, pip: UUID, delight: UUID) {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         let pip = ImpProfile(name: "Pip", hue: 0.2, favoriteHue: 0.3, personality: "")
         prefs.imps = [pip]
         let delight = prefs.save(MadeAnimation(name: "hn_delight", beats: [AnimationBeat(duration: 1, mood: "happy")]), for: pip.id)
@@ -34,7 +34,7 @@ import Testing
         let kit = try Kit.parse(prefs.kit(sharing: trigger, named: "HN", imp: pip).json())
         #expect(kit.animations.map(\.title) == ["hn_delight"] && kit.problems.isEmpty)
         #expect(kit.triggers.first?.steps.map(\.act) == [.play, .say])
-        var other = ImpPreferences()
+        var other = ImpPreferences.withWaitingImp()
         let bo = ImpProfile(name: "Bo", hue: 0.6, favoriteHue: 0.6, personality: "")
         other.imps = [bo]
         other.add(kit, triggers: Set(kit.triggers.map(\.id)), servers: [], animations: Set(kit.animations.map(\.id)), for: bo.id)

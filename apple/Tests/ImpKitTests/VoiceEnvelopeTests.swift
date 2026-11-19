@@ -51,7 +51,7 @@ import Testing
     }
 
     @Test func settingsSavedBeforeVoiceStylesStillLoad() throws {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         #expect(p.voiceStyle == .both)
         p.voiceStyle = .players
         var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(p)) as! [String: Any]

@@ -15,7 +15,7 @@ import Testing
         #expect(text.contains("npx -y @modelcontextprotocol/server-filesystem"))
         #expect(text.contains("https://mcp.example.org/x"))
         #expect(text.contains("Summarize"))
-        #expect(text.contains("own.moves.imp_play_animations"))
+        #expect(text.contains("own.animations.imp_play_animations"))
         #expect(text.contains("mcp.files.*"))
         #expect(permissions.hasCautions)
     }

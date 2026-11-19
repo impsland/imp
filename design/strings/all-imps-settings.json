@@ -95,12 +95,6 @@
     "es": "{name} no tiene cerebro.",
     "zh-Hans": "{name} 还没有大脑。"
   },
-  "settings.attention.hop_off": {
-    "note": "Item.",
-    "en": "The Hop is not set up.",
-    "es": "Hop no está configurado.",
-    "zh-Hans": "Hop 尚未设置。"
-  },
   "settings.attention.device_offline": {
     "note": "Item: a linked device cannot be reached.",
     "args": {
@@ -121,12 +115,6 @@
     "en": "Servers",
     "es": "Servidores",
     "zh-Hans": "服务器"
-  },
-  "settings.group.animations": {
-    "note": "Group title.",
-    "en": "Animations",
-    "es": "Animaciones",
-    "zh-Hans": "动画效果"
   },
   "settings.group.voice": {
     "note": "Group title. It was called Talking.",
@@ -229,12 +217,6 @@
     "es": "Apagado",
     "zh-Hans": "关闭"
   },
-  "servers.address": {
-    "note": "Field label.",
-    "en": "Address",
-    "es": "Dirección",
-    "zh-Hans": "地址"
-  },
   "servers.address_hint": {
     "note": "Hint in the address field.",
     "en": "Start with https://",
@@ -267,33 +249,6 @@
     "en": "Cannot reach it. Check the address.",
     "es": "No se puede conectar. Revisa la dirección.",
     "zh-Hans": "无法连接上，请检查地址。"
-  },
-  "servers.hop.in_use": {
-    "note": "Shows which Hop is in use.",
-    "args": {
-      "address": "string"
-    },
-    "en": "Using the Hop at {address}",
-    "es": "Usando el Hop en {address}",
-    "zh-Hans": "正在使用 {address} 上的 Hop"
-  },
-  "servers.hop.needed": {
-    "note": "Shown on a screen that needs The Hop when none is set.",
-    "en": "Linking from anywhere needs a Hop. Add one in Settings under Devices. Devices on the same network still find each other.",
-    "es": "Enlazar desde cualquier lugar necesita un Hop. Añade uno en Ajustes, en Dispositivos. Los dispositivos de la misma red se siguen encontrando.",
-    "zh-Hans": "随时随地连接需要 Hop。请在“设置”的“设备”里添加。同一网络里的设备仍然可以找到彼此。"
-  },
-  "servers.off": {
-    "note": "Shown next to a server choice that is off.",
-    "en": "Off",
-    "es": "Apagado",
-    "zh-Hans": "已关闭"
-  },
-  "animations.from_den": {
-    "note": "Heading of the animations you made or added.",
-    "en": "Made",
-    "es": "Hechas",
-    "zh-Hans": "自制"
   },
   "animations.find": {
     "note": "Button.",
@@ -426,12 +381,6 @@
     "en": "Talking",
     "es": "Conversar",
     "zh-Hans": "对话"
-  },
-  "settings.group.devices": {
-    "note": "Settings text.",
-    "en": "Devices",
-    "es": "Equipos",
-    "zh-Hans": "设备"
   },
   "settings.group.sharing": {
     "note": "Settings section: The Den, where Imps share things.",
@@ -720,12 +669,6 @@
     "en": "Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools.",
     "es": "Actívalo en un dispositivo que sea tuyo. Así sus Imps pueden escribir a los Imps de aquí, los Imps le responden con sus herramientas, puede abrir los archivos de cualquier Imp y un Imp que le lances va sin preguntar. Actívalo en los dos dispositivos para que los Imps hablen en ambos sentidos. Déjalo apagado en el de un amigo: los Imps le siguen respondiendo, pero sin herramientas.",
     "zh-Hans": "如果这台设备是你自己的，就打开它。这样它上面的 Imp 可以给这里的 Imp 发消息，Imp 回答它时会使用工具，它能打开任何 Imp 的文件，把 Imp 扔给它时也不会先询问。两台设备都打开，Imp 才能互相对话。朋友的设备请保持关闭：Imp 仍会回答它，但不使用工具。"
-  },
-  "settings.devices.mine.help": {
-    "note": "Hover help of the Mine switch of a linked device.",
-    "en": "On for your own devices, off for a friend's",
-    "es": "Activado en tus dispositivos, apagado en el de un amigo",
-    "zh-Hans": "自己的设备打开，朋友的设备关闭"
   },
   "settings.devices.call_home": {
     "note": "Help of the button on a linked device that takes back the Imps it holds.",
@@ -1021,12 +964,6 @@
     "es": "Escanear código",
     "zh-Hans": "扫描代码"
   },
-  "sharing.browse": {
-    "note": "Button on the Sharing page: look through The Den.",
-    "en": "Browse",
-    "es": "Explorar",
-    "zh-Hans": "浏览"
-  },
   "devices.copy_link.help": {
     "note": "Help of Copy Link in Link a device.",
     "en": "For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while.",
@@ -1093,12 +1030,6 @@
     "es": "En qué chat llega un mensaje de un Imp a otro.",
     "zh-Hans": "一个 Imp 发给另一个 Imp 的消息落在哪个聊天里。"
   },
-  "devices.this_mac": {
-    "note": "Title of the card for this Mac on the Devices page.",
-    "en": "This Mac",
-    "es": "Este Mac",
-    "zh-Hans": "这台 Mac"
-  },
   "devices.title": {
     "note": "Title of the card listing the linked devices.",
     "en": "Devices",
@@ -1140,18 +1071,6 @@
     "en": "Away",
     "es": "No disponible",
     "zh-Hans": "不在线"
-  },
-  "sharing.gallery": {
-    "note": "Title of the card on Sharing with Browse and Import.",
-    "en": "Gallery",
-    "es": "Galería",
-    "zh-Hans": "图库"
-  },
-  "sharing.gallery.info": {
-    "note": "Help on the Gallery card.",
-    "en": "Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp.",
-    "es": "Encuentra animaciones, disparadores e Imps que otros compartieron, o importa un kit. Para compartir los tuyos, usa el botón de compartir de un Imp.",
-    "zh-Hans": "查找他人分享的动画、触发器和 Imp，或导入你的套件。要分享你的，请使用 Imp 上的分享按钮。"
   },
   "sharing.import": {
     "note": "Button on the Sharing page: bring in a kit from a link or file.",
@@ -1198,5 +1117,50 @@
     "en": "The Imp decides",
     "es": "El Imp decide",
     "zh-Hans": "由 Imp 决定"
+  },
+  "sharing.triggers.info": {
+    "note": "Help of the Triggers list on the Sharing page.",
+    "en": "Every trigger, shared or an Imp's own. Share one as a kit, or open it in the settings of its Imp to change it.",
+    "es": "Todos los disparadores, compartidos o propios de un Imp. Comparte uno como kit, o ábrelo en los ajustes de su Imp para cambiarlo.",
+    "zh-Hans": "所有触发器，无论共用还是某个 Imp 自己的。可以把其中一个分享为套件，或在它所属 Imp 的设置里打开并修改。"
+  },
+  "sharing.animations.info": {
+    "note": "Help of the Animations list on the Sharing page.",
+    "en": "Every animation, shared or an Imp's own. Try one, change it, save it as a sticker or share it as a kit.",
+    "es": "Todas las animaciones, compartidas o propias de un Imp. Pruébalas, cámbialas, guárdalas como sticker o compártelas como kit.",
+    "zh-Hans": "所有动画，无论共用还是某个 Imp 自己的。可以试播、修改、存为贴纸或分享为套件。"
+  },
+  "sharing.tools.info": {
+    "note": "Help of the Tools list on the Sharing page.",
+    "en": "Every tool added from outside, with a dot for each Imp that uses it. Keys are left out when you share one.",
+    "es": "Todas las herramientas añadidas de fuera, con un punto por cada Imp que la usa. Al compartir una, las claves no se incluyen.",
+    "zh-Hans": "所有从外部添加的工具，每个使用它的 Imp 对应一个圆点。分享时不包含密钥。"
+  },
+  "sharing.tools.unused": {
+    "note": "Under a tool on the Sharing page that no Imp uses.",
+    "en": "No Imp uses it",
+    "es": "Ningún Imp la usa",
+    "zh-Hans": "没有 Imp 使用它"
+  },
+  "sharing.share_all": {
+    "note": "Help of the button that shares a whole list as one kit.",
+    "en": "Share all as a kit",
+    "es": "Compartir todo como kit",
+    "zh-Hans": "全部分享为套件"
+  },
+  "sharing.open_in": {
+    "note": "Help of the button that opens an item in its Imp's settings.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Open in {name}'s settings",
+    "es": "Abrir en los ajustes de {name}",
+    "zh-Hans": "在 {name} 的设置中打开"
+  },
+  "sharing.none": {
+    "note": "Beside the header of a Sharing list that has nothing in it yet.",
+    "en": "None yet",
+    "es": "Nada aún",
+    "zh-Hans": "暂无"
   }
 }

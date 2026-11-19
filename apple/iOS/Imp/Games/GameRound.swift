@@ -176,6 +176,8 @@ struct GameRound {
     private(set) var rings = 0
     /// The most sparks taken in one flight.
     private(set) var bestCombo = 0
+    /// The most Imps on the stage while the clock ran: the best is kept for this many.
+    private(set) var imps = 0
     private(set) var cleanBurn = false
     private(set) var flawless = false
     /// Clean rounds in a row, this one included (set by whoever keeps it).
@@ -211,6 +213,7 @@ struct GameRound {
     private var lastLane = 0.0
     private var combos: [UUID: Run] = [:]
     private var cooldowns: [Set<UUID>: Double] = [:]
+    private var bonkPayout = BonkPayout()
     private var phaseClock = 0.0
     private var firstCatch: Double?
     private var cleared = 0.0
@@ -306,6 +309,7 @@ struct GameRound {
     private mutating func play(_ dt: Double, movers: inout [Mover], calm: Bool, events: inout [Event]) {
         elapsed += dt
         remaining -= dt
+        imps = max(imps, movers.count)
         if !inBlaze, remaining <= Self.blaze { startBlaze(&events) }
         runSpecials(dt, calm: calm, events: &events)
         spawn(dt, calm: calm)
@@ -432,6 +436,8 @@ struct GameRound {
         embers = []
         untilWave = 0.5
         bestCombo = 0
+        imps = 0
+        bonkPayout = BonkPayout()
     }
 
     // MARK: Sparks
@@ -740,6 +746,7 @@ struct GameRound {
 
     /// Two Imps meeting while one is flying: a bonk, and they bounce apart.
     private mutating func bonks(_ dt: Double, movers: inout [Mover], calm: Bool, events: inout [Event]) {
+        bonkPayout.advance(dt)
         for key in cooldowns.keys { cooldowns[key]! -= dt }
         cooldowns = cooldowns.filter { $0.value > 0 }
         guard movers.count > 1 else { return }
@@ -763,10 +770,11 @@ struct GameRound {
                 b.pos.x += nx * overlap; b.pos.y += ny * overlap
                 movers[i] = a; movers[j] = b
                 cooldowns[pair] = 1
-                let points = inBlaze ? 6 : 3
+                // Every bonk bounces; only some pay (see `BonkPayout`).
+                let points = bonkPayout.pay(blaze: inBlaze)
                 score += points
                 let mid = CGPoint(x: (a.pos.x + b.pos.x) / 2, y: (a.pos.y + b.pos.y) / 2)
-                popups.append(Popup(text: "+\(points)", pos: onScreen(mid), kind: .ember))
+                if points > 0 { popups.append(Popup(text: "+\(points)", pos: onScreen(mid), kind: .ember)) }
                 burst(at: mid, kind: .ember, count: calm ? 8 : 18, speed: 260)
                 for id in [a.id, b.id] {
                     var run = combos[id] ?? Run()

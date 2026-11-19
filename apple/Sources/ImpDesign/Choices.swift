@@ -156,6 +156,7 @@ public struct ImpSegmented<Value: Hashable>: View {
     let title: (Value) -> String
     let symbol: ((Value) -> String)?
     let fills: Bool?
+    let badge: ((Value) -> LocalizedStringKey?)?
     @Environment(\.impTint) private var tint
     @Environment(\.isEnabled) private var enabled
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -166,8 +167,12 @@ public struct ImpSegmented<Value: Hashable>: View {
     /// so localize it first. `symbol` is an SF Symbol for an option, used when the words do not fit.
     /// `fills` forces the width: `true` spreads the columns over the whole row, `false` keeps them
     /// as narrow as their words. Leave it out and the placement decides (see above).
+    /// `badge` gives an option a small dot beside its words and says what it means (the tooltip and the spoken
+    /// hint), or nil for none. The dot hangs outside the words, so showing or hiding it moves nothing.
     public init(_ label: LocalizedStringKey, selection: Binding<Value>, options: [Value],
-                title: @escaping (Value) -> String, symbol: ((Value) -> String)? = nil, fills: Bool? = nil) {
+                title: @escaping (Value) -> String, symbol: ((Value) -> String)? = nil, fills: Bool? = nil,
+                badge: ((Value) -> LocalizedStringKey?)? = nil) {
+        self.badge = badge
         self.label = label
         _selection = selection
         self.options = options
@@ -200,6 +205,12 @@ public struct ImpSegmented<Value: Hashable>: View {
                     withImpAnimation(Motion.smooth, reduceMotion: reduceMotion) { selection = option }
                 } label: {
                     face(option)
+                        .overlay(alignment: .trailing) {
+                            if badge?(option) != nil {
+                                Circle().fill(Tone.good).frame(width: Spacing.snug, height: Spacing.snug)
+                                    .offset(x: Spacing.snug * 2).accessibilityHidden(true)
+                            }
+                        }
                         .foregroundStyle(on ? AnyShapeStyle(OnTint(tint)) : AnyShapeStyle(Tone.muted))
                         .padding(.horizontal, Spacing.medium)
                         .frame(maxWidth: .infinity, minHeight: Sizing.hit - Spacing.hairline * 2)
@@ -212,7 +223,9 @@ public struct ImpSegmented<Value: Hashable>: View {
                         .contentShape(Capsule())
                 }
                 .buttonStyle(.plain)
+                .help(badge?(option) ?? "")
                 .accessibilityLabel(title(option))
+                .accessibilityHint(badge?(option).map { Text($0) } ?? Text(verbatim: ""))
                 .accessibilityAddTraits(on ? .isSelected : [])
             }
         }

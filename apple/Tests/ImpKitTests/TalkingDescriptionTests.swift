@@ -45,8 +45,8 @@ import Testing
     }
 
     @Test func oldSettingsWaitByTheImpsChoice() throws {
-        #expect(ImpPreferences().talkWaiting == .decides)
-        var prefs = ImpPreferences()
+        #expect(ImpPreferences.withWaitingImp().talkWaiting == .decides)
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.talkWaiting = .dontWait
         let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(prefs))
         #expect(back.talkWaiting == .dontWait)

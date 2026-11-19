@@ -1877,7 +1877,7 @@ dependencies = [
 
 [[package]]
 name = "imp-chat"
-version = "2.1.0"
+version = "3.0.0"
 dependencies = [
  "clap",
  "directories",
@@ -1903,7 +1903,7 @@ dependencies = [
 
 [[package]]
 name = "imp-den"
-version = "2.1.0"
+version = "3.0.0"
 dependencies = [
  "altcha",
  "axum",
@@ -1930,7 +1930,7 @@ dependencies = [
 
 [[package]]
 name = "imp-engine"
-version = "2.1.0"
+version = "3.0.0"
 dependencies = [
  "altcha",
  "base64 0.23.1",
@@ -1951,7 +1951,7 @@ dependencies = [
 
 [[package]]
 name = "imp-ffi"
-version = "2.1.0"
+version = "3.0.0"
 dependencies = [
  "imp-engine",
  "serde",
@@ -1962,7 +1962,7 @@ dependencies = [
 
 [[package]]
 name = "imp-hop"
-version = "2.1.0"
+version = "3.0.0"
 dependencies = [
  "ed25519-dalek",
  "imp-engine",
@@ -1977,7 +1977,7 @@ dependencies = [
 
 [[package]]
 name = "imp-shared"
-version = "2.1.0"
+version = "3.0.0"
 dependencies = [
  "governor",
  "hex",

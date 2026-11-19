@@ -97,7 +97,7 @@ struct EchoLayer: View {
                 EchoTapHint(center: centers[next], color: EchoArt.colors[next], date: date, reduceMotion: reduceMotion)
             }
             if round.isOver {
-                GameResultCard(result: round.result(best: session.best), insets: insets,
+                GameResultCard(result: round.result(best: session.best(imps: session.imps), imps: session.imps), insets: insets,
                                again: { engine.startEcho() }, done: { engine.endEcho() }, howTo: { engine.startEcho(tutorial: true) })
                     .transition(GameCard.transition(reduceMotion: reduceMotion))
             } else {
@@ -270,8 +270,8 @@ private struct EchoStatus: View {
 
 /// What the end of a round says, for the shared results card.
 extension EchoRound {
-    func result(best: Int) -> GameResult {
-        GameResult(title: String(localized: "games.echo"), score: score, best: best, isRecord: isRecord,
+    func result(best: Int, imps: Int) -> GameResult {
+        GameResult(title: String(localized: "games.echo"), score: score, best: best, imps: imps, isRecord: isRecord,
                    stats: [GameStat(value: "\(level)", label: String(localized: "games.stat.longest")),
                            GameStat(value: "\(mistakes)", label: String(localized: "games.stat.slips"))],
                    prizes: completed ? [GamePrize(symbol: "sparkles", color: SparkArt.gold,

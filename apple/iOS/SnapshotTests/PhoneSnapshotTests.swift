@@ -15,14 +15,14 @@ struct PhoneSnapshotTests {
     private static let phone = ViewImageConfig.iPhone13Pro
 
     /// The notice at the top of a settings section, for the section's own items.
-    private func attention(_ nodes: [SettingsNode], in group: SettingsGroup) -> some View {
-        ScrollView { AttentionNotice(SettingsMap.attention(nodes, in: group).map { AttentionNotice.Line($0) }).padding(16) }
+    private func attention(_ nodes: [SettingsNode], at place: AttentionDestination) -> some View {
+        ScrollView { AttentionNotice(SettingsMap.attention(nodes, at: place).map { AttentionNotice.Line($0) }).padding(16) }
             .background(Tone.surface).impControls(tint: Tone.accent)
     }
 
     private func firstRun(_ events: (FirstRunModel) -> Void) -> some View {
         let services = FirstRunServices(find: { [] }, models: { _, _ in [] }, check: { _ in "" })
-        let flow = FirstRunModel(impName: "Dot", onThisComputer: false, services: services) { _ in }
+        let flow = FirstRunModel(impName: "Dot", target: .existing(UUID()), onThisComputer: false, services: services) { _, _ in }
         events(flow)
         // No Imp figure: it moves with the clock, and a still has to be the same every time.
         return FirstRunPhoneSheet(flow: flow, imp: nil, close: {}, awake: {})
@@ -39,7 +39,7 @@ struct PhoneSnapshotTests {
     @Test func brainsNeedAttention() {
         let nodes = [SettingsNode(id: "me", kind: .thisDevice, name: "Anna's iPhone", state: .ready, imps: ["Dot", "Bumble"], sleeping: [Sleeper(id: UUID(), name: "Dot"), Sleeper(id: UUID(), name: "Bumble")]),
                      SettingsNode(id: "brains", kind: .brains, name: "", state: .needsSetup)]
-        check(attention(nodes, in: .brains), "settings-attention-brains")
+        check(attention(nodes, at: .settings(.brains)), "settings-attention-brains")
     }
 
     @Test func firstRunService() { check(firstRun { _ in }, "first-run-service") }

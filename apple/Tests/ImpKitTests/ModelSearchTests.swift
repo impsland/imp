@@ -8,7 +8,7 @@ import Testing
 struct ModelSearchTests {
     private func flow(models: [String], chosen: String) -> FirstRunModel {
         let services = FirstRunServices(find: { [] }, models: { _, _ in models }, check: { _ in })
-        let flow = FirstRunModel(impName: "Dot", onThisComputer: false, services: services) { _ in }
+        let flow = FirstRunModel(impName: "Dot", target: .existing(UUID()), onThisComputer: false, services: services) { _, _ in }
         flow.models = models
         flow.model = chosen
         return flow

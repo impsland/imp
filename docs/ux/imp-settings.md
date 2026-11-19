@@ -11,7 +11,7 @@ An Imp's settings look and work like the app's Settings: one bar across the top,
 | Brain | Its Brain and its memory. | (nothing: no built-in tools) |
 | Personality | Name and Description in one block, then Persona and Reply rules. | Speak aloud, Message Imps, Open files, Open settings |
 | Look | The live Imp as the preview, Colour and Size, Character. | Change its look, View background, Set background |
-| Moves | Its animations: New, Import kit…, Share. | Play, View, Make, Remove, Move around |
+| Animations | Its animations, then the shared ones: New, Import kit…, Share. | Play, View, Make, Remove, Move around |
 | Triggers | Its triggers: New, Import kit…, Share. | List, Add, Remove |
 | Tools | Its MCP servers only: Add, Import kit…. | List, Add, Remove, Add kits, Export kits |
 | Computer | Commands, Senses, Browser, Computer control. | Mac status, Browser page, See the screen, Click and type, Check results |
@@ -28,15 +28,15 @@ Rejected: the Imp large in the middle with the settings as markers around it. It
 
 ### The wand: what the Imp may do by itself
 
-Every section that has built-in tools has the same wand button (`wand.and.sparkles`, `SectionAction.agent`) in its header, next to New or Add. It opens one sheet, `agent.title`, with the section's tool group: a switch for the group and one for each tool. A tool that is off is never offered to the Brain. The groups are the sections (`personality`, `look`, `moves`, `triggers`, `tools`, `senses`, `computer`), so the registry ids say where a tool lives: `own.moves.imp_play_animations`. The wand is grey when every tool there is off. On the phone the same wand is in the Persona header and holds Message Imps.
+Every section that has built-in tools has the same wand button (`wand.and.sparkles`, `SectionAction.agent`) in its header, next to New or Add. It opens one sheet, `agent.title`, with the section's tool group: a switch for the group and one for each tool. A tool that is off is never offered to the Brain. The groups are the sections (`personality`, `look`, `animations`, `triggers`, `tools`, `senses`, `computer`), so the registry ids say where a tool lives: `own.animations.imp_play_animations`. The wand is grey when every tool there is off. On the phone the same wand is in the Persona header and holds Message Imps.
 
-![The wand's sheet in Moves](./images/imp-agent-tools.png)
+![The wand's sheet in Animations](./images/imp-agent-tools.png)
 
 `imp_show_animation` (View) answers with the animation's beats as text (the same JSON `imp_make_animation` takes), never with pictures, so it works with a Brain that does not read images.
 
 ### Import kit…
 
-Moves, Triggers and Tools have the same Import kit… button (`square.and.arrow.down`, `SectionAction.importKit`) in their header. It opens the kit flow for this Imp.
+Animations, Triggers and Tools have the same Import kit… button (`square.and.arrow.down`, `SectionAction.importKit`) in their header. It opens the kit flow for this Imp.
 
 ### Brain with no service
 
@@ -45,7 +45,7 @@ The Brain section always shows its page, never a modal. With no service at all t
 ### Why
 
 - One layout for Settings and an Imp's settings: the same rail, the same pages, the same parts.
-- The built-in tools sit where they act (animations in Moves, its look in Look), so "what may it do" is answered on the page it is about, behind one icon that looks the same everywhere.
+- The built-in tools sit where they act (animations in Animations, its look in Look), so "what may it do" is answered on the page it is about, behind one icon that looks the same everywhere.
 - Tools holds only what you add (MCP servers). Nothing built in is mixed into that list.
 
 ## On the iPhone
@@ -120,7 +120,7 @@ A hosted model on our own server is not built. The Brain list is one generic lis
 
 ![Tools](./images/imp-tools.png)
 
-Only the MCP servers the Imp may use: there are no built-in tools here (they are behind the wand of the section they belong to, see the table at the top). The header has Import kit…, the wand (List, Add, Remove, Add kits, Export kits) and Add. The registry ids are `own.<section>.<tool>` and `mcp.<server>.<tool>`.
+Only the MCP servers the Imp may use: there are no built-in tools here (they are behind the wand of the section they belong to, see the table at the top). The header has Import kit…, the wand (List, Add, Remove, Add kits, Export kits) and Add. Add opens the New tool editor at once (`tools.new_server_title`), with no list of ready-made tools first. A bar at the top of the editor picks the kind: On the web (the default) or On this Mac (a local program); switching keeps the name typed. Add puts the tool in the library and switches it on for this Imp; Cancel adds nothing. Editing an existing tool has no kind bar. The registry ids are `own.<section>.<tool>` and `mcp.<server>.<tool>`.
 
 - Each server is a group with a switch, a status dot and word (connected, starting, could not start, sign-in needed) and "n of m on" (`tools.group_count`).
 - A server opens to its tools. Each tool has a switch.
@@ -160,7 +160,7 @@ Rejected: a When menu with a submenu of gestures and an Add a step menu. The eve
 
 The trailing action of a row follows its scope: an own trigger can be deleted (`triggers.delete`), a changed one goes back to the shared one (`triggers.use_shared`), and a shared one has no delete on its row. Its menu has `triggers.delete_every`, which asks first.
 
-An animation never starts by itself, only through a trigger. On the Animations and Moves lists, an animation no trigger plays shows "Only when tried" and a bolt button (`triggers.hint.animation`: "To play it on an event, add a trigger.") that opens a new trigger with a Play step for it.
+An animation never starts by itself, only through a trigger. On the Animations list, an animation no trigger plays shows "Only when tried" and a bolt button (`triggers.hint.animation`: "To play it on an event, add a trigger.") that opens a new trigger with a Play step for it.
 
 **No default triggers.** A fresh install has no triggers: an Imp does what a trigger says only after the person (or the Imp) adds one. A click opens the chat bubble without any. Everything else comes from a kit, from the Imp itself (`imp_add_trigger`) or from New. Example: "poke → play Wiggle, say Ouch".
 
@@ -168,11 +168,11 @@ An animation never starts by itself, only through a trigger. On the Animations a
 
 Empty state: `triggers.empty` (see [Empty lists](/ux/states#empty-lists)).
 
-## Moves
+## Animations
 
-![Moves](./images/imp-moves.png)
+![Animations](./images/imp-animations.png)
 
-**Animations** (`moves.animations`): the animations only this Imp plays, and its own versions of shared ones (`scope.changed`). The header has Share, Import kit…, the wand (Play, View, Make, Remove, Move around) and New. The animation editor's For choice offers Every Imp and this Imp only, and saving a shared animation for this Imp makes this Imp's version, as for triggers.
+**Animations** (`animations.list`): the animations only this Imp plays and its own versions of shared ones come first, then the shared ones it has no version of (an own animation with the same title hides the shared one). Each row says where it applies under its title (`ScopeLabel`: every Imp, changed for this Imp, only this Imp). Changing a shared one changes it for every Imp; saving it for this Imp only is the editor's For choice. The header has Share, Import kit…, the wand (Play, View, Make, Remove, Move around) and New. The animation editor's For choice offers Every Imp and this Imp only, and saving a shared animation for this Imp makes this Imp's version, as for triggers.
 
 ## Computer
 
@@ -248,10 +248,10 @@ Share opens the save panel at once, with no sheet before it: the Imp is saved as
 | `imp_settings.goodbye` | Goodbye |
 | `imp_settings.goodbye.a11y` | Say goodbye to {name} |
 | `imp_settings.list.label` | Settings for {name} |
+| `imp_settings.marker.animations` | Animations |
 | `imp_settings.marker.brain` | Brain |
 | `imp_settings.marker.computer` | Computer |
 | `imp_settings.marker.look` | Look |
-| `imp_settings.marker.moves` | Moves |
 | `imp_settings.marker.personality` | Personality |
 | `imp_settings.marker.tools` | Tools |
 | `imp_settings.marker.triggers` | Triggers |
@@ -301,9 +301,6 @@ Share opens the save panel at once, with no sheet before it: the Imp is saved as
 | `memory.size.m` | {count}M |
 | `memory.tools.info` | Also sends what the tools did and returned. Off is smaller and cheaper. |
 | `memory.tools.title` | Tool results |
-| `moves.animations` | Animations |
-| `moves.empty` | No animations yet. |
-| `moves.help.own` | Moves made for only this Imp. They play instead of the shared ones. |
 | `personality.about` | Description |
 | `personality.about_hint` | Researching on the web, fixing code… |
 | `personality.help.about` | One or two lines. The other Imps read it to know whom to ask for what. |
@@ -362,6 +359,7 @@ Share opens the save panel at once, with no sheet before it: the Imp is saved as
 | `tools.help.browser` | Lets the Imp look at pages and use the browser you opened for it. |
 | `tools.help.mcp` | Extra tools added from outside. Each one gives the Imp new things to do. |
 | `tools.help.server` | A program or website that gives the Imp more tools. |
+| `tools.kind` | Kind of tool |
 | `tools.mcp_connected` | Connected |
 | `tools.mcp_failed` | Could not start |
 | `tools.mcp_needs_signin` | Sign-in needed |

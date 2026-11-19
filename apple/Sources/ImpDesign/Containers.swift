@@ -165,12 +165,41 @@ public struct Row<Control: View>: View {
     }
 }
 
-/// A form row whose label sits in a fixed column, so a card's controls line up.
+/// The widest label of the `FieldRow`s in a form, so every field starts at the same x whatever the words are
+/// (a longer word in another language widens the column for all rows instead of pushing one field over).
+private struct FieldLabelWidth: PreferenceKey {
+    static let defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = max(value, nextValue()) }
+}
+
+private struct FieldLabelColumn: ViewModifier {
+    @State private var width: CGFloat = 0
+    func body(content: Content) -> some View {
+        content
+            .environment(\.fieldLabelColumn, width)
+            .onPreferenceChange(FieldLabelWidth.self) { width = $0 }
+    }
+}
+
+extension EnvironmentValues {
+    /// The label column the `FieldRow`s of a form share (see `View.fieldLabelColumn()`).
+    @Entry var fieldLabelColumn: CGFloat = 0
+}
+
+extension View {
+    /// Makes the `FieldRow`s inside share one label column: as wide as the widest label, never less than
+    /// `Sizing.fieldLabel`, so all their fields start at the same x.
+    public func fieldLabelColumn() -> some View { modifier(FieldLabelColumn()) }
+}
+
+/// A form row whose label sits in a fixed column, so a card's controls line up. Inside `fieldLabelColumn()`
+/// the rows share the widest label's width.
 public struct FieldRow<Control: View>: View {
     let label: LocalizedStringKey
     var info: LocalizedStringKey?
     var width: CGFloat
     var control: Control
+    @Environment(\.fieldLabelColumn) private var column
 
     public init(_ label: LocalizedStringKey, info: LocalizedStringKey? = nil, width: CGFloat = Sizing.fieldLabel, @ViewBuilder control: () -> Control) {
         self.label = label
@@ -185,8 +214,10 @@ public struct FieldRow<Control: View>: View {
                 Text(label).font(Typeface.caption).foregroundStyle(Tone.muted).lineLimit(1).fixedSize()
                 if let info { InfoTip(info) }
             }
+            // What this label needs, before the column is applied: the form's column is the widest of them.
+            .background(GeometryReader { Color.clear.preference(key: FieldLabelWidth.self, value: $0.size.width) })
             // The column is `width` wide, and grows for a longer word in another language instead of cutting it short.
-            .frame(minWidth: width, alignment: .leading)
+            .frame(minWidth: max(width, column), alignment: .leading)
             control.frame(maxWidth: .infinity, alignment: .leading)
         }
     }

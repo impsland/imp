@@ -7,7 +7,7 @@ import Testing
 @Suite struct SettingScopeTests {
     /// Two Imps (Pip and Bob) and one shared trigger every Imp answers to.
     private func troupe() -> (prefs: ImpPreferences, pip: UUID, bob: UUID, shared: Shortcut) {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         let pip = prefs.addNewcomer(), bob = prefs.addNewcomer()
         for i in prefs.imps.indices { prefs.imps[i].isActive = true }
         let shared = Shortcut(name: "Translate", hotkey: Hotkey(parsing: "ctrl+cmd+T"), steps: [Step(.ask, value: "Translate it.")])
@@ -117,7 +117,7 @@ import Testing
     }
 
     @Test func clicksUseTheImpsVersion() {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         let pip = prefs.addNewcomer(), bob = prefs.addNewcomer()
         let click = Shortcut(name: "Type", trigger: Trigger(.click, value: "1"), steps: [Step(.open, value: "text_box")])
         prefs.shortcuts = [click]
@@ -131,7 +131,7 @@ import Testing
     // MARK: New Imps
 
     @Test func aNewImpStartsFromTheSharedSetNotFromAnotherImp() {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         let pip = prefs.addNewcomer()
         let service = Service(name: "Own", baseURL: "http://localhost:1/v1", model: "m")
         prefs.ai.add(service)
@@ -158,7 +158,7 @@ import Testing
     // MARK: Animations
 
     @Test func anAnimationChangedForOneImpLeavesTheSharedOne() throws {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         let pip = prefs.addNewcomer(), bob = prefs.addNewcomer()
         let shared = MadeAnimation(name: "Dance", beats: [AnimationBeat(duration: 1)])
         let sharedID = prefs.save(shared, for: nil)
@@ -179,7 +179,7 @@ import Testing
     }
 
     @Test func movingAnImpsAnimationToEveryImpIsExplicit() throws {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         let pip = prefs.addNewcomer()
         let own = MadeAnimation(name: "Mine", beats: [AnimationBeat(duration: 1)])
         prefs.save(own, for: pip)
@@ -192,15 +192,15 @@ import Testing
 /// A first launch has no triggers and no animations: everything is made or added by the user.
 @Suite struct FirstLaunchTests {
     @Test func aFirstLaunchHasNoTriggersAndNoAnimations() {
-        let fresh = ImpPreferences()
+        let fresh = ImpPreferences.withWaitingImp()
         #expect(fresh.shortcuts.isEmpty && fresh.animationLibrary.isEmpty)
-        #expect(ImpPreferences().shortcuts.isEmpty)
+        #expect(ImpPreferences.withWaitingImp().shortcuts.isEmpty)
         let defaults = UserDefaults(suiteName: "FirstLaunchTests-\(UUID().uuidString)")!
         #expect(PreferencesStore(defaults: defaults).load().shortcuts.isEmpty)
     }
 
     @Test func exportingSharedTriggersOfAFreshLaunchIsEmpty() {
-        let kit = Kit.exporting(imps: [], from: ImpPreferences(), shared: true)
+        let kit = Kit.exporting(imps: [], from: ImpPreferences.withWaitingImp(), shared: true)
         #expect(kit.triggers.isEmpty)
     }
 
@@ -226,7 +226,7 @@ import Testing
     }
 
     @Test func anImpsToolEditKeepsItsVersionAVersion() throws {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         let pip = prefs.addNewcomer(), bob = prefs.addNewcomer()
         let shared = Shortcut(name: "Nap", trigger: Trigger(.idle, value: "60"), steps: [Step(.sleep)])
         prefs.shortcuts = [shared]
@@ -248,7 +248,7 @@ import Testing
         #expect(mine.performer == pip)
         let shared = try Shortcut(tool: args(seconds: 30, everyImp: true), imp: pip)
         #expect(shared.performer == nil)
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.shortcuts = [shared]
         #expect(prefs.sharedShortcuts.map(\.id) == [shared.id])
     }

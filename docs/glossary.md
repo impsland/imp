@@ -28,7 +28,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Animation.** A short sequence of beats an Imp plays as body language. Five come with the app. More are in an MCP gallery such as the Den.
 
-**Moves.** The animations one Imp plays, shown in its settings.
+**Animations (Imp Settings).** The animations one Imp plays, its own first and then the shared ones, shown in its settings.
 
 ## Where Imps are
 
@@ -76,7 +76,13 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Call home.** For an Imp's home device to take its Imp back. The visit ends.
 
-**Devices map.** The picture at the top of the Devices section of this device, its Imps, the services, the Hop and the other devices. Each part can be opened.
+**Devices screen.** The screen opened from the bottom-left corner of the home screen. It holds the Devices map and, beside it, an inspector for what is selected. See [Devices](/ux/devices).
+
+**Devices map.** The picture on the Devices screen: this device, the linked devices and the Hop as cards, the Imps inside the device their body is on, and the lines between them. Each part can be selected.
+
+**Tether.** The thin line, in an Imp's own colour, from the Imp's chip to the device where it thinks and runs its tools (its home). It is drawn for an Imp that is away from its home.
+
+**Tool limits.** The tool groups switched off for one linked device on the Devices screen. They only narrow what a device marked Mine may use; a device that is not Mine gets no tools at all.
 
 ## Thinking
 
@@ -106,6 +112,8 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Kit.** A bundle that can hold Imps, triggers, tools and animations as one JSON file. A kit is untrusted until the user confirms it. It never holds a key.
 
+**Sharing (All Imps settings).** The one page that lists everything shareable: every trigger, animation and tool, shared or an Imp's own, each to share as a kit, with Import on top.
+
 **The Den.** A standalone MCP gallery where Imps share what they make and where people find what others shared. What is shared there is public. Imp has no Den setting: you add its `/mcp` address as a tool. In the middle of a sentence it reads "the Den".
 
 **The Hop.** A relay on an Imp server that lets devices find each other from anywhere. It only passes encrypted data along. In the middle of a sentence it reads "the Hop". The Hop on this computer is the same relay, running locally.
@@ -114,9 +122,9 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 ## Screens
 
-**Imp Settings.** The settings of one Imp, laid out like Settings: a rail of sections (Brain, Personality, Look, Moves, Triggers, Tools, Computer) and the chosen section beside it.
+**Imp Settings.** The settings of one Imp, laid out like Settings: a rail of sections (Brain, Personality, Look, Animations, Triggers, Tools, Computer) and the chosen section beside it.
 
-**Marker.** A tappable thing around the Imp in Imp Settings: Brain, Look, Personality, Tools, Triggers and Moves.
+**Marker.** A tappable thing around the Imp in Imp Settings: Brain, Look, Personality, Tools, Triggers and Animations.
 
 **All Imps settings.** The app-wide settings: a rail of sections, each one click from any other.
 

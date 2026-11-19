@@ -50,12 +50,12 @@ final class HomeWindow {
         open(model)
     }
 
-    /// Opens the first run for an Imp that has no Brain: the sheet comes up over what's showing. It is
-    /// remembered that the path was shown, so it never comes up by itself again.
-    func showFirstRun(_ model: AppModel, imp: UUID) {
+    /// Opens the first run for a new Imp (it is hatched only once its Brain works): the sheet comes up over
+    /// what's showing. It is remembered that the path was shown, so it never comes up by itself again.
+    func showFirstRun(_ model: AppModel) {
         model.prefs.firstRunSeen = true
         reveal(model)
-        router.firstRun = imp
+        router.firstRun = .newImp(model.prefs.nextImp())
     }
 
     /// Opens the exact page of a setting, app-wide or an Imp's, and lights the setting up.
@@ -97,7 +97,7 @@ final class HomeWindow {
 
     private func open(_ model: AppModel) {
         if router.selection.flatMap(model.profile) == nil {
-            router.selection = (model.focused?.profile ?? model.prefs.imps[0]).id
+            router.selection = (model.focused?.profile ?? model.prefs.imps.first)?.id
         }
         if window == nil {
             let host = NSHostingController(rootView: HomeView(model: model, router: router))
@@ -179,6 +179,8 @@ final class HomeRouter {
         case home
         case imp(UUID)
         case general
+        /// The map of devices and Imps, its own screen: not a section of the settings.
+        case devices
     }
 
     var screen: Screen = .home
@@ -203,6 +205,9 @@ final class HomeRouter {
     /// Where each Imp stands on the canvas: its centre, as a fraction of the canvas's width and height.
     /// Kept while the app runs.
     var places: [UUID: CGPoint] = [:]
+    /// Where devices were dragged to on the Devices canvas, by node id. Kept while the app runs, so a refresh of the
+    /// link never puts them back.
+    var devicePlaces: [String: CGPoint] = [:]
     /// Imps that just arrived (hatched, imported, or from a link): they pop in once.
     private(set) var arriving: Set<UUID> = []
     /// An Imp the user chose Goodbye for: the window asks before it goes.
@@ -215,8 +220,10 @@ final class HomeRouter {
     var kitFlow: KitFlow? { didSet { if oldValue !== kitFlow { oldValue?.abandon() } } }
     /// A talk between two Imps being read (a sheet).
     var talk: TalkRequest?
-    /// The Imp being woken up by the first run (a sheet).
-    var firstRun: UUID?
+    /// The Imp the first run is for (a sheet): a new one that is not hatched yet, or one with no Brain.
+    var firstRun: FirstRunTarget?
+    /// Linking a device from the empty canvas or the first run (a sheet).
+    var linkingDevice = false
 
     /// Whether the window can be seen at all. Nothing animates while it can't.
     var isAwake = true
@@ -314,7 +321,9 @@ final class HomeRouter {
     }
 
     func open(target: SettingsTarget, imp: UUID?) {
-        if let group = target.page.group {
+        if target.page == .devices {
+            openDevices()
+        } else if let group = target.page.group {
             open(group: group)
         } else if let imp, let panel = ImpSetting(rawValue: target.page.rawValue) {
             select(imp)
@@ -330,10 +339,23 @@ final class HomeRouter {
         }
     }
 
+    /// Opens where an attention item is fixed.
+    func open(_ destination: AttentionDestination) {
+        switch destination {
+        case .settings(let group): open(group: group)
+        case .devices: openDevices()
+        }
+    }
+
     /// Opens the page of one group of the app-wide settings (a map node or an attention item).
     func open(group: SettingsGroup) {
         settingsSection = group
         withAnimation(ImpDesign.Motion.scene.reducedAware(HomeActions.reduceMotion)) { screen = .general }
+    }
+
+    /// Opens the Devices screen (the corner button, a link or a tool).
+    func openDevices() {
+        withAnimation(ImpDesign.Motion.scene.reducedAware(HomeActions.reduceMotion)) { screen = .devices }
     }
 
     func openGeneralSettings() {

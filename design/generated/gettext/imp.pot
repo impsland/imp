@@ -74,14 +74,24 @@ msgctxt "anim.help.tilt"
 msgid "How far the Imp leans to the side."
 msgstr ""
 
+#. Empty state of the animations list.
+msgctxt "animations.empty"
+msgid "No animations yet."
+msgstr ""
+
 #. Button.
 msgctxt "animations.find"
 msgid "Browse"
 msgstr ""
 
-#. Heading of the animations you made or added.
-msgctxt "animations.from_den"
-msgid "Made"
+#. Help of the animations list.
+msgctxt "animations.help.list"
+msgid "Animations made for only this Imp come first. The shared ones follow: changing one changes it for every Imp."
+msgstr ""
+
+#. Header of the list of the animations an Imp plays.
+msgctxt "animations.list"
+msgid "Animations"
 msgstr ""
 
 #. Button and sheet title: make a new animation of your own.
@@ -451,9 +461,34 @@ msgctxt "computer.help.senses"
 msgid "Reads the battery, processor, network and open apps, and the page open in the browser."
 msgstr ""
 
+#. Button: call every Imp a device holds home.
+msgctxt "devices.call_all_home"
+msgid "Call all home"
+msgstr ""
+
+#. Title of a line between two devices.
+msgctxt "devices.channel.title"
+msgid "{from} and {to}"
+msgstr ""
+
+#. Screen reader label of one of this Mac's Imps on the map.
+msgctxt "devices.chip.label_ours"
+msgid "{name}, an Imp of this Mac, on {node}"
+msgstr ""
+
+#. Screen reader label of another device's Imp on the map.
+msgctxt "devices.chip.label_visitor"
+msgid "{name}, an Imp from another device, on {node}"
+msgstr ""
+
 #. Help of Copy Link in Link a device.
 msgctxt "devices.copy_link.help"
 msgid "For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while."
+msgstr ""
+
+#. Screen reader label of a line between two devices.
+msgctxt "devices.edge.label"
+msgid "{from} to {to}. {route}. {state}"
 msgstr ""
 
 #. Empty state of the list of linked devices.
@@ -461,9 +496,104 @@ msgctxt "devices.empty"
 msgid "No devices yet."
 msgstr ""
 
+#. Button: forget the selected device.
+msgctxt "devices.forget.one"
+msgid "Forget this device…"
+msgstr ""
+
+#. The Hop pill under the code in the Link sheet when no Hop is set; opens its settings.
+msgctxt "devices.hop.add"
+msgid "Add a Hop"
+msgstr ""
+
+#. The Hop pill under the code in the Link sheet when a Hop is set. {host} is its address.
+msgctxt "devices.hop.pill"
+msgid "Hop: {host}"
+msgstr ""
+
+#. The Hop's state when an address is set and nothing goes through it.
+msgctxt "devices.hop.state.idle"
+msgid "Not in use"
+msgstr ""
+
+#. The Hop's state when what is set is not an address yet.
+msgctxt "devices.hop.state.needs_address"
+msgid "Needs an address"
+msgstr ""
+
+#. The Hop's state when none is set.
+msgctxt "devices.hop.state.off"
+msgid "Off"
+msgstr ""
+
+#. Button: open an Imp's settings.
+msgctxt "devices.imp.settings"
+msgid "Its settings"
+msgstr ""
+
+#. Inspector card: the Imps an Imp can message.
+msgctxt "devices.imp.talks"
+msgid "Can message"
+msgstr ""
+
+#. Help: who an Imp can message. Selecting an Imp on the map lights them.
+msgctxt "devices.imp.talks.info"
+msgid "The Imps this one can message. They are lit on the map while it is selected."
+msgstr ""
+
+#. Inspector card: an Imp's tools.
+msgctxt "devices.imp.tools"
+msgid "Its tools"
+msgstr ""
+
+#. Inspector card: this Mac's Imps a device holds.
+msgctxt "devices.inspector.holds"
+msgid "Imps of this Mac it holds"
+msgstr ""
+
+#. Inspector card: how a device is reached.
+msgctxt "devices.inspector.reach"
+msgid "How it is reached"
+msgstr ""
+
+#. Inspector card of the Hop: devices reached through it.
+msgctxt "devices.inspector.through_hop"
+msgid "Reached through it"
+msgstr ""
+
 #. Help on the Devices card.
 msgctxt "devices.list.info"
 msgid "Devices linked with this one. Mine lets a device act for you."
+msgstr ""
+
+#. Screen reader summary of the Devices map.
+msgctxt "devices.map.summary"
+msgid "Map of your devices: {devices} linked, {ours} Imps of this Mac, {visitors} Imps of other devices."
+msgstr ""
+
+#. Screen reader label of a device on the map: its state and the Imps in it.
+msgctxt "devices.node.label"
+msgid "{name}, {state}. Imps: {imps}"
+msgstr ""
+
+#. Screen reader label of a device on the map without Imps.
+msgctxt "devices.node.label_empty"
+msgid "{name}, {state}"
+msgstr ""
+
+#. Screen reader name of this Mac's node.
+msgctxt "devices.node.this_mac_label"
+msgid "{name}, this Mac"
+msgstr ""
+
+#. Where an Imp's body is, as a tag on a device row.
+msgctxt "devices.place.body"
+msgid "On"
+msgstr ""
+
+#. Where an Imp thinks, as a tag on a device row.
+msgctxt "devices.place.mind"
+msgid "Thinks on"
 msgstr ""
 
 #. Help on a linked device: not reachable now.
@@ -476,9 +606,49 @@ msgctxt "devices.reach.direct"
 msgid "Direct, on the local network"
 msgstr ""
 
+#. Label of the last known address of a device.
+msgctxt "devices.reach.last_seen"
+msgid "Last known address"
+msgstr ""
+
+#. This Mac cannot be reached by other devices now.
+msgctxt "devices.reach.none"
+msgid "Not reachable"
+msgstr ""
+
 #. Help on a linked device: reached through the server.
 msgctxt "devices.reach.server"
 msgid "Through the server"
+msgstr ""
+
+#. Status of this Mac when other devices can reach it.
+msgctxt "devices.reach.yes"
+msgid "Reachable"
+msgstr ""
+
+#. How a channel goes: through the Hop.
+msgctxt "devices.route.hop"
+msgid "Through the Hop"
+msgstr ""
+
+#. How a channel goes: through the Hop, and its address.
+msgctxt "devices.route.hop_at"
+msgid "Through the Hop at {address}"
+msgstr ""
+
+#. How a channel goes: the local network.
+msgctxt "devices.route.local"
+msgid "On the local network"
+msgstr ""
+
+#. How a channel goes: the local network, and the address.
+msgctxt "devices.route.local_at"
+msgid "On the local network at {address}"
+msgstr ""
+
+#. Small label on a line of the map that goes over the local network.
+msgctxt "devices.route.tag_local"
+msgid "Wi-Fi"
 msgstr ""
 
 #. Button and tab: read another device's code with this Mac's camera, or paste its link.
@@ -491,19 +661,89 @@ msgctxt "devices.show"
 msgid "Show code"
 msgstr ""
 
+#. State word of a device on the Devices map.
+msgctxt "devices.state.connected"
+msgid "Connected"
+msgstr ""
+
+#. State word of a device on the Devices map.
+msgctxt "devices.state.connecting"
+msgid "Connecting"
+msgstr ""
+
+#. State word of a linked device that cannot be reached now.
+msgctxt "devices.state.offline"
+msgid "Away"
+msgstr ""
+
+#. Screen reader label of the line from an Imp to the device it thinks on.
+msgctxt "devices.tether.label"
+msgid "{imp} is on {node} and thinks on {home}"
+msgstr ""
+
+#. Inspector card: the tools an Imp may use on the device it is on.
+msgctxt "devices.tether.tools"
+msgid "Tools it may use there"
+msgstr ""
+
+#. Help: the tools are the device's limits.
+msgctxt "devices.tether.tools.info"
+msgid "What the Imp may use while this device asks it. Change it on the device."
+msgstr ""
+
 #. Help on the This Mac card: the dot is The Hop.
 msgctxt "devices.this.info"
 msgid "Link another device here. The dot shows whether The Hop lets devices find each other from anywhere."
 msgstr ""
 
-#. Title of the card for this Mac on the Devices page.
-msgctxt "devices.this_mac"
+#. Badge on the node of this Mac on the Devices map.
+msgctxt "devices.this_mac_badge"
 msgid "This Mac"
 msgstr ""
 
 #. Title of the card listing the linked devices.
 msgctxt "devices.title"
 msgid "Devices"
+msgstr ""
+
+#. Name of the tool that runs commands.
+msgctxt "devices.tools.commands"
+msgid "Commands"
+msgstr ""
+
+#. Help of the per-device tool limits.
+msgctxt "devices.tools.info"
+msgid "When this device asks one of your Imps, the Imp can use the tools that are on here. Switch off what it should not touch for this device."
+msgstr ""
+
+#. Row in a device's sheet when the device is not Mine, so it gets no tools.
+msgctxt "devices.tools.locked"
+msgid "No tools until Mine"
+msgstr ""
+
+#. Shown when a device is not Mine.
+msgctxt "devices.tools.not_mine"
+msgid "Imps answer this device without tools. Turn on Mine to choose what they may use."
+msgstr ""
+
+#. Inspector card: the tools Imps may use for a device.
+msgctxt "devices.tools.title"
+msgid "Tools Imps may use from this device"
+msgstr ""
+
+#. Tooltip of the button that opens or closes a list of tool switches.
+msgctxt "devices.tools.toggle"
+msgid "Show or hide the switches"
+msgstr ""
+
+#. A device this Mac is not linked with.
+msgctxt "devices.unknown_device"
+msgid "a device not linked with this Mac"
+msgstr ""
+
+#. Button: send a visiting Imp home.
+msgctxt "devices.visitor.send_home"
+msgid "Send home"
 msgstr ""
 
 #. The key was refused.
@@ -826,6 +1066,16 @@ msgctxt "firstrun.error.no_model"
 msgid "Pick a model to continue."
 msgstr ""
 
+#. Footer button of the first run on the Mac: bring an Imp from another device instead.
+msgctxt "firstrun.link"
+msgid "From a device"
+msgstr ""
+
+#. Tooltip of that button: opens the Link sheet.
+msgctxt "firstrun.link.help"
+msgid "Link a device and bring an Imp from it instead"
+msgstr ""
+
 #. Placeholder of the model field. It filters the list, or takes a name typed by hand.
 msgctxt "firstrun.model.search"
 msgid "Search or type a model"
@@ -836,9 +1086,9 @@ msgctxt "firstrun.service.address"
 msgid "Address"
 msgstr ""
 
-#. Marks a local preset that answers on this computer.
+#. Tooltip of the dot in Local when a model server answers on this Mac.
 msgctxt "firstrun.service.found"
-msgid "Found here"
+msgid "Found on this Mac"
 msgstr ""
 
 #. Quiet line on the phone under a local preset: the address is the computer's.
@@ -849,6 +1099,16 @@ msgstr ""
 #. Field label.
 msgctxt "firstrun.service.key"
 msgid "Your key"
+msgstr ""
+
+#. Placeholder of the disabled key field when a local model is chosen.
+msgctxt "firstrun.service.key_local"
+msgid "Not needed for local models"
+msgstr ""
+
+#. Screen reader name of the Remote or Local choice.
+msgctxt "firstrun.service.kind"
+msgid "Kind of service"
 msgstr ""
 
 #. Shown while the models of the service are loaded.
@@ -891,10 +1151,17 @@ msgctxt "games.again"
 msgid "Again"
 msgstr ""
 
-#. Results card: the best score, under the score.
+#. Results card: the best score for games with this many Imps, under the score. The imps argument is the phrase 'with 3 Imps' (games.best_imps).
 msgctxt "games.best"
-msgid "Best {count}"
+msgid "Best {count} {imps}"
 msgstr ""
+
+#. Part of the best line on the results card: how many Imps played, e.g. 'with 3 Imps'. It ends the sentence 'Best 40 with 3 Imps' (zh-Hans: starts it).
+msgctxt "games.best_imps"
+msgid "with {count} Imp"
+msgid_plural "with {count} Imps"
+msgstr[0] ""
+msgstr[1] ""
 
 #. Name of the Echo game, the title of its results card.
 msgctxt "games.echo"
@@ -1030,9 +1297,14 @@ msgctxt "home.canvas.label"
 msgid "The Imps' home"
 msgstr ""
 
-#. Help and screen reader name of the corner button that opens the Devices settings.
+#. Help and screen reader name of the corner button that opens the Devices screen.
 msgctxt "home.corner.devices"
 msgid "Devices"
+msgstr ""
+
+#. Screen reader value of the Devices corner button when a linked device cannot be reached. A warning mark shows on the button.
+msgctxt "home.corner.devices.away"
+msgid "a linked device is away"
 msgstr ""
 
 #. Screen reader value of the Devices corner button: how many linked devices are connected now. A dot on the button shows when any is.
@@ -1047,14 +1319,24 @@ msgctxt "home.corner.show_hidden"
 msgid "Hidden"
 msgstr ""
 
-#. Empty main screen, one line under the title.
-msgctxt "home.empty.hint"
-msgid "Hatch your first Imp to get started."
+#. Button on the empty main screen: link another device.
+msgctxt "home.empty.link"
+msgid "Link a device"
 msgstr ""
 
-#. The one prompt in the middle of an empty main screen.
+#. Tooltip of the link button on the empty main screen.
+msgctxt "home.empty.link.help"
+msgid "Link a device and bring an Imp from it"
+msgstr ""
+
+#. Button on the empty main screen: hatch the first Imp.
 msgctxt "home.empty.new_imp"
-msgid "New"
+msgid "Hatch"
+msgstr ""
+
+#. Tooltip of the hatch button on the empty main screen.
+msgctxt "home.empty.new_imp.help"
+msgid "Hatch an Imp and give it a Brain"
 msgstr ""
 
 #. Empty main screen, title.
@@ -1247,6 +1529,11 @@ msgctxt "imp_settings.list.label"
 msgid "Settings for {name}"
 msgstr ""
 
+#. Marker below the Imp: its animations.
+msgctxt "imp_settings.marker.animations"
+msgid "Animations"
+msgstr ""
+
 #. Marker above the Imp's head and panel title.
 msgctxt "imp_settings.marker.brain"
 msgid "Brain"
@@ -1260,11 +1547,6 @@ msgstr ""
 #. Marker left of the Imp: colour, size and character.
 msgctxt "imp_settings.marker.look"
 msgid "Look"
-msgstr ""
-
-#. Marker below the Imp: its animations.
-msgctxt "imp_settings.marker.moves"
-msgid "Moves"
 msgstr ""
 
 #. Marker right of the Imp: name, persona and voice.
@@ -1667,11 +1949,6 @@ msgctxt "menu.group.goodbye"
 msgid "Goodbye to {count} Imps…"
 msgstr ""
 
-#. Tooltip of the dimmed Goodbye item when every Imp is picked.
-msgctxt "menu.group.goodbye_off"
-msgid "One Imp always stays. Leave at least one out of the group."
-msgstr ""
-
 #. Tooltip of Hide in the menu of several Imps.
 msgctxt "menu.group.hide_help"
 msgid "They hide until you show them again. Their triggers rest meanwhile."
@@ -1830,21 +2107,6 @@ msgstr ""
 #. Tip on the Imp menu item that sends it to visit a device.
 msgctxt "menu.imp.visit_tip"
 msgid "{name} visits {device} and can come back."
-msgstr ""
-
-#. Header of the list of an Imp's own animations.
-msgctxt "moves.animations"
-msgid "Animations"
-msgstr ""
-
-#. Empty state of the animations list.
-msgctxt "moves.empty"
-msgid "No animations yet."
-msgstr ""
-
-#. Help of the own animations list.
-msgctxt "moves.help.own"
-msgid "Moves made for only this Imp. They play instead of the shared ones."
 msgstr ""
 
 #. Field label: a short description of the Imp, which other Imps read to know whom to ask.
@@ -2582,11 +2844,6 @@ msgctxt "scope.only"
 msgid "Only {name}"
 msgstr ""
 
-#. Field label.
-msgctxt "servers.address"
-msgid "Address"
-msgstr ""
-
 #. Hint in the address field.
 msgctxt "servers.address_hint"
 msgid "Start with https://"
@@ -2597,16 +2854,6 @@ msgctxt "servers.hop.about"
 msgid "Lets your devices find each other. It only passes encrypted data."
 msgstr ""
 
-#. Shows which Hop is in use.
-msgctxt "servers.hop.in_use"
-msgid "Using the Hop at {address}"
-msgstr ""
-
-#. Shown on a screen that needs The Hop when none is set.
-msgctxt "servers.hop.needed"
-msgid "Linking from anywhere needs a Hop. Add one in Settings under Devices. Devices on the same network still find each other."
-msgstr ""
-
 #. Under Off on the Hop card.
 msgctxt "servers.hop.off_note"
 msgid "Only devices on the same network find each other."
@@ -2615,11 +2862,6 @@ msgstr ""
 #. Section title.
 msgctxt "servers.hop.title"
 msgid "Hop"
-msgstr ""
-
-#. Shown next to a server choice that is off.
-msgctxt "servers.off"
-msgid "Off"
 msgstr ""
 
 #. Server choice: an address the user types.
@@ -2710,11 +2952,6 @@ msgstr ""
 #. Item: a linked device cannot be reached.
 msgctxt "settings.attention.device_offline"
 msgid "{device} is offline."
-msgstr ""
-
-#. Item.
-msgctxt "settings.attention.hop_off"
-msgid "The Hop is not set up."
 msgstr ""
 
 #. Item: an Imp sleeps.
@@ -2957,11 +3194,6 @@ msgctxt "settings.devices.link.title"
 msgid "Link"
 msgstr ""
 
-#. Hover help of the Mine switch of a linked device.
-msgctxt "settings.devices.mine.help"
-msgid "On for your own devices, off for a friend's"
-msgstr ""
-
 #. Help beside the Mine switch of a linked device: what turning it on allows, and when to leave it off.
 msgctxt "settings.devices.mine.info"
 msgid "Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools."
@@ -2970,11 +3202,6 @@ msgstr ""
 #. Settings text.
 msgctxt "settings.devices.pair.title"
 msgid "Link"
-msgstr ""
-
-#. Group title.
-msgctxt "settings.group.animations"
-msgid "Animations"
 msgstr ""
 
 #. Group title.
@@ -2995,11 +3222,6 @@ msgstr ""
 #. Settings text.
 msgctxt "settings.group.bubble"
 msgid "Bubble"
-msgstr ""
-
-#. Settings text.
-msgctxt "settings.group.devices"
-msgid "Devices"
 msgstr ""
 
 #. Group title.
@@ -3302,24 +3524,44 @@ msgctxt "settings.tool.variables.info"
 msgid "Secret values the tool needs to run."
 msgstr ""
 
-#. Button on the Sharing page: look through The Den.
-msgctxt "sharing.browse"
-msgid "Browse"
-msgstr ""
-
-#. Title of the card on Sharing with Browse and Import.
-msgctxt "sharing.gallery"
-msgid "Gallery"
-msgstr ""
-
-#. Help on the Gallery card.
-msgctxt "sharing.gallery.info"
-msgid "Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp."
+#. Help of the Animations list on the Sharing page.
+msgctxt "sharing.animations.info"
+msgid "Every animation, shared or an Imp's own. Try one, change it, save it as a sticker or share it as a kit."
 msgstr ""
 
 #. Button on the Sharing page: bring in a kit from a link or file.
 msgctxt "sharing.import"
 msgid "Import"
+msgstr ""
+
+#. Beside the header of a Sharing list that has nothing in it yet.
+msgctxt "sharing.none"
+msgid "None yet"
+msgstr ""
+
+#. Help of the button that opens an item in its Imp's settings.
+msgctxt "sharing.open_in"
+msgid "Open in {name}'s settings"
+msgstr ""
+
+#. Help of the button that shares a whole list as one kit.
+msgctxt "sharing.share_all"
+msgid "Share all as a kit"
+msgstr ""
+
+#. Help of the Tools list on the Sharing page.
+msgctxt "sharing.tools.info"
+msgid "Every tool added from outside, with a dot for each Imp that uses it. Keys are left out when you share one."
+msgstr ""
+
+#. Under a tool on the Sharing page that no Imp uses.
+msgctxt "sharing.tools.unused"
+msgid "No Imp uses it"
+msgstr ""
+
+#. Help of the Triggers list on the Sharing page.
+msgctxt "sharing.triggers.info"
+msgid "Every trigger, shared or an Imp's own. Share one as a kit, or open it in the settings of its Imp to change it."
 msgstr ""
 
 #. Empty state of a list of animations.
@@ -3610,6 +3852,11 @@ msgstr ""
 #. Help of a tool server badge.
 msgctxt "tools.help.server"
 msgid "A program or website that gives the Imp more tools."
+msgstr ""
+
+#. Spoken name of the choice between a web server and a local program, in the sheet that adds a tool.
+msgctxt "tools.kind"
+msgid "Kind of tool"
 msgstr ""
 
 #. Status of an MCP server.

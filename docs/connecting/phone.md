@@ -102,7 +102,7 @@ asked, then the answer.
 ## Linking
 
 Either device shows a code and the other scans it. On the iPhone, use **Show my code** or **Scan a Code**, or
-**Paste Link**. On the Mac, use the Devices card in Imp's settings, and **Scan Code…** there.
+**Paste Link**. On the Mac, open the Devices screen (the bottom-left corner of the home window), choose **Link a device**, and use **Scan Code…** there.
 
 - A code works for **15 minutes** after it was last on screen, and several devices can scan it.
 - Devices find each other with Bonjour on your Wi-Fi. This needs **Local Network** for Imp (iPhone Settings › Imp).
@@ -118,7 +118,7 @@ linked devices (connected, via the server, or away), the Imps each holds, and **
 
 ## Trust
 
-Mark your own devices **Mine** in the Devices card or sheet.
+Mark your own devices **Mine** on the Mac's Devices screen or in the iPhone's Devices sheet. On the Mac you can also switch off single tool groups for one device.
 
 - An Imp visiting a device that isn't yours, or asked by an Imp whose home isn't one of your devices, talks but
   doesn't use its tools: no commands, no computer control, no tool servers, no messages to other Imps.
@@ -133,7 +133,7 @@ Mark your own devices **Mine** in the Devices card or sheet.
 
 Devices also try each other's addresses on port 47824, so a VPN such as Tailscale works from anywhere.
 
-Without a VPN, set a **Hop** in the Devices sheet (or the Mac's Devices card). A device waits at that Hop, a blind
+Without a VPN, set a **Hop** in the Devices sheet (or in the Link sheet of the Mac's Devices screen). A device waits at that Hop, a blind
 relay, and the others use it when nothing closer answers. The Hop can't read what passes through it.
 
 To run your own Hop, see `server/README.md` in the repository.

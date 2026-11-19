@@ -13,7 +13,7 @@ import Testing
         private(set) var calls: [(name: String, arguments: String, result: String)] = []
 
         init() {
-            var p = ImpPreferences()
+            var p = ImpPreferences.withWaitingImp()
             let pip = ImpProfile(name: "Pip", hue: 0, favoriteHue: 0.5, personality: Persona.newcomer(named: "Pip"))
             p.imps = [pip]
             prefs = p; imp = pip.id
@@ -24,7 +24,7 @@ import Testing
         }
 
         nonisolated func tools() async -> [ToolSpec] {
-            await OwnTools.specs([.moves, .triggers, .tools], animations: playable, imps: [], browser: true)
+            await OwnTools.specs([.animations, .triggers, .tools], animations: playable, imps: [], browser: true)
         }
 
         func call(_ name: String, arguments: String) async throws -> String {

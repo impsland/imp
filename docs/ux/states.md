@@ -10,7 +10,7 @@ Every empty, sleeping, waking, offline, error and partly set up state, with its 
 | Hidden Imps | None hidden | `home.hidden.empty` |
 | Tools | No tools | `tools.empty` |
 | Triggers | No triggers | `triggers.empty` |
-| Moves | No animations | `moves.empty` |
+| Animations | No animations | `animations.empty` |
 | Brains | No Brains | `brains.empty` |
 | Devices | No linked devices | `devices.empty` |
 | Memory | No chats | `memory.empty` |
@@ -22,7 +22,7 @@ An empty state has a short title, at most one line of hint text, and at most one
 
 ### Empty lists
 
-Every empty list is drawn by one component, `EmptyState`: the list's picture, large and quiet, then one short line under it ("No triggers yet."), centred across. A list that is the whole page (Triggers, Moves, Tools, the iPhone's Talks and an Imp's Tools) also centres it down the page, in the room left under the list's header. A list inside a card (Devices, Memory, Brains, Animations) centres it in the card. The actions stay in the list's header, so an empty list never has a second Add. The line says only what is missing: what to do is the header's button and the "?" help.
+Every empty list is drawn by one component, `EmptyState`: the list's picture, large and quiet, then one short line under it ("No triggers yet."), centred across. A list that is the whole page (Triggers, Animations, Tools, the iPhone's Talks and an Imp's Tools) also centres it down the page, in the room left under the list's header. A list inside a card (Devices, Memory, Brains, Animations) centres it in the card. The actions stay in the list's header, so an empty list never has a second Add. The line says only what is missing: what to do is the header's button and the "?" help.
 
 ## A sleeping Imp
 

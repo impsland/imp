@@ -14,18 +14,23 @@ struct PhoneBrainForm: View {
 
     private enum Field: Hashable { case address, key, model }
 
+    /// Picks Remote or Local and goes to the field it needs first: the key for Remote, the address for Local.
+    /// Focus moves before the choice: Local disables the key, and a disabled field that has the keyboard gives it
+    /// up, so the keyboard would drop and come back. Moved first, it goes from one field to the other and stays.
+    private func pick(_ preset: ServicePreset) {
+        focus = preset.isLocal ? .address : .key
+        flow.choose(preset)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
-            EvenGrid(minWidth: Sizing.menuTitle, spacing: Spacing.snug) {
-                ForEach(flow.presets) { preset in
-                    PresetTile(symbol: preset.symbol, title: preset.title,
-                               detail: "", picked: flow.choice == preset,
-                               link: preset.link, linkHelp: preset.link.absoluteString) {
-                        flow.choose(preset)
-                        focus = preset.isLocal ? .address : .key
-                    }
-                }
-            }
+            // Remote and Local as one compact, neutral choice (as on the Mac): the selected segment takes the text
+            // colour, not the Imp's; the tint is for the main action.
+            ImpSegmented("firstrun.service.kind",
+                         selection: Binding(get: { flow.choice }, set: { if let preset = $0 { pick(preset) } }),
+                         options: flow.presets.map { Optional($0) }, title: { $0?.title ?? "" }, symbol: { $0?.symbol ?? "" },
+                         fills: true)
+                .environment(\.impTint, Tone.text)
             VStack(alignment: .leading, spacing: Spacing.cozy) {
                 Titled(title: "firstrun.service.address") {
                     TextField("firstrun.service.address", text: $flow.address, prompt: Text(verbatim: "https://…/v1"))
@@ -36,27 +41,31 @@ struct PhoneBrainForm: View {
                         .onSubmit { focus = flow.showsKey ? .key : nil }
                         .accessibilityIdentifier("brain.address")
                 }
-                if flow.showsKey {
-                    Titled(title: "firstrun.service.key") {
-                        // On the address's keyboard, so going from one to the other changes nothing (see `SecretField`).
-                        SecretField(title: "firstrun.service.key", text: $flow.key)
-                            .impField(mono: true)
-                            .focused($focus, equals: .key)
-                            .submitLabel(.done)
-                            .onSubmit { focus = nil }
-                            .accessibilityIdentifier("brain.key")
-                    }
+                Titled(title: "firstrun.service.key") {
+                    // On the address's keyboard, so going from one to the other changes nothing (see `SecretField`).
+                    SecretField(title: flow.showsKey ? "firstrun.service.key" : "firstrun.service.key_local", text: $flow.key)
+                        .impField(mono: true)
+                        .focused($focus, equals: .key)
+                        // Local needs no key: the field stays, disabled, so nothing below it moves.
+                        .disabled(!flow.showsKey)
+                        .submitLabel(.done)
+                        .onSubmit { focus = nil }
+                        .accessibilityIdentifier("brain.key")
                 }
                 Titled(title: "firstrun.step.model") { model }
             }
-            if let problem = flow.problemText {
-                StatusText(verbatim: problem, symbol: "exclamationmark.circle", color: Tone.warnText)
-                    .fixedSize(horizontal: false, vertical: true)
-            } else {
-                // One quiet line that says what is needed.
+            // One quiet line that says what is needed, and a problem in its place: both are laid out, so the
+            // slot is as tall as the taller one and nothing moves when a problem comes or goes.
+            ZStack(alignment: .topLeading) {
                 Text(flow.needsHost && !flow.showsKey ? "firstrun.service.host_note" : "firstrun.service.note")
                     .font(Typeface.caption).foregroundStyle(Tone.muted)
                     .fixedSize(horizontal: false, vertical: true)
+                    .opacity(flow.problemText == nil ? 1 : 0)
+                    .accessibilityHidden(flow.problemText != nil)
+                StatusText(verbatim: flow.problemText ?? " ", symbol: "exclamationmark.circle", color: Tone.warnText)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .opacity(flow.problemText == nil ? 0 : 1)
+                    .accessibilityHidden(flow.problemText == nil)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

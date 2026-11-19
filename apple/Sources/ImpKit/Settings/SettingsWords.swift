@@ -8,7 +8,6 @@ extension AttentionItem {
         switch reason {
         case .noBrains: return String(localized: "brains.empty")
         case .noBrain(let imp): return said("settings.attention.imp_no_brain", imp.name)
-        case .hopNotSet: return String(localized: "settings.attention.hop_off")
         case .deviceOffline(let name): return said("settings.attention.device_offline", name)
         }
     }
@@ -17,7 +16,6 @@ extension AttentionItem {
     public var symbol: String {
         switch reason {
         case .noBrains, .noBrain: "lightbulb.slash"
-        case .hopNotSet: "arrow.triangle.swap"
         case .deviceOffline: "wifi.slash"
         }
     }

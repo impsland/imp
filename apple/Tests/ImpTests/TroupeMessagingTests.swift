@@ -15,6 +15,7 @@ import ImpKit
 
     private func world(_ server: StubModelServer, waiting: TalkWaiting, extra: [String] = []) -> World {
         let app = AppModel(persist: false)
+        app.prefs.imps = [.waiting]
         var service = Service(name: "Stub", baseURL: server.baseURL, model: "stub")
         service.model = "stub"
         app.prefs.ai.add(service)
@@ -265,6 +266,7 @@ import ImpKit
 
     @Test func theToolDescriptionListsWhatEachImpSaysAboutItself() {
         let app = AppModel(persist: false)
+        app.prefs.imps = [.waiting]
         app.prefs.imps[0].name = "Pip"
         app.prefs.imps[0].isActive = true
         let id = app.prefs.addNewcomer()

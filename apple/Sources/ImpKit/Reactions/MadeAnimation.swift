@@ -269,6 +269,16 @@ public enum AnimationRef: Hashable, Sendable {
 
 // MARK: - The library
 
+/// One row of an Imp's Animations section: the animation and how it applies to that Imp.
+public struct ListedAnimation: Hashable, Sendable, Identifiable {
+    public let animation: MadeAnimation
+    public let scope: SettingScope
+    public var id: UUID { animation.id }
+
+    /// The Imp it belongs to alone, or nil for a shared one (editing it changes it for every Imp).
+    public var isShared: Bool { scope == .everyImp }
+}
+
 extension ImpPreferences {
     /// Animations someone made for every Imp.
     public var animationLibrary: [MadeAnimation] {
@@ -306,6 +316,18 @@ extension ImpPreferences {
         let own = ownAnimations(of: imp)
         let replaced = Set(own.compactMap(\.overrides))
         return own + animationLibrary.filter { !replaced.contains($0.id) }
+    }
+
+    /// What the Animations section of `imp` lists: its own animations first, then the shared ones it has
+    /// no version of. A shared one is left out when an own one `overrides` it or has the same title (the
+    /// own one wins, as it does when played). Each comes with how it applies to `imp`.
+    public func listedAnimations(for imp: UUID) -> [ListedAnimation] {
+        let own = ownAnimations(of: imp)
+        let replaced = Set(own.compactMap(\.overrides))
+        let titles = Set(own.map { $0.title.lowercased() })
+        let shared = animationLibrary.filter { !replaced.contains($0.id) && !titles.contains($0.title.lowercased()) }
+        return own.map { ListedAnimation(animation: $0, scope: scope(ofAnimation: $0.id, for: imp)) }
+            + shared.map { ListedAnimation(animation: $0, scope: .everyImp) }
     }
 
     /// Keeps `animation` (new or changed) for `imp`, or for every Imp (nil). Returns the id it is kept under.

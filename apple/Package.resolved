@@ -1,5 +1,5 @@
 {
-  "originHash" : "27973e6bf70ac4dd17b321827b2d4982dfdd1ba79d831ed040161123fcce8bc7",
+  "originHash" : "2616cb9d4bdbcc7472137a156384ed9aa7c200f00528cf6b2320fcf34ba16b30",
   "pins" : [
     {
       "identity" : "swift-custom-dump",
@@ -35,6 +35,15 @@
       "state" : {
         "revision" : "050f1a346fbbac0ca2cfb15a95274f7bd1cf0ccf",
         "version" : "604.0.0"
+      }
+    },
+    {
+      "identity" : "swiftflow",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/aaurelions/SwiftFlow.git",
+      "state" : {
+        "revision" : "98ff46633257d188f1819255df8c8453a9b72d8f",
+        "version" : "0.3.1"
       }
     }
   ],

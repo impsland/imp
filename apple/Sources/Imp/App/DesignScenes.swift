@@ -13,7 +13,7 @@ enum DesignScene: String, CaseIterable {
     case impSleeping = "imp-sleeping"
     case impPersonality = "imp-personality"
     case impLook = "imp-look"
-    case impMoves = "imp-moves"
+    case impAnimations = "imp-animations"
     case impTriggers = "imp-triggers"
     case impTools = "imp-tools"
     case impComputer = "imp-computer"
@@ -25,18 +25,34 @@ enum DesignScene: String, CaseIterable {
     case appNarrow = "all-imps-app-narrow"
     case allNothing = "all-imps-nothing"
     case firstRunService = "first-run-service"
+    case firstRunLocal = "first-run-local"
     case firstRunError = "first-run-error"
+    case firstRunFound = "first-run-found"
     case barMenu = "bar-menu"
     case barMenuEs = "bar-menu-es"
     case impMenu = "imp-menu"
     case allPair = "all-imps-pair"
+    case allPairLinked = "all-imps-pair-linked"
+    case allPairScan = "all-imps-pair-scan"
+    case allPairScanError = "all-imps-pair-scan-error"
+    case allPairNarrow = "all-imps-pair-narrow"
+    case allPairHopCustom = "all-imps-pair-hop-custom"
     case allBubble = "all-imps-bubble"
     case allTalking = "all-imps-talking"
     case allBrains = "all-imps-brains"
-    case allDevices = "all-imps-devices"
-    case allDevicesNarrow = "all-imps-devices-narrow"
+    case devicesEmpty = "devices-empty"
+    case devicesLinked = "devices-linked"
+    case devicesImp = "devices-imp"
+    case devicesDevice = "devices-device"
+    case devicesEdge = "devices-edge"
+    case devicesMac = "devices-mac"
+    case devicesVisitor = "devices-visitor"
+    case devicesTether = "devices-tether"
+    case devicesHop = "devices-hop"
+    case devicesHopCustom = "devices-hop-custom"
+    case devicesHopOff = "devices-hop-off"
     case allSharing = "all-imps-sharing"
-    case allAnimations = "all-imps-animations"
+    case allSharingEmpty = "all-imps-sharing-empty"
     case allPrivacy = "all-imps-privacy"
     case allBackup = "all-imps-backup"
 
@@ -46,7 +62,7 @@ enum DesignScene: String, CaseIterable {
     var size: CGSize {
         switch self {
         case .canvasEmpty, .canvasImps: CGSize(width: 780, height: 640)
-        case .impBrain, .impSleeping, .impPersonality, .impLook, .impMoves, .impTriggers, .impTools, .impComputer: CGSize(width: 760, height: 720)
+        case .impBrain, .impSleeping, .impPersonality, .impLook, .impAnimations, .impTriggers, .impTools, .impComputer: CGSize(width: 760, height: 720)
         case .impLookNarrow: CGSize(width: 380, height: 720)
         case .impAgentTools: CGSize(width: Sizing.sheetWidth, height: 560)
         case .impTriggerEditor: CGSize(width: 600, height: 760)
@@ -54,28 +70,31 @@ enum DesignScene: String, CaseIterable {
         case .appWide: CGSize(width: 900, height: 720)
         case .appNarrow: CGSize(width: 560, height: 720)
         case .allNothing: CGSize(width: 760, height: 640)
-        case .firstRunService, .firstRunError: CGSize(width: Sizing.sheetWidth, height: 660)
+        case .firstRunService, .firstRunLocal, .firstRunError, .firstRunFound: CGSize(width: Sizing.sheetWidth, height: 660)
         case .barMenu, .barMenuEs: CGSize(width: 420, height: 360)
         case .impMenu: CGSize(width: 1480, height: 600)
-        case .allPair: CGSize(width: 560, height: 420)
-        case .allDevicesNarrow: CGSize(width: 380, height: 720)
-        case .allBubble, .allTalking, .allBrains, .allDevices, .allSharing, .allAnimations, .allPrivacy, .allBackup: CGSize(width: 760, height: 720)
+        case .allPair, .allPairLinked, .allPairScan, .allPairScanError: CGSize(width: 560, height: 420)
+        case .allPairNarrow: CGSize(width: 380, height: 640)
+        case .devicesEmpty, .devicesLinked: CGSize(width: 1080, height: 720)
+        case .devicesImp, .devicesDevice, .devicesEdge, .devicesMac, .devicesVisitor, .devicesTether: CGSize(width: 600, height: 720)
+        case .devicesHop, .devicesHopCustom, .devicesHopOff: CGSize(width: 600, height: 460)
+        case .allPairHopCustom: CGSize(width: Sizing.popoverWidth + 2 * Spacing.medium, height: 220)
+        case .allSharing: CGSize(width: 760, height: 560)
+        case .allSharingEmpty: CGSize(width: 760, height: 260)
+        case .allBubble, .allTalking, .allBrains, .allPrivacy, .allBackup: CGSize(width: 760, height: 720)
         }
     }
 
     @MainActor var view: AnyView {
         let content: AnyView = switch self {
         case .canvasEmpty:
-            AnyView(ZStack {
-                CanvasBackdrop(html: RoomBackground.defaultHTML)
-                EmptyCanvas(action: {})
-            })
+            AnyView(HomeView(model: Self.model(imps: 0), router: HomeRouter()))
         case .canvasImps: canvas()
         case .impBrain: impSettings(brain: true, open: .brain)
         case .impSleeping: impSettings(brain: false, open: .brain)
         case .impPersonality: impSettings(brain: true, open: .personality)
         case .impLook, .impLookNarrow: impSettings(brain: true, open: .look)
-        case .impMoves: impSettings(brain: true, open: .moves)
+        case .impAnimations: impSettings(brain: true, open: .animations)
         case .impTriggers: impSettings(brain: true, open: .triggers)
         case .impTools: impSettings(brain: true, open: .tools)
         case .impComputer: impSettings(brain: true, open: .computer)
@@ -85,19 +104,35 @@ enum DesignScene: String, CaseIterable {
         case .appWide, .appNarrow: general(.app)
         case .allNothing: general(.brains, setUp: false)
         case .firstRunService: firstRun { _ in }
+        case .firstRunLocal: firstRun { if let local = ServicePreset.local { $0.choose(local) } }
         case .firstRunError: firstRun { $0.continueFromService() }
+        case .firstRunFound: firstRun(found: true) { _ in }
         case .barMenu, .barMenuEs: barMenu()
         case .impMenu: impMenu()
         case .allPair: pairing()
+        case .allPairLinked: pairing(phase: .linked("Anna's iPhone"))
+        case .allPairScan: pairing(mode: .scan)
+        case .allPairScanError: pairing(mode: .scan, phase: .failed("Nobody answered. Check that both devices are on the same network, or set a Hop."))
+        case .allPairNarrow: pairing(width: 340)
+        case .allPairHopCustom: hopPopover()
         case .allBubble: general(.bubble)
         case .allTalking: general(.talking)
         case .allBrains: general(.brains)
-        case .allDevices: general(.devices)
         case .allSharing: general(.sharing)
-        case .allAnimations: general(.animations)
+        case .allSharingEmpty: general(.sharing, sharables: false)
         case .allPrivacy: general(.privacy)
         case .allBackup: general(.backup)
-        case .allDevicesNarrow: general(.devices)
+        case .devicesEmpty: devices(linked: false)
+        case .devicesLinked: devices(linked: true)
+        case .devicesImp: deviceSheet(.imp(Self.dotID, in: Self.phoneID.uuidString))
+        case .devicesDevice: deviceSheet(.node(Self.phoneID.uuidString))
+        case .devicesEdge: deviceSheet(.channel("00000000-0000-4000-8000-0000000000B2"))
+        case .devicesMac: deviceSheet(.node(DeviceMap.thisMacID))
+        case .devicesVisitor: deviceSheet(.imp(Self.noodleID, in: DeviceMap.thisMacID))
+        case .devicesTether: deviceSheet(.tether(Self.dotID, in: Self.phoneID.uuidString))
+        case .devicesHop: hopSheet()
+        case .devicesHopCustom: hopSheet(choice: .custom)
+        case .devicesHopOff: hopSheet(address: "")
         }
         return AnyView(content
             .environment(\.stageStill, Self.still)
@@ -107,7 +142,9 @@ enum DesignScene: String, CaseIterable {
 
     /// The scene drawn at one pixel to the point, in the light or the dark appearance, once it has settled.
     @MainActor func image(dark: Bool) -> NSBitmapImageRep? {
-        let host = NSHostingView(rootView: view)
+        // Sheets get the scene as their window, as the app's window would give them (`SheetRoom.available`).
+        // Without it they measure the real screen, so a picture would change with the display it was drawn on.
+        let host = NSHostingView(rootView: view.environment(\.sheetRoom, size.height - SheetRoom.margin))
         let window = NSWindow(contentRect: CGRect(origin: CGPoint(x: -3000, y: -3000), size: size),
                               styleMask: [.borderless], backing: .buffered, defer: false)
         window.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
@@ -188,17 +225,72 @@ enum DesignScene: String, CaseIterable {
     }
 
     /// The link-a-device sheet with a fixed invite, so the QR code is the same every time.
-    @MainActor private func pairing() -> AnyView {
+    @MainActor private func pairing(mode: LinkDeviceSheet.Mode = .show, width: CGFloat = Sizing.sheetWidth, phase: LinkPhase? = nil) -> AnyView {
         let invite = LinkInvite(device: LinkDevice(id: UUID(uuidString: "00000000-0000-4000-8000-0000000000A1") ?? UUID(), name: "Mac", kind: .mac, key: Data(count: 32)),
                                 door: Data(count: 32), invite: Data(count: 32), routes: LinkRoutes(hosts: ["mac.local"]))
-        return AnyView(LinkDeviceSheet(model: Self.model(imps: 2), mode: .show, preview: invite).background { Backdrop() })
+        return AnyView(LinkDeviceSheet(model: Self.model(imps: 2), mode: mode, width: width, preview: invite, previewPhase: phase).background { Backdrop() })
+    }
+
+    private static let dotID = UUID(uuidString: "00000000-0000-4000-8000-000000000001") ?? UUID()
+    private static let noodleID = UUID(uuidString: "00000000-0000-4000-8000-0000000000C2") ?? UUID()
+    private static let phoneID = UUID(uuidString: "00000000-0000-4000-8000-0000000000B1") ?? UUID()
+
+    /// The Devices screen. Linked: Dot is out on Anna's iPhone, which also has its own Imps, Studio Mac is
+    /// reached through the Hop and Noodle, from the iPhone, visits this Mac.
+    @MainActor private func devices(linked: Bool) -> AnyView {
+        let (model, router) = devicesModel(linked: linked)
+        return AnyView(DevicesScreen(model: model, router: router).background { SettingsBackdrop() })
+    }
+
+    /// The sheet a press on the canvas opens, drawn by itself: the offscreen renderer does not present sheets.
+    @MainActor private func deviceSheet(_ selection: DeviceSelection) -> AnyView {
+        let (model, router) = devicesModel(linked: true)
+        return AnyView(DeviceSheet(model: model, router: router, map: SettingsNodes.deviceMap(for: model), selection: selection) { _ in }
+            .background { Backdrop() })
+    }
+
+    /// The Hop's sheet; with an `address` of its own, as when none is set or Custom has just been chosen.
+    @MainActor private func hopSheet(address: String? = nil, choice: ServerChoice? = nil) -> AnyView {
+        let (model, _) = devicesModel(linked: true)
+        if choice == .custom { model.prefs.hop = "" } else if let address { model.prefs.hop = address }
+        return AnyView(HopSheet(model: model, map: SettingsNodes.deviceMap(for: model), swap: { _ in }, choice: choice)
+            .background { Backdrop() })
+    }
+
+    /// The Link sheet's Hop popover with Custom chosen and no address yet, drawn by itself: the offscreen renderer
+    /// does not present popovers.
+    @MainActor private func hopPopover() -> AnyView {
+        AnyView(HopPopoverScene())
+    }
+
+    @MainActor private func devicesModel(linked: Bool) -> (AppModel, HomeRouter) {
+        let model = Self.model(imps: 3)
+        if linked {
+            model.prefs.hop = "hop.example.org:4677"
+            func look(_ name: String, _ hue: Double, _ id: String) -> LinkImp {
+                LinkImp(id: UUID(uuidString: id) ?? UUID(), name: name, hue: hue, scale: 1, traits: .plain)
+            }
+            model.prefs.imps[0].awayOn = Self.phoneID
+            let cinder = look("Cinder", 0.9, "00000000-0000-4000-8000-0000000000C1")
+            let noodle = look("Noodle", 0.45, "00000000-0000-4000-8000-0000000000C2")
+            let stage = [LinkStaged(imp: LinkImp(model.prefs.imps[0]), home: UUID()),
+                         LinkStaged(imp: cinder, home: Self.phoneID), LinkStaged(imp: noodle, home: Self.phoneID)]
+            model.link.showSample([
+                .init(id: Self.phoneID, name: "Anna's iPhone", kind: .phone, reach: .direct, imps: [Self.dotID], isTrusted: true, stage: stage,
+                      routes: LinkRoutes(hosts: ["annas-iphone.local"], port: 47824)),
+                .init(id: UUID(uuidString: "00000000-0000-4000-8000-0000000000B2") ?? UUID(), name: "Studio Mac", kind: .mac, reach: .viaServer, imps: [], isTrusted: true),
+            ], visitors: [LinkStaged(imp: noodle, home: Self.phoneID)])
+        }
+        let router = HomeRouter()
+        router.screen = .devices
+        return (model, router)
     }
 
     /// The Imps of every scene: the same ids, names and colours.
     @MainActor private static func model(imps: Int, brain: Bool = true) -> AppModel {
         let model = AppModel(persist: false)
         model.prefs = ImpPreferences()
-        for _ in 1..<max(1, imps) { model.addImp() }
+        for _ in 0..<imps { model.addImp() }
         let ids = ["00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000003"]
         for (i, hue) in [0.08, 0.57, 0.33].enumerated() where model.prefs.imps.indices.contains(i) {
             model.prefs.imps[i].id = UUID(uuidString: ids[i]) ?? UUID()
@@ -237,13 +329,13 @@ enum DesignScene: String, CaseIterable {
             .background { SettingsBackdrop() })
     }
 
-    /// What an Imp may do by itself in Moves: the sheet behind the wand.
+    /// What an Imp may do by itself in Animations: the sheet behind the wand.
     @MainActor private func agentTools() -> AnyView {
         let model = Self.model(imps: 1, brain: true)
         let id = model.prefs.imps[0].id
         let imp = Binding(get: { model.profile(id) ?? .imp },
                           set: { new in if let i = model.prefs.imps.firstIndex(where: { $0.id == id }) { model.prefs.imps[i] = new } })
-        return AnyView(AgentToolsSheet(imp: imp, groups: [.moves])
+        return AnyView(AgentToolsSheet(imp: imp, groups: [.animations])
             .environment(\.impTint, Color.imp(model.prefs.imps[0].hue))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background { SettingsBackdrop() })
@@ -275,24 +367,49 @@ enum DesignScene: String, CaseIterable {
     }
 
     /// A section of the app-wide settings. With `setUp` false there is no Brain and no server, so the
-    /// section shows what needs attention.
-    @MainActor private func general(_ group: SettingsGroup, setUp: Bool = true) -> AnyView {
+    /// section shows what needs attention. With `sharables` false Sharing has nothing to list.
+    @MainActor private func general(_ group: SettingsGroup, setUp: Bool = true, sharables: Bool = true) -> AnyView {
         let model = Self.model(imps: 2, brain: setUp)
         if !setUp {
             model.prefs.hop = ""
         }
+        if group == .sharing, sharables { Self.addSharables(to: model) }
         let router = HomeRouter()
         router.screen = .general
         router.settingsSection = group
         return AnyView(GeneralSettingsView(model: model, router: router).background { SettingsBackdrop() })
     }
 
-    @MainActor private func firstRun(_ events: (FirstRunModel) -> Void) -> AnyView {
-        let services = FirstRunServices(find: { [] }, models: { _, _ in ["model-a", "model-b"] }, check: { _ in })
-        let flow = FirstRunModel(impName: "Dot", onThisComputer: true, services: services) { _ in }
+    /// Something of each kind to share: shared and own triggers and animations, a tool two Imps use and one nobody does.
+    @MainActor private static func addSharables(to model: AppModel) {
+        let bumble = model.prefs.imps[1].id
+        let beats = [AnimationBeat(duration: 0.5, mood: "excited", hop: true), AnimationBeat(duration: 0.8, mood: "happy", tilt: 6)]
+        model.prefs.animationLibrary = [MadeAnimation(name: "Wave", about: "A small hello.", beats: beats)]
+        model.prefs.imps[0].animations = [MadeAnimation(name: "Spin", beats: beats)]
+        model.prefs.shortcuts = [
+            Shortcut(name: "Translate", hotkey: Hotkey(parsing: "ctrl+opt+T"),
+                     steps: [Step(.ask, value: "Translate this into English.", clipboard: true)]),
+            Shortcut(name: "Greet", performer: bumble, trigger: .starter(.click), steps: [Step(.play, value: "Wave")]),
+        ]
+        let files = MCPServerConfig(name: "Files", transport: .stdio, command: "npx",
+                                    arguments: ["-y", "@modelcontextprotocol/server-filesystem", "~/Documents"])
+        model.prefs.mcpServers = [files, MCPServerConfig(name: "Notes", transport: .http, url: "https://notes.example.com/mcp")]
+        model.prefs.imps[0].servers = [files.id]
+        model.prefs.imps[1].servers = [files.id]
+    }
+
+    /// The first run of a new Imp (not in the settings), as on the first launch: with Ollama found when `found`.
+    @MainActor private func firstRun(found: Bool = false, _ events: (FirstRunModel) -> Void) -> AnyView {
+        let ollama = LocalServer(name: "Ollama", baseURL: ServicePreset.local?.baseURL ?? "", models: ["llama3.2"])
+        let services = FirstRunServices(find: { found ? [ollama] : [] }, models: { _, _ in ["model-a", "model-b"] }, check: { _ in })
+        var imp = ImpProfile.imp
+        imp.name = "Dot"
+        imp.hue = 0.08
+        let flow = FirstRunModel(impName: imp.name, target: .newImp(imp), onThisComputer: true, services: services,
+                                found: found ? [ollama] : []) { _, _ in }
         events(flow)
-        let hue = 0.08
-        return AnyView(FirstRunSheet(flow: flow, hue: hue, traits: .plain, clock: BodyClock(offset: 0), close: {})
+        let hue = imp.hue
+        return AnyView(FirstRunSheet(flow: flow, hue: hue, traits: .plain, clock: BodyClock(offset: 0), linkDevice: {}, close: {})
             .environment(\.impTint, Color.imp(hue))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background { SettingsBackdrop() })
@@ -322,7 +439,7 @@ enum BubbleScene: String, CaseIterable {
 
     /// `app` outlives the card: the model only holds it unowned.
     @MainActor private func content(app: AppModel) -> BubbleCard {
-        let imp = ImpModel(id: app.prefs.imps[0].id, app: app)
+        let imp = ImpModel(id: app.addImp(), app: app)
         let layout = BubbleLayout()
         let long = (1...14).map { "Paragraph \($0): imps keep their replies short, but sometimes a question deserves a proper answer." }
             .joined(separator: "\n\n")
@@ -361,5 +478,17 @@ enum BubbleScene: String, CaseIterable {
               let rep = frame.bitmapImageRepForCachingDisplay(in: frame.bounds) else { return nil }
         frame.cacheDisplay(in: frame.bounds, to: rep)
         return rep
+    }
+}
+
+/// The Hop card as the Link sheet's popover shows it, on the sheet's surface.
+private struct HopPopoverScene: View {
+    @State private var hop = ""
+
+    var body: some View {
+        ServerCard(kind: .hop, text: $hop, choice: .custom)
+            .padding(Spacing.medium)
+            .frame(width: Sizing.popoverWidth)
+            .background { Backdrop() }
     }
 }

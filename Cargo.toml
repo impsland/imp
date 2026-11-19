@@ -3,7 +3,7 @@ resolver = "3"
 members = ["engine", "engine/ffi", "chat", "server/shared", "server/den", "server/hop"]
 
 [workspace.package]
-version = "2.1.0"
+version = "3.0.0"
 edition = "2024"
 rust-version = "1.99"
 license = "MIT"
@@ -55,10 +55,10 @@ tower = { version = "0.5.3", features = ["util"] }
 tower-http = { version = "0.7.1", default-features = false, features = ["cors"] }
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["json", "env-filter"] }
-imp-shared = { path = "server/shared", version = "2.1.0" }
-imp-engine = { path = "engine", version = "2.1.0" }
-imp-den = { path = "server/den", version = "2.1.0" }
-imp-hop = { path = "server/hop", version = "2.1.0" }
+imp-shared = { path = "server/shared", version = "3.0.0" }
+imp-engine = { path = "engine", version = "3.0.0" }
+imp-den = { path = "server/den", version = "3.0.0" }
+imp-hop = { path = "server/hop", version = "3.0.0" }
 uniffi = { version = "0.32.2", features = ["cli"] }
 clap = { version = "4.6.7", features = ["derive", "wrap_help", "env"] }
 toml = "1.1.8"

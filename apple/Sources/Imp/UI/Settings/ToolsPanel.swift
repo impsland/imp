@@ -23,7 +23,6 @@ struct ToolsPanel: View {
     @State private var opened: Set<String> = []
     @State private var editing: Draft?
     @State private var forgetting: MCPServerConfig?
-    @State private var adding = false
     @State private var signInProblems: [UUID: String] = [:]
     @Environment(\.impTint) private var tint
 
@@ -38,10 +37,11 @@ struct ToolsPanel: View {
     var body: some View {
         PanelList("tools.title", icon: "puzzlepiece.extension.fill", info: "tools.help.mcp", accessory: {
             HStack(spacing: Spacing.small) {
+                HoverIconButton(systemName: SectionAction.add, help: "tools.add") {
+                    editing = Draft(server: MCPServerConfig(name: "", transport: .http), isNew: true)
+                }
                 ImportKitButton(imp: imp.id)
                 AgentToolsButton(imp: $imp, groups: [.tools])
-                Button { adding = true } label: { FitLabel("tools.add", systemImage: "plus") }
-                    .buttonStyle(.imp(.secondary, small: true))
             }
         }) {
             if servers.isEmpty {
@@ -56,7 +56,6 @@ struct ToolsPanel: View {
             }
         }
         .settingAnchor(.toolsServers)
-        .sheet(isPresented: $adding) { AddToolsSheet(model: model, imp: $imp, edit: { editing = $0 }) }
         .sheet(item: $editing) { draft in
             ServerEditor(draft: draft.server, isNew: draft.isNew, hub: model.assistant.hub) { saved in
                 if let i = model.prefs.mcpServers.firstIndex(where: { $0.id == saved.id }) {
@@ -231,103 +230,6 @@ struct ToolsPanel: View {
         p.mcpServers.append(contentsOf: added)
         if let i = p.imps.firstIndex(where: { $0.id == imp.id }) { p.imps[i].servers.append(contentsOf: added.map(\.id)) }
         model.changeByPerson(p)
-    }
-}
-
-/// "Add tools": ready-made MCP servers, or a local program or web server of your own. A ready-made one is
-/// added at once; Cancel takes back the ones added since the sheet opened.
-struct AddToolsSheet: View {
-    @Bindable var model: AppModel
-    @Binding var imp: ImpProfile
-    let edit: (ToolsPanel.Draft) -> Void
-    @Environment(\.dismiss) private var dismiss
-    /// The servers this sheet added, for Cancel.
-    @State private var added: [UUID] = []
-
-    var body: some View {
-        SheetScaffold(icon: "wrench.and.screwdriver.fill", title: "tools.add", cancel: { takeBack(); dismiss() }) {
-            EvenGrid(minWidth: Self.tileWidth, spacing: Spacing.small) {
-                ForEach(MCPExamples.examples, id: \.server.name) { example in
-                    let added = model.prefs.mcpServers.contains { $0.commandLine == example.server.commandLine }
-                    AddToolTile(icon: example.icon, title: Text(verbatim: example.server.name),
-                                detail: added ? Text("Added") : Text(example.blurb), done: added) {
-                        if example.isComplete { add(example.server) } else { open(MCPServerConfig(name: example.server.name, transport: example.server.transport), from: example.server) }
-                    }
-                }
-            }
-            EvenGrid(minWidth: Self.tileWidth, spacing: Spacing.small) {
-                AddToolTile(icon: "terminal.fill", title: Text("Local program"), detail: Text("Runs a command on this Mac")) {
-                    open(MCPServerConfig(name: "", transport: .stdio))
-                }
-                AddToolTile(icon: "globe", title: Text("Web server"), detail: Text("Its https:// address")) {
-                    open(MCPServerConfig(name: "", transport: .http))
-                }
-            }
-        } footer: {
-            Button("common.done") { dismiss() }
-                .buttonStyle(.primary)
-                .keyboardShortcut(.defaultAction)
-        }
-    }
-
-    /// Removes the servers this sheet added, from the library and from the Imp.
-    private func takeBack() {
-        guard !added.isEmpty else { return }
-        let gone = Set(added)
-        var p = model.prefs
-        p.mcpServers.removeAll { gone.contains($0.id) }
-        if let i = p.imps.firstIndex(where: { $0.id == imp.id }) { p.imps[i].servers.removeAll { gone.contains($0) } }
-        model.changeByPerson(p)
-        added = []
-    }
-
-    private static var tileWidth: CGFloat { Sizing.menuTitle + Spacing.page }
-
-    private func add(_ server: MCPServerConfig) {
-        var p = model.prefs
-        p.mcpServers.append(server)
-        if let i = p.imps.firstIndex(where: { $0.id == imp.id }) { p.imps[i].servers.append(server.id) }
-        model.changeByPerson(p)
-        added.append(server.id)
-    }
-
-    private func open(_ server: MCPServerConfig, from example: MCPServerConfig? = nil) {
-        dismiss()
-        edit(ToolsPanel.Draft(server: example ?? server, isNew: true))
-    }
-}
-
-/// A big, plain button for adding something (a tool).
-struct AddToolTile: View {
-    let icon: String
-    let title: Text
-    let detail: Text
-    var done = false
-    let action: () -> Void
-    @Environment(\.impTint) private var tint
-    @State private var hover = false
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: Spacing.cozy) {
-                IconTile(systemName: done ? "checkmark" : icon).opacity(done ? Opacity.dimmed : 1)
-                VStack(alignment: .leading, spacing: Spacing.hairline) {
-                    title.font(Typeface.cardTitle).foregroundStyle(Tone.text).lineLimit(1)
-                    detail.font(Typeface.small).foregroundStyle(Tone.muted).lineLimit(1)
-                }
-                Spacer(minLength: 0)
-            }
-            .padding(.horizontal, Spacing.cozy).padding(.vertical, Spacing.small)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-            .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous)
-                .fill(hover && !done ? Tone.cardHover : Tone.card))
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .disabled(done)
-        .onHover { hover = $0 }
-        .impAnimation(ImpDesign.Motion.hover, value: hover)
-        .help(detail)
     }
 }
 

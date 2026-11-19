@@ -56,12 +56,6 @@
     "es": "Adiós a {count} Imps…",
     "zh-Hans": "向 {count} 个 Imp 告别…"
   },
-  "menu.group.goodbye_off": {
-    "note": "Tooltip of the dimmed Goodbye item when every Imp is picked.",
-    "en": "One Imp always stays. Leave at least one out of the group.",
-    "es": "Siempre se queda un Imp. Deja al menos uno fuera del grupo.",
-    "zh-Hans": "总要留下一个 Imp。请至少留一个不选。"
-  },
   "menu.canvas.settings": {
     "note": "Menu item that opens the app-wide settings.",
     "en": "Settings",

@@ -3,9 +3,16 @@ import Foundation
 /// The sections the All Imps settings are split into, in the order they are listed. Every platform
 /// lists them as a rail or bar that is always one tap away. A map node or an attention item opens one.
 public enum SettingsGroup: String, CaseIterable, Sendable, Identifiable {
-    case app, bubble, talking, brains, devices, sharing, animations, privacy, backup
+    case app, bubble, talking, brains, sharing, privacy, backup
 
     public var id: String { rawValue }
+}
+
+/// Where fixing something happens: a section of the All Imps settings, or the Devices screen (which is
+/// not a section: it has its own place on the Mac and its own page on the iPhone).
+public enum AttentionDestination: Hashable, Sendable {
+    case settings(SettingsGroup)
+    case devices
 }
 
 /// One element of the settings map: this device, a connected service, a server or another device.
@@ -37,16 +44,15 @@ public struct SettingsNode: Equatable, Identifiable, Sendable {
         self.sleeping = sleeping; self.isLocal = isLocal; self.seen = seen; self.toolsHere = toolsHere; self.via = via
     }
 
-    /// The group of settings this node opens.
-    public var group: SettingsGroup {
+    /// Where this node opens: Brains for the Brains side, the Devices screen for the Hop and linked devices.
+    public var destination: AttentionDestination {
         switch kind {
-        case .brains, .thisDevice, .tools: .brains
+        case .brains, .thisDevice, .tools: .settings(.brains)
         case .hop, .desktop, .phone: .devices
         }
     }
 }
 
-/// Something to fix, with the group that fixes it.
 /// An Imp that has no Brain: which one (so its Brain can be opened) and its name.
 public struct Sleeper: Equatable, Sendable {
     public var id: UUID
@@ -57,10 +63,11 @@ public struct Sleeper: Equatable, Sendable {
 
 public struct AttentionItem: Equatable, Identifiable, Sendable {
     public enum Reason: Equatable, Sendable {
-        case noBrains, noBrain(Sleeper), hopNotSet, deviceOffline(String)
+        case noBrains, noBrain(Sleeper), deviceOffline(String)
     }
+    /// Something to fix, with the place that fixes it.
     public var reason: Reason
-    public var group: SettingsGroup
+    public var destination: AttentionDestination
     public var id: String { "\(reason)" }
 }
 
@@ -94,31 +101,29 @@ public enum SettingsMap {
         return kind.problem(with: text) == nil ? .ready : .needsSetup
     }
 
-    /// The sections that have something to fix, for the mark on their place in the rail.
-    public static func attentionGroups(_ items: [AttentionItem]) -> Set<SettingsGroup> {
-        Set(items.map(\.group))
+    /// The places that have something to fix, for the mark on their place in a rail or a corner.
+    public static func marked(_ items: [AttentionItem]) -> Set<AttentionDestination> {
+        Set(items.map(\.destination))
     }
 
-    /// What needs fixing in one section, for the notice at the top of its page.
-    public static func attention(_ nodes: [SettingsNode], in group: SettingsGroup) -> [AttentionItem] {
-        attention(nodes).filter { $0.group == group }
+    /// What needs fixing in one place, for the notice at the top of its page.
+    public static func attention(_ nodes: [SettingsNode], at destination: AttentionDestination) -> [AttentionItem] {
+        attention(nodes).filter { $0.destination == destination }
     }
 
-    /// What needs fixing, in a calm order: Brains, then the Hop, then devices. Each item belongs
-    /// to the section that fixes it: Brains or Devices (the Hop and linked devices).
+    /// What needs fixing, in a calm order: Brains, then linked devices. Each item belongs to the place
+    /// that fixes it: the Brains section or the Devices screen. No Hop is not a fault: devices still link
+    /// on the same network, and the Hop is only a hint where it is set.
     public static func attention(_ nodes: [SettingsNode]) -> [AttentionItem] {
         var items: [AttentionItem] = []
         if nodes.contains(where: { $0.kind == .brains && $0.state == .needsSetup }) {
-            items.append(AttentionItem(reason: .noBrains, group: .brains))
+            items.append(AttentionItem(reason: .noBrains, destination: .settings(.brains)))
         }
         for imp in nodes.filter({ $0.kind == .thisDevice }).flatMap(\.sleeping) {
-            items.append(AttentionItem(reason: .noBrain(imp), group: .brains))
-        }
-        if nodes.contains(where: { $0.kind == .hop && ($0.state == .off || $0.state == .needsSetup) }) {
-            items.append(AttentionItem(reason: .hopNotSet, group: .devices))
+            items.append(AttentionItem(reason: .noBrain(imp), destination: .settings(.brains)))
         }
         for node in nodes where (node.kind == .desktop || node.kind == .phone) && node.state == .offline {
-            items.append(AttentionItem(reason: .deviceOffline(node.name), group: .devices))
+            items.append(AttentionItem(reason: .deviceOffline(node.name), destination: .devices))
         }
         return items
     }

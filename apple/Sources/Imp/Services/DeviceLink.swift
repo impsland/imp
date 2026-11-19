@@ -26,6 +26,8 @@ final class DeviceLink {
         var isTrusted = false
         /// The Imps on its screen, as it last said (empty while it isn't connected).
         var stage: [LinkStaged] = []
+        /// Where it was last known on the local network.
+        var routes: LinkRoutes?
 
         var isConnected: Bool { reach != .away }
     }
@@ -33,7 +35,12 @@ final class DeviceLink {
     /// The linked devices.
     private(set) var peers: [Peer] = []
     /// Made-up devices for the design renders (nothing is linked or listened for).
-    func showSample(_ sample: [Peer]) { peers = sample }
+    func showSample(_ sample: [Peer], visitors: [LinkStaged] = []) {
+        peers = sample
+        sampleVisitors = visitors
+    }
+    /// Made-up visitors that go with the made-up devices.
+    @ObservationIgnored private var sampleVisitors: [LinkStaged]?
 
     /// Something that went wrong that the person may want to know.
     private(set) var problem: String?
@@ -75,8 +82,8 @@ final class DeviceLink {
         var sender: LinkImp
         var target: UUID
         var text: String
-        /// The device it comes from when that isn't one of the owner's own: the answer uses no tools.
-        var limitedTo: String?
+        /// The device it comes from: the answer uses the tools it is allowed (none unless it is the owner's own).
+        var origin: AskOrigin
     }
 
     /// Turns of the current chat a device is sent (it shows the latest, the Mac keeps them all).
@@ -138,6 +145,12 @@ final class DeviceLink {
     }
 
     func name(of device: UUID) -> String? { peers.first { $0.id == device }?.name }
+
+    /// Who is asking when `message` came from `device`: what its Imps may use here is decided from it.
+    private func origin(of device: UUID, _ message: LinkMessage) -> AskOrigin {
+        AskOrigin(device: device, name: name(of: device) ?? String(localized: "that device"),
+                  trusted: node?.isTrusted(message, from: device) ?? false)
+    }
     func isConnected(_ device: UUID) -> Bool { peers.first { $0.id == device }?.isConnected == true }
 
     /// Where an Imp thrown off a side of the desktop goes.
@@ -209,12 +222,14 @@ final class DeviceLink {
     func forget(_ device: UUID) {
         guard let node else { return }
         returned(node.forget(device))
+        app.prefs.deviceToolLimits.forget(device: device)
         refresh()
     }
 
     func forgetEveryone() {
         guard let node else { return }
         returned(node.forgetEveryone())
+        app.prefs.deviceToolLimits.forgetAll()
         refresh()
     }
 
@@ -296,7 +311,7 @@ final class DeviceLink {
             let id = link.device.id
             let reach: Peer.Reach = !node.isConnected(id) ? .away : node.isThroughHop(id) ? .viaServer : .direct
             return Peer(id: id, name: link.device.name, kind: link.device.kind, reach: reach, imps: node.held(by: id),
-                        isTrusted: node.isTrusted(id), stage: reach == .away ? [] : node.stage(of: id))
+                        isTrusted: node.isTrusted(id), stage: reach == .away ? [] : node.stage(of: id), routes: link.routes)
         }
         if now != peers { peers = now }
         // Visitors sleep while their homes are away, and wear the looks their homes gave them.
@@ -327,8 +342,8 @@ final class DeviceLink {
         case .ask(let imp, let text):
             let words = String(text.trimmingCharacters(in: .whitespacesAndNewlines).prefix(LinkProtocol.maxText))
             guard let model = own(imp), !words.isEmpty else { return }
-            // Only the owner's own devices make an Imp use its tools.
-            model.ask(words, limitedTo: node.isTrusted(message, from: device) ? nil : name(of: device) ?? String(localized: "that device"))
+            // Only the owner's own devices make an Imp use its tools, and only the ones allowed for them.
+            model.ask(words, askedFrom: origin(of: device, message))
         case .stop(let imp):
             own(imp)?.cancel()
         case .newChat(let imp):
@@ -360,8 +375,7 @@ final class DeviceLink {
                 node.send(.talkLines(imp: imp, lines: await talkLinesForLink(of: imp)), to: device)
             }
         case .message(let id, let sender, let to, _, let text, _):
-            let limit = node.isTrusted(message, from: device) ? nil : name(of: device) ?? String(localized: "that device")
-            answer(RemoteJob(id: id, sender: sender, target: to, text: text, limitedTo: limit), back: device)
+            answer(RemoteJob(id: id, sender: sender, target: to, text: text, origin: origin(of: device, message)), back: device)
         case .answer(let id, let text, let failed):
             let words = String(text.prefix(LinkProtocol.maxText))
             settle(id, failed ? .failure(ToolArgumentError(words)) : .success(words))
@@ -670,14 +684,14 @@ final class DeviceLink {
     }
 
     /// An Imp of this Mac answers another Imp. `turnID`: the question's id, when it came over the link.
-    private func reply(from sender: LinkImp, to target: UUID, text: String, limitedTo device: String? = nil, turnID: UUID? = nil) async throws -> String {
+    private func reply(from sender: LinkImp, to target: UUID, text: String, askedFrom origin: AskOrigin? = nil, turnID: UUID? = nil) async throws -> String {
         let words = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !words.isEmpty, app.profile(target)?.isActive == true, let model = app.imp(target) else {
             throw ToolArgumentError(String(localized: "That Imp isn't out."))
         }
         let from = ChatTurn.Sender(id: sender.id, name: sender.name, hue: sender.hue)
         let place = app.prefs.impTalk.place(asked: nil)
-        return try await model.answer(String(words.prefix(LinkProtocol.maxText)), from: from, in: place, limitedTo: device, turnID: turnID)
+        return try await model.answer(String(words.prefix(LinkProtocol.maxText)), from: from, in: place, askedFrom: origin, turnID: turnID)
     }
 
     /// An Imp on another device asks one of ours. Whatever goes wrong comes back as a failed answer.
@@ -698,7 +712,7 @@ final class DeviceLink {
         Task { @MainActor [weak self] in
             guard let self else { return }
             do {
-                let said = try await reply(from: job.sender, to: job.target, text: job.text, limitedTo: job.limitedTo, turnID: job.id)
+                let said = try await reply(from: job.sender, to: job.target, text: job.text, askedFrom: job.origin, turnID: job.id)
                 node?.send(.answer(id: job.id, text: String(said.prefix(LinkProtocol.maxText)), failed: false), to: device)
             } catch {
                 node?.send(.answer(id: job.id, text: String(error.localizedDescription.prefix(LinkProtocol.maxText)), failed: true), to: device)
@@ -722,7 +736,8 @@ final class DeviceLink {
 
     /// The Imps visiting this desktop, as the other devices are told.
     var visitorsStaged: [LinkStaged] {
-        app.visitors.compactMap { model in model.visit.map { LinkStaged(imp: $0.look, home: $0.homeID) } }
+        if let sampleVisitors { return sampleVisitors }
+        return app.visitors.compactMap { model in model.visit.map { LinkStaged(imp: $0.look, home: $0.homeID) } }
     }
 
     /// The other devices are told which Imps are on this desktop, visitors too.

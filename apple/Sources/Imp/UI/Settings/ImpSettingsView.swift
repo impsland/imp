@@ -80,8 +80,7 @@ struct ImpSettingsView: View {
                 }
                 .accessibilityLabel(words("imp_settings.share.a11y", profile.callName))
                 HoverIconButton(systemName: "hand.wave.fill", help: "imp_settings.goodbye", tint: Tone.danger) { confirming = true }
-                    .disabled(model.prefs.imps.count <= 1)
-                    .accessibilityLabel(words("imp_settings.goodbye.a11y", profile.callName))
+                                        .accessibilityLabel(words("imp_settings.goodbye.a11y", profile.callName))
                 HoverIconButton(systemName: "gearshape", help: "settings.title") { router.openGeneralSettings() }
             }
         }
@@ -108,7 +107,7 @@ struct ImpSettingsView: View {
         case .brain: BrainPanel(model: model, imp: imp)
         case .personality: PersonalityPanel(model: model, imp: imp)
         case .look: LookPanel(model: model, imp: imp)
-        case .moves: MovesPanel(model: model, imp: imp)
+        case .animations: AnimationsPanel(model: model, imp: imp)
         case .triggers: TriggersPanel(model: model, imp: imp)
         case .tools: ToolsPanel(model: model, imp: imp)
         case .computer: ComputerPanel(imp: imp)
@@ -116,8 +115,7 @@ struct ImpSettingsView: View {
     }
 
     private func sayGoodbye() {
-        guard let next = model.sayGoodbye(id) else { return }
-        router.select(next)
+        router.selection = model.sayGoodbye(id)
         router.goHome()
     }
 }

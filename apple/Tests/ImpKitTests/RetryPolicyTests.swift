@@ -208,12 +208,12 @@ private actor Notices {
     @Test func limitsHaveOneSetOfDefaultsAndStaySane() {
         let d = RequestLimits.standard
         #expect(d.timeoutSeconds == 120 && d.retries == 3 && d.retryDelaySeconds == 1 && d.backoff == 2)
-        #expect(ImpPreferences().requests == d)
+        #expect(ImpPreferences.withWaitingImp().requests == d)
         var wild = RequestLimits()
         wild.timeoutSeconds = -4; wild.retries = 999; wild.retryDelaySeconds = .nan; wild.backoff = 0
         let tame = wild.clamped
         #expect(tame.timeoutSeconds >= 5 && tame.retries == 10 && tame.retryDelaySeconds == d.retryDelaySeconds && tame.backoff == 1)
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.requests.retries = 5
         let back = try? JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(prefs))
         #expect(back?.requests.retries == 5)

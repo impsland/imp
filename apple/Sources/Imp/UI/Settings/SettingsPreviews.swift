@@ -10,7 +10,7 @@ private enum PreviewSettings {
         let model = AppModel(persist: false)
         model.prefs = ImpPreferences()
         if brain { model.prefs.ai.add(Service(name: "Ollama", baseURL: "http://localhost:11434/v1", model: "llama3.2")) }
-        let id = model.prefs.imps[0].id
+        let id = model.addImp()
         var trigger = Shortcut(name: "Translate", hotkey: nil, steps: [Step(.ask, value: "Translate this into English.", clipboard: true)])
         trigger.performer = id
         model.prefs.shortcuts = [trigger]

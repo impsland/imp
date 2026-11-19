@@ -56,7 +56,7 @@ import Testing
 
     /// Preferences with a "Fall asleep" and a "Wake up" trigger that someone added: nothing ships with them.
     private func withBodyTriggers() -> ImpPreferences {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.shortcuts = [slept(), woke()]
         return prefs
     }
@@ -68,7 +68,7 @@ import Testing
     }
 
     @Test func aFreshInstallHasNoTriggersAndNothingFallsAsleepOrWakes() {
-        let fresh = ImpPreferences()
+        let fresh = ImpPreferences.withWaitingImp()
         #expect(fresh.shortcuts.isEmpty)
         #expect(fresh.bodyShortcuts(of: imp, on: .idle(from: 0, to: 100_000), in: state).isEmpty, "no sleeping of its own")
         #expect(fresh.bodyShortcuts(of: imp, on: .near(from: -1, to: 0), in: state).isEmpty, "no waking of its own")
@@ -101,7 +101,7 @@ import Testing
     }
 
     @Test func aTriggerForOneImpIsNotForAnother() {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         let other = UUID()
         prefs.shortcuts = [Shortcut(name: "Nap", performer: other, trigger: Trigger(.idle, value: "10"), steps: [Step(.sleep)])]
         #expect(prefs.bodyShortcuts(of: imp, on: .idle(from: 9, to: 11), in: state).isEmpty)
@@ -109,7 +109,7 @@ import Testing
     }
 
     @Test func conditionsStillApplyAndAsleepSeesTheImpsOwnSleep() {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.shortcuts = [Shortcut(name: "Nap", trigger: Trigger(.idle, value: "10"),
                                     conditions: [Condition(.charger, value: "plugged")], steps: [Step(.sleep)]),
                            Shortcut(name: "Stir", trigger: Trigger(.near), conditions: [Condition(.asleep, value: "true")], steps: [Step(.wake)])]
@@ -168,14 +168,14 @@ import Testing
     }
 
     @Test func allMatchingTriggersGoOffInListOrder() {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.shortcuts = ["one", "two", "three"].map { Shortcut(name: $0, trigger: Trigger(.poke), steps: [Step(.say, value: $0)]) }
         let fired = prefs.triggers(for: imp).filter { $0.fires(on: .gesture(.poke), in: state) }
         #expect(fired.map(\.name) == ["one", "two", "three"])
     }
 
     @Test func cursorWatchingRunsOnlyWhileATriggerNeedsIt() {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.mouseGames = true
         #expect(!prefs.watchesCursor)
         prefs.shortcuts = [Shortcut(name: "Ouch", trigger: Trigger(.poke), steps: [Step(.say, value: "Ouch")])]

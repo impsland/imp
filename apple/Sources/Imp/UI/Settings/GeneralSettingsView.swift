@@ -27,10 +27,10 @@ struct GeneralSettingsView: View {
             GeometryReader { proxy in
                 HStack(alignment: .top, spacing: 0) {
                     rail(compact: proxy.size.width < CGFloat(Behavior.narrowWindowPoints),
-                         marked: SettingsMap.attentionGroups(attention))
+                         marked: Set(SettingsGroup.allCases.filter { SettingsMap.marked(attention).contains(.settings($0)) }))
                     ZStack {
                         SettingsPage {
-                            AttentionNotice(attention.filter { $0.group == section }.map { AttentionNotice.Line($0) })
+                            AttentionNotice(attention.filter { $0.destination == .settings(section) }.map { AttentionNotice.Line($0) })
                             page
                         }
                         .id(section)
@@ -62,9 +62,7 @@ struct GeneralSettingsView: View {
         case .bubble: BubblePane(model: model)
         case .talking: TalkingPane(model: model)
         case .brains: BrainsPane(model: model)
-        case .devices: DevicesPane(model: model)
         case .sharing: SharingPane(model: model)
-        case .animations: AnimationsPane(model: model, imp: router.selection)
         case .privacy: PermissionsPage(model: model)
         case .backup: BackupPane(model: model, router: router)
         }

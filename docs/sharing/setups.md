@@ -7,7 +7,7 @@ instead of described. The file format is in the [Kit format reference](/sharing/
 
 In Settings:
 
-- **Import kit…** (the same button in an Imp's Moves, Triggers and Tools), and
+- **Import** (All Imps › Sharing) and **Import kit…** (the same button in an Imp's Animations, Triggers and Tools), and
 - **Import…** (All Imps › App)
 
 take any of these: pasted JSON, a web address, an `imp://add` link, or a dropped `.json` file.
@@ -29,7 +29,7 @@ When the kit is short enough, Imp copies an `imp://add?kit=…` link instead of 
       "personality": "A dry-witted morning companion.",
       "brain": { "model": "openai/gpt-6-luna", "service": { "name": "OpenAI", "baseURL": "https://openrouter.ai/api/v1" } },
       "shell": true,
-      "tools": { "personality": true, "look": true, "moves": true, "triggers": false, "tools": false, "senses": true, "computer": false },
+      "tools": { "personality": true, "look": true, "animations": true, "triggers": false, "tools": false, "senses": true, "computer": false },
       "exchangesSent": 20, "sendsToolCalls": true,
       "mcpServers": ["Notes"],
       "triggers": [ { "name": "Good morning", "when": { "kind": "start" }, "prompt": "Greet me." } ] }

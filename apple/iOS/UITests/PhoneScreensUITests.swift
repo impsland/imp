@@ -226,7 +226,32 @@ final class PhoneScreensUITests: XCTestCase {
         XCTAssertTrue(element(app, "stage.settings").exists, "the room's own top bar is back")
         _ = room
     }
+
+    /// Embers to its results card: play a few seconds, close the round (which ends it with what it scored), and
+    /// check the card's three actions sit in one row, then play again and back out with Done.
+    func testEmbersResultsCard() {
+        let app = launch(["-hatchThree"], reset: true)
+        let play = app.buttons["Play Embers"]
+        XCTAssertTrue(play.waitForExistence(timeout: 10), "the way into Embers")
+        play.tap()
+        let skip = app.buttons["Skip"]
+        if skip.waitForExistence(timeout: 4) { skip.tap() }
+        sleep(4)  // The countdown.
+        sleep(3)  // A few seconds of play.
+        app.buttons["Close"].tap()
+        let again = app.buttons["Again"], done = app.buttons["Done"], howTo = app.buttons["How to play"]
+        XCTAssertTrue(again.waitForExistence(timeout: 6), "the results card is up")
+        sleep(1)
+        shot(app, "embers-results")
+        XCTAssertEqual(again.frame.minY, done.frame.minY, accuracy: 1, "Done and Again share a row")
+        XCTAssertEqual(again.frame.minY, howTo.frame.minY, accuracy: 1, "How to play shares it too")
+        XCTAssertEqual(again.frame.width, done.frame.width, accuracy: 1, "equal widths")
+        XCTAssertEqual(again.frame.width, howTo.frame.width, accuracy: 1, "equal widths")
+        done.tap()
+        XCTAssertFalse(again.waitForExistence(timeout: 2), "Done leaves the game")
+    }
 }
+
 
 extension PhoneScreensUITests {
     /// How many pixels of two same-sized pictures differ clearly (by more than a quarter in a channel).

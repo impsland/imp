@@ -65,7 +65,8 @@ struct ImpCanvas: View {
                         .accessibilityHidden(true)
                 }
                 if model.prefs.imps.isEmpty {
-                    EmptyCanvas(action: { HomeActions(model: model, router: router).newImp() })
+                    let actions = HomeActions(model: model, router: router)
+                    EmptyCanvas(hatch: actions.newImp, link: actions.linkDevice)
                 }
                 ForEach(ids, id: \.self) { id in
                     CanvasImp(model: model, router: router, id: id, size: geo.size, focus: $focus)
@@ -265,16 +266,24 @@ private struct CanvasImp: View {
     }
 }
 
-/// The empty canvas: one prompt in the middle. It goes away as soon as there is an Imp.
+/// The empty canvas: two actions, to hatch an Imp (the first run) or to link a
+/// device and bring one from it. It goes away as soon as there is an Imp. No sentences: the icons and their
+/// tooltips say it.
 struct EmptyCanvas: View {
-    var action: () -> Void
+    var hatch: () -> Void
+    var link: () -> Void
 
     var body: some View {
         VStack(spacing: Spacing.medium) {
-            Text("home.empty.title").font(Typeface.title).foregroundStyle(Tone.text)
-            Text("home.empty.hint").font(Typeface.body).foregroundStyle(Tone.muted).multilineTextAlignment(.center)
-            Button(action: action) { Text("home.empty.new_imp") }
-                .buttonStyle(.imp(.primary))
+            Text("home.empty.title").font(Typeface.cardTitle).foregroundStyle(Tone.muted)
+            HStack(spacing: Spacing.small) {
+                Button(action: hatch) { Label("home.empty.new_imp", systemImage: "plus") }
+                    .buttonStyle(.imp(.primary))
+                    .help(Text("home.empty.new_imp.help"))
+                Button(action: link) { Label("home.empty.link", systemImage: "iphone.and.arrow.forward") }
+                    .buttonStyle(.imp(.secondary))
+                    .help(Text("home.empty.link.help"))
+            }
         }
         .padding(Spacing.page)
         .accessibilityElement(children: .contain)

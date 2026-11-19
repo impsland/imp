@@ -128,7 +128,7 @@ enum IconRenderer {
         }
         let model = AppModel(persist: false)          // review renders never write the user's preferences
         model.prefs = ImpPreferences()
-        for _ in 1..<max(1, sampleImps) { model.addImp() }
+        for _ in 0..<max(1, sampleImps) { model.addImp() }
         let ids = model.prefs.imps.map(\.id)
         let chosen = ids[min(max(select, 0), ids.count - 1)]
         if sampleImps > 1, let i = model.prefs.imps.indices.dropFirst().first {
@@ -137,7 +137,8 @@ enum IconRenderer {
                               steps: [Step(.ask, value: "Translate this into English.", clipboard: true)])
             a.performer = model.prefs.imps[i].id
             model.prefs.shortcuts = [a]
-            let files = MCPExamples.all[0]
+            let files = MCPServerConfig(name: "Files", transport: .stdio, command: "npx",
+                                        arguments: ["-y", "@modelcontextprotocol/server-filesystem", "~/Documents"])
             model.prefs.mcpServers = [files]
             model.prefs.imps[i].servers = [files.id]
             model.prefs.ai.add(Service(name: "OpenRouter", baseURL: "https://openrouter.ai/api/v1", model: "some/model"))
@@ -157,24 +158,6 @@ enum IconRenderer {
         case let s where s.hasPrefix("general-"):
             router.screen = .general
             router.settingsSection = SettingsGroup(rawValue: String(s.dropFirst(8))) ?? .app
-            if router.settingsSection == .devices {
-                model.prefs.hop = "hop.example.org:4677"
-                // Dot is out on the iPhone, where Cinder and Noodle live, and Bumble is at home.
-                let phone = UUID()
-                func look(_ name: String, _ hue: Double) -> LinkImp { LinkImp(id: UUID(), name: name, hue: hue, scale: 1, traits: .plain) }
-                var stage = [LinkStaged(imp: look("Cinder", 0.08), home: phone), LinkStaged(imp: look("Noodle", 0.55), home: phone)]
-                if model.prefs.imps.count >= 2 {
-                    model.prefs.imps[0].name = "Dot"
-                    model.prefs.imps[1].name = "Bumble"
-                    model.prefs.imps[0].awayOn = phone
-                    stage.append(LinkStaged(imp: LinkImp(model.prefs.imps[0]), home: UUID()))
-                }
-                model.link.showSample([
-                    .init(id: phone, name: "Anna's iPhone", kind: .phone, reach: .direct, imps: [], isTrusted: true, stage: stage),
-                    .init(id: UUID(), name: "Studio Mac", kind: .mac, reach: .viaServer, imps: [], isTrusted: true),
-                    .init(id: UUID(), name: "Old iPad phone", kind: .phone, reach: .away, imps: []),
-                ])
-            }
         case "talk": router.screen = .home
         default: router.screen = .imp(chosen)
         }
@@ -188,7 +171,7 @@ enum IconRenderer {
             AnyView(LinkDeviceSheet(model: model, mode: .show, preview: LinkInvite(device: LinkDevice(id: UUID(), name: "Mac", kind: .mac, key: Data(count: 32)),
                                                            door: Data(count: 32), invite: Data(count: 32), routes: LinkRoutes(hosts: ["mac.local"])))
                 .background { Backdrop() })
-        case "add-tool": AnyView(ServerEditor(draft: MCPExamples.examples.first { !$0.isComplete }!.server,
+        case "add-tool": AnyView(ServerEditor(draft: MCPServerConfig(name: "", transport: .http),
                                                   isNew: true, hub: model.assistant.hub) { _ in }
             .background { Backdrop() })
         case "animation-editor", "animation-details":
@@ -238,6 +221,7 @@ enum IconRenderer {
         let model = AppModel(persist: false)
         model.prefs = ImpPreferences()
         model.addImp()
+        model.addImp()
         let first = model.prefs.imps[0]
         let json = #"""
         { "app": "1.7.0", "name": "Morning helper", "about": "Starts the day: a plan when the Mac wakes up, a summary on a key, and a notes tool.",
@@ -245,7 +229,7 @@ enum IconRenderer {
             { "name": "Pip", "hue": 0.57, "favoriteHue": 0.9, "scale": 1,
               "personality": "A dry-witted morning companion. Short answers, one gentle joke, never before coffee.",
               "brain": { "model": "openai/gpt-6-luna", "service": { "name": "OpenAI", "baseURL": "https://openrouter.ai/api/v1" } },
-              "shell": true, "tools": { "personality": true, "look": true, "moves": true, "triggers": false, "tools": false, "senses": true, "computer": true },
+              "shell": true, "tools": { "personality": true, "look": true, "animations": true, "triggers": false, "tools": false, "senses": true, "computer": true },
               "mcpServers": ["Notes"],
               "triggers": [ { "name": "Good morning", "when": {"kind": "start"}, "prompt": "Greet me and say what's on today." } ],
               "chats": [ { "title": "Plan the week", "turns": [ { "request": "Plan my week", "reply": "Mon: focus. Tue: calls." } ] },
@@ -293,7 +277,7 @@ enum IconRenderer {
     /// `Imp --render-bubble <file.png> [dark]`: every bubble state, with real controls, for design review.
     static func renderBubble(to url: URL, dark: Bool) {
         let model = AppModel(persist: false)
-        let imp = ImpModel(id: model.prefs.imps[0].id, app: model)
+        let imp = ImpModel(id: model.addImp(), app: model)
         let layout = BubbleLayout()
         // A chat with a tool call, recapped, then carried on.
         var chat = ChatHistory(folder: nil)
@@ -383,7 +367,7 @@ enum IconRenderer {
     /// `Imp --render-exchange <file.png> [dark]`: bubbles and chat for Imps talking to each other.
     static func renderExchange(to url: URL, dark: Bool) {
         let model = AppModel(persist: false)
-        let imp = ImpModel(id: model.prefs.imps[0].id, app: model)
+        let imp = ImpModel(id: model.addImp(), app: model)
         let layout = BubbleLayout()
         let pip = ChatTurn.Sender(id: UUID(), name: "Pip", hue: 0.58), mo = ChatTurn.Sender(id: UUID(), name: "Mo", hue: 0.33)
         let question = "Can you check whether the user has anything on tomorrow afternoon? They asked me to plan a picnic."

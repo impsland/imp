@@ -56,13 +56,32 @@ struct MenuItem: Identifiable {
     var action: () -> Void
 }
 
+/// The one measure of a menu card. The same inset is the card's edge, the gap between its sections and between
+/// its buttons, and the room inside a button, so nothing in a card is spaced by a number of its own.
+/// The glyph box gives every icon the same height, so the words under them share one baseline.
+enum MenuMetrics {
+    static let inset = Spacing.small
+    static let glyph = Sizing.iconTile
+}
+
+/// An icon in the box every menu button gives its icon, centred, however short the glyph.
+struct MenuGlyph: View {
+    let name: String
+    var size: IconSize = .large
+
+    var body: some View {
+        Image(systemName: name).font(.icon(size, weight: .semibold))
+            .frame(width: MenuMetrics.glyph, height: MenuMetrics.glyph)
+    }
+}
+
 /// The card: the menu's width, its inset, and its parts one under the other.
 struct MenuCard<Content: View>: View {
     @ViewBuilder var content: Content
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.medium) { content }
-            .padding(Spacing.medium)
+        VStack(alignment: .leading, spacing: MenuMetrics.inset) { content }
+            .padding(MenuMetrics.inset)
             .frame(minWidth: Sizing.menuWidth, maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -75,7 +94,7 @@ struct MenuGrid: View {
 
     var body: some View {
         let rows = stride(from: 0, to: items.count, by: columns).map { Array(items[$0..<min($0 + columns, items.count)]) }
-        Grid(horizontalSpacing: Spacing.snug, verticalSpacing: Spacing.snug) {
+        Grid(horizontalSpacing: MenuMetrics.inset, verticalSpacing: MenuMetrics.inset) {
             ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
                 GridRow {
                     ForEach(row) { item in
@@ -98,12 +117,12 @@ struct MenuPills: View {
     let items: [MenuItem]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.snug) {
+        VStack(alignment: .leading, spacing: MenuMetrics.inset) {
             if let title {
                 Text(verbatim: title).font(Typeface.caption).foregroundStyle(Tone.muted)
                     .accessibilityAddTraits(.isHeader)
             }
-            Grid(horizontalSpacing: Spacing.snug, verticalSpacing: Spacing.snug) {
+            Grid(horizontalSpacing: MenuMetrics.inset, verticalSpacing: MenuMetrics.inset) {
                 ForEach(Array(stride(from: 0, to: items.count, by: 2)), id: \.self) { start in
                     GridRow {
                         pill(items[start])
@@ -117,13 +136,13 @@ struct MenuPills: View {
 
     private func pill(_ item: MenuItem) -> some View {
         Button(action: item.action) {
-            HStack(spacing: Spacing.snug) {
-                Image(systemName: item.icon).font(.icon(.small, weight: .semibold))
+            HStack(spacing: MenuMetrics.inset) {
+                MenuGlyph(name: item.icon, size: .medium)
                 Text(verbatim: item.title).font(Typeface.small.weight(.medium)).lineLimit(1).truncationMode(.middle)
                 Spacer(minLength: 0)
             }
             .foregroundStyle(item.on ? AnyShapeStyle(OnTint()) : AnyShapeStyle(Tone.text))
-            .padding(.horizontal, Spacing.small)
+            .padding(.horizontal, MenuMetrics.inset)
             .frame(maxWidth: .infinity, minHeight: Sizing.control, alignment: .leading)
             .background(item.on ? AnyShapeStyle(TintFill()) : AnyShapeStyle(Color.clear),
                         in: RoundedRectangle(cornerRadius: Radius.tile, style: .continuous))
@@ -141,10 +160,13 @@ struct MenuDangerButton: View {
 
     var body: some View {
         Button(action: item.action) {
-            Label(item.title, systemImage: item.icon)
-                .font(Typeface.label)
-                .foregroundStyle(Tone.danger)
-                .frame(maxWidth: .infinity, minHeight: Sizing.control)
+            HStack(spacing: MenuMetrics.inset) {
+                MenuGlyph(name: item.icon, size: .medium)
+                Text(verbatim: item.title).font(Typeface.small.weight(.medium)).lineLimit(1)
+            }
+            .foregroundStyle(Tone.danger)
+            .padding(.horizontal, MenuMetrics.inset)
+            .frame(maxWidth: .infinity, minHeight: Sizing.control)
         }
         .buttonStyle(PebbleButtonStyle())
         .disabled(!item.enabled)

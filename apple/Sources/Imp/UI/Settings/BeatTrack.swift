@@ -229,10 +229,8 @@ struct EdgeHandle: View {
                     .opacity(hover || active ? 1 : Opacity.dimmed)
             }
             .contentShape(Rectangle())
-            .onHover { inside in
-                hover = inside
-                if inside { NSCursor.resizeLeftRight.push() } else { NSCursor.pop() }
-            }
+            .onHover { hover = $0 }
+            .cursor(.resizeLeftRight)
             .help("Drag to make the beat longer or shorter (⌥ for finer steps)")
             .accessibilityHidden(true)
     }

@@ -30,10 +30,9 @@ struct TriggersPanel: View {
     var body: some View {
         PanelList("triggers.title", icon: "bolt.fill", info: "triggers.help.list", accessory: {
             HStack(spacing: Spacing.small) {
+                HoverIconButton(systemName: SectionAction.add, help: "New") { start(.click) }
                 ImportKitButton(imp: id)
                 AgentToolsButton(imp: $imp, groups: [.triggers])
-                Button { start(.click) } label: { FitLabel("New", systemImage: "plus") }
-                    .buttonStyle(.imp(.secondary, small: true))
             }
         }) {
             if all.isEmpty {

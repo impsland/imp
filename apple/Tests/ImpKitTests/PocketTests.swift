@@ -119,7 +119,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         var (imp, store) = pocketImp(chats: [chat(2)])
         imp.about = "Finds train times."
         let (kit, secrets) = try imp.adoption(secrets: store)
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         _ = try prefs.adopt(kit: kit, as: imp.id, secrets: secrets)
         #expect(prefs.imps.first { $0.id == imp.id }?.about == "Finds train times.")
     }
@@ -142,7 +142,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
     @Test func aMacTakesItInAsAnOrdinaryImpWithItsId() throws {
         let (imp, store) = pocketImp(chats: [chat(2)])
         let (kit, secrets) = try imp.adoption(secrets: store)
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.imps = [ImpProfile.imp, ImpProfile(name: "Pocket Pip", hue: 0.1, favoriteHue: 0.6, personality: "x")]
         let adoption = try prefs.adopt(kit: kit, as: imp.id, secrets: secrets)
 
@@ -173,7 +173,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         let (kit, secrets) = try imp.adoption(secrets: store)
         #expect(secrets.apiKey == nil)                  // a key without a service goes nowhere
         #expect(try Kit.parse(kit, limit: LinkProtocol.maxFrame).imps.first?.brain == nil)
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         let mine = Service(name: "Mine", baseURL: "https://mine.example/v1", model: "m")
         prefs.ai.add(mine)
         let adoption = try prefs.adopt(kit: kit, as: imp.id, secrets: secrets)
@@ -197,7 +197,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
         var (imp, store) = pocketImp()
         imp.brain = PocketService(baseURL: "https://openrouter.ai/api/v1", model: "openai/gpt-6-luna")
         var (kit, secrets) = try imp.adoption(secrets: store)
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         _ = try prefs.adopt(kit: kit, as: imp.id, secrets: secrets)
         #expect(prefs.ai.services.map(\.name) == ["openrouter.ai"])
         imp.id = UUID()
@@ -217,7 +217,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
     @Test func reusesServicesAndServersTheMacHas() throws {
         let (imp, store) = pocketImp()
         let (kit, secrets) = try imp.adoption(secrets: store)
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         let mine = Service(name: "Mine", baseURL: "https://LLM.example.com/v1/", model: "big")
         prefs.ai.add(mine)
         let library = MCPServerConfig(name: "Notes (mine)", transport: .http, url: "https://notes.example.com/mcp", headers: ["Authorization": "mine"])
@@ -233,7 +233,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
     @Test func refusesWhatIsNotOnePocketImp() throws {
         let (imp, store) = pocketImp()
         let (kit, secrets) = try imp.adoption(secrets: store)
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         prefs.imps = [ImpProfile(id: imp.id, name: "Other", hue: 0.1, favoriteHue: 0.6, personality: "")]
         #expect(throws: PocketError.alreadyHere) { try prefs.adopt(kit: kit, as: imp.id, secrets: secrets) }
         prefs.imps = []
@@ -251,7 +251,7 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
 
     @Test func anythingBeyondAPocketImpIsIgnored() throws {
         let kit = #"{"imps":[{"name":"A","tools":{"computer":true},"shell":true,"instructions":"hack","exchangesSent":1,"triggers":[{"name":"t","on": "start"}],"animations":[{"name":"wave","beats":[{"duration":1}]}]}]}"#
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         let stock = prefs.shortcuts
         let id = UUID()
         let adoption = try prefs.adopt(kit: kit, as: id, secrets: LinkSecrets(apiKey: "  "))

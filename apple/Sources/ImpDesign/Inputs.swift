@@ -13,6 +13,7 @@ private struct FieldChrome: ViewModifier {
     var problem: String?
     @FocusState private var focused: Bool
     @Environment(\.impTint) private var tint
+    @Environment(\.isEnabled) private var enabled
 
     func body(content: Content) -> some View {
         content
@@ -39,6 +40,7 @@ private struct FieldChrome: ViewModifier {
                 }
             }
             .accessibilityHint(problem.map { Text(verbatim: $0) } ?? Text(verbatim: ""))
+            .opacity(enabled ? 1 : Opacity.disabled)
             .impAnimation(value: focused)
             .impAnimation(value: problem)
     }
@@ -151,19 +153,19 @@ private struct FieldActionStyle: ButtonStyle {
     }
 }
 
-/// A multi-line well, with a placeholder.
+/// A multi-line well, with a placeholder. With no `height` it fills the room it is given.
 public struct EditorWell: View {
     @Binding var text: String
     var placeholder: LocalizedStringKey?
     var codePlaceholder: String
     var mono: Bool
-    var height: CGFloat
+    var height: CGFloat?
     @FocusState private var focused: Bool
     @Environment(\.impTint) private var tint
 
     /// `codePlaceholder` is a placeholder that is code or a format, shown as it is.
     public init(text: Binding<String>, placeholder: LocalizedStringKey? = nil, codePlaceholder: String = "",
-                mono: Bool = false, height: CGFloat = 90) {
+                mono: Bool = false, height: CGFloat? = 90) {
         _text = text
         self.placeholder = placeholder
         self.codePlaceholder = codePlaceholder
@@ -179,7 +181,7 @@ public struct EditorWell: View {
             .scrollContentBackground(.hidden)
             .focused($focused)
             .padding(.horizontal, Spacing.tight).padding(.vertical, Spacing.snug)
-            .frame(height: height)
+            .frame(minHeight: height, maxHeight: height ?? .infinity)
             .background(RoundedRectangle(cornerRadius: Radius.small, style: .continuous).fill(Tone.well))
             .overlay(RoundedRectangle(cornerRadius: Radius.small, style: .continuous)
                 .strokeBorder(tint, lineWidth: Stroke.focus).opacity(focused ? 1 : 0))

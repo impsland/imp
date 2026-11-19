@@ -4,7 +4,7 @@ The app-wide settings. The user opens Settings, sees which section has something
 
 ## Decision: a rail of sections, no overview
 
-The settings have one level. A rail of sections sits on the leading edge (a bar above the content on the iPhone). There are nine sections and no page before them. One tap or click switches section and the content cross-fades. There is no list of pages to go back to. Settings opens on the section that was showing last, App the first time.
+The settings have one level. A rail of sections sits on the leading edge (a bar above the content on the iPhone). There are seven sections and no page before them. Devices is not one of them: it is its own screen, [Devices](/ux/devices), opened from the home corner. One tap or click switches section and the content cross-fades. There is no list of pages to go back to. Settings opens on the section that was showing last, App the first time.
 
 The bar on top says "Settings" in every section and does not change as the sections change. The rail shows which one is open.
 
@@ -20,13 +20,13 @@ What is left to set up is said where it is fixed. A section that has something t
 | --- | --- |
 | No Brains, or an Imp with no Brain | Brains |
 | The Den not set up | Sharing |
-| The Hop not set up, a linked device offline | Devices |
+| The Hop not set up, a linked device offline | The Devices corner of the home screen (a warning mark while a linked device is away) |
 
 When nothing needs attention there is no mark and no notice. An overview page that listed these apart from the settings that fix them was removed: it was one more page to open, and every item on it was a link to somewhere else.
 
 ### Pages
 
-Nine sections, each with a one-word name and a few cards of icon rows. A card has at most one "?" in its header. A row has its own only when its title cannot be understood alone.
+Seven sections, each with a one-word name and a few cards of icon rows. A card has at most one "?" in its header. A row has its own only when its title cannot be understood alone.
 
 | Page | Cards and rows |
 | --- | --- |
@@ -34,9 +34,7 @@ Nine sections, each with a one-word name and a few cards of icon rows. A card ha
 | Bubble | Look: Background (Solid or Translucent, and the amount when translucent), with a live preview over a light, a dark and a picture swatch. Showing: hide after, text box lines, chat size. Media: autoplay, audio look. |
 | Talking | Listening: language (Same as my Mac, Automatic, or one language) and, with Automatic, the languages it listens for. Between Imps: talk in, threads, waiting, window. |
 | Brains | Services: the list of Brains and the default for new Imps. Keys: the keychain. Requests: wait, retries, first wait, longer waits. |
-| Devices | This Mac with Link, the linked devices (Forget all in the header) and The Hop in the compact server card. |
-| Sharing | The Gallery (Browse, Import) and The Den in the compact server card. |
-| Animations | The search, made ones (shared, or the selected Imp's own) with New animation and Find more in their header |
+| Sharing | Import (the Gallery card), then everything shareable in the Imp settings' list style: Triggers, Animations and Tools, shared or an Imp's own, and The Den in the compact server card. |
 | Permissions | Listening: microphone and speech. Computer control: screen recording and accessibility. |
 | Backup | Keep: export and import. Reset: start again. Reset is last and asks first. |
 
@@ -59,37 +57,33 @@ A segmented row after Chats: Wait, Don't wait, The Imp decides (the default). Wa
 
 ### Why
 
-- Each thing lives where a person looks for it. The Hop connects devices, so it is in Devices. The Den is where things are shared, not a device, so it has its own section, Sharing.
+- Each thing lives where a person looks for it. The Hop connects devices, so it is in the Link sheet of [Devices](/ux/devices). The Den is where things are shared, not a device, so it has its own section, Sharing.
 - A mark and a notice on the section that fixes a problem turn "what is wrong" into "here, change this".
 - The rail makes every section one click from every other. The page order stays the same so people learn where things are.
-- Nine sections with plain names are easier to scan than many tabs. Each page is a few cards, and each card a few rows.
+- Seven sections with plain names are easier to scan than many tabs. Each page is a few cards, and each card a few rows.
 
 ### Rejected
 
 A list of pages that opens each page and needs Back to reach the next (Settings, App, Back, Bubble, Back). It costs a Back for every section. A long scrolling form of every setting. It hides what is wrong. A wizard for settings. It is too heavy for a person who only wants to change one thing.
 
-![The Devices page](./images/all-imps-devices.png)
-
-![The Devices page on a narrow width](./images/all-imps-devices-narrow.png)
-
 ![The Sharing page](./images/all-imps-sharing.png)
 
-## The Devices page
+## Devices and Animations are not pages here
 
-Three symmetric cards. **This Mac** (`devices.this_mac`) is a header only: its icon and name on the leading edge, then a dot for The Hop (lit when devices can find each other from anywhere, with its words in the tooltip and never a line of its own), the primary **Link** button (`settings.devices.link.title`) and the help tip. Link opens the sheet below. **Devices** (`devices.title`) lists each linked device as its own pebble: its symbol (dimmed while away), its name and the Imps on it as small coloured dots, how it is reached as one icon (direct, through The Hop or away, with the words in its tooltip), the "Mine" switch with its tip and a Forget icon. With no device the card shows `devices.empty` centred. Forget all is an icon in the card header and asks first. **The Hop** is the compact server card below.
-
-**Link a device** is one sheet with two tabs, the same title and the same actions in its footer row:
-
-| Tab | Content | Footer |
-| --- | --- | --- |
-| Show code | This Mac's code on white, the three steps for the other device, and a line that waits for it or names it once linked. | Copy Link. |
-| Scan code | The camera with a frame to aim at, the link field, and one status line (not a link, linking, linked, or why it failed). | Paste (a link or a picture of a code), then Link. |
-
-A code the camera sees links at once. What was typed survives switching tabs. The state behind the sheet (`LinkJoin`, `LinkedDevices`) is tested apart from the views.
+Devices (the map of the devices and where the Imps are, linking a device, the Hop and the tools each device may use) is the standalone [Devices screen](/ux/devices). Animations are not an app-wide page either: every animation is listed on Sharing, and an Imp's own are in its Animations section ([Imp settings](/ux/imp-settings)).
 
 ## The Sharing page
 
-The **Gallery** card (`sharing.gallery`) has two equal buttons: `sharing.browse` (primary, off without a Den, with the reason in its tooltip) and `sharing.import` (bring in a kit from a link or file). Publishing starts from the share button of what you want to share, as its tip says. Under it, The Den in the compact server card.
+The one place that lists everything that can be shared. Top to bottom:
+
+- **Import**: the icon button `sharing.import` in the Triggers header (Import kit…) brings in a kit from a link, a file or the clipboard.
+- **Triggers**: every trigger, shared or an Imp's own. A row shows its sentence and whose it is (Every Imp, or only that Imp), a share button (copy the kit or a link) and `sharing.open_in`, which opens the Triggers section in the settings of that Imp (for a shared one, the selected Imp or the first). The header shares all of them as one kit.
+- **Animations**: every animation, shared or an Imp's own, as the rows of an Imp's Animations section: try it, change it, a switch, Export as Sticker, the Imp's name when it is its own. The header has New (an icon, a shared animation) and shares all of them.
+- **Tools**: every MCP server with its icon (terminal for a local tool, globe for a remote one), a dot in the colour of each Imp that uses it (its name is the tooltip and the accessibility label), a share button (keys are left out) and Edit. The header shares all of them.
+
+Each list is ordered shared first, then by Imp in the order of the Imps, each by name with numbers in order (`ImpPreferences.sharableTriggers`, `sharableAnimations`, `sharableServers`). An empty list is only its header, with `sharing.none` beside it. Publishing to a gallery starts from the share button of what you want to share. Under it, The Den in the compact server card.
+
+![Sharing](./images/all-imps-sharing.png)
 
 ## Presets for The Den and The Hop
 
@@ -113,11 +107,10 @@ A server the person runs on this computer is a Custom address (`localhost:4677`,
 
 A Brain service is one generic list entry: a name, an address, a key and a model. "Add a service" offers the same two choices as the first run, Remote (a service with the user's own key) and Local (a model on this computer), and the address stays editable for any other compatible service. A hosted model from the project is not built. If it comes, it is one more entry in the same list.
 
-## Animations
+## Stickers
 
-A larger set is in The Den. Imp has no animations of its own to start with: every one is made by the person or an Imp, or comes in a kit. Each row has **Export as Sticker…** (`sticker.export`), which saves it as a `.tgs` animated sticker (see [Stickers](#stickers)). ![Animations](./images/all-imps-animations.png)
+Each animation row on the Sharing page has **Export as Sticker…** (`sticker.export`), which saves it as a `.tgs` animated sticker.
 
-### Stickers
 
 A sticker is the Imp acting the animation out, recorded from the same drawing code as the screen (`ImpPen`, `VectorPen`) and written as Lottie shape layers (`LottieWriter`), gzipped: 512 × 512, 60 frames a second, at most 3 seconds and 64 KB, with no pictures, expressions, masks, mattes, effects, text or repeaters. SF Symbols over the head become vector shapes. Each part of the Imp (an eye, a horn, a note) is its own track, keyframed only where a straight line between frames would not do. To fit 64 KB the keyframes grow sparser, step by step. A longer animation plays up to twice as fast, then stops at 3 seconds, and the save panel says so (`sticker.note.*`). One that does not fit even then says why (`sticker.error.too_big`).
 
@@ -144,12 +137,6 @@ A server the person runs on this computer is a Custom address (`localhost:4677`,
 ![Brains](./images/all-imps-brains.png)
 
 A Brain service is one generic list entry: a name, an address, a key and a model. "Add a service" offers the same two choices as the first run, Remote (a service with the user's own key) and Local (a model on this computer), and the address stays editable for any other compatible service. A hosted model from the project is not built. If it comes, it is one more entry in the same list.
-
-## Animations
-
-A larger set is in The Den. Imp has no animations of its own to start with: every one is made by the person or an Imp, or comes in a kit. ![Animations](./images/all-imps-animations.png)
-
-The page is simple: the search, the made ones with New animation and Find more (when a Den is set up) in their card's header. Without a Den, a last line says so beside the button that sets one up. The animation editor sheet stays. Made animations are shared by every Imp unless they are one Imp's own: the page shows the shared ones and the selected Imp's own, each own one tagged with its Imp. Saving a shared animation for one Imp makes that Imp's version and leaves the shared one (see [Scope](/ux/imp-settings#scope-this-imp-or-every-imp)). Each row shows what starts the animation as small symbols, not words: lit when that trigger is live, dim when it is off (the words are the hover help and the VoiceOver label). An animation no trigger plays shows a bolt button that opens a new trigger with a Play step for it.
 
 No gesture has an animation out of the box: there are no built-in animations. An animation that you or your Imp make (ask it, for example "wiggle when I poke you"), or one added from a kit, plays only through a trigger such as "poke → play Wiggle".
 
@@ -209,8 +196,8 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | State | What is shown |
 | --- | --- |
 | Everything ready | No mark in the rail and no notice. |
-| Nothing set up | The Imps still work on this device. Brains, Devices and Sharing are marked, and each says what it needs. |
-| A device offline | Its row says Away, Devices is marked and says `settings.attention.device_offline`. |
+| Nothing set up | The Imps still work on this device. Brains and Sharing are marked in the rail, and each says what it needs. The Hop is a hint on the Devices screen. |
+| A device offline | Its card on the Devices screen says Away, and the Devices corner of the home screen wears a warning mark. |
 | A server not reachable | `servers.state_fail` next to its address. |
 | No Brains | `brains.empty`. |
 | The Den not set up | `animations.needs_den`. |
@@ -220,8 +207,10 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 <!-- strings: settings brains servers animations voice privacy app devices sharing sticker -->
 | Key | English |
 | --- | --- |
+| `animations.empty` | No animations yet. |
 | `animations.find` | Browse |
-| `animations.from_den` | Made |
+| `animations.help.list` | Animations made for only this Imp come first. The shared ones follow: changing one changes it for every Imp. |
+| `animations.list` | Animations |
 | `animations.new` | New |
 | `animations.search` | Search |
 | `app.language` | Language |
@@ -244,17 +233,63 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `brains.local` | A model on this computer |
 | `brains.used_by` | one: Used by {count} Imp / other: Used by {count} Imps |
 | `brains.with_key` | A service with your key |
+| `devices.call_all_home` | Call all home |
+| `devices.channel.title` | {from} and {to} |
+| `devices.chip.label_ours` | {name}, an Imp of this Mac, on {node} |
+| `devices.chip.label_visitor` | {name}, an Imp from another device, on {node} |
 | `devices.copy_link.help` | For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while. |
+| `devices.edge.label` | {from} to {to}. {route}. {state} |
 | `devices.empty` | No devices yet. |
+| `devices.forget.one` | Forget this device… |
+| `devices.hop.add` | Add a Hop |
+| `devices.hop.pill` | Hop: {host} |
+| `devices.hop.state.idle` | Not in use |
+| `devices.hop.state.needs_address` | Needs an address |
+| `devices.hop.state.off` | Off |
+| `devices.imp.settings` | Its settings |
+| `devices.imp.talks` | Can message |
+| `devices.imp.talks.info` | The Imps this one can message. They are lit on the map while it is selected. |
+| `devices.imp.tools` | Its tools |
+| `devices.inspector.holds` | Imps of this Mac it holds |
+| `devices.inspector.reach` | How it is reached |
+| `devices.inspector.through_hop` | Reached through it |
 | `devices.list.info` | Devices linked with this one. Mine lets a device act for you. |
+| `devices.map.summary` | Map of your devices: {devices} linked, {ours} Imps of this Mac, {visitors} Imps of other devices. |
+| `devices.node.label` | {name}, {state}. Imps: {imps} |
+| `devices.node.label_empty` | {name}, {state} |
+| `devices.node.this_mac_label` | {name}, this Mac |
+| `devices.place.body` | On |
+| `devices.place.mind` | Thinks on |
 | `devices.reach.away` | Away |
 | `devices.reach.direct` | Direct, on the local network |
+| `devices.reach.last_seen` | Last known address |
+| `devices.reach.none` | Not reachable |
 | `devices.reach.server` | Through the server |
+| `devices.reach.yes` | Reachable |
+| `devices.route.hop` | Through the Hop |
+| `devices.route.hop_at` | Through the Hop at {address} |
+| `devices.route.local` | On the local network |
+| `devices.route.local_at` | On the local network at {address} |
+| `devices.route.tag_local` | Wi-Fi |
 | `devices.scan` | Scan code |
 | `devices.show` | Show code |
+| `devices.state.connected` | Connected |
+| `devices.state.connecting` | Connecting |
+| `devices.state.offline` | Away |
+| `devices.tether.label` | {imp} is on {node} and thinks on {home} |
+| `devices.tether.tools` | Tools it may use there |
+| `devices.tether.tools.info` | What the Imp may use while this device asks it. Change it on the device. |
 | `devices.this.info` | Link another device here. The dot shows whether The Hop lets devices find each other from anywhere. |
-| `devices.this_mac` | This Mac |
+| `devices.this_mac_badge` | This Mac |
 | `devices.title` | Devices |
+| `devices.tools.commands` | Commands |
+| `devices.tools.info` | When this device asks one of your Imps, the Imp can use the tools that are on here. Switch off what it should not touch for this device. |
+| `devices.tools.locked` | No tools until Mine |
+| `devices.tools.not_mine` | Imps answer this device without tools. Turn on Mine to choose what they may use. |
+| `devices.tools.title` | Tools Imps may use from this device |
+| `devices.tools.toggle` | Show or hide the switches |
+| `devices.unknown_device` | a device not linked with this Mac |
+| `devices.visitor.send_home` | Send home |
 | `privacy.computer` | Control |
 | `privacy.computer_note` | Lets an Imp run commands on this computer when you ask. |
 | `privacy.microphone` | Microphone |
@@ -262,14 +297,10 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `privacy.title` | Permissions |
 | `privacy.trust` | Trust devices |
 | `privacy.trust_note` | Only for your own devices. Their Imps may use tools on this one. |
-| `servers.address` | Address |
 | `servers.address_hint` | Start with https:// |
 | `servers.hop.about` | Lets your devices find each other. It only passes encrypted data. |
-| `servers.hop.in_use` | Using the Hop at {address} |
-| `servers.hop.needed` | Linking from anywhere needs a Hop. Add one in Settings under Devices. Devices on the same network still find each other. |
 | `servers.hop.off_note` | Only devices on the same network find each other. |
 | `servers.hop.title` | Hop |
-| `servers.off` | Off |
 | `servers.preset.custom` | Custom |
 | `servers.preset.imp` | Imp's servers |
 | `servers.preset.imp_note` | The default, run by the Imp project. |
@@ -288,7 +319,6 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `settings.app.look.info` | How the app looks. |
 | `settings.app.system.info` | How the app starts and which language it speaks. |
 | `settings.attention.device_offline` | {device} is offline. |
-| `settings.attention.hop_off` | The Hop is not set up. |
 | `settings.attention.imp_no_brain` | {name} has no Brain. |
 | `settings.backup.export.title` | Export |
 | `settings.backup.import.title` | Import |
@@ -337,15 +367,12 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `settings.devices.forget_all.title` | Forget all |
 | `settings.devices.link.info` | Link another device so your Imps can visit it. |
 | `settings.devices.link.title` | Link |
-| `settings.devices.mine.help` | On for your own devices, off for a friend's |
 | `settings.devices.mine.info` | Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools. |
 | `settings.devices.pair.title` | Link |
-| `settings.group.animations` | Animations |
 | `settings.group.app` | App |
 | `settings.group.backup` | Backup |
 | `settings.group.brains` | Brains |
 | `settings.group.bubble` | Bubble |
-| `settings.group.devices` | Devices |
 | `settings.group.privacy` | Permissions |
 | `settings.group.servers` | Servers |
 | `settings.group.sharing` | Sharing |
@@ -406,10 +433,14 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `settings.tool.headers.info` | Extra lines sent with each request, like a password. |
 | `settings.tool.name.info` | A name you pick for this tool. |
 | `settings.tool.variables.info` | Secret values the tool needs to run. |
-| `sharing.browse` | Browse |
-| `sharing.gallery` | Gallery |
-| `sharing.gallery.info` | Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp. |
+| `sharing.animations.info` | Every animation, shared or an Imp's own. Try one, change it, save it as a sticker or share it as a kit. |
 | `sharing.import` | Import |
+| `sharing.none` | None yet |
+| `sharing.open_in` | Open in {name}'s settings |
+| `sharing.share_all` | Share all as a kit |
+| `sharing.tools.info` | Every tool added from outside, with a dot for each Imp that uses it. Keys are left out when you share one. |
+| `sharing.tools.unused` | No Imp uses it |
+| `sharing.triggers.info` | Every trigger, shared or an Imp's own. Share one as a kit, or open it in the settings of its Imp to change it. |
 | `sticker.error.empty` | The animation is empty. |
 | `sticker.error.title` | Couldn’t make the sticker |
 | `sticker.error.too_big` | It is still {kb} KB when simplified. A sticker may be 64 KB: try fewer beats or simpler moves. |

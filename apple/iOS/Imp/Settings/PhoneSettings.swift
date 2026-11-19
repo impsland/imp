@@ -21,16 +21,23 @@ enum PhoneSection: String, CaseIterable, Identifiable {
     case brains, devices, app
     var id: String { rawValue }
 
-    /// The Mac's section this one is. Its name and what needs attention in it come from there.
-    var group: SettingsGroup {
+    /// Where its attention items are fixed: Brains and App are sections of the Mac's settings, Devices
+    /// is the Mac's own Devices screen.
+    var destination: AttentionDestination {
         switch self {
-        case .brains: .brains
+        case .brains: .settings(.brains)
         case .devices: .devices
-        case .app: .app
+        case .app: .settings(.app)
         }
     }
 
-    var title: String { group.title }
+    var title: String {
+        switch self {
+        case .brains: SettingsGroup.brains.title
+        case .devices: String(localized: "devices.title")
+        case .app: SettingsGroup.app.title
+        }
+    }
 
     var symbol: String {
         switch self {

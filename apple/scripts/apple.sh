@@ -262,8 +262,9 @@ cmd_app() {
   local build_args=(--package-path "$PACKAGE" -c "$config") arch
   for arch in ${archs[@]+"${archs[@]}"}; do build_args+=(--arch "$arch"); done
   swift_run build "${build_args[@]}" --product Imp
-  local binary
-  binary="$(swift_run build "${build_args[@]}" --show-bin-path)/Imp"
+  local bin_dir binary bundle
+  bin_dir="$(swift_run build "${build_args[@]}" --show-bin-path)"
+  binary="$bin_dir/Imp"
 
   # Render the icon first, then assemble the bundle in a staging folder and move it into place in
   # one step. A bundle built in place let Finder and LaunchServices see and cache a half-made app
@@ -282,8 +283,15 @@ cmd_app() {
   fi
   iconutil -c icns "$iconset" -o "$stage/Contents/Resources/AppIcon.icns"
   compile_catalogs "$stage/Contents/Resources"
+  # The packages' resource bundles (SwiftFlow's words for VoiceOver). A package finds its bundle through
+  # `Bundle.module`, which looks in Contents/Resources first and stops the app when it isn't anywhere.
+  for bundle in "$bin_dir"/*.bundle; do
+    if [[ -e "$bundle" ]]; then cp -R "$bundle" "$stage/Contents/Resources/"; fi
+  done
   # The browser extension rides along. Settings › Tools › Browser shows it, to add to a browser.
   cp -R extension "$stage/Contents/Resources/Browser Extension"
+  # The licences of the libraries the app is built with (SwiftFlow is MIT: its notice must ship with it).
+  cp THIRD_PARTY_NOTICES.md "$stage/Contents/Resources/THIRD_PARTY_NOTICES.md"
 
   sign_app "$stage"
 
@@ -520,13 +528,13 @@ CASK
 DESIGN_IMAGES_DIR="docs/ux/images"
 DESIGN_SCENES=(
   canvas-empty canvas-imps
-  imp-brain imp-sleeping imp-personality imp-look imp-moves imp-triggers imp-tools imp-computer
+  imp-brain imp-sleeping imp-personality imp-look imp-animations imp-triggers imp-tools imp-computer
   imp-look-narrow imp-agent-tools imp-trigger-editor imp-trigger-steps
   all-imps-app all-imps-app-narrow all-imps-nothing
   first-run-service first-run-error
   bar-menu bar-menu-es
-  all-imps-pair all-imps-bubble all-imps-talking all-imps-brains all-imps-devices
-  all-imps-devices-narrow all-imps-sharing all-imps-animations all-imps-privacy all-imps-backup
+  all-imps-pair all-imps-bubble all-imps-talking all-imps-brains devices-empty devices-linked devices-imp devices-device
+  all-imps-sharing all-imps-privacy all-imps-backup
   bubble-short bubble-read-all bubble-chat
 )
 

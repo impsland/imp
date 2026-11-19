@@ -7,7 +7,7 @@ import SwiftUI
 private enum PreviewFirstRun {
     static func flow(_ events: (FirstRunModel) -> Void = { _ in }) -> FirstRunModel {
         let services = FirstRunServices(find: { [] }, models: { _, _ in ["model-a", "model-b"] }, check: { _ in })
-        let flow = FirstRunModel(impName: "Dot", onThisComputer: true, services: services) { _ in }
+        let flow = FirstRunModel(impName: "Dot", target: .existing(UUID()), onThisComputer: true, services: services) { _, _ in }
         events(flow)
         return flow
     }

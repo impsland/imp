@@ -31,9 +31,9 @@ struct DevicesSheet: View {
     private var attention: [AttentionItem] { SettingsMap.attention(nodes) }
 
     private var items: [SectionItem<PhoneSection>] {
-        let marked = SettingsMap.attentionGroups(attention)
+        let marked = SettingsMap.marked(attention)
         return PhoneSection.allCases.map { item in
-            SectionItem(id: item, title: item.title, symbol: item.symbol, needsAttention: marked.contains(item.group))
+            SectionItem(id: item, title: item.title, symbol: item.symbol, needsAttention: marked.contains(item.destination))
         }
     }
 
@@ -47,7 +47,7 @@ struct DevicesSheet: View {
             SectionRail("settings.title", items: items, selection: $section, axis: .horizontal, fills: true)
             ScrollView {
                 VStack(spacing: Spacing.medium) {
-                    AttentionNotice(attention.filter { $0.group == section.group }.map(line))
+                    AttentionNotice(attention.filter { $0.destination == section.destination }.map(line))
                     content
                 }
                 .padding(.horizontal, Spacing.page).padding(.top, Spacing.small).padding(.bottom, Spacing.wide)

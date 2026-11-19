@@ -51,11 +51,12 @@ struct ShortcutSheet: View {
     /// Who the change is for: this Imp, unless Every Imp is picked.
     @State private var target: ScopeTarget
 
-    init(model: AppModel, imp: UUID, shortcut: Shortcut, isNew: Bool, scope: SettingScope,
+    /// `target` is who a change is for to begin with: `imp` alone unless said otherwise (Sharing edits a shared one for every Imp).
+    init(model: AppModel, imp: UUID, shortcut: Shortcut, isNew: Bool, scope: SettingScope, target: ScopeTarget? = nil,
          save: @escaping (Shortcut, ScopeTarget) -> Void, duplicate: @escaping (Shortcut) -> Void, delete: @escaping () -> Void) {
         self.model = model; self.imp = imp; self._shortcut = State(initialValue: shortcut); self.isNew = isNew; self.scope = scope
         self.save = save; self.duplicate = duplicate; self.delete = delete
-        self._target = State(initialValue: .imp(imp))
+        self._target = State(initialValue: target ?? .imp(imp))
     }
 
     var body: some View {

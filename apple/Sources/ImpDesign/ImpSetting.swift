@@ -1,7 +1,7 @@
 /// The sections of one Imp's settings, in the order the rail lists them. The page of an Imp has the
 /// same layout as the app's Settings: the rail on the leading side, the chosen section beside it.
 public enum ImpSetting: String, CaseIterable, Identifiable, Sendable {
-    case brain, personality, look, moves, triggers, tools, computer
+    case brain, personality, look, animations, triggers, tools, computer
 
     public var id: String { rawValue }
 
@@ -18,7 +18,7 @@ public enum ImpSetting: String, CaseIterable, Identifiable, Sendable {
         case .brain: "lightbulb.fill"
         case .look: "paintpalette.fill"
         case .personality: "theatermasks.fill"
-        case .moves: "figure.dance"
+        case .animations: "figure.dance"
         case .triggers: "bolt.fill"
         case .tools: "wrench.and.screwdriver.fill"
         case .computer: "desktopcomputer"

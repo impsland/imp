@@ -49,7 +49,7 @@ import Testing
     }
 
     @Test func settingsDefaultAndRoundTrip() throws {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         #expect(prefs.inputMaxLines == BubbleSizing.defaultInputLines)
         #expect(prefs.chatBubbleSize == nil)
         prefs.inputMaxLines = 99
@@ -62,7 +62,7 @@ import Testing
     }
 
     @Test func oldSettingsStillLoad() throws {
-        let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(ImpPreferences()))
+        let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(ImpPreferences.withWaitingImp()))
         #expect(back.inputMaxLines == BubbleSizing.defaultInputLines)
     }
 }

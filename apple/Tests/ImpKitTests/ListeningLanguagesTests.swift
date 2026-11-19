@@ -51,10 +51,10 @@ import Testing
     }
 
     @Test func oldSettingsWithoutTheListStillLoad() throws {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         p.dictationLanguages = ["en-US", "ru-RU", "de-DE", "fr-FR"]
         #expect(p.dictationLanguages.count == ListeningLanguages.maxLanguages)
-        let data = try JSONEncoder().encode(ImpPreferences())
+        let data = try JSONEncoder().encode(ImpPreferences.withWaitingImp())
         let back = try JSONDecoder().decode(ImpPreferences.self, from: data)
         #expect(back.dictationLanguages.isEmpty)
     }

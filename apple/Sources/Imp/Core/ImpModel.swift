@@ -659,16 +659,16 @@ final class ImpModel {
 
     /// Another Imp's message (`imp_message`): this Imp answers in its own bubble, and the answer
     /// goes back. Never interrupts work in progress.
-    /// `limitedTo` names the device it comes from when that isn't one of the owner's own: the Imp
-    /// answers without any tool then.
+    /// `origin` is the device it comes from, when it wasn't asked here: the Imp answers without any tool
+    /// for a device that isn't the owner's own, and with the tools the device is allowed otherwise.
     func answer(_ text: String, from sender: ChatTurn.Sender, in place: ImpTalk.Place, conversation: String? = nil,
-                limitedTo device: String? = nil, turnID: UUID? = nil) async throws -> String {
+                askedFrom origin: AskOrigin? = nil, turnID: UUID? = nil) async throws -> String {
         guard !isBusy else { throw ToolArgumentError("\(profile.name) is busy right now. Try again later.") }
         // Files either side mentions are named by their owner Imp, so the other one can open them
         // (a path relative to one Workspace means nothing in another). See `WorkspaceReference`.
         let said = WorkspaceReference.canonicalize(text, owner: sender.id)
         let reply: String = try await withCheckedThrowingContinuation { c in
-            start(.message(from: sender, text: said, place: place, conversation: conversation, id: turnID), limitedTo: device)
+            start(.message(from: sender, text: said, place: place, conversation: conversation, id: turnID), askedFrom: origin)
             replyTo = c
         }
         return WorkspaceReference.canonicalize(reply, owner: profile.id)
@@ -714,10 +714,10 @@ final class ImpModel {
     }
 
     /// A question from another app (URL command).
-    /// `limitedTo` names the device it comes from when that isn't one of the owner's own: the Imp
-    /// answers without any tool then.
-    func ask(_ text: String, limitedTo device: String? = nil) {
-        start(.typed(text, nil), limitedTo: device)
+    /// `origin` is the device it comes from, when it wasn't asked here: the Imp answers without any tool
+    /// for a device that isn't the owner's own, and with the tools the device is allowed otherwise.
+    func ask(_ text: String, askedFrom origin: AskOrigin? = nil) {
+        start(.typed(text, nil), askedFrom: origin)
     }
 
     /// Something went wrong outside a request (an unknown shortcut name from a URL command).
@@ -772,7 +772,7 @@ final class ImpModel {
         start(queuedAnswers.removeFirst())
     }
 
-    private func start(_ source: Source, limitedTo device: String? = nil) {
+    private func start(_ source: Source, askedFrom origin: AskOrigin? = nil) {
         if visit != nil { return askHome(source) }
         // Asked by you while it can't think: refused at once, with what to do. (Another Imp's
         // message and a trigger still run, and fail with the same sentence in their own way.)
@@ -791,7 +791,7 @@ final class ImpModel {
         turnToken = token
         if case .answered(_, _, _, let depth) = source { turnDepth = depth } else { turnDepth = 0 }
         job = Task { [weak self] in
-            await self?.run(source, limitedTo: device)
+            await self?.run(source, askedFrom: origin)
             self?.finishedTurn(token)
         }
     }
@@ -813,7 +813,7 @@ final class ImpModel {
         show(Bubble(title: shortcut.name, text: text, phase: .hint))
     }
 
-    private func run(_ source: Source, limitedTo device: String? = nil) async {
+    private func run(_ source: Source, askedFrom origin: AskOrigin? = nil) async {
         var title = ""
         /// What you asked, for the history (nil until there's something to answer).
         var ask: ChatTurn?
@@ -866,10 +866,12 @@ final class ImpModel {
             var messaging = true
             if case .message = source { messaging = false }       // answering an Imp: no messaging back and forth
             // Asked from a device that isn't the owner's own: plain conversation, nothing that acts.
-            let tools = device != nil ? nil
-                : try app.assistant.tools(for: profile, own: ImpTools(host: OwnToolHost(app: app, imp: id, messaging: messaging, depth: turnDepth)))
-            if device == nil, app.assistant.toolsConnecting { addStep(.wakingUp) }
-            let (reply, exchange) = try await app.assistant.chat(messages(with: turn, peer: peerChat, continuing: continuing, limitedTo: device), brain: profile.brain, tools: tools,
+            let allowed = origin == nil ? profile : origin?.profile(profile, limits: app.prefs.deviceToolLimits)
+            let tools = try allowed.flatMap {
+                try app.assistant.tools(for: $0, own: ImpTools(host: OwnToolHost(app: app, imp: id, messaging: messaging, depth: turnDepth)))
+            }
+            if allowed != nil, app.assistant.toolsConnecting { addStep(.wakingUp) }
+            let (reply, exchange) = try await app.assistant.chat(messages(with: turn, peer: peerChat, continuing: continuing, askedFrom: origin), brain: profile.brain, tools: tools,
                                                                  stream: true) { [weak self] event in
                 self?.progress(event, title: title)
             }
@@ -906,11 +908,11 @@ final class ImpModel {
 
     /// Its personality and instructions, the chat so far (as much as it's set to be sent), then
     /// the new turn. Its workspace is made first: the instructions send files there.
-    private func messages(with turn: ChatMessage, peer: ChatTurn.Sender? = nil, continuing: Bool = true, limitedTo device: String? = nil) -> [ChatMessage] {
+    private func messages(with turn: ChatMessage, peer: ChatTurn.Sender? = nil, continuing: Bool = true, askedFrom origin: AskOrigin? = nil) -> [ChatMessage] {
         let p = profile
         try? FileManager.default.createDirectory(at: p.workspace, withIntermediateDirectories: true)
         let memory = peer.map { continuing ? history.memory(withPeer: $0.id) : ChatMemory() } ?? history.current.memory
-        let note = device.map { "\n\n" + Briefing.untrusted(device: $0, home: DeviceLink.deviceName) } ?? ""
+        let note = origin.flatMap { $0.trusted ? nil : "\n\n" + Briefing.untrusted(device: $0.name, home: DeviceLink.deviceName) } ?? ""
         return memory.context(system: p.systemPrompt + note, turn: turn,
                                               exchanges: p.memoryExchanges, tools: p.remembersToolCalls)
     }

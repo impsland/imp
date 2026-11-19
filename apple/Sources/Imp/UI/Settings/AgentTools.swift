@@ -6,17 +6,20 @@ import SwiftUI
 enum SectionAction {
     /// What the Imp may do by itself in a section (its built-in tools there).
     static let agent = "wand.and.sparkles"
+    /// Adding one: a new trigger, animation or tool.
+    static let add = "plus"
     /// Adding a kit from a file, a link or the clipboard.
     static let importKit = "square.and.arrow.down"
 }
 
-/// "Import kit…" in a section's header: the same picture and words in Moves, Triggers and Tools.
+/// "Import kit…" in a section's header: the same picture and words in Animations, Triggers and Tools.
+/// With no Imp (Sharing) what it adds is for every Imp to begin with.
 struct ImportKitButton: View {
-    let imp: UUID
+    let imp: UUID?
 
     var body: some View {
         HoverIconButton(systemName: SectionAction.importKit, help: "Import kit…") {
-            HomeWindow.shared.router.kitFlow = KitFlow(imp: imp)
+            HomeWindow.shared.router.kitFlow = KitFlow(imp: imp, forEveryImp: imp == nil)
         }
     }
 }

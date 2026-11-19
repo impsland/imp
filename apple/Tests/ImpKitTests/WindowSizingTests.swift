@@ -8,7 +8,7 @@ import Testing
     private let screen = CGSize(width: 1440, height: 900)
 
     @Test func theChosenSizeIsStoredAndTheDefaultIsNot() throws {
-        var prefs = ImpPreferences()
+        var prefs = ImpPreferences.withWaitingImp()
         #expect(prefs.windowPreset == WindowSizing.standard)
         prefs.windowPreset = .large
         let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(prefs))

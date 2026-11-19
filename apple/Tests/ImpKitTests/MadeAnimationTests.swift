@@ -7,9 +7,9 @@ import Testing
                         AnimationBeat(duration: 0.8, mood: "content", glyph: "heart", tilt: 5)]
 
     static func troupe() -> (ImpPreferences, UUID, UUID) {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         let pip = ImpProfile(name: "Pip", hue: 0.5, favoriteHue: 0.9, personality: "")
-        p.imps.append(pip)
+        p.imps = [.imp, pip]
         return (p, p.imps[0].id, pip.id)
     }
 
@@ -26,8 +26,30 @@ import Testing
         #expect(p.ref(named: "Grumble", imp: pip) == nil)
     }
 
+    @Test func anImpsAnimationsListItsOwnFirstThenTheSharedOnesItHasNoVersionOf() {
+        var (p, imp, pip) = Self.troupe()
+        let wave = MadeAnimation(name: "Wave", beats: Self.beats)
+        let bow = MadeAnimation(name: "Bow", beats: Self.beats)
+        let nod = MadeAnimation(name: "Nod", beats: Self.beats)
+        for shared in [wave, bow, nod] { p.save(shared, for: nil) }
+        p.save(MadeAnimation(name: "Grumble", beats: Self.beats), for: pip)
+        var waveForPip = wave
+        waveForPip.beats = [AnimationBeat(duration: 0.2)]
+        p.save(waveForPip, for: pip)
+        let samename = MadeAnimation(name: "bow", beats: Self.beats)
+        p.save(samename, for: pip)
+
+        let listed = p.listedAnimations(for: pip)
+        #expect(listed.map(\.animation.title).prefix(3).sorted() == ["Grumble", "Wave", "bow"].sorted())
+        #expect(listed.suffix(1).map(\.animation.title) == ["Nod"], "the shared ones come last; a version or a same title hides the shared one")
+        #expect(listed.last?.scope == .everyImp && listed.last?.isShared == true)
+        #expect(listed.first { $0.animation.title == "Grumble" }?.scope == .onlyThisImp)
+        #expect(listed.first { $0.animation.title == "Wave" }?.scope == .changed)
+        #expect(p.listedAnimations(for: imp).map(\.animation.title) == ["Wave", "Bow", "Nod"], "another Imp sees only the shared ones")
+    }
+
     @Test func onlyTriggersWatchTheCursor() {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         p.save(MadeAnimation(name: "Spin", beats: Self.beats), for: nil)
         #expect(!p.watchesCursor, "an animation never starts by itself")
         p.shortcuts = [Shortcut(name: "Dizzy", trigger: Trigger(.circle), steps: [Step(.play, value: "Spin")])]
@@ -80,7 +102,7 @@ import Testing
         #expect(back.imps[0].traits == p.imps[1].traits.normalized)
         #expect(back.imps[0].animations.map(\.title) == ["Slow blink", "Yawn"])
 
-        var other = ImpPreferences()
+        var other = ImpPreferences.withWaitingImp()
         let added = other.add(back, imps: Set(back.imps.map(\.id)), triggers: [], servers: [], animations: Set(back.animations.map(\.id)), for: nil)
         #expect(added.animations == 1 && added.imps.count == 1)
         let hatched = other.imps.first { $0.id == added.imps[0].id }!
@@ -92,7 +114,7 @@ import Testing
     @Test func aKitOfOnlyAnimationsReads() throws {
         let kit = try Kit.parse(#"{"animations": [{"name": "Nod", "beats": [{"duration": 0.3, "look": [0, 0.4]}]}]}"#)
         #expect(kit.animations.count == 1 && kit.itemCount == 1)
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         p.save(MadeAnimation(name: "Nod", beats: Self.beats), for: nil)
         p.add(kit, triggers: [], servers: [], animations: [kit.animations[0].id], for: nil)
         #expect(p.animationLibrary.map(\.name) == ["Nod", "Nod 2"])

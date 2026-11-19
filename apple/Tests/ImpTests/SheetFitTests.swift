@@ -10,6 +10,7 @@ import ImpKit
     private func idealHeight(of draft: (AppModel) -> AnimationDraft) -> CGFloat {
         let model = AppModel(persist: false)
         model.prefs = ImpPreferences()
+        model.prefs.imps = [.waiting]
         let host = NSHostingView(rootView: AnimationEditor(model: model, draft: draft(model)).environment(\.sheetRoom, 4000))
         let window = NSWindow(contentRect: CGRect(x: -3000, y: -3000, width: 780, height: 2000),
                               styleMask: [.titled, .fullSizeContentView], backing: .buffered, defer: false)

@@ -15,9 +15,15 @@ struct HomeActions {
 
     // MARK: The canvas
 
+    /// A new Imp. With no Brain to give it (nothing to think with yet) it is hatched by the first run
+    /// instead, together with its first Brain: an Imp never exists without one.
     func newImp() {
+        guard model.assistant.isReady() else { return router.firstRun = .newImp(model.prefs.nextImp()) }
         router.hatch([model.addImp()])
     }
+
+    /// Opens the Link sheet, to bring an Imp from another device.
+    func linkDevice() { router.linkingDevice = true }
 
     func showHidden() {
         withAnimation(ImpDesign.Motion.fade.reducedAware(Self.reduceMotion)) { model.setHidden(false) }
@@ -165,12 +171,12 @@ struct HomeActions {
     /// Say goodbye for good. Another Imp takes the keyboard.
     func sayGoodbye(_ id: UUID) {
         router.saying = nil
-        guard let next = model.sayGoodbye(id) else { return }
+        let next = model.sayGoodbye(id)
         router.places[id] = nil
-        router.select(next)
+        router.selection = next
     }
 
-    var canSayGoodbye: Bool { model.prefs.imps.count > 1 }
+    var canSayGoodbye: Bool { !model.prefs.imps.isEmpty }
 
     // MARK: Several Imps at once
 
@@ -216,7 +222,7 @@ struct HomeActions {
         router.sayingMany = ids
     }
 
-    /// Say goodbye to all of them for good. One Imp always stays.
+    /// Say goodbye to all of them for good. Having no Imp is fine.
     func sayGoodbye(_ ids: [UUID]) {
         router.sayingMany = nil
         guard canSayGoodbye(to: ids) else { return }
@@ -226,7 +232,7 @@ struct HomeActions {
             router.places[id] = nil
         }
         router.clearPicks()
-        if let next { router.select(next) }
+        router.selection = next
     }
 
     /// "Let out" while it is at home, "Send home" once it is out, "Call Home…" while it is on another device.

@@ -39,7 +39,7 @@ final class PocketDraft {
     }
 
     static var hues: [Double] { PocketRuntime.hues }
-    /// The settings this iPhone has. Triggers and Moves live on the Mac.
+    /// The settings this iPhone has. Triggers and Animations live on the Mac.
     static let settings: [ImpSetting] = [.brain, .personality, .look, .tools]
     /// The Imp's own tools this iPhone has, each with a switch: messaging the other Imps, and playing its animations.
     /// The built-in tools a pocket Imp has (it plays no animations, so only messages to the other Imps).

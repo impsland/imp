@@ -255,6 +255,7 @@
       }
     },
     "%@ goes back into the Imps' window, and its triggers rest." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -319,6 +320,7 @@
       }
     },
     "%@ hides until you show it again from the menu bar (Show) or click it in the Imps' window. Its triggers rest meanwhile." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -821,6 +823,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@，来自 %2$@ 的访客"
+          }
+        }
+      }
+    },
+    "%@: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@: %2$@"
           }
         }
       }
@@ -1582,6 +1594,7 @@
       }
     },
     "%lld off" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2630,6 +2643,7 @@
       }
     },
     "Added" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4533,6 +4547,7 @@
       }
     },
     "Clear" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -6264,6 +6279,7 @@
       }
     },
     "Everything you and %@ said, with the tools it used." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -6449,6 +6465,7 @@
       }
     },
     "Files in Documents" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -6579,6 +6596,7 @@
       }
     },
     "Folded" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -6774,6 +6792,7 @@
       }
     },
     "Forget…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -6935,6 +6954,7 @@
       }
     },
     "Hands off writing" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -7085,6 +7105,7 @@
       }
     },
     "Hide %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8051,6 +8072,7 @@
       }
     },
     "Its https:// address" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -8704,22 +8726,6 @@
         }
       }
     },
-    "Linked with %@." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enlazado con %@."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已与 %@ 关联。"
-          }
-        }
-      }
-    },
     "Linking code" : {
       "localizations" : {
         "es" : {
@@ -8867,6 +8873,7 @@
       }
     },
     "Local program" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9131,6 +9138,7 @@
       }
     },
     "Make an animation of your own, beat by beat" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9179,6 +9187,7 @@
       }
     },
     "Makes pictures" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9539,6 +9548,7 @@
       }
     },
     "Moves" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -10750,6 +10760,7 @@
       }
     },
     "Open" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12192,6 +12203,7 @@
       }
     },
     "Reads web pages" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12370,6 +12382,7 @@
       }
     },
     "Remembers things" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -12966,6 +12979,7 @@
       }
     },
     "Runs a command on this Mac" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13835,6 +13849,7 @@
       }
     },
     "Share these animations as a kit" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -13883,6 +13898,7 @@
       }
     },
     "Shared ones play for every Imp. One made for a single Imp plays only for it and wins over a shared one." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14193,6 +14209,7 @@
       }
     },
     "Shows or hides these animations" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -14572,6 +14589,7 @@
       }
     },
     "Speaks out loud" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -17783,22 +17801,6 @@
         }
       }
     },
-    "Waiting for your other device…" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esperando a tu otro dispositivo…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在等待你的另一台设备…"
-          }
-        }
-      }
-    },
     "Wake up" : {
       "localizations" : {
         "es" : {
@@ -17832,6 +17834,7 @@
       }
     },
     "Web server" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -19526,6 +19529,30 @@
         }
       }
     },
+    "animations.empty" : {
+      "comment" : "Empty state of the animations list.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No animations yet."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay animaciones."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有动画。"
+          }
+        }
+      }
+    },
     "animations.find" : {
       "comment" : "Button.",
       "extractionState" : "manual",
@@ -19550,26 +19577,50 @@
         }
       }
     },
-    "animations.from_den" : {
-      "comment" : "Heading of the animations you made or added.",
+    "animations.help.list" : {
+      "comment" : "Help of the animations list.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Made"
+            "value" : "Animations made for only this Imp come first. The shared ones follow: changing one changes it for every Imp."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hechas"
+            "value" : "Primero van las animaciones hechas solo para este Imp. Siguen las compartidas: cambiar una la cambia para todos los Imps."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自制"
+            "value" : "先是只为这个 Imp 做的动画，后面是共用的动画：修改共用的动画会影响所有 Imp。"
+          }
+        }
+      }
+    },
+    "animations.list" : {
+      "comment" : "Header of the list of the animations an Imp plays.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animations"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animaciones"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动画"
           }
         }
       }
@@ -21356,6 +21407,102 @@
         }
       }
     },
+    "devices.call_all_home" : {
+      "comment" : "Button: call every Imp a device holds home.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call all home"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traerlos a todos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部叫回家"
+          }
+        }
+      }
+    },
+    "devices.channel.title" : {
+      "comment" : "Title of a line between two devices.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ and %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ y %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 与 %2$@"
+          }
+        }
+      }
+    },
+    "devices.chip.label_ours" : {
+      "comment" : "Screen reader label of one of this Mac's Imps on the map.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, an Imp of this Mac, on %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, un Imp de este Mac, en %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@，这台 Mac 的 Imp，在 %2$@ 上"
+          }
+        }
+      }
+    },
+    "devices.chip.label_visitor" : {
+      "comment" : "Screen reader label of another device's Imp on the map.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, an Imp from another device, on %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, un Imp de otro dispositivo, en %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@，来自其他设备的 Imp，在 %2$@ 上"
+          }
+        }
+      }
+    },
     "devices.copy_link.help" : {
       "comment" : "Help of Copy Link in Link a device.",
       "extractionState" : "manual",
@@ -21376,6 +21523,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。"
+          }
+        }
+      }
+    },
+    "devices.edge.label" : {
+      "comment" : "Screen reader label of a line between two devices.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ to %2$@. %3$@. %4$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ con %2$@. %3$@. %4$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 到 %2$@。%3$@。%4$@"
           }
         }
       }
@@ -21404,6 +21575,318 @@
         }
       }
     },
+    "devices.forget.one" : {
+      "comment" : "Button: forget the selected device.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forget this device…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Olvidar este dispositivo…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记此设备…"
+          }
+        }
+      }
+    },
+    "devices.hop.add" : {
+      "comment" : "The Hop pill under the code in the Link sheet when no Hop is set; opens its settings.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a Hop"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir un Hop"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加 Hop"
+          }
+        }
+      }
+    },
+    "devices.hop.pill" : {
+      "comment" : "The Hop pill under the code in the Link sheet when a Hop is set. {host} is its address.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hop: %1$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hop: %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hop：%1$@"
+          }
+        }
+      }
+    },
+    "devices.hop.state.idle" : {
+      "comment" : "The Hop's state when an address is set and nothing goes through it.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not in use"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin uso"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未使用"
+          }
+        }
+      }
+    },
+    "devices.hop.state.needs_address" : {
+      "comment" : "The Hop's state when what is set is not an address yet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Needs an address"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Necesita una dirección"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要地址"
+          }
+        }
+      }
+    },
+    "devices.hop.state.off" : {
+      "comment" : "The Hop's state when none is set.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Off"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已关闭"
+          }
+        }
+      }
+    },
+    "devices.imp.settings" : {
+      "comment" : "Button: open an Imp's settings.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Its settings"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus ajustes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它的设置"
+          }
+        }
+      }
+    },
+    "devices.imp.talks" : {
+      "comment" : "Inspector card: the Imps an Imp can message.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can message"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puede escribir a"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可以给谁发消息"
+          }
+        }
+      }
+    },
+    "devices.imp.talks.info" : {
+      "comment" : "Help: who an Imp can message. Selecting an Imp on the map lights them.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Imps this one can message. They are lit on the map while it is selected."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los Imps a los que este puede escribir. Se iluminan en el mapa mientras está seleccionado."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个 Imp 可以给哪些 Imp 发消息。选中它时，它们会在地图上高亮。"
+          }
+        }
+      }
+    },
+    "devices.imp.tools" : {
+      "comment" : "Inspector card: an Imp's tools.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Its tools"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus herramientas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它的工具"
+          }
+        }
+      }
+    },
+    "devices.inspector.holds" : {
+      "comment" : "Inspector card: this Mac's Imps a device holds.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imps of this Mac it holds"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imps de este Mac que tiene"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它持有的这台 Mac 的 Imp"
+          }
+        }
+      }
+    },
+    "devices.inspector.reach" : {
+      "comment" : "Inspector card: how a device is reached.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How it is reached"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cómo se llega"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接方式"
+          }
+        }
+      }
+    },
+    "devices.inspector.through_hop" : {
+      "comment" : "Inspector card of the Hop: devices reached through it.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reached through it"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alcanzados por él"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过它连接的设备"
+          }
+        }
+      }
+    },
     "devices.list.info" : {
       "comment" : "Help on the Devices card.",
       "extractionState" : "manual",
@@ -21424,6 +21907,150 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "与这台设备连接的设备。“我的”让设备可以代表你行事。"
+          }
+        }
+      }
+    },
+    "devices.map.summary" : {
+      "comment" : "Screen reader summary of the Devices map.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Map of your devices: %1$@ linked, %2$@ Imps of this Mac, %3$@ Imps of other devices."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mapa de tus dispositivos: %1$@ vinculados, %2$@ Imps de este Mac, %3$@ Imps de otros dispositivos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设备地图：已链接 %1$@ 台设备，这台 Mac 的 Imp %2$@ 个，其他设备的 Imp %3$@ 个。"
+          }
+        }
+      }
+    },
+    "devices.node.label" : {
+      "comment" : "Screen reader label of a device on the map: its state and the Imps in it.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@. Imps: %3$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@. Imps: %3$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@，%2$@。Imp：%3$@"
+          }
+        }
+      }
+    },
+    "devices.node.label_empty" : {
+      "comment" : "Screen reader label of a device on the map without Imps.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@，%2$@"
+          }
+        }
+      }
+    },
+    "devices.node.this_mac_label" : {
+      "comment" : "Screen reader name of this Mac's node.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, this Mac"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, este Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@，这台 Mac"
+          }
+        }
+      }
+    },
+    "devices.place.body" : {
+      "comment" : "Where an Imp's body is, as a tag on a device row.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在"
+          }
+        }
+      }
+    },
+    "devices.place.mind" : {
+      "comment" : "Where an Imp thinks, as a tag on a device row.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thinks on"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piensa en"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "思考于"
           }
         }
       }
@@ -21476,6 +22103,54 @@
         }
       }
     },
+    "devices.reach.last_seen" : {
+      "comment" : "Label of the last known address of a device.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last known address"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Última dirección conocida"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近已知地址"
+          }
+        }
+      }
+    },
+    "devices.reach.none" : {
+      "comment" : "This Mac cannot be reached by other devices now.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not reachable"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No accesible"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法访问"
+          }
+        }
+      }
+    },
     "devices.reach.server" : {
       "comment" : "Help on a linked device: reached through the server.",
       "extractionState" : "manual",
@@ -21496,6 +22171,150 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "经由服务器中转"
+          }
+        }
+      }
+    },
+    "devices.reach.yes" : {
+      "comment" : "Status of this Mac when other devices can reach it.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reachable"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesible"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可访问"
+          }
+        }
+      }
+    },
+    "devices.route.hop" : {
+      "comment" : "How a channel goes: through the Hop.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Through the Hop"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A través del Hop"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过 Hop"
+          }
+        }
+      }
+    },
+    "devices.route.hop_at" : {
+      "comment" : "How a channel goes: through the Hop, and its address.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Through the Hop at %1$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A través del Hop en %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过 Hop，地址 %1$@"
+          }
+        }
+      }
+    },
+    "devices.route.local" : {
+      "comment" : "How a channel goes: the local network.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On the local network"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En la red local"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过本地网络"
+          }
+        }
+      }
+    },
+    "devices.route.local_at" : {
+      "comment" : "How a channel goes: the local network, and the address.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On the local network at %1$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En la red local en %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过本地网络，地址 %1$@"
+          }
+        }
+      }
+    },
+    "devices.route.tag_local" : {
+      "comment" : "Small label on a line of the map that goes over the local network.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wi-Fi"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wi-Fi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wi-Fi"
           }
         }
       }
@@ -21548,6 +22367,150 @@
         }
       }
     },
+    "devices.state.connected" : {
+      "comment" : "State word of a device on the Devices map.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已连接"
+          }
+        }
+      }
+    },
+    "devices.state.connecting" : {
+      "comment" : "State word of a device on the Devices map.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectando"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在连接"
+          }
+        }
+      }
+    },
+    "devices.state.offline" : {
+      "comment" : "State word of a linked device that cannot be reached now.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Away"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausente"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不在线"
+          }
+        }
+      }
+    },
+    "devices.tether.label" : {
+      "comment" : "Screen reader label of the line from an Imp to the device it thinks on.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ is on %2$@ and thinks on %3$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ está en %2$@ y piensa en %3$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 在 %2$@ 上，在 %3$@ 上思考"
+          }
+        }
+      }
+    },
+    "devices.tether.tools" : {
+      "comment" : "Inspector card: the tools an Imp may use on the device it is on.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tools it may use there"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herramientas que puede usar allí"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它在那里可用的工具"
+          }
+        }
+      }
+    },
+    "devices.tether.tools.info" : {
+      "comment" : "Help: the tools are the device's limits.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What the Imp may use while this device asks it. Change it on the device."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que el Imp puede usar cuando este dispositivo le pide algo. Se cambia en el dispositivo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此设备向 Imp 提问时，Imp 可使用的工具。请在该设备上修改。"
+          }
+        }
+      }
+    },
     "devices.this.info" : {
       "comment" : "Help on the This Mac card: the dot is The Hop.",
       "extractionState" : "manual",
@@ -21572,8 +22535,8 @@
         }
       }
     },
-    "devices.this_mac" : {
-      "comment" : "Title of the card for this Mac on the Devices page.",
+    "devices.this_mac_badge" : {
+      "comment" : "Badge on the node of this Mac on the Devices map.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -21616,6 +22579,198 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设备"
+          }
+        }
+      }
+    },
+    "devices.tools.commands" : {
+      "comment" : "Name of the tool that runs commands.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commands"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comandos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "命令"
+          }
+        }
+      }
+    },
+    "devices.tools.info" : {
+      "comment" : "Help of the per-device tool limits.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When this device asks one of your Imps, the Imp can use the tools that are on here. Switch off what it should not touch for this device."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando este dispositivo le pide algo a uno de tus Imps, el Imp puede usar las herramientas activadas aquí. Desactiva lo que no debe tocar para este dispositivo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当此设备向你的某个 Imp 提问时，Imp 可以使用这里开启的工具。关掉不希望它为此设备使用的工具。"
+          }
+        }
+      }
+    },
+    "devices.tools.locked" : {
+      "comment" : "Row in a device's sheet when the device is not Mine, so it gets no tools.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No tools until Mine"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin herramientas hasta ser Mío"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设为“我的”之前没有工具"
+          }
+        }
+      }
+    },
+    "devices.tools.not_mine" : {
+      "comment" : "Shown when a device is not Mine.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imps answer this device without tools. Turn on Mine to choose what they may use."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los Imps responden a este dispositivo sin herramientas. Activa Mío para elegir lo que pueden usar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 回答此设备时不使用工具。打开“我的”后可选择它们能用什么。"
+          }
+        }
+      }
+    },
+    "devices.tools.title" : {
+      "comment" : "Inspector card: the tools Imps may use for a device.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tools Imps may use from this device"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herramientas que los Imps pueden usar desde este dispositivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 可为此设备使用的工具"
+          }
+        }
+      }
+    },
+    "devices.tools.toggle" : {
+      "comment" : "Tooltip of the button that opens or closes a list of tool switches.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show or hide the switches"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar u ocultar los interruptores"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示或隐藏开关"
+          }
+        }
+      }
+    },
+    "devices.unknown_device" : {
+      "comment" : "A device this Mac is not linked with.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "a device not linked with this Mac"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "un dispositivo no vinculado con este Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未与这台 Mac 链接的设备"
+          }
+        }
+      }
+    },
+    "devices.visitor.send_home" : {
+      "comment" : "Button: send a visiting Imp home.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send home"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar a casa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "送回家"
           }
         }
       }
@@ -23156,6 +24311,54 @@
         }
       }
     },
+    "firstrun.link" : {
+      "comment" : "Footer button of the first run on the Mac: bring an Imp from another device instead.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From a device"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desde un dispositivo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "来自设备"
+          }
+        }
+      }
+    },
+    "firstrun.link.help" : {
+      "comment" : "Tooltip of that button: opens the Link sheet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link a device and bring an Imp from it instead"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vincula un dispositivo y trae un Imp de él"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接设备，改为从它带来一个 Imp"
+          }
+        }
+      }
+    },
     "firstrun.model.search" : {
       "comment" : "Placeholder of the model field. It filters the list, or takes a name typed by hand.",
       "extractionState" : "manual",
@@ -23205,25 +24408,25 @@
       }
     },
     "firstrun.service.found" : {
-      "comment" : "Marks a local preset that answers on this computer.",
+      "comment" : "Tooltip of the dot in Local when a model server answers on this Mac.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Found here"
+            "value" : "Found on this Mac"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hallado aquí"
+            "value" : "Encontrado en este Mac"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在这里找到"
+            "value" : "在这台 Mac 上找到"
           }
         }
       }
@@ -23272,6 +24475,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的密钥"
+          }
+        }
+      }
+    },
+    "firstrun.service.key_local" : {
+      "comment" : "Placeholder of the disabled key field when a local model is chosen.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not needed for local models"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hace falta para modelos locales"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地模型不需要"
+          }
+        }
+      }
+    },
+    "firstrun.service.kind" : {
+      "comment" : "Screen reader name of the Remote or Local choice.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kind of service"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tipo de servicio"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务类型"
           }
         }
       }
@@ -23469,25 +24720,79 @@
       }
     },
     "games.best" : {
-      "comment" : "Results card: the best score, under the score.",
+      "comment" : "Results card: the best score for games with this many Imps, under the score. The imps argument is the phrase 'with 3 Imps' (games.best_imps).",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Best %1$lld"
+            "value" : "Best %1$lld %2$@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Récord %1$lld"
+            "value" : "Récord %1$lld %2$@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最高 %1$lld"
+            "value" : "%2$@最高分 %1$lld"
+          }
+        }
+      }
+    },
+    "games.best_imps" : {
+      "comment" : "Part of the best line on the results card: how many Imps played, e.g. 'with 3 Imps'. It ends the sentence 'Best 40 with 3 Imps' (zh-Hans: starts it).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "with %1$lld Imp"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "with %1$lld Imps"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "con %1$lld Imp"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "con %1$lld Imps"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld 个 Imp 的"
+                }
+              }
+            }
           }
         }
       }
@@ -24177,7 +25482,7 @@
       }
     },
     "home.corner.devices" : {
-      "comment" : "Help and screen reader name of the corner button that opens the Devices settings.",
+      "comment" : "Help and screen reader name of the corner button that opens the Devices screen.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -24196,6 +25501,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设备"
+          }
+        }
+      }
+    },
+    "home.corner.devices.away" : {
+      "comment" : "Screen reader value of the Devices corner button when a linked device cannot be reached. A warning mark shows on the button.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "a linked device is away"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "un dispositivo vinculado está ausente"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有已链接的设备不在线"
           }
         }
       }
@@ -24278,50 +25607,98 @@
         }
       }
     },
-    "home.empty.hint" : {
-      "comment" : "Empty main screen, one line under the title.",
+    "home.empty.link" : {
+      "comment" : "Button on the empty main screen: link another device.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hatch your first Imp to get started."
+            "value" : "Link a device"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haz nacer a tu primer Imp para empezar."
+            "value" : "Vincular un dispositivo"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "孵化你的第一个 Imp，就可以开始了。"
+            "value" : "连接设备"
+          }
+        }
+      }
+    },
+    "home.empty.link.help" : {
+      "comment" : "Tooltip of the link button on the empty main screen.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link a device and bring an Imp from it"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vincula un dispositivo y trae un Imp de él"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接设备，并从它带来一个 Imp"
           }
         }
       }
     },
     "home.empty.new_imp" : {
-      "comment" : "The one prompt in the middle of an empty main screen.",
+      "comment" : "Button on the empty main screen: hatch the first Imp.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "New"
+            "value" : "Hatch"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nuevo"
+            "value" : "Incubar"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新建"
+            "value" : "孵化"
+          }
+        }
+      }
+    },
+    "home.empty.new_imp.help" : {
+      "comment" : "Tooltip of the hatch button on the empty main screen.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hatch an Imp and give it a Brain"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haz nacer un Imp y dale un cerebro"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "孵化一个 Imp，并给它一个大脑"
           }
         }
       }
@@ -25238,6 +26615,30 @@
         }
       }
     },
+    "imp_settings.marker.animations" : {
+      "comment" : "Marker below the Imp: its animations.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animations"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animaciones"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动画"
+          }
+        }
+      }
+    },
     "imp_settings.marker.brain" : {
       "comment" : "Marker above the Imp's head and panel title.",
       "extractionState" : "manual",
@@ -25306,30 +26707,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "外观"
-          }
-        }
-      }
-    },
-    "imp_settings.marker.moves" : {
-      "comment" : "Marker below the Imp: its animations.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Moves"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Movimientos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "动作"
           }
         }
       }
@@ -27254,30 +28631,6 @@
         }
       }
     },
-    "menu.group.goodbye_off" : {
-      "comment" : "Tooltip of the dimmed Goodbye item when every Imp is picked.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "One Imp always stays. Leave at least one out of the group."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Siempre se queda un Imp. Deja al menos uno fuera del grupo."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "总要留下一个 Imp。请至少留一个不选。"
-          }
-        }
-      }
-    },
     "menu.group.hide_help" : {
       "comment" : "Tooltip of Hide in the menu of several Imps.",
       "extractionState" : "manual",
@@ -28042,78 +29395,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ 去 %2$@ 做客，还可以回来。"
-          }
-        }
-      }
-    },
-    "moves.animations" : {
-      "comment" : "Header of the list of an Imp's own animations.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Animations"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Animaciones"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "动画"
-          }
-        }
-      }
-    },
-    "moves.empty" : {
-      "comment" : "Empty state of the animations list.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No animations yet."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aún no hay animaciones."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "还没有动画。"
-          }
-        }
-      }
-    },
-    "moves.help.own" : {
-      "comment" : "Help of the own animations list.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Moves made for only this Imp. They play instead of the shared ones."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Movimientos hechos solo para este Imp. Se usan en lugar de los compartidos."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "只为这个 Imp 做的动作。它们会代替共用的动作。"
           }
         }
       }
@@ -31646,30 +32927,6 @@
         }
       }
     },
-    "servers.address" : {
-      "comment" : "Field label.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Address"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dirección"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "地址"
-          }
-        }
-      }
-    },
     "servers.address_hint" : {
       "comment" : "Hint in the address field.",
       "extractionState" : "manual",
@@ -31718,54 +32975,6 @@
         }
       }
     },
-    "servers.hop.in_use" : {
-      "comment" : "Shows which Hop is in use.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Using the Hop at %1$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usando el Hop en %1$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在使用 %1$@ 上的 Hop"
-          }
-        }
-      }
-    },
-    "servers.hop.needed" : {
-      "comment" : "Shown on a screen that needs The Hop when none is set.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Linking from anywhere needs a Hop. Add one in Settings under Devices. Devices on the same network still find each other."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enlazar desde cualquier lugar necesita un Hop. Añade uno en Ajustes, en Dispositivos. Los dispositivos de la misma red se siguen encontrando."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "随时随地连接需要 Hop。请在“设置”的“设备”里添加。同一网络里的设备仍然可以找到彼此。"
-          }
-        }
-      }
-    },
     "servers.hop.off_note" : {
       "comment" : "Under Off on the Hop card.",
       "extractionState" : "manual",
@@ -31810,30 +33019,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hop"
-          }
-        }
-      }
-    },
-    "servers.off" : {
-      "comment" : "Shown next to a server choice that is off.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Off"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apagado"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已关闭"
           }
         }
       }
@@ -32266,30 +33451,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ 已离线。"
-          }
-        }
-      }
-    },
-    "settings.attention.hop_off" : {
-      "comment" : "Item.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The Hop is not set up."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hop no está configurado."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hop 尚未设置。"
           }
         }
       }
@@ -33446,30 +34607,6 @@
         }
       }
     },
-    "settings.devices.mine.help" : {
-      "comment" : "Hover help of the Mine switch of a linked device.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "On for your own devices, off for a friend's"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activado en tus dispositivos, apagado en el de un amigo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自己的设备打开，朋友的设备关闭"
-          }
-        }
-      }
-    },
     "settings.devices.mine.info" : {
       "comment" : "Help beside the Mine switch of a linked device: what turning it on allows, and when to leave it off.",
       "extractionState" : "manual",
@@ -33514,30 +34651,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关联"
-          }
-        }
-      }
-    },
-    "settings.group.animations" : {
-      "comment" : "Group title.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Animations"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Animaciones"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "动画效果"
           }
         }
       }
@@ -33634,30 +34747,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "气泡"
-          }
-        }
-      }
-    },
-    "settings.group.devices" : {
-      "comment" : "Settings text.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Devices"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Equipos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "设备"
           }
         }
       }
@@ -35102,74 +36191,26 @@
         }
       }
     },
-    "sharing.browse" : {
-      "comment" : "Button on the Sharing page: look through The Den.",
+    "sharing.animations.info" : {
+      "comment" : "Help of the Animations list on the Sharing page.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Browse"
+            "value" : "Every animation, shared or an Imp's own. Try one, change it, save it as a sticker or share it as a kit."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Explorar"
+            "value" : "Todas las animaciones, compartidas o propias de un Imp. Pruébalas, cámbialas, guárdalas como sticker o compártelas como kit."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "浏览"
-          }
-        }
-      }
-    },
-    "sharing.gallery" : {
-      "comment" : "Title of the card on Sharing with Browse and Import.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gallery"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Galería"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "图库"
-          }
-        }
-      }
-    },
-    "sharing.gallery.info" : {
-      "comment" : "Help on the Gallery card.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Find animations, triggers and Imps others shared, or bring in a kit you have. To share yours, use the share button on an Imp."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Encuentra animaciones, disparadores e Imps que otros compartieron, o importa un kit. Para compartir los tuyos, usa el botón de compartir de un Imp."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "查找他人分享的动画、触发器和 Imp，或导入你的套件。要分享你的，请使用 Imp 上的分享按钮。"
+            "value" : "所有动画，无论共用还是某个 Imp 自己的。可以试播、修改、存为贴纸或分享为套件。"
           }
         }
       }
@@ -35194,6 +36235,150 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导入"
+          }
+        }
+      }
+    },
+    "sharing.none" : {
+      "comment" : "Beside the header of a Sharing list that has nothing in it yet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "None yet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada aún"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂无"
+          }
+        }
+      }
+    },
+    "sharing.open_in" : {
+      "comment" : "Help of the button that opens an item in its Imp's settings.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in %1$@'s settings"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir en los ajustes de %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 %1$@ 的设置中打开"
+          }
+        }
+      }
+    },
+    "sharing.share_all" : {
+      "comment" : "Help of the button that shares a whole list as one kit.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share all as a kit"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir todo como kit"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部分享为套件"
+          }
+        }
+      }
+    },
+    "sharing.tools.info" : {
+      "comment" : "Help of the Tools list on the Sharing page.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every tool added from outside, with a dot for each Imp that uses it. Keys are left out when you share one."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todas las herramientas añadidas de fuera, con un punto por cada Imp que la usa. Al compartir una, las claves no se incluyen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有从外部添加的工具，每个使用它的 Imp 对应一个圆点。分享时不包含密钥。"
+          }
+        }
+      }
+    },
+    "sharing.tools.unused" : {
+      "comment" : "Under a tool on the Sharing page that no Imp uses.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Imp uses it"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ningún Imp la usa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有 Imp 使用它"
+          }
+        }
+      }
+    },
+    "sharing.triggers.info" : {
+      "comment" : "Help of the Triggers list on the Sharing page.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every trigger, shared or an Imp's own. Share one as a kit, or open it in the settings of its Imp to change it."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos los disparadores, compartidos o propios de un Imp. Comparte uno como kit, o ábrelo en los ajustes de su Imp para cambiarlo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有触发器，无论共用还是某个 Imp 自己的。可以把其中一个分享为套件，或在它所属 Imp 的设置里打开并修改。"
           }
         }
       }
@@ -36586,6 +37771,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "给 Imp 提供更多工具的程序或网站。"
+          }
+        }
+      }
+    },
+    "tools.kind" : {
+      "comment" : "Spoken name of the choice between a web server and a local program, in the sheet that adds a tool.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kind of tool"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tipo de herramienta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工具类型"
           }
         }
       }

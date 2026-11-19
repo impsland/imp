@@ -71,4 +71,21 @@ import Testing
         nothing.paste(text: " ", codes: ["nope"])
         if case .failed = nothing.status {} else { Issue.record("an empty paste says so") }
     }
+
+    @Test func theLinkSheetIsWaitingUntilADeviceLinksOrACodeFails() throws {
+        var join = LinkJoin()
+        #expect(LinkPhase(newcomer: nil, join: join) == .waiting)
+        #expect(LinkPhase(newcomer: "Anna's iPhone", join: join) == .linked("Anna's iPhone"), "a device that appeared is linked")
+        join.text = "hello"
+        #expect(LinkPhase(newcomer: nil, join: join).problem != nil, "something that is not a code says so")
+        join.text = try #require(code)
+        join.start()
+        #expect(LinkPhase(newcomer: nil, join: join) == .waiting, "linking is still waiting: the slot shows progress")
+        join.finish(failed: "Nobody answered.")
+        #expect(LinkPhase(newcomer: nil, join: join) == .failed("Nobody answered."))
+        join.start()
+        #expect(LinkPhase(newcomer: nil, join: join).problem == nil, "trying again clears the problem")
+        join.finish(linked: "Mac")
+        #expect(LinkPhase(newcomer: nil, join: join).linkedName == "Mac")
+    }
 }

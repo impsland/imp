@@ -29,11 +29,11 @@
     "es": "Disparadores",
     "zh-Hans": "触发器"
   },
-  "imp_settings.marker.moves": {
+  "imp_settings.marker.animations": {
     "note": "Marker below the Imp: its animations.",
-    "en": "Moves",
-    "es": "Movimientos",
-    "zh-Hans": "动作"
+    "en": "Animations",
+    "es": "Animaciones",
+    "zh-Hans": "动画"
   },
   "imp_settings.list.label": {
     "note": "Spoken name of the rail of sections of one Imp's settings.",
@@ -472,7 +472,7 @@
     "es": "Aún no hay disparadores.",
     "zh-Hans": "还没有触发器。"
   },
-  "moves.empty": {
+  "animations.empty": {
     "note": "Empty state of the animations list.",
     "en": "No animations yet.",
     "es": "Aún no hay animaciones.",
@@ -646,11 +646,11 @@
     "es": "Editar…",
     "zh-Hans": "编辑…"
   },
-  "moves.help.own": {
-    "note": "Help of the own animations list.",
-    "en": "Moves made for only this Imp. They play instead of the shared ones.",
-    "es": "Movimientos hechos solo para este Imp. Se usan en lugar de los compartidos.",
-    "zh-Hans": "只为这个 Imp 做的动作。它们会代替共用的动作。"
+  "animations.help.list": {
+    "note": "Help of the animations list.",
+    "en": "Animations made for only this Imp come first. The shared ones follow: changing one changes it for every Imp.",
+    "es": "Primero van las animaciones hechas solo para este Imp. Siguen las compartidas: cambiar una la cambia para todos los Imps.",
+    "zh-Hans": "先是只为这个 Imp 做的动画，后面是共用的动画：修改共用的动画会影响所有 Imp。"
   },
   "tools.help.mcp": {
     "note": "Help of the extra tools list.",
@@ -1436,8 +1436,8 @@
     "es": "Ordenador",
     "zh-Hans": "电脑"
   },
-  "moves.animations": {
-    "note": "Header of the list of an Imp's own animations.",
+  "animations.list": {
+    "note": "Header of the list of the animations an Imp plays.",
     "en": "Animations",
     "es": "Animaciones",
     "zh-Hans": "动画"
@@ -1447,6 +1447,12 @@
     "en": "New tool",
     "es": "Nueva herramienta",
     "zh-Hans": "新工具"
+  },
+  "tools.kind": {
+    "note": "Spoken name of the choice between a web server and a local program, in the sheet that adds a tool.",
+    "en": "Kind of tool",
+    "es": "Tipo de herramienta",
+    "zh-Hans": "工具类型"
   },
   "agent.button": {
     "note": "Tooltip of the wand button in a section header: opens what the Imp may do there by itself.",

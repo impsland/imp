@@ -3,13 +3,13 @@ import Foundation
 /// A page of settings: one of the app-wide groups or one of an Imp's own pages. The raw value is the name
 /// a tool or a link uses.
 public enum SettingsPlace: String, CaseIterable, Sendable {
-    case app, bubble, talking, brains, devices, sharing, animations, privacy, backup
-    case brain, personality, look, moves, triggers, tools, computer
+    case app, bubble, talking, brains, devices, sharing, privacy, backup
+    case brain, personality, look, animations, triggers, tools, computer
 
     /// The app-wide group this page is, if it is one.
     public var group: SettingsGroup? { SettingsGroup(rawValue: rawValue) }
-    /// Whether the page belongs to one Imp.
-    public var isPerImp: Bool { group == nil }
+    /// Whether the page belongs to one Imp. Devices is neither a section nor an Imp's page: it is its own screen.
+    public var isPerImp: Bool { group == nil && self != .devices }
 
     /// The page a tool or a link means by this name ("looks" is the look).
     public init?(name: String) {
@@ -18,6 +18,7 @@ public enum SettingsPlace: String, CaseIterable, Sendable {
     }
 
     public var titleKey: String {
+        if self == .devices { return "devices.title" }
         if let group { return "settings.group.\(group.rawValue)" }
         return "imp_settings.marker.\(rawValue)"
     }
@@ -29,8 +30,9 @@ public enum SettingsPlace: String, CaseIterable, Sendable {
         case .personality: "theatermasks.fill"
         case .tools: "wrench.and.screwdriver.fill"
         case .triggers: "bolt.fill"
-        case .moves: "figure.dance"
+        case .animations: "figure.dance"
         case .computer: "desktopcomputer"
+        case .devices: "laptopcomputer.and.iphone"
         default: group?.symbol ?? "gearshape"
         }
     }
@@ -38,8 +40,8 @@ public enum SettingsPlace: String, CaseIterable, Sendable {
     /// The phone has these pages. The others are on the Mac only.
     public var onPhone: Bool {
         switch self {
-        case .app, .talking, .brains, .devices, .sharing, .animations, .brain, .personality, .look, .tools: true
-        case .bubble, .privacy, .backup, .triggers, .moves, .computer: false
+        case .app, .talking, .brains, .devices, .sharing, .brain, .personality, .look, .tools: true
+        case .bubble, .privacy, .backup, .triggers, .animations, .computer: false
         }
     }
 
@@ -65,11 +67,10 @@ public enum SettingID: String, CaseIterable, Sendable {
     case brainsRetries = "brains_retries", brainsFirstWait = "brains_first_wait", brainsLonger = "brains_longer"
     // Sharing
     case sharingImport = "sharing_import"
+    case sharingTriggers = "sharing_triggers", sharingAnimations = "sharing_animations", sharingTools = "sharing_tools"
     // Devices
     case devicesHop = "devices_hop"
     case devicesLink = "devices_link", devicesPair = "devices_pair", devicesForgetAll = "devices_forget_all"
-    // Animations
-    case animationsMade = "animations_made"
     // Privacy
     case privacyListening = "privacy_listening", privacyComputer = "privacy_computer"
     // Backup
@@ -82,8 +83,8 @@ public enum SettingID: String, CaseIterable, Sendable {
     case personalityRules = "personality_rules"
     // Per Imp: look
     case lookColour = "look_colour", lookSize = "look_size", lookCharacter = "look_character"
-    // Per Imp: moves
-    case movesOwn = "moves_own"
+    // Per Imp: animations
+    case animationsOwn = "animations_own"
     // Per Imp: triggers
     case triggersList = "triggers_list"
     // Per Imp: tools
@@ -123,11 +124,13 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .brainsFirstWait: Entry(page: .brains, title: "settings.brains.first_wait.title", hint: "how long to wait for the first word of an answer")
         case .brainsLonger: Entry(page: .brains, title: "settings.brains.longer.title", hint: "wait longer for slow thinking models")
         case .sharingImport: Entry(page: .sharing, title: "sharing.import", hint: "import a kit from a file, a link or the clipboard, shared Imps and animations, MCP gallery")
+        case .sharingTriggers: Entry(page: .sharing, title: "triggers.title", hint: "every trigger, shared or an Imp's own, to share as a kit or copy a link to")
+        case .sharingAnimations: Entry(page: .sharing, title: "animations.list", hint: "every animation, shared or an Imp's own, to try, edit, share as a kit or save as a sticker")
+        case .sharingTools: Entry(page: .sharing, title: "tools.title", hint: "every MCP server and which Imps use it, to edit or share as a kit")
         case .devicesHop: Entry(page: .devices, title: "servers.hop.title", hint: "the Hop server that links devices, on this computer or elsewhere")
         case .devicesLink: Entry(page: .devices, title: "settings.devices.link.title", hint: "link the iPhone or another Mac, devices, pairing")
         case .devicesPair: Entry(page: .devices, title: "settings.devices.pair.title", hint: "pair a new device with a code or QR")
         case .devicesForgetAll: Entry(page: .devices, title: "settings.devices.forget_all.title", hint: "unlink every device")
-        case .animationsMade: Entry(page: .animations, title: "animations.from_den", hint: "animations made or got from the Den, edit, rename, delete")
         case .privacyListening: Entry(page: .privacy, title: "settings.privacy.core.title", hint: "microphone, speech recognition, what Imp may listen to")
         case .privacyComputer: Entry(page: .privacy, title: "settings.privacy.computer.title", hint: "permissions to see the screen, control the computer, accessibility, files")
         case .backupExport: Entry(page: .backup, title: "settings.backup.export.title", hint: "save a copy of all Imps and settings to a file")
@@ -145,7 +148,7 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .lookColour: Entry(page: .look, title: "look.colour", hint: "the Imp's colour or hue")
         case .lookSize: Entry(page: .look, title: "look.size", hint: "how big the Imp is")
         case .lookCharacter: Entry(page: .look, title: "look.character", hint: "the Imp's traits: horns, tail, eyes, ears and other features")
-        case .movesOwn: Entry(page: .moves, title: "moves.animations", hint: "animations made for just this Imp, and what the Imp may do with animations by itself")
+        case .animationsOwn: Entry(page: .animations, title: "animations.list", hint: "the animations this Imp plays, its own and the shared ones, try, edit, turn off, and what the Imp may do with animations by itself")
         case .triggersList: Entry(page: .triggers, title: "triggers.title", hint: "things the Imp does by itself when something happens or on a shortcut")
         case .toolsServers: Entry(page: .tools, title: "tools.title", hint: "MCP servers the Imp may use, and their keys or variables")
         case .computerCommands: Entry(page: .computer, title: "Commands", hint: "let the Imp run commands on the Mac, shell, terminal")

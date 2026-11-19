@@ -161,7 +161,7 @@ private struct BrainSetup: View {
         self.model = model
         self.id = id
         self.finished = finished
-        _flow = State(initialValue: FirstRunHost.model(app: model, id: id))
+        _flow = State(initialValue: FirstRunHost.model(app: model, target: .existing(id)))
     }
 
     var body: some View {

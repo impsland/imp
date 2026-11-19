@@ -22,8 +22,8 @@ struct FirstRunPhone: View {
         let imp = pocket.imp(id)
         let services = FirstRunServices.live(persona: pocket.personality(of: id), probeSeconds: Double(Behavior.localProbeTimeoutSeconds), listSeconds: Double(Behavior.modelListTimeoutSeconds),
                                              checkSeconds: Double(Behavior.brainCheckTimeoutSeconds))
-        _flow = State(initialValue: FirstRunModel(impName: imp?.name ?? "", onThisComputer: false, services: services,
-                                                  preselectsModel: false) { [weak pocket] brain in
+        _flow = State(initialValue: FirstRunModel(impName: imp?.name ?? "", target: .existing(id), onThisComputer: false, services: services,
+                                                  preselectsModel: false) { [weak pocket] brain, _ in
             try pocket?.adoptFirstRunBrain(brain, for: id)
         })
     }
@@ -106,7 +106,7 @@ struct FirstRunPhoneSheet: View {
 
 @MainActor private func previewFlow(_ events: (FirstRunModel) -> Void = { _ in }) -> FirstRunModel {
     let services = FirstRunServices(find: { [] }, models: { _, _ in [] }, check: { _ in })
-    let flow = FirstRunModel(impName: "Dot", onThisComputer: false, services: services) { _ in }
+    let flow = FirstRunModel(impName: "Dot", target: .existing(UUID()), onThisComputer: false, services: services) { _, _ in }
     events(flow)
     return flow
 }

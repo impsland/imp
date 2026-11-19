@@ -4,7 +4,7 @@ import Testing
 
 @Suite struct TroupeTests {
     @Test func defaultsToOneRedImpWaitingInTheWindow() {
-        let p = ImpPreferences()
+        let p = ImpPreferences.withWaitingImp()
         #expect(p.imps.count == 1)
         #expect(p.imps[0].id == ImpProfile.defaultID && p.imps[0].hue == 0 && p.imps[0].brain == nil)
         #expect(!p.imps[0].isActive)
@@ -16,7 +16,7 @@ import Testing
     }
 
     @Test func performerFallsBackWhenMissingOrDeactivated() {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         p.imps[0].isActive = true
         let pip = ImpProfile.newcomer(joining: p.imps)
         p.imps.append(pip)
@@ -31,7 +31,7 @@ import Testing
     }
 
     @Test func onlyActivatedImpsListenAndRunServers() {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         let server = MCPServerConfig(name: "Files", transport: .stdio, command: "npx")
         p.mcpServers = [server]
         p.imps[0].servers = [server.id]
@@ -60,7 +60,7 @@ import Testing
     }
 
     @Test func removingAServiceFixesEveryBrain() {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         let cloud = Service(name: "Cloud", baseURL: "https://cloud.example/v1", model: "cloud-model")
         let local = Service(name: "Local", baseURL: "http://localhost:11434/v1", model: "llama")
         p.ai.add(cloud)
@@ -83,7 +83,7 @@ import Testing
     }
 
     @Test func removingTheDefaultResetsModelsPickedForIt() {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         let first = Service(name: "First", baseURL: "https://first.example/v1", model: "one")
         let second = Service(name: "Second", baseURL: "https://second.example/v1", model: "two")
         p.ai.add(first)
@@ -102,7 +102,7 @@ import Testing
     }
 
     @Test func removingAnotherServiceKeepsTheDefaultsModels() {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         let first = Service(name: "First", baseURL: "https://first.example/v1", model: "one")
         let other = Service(name: "Other", baseURL: "https://other.example/v1", model: "x")
         p.ai.add(first)
@@ -115,7 +115,7 @@ import Testing
     }
 
     @Test func troupeRoundTrips() throws {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         var pip = ImpProfile.newcomer(joining: p.imps)
         pip.usesShell = false
         p.imps.append(pip)

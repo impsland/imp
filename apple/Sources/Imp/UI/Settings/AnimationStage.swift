@@ -43,10 +43,8 @@ struct LookStage: View {
                 onLook(AnimationBeat.round(max(-1, min(1, Double(x)))), AnimationBeat.round(max(-1, min(1, Double(y)))))
             })
             .simultaneousGesture(TapGesture(count: 2).onEnded { if beat != nil { onLook(0, 0.1) } })
-            .onHover { inside in
-                hovering = inside
-                if inside { NSCursor.crosshair.push() } else { NSCursor.pop() }
-            }
+            .onHover { hovering = $0 }
+            .cursor(.crosshair)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Preview. Where it looks")

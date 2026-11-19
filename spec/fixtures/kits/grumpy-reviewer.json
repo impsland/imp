@@ -31,7 +31,7 @@
       "tools": {
         "personality": true,
         "look": true,
-        "moves": true,
+        "animations": true,
         "senses": false,
         "triggers": false,
         "tools": false,

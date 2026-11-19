@@ -77,10 +77,12 @@ public enum FirstRunPrimary: Equatable, Sendable {
 }
 
 /// The first run, step by step. The same on every platform: the views only show it. It holds what the
-/// user typed, so going back or a failed check keeps it, and it never blocks anything: closing leaves the Imp asleep.
+/// user typed, so going back or a failed check keeps it, and it never blocks anything: closing leaves an existing Imp asleep and a new one unhatched.
 @MainActor @Observable
 public final class FirstRunModel {
     public let impName: String
+    /// Whose Brain this is: an existing Imp's, or a new Imp that is hatched only when the Brain works.
+    public let target: FirstRunTarget
     /// Whether local presets are found by looking at this computer (the Mac), or are on another computer whose
     /// address the user edits (the iPhone).
     public let onThisComputer: Bool
@@ -106,7 +108,7 @@ public final class FirstRunModel {
     public var model = ""
 
     @ObservationIgnored private let network: FirstRunServices
-    @ObservationIgnored private let adopt: @MainActor (FirstRunBrain) throws -> Void
+    @ObservationIgnored private let adopt: @MainActor (FirstRunBrain, FirstRunTarget) throws -> Void
     @ObservationIgnored private let awakeBeat: Duration
     @ObservationIgnored private var task: Task<Void, Never>?
     /// The address and key the models were listed for.
@@ -116,19 +118,24 @@ public final class FirstRunModel {
     /// "Wake up" on one page: the models are being listed, and the check follows by itself.
     @ObservationIgnored private var wakesAfterLoading = false
 
-    /// `adopt` keeps the Brain once it works: the platform stores the service, the model and the key.
-    /// It throws `KeyNotSaved` when the key could not be stored, and the Imp then stays asleep.
+    /// `adopt` keeps the Brain once it works, for `target`: the platform stores the service, the model and the key,
+    /// and hatches the Imp when the target is a new one. It throws `KeyNotSaved` when the key could not be
+    /// stored, and then nothing is kept.
+    /// `found` are the model servers already known (a later `discover()` replaces them).
     /// `awakeBeat` is how long the awake Imp is shown before the flow moves on by itself.
-    public init(impName: String, onThisComputer: Bool, services: FirstRunServices,
+    public init(impName: String, target: FirstRunTarget, onThisComputer: Bool, services: FirstRunServices,
                 presets: [ServicePreset] = ServicePreset.all, awakeBeat: Duration = .milliseconds(900),
-                preselectsModel: Bool = true, adopt: @escaping @MainActor (FirstRunBrain) throws -> Void) {
+                preselectsModel: Bool = true, found: [LocalServer] = [],
+                adopt: @escaping @MainActor (FirstRunBrain, FirstRunTarget) throws -> Void) {
         self.impName = impName
+        self.target = target
         self.onThisComputer = onThisComputer
         self.presets = presets
         self.preselectsModel = preselectsModel
         self.network = services
         self.awakeBeat = awakeBeat
         self.adopt = adopt
+        self.found = found
         if let first = presets.first(where: { $0 == ServicePreset.standard }) ?? presets.first { choose(first) }
     }
 
@@ -391,11 +398,11 @@ public final class FirstRunModel {
         problem = nil
         path.apply(.check)
         let beat = awakeBeat
-        task = Task { [network, adopt] in
+        task = Task { [network, adopt, target] in
             do {
                 try await network.check(chosen)
                 guard !Task.isCancelled else { return }
-                try adopt(chosen)
+                try adopt(chosen, target)
                 path.apply(.checkWorked)
                 try await Task.sleep(for: beat)
                 path.apply(.carryOn)

@@ -3,47 +3,9 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// Ready-made tools (MCP servers) offered as starting points on the Tools tab.
-enum MCPExamples {
-    struct Example {
-        let server: MCPServerConfig
-        let icon: String
-        let blurb: LocalizedStringResource
-
-        /// Added in one click, unless it has variables to fill in: then its form opens first.
-        var isComplete: Bool { !server.environment.values.contains(where: \.isEmpty) }
-    }
-
-    static var examples: [Example] {
-        let home = FileManager.default.homeDirectoryForCurrentUser.path
-        // dtst servers (npmjs.com/org/dtst) call any OpenAI-compatible API themselves, so they get
-        // their own address, key and model: any service, not necessarily the Imp's. `optional`
-        // variables may stay blank (dtst treats an empty one as unset).
-        func dtst(_ name: String, _ package: String, optional: [String] = []) -> MCPServerConfig {
-            var env = ["OPENAI_BASE_URL": "", "OPENAI_API_KEY": "", "OPENAI_MODEL": ""]
-            for key in optional { env[key] = "" }
-            return MCPServerConfig(name: name, transport: .stdio, command: "npx", arguments: ["-y", package], environment: env)
-        }
-        return [
-            Example(server: MCPServerConfig(name: "Files", transport: .stdio, command: "npx",
-                                            arguments: ["-y", "@modelcontextprotocol/server-filesystem", home + "/Documents"]),
-                    icon: "folder.fill", blurb: "Files in Documents"),
-            Example(server: MCPServerConfig(name: "Memory", transport: .stdio, command: "npx", arguments: ["-y", "@modelcontextprotocol/server-memory"]),
-                    icon: "brain.head.profile", blurb: "Remembers things"),
-            Example(server: MCPServerConfig(name: "Fetch", transport: .stdio, command: "uvx", arguments: ["mcp-server-fetch"]),
-                    icon: "arrow.down.doc.fill", blurb: "Reads web pages"),
-            Example(server: dtst("Images", "@dtst/img"), icon: "photo.fill", blurb: "Makes pictures"),
-            Example(server: dtst("Writing", "@dtst/txt"), icon: "text.quote", blurb: "Hands off writing"),
-            // Blank voice: the model's first listed voice.
-            Example(server: dtst("Speech", "@dtst/tts", optional: ["OPENAI_VOICE"]), icon: "waveform", blurb: "Speaks out loud"),
-        ]
-    }
-
-    static var all: [MCPServerConfig] { examples.map(\.server) }
-}
-
 /// Edits a copy of a tool (an MCP server). Nothing reconnects until Save. Paste fills it from a setup
-/// snippet (JSON config, command or URL) on the clipboard.
+/// snippet (JSON config, command or URL) on the clipboard. A new tool starts as a web server; a bar at
+/// the top switches it to a local program (the name typed so far stays).
 struct ServerEditor: View {
     @State var draft: MCPServerConfig
     let isNew: Bool
@@ -78,15 +40,10 @@ struct ServerEditor: View {
             Label("tools.shared_setup", systemImage: SettingScope.everyImp.symbol)
                 .font(Typeface.small).foregroundStyle(Tone.muted)
             VStack(alignment: .leading, spacing: Spacing.cozy) {
-                EvenGrid(minWidth: Sizing.menuTitle, spacing: Spacing.snug) {
-                    ForEach([MCPServerConfig.Transport.stdio, .http], id: \.self) { kind in
-                        ChoiceChip(title: kind == .stdio ? "On this Mac" : "On the web",
-                                   icon: kind == .stdio ? "terminal.fill" : "globe", picked: draft.transport == kind) {
-                            draft.transport = kind
-                            pairs = Self.pairs(of: draft)
-                            testState = .idle
-                        }
-                    }
+                if isNew {
+                    ImpSegmented("tools.kind", selection: kind, options: [MCPServerConfig.Transport.http, .stdio],
+                                 title: { $0 == .stdio ? String(localized: "On this Mac") : String(localized: "On the web") },
+                                 symbol: { $0 == .stdio ? "terminal.fill" : "globe" })
                 }
                 FieldRow("common.name", info: "settings.tool.name.info", width: Sizing.fieldLabel + Spacing.medium) { TextField("Files", text: $draft.name).impField() }
                 if draft.transport == .stdio {
@@ -117,6 +74,15 @@ struct ServerEditor: View {
                 .disabled(!isValid)
         }
         .impNotice($notice)
+    }
+
+    /// The kind of a new tool. Switching keeps the name and shows the other kind's fields.
+    private var kind: Binding<MCPServerConfig.Transport> {
+        Binding(get: { draft.transport }, set: { next in
+            draft.transport = next
+            pairs = Self.pairs(of: draft)
+            testState = .idle
+        })
     }
 
     /// Takes the first server in the clipboard's setup, keeping this one's identity.

@@ -8,7 +8,7 @@ import SwiftUI
 /// best score. Driven once a frame by the engine, like the engine drives `GameRound`.
 @MainActor
 final class EchoSession {
-    nonisolated static let bestKey = "echoBest"
+    nonisolated static let bestsKey = "echoBests"
 
     private(set) var round: EchoRound
     /// Where the Imps may be (set every frame by the engine).
@@ -72,7 +72,13 @@ final class EchoSession {
     private let sound = EchoSound()
     private let game = GameHaptics()
 
-    var best: Int { UserDefaults.standard.integer(forKey: Self.bestKey) }
+    /// The most Imps on the stage while the round ran: the best is kept for this many.
+    private(set) var imps = 0
+
+    /// The best Echo score for games with this many Imps.
+    func best(imps: Int) -> Int {
+        GameBests(defaults: .standard, key: Self.bestsKey).best(imps: imps)
+    }
 
     init(coaching: Bool) {
         round = EchoRound(coaching: coaching)
@@ -120,6 +126,7 @@ final class EchoSession {
         clock += dt
         var out = Output()
         let lesson = round.isLesson
+        if !round.isOver { imps = max(imps, stage.ids.count) }
         handle(round.advance(dt), lesson: lesson, stage: stage, out: &out)
         move(dt, stage: stage, out: &out)
         return out
@@ -248,8 +255,10 @@ final class EchoSession {
 
     private func finish(stage: Stage, out: inout Output) {
         let score = round.score
-        let isBest = score > best
-        if isBest { UserDefaults.standard.set(score, forKey: Self.bestKey) }
+        let defaults = UserDefaults.standard
+        var bests = GameBests(defaults: defaults, key: Self.bestsKey)
+        let isBest = bests.record(score: score, imps: imps)
+        if isBest { bests.save(to: defaults, key: Self.bestsKey) }
         round.isRecord = isBest
         game.finished(best: isBest)
         for (i, id) in stage.ids.enumerated() {

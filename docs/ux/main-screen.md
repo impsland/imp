@@ -4,9 +4,9 @@
 
 On desktop the main screen is the same calm canvas as on the iPhone. The Imps move on it freely. The whole window is the canvas.
 
-- **The corners around the window's own buttons.** The window's close, minimise and zoom buttons hold one top corner. The canvas's buttons take the other three, so nothing crowds them: Settings in the other top corner, New Imp below it, and Devices below the window's buttons. On macOS (window buttons top left) that is Settings top right, New Imp bottom right and Devices bottom left. Where the window buttons are top right (Windows), everything mirrors: Settings top left, New Imp bottom left and Devices bottom right. Corners are physical, not leading and trailing, because the system keeps its buttons where they are in any language. Show hidden Imps sits beside New Imp, on its inner side, only while some Imps are hidden, and it shows how many. Devices opens the Devices settings and wears a small green dot while a linked device is connected. Each button is one click, each has a tooltip and a spoken label. There is no "more" menu: a menu that only opens more buttons costs a click for nothing. The rule is `HomeCorners`.
+- **The corners around the window's own buttons.** The window's close, minimise and zoom buttons hold one top corner. The canvas's buttons take the other three, so nothing crowds them: Settings in the other top corner, New Imp below it, and Devices below the window's buttons. On macOS (window buttons top left) that is Settings top right, New Imp bottom right and Devices bottom left. Where the window buttons are top right (Windows), everything mirrors: Settings top left, New Imp bottom left and Devices bottom right. Corners are physical, not leading and trailing, because the system keeps its buttons where they are in any language. Show hidden Imps sits beside New Imp, on its inner side, only while some Imps are hidden, and it shows how many. Devices opens the [Devices screen](/ux/devices). It wears a small green dot while a linked device is connected, or a warning mark while a linked device cannot be reached. Each button is one click, each has a tooltip and a spoken label. There is no "more" menu: a menu that only opens more buttons costs a click for nothing. The rule is `HomeCorners`.
 - **Settings, not the canvas, holds the choices.** The background is in Settings, as a one-click control.
-- **Empty canvas.** When there are no Imps, a short prompt sits in the middle: a title, a hint and one New button. It is an empty state. It goes away as soon as there is an Imp. It is never a permanent button.
+- **Empty canvas.** When there are no Imps, a compact prompt sits in the middle: the title and two icon buttons with tooltips, Hatch (opens the first run) and Link a device (opens the Link sheet to bring an Imp from another device). It is a calm state, not an error: having no Imp is valid, and Goodbye may remove the last one. It goes away as soon as there is an Imp. It is never a permanent button.
 
 ## Why
 
@@ -76,7 +76,7 @@ The buttons close the menu and then act. Size and colour change at once and leav
 
 Every right-click menu is one card of buttons (`MenuCard`), never a list of text items: big pebbles in a grid for the main actions (`MenuGrid`, three to a row, two when there are four), pills two to a row under a small heading for things to choose from (`MenuPills`), and one wide button in the danger colour for what can't be undone (`MenuDangerButton`), last. Under the Imp's card:
 
-- In the window: Copy kit and Copy link as pills (Copy link is off when no link can be made), then Goodbye (`menu.imp.goodbye`) as the wide button. It asks first, and it is off when there is only one Imp
+- In the window: Copy kit and Copy link as pills (Copy link is off when no link can be made), then Goodbye (`menu.imp.goodbye`) as the wide button. It asks first, and it is off only when nothing can go
 - On the desktop: Stop and Copy Last Reply while there is something to stop or copy, its triggers that ask it something (Triggers), and Visit (`menu.imp.visit`): a pill for each linked device, or a dimmed Visit another device (`menu.imp.visit_none`)
 - A visiting Imp's card has Chat, New Chat and Hide, then Stop and Copy, the devices its doors lead to, and Send home
 - Several Imps picked together: Hide, Free and Copy kit, size and colour, Brain as pills (Shared or a service, applied at once, the menu stays open), then Goodbye to {count} Imps… as the wide button
@@ -111,7 +111,7 @@ The menu bar extra opens a compact panel on the app surface. At the top are four
 
 | State | What the screen shows |
 | --- | --- |
-| Empty, no Imps | The prompt `home.empty.title`, `home.empty.hint` and the button `home.empty.new_imp`. |
+| Empty, no Imps | The title `home.empty.title` and the buttons `home.empty.new_imp` and `home.empty.link`. |
 | Some Imps | The canvas with the Imps and the corner buttons. |
 | Hidden Imps | The floor has a Hidden Imps element (`home.hidden.title`). See [Imps](/ux/imps). |
 | An Imp sleeping | The Imp shows Zzz. See [States](/ux/states). |
@@ -125,10 +125,13 @@ The menu bar extra opens a compact panel on the app surface. At the top are four
 | `home.canvas.hint` | Imps move around here. Press Tab to go from one Imp to the next. |
 | `home.canvas.label` | The Imps' home |
 | `home.corner.devices` | Devices |
+| `home.corner.devices.away` | a linked device is away |
 | `home.corner.devices.connected` | one: {count} connected / other: {count} connected |
 | `home.corner.show_hidden` | Hidden |
-| `home.empty.hint` | Hatch your first Imp to get started. |
-| `home.empty.new_imp` | New |
+| `home.empty.link` | Link a device |
+| `home.empty.link.help` | Link a device and bring an Imp from it |
+| `home.empty.new_imp` | Hatch |
+| `home.empty.new_imp.help` | Hatch an Imp and give it a Brain |
 | `home.empty.title` | No Imps yet |
 | `home.hidden.bring_back` | Bring back {name} |
 | `home.hidden.empty` | No hidden Imps |
@@ -159,7 +162,6 @@ The menu bar extra opens a compact panel on the app surface. At the top are four
 | `menu.canvas.show_hidden` | Hidden ({count}) |
 | `menu.group.free_help` | They step out onto the desktop, right where they stand. |
 | `menu.group.goodbye` | Goodbye to {count} Imps… |
-| `menu.group.goodbye_off` | One Imp always stays. Leave at least one out of the group. |
 | `menu.group.hide_help` | They hide until you show them again. Their triggers rest meanwhile. |
 | `menu.group.kit_help` | Copies one kit with all of them, to share or keep. |
 | `menu.group.title` | {count} Imps |

@@ -38,27 +38,40 @@ struct FirstRunFlow: View {
     }
 }
 
-/// The one primary button of the first run, as wide as the page as on the iPhone: Wake {name} up, or Try
-/// again after a failure. Return presses it.
+/// The one primary button of the first run: Wake {name} up, or Try again after a failure. Return presses it.
+/// In a sheet's footer it is the standard pill, the size of Cancel beside it (`wide: false`). In the Brain panel it
+/// is as wide as the page, as on the iPhone. Its width is the widest of its words, so it never changes size as the
+/// Imp stirs or an error shows.
 struct FirstRunPrimaryButton: View {
     @Bindable var flow: FirstRunModel
+    var wide = true
 
     var body: some View {
         switch flow.primary {
         case .none: EmptyView()
-        case .continueToModel, .wake: button(verbatim: words("firstrun.wake", flow.impName)) { flow.wakeUp() }
-        case .loading: button(verbatim: words("firstrun.wake", flow.impName)) {}.disabled(true)
-        case .tryAgain: button("common.try_again") { flow.wakeUp() }
-        case .waking: button(verbatim: words("firstrun.check.running", flow.impName)) {}.disabled(true)
+        case .continueToModel, .wake: button(wake) { flow.wakeUp() }
+        case .loading: button(wake) {}.disabled(true)
+        case .tryAgain: button(String(localized: "common.try_again")) { flow.wakeUp() }
+        case .waking: button(waking) {}.disabled(true)
         }
     }
 
-    private func button(_ title: LocalizedStringKey, action: @escaping () -> Void) -> some View {
-        Button(title, action: action).buttonStyle(WideButtonStyle()).keyboardShortcut(.defaultAction)
-    }
+    private var wake: String { words("firstrun.wake", flow.impName) }
+    private var waking: String { words("firstrun.check.running", flow.impName) }
 
-    /// For text that is already final (formatted at runtime), shown as it is.
-    private func button(verbatim title: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) { Text(verbatim: title) }.buttonStyle(WideButtonStyle()).keyboardShortcut(.defaultAction)
+    /// The text is already final (formatted at runtime), shown as it is.
+    @ViewBuilder private func button(_ title: String, action: @escaping () -> Void) -> some View {
+        if wide {
+            Button(action: action) { Text(verbatim: title) }.buttonStyle(WideButtonStyle()).keyboardShortcut(.defaultAction)
+        } else {
+            Button(action: action) {
+                ZStack {
+                    // Every wording takes room, only the current one shows: the button keeps its size.
+                    ForEach([wake, waking, String(localized: "common.try_again")], id: \.self) { Text(verbatim: $0).hidden() }
+                    Text(verbatim: title)
+                }
+            }
+            .buttonStyle(.primary).keyboardShortcut(.defaultAction)
+        }
     }
 }

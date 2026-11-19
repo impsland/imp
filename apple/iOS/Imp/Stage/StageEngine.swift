@@ -408,13 +408,19 @@ final class StageEngine {
         self.round = round
     }
 
-    var best: Int { UserDefaults.standard.integer(forKey: "emberBest") }
+    nonisolated static let bestsKey = "embersBests"
 
-    /// Keeps the best, and says whether this round beat it.
+    /// The best Embers score for games with this many Imps.
+    func best(imps: Int) -> Int {
+        GameBests(defaults: .standard, key: Self.bestsKey).best(imps: imps)
+    }
+
+    /// Keeps the best for this many Imps, and says whether this round beat it.
     private func finishGame(_ round: inout GameRound) -> Bool {
         let defaults = UserDefaults.standard
-        let isBest = round.score > best
-        if isBest { defaults.set(round.score, forKey: "emberBest") }
+        var bests = GameBests(defaults: defaults, key: Self.bestsKey)
+        let isBest = bests.record(score: round.score, imps: round.imps)
+        if isBest { bests.save(to: defaults, key: Self.bestsKey) }
         // Clean rounds in a row, and rounds where nothing got away.
         round.cleanStreak = round.cleanBurn ? defaults.integer(forKey: "emberCleanStreak") + 1 : 0
         defaults.set(round.cleanStreak, forKey: "emberCleanStreak")

@@ -48,13 +48,31 @@
     "zh-Hans": "新纪录！"
   },
   "games.best": {
-    "note": "Results card: the best score, under the score.",
+    "note": "Results card: the best score for games with this many Imps, under the score. The imps argument is the phrase 'with 3 Imps' (games.best_imps).",
+    "args": {
+      "count": "int",
+      "imps": "string"
+    },
+    "en": "Best {count} {imps}",
+    "es": "Récord {count} {imps}",
+    "zh-Hans": "{imps}最高分 {count}"
+  },
+  "games.best_imps": {
+    "note": "Part of the best line on the results card: how many Imps played, e.g. 'with 3 Imps'. It ends the sentence 'Best 40 with 3 Imps' (zh-Hans: starts it).",
     "args": {
       "count": "int"
     },
-    "en": "Best {count}",
-    "es": "Récord {count}",
-    "zh-Hans": "最高 {count}"
+    "en": {
+      "one": "with {count} Imp",
+      "other": "with {count} Imps"
+    },
+    "es": {
+      "one": "con {count} Imp",
+      "other": "con {count} Imps"
+    },
+    "zh-Hans": {
+      "other": "{count} 个 Imp 的"
+    }
   },
   "games.prize.flawless": {
     "note": "Prize badge: no ember got away in the round.",

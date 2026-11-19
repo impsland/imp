@@ -57,7 +57,7 @@ struct FactoryResetTests {
     @Test func erasesDefaultsAndFolders() throws {
         let suite = "imp-reset-test-\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suite))
-        PreferencesStore(defaults: defaults).save(ImpPreferences())
+        PreferencesStore(defaults: defaults).save(ImpPreferences.withWaitingImp())
         defaults.set("frame", forKey: "NSWindow Frame ImpHome")
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("imp-reset-\(UUID().uuidString)")
         let support = root.appendingPathComponent("Imp/Workspace/x", isDirectory: true)

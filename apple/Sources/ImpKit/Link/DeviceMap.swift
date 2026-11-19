@@ -21,8 +21,12 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
         /// The Imps on its screen right now, as it last said (`LinkMessage.stage`): its own and its
         /// visitors. Empty while it isn't connected.
         public var stage: [LinkStaged]
-        public init(id: UUID, name: String, kind: LinkKind, reach: Reach, isTrusted: Bool = false, stage: [LinkStaged] = []) {
+        /// Where the link book last knew it on the local network (the map shows them as its addresses).
+        public var routes: LinkRoutes?
+        public init(id: UUID, name: String, kind: LinkKind, reach: Reach, isTrusted: Bool = false, stage: [LinkStaged] = [],
+                    routes: LinkRoutes? = nil) {
             self.id = id; self.name = name; self.kind = kind; self.reach = reach; self.isTrusted = isTrusted; self.stage = stage
+            self.routes = routes
         }
     }
 
@@ -35,6 +39,9 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
         public var state: State
         /// The Imps of this Mac that are on this device right now.
         public var imps: [UUID] = []
+        /// How the node is reached, as `host:port`: this Mac's own routes, a linked device's last known
+        /// local routes, or the Hop's address as it was set.
+        public var addresses: [String] = []
     }
 
     /// An Imp an Imp can message: one of this Mac's, or another device's Imp on the same screen.
@@ -44,6 +51,9 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
         public var hue: Double
         /// The node its body is on.
         public var location: String
+        /// The node of the device it thinks on: `thisMacID` for this Mac's own Imps, a linked device's
+        /// node for the Imps hatched there, nil when its home is a device this Mac isn't linked with.
+        public var home: String?
     }
 
     /// A way two devices talk. A relay channel passes through the server node `via`.
@@ -56,6 +66,9 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
         public var via: String?
         /// The server's name when the channel goes through one.
         public var server: String?
+        /// The address it goes through: the Hop's `host:port` for a relay channel, the linked device's
+        /// first known local route otherwise (nil when the link book has none).
+        public var address: String?
     }
 
     public struct Tool: Equatable, Sendable, Identifiable, Codable {
@@ -70,7 +83,7 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
         public var id: UUID
         public var name: String
         public var hue: Double
-        /// The node it is on.
+        /// The node it is on. Its home is always this Mac, so the entry has no `home`.
         public var location: String
         public var tools: [Tool]
         /// The other Imps it can message (empty without the "Other Imps" tools): this Mac's own,
@@ -92,13 +105,14 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
 
     /// Every Imp whose body is on node `id`: this Mac's and other devices'.
     public func residents(of id: String) -> [Contact] {
-        imps.filter { $0.location == id }.map { Contact(id: $0.id, name: $0.name, hue: $0.hue, location: id) }
+        imps.filter { $0.location == id }.map { Contact(id: $0.id, name: $0.name, hue: $0.hue, location: id, home: Self.thisMacID) }
             + others.filter { $0.location == id }
     }
 
-    /// Builds the map in the core. `server` is the address the person set (empty or invalid: none). `visitors`
-    /// are the Imps of other devices visiting this Mac's desktop.
-    public static func build(thisMac: String, peers: [Peer], server: String,
+    /// Builds the map in the core. `server` is the Hop address the person set (empty or invalid: none).
+    /// `thisRoutes` are the ones this Mac answers on (`LinkStatus.routes`). `visitors` are the Imps of other
+    /// devices visiting this Mac's desktop.
+    public static func build(thisMac: String, thisRoutes: LinkRoutes? = nil, peers: [Peer], server: String,
                              imps: [ImpProfile], mcpServers: [MCPServerConfig], visitors: [LinkStaged] = []) -> DeviceMap {
         struct Entry: Encodable {
             var id: UUID
@@ -114,7 +128,7 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
         }
         let encoder = JSONEncoder()
         func text<T: Encodable>(_ value: T) -> String { (try? encoder.encode(value)).flatMap { String(data: $0, encoding: .utf8) } ?? "[]" }
-        guard let json = try? linkDeviceMap(thisDevice: thisMac, peers: text(peers), server: server, imps: text(entries),
+        guard let json = try? linkDeviceMap(thisDevice: thisMac, thisRoutes: thisRoutes.map(text) ?? "", peers: text(peers), server: server, imps: text(entries),
                                             visitors: text(visitors)),
               let map = try? JSONDecoder().decode(DeviceMap.self, from: Data(json.utf8)) else {
             return DeviceMap(nodes: [], channels: [], imps: [], others: [])
@@ -135,13 +149,58 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
     }
 }
 
-// MARK: Drawing
+/// How the Hop stands, for its card on the Devices canvas and its sheet. The Hop is a setting, not a linked
+/// thing, so it is always there to open, set up or turn off.
+public enum HopStanding: Equatable, Sendable {
+    /// No Hop is set.
+    case off
+    /// Something is set that is not an address yet.
+    case needsAddress
+    case connecting
+    /// A channel runs through it right now.
+    case connected
+    /// An address is set and nothing runs through it.
+    case offline
+    /// A check just reached it.
+    case reachable
+    /// A check just failed to reach it.
+    case unreachable
+
+    /// How a setting stands, given what the map says of the Hop's node. Custom with nothing valid typed
+    /// needs an address (it is not off); a check in the card's hands says more than the map.
+    public init(_ setting: ServerSetting, link: DeviceMap.State) {
+        switch setting.status {
+        case .off: self = setting.choice == .custom ? .needsAddress : .off
+        case .problem: self = .needsAddress
+        case .checking: self = .connecting
+        case .reachable: self = link == .connected ? .connected : .reachable
+        case .unreachable: self = .unreachable
+        case .ready:
+            switch link {
+            case .connected: self = .connected
+            case .connecting: self = .connecting
+            case .offline: self = .offline
+            }
+        }
+    }
+}
 
 extension DeviceMap {
-    /// The parts of the line from `a` to `b` that lie outside every box.
-    public static func pieces(from a: CGPoint, to b: CGPoint, outside boxes: [CGRect]) -> [(CGPoint, CGPoint)] {
-        linkLinePieces(a: LinkPoint(x: a.x, y: a.y), b: LinkPoint(x: b.x, y: b.y),
-                       boxes: boxes.map { LinkRect(x: $0.minX, y: $0.minY, width: $0.width, height: $0.height) })
-            .map { (CGPoint(x: $0.from.x, y: $0.from.y), CGPoint(x: $0.to.x, y: $0.to.y)) }
+    /// The Hop's place on the map when none is set: the same node, with no address and no channels.
+    public static let unsetHop = Node(id: serverID, kind: .server, name: "", state: .offline)
+
+    /// The Hop's node, or the unset one: the map always has a Hop to draw.
+    public var hopNode: Node { nodes.first { $0.kind == .server } ?? Self.unsetHop }
+
+    /// This map with the Hop's node in it, whether or not one is set.
+    public var withHop: DeviceMap {
+        var map = self
+        if !map.nodes.contains(where: { $0.kind == .server }) { map.nodes.append(Self.unsetHop) }
+        return map
+    }
+
+    /// How the Hop stands, given the address as the person typed it (empty is off).
+    public func hopStanding(text: String) -> HopStanding {
+        HopStanding(ServerSetting(kind: .hop, text: text), link: hopNode.state)
     }
 }

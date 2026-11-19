@@ -132,7 +132,7 @@ import Testing
     @Test func theToolIsOfferedWithMessaging() {
         let with = OwnTools.specs([.personality], animations: [], imps: ["Mo"], browser: false).map(\.name)
         #expect(with.contains(OwnTools.openFile))
-        #expect(!OwnTools.specs([.moves], animations: ["wave"], imps: ["Mo"], browser: false).map(\.name).contains(OwnTools.openFile))
+        #expect(!OwnTools.specs([.animations], animations: ["wave"], imps: ["Mo"], browser: false).map(\.name).contains(OwnTools.openFile))
         #expect(OwnTools.messageSpec(imps: ["Mo"]).description.contains(OwnTools.openFile))
     }
 }

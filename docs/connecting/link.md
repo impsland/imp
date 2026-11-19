@@ -8,7 +8,13 @@ are thrown off the side of one screen and land on another, and an Imp keeps thin
 The Hop (the relay run by the Imp project or by you, see `spec/PROTOCOL.md`) is one of the ways to reach
 a device. It only ever carries the encrypted bytes described here. The Hop is its own setting, apart from
 the Den or any gallery: linking uses only the Hop address, and a device with no Hop still links on the same network.
-Settings under Devices explains what a missing Hop leaves out.
+The Hop is the relay devices use to meet when they are not on the same network: the code carries its address,
+so the other device knows where to wait. The [Devices screen](/ux/devices) explains what a missing Hop leaves out;
+the Hop is set in its Link sheet.
+
+Per-device tool limits sit under the trust rules (Mine). A device that is not marked Mine gets no tools at all. A
+device that is gets the Imp's own tools, less the groups switched off for that device on the Devices screen.
+Nothing is off until someone switches it off, and the choice is forgotten with the device.
 
 ## Words
 

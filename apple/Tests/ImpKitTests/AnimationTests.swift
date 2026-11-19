@@ -12,13 +12,13 @@ private func beat() -> [AnimationBeat] { [AnimationBeat(duration: 0.5)] }
     }
 
     @Test func freshPreferencesHaveNoAnimations() {
-        let p = ImpPreferences()
+        let p = ImpPreferences.withWaitingImp()
         #expect(p.animationLibrary.isEmpty)
         #expect(p.ref(named: "Angry", imp: nil) == nil)
     }
 
     @Test func aMadeAnimationIsFoundByNameAndRemovingItForgetsIt() {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         let angry = MadeAnimation(name: "Angry", beats: beat())
         p.save(angry, for: nil)
         #expect(p.ref(named: "angry", imp: nil) == .custom(angry.id))
@@ -28,7 +28,7 @@ private func beat() -> [AnimationBeat] { [AnimationBeat(duration: 0.5)] }
     }
 
     @Test func nothingStartsAnAnimationButATrigger() throws {
-        var p = ImpPreferences()
+        var p = ImpPreferences.withWaitingImp()
         let a = MadeAnimation(name: "A", beats: beat())
         p.save(a, for: nil)
         p.setEnabled(false, animation: a.id)

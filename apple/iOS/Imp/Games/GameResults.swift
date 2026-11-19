@@ -8,6 +8,8 @@ struct GameResult {
     var title: String
     var score: Int
     var best: Int
+    /// How many Imps played: the best is only for games with this many.
+    var imps: Int
     var isRecord: Bool
     var stats: [GameStat] = []
     var prizes: [GamePrize] = []
@@ -29,8 +31,10 @@ struct GamePrize: Identifiable {
 }
 
 /// The results card of a game, top to bottom: the game's name, "New best!" when it is one, the score as
-/// the hero, the best under it, at most three stats in one even row, the prizes as compact badges, and
-/// the actions: Again (the one primary), Done beside it, and "How to play" as a quiet line.
+/// the hero, "Best with N Imps" under it (always there, so the card never changes height; after a record it
+/// is the score just set), at most three stats in one even row, the prizes as compact badges, and the
+/// actions in one row of three equal buttons, the icon above the words: Done, Again (the one primary)
+/// and How to play.
 ///
 /// The card is part of the game: the stage's chrome stays hidden until Done. It is modal for
 /// VoiceOver, which lands on the score and the best (read as one element) when it appears.
@@ -42,6 +46,7 @@ struct GameResultCard: View {
     var howTo: () -> Void
     @ScaledMetric private var statWidth = Sizing.gameStat
     @AccessibilityFocusState private var focused: Bool
+    @Environment(\.dynamicTypeSize) private var dynamicType
 
     var body: some View {
         CardFit {
@@ -63,25 +68,31 @@ struct GameResultCard: View {
             Text(result.title)
                 .font(Typeface.caption)
                 .foregroundStyle(Tone.muted)
-            if result.isRecord {
-                Text("games.new_best")
-                    .font(Typeface.label)
-                    .foregroundStyle(OnTint(SparkArt.hot))
-                    .padding(.horizontal, Spacing.medium).padding(.vertical, Spacing.tight)
-                    .background(TintFill(SparkArt.hot), in: Capsule())
-            }
+            // Always laid out, so a record does not move the score.
+            Text("games.new_best")
+                .font(Typeface.label)
+                .foregroundStyle(OnTint(SparkArt.hot))
+                .padding(.horizontal, Spacing.medium).padding(.vertical, Spacing.tight)
+                .background(TintFill(SparkArt.hot), in: Capsule())
+                .opacity(result.isRecord ? 1 : 0)
+                .accessibilityHidden(!result.isRecord)
             Text(verbatim: "\(result.score)")
                 .font(Typeface.display)
                 .monospacedDigit()
                 .foregroundStyle(Tone.text)
-            if !result.isRecord {
-                Text(verbatim: String.localizedStringWithFormat(NSLocalizedString("games.best", comment: ""), result.best))
-                    .font(Typeface.body)
-                    .foregroundStyle(Tone.muted)
-            }
+            Text(verbatim: bestLine)
+                .font(Typeface.body)
+                .foregroundStyle(Tone.muted)
+                .multilineTextAlignment(.center)
         }
         .accessibilityElement(children: .combine)
         .accessibilityFocused($focused)
+    }
+
+    /// "Best 40 with 3 Imps": the best for games with this many Imps.
+    private var bestLine: String {
+        let imps = String.localizedStringWithFormat(NSLocalizedString("games.best_imps", comment: ""), result.imps)
+        return String.localizedStringWithFormat(NSLocalizedString("games.best", comment: ""), result.best, imps)
     }
 
     /// At most three, in equal columns. They stack when the text is too large for them.
@@ -136,23 +147,21 @@ struct GameResultCard: View {
         }
     }
 
+    /// Done, Again and How to play in one row of three equal buttons, the icon above the words. With
+    /// the accessibility text sizes the row would be too narrow for the words, so they stack instead.
     private var actions: some View {
-        VStack(spacing: Spacing.snug) {
-            ViewThatFits(in: .horizontal) {
-                HStack(spacing: Spacing.cozy) { secondary; primary }
-                VStack(spacing: Spacing.small) { primary; secondary }
-            }
-            Button("games.how_to", action: howTo)
-                .buttonStyle(.quiet)
+        let stacked = dynamicType.isAccessibilitySize
+        let layout = stacked ? AnyLayout(VStackLayout(spacing: Spacing.small)) : AnyLayout(HStackLayout(spacing: Spacing.small))
+        return layout {
+            Button(action: done) { Label("common.done", systemImage: "checkmark") }
+                .buttonStyle(.stackedSecondary)
+            Button(action: again) { Label("games.again", systemImage: "arrow.counterclockwise") }
+                .buttonStyle(.stackedPrimary)
+            Button(action: howTo) { Label("games.how_to", systemImage: "questionmark.circle") }
+                .buttonStyle(.stackedSecondary)
         }
-    }
-
-    private var primary: some View {
-        Button("games.again", action: again).buttonStyle(WideButtonStyle())
-    }
-
-    private var secondary: some View {
-        Button("common.done", action: done).buttonStyle(WideButtonStyle(filled: false))
+        // In a row the buttons are as tall as the tallest; stacked, each is as tall as it needs.
+        .fixedSize(horizontal: false, vertical: !stacked)
     }
 }
 
