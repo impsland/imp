@@ -56,9 +56,9 @@ Debug builds understand `-openChat`, `-hatch`, `-openSettings` and `-editImp`, h
 ## Visiting Imps
 
 An Imp away from its home keeps thinking there. While its home is out of reach it sleeps, and its
-chat says so and waits. A visiting Imp's menu has Hide and Send Home. The **Devices** sheet
+chat says so and waits. A visiting Imp's menu has Hide and Send home. The **Devices** sheet
 (`DevicesSheet`) shows, per linked device, whether it is connected, reached through the server, or away,
-and which of this phone's Imps it holds, with **Call Home**. A visiting Imp can be passed on to a third
+and which of this phone's Imps it holds, with **Send home**. A visiting Imp can be passed on to a third
 device with its **ticket**, which lets that device act for the Imp at its home.
 
 ## Imps hatched on the phone
@@ -118,5 +118,9 @@ frames. Each Imp draws its own blinks (`BlinkTimeline`), its breath and float ar
 picture (`RestMotion`), and a picture that did not change is not drawn again (`ImpPicture`). After a minute with
 nothing happening the room settles: the Imps stop floating and only blink, until something happens.
 
-`PhoneEnergyAuditTests` fails on any `TimelineView(` or `repeatForever` outside `Energy.swift`, and on
+`PhoneEnergyAuditTests` (`apple/Tests/ImpKitTests/PhoneEnergyAuditTests.swift`) fails on any `TimelineView(` or `repeatForever` outside `Energy.swift`, and on
 `CADisplayLink` or a repeating `Timer` anywhere. Do not add continuous animation.
+
+## Docs
+
+The phone in more detail: [docs/connecting/phone.md](../../docs/connecting/phone.md). Building: [docs/development/building.md](../../docs/development/building.md).

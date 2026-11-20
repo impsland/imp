@@ -57,7 +57,7 @@ hop, symbol and an optional move that can play either way round).
 - Imps make animations too: they use `imp_make_animation`, `imp_show_animation` and `imp_remove_animation`.
 - **Export as Sticker…** (the smiling-face button on an animation, or its right-click menu) saves it as an animated
   sticker, `.tgs`: the Imp acting it out in its colour and character, as vectors (Lottie), 512 × 512 at 60 frames a
-  second, at most 3 seconds and 64 KB. A longer animation plays up to twice as fast and stops at 3 seconds; the save
+  second, at most 3 seconds and 64 KB. A longer animation plays up to twice as fast and stops at 3 seconds. The save
   panel says so.
 
 The format, with every mood, glyph and move, is in the [Kit format reference](/sharing/kits#animations-and-traits).
@@ -110,7 +110,7 @@ a friend's device, and keep thinking at home. Read [Imps on other devices](/conn
 Connect Model Context Protocol servers, local or on the web. A web server that asks you to sign in (the Den,
 for one) works too: in **Tools**, the server shows **Sign in**, which opens its own sign-in page in a browser
 sheet, and **Sign out** once you have. When you add a server or switch it on and it asks you to sign in, the sheet opens
-at once and you can cancel it; Imp never opens it by itself (at start-up, on a background reconnect, or when an Imp arrives from another device), and the server then shows
+at once and you can cancel it. Imp never opens it by itself (at start-up, on a background reconnect, or when an Imp arrives from another device), and the server then shows
 **Sign-in needed**. Until you sign in, an Imp sees one stand-in tool for the server: when you ask it to use
 the server, the sheet opens and the real tools replace the stand-in. On iPhone the sheet opens only while
 Imp is in front. The sign-in is kept with your API keys, in a private file by default or in the

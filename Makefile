@@ -87,13 +87,13 @@ test: core ## Run every test, the screen snapshots included
 snapshots: core ## Run only the screen snapshots [RECORD=1 records them all again]
 	IMP_SNAPSHOTS_RECORD=$(RECORD) $(SWIFT) test $(SWIFT_PACKAGE) --filter ImpSnapshotTests
 
-# Uses the real API configured in .env: chat, tools, recaps, and pictures and speech through MCP.
+# Uses the real API configured in .env: a chat, a thinking model, and an Imp that draws and speaks with its tools.
 # A run costs a few cents.
 test-live: core ## Run the tests against the real API in .env
 	IMP_LIVE_TESTS=1 $(SWIFT) test $(SWIFT_PACKAGE) --filter '\.Live[A-Za-z]*Tests'
 	IMP_LIVE_TESTS=1 cargo test -p imp-engine --locked --test live -- --nocapture --test-threads=1
 
-# Plays a Mac, an iPhone and an Imp against a Den and a Hop that are already running (see server/README.md).
+# Runs the Rust tests that link two devices through a Hop that is already running (see server/README.md).
 # The Hop tests are in Rust (chat/tests/hop_live.rs). Run the Hop with
 # HOP_PER_IP_PER_MINUTE raised, for example 100000, or repeated runs hit its rate limit.
 test-server: core ## Run the tests against a running Hop [IMP_HOP=...]

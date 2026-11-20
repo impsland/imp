@@ -109,7 +109,7 @@ import Testing
         #expect(map.residents(of: DeviceMap.thisMacID).map(\.name) == ["Bumble", "Cinder"])
     }
 
-    /// A relay channel names the Hop's address as set, a local one the device's first known route; the nodes list
+    /// A relay channel names the Hop's address as set, a local one the device's first known route. The nodes list
     /// every route.
     @Test func channelsSayTheAddressTheyGoThrough() {
         var local = phone

@@ -185,7 +185,7 @@ pub struct ConfigLibrary {
     pub commands: Vec<ConfigCommand>,
 }
 
-/// The skills and commands the person has in `~/.agents` (the app lists them; it does not edit them).
+/// The skills and commands the person has in `~/.agents`. The app lists them but does not edit them.
 #[uniffi::export]
 pub fn config_library(paths: ConfigPaths) -> ConfigLibrary {
     let loaded = config::load(&env_for(&paths), None, &TrustStore::default());
@@ -469,7 +469,7 @@ pub fn permission_decide(
 }
 
 /// The agent's rules after making `action` on `resource` allowed (`on`) or denied, with as few rules
-/// as it takes (a switched-off group is `{group, *, deny}`; an MCP server is a rule on `mcp` with the resource `<server>/` and a star).
+/// as it takes. A switched-off group is `{group, *, deny}`. An MCP server is a rule on `mcp` with the resource `<server>/` and a star.
 #[uniffi::export]
 pub fn permission_set(
     global: Vec<PermissionRule>,
@@ -565,7 +565,7 @@ pub fn config_gate(
 }
 
 /// Adds `allow` for `action` on `resource` to the agent's own rules (the person chose Always). It is the
-/// last rule, so it wins over what came before; one already there is not repeated.
+/// last rule, so it wins over what came before. One already there is not repeated.
 #[uniffi::export]
 pub fn config_allow_always(
     paths: ConfigPaths,

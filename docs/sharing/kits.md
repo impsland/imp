@@ -73,7 +73,7 @@ name does. Three more:
 | `act` | `value` | extras | what it does |
 |-------|---------|--------|--------------|
 | `ask` | What the Imp should do, in plain words to itself. | `clipboard: true` hands over what the person copied. | The Imp's model gets it with what happened and answers with its tools. Needs a Brain. |
-| `say` | Text. | — | Shows the text in the bubble. No Brain needed. |
+| `say` | Text. | None | Shows the text in the bubble. No Brain needed. |
 | `play` | An animation's name. | | Plays it. |
 | `sleep` | Optional animation to play while falling asleep. | | Falls asleep. |
 | `wake` | Optional animation to play while waking. | | Wakes up. |

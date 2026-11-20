@@ -135,7 +135,7 @@ pub fn argument_lines(name: &str, arguments: &str) -> Vec<DetailLine> {
     let change = CHANGE_KEYS
         .iter()
         .find(|(old, new)| map.get(*old).is_some_and(Value::is_string) && map.contains_key(*new));
-    // The map is sorted by name; what is written or changed comes last, after the path it is for.
+    // The map is sorted by name. What is written or changed comes last, after the path it is for.
     let mut entries: Vec<(&String, &Value)> = map.iter().collect();
     entries.sort_by_key(|(key, _)| {
         matches!(key.as_str(), "content" | "edits") || change.is_some_and(|(old, _)| key == old)
@@ -194,7 +194,7 @@ fn text_lines(kind: Kind, text: &str) -> Vec<DetailLine> {
 }
 
 /// A change by lines: the lines the two texts start and end with alike stay, what is between them is
-/// taken out and put in. Enough to read a change; it does not look for lines that moved.
+/// taken out and put in. That is enough to read a change. It does not look for lines that moved.
 fn diff(old: &str, new: &str) -> Vec<DetailLine> {
     let (old, new): (Vec<&str>, Vec<&str>) = (old.lines().collect(), new.lines().collect());
     let start = old.iter().zip(&new).take_while(|(a, b)| a == b).count();

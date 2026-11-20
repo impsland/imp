@@ -3,7 +3,7 @@ import ImpKit
 import SwiftUI
 
 /// Devices, the one place that says where every Imp is and how the devices talk: a canvas that fills the window.
-/// Pressing a device, an Imp or a line opens a sheet about it (`DeviceSheet`); pressing empty canvas does nothing.
+/// Pressing a device, an Imp or a line opens a sheet about it (`DeviceSheet`). Pressing empty canvas does nothing.
 /// It is its own screen, not a section of Settings. Link a device opens from the bar. Back (and Esc) leaves for the Imps.
 struct DevicesScreen: View {
     let model: AppModel

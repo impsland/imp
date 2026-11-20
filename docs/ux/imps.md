@@ -20,9 +20,9 @@ When every name is taken, the next Imp gets a pool name with a number: `Pip 2`, 
 
 ### Decision
 
-On desktop an Imp in the window is a view. The user drags it with the pointer. In the window the Imp follows the pointer exactly, held by the same spot all along. It is not stopped at the canvas edge. As soon as the Imp's own frame would cross the edge of the window, it is handed to a small borderless window that appears exactly where the Imp was drawn, and the same drag goes on in it. The copy in the window goes away at the same moment. There is no gap and no jump. The Imp is now free on the desktop. This is "Let out".
+On desktop an Imp in the window is a view. The user drags it with the pointer. In the window the Imp follows the pointer exactly, held by the same spot all along. It is not stopped at the canvas edge. As soon as the Imp's own frame would cross the edge of the window, it is handed to a small borderless window that appears exactly where the Imp was drawn, and the same drag goes on in it. The copy in the window goes away at the same moment. There is no gap and no jump. The Imp is now out on the desktop. This is "Let out".
 
-A free Imp let go with the pointer over the app window goes home into the window again, and lands exactly where it was drawn, under the same grab. This is "Send home". If it would be partly outside the canvas, it settles just inside.
+An Imp out on the desktop, let go with the pointer over the app window, goes home into the window again, and lands exactly where it was drawn, under the same grab. This is "Send home". If it would be partly outside the canvas, it settles just inside.
 
 An Imp put down inside the window settles inside the canvas (a small margin, and room for its name below).
 
@@ -34,7 +34,7 @@ The two actions are also in the Imp's context menu, with the same words.
 - **Windows.** Yes, with the same technique: a borderless, topmost, layered window.
 - **Linux on X11.** Yes, the same technique.
 - **Linux on Wayland.** No. A Wayland app cannot place a window or follow the pointer outside its own window. Imps stay in the window and "Let out" is not offered. The context menu says so with `imp.let_out.unavailable`.
-- **iPhone and Android.** There is no free Imp outside the app. Imps stay in the app and "Let out" is not offered.
+- **iPhone and Android.** No Imp can be out on the desktop. Imps stay in the app and "Let out" is not offered.
 
 ### An accidental drop
 
@@ -61,7 +61,7 @@ A confirmation dialog on every drop. It would remove the feeling of picking the 
 
 There is no double click setting. Two or more clicks are Triggers ("2 clicks on the Imp"), so they can open the settings, talk, run a prompt or anything else, per Imp or for every Imp. A first click waits for a second only when some trigger of that Imp answers to two or more clicks. Without one, a click opens the bubble with no delay. The phone has no double tap: a tap opens the chat at once, and the touch-and-hold menu has Settings. There is no settings button on the Imp.
 
-Clicks behave the same whether the Imp is free or in the window.
+Clicks behave the same whether the Imp is out on the desktop or in the window.
 
 ## Selection
 
@@ -74,7 +74,7 @@ The selected Imp (the one a click or the keyboard last chose, and the one the me
 
 On the Mac several Imps in the window can be picked together (`ImpPicks`): ⌘-click or ⇧-click adds or removes one (the first one adds to the Imp already chosen), a box drawn on empty space picks the Imps inside it (with ⌘ or ⇧ held it adds to them), and Select All (the empty-space menu, or ⌘A while an Imp has the keyboard) picks every one. Each picked Imp shows as selected. A plain click on an Imp, a click on empty space or Escape lets the group go.
 
-A right click on any picked Imp opens the group's menu: a card with their faces, "{count} Imps" and their names, then Hide, Free and Copy kit (one kit with all of them), their size and their colour (a choice shows only when every Imp has it). Under it, Brain sets one Brain for all (Shared, or one of the services), and Goodbye to {count} Imps… asks once, naming them, and is off when every Imp is picked: one Imp always stays. A right click on an Imp outside the group opens that Imp's own menu and lets the group go. Hide and Free can be undone from the Undo bar, all at once.
+A right click on any picked Imp opens the group's menu: a card with their faces, "{count} Imps" and their names, then Hide, Let out and Copy kit (one kit with all of them), their size and their colour (a choice shows only when every Imp has it). Under it, Brain sets one Brain for all (Shared, or one of the services), and Goodbye to {count} Imps… asks once, naming them, and is off when every Imp is picked: one Imp always stays. A right click on an Imp outside the group opens that Imp's own menu and lets the group go. Hide and Let out can be undone from the Undo bar, all at once.
 
 Keyboard focus is shown apart, with the focus ring (`focusRing`), and only when focus came from the keyboard (Tab or the arrow keys), never from a click. Moving between states is animated, and with Reduce Motion it just happens.
 
@@ -135,21 +135,21 @@ Showing hidden Imps as small icons along an edge. It looks like a toolbar and it
 | Awake | `imp.state.awake` | The Imp is lively and answers. |
 | Asleep | `imp.state.asleep` | Eyes closed, Zzz. See [States](/ux/states). |
 | Waking | `imp.state.waking` | The Imp stirs. |
-| Out on the desktop | `imp.state.out` | A free Imp, on the desktop only. |
+| Out on the desktop | `imp.state.out` | An Imp let out onto the desktop. Desktop only. |
 | Hidden | `imp.state.hidden` | Not on the canvas. It peeks now and then. |
 | Visiting | `imp.state.visiting` | An Imp whose home is another device. |
 | Away | `imp.state.away` | An Imp that went to visit another device. |
 
 ![A sleeping Imp](./images/imp-sleeping.png)
 
-A screen reader reads an Imp as its name and state (`imp.a11y.label`) and offers these actions: talk, open settings, hide, let out and send home. An Imp that is away offers call home instead of send home.
+A screen reader reads an Imp as its name and state (`imp.a11y.label`) and offers these actions: talk, open settings, hide, let out and send home. An Imp that is away offers Send home instead.
 
 ## Words
 
 <!-- strings: imp -->
 | Key | English |
 | --- | --- |
-| `imp.a11y.call_home` | Call {name} home |
+| `imp.a11y.call_home` | Send {name} home |
 | `imp.a11y.hide` | Hide {name} |
 | `imp.a11y.label` | {name}, {state} |
 | `imp.a11y.let_out` | Let {name} out |
@@ -158,7 +158,7 @@ A screen reader reads an Imp as its name and state (`imp.a11y.label`) and offers
 | `imp.a11y.talk` | Talk to {name} |
 | `imp.call_home.message` | It comes back here now, even if {device} is gone for good. If {device} connects again, it learns the Imp left. |
 | `imp.call_home.other_device` | the other device |
-| `imp.call_home.title` | Bring {name} back from {device}? |
+| `imp.call_home.title` | Send {name} home from {device}? |
 | `imp.drag.hint` | Drag to move it. |
 | `imp.drag.out_hint` | Drag it out of the window to let it out. |
 | `imp.hide.undo` | {name} is hidden. |

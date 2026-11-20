@@ -5,7 +5,7 @@ import ImpCore
 /// the app made it. Kept per Imp by tool registry id (`ImpProfile.toolText`, the agent file's `toolText`).
 ///
 /// A description may use `{imps}`, `{animations}` and `{place}` (`ToolText.placeholders`): the parts of a description
-/// that change. Each tool has the ones it can fill (`ToolTextRow.placeholders`); any other is left empty.
+/// that change. Each tool has the ones it can fill (`ToolTextRow.placeholders`). Any other is left empty.
 public struct ToolText: Codable, Hashable, Sendable {
     public var name: String?
     public var description: String?

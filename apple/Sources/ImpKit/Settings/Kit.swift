@@ -19,7 +19,7 @@ import Foundation
 /// `"format"` is the kit format (`Kit.format`): writers always add it, a file without it is read as 1, and
 /// a newer one than this Imp reads is refused (`KitError.newerFormat`). Adding an optional field never
 /// changes the format: readers ignore keys they don't know, and a missing one takes its default.
-/// `skills` names skills to install with `npx skills add <source>`; nothing runs it.
+/// `skills` names skills to install with `npx skills add <source>`. Nothing runs it.
 /// - `"app"` is the version of Imp that wrote the file. Informational: nothing reads it.
 public struct Kit: Equatable, Sendable {
     /// The kit format this Imp reads and writes. See spec/PROTOCOL.md, Compatibility.
@@ -43,7 +43,7 @@ public struct Kit: Equatable, Sendable {
     public var imps: [KitImp]
     /// Animations for whoever adds the kit (an Imp's own come with it, in `KitImp.animations`).
     public var animations: [MadeAnimation]
-    /// Skills the kit names. The person installs them with `npx skills add`; Imp never does.
+    /// Skills the kit names. The person installs them with `npx skills add`. Imp never does.
     public var skills: [KitSkill]
     /// The version of Imp that wrote the kit: read from a file, written when it's set (the app passes it in).
     public var app: String?

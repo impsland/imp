@@ -100,7 +100,7 @@
     "zh-Hans": "向 {name} 说再见"
   },
   "goodbye.title": {
-    "note": "Title of the dialog that asks before an Imp is deleted.",
+    "note": "Title of the dialog that asks before saying goodbye to an Imp.",
     "args": {
       "name": "string"
     },
@@ -130,7 +130,7 @@
     "zh-Hans": "留下 {name}"
   },
   "goodbye.many.title": {
-    "note": "Title of the dialog that asks before several Imps are deleted.",
+    "note": "Title of the dialog that asks before saying goodbye to several Imps.",
     "args": {
       "count": "int"
     },
@@ -1106,7 +1106,7 @@
   "tools.mcp_sign_in": {
     "note": "Button on an MCP server in the Tools list: opens the server's sign-in page.",
     "en": "Sign in",
-    "es": "Iniciar sesión",
+    "es": "Entrar",
     "zh-Hans": "登录"
   },
   "tools.mcp_sign_out": {
@@ -1445,7 +1445,7 @@
   "tools.kind": {
     "note": "Spoken name of the choice between a web server and a local program, in the sheet that adds a tool.",
     "en": "Kind of tool",
-    "es": "Tipo de herramienta",
+    "es": "Tipo",
     "zh-Hans": "工具类型"
   },
   "agent.button": {
@@ -1724,7 +1724,7 @@
   "tool.browser_page": {
     "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
     "en": "Browser page",
-    "es": "Página del navegador",
+    "es": "Página web",
     "zh-Hans": "浏览器页面"
   },
   "tool.list_triggers": {

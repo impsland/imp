@@ -61,14 +61,14 @@ owner has not marked "Mine" is somebody else's screen, so a shake asks before se
 
 The existing `pass` over the link (local network, or the Hop relay). The flight takes about a second and
 the other device answers within a moment on the same network. If there is no answer in the transfer
-timeout, the pass counts as declined and the Imp is called home. No new messages were added, so Macs
+timeout, the pass counts as declined and the Imp is sent home. No new messages were added, so Macs
 and iPhones on 2.0.x work with this unchanged.
 
 ## The cost of a wrong transfer
 
 Low and reversible, which is why the default is no question: the Imp becomes a visitor on the other
-device (the Imp, its chats and its keys stay home), Undo calls it back, and "Send home" or "Call home"
-still work later. It is higher when the device is somebody else's or far away, so those ask.
+device (the Imp, its chats and its keys stay home), Undo calls it back, and "Send home"
+still works later. It is higher when the device is somebody else's or far away, so those ask.
 
 ## Failure keeps the Imp intact
 
@@ -87,7 +87,7 @@ An Imp is in one place at a time, so a sheet about it can't stay open where it n
 - A decline, a timeout or a lost connection brings it back, and the chat was never closed.
 - An answer it was thinking about keeps going at its home (the iPhone) and lands in its chat. The Mac shows
   the work while it holds it. Text typed but not sent is dropped with the sheet.
-- A visitor (a Mac Imp on the iPhone) sent home, called home or thrown on takes its sheet with it, and so does
+- A visitor (a Mac Imp on the iPhone) sent home or thrown on takes its sheet with it, and so does
   an Imp said goodbye to.
 - Called back or Undo: it lands in the room again and its chat is one tap away. It does not reopen by itself.
 
@@ -107,7 +107,7 @@ by name so it is always the same. Compared with the other ideas:
 - last active (working on a task): moving an Imp away mid-task is the worst surprise.
 - nearest the shake: a shake has no place on the screen.
 - the one being looked at: nothing on the phone knows it, apart from touches, which are the same signal.
-Only Imps on the phone's own screen and free (not held, flying, away or still arriving) count. Visiting
+Only Imps on the phone's own screen that are not held, flying, away or still arriving count. Visiting
 Imps do not: they have their own "Send home". No Imp is ever sent while a game is on.
 
 (c) Direction: by default the direction means nothing, because most people have one device nearby and

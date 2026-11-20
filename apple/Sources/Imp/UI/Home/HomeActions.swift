@@ -47,7 +47,7 @@ struct HomeActions {
     }
 
     /// Opens a text box beside the Imp. One at home steps out first, as for Talk.
-    func type(_ id: UUID) {
+    func message(_ id: UUID) {
         guard let imp = model.profile(id), imp.awayOn == nil else { return askCallHome(id) }
         if !imp.isActive { model.setActive(id, true, at: slot(of: imp)?.origin) }
         model.imp(id)?.startTyping()
@@ -93,7 +93,7 @@ struct HomeActions {
     }
 
     /// Lets an Imp out right where it stands, or flies it home to the same place. Either can be undone.
-    /// One away on another device is asked back instead (Call Home).
+    /// One away on another device is asked back instead (Send home).
     func toggleActive(_ id: UUID) {
         guard let imp = model.profile(id) else { return }
         guard imp.awayOn == nil else { return askCallHome(id) }
@@ -119,7 +119,7 @@ struct HomeActions {
         offerUndo(.letOut, id) { model.setActive(id, false) }
     }
 
-    /// A free Imp was let go over the window: it goes home, to where it is drawn (`centre`, on screen),
+    /// A desktop Imp was let go over the window: it goes home, to where it is drawn (`centre`, on screen),
     /// which is under the pointer by the grab it was held with.
     func dropHome(_ id: UUID, centre: CGPoint, from origin: CGPoint) {
         guard let imp = model.profile(id) else { return }
@@ -152,9 +152,6 @@ struct HomeActions {
 
     func canShareLink(_ id: UUID) -> Bool { kit(id)?.stamped.link != nil }
 
-    /// Goodbye asks first: the window shows the question (see `HomeView`).
-    func askGoodbye(_ id: UUID) { router.saying = id }
-
     /// An Imp away on another device: the window asks whether to take it back.
     func askCallHome(_ id: UUID) {
         guard model.isAway(id) else { return }
@@ -168,17 +165,9 @@ struct HomeActions {
         model.callHome(id)
     }
 
-    /// Say goodbye for good. Another Imp takes the keyboard.
-    func sayGoodbye(_ id: UUID) {
-        router.saying = nil
-        let next = model.sayGoodbye(id)
-        router.places[id] = nil
-        router.selection = next
-    }
-
     var canSayGoodbye: Bool { !model.prefs.imps.isEmpty }
 
-    // MARK: Several Imps at once
+    // MARK: Goodbye and several Imps at once
 
     /// Hides them all. Undo brings them all back.
     func hide(_ ids: [UUID]) {
@@ -188,7 +177,7 @@ struct HomeActions {
     }
 
     /// Lets out every one still at home, each where it stands. Undo takes them all back in.
-    func free(_ ids: [UUID]) {
+    func letOut(_ ids: [UUID]) {
         let home = ids.compactMap(model.profile).filter { !$0.isActive && $0.awayOn == nil }
         guard let first = home.first else { return }
         for imp in home { model.setActive(imp.id, true, at: slot(of: imp)?.origin) }
@@ -216,15 +205,12 @@ struct HomeActions {
 
     func canSayGoodbye(to ids: [UUID]) -> Bool { ImpPicks.canSayGoodbye(to: ids.count, of: model.prefs.imps.count) }
 
-    /// Goodbye asks first, once for all of them (see `HomeView`).
-    func askGoodbye(_ ids: [UUID]) {
-        if ids.count == 1, let id = ids.first { return askGoodbye(id) }
-        router.sayingMany = ids
-    }
+    /// Goodbye asks first, once for all of them (see `goodbyeQuestion`).
+    func askGoodbye(_ ids: [UUID]) { router.saying = ids }
 
-    /// Say goodbye to all of them for good. Having no Imp is fine.
+    /// Say goodbye to them for good. Another Imp takes the keyboard. Having no Imp is fine.
     func sayGoodbye(_ ids: [UUID]) {
-        router.sayingMany = nil
+        router.saying = nil
         guard canSayGoodbye(to: ids) else { return }
         var next: UUID?
         for id in ids {
@@ -235,7 +221,7 @@ struct HomeActions {
         router.selection = next
     }
 
-    /// "Let out" while it is at home, "Send home" once it is out, "Call Home…" while it is on another device.
+    /// "Let out" while it is at home, "Send home" once it is out, and "Send home…" while it is on another device.
     func releaseTitle(_ id: UUID) -> String {
         guard let imp = model.profile(id) else { return String(localized: "menu.imp.let_out") }
         if imp.awayOn != nil { return String(localized: "menu.imp.call_home_ask") }

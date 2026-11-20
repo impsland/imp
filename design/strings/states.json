@@ -70,7 +70,7 @@
     "zh-Hans": "与 {device} 的连接断开了，会自动重新连接。"
   },
   "state.servers.set_up_hop": {
-    "note": "Button.",
+    "note": "Button in Settings.",
     "en": "Set up Hop",
     "es": "Configurar Hop",
     "zh-Hans": "设置 Hop"

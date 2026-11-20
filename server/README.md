@@ -1,6 +1,6 @@
 # Imp server
 
-One Rust workspace, one Docker image, two services. The wire contract is in [PROTOCOL.md](../spec/PROTOCOL.md).
+One Rust workspace, one Docker image, two services. The wire contract is in [PROTOCOL.md](../spec/PROTOCOL.md). The Den in more detail: [docs/sharing/den.md](../docs/sharing/den.md).
 
 - **imp-den** (`server/den`, command `den`): the Den, a standalone service. Shared items (Imps, animations, triggers, tools and kits), accounts, OAuth sign-in, the web gallery, a read-only JSON API and the MCP endpoint at `/mcp`.
 - **imp-hop** (`server/hop`, command `hop`): the blind relay that lets a device reach the device that hosts it. Listens on TCP 4677.

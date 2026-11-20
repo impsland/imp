@@ -163,9 +163,9 @@ public struct WideButtonStyle: ButtonStyle {
 }
 
 /// A button whose icon sits above its words, for a row of equal choices (a card's Done, Again and
-/// How to play). It takes a `Label`; `.primary` is filled with the tint (the one main action),
+/// How to play). It takes a `Label`. `.primary` is filled with the tint (the one main action),
 /// `.secondary` is a soft pebble, like `WideButtonStyle`. The words wrap onto more lines, centred, rather
-/// than being cut or shrunk, so nothing truncates in a longer language; the button grows with Dynamic
+/// than being cut or shrunk, so nothing truncates in a longer language. The button grows with Dynamic
 /// Type, and in a row (`fixedSize(horizontal: false, vertical: true)`) the buttons share one height.
 public struct StackedButtonStyle: ButtonStyle {
     public var primary: Bool
@@ -202,7 +202,7 @@ public struct StackedButtonStyle: ButtonStyle {
     }
 }
 
-/// The icon over its title, both centred; the title wraps onto as many lines as it needs, never shrunk or cut.
+/// The icon over its title, both centred. The title wraps onto as many lines as it needs, never shrunk or cut.
 private struct StackedLabelStyle: LabelStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(spacing: Spacing.snug) {

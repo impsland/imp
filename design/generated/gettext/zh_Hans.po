@@ -30,12 +30,12 @@ msgctxt "agent.title"
 msgid "What {name} may do"
 msgstr "{name} 可以做的事"
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "agentfile.open"
 msgid "Open the Imp's file"
 msgstr "打开 Imp 的文件"
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "agentfile.reveal"
 msgid "Show the Imp's file in Finder"
 msgstr "在访达中显示 Imp 的文件"
@@ -90,7 +90,7 @@ msgctxt "animations.empty"
 msgid "No animations yet."
 msgstr "还没有动画。"
 
-#. Button.
+#. Button in the Animations group of Settings.
 msgctxt "animations.find"
 msgid "Browse"
 msgstr "浏览"
@@ -115,17 +115,17 @@ msgctxt "animations.search"
 msgid "Search"
 msgstr "搜索"
 
-#. Row.
+#. Row in the App group of Settings.
 msgctxt "app.language"
 msgid "Language"
 msgstr "界面语言"
 
-#. Switch (desktop).
+#. Switch in the App group of Settings, for the desktop app only.
 msgctxt "app.login"
 msgid "Autostart"
 msgstr "自动启动"
 
-#. Note under the switch.
+#. Note under a switch in the App group of Settings.
 msgctxt "app.login_note"
 msgid "Open Imp when you sign in."
 msgstr "登录时自动打开 Imp。"
@@ -135,7 +135,7 @@ msgctxt "app.look"
 msgid "Look"
 msgstr "外观"
 
-#. Button.
+#. Button in the App group of Settings.
 msgctxt "app.reset"
 msgid "Reset"
 msgstr "重置"
@@ -145,7 +145,7 @@ msgctxt "app.system"
 msgid "System"
 msgstr "系统"
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "app.title"
 msgid "App"
 msgstr "App"
@@ -295,7 +295,7 @@ msgctxt "brain.zzz"
 msgid "Zzz, {name} is asleep"
 msgstr "Zzz，{name} 睡着了"
 
-#. Button.
+#. Button in the Brains group of Settings.
 msgctxt "brains.add"
 msgid "Add"
 msgstr "添加"
@@ -504,8 +504,8 @@ msgstr "对话和文件"
 
 #. Button: call every Imp a device holds home.
 msgctxt "devices.call_all_home"
-msgid "Call all home"
-msgstr "全部叫回家"
+msgid "Send all home"
+msgstr "全部送回家"
 
 #. Title of a line between two devices.
 msgctxt "devices.channel.title"
@@ -552,7 +552,7 @@ msgctxt "devices.forget.one"
 msgid "Forget this device…"
 msgstr "忘记此设备…"
 
-#. The Hop pill under the code in the Link sheet when no Hop is set; opens its settings.
+#. The Hop pill under the code in the Link sheet when no Hop is set. It opens its settings.
 msgctxt "devices.hop.add"
 msgid "Add a Hop"
 msgstr "添加 Hop"
@@ -1340,7 +1340,7 @@ msgctxt "goodbye.many.message"
 msgid "Their looks, Brain settings, tools, triggers and chats go with them. This can't be undone."
 msgstr "它们的外观、大脑设置、工具、触发器和聊天都会一起消失。此操作无法撤销。"
 
-#. Title of the dialog that asks before several Imps are deleted.
+#. Title of the dialog that asks before saying goodbye to several Imps.
 msgctxt "goodbye.many.title"
 msgid "Say goodbye to {count} Imps?"
 msgstr "要向 {count} 个 Imp 说再见吗？"
@@ -1350,7 +1350,7 @@ msgctxt "goodbye.message"
 msgid "Its look, Brain settings, tools, triggers and chats go with it. This can't be undone."
 msgstr "它的外观、大脑设置、工具、触发器和聊天都会一起消失。此操作无法撤销。"
 
-#. Title of the dialog that asks before an Imp is deleted.
+#. Title of the dialog that asks before saying goodbye to an Imp.
 msgctxt "goodbye.title"
 msgid "Say goodbye to {name}?"
 msgstr "要向 {name} 说再见吗？"
@@ -1448,8 +1448,8 @@ msgstr "打开"
 
 #. Screen reader action for an Imp away on another device.
 msgctxt "imp.a11y.call_home"
-msgid "Call {name} home"
-msgstr "叫 {name} 回家"
+msgid "Send {name} home"
+msgstr "把 {name} 送回家"
 
 #. Screen reader action.
 msgctxt "imp.a11y.hide"
@@ -1493,8 +1493,8 @@ msgstr "另一台设备上"
 
 #. Asks before taking back an Imp from the device that holds it.
 msgctxt "imp.call_home.title"
-msgid "Bring {name} back from {device}?"
-msgstr "把 {name} 从 {device} 叫回来？"
+msgid "Send {name} home from {device}?"
+msgstr "把 {name} 从 {device} 送回家？"
 
 #. Screen reader hint on an Imp.
 msgctxt "imp.drag.hint"
@@ -1676,17 +1676,17 @@ msgctxt "kit.help.tools"
 msgid "Tools can run things on your Mac. Read them first."
 msgstr "工具可以在你的 Mac 上运行东西。请先看一看。"
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "library.help"
 msgid "Kept in ~/.agents, for every Imp and the terminal app. Read only here."
 msgstr "保存在 ~/.agents，所有 Imp 和终端应用共用。这里只读。"
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "library.reveal"
 msgid "Show in Finder"
 msgstr "在访达中显示"
 
-#. Settings text.
+#. Title of a setting in Settings.
 msgctxt "library.title"
 msgid "Skills and commands"
 msgstr "技能和命令"
@@ -2021,12 +2021,7 @@ msgctxt "menu.canvas.show_hidden"
 msgid "Hidden ({count})"
 msgstr "已隐藏（{count}）"
 
-#. Tooltip of Free in the menu of several Imps.
-msgctxt "menu.group.free_help"
-msgid "They step out onto the desktop, right where they stand."
-msgstr "它们走到桌面上，就在各自站着的地方。"
-
-#. Menu item that deletes several picked Imps. It asks first.
+#. Menu item that says goodbye to several picked Imps. It asks first.
 msgctxt "menu.group.goodbye"
 msgid "Goodbye to {count} Imps…"
 msgstr "向 {count} 个 Imp 告别…"
@@ -2041,20 +2036,20 @@ msgctxt "menu.group.kit_help"
 msgid "Copies one kit with all of them, to share or keep."
 msgstr "把它们全部复制为一个套件，用于分享或保存。"
 
+#. Tooltip of Let out in the menu of several Imps.
+msgctxt "menu.group.let_out_help"
+msgid "They step out onto the desktop, right where they stand."
+msgstr "它们走到桌面上，就在各自站着的地方。"
+
 #. Title of the menu of several Imps picked together.
 msgctxt "menu.group.title"
 msgid "{count} Imps"
 msgstr "{count} 个 Imp"
 
-#. Button: take back one of our Imps from the device that holds it.
-msgctxt "menu.imp.call_home"
-msgid "Call Home"
-msgstr "叫回家"
-
 #. Menu item for an Imp away on another device: asks before calling it home.
 msgctxt "menu.imp.call_home_ask"
-msgid "Call Home…"
-msgstr "叫回家…"
+msgid "Send home…"
+msgstr "送回家…"
 
 #. Button in an Imp's menu that opens its chat. Keep it short: it sits under an icon.
 msgctxt "menu.imp.chat"
@@ -2076,16 +2071,6 @@ msgctxt "menu.imp.copy_link"
 msgid "Copy link"
 msgstr "复制链接"
 
-#. Button in the menu of an Imp in the app's window that lets it out onto the desktop. Keep it short: it sits under an icon.
-msgctxt "menu.imp.free"
-msgid "Free"
-msgstr "放出"
-
-#. Tooltip of the Free button in the menu of an Imp in the app's window.
-msgctxt "menu.imp.free_help"
-msgid "{name} steps out onto the desktop, right where it stands."
-msgstr "{name} 走到桌面上，就在它站着的地方。"
-
 #. Menu item that says goodbye to an Imp for good. A dialog asks first.
 msgctxt "menu.imp.goodbye"
 msgid "Goodbye"
@@ -2101,20 +2086,25 @@ msgctxt "menu.imp.hide_help"
 msgid "{name} hides until you show it again. Its triggers rest meanwhile."
 msgstr "{name} 会藏起来，直到你再次显示它。在此期间它的触发器暂停。"
 
-#. Button in a desktop Imp's menu that sends it back into the app's window. Keep it short: it sits under an icon.
-msgctxt "menu.imp.home"
-msgid "Home"
-msgstr "回家"
-
-#. Tooltip of the Home button in a desktop Imp's menu.
-msgctxt "menu.imp.home_help"
-msgid "{name} goes back into the Imps' window, and its triggers rest."
-msgstr "{name} 回到 Imp 窗口，它的触发器暂停。"
-
-#. Menu item (desktop only) that lets an Imp out onto the desktop.
+#. Button in an Imp's menu, on the desktop or in the app's window, that lets it out onto the desktop. Keep it short: it sits under an icon.
 msgctxt "menu.imp.let_out"
 msgid "Let out"
 msgstr "放出来"
+
+#. Tooltip of the Let out button in an Imp's menu in the app's window.
+msgctxt "menu.imp.let_out_help"
+msgid "{name} steps out onto the desktop, right where it stands."
+msgstr "{name} 走到桌面上，就在它站着的地方。"
+
+#. Button in an Imp's menu that opens the box to write it a message. Keep it short: it sits under an icon.
+msgctxt "menu.imp.message"
+msgid "Message"
+msgstr "消息"
+
+#. Tooltip of the Message button in an Imp's menu.
+msgctxt "menu.imp.message_help"
+msgid "Message to {name}"
+msgstr "给 {name} 发消息"
 
 #. Tip on the Imp menu item that moves it to a Mac for good.
 msgctxt "menu.imp.move_tip"
@@ -2126,10 +2116,15 @@ msgctxt "menu.imp.move_to"
 msgid "Move to {name}"
 msgstr "搬到 {name}"
 
-#. Menu item (desktop only) that puts a free Imp back in the window.
+#. Button in an Imp's menu that sends it home: back into the app's window from the desktop, or back to its home device for a visitor. Keep it short: it sits under an icon.
 msgctxt "menu.imp.send_home"
 msgid "Send home"
 msgstr "送回家"
+
+#. Tooltip of the Send home button in a desktop Imp's menu.
+msgctxt "menu.imp.send_home_help"
+msgid "{name} goes back into the Imps' window, and its triggers rest."
+msgstr "{name} 回到 Imp 窗口，它的触发器暂停。"
 
 #. Imp menu item that sends the Imp to visit a device. It comes back.
 msgctxt "menu.imp.send_to"
@@ -2165,16 +2160,6 @@ msgstr "和 {name} 说话"
 msgctxt "menu.imp.talks"
 msgid "Talks"
 msgstr "对话"
-
-#. Button in an Imp's menu that opens the typing box.
-msgctxt "menu.imp.type"
-msgid "Type"
-msgstr "输入"
-
-#. Tooltip of the Type button in an Imp's menu.
-msgctxt "menu.imp.type_help"
-msgid "Type to {name}"
-msgstr "给 {name} 打字"
 
 #. Small heading in an Imp's menu over the linked devices it can visit.
 msgctxt "menu.imp.visit"
@@ -2338,13 +2323,13 @@ msgstr "设置"
 
 #. Button: bring an Imp back.
 msgctxt "phone.callhome"
-msgid "Call home"
-msgstr "叫回家"
+msgid "Send home"
+msgstr "送回家"
 
 #. Spoken name of the call home button.
 msgctxt "phone.callhome.label"
-msgid "Call {name} home"
-msgstr "把 {name} 叫回家"
+msgid "Send {name} home"
+msgstr "把 {name} 送回家"
 
 #. iPhone: chat answering.
 msgctxt "phone.chat.answering"
@@ -2756,16 +2741,6 @@ msgctxt "phone.stage.back_to"
 msgid "Back to {name}"
 msgstr "回到 {name}"
 
-#. iPhone: stage delete body.
-msgctxt "phone.stage.delete.body"
-msgid "Its chats and keys are forgotten. This can't be undone."
-msgstr "它的聊天和密钥都会被清除，此操作无法撤销。"
-
-#. iPhone: stage delete title.
-msgctxt "phone.stage.delete.title"
-msgid "Delete {name}?"
-msgstr "删除 {name}？"
-
 #. iPhone: stage move body.
 msgctxt "phone.stage.move.body"
 msgid "{imp} moves in on {mac} for good, and its key goes with it. {mac} asks you to look it over first."
@@ -2886,17 +2861,17 @@ msgctxt "phone.with"
 msgid "With {name}"
 msgstr "在 {name} 那里"
 
-#. Switch.
+#. Switch in the Permissions group of Settings.
 msgctxt "privacy.computer"
 msgid "Control"
 msgstr "控制"
 
-#. Note under the switch.
+#. Note under a switch in the Permissions group of Settings.
 msgctxt "privacy.computer_note"
 msgid "Lets an Imp run commands on this computer when you ask."
 msgstr "你提出要求时，允许 Imp 在这台电脑上运行命令。"
 
-#. Row.
+#. Row in the Permissions group of Settings.
 msgctxt "privacy.microphone"
 msgid "Microphone"
 msgstr "麦克风权限"
@@ -2906,17 +2881,17 @@ msgctxt "privacy.microphone_note"
 msgid "Used only when you talk to an Imp by voice."
 msgstr "只在你用语音和 Imp 交谈时使用。"
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "privacy.title"
 msgid "Permissions"
 msgstr "隐私权限"
 
-#. Switch.
+#. Switch in the Permissions group of Settings.
 msgctxt "privacy.trust"
 msgid "Trust devices"
 msgstr "信任这些设备"
 
-#. Note under the switch.
+#. Note under a switch in the Permissions group of Settings.
 msgctxt "privacy.trust_note"
 msgid "Only for your own devices. Their Imps may use tools on this one."
 msgstr "仅限你自己的设备。它们的 Imp 可以使用这台设备上的工具。"
@@ -2951,7 +2926,7 @@ msgctxt "servers.hop.off_note"
 msgid "Only devices on the same network find each other."
 msgstr "只有同一网络中的设备能互相找到。"
 
-#. Section title.
+#. Title of a section in the Servers group of Settings.
 msgctxt "servers.hop.title"
 msgid "Hop"
 msgstr "Hop"
@@ -3006,7 +2981,7 @@ msgctxt "servers.state_unchecked"
 msgid "Not checked yet"
 msgstr "还没有检查过"
 
-#. Settings text.
+#. Title of a setting in the App pane of Settings.
 msgctxt "settings.app.appearance.title"
 msgid "Appearance"
 msgstr "外观样式"
@@ -3031,12 +3006,12 @@ msgctxt "settings.app.control_ink.white"
 msgid "White"
 msgstr "白色"
 
-#. Settings text.
+#. Explains a setting in the App pane of Settings.
 msgctxt "settings.app.look.info"
 msgid "How the app looks."
 msgstr "应用看起来的样子。"
 
-#. Settings text.
+#. Explains a setting in the App pane of Settings.
 msgctxt "settings.app.system.info"
 msgid "How the app starts and which language it speaks."
 msgstr "应用如何启动，以及使用哪种语言。"
@@ -3051,247 +3026,247 @@ msgctxt "settings.attention.imp_no_brain"
 msgid "{name} has no Brain."
 msgstr "{name} 还没有大脑。"
 
-#. Settings text.
+#. Title of a setting in the Backup pane of Settings.
 msgctxt "settings.backup.export.title"
 msgid "Export"
 msgstr "导出"
 
-#. Settings text.
+#. Label of a control in the Backup pane of Settings.
 msgctxt "settings.backup.folder.reveal"
 msgid "Show in Finder"
 msgstr "在访达中显示"
 
-#. Settings text.
+#. Title of a setting in the Backup pane of Settings.
 msgctxt "settings.backup.folder.title"
 msgid "Configuration"
 msgstr "配置"
 
-#. Settings text.
+#. Title of a setting in the Backup pane of Settings.
 msgctxt "settings.backup.import.title"
 msgid "Import"
 msgstr "导入"
 
-#. Settings text.
+#. Explains a setting in the Backup pane of Settings.
 msgctxt "settings.backup.keep.info"
 msgid "Save your Imps and settings in a file, or load them back."
 msgstr "把 Imp 和设置存进文件，或再次载入。"
 
-#. Settings text.
+#. Title of a setting in the Backup pane of Settings.
 msgctxt "settings.backup.keep.title"
 msgid "Backups"
 msgstr "备份"
 
-#. Settings text.
+#. Label of a control in the Backup pane of Settings.
 msgctxt "settings.backup.reset.app"
 msgid "Erase and Restart"
 msgstr "清除并重新启动"
 
-#. Settings text.
+#. Label of a control in the Backup pane of Settings.
 msgctxt "settings.backup.reset.confirm"
 msgid "Erase everything and start over?"
 msgstr "清除一切并重新开始？"
 
-#. Settings text.
+#. Explains a setting in the Backup pane of Settings.
 msgctxt "settings.backup.reset.info"
 msgid "Erase everything and begin again. This cannot be undone."
 msgstr "清除一切并重新开始，此操作无法撤销。"
 
-#. Settings text.
+#. Label of a control in the Backup pane of Settings.
 msgctxt "settings.backup.reset.message"
 msgid "Chats, memories and the app's own settings are deleted. Imps, services and keys are kept unless you also remove the shared configuration, which the terminal app uses too. This can't be undone."
 msgstr "聊天、记忆和应用自己的设置会被删除。Imp、服务和密钥会保留，除非你同时移除共享配置（终端应用也在使用它）。此操作无法撤销。"
 
-#. Settings text.
+#. Label of a control in the Backup pane of Settings.
 msgctxt "settings.backup.reset.shared"
 msgid "Erase and Also Remove the Shared Configuration"
 msgstr "清除并同时移除共享配置"
 
-#. Settings text.
+#. Title of a setting in the Backup pane of Settings.
 msgctxt "settings.backup.reset.title"
 msgid "Reset"
 msgstr "重置"
 
-#. Settings text.
+#. Explains a setting in the Brains pane of Settings.
 msgctxt "settings.brains.first_wait.info"
 msgid "How long to wait before asking again."
 msgstr "再次提问之前要等多长时间。"
 
-#. Settings text.
+#. Title of a setting in the Brains pane of Settings.
 msgctxt "settings.brains.first_wait.title"
 msgid "First pause"
 msgstr "首次间隔"
 
-#. Settings text.
+#. Explains a setting in the Brains pane of Settings.
 msgctxt "settings.brains.longer.info"
 msgid "How much longer each pause gets."
 msgstr "每次间隔会变长多少。"
 
-#. Settings text.
+#. Title of a setting in the Brains pane of Settings.
 msgctxt "settings.brains.longer.title"
 msgid "Growth"
 msgstr "递增"
 
-#. Settings text.
+#. Explains a setting in the Brains pane of Settings.
 msgctxt "settings.brains.requests.info"
 msgid "How patient an Imp is when a brain is slow."
 msgstr "大脑很慢时，Imp 有多大耐心。"
 
-#. Settings text.
+#. Title of a setting in the Brains pane of Settings.
 msgctxt "settings.brains.requests.title"
 msgid "Asking"
 msgstr "提问"
 
-#. Settings text.
+#. Explains a setting in the Brains pane of Settings.
 msgctxt "settings.brains.retries.info"
 msgid "How many times to ask again if it fails."
 msgstr "失败后再问几次。"
 
-#. Settings text.
+#. Title of a setting in the Brains pane of Settings.
 msgctxt "settings.brains.retries.title"
 msgid "Tries"
 msgstr "重试"
 
-#. Settings text.
+#. Explains a setting in the Brains pane of Settings.
 msgctxt "settings.brains.services.info"
 msgid "The brains your Imps think with."
 msgstr "你的 Imp 用来思考的大脑。"
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Brains pane of Settings.
 msgctxt "settings.brains.wait.info"
 msgid "How long to wait for an answer before giving up."
 msgstr "放弃之前，最多等待回答多久。"
 
-#. Settings text.
+#. Title of a setting in the Brains pane of Settings.
 msgctxt "settings.brains.wait.title"
 msgid "Wait"
 msgstr "等待"
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.amount.info"
 msgid "How much of the desktop shows through the bubble."
 msgstr "透过气泡能看到多少桌面。"
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.amount.title"
 msgid "Amount"
 msgstr "程度"
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.audio.info"
 msgid "What shows while a voice or sound plays."
 msgstr "播放声音时气泡里显示什么。"
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.audio.title"
 msgid "While playing"
 msgstr "播放声音时"
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.autoplay.info"
 msgid "Plays a picture, video or sound in a reply as soon as it arrives."
 msgstr "回复中的图片、视频或声音一到就自动播放。"
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.autoplay.title"
 msgid "Autoplay"
 msgstr "自动播放"
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.background.info"
 msgid "Whether the bubble is solid or lets what is behind it show through."
 msgstr "气泡是不透明的，还是能透出后面的内容。"
 
-#. Settings text.
+#. Label of a control in the Bubble pane of Settings.
 msgctxt "settings.bubble.background.solid"
 msgid "Solid"
 msgstr "纯色"
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.background.title"
 msgid "Background"
 msgstr "气泡背景"
 
-#. Settings text.
+#. Label of a control in the Bubble pane of Settings.
 msgctxt "settings.bubble.background.translucent"
 msgid "Translucent"
 msgstr "半透明的"
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.hide.info"
 msgid "How long a bubble stays after the Imp stops talking."
 msgstr "Imp 说完话后，气泡会停留多久。"
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.hide.title"
 msgid "Hide after"
 msgstr "隐藏时间"
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.lines.info"
 msgid "How many lines the text box grows to before it scrolls."
 msgstr "输入框增长到多少行后开始滚动。"
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.lines.title"
 msgid "Lines"
 msgstr "行数"
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.look.title"
 msgid "Look"
 msgstr "外观"
 
-#. Settings text.
+#. Explains a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.media.info"
 msgid "What the bubble does with sound and video."
 msgstr "气泡如何处理声音和视频。"
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.media.title"
 msgid "Media"
 msgstr "媒体"
 
-#. Settings text.
+#. Label of a control in the Bubble pane of Settings.
 msgctxt "settings.bubble.preview.label"
 msgid "Preview of the bubble on a light, a dark and a busy background"
 msgstr "气泡在浅色、深色和复杂背景上的预览"
 
-#. Settings text.
+#. Explains a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.showing.info"
 msgid "How the bubble shows answers."
 msgstr "气泡显示回答的方式。"
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.showing.title"
 msgid "Showing"
 msgstr "显示"
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.size.info"
 msgid "The size of the chat bubble. Drag its corner to change it."
 msgstr "聊天气泡的大小。拖动它的角即可调整。"
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.size.title"
 msgid "Size"
 msgstr "大小"
 
 #. Help of the button on a linked device that takes back the Imps it holds.
 msgctxt "settings.devices.call_home"
-msgid "Call its Imps home"
-msgstr "把它上面的 Imp 叫回家"
+msgid "Send its Imps home"
+msgstr "把它上面的 Imp 送回家"
 
-#. Settings text.
+#. Title of a setting in the Devices pane of Settings.
 msgctxt "settings.devices.forget_all.title"
 msgid "Forget all"
 msgstr "全部忘记"
 
-#. Settings text.
+#. Explains a setting in the Devices pane of Settings.
 msgctxt "settings.devices.link.info"
 msgid "Link another device so your Imps can visit it."
 msgstr "连接另一台设备，让你的 Imp 去做客。"
 
-#. Settings text.
+#. Title of a setting in the Devices pane of Settings.
 msgctxt "settings.devices.link.title"
 msgid "Link"
 msgstr "关联"
@@ -3301,37 +3276,37 @@ msgctxt "settings.devices.mine.info"
 msgid "Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools."
 msgstr "如果这台设备是你自己的，就打开它。这样它上面的 Imp 可以给这里的 Imp 发消息，Imp 回答它时会使用工具，它能打开任何 Imp 的文件，把 Imp 扔给它时也不会先询问。两台设备都打开，Imp 才能互相对话。朋友的设备请保持关闭：Imp 仍会回答它，但不使用工具。"
 
-#. Settings text.
+#. Title of a setting in the Devices pane of Settings.
 msgctxt "settings.devices.pair.title"
 msgid "Link"
 msgstr "关联"
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "settings.group.app"
 msgid "App"
 msgstr "App"
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "settings.group.backup"
 msgid "Backup"
 msgstr "备份"
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "settings.group.brains"
 msgid "Brains"
 msgstr "大脑"
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "settings.group.bubble"
 msgid "Bubble"
 msgstr "气泡"
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "settings.group.privacy"
 msgid "Permissions"
 msgstr "隐私权限"
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "settings.group.servers"
 msgid "Servers"
 msgstr "服务器"
@@ -3341,7 +3316,7 @@ msgctxt "settings.group.sharing"
 msgid "Sharing"
 msgstr "共享"
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "settings.group.talking"
 msgid "Talking"
 msgstr "对话"
@@ -3376,12 +3351,12 @@ msgctxt "settings.map.seen"
 msgid "Can see each other"
 msgstr "彼此可以看到"
 
-#. State of a node.
+#. State of a node on the Settings map.
 msgctxt "settings.map.state_needs_setup"
 msgid "Needs setup"
 msgstr "需要设置"
 
-#. State of a node.
+#. State of a node on the Settings map.
 msgctxt "settings.map.state_off"
 msgid "Off"
 msgstr "已关闭"
@@ -3391,7 +3366,7 @@ msgctxt "settings.map.state_offline"
 msgid "Offline"
 msgstr "离线"
 
-#. State of a node.
+#. State of a node on the Settings map.
 msgctxt "settings.map.state_ready"
 msgid "Ready"
 msgstr "就绪"
@@ -3416,82 +3391,82 @@ msgctxt "settings.map.via"
 msgid "Through {server}"
 msgstr "经由 {server}"
 
-#. Settings text.
+#. Explains a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.accessibility.info"
 msgid "So Imp can press keys and click for you."
 msgstr "让 Imp 能替你按键和点击。"
 
-#. Settings text.
+#. Title of a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.accessibility.title"
 msgid "Control"
 msgstr "控制"
 
-#. Settings text.
+#. Title of a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.computer.title"
 msgid "This computer"
 msgstr "这台 Mac 上"
 
-#. Settings text.
+#. Explains a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.core.info"
 msgid "What your Mac lets Imp do."
 msgstr "你的 Mac 允许 Imp 做的事。"
 
-#. Settings text.
+#. Title of a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.core.title"
 msgid "Allowed"
 msgstr "已允许"
 
-#. Settings text.
+#. Title of a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.microphone.title"
 msgid "Microphone"
 msgstr "麦克风权限"
 
-#. Settings text.
+#. Title of a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.screen.title"
 msgid "Screen"
 msgstr "屏幕"
 
-#. Settings text.
+#. Title of a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.speech.title"
 msgid "Speech"
 msgstr "语音"
 
-#. Settings text.
+#. Explains a setting in the Brain sheet.
 msgctxt "settings.service.address.info"
 msgid "The web address of the brain."
 msgstr "这个大脑的网络地址。"
 
-#. Settings text.
+#. Explains a setting in the Brain sheet.
 msgctxt "settings.service.cloud.info"
 msgid "A brain on the internet. It may ask for a key."
 msgstr "互联网上的大脑。可能需要密钥。"
 
-#. Settings text.
+#. Explains a setting in the Brain sheet.
 msgctxt "settings.service.key.info"
 msgid "A secret password the brain asks for."
 msgstr "这个大脑要求提供的密钥口令。"
 
-#. Settings text.
+#. Explains a setting in the Brain sheet.
 msgctxt "settings.service.local.info"
 msgid "A brain that runs on this computer."
 msgstr "一个在这台电脑上运行的大脑。"
 
-#. Settings text.
+#. Explains a setting in the Brain sheet.
 msgctxt "settings.service.model.info"
 msgid "Which model to ask."
 msgstr "向哪个模型提问。"
 
-#. Settings text.
+#. Explains a setting in the Brain sheet.
 msgctxt "settings.service.name.info"
 msgid "A name you pick for this brain."
 msgstr "你给这个大脑取的名字。"
 
-#. Settings text.
+#. Explains a setting in the Talking pane of Settings.
 msgctxt "settings.talking.between.info"
 msgid "How Imps talk to each other."
 msgstr "Imp 彼此之间如何交谈。"
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.between.title"
 msgid "Between Imps"
 msgstr "Imp 彼此之间"
@@ -3501,12 +3476,12 @@ msgctxt "settings.talking.language.auto"
 msgid "Automatic"
 msgstr "自动"
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Talking pane of Settings.
 msgctxt "settings.talking.language.info"
 msgid "The language you speak to it. Automatic listens for a few at once and keeps the one you spoke."
 msgstr "你对它说话用的语言。选“自动”时，它会同时聆听几种语言，并采用你说的那一种。"
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.language.title"
 msgid "Language"
 msgstr "使用语言"
@@ -3516,7 +3491,7 @@ msgctxt "settings.talking.languages.device"
 msgid "My Mac's languages"
 msgstr "我的 Mac 的语言"
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Talking pane of Settings.
 msgctxt "settings.talking.languages.info"
 msgid "Up to three languages. It listens in all of them at once, on this Mac, and keeps the one you spoke. The one you spoke last time wins a close call."
 msgstr "最多三种语言。它会在这台 Mac 上同时聆听这些语言，并采用你说的那一种。难以分辨时，以你上次说的语言为准。"
@@ -3531,32 +3506,32 @@ msgctxt "settings.talking.languages.title"
 msgid "Listens for"
 msgstr "聆听语言"
 
-#. Settings text.
+#. Explains a setting in the Talking pane of Settings.
 msgctxt "settings.talking.listening.info"
 msgid "How Imps hear you."
 msgstr "Imp 如何听你说话。"
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.listening.title"
 msgid "Listening"
 msgstr "聆听方式"
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Talking pane of Settings.
 msgctxt "settings.talking.talk_in.info"
 msgid "Which chat a message from one Imp to another lands in."
 msgstr "一个 Imp 发给另一个 Imp 的消息落在哪个聊天里。"
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.talk_in.title"
 msgid "Talk in"
 msgstr "交谈方式"
 
-#. Settings text.
+#. Explains a setting in the Talking pane of Settings.
 msgctxt "settings.talking.threads.info"
 msgid "Whether Imps keep chatting in the same chat or start a new one."
 msgstr "Imp 是继续同一个聊天，还是开新聊天。"
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.threads.title"
 msgid "Chats"
 msgstr "聊天"
@@ -3571,12 +3546,12 @@ msgctxt "settings.talking.waiting.dont_wait"
 msgid "Don't wait"
 msgstr "不等待"
 
-#. Settings text.
+#. Explains a setting in the Talking pane of Settings.
 msgctxt "settings.talking.waiting.info"
 msgid "Whether an Imp waits for the answer of the Imp it messages, or goes on and hears it later as a new turn."
 msgstr "Imp 给另一个 Imp 发消息后，是等对方回答，还是继续做事、之后再以新一轮收到回答。"
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.waiting.title"
 msgid "Waiting"
 msgstr "等待"
@@ -3586,12 +3561,12 @@ msgctxt "settings.talking.waiting.wait"
 msgid "Wait"
 msgstr "等待"
 
-#. Settings text.
+#. Explains a setting in the Talking pane of Settings.
 msgctxt "settings.talking.window.info"
 msgid "How many minutes a chat stays the same chat."
 msgstr "同一个聊天能保持的时长，以分钟计。"
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.window.title"
 msgid "Same chat for"
 msgstr "同一聊天时长"
@@ -3601,27 +3576,27 @@ msgctxt "settings.title"
 msgid "Settings"
 msgstr "应用设置"
 
-#. Settings text.
+#. Explains a setting in the tool sheet.
 msgctxt "settings.tool.address.info"
 msgid "The web address of the tool."
 msgstr "这个工具的网络地址。"
 
-#. Settings text.
+#. Explains a setting in the tool sheet.
 msgctxt "settings.tool.command.info"
 msgid "The command that starts the tool."
 msgstr "用来启动这个工具的命令。"
 
-#. Settings text.
+#. Explains a setting in the tool sheet.
 msgctxt "settings.tool.headers.info"
 msgid "Extra lines sent with each request, like a password."
 msgstr "随每个请求发送的额外内容，比如口令。"
 
-#. Settings text.
+#. Explains a setting in the tool sheet.
 msgctxt "settings.tool.name.info"
 msgid "A name you pick for this tool."
 msgstr "你给这个工具取的名字。"
 
-#. Settings text.
+#. Explains a setting in the tool sheet.
 msgctxt "settings.tool.variables.info"
 msgid "Secret values the tool needs to run."
 msgstr "这个工具运行时需要的秘密值。"
@@ -3691,7 +3666,7 @@ msgctxt "state.offline.title"
 msgid "You are offline"
 msgstr "你现在已离线"
 
-#. Button.
+#. Button in Settings.
 msgctxt "state.servers.set_up_hop"
 msgid "Set up Hop"
 msgstr "设置 Hop"
@@ -4621,22 +4596,22 @@ msgctxt "voice.autoplay"
 msgid "Autoplay"
 msgstr "自动播放"
 
-#. Note under the switch.
+#. Note under a switch in the Voice group of Settings.
 msgctxt "voice.autoplay_note"
 msgid "A voice an Imp marks to play starts by itself in a new reply. Otherwise you tap it."
 msgstr "Imp 标记为自动播放的语音会在新回复中自动开始。关闭后需要你点一下。"
 
-#. Switch.
+#. Switch in the Voice group of Settings.
 msgctxt "voice.listen"
 msgid "Listen"
 msgstr "聆听"
 
-#. Switch.
+#. Switch in the Voice group of Settings.
 msgctxt "voice.speak"
 msgid "Speak"
 msgstr "朗读"
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "voice.title"
 msgid "Voice"
 msgstr "语音"

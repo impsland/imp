@@ -153,7 +153,7 @@ async fn the_tool_is_described_called_and_can_be_switched_off() {
 }
 
 /// Two Imps set up only by the folder's `.agents`: agent files `imp.md` and `pip.md`, and a service and its
-/// key variable in `.agents/imp.json`. Until the folder is trusted the service is not used; once it is,
+/// key variable in `.agents/imp.json`. Until the folder is trusted the service is not used. Once it is,
 /// `imp` messages `pip` at pip's address with pip's model and the key from the environment.
 #[tokio::test]
 async fn imps_from_the_folders_files_message_each_other_once_trusted() {

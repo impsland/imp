@@ -45,7 +45,7 @@ struct ChannelPage: View {
 }
 
 /// The Imps going across a line: this Mac's whose bodies are on the far device (arrow out) and the device's own
-/// Imps here (arrow back). Each opens its sheet; one way home for all of ours sits in the card's corner.
+/// Imps here (arrow back). Each opens its sheet. One way home for all of ours sits in the card's corner.
 struct Travelling: View {
     let ctx: DeviceContext
     let channel: DeviceMap.Channel

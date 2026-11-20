@@ -171,9 +171,9 @@
     "args": {
       "name": "string"
     },
-    "en": "Call {name} home",
-    "es": "Traer a {name}",
-    "zh-Hans": "叫 {name} 回家"
+    "en": "Send {name} home",
+    "es": "Enviar a {name} a casa",
+    "zh-Hans": "把 {name} 送回家"
   },
   "imp.call_home.title": {
     "note": "Asks before taking back an Imp from the device that holds it.",
@@ -181,9 +181,9 @@
       "name": "string",
       "device": "string"
     },
-    "en": "Bring {name} back from {device}?",
-    "es": "¿Traer a {name} de {device}?",
-    "zh-Hans": "把 {name} 从 {device} 叫回来？"
+    "en": "Send {name} home from {device}?",
+    "es": "¿Enviar a {name} a casa desde {device}?",
+    "zh-Hans": "把 {name} 从 {device} 送回家？"
   },
   "imp.call_home.message": {
     "note": "Under the call home question.",

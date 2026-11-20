@@ -36,8 +36,8 @@ fn io(path: &Path) -> impl FnOnce(std::io::Error) -> ConfigError + '_ {
     }
 }
 
-/// `imp.json` as written: the known keys in the order of the format, then any the core does not know, sorted;
-/// every object below them sorted by key, two spaces, and a newline at the end.
+/// `imp.json` as written: the known keys in the order of the format, then any the core does not know, sorted.
+/// Every object below them is sorted by key, with two spaces and a newline at the end.
 pub fn to_json(config: &ImpConfig) -> String {
     json_text(config, &TOP_KEYS)
 }
@@ -60,7 +60,7 @@ fn json_text<T: Serialize>(value: &T, first: &[&str]) -> String {
     let Ok(Value::Object(map)) = serde_json::to_value(value) else {
         return "{}\n".into();
     };
-    // Objects below the first level are sorted by `serde_json` itself; the first level is written by
+    // Objects below the first level are sorted by `serde_json` itself. The first level is written by
     // hand, since `first` is not alphabetical.
     let mut entries: Vec<(String, Value)> = map.into_iter().collect();
     let rank = |k: &str| first.iter().position(|f| *f == k).unwrap_or(first.len());
@@ -122,7 +122,7 @@ pub fn write_atomic(path: &Path, bytes: &[u8], private: bool) -> Result<(), Conf
     Ok(())
 }
 
-/// The lock; it is let go when this is dropped.
+/// The lock. It is released when this is dropped.
 struct Lock(File);
 
 impl Drop for Lock {

@@ -233,7 +233,7 @@ pub fn tool_text_problems(text: &BTreeMap<String, ToolText>) -> Vec<String> {
     out
 }
 
-/// Fills `{key}` in `text` from `fills`; a `{...}` that is not a key stays as it is.
+/// Fills `{key}` in `text` from `fills`. A `{...}` that is not a key stays as it is.
 pub fn expand_placeholders(text: &str, fills: &BTreeMap<String, String>) -> String {
     let mut out = text.to_string();
     for (key, value) in fills {

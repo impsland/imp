@@ -161,7 +161,7 @@ pub fn tool_placeholders() -> Vec<String> {
     tools::PLACEHOLDERS.iter().map(|s| s.to_string()).collect()
 }
 
-/// Fills the `{key}` of `text` from `keys` and `values` (same length); every placeholder not given is left empty.
+/// Fills the `{key}` of `text` from `keys` and `values` (same length). Every placeholder not given is left empty.
 #[uniffi::export]
 pub fn tool_expand_placeholders(text: String, keys: Vec<String>, values: Vec<String>) -> String {
     let mut fills: std::collections::BTreeMap<String, String> = tools::PLACEHOLDERS

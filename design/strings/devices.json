@@ -203,9 +203,9 @@
   },
   "devices.call_all_home": {
     "note": "Button: call every Imp a device holds home.",
-    "en": "Call all home",
-    "es": "Traerlos a todos",
-    "zh-Hans": "全部叫回家"
+    "en": "Send all home",
+    "es": "Enviar todos a casa",
+    "zh-Hans": "全部送回家"
   },
   "devices.tools.commands": {
     "note": "Name of the tool that runs commands.",
@@ -269,7 +269,7 @@
     }
   },
   "devices.hop.add": {
-    "note": "The Hop pill under the code in the Link sheet when no Hop is set; opens its settings.",
+    "note": "The Hop pill under the code in the Link sheet when no Hop is set. It opens its settings.",
     "en": "Add a Hop",
     "es": "Añadir un Hop",
     "zh-Hans": "添加 Hop"

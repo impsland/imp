@@ -112,7 +112,7 @@
   "home.empty.link": {
     "note": "Button on the empty main screen: link another device.",
     "en": "Link a device",
-    "es": "Vincular un dispositivo",
+    "es": "Vincular dispositivo",
     "zh-Hans": "连接设备"
   },
   "home.empty.link.help": {

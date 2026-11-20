@@ -80,7 +80,7 @@ public struct Agent: Sendable {
         // The registry ids of the tools, which is what the permissions classify them by.
         let catalog = await tools?.catalog() ?? []
         let ids = gate == nil ? [:] : Dictionary(catalog.compactMap { t in t.entry.map { (t.spec.name, $0.id) } }, uniquingKeysWith: { first, _ in first })
-        // A tool the person renamed is called by its new name; permissions, ordering and events use its own.
+        // A tool the person renamed is called by its new name. Permissions, ordering and events use its own.
         let real = Dictionary(catalog.compactMap { t in t.entry.map { (t.spec.name, $0.name) } }, uniquingKeysWith: { first, _ in first })
         func own(_ name: String) -> String { real[name] ?? name }
         let run = try ImpCore.AgentRun(messages: messages.map(\.record), tools: specs.map(\.record),

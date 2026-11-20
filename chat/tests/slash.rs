@@ -67,7 +67,7 @@ async fn model_address_and_prompt_change_and_are_saved() {
     let w = World::new("settings");
     let mut s = session(&w).await;
     assert!(said(&run(&mut s, "/model").await).contains("mock/first"));
-    // The default model is in imp.json, an agent's own in its file; the session takes either at once.
+    // The default model is in imp.json, an agent's own is in its file. The session takes either at once.
     assert!(said(&run(&mut s, "/model mock/second").await).contains("mock/second"));
     assert_eq!(s.model, "second");
     assert_eq!(w.read_config()["model"], "mock/second");
@@ -332,7 +332,7 @@ async fn a_change_made_by_another_app_is_taken_and_said_once() {
 async fn a_chat_and_the_command_line_are_one_grammar_over_one_configuration() {
     let w = World::new("parity");
     let mut s = session(&w).await;
-    // What a chat changes, the command line reads; and the other way around.
+    // What a chat changes, the command line reads, and the other way around.
     run(
         &mut s,
         "/provider add local --url http://localhost:11434/v1",

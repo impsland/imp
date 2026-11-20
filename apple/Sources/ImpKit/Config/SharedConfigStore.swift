@@ -32,7 +32,7 @@ public final class SharedConfigStore: @unchecked Sendable {
         return SharedConfigStore(configDir: home.appending(path: ".config/imp"), homeDir: home)
     }
 
-    /// Reads everything again. The shared part of the preferences comes back; the next `save` is worked out against it.
+    /// Reads everything again. The shared part of the preferences comes back. The next `save` is worked out against it.
     @discardableResult
     public func load() -> SharedRead {
         let snapshot = SharedSnapshot(configLoad(paths: paths))

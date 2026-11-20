@@ -7,8 +7,8 @@ import SwiftUI
 /// The Devices screen as a graph for the canvas: a pure mapping from what `DeviceMap` knows to SwiftFlow's nodes
 /// and edges, with their first places. The canvas only draws it, so the shape of the graph is tested.
 ///
-/// A device (This Mac, a linked device, the Hop) is a group node; an Imp whose body is on a device is a child
-/// node inside it, in a grid. A channel is an edge between two devices; one through the Hop is two edges, to the
+/// A device (This Mac, a linked device, the Hop) is a group node. An Imp whose body is on a device is a child
+/// node inside it, in a grid. A channel is an edge between two devices. One through the Hop is two edges, to the
 /// Hop and from it. An Imp that is away from its home is tied to the home device by a tether, and an Imp that can
 /// talk to Imps on other devices has a talk edge to each, hidden until it is in focus. This Mac is in the middle,
 /// the linked devices are on its two sides (each next to the shorter side, so the picture stays balanced) and the
@@ -61,13 +61,13 @@ enum DeviceGraph {
 
     struct EdgeData: Hashable, Sendable {
         enum Kind: Hashable, Sendable {
-            /// A channel between two devices (`DeviceMap.Channel.id`); through the Hop it is the half from the Hop.
+            /// A channel between two devices (`DeviceMap.Channel.id`). Through the Hop it is the half from the Hop.
             case channel(String)
             /// The half of channels through the Hop that is shared: this Mac to the Hop (the Hop's id).
             case toHop(String)
             /// An Imp in a device that isn't its home, tied to its home.
             case tether(UUID, in: String)
-            /// An Imp (first) that can message another device's Imp (second); shown only while the first is in focus.
+            /// An Imp (first) that can message another device's Imp (second). Shown only while the first is in focus.
             case talk(UUID, UUID)
         }
 
@@ -114,7 +114,7 @@ enum DeviceGraph {
             }
         }
 
-        /// The focus of an open sheet; the Link sheet is about no one thing.
+        /// The focus of an open sheet. The Link sheet is about no one thing.
         init?(_ sheet: DevicesSheet) {
             switch sheet {
             case .about(let selection): self.init(selection)
@@ -142,7 +142,7 @@ enum DeviceGraph {
     /// The id of an Imp's node: an Imp can be seen on more than one device.
     static func impNodeID(_ imp: UUID, in node: String) -> String { "\(node)/\(imp.uuidString)" }
 
-    /// `hopText` is the Hop's address as set (empty is off); without it the Hop stands as the map says. The Hop is
+    /// `hopText` is the Hop's address as set (empty is off). Without it the Hop stands as the map says. The Hop is
     /// on the canvas only when a channel goes through it. `access` is what each linked device may do (by node id);
     /// a device without an entry is plugged with its trust only. Talk edges are
     /// all there but hidden; `revealing(talkOf:)` shows an Imp's.
@@ -281,7 +281,7 @@ enum DeviceGraph {
             }
         }
 
-        // Talk edges, from an Imp's chip to each chip of another device it can message; hidden unless it is in focus.
+        // Talk edges, from an Imp's chip to each chip of another device it can message. Hidden unless it is in focus.
         for entry in map.imps {
             for contact in entry.talksTo where contact.location != entry.location && boxes[contact.location] != nil
                 && boxes[entry.location] != nil && hasChip(contact.id, on: contact.location) && hasChip(entry.id, on: entry.location) {
@@ -368,7 +368,7 @@ enum DeviceGraph {
     }
 
     /// A device's size: as wide as its name needs and as its Imps need at their narrowest (at most three across), and
-    /// no wider than `maximumWidth`; a single Imp fills the width of its device.
+    /// no wider than `maximumWidth`. A single Imp fills the width of its device.
     static func box(of node: DeviceMap.Node, residents count: Int, longestName: Int = 0) -> CGSize {
         let across = CGFloat(min(Metrics.maxChipColumns, count))
         let imps = count > 0 ? 2 * Metrics.padding + across * chipWidth(longestName) + (across - 1) * Metrics.chipGap : 0
@@ -412,7 +412,7 @@ extension DeviceGraph.Graph {
         }
     }
 
-    /// This graph with the talk lines of Imp `imp` shown, as when it is in focus; positions and ids stay as they are.
+    /// This graph with the talk lines of Imp `imp` shown, as when it is in focus. Positions and ids stay as they are.
     func revealing(talkOf imp: UUID) -> DeviceGraph.Graph {
         var graph = self
         for index in graph.edges.indices {
@@ -446,7 +446,7 @@ extension DeviceGraph.Graph {
         }
     }
 
-    /// The ids of the nodes and lines that stay bright in `focus`; the canvas draws the rest dimmed. An Imp lights its
+    /// The ids of the nodes and lines that stay bright in `focus`. The canvas draws the rest dimmed. An Imp lights its
     /// chips, the device its body is on and its home, the channels (and the Hop) between them, its tether and its talk
     /// lines with the Imps they reach. A device lights itself, its Imps, its channels (and the Hop) and the tethers
     /// in and out. A channel lights both ends, the Hop when it goes through it, and the Imps travelling over it with

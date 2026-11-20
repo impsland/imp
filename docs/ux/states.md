@@ -34,7 +34,7 @@ An Imp with no Brain sleeps, and so does an Imp that cannot reach its Brain. It 
 - The button is `state.sleeping.action`. It opens the Brain panel, or the first-run path if the user has not been through it.
 - If the user talks to a sleeping Imp, the answer is `error.brain.none`, as a plain sentence in the bubble.
 - A visiting Imp whose home is out of reach sleeps too: `state.visiting_asleep`.
-- With no Brain at all on a phone, the Imp keeps sleeping and the small Embers game still works. This is a game, not the removed floating sparks.
+- With no Brain at all on a phone, the Imp keeps sleeping and the small Embers game still works.
 
 ### Why
 
@@ -66,7 +66,7 @@ The device has no network.
 
 ## The Hop not set up
 
-The Hop is the only server setting. The app never blocks on it, and the Imps work without it. Without a Hop, Devices is marked and its page says `settings.attention.hop_off`: devices only find each other on the same network (`servers.hop.needed`).
+The Hop is the only server setting. The app never blocks on it, and the Imps work without it. Without a Hop, Devices is marked and its page says that devices only find each other on the same network.
 
 The Den is not a setting. It is an MCP tool like any other (see [The Den](/sharing/den)), so an Imp without it simply has no such tool.
 

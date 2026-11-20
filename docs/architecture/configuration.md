@@ -5,7 +5,7 @@ other shows it: the same Imps, services, models, tool servers, permissions, skil
 belongs to a screen (windows, the bubble, colours of the app, where an Imp stands) stays with the app.
 
 The core (`engine/src/config/`) owns the format: it finds the files, merges them, fills in variables,
-evaluates permissions and writes changes. Both apps call it; neither parses these files itself.
+evaluates permissions and writes changes. Both apps call it, and neither parses these files itself.
 
 ## Where it lives
 
@@ -26,7 +26,7 @@ two apps one.
 The terminal app also reads the `.agents/` folder of every directory from where it starts up to the git
 root (or the home folder). A nearer folder wins over a farther one, and a project wins over `~/.agents`, by
 name: a project's `agents/review.md` replaces your `review` there. `AGENTS.md` files are all read, farthest
-first. A project may have its own `.agents/imp.json` with services, tool servers and permissions; because
+first. A project may have its own `.agents/imp.json` with services, tool servers and permissions. Because
 those start programs and send keys, they wait until you trust the project (`imp project trust`). Agents,
 skills, commands and `AGENTS.md` are text and are read at once.
 
@@ -83,7 +83,7 @@ only this agent sends go in `request`.
 ## Permissions
 
 A rule is an `action`, a `resource` pattern and an `effect`: `allow`, `ask` or `deny`. Rules are read in
-order — the built-in defaults, `imp.json`'s `permissions`, the agent's `permissions` — and the last rule that
+order: the built-in defaults, then `imp.json`'s `permissions`, then the agent's `permissions`. The last rule that
 matches decides. `*` matches any run of characters, `?` one.
 
 | Action | Resource | What it covers |
@@ -96,7 +96,7 @@ matches decides. `*` matches any run of characters, `?` one.
 | `message` | an Imp's name | Asking another Imp. |
 
 `ask` asks you first: in the terminal as a prompt, on the Mac in the Imp's bubble (Allow once, Always,
-Deny; Always adds an `allow` rule to the agent). The switches in an Imp's settings write these rules: a
+Deny. Always adds an `allow` rule to the agent). The switches in an Imp's settings write these rules: a
 group switched off is `{action: <group>, resource: "*", effect: deny}`.
 
 ## imp.json
@@ -135,12 +135,12 @@ group switched off is `{action: <group>, resource: "*", effect: deny}`.
   home folder), anywhere a string is allowed, in `imp.json` and in agent front matter.
 - A variant's object is merged into the request body; `low`, `medium` and `high` work without one and send
   `reasoning_effort`.
-- MCP servers are on for every Imp; a `deny` rule on `mcp` turns one off for an Imp.
+- MCP servers are on for every Imp. A `deny` rule on `mcp` turns one off for an Imp.
 
 ## Skills and commands
 
 A skill is `skills/<name>/SKILL.md` with a `name` (lowercase letters, digits and dashes, the folder's name)
-and a `description`. Only names and descriptions go in the system prompt; the `skill` tool reads a skill
+and a `description`. Only names and descriptions go in the system prompt. The `skill` tool reads a skill
 when a task needs it.
 
 A command is `commands/<name>.md`, run as `/<name> …`. Front matter: `description`, `agent`, `model`,
@@ -164,7 +164,7 @@ Everything that is not about a screen can be changed from the terminal, and the 
 | `imp config get \| set \| path` | `/config …` |
 
 Writes are atomic (a temporary file, then a rename) and made under a lock (`imp.json.lock`), after reading
-the file again, so the two apps never undo each other. The terminal app reads the files each time it needs them; the Mac app compares a cheap stamp of them (names, sizes and
+the file again, so the two apps never undo each other. The terminal app reads the files each time it needs them. The Mac app compares a cheap stamp of them (names, sizes and
 modification times) every two seconds and reads again when it changed (see below).
 
 ## How the Mac app maps it
@@ -193,11 +193,11 @@ How it behaves:
   the app holds unchanged is left as written (a default never removes what a file spells out), and what the
   app has no field for (`steps`, `request`, headers, variants, references such as `{env:NAME}`) stays.
 - The colour of an Imp stays as the file has it until its hue is changed in the app.
-- Renaming an Imp renames its file and moves its `imps` entry; removing one deletes both. The Imp keeps its
+- Renaming an Imp renames its file and moves its `imps` entry. Removing one deletes both. The Imp keeps its
   id (`imps.<name>.id`; an agent without one gets a stable id made from its name).
 - A change made outside is noticed within about two seconds. What was edited in the app and not yet written is
   written first, then the files are read again, so neither side loses an edit.
-- Settings → Backup shows the config folder; Factory Reset removes the app's own data and offers, as a separate
+- Settings → Backup shows the config folder. Factory Reset removes the app's own data and offers, as a separate
   choice, to remove the shared configuration (used by the terminal app too). An Imp's Personality page opens
   its agent file in an editor or shows it in the Finder, and its Tools page lists the skills and commands of
   `~/.agents`, read only.
@@ -206,7 +206,7 @@ Deviations from the sections above:
 
 - Providers come in the order of their ids (a JSON object has no order), and the app's services have no ids of
   their own: they are made from the provider's name.
-- An Imp's switches show a group with an `ask` rule as on; every call is still decided by the rules, so an
+- An Imp's switches show a group with an `ask` rule as on. Every call is still decided by the rules, so an
   `ask` call waits in the bubble's prompt.
 - The Mac app does not watch the files: it compares the stamp every two seconds.
 - Project folders are not read by the Mac app, as above.

@@ -107,8 +107,8 @@ Fix $1 in $2. Everything: $ARGUMENTS
 
 ### Where they are found
 
-- `.agents/commands/` in your project folder. The project is the nearest folder, from the one you start the chat
-  in up, with a `.agents` folder or a `.git`.
+- `.agents/commands/` in your project folder. The project is the folder you start the chat in and the folders
+  above it, up to the one with a `.git` (or your home folder). The nearest folder wins.
 - `~/.agents/commands/` in your home folder. These are yours, and they work in every chat. The Mac app lists them
   too (Imp settings, Tools).
 

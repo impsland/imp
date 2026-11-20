@@ -31,7 +31,7 @@ struct GamePrize: Identifiable {
 }
 
 /// The results card of a game, top to bottom: the game's name, "New best!" when it is one, the score as
-/// the hero, "Best with N Imps" under it (always there, so the card never changes height; after a record it
+/// the hero, "Best with N Imps" under it (always there, so the card never changes height. After a record it
 /// is the score just set), at most three stats in one even row, the prizes as compact badges, and the
 /// actions in one row of three equal buttons, the icon above the words: Done, Again (the one primary)
 /// and How to play.
@@ -160,7 +160,7 @@ struct GameResultCard: View {
             Button(action: howTo) { Label("games.how_to", systemImage: "questionmark.circle") }
                 .buttonStyle(.stackedSecondary)
         }
-        // In a row the buttons are as tall as the tallest; stacked, each is as tall as it needs.
+        // In a row the buttons are as tall as the tallest. Stacked, each is as tall as it needs.
         .fixedSize(horizontal: false, vertical: !stacked)
     }
 }

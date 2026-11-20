@@ -12,7 +12,8 @@ struct ImpSettingsView: View {
     @Bindable var router: HomeRouter
     let id: UUID
     @State private var section: ImpSetting
-    @State private var confirming = false
+    /// Set while the goodbye question is open.
+    @State private var asking: [UUID]?
 
     init(model: AppModel, router: HomeRouter, id: UUID, open: ImpSetting? = nil) {
         self.model = model
@@ -58,12 +59,9 @@ struct ImpSettingsView: View {
             section = wanted
         }
         .onChange(of: section) { _, chosen in router.impSection = chosen }
-        .confirmationDialog(words("goodbye.title", profile.callName), isPresented: $confirming, titleVisibility: .visible) {
-            Button("goodbye.confirm", role: .destructive, action: sayGoodbye)
-            Button(words("goodbye.cancel", profile.callName), role: .cancel) {}
-                .keyboardShortcut(.defaultAction)
-        } message: {
-            Text("goodbye.message")
+        .goodbyeQuestion($asking, names: [profile.callName]) { ids in
+            HomeActions(model: model, router: router).sayGoodbye(ids)
+            router.goHome()
         }
     }
 
@@ -79,8 +77,8 @@ struct ImpSettingsView: View {
                     ImpExport.save([id], model: model, name: profile.callName, fileName: profile.callName)
                 }
                 .accessibilityLabel(words("imp_settings.share.a11y", profile.callName))
-                HoverIconButton(systemName: "hand.wave.fill", help: "imp_settings.goodbye", tint: Tone.danger) { confirming = true }
-                                        .accessibilityLabel(words("imp_settings.goodbye.a11y", profile.callName))
+                HoverIconButton(systemName: "hand.wave.fill", help: "imp_settings.goodbye", tint: Tone.danger) { asking = [id] }
+                    .accessibilityLabel(words("imp_settings.goodbye.a11y", profile.callName))
                 HoverIconButton(systemName: "gearshape", help: "settings.title") { router.openGeneralSettings() }
             }
         }
@@ -114,11 +112,6 @@ struct ImpSettingsView: View {
             LibraryPanel(model: model)
         case .computer: ComputerPanel(model: model, imp: imp)
         }
-    }
-
-    private func sayGoodbye() {
-        router.selection = model.sayGoodbye(id)
-        router.goHome()
     }
 }
 

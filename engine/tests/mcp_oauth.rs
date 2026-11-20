@@ -62,7 +62,7 @@ impl Browserless {
             .send()
             .await
             .unwrap();
-        // A new account is shown its key once; the page then continues with that key.
+        // A new account is shown its key once. The page then continues with that key.
         assert_eq!(response.status().as_u16(), 200, "new account page");
         let page = response.text().await.unwrap();
         let at = page.find("dak_").expect("the account key is shown");
@@ -180,7 +180,7 @@ async fn a_den_signs_the_core_in_and_accepts_a_write() {
     )
     .await
     .expect("connect");
-    // The Den lets anyone initialize and read; the write is what asks for a sign-in.
+    // The Den lets anyone initialize and read. The write is what asks for a sign-in.
     assert_eq!(*signer.signed_in.borrow(), 0);
     let slug = format!("core-{}", hex::encode(rand::random::<[u8; 3]>()));
     let answer = client

@@ -40,7 +40,7 @@ Each tool row, in the wand's sheet and in the Tools list of an MCP server, has a
 
 ![Editing a tool's name and description](./images/imp-tool-text.png)
 
-The name must be 1 to 64 letters, digits, `_` or `-` and must not be another tool's name for this Imp (default names and other renames count); the sheet says so as you type and OK waits. A description may use placeholders that stand for what changes: `{imps}` (the other Imps it can message, Message Imps), `{animations}` (the animations it may play) and `{place}` (where the background shows). Tap one to add it at the end; one the tool cannot fill is left empty. When an edit drops a placeholder the default had, the sheet warns. **Reset to default** empties both fields, so OK removes the change. Every tool can be edited, also one that is off or only offered while other Imps are out. The changes are kept in the agent file's `toolText`, shared with the terminal. On the phone this sheet is not offered yet; the Mac's changes still apply there.
+The name must be 1 to 64 letters, digits, `_` or `-` and must not be another tool's name for this Imp (default names and other renames count). The sheet says so as you type and OK waits. A description may use placeholders that stand for what changes: `{imps}` (the other Imps it can message, Message Imps), `{animations}` (the animations it may play) and `{place}` (where the background shows). Tap one to add it at the end. One the tool cannot fill is left empty. When an edit drops a placeholder the default had, the sheet warns. **Reset to default** empties both fields, so OK removes the change. Every tool can be edited, also one that is off or only offered while other Imps are out. The changes are kept in the agent file's `toolText`, shared with the terminal. On the phone this sheet is not offered yet. The Mac's changes still apply there.
 
 ### Import kit…
 
@@ -128,7 +128,7 @@ A hosted model on our own server is not built. The Brain list is one generic lis
 
 ![Tools](./images/imp-tools.png)
 
-Only the MCP servers the Imp may use: there are no built-in tools here (they are behind the wand of the section they belong to, see the table at the top). The header has Import kit…, the wand (List, Add, Remove, Add kits, Export kits) and Add. Add opens the New tool editor at once (`tools.new_server_title`), with no list of ready-made tools first. A bar at the top of the editor picks the kind: On the web (the default) or On this Mac (a local program); switching keeps the name typed. Add puts the tool in the library and switches it on for this Imp; Cancel adds nothing. Editing an existing tool has no kind bar. The registry ids are `own.<section>.<tool>` and `mcp.<server>.<tool>`.
+Only the MCP servers the Imp may use: there are no built-in tools here (they are behind the wand of the section they belong to, see the table at the top). The header has Import kit…, the wand (List, Add, Remove, Add kits, Export kits) and Add. Add opens the New tool editor at once (`tools.new_server_title`), with no list of ready-made tools first. A bar at the top of the editor picks the kind: On the web (the default) or On this Mac (a local program). Switching keeps the name typed. Add puts the tool in the library and switches it on for this Imp. Cancel adds nothing. Editing an existing tool has no kind bar. The registry ids are `own.<section>.<tool>` and `mcp.<server>.<tool>`.
 
 - Each server is a group with a switch, a status dot and word (connected, starting, could not start, sign-in needed) and "n of m on" (`tools.group_count`).
 - A server opens to its tools. Each tool has a switch.
@@ -157,12 +157,12 @@ The editor reads top to bottom as the trigger runs, on a copy that changes nothi
 | When (`triggers.f.when`) | One button shows the event (its icon, its short name and its hint). It opens a gallery of tiles in three groups, the chosen one lit, each tile's hint as its tooltip. **You** (`triggers.group.you`): Keys (a key recorder), Clicks on the Imp (1 to 3), Gestures (`triggers.gestures`: 4 quick clicks, press and hold, drag, let go, shake while carrying, stroke, tickle, circle, swish, rush, bob), Cursor comes close (seconds it rests, 0 to an hour), Cursor moves away. **Time** (`triggers.group.time`): Imp starts, Every day at (a time), Every few minutes (1 to 1440), Left alone (5 seconds to a day), You come back (minutes away), Mac wakes up. **Mac** (`triggers.group.mac`): App in front (text with a menu of open apps), Website (text), Battery low (percent), Charger (plugged in or unplugged), Mac is busy (percent), Mac runs hot, Network (goes away or comes back). The value control follows the event. |
 | Only if (`triggers.f.only_if`) | A list of conditions that must all hold, empty ("Always", `triggers.cond.always`) by default. Each has a state menu (battery, charger, app, website, busy, hot, network, time of day, days, asleep) and a value control: percent, plugged or on battery, text, offline or online, two times (hours may wrap past midnight), seven weekday buttons (one stays on), asleep or awake. Each is one row with its remove button (`triggers.cond.remove`). The Add menu (`triggers.cond.add`) adds one. |
 | Do (`triggers.f.do`) | One to five steps, run in order. A step is added with one click on its tile (Ask, Say, Play, Sleep, Wake, Follow, Open), the tiles always in view under the steps until there are five. Each step is a numbered card with its kind as a menu, move up and down (with two or more), remove, and its controls. **Ask the Imp**: a multi-line instruction and With clipboard. **Say something**: text and Aloud. **Play an animation**: a menu of this Imp's animations by name. **Fall asleep** and **Wake up**: the same menu, optional. **Follow the cursor**: Off, Eyes, Hop or Glide and a speed slider from 0.5 to 2, off unless Hop or Glide. **Open something**: Text box, Listen, Chat or Settings. |
-| Name (`common.name`) | Optional; the event's summary when empty. |
-| For (`triggers.f.for`) | `triggers.scope.just` or `scope.every_imp` as two segments; it starts on this Imp for every trigger, shared ones included, so saving changes this Imp only. A line under the choice says what saving does (`triggers.scope.note_version`, `triggers.scope.note_every`). |
+| Name (`common.name`) | Optional. The event's summary is used when empty. |
+| For (`triggers.f.for`) | `triggers.scope.just` or `scope.every_imp` as two segments. It starts on this Imp for every trigger, shared ones included, so saving changes this Imp only. A line under the choice says what saving does (`triggers.scope.note_version`, `triggers.scope.note_every`). |
 
 What is missing is said in the warning colour under the block or the step it is about (`triggers.problem.*`: no keys recorded under When, no steps under Do, an ask with nothing to ask, a say with no text, a play with no animation, an animation this Imp does not have under that step). While something is missing, Save is off, and so is Try.
 
-Event and step names are one or two words on their tiles ("Poke", "Daily at", "Say"); the longer words ("4 quick clicks", "Say something") are their hints and what the trigger's sentence says.
+Event and step names are one or two words on their tiles ("Poke", "Daily at", "Say"). The longer words ("4 quick clicks", "Say something") are their hints and what the trigger's sentence says.
 
 Rejected: a When menu with a submenu of gestures and an Add a step menu. The events and steps hid two levels deep, and a new trigger was a form to fill in rather than a sentence to build.
 
@@ -180,7 +180,7 @@ Empty state: `triggers.empty` (see [Empty lists](/ux/states#empty-lists)).
 
 ![Animations](./images/imp-animations.png)
 
-**Animations** (`animations.list`): the animations only this Imp plays and its own versions of shared ones come first, then the shared ones it has no version of (an own animation with the same title hides the shared one). Each row says where it applies under its title (`ScopeLabel`: every Imp, changed for this Imp, only this Imp). Changing a shared one changes it for every Imp; saving it for this Imp only is the editor's For choice. The header has Share, Import kit…, the wand (Play, View, Make, Remove, Move around) and New. The animation editor's For choice offers Every Imp and this Imp only, and saving a shared animation for this Imp makes this Imp's version, as for triggers.
+**Animations** (`animations.list`): the animations only this Imp plays and its own versions of shared ones come first, then the shared ones it has no version of (an own animation with the same title hides the shared one). Each row says where it applies under its title (`ScopeLabel`: every Imp, changed for this Imp, only this Imp). Changing a shared one changes it for every Imp. Saving it for this Imp only is the editor's For choice. The header has Share, Import kit…, the wand (Play, View, Make, Remove, Move around) and New. The animation editor's For choice offers Every Imp and this Imp only, and saving a shared animation for this Imp makes this Imp's version, as for triggers.
 
 ## Computer
 
@@ -190,9 +190,9 @@ What the Imp may reach on this Mac, one card (`computer.access`): **Commands** (
 
 ## Share and Goodbye
 
-Share, Goodbye and Settings are actions, not settings: three icon buttons in the top trailing corner, in that order. Goodbye is tinted red. On the iPhone, where Close holds the trailing corner, Goodbye is the icon button in the leading corner of the sheet's bar while no panel is open (a panel puts Back there). It is never a big button at the bottom of the page.
+Share, Goodbye and Settings are actions, not settings: three icon buttons in the top trailing corner, in that order. Goodbye (`hand.wave.fill`) is tinted red. On the iPhone, where Close holds the trailing corner, Goodbye is the icon button in the leading corner of the sheet's bar while no panel is open (a panel puts Back there). It is never a big button at the bottom of the page.
 
-Goodbye asks first. A destructive dialog names the Imp: `goodbye.title`. The safe button is `goodbye.cancel` and it is the default. The destructive one is `goodbye.confirm`.
+Goodbye asks first, with the same dialog as in the window. The dialog names the Imp: `goodbye.title` ("Say goodbye to {name}?"). The default answer is "Keep {name}" (`goodbye.cancel`). The destructive button is "Say goodbye" (`goodbye.confirm`).
 
 Share opens the save panel at once, with no sheet before it: the Imp is saved as a kit file (with an Include chats tick when it has chats). To publish an Imp on an MCP gallery such as The Den, ask the Imp (`imp_export_kit`).
 

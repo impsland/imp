@@ -51,7 +51,7 @@ public struct LinkImp: Codable, Sendable, Equatable, Identifiable {
         self.about = about; self.abilities = abilities
     }
 
-    /// `abilities`: what this device computed for the Imp (`ImpAbilities`); the profile alone can't know its tool servers' names.
+    /// `abilities`: what this device computed for the Imp (`ImpAbilities`). The profile alone can't know its tool servers' names.
     public init(_ profile: ImpProfile, abilities: [String] = []) {
         self.init(id: profile.id, name: profile.name, hue: profile.hue, scale: profile.scale, traits: profile.traits,
                   about: profile.about.flatMap { ImpCore.troupeAboutLine(text: $0) },

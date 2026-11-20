@@ -33,11 +33,11 @@ import ImpKit
     @Test func aVisitorsMenuOffersHide() {
         let (app, pip) = appWithVisitor()
         let menu = ImpMenu(app: app, imp: pip)
-        // The menu is one card of buttons; Hide is one of its big buttons.
+        // The menu is one card of buttons. Hide is one of its big buttons.
         #expect(menu.make().items.count == 1)
-        // Same six buttons as an own Imp's menu, with New chat for Settings; asleep, only what needs no brain stays.
+        // Same six buttons as an own Imp's menu, with New chat for Settings. Asleep, only what needs no brain stays.
         let awake = ImpMenuCard(ready: true, name: "Pip", status: "", hue: 0.3, scale: 1, place: .visitor(from: "iPhone")) { _ in }
-        #expect(awake.buttons.map(\.id) == ["talk", "type", "chat", "hide", "move", "new"])
+        #expect(awake.buttons.map(\.id) == ["talk", "message", "chat", "hide", "move", "new"])
         #expect(awake.buttons.allSatisfy { $0.enabled })
         let asleep = ImpMenuCard(ready: false, name: "Pip", status: "", hue: 0.3, scale: 1, place: .visitor(from: "iPhone"), awake: false) { _ in }
         #expect(asleep.buttons.filter(\.enabled).map(\.id) == ["chat", "hide", "move"])

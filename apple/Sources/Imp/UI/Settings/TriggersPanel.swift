@@ -108,7 +108,7 @@ struct TriggersPanel: View {
                     }
                 }
                 Section {
-                    Button("Share as Kit") { share(shortcut) }
+                    Button("Share as a kit") { share(shortcut) }
                     Button("Copy Kit Link") { share(shortcut, link: true) }.disabled(kit(of: shortcut).link == nil)
                 }
                 switch scope(shortcut) {

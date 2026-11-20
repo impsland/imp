@@ -1677,7 +1677,7 @@ fn custom_commands_are_offered_after_slash_and_run_as_messages() {
     app.on_key(with(KeyCode::Char('u'), KeyModifiers::CONTROL));
     type_text(&mut app, "/e");
     assert!(app.menu().entries.iter().all(|e| !e.custom));
-    // Enter on it completes the arguments; then the line goes to the chat loop as a command, which fills in
+    // Enter on it completes the arguments. Then the line goes to the chat loop as a command, which fills in
     // the text (shell and files behind the Imp's permissions) and sends it.
     app.on_key(with(KeyCode::Char('u'), KeyModifiers::CONTROL));
     type_text(&mut app, "/rev");

@@ -4,7 +4,7 @@ import SwiftUI
 
 /// The first run on the Mac: a sheet over the window with the Imp (asleep, stirring, awake) on top, the one
 /// page below (`FirstRunFlow`) and, at the bottom, Cancel and the primary button. The top bar has Close, which
-/// does the same as Cancel. For a new Imp (not in the settings yet) that leaves the app with no Imp; for one that
+/// does the same as Cancel. For a new Imp (not in the settings yet) that leaves the app with no Imp. For one that
 /// has no Brain it stays asleep, a calm state of its own.
 /// `linkDevice` is the second way to begin, for a new Imp: bring one from another device.
 struct FirstRunSheet: View {

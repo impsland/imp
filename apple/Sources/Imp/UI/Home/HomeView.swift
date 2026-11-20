@@ -72,34 +72,14 @@ struct HomeView: View {
                 .environment(\.impTint, tint)
                 .tint(tint)
         }
-        .confirmationDialog(goodbyeTitle, isPresented: Binding(get: { router.saying != nil }, set: { if !$0 { router.saying = nil } }),
-                            titleVisibility: .visible) {
-            Button { if let id = router.saying { HomeActions(model: model, router: router).sayGoodbye(id) } } label: {
-                Text("goodbye.confirm")
-            }
-            Button(role: .cancel) { router.saying = nil } label: {
-                Text(words("goodbye.cancel", router.saying.flatMap(model.profile)?.name ?? ""))
-            }
-        } message: {
-            Text("goodbye.message")
+        .goodbyeQuestion($router.saying, names: (router.saying ?? []).compactMap { model.profile($0)?.callName }) {
+            HomeActions(model: model, router: router).sayGoodbye($0)
         }
-        // Several picked Imps at once: asked once, for all of them.
-        .confirmationDialog(words("goodbye.many.title", router.sayingMany?.count ?? 0),
-                            isPresented: Binding(get: { router.sayingMany != nil }, set: { if !$0 { router.sayingMany = nil } }),
-                            titleVisibility: .visible) {
-            Button(role: .destructive) { if let ids = router.sayingMany { HomeActions(model: model, router: router).sayGoodbye(ids) } } label: {
-                Text("goodbye.confirm")
-            }
-            Button(role: .cancel) { router.sayingMany = nil } label: { Text("goodbye.many.cancel") }
-        } message: {
-            Text(verbatim: (router.sayingMany ?? []).compactMap { model.profile($0)?.name }.formatted(.list(type: .and)) + "\n\n"
-                 + String(localized: "goodbye.many.message"))
-        }
-        // An Imp away on another device is never out of reach: a click on it, or Call Home in its menu, asks this.
+        // An Imp away on another device is never out of reach: a click on it, or Send home in its menu, asks this.
         .confirmationDialog(callHomeTitle, isPresented: Binding(get: { router.callingHome != nil }, set: { if !$0 { router.callingHome = nil } }),
                             titleVisibility: .visible) {
             Button { if let id = router.callingHome { HomeActions(model: model, router: router).callHome(id) } } label: {
-                Text("menu.imp.call_home")
+                Text("menu.imp.send_home")
             }
             Button("common.cancel", role: .cancel) { router.callingHome = nil }
         } message: {
@@ -126,9 +106,6 @@ struct HomeView: View {
         router.callingHome.flatMap(model.profile)?.awayOn.flatMap { model.link.name(of: $0) } ?? String(localized: "imp.call_home.other_device")
     }
 
-    private var goodbyeTitle: String {
-        words("goodbye.title", router.saying.flatMap(model.profile)?.name ?? "")
-    }
 }
 
 /// The canvas's actions, each one click, spread over the three corners the window's own buttons leave

@@ -234,7 +234,7 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `brains.used_by` | one: Used by {count} Imp / other: Used by {count} Imps |
 | `brains.with_key` | A service with your key |
 | `devices.access.talk` | Talk & files |
-| `devices.call_all_home` | Call all home |
+| `devices.call_all_home` | Send all home |
 | `devices.channel.title` | {from} ⇄ {to} |
 | `devices.chip.label_ours` | {name}, an Imp of this Mac, on {node} |
 | `devices.chip.label_visitor` | {name}, an Imp from another device, on {node} |
@@ -372,7 +372,7 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `settings.bubble.showing.title` | Showing |
 | `settings.bubble.size.info` | The size of the chat bubble. Drag its corner to change it. |
 | `settings.bubble.size.title` | Size |
-| `settings.devices.call_home` | Call its Imps home |
+| `settings.devices.call_home` | Send its Imps home |
 | `settings.devices.forget_all.title` | Forget all |
 | `settings.devices.link.info` | Link another device so your Imps can visit it. |
 | `settings.devices.link.title` | Link |

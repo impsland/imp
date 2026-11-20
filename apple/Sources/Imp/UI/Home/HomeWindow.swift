@@ -12,7 +12,7 @@ final class HomeWindow {
 
     var isVisible: Bool { window?.isVisible == true }
 
-    /// Whether a point on screen is over the home screen, where a free Imp can be dropped to go home. Only when that
+    /// Whether a point on screen is over the home screen, where a desktop Imp can be dropped to go home. Only when that
     /// window is showing there, not covered by another app's window.
     func isOver(_ point: CGPoint) -> Bool {
         guard let window, window.isVisible, !window.isMiniaturized, router.screen == .home else { return false }
@@ -210,8 +210,8 @@ final class HomeRouter {
     var devicePlaces: [String: CGPoint] = [:]
     /// Imps that just arrived (hatched, imported, or from a link): they pop in once.
     private(set) var arriving: Set<UUID> = []
-    /// An Imp the user chose Goodbye for: the window asks before it goes.
-    var saying: UUID?
+    /// The Imps the user chose Goodbye for, one or several picked together: the window asks before they go.
+    var saying: [UUID]?
     /// An Imp of ours away on another device that the user wants back: the window asks first.
     var callingHome: UUID?
     /// A borrowed tool whose form should open (an Imp asked the user to fill in its keys).
@@ -255,8 +255,6 @@ final class HomeRouter {
     /// The Imps picked together (`ImpPicks`): ⌘- or ⇧-click, a box drawn on empty space, Select All.
     /// Fewer than two is no group.
     var picked: Set<UUID> = []
-    /// The Imps the window asks about before they all say goodbye (see `HomeView`).
-    var sayingMany: [UUID]?
 
     /// Whether an Imp shows as chosen: one of the group, or the one Imp chosen when there is no group.
     func isPicked(_ id: UUID) -> Bool { picked.count > 1 ? picked.contains(id) : selection == id }

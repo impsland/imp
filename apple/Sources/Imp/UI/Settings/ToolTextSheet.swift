@@ -41,7 +41,7 @@ struct ToolTextButton: View {
 }
 
 /// Edits how one tool reads to the model: the name it is called by and the description it is given. Confirming keeps
-/// only what differs from the app's wording; Cancel leaves the Imp as it was. The default is the app's, or the MCP server's.
+/// only what differs from the app's wording. Cancel leaves the Imp as it was. The default is the app's, or the MCP server's.
 struct ToolTextSheet: View {
     @Binding var imp: ImpProfile
     let model: AppModel?
@@ -62,7 +62,7 @@ struct ToolTextSheet: View {
         _rows = State(initialValue: preset)
     }
 
-    /// The tool as listed; one that is not offered at all (its server is off) has its own name and no default text.
+    /// The tool as listed. One that is not offered at all (its server is off) has its own name and no default text.
     private var row: ToolTextRow {
         rows?.first { $0.id == tool.id }
             ?? ToolTextRow(id: tool.id, defaultName: tool.name, defaultDescription: "", text: imp.toolText[tool.id], placeholders: [])
@@ -85,7 +85,7 @@ struct ToolTextSheet: View {
                 descriptionField
             }
         } footer: {
-            // Puts the default words back in the fields, so you see what the model will read; OK then keeps no edit.
+            // Puts the default words back in the fields, so you see what the model will read. OK then keeps no edit.
             Button { name = row.defaultName; description = row.defaultDescription } label: {
                 FitLabel("tooltext.reset", systemImage: "arrow.counterclockwise")
             }

@@ -57,7 +57,7 @@ public struct DeviceAccess: Equatable, Sendable {
     public func isPlugged(_ id: String) -> Bool { pluggedIn.contains { $0.id == id } }
 
     /// The access with plug `id` plugged in or out. Plugging a tool while the device is not trusted trusts it too, as
-    /// a tool does nothing otherwise; unplugging "Talk & files" leaves the tool limits as they are, so they apply
+    /// a tool does nothing otherwise. Unplugging "Talk & files" leaves the tool limits as they are, so they apply
     /// again when it is plugged back.
     public func plugging(_ id: String, _ on: Bool) -> DeviceAccess {
         var next = self

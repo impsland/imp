@@ -25,7 +25,7 @@ struct PhoneBrainForm: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             // Remote and Local as one compact, neutral choice (as on the Mac): the selected segment takes the text
-            // colour, not the Imp's; the tint is for the main action.
+            // colour, not the Imp's. The tint is for the main action.
             ImpSegmented("firstrun.service.kind",
                          selection: Binding(get: { flow.choice }, set: { if let preset = $0 { pick(preset) } }),
                          options: flow.presets.map { Optional($0) }, title: { $0?.title ?? "" }, symbol: { $0?.symbol ?? "" },

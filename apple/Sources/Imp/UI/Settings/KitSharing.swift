@@ -37,7 +37,7 @@ struct ShareKitButton: View {
     var body: some View {
         let linkable = kit.stamped.link != nil
         Menu {
-            Button { done(KitSharing.copy(kit)) } label: { Label("Copy kit", systemImage: "doc.on.doc") }
+            Button { done(KitSharing.copy(kit)) } label: { Label("Copy kit", systemImage: "shippingbox.fill") }
             Button { done(KitSharing.copyLink(kit)) } label: { Label(linkable ? "Copy link" : "Too long for a link", systemImage: "link") }
                 .disabled(!linkable)
         } label: {

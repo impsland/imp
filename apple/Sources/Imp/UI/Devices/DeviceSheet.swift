@@ -3,7 +3,7 @@ import ImpKit
 import SwiftUI
 
 /// The frame of every Devices sheet: the picture and name in the header, the page, and the footer. Switches act at
-/// once; Done keeps them and Cancel puts them back (`DeviceEdits`).
+/// once. Done keeps them and Cancel puts them back (`DeviceEdits`).
 struct DeviceSheetShell<Page: View>: View {
     let model: AppModel
     let icon: String
@@ -30,7 +30,7 @@ struct DeviceSheetShell<Page: View>: View {
     }
 }
 
-/// What a press on the canvas opens: a sheet about one device, Imp or line. Its pages are in the `…Page` files; each
+/// What a press on the canvas opens: a sheet about one device, Imp or line. Its pages are in the `…Page` files. Each
 /// follows one order: the status, the main actions, the details and switches, and last what destroys. A button
 /// inside that leads to another thing swaps the sheet. Forgetting asks first.
 struct DeviceSheet: View {

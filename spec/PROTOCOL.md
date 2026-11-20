@@ -35,7 +35,7 @@ client for a wrong address. The vectors are in `spec/fixtures/server-addresses.j
 
 Test vectors for the parts that clients share are in `spec/fixtures` (see its `README.md`). The Hop
 handshake rules live once, in `engine/src/link/hop.rs`. Both the clients and the relay use that code.
-Its tests pin the bytes of a hello, a proof and every label.
+Its tests pin the bytes of a hello and a proof.
 
 ## Hop
 
@@ -71,7 +71,7 @@ gate equals the guest's gate.
 
 ### Wire format
 
-Every integer is a single byte. The connection is plain TCP.
+The hello, nonce, proof and status have fixed sizes and no length prefix. The connection is plain TCP.
 
 ```
 1. client -> hop   hello    "IMPHOP" (6 ASCII bytes), role (1), room (32), gate (32)        71 bytes
@@ -153,7 +153,7 @@ Hop address set.
 
 ### Limits
 
-All defaults can be changed with the variable shown. A value of 0 is refused at start-up. The Hop
+All defaults can be changed with the variable shown. Start-up refuses a value of 0 for the limits the config checks (`server/hop/src/config.rs`). The Hop
 listens on `HOP_ADDR` (default `0.0.0.0:4677`).
 
 | limit | default | variable |
@@ -187,7 +187,7 @@ Three interfaces, one database:
 | Web gallery at `/` | People | Browse, view (drawn from the JSON), open in Imp, copy JSON, export JSON. |
 
 Base URL: `https://<host>`. Requests and answers are UTF-8 JSON (`application/json`). Request bodies are
-limited to 300 KB, and a request that takes over 15 seconds ends with a `timeout` error. Browsers may
+limited to 600 KB, and a request that takes over 15 seconds ends with a `timeout` error. Browsers may
 call the read API with `GET` and `HEAD` from any origin (CORS). Every answer carries `X-Request-Id`.
 Rate-limited answers carry `Retry-After`. An answer with no other cache header carries
 `Cache-Control: no-store`.

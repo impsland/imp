@@ -44,7 +44,7 @@ struct ImpPage: View {
             }
         }
         SheetActions {
-            if away { SheetAction(verbatim: words("imp.a11y.call_home", entry.name), symbol: "house") { model.callHome(entry.id) } }
+            if away { SheetAction(verbatim: words("imp.a11y.call_home", entry.name), symbol: "house.fill") { model.callHome(entry.id) } }
             SheetAction(title: "devices.imp.settings", symbol: "gearshape") { ctx.router.openSettings(entry.id) }
         }
     }

@@ -21,8 +21,6 @@ struct PhoneStage: View {
     /// Opens what the Imp said with other Imps.
     /// Starts waking an Imp hatched here that has no Brain.
     var onBrain: (UUID) -> Void = { _ in }
-    /// An Imp hatched here, waiting for "Delete" to be confirmed.
-    @State private var deleting: LinkImp?
     /// An Imp hatched here, waiting for "Move to" a Mac to be confirmed.
     @State private var moving: (imp: LinkImp, mac: LinkDevice)?
     /// A shake that wants the person to pick where the Imp goes.
@@ -42,7 +40,7 @@ struct PhoneStage: View {
     /// Whether Imps are being picked together (Select in an Imp's menu), and which ones are picked so far.
     @State private var picking = false
     @State private var picked: Set<UUID> = []
-    /// Several Imps hatched here, waiting for "Goodbye" to be confirmed once for all.
+    /// The Imps hatched here that the person chose Goodbye for, asked about once for all of them.
     @State private var sayingGoodbye: [LinkImp]?
 
     var body: some View {
@@ -77,8 +75,8 @@ struct PhoneStage: View {
         .onChange(of: staged) { prunePicks() }
         .onChange(of: covered) { if covered { endPicking() } }
         .onChange(of: engine.isBlocking) { if engine.isBlocking { endPicking() } }
-        .goodbyeToMany($sayingGoodbye) { imps in
-            for imp in imps { pocket.delete(imp.id) }
+        .goodbyeQuestion(goodbyeIds, names: (sayingGoodbye ?? []).map(\.name)) { ids in
+            for id in ids { pocket.delete(id) }
             Haptics.notify(.success)
             endPicking()
         }
@@ -99,13 +97,6 @@ struct PhoneStage: View {
                             titleVisibility: .visible, presenting: menuImp.flatMap { engine.bodies[$0] }) { body in
             let source: any ChatSource = pocket.contains(body.imp.id) ? pocket : hub
             menu(for: body, source: source, awake: source.availability(body.imp.id) == .ready)
-        }
-        .confirmationDialog(deleting.map { words("phone.stage.delete.title", $0.name) } ?? "",
-                            isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }),
-                            titleVisibility: .visible, presenting: deleting) { imp in
-            Button("Delete", role: .destructive) { pocket.delete(imp.id) }
-        } message: { _ in
-            Text("phone.stage.delete.body")
         }
         .confirmationDialog(moving.map { words("phone.stage.move.title", $0.imp.name, $0.mac.name) } ?? "",
                             isPresented: Binding(get: { moving != nil }, set: { if !$0 { moving = nil } }),
@@ -454,12 +445,12 @@ struct PhoneStage: View {
                     Button { moving = (b.imp, mac) } label: { Label(words("menu.imp.move_to", mac.name), systemImage: "macbook.and.iphone") }
                 }
             } else {
-                Button { hub.sendHome(id) } label: { Label("menu.imp.send_home", systemImage: "house") }
+                Button { hub.sendHome(id) } label: { Label("menu.imp.send_home", systemImage: "house.fill") }
             }
         }
         if own {
             Section {
-                Button(role: .destructive) { deleting = b.imp } label: { Label("menu.imp.goodbye", systemImage: "trash") }
+                Button(role: .destructive) { sayingGoodbye = [b.imp] } label: { Label("menu.imp.goodbye", systemImage: "hand.wave.fill") }
             }
         }
     }
@@ -533,10 +524,15 @@ struct PhoneStage: View {
         endPicking()
     }
 
-    /// One Imp goes through the single dialog; several are asked once, for all of them.
+    /// The picked Imps hatched here are asked about once, for all of them.
     private func askGoodbyeToPicked() {
         let imps = pickedOwn
-        if imps.count == 1 { deleting = imps[0] } else if imps.count > 1 { sayingGoodbye = imps }
+        if !imps.isEmpty { sayingGoodbye = imps }
+    }
+
+    /// The ids the goodbye question is about, as the shared dialog takes them.
+    private var goodbyeIds: Binding<[UUID]?> {
+        Binding(get: { sayingGoodbye?.map(\.id) }, set: { if $0 == nil { sayingGoodbye = nil } })
     }
 
     // MARK: Wiring

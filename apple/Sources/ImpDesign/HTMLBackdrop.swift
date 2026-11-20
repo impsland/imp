@@ -117,7 +117,7 @@ enum HTMLBackdropWeb {
     static let base = URL(string: "about:blank")!
 
     /// The frame rate a backdrop's scripts get: half the screen's. CSS animations run in the compositor
-    /// and cost little; `requestAnimationFrame` loops are what keep a core busy.
+    /// and cost little. `requestAnimationFrame` loops are what keep a core busy.
     static let framesPerSecond = 30
 
     /// Holds `requestAnimationFrame` callbacks to `framesPerSecond`. Callbacks asked for in the same frame

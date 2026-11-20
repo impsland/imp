@@ -274,7 +274,7 @@ fn an_agent_is_made_shown_changed_renamed_and_removed() {
         "#e0533d",
     ]);
     assert!(made.out.contains("Made Pip"), "{}", made.out);
-    // The file is the agent; imp.json holds what the file has no field for, starting with the id.
+    // The file is the agent. imp.json holds what the file has no field for, starting with the id.
     let file = std::fs::read_to_string(w.agent_file("Pip")).unwrap();
     for part in [
         "model: ollama/qwen3#high",
@@ -564,7 +564,7 @@ fn mcp_servers_are_added_as_programs_or_addresses() {
             .collect::<Vec<_>>(),
         ["NAME", "TYPE", "TARGET", "STATE"]
     );
-    // Settings of a server; each kind has its own.
+    // Settings of a server. Each kind has its own.
     w.imp(&["mcp", "set", "files", "timeout", "5000"]);
     w.imp(&["mcp", "set", "files", "cwd", "/tmp"]);
     w.imp(&["mcp", "set", "files", "env.TOKEN", "x"]);
@@ -762,7 +762,7 @@ fn permission_rules_are_added_listed_and_removed_for_everyone_or_one_agent() {
         json!({"index": 1, "action": "triggers", "resource": "*", "effect": "deny", "source": "agent"})
     );
     assert_eq!(pip.as_array().unwrap().len(), defaults + 3);
-    // Removing is by number; the rest keep their order.
+    // Removing is by number. The rest keep their order.
     let removed = w.imp(&["permission", "remove", "1"]);
     assert!(
         removed.out.contains("Removed: deny shell rm -rf *"),

@@ -54,8 +54,8 @@ impl Permission {
     }
 }
 
-/// The first of `keys` that is a text in the JSON `arguments`; `*` when there is none (no arguments at all
-/// is how a tool list is classified, before any call is made).
+/// The first of `keys` that is a text in the JSON `arguments`, or `*` when there is none.
+/// No arguments at all is how a tool list is classified, before any call is made.
 fn argument(arguments: &str, keys: &[&str]) -> String {
     serde_json::from_str::<Value>(arguments)
         .ok()

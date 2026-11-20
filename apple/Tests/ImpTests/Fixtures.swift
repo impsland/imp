@@ -11,7 +11,7 @@ extension ImpProfile {
 }
 
 /// Apps of tests whose Imps start work that may outlive the test (a request still recording its reply). An Imp holds
-/// its app `unowned`, as in the app it never outlives it; here the app is kept for the rest of the run, so such work
+/// its app `unowned`, as in the app it never outlives it. Here the app is kept for the rest of the run, so such work
 /// finishes against a live app instead of crashing a later test.
 @MainActor enum KeptApps {
     private static var apps: [AppModel] = []

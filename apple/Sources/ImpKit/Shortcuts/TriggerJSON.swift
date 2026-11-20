@@ -168,7 +168,7 @@ extension Shortcut {
     public static let maxNameLength = 60
 
     /// A trigger from the contract's object (a kit's, or `imp_add_trigger`'s arguments). `imp` is who
-    /// it belongs to unless `for` says `every_imp`; `old` is the trigger it changes (it keeps its id,
+    /// it belongs to unless `for` says `every_imp`. `old` is the trigger it changes (it keeps its id,
     /// scope and switch). Throws a message the model or the person can act on.
     public init(tool json: JSONValue, imp: UUID, replacing old: Shortcut? = nil) throws {
         let trigger = try Trigger(on: json["on"]?.string, value: json["value"])

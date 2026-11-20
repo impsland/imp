@@ -386,7 +386,7 @@ fn show(
         AgentEvent::ToolStart(call) => {
             let _ = match call_line(&call.name, &call.arguments) {
                 CallLine::Tool(text) => {
-                    // The line names the call; what it was given follows whole, since this chat
+                    // The line names the call. What it was given follows whole, since this chat
                     // cannot open a call later.
                     let _ = writeln!(err, "  ⏺ {name} uses {text}");
                     write_details(err, argument_lines(&call.name, &call.arguments))

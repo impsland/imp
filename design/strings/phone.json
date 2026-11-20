@@ -173,7 +173,7 @@
   "phone.scan.code": {
     "note": "Button that opens the camera to scan a link code.",
     "en": "Scan",
-    "es": "Escanear",
+    "es": "Leer",
     "zh-Hans": "扫描"
   },
   "phone.paste.link": {
@@ -337,15 +337,15 @@
   },
   "phone.callhome": {
     "note": "Button: bring an Imp back.",
-    "en": "Call home",
-    "es": "Traer",
-    "zh-Hans": "叫回家"
+    "en": "Send home",
+    "es": "Enviar a casa",
+    "zh-Hans": "送回家"
   },
   "phone.callhome.label": {
     "note": "Spoken name of the call home button.",
-    "en": "Call {name} home",
-    "es": "Traer a {name}",
-    "zh-Hans": "把 {name} 叫回家",
+    "en": "Send {name} home",
+    "es": "Enviar a {name} a casa",
+    "zh-Hans": "把 {name} 送回家",
     "args": {
       "name": "string"
     }
@@ -544,21 +544,6 @@
     "en": "Ran {count} tools",
     "es": "Herramientas usadas: {count}",
     "zh-Hans": "使用了 {count} 个工具"
-  },
-  "phone.stage.delete.title": {
-    "note": "iPhone: stage delete title.",
-    "args": {
-      "name": "string"
-    },
-    "en": "Delete {name}?",
-    "es": "¿Eliminar {name}?",
-    "zh-Hans": "删除 {name}？"
-  },
-  "phone.stage.delete.body": {
-    "note": "iPhone: stage delete body.",
-    "en": "Its chats and keys are forgotten. This can't be undone.",
-    "es": "Se olvidan sus chats y claves. No se puede deshacer.",
-    "zh-Hans": "它的聊天和密钥都会被清除，此操作无法撤销。"
   },
   "phone.stage.move.title": {
     "note": "iPhone: stage move title.",
@@ -823,13 +808,13 @@
   "phone.select.menu": {
     "note": "iPhone: menu item that starts picking several Imps, with this one picked first.",
     "en": "Select",
-    "es": "Seleccionar",
+    "es": "Elegir",
     "zh-Hans": "选择"
   },
   "phone.select.deselect": {
     "note": "iPhone: VoiceOver action that takes a picked Imp out of the picks.",
     "en": "Deselect",
-    "es": "Quitar de la selección",
+    "es": "Deseleccionar",
     "zh-Hans": "取消选择"
   },
   "phone.select.title": {

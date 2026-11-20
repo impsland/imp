@@ -297,7 +297,7 @@ extension ImpPreferences {
         return own.first { $0.id == id } ?? own.first { $0.overrides == id } ?? animationLibrary.first { $0.id == id }
     }
 
-    /// Whether `ref` may play on `imp` at all (switched on; a missing one can't).
+    /// Whether `ref` may play on `imp` at all (switched on, and a missing one can't).
     public func isEnabled(_ ref: AnimationRef, imp: UUID?) -> Bool {
         switch ref {
         case .custom(let id): customAnimation(id, imp: imp)?.isEnabled ?? false

@@ -4,7 +4,7 @@ import ImpKit
 import SwiftUI
 
 /// Edits a copy of a tool (an MCP server). Nothing reconnects until Save. Paste fills it from a setup
-/// snippet (JSON config, command or URL) on the clipboard. A new tool starts as a web server; a bar at
+/// snippet (JSON config, command or URL) on the clipboard. A new tool starts as a web server. A bar at
 /// the top switches it to a local program (the name typed so far stays).
 struct ServerEditor: View {
     @State var draft: MCPServerConfig

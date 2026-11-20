@@ -746,7 +746,7 @@ Options:
                   xcrun devicectl list devices)
   --team ID       the Apple Developer Team ID to sign with (default: a team signed in to Xcode,
                   else the team of your Apple Development certificate)
-  --config NAME   Release (default) or Debug. Debug understands -demo, -openChat and more,
+  --config NAME   Release (default) or Debug. Debug understands -hatch, -openChat and more,
                   see apple/iOS/README.md.
   -h, --help      show this help
 

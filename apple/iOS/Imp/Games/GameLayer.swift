@@ -11,7 +11,7 @@ import SwiftUI
 struct GameLayer: View {
     let engine: StageEngine
     let date: Date
-    /// The stage's size (the layers lay out from the safe area now and no longer need it).
+    /// The stage's size (the layers lay out from the safe area and do not need it).
     let size: CGSize
     let insets: EdgeInsets
     /// Whether the game buttons show in the corners. Not while Imps are being picked: the picking bar is there.

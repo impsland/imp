@@ -122,7 +122,7 @@ extension HTMLBackdropTests {
             let c = rep.colorAt(x: Int(0.5 * Double(rep.pixelsWide)), y: Int(0.3 * Double(rep.pixelsHigh)))?.usingColorSpace(.sRGB)
             return c.map { $0.redComponent + $0.greenComponent + $0.blueComponent } ?? 0
         }
-        // The look takes about 1.3 s; after it a page that may not move is the picture alone, with no web view.
+        // The look takes about 1.3 s. After it, a page that may not move is the picture alone, with no web view.
         try await Task.sleep(for: .seconds(3.5))
         let seen = sky()
         #expect(seen > 0.2, "the sky shows (live: \(live)): \(seen)")

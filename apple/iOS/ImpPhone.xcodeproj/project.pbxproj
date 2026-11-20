@@ -16,6 +16,7 @@
 		0F7C71DD43E02494EE957ED2 /* PairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FE507BB816F7A06BE83F02 /* PairingView.swift */; };
 		10A8FEAAED3994CB9F8B6877 /* PhoneAppSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F066201F2ABFFB531A23D5 /* PhoneAppSection.swift */; };
 		11562AAF9BF028748223D25B /* PocketToolsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7237C199DA3C4E0C6C9D47F8 /* PocketToolsPanel.swift */; };
+		11A793680C1BFF750ADDAD33 /* GoodbyeQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29DC2096A08BF66E7735C2D /* GoodbyeQuestion.swift */; };
 		11FFEBB47FE0BB391204D124 /* IssueBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6C79866A4273D398450529 /* IssueBadge.swift */; };
 		120F363469D4AEC723B21473 /* ImpFigure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5051E3D1AB49B80B5BE06CC1 /* ImpFigure.swift */; };
 		150524892102508DC50DB777 /* PhoneSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FB3666BAFA7176923A95A2 /* PhoneSelect.swift */; };
@@ -154,6 +155,7 @@
 		9E6C79866A4273D398450529 /* IssueBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IssueBadge.swift; sourceTree = "<group>"; };
 		A426E4130941AE95721B4F66 /* LinkFileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkFileStore.swift; sourceTree = "<group>"; };
 		AA17C8D6E7748402B3655100 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		B29DC2096A08BF66E7735C2D /* GoodbyeQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GoodbyeQuestion.swift; path = ../Sources/Imp/UI/Shared/GoodbyeQuestion.swift; sourceTree = "<group>"; };
 		B31C2D953C56557D2B30BCF3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		B6297667BC85BA102DF6A825 /* Face.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Face.swift; sourceTree = "<group>"; };
 		B704DBCEBFB179FACE7B68F6 /* EmbersCoach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbersCoach.swift; sourceTree = "<group>"; };
@@ -377,6 +379,7 @@
 		CAF11B54EC0ECFD9216F4497 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				B29DC2096A08BF66E7735C2D /* GoodbyeQuestion.swift */,
 				7E4200F4E5E94BCCA1E0C678 /* Character */,
 			);
 			name = Shared;
@@ -573,6 +576,7 @@
 				EA59AA119E4F010E68D5A3CF /* GameResults.swift in Sources */,
 				F972ED1E6A05AE26D6F309DC /* GameRound.swift in Sources */,
 				E8BA8DE233B42D3C55E93B74 /* Geometry.swift in Sources */,
+				11A793680C1BFF750ADDAD33 /* GoodbyeQuestion.swift in Sources */,
 				52455C5A7F08DCE4CAFFF975 /* Haptics.swift in Sources */,
 				E8F42E3DB6AFD272B99A32B1 /* Horn.swift in Sources */,
 				120F363469D4AEC723B21473 /* ImpFigure.swift in Sources */,
@@ -697,7 +701,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 3.5.0;
+				MARKETING_VERSION = 3.5.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -839,7 +843,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 3.5.0;
+				MARKETING_VERSION = 3.5.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

@@ -3,7 +3,7 @@ import ImpDesign
 import SwiftFlow
 
 /// Where the Devices canvas looks. The layout is ours, so every device's frame is known without waiting for the
-/// canvas to measure its nodes; the first view is computed from those frames and is the same on every run.
+/// canvas to measure its nodes. The first view is computed from those frames and is the same on every run.
 enum DeviceViewport {
     /// Space kept free around the graph.
     static let padding: CGFloat = Spacing.vast

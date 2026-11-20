@@ -7,7 +7,7 @@ import SwiftUI
 /// (App-wide things live in the menu bar menu.) It is one card of buttons (`MenuCard`): the top is
 /// `ImpMenuCard`, the same as in the app's window and for a visitor, and what only sometimes applies sits under it
 /// as pills, in this order: Stop and Copy last reply, triggers, devices to visit, Copy kit and Copy link, and
-/// Goodbye last and apart. Only the place button differs from the window's menu (Home here, Free there).
+/// Goodbye last and apart. Only the place button differs from the window's menu (Send home here, Let out there).
 @MainActor
 final class ImpMenu {
     private let app: AppModel
@@ -35,7 +35,7 @@ final class ImpMenu {
                        link: { [card] in card.later { actions.copyLink(id) } },
                        goodbye: { [app, card] in
                            card.later {
-                               actions.askGoodbye(id)
+                               actions.askGoodbye([id])
                                HomeWindow.shared.show(app, imp: id)        // the window asks the question
                            }
                        })
@@ -46,7 +46,7 @@ final class ImpMenu {
         let imp = imp
         switch action {
         case .talk: card.later { imp.talk() }
-        case .type: card.later { imp.startTyping() }
+        case .message: card.later { imp.startTyping() }
         case .chat: card.later { imp.openChat() }
         case .newChat: card.later { imp.startNewChat() }
         case .hide: card.later { [app] in app.setHidden(imp.id, true) }
@@ -125,7 +125,7 @@ final class ImpMenu {
                            place: .visitor(from: visit.homeName), awake: visit.isAwake) { [app, card] action in
             switch action {
             case .talk: card.later { imp.talk() }
-            case .type: card.later { imp.startTyping() }
+            case .message: card.later { imp.startTyping() }
             case .chat: card.later { imp.openChat() }
             case .newChat: card.later { imp.startNewChat() }
             case .hide: card.later { app.setHidden(imp.id, true) }

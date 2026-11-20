@@ -14,7 +14,7 @@ extension KeyFile: SecretBackend {
 }
 
 /// Where the sign-ins of tool servers are kept. On the Mac it is `auth.json` of the shared configuration
-/// (`SharedConfigStore.mcpAuth`); on the iPhone a private file (`FileMCPAuth`).
+/// (`SharedConfigStore.mcpAuth`). On the iPhone it is a private file (`FileMCPAuth`).
 public protocol MCPAuthBackend: Sendable {
     func auth(for serverURL: String) -> McpAuth?
     func hasAuth(for serverURL: String) -> Bool

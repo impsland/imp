@@ -127,7 +127,7 @@ answered again, never taken twice. A receiver declines an Imp that is one of its
 already has a visit of from another device, and an Imp it is the home of unless the sender is its holder.
 A device has at most 8 throws from one sender waiting for its app (the rest are declined `full`), and a
 waiting throw is never forgotten to make room. A throw of an Imp of the thrower's own that no answer came
-for is called home (the receiver is told `gone`). It is remembered in the book, so after a restart the
+for is sent home (the receiver is told `gone`). It is remembered in the book, so after a restart the
 same happens to any that were in the air. A `took` that arrives after that: for one of the thrower's Imps
 it answers `gone`, for a visit that was passed on the body leaves (the receiver has it). The thrower
 remembers its last 256 timed-out throws for 10 minutes for this.
@@ -148,7 +148,7 @@ The home keeps, for every Imp that is away, its holder, a hash of its current ti
   thought lost in a dropped transfer) settles on the newest holder. At most one body stays.
 - `release` (with the ticket) sends a visiting Imp home from wherever it is: deleting a visitor, or
   forgetting its home. A release that couldn't be delivered waits for the next connection.
-- **Call home**: the home takes its Imp back at any time, kills the ticket and tells the holder `gone` as
+- **Send home**: the home takes its Imp back at any time, kills the ticket and tells the holder `gone` as
   soon as it can. The home is always the source of truth.
 
 The home answers `ask`, `stop`, `newChat`, `openChat`, `felt`, `file` and `talks` for an Imp only from its current

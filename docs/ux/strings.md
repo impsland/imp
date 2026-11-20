@@ -104,7 +104,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `computer.help.control` | Sees and operates other apps. Needs the Screen & System Audio Recording and Accessibility permissions. | Ve y maneja otras apps. Necesita los permisos de Grabación de pantalla y audio del sistema y de Accesibilidad. | 查看并操作其他应用。需要“屏幕与系统音频录制”和“辅助功能”权限。 |
 | `computer.help.senses` | Reads the battery, processor, network and open apps, and the page open in the browser. | Lee la batería, el procesador, la red y las apps abiertas, y la página abierta en el navegador. | 读取电池、处理器、网络和打开的应用，以及浏览器中打开的页面。 |
 | `devices.access.talk` | Talk & files | Hablar y archivos | 对话和文件 |
-| `devices.call_all_home` | Call all home | Traerlos a todos | 全部叫回家 |
+| `devices.call_all_home` | Send all home | Enviar todos a casa | 全部送回家 |
 | `devices.channel.title` | {from} ⇄ {to} | {from} ⇄ {to} | {from} ⇄ {to} |
 | `devices.chip.label_ours` | {name}, an Imp of this Mac, on {node} | {name}, un Imp de este Mac, en {node} | {name}，这台 Mac 的 Imp，在 {node} 上 |
 | `devices.chip.label_visitor` | {name}, an Imp from another device, on {node} | {name}, un Imp de otro dispositivo, en {node} | {name}，来自其他设备的 Imp，在 {node} 上 |
@@ -152,7 +152,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `devices.route.local` | On the local network | En la red local | 通过本地网络 |
 | `devices.route.local_at` | On the local network at {address} | En la red local en {address} | 通过本地网络，地址 {address} |
 | `devices.route.tag_local` | Wi-Fi | Wi-Fi | Wi-Fi |
-| `devices.scan` | Scan code | Escanear código | 扫描代码 |
+| `devices.scan` | Scan code | Leer código | 扫描代码 |
 | `devices.show` | Show code | Ver código | 显示代码 |
 | `devices.state.connected` | Connected | Conectado | 已连接 |
 | `devices.state.connecting` | Connecting | Conectando | 正在连接 |
@@ -280,7 +280,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `home.corner.devices.away` | a linked device is away | un dispositivo vinculado está ausente | 有已链接的设备不在线 |
 | `home.corner.devices.connected` | one: {count} connected / other: {count} connected | one: {count} conectado / other: {count} conectados | other: 已连接 {count} 台 |
 | `home.corner.show_hidden` | Hidden | Ocultos | 已隐藏 |
-| `home.empty.link` | Link a device | Vincular un dispositivo | 连接设备 |
+| `home.empty.link` | Link a device | Vincular dispositivo | 连接设备 |
 | `home.empty.link.help` | Link a device and bring an Imp from it | Vincula un dispositivo y trae un Imp de él | 连接设备，并从它带来一个 Imp |
 | `home.empty.new_imp` | Hatch | Incubar | 孵化 |
 | `home.empty.new_imp.help` | Hatch an Imp and give it a Brain | Haz nacer un Imp y dale un cerebro | 孵化一个 Imp，并给它一个大脑 |
@@ -292,7 +292,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `home.hidden.title` | Hidden ({count}) | Ocultos ({count}) | 已隐藏（{count}） |
 | `home.tray.quit` | Quit | Salir | 退出 |
 | `home.tray.show` | Open | Abrir | 打开 |
-| `imp.a11y.call_home` | Call {name} home | Traer a {name} | 叫 {name} 回家 |
+| `imp.a11y.call_home` | Send {name} home | Enviar a {name} a casa | 把 {name} 送回家 |
 | `imp.a11y.hide` | Hide {name} | Ocultar {name} | 隐藏 {name} |
 | `imp.a11y.label` | {name}, {state} | {name}, {state} | {name}，{state} |
 | `imp.a11y.let_out` | Let {name} out | Soltar a {name} | 放 {name} 出来 |
@@ -301,7 +301,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `imp.a11y.talk` | Talk to {name} | Hablar con {name} | 和 {name} 说话 |
 | `imp.call_home.message` | It comes back here now, even if {device} is gone for good. If {device} connects again, it learns the Imp left. | Vuelve aquí ahora, aunque {device} ya no esté. Si {device} se conecta de nuevo, sabrá que el Imp se fue. | 它现在就回到这里，即使 {device} 再也不会出现。如果 {device} 再次连接，它会知道 Imp 已经离开。 |
 | `imp.call_home.other_device` | the other device | el otro dispositivo | 另一台设备上 |
-| `imp.call_home.title` | Bring {name} back from {device}? | ¿Traer a {name} de {device}? | 把 {name} 从 {device} 叫回来？ |
+| `imp.call_home.title` | Send {name} home from {device}? | ¿Enviar a {name} a casa desde {device}? | 把 {name} 从 {device} 送回家？ |
 | `imp.drag.hint` | Drag to move it. | Arrastra para mover. | 拖动即可移动。 |
 | `imp.drag.out_hint` | Drag it out of the window to let it out. | Arrástralo fuera de la ventana para dejarlo salir. | 把它拖出窗口，就能放它出来。 |
 | `imp.hide.undo` | {name} is hidden. | {name} está oculto. | {name} 已隐藏。 |
@@ -401,34 +401,33 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `menu.bar.state.hidden` | Hidden | Oculto | 已隐藏 |
 | `menu.bar.state.home` | At home | En casa | 在家 |
 | `menu.bar.state.out` | Out | Fuera | 在外面 |
-| `menu.canvas.devices` | Devices | Equipos | 设备 |
+| `menu.canvas.devices` | Devices | Dispositivos | 设备 |
 | `menu.canvas.new_imp` | New Imp | Nuevo Imp | 新建 Imp |
 | `menu.canvas.reset_background` | Reset Background | Restablecer fondo | 重置背景 |
 | `menu.canvas.select_all` | Select All | Seleccionar todo | 全选 |
 | `menu.canvas.settings` | Settings | Ajustes | 应用设置 |
 | `menu.canvas.show_hidden` | Hidden ({count}) | Ocultos ({count}) | 已隐藏（{count}） |
-| `menu.group.free_help` | They step out onto the desktop, right where they stand. | Salen al escritorio, justo donde están. | 它们走到桌面上，就在各自站着的地方。 |
 | `menu.group.goodbye` | Goodbye to {count} Imps… | Adiós a {count} Imps… | 向 {count} 个 Imp 告别… |
 | `menu.group.hide_help` | They hide until you show them again. Their triggers rest meanwhile. | Se esconden hasta que los vuelvas a mostrar. Mientras, sus disparadores descansan. | 它们会藏起来，直到你再次显示。在此期间它们的触发器暂停。 |
 | `menu.group.kit_help` | Copies one kit with all of them, to share or keep. | Copia un kit con todos ellos, para compartir o guardar. | 把它们全部复制为一个套件，用于分享或保存。 |
+| `menu.group.let_out_help` | They step out onto the desktop, right where they stand. | Salen al escritorio, justo donde están. | 它们走到桌面上，就在各自站着的地方。 |
 | `menu.group.title` | {count} Imps | {count} Imps | {count} 个 Imp |
-| `menu.imp.call_home` | Call Home | Traer | 叫回家 |
-| `menu.imp.call_home_ask` | Call Home… | Traer… | 叫回家… |
+| `menu.imp.call_home_ask` | Send home… | Enviar a casa… | 送回家… |
 | `menu.imp.chat` | Chat | Chat | 对话 |
 | `menu.imp.chat_help` | Everything you and {name} said | Todo lo que habéis dicho tú y {name} | 你和 {name} 说过的所有话 |
 | `menu.imp.copy_kit` | Copy kit | Copiar kit | 复制套件 |
 | `menu.imp.copy_link` | Copy link | Copiar enlace | 复制链接 |
-| `menu.imp.free` | Free | Soltar | 放出 |
-| `menu.imp.free_help` | {name} steps out onto the desktop, right where it stands. | {name} sale al escritorio, justo donde está. | {name} 走到桌面上，就在它站着的地方。 |
 | `menu.imp.goodbye` | Goodbye | Adiós | 再见 |
 | `menu.imp.hide` | Hide | Ocultar | 隐藏 |
 | `menu.imp.hide_help` | {name} hides until you show it again. Its triggers rest meanwhile. | {name} se esconde hasta que lo vuelvas a mostrar. Mientras, sus disparadores descansan. | {name} 会藏起来，直到你再次显示它。在此期间它的触发器暂停。 |
-| `menu.imp.home` | Home | A casa | 回家 |
-| `menu.imp.home_help` | {name} goes back into the Imps' window, and its triggers rest. | {name} vuelve a la ventana de los Imps y sus disparadores descansan. | {name} 回到 Imp 窗口，它的触发器暂停。 |
 | `menu.imp.let_out` | Let out | Soltar | 放出来 |
+| `menu.imp.let_out_help` | {name} steps out onto the desktop, right where it stands. | {name} sale al escritorio, justo donde está. | {name} 走到桌面上，就在它站着的地方。 |
+| `menu.imp.message` | Message | Mensaje | 消息 |
+| `menu.imp.message_help` | Message to {name} | Mensaje para {name} | 给 {name} 发消息 |
 | `menu.imp.move_tip` | {name} lives on {device} from now on. | {name} vive en {device} desde ahora. | {name} 从现在起住在 {device}。 |
 | `menu.imp.move_to` | Move to {name} | Mover a {name} | 搬到 {name} |
 | `menu.imp.send_home` | Send home | Enviar a casa | 送回家 |
+| `menu.imp.send_home_help` | {name} goes back into the Imps' window, and its triggers rest. | {name} vuelve a la ventana de los Imps y sus disparadores descansan. | {name} 回到 Imp 窗口，它的触发器暂停。 |
 | `menu.imp.send_to` | Visit {name} | Visitar {name} | 去 {name} 做客 |
 | `menu.imp.settings` | Settings | Ajustes | Imp 设置 |
 | `menu.imp.settings_help` | {name}'s settings | Ajustes de {name} | {name} 的设置 |
@@ -436,8 +435,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `menu.imp.talk` | Talk | Hablar | 说话 |
 | `menu.imp.talk_help` | Talk to {name} | Hablar con {name} | 和 {name} 说话 |
 | `menu.imp.talks` | Talks | Charlas | 对话 |
-| `menu.imp.type` | Type | Escribir | 输入 |
-| `menu.imp.type_help` | Type to {name} | Escribir a {name} | 给 {name} 打字 |
 | `menu.imp.visit` | Visit | Visitar | 去做客 |
 | `menu.imp.visit_none` | Visit another device | Visitar otro dispositivo | 去别的设备做客吧 |
 | `menu.imp.visit_tip` | {name} visits {device} and can come back. | {name} visita {device} y puede volver. | {name} 去 {device} 做客，还可以回来。 |
@@ -470,8 +467,8 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.brains.default` | New Imps start with {name}'s Brain. | Los Imps nuevos empiezan con el cerebro de {name}. | 新的 Imp 会沿用 {name} 的大脑。 |
 | `phone.brains.empty` | No Imps yet. | Aún no hay Imps. | 还没有 Imp。 |
 | `phone.brains.set_up` | Set up | Configurar | 设置 |
-| `phone.callhome` | Call home | Traer | 叫回家 |
-| `phone.callhome.label` | Call {name} home | Traer a {name} | 把 {name} 叫回家 |
+| `phone.callhome` | Send home | Enviar a casa | 送回家 |
+| `phone.callhome.label` | Send {name} home | Enviar a {name} a casa | 把 {name} 送回家 |
 | `phone.chat.answering` | Answering {from}… | Responde a {from}… | 正在回复 {from}… |
 | `phone.chat.ask_again` | Retry | Reintentar | 重试 |
 | `phone.chat.ask_to` | Ask {name} to  | Pide a {name} que  | 让 {name} 去  |
@@ -534,12 +531,12 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.requests.timeout.info` | If the Brain takes longer than this, the Imp stops waiting and says so. | Si el cerebro tarda más que esto, el Imp deja de esperar y lo dice. | 大脑超过这个时间还没好，Imp 就不等了，并告诉你。 |
 | `phone.requests.timeout.title` | Wait up to | Esperar hasta | 最长等待 |
 | `phone.requests.title` | Waiting | Espera | 等待 |
-| `phone.scan.code` | Scan | Escanear | 扫描 |
+| `phone.scan.code` | Scan | Leer | 扫描 |
 | `phone.secret.hidden` | Entered, hidden | Oculta | 已输入，已隐藏 |
 | `phone.select.all` | Select All | Seleccionar todo | 全选 |
-| `phone.select.deselect` | Deselect | Quitar de la selección | 取消选择 |
+| `phone.select.deselect` | Deselect | Deseleccionar | 取消选择 |
 | `phone.select.hidden` | {count} Imps are hidden. | {count} Imps están ocultos. | 已隐藏 {count} 个 Imp。 |
-| `phone.select.menu` | Select | Seleccionar | 选择 |
+| `phone.select.menu` | Select | Elegir | 选择 |
 | `phone.select.title` | {count} selected | {count} seleccionados | 已选 {count} 个 |
 | `phone.server.placeholder_hop` | hop.example.com:4677 | hop.example.com:4677 | hop.example.com:4677 |
 | `phone.shake.dir.any` | Any | Cualquiera | 任意 |
@@ -554,8 +551,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.shake.which.title` | Device | Dispositivo | 设备 |
 | `phone.share` | Share | Compartir | 共享 |
 | `phone.stage.back_to` | Back to {name} | Volver a {name} | 回到 {name} |
-| `phone.stage.delete.body` | Its chats and keys are forgotten. This can't be undone. | Se olvidan sus chats y claves. No se puede deshacer. | 它的聊天和密钥都会被清除，此操作无法撤销。 |
-| `phone.stage.delete.title` | Delete {name}? | ¿Eliminar {name}? | 删除 {name}？ |
 | `phone.stage.move.body` | {imp} moves in on {mac} for good, and its key goes with it. {mac} asks you to look it over first. | {imp} se va a {mac} para siempre y su clave se va con él. {mac} te pide que lo revises antes. | {imp} 将永久搬到 {mac}，它的密钥也会一起带走。{mac} 请你先过目。 |
 | `phone.stage.move.title` | Move {imp} to {device}? | ¿Mover {imp} a {device}? | 把 {imp} 移到 {device}？ |
 | `phone.stage.nobody` | Nobody here | Nadie aquí | 这里没有人 |
@@ -658,7 +653,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.bubble.showing.title` | Showing | Mostrar | 显示 |
 | `settings.bubble.size.info` | The size of the chat bubble. Drag its corner to change it. | El tamaño de la burbuja del chat. Arrastra su esquina para cambiarlo. | 聊天气泡的大小。拖动它的角即可调整。 |
 | `settings.bubble.size.title` | Size | Tamaño | 大小 |
-| `settings.devices.call_home` | Call its Imps home | Traer a sus Imps | 把它上面的 Imp 叫回家 |
+| `settings.devices.call_home` | Send its Imps home | Enviar a sus Imps a casa | 把它上面的 Imp 送回家 |
 | `settings.devices.forget_all.title` | Forget all | Olvidar todo | 全部忘记 |
 | `settings.devices.link.info` | Link another device so your Imps can visit it. | Vincula otro dispositivo para que tus Imps puedan visitarlo. | 连接另一台设备，让你的 Imp 去做客。 |
 | `settings.devices.link.title` | Link | Enlazar | 关联 |
@@ -758,7 +753,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tool.add_kit` | Add kits | Añadir kits | 添加套件 |
 | `tool.add_tool` | Add | Añadir | 添加 |
 | `tool.add_trigger` | Add | Añadir | 添加 |
-| `tool.browser_page` | Browser page | Página del navegador | 浏览器页面 |
+| `tool.browser_page` | Browser page | Página web | 浏览器页面 |
 | `tool.create_imp` | Create an Imp | Crear un Imp | 创建 Imp |
 | `tool.export_kit` | Export kits | Exportar kits | 导出套件 |
 | `tool.list_tools` | List | Listar | 列出 |
@@ -794,11 +789,11 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tools.help.browser` | Lets the Imp look at pages and use the browser you opened for it. | Deja al Imp ver páginas y usar el navegador que le abriste. | 让 Imp 查看网页，并使用你为它打开的浏览器。 |
 | `tools.help.mcp` | Extra tools added from outside. Each one gives the Imp new things to do. | Herramientas extra añadidas de fuera. Cada una da al Imp cosas nuevas que hacer. | 从外面加进来的额外工具。每个都让 Imp 多会一些事。 |
 | `tools.help.server` | A program or website that gives the Imp more tools. | Un programa o sitio web que da más herramientas al Imp. | 给 Imp 提供更多工具的程序或网站。 |
-| `tools.kind` | Kind of tool | Tipo de herramienta | 工具类型 |
+| `tools.kind` | Kind of tool | Tipo | 工具类型 |
 | `tools.mcp_connected` | Connected | Conectado | 已连接 |
 | `tools.mcp_failed` | Could not start | No se pudo iniciar | 启动失败 |
 | `tools.mcp_needs_signin` | Sign-in needed | Falta iniciar sesión | 需要登录 |
-| `tools.mcp_sign_in` | Sign in | Iniciar sesión | 登录 |
+| `tools.mcp_sign_in` | Sign in | Entrar | 登录 |
 | `tools.mcp_sign_out` | Sign out | Cerrar sesión | 退出登录 |
 | `tools.mcp_starting` | Starting | Iniciando | 正在启动 |
 | `tools.new_server` | New | Nuevo | 新建 |

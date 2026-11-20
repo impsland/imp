@@ -16,7 +16,7 @@ struct AnimationRow: View, Equatable {
         /// Made for one Imp only: its name.
         var owner: String?
         var made: Bool
-        /// Where it applies, shown under the name (an Imp's own list); with the Imp's name.
+        /// Where it applies, shown under the name (an Imp's own list). With the Imp's name.
         var scope: SettingScope?
         var scopeName = ""
     }

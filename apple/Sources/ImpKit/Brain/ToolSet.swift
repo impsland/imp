@@ -19,7 +19,7 @@ public struct ToolSet: ToolProvider {
 
     /// The tools the selection leaves on, with what the person wrote over their names and descriptions: the ones
     /// the model is offered. A written name that is not allowed (`ToolText.isValid`) or that another offered tool has
-    /// is ignored. The entry keeps the tool's own name (`entry.name`); `spec.name` is the one the model uses.
+    /// is ignored. The entry keeps the tool's own name (`entry.name`). `spec.name` is the one the model uses.
     private func offered(_ all: [(member: ToolProvider, tool: CatalogTool)]) -> [(member: ToolProvider, tool: CatalogTool, real: String)] {
         let on = all.filter { selection.allows($0.tool.entry) }
         var taken = Set(on.map(\.tool.spec.name))

@@ -48,7 +48,7 @@ enum Permission: String, CaseIterable, Identifiable, Hashable {
 
     /// The completion handlers are `@Sendable` on purpose: macOS calls them on a background queue,
     /// and a closure written here would otherwise be main-actor isolated, which Swift 6 checks at
-    /// run time and turns into a crash (that's how granting Speech Recognition used to quit Imp).
+    /// run time and turns into a crash.
     @MainActor func request() {
         switch self {
         case .microphone:

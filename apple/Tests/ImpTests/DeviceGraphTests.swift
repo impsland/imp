@@ -34,7 +34,7 @@ import Testing
         #expect(graph.edges.isEmpty)
     }
 
-    /// The Hop is on the canvas only when a channel goes through it; then it says how it stands.
+    /// The Hop is on the canvas only when a channel goes through it. Then it says how it stands.
     @Test func theHopIsOnTheCanvasOnlyWhenUsedAndSaysHowItStands() throws {
         func standing(_ text: String) throws -> HopStanding {
             let map = DeviceMap.build(thisMac: "Mac", peers: [studio], server: hop, imps: [], mcpServers: [])
@@ -216,13 +216,13 @@ import Testing
         let fromHop = graph.edges.filter { $0.source == hopNode.id }
         #expect(fromHop.map(\.target).sorted() == [studio.id.uuidString, other.id.uuidString].sorted())
         #expect((toHop + fromHop).allSatisfy { $0.data?.look == .hop })
-        // The shared half opens the Hop; the other halves open their channel.
+        // The shared half opens the Hop. The other halves open their channel.
         #expect(graph.sheet(ofEdge: toHop[0].id) == .hop)
         #expect(fromHop.allSatisfy { if case .about(.channel)? = graph.sheet(ofEdge: $0.id) { true } else { false } })
         #expect(map.hopInUse)
     }
 
-    /// The badge says how a line is travelled and which plugs are in for its device; a device that is not Mine is locked.
+    /// The badge says how a line is travelled and which plugs are in for its device. A device that is not Mine is locked.
     @Test func aLinesBadgeHasItsRouteAndThePlugsThatAreIn() throws {
         let stranger = DeviceMap.Peer(id: UUID(), name: "Visitor", kind: .mac, reach: .direct, isTrusted: false)
         let (map, plain) = graph(peers: [phone, stranger, studio], server: hop)
@@ -278,7 +278,7 @@ import Testing
         #expect(try !isAway(cinder.imp.id, in: phone.id.uuidString), "Cinder is at home on the iPhone")
     }
 
-    /// A channel and a tether attach at different points, so the two never run along each other; the side of a tether
+    /// A channel and a tether attach at different points, so the two never run along each other. The side of a tether
     /// follows where its home is.
     @Test func tethersAndChannelsAttachAtDifferentPoints() throws {
         let away = imp("Dot", awayOn: phone.id)
@@ -432,7 +432,7 @@ import Testing
         }
     }
 
-    /// Choosing Custom in the Hop's card clears the address; the Hop's sheet must stay open then, whether or not the
+    /// Choosing Custom in the Hop's card clears the address. The Hop's sheet must stay open then, whether or not the
     /// map still has anything to say about the Hop, while a sheet about a forgotten device closes.
     @Test func theHopSheetStaysOpenWhenTheHopIsClearedButASheetAboutAGoneDeviceCloses() {
         for server in ["", hop] {

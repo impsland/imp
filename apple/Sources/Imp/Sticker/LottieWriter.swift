@@ -149,7 +149,7 @@ struct LottieWriter {
         return "[" + (colours + alphas).joined(separator: ",") + "]"
     }
 
-    /// A value that is the same in every keyframe is written once; one that changes is keyframed and moves in
+    /// A value that is the same in every keyframe is written once. One that changes is keyframed and moves in
     /// a straight line between keyframes. A keyframe that a straight line between its neighbours already
     /// passes within `tolerance` of (in every number of the value) is left out. `wrap`: a path's value sits in
     /// a one-item array in a keyframe.

@@ -25,7 +25,7 @@ public struct SharedSnapshot: Hashable, Sendable {
 }
 
 /// What reading gave: the shared part of the preferences, and which provider and which agent file each
-/// service and Imp is (the app keeps its own ids; the files keep names).
+/// service and Imp is (the app keeps its own ids, and the files keep their names).
 public struct SharedRead: Sendable {
     public var prefs = ImpPreferences()
     public var providers: [UUID: String] = [:]
@@ -35,7 +35,7 @@ public struct SharedRead: Sendable {
 
 /// What saving must do to the files, worked out against what was read last.
 public struct SharedWrite: Sendable {
-    /// A merge patch for `imp.json`; nil when nothing in it changes.
+    /// A merge patch for `imp.json`. Nil when nothing in it changes.
     public var config: JSON?
     /// A merge patch for each agent file that changes, by the file's name (a new file is made).
     public var agents: [(name: String, patch: JSON)] = []
@@ -48,7 +48,7 @@ public struct SharedWrite: Sendable {
 }
 
 /// The mapping between the app's preferences and the shared configuration (`docs/architecture/configuration.md`).
-/// Pure: the files are read and written by `SharedConfigStore`. Only the shared fields are mapped; what
+/// Pure: the files are read and written by `SharedConfigStore`. Only the shared fields are mapped. What
 /// belongs to a screen stays in `LocalPreferences`.
 public enum SharedMapping {
     // MARK: Names and ids
@@ -300,7 +300,7 @@ public enum SharedMapping {
                 "name": name.isEmpty || name == id ? .null : .string(name),
                 "options": .object(["baseURL": .string(service.baseURL)]),
             ]
-            // The default Brain's own model is `model`'s; a provider holds a model of its own only for when it is picked.
+            // The default Brain's own model is `model`'s. A provider holds a model of its own only when it is picked.
             let isDefaults = defaultRef?.provider == id && defaultRef?.model == service.model && baseConfig["providers"]?[id]?["defaultModel"] == nil
             if !isDefaults {
                 node["defaultModel"] = .optional(service.model.isEmpty ? nil : service.model)
@@ -386,7 +386,7 @@ public enum SharedMapping {
             out.removals.append(file)
             impsPatch[file] = .null
         }
-        // Extras of an Imp that was renamed are moved by the core; the old key is gone with it.
+        // Extras of an Imp that was renamed are moved by the core. The old key is gone with it.
         for r in out.renames where impsPatch[r.old] == nil { impsPatch[r.old] = .null }
         patch["imps"] = impsPatch.isEmpty ? .null : .object(impsPatch)
 

@@ -16,7 +16,7 @@ extension EnvironmentValues {
 
 /// The picture of where every Imp is, as a canvas that pans, zooms and lets devices be moved: devices as cards with
 /// their Imps inside, the channels between devices (solid on the local network, dashed through the Hop, with a badge of
-/// the plugs that are in) and a thin tether from an Imp to the device it thinks on. `DeviceGraph` decides what is on it; this draws it with SwiftFlow in
+/// the plugs that are in) and a thin tether from an Imp to the device it thinks on. `DeviceGraph` decides what is on it. This draws it with SwiftFlow in
 /// the app's look. It only reports what was pressed (`open`): the sheet is the screen's. Nothing on it is
 /// selectable, connectable or deletable, so SwiftFlow's own keys (Delete, undo) never act on the map.
 struct DevicesCanvas: View {
@@ -37,7 +37,7 @@ struct DevicesCanvas: View {
     @State private var hoveredNode: String?
     @State private var hoveredEdge: String?
     /// The canvas's size, and whether the person has panned or zoomed since it was last fitted: until then the
-    /// canvas keeps the whole map in view as the window changes; after, a refresh of the link leaves the view alone.
+    /// canvas keeps the whole map in view as the window changes. After, a refresh of the link leaves the view alone.
     @State private var canvas: CGSize = .zero
     @State private var steered = false
     @Environment(\.colorScheme) private var scheme
@@ -46,7 +46,7 @@ struct DevicesCanvas: View {
 
     var body: some View {
         let base = DeviceGraph.build(map, hopText: hop, access: access, moved: moved)
-        // Hover puts something in focus, else the open sheet's subject; the rest is dimmed. Only drawing changes: the
+        // Hover puts something in focus, else the open sheet's subject. The rest is dimmed. Only drawing changes: the
         // nodes keep their ids and places.
         let focus = hoveredNode.flatMap(base.focus(ofNode:)) ?? hoveredEdge.flatMap(base.focus(ofEdge:)) ?? sheetFocus
         let graph = base.shown(in: focus)
@@ -85,7 +85,7 @@ struct DevicesCanvas: View {
                 }
             },
             overlay: { AnyView(controls(graph)) })
-        // SwiftFlow's nodes are drawn without accessibility names of their own; the list below stands in for the
+        // SwiftFlow's nodes are drawn without accessibility names of their own. The list below stands in for the
         // canvas, so every device, Imp and line can be read and opened.
         .accessibilityRepresentation {
             VStack {

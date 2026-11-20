@@ -106,14 +106,14 @@ needs keys, Imp opens its form. Command arguments are exported as they are, so *
 
 ## Compatibility
 
-A kit says which kit format it is in `"format"` (a whole number; this Imp reads and writes format 1). Imp always writes it, a
+A kit says which kit format it is in `"format"` (a whole number. This Imp reads and writes format 1). Imp always writes it, a
 kit without it is read as format 1, and a kit in a newer format than this Imp reads is refused with a message to update Imp.
 Adding an optional field never changes the format: older Imps ignore keys they don't know and give a missing one its default.
 `"app"` is the version of Imp that wrote the file, for information only. The rules are in `spec/PROTOCOL.md`.
 
 A kit can name **skills** to install: `"skills": [{ "name": "pdf-tools", "source": "owner/repo/path" }]`. A name is a-z, 0-9 and
-dashes between them (up to 64 characters); a source is `owner/repo`, `owner/repo/path` or an https address (up to 200
-characters, no spaces, quotes or shell characters); up to 20. The review lists each with the command `npx skills add <source>`
+dashes between them (up to 64 characters). A source is `owner/repo`, `owner/repo/path` or an https address (up to 200
+characters, no spaces, quotes or shell characters). Up to 20. The review lists each with the command `npx skills add <source>`
 and a Copy button. Imp never runs it: you install a skill yourself, in Terminal.
 
 ## Ready-made kits

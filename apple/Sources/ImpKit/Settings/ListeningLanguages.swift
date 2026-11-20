@@ -18,7 +18,7 @@ public enum ListeningLanguages {
     /// How far another language must score above the sticky one to take over.
     public static let switchMargin = 0.08
 
-    /// The locales to listen in, the sticky one first. `chosen` are the person's picks; when there are
+    /// The locales to listen in, the sticky one first. `chosen` are the person's picks. When there are
     /// none, the device's preferred languages are used. Each is matched to a locale the recognizer
     /// supports: the same identifier, else the same language (in `region` when there is one).
     public static func candidates(chosen: [String], preferred: [String], supported: [String],

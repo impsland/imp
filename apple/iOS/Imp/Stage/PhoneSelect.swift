@@ -71,8 +71,8 @@ struct PickBottomBar: View {
     var body: some View {
         HStack(spacing: Spacing.small) {
             action("menu.imp.hide", symbol: "eye.slash", id: "pick.hide", run: hide)
-            if canSendHome { action("menu.imp.send_home", symbol: "house", id: "pick.home", run: sendHome) }
-            if canSayGoodbye { action("menu.imp.goodbye", symbol: "trash", id: "pick.goodbye", danger: true, run: sayGoodbye) }
+            if canSendHome { action("menu.imp.send_home", symbol: "house.fill", id: "pick.home", run: sendHome) }
+            if canSayGoodbye { action("menu.imp.goodbye", symbol: "hand.wave.fill", id: "pick.goodbye", danger: true, run: sayGoodbye) }
         }
         .padding(Spacing.small)
         .background(Tone.card, in: RoundedRectangle(cornerRadius: Radius.large, style: .continuous))
@@ -92,19 +92,5 @@ struct PickBottomBar: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier(id)
-    }
-}
-
-extension View {
-    /// Asks once before several Imps hatched here are deleted, with their names listed, and runs `confirm` for them all.
-    func goodbyeToMany(_ imps: Binding<[LinkImp]?>, confirm: @escaping ([LinkImp]) -> Void) -> some View {
-        confirmationDialog(imps.wrappedValue.map { words("goodbye.many.title", $0.count) } ?? "",
-                           isPresented: Binding(get: { imps.wrappedValue != nil }, set: { if !$0 { imps.wrappedValue = nil } }),
-                           titleVisibility: .visible, presenting: imps.wrappedValue) { list in
-            Button(role: .destructive) { confirm(list) } label: { Text("goodbye.confirm") }
-            Button(role: .cancel) {} label: { Text("goodbye.many.cancel") }
-        } message: { list in
-            Text(verbatim: list.map(\.name).formatted(.list(type: .and)) + "\n\n" + String(localized: "goodbye.many.message"))
-        }
     }
 }

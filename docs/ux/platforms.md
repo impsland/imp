@@ -50,7 +50,7 @@ Menus use the platform's own style: `NSMenu` on macOS, a popup menu on iPhone an
 
 ## Letting an Imp out
 
-| Platform | Free Imps |
+| Platform | Let out |
 | --- | --- |
 | macOS | Yes, a borderless panel. |
 | Windows | Yes, a borderless topmost layered window. |

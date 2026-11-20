@@ -16,6 +16,8 @@ update. The tools in the quick start below also need [Node.js](https://nodejs.or
 
 To build the version in a checkout of this repository instead, run `cargo install --path chat --locked`.
 
+Full reference: [docs/apps/cli-chat.md](../docs/apps/cli-chat.md) and [docs/apps/cli-commands.md](../docs/apps/cli-commands.md).
+
 ## Quick start
 
 An Imp that works with the files of the folder you start the chat in:
@@ -144,7 +146,7 @@ An empty chat shows the Imp in the middle of the screen, with how to start and w
 Models that think show it. While one thinks, a dim `Thinking` block streams its reasoning, the last four
 rows of it, so the screen does not jump. When the answer or a tool call starts, the block becomes one line,
 `✻ Thought for 3s`, like a tool call's `⏺` line. Click it, or press Ctrl+O (which opens the latest tool call
-or thought), to read the whole reasoning; the arrows walk between calls and thoughts. Every phase of thinking
+or thought), to read the whole reasoning. The arrows walk between calls and thoughts. Every phase of thinking
 in a turn gets its own line, and they stay when you scroll back. The reasoning is only shown. It is never
 sent back to the model. Reasoning is read from `reasoning`, `reasoning_content` and `reasoning_details`
 (OpenRouter, DeepSeek, vLLM, LM Studio) and from a `<think>…</think>` block at the start of the reply (Ollama).
@@ -181,7 +183,7 @@ with `/`.
 | `/imp [NAME]` | List the Imps (and visitors), or talk to another one |
 | `/model [provider/model#variant]` | Show or change the model |
 | `/agent …` | `list`, `show`, `new`, `set`, `rename`, `remove`: the same as `imp agent` (editing is for the terminal) |
-| `/provider …`, `/auth …` | Services and keys. `/auth set PROVIDER` asks for the key hidden; it is never shown or kept in the history |
+| `/provider …`, `/auth …` | Services and keys. `/auth set PROVIDER` asks for the key hidden. It is never shown or kept in the history |
 | `/mcp …` | `list` (with each server's tools, or why one did not start), `add`, `set`, `remove`, `enable`, `disable` |
 | `/permission …` | `list`, `add`, `remove` |
 | `/skill …`, `/command …` | `list` and `show` |
@@ -191,7 +193,7 @@ with `/`.
 | `/pair` | Show a code to link a Mac or an iPhone |
 | `/send DEVICE [IMP]` | Send this Imp (or another) to a linked device |
 | `/call [IMP]` | Bring an Imp back from another device |
-| `/return [VISITOR]` | Send a visiting Imp back to its home |
+| `/return [VISITOR]` | Send a visiting Imp back to its home device |
 | `/trust DEVICE [off]` | Let your Imps use their tools for one of your devices |
 | `/forget DEVICE` | End the link with a device |
 
@@ -231,7 +233,7 @@ The full guide, with examples, is in the documentation under *Terminal app* (`do
 
 ## Where everything is kept
 
-The terminal app and the Mac app share one configuration; set something up in one and the other shows it
+The terminal app and the Mac app share one configuration. Set something up in one and the other shows it
 (`docs/architecture/configuration.md` is the reference).
 
 | what | where |
@@ -296,7 +298,7 @@ my-app/
   is where standing rules belong.
 - **Skills** follow the [Agent Skills](https://agentskills.io) format: a `SKILL.md` whose front matter has a
   `name` (the folder's name: lowercase letters, digits and dashes) and a `description` of when to use it.
-  Only names and descriptions go in the system text; the Imp's `skill` tool reads the whole skill when a task
+  Only names and descriptions go in the system text. The Imp's `skill` tool reads the whole skill when a task
   needs it, so many skills cost few words. A `deny` rule on `skill` switches it off.
 - **agents/NAME.md** is an agent (see above). A nearer folder wins over a farther one, and a project wins
   over `~/.agents`, by name: the project's `review.md` replaces your `review` there.

@@ -1,9 +1,9 @@
 // Imp on a canvas, for the popup. A trimmed port of the app's own renderer (Face, Motion, Head,
-// Horn, Palette, Extras), so an Imp here has the head, curled horns, eyes, colours and idle life it
-// has on the Mac and the iPhone. The Imp server's web gallery has its own copy in
-// server/den/web/assets/imp.js, which is fuller, so the two copies can drift apart. This file keeps
-// only what the popup needs: a mood, breathing, blinking and looking at the pointer, with no
-// animations and no glyphs.
+// Horn, Palette, Extras in apple/Sources/Imp/Character), so an Imp here has the head, curled horns,
+// eyes, colours and idle life it has on the Mac and the iPhone. The Imp server's web gallery has its
+// own copy in server/den/web/assets/imp.js, which is fuller, so the two copies can drift apart. This
+// file keeps what the popup needs: the face and its moods, breathing, blinking, and looking at the
+// pointer. It does not play the app's Animations.
 
 const TAU = Math.PI * 2;
 
@@ -26,7 +26,11 @@ export function reducedMotion() {
   return matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-// Whatever the Mac sends is clamped here, so an odd value can't break the drawing.
+/**
+ * Clamps the traits Imp sends to their allowed ranges, so an odd value can't break the drawing.
+ * @param {object | null} raw The traits as received. Missing values fall back to neutral.
+ * @returns {object} Every trait in TRAIT_RANGES, inside its range.
+ */
 function normalizeTraits(raw) {
   const source = raw !== null && typeof raw === 'object' ? raw : {};
   const out = {};
@@ -115,7 +119,9 @@ function faceTarget(mood, gaze, t) {
   return f;
 }
 
-// Springs every face parameter toward its target, a little bouncy so the face looks alive.
+/**
+ * Springs every face parameter toward its target. The spring is a little bouncy, so the face looks alive.
+ */
 class FaceAnimator {
   constructor() {
     this.face = { ...FACE0 };
@@ -155,7 +161,11 @@ class FaceAnimator {
   }
 }
 
-// Moods fade into each other over about a third of a second, so the body never jumps.
+/**
+ * Blends the moods that are fading in and out. Moods fade into each other over about a third of a
+ * second, so the body never jumps.
+ * @param {number} duration How long a full fade takes, in seconds.
+ */
 class BlendWeights {
   constructor(duration) {
     this.duration = duration;
@@ -351,8 +361,16 @@ function hullPath(hulls) {
 
 const HORN_RINGS = 14, HORN_SEGMENTS = 16, HORN_EMBED = 0.5;
 
-// A curled horn built as a ring of hulls along its spine, split into the part behind the head and
-// the part in front of it. Same maths as the app's `Horn`.
+/**
+ * Builds one curled horn as a ring of hulls along its spine, split into the part behind the head and
+ * the part in front of it. The maths matches the app's Horn.
+ * @param {number} side -1 for the left horn, 1 for the right.
+ * @param {object} head The head from makeHead().
+ * @param {Function} rotate The pose from makePose().
+ * @param {object} f The face parameters.
+ * @param {number} wiggle The extra sway of the horn, in degrees.
+ * @returns {object} The horn's front and back paths, the base, and the light position.
+ */
 function makeHorn(side, head, rotate, f, wiggle) {
   const root = onBall(side * 0.9, -0.6);
   let axis = vnorm(vadd(vmul(root, 0.62), [0, -0.38, 0]));
@@ -480,7 +498,10 @@ export class ImpCanvas {
     this.snap();
   }
 
-  // Sets the canvas to `px` CSS pixels square (sharp on dense screens).
+  /**
+   * Sets the canvas to a square of px CSS pixels, scaled for the screen's pixel density so it stays sharp.
+   * @param {number} px The size in CSS pixels.
+   */
   resize(px) {
     const size = Math.round(px * (devicePixelRatio || 1));
     if (this.canvas.width !== size) {
@@ -521,14 +542,19 @@ export class ImpCanvas {
     this.blend.reset(this.mood);
   }
 
-  // A held pose changes at once. A live Imp springs to it on its own.
+  /**
+   * Applies a change to a held (still) Imp at once. A live Imp springs to the change on its own.
+   */
   settle() {
     if (this.live) return;
     this.snap();
     this.paint(0);
   }
 
-  // Called on every animation frame. It draws at most about thirty times a second.
+  /**
+   * Called on every animation frame. It draws at most about thirty times a second.
+   * @param {number} now The clock time, in seconds.
+   */
   frame(now) {
     if (now - this.lastDrawn < 0.028) return;
     this.lastDrawn = now;
@@ -597,8 +623,14 @@ export class ImpCanvas {
       [[0, p.hornLight], [1, p.hornDark]]);
   }
 
-  // Draws the back of the horns, then the head: its skin, and the light, shade and blush, which are
-  // clipped to the outline of the head.
+  /**
+   * Draws the back of the horns, then the head: its skin, and the light, shade and blush. The light,
+   * shade and blush are clipped to the outline of the head.
+   * @param {object} head The head from makeHead().
+   * @param {object[]} horns The two horns from makeHorn().
+   * @param {object} f The face parameters.
+   * @param {Function} rotate The pose from makePose().
+   */
   paintBody(head, horns, f, rotate) {
     const ctx = this.ctx, p = this.palette;
     for (const h of horns) {

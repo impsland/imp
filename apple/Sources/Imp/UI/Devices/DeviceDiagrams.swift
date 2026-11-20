@@ -116,7 +116,7 @@ struct ChipButton<Leading: View>: View {
 }
 
 extension ChipButton where Leading == AnyView {
-    /// An Imp: its colour, its name and, when it is on another device than its home, a walking mark; ours have a way home.
+    /// An Imp: its colour, its name and, when it is on another device than its home, a walking mark. Ours have a way home.
     init(imp contact: DeviceMap.Contact, ours: Bool, away: Bool = false, arrow: String? = nil,
          home: (() -> Void)? = nil, open: @escaping () -> Void) {
         self.init(title: contact.name, tint: Color.imp(contact.hue), strong: ours, trailingSymbol: home == nil ? nil : "house",

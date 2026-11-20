@@ -1,5 +1,5 @@
 //! Live API (opt-in): `IMP_LIVE_TESTS=1 cargo test -p imp-engine --test live -- --nocapture`.
-//! Talks to the real service in ./.env (`OPENAI_BASE_URL`, `OPENAI_API_KEY`, `OPENAI_MODEL`), and makes
+//! Talks to the real service named in the repository root `.env` (`OPENAI_BASE_URL`, `OPENAI_API_KEY`, `OPENAI_MODEL`), and makes
 //! real pictures and speech through the AI presets' MCP servers (@dtst/img, @dtst/tts) with the models
 //! in `OPENAI_IMAGE_MODEL` and `OPENAI_SPEECH_MODEL` (and `OPENAI_VOICE` if the speech model needs one).
 //! Costs a few cents.
@@ -13,7 +13,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::time::Duration;
 
-/// The values in ./.env, or `None` when live tests are off.
+/// The values in the repository root `.env`, or `None` when live tests are off.
 fn live() -> Option<HashMap<String, String>> {
     if std::env::var("IMP_LIVE_TESTS").as_deref() != Ok("1") {
         eprintln!("live tests are off (IMP_LIVE_TESTS=1 turns them on)");

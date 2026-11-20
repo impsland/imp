@@ -63,7 +63,7 @@ public struct PocketBrain: Sendable {
     }
 
     /// What a server's sign-in stand-in tool does here. A request can arrive while nobody is looking at
-    /// the phone, so the sheet opens only when the app is in the foreground; otherwise the model is told
+    /// the phone, so the sheet opens only when the app is in the foreground. Otherwise the model is told
     /// to ask the person to open Imp.
     static let signIn: (@Sendable (MCPServerConfig) async throws -> Void)? = {
         #if os(iOS)

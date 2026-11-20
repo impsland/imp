@@ -4,7 +4,7 @@ import ImpKit
 import SwiftUI
 
 /// What the Imp may reach on this Mac: running commands, its senses (the Mac's state and the browser
-/// page) and computer control. Each is one switch; the single tools are behind the section's agent button.
+/// page) and computer control. Each is one switch. The single tools are behind the section's agent button.
 struct ComputerPanel: View {
     let model: AppModel
     @Binding var imp: ImpProfile

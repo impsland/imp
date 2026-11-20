@@ -2,7 +2,7 @@
 
 The extension lets the Imp Mac app know which page you are on, and where things are on it, so Imp can move to an "Add to Cart" button.
 
-One folder works in every browser: Chrome and the browsers built on it (Brave, Edge, Vivaldi, Opera), Firefox and Safari. In the app, Settings › Tools › Browser › folder button shows the folder (`extension` in the source).
+One folder works in every browser: Chrome and the browsers built on it (Brave, Edge, Vivaldi, Opera), Firefox and Safari. In the app, the Browser row in Settings has a folder button that shows the folder (`extension` in the source).
 
 ## Install
 
@@ -43,7 +43,7 @@ Pin the extension to the toolbar to see how it's doing. The popup shows:
 
 ## The look and the words
 
-The popup follows Pebble, the design language in `docs/design`. It has one flat surface, soft pebbles without outlines or dividers, monochrome chrome, and one primary action, **Open Imp**. Only the Imps carry colour. The popup has a fixed width of 380 px, one inset for the header, the pebbles and the footer, and one gap between groups. A "?" button beside the page and the list opens a short help tip.
+The popup follows Pebble, the design language in [docs/design](../docs/design/). It has one flat surface, soft pebbles without outlines or dividers, monochrome chrome, and one primary action, **Open Imp**. Only the Imps carry colour. The popup has a fixed width of 380 px, one inset for the header, the pebbles and the footer, and one gap between groups. A "?" button beside the page and the list opens a short help tip.
 
 The popup follows the browser's light or dark appearance and Reduce Motion. Every control is a real button or link at least 28 px in size, with a focus ring. The connection status is a live region.
 

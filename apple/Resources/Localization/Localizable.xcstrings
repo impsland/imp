@@ -19320,7 +19320,7 @@
       }
     },
     "agentfile.open" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -19344,7 +19344,7 @@
       }
     },
     "agentfile.reveal" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -19608,7 +19608,7 @@
       }
     },
     "animations.find" : {
-      "comment" : "Button.",
+      "comment" : "Button in the Animations group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -19728,7 +19728,7 @@
       }
     },
     "app.language" : {
-      "comment" : "Row.",
+      "comment" : "Row in the App group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -19752,7 +19752,7 @@
       }
     },
     "app.login" : {
-      "comment" : "Switch (desktop).",
+      "comment" : "Switch in the App group of Settings, for the desktop app only.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -19776,7 +19776,7 @@
       }
     },
     "app.login_note" : {
-      "comment" : "Note under the switch.",
+      "comment" : "Note under a switch in the App group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -19824,7 +19824,7 @@
       }
     },
     "app.reset" : {
-      "comment" : "Button.",
+      "comment" : "Button in the App group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -19872,7 +19872,7 @@
       }
     },
     "app.title" : {
-      "comment" : "Group title.",
+      "comment" : "Title of a group of settings in the Settings window.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -20592,7 +20592,7 @@
       }
     },
     "brains.add" : {
-      "comment" : "Button.",
+      "comment" : "Button in the Brains group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -21642,19 +21642,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Call all home"
+            "value" : "Send all home"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traerlos a todos"
+            "value" : "Enviar todos a casa"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全部叫回家"
+            "value" : "全部送回家"
           }
         }
       }
@@ -21876,7 +21876,7 @@
       }
     },
     "devices.hop.add" : {
-      "comment" : "The Hop pill under the code in the Link sheet when no Hop is set; opens its settings.",
+      "comment" : "The Hop pill under the code in the Link sheet when no Hop is set. It opens its settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -22800,7 +22800,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escanear código"
+            "value" : "Leer código"
           }
         },
         "zh-Hans" : {
@@ -25734,7 +25734,7 @@
       }
     },
     "goodbye.many.title" : {
-      "comment" : "Title of the dialog that asks before several Imps are deleted.",
+      "comment" : "Title of the dialog that asks before saying goodbye to several Imps.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -25782,7 +25782,7 @@
       }
     },
     "goodbye.title" : {
-      "comment" : "Title of the dialog that asks before an Imp is deleted.",
+      "comment" : "Title of the dialog that asks before saying goodbye to an Imp.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -25992,7 +25992,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vincular un dispositivo"
+            "value" : "Vincular dispositivo"
           }
         },
         "zh-Hans" : {
@@ -26274,19 +26274,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Call %1$@ home"
+            "value" : "Send %1$@ home"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traer a %1$@"
+            "value" : "Enviar a %1$@ a casa"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "叫 %1$@ 回家"
+            "value" : "把 %1$@ 送回家"
           }
         }
       }
@@ -26490,19 +26490,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bring %1$@ back from %2$@?"
+            "value" : "Send %1$@ home from %2$@?"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Traer a %1$@ de %2$@?"
+            "value" : "¿Enviar a %1$@ a casa desde %2$@?"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把 %1$@ 从 %2$@ 叫回来？"
+            "value" : "把 %1$@ 从 %2$@ 送回家？"
           }
         }
       }
@@ -27372,7 +27372,7 @@
       }
     },
     "library.help" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -27396,7 +27396,7 @@
       }
     },
     "library.reveal" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -27420,7 +27420,7 @@
       }
     },
     "library.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -28896,7 +28896,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Equipos"
+            "value" : "Dispositivos"
           }
         },
         "zh-Hans" : {
@@ -29027,32 +29027,8 @@
         }
       }
     },
-    "menu.group.free_help" : {
-      "comment" : "Tooltip of Free in the menu of several Imps.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "They step out onto the desktop, right where they stand."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salen al escritorio, justo donde están."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "它们走到桌面上，就在各自站着的地方。"
-          }
-        }
-      }
-    },
     "menu.group.goodbye" : {
-      "comment" : "Menu item that deletes several picked Imps. It asks first.",
+      "comment" : "Menu item that says goodbye to several picked Imps. It asks first.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -29123,6 +29099,30 @@
         }
       }
     },
+    "menu.group.let_out_help" : {
+      "comment" : "Tooltip of Let out in the menu of several Imps.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "They step out onto the desktop, right where they stand."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salen al escritorio, justo donde están."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它们走到桌面上，就在各自站着的地方。"
+          }
+        }
+      }
+    },
     "menu.group.title" : {
       "comment" : "Title of the menu of several Imps picked together.",
       "extractionState" : "manual",
@@ -29147,30 +29147,6 @@
         }
       }
     },
-    "menu.imp.call_home" : {
-      "comment" : "Button: take back one of our Imps from the device that holds it.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Call Home"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Traer"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "叫回家"
-          }
-        }
-      }
-    },
     "menu.imp.call_home_ask" : {
       "comment" : "Menu item for an Imp away on another device: asks before calling it home.",
       "extractionState" : "manual",
@@ -29178,19 +29154,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Call Home…"
+            "value" : "Send home…"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traer…"
+            "value" : "Enviar a casa…"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "叫回家…"
+            "value" : "送回家…"
           }
         }
       }
@@ -29291,54 +29267,6 @@
         }
       }
     },
-    "menu.imp.free" : {
-      "comment" : "Button in the menu of an Imp in the app's window that lets it out onto the desktop. Keep it short: it sits under an icon.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Free"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Soltar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "放出"
-          }
-        }
-      }
-    },
-    "menu.imp.free_help" : {
-      "comment" : "Tooltip of the Free button in the menu of an Imp in the app's window.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ steps out onto the desktop, right where it stands."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ sale al escritorio, justo donde está."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ 走到桌面上，就在它站着的地方。"
-          }
-        }
-      }
-    },
     "menu.imp.goodbye" : {
       "comment" : "Menu item that says goodbye to an Imp for good. A dialog asks first.",
       "extractionState" : "manual",
@@ -29411,56 +29339,8 @@
         }
       }
     },
-    "menu.imp.home" : {
-      "comment" : "Button in a desktop Imp's menu that sends it back into the app's window. Keep it short: it sits under an icon.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Home"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A casa"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "回家"
-          }
-        }
-      }
-    },
-    "menu.imp.home_help" : {
-      "comment" : "Tooltip of the Home button in a desktop Imp's menu.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ goes back into the Imps' window, and its triggers rest."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ vuelve a la ventana de los Imps y sus disparadores descansan."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ 回到 Imp 窗口，它的触发器暂停。"
-          }
-        }
-      }
-    },
     "menu.imp.let_out" : {
-      "comment" : "Menu item (desktop only) that lets an Imp out onto the desktop.",
+      "comment" : "Button in an Imp's menu, on the desktop or in the app's window, that lets it out onto the desktop. Keep it short: it sits under an icon.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -29479,6 +29359,78 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "放出来"
+          }
+        }
+      }
+    },
+    "menu.imp.let_out_help" : {
+      "comment" : "Tooltip of the Let out button in an Imp's menu in the app's window.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ steps out onto the desktop, right where it stands."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ sale al escritorio, justo donde está."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 走到桌面上，就在它站着的地方。"
+          }
+        }
+      }
+    },
+    "menu.imp.message" : {
+      "comment" : "Button in an Imp's menu that opens the box to write it a message. Keep it short: it sits under an icon.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mensaje"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "消息"
+          }
+        }
+      }
+    },
+    "menu.imp.message_help" : {
+      "comment" : "Tooltip of the Message button in an Imp's menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message to %1$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mensaje para %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "给 %1$@ 发消息"
           }
         }
       }
@@ -29532,7 +29484,7 @@
       }
     },
     "menu.imp.send_home" : {
-      "comment" : "Menu item (desktop only) that puts a free Imp back in the window.",
+      "comment" : "Button in an Imp's menu that sends it home: back into the app's window from the desktop, or back to its home device for a visitor. Keep it short: it sits under an icon.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -29551,6 +29503,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "送回家"
+          }
+        }
+      }
+    },
+    "menu.imp.send_home_help" : {
+      "comment" : "Tooltip of the Send home button in a desktop Imp's menu.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ goes back into the Imps' window, and its triggers rest."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ vuelve a la ventana de los Imps y sus disparadores descansan."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 回到 Imp 窗口，它的触发器暂停。"
           }
         }
       }
@@ -29719,54 +29695,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "对话"
-          }
-        }
-      }
-    },
-    "menu.imp.type" : {
-      "comment" : "Button in an Imp's menu that opens the typing box.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Type"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escribir"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "输入"
-          }
-        }
-      }
-    },
-    "menu.imp.type_help" : {
-      "comment" : "Tooltip of the Type button in an Imp's menu.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Type to %1$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escribir a %1$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "给 %1$@ 打字"
           }
         }
       }
@@ -30546,19 +30474,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Call home"
+            "value" : "Send home"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traer"
+            "value" : "Enviar a casa"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "叫回家"
+            "value" : "送回家"
           }
         }
       }
@@ -30570,19 +30498,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Call %1$@ home"
+            "value" : "Send %1$@ home"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traer a %1$@"
+            "value" : "Enviar a %1$@ a casa"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把 %1$@ 叫回家"
+            "value" : "把 %1$@ 送回家"
           }
         }
       }
@@ -32088,7 +32016,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escanear"
+            "value" : "Leer"
           }
         },
         "zh-Hans" : {
@@ -32160,7 +32088,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quitar de la selección"
+            "value" : "Deseleccionar"
           }
         },
         "zh-Hans" : {
@@ -32208,7 +32136,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seleccionar"
+            "value" : "Elegir"
           }
         },
         "zh-Hans" : {
@@ -32551,54 +32479,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "回到 %1$@"
-          }
-        }
-      }
-    },
-    "phone.stage.delete.body" : {
-      "comment" : "iPhone: stage delete body.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Its chats and keys are forgotten. This can't be undone."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se olvidan sus chats y claves. No se puede deshacer."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "它的聊天和密钥都会被清除，此操作无法撤销。"
-          }
-        }
-      }
-    },
-    "phone.stage.delete.title" : {
-      "comment" : "iPhone: stage delete title.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Delete %1$@?"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Eliminar %1$@?"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "删除 %1$@？"
           }
         }
       }
@@ -33180,7 +33060,7 @@
       }
     },
     "privacy.computer" : {
-      "comment" : "Switch.",
+      "comment" : "Switch in the Permissions group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33204,7 +33084,7 @@
       }
     },
     "privacy.computer_note" : {
-      "comment" : "Note under the switch.",
+      "comment" : "Note under a switch in the Permissions group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33228,7 +33108,7 @@
       }
     },
     "privacy.microphone" : {
-      "comment" : "Row.",
+      "comment" : "Row in the Permissions group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33276,7 +33156,7 @@
       }
     },
     "privacy.title" : {
-      "comment" : "Group title.",
+      "comment" : "Title of a group of settings in the Settings window.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33300,7 +33180,7 @@
       }
     },
     "privacy.trust" : {
-      "comment" : "Switch.",
+      "comment" : "Switch in the Permissions group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33324,7 +33204,7 @@
       }
     },
     "privacy.trust_note" : {
-      "comment" : "Note under the switch.",
+      "comment" : "Note under a switch in the Permissions group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33492,7 +33372,7 @@
       }
     },
     "servers.hop.title" : {
-      "comment" : "Section title.",
+      "comment" : "Title of a section in the Servers group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33756,7 +33636,7 @@
       }
     },
     "settings.app.appearance.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the App pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33876,7 +33756,7 @@
       }
     },
     "settings.app.look.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the App pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33900,7 +33780,7 @@
       }
     },
     "settings.app.system.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the App pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33972,7 +33852,7 @@
       }
     },
     "settings.backup.export.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Backup pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33996,7 +33876,7 @@
       }
     },
     "settings.backup.folder.reveal" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in the Backup pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34020,7 +33900,7 @@
       }
     },
     "settings.backup.folder.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Backup pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34044,7 +33924,7 @@
       }
     },
     "settings.backup.import.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Backup pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34068,7 +33948,7 @@
       }
     },
     "settings.backup.keep.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Backup pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34092,7 +33972,7 @@
       }
     },
     "settings.backup.keep.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Backup pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34116,7 +33996,7 @@
       }
     },
     "settings.backup.reset.app" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in the Backup pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34140,7 +34020,7 @@
       }
     },
     "settings.backup.reset.confirm" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in the Backup pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34164,7 +34044,7 @@
       }
     },
     "settings.backup.reset.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Backup pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34188,7 +34068,7 @@
       }
     },
     "settings.backup.reset.message" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in the Backup pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34212,7 +34092,7 @@
       }
     },
     "settings.backup.reset.shared" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in the Backup pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34236,7 +34116,7 @@
       }
     },
     "settings.backup.reset.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Backup pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34260,7 +34140,7 @@
       }
     },
     "settings.brains.first_wait.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Brains pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34284,7 +34164,7 @@
       }
     },
     "settings.brains.first_wait.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Brains pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34308,7 +34188,7 @@
       }
     },
     "settings.brains.longer.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Brains pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34332,7 +34212,7 @@
       }
     },
     "settings.brains.longer.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Brains pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34356,7 +34236,7 @@
       }
     },
     "settings.brains.requests.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Brains pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34380,7 +34260,7 @@
       }
     },
     "settings.brains.requests.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Brains pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34404,7 +34284,7 @@
       }
     },
     "settings.brains.retries.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Brains pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34428,7 +34308,7 @@
       }
     },
     "settings.brains.retries.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Brains pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34452,7 +34332,7 @@
       }
     },
     "settings.brains.services.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Brains pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34476,7 +34356,7 @@
       }
     },
     "settings.brains.wait.info" : {
-      "comment" : "Tooltip of a settings row.",
+      "comment" : "Tooltip of a row in the Brains pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34500,7 +34380,7 @@
       }
     },
     "settings.brains.wait.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Brains pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34524,7 +34404,7 @@
       }
     },
     "settings.bubble.amount.info" : {
-      "comment" : "Tooltip of a settings row.",
+      "comment" : "Tooltip of a row in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34548,7 +34428,7 @@
       }
     },
     "settings.bubble.amount.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34572,7 +34452,7 @@
       }
     },
     "settings.bubble.audio.info" : {
-      "comment" : "Tooltip of a settings row.",
+      "comment" : "Tooltip of a row in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34596,7 +34476,7 @@
       }
     },
     "settings.bubble.audio.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34620,7 +34500,7 @@
       }
     },
     "settings.bubble.autoplay.info" : {
-      "comment" : "Tooltip of a settings row.",
+      "comment" : "Tooltip of a row in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34644,7 +34524,7 @@
       }
     },
     "settings.bubble.autoplay.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34668,7 +34548,7 @@
       }
     },
     "settings.bubble.background.info" : {
-      "comment" : "Tooltip of a settings row.",
+      "comment" : "Tooltip of a row in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34692,7 +34572,7 @@
       }
     },
     "settings.bubble.background.solid" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34716,7 +34596,7 @@
       }
     },
     "settings.bubble.background.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34740,7 +34620,7 @@
       }
     },
     "settings.bubble.background.translucent" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34764,7 +34644,7 @@
       }
     },
     "settings.bubble.hide.info" : {
-      "comment" : "Tooltip of a settings row.",
+      "comment" : "Tooltip of a row in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34788,7 +34668,7 @@
       }
     },
     "settings.bubble.hide.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34812,7 +34692,7 @@
       }
     },
     "settings.bubble.lines.info" : {
-      "comment" : "Tooltip of a settings row.",
+      "comment" : "Tooltip of a row in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34836,7 +34716,7 @@
       }
     },
     "settings.bubble.lines.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34860,7 +34740,7 @@
       }
     },
     "settings.bubble.look.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34884,7 +34764,7 @@
       }
     },
     "settings.bubble.media.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34908,7 +34788,7 @@
       }
     },
     "settings.bubble.media.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34932,7 +34812,7 @@
       }
     },
     "settings.bubble.preview.label" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34956,7 +34836,7 @@
       }
     },
     "settings.bubble.showing.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -34980,7 +34860,7 @@
       }
     },
     "settings.bubble.showing.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35004,7 +34884,7 @@
       }
     },
     "settings.bubble.size.info" : {
-      "comment" : "Tooltip of a settings row.",
+      "comment" : "Tooltip of a row in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35028,7 +34908,7 @@
       }
     },
     "settings.bubble.size.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Bubble pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35058,25 +34938,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Call its Imps home"
+            "value" : "Send its Imps home"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traer a sus Imps"
+            "value" : "Enviar a sus Imps a casa"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把它上面的 Imp 叫回家"
+            "value" : "把它上面的 Imp 送回家"
           }
         }
       }
     },
     "settings.devices.forget_all.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Devices pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35100,7 +34980,7 @@
       }
     },
     "settings.devices.link.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Devices pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35124,7 +35004,7 @@
       }
     },
     "settings.devices.link.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Devices pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35172,7 +35052,7 @@
       }
     },
     "settings.devices.pair.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Devices pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35196,7 +35076,7 @@
       }
     },
     "settings.group.app" : {
-      "comment" : "Group title.",
+      "comment" : "Title of a group of settings in the Settings window.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35220,7 +35100,7 @@
       }
     },
     "settings.group.backup" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35244,7 +35124,7 @@
       }
     },
     "settings.group.brains" : {
-      "comment" : "Group title.",
+      "comment" : "Title of a group of settings in the Settings window.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35268,7 +35148,7 @@
       }
     },
     "settings.group.bubble" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35292,7 +35172,7 @@
       }
     },
     "settings.group.privacy" : {
-      "comment" : "Group title.",
+      "comment" : "Title of a group of settings in the Settings window.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35316,7 +35196,7 @@
       }
     },
     "settings.group.servers" : {
-      "comment" : "Group title.",
+      "comment" : "Title of a group of settings in the Settings window.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35364,7 +35244,7 @@
       }
     },
     "settings.group.talking" : {
-      "comment" : "Settings text.",
+      "comment" : "Label of a control in Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35532,7 +35412,7 @@
       }
     },
     "settings.map.state_needs_setup" : {
-      "comment" : "State of a node.",
+      "comment" : "State of a node on the Settings map.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35556,7 +35436,7 @@
       }
     },
     "settings.map.state_off" : {
-      "comment" : "State of a node.",
+      "comment" : "State of a node on the Settings map.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35604,7 +35484,7 @@
       }
     },
     "settings.map.state_ready" : {
-      "comment" : "State of a node.",
+      "comment" : "State of a node on the Settings map.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35724,7 +35604,7 @@
       }
     },
     "settings.privacy.accessibility.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Permissions pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35748,7 +35628,7 @@
       }
     },
     "settings.privacy.accessibility.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Permissions pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35772,7 +35652,7 @@
       }
     },
     "settings.privacy.computer.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Permissions pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35796,7 +35676,7 @@
       }
     },
     "settings.privacy.core.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Permissions pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35820,7 +35700,7 @@
       }
     },
     "settings.privacy.core.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Permissions pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35844,7 +35724,7 @@
       }
     },
     "settings.privacy.microphone.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Permissions pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35868,7 +35748,7 @@
       }
     },
     "settings.privacy.screen.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Permissions pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35892,7 +35772,7 @@
       }
     },
     "settings.privacy.speech.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Permissions pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35916,7 +35796,7 @@
       }
     },
     "settings.service.address.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Brain sheet.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35940,7 +35820,7 @@
       }
     },
     "settings.service.cloud.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Brain sheet.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35964,7 +35844,7 @@
       }
     },
     "settings.service.key.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Brain sheet.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -35988,7 +35868,7 @@
       }
     },
     "settings.service.local.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Brain sheet.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36012,7 +35892,7 @@
       }
     },
     "settings.service.model.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Brain sheet.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36036,7 +35916,7 @@
       }
     },
     "settings.service.name.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Brain sheet.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36060,7 +35940,7 @@
       }
     },
     "settings.talking.between.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36084,7 +35964,7 @@
       }
     },
     "settings.talking.between.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36132,7 +36012,7 @@
       }
     },
     "settings.talking.language.info" : {
-      "comment" : "Tooltip of a settings row.",
+      "comment" : "Tooltip of a row in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36156,7 +36036,7 @@
       }
     },
     "settings.talking.language.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36204,7 +36084,7 @@
       }
     },
     "settings.talking.languages.info" : {
-      "comment" : "Tooltip of a settings row.",
+      "comment" : "Tooltip of a row in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36276,7 +36156,7 @@
       }
     },
     "settings.talking.listening.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36300,7 +36180,7 @@
       }
     },
     "settings.talking.listening.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36324,7 +36204,7 @@
       }
     },
     "settings.talking.talk_in.info" : {
-      "comment" : "Tooltip of a settings row.",
+      "comment" : "Tooltip of a row in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36348,7 +36228,7 @@
       }
     },
     "settings.talking.talk_in.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36372,7 +36252,7 @@
       }
     },
     "settings.talking.threads.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36396,7 +36276,7 @@
       }
     },
     "settings.talking.threads.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36468,7 +36348,7 @@
       }
     },
     "settings.talking.waiting.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36492,7 +36372,7 @@
       }
     },
     "settings.talking.waiting.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36540,7 +36420,7 @@
       }
     },
     "settings.talking.window.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36564,7 +36444,7 @@
       }
     },
     "settings.talking.window.title" : {
-      "comment" : "Settings text.",
+      "comment" : "Title of a setting in the Talking pane of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36612,7 +36492,7 @@
       }
     },
     "settings.tool.address.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the tool sheet.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36636,7 +36516,7 @@
       }
     },
     "settings.tool.command.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the tool sheet.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36660,7 +36540,7 @@
       }
     },
     "settings.tool.headers.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the tool sheet.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36684,7 +36564,7 @@
       }
     },
     "settings.tool.name.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the tool sheet.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -36708,7 +36588,7 @@
       }
     },
     "settings.tool.variables.info" : {
-      "comment" : "Settings text.",
+      "comment" : "Explains a setting in the tool sheet.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -37044,7 +36924,7 @@
       }
     },
     "state.servers.set_up_hop" : {
-      "comment" : "Button.",
+      "comment" : "Button in Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -37464,7 +37344,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Página del navegador"
+            "value" : "Página web"
           }
         },
         "zh-Hans" : {
@@ -38328,7 +38208,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tipo de herramienta"
+            "value" : "Tipo"
           }
         },
         "zh-Hans" : {
@@ -38424,7 +38304,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Iniciar sesión"
+            "value" : "Entrar"
           }
         },
         "zh-Hans" : {
@@ -41508,7 +41388,7 @@
       }
     },
     "voice.autoplay_note" : {
-      "comment" : "Note under the switch.",
+      "comment" : "Note under a switch in the Voice group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -41532,7 +41412,7 @@
       }
     },
     "voice.listen" : {
-      "comment" : "Switch.",
+      "comment" : "Switch in the Voice group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -41556,7 +41436,7 @@
       }
     },
     "voice.speak" : {
-      "comment" : "Switch.",
+      "comment" : "Switch in the Voice group of Settings.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -41580,7 +41460,7 @@
       }
     },
     "voice.title" : {
-      "comment" : "Group title.",
+      "comment" : "Title of a group of settings in the Settings window.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {

@@ -2,7 +2,7 @@ import Foundation
 
 /// What a bonk (two Imps meeting while one is flying) is worth in Embers, and when.
 ///
-/// The intent of the game is that the player scores by flinging Imps through embers; a bonk is a
+/// The intent of the game is that the player scores by flinging Imps through embers. A bonk is a
 /// small reward for a trick shot, not a way to farm. Pairs of Imps grow with the square of their
 /// number (100 Imps are 4,950 pairs), so paying every pair would make the score a function of the
 /// crowd rather than of the player. The rule: **a bonk pays at most once per `interval` seconds of
@@ -13,7 +13,7 @@ import Foundation
 public struct BonkPayout: Equatable, Sendable {
     /// The shortest time between two paying bonks.
     public static let interval = 1.0
-    /// What a paying bonk earns; doubled in the Blaze.
+    /// What a paying bonk earns, doubled in the Blaze.
     public static let points = 3
 
     private var quiet = 0.0
@@ -47,7 +47,7 @@ public struct GameBests: Equatable, Sendable {
     public func best(imps: Int) -> Int { scores[imps] ?? 0 }
 
     /// Keeps the score if it beats the best for the same number of Imps. A first game with a score
-    /// above 0 is a record; a score of 0 never is.
+    /// above 0 is a record. A score of 0 never is.
     @discardableResult
     public mutating func record(score: Int, imps: Int) -> Bool {
         guard score > best(imps: imps) else { return false }

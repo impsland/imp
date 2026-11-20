@@ -1,7 +1,7 @@
 import Foundation
 
 /// Where an Imp's questions wait for the person: one is asked at a time, a second one while the first is
-/// still open queues behind it. The answer resumes the call that asked; stopping the work (the asking task is
+/// still open queues behind it. The answer resumes the call that asked. Stopping the work (the asking task is
 /// cancelled) answers Deny. The bubble shows `current`, and `onChange` tells it when that changes.
 @MainActor
 public final class PermissionDesk: PermissionAsking {

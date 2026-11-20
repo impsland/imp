@@ -98,7 +98,7 @@ const LAYOUT: &[Slot] = &[
     Own(
         "/return",
         "/return [VISITOR]",
-        "Send a visiting Imp back to its home",
+        "Send a visiting Imp back to its home device",
     ),
     Own(
         "/trust",

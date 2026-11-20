@@ -60,13 +60,13 @@ struct ImpContextMenu: View {
         Button { if let id { actions.copyLink(id) } } label: { Text("menu.imp.copy_link") }
             .disabled(!(id.map(actions.canShareLink) ?? false))
         Divider()
-        Button(role: .destructive) { if let id { actions.askGoodbye(id) } } label: { Text("menu.imp.goodbye") }
+        Button(role: .destructive) { if let id { actions.askGoodbye([id]) } } label: { Text("menu.imp.goodbye") }
             .disabled(!actions.canSayGoodbye)
     }
 }
 
 /// The menu of an Imp in the window, from a right click (or a Control-click) on it: the same card as on the
-/// desktop (`ImpMenuCard`, with Free where the desktop has Home), then sharing and Goodbye (`ImpMenuEnd`). Stop,
+/// desktop (`ImpMenuCard`, with Let out where the desktop has Send home), then sharing and Goodbye (`ImpMenuEnd`). Stop,
 /// triggers and devices to visit are only for an Imp out on the desktop, so they are not here.
 @MainActor
 final class CanvasImpMenu {
@@ -91,7 +91,7 @@ final class CanvasImpMenu {
         return card.make(ImpMenuCard(ready: ready, name: imp.name, status: status, hue: imp.hue, scale: imp.scale, place: .home) { action in
             switch action {
             case .talk: card.later { actions.talk(id) }
-            case .type: card.later { actions.type(id) }
+            case .message: card.later { actions.message(id) }
             case .chat: card.later { actions.chat(id) }
             case .hide: card.later { actions.hide(id) }
             case .move: card.later { actions.toggleActive(id) }
@@ -104,7 +104,7 @@ final class CanvasImpMenu {
             ImpMenuEnd(canLink: actions.canShareLink(id), canGoodbye: actions.canSayGoodbye,
                        kit: { card.later { actions.copyKit(id) } },
                        link: { card.later { actions.copyLink(id) } },
-                       goodbye: { card.later { actions.askGoodbye(id) } })
+                       goodbye: { card.later { actions.askGoodbye([id]) } })
         })
     }
 }
@@ -132,7 +132,7 @@ final class CanvasGroupMenu {
         return card.make(GroupMenuCard(names: imps.map(\.name), hues: imps.map(\.hue), scales: imps.map(\.scale)) { action in
             switch action {
             case .hide: card.later { actions.hide(ids) }
-            case .free: card.later { actions.free(ids) }
+            case .letOut: card.later { actions.letOut(ids) }
             case .kit: card.later { actions.copyKit(ids) }
             case .size(let scale): actions.restyle(ids) { $0.scale = scale }
             case .colour(let hue): actions.restyle(ids) { $0.hue = hue }
@@ -140,7 +140,7 @@ final class CanvasGroupMenu {
         } extra: {
             GroupBrainPills(services: model.prefs.ai.services,
                             current: Self.brain(of: imps)) { actions.setBrain(ids, $0) }
-            MenuDangerButton(item: MenuItem(id: "goodbye", icon: "trash", title: words("menu.group.goodbye", ids.count),
+            MenuDangerButton(item: MenuItem(id: "goodbye", icon: "hand.wave.fill", title: words("menu.group.goodbye", ids.count),
                                             enabled: actions.canSayGoodbye(to: ids)) {
                 card.later { actions.askGoodbye(ids) }
             })

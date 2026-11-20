@@ -7,7 +7,7 @@ public extension View {
     /// Shows `cursor` over this view, and the standard arrow again as soon as the pointer leaves it or the view goes away.
     /// The system owns the cursor rect, so it is reset by itself: nothing is pushed that has to be popped, and a view
     /// removed while the pointer is over it cannot leave its cursor behind (which `NSCursor.push()` from a hover does).
-    /// For the cursors SwiftUI has (`.link`, resize, grab) use `pointerStyle(_:)`; this is for the ones it doesn't.
+    /// For the cursors SwiftUI has (`.link`, resize, grab) use `pointerStyle(_:)`. This is for the ones it doesn't.
     func cursor(_ cursor: NSCursor) -> some View {
         overlay(CursorArea(cursor: cursor))
     }

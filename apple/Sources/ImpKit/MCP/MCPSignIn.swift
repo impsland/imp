@@ -25,7 +25,7 @@ public enum MCPSignInError: LocalizedError, Sendable, Equatable {
 
 /// Signs in to an MCP server that asks for it (MCP authorization, OAuth 2.1), with no code that is
 /// specific to a server. The rules and the request bodies are the core's (`mcp…` in `ImpCore`,
-/// the numbered flow is at the top of engine/ffi/src/mcp_auth.rs); this makes the requests.
+/// the numbered flow is at the top of engine/ffi/src/mcp_auth.rs). This makes the requests.
 public struct MCPSignIn: Sendable {
     /// The redirect address Imp registers (a private-use scheme, RFC 8252).
     public static let redirectURI = "app.imp:/oauth"
@@ -40,7 +40,7 @@ public struct MCPSignIn: Sendable {
     }
 
     /// Runs the whole sign-in for the server at `url` and stores the result. `challenge` is what
-    /// the server's 401 said, if known; without it the server is asked once.
+    /// the server's 401 said, if known. Without it the server is asked once.
     @discardableResult
     public func signIn(to url: String, challenge: McpChallenge? = nil) async throws -> McpAuth {
         var challenge = challenge
@@ -179,7 +179,7 @@ public struct MCPSignIn: Sendable {
         s.addingPercentEncoding(withAllowedCharacters: CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~")) ?? s
     }
 
-    /// Core errors carry a sentence; show that.
+    /// Core errors carry a sentence, so show that.
     private func wording<T>(_ body: () throws -> T) throws -> T {
         do { return try body() }
         catch McpAuthError.Failed(let message) { throw MCPSignInError.failed(message) }

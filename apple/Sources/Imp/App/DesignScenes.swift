@@ -213,7 +213,7 @@ enum DesignScene: String, CaseIterable {
                     MenuItem(id: "shared", icon: "person.3.fill", title: String(localized: "brain.use_app"), on: true) {},
                     MenuItem(id: "ollama", icon: "brain", title: "Ollama") {},
                 ])
-                MenuDangerButton(item: MenuItem(id: "bye", icon: "trash", title: words("menu.group.goodbye", 3)) {})
+                MenuDangerButton(item: MenuItem(id: "bye", icon: "hand.wave.fill", title: words("menu.group.goodbye", 3)) {})
             }
             .background(Tone.raised, in: raised)
             MenuCard {
@@ -259,7 +259,7 @@ enum DesignScene: String, CaseIterable {
             .background { Backdrop() })
     }
 
-    /// The Hop's sheet; with an `address` of its own, as when none is set or Custom has just been chosen.
+    /// The Hop's sheet. With an `address` of its own, as when none is set or Custom has just been chosen.
     @MainActor private func hopSheet(address: String? = nil, choice: ServerChoice? = nil) -> AnyView {
         let (model, _) = devicesModel(linked: true)
         if choice == .custom { model.prefs.hop = "" } else if let address { model.prefs.hop = address }
@@ -503,7 +503,7 @@ enum BubbleScene: String, CaseIterable {
             return BubbleCard(bubble: Bubble(title: "Plan a weekend in Lisbon", text: "Poking the cloud…", phase: .thinking, steps: steps),
                               model: imp, layout: layout, measuring: true)
         case .thoughts:
-            // Two thoughts among tool steps, collapsed; the second one is open.
+            // Two thoughts among tool steps, collapsed. The second one is open.
             // The scene's titles are written out: a bare build has no String Catalog to look them up in.
             func thought(_ text: String, seconds: Int) -> Bubble.Step {
                 var step = Bubble.Step(ChatTurn.Step.thought(text, seconds: Double(seconds)))

@@ -123,7 +123,7 @@ import Testing
             let source = try String(contentsOf: file, encoding: .utf8)
             var rest = source[...]
             while let start = rest.range(of: ".sheet(") {
-                // The call's arguments, up to the parenthesis that closes them; the content is the closure after.
+                // The call's arguments, up to the parenthesis that closes them. The content is the closure after.
                 var depth = 0, end = start.upperBound
                 for i in source[start.lowerBound...].indices {
                     if source[i] == "(" { depth += 1 } else if source[i] == ")" { depth -= 1; if depth == 0 { end = i; break } }

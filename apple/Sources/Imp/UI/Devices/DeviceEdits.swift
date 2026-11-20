@@ -1,7 +1,7 @@
 import Foundation
 import ImpKit
 
-/// What a Devices sheet can change while it is open, as it was when it opened. Switches act at once; Cancel puts
+/// What a Devices sheet can change while it is open, as it was when it opened. Switches act at once. Cancel puts
 /// every one of them back. An Imp that was called home or a device that was forgotten stays so: those are actions.
 @MainActor
 struct DeviceEdits {

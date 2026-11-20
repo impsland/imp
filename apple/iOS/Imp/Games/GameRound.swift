@@ -770,7 +770,7 @@ struct GameRound {
                 b.pos.x += nx * overlap; b.pos.y += ny * overlap
                 movers[i] = a; movers[j] = b
                 cooldowns[pair] = 1
-                // Every bonk bounces; only some pay (see `BonkPayout`).
+                // Every bonk bounces. Only some pay (see `BonkPayout`).
                 let points = bonkPayout.pay(blaze: inBlaze)
                 score += points
                 let mid = CGPoint(x: (a.pos.x + b.pos.x) / 2, y: (a.pos.y + b.pos.y) / 2)

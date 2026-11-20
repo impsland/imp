@@ -2,7 +2,7 @@ import Foundation
 import ImpCore
 
 /// Whether an Imp that messages another waits for the answer before it goes on. The rule is the core's
-/// (`troupe::wants_wait`); the raw values are the ones the core and the settings file use.
+/// (`troupe::wants_wait`). The raw values are the ones the core and the settings file use.
 public enum TalkWaiting: String, Codable, CaseIterable, Sendable, Identifiable {
     /// Always wait, as before.
     case wait

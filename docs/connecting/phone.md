@@ -34,7 +34,7 @@ with its model, keys, tools and memory, so you can give it work from the couch. 
 your desktop.
 
 To send it back, flick it off a side of the phone's screen, or jolt the phone sideways (see
-[Transfer by shaking](/concepts/transfer)). A shake makes the Imps on the phone dizzy. **Call Home**, or clicking the
+[Transfer by shaking](/concepts/transfer)). A shake makes the Imps on the phone dizzy. **Send home**, or clicking the
 little phone on its pedestal in the Mac's window, brings a visiting Imp back too.
 
 ## Visits
@@ -42,8 +42,8 @@ little phone on its pedestal in the Mac's window, brings a visiting Imp back too
 An Imp away from its home keeps thinking there, with its home's model, keys, tools and memory.
 
 - If its home goes away, the visiting Imp falls asleep. Its chat says so and waits, and it wakes when the home is back.
-- A visiting Imp's menu has **Chat**, **Talks** and **Send Home**.
-- The **Devices** sheet lists, under each device, which of your Imps it holds, each with **Call Home**.
+- A visiting Imp's menu has **Chat**, **Talks** and **Send home**.
+- The **Devices** sheet lists, under each device, which of your Imps it holds, each with **Send home**.
 - Passing a visiting Imp to a third device gives that device a ticket. It works for that one Imp only, even if
   the third device isn't linked to the home. Details are in [Imp Link](/connecting/link#tickets).
 

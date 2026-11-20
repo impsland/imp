@@ -16,7 +16,7 @@ final class AppModel {
     /// Imps visiting the desktop from other devices: drawn here, thinking at their homes. They are
     /// not this Mac's Imps, so they have no place in its list or settings.
     private(set) var visitors: [ImpModel] = []
-    /// The Imp you talked to last. Talk/Type from the menu bar and URL commands go to it.
+    /// The Imp you talked to last. Talk and Message from the menu bar and URL commands go to it.
     private(set) var focusID = ImpProfile.defaultID
     private(set) var failedHotkeys: Set<Hotkey> = []
     /// What Imps resting in the window are acting out (desktop Imps play theirs through `ImpLife`).
@@ -191,7 +191,7 @@ final class AppModel {
 
     /// Saves a change the person made here (the Tools list, a reviewed kit, `imp_add_tool`): the tool
     /// servers it newly turns on, or edits, may open their sign-in sheet at once. Other changes (the app
-    /// starting, an Imp moving between devices) never do; those servers wait for Sign in in Tools.
+    /// starting, an Imp moving between devices) never do. Those servers wait for Sign in in Tools.
     func changeByPerson(_ p: ImpPreferences) {
         let before = Dictionary(uniqueKeysWithValues: prefs.liveServers.map { ($0.id, $0) })
         assistant.signInRequests.formUnion(p.liveServers.filter { before[$0.id] != $0 }.map(\.id))

@@ -12,7 +12,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Hide.** To send an Imp out of sight. A hidden Imp peeks out now and then. It is not deleted.
 
-**Goodbye.** To delete an Imp for good. The app asks first.
+**Goodbye.** To delete an Imp for good. The app asks first, and the action has a waving hand icon (`hand.wave.fill`).
 
 **Sleeping.** The state of an Imp that cannot think. It has no Brain, or it cannot reach its Brain. It shows Zzz. Its triggers still work.
 
@@ -36,11 +36,11 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Home (the place).** The Imps' home is the app window. An Imp that is in the window is at home.
 
-**Let out.** To let an Imp go from the window onto the desktop, where it is free. Desktop only. On iPhone, Android and Wayland, Imps stay in the app.
+**Let out.** To let an Imp go from the window onto the desktop, outside the window. Desktop only. On iPhone, Android and Wayland, Imps stay in the app.
 
-**Send home.** To put a free Imp back into the window. It never moves an Imp to another device.
+**Send home.** To put an Imp that is out on the desktop back into the window. For a visitor it flies back to its home device.
 
-**Free Imp.** An Imp that is out on the desktop, outside the window.
+**Out on the desktop.** An Imp that has been let out and is outside the window.
 
 **Floor.** The bottom edge of the window. Hidden Imps peek out from it.
 
@@ -54,7 +54,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Device.** A Mac, an iPhone, an Android phone, a Windows PC or a Linux computer running Imp. It has a name people recognise.
 
-**Home (the device).** The device an Imp lives on. Its Brain, keys, tools and chats are there. This is a different meaning from the canvas. In the Link, "home" means a device. In the window, "at home" means on the canvas. The words "Call home" and "Send home" are never mixed up: **Call home** takes a visiting Imp back to its home device, and **Send home** puts a free Imp back into the window.
+**Home (the device).** The device an Imp lives on. Its Brain, keys, tools and chats are there. This is a different meaning from the canvas. In the Link, "home" means a device. In the window, "at home" means on the canvas. The words "Call home" and "Send home" are never mixed up. **Call home** takes a visiting Imp back to its home device. **Send home** puts an Imp back into the window, or a visitor back to its home device.
 
 **Holder.** The device an Imp's body is on right now. At home, the holder and the home are the same device.
 
@@ -74,7 +74,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Mine.** A mark on a linked device that says it is the user's own. Other devices are asked about first.
 
-**Call home.** For an Imp's home device to take its Imp back. The visit ends.
+**Send home.** For an Imp's home device to take its Imp back. The visit ends.
 
 **Devices screen.** The screen opened from the bottom-left corner of the home screen. It holds the Devices map and, beside it, an inspector for what is selected. See [Devices](/ux/devices).
 
@@ -82,7 +82,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Tether.** The thin line, in an Imp's own colour, from the Imp's chip to the device where it thinks and runs its tools (its home). It is drawn for an Imp that is away from its home.
 
-**Tool limits.** The tool groups switched off for one linked device on the Devices screen. They only narrow what a device marked Mine may use; a device that is not Mine gets no tools at all.
+**Tool limits.** The tool groups switched off for one linked device on the Devices screen. They only narrow what a device marked Mine may use. A device that is not Mine gets no tools at all.
 
 ## Thinking
 

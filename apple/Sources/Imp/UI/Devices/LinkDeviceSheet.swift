@@ -65,7 +65,7 @@ struct LinkDeviceSheet: View {
         } footer: {
             switch mode {
             case .show:
-                Button { copyLink() } label: { StatefulLabel("Copy Link", symbol: "link", state: copied) }
+                Button { copyLink() } label: { StatefulLabel("Copy link", symbol: "link", state: copied) }
                     .buttonStyle(.imp(.secondary))
                     .impActionState($copied)
                     .disabled(invite == nil || phase.linkedName != nil)
@@ -100,7 +100,7 @@ struct LinkDeviceSheet: View {
     /// The code or the camera on the leading side and the words or the link on the trailing side, or one over the
     /// other when the sheet is too narrow for both. Both tabs fill the same room in the same two columns, so
     /// switching tabs or a message never moves or resizes anything: under the code is the Hop, and the camera
-    /// takes that room too; beside the code are the steps, and the link's well takes their room with its Paste.
+    /// takes that room too. Beside the code are the steps, and the link's well takes their room with its Paste.
     @ViewBuilder private func columns(stacked: Bool) -> some View {
         let leading = VStack(spacing: Spacing.cozy) {
             stage
@@ -178,7 +178,7 @@ struct LinkDeviceSheet: View {
 
     // MARK: The Hop
 
-    /// The Hop under the code, as a pill with its state. It opens its settings; the code carries the Hop, so a
+    /// The Hop under the code, as a pill with its state. It opens its settings. The code carries the Hop, so a
     /// change makes a new code. Having none is fine: devices on the same network still link.
     private var hopButton: some View {
         let hop = HopServer(model.prefs.hop)

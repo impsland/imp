@@ -3,7 +3,7 @@ import ImpKit
 import SwiftUI
 
 /// An Imp's right-click menu, the same on the desktop, in the app's window and for a visitor: the Imp in its circle
-/// with its name and status, six big buttons in a 2 × 3 grid (Talk, Type, Chat, then Hide, where it is, and
+/// with its name and status, six big buttons in a 2 × 3 grid (Talk, Message, Chat, then Hide, where it is, and
 /// Settings), its size and its colour, then `extra`: the rows that only sometimes apply (Stop, triggers, devices,
 /// sharing, Goodbye, see `ImpMenuEnd`), as buttons too (see `MenuCard`). A visitor's settings and looks belong to
 /// its home, so it has New chat where the others have Settings, and no size or colour.
@@ -17,7 +17,7 @@ struct ImpMenuCard<Extra: View>: View {
     let place: Place
     /// False for a visitor whose home is away: it can't be asked anything now.
     let awake: Bool
-    /// Runs an action. The six buttons close the menu first; size and colour change at once and leave it open.
+    /// Runs an action. The six buttons close the menu first. Size and colour change at once and leave it open.
     let run: (Action) -> Void
     let extra: Extra
     @State private var hue: Double
@@ -36,7 +36,7 @@ struct ImpMenuCard<Extra: View>: View {
         _scale = State(initialValue: scale)
     }
 
-    /// Talk, Type, Chat, then Hide, the place button, and Settings (a visitor's New chat). A visitor that is asleep
+    /// Talk, Message, Chat, then Hide, the place button, and Settings (a visitor's New chat). A visitor that is asleep
     /// can't be asked or started a chat with, and says why.
     var buttons: [MenuItem] {
         let asleep = place.isVisitor && !awake
@@ -50,10 +50,11 @@ struct ImpMenuCard<Extra: View>: View {
         let fifth: MenuItem
         switch place {
         case .desktop:
-            fifth = MenuItem(id: "move", icon: "house.fill", title: String(localized: "menu.imp.home"), help: words("menu.imp.home_help", name)) { run(.move) }
+            fifth = MenuItem(id: "move", icon: "house.fill", title: String(localized: "menu.imp.send_home"),
+                             help: words("menu.imp.send_home_help", name)) { run(.move) }
         case .home:
-            fifth = MenuItem(id: "move", icon: "arrow.up.forward.square.fill", title: String(localized: "menu.imp.free"),
-                             help: words("menu.imp.free_help", name)) { run(.move) }
+            fifth = MenuItem(id: "move", icon: "arrow.up.forward.square.fill", title: String(localized: "menu.imp.let_out"),
+                             help: words("menu.imp.let_out_help", name)) { run(.move) }
         case .visitor(let home):
             fifth = MenuItem(id: "move", icon: "house.fill", title: String(localized: "menu.imp.send_home"),
                              help: String(localized: "\(name) flies back to \(home). If it is away, \(name) goes now and \(home) hears when it is back.")) { run(.move) }
@@ -63,8 +64,9 @@ struct ImpMenuCard<Extra: View>: View {
             : MenuItem(id: "settings", icon: "slider.horizontal.3", title: String(localized: "menu.imp.settings"),
                        help: words("menu.imp.settings_help", name)) { run(.settings) }
         return [
-            ask(MenuItem(id: "talk", icon: "mic.fill", title: String(localized: "menu.imp.talk"), help: words("menu.imp.talk_help", name)) { run(.talk) }),
-            ask(MenuItem(id: "type", icon: "keyboard.fill", title: String(localized: "menu.imp.type"), help: words("menu.imp.type_help", name)) { run(.type) }),
+            ask(MenuItem(id: "talk", icon: "bubble.left.fill", title: String(localized: "menu.imp.talk"), help: words("menu.imp.talk_help", name)) { run(.talk) }),
+            ask(MenuItem(id: "message", icon: "message.fill", title: String(localized: "menu.imp.message"),
+                         help: words("menu.imp.message_help", name)) { run(.message) }),
             MenuItem(id: "chat", icon: "bubble.left.and.bubble.right.fill", title: String(localized: "menu.imp.chat"),
                      help: words("menu.imp.chat_help", name)) { run(.chat) },
             MenuItem(id: "hide", icon: "eye.slash.fill", title: String(localized: "menu.imp.hide"), help: words("menu.imp.hide_help", name)) { run(.hide) },
@@ -89,7 +91,7 @@ struct ImpMenuCard<Extra: View>: View {
     }
 }
 
-/// Where the Imp is: the fifth button of its menu sends it home from the desktop, frees it from the window, or
+/// Where the Imp is: the fifth button of its menu sends it home from the desktop, lets it out of the window, or
 /// (for a visitor, from the device it came from) flies it back there.
 enum ImpMenuPlace: Equatable {
     case desktop, home
@@ -100,7 +102,7 @@ enum ImpMenuPlace: Equatable {
 
 /// What a button of an Imp's menu does.
 enum ImpMenuAction {
-    case talk, type, chat, hide, move, settings, newChat
+    case talk, message, chat, hide, move, settings, newChat
     case size(Double)
     case colour(Double)
 }
@@ -126,7 +128,7 @@ struct ImpMenuEnd: View {
             MenuItem(id: "kit", icon: "shippingbox.fill", title: String(localized: "menu.imp.copy_kit"), action: kit),
             MenuItem(id: "link", icon: "link", title: String(localized: "menu.imp.copy_link"), enabled: canLink, action: link),
         ])
-        MenuDangerButton(item: MenuItem(id: "goodbye", icon: "trash", title: String(localized: "menu.imp.goodbye"),
+        MenuDangerButton(item: MenuItem(id: "goodbye", icon: "hand.wave.fill", title: String(localized: "menu.imp.goodbye"),
                                         enabled: canGoodbye, action: goodbye))
     }
 }
@@ -266,8 +268,8 @@ struct GroupMenuCard<Extra: View>: View {
             MenuGrid(items: [
                 MenuItem(id: "hide", icon: "eye.slash.fill", title: String(localized: "menu.imp.hide"),
                          help: String(localized: "menu.group.hide_help")) { run(.hide) },
-                MenuItem(id: "free", icon: "arrow.up.forward.square.fill", title: String(localized: "menu.imp.free"),
-                         help: String(localized: "menu.group.free_help")) { run(.free) },
+                MenuItem(id: "let_out", icon: "arrow.up.forward.square.fill", title: String(localized: "menu.imp.let_out"),
+                         help: String(localized: "menu.group.let_out_help")) { run(.letOut) },
                 MenuItem(id: "kit", icon: "shippingbox.fill", title: String(localized: "menu.imp.copy_kit"),
                          help: String(localized: "menu.group.kit_help")) { run(.kit) },
             ])
@@ -281,7 +283,7 @@ struct GroupMenuCard<Extra: View>: View {
 }
 
 /// What a button of the group's menu does.
-enum GroupMenuAction { case hide, free, kit, size(Double), colour(Double) }
+enum GroupMenuAction { case hide, letOut, kit, size(Double), colour(Double) }
 
 extension GroupMenuCard where Extra == EmptyView {
     init(names: [String], hues: [Double], scales: [Double], run: @escaping (Action) -> Void) {

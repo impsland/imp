@@ -593,7 +593,7 @@ final class ImpModel {
     /// A trigger went off: runs its steps in order, at once (an `ask` hands its work to the model
     /// and the next steps don't wait for it). `clip` is what a URL command handed over; `happened`
     /// is what set it off on the Mac (nil: the user did, with keys, clicks or a menu).
-    /// `byPerson`: the person did it (keys, a click, a gesture, a menu); the default is that nothing
+    /// `byPerson`: the person did it (keys, a click, a gesture, a menu). The default is that nothing
     /// is said to have happened.
     func perform(_ shortcut: Shortcut, clip given: Clip? = nil, happened: String? = nil, byPerson: Bool? = nil) {
         let person = byPerson ?? (happened == nil)
@@ -1054,7 +1054,7 @@ final class ImpModel {
     // MARK: Permissions
 
     /// The question open now changed (one was asked, answered or given up). The bubble that shows it is brought back if
-    /// the person had closed it; either way it is measured again.
+    /// the person had closed it. Either way it is measured again.
     private func permissionChanged() {
         prompt = desk.current.map { Bubble.Prompt(action: $0.action, resource: $0.resource, more: desk.count - 1) }
         guard prompt != nil, let work, ![.thinking, .chat].contains(bubble?.phase) else { bubble = bubble; return }

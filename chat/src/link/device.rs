@@ -717,7 +717,7 @@ impl Device {
                 ..
             } => self.thrown(transfer, imp, home.is_some(), from),
             LinkMessage::Adopt { transfer, .. } => {
-                // Moving in for good needs the review the Mac shows. The terminal says no for now.
+                // Moving in for good needs the review the Mac shows, which the terminal does not have, so it declines.
                 self.handle
                     .post(move |node, _| node.decline(transfer, LinkDecline::Other));
                 self.queued.push(Update::Note(

@@ -47,7 +47,7 @@ struct DeviceNodeCard: View {
     }
 }
 
-/// An Imp inside a device: its colour and its name. One of this Mac's Imps has a full tint of its colour; another
+/// An Imp inside a device: its colour and its name. One of this Mac's Imps has a full tint of its colour. Another
 /// device's Imp has a lighter one, so whose Imp it is can be seen at a glance, without an outline. A small mark
 /// shows only an Imp whose body is not where it thinks (`away`).
 struct DeviceImpChip: View {
@@ -133,7 +133,7 @@ struct CanvasPath: Shape {
 }
 
 /// One line of the canvas, drawn over SwiftFlow's own path so the hit area and the picture are the same line.
-/// A channel is solid on the local network and dashed through the Hop; a tether is thin and in its Imp's colour and
+/// A channel is solid on the local network and dashed through the Hop. A tether is thin and in its Imp's colour and
 /// a talk line thin and dashed in it. A line that is not connected falls back. On a channel a small badge sits on the
 /// middle of it: how it is travelled and the plugs that are in for its device. Small dots run along a line that is
 /// live (`motion`), both ways on a channel and from the Imp to its home on a tether.
@@ -141,7 +141,7 @@ struct DeviceEdgeDrawing: View {
     let data: DeviceGraph.EdgeData
     let result: EdgePathResult
     let hovered: Bool
-    /// Whether the line is in the light, in the current focus; the rest is drawn dimmed.
+    /// Whether the line is in the light, in the current focus. The rest is drawn dimmed.
     let lit: Bool
     let motion: Bool
 

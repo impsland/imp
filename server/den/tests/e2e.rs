@@ -554,7 +554,7 @@ fn full_flow() {
     assert!(status == 200 && !failed, "{found}");
     assert_eq!(names(&found), ["pack-kit"]);
 
-    // get_item and download_item; the document round-trips.
+    // get_item and download_item. The document round-trips.
     let (_, failed, got) = d.tool(
         None,
         "get_item",
@@ -629,7 +629,7 @@ fn full_flow() {
     assert_eq!(d.get(&format!("/i/{handle}/pack-kit")).status, 200);
     assert_eq!(d.get(&format!("/a/{handle}")).status, 200);
 
-    // Refresh tokens rotate; reusing an old one revokes the grant.
+    // Refresh tokens rotate. Reusing an old one revokes the grant.
     let refreshed = d.post_form(
         "/oauth/token",
         &[

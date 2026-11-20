@@ -59,7 +59,7 @@ struct TypingField: View {
                 .onChange(of: text) { _, now in if !chat && !measuring { model.typingChanged(now) } }
                 .onExitCommand { model.dismissBubble() }
                 .disabled(asleep)
-            if !chat && model.visit == nil { IconButton(icon: "mic", help: "Talk instead") { model.talk() } }
+            if !chat && model.visit == nil { IconButton(icon: "bubble.left.fill", help: "Talk instead") { model.talk() } }
             Button(action: send) {
                 Image(systemName: "arrow.up")
                     .font(Typeface.label.weight(.bold))
@@ -163,7 +163,7 @@ struct ListeningRow: View {
                 .foregroundStyle(transcript.isEmpty ? Tone.muted : Tone.text)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            IconButton(icon: "keyboard", help: "Type instead") { model.startTyping() }
+            IconButton(icon: "message.fill", help: "menu.imp.message") { model.startTyping() }
         }
     }
 }

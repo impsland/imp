@@ -169,7 +169,7 @@ private func rich() -> ImpPreferences {
         #expect(p.mcpServers[1].command == "npx" && p.mcpServers[1].arguments.last == "~" && p.mcpServers[0].transport == .http)
         #expect(p.requests.timeoutSeconds == 120 && p.requests.retries == 3)
         #expect(p.hop == "hop.example.com:4677")
-        // pip and review are Imps; retired is disabled, scout is a hidden subagent.
+        // pip and review are Imps. Retired is disabled, scout is a hidden subagent.
         #expect(p.imps.map(\.name) == ["pip", "review"])
         let pip = try #require(p.imps.first)
         #expect(pip.id == UUID(uuidString: "7c0e0000-0000-4000-8000-000000000001"))

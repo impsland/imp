@@ -10,8 +10,8 @@ const api = globalThis.browser ?? globalThis.chrome;
 const ADDRESS = "ws://127.0.0.1:47823";
 // Sleeping ends timers. An alarm wakes the background again, so an Imp started later is found within a minute.
 const WAKE_ALARM = "connect";
-// Sends an unprompted "pong" as a keepalive. Traffic on the socket keeps a Chrome service worker alive (Chrome 116+).
-const PING_MS = 20_000; // Socket traffic keeps a Chrome service worker alive (Chrome 116 and later).
+// Sends an unprompted "pong" as a keepalive. Socket traffic keeps a Chrome service worker alive (Chrome 116 and later).
+const PING_MS = 20_000;
 const RETRY_FIRST = 1_000;
 const RETRY_LAST = 30_000;
 const ACTIVITY_KEPT = 6;
@@ -21,7 +21,7 @@ const state = {
   connected: false,   // the socket to Imp is open
   connecting: false,  // an attempt is in flight
   browser: "",
-  troupe: [],         // the Imps out, as Imp described them: [{ name, hue, scale, traits, mood, away, status, device }]
+  troupe: [],         // the Imps let out, as Imp described them: [{ name, hue, scale, traits, mood, away, status, device }]
   activity: [],       // what Imp just did on pages, newest first: [{ kind, query, ok, host, at }]
 };
 const popups = new Set();   // the open popup ports
@@ -57,10 +57,11 @@ api.runtime.onConnect.addListener((port) => {
   port.postMessage(state);
 });
 
+let publishQueued = false;
+
 /**
  * Sends the current state to every open popup. Several changes in one turn send it once.
  */
-let publishQueued = false;
 function publish() {
   if (publishQueued || !popups.size) return;
   publishQueued = true;

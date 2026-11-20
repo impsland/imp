@@ -33,7 +33,7 @@ final class Assistant {
             Task { @MainActor in self?.toolStatus = status }
         }
         Task { [hub] in await hub.setStatusHandler(update) }
-        // A tool call that needs a sign-in opens the browser sheet; the person can cancel it.
+        // A tool call that needs a sign-in opens the browser sheet. The person can cancel it.
         let signIn: @Sendable (MCPServerConfig) async throws -> Void = { [weak self] server in
             guard let self else { throw MCPSignInError.cancelled }
             try await self.signInOnly(to: server)

@@ -1,6 +1,6 @@
 //! The management commands: what `imp agent`, `imp provider`, `imp mcp`... do. One function per action, each
 //! taking the parsed arguments and the [`Settings`] and answering with a [`Reply`] (a value for `--json`
-//! and the same thing for people). The terminal prints the reply; a chat shows it. Nothing here prints.
+//! and the same thing for people). The terminal prints the reply, and a chat shows it. Nothing here prints.
 
 mod agent;
 mod auth;

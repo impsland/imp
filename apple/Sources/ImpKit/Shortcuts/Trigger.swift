@@ -222,7 +222,7 @@ public enum TriggerState: String, Codable, CaseIterable, Sendable, Identifiable 
 // MARK: - Event and condition values
 
 /// The one argument of an event or a condition, as text, with the typed readings of it. Numbers are
-/// kept as text so a trigger reads and writes the same everywhere; `nil` means the default.
+/// kept as text so a trigger reads and writes the same everywhere. `nil` means the default.
 enum TriggerValue {
     static func int(_ v: String?, _ fallback: Int, _ range: ClosedRange<Int>) -> Int {
         min(max(v.flatMap { Int($0) } ?? fallback, range.lowerBound), range.upperBound)

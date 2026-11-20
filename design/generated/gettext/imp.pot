@@ -29,12 +29,12 @@ msgctxt "agent.title"
 msgid "What {name} may do"
 msgstr ""
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "agentfile.open"
 msgid "Open the Imp's file"
 msgstr ""
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "agentfile.reveal"
 msgid "Show the Imp's file in Finder"
 msgstr ""
@@ -89,7 +89,7 @@ msgctxt "animations.empty"
 msgid "No animations yet."
 msgstr ""
 
-#. Button.
+#. Button in the Animations group of Settings.
 msgctxt "animations.find"
 msgid "Browse"
 msgstr ""
@@ -114,17 +114,17 @@ msgctxt "animations.search"
 msgid "Search"
 msgstr ""
 
-#. Row.
+#. Row in the App group of Settings.
 msgctxt "app.language"
 msgid "Language"
 msgstr ""
 
-#. Switch (desktop).
+#. Switch in the App group of Settings, for the desktop app only.
 msgctxt "app.login"
 msgid "Autostart"
 msgstr ""
 
-#. Note under the switch.
+#. Note under a switch in the App group of Settings.
 msgctxt "app.login_note"
 msgid "Open Imp when you sign in."
 msgstr ""
@@ -134,7 +134,7 @@ msgctxt "app.look"
 msgid "Look"
 msgstr ""
 
-#. Button.
+#. Button in the App group of Settings.
 msgctxt "app.reset"
 msgid "Reset"
 msgstr ""
@@ -144,7 +144,7 @@ msgctxt "app.system"
 msgid "System"
 msgstr ""
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "app.title"
 msgid "App"
 msgstr ""
@@ -294,7 +294,7 @@ msgctxt "brain.zzz"
 msgid "Zzz, {name} is asleep"
 msgstr ""
 
-#. Button.
+#. Button in the Brains group of Settings.
 msgctxt "brains.add"
 msgid "Add"
 msgstr ""
@@ -505,7 +505,7 @@ msgstr ""
 
 #. Button: call every Imp a device holds home.
 msgctxt "devices.call_all_home"
-msgid "Call all home"
+msgid "Send all home"
 msgstr ""
 
 #. Title of a line between two devices.
@@ -553,7 +553,7 @@ msgctxt "devices.forget.one"
 msgid "Forget this device…"
 msgstr ""
 
-#. The Hop pill under the code in the Link sheet when no Hop is set; opens its settings.
+#. The Hop pill under the code in the Link sheet when no Hop is set. It opens its settings.
 msgctxt "devices.hop.add"
 msgid "Add a Hop"
 msgstr ""
@@ -1344,7 +1344,7 @@ msgctxt "goodbye.many.message"
 msgid "Their looks, Brain settings, tools, triggers and chats go with them. This can't be undone."
 msgstr ""
 
-#. Title of the dialog that asks before several Imps are deleted.
+#. Title of the dialog that asks before saying goodbye to several Imps.
 msgctxt "goodbye.many.title"
 msgid "Say goodbye to {count} Imps?"
 msgstr ""
@@ -1354,7 +1354,7 @@ msgctxt "goodbye.message"
 msgid "Its look, Brain settings, tools, triggers and chats go with it. This can't be undone."
 msgstr ""
 
-#. Title of the dialog that asks before an Imp is deleted.
+#. Title of the dialog that asks before saying goodbye to an Imp.
 msgctxt "goodbye.title"
 msgid "Say goodbye to {name}?"
 msgstr ""
@@ -1453,7 +1453,7 @@ msgstr ""
 
 #. Screen reader action for an Imp away on another device.
 msgctxt "imp.a11y.call_home"
-msgid "Call {name} home"
+msgid "Send {name} home"
 msgstr ""
 
 #. Screen reader action.
@@ -1498,7 +1498,7 @@ msgstr ""
 
 #. Asks before taking back an Imp from the device that holds it.
 msgctxt "imp.call_home.title"
-msgid "Bring {name} back from {device}?"
+msgid "Send {name} home from {device}?"
 msgstr ""
 
 #. Screen reader hint on an Imp.
@@ -1681,17 +1681,17 @@ msgctxt "kit.help.tools"
 msgid "Tools can run things on your Mac. Read them first."
 msgstr ""
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "library.help"
 msgid "Kept in ~/.agents, for every Imp and the terminal app. Read only here."
 msgstr ""
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "library.reveal"
 msgid "Show in Finder"
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in Settings.
 msgctxt "library.title"
 msgid "Skills and commands"
 msgstr ""
@@ -2026,12 +2026,7 @@ msgctxt "menu.canvas.show_hidden"
 msgid "Hidden ({count})"
 msgstr ""
 
-#. Tooltip of Free in the menu of several Imps.
-msgctxt "menu.group.free_help"
-msgid "They step out onto the desktop, right where they stand."
-msgstr ""
-
-#. Menu item that deletes several picked Imps. It asks first.
+#. Menu item that says goodbye to several picked Imps. It asks first.
 msgctxt "menu.group.goodbye"
 msgid "Goodbye to {count} Imps…"
 msgstr ""
@@ -2046,19 +2041,19 @@ msgctxt "menu.group.kit_help"
 msgid "Copies one kit with all of them, to share or keep."
 msgstr ""
 
+#. Tooltip of Let out in the menu of several Imps.
+msgctxt "menu.group.let_out_help"
+msgid "They step out onto the desktop, right where they stand."
+msgstr ""
+
 #. Title of the menu of several Imps picked together.
 msgctxt "menu.group.title"
 msgid "{count} Imps"
 msgstr ""
 
-#. Button: take back one of our Imps from the device that holds it.
-msgctxt "menu.imp.call_home"
-msgid "Call Home"
-msgstr ""
-
 #. Menu item for an Imp away on another device: asks before calling it home.
 msgctxt "menu.imp.call_home_ask"
-msgid "Call Home…"
+msgid "Send home…"
 msgstr ""
 
 #. Button in an Imp's menu that opens its chat. Keep it short: it sits under an icon.
@@ -2081,16 +2076,6 @@ msgctxt "menu.imp.copy_link"
 msgid "Copy link"
 msgstr ""
 
-#. Button in the menu of an Imp in the app's window that lets it out onto the desktop. Keep it short: it sits under an icon.
-msgctxt "menu.imp.free"
-msgid "Free"
-msgstr ""
-
-#. Tooltip of the Free button in the menu of an Imp in the app's window.
-msgctxt "menu.imp.free_help"
-msgid "{name} steps out onto the desktop, right where it stands."
-msgstr ""
-
 #. Menu item that says goodbye to an Imp for good. A dialog asks first.
 msgctxt "menu.imp.goodbye"
 msgid "Goodbye"
@@ -2106,19 +2091,24 @@ msgctxt "menu.imp.hide_help"
 msgid "{name} hides until you show it again. Its triggers rest meanwhile."
 msgstr ""
 
-#. Button in a desktop Imp's menu that sends it back into the app's window. Keep it short: it sits under an icon.
-msgctxt "menu.imp.home"
-msgid "Home"
-msgstr ""
-
-#. Tooltip of the Home button in a desktop Imp's menu.
-msgctxt "menu.imp.home_help"
-msgid "{name} goes back into the Imps' window, and its triggers rest."
-msgstr ""
-
-#. Menu item (desktop only) that lets an Imp out onto the desktop.
+#. Button in an Imp's menu, on the desktop or in the app's window, that lets it out onto the desktop. Keep it short: it sits under an icon.
 msgctxt "menu.imp.let_out"
 msgid "Let out"
+msgstr ""
+
+#. Tooltip of the Let out button in an Imp's menu in the app's window.
+msgctxt "menu.imp.let_out_help"
+msgid "{name} steps out onto the desktop, right where it stands."
+msgstr ""
+
+#. Button in an Imp's menu that opens the box to write it a message. Keep it short: it sits under an icon.
+msgctxt "menu.imp.message"
+msgid "Message"
+msgstr ""
+
+#. Tooltip of the Message button in an Imp's menu.
+msgctxt "menu.imp.message_help"
+msgid "Message to {name}"
 msgstr ""
 
 #. Tip on the Imp menu item that moves it to a Mac for good.
@@ -2131,9 +2121,14 @@ msgctxt "menu.imp.move_to"
 msgid "Move to {name}"
 msgstr ""
 
-#. Menu item (desktop only) that puts a free Imp back in the window.
+#. Button in an Imp's menu that sends it home: back into the app's window from the desktop, or back to its home device for a visitor. Keep it short: it sits under an icon.
 msgctxt "menu.imp.send_home"
 msgid "Send home"
+msgstr ""
+
+#. Tooltip of the Send home button in a desktop Imp's menu.
+msgctxt "menu.imp.send_home_help"
+msgid "{name} goes back into the Imps' window, and its triggers rest."
 msgstr ""
 
 #. Imp menu item that sends the Imp to visit a device. It comes back.
@@ -2169,16 +2164,6 @@ msgstr ""
 #. Tip and title of the button in an Imp's chat that opens what it said with other Imps.
 msgctxt "menu.imp.talks"
 msgid "Talks"
-msgstr ""
-
-#. Button in an Imp's menu that opens the typing box.
-msgctxt "menu.imp.type"
-msgid "Type"
-msgstr ""
-
-#. Tooltip of the Type button in an Imp's menu.
-msgctxt "menu.imp.type_help"
-msgid "Type to {name}"
 msgstr ""
 
 #. Small heading in an Imp's menu over the linked devices it can visit.
@@ -2343,12 +2328,12 @@ msgstr ""
 
 #. Button: bring an Imp back.
 msgctxt "phone.callhome"
-msgid "Call home"
+msgid "Send home"
 msgstr ""
 
 #. Spoken name of the call home button.
 msgctxt "phone.callhome.label"
-msgid "Call {name} home"
+msgid "Send {name} home"
 msgstr ""
 
 #. iPhone: chat answering.
@@ -2761,16 +2746,6 @@ msgctxt "phone.stage.back_to"
 msgid "Back to {name}"
 msgstr ""
 
-#. iPhone: stage delete body.
-msgctxt "phone.stage.delete.body"
-msgid "Its chats and keys are forgotten. This can't be undone."
-msgstr ""
-
-#. iPhone: stage delete title.
-msgctxt "phone.stage.delete.title"
-msgid "Delete {name}?"
-msgstr ""
-
 #. iPhone: stage move body.
 msgctxt "phone.stage.move.body"
 msgid "{imp} moves in on {mac} for good, and its key goes with it. {mac} asks you to look it over first."
@@ -2891,17 +2866,17 @@ msgctxt "phone.with"
 msgid "With {name}"
 msgstr ""
 
-#. Switch.
+#. Switch in the Permissions group of Settings.
 msgctxt "privacy.computer"
 msgid "Control"
 msgstr ""
 
-#. Note under the switch.
+#. Note under a switch in the Permissions group of Settings.
 msgctxt "privacy.computer_note"
 msgid "Lets an Imp run commands on this computer when you ask."
 msgstr ""
 
-#. Row.
+#. Row in the Permissions group of Settings.
 msgctxt "privacy.microphone"
 msgid "Microphone"
 msgstr ""
@@ -2911,17 +2886,17 @@ msgctxt "privacy.microphone_note"
 msgid "Used only when you talk to an Imp by voice."
 msgstr ""
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "privacy.title"
 msgid "Permissions"
 msgstr ""
 
-#. Switch.
+#. Switch in the Permissions group of Settings.
 msgctxt "privacy.trust"
 msgid "Trust devices"
 msgstr ""
 
-#. Note under the switch.
+#. Note under a switch in the Permissions group of Settings.
 msgctxt "privacy.trust_note"
 msgid "Only for your own devices. Their Imps may use tools on this one."
 msgstr ""
@@ -2956,7 +2931,7 @@ msgctxt "servers.hop.off_note"
 msgid "Only devices on the same network find each other."
 msgstr ""
 
-#. Section title.
+#. Title of a section in the Servers group of Settings.
 msgctxt "servers.hop.title"
 msgid "Hop"
 msgstr ""
@@ -3011,7 +2986,7 @@ msgctxt "servers.state_unchecked"
 msgid "Not checked yet"
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the App pane of Settings.
 msgctxt "settings.app.appearance.title"
 msgid "Appearance"
 msgstr ""
@@ -3036,12 +3011,12 @@ msgctxt "settings.app.control_ink.white"
 msgid "White"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the App pane of Settings.
 msgctxt "settings.app.look.info"
 msgid "How the app looks."
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the App pane of Settings.
 msgctxt "settings.app.system.info"
 msgid "How the app starts and which language it speaks."
 msgstr ""
@@ -3056,247 +3031,247 @@ msgctxt "settings.attention.imp_no_brain"
 msgid "{name} has no Brain."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Backup pane of Settings.
 msgctxt "settings.backup.export.title"
 msgid "Export"
 msgstr ""
 
-#. Settings text.
+#. Label of a control in the Backup pane of Settings.
 msgctxt "settings.backup.folder.reveal"
 msgid "Show in Finder"
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Backup pane of Settings.
 msgctxt "settings.backup.folder.title"
 msgid "Configuration"
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Backup pane of Settings.
 msgctxt "settings.backup.import.title"
 msgid "Import"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Backup pane of Settings.
 msgctxt "settings.backup.keep.info"
 msgid "Save your Imps and settings in a file, or load them back."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Backup pane of Settings.
 msgctxt "settings.backup.keep.title"
 msgid "Backups"
 msgstr ""
 
-#. Settings text.
+#. Label of a control in the Backup pane of Settings.
 msgctxt "settings.backup.reset.app"
 msgid "Erase and Restart"
 msgstr ""
 
-#. Settings text.
+#. Label of a control in the Backup pane of Settings.
 msgctxt "settings.backup.reset.confirm"
 msgid "Erase everything and start over?"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Backup pane of Settings.
 msgctxt "settings.backup.reset.info"
 msgid "Erase everything and begin again. This cannot be undone."
 msgstr ""
 
-#. Settings text.
+#. Label of a control in the Backup pane of Settings.
 msgctxt "settings.backup.reset.message"
 msgid "Chats, memories and the app's own settings are deleted. Imps, services and keys are kept unless you also remove the shared configuration, which the terminal app uses too. This can't be undone."
 msgstr ""
 
-#. Settings text.
+#. Label of a control in the Backup pane of Settings.
 msgctxt "settings.backup.reset.shared"
 msgid "Erase and Also Remove the Shared Configuration"
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Backup pane of Settings.
 msgctxt "settings.backup.reset.title"
 msgid "Reset"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Brains pane of Settings.
 msgctxt "settings.brains.first_wait.info"
 msgid "How long to wait before asking again."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Brains pane of Settings.
 msgctxt "settings.brains.first_wait.title"
 msgid "First pause"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Brains pane of Settings.
 msgctxt "settings.brains.longer.info"
 msgid "How much longer each pause gets."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Brains pane of Settings.
 msgctxt "settings.brains.longer.title"
 msgid "Growth"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Brains pane of Settings.
 msgctxt "settings.brains.requests.info"
 msgid "How patient an Imp is when a brain is slow."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Brains pane of Settings.
 msgctxt "settings.brains.requests.title"
 msgid "Asking"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Brains pane of Settings.
 msgctxt "settings.brains.retries.info"
 msgid "How many times to ask again if it fails."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Brains pane of Settings.
 msgctxt "settings.brains.retries.title"
 msgid "Tries"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Brains pane of Settings.
 msgctxt "settings.brains.services.info"
 msgid "The brains your Imps think with."
 msgstr ""
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Brains pane of Settings.
 msgctxt "settings.brains.wait.info"
 msgid "How long to wait for an answer before giving up."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Brains pane of Settings.
 msgctxt "settings.brains.wait.title"
 msgid "Wait"
 msgstr ""
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.amount.info"
 msgid "How much of the desktop shows through the bubble."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.amount.title"
 msgid "Amount"
 msgstr ""
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.audio.info"
 msgid "What shows while a voice or sound plays."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.audio.title"
 msgid "While playing"
 msgstr ""
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.autoplay.info"
 msgid "Plays a picture, video or sound in a reply as soon as it arrives."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.autoplay.title"
 msgid "Autoplay"
 msgstr ""
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.background.info"
 msgid "Whether the bubble is solid or lets what is behind it show through."
 msgstr ""
 
-#. Settings text.
+#. Label of a control in the Bubble pane of Settings.
 msgctxt "settings.bubble.background.solid"
 msgid "Solid"
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.background.title"
 msgid "Background"
 msgstr ""
 
-#. Settings text.
+#. Label of a control in the Bubble pane of Settings.
 msgctxt "settings.bubble.background.translucent"
 msgid "Translucent"
 msgstr ""
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.hide.info"
 msgid "How long a bubble stays after the Imp stops talking."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.hide.title"
 msgid "Hide after"
 msgstr ""
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.lines.info"
 msgid "How many lines the text box grows to before it scrolls."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.lines.title"
 msgid "Lines"
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.look.title"
 msgid "Look"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.media.info"
 msgid "What the bubble does with sound and video."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.media.title"
 msgid "Media"
 msgstr ""
 
-#. Settings text.
+#. Label of a control in the Bubble pane of Settings.
 msgctxt "settings.bubble.preview.label"
 msgid "Preview of the bubble on a light, a dark and a busy background"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.showing.info"
 msgid "How the bubble shows answers."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.showing.title"
 msgid "Showing"
 msgstr ""
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Bubble pane of Settings.
 msgctxt "settings.bubble.size.info"
 msgid "The size of the chat bubble. Drag its corner to change it."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Bubble pane of Settings.
 msgctxt "settings.bubble.size.title"
 msgid "Size"
 msgstr ""
 
 #. Help of the button on a linked device that takes back the Imps it holds.
 msgctxt "settings.devices.call_home"
-msgid "Call its Imps home"
+msgid "Send its Imps home"
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Devices pane of Settings.
 msgctxt "settings.devices.forget_all.title"
 msgid "Forget all"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Devices pane of Settings.
 msgctxt "settings.devices.link.info"
 msgid "Link another device so your Imps can visit it."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Devices pane of Settings.
 msgctxt "settings.devices.link.title"
 msgid "Link"
 msgstr ""
@@ -3306,37 +3281,37 @@ msgctxt "settings.devices.mine.info"
 msgid "Turn on for a device that's yours. Its Imps can then message the Imps here, Imps answer it with their tools, it can open any Imp's files, and an Imp you throw to it goes without asking. Turn it on on both devices so Imps talk both ways. Leave it off for a friend's device: Imps still answer it, but without tools."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Devices pane of Settings.
 msgctxt "settings.devices.pair.title"
 msgid "Link"
 msgstr ""
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "settings.group.app"
 msgid "App"
 msgstr ""
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "settings.group.backup"
 msgid "Backup"
 msgstr ""
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "settings.group.brains"
 msgid "Brains"
 msgstr ""
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "settings.group.bubble"
 msgid "Bubble"
 msgstr ""
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "settings.group.privacy"
 msgid "Permissions"
 msgstr ""
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "settings.group.servers"
 msgid "Servers"
 msgstr ""
@@ -3346,7 +3321,7 @@ msgctxt "settings.group.sharing"
 msgid "Sharing"
 msgstr ""
 
-#. Settings text.
+#. Label of a control in Settings.
 msgctxt "settings.group.talking"
 msgid "Talking"
 msgstr ""
@@ -3381,12 +3356,12 @@ msgctxt "settings.map.seen"
 msgid "Can see each other"
 msgstr ""
 
-#. State of a node.
+#. State of a node on the Settings map.
 msgctxt "settings.map.state_needs_setup"
 msgid "Needs setup"
 msgstr ""
 
-#. State of a node.
+#. State of a node on the Settings map.
 msgctxt "settings.map.state_off"
 msgid "Off"
 msgstr ""
@@ -3396,7 +3371,7 @@ msgctxt "settings.map.state_offline"
 msgid "Offline"
 msgstr ""
 
-#. State of a node.
+#. State of a node on the Settings map.
 msgctxt "settings.map.state_ready"
 msgid "Ready"
 msgstr ""
@@ -3421,82 +3396,82 @@ msgctxt "settings.map.via"
 msgid "Through {server}"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.accessibility.info"
 msgid "So Imp can press keys and click for you."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.accessibility.title"
 msgid "Control"
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.computer.title"
 msgid "This computer"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.core.info"
 msgid "What your Mac lets Imp do."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.core.title"
 msgid "Allowed"
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.microphone.title"
 msgid "Microphone"
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.screen.title"
 msgid "Screen"
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Permissions pane of Settings.
 msgctxt "settings.privacy.speech.title"
 msgid "Speech"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Brain sheet.
 msgctxt "settings.service.address.info"
 msgid "The web address of the brain."
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Brain sheet.
 msgctxt "settings.service.cloud.info"
 msgid "A brain on the internet. It may ask for a key."
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Brain sheet.
 msgctxt "settings.service.key.info"
 msgid "A secret password the brain asks for."
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Brain sheet.
 msgctxt "settings.service.local.info"
 msgid "A brain that runs on this computer."
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Brain sheet.
 msgctxt "settings.service.model.info"
 msgid "Which model to ask."
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Brain sheet.
 msgctxt "settings.service.name.info"
 msgid "A name you pick for this brain."
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Talking pane of Settings.
 msgctxt "settings.talking.between.info"
 msgid "How Imps talk to each other."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.between.title"
 msgid "Between Imps"
 msgstr ""
@@ -3506,12 +3481,12 @@ msgctxt "settings.talking.language.auto"
 msgid "Automatic"
 msgstr ""
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Talking pane of Settings.
 msgctxt "settings.talking.language.info"
 msgid "The language you speak to it. Automatic listens for a few at once and keeps the one you spoke."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.language.title"
 msgid "Language"
 msgstr ""
@@ -3521,7 +3496,7 @@ msgctxt "settings.talking.languages.device"
 msgid "My Mac's languages"
 msgstr ""
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Talking pane of Settings.
 msgctxt "settings.talking.languages.info"
 msgid "Up to three languages. It listens in all of them at once, on this Mac, and keeps the one you spoke. The one you spoke last time wins a close call."
 msgstr ""
@@ -3536,32 +3511,32 @@ msgctxt "settings.talking.languages.title"
 msgid "Listens for"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Talking pane of Settings.
 msgctxt "settings.talking.listening.info"
 msgid "How Imps hear you."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.listening.title"
 msgid "Listening"
 msgstr ""
 
-#. Tooltip of a settings row.
+#. Tooltip of a row in the Talking pane of Settings.
 msgctxt "settings.talking.talk_in.info"
 msgid "Which chat a message from one Imp to another lands in."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.talk_in.title"
 msgid "Talk in"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Talking pane of Settings.
 msgctxt "settings.talking.threads.info"
 msgid "Whether Imps keep chatting in the same chat or start a new one."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.threads.title"
 msgid "Chats"
 msgstr ""
@@ -3576,12 +3551,12 @@ msgctxt "settings.talking.waiting.dont_wait"
 msgid "Don't wait"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Talking pane of Settings.
 msgctxt "settings.talking.waiting.info"
 msgid "Whether an Imp waits for the answer of the Imp it messages, or goes on and hears it later as a new turn."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.waiting.title"
 msgid "Waiting"
 msgstr ""
@@ -3591,12 +3566,12 @@ msgctxt "settings.talking.waiting.wait"
 msgid "Wait"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the Talking pane of Settings.
 msgctxt "settings.talking.window.info"
 msgid "How many minutes a chat stays the same chat."
 msgstr ""
 
-#. Settings text.
+#. Title of a setting in the Talking pane of Settings.
 msgctxt "settings.talking.window.title"
 msgid "Same chat for"
 msgstr ""
@@ -3606,27 +3581,27 @@ msgctxt "settings.title"
 msgid "Settings"
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the tool sheet.
 msgctxt "settings.tool.address.info"
 msgid "The web address of the tool."
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the tool sheet.
 msgctxt "settings.tool.command.info"
 msgid "The command that starts the tool."
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the tool sheet.
 msgctxt "settings.tool.headers.info"
 msgid "Extra lines sent with each request, like a password."
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the tool sheet.
 msgctxt "settings.tool.name.info"
 msgid "A name you pick for this tool."
 msgstr ""
 
-#. Settings text.
+#. Explains a setting in the tool sheet.
 msgctxt "settings.tool.variables.info"
 msgid "Secret values the tool needs to run."
 msgstr ""
@@ -3696,7 +3671,7 @@ msgctxt "state.offline.title"
 msgid "You are offline"
 msgstr ""
 
-#. Button.
+#. Button in Settings.
 msgctxt "state.servers.set_up_hop"
 msgid "Set up Hop"
 msgstr ""
@@ -4626,22 +4601,22 @@ msgctxt "voice.autoplay"
 msgid "Autoplay"
 msgstr ""
 
-#. Note under the switch.
+#. Note under a switch in the Voice group of Settings.
 msgctxt "voice.autoplay_note"
 msgid "A voice an Imp marks to play starts by itself in a new reply. Otherwise you tap it."
 msgstr ""
 
-#. Switch.
+#. Switch in the Voice group of Settings.
 msgctxt "voice.listen"
 msgid "Listen"
 msgstr ""
 
-#. Switch.
+#. Switch in the Voice group of Settings.
 msgctxt "voice.speak"
 msgid "Speak"
 msgstr ""
 
-#. Group title.
+#. Title of a group of settings in the Settings window.
 msgctxt "voice.title"
 msgid "Voice"
 msgstr ""

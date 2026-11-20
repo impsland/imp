@@ -44,7 +44,7 @@ enum StickerExport {
         let paced = Antics.paced(steps, tempo: speedUp)
         let seconds = min(maxSeconds, total / speedUp)
         let frames = record(paced, frames: max(1, Int((seconds * Double(LottieWriter.fps)).rounded())), hue: hue, traits: traits)
-        // Finer first; coarser keyframes and coordinates until it fits.
+        // Finer first, then coarser keyframes and coordinates until it fits.
         var smallest = Int.max
         for (stride, decimals) in [(1, 1), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (8, 0), (10, 0), (15, 0)] {
             let json = LottieWriter(stride: stride, decimals: decimals).document(frames: frames, name: name)

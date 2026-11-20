@@ -52,7 +52,7 @@ What the Mac has from this specification and the iPhone does not, to build:
 
 - **Scope of triggers and animations.** The phone's Imps keep their own triggers and have no shared set, so there is nothing to label or override. The Mac's model (`SettingScope`, `ImpPreferences.saveTrigger`) is shared code the phone can adopt.
 - **The server card.** The phone's Devices section still shows The Hop with its own menu and Check (`PhoneServerCards`), not the Mac's `ServerCard` layout. The choices and the check work the same.
-- **Link a device as one sheet.** Done on the first screen (its own sheet with the same cards). The Mac has no Devices section in Settings any more (it is the Devices screen); in Settings the phone still shows the code, Scan and Paste as cards of its Devices section.
+- **Link a device as one sheet.** Done on the first screen (its own sheet with the same cards). The Mac has no Devices section in Settings any more (it is the Devices screen). In Settings the phone still shows the code, Scan and Paste as cards of its Devices section.
 - **Field actions.** The phone's fields do not use `FieldWell` yet. None of its fields has a button beside it.
 
 The first run uses the same model (`FirstRunModel`) and words, with Remote and Local, on both. The phone shows it on one screen, without step numbers.

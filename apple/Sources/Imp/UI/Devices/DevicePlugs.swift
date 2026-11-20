@@ -82,7 +82,7 @@ private struct Socket: View {
 }
 
 /// One plug: a body with its picture and short name and two prongs under it. Unplugged it rests above the outlet with
-/// its prongs showing, quiet on a card; plugged it has slid down so the prongs are in the socket, filled with the tint the
+/// its prongs showing, quiet on a card. Plugged it has slid down so the prongs are in the socket, filled with the tint the
 /// app's main buttons use, so what is in reads at a glance.
 private struct PlugView: View {
     let item: PlugItem

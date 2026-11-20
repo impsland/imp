@@ -522,7 +522,7 @@ async fn sign_in_page_and_flow() {
     assert_eq!(status, StatusCode::OK);
     assert_eq!(view["handle"], "fresh-hand");
 
-    // A challenge is accepted once; a taken handle and a bad handle are refused.
+    // A challenge is accepted once. A taken handle and a bad handle are refused.
     let proof = h.solved("10.0.0.4").await;
     let used = |handle: &'static str, proof: String| {
         let h = &h;
@@ -947,7 +947,7 @@ async fn publish_each_type_and_refuse_mismatches() {
     let (failed, item) = h.publish(&s, "kit", "skilled-kit", skills).await;
     assert!(!failed, "{item}");
     assert_eq!(item["runs_programs"], true);
-    // A program in a tool marks it too; the oversize check holds.
+    // A program in a tool marks it too. The oversize check holds.
     let mut program = tool_doc("prog");
     program["mcpServers"]["prog"] = json!({ "command": "npx", "args": ["x"] });
     let (failed, item) = h.publish(&s, "tool", "prog", program).await;

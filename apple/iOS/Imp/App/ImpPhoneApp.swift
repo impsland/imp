@@ -193,7 +193,7 @@ struct RootView: View {
             if CommandLine.arguments.contains("-openSettings") { router.open(.settings(devices: false)) }
             if CommandLine.arguments.contains("-editImp"), let first = pocket.imps.first { router.open(.edit(first.id, brain: false)) }
             if CommandLine.arguments.contains("-openChat") {
-                // Waits for the Imps (from the demo, or from a Mac it's connecting to).
+                // Waits for the Imps (from a Mac it's connecting to).
                 for _ in 0..<120 where hub.visits.isEmpty { try? await Task.sleep(for: .milliseconds(250)) }
                 try? await Task.sleep(for: .seconds(1.5))
                 if let first = hub.visits.first { router.talk(first.id) }

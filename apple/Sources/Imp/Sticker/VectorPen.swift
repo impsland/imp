@@ -156,7 +156,7 @@ struct VectorPen: ImpPen {
     // MARK: Marks
 
     /// A mark as a path filling `rect` (a symbol) or centred on it (a letter). Symbols that have a
-    /// character are drawn from the rounded system font; the others are drawn here.
+    /// character are drawn from the rounded system font. The others are drawn here.
     static func path(of mark: PenMark, in rect: CGRect) -> CGPath? {
         switch mark {
         case .letter(let text, let size):

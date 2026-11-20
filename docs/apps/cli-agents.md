@@ -106,8 +106,7 @@ answer arrives later as a new event at the end of the chat, marked `[Event, not 
 never changed. An Imp can have four such messages out at once. A message sent by an Imp that was woken three answers
 deep has to wait.
 
-The line chat (`imp chat --plain`, and `imp serve`) always waits, because nothing is left running to receive a late
-answer.
+The line chat (`imp chat --plain`) always waits, because nothing is left running to receive a late answer.
 
 ### Imps on your other devices
 

@@ -255,7 +255,7 @@ impl World {
         run
     }
 
-    /// Runs `imp ARGS` and expects it to fail; the sentence it says.
+    /// Runs `imp ARGS` and expects it to fail. Returns the sentence it says.
     pub fn imp_fails(&self, args: &[&str]) -> String {
         let run = self.imp_in(args, "");
         assert!(!run.ok, "imp {args:?} should fail, it said: {}", run.out);

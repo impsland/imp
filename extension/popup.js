@@ -1,4 +1,4 @@
-// The toolbar popup: the Imps that are out (alive: they watch your pointer, blink, think, sleep),
+// The toolbar popup: the Imps that are let out (alive: they watch your pointer, blink, think, sleep),
 // what tab Imp knows you're on, and what it just did there.
 //
 // The background pushes its state over a port, whenever it changes. Nothing here polls, and
@@ -14,7 +14,7 @@ const $ = (id) => document.getElementById(id);
 const t = (key, ...values) => api.i18n.getMessage(key.replace(/\./g, "_"), values.map(String));
 const SVG_NS = "http://www.w3.org/2000/svg";
 
-// While Imp isn't there (or hasn't said who's out yet), one red Imp stands in.
+// While Imp isn't there (or hasn't said which Imps are let out yet), one red Imp stands in.
 const STAND_IN = { name: "", hue: 0, scale: 1, mood: "idle", away: false, traits: null };
 const MAX_IMPS = 4;
 const MIN_TRYING = 600;    // A reconnect shows as trying for at least this long (ms), so it reads as an answer.
@@ -27,7 +27,7 @@ const clock = new Clock();
 
 let state = null;          // The last state the background sent.
 let tab = null;            // The tab in front: { url, title, icon }.
-let trying = 0;            // When Reconnect was pressed, in milliseconds. Zero means not trying.
+let trying = 0;            // When Try again was pressed, in milliseconds. Zero means not trying.
 let online = false;        // Which layout is showing. It stays as it was while trying, so nothing jumps.
 let pointer = null;
 let port = null;
@@ -371,7 +371,13 @@ function renderImps(list) {
   if (changed) for (const cell of cells) cell.rect = null;   // The layout moved, so measure again when needed.
 }
 
-/** Brings one Imp up to date. True if its size changed. Only what differs is touched. */
+/**
+ * Brings one Imp card up to date. Only the parts that differ are touched.
+ * @param {object} cell A cell made by makeCell().
+ * @param {object} imp The Imp as the background sent it.
+ * @param {boolean} many True when several Imps share the stage, which makes each one smaller.
+ * @returns {boolean} True when the card's size changed.
+ */
 function updateCell(cell, imp, many) {
   const away = !!imp.away;
   // The status is the Imp's real one, wherever it is. Away only says where.
@@ -405,7 +411,10 @@ function updateCell(cell, imp, many) {
 
 // MARK: Looking at the pointer
 
-/** Where the pointer is from an Imp, as -1…1 on both axes (or where it glances while there is none). */
+/**
+ * Turns an Imp's gaze toward the pointer, or toward its random glance when the pointer is not over the popup.
+ * @param {object} cell A cell made by makeCell().
+ */
 function aim(cell) {
   if (!pointer) return cell.fig.setGaze(cell.wander);
   cell.rect ??= cell.canvas.getBoundingClientRect();
@@ -474,7 +483,7 @@ function settle() {
 
 const settleAndRender = () => { settle(); render(); };
 
-// Pressing Reconnect changes the screen right now. The background is only told.
+// Pressing Try again changes the screen right now. The background is only told.
 $("reconnect").addEventListener("click", () => {
   if (trying) return;
   trying = performance.now();

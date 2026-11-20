@@ -23,7 +23,8 @@ struct PocketEditor: View {
     @State private var brainFlow: FirstRunModel?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var saveProblem: String?
-    @State private var confirmingGoodbye = false
+    /// Set while the goodbye question is open.
+    @State private var asking: [UUID]?
     @State private var removing: UUID?
     @State private var saving: Task<Void, Never>?
 
@@ -52,9 +53,9 @@ struct PocketEditor: View {
                         .accessibilityAddTraits(.isHeader)
                 }
             } leading: {
-                // Saying goodbye is the one sheet-wide action; it sits where Back would, on the hub only.
+                // Saying goodbye is the one sheet-wide action. It sits where Back would, on the hub only.
                 if open == nil {
-                    HoverIconButton(systemName: "hand.wave.fill", help: "imp_settings.goodbye", tint: Tone.danger) { confirmingGoodbye = true }
+                    HoverIconButton(systemName: "hand.wave.fill", help: "imp_settings.goodbye", tint: Tone.danger) { asking = [id] }
                         .accessibilityLabel(words("imp_settings.goodbye.a11y", callName))
                         .accessibilityIdentifier("imp.goodbye")
                 }
@@ -66,15 +67,10 @@ struct PocketEditor: View {
         .impControls(tint: Color.imp(draft.hue))
         .background(Tone.surface)
         .presentationBackground(Tone.surface)
-        .confirmationDialog(words("goodbye.title", callName), isPresented: $confirmingGoodbye, titleVisibility: .visible) {
-            Button("goodbye.confirm", role: .destructive) {
-                saving?.cancel()
-                pocket.delete(id)
-                done()
-            }
-            Button(words("goodbye.cancel", callName), role: .cancel) {}
-        } message: {
-            Text("goodbye.message")
+        .goodbyeQuestion($asking, names: [callName]) { _ in
+            saving?.cancel()
+            pocket.delete(id)
+            done()
         }
         .confirmationDialog("tools.remove_server", isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
                             titleVisibility: .visible) {

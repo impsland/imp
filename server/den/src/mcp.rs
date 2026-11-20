@@ -68,7 +68,7 @@ struct ItemRef {
 struct DeleteArgs {
     /// The slug of one of your items.
     slug: String,
-    /// Your own handle. Optional; naming another account's handle is refused.
+    /// Your own handle. Optional. Naming another account's handle is refused.
     handle: Option<String>,
 }
 

@@ -18,7 +18,7 @@ directly for options the targets don't expose, for example `apple/scripts/apple.
 
 ### Dependencies
 
-The Mac app uses one third-party Swift package, [SwiftFlow](https://github.com/aaurelions/SwiftFlow), for the Devices canvas. It is pinned in `apple/Package.swift` and `apple/Package.resolved` and fetched by SwiftPM on the first build. It is MIT licensed; its notice is in `THIRD_PARTY_NOTICES.md`, which `make app` copies into `Imp.app/Contents/Resources`.
+The Mac app uses one third-party Swift package, [SwiftFlow](https://github.com/aaurelions/SwiftFlow), for the Devices canvas. It is pinned in `apple/Package.swift` and `apple/Package.resolved` and fetched by SwiftPM on the first build. It is MIT licensed. Its notice is in `THIRD_PARTY_NOTICES.md`, which `make app` copies into `Imp.app/Contents/Resources`.
 
 ## The iPhone app
 

@@ -19,17 +19,14 @@ These files are its examples and its test.
 | `workspace-refs.json` | Workspace path normalisation, path checks, `imp-file://` references and SHA-256 checksums. Groups: `normalize`, `paths`, `refs`, `checksums`, with a shared `owner` and `root`. | `engine/src/workspace.rs` (unit tests), `WorkspaceReferenceTests` (Swift) | Resolves and validates every path and reference the same way. `null` means rejected. |
 | `server-addresses.json` | The Den address (a URL) and the Hop address (`host:port`) a person types. Groups: `den` and `hop`, each with an `input`, the kept `address` and an `error` sentence or `null`. | `engine/src/servers.rs` (unit tests) | Gives the same address, or the same error sentence, for every input. Empty input is no server, with no error. |
 | `mcp-setup.json` | Adding an MCP server. `words` and `quote`: command lines read and written as a shell does. `setup`: pasted text (a JSON config, a bare `"name": {...}` pair, an address, a command line) and the servers it gives, with the names suggested for them. `files`: config files read strictly, with the error for a bad one. | `engine/src/mcp/setup.rs` (unit tests), `MCPSetupVectorTests` (Swift) | Reads every case into the same servers. A name the vectors leave empty is the client's own word ("New tool"). |
-| `agents.json` | The shared `.agents/` layout: `front_matter` of Markdown files, `agents` (an Imp in `agents/NAME.md` in the older form chat still reads, or the error for a bad file, which never repeats a key), `skills` (a `SKILL.md`, whose name is its folder's), and `values` (`${NAME}` and `${NAME:-default}` filled from an environment). | `engine/src/agents.rs` (skills), `chat/src/legacy_agents.rs` (the rest) | Reads every case the same way. Only the fields a case lists are checked. |
+| `agents.json` | The shared `.agents/` layout: `front_matter` of Markdown files, `agents` (an Imp in `agents/NAME.md` in the older form chat still reads, or the error for a bad file, which never repeats a key), `skills` (a `SKILL.md`, whose name is its folder's), and `values` (`${NAME}` and `${NAME:-default}` filled from an environment). | `engine/src/agents.rs` (unit tests, which read the file with `include_str!`) | Reads every case the same way. Only the fields a case lists are checked. |
 | `config/vectors.json`, `config/imp.canonical.json`, `config/home/` | The shared configuration (`docs/architecture/configuration.md`): `model_refs` (`provider/model#variant`), `globs`, `substitution` (`{env:NAME}`), `decide` (last match wins), `defaults`, `set_group` (the switches as rules), and `load` (what loading the sample `home/` gives: `~/.agents`, a project below it before and after trusting it). `imp.canonical.json` is the sample `imp.json` as the core writes it. | `engine/tests/config_vectors.rs` | Reads every case the same way. Writes the sample `imp.json` as the canonical file, byte for byte (keys sorted below the top level, 2 spaces, a newline at the end). |
-| `kits/*.json` | Eight whole kits (Imps, triggers, tools, animations) that must parse. | `ServerLiveTests` (Swift) | Parses each kit and keeps what it can express. |
+| `kits/*.json` | Eight whole kits (Imps, triggers, tools, animations) that must parse. | `KitPermissionsTests` (Swift) | Parses each kit and keeps what it can express. |
 
 The Swift tests are in `apple/Tests/ImpKitTests`. `ServerAddressesTests` does not read
 `server-addresses.json`. It covers the Swift side of the same checks, and the vectors run in the core.
 
 `ProtocolVectorTests` (Swift) reads only `bridge-messages.json` now. The link vectors are checked by the core.
-
-`ServerLiveTests` publishes the kits to a real Den. It runs only when `IMP_SERVER` is set.
-
 ## Not in a file here
 
 The Hop handshake bytes, keys and signatures are not stored here. They are pinned by the tests in

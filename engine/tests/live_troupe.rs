@@ -1,5 +1,5 @@
 //! Live API (opt-in): `IMP_LIVE_TESTS=1 cargo test -p imp-engine --test live_troupe -- --nocapture --test-threads=1`.
-//! Talks to the real service in ./.env (`OPENAI_BASE_URL`, `OPENAI_API_KEY`, `OPENAI_MODEL`). Costs a few cents.
+//! Talks to the real service named in the repository root `.env` (`OPENAI_BASE_URL`, `OPENAI_API_KEY`, `OPENAI_MODEL`). Costs a few cents.
 //! Checks that the model reads what Imps say about themselves, and that an answer which comes later reaches it.
 
 use imp_engine::agent::{BoxFuture, HostTool, ToolHost};
@@ -12,7 +12,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use uuid::Uuid;
 
-/// The values in ./.env, or `None` when live tests are off.
+/// The values in the repository root `.env`, or `None` when live tests are off.
 fn live() -> Option<HashMap<String, String>> {
     if std::env::var("IMP_LIVE_TESTS").as_deref() != Ok("1") {
         eprintln!("live tests are off (IMP_LIVE_TESTS=1 turns them on)");

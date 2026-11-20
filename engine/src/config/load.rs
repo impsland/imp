@@ -1,6 +1,6 @@
 //! Finding the files, reading them and merging them: `imp.json` and `auth.json` of the config folder,
 //! `~/.agents`, and the `.agents` folders from a project's root down to where the terminal app started.
-//! A file that cannot be used is a diagnostic; the rest loads.
+//! A file that cannot be used is reported as a diagnostic. The rest still loads.
 
 use crate::agents::{self, Instructions, LeftOut, MOST_INSTRUCTIONS, SkillSpec};
 use crate::config::doc::{Agent, Command, Skill, valid_agent_name};

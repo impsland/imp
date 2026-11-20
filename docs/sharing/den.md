@@ -17,9 +17,9 @@ The first time an Imp publishes, the Den's sign-in page opens in a browser sheet
 
 It also opens when you add the Den as a tool, or switch it on, and the Den asks you to sign in: Imp signs in at
 once, then connects and lists its tools. You can cancel the sheet. Imp never opens it by itself: not when it starts,
-reconnects in the background, or an Imp arrives from your iPhone with the Den among its tools; the server then shows **Sign-in needed** in Tools. Until you sign in, the Imp sees one
+reconnects in the background, or an Imp arrives from your iPhone with the Den among its tools. The server then shows **Sign-in needed** in Tools. Until you sign in, the Imp sees one
 stand-in tool for the Den that opens the sign-in page when you ask it to use the Den. On iPhone it opens only while
-Imp is in front; otherwise the Imp tells you to open Imp and sign in in Tools.
+Imp is in front. Otherwise the Imp tells you to open Imp and sign in in Tools.
 
 - An account needs no registration: no e-mail and no password. You pick a handle, and the page solves a small
   proof-of-work ([ALTCHA](https://altcha.org)) by itself. To use an account you already have, paste its account key instead.

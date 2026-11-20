@@ -8,7 +8,7 @@
 //! linking code, and these nodes have no host of their own to give it out under, so the join finds no route.
 //!
 //! The nodes have no host names, so a guest can only reach its host through the Hop. The Hop limits each
-//! address to 30 new connections a minute by default: repeated runs against one Hop need
+//! address to 120 new connections a minute by default: repeated runs against one Hop need
 //! HOP_PER_IP_PER_MINUTE raised (for example 100000 on a local test Hop). Everything waits for events or
 //! conditions with a timeout, never for a fixed time.
 

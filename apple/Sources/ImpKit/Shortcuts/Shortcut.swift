@@ -1,7 +1,7 @@
 import Foundation
 
 /// One step a trigger runs (`do`): an act, its value, and the extras that act takes. Steps run in
-/// order and at once; `ask` hands its work to the Imp's model and the next steps don't wait for it.
+/// order and at once. `ask` hands its work to the Imp's model and the next steps don't wait for it.
 public struct Step: Codable, Hashable, Sendable {
     public enum Act: String, Codable, CaseIterable, Sendable, Identifiable {
         /// Hands the instruction (`value`) and what happened to the Imp's model. Needs a Brain.
@@ -117,7 +117,7 @@ public struct Step: Codable, Hashable, Sendable {
 }
 
 /// A trigger: **when this happens (and these hold), the Imp runs these steps.** The contract is
-/// `docs/sharing/kits.md#triggers`; the same object is what kits and the Imp's own tool
+/// `docs/sharing/kits.md#triggers`. The same object is what kits and the Imp's own tool
 /// `imp_add_trigger` use (see `TriggerJSON.swift`).
 public struct Shortcut: Codable, Identifiable, Hashable, Sendable {
     public var id = UUID()

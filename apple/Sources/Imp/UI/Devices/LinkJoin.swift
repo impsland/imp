@@ -61,7 +61,7 @@ enum LinkPhase: Equatable {
     case linked(String)
     case failed(String)
 
-    /// A device that appeared in the list, or a code this Mac read, means linked; a problem with the code read
+    /// A device that appeared in the list, or a code this Mac read, means linked. A problem with the code read
     /// is shown while it lasts.
     init(newcomer: String?, join: LinkJoin) {
         if let newcomer {

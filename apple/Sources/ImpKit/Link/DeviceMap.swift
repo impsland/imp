@@ -167,7 +167,7 @@ public enum HopStanding: Equatable, Sendable {
     case unreachable
 
     /// How a setting stands, given what the map says of the Hop's node. Custom with nothing valid typed
-    /// needs an address (it is not off); a check in the card's hands says more than the map.
+    /// needs an address (it is not off). A check in the card's hands says more than the map.
     public init(_ setting: ServerSetting, link: DeviceMap.State) {
         switch setting.status {
         case .off: self = setting.choice == .custom ? .needsAddress : .off

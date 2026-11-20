@@ -35,8 +35,8 @@
     "es": "Se esconden hasta que los vuelvas a mostrar. Mientras, sus disparadores descansan.",
     "zh-Hans": "它们会藏起来，直到你再次显示。在此期间它们的触发器暂停。"
   },
-  "menu.group.free_help": {
-    "note": "Tooltip of Free in the menu of several Imps.",
+  "menu.group.let_out_help": {
+    "note": "Tooltip of Let out in the menu of several Imps.",
     "en": "They step out onto the desktop, right where they stand.",
     "es": "Salen al escritorio, justo donde están.",
     "zh-Hans": "它们走到桌面上，就在各自站着的地方。"
@@ -48,7 +48,7 @@
     "zh-Hans": "把它们全部复制为一个套件，用于分享或保存。"
   },
   "menu.group.goodbye": {
-    "note": "Menu item that deletes several picked Imps. It asks first.",
+    "note": "Menu item that says goodbye to several picked Imps. It asks first.",
     "args": {
       "count": "int"
     },
@@ -75,28 +75,22 @@
     "zh-Hans": "Imp 设置"
   },
   "menu.imp.let_out": {
-    "note": "Menu item (desktop only) that lets an Imp out onto the desktop.",
+    "note": "Button in an Imp's menu, on the desktop or in the app's window, that lets it out onto the desktop. Keep it short: it sits under an icon.",
     "en": "Let out",
     "es": "Soltar",
     "zh-Hans": "放出来"
   },
   "menu.imp.send_home": {
-    "note": "Menu item (desktop only) that puts a free Imp back in the window.",
+    "note": "Button in an Imp's menu that sends it home: back into the app's window from the desktop, or back to its home device for a visitor. Keep it short: it sits under an icon.",
     "en": "Send home",
     "es": "Enviar a casa",
     "zh-Hans": "送回家"
   },
-  "menu.imp.call_home": {
-    "note": "Button: take back one of our Imps from the device that holds it.",
-    "en": "Call Home",
-    "es": "Traer",
-    "zh-Hans": "叫回家"
-  },
   "menu.imp.call_home_ask": {
     "note": "Menu item for an Imp away on another device: asks before calling it home.",
-    "en": "Call Home…",
-    "es": "Traer…",
-    "zh-Hans": "叫回家…"
+    "en": "Send home…",
+    "es": "Enviar a casa…",
+    "zh-Hans": "送回家…"
   },
   "menu.imp.hide": {
     "note": "Menu item that hides an Imp. It then peeks out now and then.",
@@ -212,11 +206,11 @@
     "es": "Oculto",
     "zh-Hans": "已隐藏"
   },
-  "menu.imp.type": {
-    "note": "Button in an Imp's menu that opens the typing box.",
-    "en": "Type",
-    "es": "Escribir",
-    "zh-Hans": "输入"
+  "menu.imp.message": {
+    "note": "Button in an Imp's menu that opens the box to write it a message. Keep it short: it sits under an icon.",
+    "en": "Message",
+    "es": "Mensaje",
+    "zh-Hans": "消息"
   },
   "menu.imp.talk_help": {
     "note": "Tooltip of the Talk button in an Imp's menu.",
@@ -227,14 +221,14 @@
     "es": "Hablar con {name}",
     "zh-Hans": "和 {name} 说话"
   },
-  "menu.imp.type_help": {
-    "note": "Tooltip of the Type button in an Imp's menu.",
+  "menu.imp.message_help": {
+    "note": "Tooltip of the Message button in an Imp's menu.",
     "args": {
       "name": "string"
     },
-    "en": "Type to {name}",
-    "es": "Escribir a {name}",
-    "zh-Hans": "给 {name} 打字"
+    "en": "Message to {name}",
+    "es": "Mensaje para {name}",
+    "zh-Hans": "给 {name} 发消息"
   },
   "menu.imp.visit": {
     "note": "Small heading in an Imp's menu over the linked devices it can visit.",
@@ -266,14 +260,8 @@
     "es": "{name} se esconde hasta que lo vuelvas a mostrar. Mientras, sus disparadores descansan.",
     "zh-Hans": "{name} 会藏起来，直到你再次显示它。在此期间它的触发器暂停。"
   },
-  "menu.imp.home": {
-    "note": "Button in a desktop Imp's menu that sends it back into the app's window. Keep it short: it sits under an icon.",
-    "en": "Home",
-    "es": "A casa",
-    "zh-Hans": "回家"
-  },
-  "menu.imp.home_help": {
-    "note": "Tooltip of the Home button in a desktop Imp's menu.",
+  "menu.imp.send_home_help": {
+    "note": "Tooltip of the Send home button in a desktop Imp's menu.",
     "args": {
       "name": "string"
     },
@@ -281,14 +269,8 @@
     "es": "{name} vuelve a la ventana de los Imps y sus disparadores descansan.",
     "zh-Hans": "{name} 回到 Imp 窗口，它的触发器暂停。"
   },
-  "menu.imp.free": {
-    "note": "Button in the menu of an Imp in the app's window that lets it out onto the desktop. Keep it short: it sits under an icon.",
-    "en": "Free",
-    "es": "Soltar",
-    "zh-Hans": "放出"
-  },
-  "menu.imp.free_help": {
-    "note": "Tooltip of the Free button in the menu of an Imp in the app's window.",
+  "menu.imp.let_out_help": {
+    "note": "Tooltip of the Let out button in an Imp's menu in the app's window.",
     "args": {
       "name": "string"
     },
@@ -308,7 +290,7 @@
   "menu.canvas.devices": {
     "note": "Menu item that opens Devices.",
     "en": "Devices",
-    "es": "Equipos",
+    "es": "Dispositivos",
     "zh-Hans": "设备"
   },
   "menu.imp.talks": {

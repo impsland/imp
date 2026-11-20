@@ -69,7 +69,7 @@ extension ImpPreferences {
         ordered(items.map { ($0, $0[keyPath: owner]) }, name: { $0[keyPath: name] })
     }
 
-    /// Shared first, then by Imp in `imps` order, each group by name; orphans dropped.
+    /// Shared first, then by Imp in `imps` order, each group by name. Orphans are dropped.
     private func ordered<T>(_ items: [(T, UUID?)], name: (T) -> String) -> [(T, UUID?)] {
         let rank = Dictionary(uniqueKeysWithValues: imps.enumerated().map { ($1.id, $0 + 1) })
         let keyed = items.enumerated().compactMap { offset, item -> (Int, Int, String, (T, UUID?))? in
