@@ -59,7 +59,7 @@ struct TypingField: View {
                 .onChange(of: text) { _, now in if !chat && !measuring { model.typingChanged(now) } }
                 .onExitCommand { model.dismissBubble() }
                 .disabled(asleep)
-            if !chat && model.visit == nil { IconButton(icon: "bubble.left.fill", help: "Talk instead") { model.talk() } }
+            if !chat && model.visit == nil { IconButton(icon: "mic", help: "Talk instead") { model.talk() } }
             Button(action: send) {
                 Image(systemName: "arrow.up")
                     .font(Typeface.label.weight(.bold))
