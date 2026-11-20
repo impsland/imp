@@ -19,7 +19,7 @@ import ImpKit
         var service = Service(name: "Stub", baseURL: server.baseURL, model: "stub")
         service.model = "stub"
         app.prefs.ai.add(service)
-        app.assistant.configure(ai: app.prefs.ai, servers: [], keychain: false)
+        app.assistant.configure(ai: app.prefs.ai, servers: [])
         app.prefs.talkWaiting = waiting
         // Pip is a newcomer too, not the first Imp: that one has the fixed default id, which other suites' apps
         // use at the same time, and its folder is the person's own.

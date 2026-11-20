@@ -37,6 +37,12 @@ headers. The apps call it through `imp-ffi` and only move the messages (a child 
 The command line transports call the same functions. When an HTTP session ends, the client sends a
 DELETE with the session id.
 
+Streamed answers carry the model's reasoning as its own event (`StreamEvent::Reasoning`, and `reasoning` on
+the reply). It is read from `reasoning`, `reasoning_content` or the `reasoning.text` and `reasoning.summary`
+entries of `reasoning_details` (never twice when both are sent), and from a `<think>…</think>` block at the very
+start of the text (`ThinkSplitter`, which copes with tags split across chunks). Reasoning is for showing only:
+it is never put in the messages a request carries.
+
 The rest of a chat works the same way. These need no I/O, and both the apps and the command line use them:
 
 - **The agent loop** (`engine/src/agent.rs`) is a step machine. It says what to ask the model next and which

@@ -85,6 +85,15 @@ Custom commands from `.agents/commands/` are in the same list, after the built-i
 
 The terminal is put back the way it was when you leave, also after an error.
 
+## Thinking
+
+Models that think show it. While one thinks, a dim `Thinking` block streams its reasoning, the last four rows
+of it, so the screen does not jump. When the answer or a tool call starts, the block becomes one line, `✻ Thought for 3s`,
+like a tool call's `⏺` line. Click it, or press **Ctrl+O** (which opens the latest tool call or thought), to
+read the whole reasoning, and use the arrows to walk between calls and thoughts. Each phase of thinking in a
+turn has its own line, and they stay when you scroll back. The reasoning is only shown: it is never sent back
+to the model.
+
 ## The line chat
 
 `imp chat --plain` is the line chat. It is also used when the input or output is not a terminal, for example
@@ -93,6 +102,9 @@ in a pipe. Answers go to standard output. Everything else (tool calls and notes)
 ```sh
 echo "Summarise notes.txt in one line" | imp chat --plain > summary.txt
 ```
+
+In the line chat, thinking shows as two lines on standard error, `✻ Thinking…` and then `✻ Thought for 3s`.
+The reasoning text itself is not printed.
 
 The line chat has no `/` list and no keys to move through what you sent. Commands and custom commands work
 the same way as in the full-screen chat.

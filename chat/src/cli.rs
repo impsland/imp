@@ -9,20 +9,21 @@ const LONG_ABOUT: &str = "Talk to your Imps from a terminal\n\nImp is a little c
 This is its terminal version. Make an Imp, then chat with it.";
 
 const AFTER_HELP: &str = "Getting started:\n  \
-imp imp new Pip --model openai/gpt-6-luna      Make an Imp called Pip\n  \
-imp mcp add files -- npx -y @modelcontextprotocol/server-filesystem .\n                                               \
-Let it work with the files of the folder you chat in\n  \
-imp chat                                       Chat with it (type /help inside)\n  \
-imp qr                                         Link a Mac or an iPhone, then /send it there\n\n\
-Your API key is never stored in the settings file. Put it in an environment variable\n\
-(IMP_API_KEY by default) or save it in the system keychain with `imp config set-key`.";
+imp provider add ollama --url http://localhost:11434/v1     Tell Imp where a model lives\n  \
+imp agent new Pip --model ollama/qwen3                      Make an Imp called Pip\n  \
+imp chat                                                    Chat with it (type /help inside)\n  \
+imp qr                                                      Link a Mac or an iPhone, then /send it there\n\n\
+Everything is kept in the files the Mac app reads too: imp.json and auth.json in the config folder\n\
+(see `imp config path`) and agents in ~/.agents. Add --json to a list or show command for machine-readable output.\n\
+Keys are never written to imp.json: `imp auth set PROVIDER` saves one in auth.json, or point a provider at an\n\
+environment variable with `imp provider add ID --url URL --key-env VAR`.";
 
-const MCP_ADD_LONG_ABOUT: &str = "Give an Imp the tools of an MCP server. A server is a program this computer starts (a command and \
-its arguments, after --) or a service at an address. In the arguments, ${workspaceFolder} (or a plain .) is the folder \
-the chat is started in.\n\n\
+const MCP_ADD_LONG_ABOUT: &str = "Add an MCP server: a program this computer starts (--command, then the program and its arguments, \
+last) or a service at an address (--url). Every Imp can use it; `imp mcp disable NAME --agent IMP` turns it off for one. \
+In the arguments, ${workspaceFolder} is the folder the chat is started in.\n\n\
 Examples:\n  \
-imp mcp add files -- npx -y @modelcontextprotocol/server-filesystem .\n  \
-imp mcp add search --header Authorization https://mcp.example.org/mcp";
+imp mcp add files --command npx -y @modelcontextprotocol/server-filesystem ${workspaceFolder}\n  \
+imp mcp add search --url https://mcp.example.org/mcp --header Authorization=Bearer\\ {env:SEARCH_KEY}";
 
 const LINK_LONG_ABOUT: &str = "Stay online as one of your devices, without a chat. Imps of this computer that are on a Mac or \
 an iPhone think here while it runs, Imps sent here visit, and Imps message each other across devices. Link a device \
@@ -38,9 +39,9 @@ imp serve --host 0.0.0.0   Let devices on your network use it";
 #[derive(Debug, Parser, PartialEq)]
 #[command(name = "imp", version, about = ABOUT, long_about = LONG_ABOUT, after_help = AFTER_HELP)]
 pub struct Cli {
-    /// Use this settings file instead of the usual one
-    #[arg(long, global = true, env = "IMP_CONFIG", value_name = "FILE")]
-    pub config: Option<PathBuf>,
+    /// Print lists and details as JSON
+    #[arg(long, global = true)]
+    pub json: bool,
 
     /// Without a command, `imp` starts `imp chat`
     #[command(subcommand)]
@@ -49,19 +50,12 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand, PartialEq)]
 pub enum Command {
-    /// Show or change settings
-    Config {
-        #[command(subcommand)]
-        action: Option<ConfigAction>,
-    },
-    /// Make, list and remove Imps
-    Imp {
-        #[command(subcommand)]
-        action: ImpAction,
-    },
+    /// Settings, Imps, services, tool servers and permissions. The same commands work in a chat with a /
+    #[command(flatten)]
+    Manage(Manage),
     /// Chat with an Imp in a full-screen chat. Type /help inside. Esc or Ctrl+C leaves.
     Chat {
-        /// Which Imp to talk to (the default Imp if left out)
+        /// Which Imp to talk to (the only one, if there is one)
         #[arg(long, value_name = "NAME")]
         imp: Option<String>,
         /// Use the simple line chat even in a terminal
@@ -70,11 +64,6 @@ pub enum Command {
         /// Don't go online for your linked devices while chatting
         #[arg(long)]
         offline: bool,
-    },
-    /// Give an Imp tools from MCP servers, list them or take them away
-    Mcp {
-        #[command(subcommand)]
-        action: McpAction,
     },
     /// Stay online for your linked devices without a chat. Press Ctrl+C to stop
     #[command(long_about = LINK_LONG_ABOUT)]
@@ -128,114 +117,245 @@ pub enum Command {
     },
 }
 
+/// What changes the configuration or shows it. One grammar for the terminal and for the `/` commands of a chat.
 #[derive(Debug, Subcommand, PartialEq)]
-pub enum ConfigAction {
-    /// Show the settings and where the API key comes from. The key itself is never shown
-    Show,
-    /// Print the path of the settings file
-    Path,
-    /// Change a setting: default_imp, api_key_env, retries, max_steps, memory_exchanges or long_chat_tokens
-    Set {
-        /// The setting
-        key: String,
-        /// Its new value
-        value: String,
+pub enum Manage {
+    /// Imps and other agents: the files in ~/.agents/agents
+    Agent {
+        #[command(subcommand)]
+        action: AgentAction,
     },
-    /// Save an API key in the system keychain, read from the first line of standard input
-    SetKey {
-        /// The Imp the key is for (the default Imp if left out)
+    /// Model services: where models live
+    Provider {
+        #[command(subcommand)]
+        action: ProviderAction,
+    },
+    /// Keys for services, and the MCP sign-ins. Keys are never shown
+    Auth {
+        #[command(subcommand)]
+        action: AuthAction,
+    },
+    /// Show or choose a model: provider/model#variant
+    Model {
+        /// The model to use, such as ollama/qwen3#high (`-` with --agent: the default again)
+        model: Option<String>,
+        /// Change this agent's model instead of the default one
         #[arg(long, value_name = "NAME")]
-        imp: Option<String>,
+        agent: Option<String>,
     },
-    /// Save the value of an MCP server header in the system keychain, read from the first line of standard input
-    SetHeader {
-        /// The MCP server, as named in the settings file
-        server: String,
-        /// The header, as listed under headers for that server
-        header: String,
+    /// MCP servers: tools from programs and services
+    Mcp {
+        #[command(subcommand)]
+        action: McpAction,
     },
-    /// Remove an API key from the system keychain
-    ClearKey {
-        /// The Imp the key was for (the default Imp if left out)
-        #[arg(long, value_name = "NAME")]
-        imp: Option<String>,
+    /// Rules for what Imps may do: allow, ask or deny
+    Permission {
+        #[command(subcommand)]
+        action: PermissionAction,
+    },
+    /// Skills the Imps can read
+    Skill {
+        #[command(subcommand)]
+        action: ReadAction,
+    },
+    /// Custom commands: commands/NAME.md, run as /NAME in a chat
+    #[command(name = "command")]
+    Cmd {
+        #[command(subcommand)]
+        action: ReadAction,
+    },
+    /// What the folder adds, and whether its settings are trusted
+    Project {
+        #[command(subcommand)]
+        action: Option<ProjectAction>,
+    },
+    /// The settings file imp.json
+    Config {
+        #[command(subcommand)]
+        action: Option<ConfigAction>,
     },
 }
 
 #[derive(Debug, Subcommand, PartialEq)]
-pub enum ImpAction {
-    /// List your Imps
-    List,
-    /// Make a new Imp. Anything you leave out is asked for
-    New {
-        /// Its name: letters, digits, dash and underscore (asked for if left out)
-        name: Option<String>,
-        /// How it behaves, in a sentence or two
+pub enum AgentAction {
+    /// List agents. The Imps are the ones that are primary or all
+    List {
+        /// Also the hidden ones
         #[arg(long)]
-        personality: Option<String>,
-        /// Where its brain lives: the base address of an OpenAI-compatible service
-        #[arg(long, value_name = "URL")]
-        url: Option<String>,
-        /// The model to ask for
+        all: bool,
+    },
+    /// Show an agent: its settings and prompt
+    Show { name: String },
+    /// Make an agent
+    New {
+        /// Letters, digits, - and _, up to 32
+        name: String,
+        /// What it is good at
+        #[arg(long)]
+        description: Option<String>,
+        /// provider/model#variant
         #[arg(long)]
         model: Option<String>,
-        /// The environment variable that holds the API key (IMP_API_KEY if left out)
-        #[arg(long, value_name = "VAR")]
-        api_key_env: Option<String>,
-        /// Make it the default Imp
+        /// primary (an Imp you talk to), subagent or all
+        #[arg(long, default_value = "primary")]
+        mode: String,
+        /// #rrggbb
         #[arg(long)]
-        default: bool,
+        color: Option<String>,
     },
-    /// Remove an Imp
-    Remove {
-        /// Its name
-        name: String,
-    },
-    /// Change one of an Imp's settings: model, base_url, personality, api_key_env or hue
+    /// Open the agent's file in $EDITOR
+    Edit { name: String },
+    /// Change one setting: description, mode, model, variant, color, steps, hidden, disabled or prompt (`-` clears)
     Set {
-        /// The Imp
         name: String,
-        /// The setting
         key: String,
-        /// Its new value
         value: String,
     },
+    /// Remove an agent and its settings
+    Remove { name: String },
+    /// Give an agent another name
+    Rename { old: String, new: String },
+}
+
+#[derive(Debug, Subcommand, PartialEq)]
+pub enum ProviderAction {
+    /// List the services
+    List,
+    /// Add a service. It must speak the OpenAI chat API
+    Add {
+        /// A short name, used in model names: ollama/qwen3
+        id: String,
+        /// The address of the API, such as http://localhost:11434/v1
+        #[arg(long, value_name = "URL")]
+        url: String,
+        /// A name for people
+        #[arg(long)]
+        name: Option<String>,
+        /// A header to send with every request, as NAME=VALUE. Repeat for several
+        #[arg(long = "header", value_name = "NAME=VALUE")]
+        headers: Vec<String>,
+        /// Read the key from this environment variable
+        #[arg(long, value_name = "VAR")]
+        key_env: Option<String>,
+    },
+    /// Change one setting: name, url, key-env or header.NAME (`-` clears)
+    Set {
+        id: String,
+        key: String,
+        value: String,
+    },
+    /// Remove a service and its saved key
+    Remove { id: String },
+}
+
+#[derive(Debug, Subcommand, PartialEq)]
+pub enum AuthAction {
+    /// Save a key for a service. It is read from standard input, and not shown when typed
+    Set { provider: String },
+    /// Forget the saved key of a service
+    Clear { provider: String },
+    /// Which services have a key, and from where
+    List,
 }
 
 #[derive(Debug, Subcommand, PartialEq)]
 pub enum McpAction {
-    /// List an Imp's MCP servers
+    /// List the MCP servers
     List {
-        /// The Imp (the default Imp if left out)
+        /// Show which are on for this agent
         #[arg(long, value_name = "NAME")]
-        imp: Option<String>,
+        agent: Option<String>,
     },
-    /// Add an MCP server: a command after --, or an address
+    /// Add an MCP server: --command, last, or --url
     #[command(long_about = MCP_ADD_LONG_ABOUT)]
     Add {
-        /// A name for the server: letters, digits, dash and underscore
         name: String,
-        /// The Imp that gets it (the default Imp if left out)
-        #[arg(long, value_name = "NAME")]
-        imp: Option<String>,
-        /// An environment variable to pass on to the command, by NAME. Repeat for several
-        #[arg(long = "env", value_name = "VAR")]
+        /// The program and its arguments
+        #[arg(long, num_args = 1.., allow_hyphen_values = true, value_name = "PROGRAM ARGS", conflicts_with = "url")]
+        command: Vec<String>,
+        /// The address of a server
+        #[arg(long, value_name = "URL")]
+        url: Option<String>,
+        /// An environment variable for the program, as NAME=VALUE. Repeat for several
+        #[arg(long = "env", value_name = "NAME=VALUE")]
         env: Vec<String>,
-        /// A header to send to the address, by NAME (its value is read from IMP_MCP_<SERVER>_<HEADER> or the keychain)
-        #[arg(long = "header", value_name = "NAME")]
+        /// A header for the address, as NAME=VALUE. Repeat for several
+        #[arg(long = "header", value_name = "NAME=VALUE")]
         headers: Vec<String>,
-        /// The address (https://...), or the command and its arguments after --
-        #[arg(required = true, num_args = 1.., allow_hyphen_values = true, value_name = "COMMAND_OR_URL")]
-        target: Vec<String>,
     },
-    /// Remove an MCP server from an Imp
-    Remove {
-        /// The server's name
+    /// Change one setting: command, url, cwd, timeout, env.NAME or header.NAME (`-` clears)
+    Set {
         name: String,
-        /// The Imp (the default Imp if left out)
-        #[arg(long, value_name = "NAME")]
-        imp: Option<String>,
+        key: String,
+        value: String,
     },
+    /// Remove an MCP server
+    Remove { name: String },
+    /// Turn a server on, for everyone or for one agent
+    Enable {
+        name: String,
+        #[arg(long, value_name = "NAME")]
+        agent: Option<String>,
+    },
+    /// Turn a server off, for everyone or for one agent
+    Disable {
+        name: String,
+        #[arg(long, value_name = "NAME")]
+        agent: Option<String>,
+    },
+}
+
+#[derive(Debug, Subcommand, PartialEq)]
+pub enum PermissionAction {
+    /// List the rules, in the order they are read. The last one that matches decides
+    List {
+        #[arg(long, value_name = "NAME")]
+        agent: Option<String>,
+    },
+    /// Add a rule at the end. ACTION is personality, look, animations, triggers, tools, senses, computer, shell, mcp, skill, read, edit or message
+    Add {
+        action: String,
+        /// What it covers: a tool, a command line, server/tool, a path... `*` is any run of characters
+        resource: String,
+        /// allow, ask or deny
+        effect: String,
+        #[arg(long, value_name = "NAME")]
+        agent: Option<String>,
+    },
+    /// Remove a rule by its number in the list
+    Remove {
+        index: usize,
+        #[arg(long, value_name = "NAME")]
+        agent: Option<String>,
+    },
+}
+
+#[derive(Debug, Subcommand, PartialEq)]
+pub enum ReadAction {
+    List,
+    Show { name: String },
+}
+
+#[derive(Debug, Subcommand, PartialEq)]
+pub enum ProjectAction {
+    /// What the folder adds
+    Show,
+    /// Allow the folder's .agents/imp.json as it is now
+    Trust,
+    /// Stop using it
+    Untrust,
+}
+
+#[derive(Debug, Subcommand, PartialEq)]
+pub enum ConfigAction {
+    /// Print where imp.json is
+    Path,
+    /// Print a setting, by dotted key such as requests.retries (everything without a key)
+    Get { key: Option<String> },
+    /// Change a setting. The value is JSON when it parses as such, else text. Escape a dot in a name as \\.
+    Set { key: String, value: String },
+    /// Remove a setting
+    Unset { key: String },
 }
 
 #[cfg(test)]
@@ -250,179 +370,100 @@ mod tests {
         Cli::try_parse_from(full)
     }
 
+    fn manage(args: &[&str]) -> Manage {
+        match parse(args).unwrap().command.unwrap() {
+            Command::Manage(m) => m,
+            other => panic!("not a manage command: {other:?}"),
+        }
+    }
+
     #[test]
     fn the_grammar_is_consistent() {
         Cli::command().debug_assert();
     }
 
     #[test]
-    fn config_commands() {
+    fn nouns_and_verbs() {
         assert_eq!(
-            parse(&["config"]).unwrap().command.unwrap(),
-            Command::Config { action: None }
-        );
-        assert_eq!(
-            parse(&["config", "show"]).unwrap().command.unwrap(),
-            Command::Config {
-                action: Some(ConfigAction::Show)
+            manage(&["agent", "new", "Pip", "--model", "ollama/qwen3#high"]),
+            Manage::Agent {
+                action: AgentAction::New {
+                    name: "Pip".into(),
+                    description: None,
+                    model: Some("ollama/qwen3#high".into()),
+                    mode: "primary".into(),
+                    color: None,
+                }
             }
         );
         assert_eq!(
-            parse(&["config", "set", "retries", "5"])
-                .unwrap()
-                .command
-                .unwrap(),
-            Command::Config {
-                action: Some(ConfigAction::Set {
-                    key: "retries".into(),
-                    value: "5".into()
-                })
+            manage(&["model", "x/y", "--agent", "Pip"]),
+            Manage::Model {
+                model: Some("x/y".into()),
+                agent: Some("Pip".into())
             }
         );
         assert_eq!(
-            parse(&["config", "set-key", "--imp", "pip"])
-                .unwrap()
-                .command
-                .unwrap(),
-            Command::Config {
-                action: Some(ConfigAction::SetKey {
-                    imp: Some("pip".into())
-                })
+            manage(&[
+                "permission",
+                "add",
+                "shell",
+                "rm *",
+                "deny",
+                "--agent",
+                "Pip"
+            ]),
+            Manage::Permission {
+                action: PermissionAction::Add {
+                    action: "shell".into(),
+                    resource: "rm *".into(),
+                    effect: "deny".into(),
+                    agent: Some("Pip".into())
+                }
             }
+        );
+        assert_eq!(manage(&["project"]), Manage::Project { action: None });
+        assert!(
+            parse(&["provider", "add", "x"]).is_err(),
+            "a provider needs --url"
         );
     }
 
     #[test]
-    fn imp_commands() {
-        assert_eq!(
-            parse(&["imp", "list"]).unwrap().command.unwrap(),
-            Command::Imp {
-                action: ImpAction::List
-            }
-        );
-        let new = parse(&[
-            "imp",
-            "new",
-            "pip",
-            "--model",
-            "m",
-            "--url",
-            "http://localhost:11434/v1",
-            "--default",
-        ])
-        .unwrap();
-        assert_eq!(
-            new.command.unwrap(),
-            Command::Imp {
-                action: ImpAction::New {
-                    name: Some("pip".into()),
-                    personality: None,
-                    url: Some("http://localhost:11434/v1".into()),
-                    model: Some("m".into()),
-                    api_key_env: None,
-                    default: true,
-                }
-            }
-        );
-        // The name may be left out: it is asked for, like the other values.
-        let unnamed = parse(&[
-            "imp",
-            "new",
-            "--url",
-            "https://openrouter.ai/api/v1",
-            "--model",
-            "openai/gpt-6-luna",
-            "--api-key-env",
-            "OPENAI_API_KEY",
-        ])
-        .unwrap();
-        assert_eq!(
-            unnamed.command.unwrap(),
-            Command::Imp {
-                action: ImpAction::New {
-                    name: None,
-                    personality: None,
-                    url: Some("https://openrouter.ai/api/v1".into()),
-                    model: Some("openai/gpt-6-luna".into()),
-                    api_key_env: Some("OPENAI_API_KEY".into()),
-                    default: false,
-                }
-            }
-        );
+    fn json_is_global_and_a_command_takes_the_rest_of_the_line() {
+        assert!(parse(&["agent", "list", "--json"]).unwrap().json);
+        match manage(&[
+            "mcp",
+            "add",
+            "files",
+            "--command",
+            "npx",
+            "-y",
+            "@modelcontextprotocol/server-filesystem",
+            "/tmp",
+        ]) {
+            Manage::Mcp {
+                action: McpAction::Add { command, .. },
+            } => assert_eq!(command.len(), 4),
+            other => panic!("{other:?}"),
+        }
     }
 
     #[test]
-    fn chat_and_global_config_flag() {
-        let cli = parse(&["chat", "--imp", "pip", "--config", "/tmp/x.toml"]).unwrap();
+    fn chat_link_serve_and_qr_stay() {
         assert_eq!(
-            cli.command.unwrap(),
+            parse(&["chat", "--imp", "pip"]).unwrap().command.unwrap(),
             Command::Chat {
                 imp: Some("pip".into()),
                 plain: false,
                 offline: false
             }
         );
-        assert_eq!(cli.config, Some(PathBuf::from("/tmp/x.toml")));
-        assert_eq!(
-            parse(&["chat"]).unwrap().command.unwrap(),
-            Command::Chat {
-                imp: None,
-                plain: false,
-                offline: false
-            }
-        );
-    }
-
-    #[test]
-    fn mcp_and_link_commands() {
-        let add = parse(&[
-            "mcp",
-            "add",
-            "files",
-            "--imp",
-            "pip",
-            "--",
-            "npx",
-            "-y",
-            "@modelcontextprotocol/server-filesystem",
-            ".",
-        ])
-        .unwrap();
-        assert_eq!(
-            add.command.unwrap(),
-            Command::Mcp {
-                action: McpAction::Add {
-                    name: "files".into(),
-                    imp: Some("pip".into()),
-                    env: vec![],
-                    headers: vec![],
-                    target: vec![
-                        "npx".into(),
-                        "-y".into(),
-                        "@modelcontextprotocol/server-filesystem".into(),
-                        ".".into()
-                    ],
-                }
-            }
-        );
-        assert!(parse(&["mcp", "add", "files"]).is_err());
         assert!(matches!(
             parse(&["link"]).unwrap().command.unwrap(),
             Command::Link { .. }
         ));
-        assert_eq!(
-            parse(&["imp", "set", "pip", "model", "x/y"])
-                .unwrap()
-                .command
-                .unwrap(),
-            Command::Imp {
-                action: ImpAction::Set {
-                    name: "pip".into(),
-                    key: "model".into(),
-                    value: "x/y".into()
-                }
-            }
-        );
+        assert!(parse(&["--config", "x.json", "chat"]).is_err());
     }
 
     #[test]

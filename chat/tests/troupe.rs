@@ -1,25 +1,24 @@
 //! `imp_message` between two Imps of the terminal app, against a local mock service.
 
-use imp_chat::config::Config;
 use imp_chat::troupe::ImpMessageHost;
 use imp_engine::{TalkStore, ToolHost, ToolSelection};
-use std::path::PathBuf;
 
 mod common;
-use common::mock;
+use common::{World, mock, mock_with, text_reply};
 
-fn data_dir(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("imp-troupe-{}-{name}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    dir
+/// Where the talks between Imps are kept in this world.
+fn store(w: &World) -> TalkStore {
+    TalkStore::new(w.data.join("talks"))
 }
 
-fn host(url: &str, dir: &PathBuf, now: fn() -> u64) -> ImpMessageHost {
-    let config = Config::parse(&format!(
-        "[imps.pip]\npersonality=\"Pip.\"\nbase_url=\"{url}\"\nmodel=\"m\"\n[imps.bo]\npersonality=\"Bo.\"\nbase_url=\"{url}\"\nmodel=\"m\"\n"
-    ))
-    .unwrap();
-    ImpMessageHost::new("pip", config, TalkStore::new(dir), Box::new(|_, _| None)).with_clock(now)
+/// Pip and Bo, two Imps of the person's own agents folder, both on the service at `url`. Pip sends.
+fn host(url: &str, w: &World, now: fn() -> u64) -> ImpMessageHost {
+    if !w.imp_json().exists() {
+        w.with_mock(url);
+        w.agent("pip", "description: Pip", "Pip.");
+        w.agent("bo", "description: Bo", "Bo.");
+    }
+    ImpMessageHost::new("pip", w.settings().load(), store(w)).with_clock(now)
 }
 
 fn t0() -> u64 {
@@ -38,8 +37,8 @@ fn t_after_two_hours() -> u64 {
 #[tokio::test]
 async fn a_recent_conversation_is_continued_by_default() {
     let (url, seen) = mock().await;
-    let dir = data_dir("continue");
-    let first = host(&url, &dir, t0);
+    let w = World::new("continue");
+    let first = host(&url, &w, t0);
     assert_eq!(
         first
             .deliver("bo", "Remember the number 42", None)
@@ -47,7 +46,7 @@ async fn a_recent_conversation_is_continued_by_default() {
             .unwrap(),
         "Answer 1"
     );
-    let second = host(&url, &dir, t_after_10_minutes);
+    let second = host(&url, &w, t_after_10_minutes);
     assert_eq!(
         second.deliver("bo", "What was it?", None).await.unwrap(),
         "Answer 2"
@@ -67,32 +66,31 @@ async fn a_recent_conversation_is_continued_by_default() {
         "{}",
         bodies[1]
     );
-    let log = TalkStore::new(&dir).load("bo", "pip");
+    let log = store(&w).load("bo", "pip");
     assert_eq!(log.conversations.len(), 1);
     assert_eq!(log.conversations[0].messages.len(), 4);
-    let _ = std::fs::remove_dir_all(dir);
 }
 
 #[tokio::test]
 async fn an_old_conversation_or_a_new_request_starts_fresh() {
     let (url, seen) = mock().await;
-    let dir = data_dir("new");
-    host(&url, &dir, t0)
+    let w = World::new("new");
+    host(&url, &w, t0)
         .deliver("bo", "Old topic", None)
         .await
         .unwrap();
     // After the window the default is a new conversation.
-    host(&url, &dir, t_after_two_hours)
+    host(&url, &w, t_after_two_hours)
         .deliver("bo", "Second topic", None)
         .await
         .unwrap();
     // The Imp can ask for a new one even while the last is recent.
-    host(&url, &dir, t_after_two_hours)
+    host(&url, &w, t_after_two_hours)
         .deliver("bo", "Third topic", Some("new"))
         .await
         .unwrap();
     // And for the latest one even when it is old.
-    host(&url, &dir, t_after_ten_hours)
+    host(&url, &w, t_after_ten_hours)
         .deliver("bo", "Fourth topic", Some("continue"))
         .await
         .unwrap();
@@ -101,16 +99,15 @@ async fn an_old_conversation_or_a_new_request_starts_fresh() {
     assert!(!bodies[2].contains("Second topic"), "{}", bodies[2]);
     assert!(bodies[3].contains("Third topic"));
     assert!(!bodies[3].contains("Old topic"));
-    let log = TalkStore::new(&dir).load("pip", "bo");
+    let log = store(&w).load("pip", "bo");
     assert_eq!(log.conversations.len(), 3);
-    let _ = std::fs::remove_dir_all(dir);
 }
 
 #[tokio::test]
 async fn the_tool_is_described_called_and_can_be_switched_off() {
     let (url, seen) = mock().await;
-    let dir = data_dir("tool");
-    let tool_host = host(&url, &dir, t0);
+    let w = World::new("tool");
+    let tool_host = host(&url, &w, t0);
     let tools = tool_host.tools();
     assert_eq!(tools.len(), 1);
     let spec = &tools[0].spec;
@@ -153,65 +150,54 @@ async fn the_tool_is_described_called_and_can_be_switched_off() {
     assert!(to_self.starts_with("Error:"));
     assert!(tool_host.call("other_tool", "{}").await.is_none());
     assert_eq!(seen.lock().unwrap().len(), 1);
-    let _ = std::fs::remove_dir_all(dir);
 }
 
-/// Two Imps set up only by `.agents/agents/imp.md` and `pip.md`, with their own service and key
-/// variable: once the folder is trusted, `imp` messages `pip` at pip's address with pip's model.
+/// Two Imps set up only by the folder's `.agents`: agent files `imp.md` and `pip.md`, and a service and its
+/// key variable in `.agents/imp.json`. Until the folder is trusted the service is not used; once it is,
+/// `imp` messages `pip` at pip's address with pip's model and the key from the environment.
 #[tokio::test]
-async fn imps_from_agent_files_alone_message_each_other() {
-    use imp_chat::project::{Project, TrustStore};
-    let (url, seen) = mock().await;
-    let root = data_dir("agent-files");
-    let agents = root.join("work/.agents/agents");
-    std::fs::create_dir_all(&agents).unwrap();
-    std::fs::write(
-        agents.join("imp.md"),
-        format!("---\ndefault: true\nbase_url: {url}\nmodel: imp-model\napi_key: ${{IMP_FILES_KEY}}\n---\nThe planner.\n"),
-    )
-    .unwrap();
-    std::fs::write(
-        agents.join("pip.md"),
-        format!("---\nbase_url: {url}/\nmodel: pip-model\napi_key_env: PIP_FILES_KEY\n---\nI am Pip, I count things.\n"),
-    )
-    .unwrap();
-    let workspace = root.join("work");
-    // Not trusted yet: the files' services are not used, and the chat says what waits.
-    let untrusted = Project::load(&workspace, None, &TrustStore::default());
-    let mut config = Config::default();
-    untrusted.apply(&mut config);
-    assert_eq!(config.default_imp.as_deref(), Some("imp"));
-    assert_eq!(config.imps["pip"].base_url, imp_chat::config::DEFAULT_URL);
-    assert_eq!(config.imps["pip"].api_key_env, None);
-    assert!(
-        untrusted.notices()[0].contains("PIP_FILES_KEY"),
-        "{:?}",
-        untrusted.notices()
+async fn imps_from_the_folders_files_message_each_other_once_trusted() {
+    let (url, seen, heads) = mock_with(|n| text_reply(&format!("Answer {n}"))).await;
+    let w = World::new("agent-files");
+    let project_config = |url: &str| {
+        format!(
+            r#"{{"providers":{{"pipsvc":{{"options":{{"baseURL":"{url}","apiKey":"{{env:PIP_FILES_KEY}}"}}}}}}}}"#
+        )
+    };
+    w.in_work(".agents/imp.json", &project_config(&url));
+    w.in_work(
+        ".agents/agents/imp.md",
+        "---\nmodel: pipsvc/imp-model\n---\nThe planner.\n",
     );
+    w.in_work(
+        ".agents/agents/pip.md",
+        "---\nmodel: pipsvc/pip-model\n---\nI am Pip, I count things.\n",
+    );
+    let settings = w.settings_with(&[("PIP_FILES_KEY", "pip-secret")]);
+    let message = |settings: &imp_chat::settings::Settings| {
+        ImpMessageHost::new("imp", settings.load(), store(&w)).with_clock(t0)
+    };
+    // Not trusted yet: the folder's service is not used, and the folder says what waits.
+    let untrusted = settings.load();
+    let project = untrusted.project.as_ref().expect("the folder has settings");
+    assert!(!project.trusted);
+    assert!(!untrusted.config.providers.contains_key("pipsvc"));
+    let host = message(&settings);
+    let refused = host.deliver("pip", "How many?", None).await.unwrap_err();
+    assert!(refused.contains("pipsvc"), "{refused}");
+    assert!(seen.lock().unwrap().is_empty());
     // Trusted: each Imp is whole from its file.
-    let store = TrustStore::at(root.join("trust.json"));
-    store
-        .set(&untrusted.root, untrusted.trust_digest.as_deref())
+    settings
+        .trust
+        .set(&project.root, project.digest.as_deref())
         .unwrap();
-    let project = Project::load(&workspace, None, &store);
-    assert!(project.trusted && project.notices().is_empty());
-    let mut config = Config::default();
-    project.apply(&mut config);
-    let (name, imp) = config.pick_imp(None).unwrap();
-    assert_eq!((name, imp.model.as_str()), ("imp", "imp-model"));
-    assert_eq!(config.imps["pip"].base_url, url);
-    let env = |n: &str| (n == "PIP_FILES_KEY").then(|| "pip-secret".to_string());
-    let key = imp_chat::keys::find(&config, "pip", &config.imps["pip"], env, |_| None);
-    assert_eq!(key.unwrap().key, "pip-secret");
-    let host = ImpMessageHost::new(
-        "imp",
-        config.clone(),
-        TalkStore::new(root.join("talks")),
-        Box::new(move |n, i| imp_chat::keys::find(&config, n, i, env, |_| None).map(|k| k.key)),
-    )
-    .with_clock(t0);
-    let enum_of_to = host.tools()[0].spec.parameters["properties"]["to"]["enum"].clone();
-    assert_eq!(enum_of_to, serde_json::json!(["pip"]));
+    let loaded = settings.load();
+    assert!(loaded.project.as_ref().unwrap().trusted);
+    let host = message(&settings);
+    assert_eq!(
+        host.tools()[0].spec.parameters["properties"]["to"]["enum"],
+        serde_json::json!(["pip"])
+    );
     let answer = host
         .call("imp_message", r#"{"to":"pip","text":"How many?"}"#)
         .await
@@ -221,14 +207,23 @@ async fn imps_from_agent_files_alone_message_each_other() {
     assert!(body.contains("pip-model"), "{body}");
     assert!(body.contains("I am Pip, I count things."), "{body}");
     assert!(body.contains("How many?"), "{body}");
-    // A change to a service asks again.
-    std::fs::write(
-        agents.join("pip.md"),
-        "---\nbase_url: https://elsewhere.example/v1\napi_key_env: PIP_FILES_KEY\n---\nPip.\n",
-    )
-    .unwrap();
-    assert!(!Project::load(&workspace, None, &store).trusted);
-    let _ = std::fs::remove_dir_all(root);
+    assert!(
+        heads.lock().unwrap()[0].contains("authorization: bearer pip-secret"),
+        "{}",
+        heads.lock().unwrap()[0]
+    );
+    // A change to the folder's services asks again.
+    w.in_work(
+        ".agents/imp.json",
+        &project_config("https://elsewhere.example/v1"),
+    );
+    assert!(!settings.load().project.unwrap().trusted);
+    assert!(
+        message(&settings)
+            .deliver("pip", "again", None)
+            .await
+            .is_err()
+    );
 }
 
 /// The person's other devices, each with an Imp, for `imp_message`: it answers with where it is.
@@ -270,14 +265,14 @@ fn remote(name: &str, place: &str) -> imp_chat::troupe::RemoteImp {
 #[tokio::test]
 async fn imps_called_alike_on_other_devices_are_each_reachable() {
     let (url, _) = mock().await;
-    let dir = data_dir("alike");
+    let w = World::new("alike");
     let look = remote("pip", "here").look;
     let others = Elsewhere(vec![
         remote("Pip", "Mac"),
         remote("Pip", "iPhone"),
         remote("Bo", "Mac"),
     ]);
-    let tool_host = host(&url, &dir, t0).with_remote(look, Some(std::rc::Rc::new(others)));
+    let tool_host = host(&url, &w, t0).with_remote(look, Some(std::rc::Rc::new(others)));
     let spec = &tool_host.tools()[0].spec;
     assert_eq!(
         spec.parameters["properties"]["to"]["enum"],
@@ -297,7 +292,6 @@ async fn imps_called_alike_on_other_devices_are_each_reachable() {
             .unwrap();
         assert!(answer.contains(from), "{to}: {answer}");
     }
-    let _ = std::fs::remove_dir_all(dir);
 }
 
 // Messages that do not wait.
@@ -307,7 +301,7 @@ use imp_engine::troupe::{MAX_DEPTH, MAX_PENDING, TalkWaiting};
 use imp_engine::{ChatMessage, Role};
 use std::rc::Rc;
 
-fn later_host(url: &str, dir: &PathBuf, waiting: TalkWaiting) -> (ImpMessageHost, Rc<Later>) {
+fn later_host(url: &str, dir: &World, waiting: TalkWaiting) -> (ImpMessageHost, Rc<Later>) {
     let later = Rc::new(Later::new());
     let host = host(url, dir, t0).with_later(waiting, Some(later.clone()));
     (host, later)
@@ -316,8 +310,8 @@ fn later_host(url: &str, dir: &PathBuf, waiting: TalkWaiting) -> (ImpMessageHost
 #[tokio::test]
 async fn a_message_that_does_not_wait_returns_a_receipt_at_once_and_the_answer_comes_later() {
     let (url, seen) = mock().await;
-    let dir = data_dir("later");
-    let (tool_host, later) = later_host(&url, &dir, TalkWaiting::DontWait);
+    let w = World::new("later");
+    let (tool_host, later) = later_host(&url, &w, TalkWaiting::DontWait);
     let spec = &tool_host.tools()[0].spec;
     assert!(spec.parameters["properties"].get("wait").is_none());
     assert!(spec.description.contains("comes later as a new message"));
@@ -347,10 +341,7 @@ async fn a_message_that_does_not_wait_returns_a_receipt_at_once_and_the_answer_c
     );
     assert_eq!(seen.lock().unwrap().len(), 1);
     // Bo filed its answer as for any message.
-    assert_eq!(
-        TalkStore::new(&dir).load("pip", "bo").conversations.len(),
-        1
-    );
+    assert_eq!(store(&w).load("pip", "bo").conversations.len(), 1);
 
     // The Imp's chat: the receipt stays what it was, and the answer is a new user message at the end.
     let asked = ChatMessage {
@@ -387,14 +378,13 @@ async fn a_message_that_does_not_wait_returns_a_receipt_at_once_and_the_answer_c
     assert!(last.content.contains("“Answer 1”"));
     // The woken Imp is one deeper.
     assert_eq!(arrival.wakes_at(), 1);
-    let _ = std::fs::remove_dir_all(dir);
 }
 
 #[tokio::test]
 async fn the_sender_decides_when_the_setting_leaves_it_to_it() {
     let (url, seen) = mock().await;
-    let dir = data_dir("decides");
-    let (tool_host, later) = later_host(&url, &dir, TalkWaiting::Decides);
+    let w = World::new("decides");
+    let (tool_host, later) = later_host(&url, &w, TalkWaiting::Decides);
     let spec = &tool_host.tools()[0].spec;
     assert_eq!(spec.parameters["properties"]["wait"]["type"], "boolean");
     // Nothing said, or true: it waits.
@@ -419,7 +409,7 @@ async fn the_sender_decides_when_the_setting_leaves_it_to_it() {
     assert_eq!(later.next().await.text, "Answer 3");
 
     // A setting of wait wins over the argument.
-    let (always, _) = later_host(&url, &dir, TalkWaiting::Wait);
+    let (always, _) = later_host(&url, &w, TalkWaiting::Wait);
     assert!(
         always.tools()[0].spec.parameters["properties"]
             .get("wait")
@@ -432,7 +422,7 @@ async fn the_sender_decides_when_the_setting_leaves_it_to_it() {
     assert_eq!(waited, "Answer 4");
 
     // A chat that takes no later answers never offers the choice.
-    let alone = host(&url, &dir, t0).with_later(TalkWaiting::DontWait, None);
+    let alone = host(&url, &w, t0).with_later(TalkWaiting::DontWait, None);
     assert!(
         alone.tools()[0].spec.parameters["properties"]
             .get("wait")
@@ -443,14 +433,13 @@ async fn the_sender_decides_when_the_setting_leaves_it_to_it() {
         .await
         .unwrap();
     assert_eq!(waited, "Answer 5");
-    let _ = std::fs::remove_dir_all(dir);
 }
 
 #[tokio::test]
 async fn an_imp_can_have_only_so_many_answers_on_their_way_and_only_so_deep() {
     let (url, _) = mock().await;
-    let dir = data_dir("limits");
-    let (tool_host, later) = later_host(&url, &dir, TalkWaiting::DontWait);
+    let w = World::new("limits");
+    let (tool_host, later) = later_host(&url, &w, TalkWaiting::DontWait);
     let send = r#"{"to":"bo","text":"x"}"#;
     for _ in 0..MAX_PENDING {
         let receipt = tool_host.call("imp_message", send).await.unwrap();
@@ -503,7 +492,6 @@ async fn an_imp_can_have_only_so_many_answers_on_their_way_and_only_so_deep() {
         "{unknown}"
     );
     assert_eq!(later.pending(), 0);
-    let _ = std::fs::remove_dir_all(dir);
 }
 
 #[tokio::test]
@@ -517,8 +505,8 @@ async fn an_imp_that_does_not_answer_in_time_comes_back_as_a_failed_answer() {
             held.push(socket);
         }
     });
-    let dir = data_dir("timeout");
-    let (tool_host, later) = later_host(&url, &dir, TalkWaiting::DontWait);
+    let w = World::new("timeout");
+    let (tool_host, later) = later_host(&url, &w, TalkWaiting::DontWait);
     later.set_timeout(std::time::Duration::from_millis(200));
     let receipt = tool_host
         .call("imp_message", r#"{"to":"bo","text":"hello?"}"#)
@@ -534,14 +522,13 @@ async fn an_imp_that_does_not_answer_in_time_comes_back_as_a_failed_answer() {
     );
     assert!(arrival.event().contains("bo couldn't answer your message"));
     keep.abort();
-    let _ = std::fs::remove_dir_all(dir);
 }
 
 #[tokio::test]
 async fn an_imp_on_another_device_answers_later_too() {
     let (url, _) = mock().await;
-    let dir = data_dir("later-remote");
-    let (tool_host, later) = later_host(&url, &dir, TalkWaiting::DontWait);
+    let w = World::new("later-remote");
+    let (tool_host, later) = later_host(&url, &w, TalkWaiting::DontWait);
     let look = remote("pip", "here").look;
     let others = Elsewhere(vec![remote("Mo", "iPhone")]);
     let tool_host = tool_host.with_remote(look, Some(Rc::new(others)));
@@ -553,25 +540,32 @@ async fn an_imp_on_another_device_answers_later_too() {
     let arrival = later.next().await;
     assert_eq!(arrival.from, "Mo");
     assert_eq!(arrival.text, "Mo on iPhone");
-    let _ = std::fs::remove_dir_all(dir);
 }
 
 #[tokio::test]
 async fn imps_are_told_what_the_others_say_about_themselves() {
     let (url, _) = mock().await;
-    let dir = data_dir("profiles");
-    let config = Config::parse(&format!(
-        "[imps.pip]\npersonality=\"Pip.\"\nbase_url=\"{url}\"\nmodel=\"m\"\n\
-         [imps.ash]\npersonality=\"A.\"\ndescription=\"knows the capital cities\\nof every country\"\nbase_url=\"{url}\"\nmodel=\"m\"\n\
-         [imps.ash.mcp_servers.atlas]\ncommand=\"atlas\"\n\
-         [imps.birch]\npersonality=\"B.\"\nbase_url=\"{url}\"\nmodel=\"m\"\n"
-    ))
-    .unwrap();
+    let w = World::new("profiles");
+    w.write_config(&format!(
+        r#"{{"model":"mock/m","providers":{{"mock":{{"options":{{"baseURL":"{url}"}}}}}},"mcp":{{"atlas":{{"type":"local","command":["atlas"]}}}}}}"#
+    ));
+    w.agent("pip", "description: Pip", "Pip.");
+    w.agent(
+        "ash",
+        "description: \"knows the capital cities\\nof every country\"",
+        "A.",
+    );
+    // Birch has no description and no tool servers (a rule turns the one there is off for it).
+    w.agent(
+        "birch",
+        "permissions:\n  - {action: mcp, resource: \"atlas/*\", effect: deny}",
+        "B.",
+    );
     let mut mo = remote("Mo", "iPhone");
     mo.look.about = Some("  draws\npictures ".into());
     mo.look.abilities = vec!["canvas".into()];
     let look = remote("pip", "here").look;
-    let tool_host = ImpMessageHost::new("pip", config, TalkStore::new(&dir), Box::new(|_, _| None))
+    let tool_host = ImpMessageHost::new("pip", w.settings().load(), store(&w))
         .with_remote(look, Some(Rc::new(Elsewhere(vec![mo]))));
     let d = tool_host.tools()[0].spec.description.clone();
     assert!(
@@ -581,5 +575,4 @@ async fn imps_are_told_what_the_others_say_about_themselves() {
     assert!(d.contains("- Mo: draws pictures. Can: canvas."), "{d}");
     // Birch says nothing, so it is not listed.
     assert!(!d.contains("- birch"), "{d}");
-    let _ = std::fs::remove_dir_all(dir);
 }

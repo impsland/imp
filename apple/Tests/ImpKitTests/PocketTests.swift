@@ -331,7 +331,8 @@ final class PocketStub: URLProtocol, @unchecked Sendable {
             return Self.replies.isEmpty ? "{}" : Self.replies.removeFirst()
         }
         if body == "hang" { return }
-        let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: ["Content-Type": "application/json"])!
+        let type = body.hasPrefix("data:") ? "text/event-stream" : "application/json"
+        let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: ["Content-Type": type])!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
         client?.urlProtocol(self, didLoad: Data(body.utf8))
         client?.urlProtocolDidFinishLoading(self)
@@ -386,6 +387,31 @@ private actor Sent {
         _ = try await b.ask("And?", of: imp2)
         let roles = (PocketStub.bodies[1]["messages"] as? [[String: Any]])?.compactMap { $0["role"] as? String }
         #expect(roles == ["system", "user", "assistant", "user"])
+    }
+
+    @Test func keepsWhatTheModelThoughtAsStepsAndNeverSendsItBack() async throws {
+        func stream(_ chunks: [String]) -> String { (chunks.map { "data: \($0)" } + ["data: [DONE]"]).joined(separator: "\n\n") + "\n\n" }
+        let (imp, store) = pocketImp()
+        let b = brain(store, replies: [
+            stream([#"{"choices":[{"delta":{"reasoning":"Need the tool."}}]}"#,
+                    #"{"choices":[{"delta":{"tool_calls":[{"index":0,"id":"c1","function":{"name":"imp_play_animations","arguments":"{\"names\":[]}"}}]}}]}"#]),
+            stream([#"{"choices":[{"delta":{"reasoning_content":"Now answer."}}]}"#, #"{"choices":[{"delta":{"content":"Done."}}]}"#]),
+        ])
+        let log = WorkLog()
+        let answer = try await b.ask("Go", of: imp, talk: PocketTalk(animations: ["smile"], play: { _ in })) { await log.add($0) }
+        #expect(answer.turn.reply == "Done.")
+        let thoughts = answer.turn.steps.filter(\.isThought)
+        #expect(thoughts.map(\.response) == ["Need the tool.", "Now answer."])
+        #expect(answer.turn.steps.map(\.isThought) == [true, false, true])
+        #expect(thoughts.allSatisfy { ($0.seconds ?? 0) >= 1 && $0.title == ChatTurn.Step.thoughtTitle(seconds: $0.seconds!) })
+        #expect(await log.all.compactMap { $0?.reasoning }.contains("Need the tool."))
+        // Only the summary travels over the link.
+        let wire = LinkTurn(local: answer.turn)
+        #expect(wire.thoughts == [0, 2] && wire.steps == answer.turn.steps.map(\.title))
+        let sent = try String(decoding: JSONEncoder().encode(wire), as: UTF8.self)
+        #expect(!sent.contains("Need the tool.") && !sent.contains("Now answer."))
+        #expect(!String(describing: PocketStub.bodies).contains("Need the tool."))
+        #expect(!String(describing: answer.memory as Any).contains("Need the tool."))
     }
 
     @Test func callsImpMessageAndPlaysAnimations() async throws {

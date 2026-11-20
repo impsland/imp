@@ -5,6 +5,7 @@ uniffi::setup_scaffolding!("imp_engine");
 
 mod agent;
 mod chat;
+mod config;
 mod link;
 mod link_ui;
 mod local_brain;
@@ -21,6 +22,7 @@ mod workspace;
 
 pub use agent::*;
 pub use chat::*;
+pub use config::*;
 pub use link::*;
 pub use link_ui::*;
 pub use local_brain::*;

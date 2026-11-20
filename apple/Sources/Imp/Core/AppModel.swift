@@ -65,15 +65,20 @@ final class AppModel {
     @ObservationIgnored private var erased = false
     @ObservationIgnored private let log = Logger(subsystem: "app.imp.Imp", category: "app")
 
-    /// Nil for offscreen design renders, which must never touch the user's saved preferences.
+    /// The app's own preferences (screens, bubble, where Imps stand). Nil for offscreen design renders, which
+    /// must never touch the user's saved preferences.
     @ObservationIgnored private let store: PreferencesStore?
+    /// The configuration the Mac and `imp` share: Imps, services, keys, tool servers, triggers. Nil for design renders.
+    @ObservationIgnored let config: SharedConfigStore?
 
-    init(persist: Bool = true) {
-        store = persist ? PreferencesStore() : nil
-        assistant = Assistant(usesKeychain: persist)
-        let loaded = store?.load() ?? ImpPreferences()
+    /// `defaults` and `config` are the person's own unless a test gives its own.
+    init(persist: Bool = true, config: SharedConfigStore? = nil, defaults: UserDefaults = .standard) {
+        self.config = persist ? (config ?? .standard()) : nil
+        store = persist ? PreferencesStore(defaults: defaults) : nil
+        assistant = Assistant(config: self.config)
+        var loaded = self.config?.load().prefs ?? ImpPreferences()
+        if let store { loaded.apply(store.load()) }
         prefs = loaded
-        store?.save(loaded)
         syncTroupe()
         dictation.onPartial = { [weak self] text in self?.listener?.updateListening(text) }
         dictation.onLevel = { [weak self] level in self?.listener?.micLevel = level }
@@ -115,10 +120,11 @@ final class AppModel {
 
     func start() {
         started = true
+        watchConfiguration()
         // Ask the user's shell for its PATH now, so the first tool server or command doesn't wait.
         Task.detached(priority: .utility) { _ = await LoginEnvironment.resolved() }
         Self.applyAppearance(prefs.appearance)
-        assistant.configure(ai: prefs.ai, servers: prefs.liveServers, keychain: prefs.keysInKeychain, limits: prefs.requests)
+        assistant.configure(ai: prefs.ai, servers: prefs.liveServers, limits: prefs.requests)
         reactions.apply(prefs)
         HotkeyCenter.shared.install()
         registerHotkeys()
@@ -198,9 +204,8 @@ final class AppModel {
         if p.appearance != old.appearance { Self.applyAppearance(p.appearance) }
         if p.windowPreset != old.windowPreset { HomeWindow.shared.apply(p.windowPreset) }
         if p.watchesCursor != old.watchesCursor { reactions.apply(p) }
-        // Configuring asks the Keychain about every service: only when what it reads has changed.
-        if p.ai != old.ai || p.liveServers != old.liveServers || p.keysInKeychain != old.keysInKeychain || p.requests != old.requests {
-            assistant.configure(ai: p.ai, servers: p.liveServers, keychain: p.keysInKeychain, limits: p.requests)
+        if p.ai != old.ai || p.liveServers != old.liveServers || p.requests != old.requests {
+            assistant.configure(ai: p.ai, servers: p.liveServers, limits: p.requests)
         }
         if p.shortcuts != old.shortcuts, started {
             for imp in imps {
@@ -233,10 +238,41 @@ final class AppModel {
         }
     }
 
+    /// Writes now: the app's own part to the preferences and the shared part to the configuration, where
+    /// only what differs from what was read goes (as patches the core applies to the files as they are now, so
+    /// what `imp` changed meanwhile stays).
     func flushSave() {
         pendingSave?.cancel()
         pendingSave = nil
-        if !erased { store?.save(prefs) }
+        guard !erased else { return }
+        store?.save(prefs.local)
+        do { try config?.save(prefs) } catch { log.error("The configuration was not saved: \(error.localizedDescription, privacy: .public)") }
+    }
+
+    // MARK: Changes made outside
+
+    /// Checks (every couple of seconds: the files are replaced by renaming, which watching one file would
+    /// lose) whether `imp` or a person changed the shared files, and takes the change in.
+    @ObservationIgnored private var watcher: Task<Void, Never>?
+
+    private func watchConfiguration() {
+        guard config != nil, watcher == nil else { return }
+        watcher = Task { @MainActor [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(2))
+                self?.reloadConfiguration()
+            }
+        }
+    }
+
+    /// Takes in what changed in the shared files since they were read, if anything. What was edited here and
+    /// not yet written is written first, so the edit is not lost and the other changes stay.
+    func reloadConfiguration(force: Bool = false) {
+        guard let config, !erased, force || config.changedOutside() else { return }
+        if pendingSave != nil { flushSave() }
+        var fresh = config.load().prefs
+        fresh.apply(prefs.local)
+        if fresh != prefs { prefs = fresh }
     }
 
     /// Light, dark or follow the system: applies to every window, bubble and menu.
@@ -639,12 +675,13 @@ final class AppModel {
     /// Back to the very first launch: every Imp, service, key, borrowed tool, trigger, chat and
     /// setting goes, Imp stops opening at login and forgets its macOS permissions, then quits and
     /// opens again fresh. Nothing is saved after this (the wipe must not be undone on the way out).
-    func resetToFirstLaunch() {
+    /// The shared configuration (what `imp` uses too) is kept unless `includingSharedConfiguration`.
+    func resetToFirstLaunch(includingSharedConfiguration: Bool = false) {
         guard persists else { return }
         erased = true
         if dictation.isRunning { dictation.cancel() }
         if LoginItem.isEnabled { try? LoginItem.set(false) }
-        let left = FactoryReset.app().erase()
+        let left = FactoryReset.app(shared: config).erase(includingSharedConfiguration: includingSharedConfiguration)
         if !left.isEmpty { log.error("Reset left behind: \(left.joined(separator: ", "), privacy: .public)") }
         Self.relaunchAfterExit(resettingPermissions: Bundle.main.bundleIdentifier)
         exit(0)                              // not terminate: nothing may write settings back on the way out

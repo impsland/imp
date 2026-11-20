@@ -57,7 +57,7 @@ enum LiveEnv {
             switch event {
             case .text: await calls.streamed()
             case .toolStarted(let name, _): await calls.used(name)
-            case .toolFinished, .retrying: break
+            case .reasoning, .thought, .toolFinished, .toolRefused, .retrying: break
             }
         }
         #expect(reply.contains("42"), "got: \(reply)")
@@ -147,4 +147,31 @@ private actor LiveCalls {
         print("live after recap: \(reply)")
         #expect(reply.contains("900") && reply.contains("lisbon-plan"), "got: \(reply)")
     }
+}
+
+/// A thinking model through the Swift agent: its reasoning streams, then it is one "Thought for Ns" step.
+@Suite(.enabled(if: LiveEnv.values != nil && ProcessInfo.processInfo.environment["IMP_LIVE_REASONING_MODEL"] != nil), .serialized)
+struct LiveReasoningTests {
+    @Test func aThinkingModelStreamsItsReasoning() async throws {
+        let live = try LiveEnv.client()
+        let model = try #require(ProcessInfo.processInfo.environment["IMP_LIVE_REASONING_MODEL"])
+        let events = EventLogLive()
+        let agent = Agent(client: live.client, model: model)
+        let (reply, transcript) = try await agent.run([.user("What is 17*23? Answer with the number.")], stream: true) { await events.add($0) }
+        let all = await events.all
+        let reasoning = all.compactMap { event -> String? in if case .reasoning(let t) = event { t } else { nil } }
+        let thoughts = all.compactMap { event -> (String, Double)? in if case .thought(let t, let s) = event { (t, s) } else { nil } }
+        print("live reasoning events: \(reasoning.count) | thoughts: \(thoughts.count) | seconds: \(thoughts.map(\.1)) | reply: \(reply)")
+        #expect(!reasoning.isEmpty)
+        let thought = try #require(thoughts.first)
+        #expect(!thought.0.isEmpty && thought.1 > 0)
+        #expect(ChatTurn.Step.thought(thought.0, seconds: thought.1).seconds ?? 0 >= 1)
+        #expect(reply.contains("391"), "got: \(reply)")
+        #expect(!transcript.contains { $0.content?.contains(thought.0) == true })
+    }
+}
+
+private actor EventLogLive {
+    private(set) var all: [AgentEvent] = []
+    func add(_ event: AgentEvent) { all.append(event) }
 }

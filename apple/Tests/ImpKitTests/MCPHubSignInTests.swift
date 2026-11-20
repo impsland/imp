@@ -73,7 +73,7 @@ final class CountingPresenter: MCPSignInPresenter, @unchecked Sendable {
         c.protocolClasses = [HubStub.self]
         let session = URLSession(configuration: c)
         let file = KeyFile(url: FileManager.default.temporaryDirectory.appendingPathComponent("imp-hub-\(UUID().uuidString)/keys.json"))
-        let store = MCPAuthStore(file: file, keychain: { RecordingBackend() })
+        let store = MCPAuthStore(backend: FileMCPAuth(file: file))
         let hub = MCPHub(auth: store, session: session)
         if handler {
             await hub.setSignIn { server in

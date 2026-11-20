@@ -44,8 +44,10 @@ public enum ControlInk: String, Codable, CaseIterable, Sendable, Identifiable {
     public var id: String { rawValue }
 }
 
-/// Everything the user can configure. Stored as one JSON blob. API keys live apart from it: in a
-/// private file (`KeyFile`), or in the Keychain if the user asks for that (`keysInKeychain`).
+/// Everything the user can configure. Its shared part (services, tool servers, triggers, animations, requests,
+/// talk, link and each Imp's identity, model and tools) lives in the shared configuration
+/// (`SharedConfigStore`, `docs/architecture/configuration.md`) and its screen part in `LocalPreferences`.
+/// API keys are in `auth.json` next to `imp.json`, never here.
 public struct ImpPreferences: Codable, Hashable, Sendable {
     public var ai = AIConfig()
     /// Triggers: when something happens, an Imp does something. Each is shared by every Imp
@@ -149,13 +151,6 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { windowMinutes = min(max(newValue, 1), TalkThreading.maxWindowMinutes) }
     }
     private var windowMinutes: Int?
-    /// Keeps API keys in the login Keychain instead of a private file. Off unless the user turns it
-    /// on: macOS may ask for their password when Imp reads a key from there (after an update, say).
-    public var keysInKeychain: Bool {
-        get { keychain ?? false }
-        set { keychain = newValue }
-    }
-    private var keychain: Bool?
     /// The Hop the user chose, as `host:port`. Imp's own Hop until they change it. Empty: no Hop
     /// (see `HopServer`).
     public var hop: String {
@@ -235,3 +230,84 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     }
 }
 
+
+/// One Imp's part that belongs to this Mac's screen, not to the configuration `imp` shares.
+public struct LocalImp: Codable, Hashable, Sendable {
+    public var isActive = true
+    public var knowsFavorite = false
+    public var origin: CGPoint?
+    public var awayOn: UUID?
+    public init() {}
+}
+
+/// What stays with the app (`docs/architecture/configuration.md`, "Where it lives"): appearance, the bubble,
+/// the window, media and voice, listening languages, the first run, and for each Imp whether it is out, where
+/// it stands, whether the person found its favourite colour and which phone it is on. Kept in `UserDefaults`.
+/// The dictation languages are this Mac's (the languages its speech recognition has), so `imp` does not share them.
+public struct LocalPreferences: Codable, Hashable, Sendable {
+    public var appearance: Appearance = .system
+    var ink: ControlInk?
+    public var antics = true
+    public var mouseGames = true
+    var firstRunShown: Bool?
+    public var bubbleAutoHideSeconds: Double = 30
+    var bubbleLook: BubbleAppearance?
+    var mediaAutoplay: Bool?
+    var voice: VoiceStyle?
+    var inputLines: Int?
+    var chatWidth: Double?
+    var chatHeight: Double?
+    var window: WindowPreset?
+    var backgroundHTML: String?
+    public var dictationLocale = ""
+    var dictationLanguageList: [String]?
+    /// By the Imp's id.
+    public var imps: [UUID: LocalImp] = [:]
+    /// The troupe's order: the files only know names.
+    public var order: [UUID] = []
+
+    public init() {}
+}
+
+extension ImpPreferences {
+    /// The part that stays with the app.
+    public var local: LocalPreferences {
+        var l = LocalPreferences()
+        l.appearance = appearance; l.ink = ink; l.antics = antics; l.mouseGames = mouseGames
+        l.firstRunShown = firstRunShown; l.bubbleAutoHideSeconds = bubbleAutoHideSeconds; l.bubbleLook = bubbleLook
+        l.mediaAutoplay = mediaAutoplay; l.voice = voice; l.inputLines = inputLines; l.chatWidth = chatWidth
+        l.chatHeight = chatHeight; l.window = window; l.backgroundHTML = backgroundHTML
+        l.dictationLocale = dictationLocale; l.dictationLanguageList = dictationLanguageList
+        for imp in imps {
+            var i = LocalImp()
+            i.isActive = imp.isActive; i.knowsFavorite = imp.knowsFavorite; i.origin = imp.origin; i.awayOn = imp.awayOn
+            l.imps[imp.id] = i
+        }
+        l.order = imps.map(\.id)
+        return l
+    }
+
+    /// Puts the app's own part over these preferences (read from the shared configuration): the screen settings, each
+    /// Imp's state, and the troupe in the order it was in (Imps the app has not seen follow, in the files' order).
+    public mutating func apply(_ l: LocalPreferences) {
+        appearance = l.appearance; ink = l.ink; antics = l.antics; mouseGames = l.mouseGames
+        firstRunShown = l.firstRunShown; bubbleAutoHideSeconds = l.bubbleAutoHideSeconds; bubbleLook = l.bubbleLook
+        mediaAutoplay = l.mediaAutoplay; voice = l.voice; inputLines = l.inputLines; chatWidth = l.chatWidth
+        chatHeight = l.chatHeight; window = l.window; backgroundHTML = l.backgroundHTML
+        dictationLocale = l.dictationLocale; dictationLanguageList = l.dictationLanguageList
+        for i in imps.indices {
+            guard let state = l.imps[imps[i].id] else { continue }
+            imps[i].isActive = state.isActive; imps[i].knowsFavorite = state.knowsFavorite
+            imps[i].origin = state.origin; imps[i].awayOn = state.awayOn
+        }
+        let rank = Dictionary(l.order.enumerated().map { ($1, $0) }, uniquingKeysWith: { a, _ in a })
+        imps = imps.enumerated().sorted { a, b in
+            switch (rank[a.element.id], rank[b.element.id]) {
+            case let (x?, y?): x < y
+            case (_?, nil): true
+            case (nil, _?): false
+            case (nil, nil): a.offset < b.offset
+            }
+        }.map(\.element)
+    }
+}

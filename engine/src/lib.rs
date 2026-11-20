@@ -5,6 +5,7 @@
 pub mod agent;
 pub mod agents;
 pub mod chat;
+pub mod config;
 pub mod link;
 pub mod local_brain;
 pub mod mcp;
@@ -24,8 +25,8 @@ pub use agent::{
 #[cfg(feature = "io")]
 pub use chat::OpenAiClient;
 pub use chat::{
-    ChatError, ChatMessage, ChatReply, ChatStream, ReplyAccumulator, Role, StreamEvent, ToolCall,
-    ToolSpec,
+    ChatError, ChatMessage, ChatReply, ChatStream, ReplyAccumulator, Role, StreamEvent,
+    StreamReader, ThinkSplitter, ToolCall, ToolSpec,
 };
 pub use mcp::McpTool;
 #[cfg(feature = "io")]

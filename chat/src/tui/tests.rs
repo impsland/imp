@@ -494,14 +494,23 @@ fn a_slash_command_runs_and_shows_without_joining_the_conversation() {
     let text = screen(&app, 60, 10).join("\n");
     assert!(text.contains("› /model gpt-x"), "{text}");
     assert!(text.contains("Saved. pip's model is gpt-x now."), "{text}");
-    // A key typed to /api_key never shows.
-    type_text(&mut app, "/api_key sk-very-secret");
+    // A key typed for `/auth set` never shows, and goes to the command alone.
+    type_text(&mut app, "/auth set openai");
     assert!(matches!(
         app.on_key(key(KeyCode::Enter)),
         Action::Command(_)
     ));
+    app.ask_secret("Key for openai".into(), "/auth set openai".into());
+    type_text(&mut app, "sk-very-secret");
     let text = screen(&app, 60, 12).join("\n");
     assert!(!text.contains("sk-very-secret"), "{text}");
+    assert_eq!(
+        app.on_key(key(KeyCode::Enter)),
+        Action::Secret {
+            line: "/auth set openai".into(),
+            key: "sk-very-secret".into()
+        }
+    );
     // `//` sends a message that starts with a slash.
     type_text(&mut app, "//etc/hosts is a file");
     assert_eq!(
@@ -516,7 +525,10 @@ fn commands_are_suggested_and_tab_completes_them() {
     type_text(&mut app, "/mc");
     assert_eq!(app.suggestions()[0].name, "/mcp");
     let text = screen(&app, 80, 12).join("\n");
-    assert!(text.contains("List, add or remove MCP servers"), "{text}");
+    assert!(
+        text.contains("MCP servers: tools from programs and services"),
+        "{text}"
+    );
     app.on_key(key(KeyCode::Tab));
     assert_eq!(app.input(), "/mcp ");
     assert!(
@@ -532,7 +544,7 @@ fn names(app: &App) -> Vec<&'static str> {
     app.menu()
         .entries
         .iter()
-        .filter_map(|e| e.command.map(|c| c.name))
+        .filter_map(|e| e.command.map(|c| c.name.as_str()))
         .collect()
 }
 
@@ -544,17 +556,24 @@ fn highlighted(app: &App) -> String {
 #[test]
 fn matches_are_ranked_prefix_first_then_contained_then_in_order() {
     let mut app = app("pip", "m");
-    type_text(&mut app, "/api");
-    assert_eq!(names(&app), ["/api_key", "/api_key_env"]);
+    type_text(&mut app, "/pr");
+    // Names that start with it first, then the ones with its letters in order.
+    assert_eq!(
+        names(&app),
+        ["/provider", "/project", "/permission", "/pair"]
+    );
     app.on_key(with(KeyCode::Char('u'), KeyModifiers::CONTROL));
-    type_text(&mut app, "/key");
-    // The alias of /api_key first, then names that contain it.
-    assert_eq!(names(&app), ["/api_key", "/api_key_env"]);
+    type_text(&mut app, "/ommand");
+    // Names that contain it come after the ones that start with it.
+    assert_eq!(names(&app), ["/command"]);
     app.on_key(with(KeyCode::Char('u'), KeyModifiers::CONTROL));
-    type_text(&mut app, "/pe");
-    assert_eq!(names(&app)[0], "/personality");
+    type_text(&mut app, "/rules");
+    // The alias of /permission finds it.
+    assert_eq!(names(&app), ["/permission"]);
+    app.on_key(with(KeyCode::Char('u'), KeyModifiers::CONTROL));
+    type_text(&mut app, "/pm");
     assert!(
-        names(&app).contains(&"/api_key"),
+        names(&app).contains(&"/permission"),
         "letters in order: {:?}",
         names(&app)
     );
@@ -617,19 +636,20 @@ fn the_list_scrolls_and_says_where_the_highlight_is() {
 fn the_list_is_above_the_field_and_commands_with_forms_show_them_under_the_name() {
     let mut app = app("pip", "m");
     type_text(&mut app, "/mc");
-    let rows = screen(&app, 80, 24);
+    let rows = screen(&app, 120, 24);
     let field = rows
         .iter()
         .position(|r| r == " › /mc")
         .unwrap_or_else(|| panic!("{rows:#?}"));
     let name = rows.iter().position(|r| r.starts_with(" › /mcp")).unwrap();
-    assert!(rows[name].contains("List, add or remove MCP servers"));
+    assert!(rows[name].contains("MCP servers: tools from programs and services"));
     let forms = [
-        "add NAME COMMAND [ARGS...]",
-        "add NAME URL",
-        "add {CONFIG}",
+        "list [--agent NAME]",
+        "add NAME [--command PROGRAM ARGS] [--url URL] [--env NAME=VALUE] [--header NAME=VALUE]",
+        "set NAME KEY VALUE",
         "remove NAME",
-        "reload",
+        "enable NAME [--agent NAME]",
+        "disable NAME [--agent NAME]",
     ];
     for (i, form) in forms.iter().enumerate() {
         assert_eq!(rows[name + 1 + i].trim(), *form, "{rows:#?}");
@@ -643,7 +663,7 @@ fn the_hint_of_a_command_is_above_the_field_too() {
     let mut app = app("pip", "m");
     type_text(&mut app, "/model ");
     let rows = screen(&app, 80, 24);
-    let hint = row_of(&rows, "/model [NAME]: ");
+    let hint = row_of(&rows, "/model [MODEL] [--agent NAME]: ");
     let field = row_of(&rows, "› /model");
     assert!(hint < field, "{rows:#?}");
 }
@@ -731,7 +751,10 @@ fn esc_closes_the_list_first_and_leaves_the_second_time() {
     assert_eq!(app.input(), "/mc", "the text stays");
     assert!(app.menu().entries.is_empty());
     let text = screen(&app, 80, 12).join("\n");
-    assert!(!text.contains("List, add or remove MCP servers"), "{text}");
+    assert!(
+        !text.contains("MCP servers: tools from programs and services"),
+        "{text}"
+    );
     // Up and Down scroll the chat again while the list is closed.
     app.on_key(key(KeyCode::Up));
     assert_eq!(app.input(), "/mc");
@@ -776,8 +799,13 @@ fn a_command_and_a_space_show_how_to_use_it() {
     assert!(text.contains(&hint), "{text}");
     // An alias finds its command too.
     app.on_key(with(KeyCode::Char('u'), KeyModifiers::CONTROL));
-    type_text(&mut app, "/key ");
-    assert!(app.menu().hint.unwrap_or_default().starts_with("/api_key"));
+    type_text(&mut app, "/rules ");
+    assert!(
+        app.menu()
+            .hint
+            .unwrap_or_default()
+            .starts_with("/permission")
+    );
     // An unknown command has no hint.
     app.on_key(with(KeyCode::Char('u'), KeyModifiers::CONTROL));
     type_text(&mut app, "/nope ");
@@ -787,19 +815,19 @@ fn a_command_and_a_space_show_how_to_use_it() {
 #[test]
 fn fixed_choices_after_a_command_are_listed_and_accepted() {
     let mut app = app("pip", "m");
-    type_text(&mut app, "/api_key ");
+    type_text(&mut app, "/auth ");
     let labels: Vec<String> = app.menu().entries.iter().map(|e| e.label.clone()).collect();
-    assert_eq!(labels, ["save", "forget"]);
-    type_text(&mut app, "f");
+    assert_eq!(labels, ["set", "clear", "list"]);
+    type_text(&mut app, "c");
     assert_eq!(app.menu().entries.len(), 1);
     app.on_key(key(KeyCode::Tab));
-    assert_eq!(app.input(), "/api_key forget");
-    // Enter with a choice open sends what is typed, so `/api_key` alone shows where the key is from.
+    assert_eq!(app.input(), "/auth clear ");
+    // Enter with a choice open sends what is typed, so `/auth` alone lists where the keys are from.
     let mut app = self::app("pip", "m");
-    type_text(&mut app, "/api_key ");
+    type_text(&mut app, "/auth ");
     assert_eq!(
         app.on_key(key(KeyCode::Enter)),
-        Action::Command("/api_key".into())
+        Action::Command("/auth".into())
     );
     let mut app = self::app("pip", "m");
     type_text(&mut app, "/mcp re");
@@ -1621,13 +1649,15 @@ fn an_answer_that_came_later_wakes_the_imp_with_a_new_message_and_shows_as_an_ev
 fn custom_commands_are_offered_after_slash_and_run_as_messages() {
     let mut app = app("pip", "m");
     app.set_custom_commands(vec![
-        crate::project::CustomCommand {
+        imp_engine::config::Command {
             name: "review".into(),
-            text: "Review $ARGUMENTS for bugs and missing tests.".into(),
+            template: "Review $ARGUMENTS for bugs and missing tests.".into(),
+            ..Default::default()
         },
-        crate::project::CustomCommand {
+        imp_engine::config::Command {
             name: "exit".into(),
-            text: "Shadowed by the built-in.".into(),
+            template: "Shadowed by the built-in.".into(),
+            ..Default::default()
         },
     ]);
     // Typed by its first letters, it shows with the built-ins' list and its usage.
@@ -1645,15 +1675,16 @@ fn custom_commands_are_offered_after_slash_and_run_as_messages() {
     app.on_key(with(KeyCode::Char('u'), KeyModifiers::CONTROL));
     type_text(&mut app, "/e");
     assert!(app.menu().entries.iter().all(|e| !e.custom));
-    // Enter on it completes the arguments; then the line is sent as the command's text.
+    // Enter on it completes the arguments; then the line goes to the chat loop as a command, which fills in
+    // the text (shell and files behind the Imp's permissions) and sends it.
     app.on_key(with(KeyCode::Char('u'), KeyModifiers::CONTROL));
     type_text(&mut app, "/rev");
     app.on_key(key(KeyCode::Enter));
     assert_eq!(app.input(), "/review ");
     type_text(&mut app, "src/auth.rs");
     match app.on_key(key(KeyCode::Enter)) {
-        Action::Send(text) => assert_eq!(text, "Review src/auth.rs for bugs and missing tests."),
-        _ => panic!("a custom command should be sent to the Imp"),
+        Action::Command(line) => assert_eq!(line, "/review src/auth.rs"),
+        _ => panic!("a custom command should go to the chat loop as a command"),
     }
 }
 
@@ -1717,7 +1748,7 @@ fn ctrl_o_opens_a_tool_call_whole_and_esc_closes_it() {
         text.contains("Result") && text.contains("Wrote 2 lines"),
         "{text}"
     );
-    assert!(text.contains("call 1 of 1"), "{text}");
+    assert!(text.contains("← → 1 of 1"), "{text}");
     // Keys do not reach the message behind.
     app.on_key(key(KeyCode::Char('x')));
     assert_eq!(app.input(), "");
@@ -1773,17 +1804,17 @@ fn the_arrows_move_between_calls_and_there_is_nothing_to_open_without_one() {
     app.on_key(ctrl_o());
     let text = screen(&app, 60, 12).join("\n");
     assert!(
-        text.contains("second.txt") && text.contains("call 2 of 2"),
+        text.contains("second.txt") && text.contains("← → 2 of 2"),
         "{text}"
     );
     app.on_key(key(KeyCode::Left));
     let text = screen(&app, 60, 12).join("\n");
     assert!(
-        text.contains("first.txt") && text.contains("call 1 of 2"),
+        text.contains("first.txt") && text.contains("← → 1 of 2"),
         "{text}"
     );
     app.on_key(key(KeyCode::Left));
-    assert!(screen(&app, 60, 12).join("\n").contains("call 1 of 2"));
+    assert!(screen(&app, 60, 12).join("\n").contains("← → 1 of 2"));
     app.on_key(ctrl_o());
     assert!(!app.is_detail_open());
 
@@ -1817,7 +1848,7 @@ fn a_click_on_a_tool_call_opens_that_call_in_full() {
     mouse(&mut app, MouseEventKind::Up(MouseButton::Left), 4, first);
     assert!(app.is_detail_open());
     let text = screen(&app, 40, 14).join("\n");
-    assert!(text.contains("call 1 of 2"), "{text}");
+    assert!(text.contains("← → 1 of 2"), "{text}");
     app.on_key(key(KeyCode::Esc));
     // A click on the Imp's own words opens nothing.
     let rows = screen(&app, 40, 14);
@@ -1825,4 +1856,194 @@ fn a_click_on_a_tool_call_opens_that_call_in_full() {
     mouse(&mut app, MouseEventKind::Down(MouseButton::Left), 2, words);
     mouse(&mut app, MouseEventKind::Up(MouseButton::Left), 2, words);
     assert!(!app.is_detail_open());
+}
+
+fn reason(app: &mut App, text: &str) {
+    app.on_agent(&AgentEvent::Stream(StreamEvent::Reasoning(text.into())));
+}
+
+fn asked(question: &str) -> App {
+    let mut app = app("pip", "m");
+    type_text(&mut app, question);
+    app.on_key(key(KeyCode::Enter));
+    app.on_agent(&AgentEvent::StepStart);
+    app
+}
+
+#[test]
+fn thinking_streams_live_in_a_few_rows_and_collapses_when_the_answer_starts() {
+    let mut app = asked("17*23?");
+    reason(&mut app, "First I multiply seventeen by twenty. ");
+    reason(&mut app, "Then by three.");
+    let text = screen(&app, 40, 16).join("\n");
+    assert!(text.contains("Thinking…"), "{text}");
+    assert!(text.contains("First I multiply seventeen"), "{text}");
+    assert!(text.contains("Then by three."), "{text}");
+    assert!(!text.contains("Thought for"), "{text}");
+
+    // Long reasoning shows its latest rows only, so the screen does not fill up.
+    let long: String = (1..=30).map(|i| format!("step{i} ")).collect();
+    reason(&mut app, &long);
+    let rows = screen(&app, 30, 24);
+    let text = rows.join("\n");
+    assert!(text.contains("step30"), "{text}");
+    assert!(!text.contains("step1 "), "{text}");
+    let shown = rows.iter().filter(|r| r.contains("step")).count();
+    assert!(shown <= 4, "{shown} rows of reasoning\n{text}");
+
+    app.on_agent(&AgentEvent::Stream(StreamEvent::Text("391".into())));
+    let text = screen(&app, 40, 16).join("\n");
+    assert!(text.contains("✻ Thought for "), "{text}");
+    assert!(
+        !text.contains("step30") && !text.contains("Thinking…"),
+        "{text}"
+    );
+    assert!(text.contains("● 391"), "{text}");
+}
+
+#[test]
+fn a_thought_opens_in_full_like_a_tool_call_and_stays_when_scrolling_back() {
+    let mut app = asked("hi");
+    reason(
+        &mut app,
+        "Line one of the thought.\nLine two of the thought.",
+    );
+    app.on_agent(&AgentEvent::Stream(StreamEvent::Text("Hello".into())));
+    app.on_agent(&AgentEvent::StepEnd);
+    app.on_done(Ok(()));
+    let text = screen(&app, 50, 12).join("\n");
+    assert!(!text.contains("Line one"), "{text}");
+    // Ctrl+O opens it, and Esc closes it.
+    app.on_key(ctrl_o());
+    assert!(app.is_detail_open());
+    let text = screen(&app, 50, 12).join("\n");
+    assert!(text.contains("Thought for "), "{text}");
+    assert!(
+        text.contains("Line one of the thought.") && text.contains("Line two of the thought."),
+        "{text}"
+    );
+    assert!(text.contains("← → 1 of 1"), "{text}");
+    app.on_key(key(KeyCode::Esc));
+    assert!(!app.is_detail_open());
+
+    // A click on its row opens it too.
+    let rows = screen(&app, 50, 12);
+    let y = rows
+        .iter()
+        .position(|r| r.contains("✻ Thought for"))
+        .unwrap() as u16;
+    let click = |kind| MouseEvent {
+        kind,
+        column: 4,
+        row: y,
+        modifiers: KeyModifiers::NONE,
+    };
+    app.on_mouse(click(MouseEventKind::Down(MouseButton::Left)));
+    app.on_mouse(click(MouseEventKind::Up(MouseButton::Left)));
+    assert!(app.is_detail_open());
+    app.on_key(ctrl_o());
+    assert!(!app.is_detail_open());
+
+    // The transcript keeps it, collapsed, in the chat's order.
+    let all = app
+        .transcript(50)
+        .iter()
+        .map(|l| l.to_string())
+        .collect::<Vec<_>>();
+    let thought = all
+        .iter()
+        .position(|l| l.contains("✻ Thought for"))
+        .unwrap();
+    let said = all.iter().position(|l| l.contains("● Hello")).unwrap();
+    assert!(thought < said, "{all:?}");
+    assert!(!all.iter().any(|l| l.contains("Line one")), "{all:?}");
+}
+
+#[test]
+fn each_phase_of_thinking_in_a_turn_gets_its_own_line_between_the_tool_calls() {
+    let mut app = asked("look");
+    reason(&mut app, "I should read the file.");
+    let call = ToolCall {
+        id: "c1".into(),
+        name: "files__read_file".into(),
+        arguments: r#"{"path":"a.txt"}"#.into(),
+    };
+    app.on_agent(&AgentEvent::Stream(StreamEvent::ToolCallDelta {
+        index: 0,
+        id: Some(call.id.clone()),
+        name: Some(call.name.clone()),
+        arguments: call.arguments.clone(),
+    }));
+    app.on_agent(&AgentEvent::StepEnd);
+    app.on_agent(&AgentEvent::ToolStart(call.clone()));
+    app.on_agent(&AgentEvent::ToolResult {
+        call_id: call.id,
+        name: call.name,
+        content: "contents".into(),
+    });
+    app.on_agent(&AgentEvent::StepStart);
+    reason(&mut app, "Now I can answer.");
+    app.on_agent(&AgentEvent::Stream(StreamEvent::Text("Done".into())));
+    app.on_agent(&AgentEvent::StepEnd);
+    app.on_done(Ok(()));
+    let all = app
+        .transcript(50)
+        .iter()
+        .map(|l| l.to_string())
+        .collect::<Vec<_>>();
+    let at = |what: &str| all.iter().position(|l| l.contains(what));
+    let thoughts: Vec<usize> = all
+        .iter()
+        .enumerate()
+        .filter(|(_, l)| l.contains("✻ Thought for"))
+        .map(|(i, _)| i)
+        .collect();
+    assert_eq!(thoughts.len(), 2, "{all:?}");
+    let (call, done) = (at("⏺ read_file").unwrap(), at("● Done").unwrap());
+    assert!(
+        thoughts[0] < call && call < thoughts[1] && thoughts[1] < done,
+        "{all:?}"
+    );
+    // Ctrl+O opens the latest item, and the arrows walk back through all three in order.
+    app.on_key(ctrl_o());
+    assert!(
+        screen(&app, 50, 10)
+            .join("\n")
+            .contains("Now I can answer.")
+    );
+    assert!(screen(&app, 50, 10).join("\n").contains("← → 3 of 3"));
+    app.on_key(key(KeyCode::Left));
+    assert!(screen(&app, 50, 10).join("\n").contains("a.txt"));
+    app.on_key(key(KeyCode::Left));
+    assert!(
+        screen(&app, 50, 10)
+            .join("\n")
+            .contains("I should read the file.")
+    );
+}
+
+#[test]
+fn a_stopped_turn_keeps_what_it_thought_and_a_cleared_chat_forgets_it() {
+    let mut app = asked("hmm");
+    reason(&mut app, "Pondering deeply.");
+    app.on_stopped();
+    let text = screen(&app, 40, 10).join("\n");
+    assert!(
+        text.contains("✻ Thought for ") && !text.contains("Pondering"),
+        "{text}"
+    );
+    app.clear();
+    let text = screen(&app, 40, 10).join("\n");
+    assert!(!text.contains("Thought for"), "{text}");
+}
+
+#[test]
+fn reasoning_never_goes_into_what_the_model_is_sent() {
+    let mut app = asked("q");
+    reason(&mut app, "SECRET-THOUGHT");
+    app.on_agent(&AgentEvent::Stream(StreamEvent::Text("a".into())));
+    app.on_agent(&AgentEvent::StepEnd);
+    app.on_done(Ok(()));
+    let sent = format!("{:?}", app.chat.request_messages());
+    assert!(!sent.contains("SECRET-THOUGHT"), "{sent}");
 }

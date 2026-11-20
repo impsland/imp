@@ -55,12 +55,13 @@ struct HomeView: View {
                 .environment(\.impTint, tint)
                 .tint(tint)
         }
-        .sheet(isPresented: Binding(get: { router.firstRun != nil }, set: { if !$0 { router.firstRun = nil } })) {
-            if let target = router.firstRun, let profile = target.profile(in: model.prefs.imps) {
-                FirstRunHost(app: model, target: target, hatched: { router.hatch([$0]) }) { router.firstRun = nil }
-                    .environment(\.impTint, Color.imp(profile.hue))
-                    .tint(Color.imp(profile.hue))
-            }
+        // Up only while its Imp exists (one can go while the sheet opens: removed from the terminal), so the sheet
+        // always has its whole content: an empty sheet can't be closed and holds the window.
+        .sheet(item: Binding(get: { router.firstRun.flatMap { FirstRunShown($0, imps: model.prefs.imps) } },
+                             set: { if $0 == nil { router.firstRun = nil } })) { shown in
+            FirstRunHost(app: model, target: shown.target, hatched: { router.hatch([$0]) }) { router.firstRun = nil }
+                .environment(\.impTint, Color.imp(shown.profile.hue))
+                .tint(Color.imp(shown.profile.hue))
         }
         .sheet(isPresented: $router.linkingDevice) {
             LinkDeviceSheet(model: model, mode: .show)
@@ -263,5 +264,19 @@ private struct WindowDragStrip: NSViewRepresentable {
     private final class Strip: NSView {
         override var mouseDownCanMoveWindow: Bool { true }
         override func mouseDown(with event: NSEvent) { window?.performDrag(with: event) }
+    }
+}
+
+/// The first-run sheet's subject: what it sets up and that Imp's profile, found together, so the sheet is only up
+/// while there is an Imp to show. Its identity is the Imp's id: the sheet stays while the profile changes.
+private struct FirstRunShown: Identifiable {
+    let target: FirstRunTarget
+    let profile: ImpProfile
+    var id: UUID { profile.id }
+
+    init?(_ target: FirstRunTarget, imps: [ImpProfile]) {
+        guard let profile = target.profile(in: imps) else { return nil }
+        self.target = target
+        self.profile = profile
     }
 }

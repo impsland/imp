@@ -114,6 +114,39 @@ import Testing
         #expect(missing.isEmpty, "MarkdownView without onImageLoad (its pictures never load): \(missing)")
     }
 
+    /// A Mac sheet that shows nothing can't be closed (it has no Cancel and no close button) and holds its window,
+    /// the app's quit included. So what a sheet shows is never wrapped in a bare `if`: decide whether it is up in
+    /// its `isPresented`/`item` binding instead. (An iPhone sheet can always be swiped away.)
+    @Test func aMacSheetIsNeverEmpty() throws {
+        var found: [String] = []
+        for file in Self.swiftFiles("apple/Sources/Imp/UI") {
+            let source = try String(contentsOf: file, encoding: .utf8)
+            var rest = source[...]
+            while let start = rest.range(of: ".sheet(") {
+                // The call's arguments, up to the parenthesis that closes them; the content is the closure after.
+                var depth = 0, end = start.upperBound
+                for i in source[start.lowerBound...].indices {
+                    if source[i] == "(" { depth += 1 } else if source[i] == ")" { depth -= 1; if depth == 0 { end = i; break } }
+                }
+                var body = source[source.index(after: end)...].drop { $0 == " " }
+                if body.first == "{" {
+                    body = body.dropFirst()
+                    // Past `item in`, blank lines and comments, to the first statement.
+                    if let inRange = body.prefix(80).range(of: " in"), !body[..<inRange.lowerBound].contains("\n") {
+                        body = body[inRange.upperBound...]
+                    }
+                    var lines = body.split(separator: "\n", omittingEmptySubsequences: false).map { $0.trimmingCharacters(in: .whitespaces) }
+                    lines.removeAll { $0.isEmpty || $0.hasPrefix("//") }
+                    if let first = lines.first, first.hasPrefix("if ") {
+                        found.append("\(file.lastPathComponent):\(source[..<start.lowerBound].filter { $0 == "\n" }.count + 1)")
+                    }
+                }
+                rest = source[end...]
+            }
+        }
+        #expect(found.isEmpty, "A sheet whose content is a bare `if` can open empty and lock the window: \(found)")
+    }
+
     @Test func screensTakeTheirValuesFromTokens() throws {
         let files = (Self.swiftFiles("apple/Sources/Imp/UI") + Self.swiftFiles("apple/Sources/ImpDesign") + Self.swiftFiles("apple/iOS/Imp"))
             .filter { !$0.lastPathComponent.hasSuffix(".generated.swift") && Self.drawings[$0.lastPathComponent] == nil }

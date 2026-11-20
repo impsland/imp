@@ -49,6 +49,8 @@ pub struct StreamToolCall {
 #[derive(Debug, Clone, PartialEq, uniffi::Record)]
 pub struct StreamReply {
     pub text: String,
+    /// What the model thought first. For showing only: it is never sent back.
+    pub reasoning: String,
     pub tool_calls: Vec<StreamToolCall>,
 }
 
@@ -81,6 +83,11 @@ impl ChatStream {
         self.0.lock().expect("stream lock").text().to_string()
     }
 
+    /// All the reasoning so far, as it arrived. For showing, never for sending back to the model.
+    pub fn reasoning(&self) -> String {
+        self.0.lock().expect("stream lock").reasoning().to_string()
+    }
+
     /// The whole reply so far.
     pub fn reply(&self) -> StreamReply {
         self.0.lock().expect("stream lock").reply().into()
@@ -91,6 +98,7 @@ impl From<chat::ChatReply> for StreamReply {
     fn from(reply: chat::ChatReply) -> Self {
         Self {
             text: reply.text,
+            reasoning: reply.reasoning,
             tool_calls: reply.tool_calls.into_iter().map(Into::into).collect(),
         }
     }

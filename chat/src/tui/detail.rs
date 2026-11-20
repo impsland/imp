@@ -1,8 +1,9 @@
 //! The details of one tool call, which the one-line view cuts short: every argument and the whole result,
-//! wrapped to the screen. A written file shows as added lines and an edit as the lines taken out and put
+//! wrapped to the screen. A thought (`✻ Thought for 3s`) opens the same way, as its whole reasoning. A written file shows as added lines and an edit as the lines taken out and put
 //! in. It covers the chat like the help card does and moves between the calls of the chat with the arrows.
 
 use super::text::{text_width, truncate, wrap};
+use super::thought::Thought;
 use super::{App, WHEEL_LINES};
 use crate::strings;
 use crate::theme::Theme;
@@ -22,7 +23,22 @@ pub(super) const MOST_LINES: usize = 40;
 /// Columns left empty at each side of the text.
 const MARGIN: usize = 2;
 
-/// Which call is open, how far it is scrolled, and whether it shows all its lines.
+/// What the details can show: a tool call with its result, or a thought.
+enum Item<'a> {
+    Tool(&'a ToolCall, Option<&'a ChatMessage>),
+    Thought(&'a Thought),
+}
+
+impl Item<'_> {
+    fn id(&self) -> &str {
+        match self {
+            Self::Tool(call, _) => &call.id,
+            Self::Thought(thought) => &thought.id,
+        }
+    }
+}
+
+/// Which item is open, how far it is scrolled, and whether it shows all its lines.
 pub struct Detail {
     at: usize,
     scroll: Cell<usize>,
@@ -34,30 +50,35 @@ impl App {
         self.detail.is_some()
     }
 
-    /// The calls to tools in the chat in order, each with its result once it has come. A message to
-    /// another Imp is not one: it already shows whole.
-    fn tool_calls(&self) -> Vec<(&ToolCall, Option<&ChatMessage>)> {
+    /// The calls to tools in the chat and the thoughts, in order, each call with its result once it
+    /// has come. A message to another Imp is not one: it already shows whole.
+    fn items(&self) -> Vec<Item<'_>> {
         let messages = self.chat.messages();
-        messages
-            .iter()
-            .enumerate()
-            .flat_map(|(i, m)| m.tool_calls.iter().map(move |call| (i, call)))
-            .filter(|(_, call)| call.name != crate::troupe::TOOL_NAME)
-            .map(|(i, call)| {
+        let mut thoughts = self.thoughts.iter().peekable();
+        let mut items = Vec::new();
+        for (i, message) in messages.iter().enumerate() {
+            while let Some(thought) = thoughts.next_if(|t| t.at <= i) {
+                items.push(Item::Thought(thought));
+            }
+            for call in message
+                .tool_calls
+                .iter()
+                .filter(|call| call.name != crate::troupe::TOOL_NAME)
+            {
                 let result = messages[i + 1..]
                     .iter()
                     .find(|m| m.role == Role::Tool && m.tool_call_id.as_deref() == Some(&call.id));
-                (call, result)
-            })
-            .collect()
+                items.push(Item::Tool(call, result));
+            }
+        }
+        items.extend(thoughts.map(Item::Thought));
+        items
     }
 
-    /// Opens the call with this id, as a click on its rows does. Nothing opens for a call that is not there.
-    pub(super) fn open_tool_detail(&mut self, call_id: &str) {
-        let at = self
-            .tool_calls()
-            .iter()
-            .position(|(call, _)| call.id == call_id);
+    /// Opens the call or thought with this id, as a click on its rows does. Nothing opens for one that
+    /// is not there.
+    pub(super) fn open_tool_detail(&mut self, id: &str) {
+        let at = self.items().iter().position(|item| item.id() == id);
         self.detail = at.map(|at| Detail {
             at,
             scroll: Cell::new(0),
@@ -65,9 +86,9 @@ impl App {
         });
     }
 
-    /// Opens the latest call. A chat without tool calls has nothing to open.
+    /// Opens the latest call or thought. A chat with neither has nothing to open.
     pub(super) fn open_detail(&mut self) {
-        let last = self.tool_calls().len().checked_sub(1);
+        let last = self.items().len().checked_sub(1);
         self.detail = last.map(|at| Detail {
             at,
             scroll: Cell::new(0),
@@ -78,7 +99,7 @@ impl App {
     /// While the details are open, the arrows move between calls and through a long one, Enter shows
     /// every line of it, and Esc closes. Other keys are not typed into the message behind.
     pub(super) fn detail_key(&mut self, key: KeyEvent) -> super::Action {
-        let total = self.tool_calls().len();
+        let total = self.items().len();
         let page = self.page();
         let Some(detail) = self.detail.as_mut() else {
             return super::Action::None;
@@ -131,14 +152,19 @@ impl App {
         let Some(detail) = &self.detail else {
             return;
         };
-        let calls = self.tool_calls();
-        let Some((call, result)) = calls.get(detail.at.min(calls.len().saturating_sub(1))) else {
+        let items = self.items();
+        let Some(item) = items.get(detail.at.min(items.len().saturating_sub(1))) else {
             return;
         };
         frame.render_widget(Clear, area);
         frame.buffer_mut().set_style(area, self.theme.raised());
         let width = (area.width as usize).saturating_sub(2 * MARGIN).max(1);
-        let rows = self.detail_rows(call, result.map(|m| m.content.as_str()), detail.all, width);
+        let rows = match item {
+            Item::Tool(call, result) => {
+                self.detail_rows(call, result.map(|m| m.content.as_str()), detail.all, width)
+            }
+            Item::Thought(thought) => self.thought_rows(thought, width),
+        };
         let room = (area.height as usize).saturating_sub(1);
         let max = rows.len().saturating_sub(room);
         let from = detail.scroll.get().min(max);
@@ -147,8 +173,8 @@ impl App {
             self.lang,
             "cli.chat.detail_footer",
             &[
-                ("n", &(detail.at + 1).min(calls.len()).to_string()),
-                ("total", &calls.len().to_string()),
+                ("n", &(detail.at + 1).min(items.len()).to_string()),
+                ("total", &items.len().to_string()),
             ],
         );
         let mut shown: Vec<Line<'static>> = rows.into_iter().skip(from).take(room).collect();
@@ -161,6 +187,25 @@ impl App {
             area.height,
         );
         frame.render_widget(Paragraph::new(shown), body.intersection(area));
+    }
+
+    /// The rows of a thought: its title and the whole reasoning, dim.
+    fn thought_rows(&self, thought: &Thought, width: usize) -> Vec<Line<'static>> {
+        let mut rows = vec![
+            Line::styled(
+                truncate(&self.thought_title(thought), width),
+                self.theme.strong(),
+            ),
+            Line::raw(""),
+        ];
+        for line in thought.text.lines() {
+            rows.extend(
+                wrap(line, width)
+                    .into_iter()
+                    .map(|text| Line::styled(text, self.theme.muted())),
+            );
+        }
+        rows
     }
 
     /// The rows of a call's details: its name, its arguments, and its result.

@@ -11,6 +11,15 @@
     "es": "Pensando",
     "zh-Hans": "思考中"
   },
+  "cli.chat.thought_for": {
+    "note": "The collapsed line of what the Imp thought before it answered or used a tool. {seconds} is how long it took, in whole seconds.",
+    "en": "Thought for {seconds}s",
+    "es": "Pensó durante {seconds}s",
+    "zh-Hans": "思考了 {seconds} 秒",
+    "args": {
+      "seconds": "string"
+    }
+  },
   "cli.chat.answering": {
     "note": "What the Imp is doing while its answer arrives.",
     "en": "Answering",
@@ -266,9 +275,9 @@
   },
   "cli.help.tool": {
     "note": "The marks of a tool call and of a message to another Imp in the chat.",
-    "en": "A tool the Imp used, or a message to another Imp",
-    "es": "Una herramienta que usó el Imp, o un mensaje a otro Imp",
-    "zh-Hans": "Imp 使用的工具，或发给另一个 Imp 的消息"
+    "en": "A tool the Imp used, a message to another Imp, or what it thought",
+    "es": "Una herramienta que usó el Imp, un mensaje a otro Imp, o lo que pensó",
+    "zh-Hans": "Imp 使用的工具、发给另一个 Imp 的消息，或它的思考"
   },
   "cli.chat.menu_hint": {
     "note": "Short reminder at the right of the status line while the list of / commands is open.",
@@ -386,9 +395,9 @@
   },
   "cli.help.tool_details": {
     "note": "The key in the help card that opens the details of a tool call.",
-    "en": "Open the details of a tool call, with ← → between calls",
-    "es": "Abre los detalles de una herramienta, con ← → entre llamadas",
-    "zh-Hans": "打开工具调用的详情，用 ← → 切换调用"
+    "en": "Open a tool call or a thought in full, with ← → between them",
+    "es": "Abre una herramienta o un pensamiento completo, con ← → entre ellos",
+    "zh-Hans": "展开工具调用或思考的全文，用 ← → 切换"
   },
   "cli.chat.detail_result": {
     "note": "Heading of a tool call's result in its details view.",
@@ -406,9 +415,9 @@
     }
   },
   "cli.chat.detail_footer": {
-    "note": "Last line of the details view of a tool call. {n} is which call this is and {total} how many there are.",
-    "en": "← → call {n} of {total} · ↑ ↓ scroll · Esc close",
-    "es": "← → llamada {n} de {total} · ↑ ↓ desplazar · Esc cerrar",
+    "note": "Last line of the details view of a tool call or of a thought. {n} is which one this is and {total} how many there are.",
+    "en": "← → {n} of {total} · ↑ ↓ scroll · Esc close",
+    "es": "← → {n} de {total} · ↑ ↓ desplazar · Esc cerrar",
     "zh-Hans": "← → 第 {n} 个，共 {total} 个 · ↑ ↓ 滚动 · Esc 关闭",
     "args": {
       "n": "string",

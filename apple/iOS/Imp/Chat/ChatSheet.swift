@@ -274,6 +274,7 @@ struct ImpSheet: View {
                 }
             }
             .onChange(of: work?.partial) { proxy.scrollTo("end", anchor: .bottom) }
+            .onChange(of: work?.reasoning.isEmpty) { proxy.scrollTo("end", anchor: .bottom) }
             .onChange(of: work == nil) { withImpAnimation(ImpDesign.Motion.smooth, reduceMotion: reduceMotion) { proxy.scrollTo("end", anchor: .bottom) } }
         }
     }
@@ -691,9 +692,100 @@ private struct TurnView: View, Equatable {
             } else {
                 AskBubble(text: turn.request, retry: retry)
             }
-            if !turn.steps.isEmpty { StepsLine(steps: turn.steps) }
+            StepsBlock(turn: turn)
             ReplyCard(text: turn.reply, imp: imp, hub: hub, failed: turn.failed, autoplay: fresh && autoplayVoices, retry: turn.failed ? retry : nil)
         }
+    }
+}
+
+/// What the Imp did on the way, in order: each thinking phase is a line of its own ("Thought for 3s ›"), the tools
+/// between two of them are folded into one line.
+private struct StepsBlock: View {
+    var turn: LinkTurn
+
+    private enum Part { case thought(Int), tools([String]) }
+
+    private var parts: [Part] {
+        var parts: [Part] = []
+        let thoughts = Set(turn.thoughts ?? [])
+        for (i, title) in turn.steps.enumerated() {
+            if thoughts.contains(i) {
+                parts.append(.thought(i))
+            } else if case .tools(let before)? = parts.last {
+                parts[parts.count - 1] = .tools(before + [title])
+            } else {
+                parts.append(.tools([title]))
+            }
+        }
+        return parts
+    }
+
+    var body: some View {
+        ForEach(Array(parts.enumerated()), id: \.offset) { _, part in
+            switch part {
+            case .thought(let i): ThoughtLine(title: turn.steps[i], text: turn.reasoning[i])
+            case .tools(let titles): StepsLine(steps: titles)
+            }
+        }
+    }
+}
+
+/// One thinking phase, folded: "Thought for 3s ›". Tap to read what it thought (when this device has it: a visiting
+/// Imp's home sends only the line).
+private struct ThoughtLine: View {
+    var title: String
+    var text: String?
+    @State private var open = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.snug) {
+            Button { withImpAnimation(ImpDesign.Motion.expand, reduceMotion: reduceMotion) { open.toggle() } } label: {
+                HStack(spacing: Spacing.snug) {
+                    Image(systemName: "brain").font(.icon(.small))
+                    Text(title).lineLimit(1)
+                    if text != nil {
+                        Image(systemName: "chevron.right").font(.icon(.tiny, weight: .bold)).rotationEffect(.degrees(open ? 90 : 0))
+                    }
+                }
+                .font(Typeface.small.weight(.medium))
+                .foregroundStyle(Tone.muted)
+                .frame(minHeight: Sizing.hit, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(text == nil)
+            if open, let text {
+                ScrollView {
+                    Text(text)
+                        .font(Typeface.small)
+                        .foregroundStyle(Tone.muted)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(maxHeight: Sizing.thinkingHeight * 3)
+                .padding(.leading, Spacing.large)
+                .transition(.opacity)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading, Spacing.small)
+    }
+}
+
+/// What the model thinks as it streams in: dim, in a block of fixed height with the newest words at the bottom.
+private struct LiveThinking: View {
+    var text: String
+
+    var body: some View {
+        Text(text)
+            .font(Typeface.small)
+            .foregroundStyle(Tone.muted)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, minHeight: Sizing.thinkingHeight, maxHeight: Sizing.thinkingHeight, alignment: .bottomLeading)
+            .clipped()
+            .padding(.leading, Spacing.large)
+            .accessibilityLabel(Text(text))
     }
 }
 
@@ -798,6 +890,7 @@ private struct LiveTurn: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, Spacing.small)
             }
+            if !work.reasoning.isEmpty { LiveThinking(text: work.reasoning) }
             if work.partial.isEmpty {
                 TypingDots().frame(maxWidth: .infinity, alignment: .leading)
             } else {

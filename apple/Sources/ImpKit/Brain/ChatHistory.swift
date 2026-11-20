@@ -12,9 +12,32 @@ public struct ChatTurn: Codable, Equatable, Identifiable, Sendable {
         public var request: String
         public var response: String?
         public var failed: Bool
+        /// Set when this step is the model thinking (`response` is what it thought, display-only, never sent back),
+        /// and how many whole seconds it took.
+        public var seconds: Int?
 
-        public init(id: UUID = UUID(), icon: String, title: String, request: String, response: String?, failed: Bool) {
+        public init(id: UUID = UUID(), icon: String, title: String, request: String, response: String?, failed: Bool, seconds: Int? = nil) {
             self.id = id; self.icon = icon; self.title = title; self.request = request; self.response = response; self.failed = failed
+            self.seconds = seconds
+        }
+
+        public var isThought: Bool { seconds != nil }
+
+        /// The symbol of a thought.
+        public static let thoughtIcon = "brain"
+
+        /// "Thought for 3s", the collapsed line of a thought.
+        public static func thoughtTitle(seconds: Int) -> String {
+            String.localizedStringWithFormat(NSLocalizedString("chat.thought_for", comment: ""), seconds)
+        }
+
+        /// "Thinking…", while the model still thinks.
+        public static var thinkingTitle: String { NSLocalizedString("chat.thinking", comment: "") }
+
+        /// A finished thought: what the model thought and how long it took (at least a second).
+        public static func thought(_ reasoning: String, seconds: Double, id: UUID = UUID()) -> Step {
+            let whole = max(1, Int(seconds.rounded()))
+            return Step(id: id, icon: thoughtIcon, title: thoughtTitle(seconds: whole), request: "", response: reasoning, failed: false, seconds: whole)
         }
     }
 

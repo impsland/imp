@@ -2,15 +2,29 @@ import Foundation
 import Testing
 @testable import ImpKit
 
-/// Serves queued canned chat-completions bodies instead of hitting the network.
+/// Serves queued canned chat-completions bodies instead of hitting the network. Each test gets its own queue,
+/// behind a host of its own (`serve`), so suites that run at the same time never take each other's replies.
 final class StubProtocol: URLProtocol, @unchecked Sendable {
-    nonisolated(unsafe) static var queue: [String] = []
-    static let lock = NSLock()
+    nonisolated(unsafe) private static var queues: [String: [String]] = [:]
+    private static let lock = NSLock()
+
+    /// Queues `replies` for one test and returns the base URL to give its client.
+    static func serve(_ replies: [String]) -> String {
+        let host = "t\(UUID().uuidString.lowercased()).test"
+        lock.withLock { queues[host] = replies }
+        return "https://\(host)/v1"
+    }
 
     override class func canInit(with request: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
     override func startLoading() {
-        let body = Self.lock.withLock { Self.queue.isEmpty ? "{}" : Self.queue.removeFirst() }
+        let host = request.url?.host ?? ""
+        let body = Self.lock.withLock {
+            guard var queue = Self.queues[host], !queue.isEmpty else { return "{}" }
+            let next = queue.removeFirst()
+            Self.queues[host] = queue
+            return next
+        }
         // Bodies made of `data:` lines are served as a stream (server-sent events).
         let type = body.hasPrefix("data:") ? "text/event-stream" : "application/json"
         let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: ["Content-Type": type])!
@@ -85,10 +99,10 @@ struct FakeTools: ToolProvider {
     }
 
     private func agent(_ replies: [String], maxSteps: Int = 8) throws -> Agent {
-        StubProtocol.lock.withLock { StubProtocol.queue = replies }
+        let base = StubProtocol.serve(replies)
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [StubProtocol.self]
-        let client = try OpenAIClient(baseURL: "https://example.test/v1", apiKey: "k", session: URLSession(configuration: config))
+        let client = try OpenAIClient(baseURL: base, apiKey: "k", session: URLSession(configuration: config))
         return Agent(client: client, model: "m", tools: FakeTools(), maxSteps: maxSteps)
     }
 
@@ -129,6 +143,43 @@ struct FakeTools: ToolProvider {
         let (reply, _) = try await a.run([.user("hi")], stream: true) { await events.add($0) }
         #expect(reply == "Hello!")
         #expect(await events.all == [.text("Hel"), .text("Hello!")])
+    }
+
+    private func delta(_ key: String, _ text: String) -> String { #"{"choices":[{"delta":{"\#(key)":"\#(text)"}}]}"# }
+    private let toolFragment = #"{"choices":[{"delta":{"tool_calls":[{"index":0,"id":"c1","function":{"name":"echo","arguments":"{}"}}]}}]}"#
+
+    @Test(arguments: ["reasoning", "reasoning_content"])
+    func agentShowsReasoningLiveThenOneThoughtPerPhase(key: String) async throws {
+        let a = try agent([sse([delta(key, "Use "), delta(key, "the tool."), toolFragment]),
+                           sse([delta(key, "Now say it."), delta("content", "Done")])])
+        let events = EventLog()
+        let (reply, transcript) = try await a.run([.user("go")], stream: true) { await events.add($0) }
+        #expect(reply == "Done")
+        let all = await events.all
+        #expect(all.compactMap { if case .reasoning(let t) = $0 { t } else { nil } } == ["Use ", "Use the tool.", "Now say it."])
+        let thoughts = all.compactMap { event -> String? in if case .thought(let t, _) = event { t } else { nil } }
+        #expect(thoughts == ["Use the tool.", "Now say it."])
+        // Each thought closes before what follows it: the tool call, the first words of the answer.
+        let kinds = all.map { event -> String in
+            switch event {
+            case .reasoning: "r"
+            case .thought: "T"
+            case .toolStarted: "tool"
+            case .text: "text"
+            default: "other"
+            }
+        }
+        #expect(kinds == ["r", "r", "T", "tool", "other", "r", "T", "text"])
+        #expect(transcript.allSatisfy { !($0.content ?? "").contains("tool.") })
+    }
+
+    @Test func agentReadsThinkTags() async throws {
+        let a = try agent([sse([delta("content", "<think>Hmm, "), delta("content", "391.</think>"), delta("content", "391")])])
+        let events = EventLog()
+        let (reply, _) = try await a.run([.user("17*23")], stream: true) { await events.add($0) }
+        #expect(reply == "391")
+        let thoughts = await events.all.compactMap { event -> String? in if case .thought(let t, _) = event { t } else { nil } }
+        #expect(thoughts.count == 1 && thoughts[0].contains("Hmm, 391."))
     }
 
     @Test func agentStreamsToolCallsInFragments() async throws {
@@ -232,10 +283,10 @@ extension BrainTests {
     }
 
     private func slowAgent(_ replies: [String], _ tools: SlowTools) throws -> Agent {
-        StubProtocol.lock.withLock { StubProtocol.queue = replies }
+        let base = StubProtocol.serve(replies)
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [StubProtocol.self]
-        let client = try OpenAIClient(baseURL: "https://example.test/v1", apiKey: "k", session: URLSession(configuration: config))
+        let client = try OpenAIClient(baseURL: base, apiKey: "k", session: URLSession(configuration: config))
         return Agent(client: client, model: "m", tools: tools)
     }
 

@@ -110,9 +110,8 @@ struct KeyField: View {
             }
         })
     }
-    private var inKeychain: Bool { model.prefs.keysInKeychain }
     private var placeholder: LocalizedStringKey {
-        if saved { return inKeychain ? "Saved in your Keychain" : "Saved on this Mac" }
+        if saved { return "Saved on this Mac" }
         return service.isLocal ? "Not needed on this Mac" : "Paste the key here"
     }
 
@@ -122,7 +121,7 @@ struct KeyField: View {
                 Group {
                     if show { TextField(placeholder, text: key) } else { SecureField(placeholder, text: key) }
                 }
-                .help(inKeychain ? "Kept in your login Keychain" : "Kept in a private file only your account can read")
+                .help("Kept in a private file only your account can read")
             } actions: {
                 FieldAction(systemName: show ? "eye.slash" : "eye", help: show ? "Hide key" : "Show key") { show.toggle() }
                 FieldAction(systemName: "doc.on.clipboard", help: "Paste key", action: paste)

@@ -33,10 +33,18 @@ public struct ToolOutput: Equatable, Sendable {
 public enum AgentEvent: Equatable, Sendable {
     /// The reply's text so far (streaming). Text that came before tool calls is superseded by them.
     case text(String)
+    /// What the model has thought so far in this request (streaming, the whole of it each time). For showing only:
+    /// it is never put into the messages sent to the model.
+    case reasoning(String)
+    /// The model is done thinking (its answer or a tool call follows): everything it thought and how long it took.
+    case thought(String, seconds: Double)
     /// A tool call starts: its name and raw JSON arguments.
     case toolStarted(String, arguments: String)
     /// A tool call ends: its name, whether it worked, and what the model reads back.
     case toolFinished(String, ok: Bool, result: String)
+    /// A tool call was not allowed by the Imp's permissions (a `deny` rule, or an `ask` the person answered Deny to):
+    /// the tool did not run. The reason is what the model reads back.
+    case toolRefused(String, reason: String)
     /// A request failed for a passing reason and is about to be tried again.
     case retrying(RetryNotice)
 }
@@ -46,6 +54,8 @@ public struct Agent: Sendable {
     public var client: OpenAIClient
     public var model: String
     public var tools: ToolProvider?
+    /// The permissions every tool call is checked against before it runs (nil: no rules to enforce).
+    public var gate: ToolGate?
     public var maxSteps = 16
     /// How long one request may take and how it is retried.
     public var limits: RequestLimits
@@ -54,10 +64,10 @@ public struct Agent: Sendable {
     /// Counts the time a request may take. Tests swap it too.
     public var deadlineSleep: @Sendable (TimeInterval) async throws -> Void
 
-    public init(client: OpenAIClient, model: String, tools: ToolProvider? = nil, maxSteps: Int = 16,
+    public init(client: OpenAIClient, model: String, tools: ToolProvider? = nil, gate: ToolGate? = nil, maxSteps: Int = 16,
                 limits: RequestLimits = .standard, sleep: @escaping @Sendable (TimeInterval) async throws -> Void = RetryPolicy.pause,
                 deadlineSleep: @escaping @Sendable (TimeInterval) async throws -> Void = RetryPolicy.pause) {
-        self.client = client; self.model = model; self.tools = tools; self.maxSteps = maxSteps
+        self.client = client; self.model = model; self.tools = tools; self.gate = gate; self.maxSteps = maxSteps
         self.limits = limits.clamped; self.sleep = sleep; self.deadlineSleep = deadlineSleep
     }
 
@@ -67,6 +77,9 @@ public struct Agent: Sendable {
                     onEvent: @Sendable (AgentEvent) async -> Void = { _ in }) async throws
         -> (reply: String, transcript: [ChatMessage]) {
         let specs = await tools?.tools() ?? []
+        // The registry ids of the tools, which is what the permissions classify them by.
+        let ids = gate == nil ? [:] : Dictionary(await tools?.catalog().compactMap { t in t.entry.map { (t.spec.name, $0.id) } } ?? [],
+                                                 uniquingKeysWith: { first, _ in first })
         let run = try ImpCore.AgentRun(messages: messages.map(\.record), tools: specs.map(\.record),
                                        maxSteps: UInt32(clamping: max(0, maxSteps)))
         while true {
@@ -76,8 +89,9 @@ public struct Agent: Sendable {
                 return (text, messages + run.messages().dropFirst(messages.count).map(ChatMessage.init(record:)))
             case .ask(let request, let offered):
                 let reply = try await ask(request, tools: offered, stream: stream, onEvent: onEvent)
+                // The reasoning is for showing: the core keeps it out of the messages it sends back.
                 let calls = run.reply(reply: StreamReply(
-                    text: reply.text, toolCalls: reply.toolCalls.map { StreamToolCall(id: $0.id, name: $0.name, arguments: $0.arguments) }))
+                    text: reply.text, reasoning: reply.reasoning, toolCalls: reply.toolCalls.map { StreamToolCall(id: $0.id, name: $0.name, arguments: $0.arguments) }))
                 guard let tools else { continue }
                 // Consecutive calls of tools that may overlap (`troupe::runs_concurrently`: asking other Imps) run
                 // together. Every result is handed back in the order the model asked, so the transcript keeps it.
@@ -91,10 +105,24 @@ public struct Agent: Sendable {
                     index = end
                     try Task.checkCancellation()
                     for call in batch { await onEvent(.toolStarted(call.name, arguments: call.arguments)) }
-                    let results = try await Self.execute(batch.map { ($0.name, $0.arguments) }, with: tools)
-                    for (call, result) in zip(batch, results) {
+                    // The permissions first, one call at a time (a person answers one question at a time).
+                    var refused: [Int: String] = [:]
+                    if let gate {
+                        for (i, call) in batch.enumerated() {
+                            try Task.checkCancellation()
+                            if let why = await gate.refusal(toolID: ids[call.name], name: call.name, arguments: call.arguments) { refused[i] = why }
+                        }
+                    }
+                    let allowed = batch.indices.filter { refused[$0] == nil }
+                    var ran = try await Self.execute(allowed.map { (batch[$0].name, batch[$0].arguments) }, with: tools).makeIterator()
+                    for (i, call) in batch.enumerated() {
+                        if let why = refused[i] {
+                            let done = run.toolFailed(callId: call.id, tool: call.name, message: why)
+                            await onEvent(.toolRefused(call.name, reason: done.text))
+                            continue
+                        }
                         let done: ToolOutcome
-                        switch result {
+                        switch ran.next()! {
                         case .success(let output):
                             done = run.toolResult(callId: call.id, tool: call.name, text: output.text, images: output.images.map(\.dataURL))
                         case .failure(let error):
@@ -130,6 +158,29 @@ public struct Agent: Sendable {
         return results
     }
 
+    /// The model's thinking in one request: when it began and what it said, closed once (by the first words of the
+    /// answer, or the end of the request).
+    private actor Thinking {
+        private var began: ContinuousClock.Instant?
+        private var text = ""
+        private var closed = false
+
+        func hear(_ reasoning: String) {
+            if began == nil { began = .now }
+            text = reasoning
+        }
+
+        /// The thought, once, if the model thought at all. `final` is what the whole reply carries (for servers that don't stream).
+        func close(final: String = "") -> (text: String, seconds: Double)? {
+            guard !closed else { return nil }
+            let thought = text.isEmpty ? final : text
+            guard !thought.isEmpty else { return nil }
+            closed = true
+            let elapsed = began.map { $0.duration(to: .now) } ?? .zero
+            return (thought, Double(elapsed.components.seconds) + Double(elapsed.components.attoseconds) / 1e18)
+        }
+    }
+
     /// Whether a try already showed some of the answer: a retry would show it twice.
     private actor Shown {
         private(set) var any = false
@@ -145,13 +196,22 @@ public struct Agent: Sendable {
             let shown = Shown()
             return try await limits.policy.run(sleep: sleep, canRetry: { await !shown.any },
                                                onRetry: { await emit(.retrying($0)) }) {
-                try await RequestDeadline.run(seconds: limits.timeoutSeconds, sleep: deadlineSleep) {
+                let thinking = Thinking()
+                let reply = try await RequestDeadline.run(seconds: limits.timeoutSeconds, sleep: deadlineSleep) {
                     guard stream else { return try await client.chat(model: model, messages: messages, tools: tools) }
-                    return try await client.chatStream(model: model, messages: messages, tools: tools) { text in
-                        if !text.isEmpty { await shown.mark() }
+                    return try await client.chatStream(model: model, messages: messages, tools: tools, onReasoning: { reasoning in
+                        await thinking.hear(reasoning)
+                        await emit(.reasoning(reasoning))
+                    }, onText: { text in
+                        if !text.isEmpty {
+                            await shown.mark()
+                            if let done = await thinking.close() { await emit(.thought(done.text, seconds: done.seconds)) }
+                        }
                         await emit(.text(text))
-                    }
+                    })
                 }
+                if let done = await thinking.close(final: reply.reasoning) { await emit(.thought(done.text, seconds: done.seconds)) }
+                return reply
             }
         }
     }

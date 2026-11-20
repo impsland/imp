@@ -41,5 +41,4 @@ textwrap.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
-toml.workspace = true
 uuid = { workspace = true, features = ["v4"] }

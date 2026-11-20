@@ -137,7 +137,7 @@
   "skills": [
     {
       "name": "a skill",
-      "folder": "notes",
+      "folder": "release-notes",
       "text": "---\nname: release-notes\ndescription: >\n  Write the release\n  notes\n---\nSteps",
       "skill": {
         "name": "release-notes",

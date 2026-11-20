@@ -30,7 +30,11 @@ public struct ToolSpec: Hashable, Sendable {
 public struct ChatReply: Hashable, Sendable {
     public var text: String
     public var toolCalls: [ToolCall]
-    public init(text: String, toolCalls: [ToolCall] = []) { self.text = text; self.toolCalls = toolCalls }
+    /// What the model thought first. For showing only: it is never sent back.
+    public var reasoning: String
+    public init(text: String, toolCalls: [ToolCall] = [], reasoning: String = "") {
+        self.text = text; self.toolCalls = toolCalls; self.reasoning = reasoning
+    }
 }
 
 public struct ChatMessage: Codable, Hashable, Sendable {

@@ -48,6 +48,10 @@ A red badge or a warning triangle. It scares people and makes a missing Brain lo
 
 When a Brain is checked and works, the Imp stirs (`state.waking`) and then wakes up (`brain.check_ok`).
 
+## A thinking model
+
+A model that thinks shows it in every chat, on the Mac and the iPhone, like a tool call. While it thinks, a "Thinking…" row (`chat.thinking`) has its newest words under it in a block of fixed height (`thinkingHeight`), so nothing shifts as it grows. When the model answers or calls a tool the row becomes "Thought for 3s" (`chat.thought_for`), collapsed, and a tap opens everything it thought (`chat.reasoning`), selectable and scrollable. Each thinking phase is a row of its own, in order among the tool calls. The reasoning is only for showing: it is kept in the chat history, never sent back to the model. Over the Link only the "Thought for 3s" row travels.
+
 ## Offline
 
 The device has no network.

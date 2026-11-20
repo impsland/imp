@@ -6,6 +6,8 @@
   <string name="agent_off">Off</string>
   <string name="agent_on">On</string>
   <string name="agent_title">What %1$s may do</string>
+  <string name="agentfile_open">Open the Imp\'s file</string>
+  <string name="agentfile_reveal">Show the Imp\'s file in Finder</string>
   <string name="anim_help_about">One sentence about what it does.</string>
   <string name="anim_help_beats">Each chip is one moment of the move. Drag to move it or stretch it.</string>
   <string name="anim_help_hop">How high the Imp jumps in this beat.</string>
@@ -66,6 +68,13 @@
     <item quantity="other">Used by %1$d Imps</item>
   </plurals>
   <string name="brains_with_key">A service with your key</string>
+  <string name="chat_reasoning">Reasoning</string>
+  <string name="chat_show_thought">Show what it thought</string>
+  <string name="chat_thinking">Thinking…</string>
+  <plurals name="chat_thought_for">
+    <item quantity="one">Thought for %1$ds</item>
+    <item quantity="other">Thought for %1$ds</item>
+  </plurals>
   <string name="common_action_done">Done</string>
   <string name="common_action_failed">Failed</string>
   <string name="common_action_working">Working</string>
@@ -335,6 +344,9 @@
   <string name="kit_help_paste">Paste a kit, a web address or an imp:// link, or drop a file. You look at it first.</string>
   <string name="kit_help_skipped">Things in the kit this Mac cannot use, so they are left out.</string>
   <string name="kit_help_tools">Tools can run things on your Mac. Read them first.</string>
+  <string name="library_help">Kept in ~/.agents, for every Imp and the terminal app. Read only here.</string>
+  <string name="library_reveal">Show in Finder</string>
+  <string name="library_title">Skills and commands</string>
   <string name="link_localnet_off">Local Network is off for Imp</string>
   <string name="link_localnet_open">Open Settings</string>
   <string name="link_localnet_open_mac">Open System Settings</string>
@@ -606,17 +618,19 @@
   <string name="settings_attention_device_offline">%1$s is offline.</string>
   <string name="settings_attention_imp_no_brain">%1$s has no Brain.</string>
   <string name="settings_backup_export_title">Export</string>
+  <string name="settings_backup_folder_reveal">Show in Finder</string>
+  <string name="settings_backup_folder_title">Configuration</string>
   <string name="settings_backup_import_title">Import</string>
   <string name="settings_backup_keep_info">Save your Imps and settings in a file, or load them back.</string>
   <string name="settings_backup_keep_title">Backups</string>
+  <string name="settings_backup_reset_app">Erase and Restart</string>
+  <string name="settings_backup_reset_confirm">Erase everything and start over?</string>
   <string name="settings_backup_reset_info">Erase everything and begin again. This cannot be undone.</string>
+  <string name="settings_backup_reset_message">Chats, memories and the app\'s own settings are deleted. Imps, services and keys are kept unless you also remove the shared configuration, which the terminal app uses too. This can\'t be undone.</string>
+  <string name="settings_backup_reset_shared">Erase and Also Remove the Shared Configuration</string>
   <string name="settings_backup_reset_title">Reset</string>
   <string name="settings_brains_first_wait_info">How long to wait before asking again.</string>
   <string name="settings_brains_first_wait_title">First pause</string>
-  <string name="settings_brains_keychain_info">Keep keys safe in your Mac\'s Keychain.</string>
-  <string name="settings_brains_keychain_title">Keychain</string>
-  <string name="settings_brains_keys_info">Secret passwords for your brains.</string>
-  <string name="settings_brains_keys_title">Keys</string>
   <string name="settings_brains_longer_info">How much longer each pause gets.</string>
   <string name="settings_brains_longer_title">Growth</string>
   <string name="settings_brains_requests_info">How patient an Imp is when a brain is slow.</string>

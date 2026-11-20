@@ -9,11 +9,11 @@ An Imp's settings look and work like the app's Settings: one bar across the top,
 | Section | What it holds | The wand opens |
 | --- | --- | --- |
 | Brain | Its Brain and its memory. | (nothing: no built-in tools) |
-| Personality | Name and Description in one block, then Persona and Reply rules. | Speak aloud, Message Imps, Open files, Open settings |
+| Personality | Name and Description in one block, then Persona and Reply rules. The Persona header has two icon buttons: open the Imp's agent file in an editor, and show it in the Finder. | Speak aloud, Message Imps, Open files, Open settings |
 | Look | The live Imp as the preview, Colour and Size, Character. | Change its look, View background, Set background |
 | Animations | Its animations, then the shared ones: New, Import kit…, Share. | Play, View, Make, Remove, Move around |
 | Triggers | Its triggers: New, Import kit…, Share. | List, Add, Remove |
-| Tools | Its MCP servers only: Add, Import kit…. | List, Add, Remove, Add kits, Export kits |
+| Tools | Its MCP servers: Add, Import kit…. Below them, read only, the skills and commands of `~/.agents`: one pebble each (name or `/name`, one line of what it is for) with a folder icon button that shows the file. Nothing is shown when there are none. | List, Add, Remove, Add kits, Export kits |
 | Computer | Commands, Senses, Browser, Computer control. | Mac status, Browser page, See the screen, Click and type, Check results |
 
 ![Brain](./images/imp-brain.png)
@@ -46,7 +46,7 @@ The Brain section always shows its page, never a modal. With no service at all t
 
 - One layout for Settings and an Imp's settings: the same rail, the same pages, the same parts.
 - The built-in tools sit where they act (animations in Animations, its look in Look), so "what may it do" is answered on the page it is about, behind one icon that looks the same everywhere.
-- Tools holds only what you add (MCP servers). Nothing built in is mixed into that list.
+- Tools holds what you add (MCP servers) and, apart, what `~/.agents` has (skills and commands, read only). Nothing built in is mixed into either list.
 
 ## On the iPhone
 

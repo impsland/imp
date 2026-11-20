@@ -18,22 +18,13 @@ There are two kinds of command:
 | `/clear` | Starts the conversation over (also `/new`, `/reset`) |
 | `/compact` | Sums up the chat, so the Imp goes on from the summary (also `/recap`, `/summarize`) |
 | `/quit` | Leaves the chat (also `/exit`, `/q`) |
-| `/model [NAME]` | Shows or changes the model, such as `/model openai/gpt-6-luna` |
-| `/base_url [URL]` | Shows or changes the service address, an OpenAI-compatible `/v1` root (also `/url`) |
-| `/api_key [KEY]` | Shows where the key comes from, or uses `KEY` until the chat ends (also `/key`) |
-| `/api_key save KEY` | Uses the key and keeps it in the system keychain. `/api_key forget` removes it |
-| `/api_key_env [NAME]` | Reads this Imp's key from another environment variable |
-| `/personality [TEXT]` | Shows or changes how the Imp behaves |
 | `/imp [NAME]` | Lists the Imps and the visitors, or talks to another Imp (also `/imps`) |
-| `/mcp` | Lists the MCP servers, with their tools, or why one did not start |
-| `/mcp add NAME COMMAND [ARGS...]` | Adds a server that the chat starts. `--env VAR` passes a variable on |
-| `/mcp add NAME URL` | Adds a server at an address. `--header NAME` sends a header |
-| `/mcp add {CONFIG}` | Adds the servers of a pasted config, such as `{"mcpServers": {...}}` |
-| `/mcp remove NAME`, `/mcp reload` | Removes a server, or starts them all again |
-| `/tools`, `/tools off ID`, `/tools on ID` | Lists the tools by id, or switches one off or on |
-| `/settings` | Shows the Imp's settings, its folder and the settings file (also `/config`) |
-| `/project` | Shows what this folder adds (also `/skills`, `/agents`) |
-| `/project trust`, `/project untrust` | Lets the folder's MCP servers and service settings run, or stops them |
+| `/model [provider/model#variant]` | Shows or changes the model, such as `/model openrouter/openai/gpt-6-luna` |
+| `/agent`, `/provider`, `/auth`, `/mcp`, `/permission` | The same words as the command line: `/mcp list`, `/mcp add files --command npx …`, `/auth set openrouter` (the key is typed hidden and never shown) |
+| `/skill`, `/command` | Lists the skills and custom commands, or shows one |
+| `/project`, `/project trust`, `/project untrust` | Shows what this folder adds, and lets its services and tool servers run, or stops them |
+| `/config` | Shows or changes `imp.json` by key, such as `/config get requests.retries` |
+| `/tools` | Lists the tools by id and whether the rules leave them on |
 | `/devices` | Lists the linked devices, the Imps on their screens and the visitors here (also `/peers`, `/visitors`) |
 | `/pair` | Shows a code to link a Mac or an iPhone (also `/link`, `/qr`) |
 | `/send DEVICE [IMP]` | Sends this Imp, or another one, to a linked device |
@@ -42,7 +33,8 @@ There are two kinds of command:
 | `/trust DEVICE [off]` | Lets your Imps use their tools for one of your devices |
 | `/forget DEVICE` | Ends the link with a device |
 
-A key given to `/api_key` is never shown in the chat and never written to the settings file.
+Changes go to the files the Mac app shares, and take effect with the next message. `imp agent edit` opens an
+Imp's file in your editor, so it has no chat form.
 
 Typing a few letters is enough to find a command. `/ex` offers `/quit`, `/mc` offers `/mcp`.
 
@@ -86,6 +78,25 @@ any other.
   then `in three bullets`.
 - The text is taken as it is. Write it the way you would write a message to the Imp.
 
+### Front matter
+
+A command can start with front matter:
+
+```markdown
+---
+description: Fix a bug
+agent: pip
+subtask: true
+---
+Fix $1 in $2. Everything: $ARGUMENTS
+```
+
+- `description` is shown in the `/` list (without it, the first line of the file).
+- `agent` is the Imp that runs it, `model` a model for this message only, and `subtask: true` runs it in a
+  conversation of its own, whose answer is shown and not kept.
+- `$1`, `$2` … are the words typed after the name, one each. `` !`cmd` `` is replaced by what a command prints
+  (it needs the `shell` permission) and `@path` by the file's contents (the `read` permission).
+
 ### Names
 
 - The file name, without `.md`, is the command name. It can contain letters, digits, `-` and `_`, and must start
@@ -98,7 +109,8 @@ any other.
 
 - `.agents/commands/` in your project folder. The project is the nearest folder, from the one you start the chat
   in up, with a `.agents` folder or a `.git`.
-- `~/.agents/commands/` in your home folder. These are yours, and they work in every chat.
+- `~/.agents/commands/` in your home folder. These are yours, and they work in every chat. The Mac app lists them
+  too (Imp settings, Tools).
 
 If a project and your home folder both have a command with the same name, the project's command is used.
 
@@ -106,7 +118,7 @@ If a project and your home folder both have a command with the same name, the pr
 
 Custom commands need no `/project trust`. A command only sends the text you wrote in the file, on a command you
 type yourself, so a project cannot start programs or send your key with one. The things that need trust are
-unchanged: MCP servers and an Imp's `base_url` and key variable (see
+unchanged: a project's own `.agents/imp.json`, with services, tool servers and permissions (see
 [Sub-agents](/apps/cli-agents#trust)).
 
 ### When they are read
@@ -118,7 +130,7 @@ time it is read.
 ### Finding them
 
 - Type `/` and the custom commands come after the built-in ones, with their arguments in the list, such as
-  `/review ARGUMENTS`. The first line of the file is shown as its description.
+  `/review ARGUMENTS`. 
 - Type `/review` and press Enter. A command that takes arguments is completed to `/review ` so you can type
   them. Otherwise it is sent at once.
 - `/help` lists them with the built-in commands.

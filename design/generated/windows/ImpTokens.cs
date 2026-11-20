@@ -84,6 +84,8 @@ public static class ImpSizes
     public const double SheetWidth = 560;
     /// <summary>A round tile: an animation's preview, the Imp on the phone's settings.</summary>
     public const double Marker = 44;
+    /// <summary>The room of a model's reasoning while it streams in (about three lines): the same all along, so nothing shifts.</summary>
+    public const double ThinkingHeight = 54;
     /// <summary>The Imp drawn in a row or a card.</summary>
     public const double ImpPortrait = 40;
     /// <summary>The label column of a form row, so a card's controls line up.</summary>

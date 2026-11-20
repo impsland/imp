@@ -8,29 +8,27 @@ import Observation
 /// `nil` means the default brain. The UI never builds requests itself.
 @MainActor @Observable
 final class Assistant {
-    /// Services with a saved key. Known without reading the keys (the Keychain is only asked whether
-    /// an item is there), so launching and browsing settings never ask for the user's password.
+    /// Services with a saved key (`auth.json`, or `options.apiKey` in `imp.json`), as of the last `configure`.
+    /// Known without reading the keys, so launching and browsing settings read no secret.
     private var keyed: Set<UUID> = []
-    /// Keys read so far, by service ID: each is read the first time a request needs it.
-    @ObservationIgnored private var keys: [UUID: String] = [:]
     private(set) var ai = AIConfig()
     /// How long a request may take and how it is retried (`ImpPreferences.requests`).
     private(set) var limits = RequestLimits.standard
     /// Live state of each configured MCP server.
     private(set) var toolStatus: [UUID: MCPStatus] = [:]
 
-    @ObservationIgnored let hub = MCPHub()
+    @ObservationIgnored let hub: MCPHub
     @ObservationIgnored private var servers: [MCPServerConfig] = []
 
-    /// False for offscreen design renders: they must never read or write the user's keys.
-    @ObservationIgnored private let persists: Bool
-    /// Where keys are kept: a private file (the default), or the Keychain if the user asked.
-    @ObservationIgnored private let file = KeyFile()
-    @ObservationIgnored private var inKeychain = false
-    @ObservationIgnored private var configured = false
+    /// The shared configuration, where keys and tool server sign-ins are kept. Nil for offscreen design
+    /// renders: they must never read or write the user's keys.
+    @ObservationIgnored private let config: SharedConfigStore?
+    @ObservationIgnored private let auth: MCPAuthStore
 
-    init(usesKeychain persists: Bool = true) {
-        self.persists = persists
+    init(config: SharedConfigStore?) {
+        self.config = config
+        auth = config?.mcpAuth ?? MCPAuthStore.empty
+        hub = MCPHub(auth: auth)
         let update: @Sendable ([UUID: MCPStatus]) -> Void = { [weak self] status in
             Task { @MainActor in self?.toolStatus = status }
         }
@@ -46,12 +44,12 @@ final class Assistant {
     // MARK: Signing in to tool servers
 
     /// The servers (by id) the person is signed in to. Only checks that a sign-in is saved: the
-    /// token itself is not read, so the Keychain (if used) never asks for a password here.
+    /// token itself is not read.
     private(set) var signedIn: Set<UUID> = []
     @ObservationIgnored private let presenter = WebAuthPresenter()
 
     func refreshSignedIn() {
-        signedIn = Set(servers.filter { $0.transport == .http && MCPAuthStore.standard.hasAuth(for: $0.url.trimmingCharacters(in: .whitespaces)) }.map(\.id))
+        signedIn = Set(servers.filter { $0.transport == .http && auth.hasAuth(for: $0.url.trimmingCharacters(in: .whitespaces)) }.map(\.id))
     }
 
     /// Shows the browser sheet for `server` and keeps the sign-in. Throws when cancelled or failed.
@@ -64,7 +62,7 @@ final class Assistant {
     @MainActor func signInOnly(to server: MCPServerConfig) async throws {
         let url = server.url.trimmingCharacters(in: .whitespaces)
         defer { refreshSignedIn() }
-        try await MCPSignIn(presenter: presenter).signIn(to: url)
+        try await MCPSignIn(store: auth, presenter: presenter).signIn(to: url)
     }
 
     func signInAndReconnect(_ server: MCPServerConfig) async -> String? {
@@ -74,83 +72,31 @@ final class Assistant {
     }
 
     func signOut(of server: MCPServerConfig) async {
-        await MCPSignIn(presenter: presenter).signOut(of: server.url.trimmingCharacters(in: .whitespaces))
+        await MCPSignIn(store: auth, presenter: presenter).signOut(of: server.url.trimmingCharacters(in: .whitespaces))
         refreshSignedIn()
         await hub.reconnect(server.id)
     }
 
-    private static func account(_ id: UUID) -> String { "service.\(id.uuidString)" }
-
     func hasKey(_ service: UUID) -> Bool { keyed.contains(service) }
 
-    /// A service's key, read on first use. From the private file that never asks anything. From the
-    /// Keychain (only if the user keeps keys there) the read may ask for their password. A refusal
-    /// isn't remembered: the next request asks again.
+    /// A service's key, read from `auth.json` when a request needs it.
     private func key(for service: Service) throws -> String {
         guard keyed.contains(service.id) else { return "" }
-        if let key = keys[service.id] { return key }
-        guard persists else { return "" }
-        let account = Self.account(service.id)
-        guard inKeychain else {
-            guard let key = file.read(account) else {
-                keyed.remove(service.id)                     // removed outside Imp
-                return ""
-            }
-            keys[service.id] = key
-            return key
+        guard let key = config?.key(for: service.id) else {
+            keyed.remove(service.id)                         // removed outside Imp
+            return ""
         }
-        do {
-            guard let key = try Keychain.read(account) else {
-                keyed.remove(service.id)
-                return ""
-            }
-            keys[service.id] = key
-            return key
-        } catch {
-            throw APIError.keyDenied(service: service.label)
-        }
+        return key
     }
 
-    /// Saves (or, when empty, removes) a service's key, where keys are kept. False when the key
-    /// store refused it: nothing is then remembered, so the caller can say so.
+    /// Saves (or, when empty, removes) a service's key in `auth.json`, readable by the person only. False
+    /// when it could not be written (or the service is not saved yet): nothing is then remembered.
     @discardableResult
     func setKey(_ key: String, for service: UUID) -> Bool {
         let trimmed = key.trimmingCharacters(in: .whitespacesAndNewlines)
-        if persists {
-            let account = Self.account(service)
-            if inKeychain {
-                // Removing an item that is not there is not a failure.
-                guard Keychain.write(trimmed, account: account) || trimmed.isEmpty else { return false }
-                file.write("", account: account)
-            } else {
-                guard file.write(trimmed, account: account) else { return false }
-            }
-        }
-        if trimmed.isEmpty {
-            keyed.remove(service)
-            keys[service] = nil
-        } else {
-            keyed.insert(service)
-            keys[service] = trimmed
-        }
+        if let config, !config.setKey(trimmed, for: service) { return false }
+        if trimmed.isEmpty { keyed.remove(service) } else { keyed.insert(service) }
         return true
-    }
-
-    /// Moves every saved key into the Keychain, or out of it into the private file: the user just
-    /// switched the setting (so the password macOS may ask for, reading them out, is expected).
-    /// A key macOS won't hand over stays where it was.
-    private func moveKeys(toKeychain: Bool) {
-        for id in ai.services.map(\.id) {
-            let account = Self.account(id)
-            if toKeychain {
-                guard let key = keys[id] ?? file.read(account) else { continue }
-                if Keychain.write(key, account: account) { file.write("", account: account) }
-            } else {
-                guard Keychain.contains(account), let key = keys[id] ?? (try? Keychain.read(account)) ?? nil else { continue }
-                keys[id] = key
-                if file.write(key, account: account) { Keychain.write("", account: account) }
-            }
-        }
     }
 
     /// The brain has a service (with a key, unless it runs locally) and a model.
@@ -174,19 +120,10 @@ final class Assistant {
     /// those, open the sign-in sheet if they ask for one.
     var signInRequests: Set<UUID> = []
 
-    func configure(ai: AIConfig, servers: [MCPServerConfig], keychain: Bool, limits: RequestLimits = .standard) {
+    func configure(ai: AIConfig, servers: [MCPServerConfig], limits: RequestLimits = .standard) {
         self.ai = ai
         self.limits = limits
-        if persists {
-            if configured, keychain != inKeychain { moveKeys(toKeychain: keychain) }
-            inKeychain = keychain
-            MCPAuthStore.standard.setInKeychain(keychain)   // tokens of tool servers follow the same rule
-            let inFile = file.all()
-            keyed = Set(ai.services.map(\.id).filter {
-                keychain ? Keychain.contains(Self.account($0)) : inFile[Self.account($0)] != nil
-            })
-        }
-        configured = true
+        if let config { keyed = Set(ai.services.map(\.id).filter(config.hasKey)) }
         // Only servers the person just turned on may open the sign-in sheet (`AppModel.changeByPerson`).
         let signInNow = signInRequests
         signInRequests = []
@@ -243,13 +180,13 @@ final class Assistant {
     /// finishes and, with `stream`, the answer's text as it arrives. Returns the answer and the
     /// exchange to remember: the last message sent (the user's turn) and every one that followed
     /// (tool calls, their results, the answer).
-    func chat(_ messages: [ChatMessage], brain: Brain?, tools: ToolProvider?, stream: Bool = false,
+    func chat(_ messages: [ChatMessage], brain: Brain?, tools: ToolProvider?, gate: ToolGate? = nil, stream: Bool = false,
               onEvent: @escaping @MainActor (AgentEvent) -> Void = { _ in }) async throws
         -> (reply: String, exchange: [ChatMessage]) {
         let model = ai.model(in: brain)
         let client = try client(brain: brain)
         guard !model.isEmpty else { throw APIError.noModel }
-        let agent = Agent(client: client, model: model, tools: tools, limits: limits)
+        let agent = Agent(client: client, model: model, tools: tools, gate: gate, limits: limits)
         let (reply, transcript) = try await agent.run(messages, stream: stream) { event in await onEvent(event) }
         guard !reply.isEmpty else { throw APIError.emptyResponse("text") }
         return (reply, Array(transcript[max(messages.count - 1, 0)...]))

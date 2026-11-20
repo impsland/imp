@@ -229,7 +229,11 @@ pub fn attach(text: &str, workspace: &Path) -> Attached {
 fn resolve(mention: &str, workspace: &Path) -> Option<(String, PathBuf)> {
     let mut written = mention.to_string();
     loop {
-        let path = PathBuf::from(expand(&written, workspace));
+        let path = PathBuf::from(expand(
+            &written,
+            workspace,
+            directories::BaseDirs::new().as_ref().map(|d| d.home_dir()),
+        ));
         let path = if path.is_absolute() {
             path
         } else {

@@ -176,6 +176,8 @@ pub fn request_body(
 pub enum StreamEvent {
     /// More of the reply text.
     Text(String),
+    /// More of the model's reasoning, which is shown but never sent back to the model.
+    Reasoning(String),
     /// A part of a tool call. Parts of one call share an `index`. Id and name come first.
     ToolCallDelta {
         index: usize,
@@ -191,6 +193,9 @@ pub enum StreamEvent {
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct ChatReply {
     pub text: String,
+    /// What the model thought before it answered. For showing only: `into_message` drops it and
+    /// requests never carry it.
+    pub reasoning: String,
     pub tool_calls: Vec<ToolCall>,
     pub finish_reason: Option<String>,
 }
@@ -209,6 +214,7 @@ impl ChatReply {
 #[derive(Debug, Default, Clone)]
 pub struct ReplyAccumulator {
     text: String,
+    reasoning: String,
     calls: BTreeMap<usize, ToolCall>,
     finish_reason: Option<String>,
 }
@@ -217,6 +223,7 @@ impl ReplyAccumulator {
     pub fn apply(&mut self, event: &StreamEvent) {
         match event {
             StreamEvent::Text(t) => self.text.push_str(t),
+            StreamEvent::Reasoning(t) => self.reasoning.push_str(t),
             StreamEvent::ToolCallDelta {
                 index,
                 id,
@@ -238,6 +245,11 @@ impl ReplyAccumulator {
 
     pub fn text(&self) -> &str {
         &self.text
+    }
+
+    /// All the reasoning so far, as it arrived.
+    pub fn reasoning(&self) -> &str {
+        &self.reasoning
     }
 
     pub fn tool_calls(&self) -> impl Iterator<Item = &ToolCall> {
@@ -267,6 +279,7 @@ impl ReplyAccumulator {
             .collect();
         ChatReply {
             text: self.text.trim().to_string(),
+            reasoning: self.reasoning.trim().to_string(),
             tool_calls,
             finish_reason: self.finish_reason.clone(),
         }
@@ -275,6 +288,7 @@ impl ReplyAccumulator {
     pub fn finish(self) -> ChatReply {
         ChatReply {
             text: self.text,
+            reasoning: self.reasoning,
             tool_calls: self.calls.into_values().collect(),
             finish_reason: self.finish_reason,
         }
@@ -335,6 +349,7 @@ impl SseParser {
 #[derive(Debug, Default, Clone)]
 pub struct ChatStream {
     reply: ReplyAccumulator,
+    reader: StreamReader,
     done: bool,
 }
 
@@ -347,13 +362,18 @@ impl ChatStream {
         let payload = data.trim();
         if payload == "[DONE]" {
             self.done = true;
-            return Ok(false);
+            let mut added = false;
+            for event in self.reader.end() {
+                added |= matches!(event, StreamEvent::Text(_));
+                self.reply.apply(&event);
+            }
+            return Ok(added);
         }
         if serde_json::from_str::<Value>(payload).is_err() {
             return Ok(false);
         }
         let mut added = false;
-        for event in parse_chunk(payload)? {
+        for event in self.reader.chunk(payload)? {
             added |= matches!(event, StreamEvent::Text(_));
             self.reply.apply(&event);
         }
@@ -368,6 +388,11 @@ impl ChatStream {
     /// All the text so far, as it arrived.
     pub fn text(&self) -> &str {
         self.reply.text()
+    }
+
+    /// All the reasoning so far, as it arrived.
+    pub fn reasoning(&self) -> &str {
+        self.reply.reasoning()
     }
 
     /// The whole reply so far (see [`ReplyAccumulator::tidy_reply`]).
@@ -408,16 +433,22 @@ pub fn parse_reply(body: &str) -> Result<ChatReply, ChatError> {
         return Err(error);
     }
     let message = value.pointer("/choices/0/message");
-    let text = match message.and_then(|m| m.get("content")) {
-        Some(Value::String(s)) => s.trim().to_string(),
+    let content = match message.and_then(|m| m.get("content")) {
+        Some(Value::String(s)) => s.clone(),
         Some(Value::Array(parts)) => parts
             .iter()
             .filter_map(|p| p.get("text").and_then(Value::as_str))
-            .collect::<String>()
-            .trim()
-            .to_string(),
+            .collect::<String>(),
         _ => String::new(),
     };
+    let (inline, text) = split_think(&content);
+    let reasoning = message
+        .map(reasoning_of)
+        .filter(|r| !r.is_empty())
+        .unwrap_or(inline)
+        .trim()
+        .to_string();
+    let text = text.trim().to_string();
     let mut tool_calls = Vec::new();
     for (i, call) in message
         .and_then(|m| m.get("tool_calls"))
@@ -449,6 +480,7 @@ pub fn parse_reply(body: &str) -> Result<ChatReply, ChatError> {
     }
     Ok(ChatReply {
         text,
+        reasoning,
         tool_calls,
         finish_reason: None,
     })
@@ -502,6 +534,10 @@ pub fn parse_chunk(payload: &str) -> Result<Vec<StreamEvent>, ChatError> {
         return Ok(events);
     };
     let delta = &choice["delta"];
+    let reasoning = reasoning_of(delta);
+    if !reasoning.is_empty() {
+        events.push(StreamEvent::Reasoning(reasoning));
+    }
     if let Some(text) = delta
         .get("content")
         .and_then(Value::as_str)
@@ -536,6 +572,186 @@ pub fn parse_chunk(payload: &str) -> Result<Vec<StreamEvent>, ChatError> {
     Ok(events)
 }
 
+/// The reasoning in a streamed `delta` or a whole `message`. Services spell it three ways, and some
+/// send two at once with the same words, so only the first that has any is read: `reasoning` (a
+/// string), else `reasoning_content`, else the `reasoning.text` and `reasoning.summary` entries of
+/// `reasoning_details`. Encrypted entries are not text and are ignored.
+fn reasoning_of(object: &Value) -> String {
+    for key in ["reasoning", "reasoning_content"] {
+        if let Some(text) = object
+            .get(key)
+            .and_then(Value::as_str)
+            .filter(|t| !t.is_empty())
+        {
+            return text.to_string();
+        }
+    }
+    object
+        .get("reasoning_details")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter_map(|d| {
+            let field = match d.get("type").and_then(Value::as_str)? {
+                "reasoning.text" => "text",
+                "reasoning.summary" => "summary",
+                _ => return None,
+            };
+            d.get(field)
+                .or_else(|| d.get("text"))
+                .and_then(Value::as_str)
+        })
+        .collect()
+}
+
+const THINK_OPEN: &str = "<think>";
+const THINK_CLOSE: &str = "</think>";
+
+#[derive(Debug, Clone, Default)]
+enum ThinkState {
+    /// Nothing decided yet: the reply so far is only blanks and maybe the start of `<think>`.
+    #[default]
+    Start,
+    Inside,
+    /// After the block: the blanks that follow it are dropped.
+    After {
+        started: bool,
+    },
+    /// The reply did not start with a think block.
+    Plain,
+}
+
+/// Splits `<think>…</think>` out of streamed text. Local models (Ollama, qwen) write their reasoning
+/// that way at the start of the reply. Only a block at the very start counts (blanks may come before
+/// it). Tags may arrive in pieces, so a possible tag is held back until it is known. A block still
+/// open at the end stays reasoning.
+#[derive(Debug, Clone, Default)]
+pub struct ThinkSplitter {
+    state: ThinkState,
+    held: String,
+}
+
+impl ThinkSplitter {
+    /// Takes the next piece of text. Returns the reasoning and the text that can be shown now.
+    pub fn push(&mut self, piece: &str) -> Vec<StreamEvent> {
+        let mut out = Vec::new();
+        self.held.push_str(piece);
+        loop {
+            match self.state {
+                ThinkState::Start => {
+                    let trimmed = self.held.trim_start();
+                    if let Some(rest) = trimmed.strip_prefix(THINK_OPEN) {
+                        self.held = rest.to_string();
+                        self.state = ThinkState::Inside;
+                    } else if trimmed.is_empty() || THINK_OPEN.starts_with(trimmed) {
+                        return out;
+                    } else {
+                        self.state = ThinkState::Plain;
+                    }
+                }
+                ThinkState::Inside => {
+                    if let Some(at) = self.held.find(THINK_CLOSE) {
+                        let rest = self.held.split_off(at + THINK_CLOSE.len());
+                        self.held.truncate(at);
+                        emit(
+                            &mut out,
+                            StreamEvent::Reasoning(std::mem::take(&mut self.held)),
+                        );
+                        self.held = rest;
+                        self.state = ThinkState::After { started: false };
+                    } else {
+                        let keep = (1..THINK_CLOSE.len())
+                            .rev()
+                            .find(|k| self.held.ends_with(&THINK_CLOSE[..*k]))
+                            .unwrap_or(0);
+                        let kept = self.held.split_off(self.held.len() - keep);
+                        emit(
+                            &mut out,
+                            StreamEvent::Reasoning(std::mem::replace(&mut self.held, kept)),
+                        );
+                        return out;
+                    }
+                }
+                ThinkState::After { started } => {
+                    let text = std::mem::take(&mut self.held);
+                    let text = if started { &text } else { text.trim_start() };
+                    if !text.is_empty() {
+                        self.state = ThinkState::After { started: true };
+                        emit(&mut out, StreamEvent::Text(text.to_string()));
+                    }
+                    return out;
+                }
+                ThinkState::Plain => {
+                    emit(&mut out, StreamEvent::Text(std::mem::take(&mut self.held)));
+                    return out;
+                }
+            }
+        }
+    }
+
+    /// The reply ended: what was held back comes out, text if no block was open and reasoning if one was.
+    pub fn finish(&mut self) -> Vec<StreamEvent> {
+        let held = std::mem::take(&mut self.held);
+        let mut out = Vec::new();
+        match self.state {
+            ThinkState::Inside => emit(&mut out, StreamEvent::Reasoning(held)),
+            _ => emit(&mut out, StreamEvent::Text(held)),
+        }
+        self.state = ThinkState::Plain;
+        out
+    }
+}
+
+fn emit(out: &mut Vec<StreamEvent>, event: StreamEvent) {
+    let empty = matches!(&event, StreamEvent::Text(t) | StreamEvent::Reasoning(t) if t.is_empty());
+    if !empty {
+        out.push(event);
+    }
+}
+
+/// A whole text split into its leading think block and the rest.
+fn split_think(text: &str) -> (String, String) {
+    let mut splitter = ThinkSplitter::default();
+    let (mut reasoning, mut rest) = (String::new(), String::new());
+    for event in splitter.push(text).into_iter().chain(splitter.finish()) {
+        match event {
+            StreamEvent::Reasoning(t) => reasoning.push_str(&t),
+            StreamEvent::Text(t) => rest.push_str(&t),
+            _ => {}
+        }
+    }
+    (reasoning, rest)
+}
+
+/// Reads the chunks of a stream: [`parse_chunk`] plus the `<think>` splitting of the text. Held-back
+/// text comes out when something other than text arrives, and at [`end`](Self::end).
+#[derive(Debug, Clone, Default)]
+pub struct StreamReader {
+    think: ThinkSplitter,
+}
+
+impl StreamReader {
+    pub fn chunk(&mut self, payload: &str) -> Result<Vec<StreamEvent>, ChatError> {
+        let mut out = Vec::new();
+        for event in parse_chunk(payload)? {
+            match event {
+                StreamEvent::Text(t) => out.extend(self.think.push(&t)),
+                StreamEvent::Reasoning(_) => out.push(event),
+                other => {
+                    out.extend(self.think.finish());
+                    out.push(other);
+                }
+            }
+        }
+        Ok(out)
+    }
+
+    /// The stream is over: whatever was held back.
+    pub fn end(&mut self) -> Vec<StreamEvent> {
+        self.think.finish()
+    }
+}
+
 #[cfg(feature = "io")]
 /// A client for one service. `Debug` hides the key.
 #[derive(Clone)]
@@ -544,6 +760,8 @@ pub struct OpenAiClient {
     api_key: Option<String>,
     http: reqwest::Client,
     retry: RetryPolicy,
+    headers: std::collections::BTreeMap<String, String>,
+    extra_body: serde_json::Map<String, Value>,
 }
 
 #[cfg(feature = "io")]
@@ -576,7 +794,22 @@ impl OpenAiClient {
             api_key,
             http,
             retry,
+            headers: std::collections::BTreeMap::new(),
+            extra_body: serde_json::Map::new(),
         })
+    }
+
+    /// Adds headers to every request and fields to every request body (a model's variant, an agent's
+    /// `request`). The fields never replace `model`, `messages`, `tools` or `stream`.
+    #[must_use]
+    pub fn with_request(
+        mut self,
+        headers: std::collections::BTreeMap<String, String>,
+        body: serde_json::Map<String, Value>,
+    ) -> Self {
+        self.headers = headers;
+        self.extra_body = body;
+        self
     }
 
     async fn send(&self, body: &Value) -> Result<reqwest::Response, ChatError> {
@@ -586,6 +819,9 @@ impl OpenAiClient {
             .json(body);
         if let Some(key) = &self.api_key {
             request = request.bearer_auth(key);
+        }
+        for (name, value) in &self.headers {
+            request = request.header(name, value);
         }
         let response = request
             .send()
@@ -612,25 +848,40 @@ impl OpenAiClient {
         mut on_event: impl FnMut(&StreamEvent),
         on_retry: impl FnMut(RetryNotice),
     ) -> Result<ChatReply, ChatError> {
-        let body = request_body(model, messages, tools, true);
+        let mut body = request_body(model, messages, tools, true);
+        for (key, value) in &self.extra_body {
+            if !matches!(key.as_str(), "model" | "messages" | "tools" | "stream") {
+                body[key] = value.clone();
+            }
+        }
         let response = self
             .retry
             .run(|| self.send(&body), || true, on_retry)
             .await?;
         let mut bytes = response.bytes_stream();
         let mut parser = SseParser::default();
+        let mut reader = StreamReader::default();
         let mut reply = ReplyAccumulator::default();
         while let Some(chunk) = bytes.next().await {
             let chunk = chunk.map_err(|e| ChatError::Network(e.without_url().to_string()))?;
             for payload in parser.feed(&chunk) {
-                if payload.trim() == "[DONE]" {
-                    return Ok(reply.finish());
-                }
-                for event in parse_chunk(&payload)? {
+                let events = if payload.trim() == "[DONE]" {
+                    reader.end()
+                } else {
+                    reader.chunk(&payload)?
+                };
+                for event in events {
                     reply.apply(&event);
                     on_event(&event);
                 }
+                if payload.trim() == "[DONE]" {
+                    return Ok(reply.finish());
+                }
             }
+        }
+        for event in reader.end() {
+            reply.apply(&event);
+            on_event(&event);
         }
         Ok(reply.finish())
     }
@@ -942,5 +1193,206 @@ mod tests {
         );
         assert!(ChatError::Network(String::new()).is_retryable());
         assert!(!ChatError::Protocol(String::new()).is_retryable());
+    }
+
+    fn events(payload: &str) -> Vec<StreamEvent> {
+        parse_chunk(payload).unwrap()
+    }
+
+    fn reasoning(text: &str) -> StreamEvent {
+        StreamEvent::Reasoning(text.into())
+    }
+
+    fn text(text: &str) -> StreamEvent {
+        StreamEvent::Text(text.into())
+    }
+
+    #[test]
+    fn openrouter_sends_reasoning_once_though_it_is_in_two_places() {
+        let chunk = r#"{"choices":[{"delta":{"content":"","role":"assistant","reasoning":" need answer simple","reasoning_details":[{"type":"reasoning.text","text":" need answer simple","format":"unknown","index":0}]}}]}"#;
+        assert_eq!(events(chunk), vec![reasoning(" need answer simple")]);
+    }
+
+    #[test]
+    fn reasoning_content_is_read_when_there_is_no_reasoning() {
+        let chunk = r#"{"choices":[{"delta":{"reasoning_content":"hmm"}}]}"#;
+        assert_eq!(events(chunk), vec![reasoning("hmm")]);
+        let both = r#"{"choices":[{"delta":{"reasoning":"","reasoning_content":"hmm"}}]}"#;
+        assert_eq!(events(both), vec![reasoning("hmm")]);
+    }
+
+    #[test]
+    fn reasoning_details_alone_give_text_and_summaries_but_not_encrypted_data() {
+        let chunk = r#"{"choices":[{"delta":{"reasoning_details":[
+            {"type":"reasoning.text","text":"a"},
+            {"type":"reasoning.summary","summary":"b"},
+            {"type":"reasoning.encrypted","data":"SECRET"},
+            {"type":"reasoning.text","text":"c"}]}}]}"#;
+        assert_eq!(events(chunk), vec![reasoning("abc")]);
+        let encrypted = r#"{"choices":[{"delta":{"reasoning_details":[{"type":"reasoning.encrypted","data":"x"}]}}]}"#;
+        assert!(events(encrypted).is_empty());
+    }
+
+    #[test]
+    fn reasoning_comes_before_the_text_of_the_same_chunk() {
+        let chunk = r#"{"choices":[{"delta":{"reasoning":"r","content":"c"}}]}"#;
+        assert_eq!(events(chunk), vec![reasoning("r"), text("c")]);
+    }
+
+    #[test]
+    fn a_whole_reply_keeps_its_reasoning() {
+        for key in ["reasoning", "reasoning_content"] {
+            let body =
+                format!(r#"{{"choices":[{{"message":{{"content":" 391 ","{key}":" 17*23 "}}}}]}}"#);
+            let reply = parse_reply(&body).unwrap();
+            assert_eq!(reply.text, "391");
+            assert_eq!(reply.reasoning, "17*23");
+        }
+        let details = r#"{"choices":[{"message":{"content":"x","reasoning":"same","reasoning_details":[{"type":"reasoning.text","text":"same"}]}}]}"#;
+        assert_eq!(parse_reply(details).unwrap().reasoning, "same");
+        let inline = r#"{"choices":[{"message":{"content":"<think>why</think>\n\nbecause"}}]}"#;
+        let reply = parse_reply(inline).unwrap();
+        assert_eq!(
+            (reply.reasoning.as_str(), reply.text.as_str()),
+            ("why", "because")
+        );
+    }
+
+    /// Everything the splitter says for these pieces, with the reasoning and the text each joined.
+    fn split(pieces: &[&str]) -> (String, String) {
+        let mut splitter = ThinkSplitter::default();
+        let mut all = Vec::new();
+        for piece in pieces {
+            all.extend(splitter.push(piece));
+        }
+        all.extend(splitter.finish());
+        let (mut r, mut t) = (String::new(), String::new());
+        for event in all {
+            match event {
+                StreamEvent::Reasoning(x) => r.push_str(&x),
+                StreamEvent::Text(x) => t.push_str(&x),
+                _ => unreachable!(),
+            }
+        }
+        (r, t)
+    }
+
+    #[test]
+    fn a_think_block_at_the_start_is_reasoning() {
+        assert_eq!(
+            split(&["<think>\nadd them\n</think>\n\nIt is 4."]),
+            ("\nadd them\n".into(), "It is 4.".into())
+        );
+        assert_eq!(split(&["  \n<think>x</think>y"]), ("x".into(), "y".into()));
+    }
+
+    #[test]
+    fn tags_split_across_chunks_still_work() {
+        assert_eq!(
+            split(&["<thi", "nk>pon", "der</th", "ink>", "\n", "The ", "answer"]),
+            ("ponder".into(), "The answer".into())
+        );
+        let by_char: Vec<String> = "<think>ab</think>cd".chars().map(String::from).collect();
+        let pieces: Vec<&str> = by_char.iter().map(String::as_str).collect();
+        assert_eq!(split(&pieces), ("ab".into(), "cd".into()));
+        // A lookalike inside the block is reasoning, not the end of it.
+        assert_eq!(
+            split(&["<think>a </thin", "g b</think>z"]),
+            ("a </thing b".into(), "z".into())
+        );
+    }
+
+    #[test]
+    fn an_unclosed_block_stays_reasoning() {
+        assert_eq!(
+            split(&["<think>still ", "going </th"]),
+            ("still going </th".into(), String::new())
+        );
+    }
+
+    #[test]
+    fn a_think_block_not_at_the_start_is_text() {
+        let said = "Hi <think>no</think> there";
+        assert_eq!(split(&[said]), (String::new(), said.into()));
+        assert_eq!(
+            split(&["Hi ", "<think>no</think>"]),
+            (String::new(), "Hi <think>no</think>".into())
+        );
+    }
+
+    #[test]
+    fn a_start_that_only_looks_like_a_tag_comes_out_as_text() {
+        assert_eq!(split(&["<thi"]), (String::new(), "<thi".into()));
+        assert_eq!(
+            split(&["<thi", "s is html"]),
+            (String::new(), "<thi".to_string() + "s is html")
+        );
+        assert_eq!(split(&["  "]), (String::new(), "  ".into()));
+    }
+
+    #[test]
+    fn a_stream_splits_think_tags_in_content() {
+        let mut s = ChatStream::default();
+        for piece in ["<thi", "nk>2+2", "</think>", "\n4"] {
+            let line = format!(
+                "data: {}",
+                serde_json::json!({"choices":[{"delta":{"content":piece}}]})
+            );
+            s.feed_line(&line).unwrap();
+        }
+        s.feed_line("data: [DONE]").unwrap();
+        assert_eq!(s.reasoning(), "2+2");
+        assert_eq!(s.text(), "4");
+        let reply = s.reply();
+        assert_eq!(
+            (reply.reasoning.as_str(), reply.text.as_str()),
+            ("2+2", "4")
+        );
+    }
+
+    #[test]
+    fn held_back_text_comes_out_before_a_tool_call() {
+        let mut reader = StreamReader::default();
+        assert!(
+            reader
+                .chunk(r#"{"choices":[{"delta":{"content":"<thi"}}]}"#)
+                .unwrap()
+                .is_empty()
+        );
+        let out = reader
+            .chunk(r#"{"choices":[{"delta":{"tool_calls":[{"index":0,"id":"c","function":{"name":"f"}}]}}]}"#)
+            .unwrap();
+        assert_eq!(out[0], text("<thi"));
+        assert!(matches!(out[1], StreamEvent::ToolCallDelta { .. }));
+    }
+
+    #[test]
+    fn the_accumulator_keeps_reasoning_apart_from_the_text() {
+        let mut acc = ReplyAccumulator::default();
+        acc.apply(&reasoning(" think "));
+        acc.apply(&reasoning("more "));
+        acc.apply(&text(" answer "));
+        assert_eq!(acc.reasoning(), " think more ");
+        assert_eq!(acc.text(), " answer ");
+        let tidy = acc.tidy_reply();
+        assert_eq!(
+            (tidy.reasoning.as_str(), tidy.text.as_str()),
+            ("think more", "answer")
+        );
+        let reply = acc.finish();
+        assert_eq!(reply.reasoning, " think more ");
+    }
+
+    #[test]
+    fn reasoning_is_never_sent_back_to_the_model() {
+        let reply = ChatReply {
+            text: "391".into(),
+            reasoning: "SECRET-THOUGHT".into(),
+            ..ChatReply::default()
+        };
+        let message = reply.into_message();
+        let body = request_body("m", &[ChatMessage::user("q"), message], &[], true).to_string();
+        assert!(!body.contains("SECRET-THOUGHT"), "{body}");
+        assert!(!body.contains("reasoning"), "{body}");
     }
 }

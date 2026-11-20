@@ -1,6 +1,7 @@
 //! Drawing the chat: the transcript, the message field, the status line and the help card.
 //! No borders and no lines between things: groups are set apart by blank space and a soft fill.
 //!
+//! What the model thought reads as `✻ Thought for 3s`, dim, and opens like a tool call (see `thought`).
 //! A tool call reads as `⏺ read_file(path: "README.md")` with its result under it (`⎿ …`), a message to
 //! another Imp as `⇢ zed: …` and its answer as `⇠ …`. Lines from commands are dim and never part of
 //! what the model sees. An empty chat shows the Imp in the middle, when there is room for it.
@@ -65,7 +66,7 @@ pub struct Row {
 }
 
 impl Row {
-    fn new(line: Line<'static>, gutter: usize) -> Self {
+    pub(super) fn new(line: Line<'static>, gutter: usize) -> Self {
         Self {
             line,
             gutter,
@@ -74,7 +75,7 @@ impl Row {
         }
     }
 
-    fn blank() -> Self {
+    pub(super) fn blank() -> Self {
         Self::new(Line::raw(""), 0)
     }
 }
@@ -103,13 +104,16 @@ impl App {
                 .map(|(_, n)| n)
                 .collect();
             self.push_notes(&mut rows, &run, width);
+            self.push_thoughts(&mut rows, |at| at == i, width);
             self.push_message(&mut rows, message, &messages[i + 1..], width);
         }
+        self.push_thoughts(&mut rows, |at| at >= messages.len(), width);
         let streaming = self.streaming();
         if !streaming.is_empty() {
             self.push_answer(&mut rows, &format!("{streaming}▌"), width);
         } else if self.waiting && self.tool.is_none() {
             self.push_thinking(&mut rows, width);
+            self.push_reasoning_tail(&mut rows, width);
         }
         let run: Vec<&Note> = notes.map(|(_, n)| n).collect();
         self.push_notes(&mut rows, &run, width);
@@ -126,7 +130,7 @@ impl App {
     }
 
     /// The Imp's own mark: its colour, or the visitor's.
-    fn mark_style(&self) -> Style {
+    pub(super) fn mark_style(&self) -> Style {
         match &self.visiting {
             Some(v) => self.theme.hue(v.hue),
             None => self.theme.imp(),
@@ -417,7 +421,16 @@ impl App {
             .saturating_sub(FIELD_INDENT as usize + 1)
             .max(1);
         self.field_width.set(field_width);
-        let field_rows = field::layout(&self.input, field_width);
+        // A secret being typed shows as dots, with the cursor after them.
+        let dots: String;
+        let (typed, at): (&str, usize) = match &self.secret {
+            Some(secret) => {
+                dots = "•".repeat(secret.typed.chars().count());
+                (&dots, dots.len())
+            }
+            None => (&self.input, self.cursor),
+        };
+        let field_rows = field::layout(typed, field_width);
         let smallest = 1 + 2 * pad;
         let tallest = MAX_INPUT_HEIGHT.min(area.height / 2).max(smallest);
         let input_height = (field_rows.len() as u16 + 2 * pad)
@@ -434,8 +447,8 @@ impl App {
         ])
         .areas(area);
         self.render_transcript(frame, top);
-        let cursor = field::cursor_cell(&self.input, &field_rows, self.cursor);
-        let lines = field::row_texts(&self.input, &field_rows);
+        let cursor = field::cursor_cell(typed, &field_rows, at);
+        let lines = field::row_texts(typed, &field_rows);
         self.render_field(frame, field, &lines, cursor, pad);
         if above > 0 {
             frame.render_widget(Paragraph::new(popup), hints);
@@ -513,7 +526,7 @@ impl App {
         } else {
             "cli.chat.input_hint"
         };
-        let shown: Vec<Line> = if self.input.is_empty() {
+        let shown: Vec<Line> = if self.input.is_empty() && self.secret.is_none() {
             let hint = strings::text(self.lang, hint);
             vec![Line::from(vec![
                 Span::styled(format!(" {YOU} "), self.theme.muted()),

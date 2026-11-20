@@ -271,6 +271,7 @@ extension ChatTurn {
                 var s: [String: JSONValue] = ["icon": .string(step.icon), "title": .string(step.title), "request": .string(step.request)]
                 if let response = step.response { s["response"] = .string(response) }
                 if step.failed { s["failed"] = .bool(true) }
+                if let seconds = step.seconds { s["seconds"] = .number(Double(seconds)) }
                 return .object(s)
             })
         }
@@ -281,7 +282,8 @@ extension ChatTurn {
         guard case .object = json, let request = json["request"]?.string else { return nil }
         let steps = (json["steps"]?.array ?? []).map { s in
             Step(icon: s["icon"]?.string ?? "hammer", title: s["title"]?.string ?? "", request: s["request"]?.string ?? "",
-                 response: s["response"]?.string, failed: s["failed"]?.bool ?? false)
+                 response: s["response"]?.string, failed: s["failed"]?.bool ?? false,
+                 seconds: s["seconds"]?.double.map { Int($0) })
         }
         var sender: Sender?
         if let name = json["sender"]?["name"]?.string { sender = Sender(id: UUID(), name: name, hue: json["sender"]?["hue"]?.double ?? 0) }

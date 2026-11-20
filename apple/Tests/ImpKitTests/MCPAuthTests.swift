@@ -42,19 +42,6 @@ final class AuthStub: URLProtocol, @unchecked Sendable {
     }
 }
 
-/// A secret store that notes what was done to it.
-final class RecordingBackend: SecretBackend, @unchecked Sendable {
-    private let lock = NSLock()
-    private var values: [String: String] = [:]
-    private(set) var touched = 0
-    func read(_ account: String) -> String? { lock.withLock { touched += 1; return values[account] } }
-    func write(_ value: String, account: String) -> Bool {
-        lock.withLock { touched += 1; values[account] = value.isEmpty ? nil : value }
-        return true
-    }
-    func accounts(withPrefix prefix: String) -> [String] { lock.withLock { touched += 1; return values.keys.filter { $0.hasPrefix(prefix) } } }
-}
-
 struct FakePresenter: MCPSignInPresenter {
     var cancel = false
     func present(_ authorizeURL: URL, callbackScheme: String) async throws -> URL {
@@ -73,9 +60,9 @@ private func session() -> URLSession {
     return URLSession(configuration: c)
 }
 
-private func tempStore(keychain: RecordingBackend = RecordingBackend()) -> (MCPAuthStore, KeyFile) {
+private func tempStore() -> (MCPAuthStore, KeyFile) {
     let file = KeyFile(url: FileManager.default.temporaryDirectory.appendingPathComponent("imp-auth-\(UUID().uuidString)/keys.json"))
-    return (MCPAuthStore(file: file, keychain: { Issue.record("the Keychain was reached"); return keychain }), file)
+    return (MCPAuthStore(backend: FileMCPAuth(file: file)), file)
 }
 
 private func auth(token: String = "AT", expires: UInt64? = nil, refresh: String? = "RT") -> McpAuth {
@@ -186,16 +173,14 @@ private let farFuture = UInt64(Date().timeIntervalSince1970) + 86_400
         }
     }
 
-    @Test func signingInStoresTheTokenInTheFileAndNotTheKeychain() async throws {
-        let keychain = RecordingBackend()
-        let (store, file) = tempStore(keychain: keychain)
+    @Test func signingInStoresTheTokenInTheFile() async throws {
+        let (store, file) = tempStore()
         serverStub()
         let result = try await MCPSignIn(store: store, presenter: FakePresenter(), session: session()).signIn(to: mcpURL)
         #expect(result.accessToken == "AT" && result.clientId == "cid-1" && result.redirectUri == "app.imp:/oauth")
         #expect(store.auth(for: mcpURL)?.refreshToken == "RT")
         #expect(file.all().keys.contains("mcp.auth.\(mcpURL)"), "in the app-private file")
         #expect(file.all().keys.contains("mcp.client.https://auth.example.com"))
-        #expect(keychain.touched == 0, "the Keychain is opt-in")
         let token = try #require(AuthStub.requests.first { $0.request.url?.path == "/token" })
         #expect(token.body.contains("code=abc") && token.body.contains("code_verifier="))
     }
@@ -226,32 +211,14 @@ private let farFuture = UInt64(Date().timeIntervalSince1970) + 86_400
 
     // MARK: Where tokens live
 
-    @Test func theDefaultStoreNeverReachesTheKeychain() throws {
-        let keychain = RecordingBackend()
-        let (store, file) = tempStore(keychain: keychain)
-        #expect(!store.inKeychain)
+    @Test func theFileStoreKeepsTokensAndClientIDs() throws {
+        let (store, file) = tempStore()
         store.save(auth(), for: mcpURL)
         store.setClientID("cid", issuer: "https://auth.example.com")
         #expect(store.auth(for: mcpURL)?.accessToken == "AT" && store.hasAuth(for: mcpURL))
         #expect(store.clientID(issuer: "https://auth.example.com") == "cid")
-        store.setInKeychain(false)
         store.forget(mcpURL)
-        #expect(store.auth(for: mcpURL) == nil)
-        #expect(keychain.touched == 0)
+        #expect(store.auth(for: mcpURL) == nil && !store.hasAuth(for: mcpURL))
         _ = file
-    }
-
-    @Test func theToggleMovesTokensToTheKeychainAndBack() throws {
-        let keychain = RecordingBackend()
-        let file = KeyFile(url: FileManager.default.temporaryDirectory.appendingPathComponent("imp-auth-\(UUID().uuidString)/keys.json"))
-        let store = MCPAuthStore(file: file, keychain: { keychain })
-        store.save(auth(), for: mcpURL)
-        store.setInKeychain(true)
-        #expect(file.all().isEmpty, "moved out of the file")
-        #expect(keychain.accounts(withPrefix: "mcp.auth.") == ["mcp.auth.\(mcpURL)"])
-        #expect(store.auth(for: mcpURL)?.accessToken == "AT")
-        store.setInKeychain(false)
-        #expect(keychain.accounts(withPrefix: "mcp.").isEmpty)
-        #expect(file.all().keys.contains("mcp.auth.\(mcpURL)"))
     }
 }

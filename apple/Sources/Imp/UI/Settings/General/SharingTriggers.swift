@@ -23,15 +23,16 @@ struct SharingTriggers: View {
                        importAnchor: true, rows: { ForEach(listed) { row($0) } })
             .settingAnchor(.sharingTriggers)
             .sheet(item: $draft) { item in
-                if let imp = model.settingsImp(for: item.owner) {
-                    ShortcutSheet(model: model, imp: imp.id, shortcut: item.shortcut, isNew: item.isNew,
-                                  scope: item.owner == nil ? .everyImp : .onlyThisImp, target: item.owner.map(ScopeTarget.imp) ?? .everyImp,
-                                  save: { save($0, for: $1) },
-                                  duplicate: { copy($0, of: item) },
-                                  delete: { remove(item) })
-                        .environment(\.impTint, Color.imp(imp.hue))
-                        .tint(Color.imp(imp.hue))
-                }
+                // Always a whole editor: an empty sheet can't be closed and holds the window. With no Imp to try it
+                // on (none yet), a shared trigger is edited for every Imp, without Try.
+                let imp = model.settingsImp(for: item.owner)
+                ShortcutSheet(model: model, imp: imp?.id, shortcut: item.shortcut, isNew: item.isNew,
+                              scope: item.owner == nil ? .everyImp : .onlyThisImp, target: item.owner.map(ScopeTarget.imp) ?? .everyImp,
+                              save: { save($0, for: $1) },
+                              duplicate: { copy($0, of: item) },
+                              delete: { remove(item) })
+                    .environment(\.impTint, imp.map { Color.imp($0.hue) } ?? Color.imp)
+                    .tint(imp.map { Color.imp($0.hue) } ?? Color.imp)
             }
     }
 

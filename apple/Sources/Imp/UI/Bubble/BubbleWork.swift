@@ -7,6 +7,7 @@ struct WorkingView: View {
     let bubble: Bubble
     let layout: BubbleLayout
     var measuring = false
+    var answer: (PermissionAnswer) -> Void = { _ in }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
@@ -28,7 +29,58 @@ struct WorkingView: View {
                     .lineLimit(1)
             }
             if !bubble.steps.isEmpty { StepList(steps: bubble.steps, layout: layout, animated: !measuring) }
+            if let prompt = bubble.permission { PermissionPromptView(prompt: prompt, answer: answer) }
         }
+    }
+}
+
+/// An Imp asks before it goes on (its permissions say `ask`): what it wants to do, then Allow once, Always and Deny.
+/// The resource is one line (the full text is its help), so the block is always the same height and the bubble does not
+/// jump with what is asked. Return allows once, Esc denies.
+struct PermissionPromptView: View {
+    @Environment(\.impTint) private var tint
+    let prompt: Bubble.Prompt
+    let answer: (PermissionAnswer) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.small) {
+            HStack(spacing: Spacing.small) {
+                Image(systemName: prompt.icon)
+                    .font(Typeface.small.weight(.semibold))
+                    .foregroundStyle(LegibleTint(on: .raised))
+                    .frame(width: BubbleMetrics.step, height: BubbleMetrics.step)
+                    .background(Circle().fill(tint.opacity(Opacity.tintFill)))
+                    .accessibilityHidden(true)
+                Text(prompt.resource)
+                    .font(Typeface.mono)
+                    .foregroundStyle(Tone.text)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .help(prompt.resource)
+                Spacer(minLength: Spacing.tight)
+                if prompt.more > 0 {
+                    Text("+\(prompt.more)").font(Typeface.small).foregroundStyle(Tone.muted)
+                        .accessibilityLabel(Text("\(prompt.more) more waiting"))
+                }
+            }
+            HStack(spacing: Spacing.small) {
+                Button("Allow once") { answer(.once) }
+                    .buttonStyle(ImpButtonStyle(kind: .primary, small: true))
+                    .keyboardShortcut(.defaultAction)
+                    .help("Let it do this once")
+                    .accessibilityLabel(Text("Allow once: \(prompt.action) \(prompt.resource)"))
+                Button("Always") { answer(.always) }
+                    .buttonStyle(ImpButtonStyle(kind: .secondary, small: true))
+                    .help("Let it do this from now on")
+                    .accessibilityLabel(Text("Always allow: \(prompt.action) \(prompt.resource)"))
+                Button("Deny") { answer(.deny) }
+                    .buttonStyle(ImpButtonStyle(kind: .quiet, small: true))
+                    .keyboardShortcut(.cancelAction)
+                    .help("Do not let it")
+                    .accessibilityLabel(Text("Deny: \(prompt.action) \(prompt.resource)"))
+            }
+        }
+        .accessibilityElement(children: .contain)
     }
 }
 
@@ -67,14 +119,18 @@ struct StepList: View {
             ForEach(steps) { step in
                 let open = layout.openSteps.contains(step.id)
                 VStack(alignment: .leading, spacing: Spacing.snug) {
-                    if step.tool == nil {
+                    if !step.isExpandable {
                         row(step, open: false)
                     } else {
                         Button { toggle(step) } label: { row(step, open: open) }
                             .buttonStyle(.plain)
-                            .help(open ? "Hide the details" : "Show what was asked and what came back")
+                            .help(open ? "Hide the details" : step.thought ? LocalizedStringKey("chat.show_thought") : "Show what was asked and what came back")
                     }
-                    if open { StepDetail(step: step) }
+                    if step.thought && step.state == .running && !open {
+                        LiveThinking(text: step.response ?? "")
+                    } else if open {
+                        StepDetail(step: step)
+                    }
                 }
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
@@ -95,7 +151,7 @@ struct StepList: View {
                 .lineLimit(1)
                 .truncationMode(.middle)
             Spacer(minLength: Spacing.tight)
-            if step.tool != nil {
+            if step.isExpandable {
                 Image(systemName: "chevron.right")
                     .font(Typeface.small.weight(.semibold))
                     .foregroundStyle(Tone.faint)
@@ -120,6 +176,23 @@ struct StepList: View {
     }
 }
 
+/// What the model thinks, as it streams in: dim, in a block of fixed height with the newest words at the bottom
+/// (older lines are cut off at the top), so the bubble keeps its size while it grows.
+struct LiveThinking: View {
+    let text: String
+
+    var body: some View {
+        Text(text.isEmpty ? " " : text)
+            .font(Typeface.small)
+            .foregroundStyle(Tone.muted)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, minHeight: Sizing.thinkingHeight, maxHeight: Sizing.thinkingHeight, alignment: .bottomLeading)
+            .clipped()
+            .padding(.leading, BubbleMetrics.step + Spacing.small)
+            .accessibilityLabel(Text(text))
+    }
+}
+
 /// A tool call in full: the request and the response, each selectable and copyable. Long ones
 /// scroll in a box of fixed height (so the bubble's measured size stays right).
 struct StepDetail: View {
@@ -128,6 +201,17 @@ struct StepDetail: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.snug) {
+            if step.thought {
+                section("chat.reasoning", step.response ?? "", prose: true)
+            } else {
+                requestAndResponse
+            }
+        }
+        .padding(.leading, BubbleMetrics.step + Spacing.small)
+    }
+
+    @ViewBuilder private var requestAndResponse: some View {
+        VStack(alignment: .leading, spacing: Spacing.snug) {
             section("Request", step.request)
             if let response = step.response {
                 section("Response", response)
@@ -135,10 +219,10 @@ struct StepDetail: View {
                 Text("Waiting for the response…").font(Typeface.small).foregroundStyle(Tone.muted)
             }
         }
-        .padding(.leading, BubbleMetrics.step + Spacing.small)
     }
 
-    private func section(_ label: LocalizedStringKey, _ text: String) -> some View {
+    /// `prose` is a thought: words to read, wrapped in the body's type. A tool's request and response are code.
+    private func section(_ label: LocalizedStringKey, _ text: String, prose: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: Spacing.tight) {
             HStack {
                 Text(label).font(Typeface.small.weight(.semibold)).foregroundStyle(Tone.muted)
@@ -146,7 +230,8 @@ struct StepDetail: View {
                 CopyButton(size: 18) { Pasteboard.write(text: text) }
             }
             let content = Text(text.isEmpty ? " " : text)
-                .font(Typeface.mono)
+                .font(prose ? Typeface.body : Typeface.mono)
+                .foregroundStyle(prose ? AnyShapeStyle(Tone.muted) : AnyShapeStyle(.primary))
                 .textSelection(.enabled)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)

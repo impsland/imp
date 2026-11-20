@@ -1,27 +1,25 @@
 //! Runs the real `imp` binary. Settings live in a temporary folder and no real service is called.
 
 use std::io::Write;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
 const SECRET: &str = "sk-test-do-not-print-0123456789";
 
+/// A settings folder and a home folder of their own, so no test touches another's agents or the developer's.
 fn temp_config(tag: &str) -> PathBuf {
     let dir = std::env::temp_dir().join(format!("imp-chat-bin-{}-{tag}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).unwrap();
-    dir.join("config.toml")
+    std::fs::create_dir_all(dir.join("home")).unwrap();
+    dir
 }
 
-fn imp(config: &PathBuf, args: &[&str], stdin: &str) -> Output {
+fn imp(root: &Path, args: &[&str], stdin: &str) -> Output {
     let mut child = Command::new(env!("CARGO_BIN_EXE_imp"))
-        // A home of its own: the program never touches the developer's settings or moves their files.
-        .env("HOME", test_home())
-        .arg("--config")
-        .arg(config)
-        .args(args)
+        .env("HOME", root.join("home"))
+        .env("IMP_CONFIG_HOME", root.join("cfg"))
         .env("IMP_API_KEY", SECRET)
-        .env_remove("IMP_CONFIG")
+        .args(args)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -51,7 +49,7 @@ fn help_is_friendly() {
     assert!(out.status.success());
     let help = text(&out.stdout);
     assert!(help.contains("Talk to your Imps from a terminal"), "{help}");
-    for word in ["config", "imp", "chat", "Getting started"] {
+    for word in ["agent", "provider", "permission", "chat", "Getting started"] {
         assert!(help.contains(word), "{word} missing in {help}");
     }
     assert!(!help.contains(';'));
@@ -75,92 +73,136 @@ fn no_arguments_starts_chat_like_imp_chat() {
 }
 
 #[test]
-fn making_listing_and_removing_imps() {
-    let config = temp_config("flow");
-    let made = imp(
-        &config,
+fn making_listing_and_removing_agents() {
+    let root = temp_config("flow");
+    let provider = imp(
+        &root,
         &[
-            "imp",
-            "new",
-            "pip",
-            "--model",
-            "tiny",
+            "provider",
+            "add",
+            "ollama",
             "--url",
             "http://localhost:11434/v1",
-            "--personality",
+        ],
+        "",
+    );
+    assert!(provider.status.success(), "{}", text(&provider.stderr));
+    let made = imp(
+        &root,
+        &[
+            "agent",
+            "new",
+            "Pip",
+            "--model",
+            "ollama/tiny#high",
+            "--description",
             "Brisk.",
         ],
         "",
     );
     assert!(made.status.success(), "{}", text(&made.stderr));
-    let list = text(&imp(&config, &["imp", "list"], "").stdout);
-    assert!(list.contains("* pip"), "{list}");
-    assert!(list.contains("tiny"));
-    assert!(list.contains("http://localhost:11434/v1"));
-
-    let duplicate = imp(&config, &["imp", "new", "pip", "--model", "x"], "");
-    assert!(!duplicate.status.success());
-
-    // Asked for what is missing.
-    let asked = imp(
-        &config,
-        &["imp", "new", "zed"],
-        "Calm.\nhttps://example.com/v1\nbig\n",
-    );
-    assert!(asked.status.success(), "{}", text(&asked.stderr));
-    let saved = std::fs::read_to_string(&config).unwrap();
+    let file = root.join("home/.agents/agents/Pip.md");
+    let saved = std::fs::read_to_string(&file).unwrap();
     assert!(
-        saved.contains("Calm.")
-            && saved.contains("https://example.com/v1")
-            && saved.contains("big")
+        saved.contains("ollama/tiny#high") && saved.contains("Brisk."),
+        "{saved}"
     );
+    let list = text(&imp(&root, &["agent", "list"], "").stdout);
+    assert!(
+        list.contains("Pip") && list.contains("ollama/tiny#high"),
+        "{list}"
+    );
+    let json = text(&imp(&root, &["agent", "list", "--json"], "").stdout);
+    assert!(json.contains("\"Pip\""), "{json}");
 
-    let set = imp(&config, &["config", "set", "default_imp", "zed"], "");
-    assert!(set.status.success());
-    assert!(text(&imp(&config, &["imp", "list"], "").stdout).contains("* zed"));
+    let duplicate = imp(&root, &["agent", "new", "Pip", "--model", "ollama/x"], "");
+    assert!(!duplicate.status.success());
+    assert!(text(&duplicate.stderr).contains("already an agent called Pip"));
+    let bad = imp(
+        &root,
+        &[
+            "agent", "new", "Zed", "--model", "ollama/x", "--mode", "bogus",
+        ],
+        "",
+    );
+    assert!(!bad.status.success());
 
-    assert!(imp(&config, &["imp", "remove", "zed"], "").status.success());
-    assert!(!text(&imp(&config, &["imp", "list"], "").stdout).contains("zed"));
+    let set = imp(&root, &["config", "set", "default_agent", "Pip"], "");
+    assert!(set.status.success(), "{}", text(&set.stderr));
+    assert!(text(&imp(&root, &["config", "get", "default_agent"], "").stdout).contains("Pip"));
+
+    assert!(imp(&root, &["agent", "remove", "Pip"], "").status.success());
+    assert!(!file.exists());
+    assert!(!text(&imp(&root, &["agent", "list"], "").stdout).contains("Pip"));
 }
 
 #[test]
-fn keys_are_never_printed_or_written() {
-    let config = temp_config("keys");
-    let made = imp(&config, &["imp", "new", "pip", "--model", "m"], "");
-    assert!(made.status.success());
-    let shown = imp(&config, &["config"], "");
+fn keys_are_never_printed_or_written_in_the_settings() {
+    let root = temp_config("keys");
+    let made = imp(
+        &root,
+        &[
+            "provider",
+            "add",
+            "ollama",
+            "--url",
+            "http://localhost:11434/v1",
+            "--key-env",
+            "IMP_API_KEY",
+        ],
+        "",
+    );
+    assert!(made.status.success(), "{}", text(&made.stderr));
+    let shown = imp(&root, &["auth", "list"], "");
     assert!(shown.status.success());
     let (out, err) = (text(&shown.stdout), text(&shown.stderr));
-    assert!(
-        out.contains("found in the environment variable IMP_API_KEY"),
-        "{out}"
-    );
+    assert!(out.contains("env IMP_API_KEY"), "{out}");
     assert!(!out.contains(SECRET) && !err.contains(SECRET));
-    for output in [&made.stdout, &made.stderr] {
-        assert!(!text(output).contains(SECRET));
-    }
-    assert!(!std::fs::read_to_string(&config).unwrap().contains(SECRET));
+    let settings = root.join("cfg/imp.json");
+    assert!(!std::fs::read_to_string(&settings).unwrap().contains(SECRET));
 
     // A key pasted where a variable name belongs is refused without being echoed.
-    let bad = imp(&config, &["config", "set", "api_key_env", SECRET], "");
+    let bad = imp(&root, &["provider", "set", "ollama", "key-env", SECRET], "");
     assert!(!bad.status.success());
     assert!(!text(&bad.stdout).contains(SECRET) && !text(&bad.stderr).contains(SECRET));
     let bad = imp(
-        &config,
-        &["imp", "new", "x", "--model", "m", "--api-key-env", SECRET],
+        &root,
+        &[
+            "provider",
+            "add",
+            "x",
+            "--url",
+            "http://x/v1",
+            "--key-env",
+            SECRET,
+        ],
         "",
     );
     assert!(!bad.status.success());
     assert!(!text(&bad.stderr).contains(SECRET));
-    assert!(!std::fs::read_to_string(&config).unwrap().contains(SECRET));
+    assert!(!std::fs::read_to_string(&settings).unwrap().contains(SECRET));
+
+    // A key read from standard input goes to auth.json alone, and is never shown again.
+    let saved = imp(&root, &["auth", "set", "ollama"], "sk-typed-key-9876\n");
+    assert!(saved.status.success(), "{}", text(&saved.stderr));
+    assert!(!text(&saved.stdout).contains("sk-typed-key-9876"));
+    assert!(
+        !std::fs::read_to_string(&settings)
+            .unwrap()
+            .contains("sk-typed-key-9876")
+    );
+    let auth = std::fs::read_to_string(root.join("cfg/auth.json")).unwrap();
+    assert!(auth.contains("sk-typed-key-9876"));
+    let list = text(&imp(&root, &["auth", "list"], "").stdout);
+    assert!(!list.contains("sk-typed-key-9876"), "{list}");
 }
 
 #[test]
 fn chatting_without_an_imp_explains_what_to_do() {
-    let config = temp_config("empty");
-    let out = imp(&config, &["chat"], "hi\n");
+    let root = temp_config("empty");
+    let out = imp(&root, &["chat"], "hi\n");
     assert!(!out.status.success());
-    assert!(text(&out.stderr).contains("imp imp new"));
+    assert!(text(&out.stderr).contains("imp agent new"));
 }
 
 #[test]

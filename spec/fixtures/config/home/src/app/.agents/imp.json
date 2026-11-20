@@ -1,0 +1,5 @@
+{
+  "model": "ollama/qwen3.8",
+  "mcp": { "project-tool": { "type": "local", "command": ["./tool"] } },
+  "permissions": [{ "action": "shell", "resource": "git push*", "effect": "ask" }]
+}

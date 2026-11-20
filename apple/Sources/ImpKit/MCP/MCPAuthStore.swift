@@ -1,8 +1,7 @@
 import Foundation
 import ImpCore
 
-/// A place that keeps small secrets by account name. `KeyFile` is one (the default), the Keychain
-/// the other (opt-in); tests give a double that records what was touched.
+/// A place that keeps small secrets by account name: `KeyFile` on the iPhone, a double in tests.
 public protocol SecretBackend: Sendable {
     func read(_ account: String) -> String?
     /// Saves a value (empty removes it). Returns whether it worked.
@@ -14,85 +13,80 @@ extension KeyFile: SecretBackend {
     public func accounts(withPrefix prefix: String) -> [String] { all().keys.filter { $0.hasPrefix(prefix) } }
 }
 
-/// The login Keychain as a `SecretBackend`. Only used when the person turned "Keep keys in the
-/// Keychain" on; nothing constructs it by default.
-public struct KeychainBackend: SecretBackend {
-    public init() {}
-    public func read(_ account: String) -> String? { (try? Keychain.read(account)) ?? nil }
-    public func write(_ value: String, account: String) -> Bool {
-        Keychain.write(value, account: account) || (value.isEmpty && !Keychain.contains(account))
-    }
-    public func accounts(withPrefix prefix: String) -> [String] { Keychain.accounts(withPrefix: prefix) }
+/// Where the sign-ins of tool servers are kept. On the Mac it is `auth.json` of the shared configuration
+/// (`SharedConfigStore.mcpAuth`); on the iPhone a private file (`FileMCPAuth`).
+public protocol MCPAuthBackend: Sendable {
+    func auth(for serverURL: String) -> McpAuth?
+    func hasAuth(for serverURL: String) -> Bool
+    func save(_ auth: McpAuth, for serverURL: String) -> Bool
+    func forget(_ serverURL: String)
+    func clientID(issuer: String) -> String?
+    func setClientID(_ id: String, issuer: String)
 }
 
-/// What a signed-in MCP server leaves: tokens (secret) kept like the API keys. In the app-private
-/// `KeyFile` unless `inKeychain` is on, and then in the Keychain. The Keychain backend is created
-/// only on demand, so the default path never reaches it.
-public final class MCPAuthStore: @unchecked Sendable {
-    /// The store the apps share. The Mac sets `inKeychain` from the preference.
-    public static let standard = MCPAuthStore(file: KeyFile(url: URL.applicationSupportDirectory.appendingPathComponent("Imp/keys.json")))
-
+/// Sign-ins in a `SecretBackend` (the iPhone's app-private file).
+public struct FileMCPAuth: MCPAuthBackend {
     static let authPrefix = "mcp.auth."
     static let clientPrefix = "mcp.client."
-
     private let file: any SecretBackend
-    private let makeKeychain: @Sendable () -> any SecretBackend
-    private let lock = NSLock()
-    private var keychainOn = false
-    private var keychainBackend: (any SecretBackend)?
 
-    public init(file: any SecretBackend, keychain: @escaping @Sendable () -> any SecretBackend = { KeychainBackend() }) {
-        self.file = file; self.makeKeychain = keychain
-    }
-
-    public var inKeychain: Bool { lock.withLock { keychainOn } }
-
-    /// Where reads and writes go now.
-    private var backend: any SecretBackend {
-        lock.withLock {
-            guard keychainOn else { return file }
-            if keychainBackend == nil { keychainBackend = makeKeychain() }
-            return keychainBackend!
-        }
-    }
-
-    /// Switches where tokens are kept and moves the saved ones across (nothing is touched when it
-    /// is unchanged, and the Keychain is not reached unless one side is the Keychain).
-    public func setInKeychain(_ on: Bool) {
-        guard on != inKeychain else { return }
-        let old = backend
-        lock.withLock { keychainOn = on }
-        let new = backend
-        for prefix in [Self.authPrefix, Self.clientPrefix] {
-            for account in old.accounts(withPrefix: prefix) {
-                guard let value = old.read(account) else { continue }
-                if new.write(value, account: account) { old.write("", account: account) }
-            }
-        }
-    }
+    public init(file: any SecretBackend) { self.file = file }
 
     public func auth(for serverURL: String) -> McpAuth? {
-        guard let text = backend.read(Self.authPrefix + serverURL),
+        guard let text = file.read(Self.authPrefix + serverURL),
               let stored = try? JSONDecoder().decode(StoredAuth.self, from: Data(text.utf8)) else { return nil }
         return stored.auth
     }
 
-    /// Whether a sign-in is saved, without reading the token (so the Keychain never asks).
     public func hasAuth(for serverURL: String) -> Bool {
-        backend.accounts(withPrefix: Self.authPrefix + serverURL).contains(Self.authPrefix + serverURL)
+        file.accounts(withPrefix: Self.authPrefix + serverURL).contains(Self.authPrefix + serverURL)
     }
 
-    @discardableResult
     public func save(_ auth: McpAuth, for serverURL: String) -> Bool {
         guard let data = try? JSONEncoder().encode(StoredAuth(auth)) else { return false }
-        return backend.write(String(decoding: data, as: UTF8.self), account: Self.authPrefix + serverURL)
+        return file.write(String(decoding: data, as: UTF8.self), account: Self.authPrefix + serverURL)
     }
 
-    public func forget(_ serverURL: String) { backend.write("", account: Self.authPrefix + serverURL) }
+    public func forget(_ serverURL: String) { file.write("", account: Self.authPrefix + serverURL) }
+    public func clientID(issuer: String) -> String? { file.read(Self.clientPrefix + issuer) }
+    public func setClientID(_ id: String, issuer: String) { file.write(id, account: Self.clientPrefix + issuer) }
+}
+
+/// A design render's tool server sign-ins: none, and nothing is kept.
+struct NoMCPAuth: MCPAuthBackend {
+    func auth(for serverURL: String) -> McpAuth? { nil }
+    func hasAuth(for serverURL: String) -> Bool { false }
+    func save(_ auth: McpAuth, for serverURL: String) -> Bool { false }
+    func forget(_ serverURL: String) {}
+    func clientID(issuer: String) -> String? { nil }
+    func setClientID(_ id: String, issuer: String) {}
+}
+
+/// What a signed-in MCP server leaves: tokens (secret), kept by a backend.
+public final class MCPAuthStore: @unchecked Sendable {
+    /// The store the iPhone app uses: the private file in its folder. The Mac passes its own (`SharedConfigStore.mcpAuth`).
+    public static let standard = MCPAuthStore(backend: FileMCPAuth(file: KeyFile()))
+
+    /// Signed in to nothing, and nothing is kept.
+    public static var empty: MCPAuthStore { MCPAuthStore(backend: NoMCPAuth()) }
+
+    private let backend: any MCPAuthBackend
+
+    public init(backend: any MCPAuthBackend) { self.backend = backend }
+
+    public func auth(for serverURL: String) -> McpAuth? { backend.auth(for: serverURL) }
+
+    /// Whether a sign-in is saved.
+    public func hasAuth(for serverURL: String) -> Bool { backend.hasAuth(for: serverURL) }
+
+    @discardableResult
+    public func save(_ auth: McpAuth, for serverURL: String) -> Bool { backend.save(auth, for: serverURL) }
+
+    public func forget(_ serverURL: String) { backend.forget(serverURL) }
 
     /// The client id registered with an authorization server (not a secret, kept alongside).
-    public func clientID(issuer: String) -> String? { backend.read(Self.clientPrefix + issuer) }
-    public func setClientID(_ id: String, issuer: String) { backend.write(id, account: Self.clientPrefix + issuer) }
+    public func clientID(issuer: String) -> String? { backend.clientID(issuer: issuer) }
+    public func setClientID(_ id: String, issuer: String) { backend.setClientID(id, issuer: issuer) }
 }
 
 /// `McpAuth` as JSON.

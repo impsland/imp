@@ -13,7 +13,7 @@ import ImpKit
         app.prefs.imps = [.waiting]
         let local = Service(name: "Studio", baseURL: "http://localhost:1234/v1", model: "qwen")
         app.prefs.ai.add(local)
-        app.assistant.configure(ai: app.prefs.ai, servers: [], keychain: false)
+        app.assistant.configure(ai: app.prefs.ai, servers: [])
         return (app, local)
     }
 

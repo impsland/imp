@@ -1,0 +1,22 @@
+{
+  "model": "openrouter/openai/gpt-6-luna",
+  "providers": {
+    "openrouter": { "name": "OpenRouter", "options": { "baseURL": "https://openrouter.ai/api/v1" } },
+    "ollama": {
+      "options": {
+        "baseURL": "https://ollama.example.com/v1",
+        "apiKey": "{env:OLLAMA_API_KEY}",
+        "headers": { "X-Gateway-Tenant": "engineering" }
+      },
+      "models": { "qwen3.8": { "variants": { "high": { "reasoning_effort": "high" } } } }
+    }
+  },
+  "mcp": {
+    "files": { "type": "local", "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "~"] },
+    "den": { "type": "remote", "url": "https://den.imp.land/mcp" }
+  },
+  "permissions": [{ "action": "shell", "resource": "rm -rf *", "effect": "deny" }],
+  "imps": { "pip": { "id": "7c0e0000-0000-4000-8000-000000000001", "size": 1.0, "memory": { "exchanges": 20 } } },
+  "requests": { "timeoutSeconds": 120, "retries": 3 },
+  "link": { "hop": "hop.example.com:4677" }
+}

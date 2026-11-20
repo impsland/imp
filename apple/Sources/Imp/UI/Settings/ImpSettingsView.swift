@@ -109,7 +109,9 @@ struct ImpSettingsView: View {
         case .look: LookPanel(model: model, imp: imp)
         case .animations: AnimationsPanel(model: model, imp: imp)
         case .triggers: TriggersPanel(model: model, imp: imp)
-        case .tools: ToolsPanel(model: model, imp: imp)
+        case .tools:
+            ToolsPanel(model: model, imp: imp)
+            LibraryPanel(model: model)
         case .computer: ComputerPanel(imp: imp)
         }
     }

@@ -796,11 +796,12 @@ final class Panels {
         return size
     }
 
-    /// Typing (in the bubble, or in the chat) needs keyboard focus. The panel never activates
+    /// Typing (in the bubble, or in the chat) needs keyboard focus, and so does a permission question (Return allows
+    /// once, Esc denies). The panel never activates
     /// Imp (it is non-activating), so the app in front stays in front. Nothing here, or when the
     /// bubble closes, may activate or hide any app.
     private func updateKeyFocus(for bubble: Bubble) {
-        if (bubble.phase == .typing || bubble.phase == .chat) && !bubblePanel.isKeyWindow {
+        if (bubble.phase == .typing || bubble.phase == .chat || bubble.permission != nil) && !bubblePanel.isKeyWindow {
             bubblePanel.makeKeyAndOrderFront(nil)
         }
     }

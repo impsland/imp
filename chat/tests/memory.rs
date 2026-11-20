@@ -3,40 +3,23 @@
 
 mod common;
 
-use common::mock;
+use common::{World, mock};
 use imp_chat::session::{Session, SessionOptions};
 use imp_chat::slash::{self, Context, Outcome};
-use std::path::{Path, PathBuf};
 
-fn folder(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("imp-chat-memory-{name}-{}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).unwrap();
-    dir
-}
-
-async fn session(dir: &Path, url: &str, extra: &str) -> Session {
-    let config = dir.join("config.toml");
-    std::fs::write(
-        &config,
-        format!(
-            "api_key_env = \"IMP_TEST_NO_KEY\"\n{extra}\n[imps.pip]\npersonality = \"Kind.\"\nbase_url = \"{url}\"\nmodel = \"m\"\n"
-        ),
-    )
-    .unwrap();
-    Session::open(
-        &config,
-        None,
-        SessionOptions {
-            workspace: Some(dir.to_path_buf()),
-            remote: None,
-            // Not the developer's own ~/.agents.
-            agents_home: Some(no_home()),
-            answers_later: false,
-        },
-    )
-    .await
-    .unwrap()
+/// An Imp called pip on the mock service. `extra` is more of `imp.json`'s `imps.pip`.
+async fn session(w: &World, url: &str, extra: &str) -> Session {
+    w.with_mock(url);
+    w.agent("pip", "description: Kind", "Kind.");
+    if !extra.is_empty() {
+        let mut config = w.read_config();
+        config["imps"] =
+            serde_json::json!({ "pip": serde_json::from_str::<serde_json::Value>(extra).unwrap() });
+        w.write_config(&config.to_string());
+    }
+    Session::open(&w.settings(), None, SessionOptions::default())
+        .await
+        .unwrap()
 }
 
 /// One message and its answer, as the chats do it: the request is the chat's, then the exchange ends.
@@ -48,7 +31,7 @@ async fn ask(s: &Session, chat: &mut imp_chat::chat_state::ChatState, text: &str
         &s.model,
         &mut messages,
         &*s.toolbox,
-        &s.selection,
+        &imp_engine::ToolSelection::all(),
         s.max_steps,
         |e| chat.apply_agent(&e),
     )
@@ -61,8 +44,8 @@ async fn ask(s: &Session, chat: &mut imp_chat::chat_state::ChatState, text: &str
 #[tokio::test]
 async fn compact_sums_the_chat_up_and_the_next_message_goes_on_from_it() {
     let (url, seen) = mock().await;
-    let dir = folder("compact");
-    let mut s = session(&dir, &url, "").await;
+    let w = World::new("compact");
+    let mut s = session(&w, &url, "").await;
     let mut chat = s.new_chat();
     ask(&s, &mut chat, "Remember the number 42").await;
     ask(&s, &mut chat, "And the colour blue").await;
@@ -96,14 +79,18 @@ async fn compact_sums_the_chat_up_and_the_next_message_goes_on_from_it() {
     );
     assert_eq!(chat.messages().len(), 6, "the chat still shows it all");
     s.close().await;
-    let _ = std::fs::remove_dir_all(dir);
 }
 
 #[tokio::test]
 async fn memory_exchanges_sends_only_the_latest() {
     let (url, seen) = mock().await;
-    let dir = folder("exchanges");
-    let s = session(&dir, &url, "memory_exchanges = 1").await;
+    let w = World::new("exchanges");
+    let s = session(
+        &w,
+        &url,
+        r#"{"id":"7c0e0000-0000-4000-8000-000000000001","memory":{"exchanges":1}}"#,
+    )
+    .await;
     assert_eq!(s.memory_exchanges, 1);
     let mut chat = s.new_chat();
     ask(&s, &mut chat, "first").await;
@@ -113,12 +100,4 @@ async fn memory_exchanges_sends_only_the_latest() {
     assert!(!last.contains("first"), "{last}");
     assert!(last.contains("second") && last.contains("third"), "{last}");
     s.close().await;
-    let _ = std::fs::remove_dir_all(dir);
-}
-
-/// An empty folder standing for the person's home, so the tests never read the developer's ~/.agents.
-fn no_home() -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("imp-chat-no-home-{}", std::process::id()));
-    std::fs::create_dir_all(&dir).unwrap();
-    dir
 }

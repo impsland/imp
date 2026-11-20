@@ -30,6 +30,16 @@ msgctxt "agent.title"
 msgid "What {name} may do"
 msgstr "Lo que {name} puede hacer"
 
+#. Settings text.
+msgctxt "agentfile.open"
+msgid "Open the Imp's file"
+msgstr "Abrir el archivo del Imp"
+
+#. Settings text.
+msgctxt "agentfile.reveal"
+msgid "Show the Imp's file in Finder"
+msgstr "Mostrar el archivo del Imp en Finder"
+
 #. Help of the move description.
 msgctxt "anim.help.about"
 msgid "One sentence about what it does."
@@ -316,6 +326,28 @@ msgstr[1] "Lo usan {count} Imps"
 msgctxt "brains.with_key"
 msgid "A service with your key"
 msgstr "Un servicio con tu clave"
+
+#. Label of the model's reasoning when a thought row is open.
+msgctxt "chat.reasoning"
+msgid "Reasoning"
+msgstr "Razonamiento"
+
+#. Help of a collapsed thought row.
+msgctxt "chat.show_thought"
+msgid "Show what it thought"
+msgstr "Mostrar lo que pensó"
+
+#. The model is thinking: the row that shows its reasoning as it streams in.
+msgctxt "chat.thinking"
+msgid "Thinking…"
+msgstr "Pensando…"
+
+#. The collapsed row of what the model thought before it answered or used a tool. {count} is how long it took, in whole seconds.
+msgctxt "chat.thought_for"
+msgid "Thought for {count}s"
+msgid_plural "Thought for {count}s"
+msgstr[0] "Pensó durante {count} s"
+msgstr[1] "Pensó durante {count} s"
 
 #. Screen reader value of a button whose action just succeeded.
 msgctxt "common.action_done"
@@ -1609,6 +1641,21 @@ msgstr "Cosas del kit que este Mac no puede usar, por eso se dejan fuera."
 msgctxt "kit.help.tools"
 msgid "Tools can run things on your Mac. Read them first."
 msgstr "Las herramientas pueden ejecutar cosas en tu Mac. Léelas primero."
+
+#. Settings text.
+msgctxt "library.help"
+msgid "Kept in ~/.agents, for every Imp and the terminal app. Read only here."
+msgstr "Están en ~/.agents, para todos los Imps y la app de terminal. Aquí solo se leen."
+
+#. Settings text.
+msgctxt "library.reveal"
+msgid "Show in Finder"
+msgstr "Mostrar en Finder"
+
+#. Settings text.
+msgctxt "library.title"
+msgid "Skills and commands"
+msgstr "Habilidades y comandos"
 
 #. Status line when Local Network access is off for Imp.
 msgctxt "link.localnet.off"
@@ -2966,6 +3013,16 @@ msgid "Export"
 msgstr "Exportar"
 
 #. Settings text.
+msgctxt "settings.backup.folder.reveal"
+msgid "Show in Finder"
+msgstr "Mostrar en Finder"
+
+#. Settings text.
+msgctxt "settings.backup.folder.title"
+msgid "Configuration"
+msgstr "Configuración"
+
+#. Settings text.
 msgctxt "settings.backup.import.title"
 msgid "Import"
 msgstr "Importar"
@@ -2981,9 +3038,29 @@ msgid "Backups"
 msgstr "Copias"
 
 #. Settings text.
+msgctxt "settings.backup.reset.app"
+msgid "Erase and Restart"
+msgstr "Borrar y reiniciar"
+
+#. Settings text.
+msgctxt "settings.backup.reset.confirm"
+msgid "Erase everything and start over?"
+msgstr "¿Borrar todo y empezar de nuevo?"
+
+#. Settings text.
 msgctxt "settings.backup.reset.info"
 msgid "Erase everything and begin again. This cannot be undone."
 msgstr "Borra todo y empieza de nuevo. No se puede deshacer."
+
+#. Settings text.
+msgctxt "settings.backup.reset.message"
+msgid "Chats, memories and the app's own settings are deleted. Imps, services and keys are kept unless you also remove the shared configuration, which the terminal app uses too. This can't be undone."
+msgstr "Se borran los chats, los recuerdos y los ajustes de la app. Los Imps, servicios y claves se conservan salvo que también quites la configuración compartida, que usa también la app de terminal. No se puede deshacer."
+
+#. Settings text.
+msgctxt "settings.backup.reset.shared"
+msgid "Erase and Also Remove the Shared Configuration"
+msgstr "Borrar y quitar también la configuración compartida"
 
 #. Settings text.
 msgctxt "settings.backup.reset.title"
@@ -2999,26 +3076,6 @@ msgstr "Cuánto esperar antes de preguntar otra vez."
 msgctxt "settings.brains.first_wait.title"
 msgid "First pause"
 msgstr "Primera pausa"
-
-#. Settings text.
-msgctxt "settings.brains.keychain.info"
-msgid "Keep keys safe in your Mac's Keychain."
-msgstr "Guarda las claves en el Llavero de tu Mac."
-
-#. Settings text.
-msgctxt "settings.brains.keychain.title"
-msgid "Keychain"
-msgstr "Llavero"
-
-#. Settings text.
-msgctxt "settings.brains.keys.info"
-msgid "Secret passwords for your brains."
-msgstr "Contraseñas secretas de tus cerebros."
-
-#. Settings text.
-msgctxt "settings.brains.keys.title"
-msgid "Keys"
-msgstr "Claves"
 
 #. Settings text.
 msgctxt "settings.brains.longer.info"

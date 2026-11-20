@@ -19,6 +19,12 @@ struct Bubble: Equatable, Identifiable {
         /// What was asked (the command, or the tool's arguments) and what came back (nil while running).
         var request = ""
         var response: String?
+        /// The model thinking: `response` is its reasoning (live while running), `seconds` how long it took once done.
+        var thought = false
+        var seconds: Int?
+
+        /// What a click opens: a tool call's request and response, or a thought's reasoning.
+        var isExpandable: Bool { tool != nil || thought }
 
         /// The most of a response kept for showing (outputs can be huge, the model got it all).
         static let responseLimit = 20_000
@@ -29,7 +35,16 @@ struct Bubble: Equatable, Identifiable {
         /// A step from the history (its id kept, so it opens and closes like a live one).
         init(_ saved: ChatTurn.Step) {
             self.init(id: saved.id, icon: saved.icon, title: saved.title, state: saved.failed ? .failed : .done,
-                      tool: "saved", request: saved.request, response: saved.response)
+                      tool: saved.isThought ? nil : "saved", request: saved.request, response: saved.response)
+            thought = saved.isThought
+            seconds = saved.seconds
+        }
+
+        /// The model is thinking: its reasoning shows as it streams in.
+        static func thinking(_ reasoning: String) -> Step {
+            var step = Step(icon: ChatTurn.Step.thoughtIcon, title: ChatTurn.Step.thinkingTitle, response: reasoning)
+            step.thought = true
+            return step
         }
 
         init(id: UUID = UUID(), icon: String, title: String, state: State = .running, tool: String? = nil,
@@ -40,6 +55,10 @@ struct Bubble: Equatable, Identifiable {
 
         /// As kept in the history. Only tool calls are worth keeping (not "Waking up tools").
         var saved: ChatTurn.Step? {
+            if thought {
+                guard let seconds else { return nil }
+                return ChatTurn.Step(id: id, icon: icon, title: title, request: request, response: response, failed: false, seconds: seconds)
+            }
             guard tool != nil else { return nil }
             return ChatTurn.Step(id: id, icon: icon, title: title, request: request, response: response, failed: state == .failed)
         }
@@ -70,6 +89,29 @@ struct Bubble: Equatable, Identifiable {
         var asReply: Exchange { Exchange(role: .reply, peer: peer, question: question) }
     }
 
+    /// A question the Imp's permissions ask the person before a tool call goes on: what it wants to do and to what.
+    /// Shown in a fixed-height block of the working bubble (the resource on one line, in full as its help).
+    struct Prompt: Equatable {
+        var action: String
+        var resource: String
+        /// Questions queued behind this one.
+        var more = 0
+
+        /// The symbol of what is asked: a command, a tool, a file, another Imp.
+        var icon: String {
+            switch action {
+            case "shell": "terminal"
+            case "mcp": "powerplug"
+            case "read": "doc.text"
+            case "edit": "square.and.pencil"
+            case "message": "bubble.left.and.bubble.right"
+            case "skill": "sparkles"
+            case "computer": "cursorarrow.click"
+            default: "hand.raised"
+            }
+        }
+    }
+
     var id = UUID()
     /// What this is about (an action's name). Shown small and quiet, never as a header.
     var title = ""
@@ -85,6 +127,8 @@ struct Bubble: Equatable, Identifiable {
     var isStreaming = false
     /// Set while this bubble is about a talk with another Imp.
     var exchange: Exchange?
+    /// The question waiting for an answer (working and chat bubbles only: the model keeps it there).
+    var permission: Prompt?
 
     /// A finished answer with words: it can be copied.
     var isCopyable: Bool { phase == .result && !isStreaming && !text.isEmpty }

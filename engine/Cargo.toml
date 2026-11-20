@@ -32,6 +32,7 @@ rand.workspace = true
 reqwest = { workspace = true, optional = true }
 serde.workspace = true
 serde_json.workspace = true
+serde_yaml_ng.workspace = true
 snow.workspace = true
 sha2.workspace = true
 thiserror.workspace = true
@@ -60,6 +61,7 @@ required-features = ["io"]
 
 [dev-dependencies]
 altcha.workspace = true
+tempfile.workspace = true
 
 [[test]]
 name = "mcp_oauth"

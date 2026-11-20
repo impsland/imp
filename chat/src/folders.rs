@@ -8,7 +8,7 @@
 //! folder there when it starts ([`settle_here`]). The app's files stay where they are. Choosing a folder
 //! never moves anything, so tests and other users of the library leave a person's files alone.
 //!
-//! `--config`, `IMP_CONFIG`, `--data-dir` and `IMP_DATA_DIR` still choose any other place.
+//! `IMP_CONFIG_HOME` and `IMP_DATA_DIR` choose any other place.
 
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
@@ -21,7 +21,6 @@ pub const SHARED_FOLDER: &str = "imp";
 /// What `imp` itself made in the shared folder: its settings, link, conversations between Imps, folder
 /// trust. Everything else there is the Mac app's.
 pub const OURS: &[&str] = &[
-    "config.toml",
     "link-book",
     "link-identity",
     "link.lock",
@@ -76,7 +75,7 @@ pub fn settle(support: &Path) -> Settled {
         }
     }
     // What could not move keeps its old place, and so would the settings: use the shared folder then.
-    if shared.join("config.toml").exists() && !own.join("config.toml").exists() {
+    if shared.join("link-book").exists() && !own.join("link-book").exists() {
         return Settled::Shared(shared);
     }
     Settled::Moved(own, moved)
@@ -100,12 +99,8 @@ fn hold_lock(shared: &Path) -> Option<Option<std::fs::File>> {
 pub fn choose(support: &Path) -> PathBuf {
     let own = support.join(MAC_FOLDER);
     let shared = support.join(SHARED_FOLDER);
-    let in_own = ["config.toml", "link-book"]
-        .iter()
-        .any(|n| own.join(n).exists());
-    let in_shared = ["config.toml", "link-book"]
-        .iter()
-        .any(|n| shared.join(n).exists());
+    let in_own = ["link-book"].iter().any(|n| own.join(n).exists());
+    let in_shared = ["link-book"].iter().any(|n| shared.join(n).exists());
     if !in_own && in_shared { shared } else { own }
 }
 
@@ -181,7 +176,7 @@ mod tests {
     fn our_files_move_out_and_the_apps_stay() {
         let base = support("move");
         let shared = base.join(SHARED_FOLDER);
-        write(shared.join("config.toml"), "settings");
+        write(shared.join("trusted_folders.json"), "trust");
         write(shared.join("link-book"), "book");
         write(shared.join("link-identity"), "seed");
         write(shared.join("talks/pip.json"), "talk");
@@ -197,11 +192,16 @@ mod tests {
         assert_eq!(folder, &own);
         assert_eq!(
             moved,
-            &["config.toml", "link-book", "link-identity", "talks"]
+            &[
+                "link-book",
+                "link-identity",
+                "talks",
+                "trusted_folders.json"
+            ]
         );
         assert_eq!(
-            std::fs::read_to_string(own.join("config.toml")).unwrap(),
-            "settings"
+            std::fs::read_to_string(own.join("trusted_folders.json")).unwrap(),
+            "trust"
         );
         assert!(own.join("talks/pip.json").exists());
         for app in ["link.json", "keys.json", "Chats/a.json"] {
@@ -219,7 +219,7 @@ mod tests {
         let base = support("busy");
         let shared = base.join(SHARED_FOLDER);
         let own = base.join(MAC_FOLDER);
-        write(shared.join("config.toml"), "old");
+        write(shared.join("link-book"), "old");
         write(shared.join("link.lock"), "");
         // Another imp holds the lock: nothing moves, and the shared folder stays in use.
         let held = std::fs::File::options()
@@ -232,18 +232,18 @@ mod tests {
         assert_eq!(choose(&base), shared, "used where its settings are");
         held.unlock().unwrap();
         // The new folder already has settings: they are kept, the old ones are left alone.
-        write(own.join("config.toml"), "new");
-        write(shared.join("link-book"), "book");
+        write(own.join("link-book"), "new");
+        write(shared.join("talks/a.json"), "talk");
         let Settled::Moved(_, moved) = settle(&base) else {
             panic!("moves what is missing");
         };
-        assert_eq!(moved, &["link-book", "link.lock"]);
+        assert_eq!(moved, &["link.lock", "talks"]);
         assert_eq!(
-            std::fs::read_to_string(own.join("config.toml")).unwrap(),
+            std::fs::read_to_string(own.join("link-book")).unwrap(),
             "new"
         );
         assert_eq!(
-            std::fs::read_to_string(shared.join("config.toml")).unwrap(),
+            std::fs::read_to_string(shared.join("link-book")).unwrap(),
             "old"
         );
         // A Mac that never had imp in the shared folder.

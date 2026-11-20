@@ -3,6 +3,9 @@
 //! there, and comes back with its conversation. An Imp of the phone visits the computer and answers through
 //! its home. Imps message each other across the two. No real service or key store is used.
 
+mod common;
+
+use common::World;
 use imp_chat::link::device::{Device, DeviceOptions, Update};
 use imp_chat::link::{Runner, SeedStore};
 use imp_engine::link::card::LinkKind;
@@ -11,7 +14,6 @@ use imp_engine::link::{
     LinkEntry, LinkImp, LinkMessage, LinkSide, LinkStaged, LinkTraits, LinkTurn,
 };
 use imp_engine::{ChatMessage, Role};
-use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
@@ -63,37 +65,24 @@ async fn mock(reply: &'static str) -> String {
     url
 }
 
-fn folder(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("imp-chat-device-{name}-{}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).unwrap();
-    dir
-}
-
-/// A computer with one Imp, `linktest`, whose brain is the mock.
-async fn computer(name: &str) -> (Device, DeviceOptions) {
-    let dir = folder(name);
+/// A computer with one Imp, `linktest`, whose brain is the mock. The world holds its files and goes with it.
+async fn computer(name: &str) -> (Device, DeviceOptions, World) {
+    let world = World::new(&format!("device-{name}"));
     let url = mock("Hello from the computer").await;
-    let config = dir.join("config.toml");
-    std::fs::write(
-        &config,
-        format!(
-            "api_key_env = \"IMP_TEST_NO_KEY\"\n[imps.linktest]\npersonality = \"Kind.\"\nbase_url = \"{url}\"\nmodel = \"m\"\n"
-        ),
-    )
-    .unwrap();
+    world.with_mock(&url);
+    world.agent("linktest", "mode: primary", "Kind.");
     let options = DeviceOptions {
         name: Some("Desk".into()),
         hosts: vec!["127.0.0.1".into()],
-        data_dir: dir.join("data"),
-        config,
-        workspace: Some(dir),
+        data_dir: world.data.clone(),
+        settings: Some(world.settings()),
+        workspace: Some(world.work.clone()),
         ..DeviceOptions::default()
     };
     let device = Device::start(&options, Arc::new(Memory::default()))
         .await
         .unwrap();
-    (device, options)
+    (device, options, world)
 }
 
 struct Phone {
@@ -223,7 +212,7 @@ fn pocket_imp() -> LinkImp {
 
 #[tokio::test]
 async fn an_imp_goes_to_the_phone_answers_there_and_comes_back_with_its_conversation() {
-    let (mut device, _options) = computer("travel").await;
+    let (mut device, _options, _world) = computer("travel").await;
     let mut phone = phone().await;
     link(&mut device, &mut phone).await;
     let peer = device.find_peer("pocket").unwrap();
@@ -372,7 +361,7 @@ async fn device_id(_device: &Device, phone: &Phone) -> Uuid {
 
 #[tokio::test]
 async fn an_imp_of_the_phone_visits_the_computer_and_answers_through_its_home() {
-    let (mut device, _options) = computer("visit").await;
+    let (mut device, _options, _world) = computer("visit").await;
     let mut phone = phone().await;
     link(&mut device, &mut phone).await;
     let desk = device_id(&device, &phone).await;
@@ -478,7 +467,7 @@ async fn an_imp_of_the_phone_visits_the_computer_and_answers_through_its_home() 
 
 #[tokio::test]
 async fn imps_message_each_other_across_devices() {
-    let (mut device, options) = computer("troupe").await;
+    let (mut device, options, _world) = computer("troupe").await;
     let mut phone = phone().await;
     link(&mut device, &mut phone).await;
     let desk = device_id(&device, &phone).await;
@@ -512,8 +501,10 @@ async fn imps_message_each_other_across_devices() {
     assert_eq!(target.place, "Pocket");
 
     // The computer's Imp asks Pebble. The phone answers it as its app would.
-    let config = imp_chat::config::Config::load_with_ids(&options.config).unwrap();
-    let me = imp_chat::session::look_of("linktest", &config.imps["linktest"]);
+    let loaded = options.settings.as_ref().unwrap().load();
+    let agent = imp_chat::settings::find_imp(&loaded, Some("linktest")).unwrap();
+    let servers = imp_chat::settings::servers_of(&loaded, &agent.value);
+    let me = imp_chat::settings::look_of(&loaded, &agent.value, &servers);
     let asking = remote.ask(me, target, "What's up?");
     tokio::pin!(asking);
     let answer = tokio::time::timeout(WAIT, async {
@@ -540,7 +531,7 @@ async fn imps_message_each_other_across_devices() {
 
 #[tokio::test]
 async fn only_one_program_is_the_computer_at_a_time() {
-    let (device, options) = computer("lock").await;
+    let (device, options, _world) = computer("lock").await;
     let second = Device::start(&options, Arc::new(Memory::default())).await;
     assert!(matches!(
         second.err(),

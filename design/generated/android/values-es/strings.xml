@@ -6,6 +6,8 @@
   <string name="agent_off">Desactivado</string>
   <string name="agent_on">Activado</string>
   <string name="agent_title">Lo que %1$s puede hacer</string>
+  <string name="agentfile_open">Abrir el archivo del Imp</string>
+  <string name="agentfile_reveal">Mostrar el archivo del Imp en Finder</string>
   <string name="anim_help_about">Una frase sobre lo que hace.</string>
   <string name="anim_help_beats">Cada ficha es un momento del movimiento. Arrastra para moverla o estirarla.</string>
   <string name="anim_help_hop">Qué tan alto salta el Imp en este tiempo.</string>
@@ -67,6 +69,14 @@
     <item quantity="many">Lo usan %1$d Imps</item>
   </plurals>
   <string name="brains_with_key">Un servicio con tu clave</string>
+  <string name="chat_reasoning">Razonamiento</string>
+  <string name="chat_show_thought">Mostrar lo que pensó</string>
+  <string name="chat_thinking">Pensando…</string>
+  <plurals name="chat_thought_for">
+    <item quantity="one">Pensó durante %1$d s</item>
+    <item quantity="other">Pensó durante %1$d s</item>
+    <item quantity="many">Pensó durante %1$d s</item>
+  </plurals>
   <string name="common_action_done">Hecho</string>
   <string name="common_action_failed">Falló</string>
   <string name="common_action_working">En curso</string>
@@ -340,6 +350,9 @@
   <string name="kit_help_paste">Pega un kit, una dirección web o un enlace imp://, o suelta un archivo. Primero lo revisas.</string>
   <string name="kit_help_skipped">Cosas del kit que este Mac no puede usar, por eso se dejan fuera.</string>
   <string name="kit_help_tools">Las herramientas pueden ejecutar cosas en tu Mac. Léelas primero.</string>
+  <string name="library_help">Están en ~/.agents, para todos los Imps y la app de terminal. Aquí solo se leen.</string>
+  <string name="library_reveal">Mostrar en Finder</string>
+  <string name="library_title">Habilidades y comandos</string>
   <string name="link_localnet_off">Red local desactivada</string>
   <string name="link_localnet_open">Abrir Ajustes</string>
   <string name="link_localnet_open_mac">Abrir Ajustes del Sistema</string>
@@ -611,17 +624,19 @@
   <string name="settings_attention_device_offline">%1$s sin conexión.</string>
   <string name="settings_attention_imp_no_brain">%1$s no tiene cerebro.</string>
   <string name="settings_backup_export_title">Exportar</string>
+  <string name="settings_backup_folder_reveal">Mostrar en Finder</string>
+  <string name="settings_backup_folder_title">Configuración</string>
   <string name="settings_backup_import_title">Importar</string>
   <string name="settings_backup_keep_info">Guarda tus Imps y ajustes en un archivo, o cárgalos de nuevo.</string>
   <string name="settings_backup_keep_title">Copias</string>
+  <string name="settings_backup_reset_app">Borrar y reiniciar</string>
+  <string name="settings_backup_reset_confirm">¿Borrar todo y empezar de nuevo?</string>
   <string name="settings_backup_reset_info">Borra todo y empieza de nuevo. No se puede deshacer.</string>
+  <string name="settings_backup_reset_message">Se borran los chats, los recuerdos y los ajustes de la app. Los Imps, servicios y claves se conservan salvo que también quites la configuración compartida, que usa también la app de terminal. No se puede deshacer.</string>
+  <string name="settings_backup_reset_shared">Borrar y quitar también la configuración compartida</string>
   <string name="settings_backup_reset_title">Reiniciar</string>
   <string name="settings_brains_first_wait_info">Cuánto esperar antes de preguntar otra vez.</string>
   <string name="settings_brains_first_wait_title">Primera pausa</string>
-  <string name="settings_brains_keychain_info">Guarda las claves en el Llavero de tu Mac.</string>
-  <string name="settings_brains_keychain_title">Llavero</string>
-  <string name="settings_brains_keys_info">Contraseñas secretas de tus cerebros.</string>
-  <string name="settings_brains_keys_title">Claves</string>
   <string name="settings_brains_longer_info">Cuánto más larga es cada pausa.</string>
   <string name="settings_brains_longer_title">Aumento</string>
   <string name="settings_brains_requests_info">Qué tan paciente es un Imp cuando un cerebro tarda.</string>

@@ -36,8 +36,9 @@ struct ShortcutSheet: View {
     @Environment(\.impTint) private var tint
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let model: AppModel
-    /// The Imp whose settings these are.
-    let imp: UUID
+    /// The Imp whose settings these are. None when a shared trigger is edited with no Imp to try it on
+    /// (Settings › Sharing with no Imps yet): the trigger is then for every Imp and Try is off.
+    let imp: UUID?
     @State var shortcut: Shortcut
     let isNew: Bool
     /// How the trigger applies to this Imp now.
@@ -52,11 +53,11 @@ struct ShortcutSheet: View {
     @State private var target: ScopeTarget
 
     /// `target` is who a change is for to begin with: `imp` alone unless said otherwise (Sharing edits a shared one for every Imp).
-    init(model: AppModel, imp: UUID, shortcut: Shortcut, isNew: Bool, scope: SettingScope, target: ScopeTarget? = nil,
+    init(model: AppModel, imp: UUID?, shortcut: Shortcut, isNew: Bool, scope: SettingScope, target: ScopeTarget? = nil,
          save: @escaping (Shortcut, ScopeTarget) -> Void, duplicate: @escaping (Shortcut) -> Void, delete: @escaping () -> Void) {
         self.model = model; self.imp = imp; self._shortcut = State(initialValue: shortcut); self.isNew = isNew; self.scope = scope
         self.save = save; self.duplicate = duplicate; self.delete = delete
-        self._target = State(initialValue: target ?? .imp(imp))
+        self._target = State(initialValue: target ?? imp.map(ScopeTarget.imp) ?? .everyImp)
     }
 
     var body: some View {
@@ -76,9 +77,9 @@ struct ShortcutSheet: View {
                 HoverIconButton(systemName: scope == .changed ? "arrow.uturn.backward" : "trash", help: "Delete", tint: Tone.danger) { confirmingDelete = true }
                 HoverIconButton(systemName: "plus.square.on.square", help: "Duplicate") { duplicate(shortcut) }
             }
-            Button { model.trigger(shortcut, on: model.imp(imp), trying: true) } label: { FitLabel("triggers.try", systemImage: "play.fill") }
+            Button { model.trigger(shortcut, on: imp.flatMap(model.imp), trying: true) } label: { FitLabel("triggers.try", systemImage: "play.fill") }
                 .buttonStyle(.secondary)
-                .disabled(!shortcut.isValid)
+                .disabled(!shortcut.isValid || imp == nil)
             Button(isNew ? "Add" : "Save") { save(shortcut, target) }
                 .buttonStyle(.primary)
                 .keyboardShortcut(.defaultAction)
@@ -89,7 +90,7 @@ struct ShortcutSheet: View {
         }
     }
 
-    private var impName: String { model.profile(imp)?.callName ?? ImpProfile.stranger }
+    private var impName: String { imp.flatMap(model.profile)?.callName ?? ImpProfile.stranger }
 
     private func animate(_ change: () -> Void) { withImpAnimation(ImpDesign.Motion.expand, reduceMotion: reduceMotion, change) }
 
@@ -362,6 +363,8 @@ struct ShortcutSheet: View {
             FieldRow("common.name", info: "triggers.help.name") {
                 TextField("common.name", text: $shortcut.name, prompt: Text(verbatim: shortcut.trigger.summary)).impField()
             }
+            // With no Imp there is only one choice, every Imp, so there is nothing to pick.
+            if let imp {
             FieldRow("triggers.f.for", info: "triggers.help.for") {
                 VStack(alignment: .leading, spacing: Spacing.tight) {
                     ImpSegmented("triggers.f.for", selection: Binding(get: { target == .everyImp }, set: { target = $0 ? .everyImp : .imp(imp) }),
@@ -373,6 +376,7 @@ struct ShortcutSheet: View {
                             .font(Typeface.small).foregroundStyle(Tone.muted).fixedSize(horizontal: false, vertical: true)
                     }
                 }
+            }
             }
         }
         .padding(Spacing.medium)

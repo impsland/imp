@@ -7,15 +7,15 @@
 //! Imps on the person's other devices (a Mac, an iPhone) can be messaged too, through the link: `Remote`
 //! lists them and carries the question there and the answer back.
 
-use crate::config::{Config, ImpConfig};
-use crate::session::system_prompt;
+use crate::settings;
 use futures_util::StreamExt;
 use futures_util::stream::FuturesUnordered;
+use imp_engine::config::{Loaded, resolve};
 use imp_engine::link::LinkImp;
 use imp_engine::troupe::{self as words, TalkWaiting, TargetProfile};
 use imp_engine::{
-    BoxFuture, ChatMessage, HostTool, OpenAiClient, RequestLimits, TalkStore, ToolEntry, ToolHost,
-    ToolSelection, ToolSpec, Toolbox, run_agent,
+    BoxFuture, ChatMessage, HostTool, TalkStore, ToolEntry, ToolHost, ToolSelection, ToolSpec,
+    Toolbox, run_agent,
 };
 use serde_json::Value;
 use std::cell::{Cell, RefCell};
@@ -53,11 +53,6 @@ enum Target {
 }
 
 pub const TOOL_NAME: &str = "imp_message";
-
-type KeyFn = dyn Fn(&str, &ImpConfig) -> Option<String>;
-
-/// Looks up the API key of an Imp. Keys are never kept by the tool.
-pub type KeyLookup = Box<dyn Fn(&str, &ImpConfig) -> Option<String>>;
 
 /// An answer to a message sent without waiting, on its way back to the Imp that sent it.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -160,9 +155,8 @@ impl Later {
 
 pub struct ImpMessageHost {
     sender: String,
-    config: Config,
+    loaded: Loaded,
     store: TalkStore,
-    keys: Rc<KeyFn>,
     now: fn() -> u64,
     look: Option<LinkImp>,
     remote: Option<Rc<dyn Remote>>,
@@ -171,12 +165,13 @@ pub struct ImpMessageHost {
 }
 
 /// What an Imp here says about itself to the others: its description, and its MCP servers as what it can do.
-pub fn profile_of(name: &str, imp: &ImpConfig) -> TargetProfile {
-    TargetProfile {
-        name: name.to_string(),
-        about: imp.description.as_deref().and_then(words::about_line),
-        abilities: words::ability_tags(&imp.mcp_servers.keys().cloned().collect::<Vec<_>>()),
-    }
+pub fn profile_of(loaded: &Loaded, name: &str, label: &str) -> Option<TargetProfile> {
+    let agent = &loaded.agents.get(name)?.value;
+    Some(TargetProfile {
+        name: label.to_string(),
+        about: agent.description.as_deref().and_then(words::about_line),
+        abilities: words::ability_tags(&settings::servers_of(loaded, agent)),
+    })
 }
 
 pub fn clock() -> u64 {
@@ -186,12 +181,11 @@ pub fn clock() -> u64 {
 }
 
 impl ImpMessageHost {
-    pub fn new(sender: &str, config: Config, store: TalkStore, keys: KeyLookup) -> Self {
+    pub fn new(sender: &str, loaded: Loaded, store: TalkStore) -> Self {
         Self {
             sender: sender.to_string(),
-            config,
+            loaded,
             store,
-            keys: Rc::from(keys),
             now: clock,
             look: None,
             remote: None,
@@ -225,10 +219,9 @@ impl ImpMessageHost {
     }
 
     fn others(&self) -> Vec<&str> {
-        self.config
-            .imps
-            .keys()
-            .map(String::as_str)
+        self.loaded
+            .imps()
+            .map(|a| a.value.name.as_str())
             .filter(|n| *n != self.sender)
             .collect()
     }
@@ -238,7 +231,7 @@ impl ImpMessageHost {
     /// when the name is taken (by this Imp too).
     fn targets(&self) -> Vec<(String, Target)> {
         let here: Vec<String> = self.others().into_iter().map(str::to_string).collect();
-        let own_ids: Vec<Uuid> = self.config.imps.values().filter_map(|i| i.id).collect();
+        let own_ids: Vec<Uuid> = self.loaded.config.imps.values().map(|i| i.id).collect();
         let away: Vec<RemoteImp> = self
             .remote
             .as_ref()
@@ -293,14 +286,12 @@ impl ImpMessageHost {
         let (text, asked) = (text.to_string(), asked.map(str::to_string));
         match target {
             Target::Here(name) => {
-                let (config, store, keys) =
-                    (self.config.clone(), self.store.clone(), self.keys.clone());
+                let (loaded, store) = (self.loaded.clone(), self.store.clone());
                 let (sender, now) = (self.sender.clone(), (self.now)());
                 Box::pin(async move {
                     answer_here(
-                        &config,
+                        &loaded,
                         &store,
-                        &*keys,
                         &sender,
                         &name,
                         &text,
@@ -390,11 +381,7 @@ impl ImpMessageHost {
         for (label, target) in self.targets() {
             // What each says about itself: the Imps here from the settings, the others from their look.
             let profile = match &target {
-                Target::Here(name) => self
-                    .config
-                    .imps
-                    .get(name)
-                    .map(|imp| profile_of(&label, imp)),
+                Target::Here(name) => profile_of(&self.loaded, name, &label),
                 Target::Away(imp) => Some(TargetProfile {
                     name: label.clone(),
                     about: imp.look.about.clone(),
@@ -461,38 +448,31 @@ impl ToolHost for ImpMessageHost {
 /// is kept per pair in `store`.
 #[allow(clippy::too_many_arguments)]
 pub async fn answer_here(
-    config: &Config,
+    loaded: &Loaded,
     store: &TalkStore,
-    keys: &dyn Fn(&str, &ImpConfig) -> Option<String>,
     sender: &str,
     to: &str,
     text: &str,
     asked: Option<&str>,
     now: u64,
 ) -> Result<String, String> {
-    let target = config
-        .imps
-        .get(to)
-        .ok_or_else(|| format!("There is no Imp called {to} here."))?;
-    let client = OpenAiClient::new(
-        &target.base_url,
-        keys(to, target),
-        RequestLimits {
-            retries: i64::from(config.retries),
-            ..RequestLimits::default()
-        }
-        .policy(),
-    )
-    .map_err(|e| e.to_string())?;
+    let target = &loaded
+        .imps()
+        .find(|a| a.value.name == to)
+        .ok_or_else(|| format!("There is no Imp called {to} here."))?
+        .value;
+    let resolved = resolve(&loaded.config, &loaded.auth, target, None)?;
+    let client = crate::session::client_of(loaded, &resolved).map_err(|e| e.0)?;
+    let talk = settings::talk_of(loaded);
     let mut log = store.load(sender, to);
-    let continues = config.talk_threading.continues(
-        asked,
-        log.last_activity(),
-        config.talk_window_minutes,
-        now,
-    );
+    let continues = talk
+        .threading
+        .continues(asked, log.last_activity(), talk.window_minutes, now);
     let conversation = log.open(continues, now);
-    let mut messages = vec![ChatMessage::system(system_prompt(to, target))];
+    let mut messages = vec![ChatMessage::system(settings::system_prompt(
+        target,
+        loaded.config.imps.get(to),
+    ))];
     for m in &conversation.messages {
         messages.push(if m.from == sender {
             ChatMessage::user(&m.text)
@@ -506,7 +486,7 @@ pub async fn answer_here(
     )));
     let answer = run_agent(
         &client,
-        &target.model,
+        &resolved.model,
         &mut messages,
         &Toolbox::new(),
         &ToolSelection::all(),

@@ -162,5 +162,40 @@
     "en": "No network. Check your connection, then try again.",
     "es": "Sin red. Revisa tu conexión e inténtalo de nuevo.",
     "zh-Hans": "没有网络。请检查连接，然后再试一次。"
+  },
+  "chat.thinking": {
+    "note": "The model is thinking: the row that shows its reasoning as it streams in.",
+    "en": "Thinking…",
+    "es": "Pensando…",
+    "zh-Hans": "思考中…"
+  },
+  "chat.thought_for": {
+    "note": "The collapsed row of what the model thought before it answered or used a tool. {count} is how long it took, in whole seconds.",
+    "args": {
+      "count": "int"
+    },
+    "en": {
+      "one": "Thought for {count}s",
+      "other": "Thought for {count}s"
+    },
+    "es": {
+      "one": "Pensó durante {count} s",
+      "other": "Pensó durante {count} s"
+    },
+    "zh-Hans": {
+      "other": "思考了 {count} 秒"
+    }
+  },
+  "chat.reasoning": {
+    "note": "Label of the model's reasoning when a thought row is open.",
+    "en": "Reasoning",
+    "es": "Razonamiento",
+    "zh-Hans": "推理"
+  },
+  "chat.show_thought": {
+    "note": "Help of a collapsed thought row.",
+    "en": "Show what it thought",
+    "es": "Mostrar lo que pensó",
+    "zh-Hans": "显示它的思考"
   }
 }

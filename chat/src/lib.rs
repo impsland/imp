@@ -1,7 +1,8 @@
 //! The Imp command line app. The binary is called `imp`.
 //!
 //! - `cli` is the command line grammar and `commands` what each command does.
-//! - `config` is the settings file, `folders` where it and the data live, and `keys` where API keys come from.
+//! - `settings` is the configuration shared with the Mac app (`imp_engine::config`), `folders` where the data lives,
+//!   `gate` the permissions that decide every tool call.
 //! - `session` is an Imp ready to chat: its model client, MCP servers and tools.
 //! - `project` is what a folder's `AGENTS.md` and `.agents/` add, `mentions` the files picked with `@`.
 //! - `chat_state` is the conversation (no input or output in it), `transcript` how tool calls read,
@@ -12,9 +13,10 @@
 pub mod chat_state;
 pub mod cli;
 pub mod commands;
-pub mod config;
+pub mod custom;
 pub mod folders;
-pub mod keys;
+pub mod gate;
+pub mod grammar;
 pub mod link;
 pub mod mcp_auth;
 pub mod mentions;
@@ -22,6 +24,7 @@ pub mod project;
 pub mod qr;
 pub mod serve;
 pub mod session;
+pub mod settings;
 pub mod slash;
 pub mod strings;
 pub mod theme;
@@ -52,6 +55,17 @@ impl From<std::io::Error> for CliError {
 impl From<imp_engine::ChatError> for CliError {
     fn from(e: imp_engine::ChatError) -> Self {
         Self(e.to_string())
+    }
+}
+
+impl From<imp_engine::config::ConfigError> for CliError {
+    fn from(e: imp_engine::config::ConfigError) -> Self {
+        match e {
+            imp_engine::config::ConfigError::NoFolder => {
+                Self("There is no data folder to remember this in. Set IMP_DATA_DIR.".into())
+            }
+            e => Self(e.to_string()),
+        }
     }
 }
 

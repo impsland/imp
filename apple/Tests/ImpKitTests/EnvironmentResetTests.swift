@@ -57,22 +57,28 @@ struct FactoryResetTests {
     @Test func erasesDefaultsAndFolders() throws {
         let suite = "imp-reset-test-\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suite))
-        PreferencesStore(defaults: defaults).save(ImpPreferences.withWaitingImp())
+        PreferencesStore(defaults: defaults).save(ImpPreferences.withWaitingImp().local)
         defaults.set("frame", forKey: "NSWindow Frame ImpHome")
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("imp-reset-\(UUID().uuidString)")
         let support = root.appendingPathComponent("Imp/Workspace/x", isDirectory: true)
         try FileManager.default.createDirectory(at: support, withIntermediateDirectories: true)
-        try Data("{}".utf8).write(to: root.appendingPathComponent("Imp/keys.json"))
+        let shared = root.appendingPathComponent("config/imp.json")
+        try FileManager.default.createDirectory(at: shared.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try Data("{}".utf8).write(to: shared)
         let missing = root.appendingPathComponent("never-made")
 
         let left = FactoryReset(defaults: defaults, domain: suite,
-                                folders: [root.appendingPathComponent("Imp"), missing], keychainService: nil).erase()
+                                folders: [root.appendingPathComponent("Imp"), missing], sharedFiles: [shared]).erase()
 
         #expect(left.isEmpty)
         #expect(defaults.data(forKey: PreferencesStore.key) == nil)
         #expect(defaults.string(forKey: "NSWindow Frame ImpHome") == nil)
         #expect(!FileManager.default.fileExists(atPath: root.appendingPathComponent("Imp").path))
-        #expect(PreferencesStore(defaults: defaults).load().shortcuts.map(\.name) .isEmpty)
+        #expect(PreferencesStore(defaults: defaults).load() == LocalPreferences())
+        #expect(FileManager.default.fileExists(atPath: shared.path), "the shared configuration is kept: imp uses it too")
+
+        let more = FactoryReset(defaults: defaults, domain: suite, folders: [], sharedFiles: [shared, missing]).erase(includingSharedConfiguration: true)
+        #expect(more.isEmpty && !FileManager.default.fileExists(atPath: shared.path))
         try? FileManager.default.removeItem(at: root)
     }
 }

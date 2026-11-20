@@ -63,7 +63,7 @@ public enum SettingID: String, CaseIterable, Sendable {
     case talkingTalkIn = "talking_talk_in"
     case talkingThreads = "talking_threads", talkingWindow = "talking_window", talkingWaiting = "talking_waiting"
     // Brains
-    case brainsServices = "brains_services", brainsKeychain = "brains_keychain", brainsWait = "brains_wait"
+    case brainsServices = "brains_services", brainsWait = "brains_wait"
     case brainsRetries = "brains_retries", brainsFirstWait = "brains_first_wait", brainsLonger = "brains_longer"
     // Sharing
     case sharingImport = "sharing_import"
@@ -74,7 +74,7 @@ public enum SettingID: String, CaseIterable, Sendable {
     // Privacy
     case privacyListening = "privacy_listening", privacyComputer = "privacy_computer"
     // Backup
-    case backupExport = "backup_export", backupImport = "backup_import", backupReset = "backup_reset"
+    case backupExport = "backup_export", backupImport = "backup_import", backupReset = "backup_reset", backupFolder = "backup_folder"
     // Per Imp: brain
     case brainSource = "brain_source"
     case brainSends = "brain_sends", brainTools = "brain_tools", brainNewChat = "brain_new_chat", brainCurrentChat = "brain_current_chat"
@@ -118,7 +118,6 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .talkingWaiting: Entry(page: .talking, title: "settings.talking.waiting.title", hint: "whether an Imp waits for another Imp's answer or goes on")
         case .talkingWindow: Entry(page: .talking, title: "settings.talking.window.title", hint: "how long before a chat starts over")
         case .brainsServices: Entry(page: .brains, title: "settings.group.brains", hint: "AI services the Imps can use, add an API, address, model, OpenAI, Claude, Ollama")
-        case .brainsKeychain: Entry(page: .brains, title: "settings.brains.keychain.title", hint: "where API keys are stored, the Keychain")
         case .brainsWait: Entry(page: .brains, title: "settings.brains.wait.title", hint: "how long to wait for an AI answer, timeout")
         case .brainsRetries: Entry(page: .brains, title: "settings.brains.retries.title", hint: "how many times to try again when a request fails")
         case .brainsFirstWait: Entry(page: .brains, title: "settings.brains.first_wait.title", hint: "how long to wait for the first word of an answer")
@@ -135,6 +134,7 @@ public enum SettingID: String, CaseIterable, Sendable {
         case .privacyComputer: Entry(page: .privacy, title: "settings.privacy.computer.title", hint: "permissions to see the screen, control the computer, accessibility, files")
         case .backupExport: Entry(page: .backup, title: "settings.backup.export.title", hint: "save a copy of all Imps and settings to a file")
         case .backupImport: Entry(page: .backup, title: "settings.backup.import.title", hint: "restore Imps and settings from a file")
+        case .backupFolder: Entry(page: .backup, title: "settings.backup.folder.title", hint: "where the configuration is kept, the folder imp.json and auth.json are in, shared with the terminal app")
         case .backupReset: Entry(page: .backup, title: "app.reset", hint: "erase everything and start over, factory reset")
         case .brainSource: Entry(page: .brain, title: "brain.source", hint: "use the shared Brain or its own one")
         case .brainSends: Entry(page: .brain, title: "memory.sends.title", hint: "how many of the latest messages go to the Brain with each one, memory, remembers")

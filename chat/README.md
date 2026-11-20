@@ -23,17 +23,18 @@ An Imp that works with the files of the folder you start the chat in:
 ```sh
 export OPENROUTER_API_KEY=sk-or-...        # never written to a file
 
-imp imp new Pip --model openai/gpt-6-luna --api-key-env OPENROUTER_API_KEY
-imp mcp add files -- npx -y @modelcontextprotocol/server-filesystem .
+imp provider add openrouter --url https://openrouter.ai/api/v1 --key-env OPENROUTER_API_KEY
+imp agent new Pip --model openrouter/openai/gpt-6-luna
+imp mcp add files --command npx -y @modelcontextprotocol/server-filesystem .
 
 cd ~/projects/my-app                        # the folder Pip works in
 imp                                         # the same as imp chat
 ```
 
-`imp imp new` asks for anything you leave out. The service address is OpenRouter's
-(`https://openrouter.ai/api/v1`) unless you give `--url`. In the server's arguments, `.` and
-`${workspaceFolder}` are the folder the chat is started in, so the same settings work in every folder.
-The Imp is told that folder too.
+`imp provider add` is a service, called by the short name you give it (`openrouter`); a model is written
+`provider/model`, with an optional `#variant` (`openai/gpt-6-luna#high`). `imp agent new` makes the Imp as a
+file in `~/.agents/agents`. In the server's arguments, `.` and `${workspaceFolder}` are the folder the chat
+is started in, so the same settings work in every folder. The Imp is told that folder too.
 
 Then ask, for example:
 
@@ -50,37 +51,40 @@ Then ask, for example:
   ⎿ Successfully wrote to /Users/me/projects/my-app/TODO.md
 ```
 
-Everything can also be done inside the chat: `/mcp add files npx -y @modelcontextprotocol/server-filesystem .`,
-`/model openai/gpt-6-luna`, `/api_key sk-or-...`. Type `/` to see the commands.
+Everything can also be done inside the chat with the same words: `/mcp add files --command npx -y
+@modelcontextprotocol/server-filesystem .`, `/model openrouter/openai/gpt-6-luna`, `/auth set openrouter`.
+Type `/` to see the commands.
 
 ## Commands
+
+Run `imp --help` for every command and `imp COMMAND --help` for one. Lists and details take `--json`.
 
 | command | what it does |
 |---|---|
 | `imp chat [--imp NAME]` | The full-screen chat. `--plain` for the line chat, `--offline` to stay off the link |
-| `imp imp new [NAME]` | Make an Imp. `--model`, `--url`, `--personality`, `--api-key-env`, `--default` |
-| `imp imp list`, `imp imp remove NAME` | List your Imps (`*` is the default one), remove one |
-| `imp imp set NAME KEY VALUE` | Change `model`, `base_url`, `personality`, `description`, `api_key_env` or `hue` |
-| `imp mcp add NAME -- COMMAND [ARGS...]` | Give an Imp an MCP server it starts. `--env VAR` passes a variable on |
-| `imp mcp add NAME URL` | An MCP server at an address. `--header NAME` sends a header |
-| `imp mcp list`, `imp mcp remove NAME` | List or remove servers. `--imp NAME` for an Imp that isn't the default |
-| `imp config`, `imp config show` | The settings and where each key comes from. The key itself is never shown |
-| `imp config path` | Print the path of the settings file |
-| `imp config set KEY VALUE` | Change `default_imp`, `api_key_env`, `retries`, `max_steps`, `memory_exchanges` or `long_chat_tokens`, such as `imp config set default_imp Pip` |
-| `imp config set-key [--imp NAME]` | Save a key in the system keychain (read from the first line of standard input) |
-| `imp config clear-key [--imp NAME]` | Remove a key from the system keychain |
-| `imp config set-header SERVER HEADER` | Save an MCP header's value in the system keychain (read from the first line of standard input) |
+| `imp agent list [--all]`, `show NAME` | The agents of `~/.agents/agents`; the Imps are the `primary` and `all` ones |
+| `imp agent new NAME` | Make one. `--description`, `--model`, `--mode`, `--color` |
+| `imp agent set NAME KEY VALUE` | Change `description`, `mode`, `model`, `variant`, `color`, `steps`, `hidden`, `disabled` or `prompt` (`-` clears) |
+| `imp agent edit NAME`, `rename OLD NEW`, `remove NAME` | Open the file in `$EDITOR`, rename it, remove it |
+| `imp provider list`, `add ID`, `set ID KEY VALUE`, `remove ID` | The services. `add` takes `--url`, `--name`, `--header NAME=VALUE`, `--key-env VAR` |
+| `imp auth set PROVIDER`, `clear PROVIDER`, `list` | Keys in `auth.json`. `set` reads the key from standard input. Keys are never shown |
+| `imp model [provider/model#variant] [--agent NAME]` | Show or choose the default model, or one agent's (`-` with `--agent`: the default again) |
+| `imp mcp list`, `add NAME`, `set`, `remove`, `enable`, `disable` | MCP servers: `--command PROGRAM ARGS` or `--url URL`, with `--env` and `--header`. `--agent NAME` for one Imp |
+| `imp permission list`, `add ACTION RESOURCE EFFECT`, `remove N` | Rules for what Imps may do. `--agent NAME` for one Imp |
+| `imp skill list`, `show NAME`; `imp command list`, `show NAME` | The skills and custom commands that were found |
+| `imp project`, `project trust`, `project untrust` | What this folder adds, and whether its settings run |
+| `imp config path`, `get [KEY]`, `set KEY VALUE`, `unset KEY` | `imp.json` by dotted key, such as `requests.retries` |
 | `imp qr` | Link a Mac or an iPhone: shows a code to scan, then stays online |
 | `imp link` | Stay online for your linked devices without a chat |
-| `imp serve` | Run the Den and the Hop on this computer. `--den-only` or `--hop-only` runs one, `--host ADDRESS` lets your network reach it |
+| `imp serve` | Run the Hop on this computer. `--host ADDRESS` lets your network reach it |
 | `imp qr TEXT` | Draw any text as a QR code |
 
 ## What the Imp remembers
 
 The chat shows everything that was said. What the model is sent is the Imp's memory of it, the same as
-in the Mac and iPhone apps: the latest exchanges (all of them by default, see `memory_exchanges`), with
+in the Mac and iPhone apps: the latest exchanges (all of them by default, see `imps.NAME.memory.exchanges`), with
 long tool results clipped. A message that failed or that you stopped still shows, but is not sent again.
-When a chat grows long (`long_chat_tokens`, 250,000 tokens by default) it says so once. `/compact` then
+When a chat grows long (`imps.NAME.memory.newChatAtTokens`, 250,000 tokens by default) it says so once. `/compact` then
 has the model sum up the chat so far. The summary goes in place of everything before the last exchange,
 so the chat carries on for less. `/clear` starts over.
 
@@ -110,7 +114,7 @@ An empty chat shows the Imp in the middle of the screen, with how to start and w
 - Enter sends. Alt+Enter, Shift+Enter or Ctrl+J adds a line. Pasting several lines works.
 - Type `/` to see the commands. Up and Down choose one, Tab or Right puts it in the message, and Enter runs it
   (a command that needs more, such as `/send DEVICE`, is completed instead). Esc closes the list. After a command
-  and a space, a line shows how to use it, and fixed choices such as `save` after `/api_key` are listed.
+  and a space, a line shows how to use it, and fixed choices such as `save` after `/auth` are listed.
 - Left, Right, Home, End (or Ctrl+A, Ctrl+E) move in the message. Alt or Ctrl with Left or Right moves by word.
   Backspace and Delete erase at the cursor, Ctrl+W (or Alt+Backspace) the word before it, Ctrl+U everything.
 - Up on the first line of the message brings back what you sent before, and each Up goes one message further
@@ -137,12 +141,23 @@ An empty chat shows the Imp in the middle of the screen, with how to start and w
   blank lines, takes two columns if the terminal is wide, and else scrolls with Up, Down and the wheel.
 - On a short terminal the message field loses its blank rows and the Imp's picture is left out.
 
+Models that think show it. While one thinks, a dim `Thinking` block streams its reasoning, the last four
+rows of it, so the screen does not jump. When the answer or a tool call starts, the block becomes one line,
+`✻ Thought for 3s`, like a tool call's `⏺` line. Click it, or press Ctrl+O (which opens the latest tool call
+or thought), to read the whole reasoning; the arrows walk between calls and thoughts. Every phase of thinking
+in a turn gets its own line, and they stay when you scroll back. The reasoning is only shown. It is never
+sent back to the model. Reasoning is read from `reasoning`, `reasoning_content` and `reasoning_details`
+(OpenRouter, DeepSeek, vLLM, LM Studio) and from a `<think>…</think>` block at the start of the reply (Ollama).
+
 `imp chat --plain` is the line chat. It is also used when the input or output is not a terminal, for
 example in a pipe. Answers go to standard output and everything else (tool calls, notes) to standard error:
 
 ```sh
 echo "Summarise notes.txt in one line" | imp chat --plain > summary.txt
 ```
+
+In the line chat, thinking shows as two lines on standard error, `✻ Thinking…` and then `✻ Thought for 3s`.
+The reasoning text itself is not printed.
 
 The look follows the apps as far as a terminal can: no boxes and no lines, the terminal's own background,
 and the only colours are the Imp's mark and red for problems. Colours come from `design/tokens.json`
@@ -153,31 +168,25 @@ or `LANG`. They live in `design/strings/cli.json`, and `node design/generate.mjs
 
 ## Chat commands
 
-Type them in the chat. Changes are saved to the settings file and take effect with the next message.
-`//text` sends a message that starts with `/`.
+Type them in the chat. They are the command line's words with a `/` in front of them (`imp model` is `/model`),
+and they change the same files, so the Mac app shows the change too. `//text` sends a message that starts
+with `/`.
 
 | command | what it does |
 |---|---|
-| `/help` | List the commands |
+| `/help` | List the commands, and your custom ones |
 | `/clear` | Start the conversation over |
 | `/compact` | Sum up the chat so far: the Imp goes on from the summary instead of everything said before (also `/recap`) |
 | `/quit` | Leave (also `/exit`) |
-| `/model [NAME]` | Show or change the model, such as `/model openai/gpt-6-luna` |
-| `/base_url [URL]` | Show or change the service address (an OpenAI-compatible `/v1` root) |
-| `/api_key [KEY]` | Show where the key comes from, or use `KEY` until the chat ends |
-| `/api_key save KEY` | Use it and keep it in the system keychain. `/api_key forget` removes it |
-| `/api_key_env [NAME]` | Read this Imp's key from another environment variable |
-| `/personality [TEXT]` | Show or change how the Imp behaves |
 | `/imp [NAME]` | List the Imps (and visitors), or talk to another one |
-| `/mcp` | List the MCP servers, with their tools or why they did not start |
-| `/mcp add NAME COMMAND [ARGS...]` | Add a server the chat starts. `--env VAR` passes a variable on |
-| `/mcp add NAME URL` | Add a server at an address. `--header NAME` sends a header |
-| `/mcp add {CONFIG}` | Add the servers of a pasted config, such as `{"mcpServers": {...}}`. Only the names of its variables and headers are kept |
-| `/mcp remove NAME`, `/mcp reload` | Remove a server, or start them all again |
-| `/tools`, `/tools off ID`, `/tools on ID` | List the tools by id, switch one off or on |
-| `/settings` | The Imp's settings, its folder and the settings file |
-| `/project` | What this folder's `AGENTS.md` and `.agents/` add (also `/skills`, `/agents`) |
-| `/project trust`, `/project untrust` | Start the MCP servers of the folder's `.agents/mcp.json`, or stop them |
+| `/model [provider/model#variant]` | Show or change the model |
+| `/agent …` | `list`, `show`, `new`, `set`, `rename`, `remove`: the same as `imp agent` (editing is for the terminal) |
+| `/provider …`, `/auth …` | Services and keys. `/auth set PROVIDER` asks for the key hidden; it is never shown or kept in the history |
+| `/mcp …` | `list` (with each server's tools, or why one did not start), `add`, `set`, `remove`, `enable`, `disable` |
+| `/permission …` | `list`, `add`, `remove` |
+| `/skill …`, `/command …` | `list` and `show` |
+| `/project …`, `/config …` | What the folder adds, trust; `imp.json` by key |
+| `/tools` | List the tools by id and whether the rules leave them on |
 | `/devices` | Linked devices, the Imps on their screens and the visitors here |
 | `/pair` | Show a code to link a Mac or an iPhone |
 | `/send DEVICE [IMP]` | Send this Imp (or another) to a linked device |
@@ -186,71 +195,90 @@ Type them in the chat. Changes are saved to the settings file and take effect wi
 | `/trust DEVICE [off]` | Let your Imps use their tools for one of your devices |
 | `/forget DEVICE` | End the link with a device |
 
-A key given to `/api_key` is never shown in the chat and never written to the settings file.
-
-Names that are close enough also work: `/exit`, `/q` and `/new` do what `/quit` and `/clear` do, and `/ex`
-already offers `/quit` in the list. `/help` also lists your custom commands.
+Names that are close enough also work, and typing a few letters is enough to find a command: `/ex` already
+offers `/quit`.
 
 ## Custom commands
 
-A file in `.agents/commands/` (in the project, or in `~/.agents/commands/` for every chat) is a command. Its
-name is the file name without `.md`, and its text is sent to the Imp when you type the command:
+A file `commands/NAME.md` in `~/.agents` (for every chat) or in a project's `.agents` is a command, run as
+`/NAME arguments`. Its text is the message the Imp gets:
 
-```text
-my-app/.agents/commands/review.md     contains:  Review $ARGUMENTS for bugs and missing tests.
+```markdown
+---
+description: Review a file
+agent: reviewer
+---
+Review $1 for bugs and missing tests. Also consider: $ARGUMENTS
 ```
 
 ```text
-› /review src/auth.rs
-› Review src/auth.rs for bugs and missing tests.
+› /review src/auth.rs the error handling
+› Review src/auth.rs for bugs and missing tests. Also consider: src/auth.rs the error handling
 ```
 
-- `$ARGUMENTS` is replaced by what follows the command. Without it, what follows is added after the text.
-- Names are letters, digits, `-` and `_`. A built-in command of the same name always wins.
-- A project's command replaces your home one of the same name.
-- Custom commands are in the `/` list after the built-in ones, and `/help` lists them. They need no
-  `/project trust`: they only send the text you wrote in the file, on a command you type.
+- `$ARGUMENTS` is everything after the name; `$1`, `$2` … are its words one by one. Without a placeholder,
+  what follows is added after the text.
+- `` !`cmd` `` is replaced by what the command prints (it needs the `shell` permission for that command line),
+  and `@path` by the file's contents (the `read` permission).
+- Front matter: `description` (shown in the `/` list), `agent` (the Imp that runs it), `model` (for this
+  message only) and `subtask: true` (a conversation of its own, whose answer is shown and not kept).
+- Names are 1 to 32 letters, digits, `-` and `_`. A built-in command of the same name always wins, and a
+  project's command replaces your home one of the same name.
+- `imp command list` shows what was found, and `imp command show NAME` one command. The Mac app lists them too.
+- They need no `/project trust`: they only send the text you wrote, on a command you type.
 
 The full guide, with examples, is in the documentation under *Terminal app* (`docs/apps/cli-commands.md`).
 
-## Settings file
+## Where everything is kept
 
-By default it is `config.toml` in the system's config folder for `imp` (`~/.config/imp/config.toml` on Linux,
-`~/Library/Application Support/imp-chat/config.toml` on a Mac). Use `--config FILE` or `IMP_CONFIG` for another
-one. `imp config path` prints it.
+The terminal app and the Mac app share one configuration; set something up in one and the other shows it
+(`docs/architecture/configuration.md` is the reference).
 
-On a Mac, `imp` keeps its settings and data in `~/Library/Application Support/imp-chat`, a folder of its own.
-Before imp-chat 1.5 it used `~/Library/Application Support/imp`, which is also the Mac app's `Imp` folder (a Mac
-ignores case in file names), where the app's Factory Reset would delete them. The first time a newer `imp`
-runs, it moves the files it made there (`config.toml`, `link-book`, `link-identity`, `talks` and the rest)
-into its own folder and leaves the app's files alone. While an older `imp` is still running, nothing moves
-until it ends.
+| what | where |
+|---|---|
+| Imps and other agents | `~/.agents/agents/NAME.md`: front matter, then the prompt |
+| Skills, custom commands, standing notes | `~/.agents/skills/NAME/SKILL.md`, `~/.agents/commands/NAME.md`, `~/.agents/AGENTS.md` |
+| Services, the default model, MCP servers, permissions, triggers, requests, link | `imp.json` in the config folder |
+| Keys and MCP sign-ins | `auth.json` in the config folder, readable by you only |
 
-```toml
-default_imp = "Pip"
-api_key_env = "IMP_API_KEY"   # the variable every Imp reads its key from, unless it names its own
-retries = 3                   # tries again after a failed request, 0 to 10
-max_steps = 10                # the most rounds of tool calls for one answer
-memory_exchanges = 0          # how many of the latest exchanges go with each message, 0 for all
-long_chat_tokens = 250000     # say a chat is long (and suggest /compact) at this many tokens, 0 never
+The config folder is `$IMP_CONFIG_HOME`, else `$XDG_CONFIG_HOME/imp`, else `~/.config/imp` (on a Mac too).
+`imp config path` prints the path of `imp.json`. What `imp` keeps only for itself (the link book and identity,
+saved conversations between Imps) is in a data folder of its own: `~/Library/Application Support/imp-chat` on a
+Mac, `IMP_DATA_DIR` for another. Files are written whole and renamed into place under a lock, after reading
+again, so the two apps never undo each other.
 
-[imps.Pip]
-id = "…"                      # made by imp, the same on every device it visits
-personality = "Friendly, curious and a little mischievous. Keeps answers short."
-base_url = "https://openrouter.ai/api/v1"
-model = "openai/gpt-6-luna"
-api_key_env = "OPENROUTER_API_KEY"   # optional, for this Imp only
-# hue = 0.57                  # its colour on other devices, 0 to 1 (taken from the name if left out)
-
-[imps.Pip.mcp_servers.files]
-command = "npx"
-args = ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
+```json
+{
+  "model": "openrouter/openai/gpt-6-luna",
+  "providers": {
+    "openrouter": { "name": "OpenRouter", "options": { "baseURL": "https://openrouter.ai/api/v1", "apiKey": "{env:OPENROUTER_API_KEY}" } }
+  },
+  "mcp": { "files": { "type": "local", "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"] } },
+  "permissions": [{ "action": "shell", "resource": "rm -rf *", "effect": "deny" }],
+  "requests": { "timeoutSeconds": 120, "retries": 3 },
+  "talk": { "threading": "decides", "windowMinutes": 60 }
+}
 ```
+
+```markdown
+---
+description: Friendly and brief
+mode: primary
+model: openrouter/openai/gpt-6-luna#high
+steps: 40
+---
+Friendly, curious and a little mischievous. Keeps answers short.
+```
+
+`{env:NAME}` in a value is the environment variable and `{file:path}` the file's contents. Settings only the
+Mac app has fields for (an Imp's character, size, memory, own animations, its id) are in `imp.json` under
+`imps.NAME`. `steps` is the most tool rounds for one answer, `imps.NAME.memory.exchanges` how many of the latest
+exchanges go with each message (0: all), and `imps.NAME.memory.newChatAtTokens` when a chat counts as long.
 
 ## AGENTS.md and the .agents folder
 
-A chat reads the files that other coding agents read too, from its folder's project: the nearest folder,
-from the one you start the chat in up, with a `.agents` folder or a `.git`.
+A chat reads the files that other coding agents read too, from its folder's project: every folder from the
+one you start the chat in up to the git root (or your home folder).
 
 ```text
 my-app/
@@ -259,91 +287,57 @@ my-app/
   .agents/
     AGENTS.md                     instructions too
     skills/release-notes/SKILL.md a skill
-    agents/Pip.md                 the Imp Pip, in this folder
+    agents/review.md              the agent review, in this folder
     commands/review.md            the command /review
-    mcp.json                      MCP servers for every Imp here
+    imp.json                      services, MCP servers and permissions, once you trust them
 ```
 
 - **AGENTS.md** goes in the system text, after who the Imp is, in the order above (32 KB at most). That
-  is where standing rules belong: the model gives the system text the most weight, it holds for the whole
-  chat and after `/clear`, and it stays the same from message to message, so services that cache the start
-  of a request can reuse it.
+  is where standing rules belong.
 - **Skills** follow the [Agent Skills](https://agentskills.io) format: a `SKILL.md` whose front matter has a
-  `name` (lowercase letters, digits and dashes) and a `description` of when to use it. Only the names and
-  descriptions go in the system text. The Imp gets a tool, `use_skill`, that reads the whole skill and lists
-  the files beside it when a task needs it, so many skills cost few words. `/tools off own.skills.use_skill`
-  switches it off.
-- **agents/NAME.md** is the whole Imp NAME for this folder. The front matter can have `model`, `base_url`,
-  `api_key_env: NAME` (or `api_key: ${NAME}`: the environment variable that holds the key, never the key
-  itself), `tools` (only these are on: tool names such as `read_file`, ids such as `mcp.files.read_file`, or
-  servers such as `mcp.files`), `disallowedTools`, `hue` and `default: true` (the Imp a chat in this
-  folder opens with). The text under it is how the Imp behaves. What a file leaves out comes from your
-  default Imp, and an Imp that is not in your settings file exists only in this folder.
+  `name` (the folder's name: lowercase letters, digits and dashes) and a `description` of when to use it.
+  Only names and descriptions go in the system text; the Imp's `skill` tool reads the whole skill when a task
+  needs it, so many skills cost few words. A `deny` rule on `skill` switches it off.
+- **agents/NAME.md** is an agent (see above). A nearer folder wins over a farther one, and a project wins
+  over `~/.agents`, by name: the project's `review.md` replaces your `review` there.
+- **.agents/imp.json** may add services, MCP servers and permissions. Because those start programs and send
+  keys, they wait until you allow them with `imp project trust`; if the file changes, they wait again.
+  `imp project untrust` turns them off. Agents, skills, commands and `AGENTS.md` are text, read at once.
 
-  ```markdown
-  ---
-  description: Reviews changes before they are merged
-  default: true
-  base_url: https://openrouter.ai/api/v1
-  api_key: ${OPENROUTER_API_KEY}
-  model: openai/gpt-6-luna
-  tools: [read_file, search_files, use_skill, imp_message]
-  ---
-  You review code. Say what could break, most serious first, and keep it short.
-  ```
-
-  The Imps of a folder message each other with `imp_message` as the Imps of the settings file do: with
-  `Pip.md` and `Dot.md`, `Pip` can ask `Dot`, who answers with its own service, model and personality.
-- **mcp.json** lists servers the usual way: `{"mcpServers": {"NAME": {"command": ..., "args": [...],
-  "env": {...}}}}` or `{"url": ..., "headers": {...}}`. Values can be written in it or taken from the
-  environment with `${NAME}` (or `${NAME:-default}`), and `${workspaceFolder}` is the chat's folder. An
-  Imp's own server of the same name wins.
-- **Trust.** A downloaded project could start programs (its MCP servers) or send your key to its own
-  address (`base_url` with `api_key_env`). So a project's servers and its Imps' `base_url` and key variable
-  are not used until you allow them with `/project trust`. Until then those Imps use your default Imp's
-  service, and the chat says what waits. If any of them changes, they wait to be allowed again.
-  `/project untrust` turns them off.
-
-The same layout in your home folder (`~/.agents/AGENTS.md`, `~/.agents/skills/`, `~/.agents/agents/`,
-`~/.agents/mcp.json`) is yours, read in every chat and trusted. A project's skill or Imp replaces yours of
-the same name. `/project` shows what was found, and problems with the files are shown when the chat starts.
+The same layout in `~/.agents` is yours, read in every chat and trusted. `imp project` shows what was found,
+and problems with files are shown when the chat starts.
 
 ## Tools through MCP servers
 
 An Imp can use tools from MCP servers. A server is either a program on your computer, which is started when
-the chat starts and stopped when it ends, or a service reached over HTTP. Add them with `imp mcp add` or
-`/mcp add`, or in the settings file. Only the NAMES of environment variables and headers are listed. Their
-values are never stored in that file.
+the chat starts and stopped when it ends, or a service reached over HTTP. Every Imp may use every server;
+a rule turns one off for an Imp. Add them with `imp mcp add` or `/mcp add`, or in `imp.json`:
 
-```toml
-[imps.Pip]
-tools_off = ["mcp.files.write_file"]  # tools this Imp must not use, by id
-
-[imps.Pip.mcp_servers.files]
-command = "npx"
-args = ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}", "~/notes"]
-
-[imps.Pip.mcp_servers.github]
-command = "npx"
-args = ["-y", "@modelcontextprotocol/server-github"]
-env = ["GITHUB_PERSONAL_ACCESS_TOKEN"]
-
-[imps.Pip.mcp_servers.search]         # a server reached over HTTP
-url = "https://mcp.example.org/mcp"
-headers = ["Authorization"]
+```json
+{
+  "mcp": {
+    "files": { "type": "local", "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}", "~/notes"] },
+    "github": { "type": "local", "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
+                "environment": { "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_TOKEN}" } },
+    "search": { "type": "remote", "url": "https://mcp.example.org/mcp", "headers": { "Authorization": "Bearer {env:SEARCH_KEY}" } }
+  },
+  "permissions": [{ "action": "mcp", "resource": "files/write_file", "effect": "deny" }]
+}
 ```
 
-- In `command` and `args`, `${workspaceFolder}` and `${cwd}` are the folder the chat is started in, and a
-  leading `~/` is your home folder. A plain `.` works too, because the server starts in that folder.
-- A server has a `command` (with `args` and `env`) or a `url` (with `headers`), never both.
+- In `command`, `${workspaceFolder}` is the folder the chat is started in, and a leading `~/` is your home
+  folder. A plain `.` works too, because the server starts in that folder.
+- A server is `local` (`command`, `environment`) or `remote` (`url`, `headers`), never both. Values can use
+  `{env:NAME}`, so a secret stays in your environment.
+- A remote server that asks you to sign in (OAuth) is signed in once, in the Mac app or here, and the sign-in
+  is kept in `auth.json` for both.
 - Imp speaks the Streamable HTTP transport: it posts each message to the address, accepts a JSON answer or an
-  event stream, and keeps the session the server starts. The value of a header is read from the environment
-  variable `IMP_MCP_<SERVER>_<HEADER>` in capitals (for the example, `IMP_MCP_SEARCH_AUTHORIZATION`), or else from the
-  system keychain, where `imp config set-header search Authorization` saves it.
+  event stream, and keeps the session the server starts.
 - Tool ids look like `mcp.SERVER.TOOL` for MCP tools and `own.GROUP.TOOL` for the ones that come with `imp`.
-  `/tools` lists them. Tools in `tools_off` are not offered, and a call to one is refused.
-- When a tool is called, the result goes back to the model, which can call more tools, up to `max_steps`
-  rounds. After the last one, the model is asked once more for a plain answer.
+  `/tools` lists them. A tool a rule denies (`mcp` with `server/tool`, or the group's action) is not offered,
+  and a call to one is refused. `imp mcp disable NAME --agent IMP` writes the rule for one Imp.
+- When a tool is called, the result goes back to the model, which can call more tools, up to the agent's
+  `steps`. After the last one, the model is asked once more for a plain answer.
 - A server that does not start is shown with the reason, and the chat goes on without it.
 
 ## Imps talking to each other
@@ -353,7 +347,7 @@ The guide to Imps that a project shares, such as a reviewer and a researcher, wi
 
 When you have more than one Imp, each can send a message to the others with the `imp_message` tool, as in the
 Mac and iPhone apps. The other Imp answers with its own model and personality, without tools of its own. The
-chat shows the message (`⇢`) and the answer (`⇠`). The tool id is `own.personality.imp_message`, so `tools_off` can
+chat shows the message (`⇢`) and the answer (`⇠`). The tool id is `own.personality.imp_message`, so a `deny` rule can
 switch it off.
 
 While the chat is online (see below), the Imps on your Mac's and iPhone's screens can be messaged too, and
@@ -362,16 +356,16 @@ called `name@Device`.
 
 The tool has an optional `conversation` choice, `new` or `continue`. If the Imp says nothing, the
 conversation continues when the last message between the two is younger than the window. Conversations are
-saved per pair of Imps in the data folder (`talks` inside it). Two settings at the top of the settings file
-change the rule:
+saved per pair of Imps in the data folder (`talks` inside it). Two settings in `imp.json` change the rule:
 
-```toml
-talk_window_minutes = 60        # default 60, at most 10080
-talk_threading = "decides"      # decides (default), recent, always or never
+```json
+{ "talk": { "windowMinutes": 60, "threading": "decides" } }
 ```
 
+`windowMinutes` is at most 10080; `threading` is `decides` (default), `recent`, `always` or `never`.
+
 Other Imps read what an Imp says about itself. Give it a sentence on what it is for, as `description` in
-`[imps.NAME]` (or `imp imp set NAME description TEXT`) or in the front matter of its `.agents/agents/*.md` file. The
+its agent file (`imp agent set NAME description TEXT`). The
 tool lists it next to the Imp's name, as information and never as instructions, and it goes to your other
 devices too, with the Imp's abilities (`shell` when its shell tool is on, and the names of its MCP servers).
 Messages to several Imps in one reply run at the same time.
@@ -420,10 +414,8 @@ The link itself (identity, handshake, tickets, the book of linked devices) is th
 `imp-engine`. The identity key is never printed. It is kept in the file `link-identity` in the data folder, which
 only you can read (as `~/.ssh` keeps a key), and the book file `link-book` next to it holds the rest. Each data
 folder (`--data-dir`, `IMP_DATA_DIR`) has its own key. Nothing about the link touches the system keychain, so
-the chat never asks for your password. An older `imp` kept the key in the keychain: run `imp link` (or
-`imp qr`, or `/devices` in the chat) once to move it into the file. Until then the chat starts without your
-devices and says so. The terminal does not share files with the apps yet, and an iPhone Imp can't move in for
-good here (`adopt`): send it over to visit instead.
+the chat never asks for your password. The link's identity and book are the terminal's own (the apps keep theirs), so each shows up as its own
+device. An iPhone Imp can't move in for good here (`adopt`): send it over to visit instead.
 
 `imp qr TEXT` draws any text as a QR code instead, for example a kit address to open on a phone. The code is
 always drawn in black on white with a quiet zone of four modules, whatever colours the terminal has, so a
@@ -431,25 +423,24 @@ phone can read it.
 
 ## API keys
 
-A key is never printed and never written to the settings file. It is looked up in this order:
+A key is never printed and never written to `imp.json`. A service's key is, in this order:
 
-1. A key given in the chat with `/api_key KEY`, until the chat ends.
-2. The environment variable named by the Imp's `api_key_env`, or else the global `api_key_env`
-   (`IMP_API_KEY` by default).
-3. The system keychain, where `imp config set-key --imp NAME` or `/api_key save KEY` saves it.
-   `imp config clear-key` or `/api_key forget` removes it.
+1. `options.apiKey` in `imp.json` when it is set, usually `{env:NAME}` (`imp provider add ID --key-env NAME`).
+2. The key saved for it in `auth.json`, by `imp auth set PROVIDER` or `/auth set PROVIDER` (typed hidden, or the
+   first line of standard input). `imp auth clear PROVIDER` removes it, `imp auth list` shows which services
+   have one and from where, never the key.
 
-The keychain is read only when the environment variable is empty, so a key in the environment never brings a
-password prompt. On macOS, a key saved in the keychain makes the Keychain ask once after each update of `imp`
-(a new build is a new program to it): choose "Always Allow", or keep the key in the environment instead.
+`auth.json` is readable by you only (mode 0600), and is the same file the Mac app keeps its keys in. Nothing
+uses the system keychain, so a chat never asks for your password.
 
 ## Environment variables
 
-- `IMP_API_KEY` holds the API key (the name can be changed in the settings, per Imp too).
-- `IMP_CONFIG` is the path of the settings file.
+- `IMP_CONFIG_HOME` is the config folder (`imp.json`, `auth.json`), instead of `$XDG_CONFIG_HOME/imp` or
+  `~/.config/imp`.
 - `IMP_DATA_DIR` is the folder for saved data: conversations between Imps and the link book. `imp serve`,
   `imp qr` and `imp link` read it too.
 - `IMP_HOP` is the Hop to meet linked devices at, as `host:port`.
+- Any variable a provider or MCP server names with `{env:NAME}`, such as `OPENROUTER_API_KEY`.
 - `IMP_LINK_LOG` is a file to add a line to for each event of the link (connected, disconnected, each
   message's kind and size, passes), with the time. Never what was said, a key or a ticket. For finding out
   why a connection dropped or an Imp went astray.
@@ -479,10 +470,10 @@ programs in `server/den` and `server/hop` and the Docker image are separate and 
 | file | what it is |
 |---|---|
 | `cli.rs` | the command line grammar (`imp --help`) |
-| `commands/` | what each command does: `chat`, `imps`, `mcp_cmd`, `config_cmd`, `serve` |
-| `config.rs`, `keys.rs` | the settings file, and where keys come from |
+| `commands/` | what each command does: `chat`, `reply`, `serve`, and `manage/` (agents, providers, auth, models, MCP, permissions, skills, commands, project, config) |
+| `settings.rs` | what the chat takes from the shared configuration: the model, steps, memory, talk rules |
 | `folders.rs` | the settings and data folders, and the move of files from older builds |
-| `project.rs` | the `AGENTS.md`, `.agents/` and `mcp.json` files of a folder |
+| `project.rs` | the `AGENTS.md` and `.agents/` files of a folder |
 | `session.rs` | an Imp ready to chat: model client, MCP servers, tools. Rebuilt as `/` commands change it |
 | `slash.rs` | the `/` commands, shared by both chats |
 | `chat_state.rs`, `transcript.rs` | the conversation, and how tool calls read in one line |

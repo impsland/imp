@@ -15,9 +15,8 @@
 use super::runner::{NodeHandle, Runner, now};
 use super::{BookFile, SeedStore, local_hosts, new_device_id};
 use crate::chat_state::ChatState;
-use crate::config::Config;
-use crate::keys;
-use crate::session::{Session, SessionOptions, data_dir, look_of};
+use crate::session::{Session, SessionOptions, data_dir};
+use crate::settings::{self, Settings};
 use crate::troupe::{self, Remote, RemoteImp};
 use crate::{CliError, Result};
 use futures_util::StreamExt;
@@ -61,19 +60,22 @@ pub struct DeviceOptions {
     pub hop: Option<String>,
     /// Where the book is kept.
     pub data_dir: PathBuf,
-    /// The settings file, for this computer's Imps.
-    pub config: PathBuf,
+    /// The configuration, for this computer's Imps. Without it there are none.
+    pub settings: Option<Settings>,
     /// The folder a home answer works in (an Imp's file tools use it).
     pub workspace: Option<PathBuf>,
 }
 
 impl DeviceOptions {
-    /// The usual data folder and the given settings file.
-    pub fn usual(config: &Path) -> Result<Self> {
+    /// The usual data folder and the given configuration.
+    pub fn usual(settings: &Settings) -> Result<Self> {
         Ok(Self {
             data_dir: data_dir()?,
-            config: config.to_path_buf(),
-            hop: keys::real_env("IMP_HOP").filter(|h| !h.trim().is_empty()),
+            workspace: Some(settings.workspace.clone()),
+            settings: Some(settings.clone()),
+            hop: std::env::var("IMP_HOP")
+                .ok()
+                .filter(|h| !h.trim().is_empty()),
             ..Self::default()
         })
     }
@@ -190,7 +192,7 @@ pub struct Device {
     handle: NodeHandle,
     events: mpsc::UnboundedReceiver<Event>,
     shared: Rc<RefCell<Shared>>,
-    config: PathBuf,
+    settings: Option<Settings>,
     workspace: Option<PathBuf>,
     /// Where conversations between Imps are kept.
     talks: PathBuf,
@@ -313,6 +315,14 @@ pub fn reach_note(routes: &LinkRoutes) -> String {
 }
 
 impl Device {
+    /// The configuration of this computer's Imps, read now.
+    fn load(&self) -> Result<imp_engine::config::Loaded> {
+        self.settings
+            .as_ref()
+            .map(Settings::load)
+            .ok_or_else(|| CliError("This computer has no Imps to send.".into()))
+    }
+
     /// Starts this computer on the link: the lock, the book, the listener and the node.
     pub async fn start(
         options: &DeviceOptions,
@@ -342,7 +352,7 @@ impl Device {
                 name: me.name,
                 ..Shared::default()
             })),
-            config: options.config.clone(),
+            settings: options.settings.clone(),
             workspace: options.workspace.clone(),
             talks: options.data_dir.join("talks"),
             homes: HashMap::new(),
@@ -448,9 +458,10 @@ impl Device {
         messages: Vec<ChatMessage>,
         to: &Peer,
     ) -> Result<()> {
-        let config = Config::load_with_ids(&self.config)?;
-        let (name, imp) = config.pick_imp(Some(name))?;
-        let look = look_of(name, imp);
+        let loaded = self.load()?;
+        let agent = &settings::find_imp(&loaded, Some(name))?.value;
+        let name = agent.name.as_str();
+        let look = settings::look_of(&loaded, agent, &settings::servers_of(&loaded, agent));
         if let Some(on) = self.away_on(look.id) {
             return Err(CliError(format!(
                 "{name} is on {on} already. Use /call {name} to bring it back first."
@@ -504,9 +515,9 @@ impl Device {
 
     /// Brings an Imp of this computer back from the device that holds it.
     pub async fn call_home(&mut self, name: &str) -> Result<Update> {
-        let config = Config::load_with_ids(&self.config)?;
-        let (name, imp) = config.pick_imp(Some(name))?;
-        let id = imp.id.unwrap_or_else(Uuid::nil);
+        let loaded = self.load()?;
+        let name = settings::find_imp(&loaded, Some(name))?.value.name.as_str();
+        let id = settings::imp_id(&loaded, name);
         let holder = self
             .handle
             .with(move |node, _| node.call_home(id))
@@ -938,12 +949,13 @@ impl Device {
         match passed.outcome {
             PassOutcome::Took if sending.ours => {
                 self.shared.borrow_mut().away.insert(passed.imp, passed.to);
-                let system = Config::load(&self.config)
+                let system = self
+                    .load()
                     .ok()
-                    .and_then(|c| {
-                        c.imps
-                            .get(&sending.name)
-                            .map(|i| crate::session::system_prompt(&sending.name, i))
+                    .and_then(|l| {
+                        l.agents.get(&sending.name).map(|a| {
+                            settings::system_prompt(&a.value, l.config.imps.get(&sending.name))
+                        })
                     })
                     .unwrap_or_default();
                 let chat = ChatState::from_messages(system, sending.messages);
@@ -1004,8 +1016,13 @@ impl Device {
         self.ensure_home(imp);
         let handle = self.handle.clone();
         let device = self.peer_name(from).unwrap_or_else(|| "a device".into());
-        let config = self.config.clone();
-        let workspace = self.workspace.clone();
+        let settings = self.settings.clone().map(|s| match &self.workspace {
+            Some(w) => Settings {
+                workspace: w.clone(),
+                ..s
+            },
+            None => s,
+        });
         let Some(home) = self.homes.get_mut(&imp) else {
             return;
         };
@@ -1030,21 +1047,21 @@ impl Device {
                 .with(move |node, _| node.is_trusted(from))
                 .await
                 .unwrap_or(false);
-            let session = match session {
-                Some(s) => Some(s),
-                None => Session::open(
-                    &config,
+            let session = match (session, settings) {
+                (Some(s), _) => Some(s),
+                (None, Some(settings)) => Session::open(
+                    &settings,
                     Some(&name),
                     SessionOptions {
-                        workspace,
                         remote: None,
-                        agents_home: None,
                         answers_later: false,
+                        asker: None,
                     },
                 )
                 .await
                 .ok()
                 .map(Rc::new),
+                (None, None) => None,
             };
             let started = now();
             let mut turn = LinkTurn {
@@ -1076,23 +1093,29 @@ impl Device {
                 }),
             ));
             let mut messages = chat.request_messages_with(&s.system);
-            let toolbox = if trusted {
-                (*s.toolbox).clone()
-            } else {
-                imp_engine::Toolbox::new()
-            };
+            let selection = imp_engine::ToolSelection::all();
+            let no_tools = imp_engine::Toolbox::new();
+            let toolbox: &dyn imp_engine::ToolHost = if trusted { &*s.toolbox } else { &no_tools };
             let partial = RefCell::new(String::new());
             let status = RefCell::new(None::<String>);
             let steps = RefCell::new(Vec::<String>::new());
+            // When the model began thinking. Only that it thought goes to the other device, as a step.
+            let thinking = RefCell::new(None::<Instant>);
             let last = RefCell::new(Instant::now());
             let run = run_agent(
                 &s.client,
                 &s.model,
                 &mut messages,
-                &toolbox,
-                &s.selection,
+                toolbox,
+                &selection,
                 s.max_steps,
                 |event| {
+                    if let AgentEvent::Stream(StreamEvent::Reasoning(_)) = &event {
+                        thinking.borrow_mut().get_or_insert_with(Instant::now);
+                    } else if let Some(since) = thinking.borrow_mut().take() {
+                        let seconds = since.elapsed().as_secs_f64().ceil().max(1.0);
+                        steps.borrow_mut().push(format!("Thought for {seconds}s"));
+                    }
                     match &event {
                         AgentEvent::Stream(StreamEvent::Text(t)) => {
                             partial.borrow_mut().push_str(t)
@@ -1171,20 +1194,15 @@ impl Device {
             imp: target.clone(),
             line: format!("{} (on {device}) messages {target}: {text}", asker.name),
         });
-        let config_path = self.config.clone();
+        let settings = self.settings.clone();
         let talks = self.talks.clone();
         self.jobs.push(Box::pin(async move {
             let answer = async {
-                let config = Config::load(&config_path).map_err(|e| e.0)?;
+                let loaded = settings.ok_or("This computer has no Imps.")?.load();
                 let store = TalkStore::new(talks);
-                let global = config.clone();
-                let lookup: troupe::KeyLookup = Box::new(move |n, i| {
-                    keys::find(&global, n, i, keys::real_env, keys::real_keychain).map(|k| k.key)
-                });
                 troupe::answer_here(
-                    &config,
+                    &loaded,
                     &store,
-                    &lookup,
                     &asker.name,
                     &target,
                     &text,
@@ -1311,19 +1329,24 @@ impl Device {
 
     /// Tells a holder everything about an Imp of this computer: how it looks, its brain, its chat.
     fn send_everything(&mut self, imp: Uuid, holder: Uuid) {
-        let Ok(config) = Config::load_with_ids(&self.config) else {
+        let Ok(loaded) = self.load() else {
             return;
         };
-        let Some((name, settings)) = config.imp_by_id(imp) else {
+        let Some(found) = settings::imp_by_id(&loaded, imp) else {
             return;
         };
-        let look = look_of(name, settings);
+        let look = settings::look_of(
+            &loaded,
+            &found.value,
+            &settings::servers_of(&loaded, &found.value),
+        );
         let turns = self
             .homes
             .get(&imp)
             .map(|h| tail(&h.turns))
             .unwrap_or_default();
-        let ready = !settings.model.trim().is_empty();
+        let ready =
+            imp_engine::config::resolve(&loaded.config, &loaded.auth, &found.value, None).is_ok();
         self.handle.post(move |node, _| {
             let tools = node.is_trusted(holder);
             for m in [
@@ -1403,8 +1426,8 @@ impl Device {
     }
 
     fn imp_name(&self, imp: Uuid) -> Option<String> {
-        let config = Config::load(&self.config).ok()?;
-        config.imp_by_id(imp).map(|(n, _)| n.to_string())
+        let loaded = self.load().ok()?;
+        settings::imp_by_id(&loaded, imp).map(|a| a.value.name.clone())
     }
 
     fn peer_name(&self, device: Uuid) -> Option<String> {
@@ -1469,7 +1492,7 @@ impl Device {
 
     /// Tells every device which Imps are on this computer's screen: its own at home, and its visitors.
     fn publish_stage(&mut self) {
-        let Ok(config) = Config::load_with_ids(&self.config) else {
+        let Ok(loaded) = self.load() else {
             return;
         };
         let (me, away, visitors) = {
@@ -1487,10 +1510,9 @@ impl Device {
                     .collect::<Vec<_>>(),
             )
         };
-        let mut stage: Vec<LinkStaged> = config
-            .imps
-            .iter()
-            .map(|(name, imp)| look_of(name, imp))
+        let mut stage: Vec<LinkStaged> = loaded
+            .imps()
+            .map(|a| settings::look_of(&loaded, &a.value, &settings::servers_of(&loaded, &a.value)))
             .filter(|look| !away.contains(&look.id))
             .map(|imp| LinkStaged { imp, home: me })
             .collect();

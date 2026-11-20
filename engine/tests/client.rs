@@ -152,3 +152,59 @@ async fn does_not_retry_a_401_and_gives_up_after_the_limit() {
     assert!(matches!(err, ChatError::Http { status: 503, .. }));
     assert_eq!(count.load(Ordering::SeqCst), 3);
 }
+
+#[tokio::test]
+async fn streams_reasoning_in_every_spelling_and_keeps_it_out_of_the_answer() {
+    let (url, _, _) = mock(vec![sse(&[
+        r#"{"choices":[{"delta":{"content":"","reasoning":"a","reasoning_details":[{"type":"reasoning.text","text":"a"}]}}]}"#,
+        r#"{"choices":[{"delta":{"reasoning_content":"b"}}]}"#,
+        r#"{"choices":[{"delta":{"content":"Done","role":"assistant"},"finish_reason":"stop"}]}"#,
+        "[DONE]",
+    ])])
+    .await;
+    let client = OpenAiClient::new(&url, None, fast()).unwrap();
+    let mut pieces = Vec::new();
+    let reply = client
+        .stream(
+            "m",
+            &[ChatMessage::user("hi")],
+            &[],
+            |e| pieces.push(e.clone()),
+            |_| {},
+        )
+        .await
+        .unwrap();
+    assert_eq!(reply.reasoning, "ab");
+    assert_eq!(reply.text, "Done");
+    assert_eq!(pieces[0], StreamEvent::Reasoning("a".into()));
+    assert_eq!(pieces[1], StreamEvent::Reasoning("b".into()));
+}
+
+#[tokio::test]
+async fn splits_a_think_block_out_of_streamed_content() {
+    let (url, _, _) = mock(vec![sse(&[
+        r#"{"choices":[{"delta":{"content":"<thi"}}]}"#,
+        r#"{"choices":[{"delta":{"content":"nk>so"}}]}"#,
+        r#"{"choices":[{"delta":{"content":"</think>\n\nYes"},"finish_reason":"stop"}]}"#,
+        "[DONE]",
+    ])])
+    .await;
+    let client = OpenAiClient::new(&url, None, fast()).unwrap();
+    let mut pieces = Vec::new();
+    let reply = client
+        .stream(
+            "m",
+            &[ChatMessage::user("hi")],
+            &[],
+            |e| pieces.push(e.clone()),
+            |_| {},
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        (reply.reasoning.as_str(), reply.text.as_str()),
+        ("so", "Yes")
+    );
+    assert!(pieces.contains(&StreamEvent::Reasoning("so".into())));
+    assert!(pieces.contains(&StreamEvent::Text("Yes".into())));
+}

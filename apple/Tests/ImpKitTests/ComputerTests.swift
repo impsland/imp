@@ -16,10 +16,10 @@ private struct PictureTools: ToolProvider {
 /// Part of BrainTests (same serialized suite): they share the stubbed network queue.
 extension BrainTests {
     private func pictureAgent(_ replies: [String]) throws -> Agent {
-        StubProtocol.lock.withLock { StubProtocol.queue = replies }
+        let base = StubProtocol.serve(replies)
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [StubProtocol.self]
-        let client = try OpenAIClient(baseURL: "https://example.test/v1", apiKey: "k", session: URLSession(configuration: config))
+        let client = try OpenAIClient(baseURL: base, apiKey: "k", session: URLSession(configuration: config))
         return Agent(client: client, model: "m", tools: PictureTools(), maxSteps: 8)
     }
 

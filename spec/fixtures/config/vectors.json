@@ -1,0 +1,534 @@
+{
+  "model_refs": [
+    {
+      "text": "ollama/qwen3.8#high",
+      "provider": "ollama",
+      "model": "qwen3.8",
+      "variant": "high"
+    },
+    {
+      "text": "ollama/qwen3.8",
+      "provider": "ollama",
+      "model": "qwen3.8",
+      "variant": null
+    },
+    {
+      "text": "openrouter/openai/gpt-6-luna",
+      "provider": "openrouter",
+      "model": "openai/gpt-6-luna",
+      "variant": null
+    },
+    {
+      "text": "a/b/c#v",
+      "provider": "a",
+      "model": "b/c",
+      "variant": "v"
+    },
+    {
+      "text": "model",
+      "error": true
+    },
+    {
+      "text": "/m",
+      "error": true
+    },
+    {
+      "text": "p/",
+      "error": true
+    },
+    {
+      "text": "p/m#",
+      "error": true
+    },
+    {
+      "text": "p/m#a#b",
+      "error": true
+    },
+    {
+      "text": "#v",
+      "error": true
+    }
+  ],
+  "globs": [
+    {
+      "pattern": "*",
+      "text": "",
+      "matches": true
+    },
+    {
+      "pattern": "a*c",
+      "text": "ac",
+      "matches": true
+    },
+    {
+      "pattern": "a*c",
+      "text": "abd",
+      "matches": false
+    },
+    {
+      "pattern": "a?c",
+      "text": "ac",
+      "matches": false
+    },
+    {
+      "pattern": "files/*",
+      "text": "files/read",
+      "matches": true
+    },
+    {
+      "pattern": "*.md",
+      "text": "a/b.md",
+      "matches": true
+    },
+    {
+      "pattern": "*a*b*",
+      "text": "xbxa",
+      "matches": false
+    }
+  ],
+  "substitution": {
+    "env": {
+      "KEY": "abc",
+      "EMPTY": ""
+    },
+    "cases": [
+      {
+        "input": "Bearer {env:KEY}",
+        "output": "Bearer abc",
+        "problems": 0
+      },
+      {
+        "input": "a{env:NOPE}b",
+        "output": "ab",
+        "problems": 1
+      },
+      {
+        "input": "[{env:EMPTY}]",
+        "output": "[]",
+        "problems": 0
+      },
+      {
+        "input": "{ \"json\": 1 }",
+        "output": "{ \"json\": 1 }",
+        "problems": 0
+      },
+      {
+        "input": "{env:bad name}",
+        "output": "{env:bad name}",
+        "problems": 0
+      },
+      {
+        "input": "${KEY}",
+        "output": "${KEY}",
+        "problems": 0
+      }
+    ]
+  },
+  "decide": [
+    {
+      "name": "no rule allows",
+      "rules": [],
+      "action": "shell",
+      "resource": "ls",
+      "effect": "allow"
+    },
+    {
+      "name": "the last match wins",
+      "rules": [
+        {
+          "action": "shell",
+          "resource": "*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "git *",
+          "effect": "allow"
+        },
+        {
+          "action": "shell",
+          "resource": "git push*",
+          "effect": "deny"
+        }
+      ],
+      "checks": [
+        {
+          "action": "shell",
+          "resource": "ls",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "git status",
+          "effect": "allow"
+        },
+        {
+          "action": "shell",
+          "resource": "git push -f",
+          "effect": "deny"
+        },
+        {
+          "action": "read",
+          "resource": "x",
+          "effect": "allow"
+        }
+      ]
+    },
+    {
+      "name": "mcp tools by server",
+      "rules": [
+        {
+          "action": "mcp",
+          "resource": "files/*",
+          "effect": "deny"
+        }
+      ],
+      "checks": [
+        {
+          "action": "mcp",
+          "resource": "files/read",
+          "effect": "deny"
+        },
+        {
+          "action": "mcp",
+          "resource": "web/get",
+          "effect": "allow"
+        }
+      ]
+    }
+  ],
+  "defaults": [
+    {
+      "group": "personality",
+      "enabled": true
+    },
+    {
+      "group": "look",
+      "enabled": true
+    },
+    {
+      "group": "animations",
+      "enabled": true
+    },
+    {
+      "group": "triggers",
+      "enabled": true
+    },
+    {
+      "group": "tools",
+      "enabled": true
+    },
+    {
+      "group": "senses",
+      "enabled": true
+    },
+    {
+      "group": "computer",
+      "enabled": false
+    }
+  ],
+  "set_group": [
+    {
+      "name": "off writes the deny rule",
+      "config": [],
+      "before": [],
+      "group": "triggers",
+      "on": false,
+      "after": [
+        {
+          "action": "triggers",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ]
+    },
+    {
+      "name": "on removes it",
+      "config": [],
+      "before": [
+        {
+          "action": "triggers",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ],
+      "group": "triggers",
+      "on": true,
+      "after": []
+    },
+    {
+      "name": "computer is opt-in",
+      "config": [],
+      "before": [],
+      "group": "computer",
+      "on": true,
+      "after": [
+        {
+          "action": "computer",
+          "resource": "*",
+          "effect": "allow"
+        }
+      ]
+    },
+    {
+      "name": "computer off needs no rule",
+      "config": [],
+      "before": [
+        {
+          "action": "computer",
+          "resource": "*",
+          "effect": "allow"
+        }
+      ],
+      "group": "computer",
+      "on": false,
+      "after": []
+    },
+    {
+      "name": "imp.json denies, the agent opts in",
+      "config": [
+        {
+          "action": "look",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ],
+      "before": [],
+      "group": "look",
+      "on": true,
+      "after": [
+        {
+          "action": "look",
+          "resource": "*",
+          "effect": "allow"
+        }
+      ]
+    }
+  ],
+  "load": {
+    "env": {
+      "OLLAMA_API_KEY": "sk-from-env"
+    },
+    "global": {
+      "model": "openrouter/openai/gpt-6-luna",
+      "agents": [
+        "pip",
+        "review",
+        "scout"
+      ],
+      "imps": [
+        "pip",
+        "review"
+      ],
+      "skills": [
+        "notes"
+      ],
+      "commands": [
+        "fix"
+      ],
+      "instructions": [
+        "Be brief."
+      ],
+      "ollama_key": "sk-from-env",
+      "diagnostics": 0
+    },
+    "project": {
+      "start": "src/app/crates/x",
+      "untrusted": {
+        "model": "openrouter/openai/gpt-6-luna",
+        "mcp": [
+          "den",
+          "files"
+        ],
+        "review": "Reviews changes (nearest)"
+      },
+      "trusted": {
+        "model": "ollama/qwen3.8",
+        "mcp": [
+          "den",
+          "files",
+          "project-tool"
+        ],
+        "permissions": 2
+      },
+      "instructions": [
+        "Be brief.",
+        "Project notes.",
+        "Crate notes."
+      ]
+    }
+  },
+  "gate": [
+    {
+      "name": "an own tool is its group and its name",
+      "tool_id": "own.personality.imp_speak",
+      "tool": "imp_speak",
+      "arguments": "{}",
+      "action": "personality",
+      "resource": "imp_speak"
+    },
+    {
+      "name": "a built-in tool without an id is found by name",
+      "tool": "computer_act",
+      "arguments": "{}",
+      "action": "computer",
+      "resource": "computer_act"
+    },
+    {
+      "name": "a message is the Imp's name",
+      "tool_id": "own.personality.imp_message",
+      "tool": "imp_message",
+      "arguments": "{\"to\":\"Pip\",\"text\":\"hi\"}",
+      "action": "message",
+      "resource": "Pip"
+    },
+    {
+      "name": "a message without arguments is any Imp",
+      "tool_id": "own.personality.imp_message",
+      "tool": "imp_message",
+      "arguments": "",
+      "action": "message",
+      "resource": "*"
+    },
+    {
+      "name": "a skill is its name",
+      "tool": "use_skill",
+      "arguments": "{\"name\":\"review\"}",
+      "action": "skill",
+      "resource": "review"
+    },
+    {
+      "name": "an MCP tool is server and tool",
+      "tool_id": "mcp.files.write_file",
+      "tool": "files_write_file",
+      "arguments": "{}",
+      "action": "mcp",
+      "resource": "files/write_file"
+    },
+    {
+      "name": "a server's own name replaces its key",
+      "tool_id": "mcp.my_files.read",
+      "tool": "x",
+      "arguments": "{}",
+      "servers": [
+        "my files"
+      ],
+      "action": "mcp",
+      "resource": "my files/read"
+    },
+    {
+      "name": "the shell is its command line",
+      "tool": "shell",
+      "arguments": "{\"command\":\"rm -rf /tmp/x\"}",
+      "action": "shell",
+      "resource": "rm -rf /tmp/x"
+    },
+    {
+      "name": "a shell without a command is any command",
+      "tool": "shell",
+      "arguments": "{}",
+      "action": "shell",
+      "resource": "*"
+    },
+    {
+      "name": "run_command is the shell",
+      "tool": "run_command",
+      "arguments": "{\"command\":\"ls\"}",
+      "action": "shell",
+      "resource": "ls"
+    },
+    {
+      "name": "reading a file is its path",
+      "tool": "read_file",
+      "arguments": "{\"path\":\"/etc/hosts\"}",
+      "action": "read",
+      "resource": "/etc/hosts"
+    },
+    {
+      "name": "writing a file is an edit of its path",
+      "tool": "write_file",
+      "arguments": "{\"path\":\"/tmp/a\"}",
+      "action": "edit",
+      "resource": "/tmp/a"
+    },
+    {
+      "name": "anything else is its own action",
+      "tool": "teleport",
+      "arguments": "{\"to\":\"x\"}",
+      "action": "teleport",
+      "resource": "*"
+    }
+  ],
+  "gate_decide": [
+    {
+      "name": "a command rule denies",
+      "rules": [
+        {
+          "action": "shell",
+          "resource": "rm -rf *",
+          "effect": "deny"
+        }
+      ],
+      "tool": "shell",
+      "arguments": "{\"command\":\"rm -rf /\"}",
+      "effect": "deny"
+    },
+    {
+      "name": "another command goes on",
+      "rules": [
+        {
+          "action": "shell",
+          "resource": "rm -rf *",
+          "effect": "deny"
+        }
+      ],
+      "tool": "shell",
+      "arguments": "{\"command\":\"ls\"}",
+      "effect": "allow"
+    },
+    {
+      "name": "an MCP tool asks",
+      "rules": [
+        {
+          "action": "mcp",
+          "resource": "files/*",
+          "effect": "ask"
+        }
+      ],
+      "tool": "x",
+      "tool_id": "mcp.files.write_file",
+      "arguments": "{}",
+      "servers": [
+        "files"
+      ],
+      "effect": "ask"
+    },
+    {
+      "name": "a path rule reads the home folder",
+      "rules": [
+        {
+          "action": "read",
+          "resource": "~/.ssh/*",
+          "effect": "deny"
+        }
+      ],
+      "home": "/Users/a",
+      "tool": "read_file",
+      "arguments": "{\"path\":\"/Users/a/.ssh/id\"}",
+      "effect": "deny"
+    },
+    {
+      "name": "a message to one Imp is denied",
+      "rules": [
+        {
+          "action": "message",
+          "resource": "Pip",
+          "effect": "deny"
+        }
+      ],
+      "tool": "imp_message",
+      "arguments": "{\"to\":\"Pip\"}",
+      "effect": "deny"
+    }
+  ]
+}

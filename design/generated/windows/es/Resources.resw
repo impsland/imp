@@ -10,6 +10,8 @@
   <data name="agent.off" xml:space="preserve"><value>Desactivado</value><comment>Spoken value of the wand button: every tool there is off.</comment></data>
   <data name="agent.on" xml:space="preserve"><value>Activado</value><comment>Spoken value of the wand button: some tools are on.</comment></data>
   <data name="agent.title" xml:space="preserve"><value>Lo que {name} puede hacer</value><comment>Title of the sheet with the Imp's own tools of one section.</comment></data>
+  <data name="agentfile.open" xml:space="preserve"><value>Abrir el archivo del Imp</value><comment>Settings text.</comment></data>
+  <data name="agentfile.reveal" xml:space="preserve"><value>Mostrar el archivo del Imp en Finder</value><comment>Settings text.</comment></data>
   <data name="anim.help.about" xml:space="preserve"><value>Una frase sobre lo que hace.</value><comment>Help of the move description.</comment></data>
   <data name="anim.help.beats" xml:space="preserve"><value>Cada ficha es un momento del movimiento. Arrastra para moverla o estirarla.</value><comment>Help of the beats track.</comment></data>
   <data name="anim.help.hop" xml:space="preserve"><value>Qué tan alto salta el Imp en este tiempo.</value><comment>Help of the hop setting.</comment></data>
@@ -68,6 +70,11 @@
   <data name="brains.used_by.one" xml:space="preserve"><value>Lo usa {count} Imp</value><comment>Under a Brain: how many Imps use it.</comment></data>
   <data name="brains.used_by.other" xml:space="preserve"><value>Lo usan {count} Imps</value><comment>Under a Brain: how many Imps use it.</comment></data>
   <data name="brains.with_key" xml:space="preserve"><value>Un servicio con tu clave</value><comment>Choice when adding a Brain.</comment></data>
+  <data name="chat.reasoning" xml:space="preserve"><value>Razonamiento</value><comment>Label of the model's reasoning when a thought row is open.</comment></data>
+  <data name="chat.show_thought" xml:space="preserve"><value>Mostrar lo que pensó</value><comment>Help of a collapsed thought row.</comment></data>
+  <data name="chat.thinking" xml:space="preserve"><value>Pensando…</value><comment>The model is thinking: the row that shows its reasoning as it streams in.</comment></data>
+  <data name="chat.thought_for.one" xml:space="preserve"><value>Pensó durante {count} s</value><comment>The collapsed row of what the model thought before it answered or used a tool. {count} is how long it took, in whole seconds.</comment></data>
+  <data name="chat.thought_for.other" xml:space="preserve"><value>Pensó durante {count} s</value><comment>The collapsed row of what the model thought before it answered or used a tool. {count} is how long it took, in whole seconds.</comment></data>
   <data name="common.action_done" xml:space="preserve"><value>Hecho</value><comment>Screen reader value of a button whose action just succeeded.</comment></data>
   <data name="common.action_failed" xml:space="preserve"><value>Falló</value><comment>Screen reader value of a button whose action just failed.</comment></data>
   <data name="common.action_working" xml:space="preserve"><value>En curso</value><comment>Screen reader value of a button whose action is running.</comment></data>
@@ -329,6 +336,9 @@
   <data name="kit.help.paste" xml:space="preserve"><value>Pega un kit, una dirección web o un enlace imp://, o suelta un archivo. Primero lo revisas.</value><comment>Help of the kit paste field.</comment></data>
   <data name="kit.help.skipped" xml:space="preserve"><value>Cosas del kit que este Mac no puede usar, por eso se dejan fuera.</value><comment>Help of skipped items.</comment></data>
   <data name="kit.help.tools" xml:space="preserve"><value>Las herramientas pueden ejecutar cosas en tu Mac. Léelas primero.</value><comment>Help of the kit tools.</comment></data>
+  <data name="library.help" xml:space="preserve"><value>Están en ~/.agents, para todos los Imps y la app de terminal. Aquí solo se leen.</value><comment>Settings text.</comment></data>
+  <data name="library.reveal" xml:space="preserve"><value>Mostrar en Finder</value><comment>Settings text.</comment></data>
+  <data name="library.title" xml:space="preserve"><value>Habilidades y comandos</value><comment>Settings text.</comment></data>
   <data name="link.localnet.off" xml:space="preserve"><value>Red local desactivada</value><comment>Status line when Local Network access is off for Imp.</comment></data>
   <data name="link.localnet.open" xml:space="preserve"><value>Abrir Ajustes</value><comment>Button on the iPhone that opens the app's page in Settings.</comment></data>
   <data name="link.localnet.open_mac" xml:space="preserve"><value>Abrir Ajustes del Sistema</value><comment>Button on the Mac that opens System Settings, Local Network.</comment></data>
@@ -600,17 +610,19 @@
   <data name="settings.attention.device_offline" xml:space="preserve"><value>{device} sin conexión.</value><comment>Item: a linked device cannot be reached.</comment></data>
   <data name="settings.attention.imp_no_brain" xml:space="preserve"><value>{name} no tiene cerebro.</value><comment>Item: an Imp sleeps.</comment></data>
   <data name="settings.backup.export.title" xml:space="preserve"><value>Exportar</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.folder.reveal" xml:space="preserve"><value>Mostrar en Finder</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.folder.title" xml:space="preserve"><value>Configuración</value><comment>Settings text.</comment></data>
   <data name="settings.backup.import.title" xml:space="preserve"><value>Importar</value><comment>Settings text.</comment></data>
   <data name="settings.backup.keep.info" xml:space="preserve"><value>Guarda tus Imps y ajustes en un archivo, o cárgalos de nuevo.</value><comment>Settings text.</comment></data>
   <data name="settings.backup.keep.title" xml:space="preserve"><value>Copias</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.reset.app" xml:space="preserve"><value>Borrar y reiniciar</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.reset.confirm" xml:space="preserve"><value>¿Borrar todo y empezar de nuevo?</value><comment>Settings text.</comment></data>
   <data name="settings.backup.reset.info" xml:space="preserve"><value>Borra todo y empieza de nuevo. No se puede deshacer.</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.reset.message" xml:space="preserve"><value>Se borran los chats, los recuerdos y los ajustes de la app. Los Imps, servicios y claves se conservan salvo que también quites la configuración compartida, que usa también la app de terminal. No se puede deshacer.</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.reset.shared" xml:space="preserve"><value>Borrar y quitar también la configuración compartida</value><comment>Settings text.</comment></data>
   <data name="settings.backup.reset.title" xml:space="preserve"><value>Reiniciar</value><comment>Settings text.</comment></data>
   <data name="settings.brains.first_wait.info" xml:space="preserve"><value>Cuánto esperar antes de preguntar otra vez.</value><comment>Settings text.</comment></data>
   <data name="settings.brains.first_wait.title" xml:space="preserve"><value>Primera pausa</value><comment>Settings text.</comment></data>
-  <data name="settings.brains.keychain.info" xml:space="preserve"><value>Guarda las claves en el Llavero de tu Mac.</value><comment>Settings text.</comment></data>
-  <data name="settings.brains.keychain.title" xml:space="preserve"><value>Llavero</value><comment>Settings text.</comment></data>
-  <data name="settings.brains.keys.info" xml:space="preserve"><value>Contraseñas secretas de tus cerebros.</value><comment>Settings text.</comment></data>
-  <data name="settings.brains.keys.title" xml:space="preserve"><value>Claves</value><comment>Settings text.</comment></data>
   <data name="settings.brains.longer.info" xml:space="preserve"><value>Cuánto más larga es cada pausa.</value><comment>Settings text.</comment></data>
   <data name="settings.brains.longer.title" xml:space="preserve"><value>Aumento</value><comment>Settings text.</comment></data>
   <data name="settings.brains.requests.info" xml:space="preserve"><value>Qué tan paciente es un Imp cuando un cerebro tarda.</value><comment>Settings text.</comment></data>

@@ -128,10 +128,27 @@ import Testing
         defer { defaults.removePersistentDomain(forName: suite) }
         let store = PreferencesStore(defaults: defaults)
         var p = ImpPreferences.withWaitingImp()
+        p.appearance = .dark
+        p.controlInk = .black
+        p.antics = false
+        p.inputMaxLines = 5
+        p.firstRunSeen = true
+        p.dictationLocale = "de-DE"
+        p.imps[0].isActive = false
+        p.imps[0].origin = CGPoint(x: 10, y: 20)
+        p.imps[0].knowsFavorite = true
+        // What the configuration holds is not kept here.
         p.ai.add(Service(name: "Local", baseURL: "http://localhost:1234/v1"))
         p.shortcuts = [Shortcut(name: "Translate", hotkey: Hotkey(keyCode: 79), steps: [Step(.ask, value: "Translate into English.")])]
-        store.save(p)
-        #expect(store.load() == p)
+        store.save(p.local)
+        let back = store.load()
+        #expect(back == p.local)
+        var restored = ImpPreferences.withWaitingImp()
+        restored.apply(back)
+        #expect(restored.appearance == .dark && restored.controlInk == .black && !restored.antics && restored.inputMaxLines == 5)
+        #expect(restored.firstRunSeen && restored.dictationLocale == "de-DE")
+        #expect(!restored.imps[0].isActive && restored.imps[0].origin == CGPoint(x: 10, y: 20) && restored.imps[0].knowsFavorite)
+        #expect(restored.shortcuts.isEmpty && restored.ai.services.isEmpty, "services and triggers are in the configuration")
     }
 
     @Test func anOlderFormatIsAFreshStart() {
@@ -139,14 +156,13 @@ import Testing
         defer { defaults.removePersistentDomain(forName: suite) }
         defaults.set(Data(#"{"api":{"providers":[]}}"#.utf8), forKey: PreferencesStore.key)
         let loaded = PreferencesStore(defaults: defaults).load()
-        #expect(loaded.imps.isEmpty, "a fresh install has no Imp until one is hatched with a Brain")
-        #expect(loaded.shortcuts.isEmpty, "a fresh install has no triggers")
+        #expect(loaded == LocalPreferences(), "a fresh install has the defaults")
     }
 
     @Test func aFreshInstallHasNoTriggers() {
         let (defaults, suite) = scratch()
         defer { defaults.removePersistentDomain(forName: suite) }
         #expect(ImpPreferences.withWaitingImp().shortcuts.isEmpty)
-        #expect(PreferencesStore(defaults: defaults).load().shortcuts.isEmpty)
+        #expect(PreferencesStore(defaults: defaults).load() == LocalPreferences())
     }
 }

@@ -1,5 +1,7 @@
 //! The line chat against a local mock service. No real service is called.
 
+mod common;
+
 use imp_chat::chat_state::ChatState;
 use imp_chat::commands::{Io, chat_loop};
 use imp_engine::{OpenAiClient, RetryPolicy, Role};
@@ -81,4 +83,40 @@ async fn a_failing_service_is_reported_and_the_chat_goes_on() {
         2
     );
     let _ = Role::User;
+}
+
+#[tokio::test]
+async fn thinking_shows_as_two_lines_on_stderr_and_never_as_reasoning_text() {
+    let reply = |n: usize| {
+        if n == 1 {
+            "data: {\"choices\":[{\"delta\":{\"reasoning\":\"SECRET-1 \"}}]}\n\ndata: {\"choices\":[{\"delta\":{\"reasoning\":\"SECRET-2\"}}]}\n\ndata: {\"choices\":[{\"delta\":{\"content\":\"391\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n".to_string()
+        } else {
+            common::text_reply("later")
+        }
+    };
+    let (url, bodies, _) = common::mock_with(reply).await;
+    let client = OpenAiClient::new(&url, None, RetryPolicy::none()).unwrap();
+    let mut input = Cursor::new(b"17*23?\nand?\n/quit\n".to_vec());
+    let (mut out, mut err) = (Vec::new(), Vec::new());
+    let mut io = Io {
+        input: &mut input,
+        out: &mut out,
+        err: &mut err,
+    };
+    chat_loop(&client, "m", "pip", ChatState::new("s"), &mut io)
+        .await
+        .unwrap();
+    let (out, err) = (
+        String::from_utf8(out).unwrap(),
+        String::from_utf8(err).unwrap(),
+    );
+    assert_eq!(out, "391\nlater\n");
+    let marks: Vec<&str> = err.lines().filter(|l| l.contains('✻')).collect();
+    assert_eq!(marks.len(), 2, "{err}");
+    assert!(marks[0].contains("…"), "{err}");
+    assert!(marks[1].chars().any(|c| c.is_ascii_digit()), "{err}");
+    assert!(!err.contains("SECRET") && !out.contains("SECRET"));
+    // The next request does not carry the reasoning back.
+    let sent = bodies.lock().unwrap().join("\n");
+    assert!(!sent.contains("SECRET"), "{sent}");
 }

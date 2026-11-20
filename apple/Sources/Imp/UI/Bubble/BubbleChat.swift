@@ -414,6 +414,7 @@ private struct TurnView: View {
             if !steps.isEmpty {
                 StepList(steps: steps, layout: layout, animated: live && !measuring)
             }
+            if live, let prompt = model.prompt { PermissionPromptView(prompt: prompt, answer: model.answerPermission) }
             if turn.failed {
                 Label(turn.reply, systemImage: "exclamationmark.triangle.fill")
                     .font(Typeface.body).foregroundStyle(Tone.danger)

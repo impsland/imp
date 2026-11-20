@@ -29,6 +29,16 @@ msgctxt "agent.title"
 msgid "What {name} may do"
 msgstr ""
 
+#. Settings text.
+msgctxt "agentfile.open"
+msgid "Open the Imp's file"
+msgstr ""
+
+#. Settings text.
+msgctxt "agentfile.reveal"
+msgid "Show the Imp's file in Finder"
+msgstr ""
+
 #. Help of the move description.
 msgctxt "anim.help.about"
 msgid "One sentence about what it does."
@@ -315,6 +325,28 @@ msgstr[1] ""
 msgctxt "brains.with_key"
 msgid "A service with your key"
 msgstr ""
+
+#. Label of the model's reasoning when a thought row is open.
+msgctxt "chat.reasoning"
+msgid "Reasoning"
+msgstr ""
+
+#. Help of a collapsed thought row.
+msgctxt "chat.show_thought"
+msgid "Show what it thought"
+msgstr ""
+
+#. The model is thinking: the row that shows its reasoning as it streams in.
+msgctxt "chat.thinking"
+msgid "Thinking…"
+msgstr ""
+
+#. The collapsed row of what the model thought before it answered or used a tool. {count} is how long it took, in whole seconds.
+msgctxt "chat.thought_for"
+msgid "Thought for {count}s"
+msgid_plural "Thought for {count}s"
+msgstr[0] ""
+msgstr[1] ""
 
 #. Screen reader value of a button whose action just succeeded.
 msgctxt "common.action_done"
@@ -1607,6 +1639,21 @@ msgstr ""
 #. Help of the kit tools.
 msgctxt "kit.help.tools"
 msgid "Tools can run things on your Mac. Read them first."
+msgstr ""
+
+#. Settings text.
+msgctxt "library.help"
+msgid "Kept in ~/.agents, for every Imp and the terminal app. Read only here."
+msgstr ""
+
+#. Settings text.
+msgctxt "library.reveal"
+msgid "Show in Finder"
+msgstr ""
+
+#. Settings text.
+msgctxt "library.title"
+msgid "Skills and commands"
 msgstr ""
 
 #. Status line when Local Network access is off for Imp.
@@ -2965,6 +3012,16 @@ msgid "Export"
 msgstr ""
 
 #. Settings text.
+msgctxt "settings.backup.folder.reveal"
+msgid "Show in Finder"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.backup.folder.title"
+msgid "Configuration"
+msgstr ""
+
+#. Settings text.
 msgctxt "settings.backup.import.title"
 msgid "Import"
 msgstr ""
@@ -2980,8 +3037,28 @@ msgid "Backups"
 msgstr ""
 
 #. Settings text.
+msgctxt "settings.backup.reset.app"
+msgid "Erase and Restart"
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.backup.reset.confirm"
+msgid "Erase everything and start over?"
+msgstr ""
+
+#. Settings text.
 msgctxt "settings.backup.reset.info"
 msgid "Erase everything and begin again. This cannot be undone."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.backup.reset.message"
+msgid "Chats, memories and the app's own settings are deleted. Imps, services and keys are kept unless you also remove the shared configuration, which the terminal app uses too. This can't be undone."
+msgstr ""
+
+#. Settings text.
+msgctxt "settings.backup.reset.shared"
+msgid "Erase and Also Remove the Shared Configuration"
 msgstr ""
 
 #. Settings text.
@@ -2997,26 +3074,6 @@ msgstr ""
 #. Settings text.
 msgctxt "settings.brains.first_wait.title"
 msgid "First pause"
-msgstr ""
-
-#. Settings text.
-msgctxt "settings.brains.keychain.info"
-msgid "Keep keys safe in your Mac's Keychain."
-msgstr ""
-
-#. Settings text.
-msgctxt "settings.brains.keychain.title"
-msgid "Keychain"
-msgstr ""
-
-#. Settings text.
-msgctxt "settings.brains.keys.info"
-msgid "Secret passwords for your brains."
-msgstr ""
-
-#. Settings text.
-msgctxt "settings.brains.keys.title"
-msgid "Keys"
 msgstr ""
 
 #. Settings text.

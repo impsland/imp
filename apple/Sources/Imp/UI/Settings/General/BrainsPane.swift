@@ -26,12 +26,6 @@ struct BrainsPane: View {
                     }
                 }
             }
-            Card("settings.brains.keys.title", icon: "key.fill", info: "settings.brains.keys.info") {
-                Row("settings.brains.keychain.title", icon: "lock.fill", info: "settings.brains.keychain.info") {
-                    Toggle(String(""), isOn: $model.prefs.keysInKeychain).labelsHidden().toggleStyle(.impSwitchBare)
-                }
-                .settingAnchor(.brainsKeychain)
-            }
             Card("settings.brains.requests.title", icon: "arrow.clockwise", info: "settings.brains.requests.info") {
                 Row("settings.brains.wait.title", icon: "hourglass", info: "settings.brains.wait.info") {
                     ImpStepper(value: $model.prefs.requests.timeoutSeconds, in: RequestLimits.timeoutControlRange, step: RequestLimits.timeoutStep) {

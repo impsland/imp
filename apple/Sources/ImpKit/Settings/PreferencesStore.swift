@@ -1,24 +1,22 @@
 import Foundation
 
-/// Where the preferences live: one JSON blob in `UserDefaults`. API keys never go here (they're
-/// in the Keychain). Nothing saved, or data that doesn't decode (an older format), is a fresh install (bare `ImpPreferences()`).
+/// Where the app's own preferences live: `LocalPreferences` as one JSON blob in `UserDefaults`. Everything
+/// the terminal app shares (Imps, services, tool servers, triggers…) is in the configuration instead
+/// (`SharedConfigStore`) and API keys in its `auth.json`. Nothing saved, or data that doesn't decode, is a fresh install.
 public struct PreferencesStore {
-    public static let key = "preferences"
+    public static let key = "preferences.local"
     private let defaults: UserDefaults
 
     public init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
     }
 
-    public func load() -> ImpPreferences {
-        var prefs = defaults.data(forKey: Self.key).flatMap { try? JSONDecoder().decode(ImpPreferences.self, from: $0) } ?? ImpPreferences()
-        // Triggers saved in an older shape come back without steps: drop them, keep everything else.
-        prefs.shortcuts.removeAll { !$0.isValid }
-        return prefs
+    public func load() -> LocalPreferences {
+        defaults.data(forKey: Self.key).flatMap { try? JSONDecoder().decode(LocalPreferences.self, from: $0) } ?? LocalPreferences()
     }
 
-    public func save(_ preferences: ImpPreferences) {
-        guard let data = try? JSONEncoder().encode(preferences) else { return }
+    public func save(_ local: LocalPreferences) {
+        guard let data = try? JSONEncoder().encode(local) else { return }
         defaults.set(data, forKey: Self.key)
     }
 }

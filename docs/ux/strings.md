@@ -10,6 +10,8 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `agent.off` | Off | Desactivado | 关 |
 | `agent.on` | On | Activado | 开 |
 | `agent.title` | What {name} may do | Lo que {name} puede hacer | {name} 可以做的事 |
+| `agentfile.open` | Open the Imp's file | Abrir el archivo del Imp | 打开 Imp 的文件 |
+| `agentfile.reveal` | Show the Imp's file in Finder | Mostrar el archivo del Imp en Finder | 在访达中显示 Imp 的文件 |
 | `anim.help.about` | One sentence about what it does. | Una frase sobre lo que hace. | 用一句话说明它的作用。 |
 | `anim.help.beats` | Each chip is one moment of the move. Drag to move it or stretch it. | Cada ficha es un momento del movimiento. Arrastra para moverla o estirarla. | 每个小块是动作中的一个瞬间。拖动来移动或拉长它。 |
 | `anim.help.hop` | How high the Imp jumps in this beat. | Qué tan alto salta el Imp en este tiempo. | Imp 在这一拍里跳多高。 |
@@ -67,6 +69,10 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `brains.local` | A model on this computer | Un modelo en este equipo | 这台电脑上的一个模型 |
 | `brains.used_by` | one: Used by {count} Imp / other: Used by {count} Imps | one: Lo usa {count} Imp / other: Lo usan {count} Imps | other: {count} 个 Imp 在使用 |
 | `brains.with_key` | A service with your key | Un servicio con tu clave | 需要你自己密钥的服务 |
+| `chat.reasoning` | Reasoning | Razonamiento | 推理 |
+| `chat.show_thought` | Show what it thought | Mostrar lo que pensó | 显示它的思考 |
+| `chat.thinking` | Thinking… | Pensando… | 思考中… |
+| `chat.thought_for` | one: Thought for {count}s / other: Thought for {count}s | one: Pensó durante {count} s / other: Pensó durante {count} s | other: 思考了 {count} 秒 |
 | `common.action_done` | Done | Hecho | 完成 |
 | `common.action_failed` | Failed | Falló | 失败 |
 | `common.action_working` | Working | En curso | 进行中 |
@@ -324,6 +330,9 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `kit.help.paste` | Paste a kit, a web address or an imp:// link, or drop a file. You look at it first. | Pega un kit, una dirección web o un enlace imp://, o suelta un archivo. Primero lo revisas. | 粘贴一个套件、网址或 imp:// 链接，或放入文件。你会先查看。 |
 | `kit.help.skipped` | Things in the kit this Mac cannot use, so they are left out. | Cosas del kit que este Mac no puede usar, por eso se dejan fuera. | 套件里这台 Mac 用不了的东西，所以被略过。 |
 | `kit.help.tools` | Tools can run things on your Mac. Read them first. | Las herramientas pueden ejecutar cosas en tu Mac. Léelas primero. | 工具可以在你的 Mac 上运行东西。请先看一看。 |
+| `library.help` | Kept in ~/.agents, for every Imp and the terminal app. Read only here. | Están en ~/.agents, para todos los Imps y la app de terminal. Aquí solo se leen. | 保存在 ~/.agents，所有 Imp 和终端应用共用。这里只读。 |
+| `library.reveal` | Show in Finder | Mostrar en Finder | 在访达中显示 |
+| `library.title` | Skills and commands | Habilidades y comandos | 技能和命令 |
 | `link.localnet.off` | Local Network is off for Imp | Red local desactivada | Imp 的本地网络已被关闭 |
 | `link.localnet.open` | Open Settings | Abrir Ajustes | 打开设置 |
 | `link.localnet.open_mac` | Open System Settings | Abrir Ajustes del Sistema | 打开“系统设置” |
@@ -595,17 +604,19 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `settings.attention.device_offline` | {device} is offline. | {device} sin conexión. | {device} 已离线。 |
 | `settings.attention.imp_no_brain` | {name} has no Brain. | {name} no tiene cerebro. | {name} 还没有大脑。 |
 | `settings.backup.export.title` | Export | Exportar | 导出 |
+| `settings.backup.folder.reveal` | Show in Finder | Mostrar en Finder | 在访达中显示 |
+| `settings.backup.folder.title` | Configuration | Configuración | 配置 |
 | `settings.backup.import.title` | Import | Importar | 导入 |
 | `settings.backup.keep.info` | Save your Imps and settings in a file, or load them back. | Guarda tus Imps y ajustes en un archivo, o cárgalos de nuevo. | 把 Imp 和设置存进文件，或再次载入。 |
 | `settings.backup.keep.title` | Backups | Copias | 备份 |
+| `settings.backup.reset.app` | Erase and Restart | Borrar y reiniciar | 清除并重新启动 |
+| `settings.backup.reset.confirm` | Erase everything and start over? | ¿Borrar todo y empezar de nuevo? | 清除一切并重新开始？ |
 | `settings.backup.reset.info` | Erase everything and begin again. This cannot be undone. | Borra todo y empieza de nuevo. No se puede deshacer. | 清除一切并重新开始，此操作无法撤销。 |
+| `settings.backup.reset.message` | Chats, memories and the app's own settings are deleted. Imps, services and keys are kept unless you also remove the shared configuration, which the terminal app uses too. This can't be undone. | Se borran los chats, los recuerdos y los ajustes de la app. Los Imps, servicios y claves se conservan salvo que también quites la configuración compartida, que usa también la app de terminal. No se puede deshacer. | 聊天、记忆和应用自己的设置会被删除。Imp、服务和密钥会保留，除非你同时移除共享配置（终端应用也在使用它）。此操作无法撤销。 |
+| `settings.backup.reset.shared` | Erase and Also Remove the Shared Configuration | Borrar y quitar también la configuración compartida | 清除并同时移除共享配置 |
 | `settings.backup.reset.title` | Reset | Reiniciar | 重置 |
 | `settings.brains.first_wait.info` | How long to wait before asking again. | Cuánto esperar antes de preguntar otra vez. | 再次提问之前要等多长时间。 |
 | `settings.brains.first_wait.title` | First pause | Primera pausa | 首次间隔 |
-| `settings.brains.keychain.info` | Keep keys safe in your Mac's Keychain. | Guarda las claves en el Llavero de tu Mac. | 把密钥安全放在 Mac 的钥匙串里。 |
-| `settings.brains.keychain.title` | Keychain | Llavero | 钥匙串 |
-| `settings.brains.keys.info` | Secret passwords for your brains. | Contraseñas secretas de tus cerebros. | 你的各个大脑所用的密钥口令。 |
-| `settings.brains.keys.title` | Keys | Claves | 密钥 |
 | `settings.brains.longer.info` | How much longer each pause gets. | Cuánto más larga es cada pausa. | 每次间隔会变长多少。 |
 | `settings.brains.longer.title` | Growth | Aumento | 递增 |
 | `settings.brains.requests.info` | How patient an Imp is when a brain is slow. | Qué tan paciente es un Imp cuando un cerebro tarda. | 大脑很慢时，Imp 有多大耐心。 |

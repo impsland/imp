@@ -172,6 +172,16 @@ private func toolExchange(_ ask: String = "Make it sound nicer", file: String = 
         #expect(reopened.current.memory.exchangeCount == 1)
     }
 
+    @Test func thoughtStepsRoundTrip() {
+        let folder = tempFolder()
+        var h = ChatHistory(folder: folder)
+        let thought = ChatTurn.Step.thought("First this,\nthen that.", seconds: 3.4)
+        h.append(ChatTurn(request: "Plan", reply: "Planned.", steps: [thought]), remembering: [.user("Plan"), .assistant("Planned.")])
+        ChatHistory.flush()
+        let step = ChatHistory(folder: folder).turns[0].steps[0]
+        #expect(step == thought && step.isThought && step.seconds == 3 && step.response == "First this,\nthen that.")
+    }
+
     @Test func newChatsAndSwitchingBack() {
         let folder = tempFolder()
         var h = ChatHistory(folder: folder)

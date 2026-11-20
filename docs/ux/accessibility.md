@@ -66,6 +66,7 @@ The smallest a control's hit area gets:
 | `column` | 720 | 720 | 720 | 760 | 720 | The widest a settings column grows. Wider screens centre it. |
 | `sheetWidth` | 520 | 560 | 520 | 560 | 560 | The width of a sheet on a desktop. |
 | `marker` | 48 | 56 | 44 | 44 | 44 | A round tile: an animation's preview, the Imp on the phone's settings. |
+| `thinkingHeight` | 60 | 60 | 54 | 54 | 54 | The room of a model's reasoning while it streams in (about three lines): the same all along, so nothing shifts. |
 | `impPortrait` | 44 | 48 | 36 | 40 | 40 | The Imp drawn in a row or a card. |
 | `fieldLabel` | 96 | 104 | 76 | 96 | 96 | The label column of a form row, so a card's controls line up. |
 | `mark` | 24 | 24 | 20 | 20 | 20 | A round tick or a status mark. |

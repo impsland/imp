@@ -478,30 +478,6 @@
     "es": "Los cerebros de tus Imps.",
     "zh-Hans": "你的 Imp 用来思考的大脑。"
   },
-  "settings.brains.keys.title": {
-    "note": "Settings text.",
-    "en": "Keys",
-    "es": "Claves",
-    "zh-Hans": "密钥"
-  },
-  "settings.brains.keys.info": {
-    "note": "Settings text.",
-    "en": "Secret passwords for your brains.",
-    "es": "Contraseñas secretas de tus cerebros.",
-    "zh-Hans": "你的各个大脑所用的密钥口令。"
-  },
-  "settings.brains.keychain.title": {
-    "note": "Settings text.",
-    "en": "Keychain",
-    "es": "Llavero",
-    "zh-Hans": "钥匙串"
-  },
-  "settings.brains.keychain.info": {
-    "note": "Settings text.",
-    "en": "Keep keys safe in your Mac's Keychain.",
-    "es": "Guarda las claves en el Llavero de tu Mac.",
-    "zh-Hans": "把密钥安全放在 Mac 的钥匙串里。"
-  },
   "settings.brains.requests.title": {
     "note": "Settings text.",
     "en": "Asking",
@@ -1162,5 +1138,71 @@
     "en": "None yet",
     "es": "Nada aún",
     "zh-Hans": "暂无"
+  },
+  "settings.backup.folder.title": {
+    "note": "Settings text.",
+    "en": "Configuration",
+    "es": "Configuración",
+    "zh-Hans": "配置"
+  },
+  "settings.backup.folder.reveal": {
+    "note": "Settings text.",
+    "en": "Show in Finder",
+    "es": "Mostrar en Finder",
+    "zh-Hans": "在访达中显示"
+  },
+  "settings.backup.reset.confirm": {
+    "note": "Settings text.",
+    "en": "Erase everything and start over?",
+    "es": "¿Borrar todo y empezar de nuevo?",
+    "zh-Hans": "清除一切并重新开始？"
+  },
+  "settings.backup.reset.app": {
+    "note": "Settings text.",
+    "en": "Erase and Restart",
+    "es": "Borrar y reiniciar",
+    "zh-Hans": "清除并重新启动"
+  },
+  "settings.backup.reset.shared": {
+    "note": "Settings text.",
+    "en": "Erase and Also Remove the Shared Configuration",
+    "es": "Borrar y quitar también la configuración compartida",
+    "zh-Hans": "清除并同时移除共享配置"
+  },
+  "settings.backup.reset.message": {
+    "note": "Settings text.",
+    "en": "Chats, memories and the app's own settings are deleted. Imps, services and keys are kept unless you also remove the shared configuration, which the terminal app uses too. This can't be undone.",
+    "es": "Se borran los chats, los recuerdos y los ajustes de la app. Los Imps, servicios y claves se conservan salvo que también quites la configuración compartida, que usa también la app de terminal. No se puede deshacer.",
+    "zh-Hans": "聊天、记忆和应用自己的设置会被删除。Imp、服务和密钥会保留，除非你同时移除共享配置（终端应用也在使用它）。此操作无法撤销。"
+  },
+  "agentfile.open": {
+    "note": "Settings text.",
+    "en": "Open the Imp's file",
+    "es": "Abrir el archivo del Imp",
+    "zh-Hans": "打开 Imp 的文件"
+  },
+  "agentfile.reveal": {
+    "note": "Settings text.",
+    "en": "Show the Imp's file in Finder",
+    "es": "Mostrar el archivo del Imp en Finder",
+    "zh-Hans": "在访达中显示 Imp 的文件"
+  },
+  "library.title": {
+    "note": "Settings text.",
+    "en": "Skills and commands",
+    "es": "Habilidades y comandos",
+    "zh-Hans": "技能和命令"
+  },
+  "library.help": {
+    "note": "Settings text.",
+    "en": "Kept in ~/.agents, for every Imp and the terminal app. Read only here.",
+    "es": "Están en ~/.agents, para todos los Imps y la app de terminal. Aquí solo se leen.",
+    "zh-Hans": "保存在 ~/.agents，所有 Imp 和终端应用共用。这里只读。"
+  },
+  "library.reveal": {
+    "note": "Settings text.",
+    "en": "Show in Finder",
+    "es": "Mostrar en Finder",
+    "zh-Hans": "在访达中显示"
   }
 }

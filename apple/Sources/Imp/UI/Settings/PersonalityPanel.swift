@@ -47,7 +47,12 @@ struct PersonalityPanel: View {
         .onAppear { if !loaded { name = imp.name; loaded = true } }
 
         PanelSection("personality.persona", icon: "theatermasks.fill", info: "personality.help.persona",
-                     accessory: { AgentToolsButton(imp: $imp, groups: [.personality]) }) {
+                     accessory: {
+                         HStack(spacing: Spacing.small) {
+                             AgentFileButtons(model: model, imp: imp.id)
+                             AgentToolsButton(imp: $imp, groups: [.personality])
+                         }
+                     }) {
             EditorWell(text: $imp.personality,
                        placeholder: "A grumpy librarian who loves puns? A cheerful cheerleader?",
                        height: Self.wellHeight)

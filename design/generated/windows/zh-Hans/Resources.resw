@@ -10,6 +10,8 @@
   <data name="agent.off" xml:space="preserve"><value>关</value><comment>Spoken value of the wand button: every tool there is off.</comment></data>
   <data name="agent.on" xml:space="preserve"><value>开</value><comment>Spoken value of the wand button: some tools are on.</comment></data>
   <data name="agent.title" xml:space="preserve"><value>{name} 可以做的事</value><comment>Title of the sheet with the Imp's own tools of one section.</comment></data>
+  <data name="agentfile.open" xml:space="preserve"><value>打开 Imp 的文件</value><comment>Settings text.</comment></data>
+  <data name="agentfile.reveal" xml:space="preserve"><value>在访达中显示 Imp 的文件</value><comment>Settings text.</comment></data>
   <data name="anim.help.about" xml:space="preserve"><value>用一句话说明它的作用。</value><comment>Help of the move description.</comment></data>
   <data name="anim.help.beats" xml:space="preserve"><value>每个小块是动作中的一个瞬间。拖动来移动或拉长它。</value><comment>Help of the beats track.</comment></data>
   <data name="anim.help.hop" xml:space="preserve"><value>Imp 在这一拍里跳多高。</value><comment>Help of the hop setting.</comment></data>
@@ -67,6 +69,10 @@
   <data name="brains.local" xml:space="preserve"><value>这台电脑上的一个模型</value><comment>Choice when adding a Brain.</comment></data>
   <data name="brains.used_by.other" xml:space="preserve"><value>{count} 个 Imp 在使用</value><comment>Under a Brain: how many Imps use it.</comment></data>
   <data name="brains.with_key" xml:space="preserve"><value>需要你自己密钥的服务</value><comment>Choice when adding a Brain.</comment></data>
+  <data name="chat.reasoning" xml:space="preserve"><value>推理</value><comment>Label of the model's reasoning when a thought row is open.</comment></data>
+  <data name="chat.show_thought" xml:space="preserve"><value>显示它的思考</value><comment>Help of a collapsed thought row.</comment></data>
+  <data name="chat.thinking" xml:space="preserve"><value>思考中…</value><comment>The model is thinking: the row that shows its reasoning as it streams in.</comment></data>
+  <data name="chat.thought_for.other" xml:space="preserve"><value>思考了 {count} 秒</value><comment>The collapsed row of what the model thought before it answered or used a tool. {count} is how long it took, in whole seconds.</comment></data>
   <data name="common.action_done" xml:space="preserve"><value>完成</value><comment>Screen reader value of a button whose action just succeeded.</comment></data>
   <data name="common.action_failed" xml:space="preserve"><value>失败</value><comment>Screen reader value of a button whose action just failed.</comment></data>
   <data name="common.action_working" xml:space="preserve"><value>进行中</value><comment>Screen reader value of a button whose action is running.</comment></data>
@@ -324,6 +330,9 @@
   <data name="kit.help.paste" xml:space="preserve"><value>粘贴一个套件、网址或 imp:// 链接，或放入文件。你会先查看。</value><comment>Help of the kit paste field.</comment></data>
   <data name="kit.help.skipped" xml:space="preserve"><value>套件里这台 Mac 用不了的东西，所以被略过。</value><comment>Help of skipped items.</comment></data>
   <data name="kit.help.tools" xml:space="preserve"><value>工具可以在你的 Mac 上运行东西。请先看一看。</value><comment>Help of the kit tools.</comment></data>
+  <data name="library.help" xml:space="preserve"><value>保存在 ~/.agents，所有 Imp 和终端应用共用。这里只读。</value><comment>Settings text.</comment></data>
+  <data name="library.reveal" xml:space="preserve"><value>在访达中显示</value><comment>Settings text.</comment></data>
+  <data name="library.title" xml:space="preserve"><value>技能和命令</value><comment>Settings text.</comment></data>
   <data name="link.localnet.off" xml:space="preserve"><value>Imp 的本地网络已被关闭</value><comment>Status line when Local Network access is off for Imp.</comment></data>
   <data name="link.localnet.open" xml:space="preserve"><value>打开设置</value><comment>Button on the iPhone that opens the app's page in Settings.</comment></data>
   <data name="link.localnet.open_mac" xml:space="preserve"><value>打开“系统设置”</value><comment>Button on the Mac that opens System Settings, Local Network.</comment></data>
@@ -595,17 +604,19 @@
   <data name="settings.attention.device_offline" xml:space="preserve"><value>{device} 已离线。</value><comment>Item: a linked device cannot be reached.</comment></data>
   <data name="settings.attention.imp_no_brain" xml:space="preserve"><value>{name} 还没有大脑。</value><comment>Item: an Imp sleeps.</comment></data>
   <data name="settings.backup.export.title" xml:space="preserve"><value>导出</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.folder.reveal" xml:space="preserve"><value>在访达中显示</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.folder.title" xml:space="preserve"><value>配置</value><comment>Settings text.</comment></data>
   <data name="settings.backup.import.title" xml:space="preserve"><value>导入</value><comment>Settings text.</comment></data>
   <data name="settings.backup.keep.info" xml:space="preserve"><value>把 Imp 和设置存进文件，或再次载入。</value><comment>Settings text.</comment></data>
   <data name="settings.backup.keep.title" xml:space="preserve"><value>备份</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.reset.app" xml:space="preserve"><value>清除并重新启动</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.reset.confirm" xml:space="preserve"><value>清除一切并重新开始？</value><comment>Settings text.</comment></data>
   <data name="settings.backup.reset.info" xml:space="preserve"><value>清除一切并重新开始，此操作无法撤销。</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.reset.message" xml:space="preserve"><value>聊天、记忆和应用自己的设置会被删除。Imp、服务和密钥会保留，除非你同时移除共享配置（终端应用也在使用它）。此操作无法撤销。</value><comment>Settings text.</comment></data>
+  <data name="settings.backup.reset.shared" xml:space="preserve"><value>清除并同时移除共享配置</value><comment>Settings text.</comment></data>
   <data name="settings.backup.reset.title" xml:space="preserve"><value>重置</value><comment>Settings text.</comment></data>
   <data name="settings.brains.first_wait.info" xml:space="preserve"><value>再次提问之前要等多长时间。</value><comment>Settings text.</comment></data>
   <data name="settings.brains.first_wait.title" xml:space="preserve"><value>首次间隔</value><comment>Settings text.</comment></data>
-  <data name="settings.brains.keychain.info" xml:space="preserve"><value>把密钥安全放在 Mac 的钥匙串里。</value><comment>Settings text.</comment></data>
-  <data name="settings.brains.keychain.title" xml:space="preserve"><value>钥匙串</value><comment>Settings text.</comment></data>
-  <data name="settings.brains.keys.info" xml:space="preserve"><value>你的各个大脑所用的密钥口令。</value><comment>Settings text.</comment></data>
-  <data name="settings.brains.keys.title" xml:space="preserve"><value>密钥</value><comment>Settings text.</comment></data>
   <data name="settings.brains.longer.info" xml:space="preserve"><value>每次间隔会变长多少。</value><comment>Settings text.</comment></data>
   <data name="settings.brains.longer.title" xml:space="preserve"><value>递增</value><comment>Settings text.</comment></data>
   <data name="settings.brains.requests.info" xml:space="preserve"><value>大脑很慢时，Imp 有多大耐心。</value><comment>Settings text.</comment></data>

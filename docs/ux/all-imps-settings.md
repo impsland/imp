@@ -33,10 +33,10 @@ Seven sections, each with a one-word name and a few cards of icon rows. A card h
 | App | Look: Appearance (Auto, Light, Dark), On colour (White, Black). System: start at login, language. Window: the size of the home window (Small, Medium, Large, Full). |
 | Bubble | Look: Background (Solid or Translucent, and the amount when translucent), with a live preview over a light, a dark and a picture swatch. Showing: hide after, text box lines, chat size. Media: autoplay, audio look. |
 | Talking | Listening: language (Same as my Mac, Automatic, or one language) and, with Automatic, the languages it listens for. Between Imps: talk in, threads, waiting, window. |
-| Brains | Services: the list of Brains and the default for new Imps. Keys: the keychain. Requests: wait, retries, first wait, longer waits. |
+| Brains | Services: the list of Brains and the default for new Imps. Keys are typed in each service and kept in the shared `auth.json`. Requests: wait, retries, first wait, longer waits. |
 | Sharing | Import (the Gallery card), then everything shareable in the Imp settings' list style: Triggers, Animations and Tools, shared or an Imp's own, and The Den in the compact server card. |
 | Permissions | Listening: microphone and speech. Computer control: screen recording and accessibility. |
-| Backup | Keep: export and import. Reset: start again. Reset is last and asks first. |
+| Backup | Keep: export and import, and Configuration: the folder the shared configuration lives in (`~/.config/imp`), with a folder icon button that shows it in the Finder. Reset: start again. Reset is last and asks first, with two buttons: erase the app's own data, or also remove the shared configuration (the terminal app uses it too). |
 
 ![App settings](./images/all-imps-app.png)
 
@@ -321,17 +321,19 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `settings.attention.device_offline` | {device} is offline. |
 | `settings.attention.imp_no_brain` | {name} has no Brain. |
 | `settings.backup.export.title` | Export |
+| `settings.backup.folder.reveal` | Show in Finder |
+| `settings.backup.folder.title` | Configuration |
 | `settings.backup.import.title` | Import |
 | `settings.backup.keep.info` | Save your Imps and settings in a file, or load them back. |
 | `settings.backup.keep.title` | Backups |
+| `settings.backup.reset.app` | Erase and Restart |
+| `settings.backup.reset.confirm` | Erase everything and start over? |
 | `settings.backup.reset.info` | Erase everything and begin again. This cannot be undone. |
+| `settings.backup.reset.message` | Chats, memories and the app's own settings are deleted. Imps, services and keys are kept unless you also remove the shared configuration, which the terminal app uses too. This can't be undone. |
+| `settings.backup.reset.shared` | Erase and Also Remove the Shared Configuration |
 | `settings.backup.reset.title` | Reset |
 | `settings.brains.first_wait.info` | How long to wait before asking again. |
 | `settings.brains.first_wait.title` | First pause |
-| `settings.brains.keychain.info` | Keep keys safe in your Mac's Keychain. |
-| `settings.brains.keychain.title` | Keychain |
-| `settings.brains.keys.info` | Secret passwords for your brains. |
-| `settings.brains.keys.title` | Keys |
 | `settings.brains.longer.info` | How much longer each pause gets. |
 | `settings.brains.longer.title` | Growth |
 | `settings.brains.requests.info` | How patient an Imp is when a brain is slow. |

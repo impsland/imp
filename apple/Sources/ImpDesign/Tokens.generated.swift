@@ -342,6 +342,15 @@ public enum Sizing {
         #endif
     }
 
+    /// The room of a model's reasoning while it streams in (about three lines): the same all along, so nothing shifts.
+    public static var thinkingHeight: CGFloat {
+        #if os(iOS)
+        60
+        #else
+        54
+        #endif
+    }
+
     /// The Imp drawn in a row or a card.
     public static var impPortrait: CGFloat {
         #if os(iOS)

@@ -196,7 +196,7 @@ import Testing
         #expect(fresh.shortcuts.isEmpty && fresh.animationLibrary.isEmpty)
         #expect(ImpPreferences.withWaitingImp().shortcuts.isEmpty)
         let defaults = UserDefaults(suiteName: "FirstLaunchTests-\(UUID().uuidString)")!
-        #expect(PreferencesStore(defaults: defaults).load().shortcuts.isEmpty)
+        #expect(PreferencesStore(defaults: defaults).load() == LocalPreferences())
     }
 
     @Test func exportingSharedTriggersOfAFreshLaunchIsEmpty() {

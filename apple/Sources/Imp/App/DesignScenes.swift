@@ -292,8 +292,12 @@ enum DesignScene: String, CaseIterable {
         model.prefs = ImpPreferences()
         for _ in 0..<imps { model.addImp() }
         let ids = ["00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000003"]
-        for (i, hue) in [0.08, 0.57, 0.33].enumerated() where model.prefs.imps.indices.contains(i) {
+        // Colours and secret favourites are fixed (a newcomer's favourite is random), and far apart, so no
+        // picture shows the favourite's heart by chance.
+        for (i, (hue, favorite)) in [(0.08, 0.75), (0.57, 0.2), (0.33, 0.9)].enumerated() where model.prefs.imps.indices.contains(i) {
             model.prefs.imps[i].id = UUID(uuidString: ids[i]) ?? UUID()
+            // The favourite before the colour: changing the colour onto a (random) favourite marks it found.
+            model.prefs.imps[i].favoriteHue = favorite
             model.prefs.imps[i].hue = hue
             model.prefs.imps[i].name = ["Dot", "Bumble", "Pip"][i]
             model.prefs.imps[i].personality = Persona.newcomer(named: ["Dot", "Bumble", "Pip"][i])
@@ -433,6 +437,9 @@ enum BubbleScene: String, CaseIterable {
     case short = "bubble-short"
     case readAll = "bubble-read-all"
     case chat = "bubble-chat"
+    case permission = "bubble-permission"
+    case thinking = "bubble-thinking"
+    case thoughts = "bubble-thoughts"
 
     /// What the bubble floats over: nothing like the bubble's own colours.
     static let backdrop = NSColor(srgbRed: 0.0, green: 0.62, blue: 0.35, alpha: 1)
@@ -450,6 +457,38 @@ enum BubbleScene: String, CaseIterable {
         case .readAll:
             layout.textLimit = 210
             return BubbleCard(bubble: Bubble(title: "Talk to Imp", text: long, phase: .result), model: imp, layout: layout, measuring: true)
+        case .permission:
+            // Working, a command already refused before it, and the question about the next one (long, so it is cut).
+            let steps = [Bubble.Step(icon: "terminal", title: "Run a command", state: .failed, tool: "shell", request: "rm -rf ~/old", response: "Not allowed by your permissions: shell rm -rf ~/old"),
+                         Bubble.Step(icon: "terminal", title: "Run a command", tool: "shell", request: "")]
+            var bubble = Bubble(title: "Tidy my downloads", text: "Poking the cloud…", phase: .thinking, steps: steps)
+            bubble.permission = Bubble.Prompt(action: "shell", resource: "mv ~/Downloads/*.pdf ~/Documents/Papers/2026/inbox/from-downloads", more: 1)
+            return BubbleCard(bubble: bubble, model: imp, layout: layout, measuring: true)
+        case .thinking:
+            // The model is thinking: its newest words stream in a block of fixed height under the row.
+            let reasoning = "The user wants a weekend plan for Lisbon. Alfama is best on foot in the morning, before the heat. "
+                + "Belém is across town, so it deserves its own day. Pastéis de nata are best fresh, so before ten. "
+                + "Then a viewpoint for the evening: Miradouro da Senhora do Monte faces the sunset over the castle."
+            let steps = [Bubble.Step(icon: "magnifyingglass", title: "Search the web", state: .done, tool: "web", request: "{\"query\":\"Lisbon weekend\"}", response: "…"),
+                         { var live = Bubble.Step.thinking(reasoning); live.title = "Thinking…"; return live }()]
+            return BubbleCard(bubble: Bubble(title: "Plan a weekend in Lisbon", text: "Poking the cloud…", phase: .thinking, steps: steps),
+                              model: imp, layout: layout, measuring: true)
+        case .thoughts:
+            // Two thoughts among tool steps, collapsed; the second one is open.
+            // The scene's titles are written out: a bare build has no String Catalog to look them up in.
+            func thought(_ text: String, seconds: Int) -> Bubble.Step {
+                var step = Bubble.Step(ChatTurn.Step.thought(text, seconds: Double(seconds)))
+                step.title = "Thought for \(seconds)s"
+                return step
+            }
+            let open = thought("Alfama first, on foot. Belém the next day.\nThen the tram 28 for the evening.", seconds: 4)
+            layout.openSteps = [open.id]
+            let steps = [thought("Search for opening hours first.", seconds: 2),
+                         Bubble.Step(icon: "magnifyingglass", title: "Search the web", state: .done, tool: "web", request: "{\"query\":\"Lisbon weekend\"}", response: "…"),
+                         open,
+                         Bubble.Step(icon: "calendar", title: "Add an event", state: .running, tool: "calendar", request: "")]
+            return BubbleCard(bubble: Bubble(title: "Plan a weekend in Lisbon", text: "Summoning answers…", phase: .thinking, steps: steps),
+                              model: imp, layout: layout, measuring: true)
         case .chat:
             var chat = ChatHistory(folder: nil)
             let date = Date(timeIntervalSinceReferenceDate: 812_000_000)

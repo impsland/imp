@@ -3,7 +3,8 @@
 An Imp can ask another Imp for help. The other Imp answers with its own model, its own personality and its own
 tools, and its answer comes back into the conversation. You can use this in two ways:
 
-- **Imps of the settings file**, made with `imp imp new`. They are yours, on this computer.
+- **Your Imps**, made with `imp agent new` or in the Mac app: files in `~/.agents/agents`. They are yours, on
+  this computer, and the Mac app shows them too.
 - **Imps of a folder**, written as Markdown files in the project's `.agents/agents/` folder. They belong to the
   project. Anyone who works in the folder gets them, so a team can share a reviewer, a researcher or a
   test-writer the same way they share `AGENTS.md`.
@@ -17,9 +18,13 @@ Make `.agents/agents/reviewer.md` in your project:
 ```markdown
 ---
 description: Reviews changes before they are merged
-default: true
-model: openai/gpt-6-luna
-tools: [read_file, search_files, use_skill, imp_message]
+mode: primary
+model: openrouter/openai/gpt-6-luna
+steps: 20
+permissions:
+  - action: edit
+    resource: "*"
+    effect: deny
 ---
 You review code. Say what could break, most serious first, and keep it short.
 ```
@@ -28,16 +33,12 @@ You review code. Say what could break, most serious first, and keep it short.
 - The **text under the front matter** is how the Imp behaves. It is the Imp's personality.
 - `description` is one sentence about what the Imp is for. Other Imps read it to decide whom to ask. It is
   information for them, never instructions.
-- `default: true` makes this the Imp that a chat in this folder opens with. Without it, the chat opens with
-  your default Imp from the settings file.
-- `tools` lists what the Imp may use. Only these are on. Names such as `read_file`, ids such as
-  `mcp.files.read_file`, or whole servers such as `mcp.files` all work. Leave `tools` out and the Imp gets the
-  tools your default Imp has.
-- Anything you leave out comes from your default Imp in the settings file.
-
-Other front matter fields are `base_url`, `api_key_env` (the name of an environment variable that holds the key,
-never the key itself), `api_key: ${NAME}` (the same, written as a placeholder), `disallowedTools` and `hue` (its
-colour on the screens of your devices). The full list is in `chat/README.md`.
+- `mode` is `primary` (an Imp you talk to), `subagent` (only other Imps call it) or `all` (the default).
+- `model` is `provider/model`, with an optional `#variant`. Without it, the default model is used.
+- `permissions` are rules, `allow`, `ask` or `deny`; the last rule that matches decides. Leave them out and
+  the Imp may do what your own Imps may.
+- Other fields: `color` (`#rrggbb`), `steps` (the most tool rounds in one answer), `hidden` and `disabled`. The
+  full list is in [Configuration](/architecture/configuration).
 
 Check what the chat found with `/project`. A file that could not be used is shown there with the reason.
 
@@ -80,21 +81,25 @@ Then, asking the reviewer:
 ### Conversations
 
 Each pair of Imps keeps its conversation. If an Imp does not say which conversation it means, the chat continues
-the last one when it is recent enough. Two settings at the top of your settings file change this:
+the last one when it is recent enough. Two settings in `imp.json`, under `talk`, change this:
 
-```toml
-talk_window_minutes = 60        # how recent counts as "continue", default 60
-talk_threading = "decides"      # decides (default), recent, always or never
+```json
+{ "talk": { "windowMinutes": 60, "threading": "decides" } }
 ```
+
+`windowMinutes` is how recent counts as "continue" (default 60), and `threading` is `decides` (default),
+`recent`, `always` or `never`.
 
 ### Waiting for an answer
 
 By default, an Imp waits for the other's answer before it goes on. A message can also go without waiting. The
-setting is `talk_waiting`:
+setting is `talk.waiting` in `imp.json`:
 
-```toml
-talk_waiting = "decides"        # decides (default), wait or dont_wait
+```json
+{ "talk": { "waiting": "decides" } }
 ```
+
+It is `decides` (default), `wait` or `dont_wait`.
 
 With `decides`, the Imp chooses. A message that does not wait gets a receipt at once, and the Imp carries on. The
 answer arrives later as a new event at the end of the chat, marked `[Event, not from the user]`. Earlier messages are
@@ -112,22 +117,23 @@ the Imps, so the other Imps know what they are for.
 
 ## Trust
 
-A downloaded project could start programs or send your key to its own address. So a project's Imps do not use their
-`base_url` or key variable, and a project's MCP servers do not start, until you allow them:
+A downloaded project could start programs or send your key to its own address. So a project's own
+`.agents/imp.json`, with its services, tool servers and permissions, is not used until you allow it:
 
 ```text
-/project trust
+imp project trust
 ```
 
-Until then, those Imps use your default Imp's service, and the chat says what waits. If a folder Imp changes its
-`base_url` or key variable later, it waits for you to allow it again. `/project untrust` turns them off.
+(or `/project trust` in the chat). Until then the chat says what waits. If the file changes later, it waits
+for you to allow it again. `imp project untrust` turns it off. A project's agents, skills, commands and
+`AGENTS.md` are text and need no trust.
 
 Your own Imps in `~/.agents/agents/` are always trusted.
 
 ## Good habits
 
 - Keep each Imp to one job, and say what that job is in `description`. Other Imps choose whom to ask by it.
-- Give the Imps you talk to directly only the tools they need, such as `read_file` for a reviewer. An Imp that is
-  only asked questions needs no tools at all.
+- Give the Imps you talk to directly only the tools they need, with `permissions` in its file or
+  `imp permission add ACTION RESOURCE deny --agent NAME`. An Imp that is only asked questions needs no tools at all.
 - Put standing rules in `AGENTS.md`, and what is specific to one Imp in its file.
-- Use `/tools` to see the ids of every tool and `/tools off ID` to switch one off for a try.
+- Use `/tools` to see the ids of every tool and whether the rules leave it on.

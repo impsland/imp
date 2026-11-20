@@ -1,18 +1,13 @@
 //! Signing in to MCP servers that ask for it (MCP authorization, OAuth 2.1). The rules and the
 //! requests are in `imp_engine::mcp::auth` and `auth_flow`. This is the terminal's part: the
-//! browser, the loopback address the browser comes back to, and the private file with the tokens.
-//!
-//! The tokens live in `mcp-auth.json` in imp's data folder, readable by the owner only, keyed by the
-//! address of the MCP server. There is no keychain, so no prompts.
+//! browser and the loopback address the browser comes back to. The tokens are kept in `auth.json`.
 
+use imp_engine::config::{McpServer, Store};
 use imp_engine::mcp::auth::{self, McpAuth};
 use imp_engine::mcp::auth_flow::{self, RefreshFailure};
 use imp_engine::{McpError, McpSignIn};
-use serde::{Deserialize, Serialize};
-use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::io::IsTerminal;
-use std::path::{Path, PathBuf};
 use std::time::Duration;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
@@ -20,73 +15,85 @@ use tokio::net::TcpListener;
 /// How long the person has to finish in the browser.
 pub const SIGN_IN_WAIT: Duration = Duration::from_secs(300);
 
-/// The file's content: one sign-in per MCP server address, and the client id Imp got from each
-/// authorization server (by issuer).
-#[derive(Debug, Default, Serialize, Deserialize)]
-pub struct AuthStore {
-    #[serde(default)]
-    pub servers: BTreeMap<String, McpAuth>,
-    #[serde(default)]
-    pub clients: BTreeMap<String, String>,
-}
-
-impl AuthStore {
-    pub fn load(path: &Path) -> Self {
-        std::fs::read_to_string(path)
-            .ok()
-            .and_then(|t| serde_json::from_str(&t).ok())
-            .unwrap_or_default()
-    }
-
-    /// Writes the file with mode 0600 (on Unix), through a temporary file in the same folder.
-    pub fn save(&self, path: &Path) -> std::io::Result<()> {
-        use std::io::Write;
-        if let Some(dir) = path.parent() {
-            std::fs::create_dir_all(dir)?;
-        }
-        let tmp = path.with_extension("json.tmp");
-        let mut options = std::fs::OpenOptions::new();
-        options.write(true).create(true).truncate(true);
-        #[cfg(unix)]
-        std::os::unix::fs::OpenOptionsExt::mode(&mut options, 0o600);
-        let mut file = options.open(&tmp)?;
-        file.write_all(serde_json::to_string_pretty(self)?.as_bytes())?;
-        file.sync_all()?;
-        std::fs::rename(&tmp, path)
-    }
-}
-
-/// The default place of the file.
-pub fn default_path() -> Option<PathBuf> {
-    crate::folders::data_dir().map(|d| d.join("mcp-auth.json"))
-}
-
-/// Signs in to MCP servers for the terminal.
+/// Signs in to MCP servers for the terminal. The tokens are in `auth.json` of the configuration folder
+/// (`Auth::mcp`, by the server's name), shared with the Mac app and readable by the person only.
 pub struct ChatSignIn {
-    path: PathBuf,
-    store: RefCell<AuthStore>,
+    store: Store,
+    /// The name of each remote server by its address.
+    names: BTreeMap<String, String>,
     /// Open this address for the person. The default starts the system's browser.
     open: Box<dyn Fn(&str)>,
     interactive: bool,
 }
 
 impl ChatSignIn {
-    pub fn new(path: PathBuf) -> Self {
-        Self::with(path, Box::new(open_browser), std::io::stdin().is_terminal())
+    pub fn new(store: Store, servers: &BTreeMap<String, McpServer>) -> Self {
+        Self::with(
+            store,
+            servers,
+            Box::new(open_browser),
+            std::io::stdin().is_terminal(),
+        )
     }
 
     /// `open` shows the address to the person, `interactive` says whether anyone is there.
-    pub fn with(path: PathBuf, open: Box<dyn Fn(&str)>, interactive: bool) -> Self {
+    pub fn with(
+        store: Store,
+        servers: &BTreeMap<String, McpServer>,
+        open: Box<dyn Fn(&str)>,
+        interactive: bool,
+    ) -> Self {
+        let names = servers
+            .iter()
+            .filter_map(|(name, s)| match s {
+                McpServer::Remote { url, .. } => Some((url.clone(), name.clone())),
+                McpServer::Local { .. } => None,
+            })
+            .collect();
         Self {
-            store: RefCell::new(AuthStore::load(&path)),
-            path,
+            store,
+            names,
             open,
             interactive,
         }
     }
 
-    fn save(&self) {
-        if let Err(e) = self.store.borrow().save(&self.path) {
+    fn name_of(&self, url: &str) -> String {
+        self.names
+            .get(url)
+            .cloned()
+            .unwrap_or_else(|| url.to_string())
+    }
+
+    fn saved(&self, url: &str) -> Option<McpAuth> {
+        self.store
+            .read_auth()
+            .ok()
+            .and_then(|a| a.mcp.get(&self.name_of(url)).cloned())
+    }
+
+    /// The client id Imp got from an authorization server (by issuer) for any server before.
+    fn client_for(&self, issuer: &str) -> Option<String> {
+        self.store
+            .read_auth()
+            .ok()?
+            .mcp
+            .values()
+            .find(|a| a.issuer == issuer)
+            .map(|a| a.client_id.clone())
+    }
+
+    fn keep(&self, url: &str, auth: Option<McpAuth>) {
+        let name = self.name_of(url);
+        let done = self.store.update_auth(|a| match auth {
+            Some(auth) => {
+                a.mcp.insert(name, auth);
+            }
+            None => {
+                a.mcp.remove(&name);
+            }
+        });
+        if let Err(e) = done {
             eprintln!("Imp could not keep your sign-in ({e}); you will sign in again next time.");
         }
     }
@@ -114,23 +121,9 @@ impl ChatSignIn {
         })?;
         let port = listener.local_addr().map(|a| a.port()).unwrap_or(0);
         let redirect = format!("http://127.0.0.1:{port}/oauth");
-        let cached = self
-            .store
-            .borrow()
-            .clients
-            .get(&found.server.issuer)
-            .cloned();
-        let client_id = match cached {
+        let client_id = match self.client_for(&found.server.issuer) {
             Some(id) => id,
-            None => {
-                let id = auth_flow::register(&http, &found.server, &redirect).await?;
-                self.store
-                    .borrow_mut()
-                    .clients
-                    .insert(found.server.issuer.clone(), id.clone());
-                self.save();
-                id
-            }
+            None => auth_flow::register(&http, &found.server, &redirect).await?,
         };
         let pkce = auth::pkce_new();
         let state = auth::random_state();
@@ -164,11 +157,7 @@ impl ChatSignIn {
             url,
         )
         .await?;
-        self.store
-            .borrow_mut()
-            .servers
-            .insert(url.to_string(), signed);
-        self.save();
+        self.keep(url, Some(signed));
         eprintln!("Signed in to {name}.");
         Ok(())
     }
@@ -181,7 +170,7 @@ impl McpSignIn for ChatSignIn {
         force_refresh: bool,
     ) -> imp_engine::BoxFuture<'a, Result<Option<String>, McpError>> {
         Box::pin(async move {
-            let Some(current) = self.store.borrow().servers.get(server_url).cloned() else {
+            let Some(current) = self.saved(server_url) else {
                 return Ok(None);
             };
             let now = auth_flow::now_secs();
@@ -196,16 +185,11 @@ impl McpSignIn for ChatSignIn {
             match auth_flow::refresh(&http, &current, server_url).await {
                 Ok(next) => {
                     let token = next.access_token.clone();
-                    self.store
-                        .borrow_mut()
-                        .servers
-                        .insert(server_url.to_string(), next);
-                    self.save();
+                    self.keep(server_url, Some(next));
                     Ok(Some(token))
                 }
                 Err(RefreshFailure::Rejected) => {
-                    self.store.borrow_mut().servers.remove(server_url);
-                    self.save();
+                    self.keep(server_url, None);
                     Ok(None)
                 }
                 Err(RefreshFailure::Other(e)) => {
@@ -299,25 +283,6 @@ async fn wait_for_code(listener: &TcpListener, state: &str) -> Result<String, St
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn the_store_is_private_and_round_trips() {
-        let dir = std::env::temp_dir().join(format!("imp-auth-{}", uuid::Uuid::new_v4()));
-        let path = dir.join("mcp-auth.json");
-        let mut store = AuthStore::default();
-        store
-            .clients
-            .insert("https://a.example".into(), "c1".into());
-        store.save(&path).unwrap();
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            let mode = std::fs::metadata(&path).unwrap().permissions().mode();
-            assert_eq!(mode & 0o777, 0o600);
-        }
-        assert_eq!(AuthStore::load(&path).clients["https://a.example"], "c1");
-        std::fs::remove_dir_all(&dir).unwrap();
-    }
 
     #[tokio::test]
     async fn the_loopback_listener_returns_the_code_and_ignores_other_requests() {

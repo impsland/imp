@@ -23,6 +23,16 @@ struct BackupPane: View {
                         .buttonStyle(.imp(.secondary, small: true))
                 }
                 .settingAnchor(.backupImport)
+                if let folder = model.config?.configDir {
+                    Row("settings.backup.folder.title", icon: "folder.fill") {
+                        HStack(spacing: Spacing.small) {
+                            Text(verbatim: (folder.path as NSString).abbreviatingWithTildeInPath)
+                                .font(Typeface.small).foregroundStyle(Tone.muted).lineLimit(1).truncationMode(.middle)
+                            HoverIconButton(systemName: "folder", help: "settings.backup.folder.reveal") { FileActions.reveal(folder) }
+                        }
+                    }
+                    .settingAnchor(.backupFolder)
+                }
             }
 
             Card("settings.backup.reset.title", icon: "arrow.counterclockwise", info: "settings.backup.reset.info") {
@@ -33,10 +43,11 @@ struct BackupPane: View {
                 .settingAnchor(.backupReset)
             }
         }
-        .confirmationDialog("Erase everything and start over?", isPresented: $confirmingReset, titleVisibility: .visible) {
-            Button("Erase and Restart", role: .destructive) { model.resetToFirstLaunch() }
+        .confirmationDialog("settings.backup.reset.confirm", isPresented: $confirmingReset, titleVisibility: .visible) {
+            Button("settings.backup.reset.app", role: .destructive) { model.resetToFirstLaunch() }
+            Button("settings.backup.reset.shared", role: .destructive) { model.resetToFirstLaunch(includingSharedConfiguration: true) }
         } message: {
-            Text("Every Imp, service, key, tool, trigger, chat and setting is deleted. This can't be undone.")
+            Text("settings.backup.reset.message")
         }
     }
 }

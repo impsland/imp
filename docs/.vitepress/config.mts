@@ -105,6 +105,7 @@ export default defineConfig({
         items: [
           { text: 'Layers and layout', link: '/architecture/' },
           { text: 'How the apps reach the core', link: '/architecture/core' },
+          { text: 'Configuration', link: '/architecture/configuration' },
           { text: 'Threat model of Imp Link', link: '/architecture/threat-model' },
         ],
       },

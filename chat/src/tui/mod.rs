@@ -16,18 +16,20 @@ mod menu;
 mod select;
 mod terminal;
 mod text;
+mod thought;
 mod view;
 
 #[cfg(test)]
 mod tests;
 
 use crate::chat_state::ChatState;
+use crate::gate::{Answer, Question};
 use crate::link::device::{Visitor, messages_of};
-use crate::project::CustomCommand;
 use crate::slash::{self, Note};
 use crate::strings::{self, Lang};
 use crate::theme::Theme;
-use imp_engine::{AgentEvent, ChatMessage};
+use imp_engine::config::Command as CustomCommand;
+use imp_engine::{AgentEvent, ChatMessage, StreamEvent};
 use ratatui::crossterm::event::{
     KeyCode, KeyEvent, KeyEventKind, KeyModifiers, MouseButton, MouseEvent, MouseEventKind,
 };
@@ -53,6 +55,21 @@ pub enum Action {
     Stop,
     /// Put this text on the clipboard.
     Copy(String),
+    /// The person answered a question about a permission.
+    Answer(Answer),
+    /// The person typed a key for a command that asked for one: run `line` again with it.
+    Secret {
+        line: String,
+        key: String,
+    },
+}
+
+/// A secret being typed, such as a key: shown as dots, and never kept in the history or the transcript.
+#[derive(Debug)]
+struct Secret {
+    prompt: String,
+    line: String,
+    typed: String,
 }
 
 /// How many lines the mouse wheel moves.
@@ -118,11 +135,19 @@ pub struct App {
     custom: Vec<CustomCommand>,
     /// What the folder adds (AGENTS.md, skills), in a few words for the empty screen.
     context: String,
+    /// A permission the Imp asks for, until it is answered. Nothing else takes keys meanwhile.
+    question: Option<Question>,
+    /// A key being typed for a command (`/auth set`).
+    secret: Option<Secret>,
     waiting: bool,
     /// When the answer that is arriving was asked for.
     started: Option<Instant>,
     retry: Option<String>,
     tool: Option<String>,
+    /// What the model thought in this chat, collapsed, and the thinking that is going on.
+    thoughts: Vec<thought::Thought>,
+    thinking: Option<thought::Thinking>,
+    thought_count: usize,
     error: Option<String>,
     help: bool,
     /// The details of a tool call, while they are open.
@@ -172,6 +197,8 @@ impl App {
             last_click: None,
             flash: None,
             help_scroll: Cell::new(0),
+            question: None,
+            secret: None,
             files: Vec::new(),
             custom: Vec::new(),
             context: String::new(),
@@ -179,6 +206,9 @@ impl App {
             started: None,
             retry: None,
             tool: None,
+            thoughts: Vec::new(),
+            thinking: None,
+            thought_count: 0,
             error: None,
             help: false,
             detail: None,
@@ -283,6 +313,12 @@ impl App {
     pub fn on_key(&mut self, key: KeyEvent) -> Action {
         if key.kind == KeyEventKind::Release {
             return Action::None;
+        }
+        if self.secret.is_some() {
+            return self.secret_key(key);
+        }
+        if self.question.is_some() {
+            return self.question_key(key);
         }
         if self.help {
             return self.help_key(key);
@@ -396,7 +432,7 @@ impl App {
             if slash::needs_args(command) {
                 return self.accept(menu);
             }
-            self.set_input(command.name.to_string());
+            self.set_input(command.name.clone());
         }
         self.submit()
     }
@@ -513,12 +549,11 @@ impl App {
 
     fn submit(&mut self) -> Action {
         let text = self.input.trim().to_string();
-        if text.is_empty() {
+        // A command is still being run: what is typed waits in the field.
+        if text.is_empty() || self.busy.is_some() {
             return Action::None;
         }
-        // A custom command sends its text to the Imp, so it is a message, not a command.
-        let custom = slash::custom_text(&text, &self.custom);
-        if custom.is_none() && slash::is_command(&text) {
+        if slash::is_command(&text) {
             let word = text.split_whitespace().next().unwrap_or("");
             match word {
                 "/quit" | "/exit" => return Action::Quit,
@@ -535,13 +570,10 @@ impl App {
             self.set_input(String::new());
             self.set_scroll(0);
             self.error = None;
-            if !text.starts_with("/api_key") && !text.starts_with("/key") {
-                self.remember(&text);
-            }
-            self.note(Note::command(slash::shown(&text)));
+            self.remember(&text);
+            self.note(Note::command(text.trim().to_string()));
             return Action::Command(text);
         }
-        let text = custom.unwrap_or(text);
         let text = text
             .strip_prefix('/')
             .filter(|t| t.starts_with('/'))
@@ -598,6 +630,7 @@ impl App {
     /// Starts the conversation over. Notes go too.
     pub fn clear(&mut self) {
         self.chat.clear();
+        self.forget_thoughts();
         self.notes.clear();
         self.selection.set(None);
         self.set_scroll(0);
@@ -648,11 +681,92 @@ impl App {
 
     pub fn on_paste(&mut self, text: &str) {
         let text = text.replace("\r\n", "\n").replace('\r', "\n");
+        if let Some(secret) = self.secret.as_mut() {
+            secret.typed.push_str(text.trim_end_matches('\n'));
+            return;
+        }
         self.edit(|app| app.insert(&text));
     }
 
     // What the program tells the screen
     /// A line under the conversation so far. It is never sent to the model.
+    /// The Imp asks to do something its rules say to ask about.
+    pub fn ask(&mut self, question: Question) {
+        self.note(Note::info(format!(
+            "{} asks to use **{}**. Press **y** to allow once, **a** to always allow, **n** to deny.",
+            question.imp,
+            question.what()
+        )));
+        self.question = Some(question);
+    }
+
+    /// A command needs a key: the next keys are it, shown as dots, until Enter (it goes to the command) or
+    /// Esc (nothing is saved).
+    pub fn ask_secret(&mut self, prompt: String, line: String) {
+        self.secret = Some(Secret {
+            prompt,
+            line,
+            typed: String::new(),
+        });
+    }
+
+    fn secret_key(&mut self, key: KeyEvent) -> Action {
+        let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
+        let Some(secret) = self.secret.as_mut() else {
+            return Action::None;
+        };
+        match key.code {
+            KeyCode::Enter => {
+                let Secret { line, typed, .. } = self.secret.take().expect("checked above");
+                Action::Secret { line, key: typed }
+            }
+            KeyCode::Esc => self.cancel_secret(),
+            KeyCode::Char('c' | 'd') if ctrl => self.cancel_secret(),
+            KeyCode::Char('u') if ctrl => {
+                secret.typed.clear();
+                Action::None
+            }
+            KeyCode::Backspace => {
+                secret.typed.pop();
+                Action::None
+            }
+            KeyCode::Char(c) if !ctrl => {
+                secret.typed.push(c);
+                Action::None
+            }
+            _ => Action::None,
+        }
+    }
+
+    fn cancel_secret(&mut self) -> Action {
+        self.secret = None;
+        self.note(Note::info("Cancelled. Nothing was saved."));
+        Action::None
+    }
+
+    fn question_key(&mut self, key: KeyEvent) -> Action {
+        let answer = match key.code {
+            KeyCode::Char('y' | 'Y') | KeyCode::Enter => Answer::Once,
+            KeyCode::Char('a' | 'A') => Answer::Always,
+            KeyCode::Char('n' | 'N' | 'd' | 'D') | KeyCode::Esc => Answer::Deny,
+            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => Answer::Deny,
+            _ => return Action::None,
+        };
+        self.answered(answer);
+        Action::Answer(answer)
+    }
+
+    /// The question is answered (or gone): the keys are the chat's again.
+    pub fn answered(&mut self, answer: Answer) {
+        if self.question.take().is_some() {
+            self.note(Note::info(match answer {
+                Answer::Once => "Allowed once.",
+                Answer::Always => "Allowed, and remembered in the agent's file.",
+                Answer::Deny => "Not allowed.",
+            }));
+        }
+    }
+
     pub fn note(&mut self, note: Note) {
         self.notes.push((self.chat.messages().len(), note));
         self.set_scroll(0);
@@ -672,6 +786,7 @@ impl App {
     /// Talk to another Imp of this computer now. The conversation starts fresh, or goes on from `messages`.
     pub fn switch(&mut self, imp: &str, model: &str, chat: ChatState) {
         self.chat = chat;
+        self.forget_thoughts();
         self.imp = imp.to_string();
         self.model = model.to_string();
         self.notes.clear();
@@ -721,6 +836,7 @@ impl App {
             messages.push(ChatMessage::user(last));
         }
         self.chat = ChatState::from_messages("", messages);
+        self.forget_thoughts();
         let work = visitor.work.as_ref();
         // Asleep, it answers nothing until its home is back.
         self.waiting = visitor.awake && (work.is_some() || pending_question);
@@ -750,12 +866,20 @@ impl App {
     pub fn on_agent(&mut self, event: &AgentEvent) {
         match event {
             AgentEvent::Retry(n) => self.retry = Some(n.text()),
-            AgentEvent::Stream(_) => self.retry = None,
+            AgentEvent::Stream(StreamEvent::Reasoning(more)) => {
+                self.retry = None;
+                self.think(more);
+            }
+            AgentEvent::Stream(_) => {
+                self.retry = None;
+                self.end_thinking();
+            }
             AgentEvent::ToolStart(call) => {
                 self.tool = Some(crate::transcript::short_name(&call.name).to_string());
             }
             AgentEvent::ToolResult { .. } => self.tool = None,
-            AgentEvent::StepStart | AgentEvent::StepEnd => {}
+            AgentEvent::StepEnd => self.end_thinking(),
+            AgentEvent::StepStart => {}
         }
         self.chat.apply_agent(event);
     }
@@ -775,6 +899,7 @@ impl App {
     }
 
     fn finish(&mut self, answered: bool) {
+        self.end_thinking();
         if self.chat.is_streaming() {
             self.chat.abort_reply();
         }

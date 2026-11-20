@@ -70,6 +70,7 @@ impl AgentRun {
     pub fn reply(&self, reply: StreamReply) -> Vec<StreamToolCall> {
         let reply = ChatReply {
             text: reply.text,
+            reasoning: reply.reasoning,
             tool_calls: reply.tool_calls.into_iter().map(Into::into).collect(),
             finish_reason: None,
         };

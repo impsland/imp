@@ -2,13 +2,14 @@
 //!
 //! While a command name is typed the list shows the commands that match it, best first. Once the
 //! name is followed by a space, one line shows how to use the command, and the words that can
-//! follow it (such as `save` after `/api_key`) are listed when there is a fixed set.
+//! follow it (such as `add` after `/mcp`) are listed when there is a fixed set.
 //!
 //! While a word that starts with `@` is typed, anywhere in the message, the list shows the folder's
 //! files that match it. Accepting one puts its path in the message. A folder opens to what is in it.
 
 use super::text::{text_width, truncate};
 use super::{Action, App, MOST_SUGGESTION_ROWS, MOST_SUGGESTIONS};
+use crate::custom;
 use crate::mentions;
 use crate::slash::{self, Command};
 use ratatui::style::Modifier;
@@ -22,7 +23,7 @@ pub struct Entry {
     pub label: String,
     pub about: String,
     /// The forms of a command that has several, shown as lines under it.
-    pub details: Vec<&'static str>,
+    pub details: Vec<String>,
     /// The command itself, when the list is of commands and not of words after one.
     pub command: Option<&'static Command>,
     /// A custom command (`.agents/commands`): accepting it runs it, or fills in its arguments.
@@ -70,10 +71,15 @@ impl App {
                             insert: if slash::takes_args(c) {
                                 format!("{} ", c.name)
                             } else {
-                                c.name.to_string()
+                                c.name.clone()
                             },
-                            label: if details.is_empty() { c.usage } else { c.name }.to_string(),
-                            about: c.about.to_string(),
+                            label: if details.is_empty() {
+                                &c.usage
+                            } else {
+                                &c.name
+                            }
+                            .clone(),
+                            about: c.about.clone(),
                             details,
                             command: Some(c),
                             custom: false,
@@ -90,15 +96,15 @@ impl App {
                     let name = format!("/{}", c.name);
                     name.starts_with(typed) && slash::find(&name).is_none()
                 }) {
-                    let usage = slash::custom_usage(c);
+                    let usage = custom::usage(c);
                     entries.push(Entry {
-                        insert: if usage.ends_with("ARGUMENTS") {
+                        insert: if custom::takes_arguments(c) {
                             format!("/{} ", c.name)
                         } else {
                             format!("/{}", c.name)
                         },
                         label: usage,
-                        about: slash::custom_about(c),
+                        about: custom::about(c),
                         details: Vec::new(),
                         command: None,
                         custom: true,
@@ -118,7 +124,7 @@ impl App {
         let entries = if self.menu_closed || rest.contains(char::is_whitespace) {
             Vec::new()
         } else {
-            slash::choices(command.name)
+            slash::choices(&command.name)
                 .iter()
                 .filter(|c| c.word.starts_with(rest))
                 .map(|c| Entry {
@@ -128,8 +134,8 @@ impl App {
                         c.word,
                         if c.more { " " } else { "" }
                     ),
-                    label: c.word.to_string(),
-                    about: c.about.to_string(),
+                    label: c.word.clone(),
+                    about: c.about.clone(),
                     details: Vec::new(),
                     command: None,
                     custom: false,
@@ -138,7 +144,7 @@ impl App {
                 .collect()
         };
         Menu {
-            hint: Some(format!("{}: {}", command.usage, command.about)),
+            hint: slash::hint(&self.input),
             entries,
             files: false,
         }
@@ -221,6 +227,13 @@ impl App {
     /// the list (a command with several forms takes a line for each) with a line saying where in it
     /// the highlight is when it does not all fit.
     pub(super) fn popup(&self, room: usize, width: usize) -> Vec<Line<'static>> {
+        if let Some(secret) = &self.secret {
+            let said = format!(
+                " {} (not shown). Enter saves it, Esc cancels.",
+                secret.prompt
+            );
+            return vec![Line::styled(truncate(&said, width), self.theme.muted())];
+        }
         let menu = self.menu();
         let mut lines = Vec::new();
         if let (Some(hint), true) = (&menu.hint, room > 0) {

@@ -145,7 +145,7 @@ struct BubbleCard: View {
             case .listening:
                 ListeningRow(model: model, transcript: bubble.text, measuring: measuring)
             case .thinking:
-                WorkingView(bubble: bubble, layout: layout, measuring: measuring)
+                WorkingView(bubble: bubble, layout: layout, measuring: measuring, answer: model.answerPermission)
             case .result:
                 ResultView(bubble: bubble, model: model, layout: layout, measuring: measuring)
             case .error, .hint:

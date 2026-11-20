@@ -30,6 +30,16 @@ msgctxt "agent.title"
 msgid "What {name} may do"
 msgstr "{name} 可以做的事"
 
+#. Settings text.
+msgctxt "agentfile.open"
+msgid "Open the Imp's file"
+msgstr "打开 Imp 的文件"
+
+#. Settings text.
+msgctxt "agentfile.reveal"
+msgid "Show the Imp's file in Finder"
+msgstr "在访达中显示 Imp 的文件"
+
 #. Help of the move description.
 msgctxt "anim.help.about"
 msgid "One sentence about what it does."
@@ -315,6 +325,27 @@ msgstr[0] "{count} 个 Imp 在使用"
 msgctxt "brains.with_key"
 msgid "A service with your key"
 msgstr "需要你自己密钥的服务"
+
+#. Label of the model's reasoning when a thought row is open.
+msgctxt "chat.reasoning"
+msgid "Reasoning"
+msgstr "推理"
+
+#. Help of a collapsed thought row.
+msgctxt "chat.show_thought"
+msgid "Show what it thought"
+msgstr "显示它的思考"
+
+#. The model is thinking: the row that shows its reasoning as it streams in.
+msgctxt "chat.thinking"
+msgid "Thinking…"
+msgstr "思考中…"
+
+#. The collapsed row of what the model thought before it answered or used a tool. {count} is how long it took, in whole seconds.
+msgctxt "chat.thought_for"
+msgid "Thought for {count}s"
+msgid_plural "Thought for {count}s"
+msgstr[0] "思考了 {count} 秒"
 
 #. Screen reader value of a button whose action just succeeded.
 msgctxt "common.action_done"
@@ -1604,6 +1635,21 @@ msgstr "套件里这台 Mac 用不了的东西，所以被略过。"
 msgctxt "kit.help.tools"
 msgid "Tools can run things on your Mac. Read them first."
 msgstr "工具可以在你的 Mac 上运行东西。请先看一看。"
+
+#. Settings text.
+msgctxt "library.help"
+msgid "Kept in ~/.agents, for every Imp and the terminal app. Read only here."
+msgstr "保存在 ~/.agents，所有 Imp 和终端应用共用。这里只读。"
+
+#. Settings text.
+msgctxt "library.reveal"
+msgid "Show in Finder"
+msgstr "在访达中显示"
+
+#. Settings text.
+msgctxt "library.title"
+msgid "Skills and commands"
+msgstr "技能和命令"
 
 #. Status line when Local Network access is off for Imp.
 msgctxt "link.localnet.off"
@@ -2961,6 +3007,16 @@ msgid "Export"
 msgstr "导出"
 
 #. Settings text.
+msgctxt "settings.backup.folder.reveal"
+msgid "Show in Finder"
+msgstr "在访达中显示"
+
+#. Settings text.
+msgctxt "settings.backup.folder.title"
+msgid "Configuration"
+msgstr "配置"
+
+#. Settings text.
 msgctxt "settings.backup.import.title"
 msgid "Import"
 msgstr "导入"
@@ -2976,9 +3032,29 @@ msgid "Backups"
 msgstr "备份"
 
 #. Settings text.
+msgctxt "settings.backup.reset.app"
+msgid "Erase and Restart"
+msgstr "清除并重新启动"
+
+#. Settings text.
+msgctxt "settings.backup.reset.confirm"
+msgid "Erase everything and start over?"
+msgstr "清除一切并重新开始？"
+
+#. Settings text.
 msgctxt "settings.backup.reset.info"
 msgid "Erase everything and begin again. This cannot be undone."
 msgstr "清除一切并重新开始，此操作无法撤销。"
+
+#. Settings text.
+msgctxt "settings.backup.reset.message"
+msgid "Chats, memories and the app's own settings are deleted. Imps, services and keys are kept unless you also remove the shared configuration, which the terminal app uses too. This can't be undone."
+msgstr "聊天、记忆和应用自己的设置会被删除。Imp、服务和密钥会保留，除非你同时移除共享配置（终端应用也在使用它）。此操作无法撤销。"
+
+#. Settings text.
+msgctxt "settings.backup.reset.shared"
+msgid "Erase and Also Remove the Shared Configuration"
+msgstr "清除并同时移除共享配置"
 
 #. Settings text.
 msgctxt "settings.backup.reset.title"
@@ -2994,26 +3070,6 @@ msgstr "再次提问之前要等多长时间。"
 msgctxt "settings.brains.first_wait.title"
 msgid "First pause"
 msgstr "首次间隔"
-
-#. Settings text.
-msgctxt "settings.brains.keychain.info"
-msgid "Keep keys safe in your Mac's Keychain."
-msgstr "把密钥安全放在 Mac 的钥匙串里。"
-
-#. Settings text.
-msgctxt "settings.brains.keychain.title"
-msgid "Keychain"
-msgstr "钥匙串"
-
-#. Settings text.
-msgctxt "settings.brains.keys.info"
-msgid "Secret passwords for your brains."
-msgstr "你的各个大脑所用的密钥口令。"
-
-#. Settings text.
-msgctxt "settings.brains.keys.title"
-msgid "Keys"
-msgstr "密钥"
 
 #. Settings text.
 msgctxt "settings.brains.longer.info"

@@ -13,7 +13,7 @@ import ImpKit
         var service = Service(name: "Live", baseURL: v["OPENAI_BASE_URL"] ?? "", model: v["OPENAI_MODEL"] ?? "")
         service.model = v["OPENAI_MODEL"] ?? ""
         app.prefs.ai.add(service)
-        app.assistant.configure(ai: app.prefs.ai, servers: [], keychain: false)
+        app.assistant.configure(ai: app.prefs.ai, servers: [])
         #expect(app.assistant.setKey(v["OPENAI_API_KEY"] ?? "", for: service.id))
         app.prefs.talkWaiting = .dontWait
         app.prefs.imps[0].name = "Pip"

@@ -101,18 +101,33 @@ public struct LinkTurn: Codable, Sendable, Equatable, Identifiable {
     public var failed: Bool
     /// What the Imp did on the way (tool steps), as short titles.
     public var steps: [String]
+    /// Which of `steps` are the Imp thinking ("Thought for 3s"), by position. Only the title travels, never what it thought.
+    public var thoughts: [Int]?
+    /// What it thought at those positions, on the device that thought it (a pocket Imp). Never sent: not part of the wire shape.
+    public var reasoning: [Int: String] = [:]
     /// True when `request` is not a request but the answer of the Imp `from` to a message this Imp sent without waiting.
     public var answer: Bool?
 
-    public init(id: UUID, date: Date, request: String, from: String? = nil, reply: String, failed: Bool, steps: [String] = [], answer: Bool? = nil) {
+    public init(id: UUID, date: Date, request: String, from: String? = nil, reply: String, failed: Bool, steps: [String] = [],
+                thoughts: [Int]? = nil, answer: Bool? = nil) {
         self.id = id; self.date = date; self.request = request; self.from = from; self.answer = answer
-        self.reply = reply; self.failed = failed; self.steps = steps
+        self.reply = reply; self.failed = failed; self.steps = steps; self.thoughts = thoughts
     }
 
     public init(_ turn: ChatTurn) {
+        let thoughts = turn.steps.indices.filter { turn.steps[$0].isThought }
         self.init(id: turn.id, date: turn.date, request: turn.request, from: turn.sender?.name, reply: turn.reply,
-                  failed: turn.failed, steps: turn.steps.map(\.title), answer: turn.via == .answer ? true : nil)
+                  failed: turn.failed, steps: turn.steps.map(\.title), thoughts: thoughts.isEmpty ? nil : thoughts,
+                  answer: turn.via == .answer ? true : nil)
     }
+
+    /// A turn for showing on the device that has it: what the Imp thought is kept with it.
+    public init(local turn: ChatTurn) {
+        self.init(turn)
+        for i in turn.steps.indices where turn.steps[i].isThought { reasoning[i] = turn.steps[i].response ?? "" }
+    }
+
+    private enum CodingKeys: String, CodingKey { case id, date, request, from, reply, failed, steps, thoughts, answer }
 }
 
 /// What an Imp is doing right now, while it works on something.
@@ -125,9 +140,14 @@ public struct LinkWork: Codable, Sendable, Equatable {
     public var partial: String
     /// Another Imp asked, not you: its name. (It shows as a speech bubble, not in your chat.)
     public var from: String?
+    /// What it thinks right now, on the device that thinks it (a pocket Imp). Never sent: a visitor is only told
+    /// "Thinking…" (`status`).
+    public var reasoning = ""
 
-    public init(request: String, status: String?, partial: String, from: String? = nil) {
-        self.request = request; self.status = status; self.partial = partial; self.from = from
+    private enum CodingKeys: String, CodingKey { case request, status, partial, from }
+
+    public init(request: String, status: String?, partial: String, from: String? = nil, reasoning: String = "") {
+        self.request = request; self.status = status; self.partial = partial; self.from = from; self.reasoning = reasoning
     }
 }
 

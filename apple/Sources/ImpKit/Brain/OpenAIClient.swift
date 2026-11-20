@@ -68,14 +68,17 @@ public struct OpenAIClient: Sendable {
         return try Self.chatReply(from: data)
     }
 
-    /// The same round trip, streamed: `onText` hears the reply's text so far as it arrives (only
-    /// text: tool calls come back whole at the end). Servers that ignore `stream` still work.
+    /// The same round trip, streamed: `onText` hears the reply's text so far as it arrives (tool calls come
+    /// back whole at the end), `onReasoning` the model's reasoning so far (for showing, never sent back).
+    /// Servers that ignore `stream` still work.
     public func chatStream(model: String, messages: [ChatMessage], tools: [ToolSpec] = [],
+                           onReasoning: @Sendable (String) async -> Void = { _ in },
                            onText: @Sendable (String) async -> Void) async throws -> ChatReply {
-        try await chatStream(model: model, messages: messages.map(\.record), tools: tools.map(\.record), onText: onText)
+        try await chatStream(model: model, messages: messages.map(\.record), tools: tools.map(\.record), onReasoning: onReasoning, onText: onText)
     }
 
     func chatStream(model: String, messages: [ModelMessage], tools: [ModelTool],
+                    onReasoning: @Sendable (String) async -> Void = { _ in },
                     onText: @Sendable (String) async -> Void) async throws -> ChatReply {
         let body = try Self.requestBody(model: model, messages: messages, tools: tools, stream: true)
         let request = try makeRequest("chat/completions", body: body, timeout: 90)
@@ -87,13 +90,18 @@ public struct OpenAIClient: Sendable {
             for try await byte in bytes { data.append(byte) }
             try Self.check(response, data: data)
             let reply = try Self.chatReply(from: data)
+            if !reply.reasoning.isEmpty { await onReasoning(reply.reasoning) }
             if !reply.text.isEmpty { await onText(reply.text) }
             return reply
         }
         var stream = ChatStreamAccumulator()
+        var heard = 0
         for try await line in bytes.lines {
             try Task.checkCancellation()
-            if try stream.feed(line: line) { await onText(stream.text) }
+            let added = try stream.feed(line: line)
+            let thought = stream.reasoning
+            if thought.utf8.count != heard { heard = thought.utf8.count; await onReasoning(thought) }
+            if added { await onText(stream.text) }
             if stream.isDone { break }
         }
         let reply = stream.reply
@@ -114,7 +122,8 @@ public struct OpenAIClient: Sendable {
     static func chatReply(from data: Data) throws -> ChatReply {
         do {
             let reply = try parseChatReply(body: String(decoding: data, as: UTF8.self))
-            return ChatReply(text: reply.text, toolCalls: reply.toolCalls.map { ToolCall(id: $0.id, name: $0.name, arguments: $0.arguments) })
+            return ChatReply(text: reply.text, toolCalls: reply.toolCalls.map { ToolCall(id: $0.id, name: $0.name, arguments: $0.arguments) },
+                             reasoning: reply.reasoning)
         } catch let error as ChatStreamError {
             throw APIError(error)
         }

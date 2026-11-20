@@ -47,7 +47,7 @@ public struct PocketAnswer: Sendable, Equatable {
     /// The Imp it was talking with, when another Imp asked (`PocketImp.record` files it in a chat of its own).
     public var peer: UUID?
 
-    public var linkTurn: LinkTurn { LinkTurn(turn) }
+    public var linkTurn: LinkTurn { LinkTurn(local: turn) }
 }
 
 /// Runs one ask for a pocket Imp: its service (streaming), its HTTP tool servers and the two tools
@@ -145,6 +145,9 @@ public struct PocketBrain: Sendable {
         let onWork: @Sendable (LinkWork?) async -> Void
         private(set) var steps: [ChatTurn.Step] = []
         private var partial = ""
+        /// The model is thinking (its words stay here: a visiting Imp is told only that it thinks, and later how long).
+        private var thinking = false
+        private var reasoning = ""
         /// "Retrying 2 of 3" while a request is tried again.
         private var retry: String?
 
@@ -161,6 +164,14 @@ public struct PocketBrain: Sendable {
                 retry = nil
             case .retrying(let notice):
                 retry = notice.text
+            case .reasoning(let text):
+                thinking = true
+                reasoning = text
+                retry = nil
+            case .thought(let thought, let seconds):
+                thinking = false
+                reasoning = ""
+                steps.append(.thought(thought, seconds: seconds))
             case .toolStarted(let name, let arguments):
                 let label = ToolLabel(tool: name, arguments: arguments)
                 steps.append(ChatTurn.Step(icon: label.icon, title: label.title, request: label.request, response: nil, failed: false))
@@ -171,13 +182,18 @@ public struct PocketBrain: Sendable {
                     steps[i].response = result
                     steps[i].failed = !ok
                 }
+            case .toolRefused(_, let reason):
+                if let i = steps.lastIndex(where: { $0.response == nil }) {
+                    steps[i].response = reason
+                    steps[i].failed = true
+                }
             }
             await report()
         }
 
         private func report() async {
-            let status = retry ?? steps.last { $0.response == nil }?.title
-            await onWork(LinkWork(request: request, status: status, partial: partial, from: from))
+            let status = retry ?? (thinking ? ChatTurn.Step.thinkingTitle : nil) ?? steps.last { $0.response == nil }?.title
+            await onWork(LinkWork(request: request, status: status, partial: partial, from: from, reasoning: thinking ? reasoning : ""))
         }
     }
 }

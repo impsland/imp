@@ -17,12 +17,4 @@ import Testing
         file.write("", account: "b")
         #expect(!FileManager.default.fileExists(atPath: file.url.path), "no keys, no file")
     }
-
-    @Test func theKeychainIsOptIn() throws {
-        var p = ImpPreferences.withWaitingImp()
-        #expect(!p.keysInKeychain)
-        p.keysInKeychain = true
-        let back = try JSONDecoder().decode(ImpPreferences.self, from: JSONEncoder().encode(p))
-        #expect(back.keysInKeychain)
-    }
 }

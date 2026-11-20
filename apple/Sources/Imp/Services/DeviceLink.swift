@@ -513,7 +513,7 @@ final class DeviceLink {
                      from: w.received?.peer.name)
         }
         // Talks with other Imps show as its speech bubble there, not in your chat.
-        let chat = imp.history.current.turns.filter { $0.sender == nil }.suffix(Self.chatPage).map(LinkTurn.init)
+        let chat = imp.history.current.turns.filter { $0.sender == nil }.suffix(Self.chatPage).map { LinkTurn($0) }
         let holder = node?.holder(of: id)
         return Snapshot(look: app.linkImp(profile), mood: (imp.activity?.mood ?? .idle).rawValue, ready: imp.isReady,
                         tools: holder.map { node?.isTrusted($0) ?? false } ?? true, work: work,

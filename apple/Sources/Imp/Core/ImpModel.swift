@@ -20,6 +20,9 @@ final class ImpModel {
     /// replaced) the waiting ends too, and stopping a job takes its work-in-progress bubble with it.
     private(set) var bubble: Bubble? {
         didSet {
+            // The open permission question lives in the working bubble and the chat, nowhere else.
+            let shown = bubble.map { [.thinking, .chat].contains($0.phase) } == true ? prompt : nil
+            if bubble != nil, bubble?.permission != shown { bubble?.permission = shown }
             if let waiting = activity?.waitingPhase, bubble?.phase != waiting { endWaiting() }
             // A bubble that went away can't report the pointer leaving it: the next starts fresh.
             if bubble?.id != oldValue?.id { bubbleHovered = false }
@@ -106,6 +109,9 @@ final class ImpModel {
     /// Why the last recap didn't work (nil once one does).
     private(set) var recapError: String?
     @ObservationIgnored private var recapTask: Task<Void, Never>?
+    /// Where this Imp's permission questions wait (one open at a time, the rest queue), and the open one as the bubble shows it.
+    let desk = PermissionDesk()
+    private(set) var prompt: Bubble.Prompt?
     /// The bubble the history replaced, to go back to.
     @ObservationIgnored private var beforeChat: Bubble?
 
@@ -154,6 +160,7 @@ final class ImpModel {
         // A visitor's chats are its home's: what it shows is a copy of the current one.
         history = app.persists && visiting == nil ? ChatHistory(folder: ChatHistory.folder(for: id))
                                                   : ChatHistory(folder: nil)
+        desk.onChange = { [weak self] in self?.permissionChanged() }
         // Audio or video in the bubble holds it up while it plays. The clock starts when it stops.
         playbackObserver = NotificationCenter.default.addObserver(forName: Playback.didChange, object: nil,
                                                                   queue: .main) { [weak self] note in
@@ -872,7 +879,7 @@ final class ImpModel {
             }
             if allowed != nil, app.assistant.toolsConnecting { addStep(.wakingUp) }
             let (reply, exchange) = try await app.assistant.chat(messages(with: turn, peer: peerChat, continuing: continuing, askedFrom: origin), brain: profile.brain, tools: tools,
-                                                                 stream: true) { [weak self] event in
+                                                                 gate: tools == nil ? nil : gate(origin: origin), stream: true) { [weak self] event in
                 self?.progress(event, title: title)
             }
             try Task.checkCancellation()
@@ -1032,6 +1039,30 @@ final class ImpModel {
         }
     }
 
+    // MARK: Permissions
+
+    /// The question open now changed (one was asked, answered or given up). The bubble that shows it is brought back if
+    /// the person had closed it; either way it is measured again.
+    private func permissionChanged() {
+        prompt = desk.current.map { Bubble.Prompt(action: $0.action, resource: $0.resource, more: desk.count - 1) }
+        guard prompt != nil, let work, ![.thinking, .chat].contains(bubble?.phase) else { bubble = bubble; return }
+        show(Bubble(title: work.heading, text: Captions.thinking[0], phase: .thinking, steps: work.steps), autoHide: false)
+    }
+
+    /// The person's answer to the open question: the call that asked goes on or is refused.
+    func answerPermission(_ answer: PermissionAnswer) { desk.answer(answer) }
+
+    /// The permissions of this Imp's tool calls. Nobody can be asked when the Imp answers another device or is only
+    /// visiting here: `ask` is `deny` there.
+    private func gate(origin: AskOrigin?) -> ToolGate? {
+        guard let config = app.config else { return nil }
+        let agent = config.agentName(for: id) ?? SharedMapping.agentName(for: profile.name, avoiding: [])
+        let away = origin != nil || visit != nil
+        return ToolGate(imp: profile.name, agent: agent, store: config, asker: away ? nil : desk,
+                        unattended: origin.map { String(localized: "it was asked from \($0.name)") } ?? String(localized: "this Imp is visiting"),
+                        remembered: { [weak app] in await app?.reloadConfiguration(force: true) })
+    }
+
     // MARK: Steps (commands and tools)
 
     private func addStep(_ step: Bubble.Step) {
@@ -1058,6 +1089,24 @@ final class ImpModel {
             stream(text, title: title)
         case .retrying(let notice):
             showRetry(notice)
+        case .reasoning(let text):
+            endRetryNote()
+            guard var w = work else { return }
+            if let i = w.steps.lastIndex(where: { $0.thought && $0.state == .running }) {
+                w.steps[i].response = Bubble.Step.clipped(text)
+                work = w
+                showSteps()
+            } else {
+                addStep(.thinking(Bubble.Step.clipped(text)))
+            }
+        case .thought(let text, let seconds):
+            guard var w = work else { return }
+            let done = ChatTurn.Step.thought(text, seconds: seconds)
+            let live = w.steps.lastIndex(where: { $0.thought && $0.state == .running })
+            var step = Bubble.Step(done)
+            if let live { step.id = w.steps[live].id; w.steps[live] = step } else { w.steps.append(step) }
+            work = w
+            showSteps()
         case .toolStarted(let name, let arguments):
             stopStreaming()
             setActivity(.tools)
@@ -1072,6 +1121,13 @@ final class ImpModel {
             work = w
             showSteps()
             setActivity(.thinking)                     // back to the model with the result
+        case .toolRefused(let name, let reason):
+            guard var w = work, let i = w.steps.lastIndex(where: { $0.tool == name && $0.state == .running }) else { return }
+            w.steps[i].state = .failed
+            w.steps[i].response = Bubble.Step.clipped(reason)
+            work = w
+            showSteps()
+            setActivity(.thinking)
         }
     }
 
@@ -1098,7 +1154,7 @@ final class ImpModel {
 
     /// Steps of the finished job, with anything still running marked done.
     private var finishedSteps: [Bubble.Step] {
-        (work?.steps ?? []).map { var s = $0; if s.state == .running { s.state = .done }; return s }
+        (work?.steps ?? []).filter { !$0.thought || $0.seconds != nil }.map { var s = $0; if s.state == .running { s.state = .done }; return s }
     }
 
     /// This Imp put a question to another Imp (`imp_message`): its bubble says whom it waits for.
@@ -1140,7 +1196,11 @@ extension ImpModel {
     func heard(chat turns: [LinkTurn]) {
         var copy = ChatHistory(folder: nil)
         for t in turns {
-            let steps = t.steps.map { ChatTurn.Step(icon: "wrench.and.screwdriver", title: $0, request: "", response: nil, failed: false) }
+            // A thought of the home comes as its line only ("Thought for 3s"), never what it thought.
+            let thoughts = Set(t.thoughts ?? [])
+            let steps = t.steps.enumerated().map { i, title in
+                ChatTurn.Step(icon: thoughts.contains(i) ? ChatTurn.Step.thoughtIcon : "wrench.and.screwdriver", title: title, request: "", response: nil, failed: false)
+            }
             copy.append(ChatTurn(id: t.id, date: t.date, request: t.request, reply: t.reply, failed: t.failed, steps: steps, via: .typed))
         }
         history = copy
@@ -1184,7 +1244,7 @@ extension ImpModel {
             // changing `work` before it reads it, and Swift stops the app on that overlap.
             current.steps = current.steps.map { var s = $0; s.state = .done; return s }
             work = current
-            addStep(Bubble.Step(icon: "gearshape", title: status, tool: "home"))
+            addStep(Bubble.Step(icon: status == ChatTurn.Step.thinkingTitle ? ChatTurn.Step.thoughtIcon : "gearshape", title: status, tool: "home"))
         }
         stream(heard.partial, title: "")
     }

@@ -7,7 +7,7 @@
 
 use imp_engine::{
     AgentEvent, ChatMessage, McpEndpoint, McpHost, McpSecrets, McpServerSpec, OpenAiClient,
-    RetryPolicy, Role, ToolSelection, run_agent,
+    RetryPolicy, Role, StreamEvent, ToolSelection, run_agent,
 };
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -115,6 +115,46 @@ async fn a_plain_chat_streams_an_answer() {
     println!("live core: chat answered {answer:?} after {streamed} stream events");
     assert!(answer.to_lowercase().contains("pong"), "{answer}");
     assert!(streamed > 0);
+}
+
+/// A model that thinks (`IMP_LIVE_REASONING_MODEL`, such as `deepseek/deepseek-v4.1-flash-1017` on
+/// OpenRouter): its reasoning streams as its own events, apart from the answer, and is kept in the
+/// reply.
+#[tokio::test]
+async fn a_thinking_model_streams_its_reasoning() {
+    let Some(env) = live() else { return };
+    let Ok(model) = std::env::var("IMP_LIVE_REASONING_MODEL") else {
+        eprintln!("no reasoning model (IMP_LIVE_REASONING_MODEL names one)");
+        return;
+    };
+    let (client, _) = client(&env);
+    let mut events = Vec::new();
+    let reply = client
+        .stream(
+            &model,
+            &[ChatMessage::new(
+                Role::User,
+                "What is 17*23? Answer with the number.",
+            )],
+            &[],
+            |e| events.push(e.clone()),
+            |_| {},
+        )
+        .await
+        .expect("answer");
+    let thoughts = events
+        .iter()
+        .filter(|e| matches!(e, StreamEvent::Reasoning(_)))
+        .count();
+    println!(
+        "live core: {thoughts} reasoning events, {} chars of reasoning, answer {:?}",
+        reply.reasoning.len(),
+        reply.text
+    );
+    assert!(thoughts > 0, "no reasoning events arrived");
+    assert!(!reply.reasoning.trim().is_empty());
+    assert!(reply.text.contains("391"), "{}", reply.text);
+    assert!(!reply.text.contains("<think>"));
 }
 
 #[tokio::test]

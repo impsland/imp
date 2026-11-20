@@ -228,6 +228,7 @@
   <x:Double x:Key="ImpSizeColumn">760</x:Double>
   <x:Double x:Key="ImpSizeSheetWidth">560</x:Double>
   <x:Double x:Key="ImpSizeMarker">44</x:Double>
+  <x:Double x:Key="ImpSizeThinkingHeight">54</x:Double>
   <x:Double x:Key="ImpSizeImpPortrait">40</x:Double>
   <x:Double x:Key="ImpSizeFieldLabel">96</x:Double>
   <x:Double x:Key="ImpSizeMark">20</x:Double>

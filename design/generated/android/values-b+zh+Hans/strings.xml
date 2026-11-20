@@ -6,6 +6,8 @@
   <string name="agent_off">关</string>
   <string name="agent_on">开</string>
   <string name="agent_title">%1$s 可以做的事</string>
+  <string name="agentfile_open">打开 Imp 的文件</string>
+  <string name="agentfile_reveal">在访达中显示 Imp 的文件</string>
   <string name="anim_help_about">用一句话说明它的作用。</string>
   <string name="anim_help_beats">每个小块是动作中的一个瞬间。拖动来移动或拉长它。</string>
   <string name="anim_help_hop">Imp 在这一拍里跳多高。</string>
@@ -65,6 +67,12 @@
     <item quantity="other">%1$d 个 Imp 在使用</item>
   </plurals>
   <string name="brains_with_key">需要你自己密钥的服务</string>
+  <string name="chat_reasoning">推理</string>
+  <string name="chat_show_thought">显示它的思考</string>
+  <string name="chat_thinking">思考中…</string>
+  <plurals name="chat_thought_for">
+    <item quantity="other">思考了 %1$d 秒</item>
+  </plurals>
   <string name="common_action_done">完成</string>
   <string name="common_action_failed">失败</string>
   <string name="common_action_working">进行中</string>
@@ -330,6 +338,9 @@
   <string name="kit_help_paste">粘贴一个套件、网址或 imp:// 链接，或放入文件。你会先查看。</string>
   <string name="kit_help_skipped">套件里这台 Mac 用不了的东西，所以被略过。</string>
   <string name="kit_help_tools">工具可以在你的 Mac 上运行东西。请先看一看。</string>
+  <string name="library_help">保存在 ~/.agents，所有 Imp 和终端应用共用。这里只读。</string>
+  <string name="library_reveal">在访达中显示</string>
+  <string name="library_title">技能和命令</string>
   <string name="link_localnet_off">Imp 的本地网络已被关闭</string>
   <string name="link_localnet_open">打开设置</string>
   <string name="link_localnet_open_mac">打开“系统设置”</string>
@@ -601,17 +612,19 @@
   <string name="settings_attention_device_offline">%1$s 已离线。</string>
   <string name="settings_attention_imp_no_brain">%1$s 还没有大脑。</string>
   <string name="settings_backup_export_title">导出</string>
+  <string name="settings_backup_folder_reveal">在访达中显示</string>
+  <string name="settings_backup_folder_title">配置</string>
   <string name="settings_backup_import_title">导入</string>
   <string name="settings_backup_keep_info">把 Imp 和设置存进文件，或再次载入。</string>
   <string name="settings_backup_keep_title">备份</string>
+  <string name="settings_backup_reset_app">清除并重新启动</string>
+  <string name="settings_backup_reset_confirm">清除一切并重新开始？</string>
   <string name="settings_backup_reset_info">清除一切并重新开始，此操作无法撤销。</string>
+  <string name="settings_backup_reset_message">聊天、记忆和应用自己的设置会被删除。Imp、服务和密钥会保留，除非你同时移除共享配置（终端应用也在使用它）。此操作无法撤销。</string>
+  <string name="settings_backup_reset_shared">清除并同时移除共享配置</string>
   <string name="settings_backup_reset_title">重置</string>
   <string name="settings_brains_first_wait_info">再次提问之前要等多长时间。</string>
   <string name="settings_brains_first_wait_title">首次间隔</string>
-  <string name="settings_brains_keychain_info">把密钥安全放在 Mac 的钥匙串里。</string>
-  <string name="settings_brains_keychain_title">钥匙串</string>
-  <string name="settings_brains_keys_info">你的各个大脑所用的密钥口令。</string>
-  <string name="settings_brains_keys_title">密钥</string>
   <string name="settings_brains_longer_info">每次间隔会变长多少。</string>
   <string name="settings_brains_longer_title">递增</string>
   <string name="settings_brains_requests_info">大脑很慢时，Imp 有多大耐心。</string>

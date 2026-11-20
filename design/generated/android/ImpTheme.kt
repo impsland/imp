@@ -255,6 +255,8 @@ object ImpSizing {
     val sheetWidth = 560.dp
     /** A round tile: an animation's preview, the Imp on the phone's settings. */
     val marker = 56.dp
+    /** The room of a model's reasoning while it streams in (about three lines): the same all along, so nothing shifts. */
+    val thinkingHeight = 60.dp
     /** The Imp drawn in a row or a card. */
     val impPortrait = 48.dp
     /** The label column of a form row, so a card's controls line up. */

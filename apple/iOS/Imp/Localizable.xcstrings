@@ -5873,6 +5873,54 @@
         }
       }
     },
+    "agentfile.open" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open the Imp's file"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir el archivo del Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 Imp 的文件"
+          }
+        }
+      }
+    },
+    "agentfile.reveal" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show the Imp's file in Finder"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar el archivo del Imp en Finder"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在访达中显示 Imp 的文件"
+          }
+        }
+      }
+    },
     "anim.help.about" : {
       "comment" : "Help of the move description.",
       "extractionState" : "manual",
@@ -7267,6 +7315,132 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "需要你自己密钥的服务"
+          }
+        }
+      }
+    },
+    "chat.reasoning" : {
+      "comment" : "Label of the model's reasoning when a thought row is open.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reasoning"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Razonamiento"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "推理"
+          }
+        }
+      }
+    },
+    "chat.show_thought" : {
+      "comment" : "Help of a collapsed thought row.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show what it thought"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar lo que pensó"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示它的思考"
+          }
+        }
+      }
+    },
+    "chat.thinking" : {
+      "comment" : "The model is thinking: the row that shows its reasoning as it streams in.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thinking…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pensando…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "思考中…"
+          }
+        }
+      }
+    },
+    "chat.thought_for" : {
+      "comment" : "The collapsed row of what the model thought before it answered or used a tool. {count} is how long it took, in whole seconds.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Thought for %1$llds"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Thought for %1$llds"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Pensó durante %1$lld s"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Pensó durante %1$lld s"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "思考了 %1$lld 秒"
+                }
+              }
+            }
           }
         }
       }
@@ -13555,6 +13729,78 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "工具可以在你的 Mac 上运行东西。请先看一看。"
+          }
+        }
+      }
+    },
+    "library.help" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kept in ~/.agents, for every Imp and the terminal app. Read only here."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Están en ~/.agents, para todos los Imps y la app de terminal. Aquí solo se leen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存在 ~/.agents，所有 Imp 和终端应用共用。这里只读。"
+          }
+        }
+      }
+    },
+    "library.reveal" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show in Finder"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar en Finder"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在访达中显示"
+          }
+        }
+      }
+    },
+    "library.title" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skills and commands"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Habilidades y comandos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "技能和命令"
           }
         }
       }
@@ -20063,6 +20309,54 @@
         }
       }
     },
+    "settings.backup.folder.reveal" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show in Finder"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar en Finder"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在访达中显示"
+          }
+        }
+      }
+    },
+    "settings.backup.folder.title" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuration"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuración"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置"
+          }
+        }
+      }
+    },
     "settings.backup.import.title" : {
       "comment" : "Settings text.",
       "extractionState" : "manual",
@@ -20135,6 +20429,54 @@
         }
       }
     },
+    "settings.backup.reset.app" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erase and Restart"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar y reiniciar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除并重新启动"
+          }
+        }
+      }
+    },
+    "settings.backup.reset.confirm" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erase everything and start over?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Borrar todo y empezar de nuevo?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除一切并重新开始？"
+          }
+        }
+      }
+    },
     "settings.backup.reset.info" : {
       "comment" : "Settings text.",
       "extractionState" : "manual",
@@ -20155,6 +20497,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "清除一切并重新开始，此操作无法撤销。"
+          }
+        }
+      }
+    },
+    "settings.backup.reset.message" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chats, memories and the app's own settings are deleted. Imps, services and keys are kept unless you also remove the shared configuration, which the terminal app uses too. This can't be undone."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se borran los chats, los recuerdos y los ajustes de la app. Los Imps, servicios y claves se conservan salvo que también quites la configuración compartida, que usa también la app de terminal. No se puede deshacer."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聊天、记忆和应用自己的设置会被删除。Imp、服务和密钥会保留，除非你同时移除共享配置（终端应用也在使用它）。此操作无法撤销。"
+          }
+        }
+      }
+    },
+    "settings.backup.reset.shared" : {
+      "comment" : "Settings text.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erase and Also Remove the Shared Configuration"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar y quitar también la configuración compartida"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除并同时移除共享配置"
           }
         }
       }
@@ -20227,102 +20617,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "首次间隔"
-          }
-        }
-      }
-    },
-    "settings.brains.keychain.info" : {
-      "comment" : "Settings text.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keep keys safe in your Mac's Keychain."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Guarda las claves en el Llavero de tu Mac."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "把密钥安全放在 Mac 的钥匙串里。"
-          }
-        }
-      }
-    },
-    "settings.brains.keychain.title" : {
-      "comment" : "Settings text.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keychain"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Llavero"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "钥匙串"
-          }
-        }
-      }
-    },
-    "settings.brains.keys.info" : {
-      "comment" : "Settings text.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Secret passwords for your brains."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Contraseñas secretas de tus cerebros."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你的各个大脑所用的密钥口令。"
-          }
-        }
-      }
-    },
-    "settings.brains.keys.title" : {
-      "comment" : "Settings text.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keys"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claves"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "密钥"
           }
         }
       }

@@ -3,7 +3,7 @@ resolver = "3"
 members = ["engine", "engine/ffi", "chat", "server/shared", "server/den", "server/hop"]
 
 [workspace.package]
-version = "3.0.0"
+version = "4.0.0"
 edition = "2024"
 rust-version = "1.99"
 license = "MIT"
@@ -44,6 +44,8 @@ rmcp = { version = "3.8.0", default-features = false, features = ["server", "mac
 schemars = "1.2.3"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.154"
+serde_yaml_ng = "0.10.0"
+tempfile = "3.27.0"
 snow = { version = "0.10.0", default-features = false, features = ["default-resolver", "use-chacha20poly1305", "use-blake2", "use-curve25519", "use-getrandom", "std"] }
 sha2 = "0.11.1"
 socket2 = { version = "0.6.5", features = ["all"] }
@@ -55,10 +57,10 @@ tower = { version = "0.5.3", features = ["util"] }
 tower-http = { version = "0.7.1", default-features = false, features = ["cors"] }
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["json", "env-filter"] }
-imp-shared = { path = "server/shared", version = "3.0.0" }
-imp-engine = { path = "engine", version = "3.0.0" }
-imp-den = { path = "server/den", version = "3.0.0" }
-imp-hop = { path = "server/hop", version = "3.0.0" }
+imp-shared = { path = "server/shared", version = "4.0.0" }
+imp-engine = { path = "engine", version = "4.0.0" }
+imp-den = { path = "server/den", version = "4.0.0" }
+imp-hop = { path = "server/hop", version = "4.0.0" }
 uniffi = { version = "0.32.2", features = ["cli"] }
 clap = { version = "4.6.7", features = ["derive", "wrap_help", "env"] }
 toml = "1.1.8"

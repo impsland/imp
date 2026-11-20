@@ -207,7 +207,7 @@ public struct PocketImp: Codable, Equatable, Sendable, Identifiable {
 
     /// The turns of the chat with you, the latest `limit`, as the phone shows them.
     public func turns(limit: Int = 40) -> [LinkTurn] {
-        (current?.turns ?? []).filter { $0.sender == nil || $0.via == .answer }.suffix(limit).map(LinkTurn.init)
+        (current?.turns ?? []).filter { $0.sender == nil || $0.via == .answer }.suffix(limit).map(LinkTurn.init(local:))
     }
 
     /// What it remembers of its talk with `peer` (another Imp), or of the chat with you.
