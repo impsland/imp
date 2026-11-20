@@ -36,28 +36,30 @@ It is fitted again when the window changes size, when a device or an Imp comes o
 
 ## The sheets
 
-Pressing something opens one sheet, with a header (picture and name), Cancel on the leading side and Done on the trailing side. Every sheet follows one order: the status line, the main actions, the details and switches, and last what destroys. Rows lead with a picture; there are no sentences, and what needs explaining sits behind a help icon. Switches act at once; Done keeps them and Cancel puts them back as they were when the sheet opened (the Hop, Mine, the tool limits and an Imp's tools; an Imp called home or a device forgotten stays so, those are actions). A button inside a sheet that points at another device or Imp swaps the sheet for that one. Forget, and Forget everyone, ask first; forgetting calls this Mac's Imps home from that device and sends its visitors home. A sheet about something that is gone (a forgotten device, an Imp that came home) closes.
+Pressing something opens one sheet, with a header (picture and name), Cancel on the leading side and Done on the trailing side. Every sheet follows one order: the picture of the thing, its settings, its actions, and last what destroys. A sheet shows the settings of the thing pressed and never lists the nodes at the ends of a line: a device, an Imp and a line each have their own sheet. Cards and buttons fill the sheet's width, and a row of buttons shares it equally. Switches and plugs act at once; Done keeps them and Cancel puts them back as they were when the sheet opened (the Hop, the plugs and an Imp's tools; an Imp called home or a device forgotten stays so, those are actions). A chip inside a sheet that points at an Imp or a device swaps the sheet for that one. Forget, and Forget everyone, ask first; forgetting calls this Mac's Imps home from that device and sends its visitors home. A sheet about something that is gone (a forgotten device, an Imp that came home) closes.
 
-The Hop is a setting, not a linked thing, so it has its own sheet (`DevicesSheet.hop`) that never depends on the Hop being in the map: it stays open while an address is being chosen.
+The Hop is a setting, not a linked thing, so it has its own sheet (`DevicesSheet.hop`) that never depends on the Hop being in the map: it stays open while an address is being chosen. The Hop is on the canvas only when a line goes through it; This Mac's sheet has its entry.
 
 | Pressed | The sheet shows | Actions |
 | --- | --- | --- |
-| This Mac | Reachable or not, the Local Network notice when the system blocks it, its addresses. | Link a device. Forget everyone, when anything is linked. |
-| A linked device | How it stands and how it is reached. **Mine** (a switch row). The tool limits, a row of the tools that are on that opens into switches. The Imps of this Mac it holds. Its last known addresses when it is not connected. | Mine switch. A switch per tool group. Call home per Imp, and for all. Forget. |
-| The Hop | How it stands, the Hop control (the same card as in the Link sheet), and the devices reached through it. | Choose Imp's Hop, Custom or Off; type and Check an address. Jump to a device. |
-| One of this Mac's Imps | Where its body is. Its tools, a row of pictures that opens into switches. Whom it can message. | Call home and a jump to the device, when it is away. Open its settings. Switch a tool group or tool server for this Imp. Jump to an Imp it talks to. |
-| An Imp of another device | Where its body is and where it thinks, each a row that opens that device. | Send home, when it is visiting this Mac. |
-| A channel line | How it stands and how it goes. A row for each end and for the Hop it passes through. | Forget the device. |
-| A tether | Where its body is and where it thinks, and the tools it may use where it is (or a lock row when the device is not Mine). | Call home. |
+| This Mac | Reachable or not, the Local Network notice when the system blocks it, "Reachable at" its addresses, a Hop row (its state and host, or Add a Hop). | The Hop row opens the Hop's sheet. Link a device and Forget everyone, in one row of two equal buttons (the second only when anything is linked). |
+| A linked device | How it stands and how it is reached. "On its screen": a chip for every Imp there (this Mac's, its own, its visitors). The plugs: what it can use here. Its last known addresses when it is not connected. | Plug or unplug. Open an Imp's sheet. Call home per Imp, and for all. Forget. |
+| The Hop | How it stands, the Hop control (the same card as in the Link sheet), and chips for the devices reached through it. | Choose Imp's Hop, Custom or Off; type and Check an address. Open a device. |
+| One of this Mac's Imps (its chip) | A picture: its body on one device, thinking on this Mac (one tile "Here" at home). When away, "Can use there": its tools as plugs, blocked ones dimmed with a lock. Its tools, folded. Whom it can message, as chips. | Press a blocked plug to open the connection where it is plugged in. Switch a tool group or tool server for this Imp. Open an Imp it talks to. Call home, when it is away. Open its settings. |
+| An Imp of another device | A picture: where its body is and where it thinks. "Its device can use here": that device's plugs, read only. | Send home, when it is visiting this Mac. |
+| A line (a connection) | A picture: the two devices joined in the colour of the line's state, with the route (Wi-Fi, or the Hop between them); its address in small type only when it is not up. "What the device can use here": the plugs. "Travelling": chips of the Imps going across it (this Mac's out, the device's own in). | Plug or unplug. Open an Imp. Call all home. Forget the device. |
+| A tether | The sheet of its Imp. | As above. |
 
-## Tool limits
+## Plugs
 
-An Imp of this Mac that a linked device holds answers that device's asks here, with this Mac's tools. Two rules combine:
+What a linked device may do with this Mac's Imps is shown as plugs and a socket strip, not as switches with names to learn: each capability is a plug (a picture and a short word), and when it is plugged into the device's socket the Imps here have that capability for that device. A plug that is in sits in the socket with a soft glow; one that is out rests above it with an outline. A tap plugs or unplugs it, and so does pulling it down into the socket or up out of it. The rows are even and full width, a short last row sharing its width (four plugs are two and two, never three and one). Each plug is a toggle for a screen reader, with its title and "plugged in" or "not plugged in". With Reduce Motion on, plugs fade instead of sliding.
 
-1. **Mine.** A device that is not marked Mine gets no tools at all, whatever is set below (`AskOrigin`). The linked device's sheet says so instead of listing switches.
-2. **Tool limits.** A device that is Mine gets the Imp's own tools, less the groups switched off for that device. The switches list the tool groups an Imp of this Mac uses, the commands tool and every tool server that is on. Nothing is off until it is switched off.
+The first plug is **Talk & files**: the device is trusted to talk to the Imps and to share files. Two rules combine (`DeviceAccess`):
 
-A limit can only narrow. It never gives a tool to an Imp that does not have it. The limits are kept per device (`DeviceToolLimits`) and are removed when the device is forgotten. See [Imp Link](/connecting/link).
+1. **Talk & files.** A device without it gets no tools at all, whatever the other plugs say (`AskOrigin`). Plugging a tool plugs Talk & files too. Unplugging it keeps the tool plugs as they were, for when it is plugged back.
+2. **Tool plugs.** A device with Talk & files gets the Imp's own tools less the groups that are not plugged for it: the tool groups an Imp of this Mac uses, the commands tool and every tool server that is on. Everything is plugged until it is unplugged.
+
+A plug can only narrow: it never gives a tool to an Imp that does not have it. The limits are kept per device (`DeviceToolLimits`) and are removed when the device is forgotten. On the canvas a line's badge shows the route, then a plug and the capabilities plugged in (an outlined, dimmed plug when none is). See [Imp Link](/connecting/link).
 
 ## The Link sheet and the Hop
 

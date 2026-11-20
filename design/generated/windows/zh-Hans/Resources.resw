@@ -90,6 +90,7 @@
   <data name="common.name" xml:space="preserve"><value>名称</value><comment>Label of a name field.</comment></data>
   <data name="common.needs_attention" xml:space="preserve"><value>需要你留意</value><comment>Screen reader value of a settings section that has something to fix.</comment></data>
   <data name="common.off" xml:space="preserve"><value>关</value><comment>State of a switch.</comment></data>
+  <data name="common.ok" xml:space="preserve"><value>好</value><comment>Button that confirms a sheet's changes and closes it.</comment></data>
   <data name="common.on" xml:space="preserve"><value>开</value><comment>State of a switch.</comment></data>
   <data name="common.open" xml:space="preserve"><value>打开</value><comment>Button that opens something.</comment></data>
   <data name="common.remove" xml:space="preserve"><value>移除</value><comment>Button that removes an item.</comment></data>
@@ -102,19 +103,25 @@
   <data name="computer.help.access" xml:space="preserve"><value>Imp 可以在这台 Mac 上使用的东西。</value><comment>Help of the Computer section.</comment></data>
   <data name="computer.help.control" xml:space="preserve"><value>查看并操作其他应用。需要“屏幕与系统音频录制”和“辅助功能”权限。</value><comment>Help of the Computer control switch.</comment></data>
   <data name="computer.help.senses" xml:space="preserve"><value>读取电池、处理器、网络和打开的应用，以及浏览器中打开的页面。</value><comment>Help of the Senses switch.</comment></data>
+  <data name="devices.access.talk" xml:space="preserve"><value>对话和文件</value><comment>Name of the first plug a linked device can have: it is trusted to talk to the Imps and share files.</comment></data>
   <data name="devices.call_all_home" xml:space="preserve"><value>全部叫回家</value><comment>Button: call every Imp a device holds home.</comment></data>
-  <data name="devices.channel.title" xml:space="preserve"><value>{from} 与 {to}</value><comment>Title of a line between two devices.</comment></data>
+  <data name="devices.channel.title" xml:space="preserve"><value>{from} ⇄ {to}</value><comment>Title of a line between two devices.</comment></data>
   <data name="devices.chip.label_ours" xml:space="preserve"><value>{name}，这台 Mac 的 Imp，在 {node} 上</value><comment>Screen reader label of one of this Mac's Imps on the map.</comment></data>
   <data name="devices.chip.label_visitor" xml:space="preserve"><value>{name}，来自其他设备的 Imp，在 {node} 上</value><comment>Screen reader label of another device's Imp on the map.</comment></data>
   <data name="devices.copy_link.help" xml:space="preserve"><value>适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。</value><comment>Help of Copy Link in Link a device.</comment></data>
   <data name="devices.edge.label" xml:space="preserve"><value>{from} 到 {to}。{route}。{state}</value><comment>Screen reader label of a line between two devices.</comment></data>
+  <data name="devices.edge.travelling" xml:space="preserve"><value>往来中</value><comment>Title of the chips of the Imps going across a line.</comment></data>
   <data name="devices.empty" xml:space="preserve"><value>还没有设备。</value><comment>Empty state of the list of linked devices.</comment></data>
+  <data name="devices.forget.named" xml:space="preserve"><value>忘记 {name}…</value><comment>Button that forgets one linked device, with its name.</comment></data>
   <data name="devices.forget.one" xml:space="preserve"><value>忘记此设备…</value><comment>Button: forget the selected device.</comment></data>
   <data name="devices.hop.add" xml:space="preserve"><value>添加 Hop</value><comment>The Hop pill under the code in the Link sheet when no Hop is set; opens its settings.</comment></data>
   <data name="devices.hop.pill" xml:space="preserve"><value>Hop：{host}</value><comment>The Hop pill under the code in the Link sheet when a Hop is set. {host} is its address.</comment></data>
   <data name="devices.hop.state.idle" xml:space="preserve"><value>未使用</value><comment>The Hop's state when an address is set and nothing goes through it.</comment></data>
   <data name="devices.hop.state.needs_address" xml:space="preserve"><value>需要地址</value><comment>The Hop's state when what is set is not an address yet.</comment></data>
   <data name="devices.hop.state.off" xml:space="preserve"><value>已关闭</value><comment>The Hop's state when none is set.</comment></data>
+  <data name="devices.imp.can_use" xml:space="preserve"><value>在那里可用</value><comment>Title of the plugs of an Imp that is away: its tools it can use where it is.</comment></data>
+  <data name="devices.imp.can_use.info" xml:space="preserve"><value>此 Imp 所在设备允许它使用的工具。带锁的工具在该设备的连接上没有插上：点按它可打开连接并插上。</value><comment>Help of the plugs of an Imp that is away.</comment></data>
+  <data name="devices.imp.here" xml:space="preserve"><value>在这里</value><comment>Caption of the one tile of an Imp that is at home.</comment></data>
   <data name="devices.imp.settings" xml:space="preserve"><value>它的设置</value><comment>Button: open an Imp's settings.</comment></data>
   <data name="devices.imp.talks" xml:space="preserve"><value>可以给谁发消息</value><comment>Inspector card: the Imps an Imp can message.</comment></data>
   <data name="devices.imp.talks.info" xml:space="preserve"><value>这个 Imp 可以给哪些 Imp 发消息。选中它时，它们会在地图上高亮。</value><comment>Help: who an Imp can message. Selecting an Imp on the map lights them.</comment></data>
@@ -127,8 +134,13 @@
   <data name="devices.node.label" xml:space="preserve"><value>{name}，{state}。Imp：{imps}</value><comment>Screen reader label of a device on the map: its state and the Imps in it.</comment></data>
   <data name="devices.node.label_empty" xml:space="preserve"><value>{name}，{state}</value><comment>Screen reader label of a device on the map without Imps.</comment></data>
   <data name="devices.node.this_mac_label" xml:space="preserve"><value>{name}，这台 Mac</value><comment>Screen reader name of this Mac's node.</comment></data>
+  <data name="devices.on_screen" xml:space="preserve"><value>在它的屏幕上</value><comment>Title of the chips of the Imps on a device's screen.</comment></data>
   <data name="devices.place.body" xml:space="preserve"><value>在</value><comment>Where an Imp's body is, as a tag on a device row.</comment></data>
   <data name="devices.place.mind" xml:space="preserve"><value>思考于</value><comment>Where an Imp thinks, as a tag on a device row.</comment></data>
+  <data name="devices.plug.off" xml:space="preserve"><value>未插上</value><comment>Spoken value of a plug that is not plugged in.</comment></data>
+  <data name="devices.plug.on" xml:space="preserve"><value>已插上</value><comment>Spoken value of a plug that is plugged in.</comment></data>
+  <data name="devices.plug.title" xml:space="preserve"><value>{name} 在这里可以用什么</value><comment>Title of the card of plugs: what a linked device can use of this Mac's Imps.</comment></data>
+  <data name="devices.reach.at" xml:space="preserve"><value>可通过以下地址访问</value><comment>Title of the addresses this Mac can be reached at.</comment></data>
   <data name="devices.reach.away" xml:space="preserve"><value>不在线</value><comment>Help on a linked device: not reachable now.</comment></data>
   <data name="devices.reach.direct" xml:space="preserve"><value>直连，走本地网络</value><comment>Help on a linked device: reached on the local network.</comment></data>
   <data name="devices.reach.last_seen" xml:space="preserve"><value>最近已知地址</value><comment>Label of the last known address of a device.</comment></data>
@@ -145,19 +157,15 @@
   <data name="devices.state.connected" xml:space="preserve"><value>已连接</value><comment>State word of a device on the Devices map.</comment></data>
   <data name="devices.state.connecting" xml:space="preserve"><value>正在连接</value><comment>State word of a device on the Devices map.</comment></data>
   <data name="devices.state.offline" xml:space="preserve"><value>不在线</value><comment>State word of a linked device that cannot be reached now.</comment></data>
+  <data name="devices.talk.label" xml:space="preserve"><value>{imp} 可以给 {contact} 发消息</value><comment>Screen reader label of the line from an Imp to another device's Imp it can message.</comment></data>
   <data name="devices.tether.label" xml:space="preserve"><value>{imp} 在 {node} 上，在 {home} 上思考</value><comment>Screen reader label of the line from an Imp to the device it thinks on.</comment></data>
-  <data name="devices.tether.tools" xml:space="preserve"><value>它在那里可用的工具</value><comment>Inspector card: the tools an Imp may use on the device it is on.</comment></data>
-  <data name="devices.tether.tools.info" xml:space="preserve"><value>此设备向 Imp 提问时，Imp 可使用的工具。请在该设备上修改。</value><comment>Help: the tools are the device's limits.</comment></data>
   <data name="devices.this.info" xml:space="preserve"><value>在这里连接另一台设备。圆点表示 The Hop 是否让设备能从任何地方互相找到。</value><comment>Help on the This Mac card: the dot is The Hop.</comment></data>
   <data name="devices.this_mac_badge" xml:space="preserve"><value>这台 Mac</value><comment>Badge on the node of this Mac on the Devices map.</comment></data>
   <data name="devices.title" xml:space="preserve"><value>设备</value><comment>Title of the card listing the linked devices.</comment></data>
   <data name="devices.tools.commands" xml:space="preserve"><value>命令</value><comment>Name of the tool that runs commands.</comment></data>
-  <data name="devices.tools.info" xml:space="preserve"><value>当此设备向你的某个 Imp 提问时，Imp 可以使用这里开启的工具。关掉不希望它为此设备使用的工具。</value><comment>Help of the per-device tool limits.</comment></data>
-  <data name="devices.tools.locked" xml:space="preserve"><value>设为“我的”之前没有工具</value><comment>Row in a device's sheet when the device is not Mine, so it gets no tools.</comment></data>
-  <data name="devices.tools.not_mine" xml:space="preserve"><value>Imp 回答此设备时不使用工具。打开“我的”后可选择它们能用什么。</value><comment>Shown when a device is not Mine.</comment></data>
-  <data name="devices.tools.title" xml:space="preserve"><value>Imp 可为此设备使用的工具</value><comment>Inspector card: the tools Imps may use for a device.</comment></data>
   <data name="devices.tools.toggle" xml:space="preserve"><value>显示或隐藏开关</value><comment>Tooltip of the button that opens or closes a list of tool switches.</comment></data>
   <data name="devices.unknown_device" xml:space="preserve"><value>未与这台 Mac 链接的设备</value><comment>A device this Mac is not linked with.</comment></data>
+  <data name="devices.visitor.can_use" xml:space="preserve"><value>它的设备在这里可用</value><comment>Title of the read-only plugs of the device an Imp comes from.</comment></data>
   <data name="devices.visitor.send_home" xml:space="preserve"><value>送回家</value><comment>Button: send a visiting Imp home.</comment></data>
   <data name="error.brain.key" xml:space="preserve"><value>{service} 不接受这个密钥。请检查后重试。</value><comment>The key was refused.</comment></data>
   <data name="error.brain.local" xml:space="preserve"><value>没有模型回应。请确认它正在运行，然后重试。</value><comment>The local model server did not answer.</comment></data>
@@ -471,12 +479,14 @@
   <data name="phone.chat.ask_to_prefix" xml:space="preserve"><value>请 {name}：</value><comment>iPhone: the start of a message asking another Imp, sent to the Imp. The field does not show it.</comment></data>
   <data name="phone.chat.edit_help" xml:space="preserve"><value>编辑</value><comment>iPhone: chat edit help.</comment></data>
   <data name="phone.chat.failed" xml:space="preserve"><value>没能给出回答</value><comment>iPhone: chat failed.</comment></data>
+  <data name="phone.chat.history" xml:space="preserve"><value>聊天记录</value><comment>iPhone: tip of the menu in an Imp's chat bar that lists its saved chats to carry on in.</comment></data>
   <data name="phone.chat.jump_latest" xml:space="preserve"><value>最新</value><comment>iPhone: chat jump latest.</comment></data>
   <data name="phone.chat.message" xml:space="preserve"><value>给 {name} 发消息</value><comment>iPhone: chat message.</comment></data>
   <data name="phone.chat.new" xml:space="preserve"><value>新建</value><comment>iPhone: chat new.</comment></data>
   <data name="phone.chat.no_brain" xml:space="preserve"><value>还没有大脑</value><comment>iPhone: chat no brain.</comment></data>
   <data name="phone.chat.peers" xml:space="preserve"><value>给其他 Imp 发消息</value><comment>iPhone: button beside the chat field that lists the other Imps to message.</comment></data>
   <data name="phone.chat.ran_tools" xml:space="preserve"><value>使用了 {count} 个工具</value><comment>iPhone: chat ran tools.</comment></data>
+  <data name="phone.chat.untitled" xml:space="preserve"><value>聊天</value><comment>iPhone: name of a saved chat that has no title yet.</comment></data>
   <data name="phone.code.caption" xml:space="preserve"><value>在另一台设备上扫描</value><comment>One line under the QR code.</comment></data>
   <data name="phone.code.label" xml:space="preserve"><value>关联二维码</value><comment>Spoken name of the QR code.</comment></data>
   <data name="phone.connected" xml:space="preserve"><value>已连接</value><comment>State of a linked device that answers.</comment></data>
@@ -749,6 +759,7 @@
   <data name="tool.add_tool" xml:space="preserve"><value>添加</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.add_trigger" xml:space="preserve"><value>添加</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.browser_page" xml:space="preserve"><value>浏览器页面</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
+  <data name="tool.create_imp" xml:space="preserve"><value>创建 Imp</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.export_kit" xml:space="preserve"><value>导出套件</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.list_tools" xml:space="preserve"><value>列出</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.list_triggers" xml:space="preserve"><value>列出</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
@@ -767,7 +778,6 @@
   <data name="tool.set_traits" xml:space="preserve"><value>改变外观</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.show_animation" xml:space="preserve"><value>查看</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.show_background" xml:space="preserve"><value>查看背景</value><comment>Short name of a built-in tool in the Look section: reads the HTML background behind the Imps.</comment></data>
-  <data name="tool.speak" xml:space="preserve"><value>朗读</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.verify" xml:space="preserve"><value>检查结果</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tools.add" xml:space="preserve"><value>添加</value><comment>Button that adds tools.</comment></data>
   <data name="tools.collapse" xml:space="preserve"><value>隐藏 {group} 中的工具</value><comment>Screen reader action.</comment></data>
@@ -801,6 +811,20 @@
   <data name="tools.server_name" xml:space="preserve"><value>名称</value><comment>Label of a tool server's name field.</comment></data>
   <data name="tools.shared_setup" xml:space="preserve"><value>使用这个工具的每个 Imp 都会得到这套设置。每个 Imp 各自开启或关闭它。</value><comment>In the extra tool editor: its setup is shared, while each Imp switches it on or off for itself.</comment></data>
   <data name="tools.title" xml:space="preserve"><value>工具</value><comment>Panel title.</comment></data>
+  <data name="tooltext.description" xml:space="preserve"><value>模型读到的说明</value><comment>Label of the description editor in the tool text sheet.</comment></data>
+  <data name="tooltext.description_empty" xml:space="preserve"><value>为空。该工具将不带说明提供给模型。</value><comment>Placeholder of an empty description.</comment></data>
+  <data name="tooltext.dropped" xml:space="preserve"><value>默认说明还包含 {list}，当前文本已不再包含。</value><comment>Warning when an edit removed a placeholder the default description had.</comment></data>
+  <data name="tooltext.edit" xml:space="preserve"><value>更改模型读到的这个工具的内容</value><comment>Help of the pencil on a tool's row.</comment></data>
+  <data name="tooltext.edited" xml:space="preserve"><value>它的名称或说明已更改</value><comment>Mark on a tool whose name or description was changed.</comment></data>
+  <data name="tooltext.from_server" xml:space="preserve"><value>默认的名称和说明来自服务器“{server}”。</value><comment>Line in the tool text sheet of an MCP tool.</comment></data>
+  <data name="tooltext.id" xml:space="preserve"><value>ID（不会改变）</value><comment>Label before a tool's id in the sheet that edits its name and description: the id stays the same whatever name is typed.</comment></data>
+  <data name="tooltext.name" xml:space="preserve"><value>模型调用它的名称</value><comment>Label of the name field in the tool text sheet.</comment></data>
+  <data name="tooltext.name_invalid" xml:space="preserve"><value>请使用 1 到 64 个字母、数字、_ 或 -。</value><comment>Problem with a tool name.</comment></data>
+  <data name="tooltext.name_taken" xml:space="preserve"><value>另一个工具已使用此名称。</value><comment>Problem with a tool name.</comment></data>
+  <data name="tooltext.placeholder.animations" xml:space="preserve"><value>它可以播放的动画。</value><comment>What the {animations} placeholder stands for.</comment></data>
+  <data name="tooltext.placeholder.imps" xml:space="preserve"><value>它可以发消息的其他 Imp，以及各自的自我介绍。</value><comment>What the {imps} placeholder stands for.</comment></data>
+  <data name="tooltext.placeholder.place" xml:space="preserve"><value>背景显示的位置。</value><comment>What the {place} placeholder stands for.</comment></data>
+  <data name="tooltext.reset" xml:space="preserve"><value>恢复默认</value><comment>Button that restores a tool's own name and description.</comment></data>
   <data name="trigger.event.at" xml:space="preserve"><value>每天定时</value><comment>Short name of a trigger event, on its tile.</comment></data>
   <data name="trigger.event.away" xml:space="preserve"><value>光标离开</value><comment>Short name of a trigger event, on its tile.</comment></data>
   <data name="trigger.event.circle" xml:space="preserve"><value>绕圈</value><comment>Short name of a trigger event, on its tile.</comment></data>
@@ -870,7 +894,6 @@
   <data name="triggers.scope.note_version" xml:space="preserve"><value>只为 {name} 保存一个版本。其他 Imp 保留共享的那个。</value><comment>Below the For choice when a shared trigger is saved for one Imp.</comment></data>
   <data name="triggers.share_every" xml:space="preserve"><value>共享给所有</value><comment>Menu item on this Imp's trigger: share it with every Imp.</comment></data>
   <data name="triggers.step.add_one" xml:space="preserve"><value>添加步骤：{name}</value><comment>Spoken label of a step tile.</comment></data>
-  <data name="triggers.step.aloud" xml:space="preserve"><value>朗读</value><comment>Toggle of a say step: also speak it.</comment></data>
   <data name="triggers.step.anim_none" xml:space="preserve"><value>默认方式</value><comment>Animation menu of a sleep or wake step: no animation.</comment></data>
   <data name="triggers.step.ask_ph" xml:space="preserve"><value>它该做什么？用你自己的话说。</value><comment>Placeholder of the instruction of an ask step.</comment></data>
   <data name="triggers.step.clipboard" xml:space="preserve"><value>附带剪贴板</value><comment>Toggle of an ask step: hand over the clipboard.</comment></data>

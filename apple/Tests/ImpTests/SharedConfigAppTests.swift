@@ -52,6 +52,54 @@ import ImpKit
         #expect(box.app().prefs.imps.map(\.id) == [id])
     }
 
+    @Test func toolTextIsSharedAndShapesTheMacsTools() async throws {
+        let box = Sandbox()
+        defer { box.remove() }
+        let app = box.app()
+        let first = app.addImp()
+        _ = app.addImp()
+        let at = try #require(app.prefs.imps.firstIndex { $0.id == first })
+        let message = ToolRegistry.ownID(.personality, tool: "imp_message"), show = ToolRegistry.ownID(.look, tool: "imp_show_background")
+        app.prefs.imps[at].toolText = [message: ToolText(name: "ask_friend", description: "Ask one of {imps} (in {place}: {animations})"),
+                                      show: ToolText(name: "look_behind", description: "Read the page in {place}")]
+        app.flushSave()
+        #expect(box.coreRead().imps.first { $0.id == first }?.toolText == app.prefs.imps[at].toolText, "the terminal's agent file has it")
+        let agent = try String(contentsOf: box.agent(app.prefs.imps[at].name), encoding: .utf8)
+        #expect(agent.contains("ask_friend"), "\(agent)")
+        let profile = try #require(app.profile(first))
+        let set = ToolSet([ImpTools(host: OwnToolHost(app: app, imp: first, messaging: true))], selection: profile.toolSelection)
+        let specs = await set.tools()
+        #expect(specs.first { $0.name == "look_behind" }?.description == "Read the page in the home window on the Mac")
+        #expect(!specs.contains { $0.name == "imp_show_background" })
+        #expect(try await set.call("look_behind", arguments: "{}") == RoomBackground.shown(app.prefs.background))
+        let rows = await set.textRows()
+        #expect(rows.first { $0.id == show }?.defaultDescription.contains("{place}") == true)
+    }
+
+    @Test func aNewServiceKeepsTheKeyTypedForIt() throws {
+        let box = Sandbox()
+        defer { box.remove() }
+        let app = box.app()
+        let service = Service(name: "Cloud", baseURL: "https://api.example.com/v1", model: "m")
+        #expect(app.addService(service, key: "sk-new"), "the service is written before its key")
+        #expect(app.assistant.hasKey(service.id))
+        // Read from auth.json, where `imp` finds it too.
+        #expect(app.config?.key(for: service.id) == "sk-new")
+        #expect(box.coreRead().ai.services.map(\.name) == ["Cloud"])
+    }
+
+    @Test func theFirstRunKeepsTheKeyOfANewBrain() throws {
+        let box = Sandbox()
+        defer { box.remove() }
+        let app = box.app()
+        let profile = app.prefs.nextImp()
+        let brain = FirstRunBrain(name: "Cloud", baseURL: "https://api.example.com/v1", model: "m", key: "sk-first", isLocal: false)
+        let id = try app.adoptFirstRunBrain(brain, for: .newImp(profile))
+        #expect(app.isReady(id))
+        let service = try #require(app.prefs.ai.brain.service)
+        #expect(app.config?.key(for: service) == "sk-first")
+    }
+
     @Test func anAgentFileEditedByTheTerminalAppearsAfterTheCheck() throws {
         let box = Sandbox()
         defer { box.remove() }
@@ -97,5 +145,31 @@ import ImpKit
         let again = box.app()
         #expect(again.prefs.imps.first { $0.id == id }?.origin == CGPoint(x: 7, y: 9))
         #expect(!((try? String(contentsOf: box.agent(app.prefs.imps[index].name), encoding: .utf8)) ?? "").contains("origin"))
+    }
+}
+
+@MainActor @Suite struct CreateImpAppTests {
+    @Test func anImpMakesAnImpAndTheSharedConfigWritesIt() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("imp-create-\(UUID().uuidString)")
+        let suite = "app.imp.tests.\(UUID().uuidString)"
+        defer { try? FileManager.default.removeItem(at: root); UserDefaults().removePersistentDomain(forName: suite) }
+        let store = SharedConfigStore(configDir: root.appendingPathComponent(".config/imp"), homeDir: root)
+        let app = AppModel(persist: true, config: store, defaults: UserDefaults(suiteName: suite)!)
+        let creatorID = app.addImp()
+        let creator = try #require(app.profile(creatorID))
+        let brain = Brain(service: UUID(), model: "qwen")
+        app.prefs.imps[0].brain = brain
+        app.prefs.imps[0].name = "Pip"
+        let made = try app.createImp(["name": "Scout", "description": "Reviews diffs", "system_prompt": "You review code."],
+                                     by: creator.id, letOut: false)
+        #expect(app.prefs.imps.count == 2)
+        #expect(made.brain == brain && made.about == "Reviews diffs" && made.personality == "You review code.")
+        #expect(throws: ToolArgumentError.self) { try app.createImp(["name": "scout"], by: creator.id, letOut: false) }
+        #expect(app.prefs.imps.count == 2)
+        app.flushSave()
+        let file = root.appendingPathComponent(".agents/agents/Scout.md")
+        let text = try String(contentsOf: file, encoding: .utf8)
+        #expect(text.contains("description: Reviews diffs") || text.contains("description: \"Reviews diffs\""))
+        #expect(text.contains("You review code."))
     }
 }

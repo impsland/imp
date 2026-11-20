@@ -7,8 +7,11 @@ import ImpKit
 /// itself up, the troupe. Offered alongside the shell and its MCP servers, run on the main actor.
 struct ImpTools: ToolProvider {
     let host: OwnToolHost
+    /// Lists every tool, offered or not, for the screen that edits how they read (`OwnToolHost.catalog(editing:)`).
+    var editing = false
 
     func tools() async -> [ToolSpec] { await host.specs() }
+    func catalog() async -> [CatalogTool] { await host.catalog(editing: editing) }
     func call(_ name: String, arguments: String) async throws -> String { try await host.call(name, arguments: arguments) }
     func run(_ name: String, arguments: String) async throws -> ToolOutput { try await host.run(name, arguments: arguments) }
 }
@@ -61,15 +64,33 @@ final class OwnToolHost {
                          away: remote, awayName: { $0.imp.name }, place: { app?.link.name(of: $0.home) ?? "" })
     }
 
-    func specs() -> [ToolSpec] {
+    private static let place = "the home window on the Mac"
+
+    func specs() -> [ToolSpec] { build().specs }
+
+    /// The tools with the parts of their descriptions a person's own wording may use (`OwnTools.catalog`).
+    /// `editing`: for the screen that edits how they read, which lists every tool, with others to message and a browser
+    /// even when there are none now.
+    func catalog(editing: Bool = false) -> [CatalogTool] {
+        let built = build(editing: editing)
+        return OwnTools.catalog(built.specs, animations: playable.map(\.name), roster: built.roster, place: Self.place)
+    }
+
+    private func build(editing: Bool = false) -> (specs: [ToolSpec], roster: String) {
         let names = talkNames
         // What each Imp it can message says about itself. What a device sent is untrusted: sanitized again.
         let profiles = names.here.map { ImpAbilities.profile(name: $0.name, about: $0.imp.profile.about, abilities: app?.abilities(of: $0.imp.profile) ?? []) }
             + names.away.map { ImpAbilities.profile(name: $0.name, about: $0.imp.imp.about, abilities: $0.imp.imp.abilities) }
-        return OwnTools.specs(groups, animations: playable.map(\.name), imps: messaging ? names.here.map(\.name) : [], pocket: messaging ? names.away.map(\.name) : [],
-                              browser: BrowserBridge.shared.isConnected, talk: app?.prefs.impTalk ?? .own,
-                              conversation: app?.prefs.talkThreading == .decides,
-                              profiles: profiles, waiting: app?.prefs.talkWaiting ?? .decides)
+        var imps = messaging ? names.here.map(\.name) : []
+        let pocket = messaging ? names.away.map(\.name) : []
+        if editing, imps.isEmpty, pocket.isEmpty { imps = ["Anna"] }
+        let talk = app?.prefs.impTalk ?? .own, conversation = app?.prefs.talkThreading == .decides, waiting = app?.prefs.talkWaiting ?? .decides
+        let specs = OwnTools.specs(groups, animations: playable.map(\.name), imps: imps, pocket: pocket,
+                                   browser: editing || BrowserBridge.shared.isConnected, talk: talk, conversation: conversation,
+                                   profiles: profiles, waiting: waiting)
+        let roster = imps.isEmpty && pocket.isEmpty ? "" : OwnTools.messageParts(imps: imps, pocket: pocket, talk: talk, conversation: conversation,
+                                                                                  profiles: profiles, waiting: waiting).roster
+        return (specs, roster)
     }
 
     /// Like `call`, but a tool can hand pictures back too (`imp_open_file`).
@@ -91,7 +112,7 @@ final class OwnToolHost {
             switch name {
             case OwnTools.play: return try play(args)
             case OwnTools.move: return try await move(args)
-            case OwnTools.speak: return try speak(args)
+            case OwnTools.createImp: return try createImp(args)
             case OwnTools.status: return app?.senses.report() ?? ""
             case OwnTools.page: return try await page(args)
             case OwnTools.listTriggers: return listTriggers()
@@ -291,12 +312,10 @@ final class OwnToolHost {
         return v.string.flatMap(Double.init)
     }
 
-    private func speak(_ args: JSONValue) throws -> String {
-        guard let text = args["text"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else {
-            throw ToolArgumentError("Give the `text` to say.")
-        }
-        Speaker.shared.say(text, language: args["language"]?.string)
-        return "Speaking."
+    private func createImp(_ args: JSONValue) throws -> String {
+        guard let app else { throw ToolArgumentError("Imps cannot be created now.") }
+        let made = try app.createImp(args, by: id)
+        return "Created \(made.name) (id \(made.id.uuidString)). It starts with your Brain and is out on the desktop: message it with \(OwnTools.message)."
     }
 
     // MARK: Senses

@@ -14,6 +14,7 @@ impl From<ToolSelection> for tools::ToolSelection {
         Self {
             groups_off: s.groups_off.into_iter().collect(),
             tools_off: s.tools_off.into_iter().collect(),
+            text: Default::default(),
         }
     }
 }
@@ -111,7 +112,6 @@ pub fn tool_group_on_by_default(group: String) -> bool {
 pub enum BuiltInTool {
     ImpPlayAnimations,
     ImpMove,
-    ImpSpeak,
     ImpMakeAnimation,
     ImpShowAnimation,
     ImpRemoveAnimation,
@@ -128,6 +128,7 @@ pub enum BuiltInTool {
     ImpRemoveTool,
     ImpOpenSettings,
     ImpMessage,
+    ImpCreateImp,
     ImpOpenFile,
     ComputerObserve,
     ComputerAct,
@@ -146,4 +147,27 @@ pub fn tool_built_in_name(tool: BuiltInTool) -> String {
 #[uniffi::export]
 pub fn tool_built_in_tool(name: String) -> Option<BuiltInTool> {
     BuiltInTool::named(&name)
+}
+
+/// Whether `name` is a name the model can call a tool by (1 to 64 letters, digits, `_` and `-`).
+#[uniffi::export]
+pub fn tool_name_valid(name: String) -> bool {
+    tools::valid_tool_name(&name)
+}
+
+/// The parts of a tool description that change, which a description the person wrote may use as `{name}`.
+#[uniffi::export]
+pub fn tool_placeholders() -> Vec<String> {
+    tools::PLACEHOLDERS.iter().map(|s| s.to_string()).collect()
+}
+
+/// Fills the `{key}` of `text` from `keys` and `values` (same length); every placeholder not given is left empty.
+#[uniffi::export]
+pub fn tool_expand_placeholders(text: String, keys: Vec<String>, values: Vec<String>) -> String {
+    let mut fills: std::collections::BTreeMap<String, String> = tools::PLACEHOLDERS
+        .iter()
+        .map(|k| (k.to_string(), String::new()))
+        .collect();
+    fills.extend(keys.into_iter().zip(values));
+    tools::expand_placeholders(&text, &fills)
 }

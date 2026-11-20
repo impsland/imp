@@ -5,7 +5,9 @@ import SwiftUI
 
 /// The menu you get by right-clicking an Imp on the desktop: everything about *that* Imp and nothing else.
 /// (App-wide things live in the menu bar menu.) It is one card of buttons (`MenuCard`): the top is
-/// `ImpMenuCard`, the same as in the app's window, and what only sometimes applies sits under it as pills.
+/// `ImpMenuCard`, the same as in the app's window and for a visitor, and what only sometimes applies sits under it
+/// as pills, in this order: Stop and Copy last reply, triggers, devices to visit, Copy kit and Copy link, and
+/// Goodbye last and apart. Only the place button differs from the window's menu (Home here, Free there).
 @MainActor
 final class ImpMenu {
     private let app: AppModel
@@ -21,11 +23,22 @@ final class ImpMenu {
     func make() -> NSMenu {
         if let visit = imp.visit { return card.make(visitorCard(visit)) }
         let status = imp.isReady ? String(localized: "Awake") : String(localized: "Needs a brain")
+        let actions = HomeActions(model: app, router: HomeWindow.shared.router)
+        let id = imp.id
         return card.make(ImpMenuCard(ready: imp.isReady, name: imp.profile.name, status: status, hue: imp.profile.hue,
                                      scale: imp.profile.scale, place: .desktop) { [weak self] action in
             self?.run(action)
         } extra: {
             extras
+            ImpMenuEnd(canLink: actions.canShareLink(id), canGoodbye: actions.canSayGoodbye,
+                       kit: { [card] in card.later { actions.copyKit(id) } },
+                       link: { [card] in card.later { actions.copyLink(id) } },
+                       goodbye: { [app, card] in
+                           card.later {
+                               actions.askGoodbye(id)
+                               HomeWindow.shared.show(app, imp: id)        // the window asks the question
+                           }
+                       })
         })
     }
 
@@ -35,6 +48,7 @@ final class ImpMenu {
         case .talk: card.later { imp.talk() }
         case .type: card.later { imp.startTyping() }
         case .chat: card.later { imp.openChat() }
+        case .newChat: card.later { imp.startNewChat() }
         case .hide: card.later { [app] in app.setHidden(imp.id, true) }
         case .move: card.later { [app] in Self.sendHome(imp.id, app: app) }
         case .settings: card.later { imp.openSettings() }
@@ -97,7 +111,8 @@ final class ImpMenu {
         }
     }
 
-    /// A visiting Imp's menu: its brain is at its home, so there is no size, colour or triggers here.
+    /// A visiting Imp's menu: the same card as an own Imp's (its brain is at its home, so New chat takes the place of
+    /// Settings, and there is no size, colour, trigger, sharing or Goodbye), then the devices it may go on to.
     private func visitorCard(_ visit: Visiting) -> some View {
         let imp = imp
         let name = visit.look.name
@@ -106,35 +121,21 @@ final class ImpMenu {
         let doors = Set([LinkSide.left, .right].flatMap { app.link.bands(of: imp.id, side: $0).map(\.device) })
         let visits = visits(doors: doors)
         let now = rightNow
-        let buttons = visitorButtons(visit)
-        return MenuCard {
-            ImpMenuHeader(ready: visit.isAwake, name: name, status: status, hue: visit.look.hue)
-            MenuGrid(items: buttons)
+        return ImpMenuCard(ready: visit.isAwake, name: name, status: status, hue: visit.look.hue, scale: 1,
+                           place: .visitor(from: visit.homeName), awake: visit.isAwake) { [app, card] action in
+            switch action {
+            case .talk: card.later { imp.talk() }
+            case .type: card.later { imp.startTyping() }
+            case .chat: card.later { imp.openChat() }
+            case .newChat: card.later { imp.startNewChat() }
+            case .hide: card.later { app.setHidden(imp.id, true) }
+            case .move: card.later { app.sendHome(visitor: imp.id) }
+            case .settings, .size, .colour: break
+            }
+        } extra: {
             if !now.isEmpty { MenuPills(items: now) }
             if !visits.isEmpty { MenuPills(title: String(localized: "menu.imp.visit"), items: visits) }
-            MenuPills(items: [MenuItem(id: "home", icon: "house.fill", title: String(localized: "menu.imp.send_home"),
-                                       help: String(localized: "\(name) flies back to \(visit.homeName). If it is away, \(name) goes now and \(visit.homeName) hears when it is back.")) { [app, card] in
-                card.later { app.sendHome(visitor: imp.id) }
-            }])
         }
-        .environment(\.impTint, Color.imp(visit.look.hue))
-    }
-
-    /// A visitor's big buttons: Chat, New Chat and Hide.
-    func visitorButtons(_ visit: Visiting) -> [MenuItem] {
-        let imp = imp
-        let name = visit.look.name
-        return [
-            MenuItem(id: "chat", icon: "bubble.left.and.bubble.right.fill", title: String(localized: "menu.imp.chat"),
-                     help: words("menu.imp.chat_help", name)) { [card] in card.later { imp.openChat() } },
-            MenuItem(id: "new", icon: "plus.bubble.fill", title: String(localized: "New Chat"), enabled: visit.isAwake) { [card] in
-                card.later { imp.startNewChat() }
-            },
-            MenuItem(id: "hide", icon: "eye.slash.fill", title: String(localized: "menu.imp.hide"),
-                     help: String(localized: "\(name) hides until you show it again from the menu bar (Show). It keeps visiting meanwhile.")) { [app, card] in
-                card.later { app.setHidden(imp.id, true) }
-            },
-        ]
     }
 
     /// Size and colour change while the menu stays open, so both can be picked in one go.

@@ -27,6 +27,7 @@ struct ImportKitButton: View {
 /// The header button of a section that opens what the Imp may do there by itself: the built-in tools of
 /// that section, each with a switch. The same picture in every section.
 struct AgentToolsButton: View {
+    let model: AppModel
     @Binding var imp: ImpProfile
     let groups: [ImpToolGroup]
     @State private var open = false
@@ -39,7 +40,7 @@ struct AgentToolsButton: View {
             .accessibilityValue(Text(off ? "agent.off" : "agent.on"))
             .accessibilityIdentifier("agent.tools")
             .sheet(isPresented: $open) {
-                AgentToolsSheet(imp: $imp, groups: groups)
+                AgentToolsSheet(model: model, imp: $imp, groups: groups)
                     .environment(\.impTint, tint)
                     .tint(tint)
             }
@@ -50,6 +51,7 @@ struct AgentToolsButton: View {
 /// one. A tool that is off is never offered to the model. Changes apply at once, as on the page, and Cancel
 /// puts back the switches as they were when the sheet opened.
 struct AgentToolsSheet: View {
+    let model: AppModel?
     @Binding var imp: ImpProfile
     let groups: [ImpToolGroup]
     @Environment(\.dismiss) private var dismiss
@@ -75,13 +77,14 @@ struct AgentToolsSheet: View {
         let on = imp.uses(group)
         return VStack(alignment: .leading, spacing: Spacing.snug) {
             switchRow(title: group.title, icon: group.symbol, info: group.summary, font: Typeface.cardTitle,
-                      isOn: Binding(get: { imp.uses(group) }, set: { imp.setUses(group, $0) }))
+                      isOn: Binding(get: { imp.uses(group) }, set: { imp.setUses(group, $0) }), edit: nil)
             // A group of one tool is that tool: its switch is enough.
             if tools.count > 1 {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(tools) { tool in
                         switchRow(title: tool.title.isEmpty ? tool.name : tool.title, icon: nil, info: nil, font: Typeface.body,
-                                  isOn: Binding(get: { imp.uses(tool: tool.id) }, set: { imp.setUses(tool: tool.id, $0) }))
+                                  isOn: Binding(get: { imp.uses(tool: tool.id) }, set: { imp.setUses(tool: tool.id, $0) }),
+                                  edit: model.map { model in { ToolTextButton(imp: $imp, model: model, tool: tool, symbol: group.symbol) } })
                     }
                 }
                 .padding(.leading, Spacing.wide)
@@ -95,7 +98,8 @@ struct AgentToolsSheet: View {
         .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous).fill(Tone.card))
     }
 
-    private func switchRow(title: String, icon: String?, info: String?, font: Font, isOn: Binding<Bool>) -> some View {
+    private func switchRow(title: String, icon: String?, info: String?, font: Font, isOn: Binding<Bool>,
+                           edit: (() -> ToolTextButton)?) -> some View {
         HStack(spacing: Spacing.small) {
             if let icon {
                 Image(systemName: icon).font(.icon(.large)).foregroundStyle(Tone.muted)
@@ -104,6 +108,7 @@ struct AgentToolsSheet: View {
             Text(verbatim: title).font(font).foregroundStyle(Tone.text).lineLimit(2)
             if let info { InfoTip(verbatim: info) }
             Spacer(minLength: Spacing.small)
+            if let edit { edit() }
             Toggle(isOn: isOn) { Text(verbatim: title) }
                 .labelsHidden().toggleStyle(.impSwitchBare)
                 .accessibilityLabel(Text(verbatim: title))

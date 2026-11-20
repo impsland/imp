@@ -23,7 +23,6 @@ extension Step {
         case .open: detail = Step.Target(rawValue: text).map { String(localized: String.LocalizationValue("triggers.open.\($0.rawValue)")) } ?? text
         }
         if act == .ask, handsOverClipboard { detail += " (\(String(localized: "triggers.step.clipboard")))" }
-        if act == .say, speaksAloud { detail += " (\(String(localized: "triggers.step.aloud")))" }
         return detail.isEmpty ? act.title : "\(act.title): \(detail)"
     }
 }
@@ -305,12 +304,7 @@ struct ShortcutSheet: View {
             Toggle("triggers.step.clipboard", isOn: Binding(get: { s.wrappedValue.clipboard == true }, set: { s.wrappedValue.clipboard = $0 ? true : nil }))
                 .toggleStyle(ImpToggleButtonStyle())
         case .say:
-            HStack(spacing: Spacing.small) {
-                TextField("triggers.step.say_ph", text: text).impField()
-                Toggle("triggers.step.aloud", isOn: Binding(get: { s.wrappedValue.aloud == true }, set: { s.wrappedValue.aloud = $0 ? true : nil }))
-                    .toggleStyle(ImpToggleButtonStyle())
-                    .fixedSize()
-            }
+            TextField("triggers.step.say_ph", text: text).impField()
         case .play, .sleep, .wake:
             animationMenu(text, optional: s.wrappedValue.act != .play)
         case .follow:

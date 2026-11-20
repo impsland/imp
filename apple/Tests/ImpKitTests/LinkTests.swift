@@ -99,3 +99,28 @@ import Foundation
         }
     }
 }
+
+@Suite struct LinkChatWireTests {
+    @Test func aTurnKeepsItsThoughtsAndAnswerOnTheWireAndOldOnesStillDecode() throws {
+        let turn = LinkTurn(id: UUID(), date: Date(timeIntervalSince1970: 1_760_000_000), request: "It is done", from: "Bo",
+                            reply: "Noted", failed: false, steps: ["Thought for 3s", "Read file"], thoughts: [0], answer: true)
+        let message = LinkMessage.chat(imp: UUID(), turns: [turn])
+        let back = try JSONDecoder().decode(LinkMessage.self, from: JSONEncoder().encode(message))
+        #expect(back == message)
+        let plain = LinkTurn(id: UUID(), date: Date(), request: "hi", reply: "yo", failed: false)
+        let json = try #require(try JSONSerialization.jsonObject(with: JSONEncoder().encode(plain)) as? [String: Any])
+        #expect(json["thoughts"] == nil && json["answer"] == nil, "absent when there are none")
+        let old = #"{"id":"00000000-0000-0000-0000-000000000021","date":1,"request":"a","reply":"b","failed":false,"steps":[]}"#
+        let decoded = try JSONDecoder().decode(LinkTurn.self, from: Data(old.utf8))
+        #expect(decoded.thoughts == nil && decoded.answer == nil)
+    }
+
+    @Test func aHomeListsOnlyChatsWithYouNewestFirstAndSendsShortTitles() {
+        let talk = ChatSummary(id: UUID(), title: "talk", updated: Date(timeIntervalSince1970: 9), turns: 1, peer: UUID())
+        let mine = ChatSummary(id: UUID(), title: String(repeating: "x", count: 500), updated: Date(timeIntervalSince1970: 3), turns: 1)
+        let newer = ChatSummary(id: UUID(), title: "new", updated: Date(timeIntervalSince1970: 4), turns: 1)
+        let list = LinkChats.list([talk, mine, newer])
+        #expect(list.map(\.id) == [newer.id, mine.id])
+        #expect(list[1].title.count == LinkChats.longestTitle)
+    }
+}

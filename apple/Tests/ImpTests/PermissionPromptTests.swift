@@ -17,7 +17,7 @@ import ImpKit
 
         init(server: StubModelServer, rule: String) throws {
             let configDir = root.appendingPathComponent(".config/imp")
-            app = AppModel(persist: true, config: SharedConfigStore(configDir: configDir, homeDir: root), defaults: UserDefaults(suiteName: suite)!)
+            app = KeptApps.keep(AppModel(persist: true, config: SharedConfigStore(configDir: configDir, homeDir: root), defaults: UserDefaults(suiteName: suite)!))
             _ = app.addImp()
             app.prefs.imps[0].name = "Pip"
             app.prefs.imps[0].personality = "You are Pip."

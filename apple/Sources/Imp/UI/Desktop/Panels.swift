@@ -555,6 +555,20 @@ final class Panels {
     private var impTarget: CGPoint?
     /// The bubble the current layout belongs to (a new one starts collapsed and attached).
     private var laidOutBubble: UUID?
+    /// What a streaming reply was last measured for, once its text was cut (see `layoutBubble`).
+    private var measuredStream: StreamLayout?
+
+    /// Everything but the reply's words that decides the bubble's size: while only the words change (they stream in),
+    /// a reply that is already cut keeps its size.
+    private struct StreamLayout: Equatable {
+        var bubble: UUID
+        var expanded: Bool
+        var detached: Bool
+        var showSteps: Bool
+        var steps: Int
+        var width: CGFloat?
+        var textHeight: CGFloat?
+    }
     /// True while we move the bubble ourselves (so it isn't mistaken for the user dragging it).
     private var placingBubble = false
     private static let overlap: CGFloat = 10        // how far the trail's tip overlaps the top of Imp's horns
@@ -590,6 +604,14 @@ final class Panels {
             layout.openSteps = []
             layout.chatPages = 1
         }
+        // A long reply streaming in only grows. Once its text is cut (in the card, or in the reading view at its most), the
+        // card's size can't change, so it is not measured again for every word: each measuring lays the whole reply out
+        // again, up to three times, and made scrolling the reading view stutter while it streamed.
+        let stream = StreamLayout(bubble: bubble.id, expanded: layout.expanded, detached: layout.detached, showSteps: layout.showSteps,
+                                  steps: bubble.steps.count, width: layout.customWidth, textHeight: layout.customTextHeight)
+        if bubble.phase == .result, bubble.isStreaming, layout.textLimit != nil, bubbleVisible, measuredStream == stream { return }
+        measuredStream = nil
+
         let screen = (impPanel.screen ?? NSScreen.main)?.visibleFrame ?? .infinite
         var imp = impPanel.frame
         if let impTarget { imp.origin = impTarget }
@@ -627,6 +649,7 @@ final class Panels {
             }
         }
         layout.textLimit = limit
+        if bubble.phase == .result, bubble.isStreaming, limit != nil { measuredStream = stream }
 
         if layout.detached {
             // The user placed it: Imp can go home, and the bubble keeps its top edge where it is.

@@ -432,6 +432,11 @@ msgctxt "common.off"
 msgid "Off"
 msgstr "关"
 
+#. Button that confirms a sheet's changes and closes it.
+msgctxt "common.ok"
+msgid "OK"
+msgstr "好"
+
 #. State of a switch.
 msgctxt "common.on"
 msgid "On"
@@ -492,6 +497,11 @@ msgctxt "computer.help.senses"
 msgid "Reads the battery, processor, network and open apps, and the page open in the browser."
 msgstr "读取电池、处理器、网络和打开的应用，以及浏览器中打开的页面。"
 
+#. Name of the first plug a linked device can have: it is trusted to talk to the Imps and share files.
+msgctxt "devices.access.talk"
+msgid "Talk & files"
+msgstr "对话和文件"
+
 #. Button: call every Imp a device holds home.
 msgctxt "devices.call_all_home"
 msgid "Call all home"
@@ -499,8 +509,8 @@ msgstr "全部叫回家"
 
 #. Title of a line between two devices.
 msgctxt "devices.channel.title"
-msgid "{from} and {to}"
-msgstr "{from} 与 {to}"
+msgid "{from} ⇄ {to}"
+msgstr "{from} ⇄ {to}"
 
 #. Screen reader label of one of this Mac's Imps on the map.
 msgctxt "devices.chip.label_ours"
@@ -522,10 +532,20 @@ msgctxt "devices.edge.label"
 msgid "{from} to {to}. {route}. {state}"
 msgstr "{from} 到 {to}。{route}。{state}"
 
+#. Title of the chips of the Imps going across a line.
+msgctxt "devices.edge.travelling"
+msgid "Travelling"
+msgstr "往来中"
+
 #. Empty state of the list of linked devices.
 msgctxt "devices.empty"
 msgid "No devices yet."
 msgstr "还没有设备。"
+
+#. Button that forgets one linked device, with its name.
+msgctxt "devices.forget.named"
+msgid "Forget {name}…"
+msgstr "忘记 {name}…"
 
 #. Button: forget the selected device.
 msgctxt "devices.forget.one"
@@ -556,6 +576,21 @@ msgstr "需要地址"
 msgctxt "devices.hop.state.off"
 msgid "Off"
 msgstr "已关闭"
+
+#. Title of the plugs of an Imp that is away: its tools it can use where it is.
+msgctxt "devices.imp.can_use"
+msgid "Can use there"
+msgstr "在那里可用"
+
+#. Help of the plugs of an Imp that is away.
+msgctxt "devices.imp.can_use.info"
+msgid "The tools of this Imp that the device it is on lets it use. A tool with a lock is not plugged in on that device's connection: press it to open the connection and plug it in."
+msgstr "此 Imp 所在设备允许它使用的工具。带锁的工具在该设备的连接上没有插上：点按它可打开连接并插上。"
+
+#. Caption of the one tile of an Imp that is at home.
+msgctxt "devices.imp.here"
+msgid "Here"
+msgstr "在这里"
 
 #. Button: open an Imp's settings.
 msgctxt "devices.imp.settings"
@@ -617,6 +652,11 @@ msgctxt "devices.node.this_mac_label"
 msgid "{name}, this Mac"
 msgstr "{name}，这台 Mac"
 
+#. Title of the chips of the Imps on a device's screen.
+msgctxt "devices.on_screen"
+msgid "On its screen"
+msgstr "在它的屏幕上"
+
 #. Where an Imp's body is, as a tag on a device row.
 msgctxt "devices.place.body"
 msgid "On"
@@ -626,6 +666,26 @@ msgstr "在"
 msgctxt "devices.place.mind"
 msgid "Thinks on"
 msgstr "思考于"
+
+#. Spoken value of a plug that is not plugged in.
+msgctxt "devices.plug.off"
+msgid "not plugged in"
+msgstr "未插上"
+
+#. Spoken value of a plug that is plugged in.
+msgctxt "devices.plug.on"
+msgid "plugged in"
+msgstr "已插上"
+
+#. Title of the card of plugs: what a linked device can use of this Mac's Imps.
+msgctxt "devices.plug.title"
+msgid "What {name} can use here"
+msgstr "{name} 在这里可以用什么"
+
+#. Title of the addresses this Mac can be reached at.
+msgctxt "devices.reach.at"
+msgid "Reachable at"
+msgstr "可通过以下地址访问"
 
 #. Help on a linked device: not reachable now.
 msgctxt "devices.reach.away"
@@ -707,20 +767,15 @@ msgctxt "devices.state.offline"
 msgid "Away"
 msgstr "不在线"
 
+#. Screen reader label of the line from an Imp to another device's Imp it can message.
+msgctxt "devices.talk.label"
+msgid "{imp} can message {contact}"
+msgstr "{imp} 可以给 {contact} 发消息"
+
 #. Screen reader label of the line from an Imp to the device it thinks on.
 msgctxt "devices.tether.label"
 msgid "{imp} is on {node} and thinks on {home}"
 msgstr "{imp} 在 {node} 上，在 {home} 上思考"
-
-#. Inspector card: the tools an Imp may use on the device it is on.
-msgctxt "devices.tether.tools"
-msgid "Tools it may use there"
-msgstr "它在那里可用的工具"
-
-#. Help: the tools are the device's limits.
-msgctxt "devices.tether.tools.info"
-msgid "What the Imp may use while this device asks it. Change it on the device."
-msgstr "此设备向 Imp 提问时，Imp 可使用的工具。请在该设备上修改。"
 
 #. Help on the This Mac card: the dot is The Hop.
 msgctxt "devices.this.info"
@@ -742,26 +797,6 @@ msgctxt "devices.tools.commands"
 msgid "Commands"
 msgstr "命令"
 
-#. Help of the per-device tool limits.
-msgctxt "devices.tools.info"
-msgid "When this device asks one of your Imps, the Imp can use the tools that are on here. Switch off what it should not touch for this device."
-msgstr "当此设备向你的某个 Imp 提问时，Imp 可以使用这里开启的工具。关掉不希望它为此设备使用的工具。"
-
-#. Row in a device's sheet when the device is not Mine, so it gets no tools.
-msgctxt "devices.tools.locked"
-msgid "No tools until Mine"
-msgstr "设为“我的”之前没有工具"
-
-#. Shown when a device is not Mine.
-msgctxt "devices.tools.not_mine"
-msgid "Imps answer this device without tools. Turn on Mine to choose what they may use."
-msgstr "Imp 回答此设备时不使用工具。打开“我的”后可选择它们能用什么。"
-
-#. Inspector card: the tools Imps may use for a device.
-msgctxt "devices.tools.title"
-msgid "Tools Imps may use from this device"
-msgstr "Imp 可为此设备使用的工具"
-
 #. Tooltip of the button that opens or closes a list of tool switches.
 msgctxt "devices.tools.toggle"
 msgid "Show or hide the switches"
@@ -771,6 +806,11 @@ msgstr "显示或隐藏开关"
 msgctxt "devices.unknown_device"
 msgid "a device not linked with this Mac"
 msgstr "未与这台 Mac 链接的设备"
+
+#. Title of the read-only plugs of the device an Imp comes from.
+msgctxt "devices.visitor.can_use"
+msgid "Its device can use here"
+msgstr "它的设备在这里可用"
 
 #. Button: send a visiting Imp home.
 msgctxt "devices.visitor.send_home"
@@ -2341,6 +2381,11 @@ msgctxt "phone.chat.failed"
 msgid "Couldn't answer"
 msgstr "没能给出回答"
 
+#. iPhone: tip of the menu in an Imp's chat bar that lists its saved chats to carry on in.
+msgctxt "phone.chat.history"
+msgid "Chats"
+msgstr "聊天记录"
+
 #. iPhone: chat jump latest.
 msgctxt "phone.chat.jump_latest"
 msgid "Latest"
@@ -2370,6 +2415,11 @@ msgstr "给其他 Imp 发消息"
 msgctxt "phone.chat.ran_tools"
 msgid "Ran {count} tools"
 msgstr "使用了 {count} 个工具"
+
+#. iPhone: name of a saved chat that has no title yet.
+msgctxt "phone.chat.untitled"
+msgid "Chat"
+msgstr "聊天"
 
 #. One line under the QR code.
 msgctxt "phone.code.caption"
@@ -3732,6 +3782,11 @@ msgid "Browser page"
 msgstr "浏览器页面"
 
 #. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.create_imp"
+msgid "Create an Imp"
+msgstr "创建 Imp"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
 msgctxt "tool.export_kit"
 msgid "Export kits"
 msgstr "导出套件"
@@ -3820,11 +3875,6 @@ msgstr "查看"
 msgctxt "tool.show_background"
 msgid "View background"
 msgstr "查看背景"
-
-#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
-msgctxt "tool.speak"
-msgid "Speak aloud"
-msgstr "朗读"
 
 #. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
 msgctxt "tool.verify"
@@ -3990,6 +4040,76 @@ msgstr "使用这个工具的每个 Imp 都会得到这套设置。每个 Imp �
 msgctxt "tools.title"
 msgid "Tools"
 msgstr "工具"
+
+#. Label of the description editor in the tool text sheet.
+msgctxt "tooltext.description"
+msgid "Description the model reads"
+msgstr "模型读到的说明"
+
+#. Placeholder of an empty description.
+msgctxt "tooltext.description_empty"
+msgid "Empty. The tool is offered with no description."
+msgstr "为空。该工具将不带说明提供给模型。"
+
+#. Warning when an edit removed a placeholder the default description had.
+msgctxt "tooltext.dropped"
+msgid "The default also had {list}, which this text no longer has."
+msgstr "默认说明还包含 {list}，当前文本已不再包含。"
+
+#. Help of the pencil on a tool's row.
+msgctxt "tooltext.edit"
+msgid "Change what the model reads about this tool"
+msgstr "更改模型读到的这个工具的内容"
+
+#. Mark on a tool whose name or description was changed.
+msgctxt "tooltext.edited"
+msgid "Its name or description was changed"
+msgstr "它的名称或说明已更改"
+
+#. Line in the tool text sheet of an MCP tool.
+msgctxt "tooltext.from_server"
+msgid "The default name and description come from the server “{server}”."
+msgstr "默认的名称和说明来自服务器“{server}”。"
+
+#. Label before a tool's id in the sheet that edits its name and description: the id stays the same whatever name is typed.
+msgctxt "tooltext.id"
+msgid "ID (never changes)"
+msgstr "ID（不会改变）"
+
+#. Label of the name field in the tool text sheet.
+msgctxt "tooltext.name"
+msgid "Name the model calls it"
+msgstr "模型调用它的名称"
+
+#. Problem with a tool name.
+msgctxt "tooltext.name_invalid"
+msgid "Use 1 to 64 letters, digits, _ or -."
+msgstr "请使用 1 到 64 个字母、数字、_ 或 -。"
+
+#. Problem with a tool name.
+msgctxt "tooltext.name_taken"
+msgid "Another tool already has this name."
+msgstr "另一个工具已使用此名称。"
+
+#. What the {animations} placeholder stands for.
+msgctxt "tooltext.placeholder.animations"
+msgid "The animations it may play."
+msgstr "它可以播放的动画。"
+
+#. What the {imps} placeholder stands for.
+msgctxt "tooltext.placeholder.imps"
+msgid "The other Imps it can message, with what each says about itself."
+msgstr "它可以发消息的其他 Imp，以及各自的自我介绍。"
+
+#. What the {place} placeholder stands for.
+msgctxt "tooltext.placeholder.place"
+msgid "Where the background shows."
+msgstr "背景显示的位置。"
+
+#. Button that restores a tool's own name and description.
+msgctxt "tooltext.reset"
+msgid "Reset to default"
+msgstr "恢复默认"
 
 #. Short name of a trigger event, on its tile.
 msgctxt "trigger.event.at"
@@ -4335,11 +4455,6 @@ msgstr "共享给所有"
 msgctxt "triggers.step.add_one"
 msgid "Add a step: {name}"
 msgstr "添加步骤：{name}"
-
-#. Toggle of a say step: also speak it.
-msgctxt "triggers.step.aloud"
-msgid "Aloud"
-msgstr "朗读"
 
 #. Animation menu of a sleep or wake step: no animation.
 msgctxt "triggers.step.anim_none"

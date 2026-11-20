@@ -13,6 +13,8 @@ struct DeviceContext {
     let link: () -> Void
     let forget: (DeviceLink.Peer) -> Void
     let forgetEveryone: () -> Void
+    /// Opens the Hop's sheet.
+    let hop: () -> Void
 
     /// The linked device behind a node.
     func peer(_ node: String) -> DeviceLink.Peer? { model.link.peers.first { $0.id.uuidString == node } }
@@ -22,11 +24,16 @@ struct DeviceContext {
     func symbol(of node: String) -> String { map.node(node)?.symbol ?? "questionmark" }
 
     var thisMac: String { DeviceMap.thisMacID }
+
+    /// The line between this Mac and the device `node`, the one its plugs are on: through the Hop or direct.
+    func connection(to node: String) -> DeviceMap.Channel? {
+        map.channels.first { $0.from == node || $0.to == node }
+    }
 }
 
 // MARK: Rows
 
-/// How a thing stands, as one line: a picture in the state's colour and a word.
+/// How a thing stands, as a card across the sheet: a picture in the state's colour and a word.
 struct StatusLine: View {
     let symbol: String
     var tone: Color = Tone.muted
@@ -35,7 +42,7 @@ struct StatusLine: View {
     var body: some View {
         Label { Text(verbatim: text).font(Typeface.label).foregroundStyle(Tone.text).lineLimit(1) }
             icon: { Image(systemName: symbol).font(.icon(.small)).foregroundStyle(tone) }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .pebble()
             .accessibilityElement(children: .combine)
     }
 }
@@ -66,66 +73,6 @@ extension SheetRow where Leading == IconTile, Trailing == EmptyView {
     }
 }
 
-/// A row that opens another sheet: a leading picture, a title, what goes before the chevron (what the thing is to
-/// this sheet's subject, a small tag, never a sentence) and the chevron.
-struct JumpRow<Leading: View, Trailing: View>: View {
-    let title: String
-    @ViewBuilder var leading: Leading
-    @ViewBuilder var trailing: Trailing
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: Spacing.cozy) {
-                leading
-                Text(verbatim: title).font(Typeface.body).foregroundStyle(Tone.text).lineLimit(1)
-                Spacer(minLength: Spacing.small)
-                trailing
-                Image(systemName: "chevron.right").font(.icon(.tiny)).foregroundStyle(Tone.faint).accessibilityHidden(true)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .pebble(hover: true)
-    }
-}
-
-extension JumpRow where Leading == IconTile, Trailing == Text {
-    /// A device or thing with its picture and a short tag for how it relates to the sheet's subject.
-    init(_ title: String, symbol: String, tag: LocalizedStringKey, action: @escaping () -> Void) {
-        self.init(title: title, leading: { IconTile(systemName: symbol) },
-                  trailing: { Text(tag).font(Typeface.small).foregroundStyle(Tone.muted) }, action: action)
-    }
-}
-
-extension JumpRow where Leading == IconTile, Trailing == EmptyView {
-    init(_ title: String, symbol: String, action: @escaping () -> Void) {
-        self.init(title: title, leading: { IconTile(systemName: symbol) }, trailing: { EmptyView() }, action: action)
-    }
-}
-
-/// An Imp in a list: its colour, its name and where its body is (a walking mark for a visitor). Opens its sheet.
-struct ImpJumpRow: View {
-    let contact: DeviceMap.Contact
-    let place: String
-    let visitor: Bool
-    let open: () -> Void
-
-    var body: some View {
-        JumpRow(title: contact.name, leading: {
-            Circle().fill(Color.imp(contact.hue)).frame(width: Spacing.cozy, height: Spacing.cozy)
-        }, trailing: {
-            HStack(spacing: Spacing.small) {
-                if visitor { Image(systemName: "figure.walk.arrival").font(.icon(.tiny)).accessibilityHidden(true) }
-                Text(verbatim: place).font(Typeface.small).lineLimit(1)
-            }
-            .foregroundStyle(Tone.muted)
-        }, action: open)
-        .accessibilityLabel(Text(verbatim: "\(contact.name), \(place)"))
-    }
-}
-
 /// A row with a switch: a picture, a title, an optional help and the switch.
 struct SwitchRow: View {
     let symbol: String
@@ -138,25 +85,6 @@ struct SwitchRow: View {
             if let info { InfoTip(info) }
             Toggle(isOn: $isOn) { Text(verbatim: title) }.labelsHidden().toggleStyle(.impSwitchBare)
         })
-    }
-}
-
-/// The two places an Imp is tied to: the device its body is on, and the device it thinks on (none when that is a device
-/// this Mac is not linked with). Each opens that device.
-struct PlaceRows: View {
-    let ctx: DeviceContext
-    let on: String
-    let thinksOn: String?
-
-    var body: some View {
-        VStack(spacing: Spacing.small) {
-            JumpRow(ctx.name(of: on), symbol: ctx.symbol(of: on), tag: "devices.place.body") { ctx.select(.node(on)) }
-            if let thinksOn {
-                JumpRow(ctx.name(of: thinksOn), symbol: ctx.symbol(of: thinksOn), tag: "devices.place.mind") { ctx.select(.node(thinksOn)) }
-            } else {
-                SheetRow(String(localized: "devices.unknown_device"), symbol: "questionmark")
-            }
-        }
     }
 }
 
@@ -232,8 +160,9 @@ struct SheetAction: View {
     }
 
     /// For a name that is not a key, such as a device's.
-    init(verbatim title: String, symbol: String, action: @escaping () -> Void) {
+    init(verbatim title: String, symbol: String, role: ButtonRole? = nil, action: @escaping () -> Void) {
         label = FitLabel(verbatim: title, systemImage: symbol)
+        self.role = role
         self.action = action
     }
 
@@ -243,11 +172,18 @@ struct SheetAction: View {
     }
 }
 
-/// The main actions of a sheet, side by side and wrapping.
+/// The main actions of a sheet: one row across the sheet's whole width, the buttons sharing it equally, or
+/// one under the other (each as wide as the sheet) when their words don't fit side by side. Never a short
+/// row on the left with the space on the right left empty.
 struct SheetActions<Content: View>: View {
     @ViewBuilder var content: Content
 
     var body: some View {
-        FlowLayout(spacing: Spacing.small, lineSpacing: Spacing.small) { content }
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: Spacing.small) { content }
+            VStack(spacing: Spacing.small) { content }
+        }
+        .environment(\.impPillFills, true)
+        .frame(maxWidth: .infinity)
     }
 }

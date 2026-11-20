@@ -92,6 +92,7 @@
   <data name="common.name" xml:space="preserve"><value>Nombre</value><comment>Label of a name field.</comment></data>
   <data name="common.needs_attention" xml:space="preserve"><value>Necesita atención</value><comment>Screen reader value of a settings section that has something to fix.</comment></data>
   <data name="common.off" xml:space="preserve"><value>Apagado</value><comment>State of a switch.</comment></data>
+  <data name="common.ok" xml:space="preserve"><value>Aceptar</value><comment>Button that confirms a sheet's changes and closes it.</comment></data>
   <data name="common.on" xml:space="preserve"><value>Encendido</value><comment>State of a switch.</comment></data>
   <data name="common.open" xml:space="preserve"><value>Abrir</value><comment>Button that opens something.</comment></data>
   <data name="common.remove" xml:space="preserve"><value>Quitar</value><comment>Button that removes an item.</comment></data>
@@ -104,19 +105,25 @@
   <data name="computer.help.access" xml:space="preserve"><value>Lo que el Imp puede usar en este Mac.</value><comment>Help of the Computer section.</comment></data>
   <data name="computer.help.control" xml:space="preserve"><value>Ve y maneja otras apps. Necesita los permisos de Grabación de pantalla y audio del sistema y de Accesibilidad.</value><comment>Help of the Computer control switch.</comment></data>
   <data name="computer.help.senses" xml:space="preserve"><value>Lee la batería, el procesador, la red y las apps abiertas, y la página abierta en el navegador.</value><comment>Help of the Senses switch.</comment></data>
+  <data name="devices.access.talk" xml:space="preserve"><value>Hablar y archivos</value><comment>Name of the first plug a linked device can have: it is trusted to talk to the Imps and share files.</comment></data>
   <data name="devices.call_all_home" xml:space="preserve"><value>Traerlos a todos</value><comment>Button: call every Imp a device holds home.</comment></data>
-  <data name="devices.channel.title" xml:space="preserve"><value>{from} y {to}</value><comment>Title of a line between two devices.</comment></data>
+  <data name="devices.channel.title" xml:space="preserve"><value>{from} ⇄ {to}</value><comment>Title of a line between two devices.</comment></data>
   <data name="devices.chip.label_ours" xml:space="preserve"><value>{name}, un Imp de este Mac, en {node}</value><comment>Screen reader label of one of this Mac's Imps on the map.</comment></data>
   <data name="devices.chip.label_visitor" xml:space="preserve"><value>{name}, un Imp de otro dispositivo, en {node}</value><comment>Screen reader label of another device's Imp on the map.</comment></data>
   <data name="devices.copy_link.help" xml:space="preserve"><value>Para un dispositivo que no puede escanear: pega el enlace en Escanear código en el otro dispositivo. Mantenlo en privado. Permite que un dispositivo se vincule con este Mac durante un rato.</value><comment>Help of Copy Link in Link a device.</comment></data>
   <data name="devices.edge.label" xml:space="preserve"><value>{from} con {to}. {route}. {state}</value><comment>Screen reader label of a line between two devices.</comment></data>
+  <data name="devices.edge.travelling" xml:space="preserve"><value>De viaje</value><comment>Title of the chips of the Imps going across a line.</comment></data>
   <data name="devices.empty" xml:space="preserve"><value>Aún no hay dispositivos.</value><comment>Empty state of the list of linked devices.</comment></data>
+  <data name="devices.forget.named" xml:space="preserve"><value>Olvidar {name}…</value><comment>Button that forgets one linked device, with its name.</comment></data>
   <data name="devices.forget.one" xml:space="preserve"><value>Olvidar este dispositivo…</value><comment>Button: forget the selected device.</comment></data>
   <data name="devices.hop.add" xml:space="preserve"><value>Añadir un Hop</value><comment>The Hop pill under the code in the Link sheet when no Hop is set; opens its settings.</comment></data>
   <data name="devices.hop.pill" xml:space="preserve"><value>Hop: {host}</value><comment>The Hop pill under the code in the Link sheet when a Hop is set. {host} is its address.</comment></data>
   <data name="devices.hop.state.idle" xml:space="preserve"><value>Sin uso</value><comment>The Hop's state when an address is set and nothing goes through it.</comment></data>
   <data name="devices.hop.state.needs_address" xml:space="preserve"><value>Necesita una dirección</value><comment>The Hop's state when what is set is not an address yet.</comment></data>
   <data name="devices.hop.state.off" xml:space="preserve"><value>Desactivado</value><comment>The Hop's state when none is set.</comment></data>
+  <data name="devices.imp.can_use" xml:space="preserve"><value>Puede usar allí</value><comment>Title of the plugs of an Imp that is away: its tools it can use where it is.</comment></data>
+  <data name="devices.imp.can_use.info" xml:space="preserve"><value>Las herramientas de este Imp que el dispositivo donde está le deja usar. Una herramienta con candado no está conectada en la conexión de ese dispositivo: púlsala para abrir la conexión y conectarla.</value><comment>Help of the plugs of an Imp that is away.</comment></data>
+  <data name="devices.imp.here" xml:space="preserve"><value>Aquí</value><comment>Caption of the one tile of an Imp that is at home.</comment></data>
   <data name="devices.imp.settings" xml:space="preserve"><value>Sus ajustes</value><comment>Button: open an Imp's settings.</comment></data>
   <data name="devices.imp.talks" xml:space="preserve"><value>Puede escribir a</value><comment>Inspector card: the Imps an Imp can message.</comment></data>
   <data name="devices.imp.talks.info" xml:space="preserve"><value>Los Imps a los que este puede escribir. Se iluminan en el mapa mientras está seleccionado.</value><comment>Help: who an Imp can message. Selecting an Imp on the map lights them.</comment></data>
@@ -129,8 +136,13 @@
   <data name="devices.node.label" xml:space="preserve"><value>{name}, {state}. Imps: {imps}</value><comment>Screen reader label of a device on the map: its state and the Imps in it.</comment></data>
   <data name="devices.node.label_empty" xml:space="preserve"><value>{name}, {state}</value><comment>Screen reader label of a device on the map without Imps.</comment></data>
   <data name="devices.node.this_mac_label" xml:space="preserve"><value>{name}, este Mac</value><comment>Screen reader name of this Mac's node.</comment></data>
+  <data name="devices.on_screen" xml:space="preserve"><value>En su pantalla</value><comment>Title of the chips of the Imps on a device's screen.</comment></data>
   <data name="devices.place.body" xml:space="preserve"><value>En</value><comment>Where an Imp's body is, as a tag on a device row.</comment></data>
   <data name="devices.place.mind" xml:space="preserve"><value>Piensa en</value><comment>Where an Imp thinks, as a tag on a device row.</comment></data>
+  <data name="devices.plug.off" xml:space="preserve"><value>desconectado</value><comment>Spoken value of a plug that is not plugged in.</comment></data>
+  <data name="devices.plug.on" xml:space="preserve"><value>conectado</value><comment>Spoken value of a plug that is plugged in.</comment></data>
+  <data name="devices.plug.title" xml:space="preserve"><value>Qué puede usar {name} aquí</value><comment>Title of the card of plugs: what a linked device can use of this Mac's Imps.</comment></data>
+  <data name="devices.reach.at" xml:space="preserve"><value>Accesible en</value><comment>Title of the addresses this Mac can be reached at.</comment></data>
   <data name="devices.reach.away" xml:space="preserve"><value>No disponible</value><comment>Help on a linked device: not reachable now.</comment></data>
   <data name="devices.reach.direct" xml:space="preserve"><value>Directo, en la red local</value><comment>Help on a linked device: reached on the local network.</comment></data>
   <data name="devices.reach.last_seen" xml:space="preserve"><value>Última dirección conocida</value><comment>Label of the last known address of a device.</comment></data>
@@ -147,19 +159,15 @@
   <data name="devices.state.connected" xml:space="preserve"><value>Conectado</value><comment>State word of a device on the Devices map.</comment></data>
   <data name="devices.state.connecting" xml:space="preserve"><value>Conectando</value><comment>State word of a device on the Devices map.</comment></data>
   <data name="devices.state.offline" xml:space="preserve"><value>Ausente</value><comment>State word of a linked device that cannot be reached now.</comment></data>
+  <data name="devices.talk.label" xml:space="preserve"><value>{imp} puede escribir a {contact}</value><comment>Screen reader label of the line from an Imp to another device's Imp it can message.</comment></data>
   <data name="devices.tether.label" xml:space="preserve"><value>{imp} está en {node} y piensa en {home}</value><comment>Screen reader label of the line from an Imp to the device it thinks on.</comment></data>
-  <data name="devices.tether.tools" xml:space="preserve"><value>Herramientas que puede usar allí</value><comment>Inspector card: the tools an Imp may use on the device it is on.</comment></data>
-  <data name="devices.tether.tools.info" xml:space="preserve"><value>Lo que el Imp puede usar cuando este dispositivo le pide algo. Se cambia en el dispositivo.</value><comment>Help: the tools are the device's limits.</comment></data>
   <data name="devices.this.info" xml:space="preserve"><value>Vincula otro dispositivo aquí. El punto indica si The Hop permite que se encuentren desde cualquier lugar.</value><comment>Help on the This Mac card: the dot is The Hop.</comment></data>
   <data name="devices.this_mac_badge" xml:space="preserve"><value>Este Mac</value><comment>Badge on the node of this Mac on the Devices map.</comment></data>
   <data name="devices.title" xml:space="preserve"><value>Dispositivos</value><comment>Title of the card listing the linked devices.</comment></data>
   <data name="devices.tools.commands" xml:space="preserve"><value>Comandos</value><comment>Name of the tool that runs commands.</comment></data>
-  <data name="devices.tools.info" xml:space="preserve"><value>Cuando este dispositivo le pide algo a uno de tus Imps, el Imp puede usar las herramientas activadas aquí. Desactiva lo que no debe tocar para este dispositivo.</value><comment>Help of the per-device tool limits.</comment></data>
-  <data name="devices.tools.locked" xml:space="preserve"><value>Sin herramientas hasta ser Mío</value><comment>Row in a device's sheet when the device is not Mine, so it gets no tools.</comment></data>
-  <data name="devices.tools.not_mine" xml:space="preserve"><value>Los Imps responden a este dispositivo sin herramientas. Activa Mío para elegir lo que pueden usar.</value><comment>Shown when a device is not Mine.</comment></data>
-  <data name="devices.tools.title" xml:space="preserve"><value>Herramientas que los Imps pueden usar desde este dispositivo</value><comment>Inspector card: the tools Imps may use for a device.</comment></data>
   <data name="devices.tools.toggle" xml:space="preserve"><value>Mostrar u ocultar los interruptores</value><comment>Tooltip of the button that opens or closes a list of tool switches.</comment></data>
   <data name="devices.unknown_device" xml:space="preserve"><value>un dispositivo no vinculado con este Mac</value><comment>A device this Mac is not linked with.</comment></data>
+  <data name="devices.visitor.can_use" xml:space="preserve"><value>Su dispositivo puede usar aquí</value><comment>Title of the read-only plugs of the device an Imp comes from.</comment></data>
   <data name="devices.visitor.send_home" xml:space="preserve"><value>Enviar a casa</value><comment>Button: send a visiting Imp home.</comment></data>
   <data name="error.brain.key" xml:space="preserve"><value>{service} no aceptó la clave. Revísala e inténtalo de nuevo.</value><comment>The key was refused.</comment></data>
   <data name="error.brain.local" xml:space="preserve"><value>Ningún modelo respondió. Comprueba que esté en marcha e inténtalo de nuevo.</value><comment>The local model server did not answer.</comment></data>
@@ -477,12 +485,14 @@
   <data name="phone.chat.ask_to_prefix" xml:space="preserve"><value>Pide a {name} que: </value><comment>iPhone: the start of a message asking another Imp, sent to the Imp. The field does not show it.</comment></data>
   <data name="phone.chat.edit_help" xml:space="preserve"><value>Editar</value><comment>iPhone: chat edit help.</comment></data>
   <data name="phone.chat.failed" xml:space="preserve"><value>No pudo responder</value><comment>iPhone: chat failed.</comment></data>
+  <data name="phone.chat.history" xml:space="preserve"><value>Chats</value><comment>iPhone: tip of the menu in an Imp's chat bar that lists its saved chats to carry on in.</comment></data>
   <data name="phone.chat.jump_latest" xml:space="preserve"><value>Último</value><comment>iPhone: chat jump latest.</comment></data>
   <data name="phone.chat.message" xml:space="preserve"><value>Escribir a {name}</value><comment>iPhone: chat message.</comment></data>
   <data name="phone.chat.new" xml:space="preserve"><value>Nuevo</value><comment>iPhone: chat new.</comment></data>
   <data name="phone.chat.no_brain" xml:space="preserve"><value>Aún sin cerebro</value><comment>iPhone: chat no brain.</comment></data>
   <data name="phone.chat.peers" xml:space="preserve"><value>Escribir a otro Imp</value><comment>iPhone: button beside the chat field that lists the other Imps to message.</comment></data>
   <data name="phone.chat.ran_tools" xml:space="preserve"><value>Herramientas usadas: {count}</value><comment>iPhone: chat ran tools.</comment></data>
+  <data name="phone.chat.untitled" xml:space="preserve"><value>Chat</value><comment>iPhone: name of a saved chat that has no title yet.</comment></data>
   <data name="phone.code.caption" xml:space="preserve"><value>Escanea en el otro dispositivo</value><comment>One line under the QR code.</comment></data>
   <data name="phone.code.label" xml:space="preserve"><value>Código de enlace</value><comment>Spoken name of the QR code.</comment></data>
   <data name="phone.connected" xml:space="preserve"><value>Conectado</value><comment>State of a linked device that answers.</comment></data>
@@ -755,6 +765,7 @@
   <data name="tool.add_tool" xml:space="preserve"><value>Añadir</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.add_trigger" xml:space="preserve"><value>Añadir</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.browser_page" xml:space="preserve"><value>Página del navegador</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
+  <data name="tool.create_imp" xml:space="preserve"><value>Crear un Imp</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.export_kit" xml:space="preserve"><value>Exportar kits</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.list_tools" xml:space="preserve"><value>Listar</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.list_triggers" xml:space="preserve"><value>Listar</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
@@ -773,7 +784,6 @@
   <data name="tool.set_traits" xml:space="preserve"><value>Cambiar su aspecto</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.show_animation" xml:space="preserve"><value>Ver</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.show_background" xml:space="preserve"><value>Ver fondo</value><comment>Short name of a built-in tool in the Look section: reads the HTML background behind the Imps.</comment></data>
-  <data name="tool.speak" xml:space="preserve"><value>Hablar en voz alta</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.verify" xml:space="preserve"><value>Comprobar resultados</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tools.add" xml:space="preserve"><value>Añadir</value><comment>Button that adds tools.</comment></data>
   <data name="tools.collapse" xml:space="preserve"><value>Ocultar herramientas de {group}</value><comment>Screen reader action.</comment></data>
@@ -807,6 +817,20 @@
   <data name="tools.server_name" xml:space="preserve"><value>Nombre</value><comment>Label of a tool server's name field.</comment></data>
   <data name="tools.shared_setup" xml:space="preserve"><value>Todos los Imps que usan esta herramienta reciben esta configuración. Cada Imp la activa o desactiva por su cuenta.</value><comment>In the extra tool editor: its setup is shared, while each Imp switches it on or off for itself.</comment></data>
   <data name="tools.title" xml:space="preserve"><value>Herramientas</value><comment>Panel title.</comment></data>
+  <data name="tooltext.description" xml:space="preserve"><value>Descripción que lee el modelo</value><comment>Label of the description editor in the tool text sheet.</comment></data>
+  <data name="tooltext.description_empty" xml:space="preserve"><value>Vacío. La herramienta se ofrece sin descripción.</value><comment>Placeholder of an empty description.</comment></data>
+  <data name="tooltext.dropped" xml:space="preserve"><value>El texto predeterminado también tenía {list}, que este texto ya no incluye.</value><comment>Warning when an edit removed a placeholder the default description had.</comment></data>
+  <data name="tooltext.edit" xml:space="preserve"><value>Cambiar lo que el modelo lee de esta herramienta</value><comment>Help of the pencil on a tool's row.</comment></data>
+  <data name="tooltext.edited" xml:space="preserve"><value>Se cambió su nombre o descripción</value><comment>Mark on a tool whose name or description was changed.</comment></data>
+  <data name="tooltext.from_server" xml:space="preserve"><value>El nombre y la descripción predeterminados vienen del servidor «{server}».</value><comment>Line in the tool text sheet of an MCP tool.</comment></data>
+  <data name="tooltext.id" xml:space="preserve"><value>ID (no cambia)</value><comment>Label before a tool's id in the sheet that edits its name and description: the id stays the same whatever name is typed.</comment></data>
+  <data name="tooltext.name" xml:space="preserve"><value>Nombre con el que el modelo la llama</value><comment>Label of the name field in the tool text sheet.</comment></data>
+  <data name="tooltext.name_invalid" xml:space="preserve"><value>Usa de 1 a 64 letras, dígitos, _ o -.</value><comment>Problem with a tool name.</comment></data>
+  <data name="tooltext.name_taken" xml:space="preserve"><value>Otra herramienta ya tiene este nombre.</value><comment>Problem with a tool name.</comment></data>
+  <data name="tooltext.placeholder.animations" xml:space="preserve"><value>Las animaciones que puede reproducir.</value><comment>What the {animations} placeholder stands for.</comment></data>
+  <data name="tooltext.placeholder.imps" xml:space="preserve"><value>Los demás Imps a los que puede escribir, con lo que cada uno dice de sí mismo.</value><comment>What the {imps} placeholder stands for.</comment></data>
+  <data name="tooltext.placeholder.place" xml:space="preserve"><value>Dónde se muestra el fondo.</value><comment>What the {place} placeholder stands for.</comment></data>
+  <data name="tooltext.reset" xml:space="preserve"><value>Restablecer</value><comment>Button that restores a tool's own name and description.</comment></data>
   <data name="trigger.event.at" xml:space="preserve"><value>Cada día a las</value><comment>Short name of a trigger event, on its tile.</comment></data>
   <data name="trigger.event.away" xml:space="preserve"><value>Cursor lejos</value><comment>Short name of a trigger event, on its tile.</comment></data>
   <data name="trigger.event.circle" xml:space="preserve"><value>Rodear</value><comment>Short name of a trigger event, on its tile.</comment></data>
@@ -876,7 +900,6 @@
   <data name="triggers.scope.note_version" xml:space="preserve"><value>Guarda una versión solo para {name}. Los demás Imps conservan la compartida.</value><comment>Below the For choice when a shared trigger is saved for one Imp.</comment></data>
   <data name="triggers.share_every" xml:space="preserve"><value>Para todos</value><comment>Menu item on this Imp's trigger: share it with every Imp.</comment></data>
   <data name="triggers.step.add_one" xml:space="preserve"><value>Añadir un paso: {name}</value><comment>Spoken label of a step tile.</comment></data>
-  <data name="triggers.step.aloud" xml:space="preserve"><value>En voz alta</value><comment>Toggle of a say step: also speak it.</comment></data>
   <data name="triggers.step.anim_none" xml:space="preserve"><value>Lo habitual</value><comment>Animation menu of a sleep or wake step: no animation.</comment></data>
   <data name="triggers.step.ask_ph" xml:space="preserve"><value>¿Qué debe hacer? Dilo con tus palabras.</value><comment>Placeholder of the instruction of an ask step.</comment></data>
   <data name="triggers.step.clipboard" xml:space="preserve"><value>Con el portapapeles</value><comment>Toggle of an ask step: hand over the clipboard.</comment></data>

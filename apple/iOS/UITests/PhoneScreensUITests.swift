@@ -250,6 +250,31 @@ final class PhoneScreensUITests: XCTestCase {
         done.tap()
         XCTAssertFalse(again.waitForExistence(timeout: 2), "Done leaves the game")
     }
+
+    /// A page an Imp drew behind the room (moving, far larger than the screen) leaves the room the screen's size: the
+    /// status pill stays at the top, and in Embers the close (X) is in the top-trailing corner and closes the round.
+    func testBackgroundKeepsTheRoomOnScreen() {
+        let app = launch(["-hatchThree", "-uiTestBackground"], reset: true)
+        let screen = app.windows.firstMatch.frame
+        let play = app.buttons["Play Embers"]
+        XCTAssertTrue(play.waitForExistence(timeout: 10), "the way into Embers")
+        sleep(4)  // The page loads and is looked at.
+        shot(app, "background-room")
+        XCTAssertTrue(screen.contains(play.frame), "Play Embers on screen: \(play.frame) in \(screen)")
+        play.tap()
+        let skip = app.buttons["Skip"]
+        if skip.waitForExistence(timeout: 4) { skip.tap() }
+        sleep(5)
+        let close = app.buttons["Close"]
+        XCTAssertTrue(close.waitForExistence(timeout: 4), "the close (X)")
+        shot(app, "background-embers")
+        XCTAssertTrue(screen.contains(close.frame), "the close on screen: \(close.frame) in \(screen)")
+        XCTAssertGreaterThan(close.frame.midX, screen.midX, "in the trailing half")
+        XCTAssertLessThan(close.frame.midY, screen.height / 4, "near the top")
+        XCTAssertTrue(close.isHittable)
+        close.tap()
+        XCTAssertTrue(app.buttons["Done"].waitForExistence(timeout: 6), "closing ends the round")
+    }
 }
 
 

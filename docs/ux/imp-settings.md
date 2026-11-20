@@ -9,7 +9,7 @@ An Imp's settings look and work like the app's Settings: one bar across the top,
 | Section | What it holds | The wand opens |
 | --- | --- | --- |
 | Brain | Its Brain and its memory. | (nothing: no built-in tools) |
-| Personality | Name and Description in one block, then Persona and Reply rules. The Persona header has two icon buttons: open the Imp's agent file in an editor, and show it in the Finder. | Speak aloud, Message Imps, Open files, Open settings |
+| Personality | Name and Description in one block, then Persona and Reply rules. The Persona header has two icon buttons: open the Imp's agent file in an editor, and show it in the Finder. | Message Imps, Create an Imp, Open files, Open settings |
 | Look | The live Imp as the preview, Colour and Size, Character. | Change its look, View background, Set background |
 | Animations | Its animations, then the shared ones: New, Import kit…, Share. | Play, View, Make, Remove, Move around |
 | Triggers | Its triggers: New, Import kit…, Share. | List, Add, Remove |
@@ -33,6 +33,14 @@ Every section that has built-in tools has the same wand button (`wand.and.sparkl
 ![The wand's sheet in Animations](./images/imp-agent-tools.png)
 
 `imp_show_animation` (View) answers with the animation's beats as text (the same JSON `imp_make_animation` takes), never with pictures, so it works with a Brain that does not read images.
+
+### Editing what the model reads about a tool
+
+Each tool row, in the wand's sheet and in the Tools list of an MCP server, has a pencil (hover it to read what the model reads now). It opens a sheet with the tool's title and its registry id (`own.personality.imp_message`, `mcp.files.read_file`), and two fields: **Name the model calls it** (the placeholder is the default name) and **Description the model reads** (filled with the current text). A tool that was changed carries a small `pencil.circle.fill`. For an MCP tool the default comes from the server, and the sheet says so.
+
+![Editing a tool's name and description](./images/imp-tool-text.png)
+
+The name must be 1 to 64 letters, digits, `_` or `-` and must not be another tool's name for this Imp (default names and other renames count); the sheet says so as you type and OK waits. A description may use placeholders that stand for what changes: `{imps}` (the other Imps it can message, Message Imps), `{animations}` (the animations it may play) and `{place}` (where the background shows). Tap one to add it at the end; one the tool cannot fill is left empty. When an edit drops a placeholder the default had, the sheet warns. **Reset to default** empties both fields, so OK removes the change. Every tool can be edited, also one that is off or only offered while other Imps are out. The changes are kept in the agent file's `toolText`, shared with the terminal. On the phone this sheet is not offered yet; the Mac's changes still apply there.
 
 ### Import kit…
 
@@ -104,7 +112,7 @@ Rejected: sharing a Character on its own. It would be a second thing to learn an
 
 One block holds **Name** and **Description** (`personality.about`), the standard words. The name is who the Imp is, not how it looks. An empty name shows `personality.name_empty` and is not saved. The description is one or two lines, at most 200 characters, with an info text (`personality.help.about`) saying the other Imps read it to know whom to ask. It is empty by default. It goes to the other Imps with the Imp's abilities (shell, browser, the names of its tool servers, which the Mac works out), on this Mac and on linked devices.
 
-Then **Persona**, with Reply rules under it. The wand in the Persona header holds Speak aloud, Message Imps, Open files and Open settings.
+Then **Persona**, with Reply rules under it. The wand in the Persona header holds Message Imps, Create an Imp, Open files and Open settings.
 
 ## Brain
 
@@ -138,7 +146,7 @@ Empty state: `tools.empty` (see [Empty lists](/ux/states#empty-lists)) and the b
 
 ![A trigger with a condition and two steps](./images/imp-trigger-steps.png)
 
-A trigger is **one event, optional conditions and one to five steps** (the contract is in [Kits](/sharing/kits#triggers)). A row is one line, "event · conditions → steps", for example "4 quick clicks · Between 9:00 AM and 6:00 PM → play “Wiggle” · say “Ouch!” (aloud)", with the symbol of its first step on the tile. Each has a switch and its scope under it (see [Scope](#scope-this-imp-or-every-imp)). Triggers run without a Brain unless a step asks the model, so they work even while the Imp sleeps. The list shows this Imp's own triggers first, then the shared ones it has no version of.
+A trigger is **one event, optional conditions and one to five steps** (the contract is in [Kits](/sharing/kits#triggers)). A row is one line, "event · conditions → steps", for example "4 quick clicks · Between 9:00 AM and 6:00 PM → play “Wiggle” · say “Ouch!”", with the symbol of its first step on the tile. Each has a switch and its scope under it (see [Scope](#scope-this-imp-or-every-imp)). Triggers run without a Brain unless a step asks the model, so they work even while the Imp sleeps. The list shows this Imp's own triggers first, then the shared ones it has no version of.
 
 The header has Import kit…, the wand (List, Add, Remove) and New, which opens the editor (`triggers.new`) directly.
 
@@ -324,6 +332,7 @@ Share opens the save panel at once, with no sheet before it: the Imp is saved as
 | `tool.add_tool` | Add |
 | `tool.add_trigger` | Add |
 | `tool.browser_page` | Browser page |
+| `tool.create_imp` | Create an Imp |
 | `tool.export_kit` | Export kits |
 | `tool.list_tools` | List |
 | `tool.list_triggers` | List |
@@ -342,7 +351,6 @@ Share opens the save panel at once, with no sheet before it: the Imp is saved as
 | `tool.set_traits` | Change its look |
 | `tool.show_animation` | View |
 | `tool.show_background` | View background |
-| `tool.speak` | Speak aloud |
 | `tool.verify` | Check results |
 | `tools.add` | Add |
 | `tools.collapse` | Hide the tools in {group} |
@@ -445,7 +453,6 @@ Share opens the save panel at once, with no sheet before it: the Imp is saved as
 | `triggers.scope.note_version` | Saves a version for {name} only. The other Imps keep the shared one. |
 | `triggers.share_every` | Share to all |
 | `triggers.step.add_one` | Add a step: {name} |
-| `triggers.step.aloud` | Aloud |
 | `triggers.step.anim_none` | The usual way |
 | `triggers.step.ask_ph` | What should it do? Say it in your own words. |
 | `triggers.step.clipboard` | With clipboard |

@@ -22,7 +22,7 @@ hold), the Imp runs the steps in order. It is the only way an Imp does anything 
 
 Add conditions such as *only if on battery*, *only between 22:00 and 07:00*, *only Monday to Friday* or *only while it is asleep*.
 
-A step can ask the Imp's model (with what you copied, if you like), say something (aloud too), play one of its animations, fall asleep, wake up, follow the cursor, or open the text box, the chat, the settings or listening. Example: *poke → play Wiggle, say "Ouch!"*. Add them in Settings, Triggers.
+A step can ask the Imp's model (with what you copied, if you like), say something, play one of its animations, fall asleep, wake up, follow the cursor, or open the text box, the chat, the settings or listening. Example: *poke → play Wiggle, say "Ouch!"*. Add them in Settings, Triggers.
 
 A new Imp has no triggers to start with. Steps that act on the Imp's body need no model at all: fall asleep, wake up, play an animation, or **follow the cursor**. Follow takes a mode (Off, Eyes, Hop or Glide) and a speed. Without a follow trigger an Imp's eyes follow the cursor and its body stays. To have it hop after your cursor, add a trigger *Imp starts → follow the cursor, Hop*, or just tell it "follow my cursor". With Reduce Motion on, Hop and Glide become Eyes. This is for the Mac: the iPhone has no cursor.
 
@@ -43,8 +43,8 @@ key, and create the trigger, then show you how it works.
 
 ## Body and senses
 
-Imp plays its animations as body language: it hops, slides or bounces around the screen, speaks out loud,
-reads how the Mac is doing, and messages the other Imps. Each of these tools can be switched off per Imp,
+Imp plays its animations as body language: it hops, slides or bounces around the screen,
+reads how the Mac is doing, messages the other Imps and creates new ones for a recurring job. Each of these tools can be switched off per Imp,
 behind the wand button of the section it belongs to (Animations, Personality, Look, Triggers, Tools, Computer).
 
 ## Make your own animations

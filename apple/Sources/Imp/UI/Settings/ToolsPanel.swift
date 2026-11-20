@@ -41,7 +41,7 @@ struct ToolsPanel: View {
                     editing = Draft(server: MCPServerConfig(name: "", transport: .http), isNew: true)
                 }
                 ImportKitButton(imp: imp.id)
-                AgentToolsButton(imp: $imp, groups: [.tools])
+                AgentToolsButton(model: model, imp: $imp, groups: [.tools])
             }
         }) {
             if servers.isEmpty {
@@ -144,6 +144,7 @@ struct ToolsPanel: View {
                 HStack(spacing: Spacing.small) {
                     Text(verbatim: name).font(Typeface.caption).foregroundStyle(Tone.text).lineLimit(2)
                     Spacer(minLength: Spacing.small)
+                    ToolTextButton(imp: $imp, model: model, tool: tool, symbol: symbol(of: group), server: { if case .server = group.source { title(of: group) } else { nil } }())
                     Toggle(isOn: Binding(get: { imp.uses(tool: tool.id) }, set: { imp.setUses(tool: tool.id, $0) })) { Text(verbatim: name) }
                         .labelsHidden().toggleStyle(.impSwitchBare)
                         .accessibilityLabel(Text(verbatim: name))

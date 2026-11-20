@@ -15,6 +15,28 @@ import Testing
         #expect(map.nodes[0].imps.count == 1)
     }
 
+    @Test func theHopIsThereOnlyWhenSetAndUsedWhenAChannelGoesThroughIt() {
+        let none = DeviceMap.build(thisMac: "Mac", peers: [phone], server: "", imps: [], mcpServers: [])
+        #expect(none.hop == nil && !none.hopInUse)
+        #expect(none.hopStanding(text: "") == .off)
+        let set = DeviceMap.build(thisMac: "Mac", peers: [phone], server: "imp.example.org", imps: [], mcpServers: [])
+        #expect(!set.hopInUse, "set, but every channel is local")
+        let used = DeviceMap.build(thisMac: "Mac", peers: [phone, mac], server: "imp.example.org", imps: [], mcpServers: [])
+        #expect(used.hop?.kind == .server && used.hopInUse)
+    }
+
+    @Test func travellersAreThisMacsImpsOnTheFarDeviceAndItsImpsVisitingHere() throws {
+        var out = imp("Dot")
+        out.awayOn = phone.id
+        let visitor = LinkStaged(imp: LinkImp(id: UUID(), name: "Noodle", hue: 0.4, scale: 1, traits: .plain), home: phone.id)
+        let other = LinkStaged(imp: LinkImp(id: UUID(), name: "Stranger", hue: 0.6, scale: 1, traits: .plain), home: UUID())
+        let map = DeviceMap.build(thisMac: "Mac", peers: [phone], server: "", imps: [out, imp("Pip")], mcpServers: [], visitors: [visitor, other])
+        let channel = try #require(map.channels.first)
+        let travellers = map.travellers(of: channel)
+        #expect(travellers.out.map(\.name) == ["Dot"])
+        #expect(travellers.in.map(\.name) == ["Noodle"])
+    }
+
     @Test func channelsKeepPathStateAndServer() {
         let map = DeviceMap.build(thisMac: "Mac", peers: [phone, mac], server: "imp.example.org", imps: [imp("Pip")], mcpServers: [])
         #expect(map.nodes.map(\.kind) == [.thisMac, .server, .phone, .mac])

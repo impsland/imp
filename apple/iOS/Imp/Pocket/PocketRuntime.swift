@@ -517,6 +517,8 @@ final class PocketRuntime {
             stop(id)
         case .newChat(let id):
             newChat(id)
+        case .openChat(let id, let chat):
+            openChat(id, chat)
         case .felt(let id, let feeling):
             let step: AnticStep = switch feeling {
             case .poke: AnticStep(duration: 0.7, mood: .surprised, glyph: .exclaim)
@@ -541,7 +543,10 @@ final class PocketRuntime {
         if let holder = hub.node.holder(of: id) { hub.node.send(message, to: holder) }
     }
 
-    private func pushChat(_ id: UUID) { tell(id, .chat(imp: id, turns: Array(turns(id).suffix(200)))) }
+    private func pushChat(_ id: UUID) {
+        tell(id, .chat(imp: id, turns: Array(turns(id).suffix(200))))
+        if let list = chatList(id), let current = list.current { tell(id, .chats(imp: id, current: current, chats: list.chats)) }
+    }
 
     private func pushWork(_ id: UUID) {
         tell(id, .work(imp: id, work: work[id]))
@@ -649,5 +654,18 @@ extension PocketRuntime: ChatSource {
     func newChat(_ id: UUID) {
         store.update(id) { $0.newChat() }
         pushChat(id)
+    }
+
+    /// Carries on in a saved chat, where it left off. What it was working on belongs to the chat it started in.
+    func openChat(_ id: UUID, _ chat: UUID) {
+        stop(id)
+        store.update(id) { $0.open(chat: chat) }
+        pushChat(id)
+    }
+
+    /// Its saved chats, newest first, and the id of the one it is in.
+    func chatList(_ id: UUID) -> ChatList? {
+        guard let imp = store.imp(id) else { return nil }
+        return ChatList(current: imp.current?.id, chats: LinkChats.list(imp.chatList()))
     }
 }

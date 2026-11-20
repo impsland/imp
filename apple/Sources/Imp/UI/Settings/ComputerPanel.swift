@@ -6,11 +6,12 @@ import SwiftUI
 /// What the Imp may reach on this Mac: running commands, its senses (the Mac's state and the browser
 /// page) and computer control. Each is one switch; the single tools are behind the section's agent button.
 struct ComputerPanel: View {
+    let model: AppModel
     @Binding var imp: ImpProfile
 
     var body: some View {
         PanelSection("computer.access", icon: "desktopcomputer", info: "computer.help.access",
-                     accessory: { AgentToolsButton(imp: $imp, groups: [.senses, .computer]) }) {
+                     accessory: { AgentToolsButton(model: model, imp: $imp, groups: [.senses, .computer]) }) {
             commands
             Row("Senses", icon: ImpToolGroup.senses.symbol, info: "computer.help.senses") { groupSwitch(.senses) }
             browser

@@ -75,13 +75,11 @@ public struct Step: Codable, Hashable, Sendable {
     public var value: String?
     /// ask: hand over what the person copied.
     public var clipboard: Bool?
-    /// say: also speak it.
-    public var aloud: Bool?
     /// follow: 0.5 to 2, 1 is normal.
     public var speed: Double?
 
-    public init(_ act: Act, value: String? = nil, clipboard: Bool? = nil, aloud: Bool? = nil, speed: Double? = nil) {
-        self.act = act; self.value = value; self.clipboard = clipboard; self.aloud = aloud
+    public init(_ act: Act, value: String? = nil, clipboard: Bool? = nil, speed: Double? = nil) {
+        self.act = act; self.value = value; self.clipboard = clipboard
         self.speed = speed.map(FollowMath.clampedSpeed)
     }
 
@@ -91,7 +89,6 @@ public struct Step: Codable, Hashable, Sendable {
     /// play / sleep / wake: the animation's name, if one is given.
     public var animationName: String? { act.usesAnimation && !text.isEmpty ? text : nil }
     public var handsOverClipboard: Bool { clipboard == true }
-    public var speaksAloud: Bool { aloud == true }
     public var followMode: FollowMode { FollowMode(rawValue: text.lowercased()) ?? .eyes }
     public var followSpeed: Double { FollowMath.clampedSpeed(speed ?? FollowMath.defaultSpeed) }
     public var target: Target? { Target(rawValue: text.lowercased()) }
@@ -111,7 +108,7 @@ public struct Step: Codable, Hashable, Sendable {
     public var summary: String {
         switch act {
         case .ask: text.isEmpty ? "ask (respond to it)" : "ask: \(text)" + (handsOverClipboard ? " (with the clipboard)" : "")
-        case .say: "say “\(text)”" + (speaksAloud ? " (aloud)" : "")
+        case .say: "say “\(text)”"
         case .play, .sleep, .wake: act.rawValue + (text.isEmpty ? "" : " “\(text)”")
         case .follow: "follow \(followMode.rawValue)" + (followMode.movesBody ? String(format: " at %.1f×", followSpeed) : "")
         case .open: "open \(text)"

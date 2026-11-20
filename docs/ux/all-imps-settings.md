@@ -233,19 +233,25 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `brains.local` | A model on this computer |
 | `brains.used_by` | one: Used by {count} Imp / other: Used by {count} Imps |
 | `brains.with_key` | A service with your key |
+| `devices.access.talk` | Talk & files |
 | `devices.call_all_home` | Call all home |
-| `devices.channel.title` | {from} and {to} |
+| `devices.channel.title` | {from} ⇄ {to} |
 | `devices.chip.label_ours` | {name}, an Imp of this Mac, on {node} |
 | `devices.chip.label_visitor` | {name}, an Imp from another device, on {node} |
 | `devices.copy_link.help` | For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while. |
 | `devices.edge.label` | {from} to {to}. {route}. {state} |
+| `devices.edge.travelling` | Travelling |
 | `devices.empty` | No devices yet. |
+| `devices.forget.named` | Forget {name}… |
 | `devices.forget.one` | Forget this device… |
 | `devices.hop.add` | Add a Hop |
 | `devices.hop.pill` | Hop: {host} |
 | `devices.hop.state.idle` | Not in use |
 | `devices.hop.state.needs_address` | Needs an address |
 | `devices.hop.state.off` | Off |
+| `devices.imp.can_use` | Can use there |
+| `devices.imp.can_use.info` | The tools of this Imp that the device it is on lets it use. A tool with a lock is not plugged in on that device's connection: press it to open the connection and plug it in. |
+| `devices.imp.here` | Here |
 | `devices.imp.settings` | Its settings |
 | `devices.imp.talks` | Can message |
 | `devices.imp.talks.info` | The Imps this one can message. They are lit on the map while it is selected. |
@@ -258,8 +264,13 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `devices.node.label` | {name}, {state}. Imps: {imps} |
 | `devices.node.label_empty` | {name}, {state} |
 | `devices.node.this_mac_label` | {name}, this Mac |
+| `devices.on_screen` | On its screen |
 | `devices.place.body` | On |
 | `devices.place.mind` | Thinks on |
+| `devices.plug.off` | not plugged in |
+| `devices.plug.on` | plugged in |
+| `devices.plug.title` | What {name} can use here |
+| `devices.reach.at` | Reachable at |
 | `devices.reach.away` | Away |
 | `devices.reach.direct` | Direct, on the local network |
 | `devices.reach.last_seen` | Last known address |
@@ -276,19 +287,15 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `devices.state.connected` | Connected |
 | `devices.state.connecting` | Connecting |
 | `devices.state.offline` | Away |
+| `devices.talk.label` | {imp} can message {contact} |
 | `devices.tether.label` | {imp} is on {node} and thinks on {home} |
-| `devices.tether.tools` | Tools it may use there |
-| `devices.tether.tools.info` | What the Imp may use while this device asks it. Change it on the device. |
 | `devices.this.info` | Link another device here. The dot shows whether The Hop lets devices find each other from anywhere. |
 | `devices.this_mac_badge` | This Mac |
 | `devices.title` | Devices |
 | `devices.tools.commands` | Commands |
-| `devices.tools.info` | When this device asks one of your Imps, the Imp can use the tools that are on here. Switch off what it should not touch for this device. |
-| `devices.tools.locked` | No tools until Mine |
-| `devices.tools.not_mine` | Imps answer this device without tools. Turn on Mine to choose what they may use. |
-| `devices.tools.title` | Tools Imps may use from this device |
 | `devices.tools.toggle` | Show or hide the switches |
 | `devices.unknown_device` | a device not linked with this Mac |
+| `devices.visitor.can_use` | Its device can use here |
 | `devices.visitor.send_home` | Send home |
 | `privacy.computer` | Control |
 | `privacy.computer_note` | Lets an Imp run commands on this computer when you ask. |

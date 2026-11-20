@@ -33,7 +33,7 @@ import Testing
     }
 
     @Test func stepsKeepTheirOrderThroughACodableRoundTrip() throws {
-        let steps = [Step(.play, value: "Wiggle"), Step(.say, value: "Ouch!"), Step(.sleep), Step(.say, value: "Zzz", aloud: true)]
+        let steps = [Step(.play, value: "Wiggle"), Step(.say, value: "Ouch!"), Step(.sleep), Step(.say, value: "Zzz")]
         let s = Shortcut(name: "Ouch", trigger: Trigger(.poke), steps: steps)
         let back = try JSONDecoder().decode(Shortcut.self, from: JSONEncoder().encode(s))
         #expect(back.steps == steps && back.steps.map(\.act) == [.play, .say, .sleep, .say])

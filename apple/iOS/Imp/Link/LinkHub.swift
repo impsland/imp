@@ -23,6 +23,7 @@ enum PocketEvent {
     case ask(UUID, String, trusted: Bool)
     case stop(UUID)
     case newChat(UUID)
+    case openChat(UUID, chat: UUID)
     case felt(UUID, LinkFeeling)
     case file(id: UUID, imp: UUID, from: UUID)
     case talks(UUID, from: UUID)
@@ -72,6 +73,8 @@ final class LinkHub {
     /// Imps hatched here that another device holds right now, and who holds each.
     private(set) var holders: [UUID: UUID] = [:]
     private(set) var chats: [UUID: [LinkTurn]] = [:]
+    /// The saved chats of each visiting Imp at its home, and the one it is in.
+    private(set) var chatLists: [UUID: (current: UUID, chats: [LinkChat])] = [:]
     private(set) var work: [UUID: LinkWork] = [:]
     private(set) var moods: [UUID: Mood] = [:]
     /// What each visiting Imp acted out last (`StageEvent.animate`).
@@ -560,6 +563,7 @@ final class LinkHub {
         case .stage: onPocket?(.stage(from))
         case .stop(let imp): onPocket?(.stop(imp))
         case .newChat(let imp): onPocket?(.newChat(imp))
+        case .openChat(let imp, let chat): onPocket?(.openChat(imp, chat: chat))
         case .felt(let imp, let feeling): onPocket?(.felt(imp, feeling))
         case .file(let id, let imp, _): onPocket?(.file(id: id, imp: imp, from: from))
         case .talks(let imp): onPocket?(.talks(imp, from: from))
@@ -568,6 +572,7 @@ final class LinkHub {
         case .answer(let id, let text, let failed): onPocket?(.answer(id: id, text: text, failed: failed))
         case .look: onEvent?(.roster)
         case .chat(let imp, let turns): chats[imp] = turns
+        case .chats(let imp, let current, let list): chatLists[imp] = (current, list)
         case .work(let imp, let w): work[imp] = w
         case .mood(let imp, let name): moods[imp] = Mood(link: name)
         case .brain(let imp, let ready, let tools):
@@ -633,6 +638,12 @@ final class LinkHub {
         tell(imp, .newChat(imp: imp))
     }
 
+    /// Asks the home to carry on in one of its chats. What it says next replaces what is shown.
+    func openChat(_ imp: UUID, _ chat: UUID) {
+        guard isAwake(imp) else { return }
+        tell(imp, .openChat(imp: imp, chat: chat))
+    }
+
     /// Asks the home for a file (see `LinkFileStore`).
     /// Returns the home it was asked of, which is the only device whose parts count.
     func requestFile(_ transfer: UUID, imp: UUID, ref: String) -> UUID? {
@@ -688,7 +699,7 @@ final class LinkHub {
 
     /// Forgets what was known of a visiting Imp that left.
     private func clear(_ imp: UUID) {
-        chats[imp] = nil; work[imp] = nil; moods[imp] = nil; acts[imp] = nil; talkLines[imp] = nil; brainless.remove(imp); toolless.remove(imp)
+        chats[imp] = nil; chatLists[imp] = nil; work[imp] = nil; moods[imp] = nil; acts[imp] = nil; talkLines[imp] = nil; brainless.remove(imp); toolless.remove(imp)
         if let speech = speeches[imp] { drop(speech, for: imp) }
     }
 }

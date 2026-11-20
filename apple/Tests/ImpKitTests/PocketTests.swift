@@ -91,6 +91,70 @@ private func chat(_ turns: Int, size: Int = 40, title: String = "Chat") -> Chat 
     }
 }
 
+@Suite struct PocketChatPickTests {
+    @Test func listsSavedChatsNewestFirstAndOpensOneByMakingItTheCurrent() {
+        var older = chat(1, title: "Older"); older.updated = Date(timeIntervalSince1970: 100)
+        var newer = chat(1, title: "Newer"); newer.updated = Date(timeIntervalSince1970: 200)
+        let talk = Chat(title: "Talk", turns: [ChatTurn(request: "psst")], peer: UUID())
+        var (imp, _) = pocketImp(chats: [older, talk, newer])
+        #expect(imp.current?.id == newer.id)
+        #expect(imp.chatList().map(\.title) == ["Newer", "Older"])       // a talk with another Imp is not a chat with you
+        imp.open(chat: older.id)
+        #expect(imp.current?.id == older.id)
+        #expect(imp.turns().first?.request.hasPrefix("q0") == true)
+        #expect(imp.chats.count == 3)
+        imp.open(chat: talk.id)                                           // not a chat with you
+        imp.open(chat: UUID())                                            // not a chat it has
+        #expect(imp.current?.id == older.id)
+    }
+
+    @Test func openingAChatDropsTheEmptyOneYouWereIn() {
+        let saved = chat(2, title: "Saved")
+        var (imp, _) = pocketImp(chats: [saved])
+        imp.newChat()
+        #expect(imp.current?.isEmpty == true)
+        imp.open(chat: saved.id)
+        #expect(imp.chats.map(\.id) == [saved.id])
+        #expect(imp.chatList().map(\.id) == [saved.id])
+    }
+
+    @Test func theChatListTravelsAsWiredAndIsCapped() throws {
+        let many = (0..<40).map { ChatSummary(id: UUID(), title: "c\($0)", updated: Date(timeIntervalSince1970: Double($0)), turns: 1) }
+        let list = LinkChats.list(many)
+        #expect(list.count == LinkChats.limit)
+        #expect(list.first?.title == "c39")
+        let current = UUID(), imp = UUID()
+        let message = LinkMessage.chats(imp: imp, current: current, chats: list)
+        let json = try #require(try JSONSerialization.jsonObject(with: JSONEncoder().encode(message)) as? [String: Any])
+        let body = try #require(json["chats"] as? [String: Any])
+        #expect(Set(body.keys) == ["imp", "current", "chats"])
+        #expect(try JSONDecoder().decode(LinkMessage.self, from: JSONEncoder().encode(message)) == message)
+        let open = LinkMessage.openChat(imp: imp, chat: current)
+        #expect(try JSONDecoder().decode(LinkMessage.self, from: JSONEncoder().encode(open)) == open)
+        let wire = try #require(try JSONSerialization.jsonObject(with: JSONEncoder().encode(open)) as? [String: Any])
+        #expect((wire["openChat"] as? [String: Any])?.keys.sorted() == ["chat", "imp"])
+    }
+
+    @Test func aMirrorShowsTheHomesChatsAndTheOneItIsIn() {
+        let a = LinkChat(id: UUID(), title: "Plan", updated: Date(timeIntervalSince1970: 5))
+        let b = LinkChat(id: UUID(), title: "Old", updated: Date(timeIntervalSince1970: 1))
+        let turns = [ChatTurn(request: "hi", reply: "hello", via: .typed)]
+        var mirror = ChatHistory(mirror: turns, current: a.id, chats: [a, b])
+        #expect(mirror.folder == nil)
+        #expect(mirror.current.id == a.id)
+        #expect(mirror.current.title == "Plan")
+        #expect(mirror.chats.map(\.id) == [a.id, b.id])
+        #expect(mirror.turns.count == 1)
+        mirror.open(b.id)                                                  // nothing to read: the home switches, not the mirror
+        #expect(mirror.current.id == a.id)
+        // The chat you are in may be one the home hasn't saved yet (empty), and a home that sends no list still works.
+        let fresh = ChatHistory(mirror: [], current: UUID(), chats: [a])
+        #expect(fresh.isEmpty && fresh.chats.count == 1)
+        let bare = ChatHistory(mirror: turns)
+        #expect(bare.current.title == "hi" && bare.chats.isEmpty)
+    }
+}
+
 @Suite struct PocketHandoverTests {
     @Test func kitHoldsTheImpAndItsChatsButNoSecrets() throws {
         let (imp, store) = pocketImp(chats: [chat(3, title: "Old"), chat(2, title: "New")])

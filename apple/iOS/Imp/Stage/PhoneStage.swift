@@ -428,31 +428,39 @@ struct PhoneStage: View {
         }
     }
 
-    /// The Imp's menu, also its VoiceOver actions: icon first, short titles, the destructive one last.
+    /// The Imp's menu, also its VoiceOver actions, in the order of the Mac's: Settings, Select and Hide (about this Imp
+    /// here), where it can go (other devices, or home for a visitor), and Goodbye last and apart.
     @ViewBuilder private func menu(for b: StageEngine.Body, source: any ChatSource, awake: Bool) -> some View {
         let id = b.imp.id
-        if pocket.contains(id) {
-            Button { onEdit(id) } label: { Label("menu.imp.settings", systemImage: "slider.horizontal.3") }
-        }
-        Button { hide(b.imp) } label: { Label("menu.imp.hide", systemImage: "eye.slash") }
-        Button { startPicking(with: id) } label: { Label("phone.select.menu", systemImage: "checkmark.circle") }
-            .accessibilityIdentifier("imp.select")
+        let own = pocket.contains(id)
         Section {
-        ForEach(hub.connectedPeers) { device in
-            if hub.way(of: id, to: device.id, preferring: .right) != nil {
-                Button { engine.sendGently(id, to: device.id) } label: {
-                    Label(words("menu.imp.send_to", device.name), systemImage: device.kind == .mac ? "macbook" : "iphone")
+            if own {
+                Button { onEdit(id) } label: { Label("menu.imp.settings", systemImage: "slider.horizontal.3") }
+            }
+            Button { startPicking(with: id) } label: { Label("phone.select.menu", systemImage: "checkmark.circle") }
+                .accessibilityIdentifier("imp.select")
+            Button { hide(b.imp) } label: { Label("menu.imp.hide", systemImage: "eye.slash") }
+        }
+        Section {
+            ForEach(hub.connectedPeers) { device in
+                if hub.way(of: id, to: device.id, preferring: .right) != nil {
+                    Button { engine.sendGently(id, to: device.id) } label: {
+                        Label(words("menu.imp.send_to", device.name), systemImage: device.kind == .mac ? "macbook" : "iphone")
+                    }
                 }
             }
-        }
-        }
-        if pocket.contains(id) {
-            ForEach(hub.connectedPeers.filter { $0.kind == .mac }) { mac in
-                Button { moving = (b.imp, mac) } label: { Label(words("menu.imp.move_to", mac.name), systemImage: "macbook.and.iphone") }
+            if own {
+                ForEach(hub.connectedPeers.filter { $0.kind == .mac }) { mac in
+                    Button { moving = (b.imp, mac) } label: { Label(words("menu.imp.move_to", mac.name), systemImage: "macbook.and.iphone") }
+                }
+            } else {
+                Button { hub.sendHome(id) } label: { Label("menu.imp.send_home", systemImage: "house") }
             }
-            Button(role: .destructive) { deleting = b.imp } label: { Label("menu.imp.goodbye", systemImage: "trash") }
-        } else {
-            Button(role: .destructive) { hub.sendHome(id) } label: { Label("menu.imp.send_home", systemImage: "house") }
+        }
+        if own {
+            Section {
+                Button(role: .destructive) { deleting = b.imp } label: { Label("menu.imp.goodbye", systemImage: "trash") }
+            }
         }
     }
 

@@ -127,6 +127,18 @@ public struct ChatHistory: Sendable {
         }
     }
 
+    /// A mirror of chats kept on another device (the home of a visiting Imp): in memory, with the chat it is in, as its
+    /// turns say, and the list it told. Nothing is read or saved, so `open` has nothing to open: ask the home to switch
+    /// and mirror what it says next. Without `current` (a home that doesn't tell) the chat is named from its first turn.
+    public init(mirror turns: [ChatTurn], current: UUID? = nil, chats listed: [LinkChat] = []) {
+        folder = nil
+        chats = listed.map { ChatSummary(id: $0.id, title: $0.title, updated: $0.updated, turns: 0, peer: nil) }
+        var chat = Chat(id: current ?? UUID(), created: turns.first?.date ?? Date(), turns: turns)
+        chat.title = listed.first { $0.id == chat.id }?.title
+            ?? turns.first(where: { $0.via != .recap }).map(Chat.title(for:)) ?? ""
+        self.current = chat
+    }
+
     public var turns: [ChatTurn] { current.turns }
     public var isEmpty: Bool { current.isEmpty }
 

@@ -27,6 +27,12 @@ public struct ImpButtonStyle: ButtonStyle {
     }
 }
 
+extension EnvironmentValues {
+    /// Pills take the whole width they are offered (a row of actions sharing a sheet's width) instead of
+    /// hugging their words.
+    @Entry public var impPillFills = false
+}
+
 /// The pill look, usable on any label (buttons, menus) so menus match buttons exactly.
 private struct ImpPill: ViewModifier {
     let kind: ImpButtonStyle.Kind
@@ -36,10 +42,12 @@ private struct ImpPill: ViewModifier {
     @Environment(\.isFocused) private var focused
     @Environment(\.impTint) private var tint
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.impPillFills) private var fills
     @State private var hover = false
 
     func body(content: Content) -> some View {
         OneLine { content }
+            .frame(maxWidth: fills ? .infinity : nil)
             .font(font)
             .foregroundStyle(foreground)
             .padding(.horizontal, small ? Spacing.cozy : Spacing.roomy)

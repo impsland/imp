@@ -611,6 +611,17 @@ final class AppModel {
     @discardableResult
     func addImp() -> UUID { prefs.addNewcomer() }
 
+    /// An Imp makes a new one (`imp_create_imp`): saved like any Imp, with its creator's Brain. It is let out onto the
+    /// desktop (`letOut`) so the others can message it. Throws what to fix in the arguments.
+    @discardableResult
+    func createImp(_ args: JSONValue, by creator: UUID, letOut: Bool = true) throws -> ImpProfile {
+        var p = prefs
+        let made = try p.createImp(args, by: creator)
+        prefs = p
+        if letOut { setActive(made.id, true) }
+        return profile(made.id) ?? made
+    }
+
     /// Keeps the browser extension's popup told which Imps are out, how they look and how they
     /// are (thinking, asleep…), as it changes. Nothing they said goes there.
     private func tellBrowser() {
@@ -635,12 +646,38 @@ final class AppModel {
     /// nothing is changed, no Imp included. Returns the Imp.
     @discardableResult
     func adoptFirstRunBrain(_ brain: FirstRunBrain, for target: FirstRunTarget) throws -> UUID {
+        let before = prefs
         var p = prefs
         let imp = p.keep(brain, for: target)
         let service = p.ai.brain.service
-        if !brain.key.isEmpty, let service, !assistant.setKey(brain.key, for: service) { throw KeyNotSaved() }
-        prefs = p
+        guard !brain.key.isEmpty, let service else { prefs = p; return imp }
+        guard commit(p, key: brain.key, for: service) else {
+            prefs = before
+            throw KeyNotSaved()
+        }
         return imp
+    }
+
+    /// Adds a service with the key typed for it. False when the key store refused the key: then the service
+    /// is not added either.
+    func addService(_ service: Service, key: String) -> Bool {
+        var p = prefs
+        p.ai.add(service)
+        guard !key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { prefs = p; return true }
+        return commit(p, key: key, for: service.id)
+    }
+
+    /// Keys live in `auth.json` under the service's provider, which exists only once the service is in the
+    /// configuration files: so `next` is written first and then the key. When the key is refused, the
+    /// preferences go back to what they were (and are written again).
+    private func commit(_ next: ImpPreferences, key: String, for service: UUID) -> Bool {
+        let before = prefs
+        prefs = next
+        if config != nil { flushSave() }
+        if assistant.setKey(key, for: service) { return true }
+        prefs = before
+        if config != nil { flushSave() }
+        return false
     }
 
     /// Removes a service everywhere, its saved key included.

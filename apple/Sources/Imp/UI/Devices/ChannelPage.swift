@@ -2,50 +2,73 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// A channel: how it stands and goes, a way to each end and to the Hop it passes through, and last Forget.
+/// A line between this Mac and a device, as a picture and its settings: the two devices joined in the colour of how the
+/// line stands (with the Hop between them when it goes through it), what the device can use on it as plugs, the Imps
+/// travelling across it, and last Forget. Nothing here leads to the devices at its ends: they have their own sheets.
 struct ChannelPage: View {
     let ctx: DeviceContext
     let channel: DeviceMap.Channel
 
     var body: some View {
-        StatusLine(symbol: channel.state.symbol, tone: channel.state.tone, text: "\(channel.state.word) · \(ctx.map.route(of: channel))")
-        VStack(spacing: Spacing.small) {
-            ForEach([channel.from, channel.to], id: \.self) { end in
-                JumpRow(ctx.name(of: end), symbol: ctx.symbol(of: end)) { ctx.select(.node(end)) }
-            }
-            if channel.path == .relay, let via = channel.via {
-                JumpRow(ctx.name(of: via), symbol: "arrow.triangle.swap") { ctx.select(.node(via)) }
+        let far = [channel.from, channel.to].first { $0 != ctx.thisMac && ctx.map.node($0)?.kind != .server } ?? channel.to
+        let peer = ctx.peer(far)
+        let hop = channel.path == .relay
+        Diagram {
+            DiagramTile(symbol: ctx.symbol(of: ctx.thisMac), name: ctx.name(of: ctx.thisMac))
+            DiagramConnector(symbol: hop ? "arrow.triangle.swap" : "wifi", tone: channel.state.tone, dashed: hop,
+                             pill: hop ? (channel.server ?? String(localized: "servers.hop.title")) : nil)
+            DiagramTile(symbol: ctx.symbol(of: far), name: ctx.name(of: far))
+        } footer: { detail }
+        if let peer {
+            PanelSection(LocalizedStringKey(words("devices.plug.title", peer.name)), icon: "powerplug.fill") {
+                DevicePlugBoard(model: ctx.model, peer: peer)
             }
         }
-        if let peer = [channel.from, channel.to].lazy.compactMap({ ctx.peer($0) }).first {
-            SheetActions { SheetAction(title: "devices.forget.one", symbol: "xmark.circle", role: .destructive) { ctx.forget(peer) } }
+        Travelling(ctx: ctx, channel: channel)
+        if let peer {
+            SheetActions {
+                SheetAction(verbatim: words("devices.forget.named", peer.name), symbol: "xmark.circle", role: .destructive) { ctx.forget(peer) }
+            }
+        }
+    }
+
+    /// How the line stands in a word, and its address in small type only when it is not up (where it was last seen).
+    private var detail: some View {
+        HStack(spacing: Spacing.small) {
+            Image(systemName: channel.state.symbol).font(.icon(.tiny)).foregroundStyle(channel.state.tone)
+            Text(verbatim: "\(channel.state.word) · \(ctx.map.tag(of: channel))").font(Typeface.small).foregroundStyle(Tone.muted)
+            if channel.state == .offline, let address = channel.address {
+                Text(verbatim: address).font(Typeface.mono).foregroundStyle(Tone.muted).lineLimit(1).textSelection(.enabled)
+            }
         }
     }
 }
 
-/// A tether: an Imp that is on one device and thinks on another, with the tools it may use where it is.
-struct TetherPage: View {
+/// The Imps going across a line: this Mac's whose bodies are on the far device (arrow out) and the device's own
+/// Imps here (arrow back). Each opens its sheet; one way home for all of ours sits in the card's corner.
+struct Travelling: View {
     let ctx: DeviceContext
-    let contact: DeviceMap.Contact
-    let node: String
+    let channel: DeviceMap.Channel
 
     var body: some View {
-        PlaceRows(ctx: ctx, on: node, thinksOn: contact.home)
-        if ctx.map.imp(contact.id) != nil {
-            SheetActions { SheetAction(title: "settings.devices.call_home", symbol: "house") { ctx.model.callHome(contact.id) } }
-        }
-        if let entry = ctx.map.imp(contact.id), let peer = ctx.peer(node) {
-            if peer.isTrusted {
-                let allowed = entry.tools.filter { ctx.model.prefs.deviceToolLimits.isAllowed(group: $0.id, on: peer.id) }
-                if !allowed.isEmpty {
-                    PanelSection("devices.tether.tools", icon: "wrench.and.screwdriver.fill", info: "devices.tether.tools.info") {
-                        ToolStrip(tools: allowed.map { ($0.symbol, $0.title) })
+        let travellers = ctx.map.travellers(of: channel)
+        if !travellers.out.isEmpty || !travellers.in.isEmpty {
+            PanelSection("devices.edge.travelling", icon: "figure.walk", accessory: {
+                if !travellers.out.isEmpty {
+                    HoverIconButton(systemName: "house.fill", help: "devices.call_all_home") { travellers.out.forEach { ctx.model.callHome($0.id) } }
+                }
+            }, content: {
+                ChipFlow {
+                    ForEach(travellers.out) { contact in
+                        ChipButton(imp: contact, ours: true, arrow: "arrow.right", home: { ctx.model.callHome(contact.id) }) {
+                            ctx.select(.imp(contact.id, in: contact.location))
+                        }
+                    }
+                    ForEach(travellers.in) { contact in
+                        ChipButton(imp: contact, ours: false, arrow: "arrow.left") { ctx.select(.imp(contact.id, in: contact.location)) }
                     }
                 }
-            } else {
-                SheetRow(title: String(localized: "devices.tools.locked"), leading: { IconTile(systemName: "lock.fill") },
-                         trailing: { InfoTip("devices.tools.not_mine") })
-            }
+            })
         }
     }
 }

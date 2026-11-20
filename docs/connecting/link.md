@@ -151,7 +151,7 @@ The home keeps, for every Imp that is away, its holder, a hash of its current ti
 - **Call home**: the home takes its Imp back at any time, kills the ticket and tells the holder `gone` as
   soon as it can. The home is always the source of truth.
 
-The home answers `ask`, `stop`, `newChat`, `felt`, `file` and `talks` for an Imp only from its current
+The home answers `ask`, `stop`, `newChat`, `openChat`, `felt`, `file` and `talks` for an Imp only from its current
 holder, and sends that Imp's looks, chat, work, mood, brain, speech, animations and files only to it. From anyone
 else it answers `gone` for the Imp (and `fileFailed` for a `file`): it isn't theirs any more. Making a new
 ticket for an Imp whose holder is another device tells that device `gone`.
@@ -346,12 +346,14 @@ message depends on who sent it.
 | `release` | `imp`, `ticket` | holder or anyone with the ticket, to the holder |
 | `ask` | `imp`, `text` | holder, home |
 | `stop`, `newChat`, `talks` | `imp` | holder, home |
+| `openChat` | `imp`, `chat`: one of the ids the home listed in `chats`. The home carries on in it and sends the new `chat` and `chats`; one it doesn't have is ignored | holder, home |
 | `felt` | `imp`, `feeling`: `poke`, `cuddle`, `shake`, `drop` | holder, home |
 | `file` | `id`, `imp`, `ref` | holder, home |
 | `filePart` | `id`, `part`: `{ name, size, offset, data }` | home, holder |
 | `fileFailed` | `id`, `reason` | home, holder |
 | `look` | `imp`: a looks object | home, holder |
-| `chat` | `imp`, `turns`: list of `{ id, date, request, from?, reply, failed, steps }` | home, holder |
+| `chat` | `imp`, `turns`: list of `{ id, date, request, from?, reply, failed, steps, thoughts?, answer? }`. `thoughts`: positions in `steps` that are the Imp thinking (titles only, never what it thought). `answer`: true when `request` is the answer of `from` to a message sent without waiting | home, holder |
+| `chats` | `imp`, `current`: the id of the chat it is in (not saved while empty), `chats`: list of `{ id, title, updated }`, newest first, with chats with you only. Sent with `chat` whenever either changes | home, holder |
 | `work` | `imp`, `work`: `{ request, status?, partial, from? }` or null. When an answer is done, the home sends the `chat` with its turn first, then `work` null, and the holder shows the newest turn as the answer | home, holder |
 | `mood` | `imp`, `mood` (a mood name) | home, holder |
 | `brain` | `imp`, `ready`: whether it has a brain it can think with at home. False: it sleeps on the holder too, and asking it is refused there. `tools`: false when the home doesn't count the holder as the owner's, so the Imp only talks for it. Sent again when either changes. | home, holder |
@@ -369,8 +371,8 @@ Who may send what (`engine/src/link/access.rs`):
 
 - Every connected device: `ping`, `pong`, `bye`, `claim`, `release`, `claimed`, `gone` and `answer`.
 - A linked peer only: `routes`, `pass`, `took`, `declined`, `adopt` and `adopted`.
-- The holder of the Imp only: `ask`, `stop`, `newChat`, `felt`, `file` and `talks`.
-- The home of a visit only: `look`, `chat`, `work`, `mood`, `brain`, `animate`, `speech` and `talkLines`.
+- The holder of the Imp only: `ask`, `stop`, `newChat`, `openChat`, `felt`, `file` and `talks`.
+- The home of a visit only: `look`, `chat`, `chats`, `work`, `mood`, `brain`, `animate`, `speech` and `talkLines`.
 - The home of one of this device's visitors: `filePart` and `fileFailed`.
 - A linked peer, or the holder of the target: `message`.
 - A linked peer, a holder of one of this device's Imps, or the home of a visitor: `stage`.
@@ -381,7 +383,7 @@ Receiver limits (`is_sound` in `engine/src/link/messages.rs`):
 - Names: 160 characters. Texts (`ask`, `message`, `answer`): 20 000 characters. `bye`: 200 characters.
   A `fileFailed` reason: 500 characters. A `mood`: 40 characters. A file `ref`: 4096 characters.
 - Keys, doors and tickets: exactly 32 bytes.
-- `stage`: 64 Imps at most. `chat`: 500 turns, each with 200 steps at most. `animate`: 256 beats.
+- `stage`: 64 Imps at most. `chat`: 500 turns, each with 200 steps at most. `chats`: 30 chats, each title 200 characters at most. `animate`: 256 beats.
   `talkLines`: 300 lines.
 - `filePart`: 1 MiB at most per part. Files: 512 MiB at most.
 

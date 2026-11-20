@@ -173,3 +173,31 @@ extension HTMLBackdropTests {
 private enum RoomBackgroundSample {
     static let plain = "<html><body></body></html>"
 }
+
+extension HTMLBackdropTests {
+    /// A page much larger than the window (no viewport, fixed pixel sizes) is drawn inside the window's size: the
+    /// backdrop never makes what it is laid out with larger, also once it was drawn at a larger size and its picture
+    /// was taken there. On the iPhone the room once grew past the screen this way (`testBackgroundKeepsTheRoomOnScreen`).
+    @Test("A large page never changes the layout")
+    func keepsItsSize() async throws {
+        let html = "<html><body style='margin:0;width:3000px;height:3000px;background:linear-gradient(#f00,#00f)'></body></html>"
+        let size = CGSize(width: 200, height: 120)
+        let host = NSHostingController(rootView: ZStack { HTMLBackdrop(html: html); Text(verbatim: "Imp") })
+        let window = NSWindow(contentRect: CGRect(origin: CGPoint(x: -4000, y: -4000), size: size), styleMask: [.borderless],
+                              backing: .buffered, defer: false)
+        window.contentViewController = host
+        window.setContentSize(size)
+        window.orderBack(nil)
+        defer { window.orderOut(nil) }
+        #expect(host.sizeThatFits(in: size) == size)
+        // Drawn in a larger window for long enough to load and be looked at twice, then the window is made small again.
+        let large = CGSize(width: 320, height: 240)
+        window.setContentSize(large)
+        try await Task.sleep(for: .seconds(3))
+        window.setContentSize(size)
+        try await Task.sleep(for: .milliseconds(500))
+        host.view.layoutSubtreeIfNeeded()
+        #expect(host.sizeThatFits(in: size) == size, "the backdrop keeps the size it was drawn at")
+        #expect(host.view.fittingSize.width <= size.width && host.view.fittingSize.height <= size.height, "\(host.view.fittingSize)")
+    }
+}

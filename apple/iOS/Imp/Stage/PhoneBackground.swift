@@ -27,4 +27,17 @@ final class PhoneBackground {
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? Data(html.utf8).write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
     }
+
+    #if DEBUG
+    /// For the UI tests: a moving page drawn far past the screen (`-uiTestBackground`).
+    static let uiTestPage = """
+    <!doctype html><html><head><meta charset="utf-8">
+    <style>body{margin:0;width:1600px;height:2600px;background:linear-gradient(120deg,#123,#539,#c53);background-size:400% 400%;
+    animation:g 6s ease infinite}@keyframes g{50%{background-position:100% 50%}}
+    .s{position:absolute;width:6px;height:6px;border-radius:3px;background:#fff;animation:t 2s infinite alternate}
+    @keyframes t{to{opacity:.2}}</style></head><body><script>
+    for(let i=0;i<120;i++){const d=document.createElement('div');d.className='s';d.style.left=Math.random()*1600+'px';
+    d.style.top=Math.random()*2600+'px';document.body.appendChild(d)}</script></body></html>
+    """
+    #endif
 }

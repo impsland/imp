@@ -1072,6 +1072,8 @@ impl Device {
                 reply: String::new(),
                 failed: false,
                 steps: Vec::new(),
+                thoughts: None,
+                answer: None,
             };
             let Some(s) = session.clone() else {
                 turn.failed = true;
@@ -1706,6 +1708,8 @@ pub fn turns_of(messages: &[ChatMessage]) -> Vec<LinkTurn> {
                 reply: String::new(),
                 failed: false,
                 steps: Vec::new(),
+                thoughts: None,
+                answer: None,
             }),
             Role::Assistant => {
                 if let Some(turn) = turns.last_mut() {

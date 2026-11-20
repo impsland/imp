@@ -41,6 +41,7 @@ pub fn allows(
         M::Ask { imp, .. }
         | M::Stop { imp }
         | M::NewChat { imp }
+        | M::OpenChat { imp, .. }
         | M::Felt { imp, .. }
         | M::File { imp, .. }
         | M::Talks { imp } => ledger.authorises(device, *imp),
@@ -61,6 +62,7 @@ pub fn allows(
         | M::Adopted { .. } => standing == Standing::Peer,
         M::Look { imp } => visit_of(&imp.id),
         M::Chat { imp, .. }
+        | M::Chats { imp, .. }
         | M::Work { imp, .. }
         | M::Mood { imp, .. }
         | M::Brain { imp, .. }
@@ -115,6 +117,10 @@ mod tests {
             },
             LinkMessage::Stop { imp: id(1) },
             LinkMessage::NewChat { imp: id(1) },
+            LinkMessage::OpenChat {
+                imp: id(1),
+                chat: id(8),
+            },
             LinkMessage::Felt {
                 imp: id(1),
                 feeling: crate::link::messages::LinkFeeling::Poke,
@@ -147,6 +153,13 @@ mod tests {
         };
         assert!(ok(&work, 10, Standing::Visitor));
         assert!(!ok(&work, 3, Standing::Peer));
+        let chats = LinkMessage::Chats {
+            imp: id(1),
+            current: id(8),
+            chats: vec![],
+        };
+        assert!(ok(&chats, 10, Standing::Visitor));
+        assert!(!ok(&chats, 3, Standing::Peer));
         let mood = LinkMessage::Mood {
             imp: id(2),
             mood: "happy".into(),

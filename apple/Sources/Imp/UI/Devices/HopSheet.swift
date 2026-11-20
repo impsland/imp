@@ -4,7 +4,7 @@ import SwiftUI
 
 /// The Hop's sheet. The Hop is a setting, not a linked thing, so this sheet does not depend on the Hop having a node in
 /// the map: it stays open while an address is being chosen. It has the Link popover's card without its title and with
-/// its one state beside the address, and the devices reached through it.
+/// its one state beside the address, and the devices reached through it as chips.
 struct HopSheet: View {
     let model: AppModel
     let map: DeviceMap
@@ -15,14 +15,18 @@ struct HopSheet: View {
     var body: some View {
         DeviceSheetShell(model: model, icon: "arrow.triangle.swap", title: String(localized: "servers.hop.title")) {
             ServerCard(kind: .hop, text: Binding(get: { model.prefs.hop }, set: { model.prefs.hop = $0 }), choice: choice,
-                       hosted: true, link: map.hopNode.state)
+                       hosted: true, link: map.hop?.state ?? .offline)
                 .settingAnchor(.devicesHop)
-            let through = map.channels.filter { $0.via == map.hopNode.id }
+            let through = map.channels.filter { $0.via == DeviceMap.serverID }
             if !through.isEmpty {
                 PanelSection("devices.inspector.through_hop", icon: "arrow.triangle.swap") {
-                    ForEach(through) { channel in
-                        let device = [channel.from, channel.to].first { $0 != DeviceMap.thisMacID } ?? channel.to
-                        JumpRow(map.title(of: device), symbol: map.node(device)?.symbol ?? "questionmark") { swap(.opening(.node(device))) }
+                    ChipFlow {
+                        ForEach(through) { channel in
+                            let device = [channel.from, channel.to].first { $0 != DeviceMap.thisMacID } ?? channel.to
+                            ChipButton(device: map.node(device)?.symbol ?? "questionmark", name: map.title(of: device)) {
+                                swap(.opening(.node(device)))
+                            }
+                        }
                     }
                 }
             }

@@ -7853,6 +7853,30 @@
         }
       }
     },
+    "common.ok" : {
+      "comment" : "Button that confirms a sheet's changes and closes it.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aceptar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "好"
+          }
+        }
+      }
+    },
     "common.on" : {
       "comment" : "State of a switch.",
       "extractionState" : "manual",
@@ -8141,6 +8165,30 @@
         }
       }
     },
+    "devices.access.talk" : {
+      "comment" : "Name of the first plug a linked device can have: it is trusted to talk to the Imps and share files.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Talk & files"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hablar y archivos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对话和文件"
+          }
+        }
+      }
+    },
     "devices.call_all_home" : {
       "comment" : "Button: call every Imp a device holds home.",
       "extractionState" : "manual",
@@ -8172,19 +8220,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ and %2$@"
+            "value" : "%1$@ ⇄ %2$@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ y %2$@"
+            "value" : "%1$@ ⇄ %2$@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 与 %2$@"
+            "value" : "%1$@ ⇄ %2$@"
           }
         }
       }
@@ -8285,6 +8333,30 @@
         }
       }
     },
+    "devices.edge.travelling" : {
+      "comment" : "Title of the chips of the Imps going across a line.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Travelling"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De viaje"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "往来中"
+          }
+        }
+      }
+    },
     "devices.empty" : {
       "comment" : "Empty state of the list of linked devices.",
       "extractionState" : "manual",
@@ -8305,6 +8377,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "还没有设备。"
+          }
+        }
+      }
+    },
+    "devices.forget.named" : {
+      "comment" : "Button that forgets one linked device, with its name.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forget %1$@…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Olvidar %1$@…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘记 %1$@…"
           }
         }
       }
@@ -8449,6 +8545,78 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已关闭"
+          }
+        }
+      }
+    },
+    "devices.imp.can_use" : {
+      "comment" : "Title of the plugs of an Imp that is away: its tools it can use where it is.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can use there"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puede usar allí"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在那里可用"
+          }
+        }
+      }
+    },
+    "devices.imp.can_use.info" : {
+      "comment" : "Help of the plugs of an Imp that is away.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The tools of this Imp that the device it is on lets it use. A tool with a lock is not plugged in on that device's connection: press it to open the connection and plug it in."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las herramientas de este Imp que el dispositivo donde está le deja usar. Una herramienta con candado no está conectada en la conexión de ese dispositivo: púlsala para abrir la conexión y conectarla."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此 Imp 所在设备允许它使用的工具。带锁的工具在该设备的连接上没有插上：点按它可打开连接并插上。"
+          }
+        }
+      }
+    },
+    "devices.imp.here" : {
+      "comment" : "Caption of the one tile of an Imp that is at home.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Here"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquí"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在这里"
           }
         }
       }
@@ -8741,6 +8909,30 @@
         }
       }
     },
+    "devices.on_screen" : {
+      "comment" : "Title of the chips of the Imps on a device's screen.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On its screen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En su pantalla"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在它的屏幕上"
+          }
+        }
+      }
+    },
     "devices.place.body" : {
       "comment" : "Where an Imp's body is, as a tag on a device row.",
       "extractionState" : "manual",
@@ -8785,6 +8977,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "思考于"
+          }
+        }
+      }
+    },
+    "devices.plug.off" : {
+      "comment" : "Spoken value of a plug that is not plugged in.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "not plugged in"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "desconectado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未插上"
+          }
+        }
+      }
+    },
+    "devices.plug.on" : {
+      "comment" : "Spoken value of a plug that is plugged in.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "plugged in"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "conectado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已插上"
+          }
+        }
+      }
+    },
+    "devices.plug.title" : {
+      "comment" : "Title of the card of plugs: what a linked device can use of this Mac's Imps.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What %1$@ can use here"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qué puede usar %1$@ aquí"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 在这里可以用什么"
+          }
+        }
+      }
+    },
+    "devices.reach.at" : {
+      "comment" : "Title of the addresses this Mac can be reached at.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reachable at"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesible en"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可通过以下地址访问"
           }
         }
       }
@@ -9173,6 +9461,30 @@
         }
       }
     },
+    "devices.talk.label" : {
+      "comment" : "Screen reader label of the line from an Imp to another device's Imp it can message.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ can message %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ puede escribir a %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 可以给 %2$@ 发消息"
+          }
+        }
+      }
+    },
     "devices.tether.label" : {
       "comment" : "Screen reader label of the line from an Imp to the device it thinks on.",
       "extractionState" : "manual",
@@ -9193,54 +9505,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ 在 %2$@ 上，在 %3$@ 上思考"
-          }
-        }
-      }
-    },
-    "devices.tether.tools" : {
-      "comment" : "Inspector card: the tools an Imp may use on the device it is on.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tools it may use there"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Herramientas que puede usar allí"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "它在那里可用的工具"
-          }
-        }
-      }
-    },
-    "devices.tether.tools.info" : {
-      "comment" : "Help: the tools are the device's limits.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "What the Imp may use while this device asks it. Change it on the device."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lo que el Imp puede usar cuando este dispositivo le pide algo. Se cambia en el dispositivo."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此设备向 Imp 提问时，Imp 可使用的工具。请在该设备上修改。"
           }
         }
       }
@@ -9341,102 +9605,6 @@
         }
       }
     },
-    "devices.tools.info" : {
-      "comment" : "Help of the per-device tool limits.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "When this device asks one of your Imps, the Imp can use the tools that are on here. Switch off what it should not touch for this device."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuando este dispositivo le pide algo a uno de tus Imps, el Imp puede usar las herramientas activadas aquí. Desactiva lo que no debe tocar para este dispositivo."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "当此设备向你的某个 Imp 提问时，Imp 可以使用这里开启的工具。关掉不希望它为此设备使用的工具。"
-          }
-        }
-      }
-    },
-    "devices.tools.locked" : {
-      "comment" : "Row in a device's sheet when the device is not Mine, so it gets no tools.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No tools until Mine"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin herramientas hasta ser Mío"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "设为“我的”之前没有工具"
-          }
-        }
-      }
-    },
-    "devices.tools.not_mine" : {
-      "comment" : "Shown when a device is not Mine.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imps answer this device without tools. Turn on Mine to choose what they may use."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los Imps responden a este dispositivo sin herramientas. Activa Mío para elegir lo que pueden usar."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp 回答此设备时不使用工具。打开“我的”后可选择它们能用什么。"
-          }
-        }
-      }
-    },
-    "devices.tools.title" : {
-      "comment" : "Inspector card: the tools Imps may use for a device.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tools Imps may use from this device"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Herramientas que los Imps pueden usar desde este dispositivo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp 可为此设备使用的工具"
-          }
-        }
-      }
-    },
     "devices.tools.toggle" : {
       "comment" : "Tooltip of the button that opens or closes a list of tool switches.",
       "extractionState" : "manual",
@@ -9481,6 +9649,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未与这台 Mac 链接的设备"
+          }
+        }
+      }
+    },
+    "devices.visitor.can_use" : {
+      "comment" : "Title of the read-only plugs of the device an Imp comes from.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Its device can use here"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su dispositivo puede usar aquí"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它的设备在这里可用"
           }
         }
       }
@@ -17117,6 +17309,30 @@
         }
       }
     },
+    "phone.chat.history" : {
+      "comment" : "iPhone: tip of the menu in an Imp's chat bar that lists its saved chats to carry on in.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chats"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chats"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聊天记录"
+          }
+        }
+      }
+    },
     "phone.chat.jump_latest" : {
       "comment" : "iPhone: chat jump latest.",
       "extractionState" : "manual",
@@ -17257,6 +17473,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用了 %1$lld 个工具"
+          }
+        }
+      }
+    },
+    "phone.chat.untitled" : {
+      "comment" : "iPhone: name of a saved chat that has no title yet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聊天"
           }
         }
       }
@@ -23789,6 +24029,30 @@
         }
       }
     },
+    "tool.create_imp" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create an Imp"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear un Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "创建 Imp"
+          }
+        }
+      }
+    },
     "tool.export_kit" : {
       "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
       "extractionState" : "manual",
@@ -24217,30 +24481,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "查看背景"
-          }
-        }
-      }
-    },
-    "tool.speak" : {
-      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Speak aloud"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hablar en voz alta"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "朗读"
           }
         }
       }
@@ -25033,6 +25273,342 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "工具"
+          }
+        }
+      }
+    },
+    "tooltext.description" : {
+      "comment" : "Label of the description editor in the tool text sheet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Description the model reads"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descripción que lee el modelo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模型读到的说明"
+          }
+        }
+      }
+    },
+    "tooltext.description_empty" : {
+      "comment" : "Placeholder of an empty description.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empty. The tool is offered with no description."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vacío. La herramienta se ofrece sin descripción."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为空。该工具将不带说明提供给模型。"
+          }
+        }
+      }
+    },
+    "tooltext.dropped" : {
+      "comment" : "Warning when an edit removed a placeholder the default description had.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The default also had %1$@, which this text no longer has."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El texto predeterminado también tenía %1$@, que este texto ya no incluye."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认说明还包含 %1$@，当前文本已不再包含。"
+          }
+        }
+      }
+    },
+    "tooltext.edit" : {
+      "comment" : "Help of the pencil on a tool's row.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change what the model reads about this tool"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar lo que el modelo lee de esta herramienta"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改模型读到的这个工具的内容"
+          }
+        }
+      }
+    },
+    "tooltext.edited" : {
+      "comment" : "Mark on a tool whose name or description was changed.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Its name or description was changed"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se cambió su nombre o descripción"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它的名称或说明已更改"
+          }
+        }
+      }
+    },
+    "tooltext.from_server" : {
+      "comment" : "Line in the tool text sheet of an MCP tool.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The default name and description come from the server “%1$@”."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El nombre y la descripción predeterminados vienen del servidor «%1$@»."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认的名称和说明来自服务器“%1$@”。"
+          }
+        }
+      }
+    },
+    "tooltext.id" : {
+      "comment" : "Label before a tool's id in the sheet that edits its name and description: the id stays the same whatever name is typed.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID (never changes)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID (no cambia)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID（不会改变）"
+          }
+        }
+      }
+    },
+    "tooltext.name" : {
+      "comment" : "Label of the name field in the tool text sheet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name the model calls it"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre con el que el modelo la llama"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模型调用它的名称"
+          }
+        }
+      }
+    },
+    "tooltext.name_invalid" : {
+      "comment" : "Problem with a tool name.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use 1 to 64 letters, digits, _ or -."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa de 1 a 64 letras, dígitos, _ o -."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请使用 1 到 64 个字母、数字、_ 或 -。"
+          }
+        }
+      }
+    },
+    "tooltext.name_taken" : {
+      "comment" : "Problem with a tool name.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Another tool already has this name."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otra herramienta ya tiene este nombre."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "另一个工具已使用此名称。"
+          }
+        }
+      }
+    },
+    "tooltext.placeholder.animations" : {
+      "comment" : "What the {animations} placeholder stands for.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The animations it may play."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las animaciones que puede reproducir."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它可以播放的动画。"
+          }
+        }
+      }
+    },
+    "tooltext.placeholder.imps" : {
+      "comment" : "What the {imps} placeholder stands for.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The other Imps it can message, with what each says about itself."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los demás Imps a los que puede escribir, con lo que cada uno dice de sí mismo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它可以发消息的其他 Imp，以及各自的自我介绍。"
+          }
+        }
+      }
+    },
+    "tooltext.placeholder.place" : {
+      "comment" : "What the {place} placeholder stands for.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Where the background shows."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dónde se muestra el fondo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景显示的位置。"
+          }
+        }
+      }
+    },
+    "tooltext.reset" : {
+      "comment" : "Button that restores a tool's own name and description.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset to default"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restablecer"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复默认"
           }
         }
       }
@@ -26689,30 +27265,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加步骤：%1$@"
-          }
-        }
-      }
-    },
-    "triggers.step.aloud" : {
-      "comment" : "Toggle of a say step: also speak it.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aloud"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En voz alta"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "朗读"
           }
         }
       }

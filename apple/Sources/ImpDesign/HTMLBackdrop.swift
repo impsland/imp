@@ -52,31 +52,35 @@ public struct HTMLBackdrop: View {
     }
 
     public var body: some View {
-        ZStack {
-            // The layer fills what it is given, also while nothing is drawn in it yet: its size is what tells
-            // it to look at the page at all (a ZStack of nothing is 0 x 0, and the page would never load).
-            Color.clear
-            if html != plain, let still {
-                Image(decorative: still.image, scale: 1)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: size.width, height: size.height)
-                    .clipped()
-            }
-            if needsWeb {
-                HTMLBackdropView(html: html, look: current ? nil : "\(Int(size.width))x\(Int(size.height))-\(scheme == .dark)") { image, moving in
-                    still = Still(image: image, html: html, size: size, dark: scheme == .dark, moving: moving)
+        // The size is what the backdrop is offered and nothing else: a clear base takes exactly that, and the page
+        // (its picture or its web view) is drawn over it at that size and clipped. An overlay never sizes what it
+        // is on, so whatever a page draws (wider than the screen, a web view that wants its own size) can't
+        // make the window's content larger and move what is laid out with it. The base also gives the layer a
+        // size while nothing is drawn yet: that size is what tells it to look at the page at all.
+        Color.clear
+            .onGeometryChange(for: CGSize.self) { $0.size } action: { size = $0 }  // a resize is looked at again once still
+            .overlay(alignment: .topLeading) {
+                ZStack {
+                    if html != plain, let still {
+                        Image(decorative: still.image, scale: 1)
+                            .resizable()
+                            .scaledToFill()
+                    }
+                    if needsWeb {
+                        HTMLBackdropView(html: html, look: current ? nil : "\(Int(size.width))x\(Int(size.height))-\(scheme == .dark)") { image, moving in
+                            still = Still(image: image, html: html, size: size, dark: scheme == .dark, moving: moving)
+                        }
+                    }
                 }
+                .frame(width: size.width, height: size.height)
+                .clipped()
             }
-        }
-        // A new size (a window being resized) is looked at again once it has kept still a moment.
-        .onGeometryChange(for: CGSize.self) { $0.size } action: { size = $0 }
-        .onReceive(NotificationCenter.default.publisher(for: .NSProcessInfoPowerStateDidChange)) { _ in
-            lowPower = ProcessInfo.processInfo.isLowPowerModeEnabled
-        }
-        .ignoresSafeArea()
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
+            .onReceive(NotificationCenter.default.publisher(for: .NSProcessInfoPowerStateDidChange)) { _ in
+                lowPower = ProcessInfo.processInfo.isLowPowerModeEnabled
+            }
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
     }
 }
 

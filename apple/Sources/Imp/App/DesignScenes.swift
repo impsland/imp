@@ -19,6 +19,7 @@ enum DesignScene: String, CaseIterable {
     case impComputer = "imp-computer"
     case impLookNarrow = "imp-look-narrow"
     case impAgentTools = "imp-agent-tools"
+    case impToolText = "imp-tool-text"
     case impTriggerEditor = "imp-trigger-editor"
     case impTriggerSteps = "imp-trigger-steps"
     case appWide = "all-imps-app"
@@ -47,7 +48,8 @@ enum DesignScene: String, CaseIterable {
     case devicesEdge = "devices-edge"
     case devicesMac = "devices-mac"
     case devicesVisitor = "devices-visitor"
-    case devicesTether = "devices-tether"
+    case devicesFocus = "devices-focus"
+    case devicesLocal = "devices-local"
     case devicesHop = "devices-hop"
     case devicesHopCustom = "devices-hop-custom"
     case devicesHopOff = "devices-hop-off"
@@ -65,6 +67,7 @@ enum DesignScene: String, CaseIterable {
         case .impBrain, .impSleeping, .impPersonality, .impLook, .impAnimations, .impTriggers, .impTools, .impComputer: CGSize(width: 760, height: 720)
         case .impLookNarrow: CGSize(width: 380, height: 720)
         case .impAgentTools: CGSize(width: Sizing.sheetWidth, height: 560)
+        case .impToolText: CGSize(width: Sizing.sheetWidth + Spacing.vast, height: 620)
         case .impTriggerEditor: CGSize(width: 600, height: 760)
         case .impTriggerSteps: CGSize(width: 600, height: 960)
         case .appWide: CGSize(width: 900, height: 720)
@@ -72,11 +75,11 @@ enum DesignScene: String, CaseIterable {
         case .allNothing: CGSize(width: 760, height: 640)
         case .firstRunService, .firstRunLocal, .firstRunError, .firstRunFound: CGSize(width: Sizing.sheetWidth, height: 660)
         case .barMenu, .barMenuEs: CGSize(width: 420, height: 360)
-        case .impMenu: CGSize(width: 1480, height: 600)
+        case .impMenu: CGSize(width: 1800, height: 640)
         case .allPair, .allPairLinked, .allPairScan, .allPairScanError: CGSize(width: 560, height: 420)
         case .allPairNarrow: CGSize(width: 380, height: 640)
-        case .devicesEmpty, .devicesLinked: CGSize(width: 1080, height: 720)
-        case .devicesImp, .devicesDevice, .devicesEdge, .devicesMac, .devicesVisitor, .devicesTether: CGSize(width: 600, height: 720)
+        case .devicesEmpty, .devicesLinked, .devicesFocus, .devicesLocal: CGSize(width: 1080, height: 720)
+        case .devicesImp, .devicesDevice, .devicesEdge, .devicesMac, .devicesVisitor: CGSize(width: 600, height: 720)
         case .devicesHop, .devicesHopCustom, .devicesHopOff: CGSize(width: 600, height: 460)
         case .allPairHopCustom: CGSize(width: Sizing.popoverWidth + 2 * Spacing.medium, height: 220)
         case .allSharing: CGSize(width: 760, height: 560)
@@ -99,6 +102,7 @@ enum DesignScene: String, CaseIterable {
         case .impTools: impSettings(brain: true, open: .tools)
         case .impComputer: impSettings(brain: true, open: .computer)
         case .impAgentTools: agentTools()
+        case .impToolText: toolText()
         case .impTriggerEditor: triggerEditor()
         case .impTriggerSteps: triggerEditor(poke: true)
         case .appWide, .appNarrow: general(.app)
@@ -129,7 +133,8 @@ enum DesignScene: String, CaseIterable {
         case .devicesEdge: deviceSheet(.channel("00000000-0000-4000-8000-0000000000B2"))
         case .devicesMac: deviceSheet(.node(DeviceMap.thisMacID))
         case .devicesVisitor: deviceSheet(.imp(Self.noodleID, in: DeviceMap.thisMacID))
-        case .devicesTether: deviceSheet(.tether(Self.dotID, in: Self.phoneID.uuidString))
+        case .devicesFocus: devices(linked: true, focus: .imp(Self.dotID, in: Self.phoneID.uuidString))
+        case .devicesLocal: devices(linked: true, hop: true)
         case .devicesHop: hopSheet()
         case .devicesHopCustom: hopSheet(choice: .custom)
         case .devicesHopOff: hopSheet(address: "")
@@ -174,8 +179,8 @@ enum DesignScene: String, CaseIterable {
             .background(Color.gray))
     }
 
-    /// An Imp's right-click menu card on a mid-grey desktop: on the desktop (Home), in the window (Free), and for
-    /// three Imps picked together.
+    /// An Imp's right-click menu card on a mid-grey desktop: on the desktop (Home), a visitor's, in the window (Free),
+    /// for three Imps picked together, and for empty space.
     @MainActor private func impMenu() -> AnyView {
         let model = Self.model(imps: 2)
         let imps = model.prefs.imps
@@ -190,13 +195,17 @@ enum DesignScene: String, CaseIterable {
                     MenuItem(id: "t3", icon: "sun.max", title: "Morning") {},
                 ])
                 MenuPills(title: String(localized: "menu.imp.visit"), items: [MenuItem(id: "p", icon: "iphone.gen3", title: "iPhone") {}])
+                ImpMenuEnd(canLink: true, canGoodbye: true, kit: {}, link: {}, goodbye: {})
+            }
+            .background(Tone.raised, in: raised)
+            ImpMenuCard(ready: true, name: "Pip", status: String(localized: "Pip, visiting from iPhone"), hue: 0.33, scale: 1,
+                        place: .visitor(from: "iPhone")) { _ in } extra: {
+                MenuPills(title: String(localized: "menu.imp.visit"), items: [MenuItem(id: "p", icon: "desktopcomputer", title: "Studio Mac") {}])
             }
             .background(Tone.raised, in: raised)
             ImpMenuCard(ready: false, name: imps[1].name, status: String(localized: "Needs a brain"), hue: imps[1].hue,
                         scale: 0.75, place: .home) { _ in } extra: {
-                MenuPills(items: [MenuItem(id: "kit", icon: "shippingbox.fill", title: String(localized: "menu.imp.copy_kit")) {},
-                                  MenuItem(id: "link", icon: "link", title: String(localized: "menu.imp.copy_link"), enabled: false) {}])
-                MenuDangerButton(item: MenuItem(id: "bye", icon: "trash", title: String(localized: "menu.imp.goodbye")) {})
+                ImpMenuEnd(canLink: false, canGoodbye: true, kit: {}, link: {}, goodbye: {})
             }
             .background(Tone.raised, in: raised)
             GroupMenuCard(names: imps.map(\.name) + ["Pip"], hues: imps.map(\.hue) + [0.33], scales: [1, 1, 1]) { _ in } extra: {
@@ -237,9 +246,10 @@ enum DesignScene: String, CaseIterable {
 
     /// The Devices screen. Linked: Dot is out on Anna's iPhone, which also has its own Imps, Studio Mac is
     /// reached through the Hop and Noodle, from the iPhone, visits this Mac.
-    @MainActor private func devices(linked: Bool) -> AnyView {
-        let (model, router) = devicesModel(linked: linked)
-        return AnyView(DevicesScreen(model: model, router: router).background { SettingsBackdrop() })
+    @MainActor private func devices(linked: Bool, focus: DeviceGraph.Focus? = nil, hop: Bool = false) -> AnyView {
+        let (model, router) = devicesModel(linked: linked, allLocal: hop)
+        return AnyView(DevicesScreen(model: model, router: router, focus: focus).environment(\.devicesMotion, false)
+            .background { SettingsBackdrop() })
     }
 
     /// The sheet a press on the canvas opens, drawn by itself: the offscreen renderer does not present sheets.
@@ -263,7 +273,7 @@ enum DesignScene: String, CaseIterable {
         AnyView(HopPopoverScene())
     }
 
-    @MainActor private func devicesModel(linked: Bool) -> (AppModel, HomeRouter) {
+    @MainActor private func devicesModel(linked: Bool, allLocal: Bool = false) -> (AppModel, HomeRouter) {
         let model = Self.model(imps: 3)
         if linked {
             model.prefs.hop = "hop.example.org:4677"
@@ -278,7 +288,7 @@ enum DesignScene: String, CaseIterable {
             model.link.showSample([
                 .init(id: Self.phoneID, name: "Anna's iPhone", kind: .phone, reach: .direct, imps: [Self.dotID], isTrusted: true, stage: stage,
                       routes: LinkRoutes(hosts: ["annas-iphone.local"], port: 47824)),
-                .init(id: UUID(uuidString: "00000000-0000-4000-8000-0000000000B2") ?? UUID(), name: "Studio Mac", kind: .mac, reach: .viaServer, imps: [], isTrusted: true),
+                .init(id: UUID(uuidString: "00000000-0000-4000-8000-0000000000B2") ?? UUID(), name: "Studio Mac", kind: .mac, reach: allLocal ? .direct : .viaServer, imps: [], isTrusted: true),
             ], visitors: [LinkStaged(imp: noodle, home: Self.phoneID)])
         }
         let router = HomeRouter()
@@ -324,7 +334,7 @@ enum DesignScene: String, CaseIterable {
         if poke {
             model.prefs.imps[0].animations = [MadeAnimation(name: "Wiggle", beats: [])]
             trigger = Shortcut(name: "Ouch", trigger: Trigger(.poke), conditions: [Condition(.hours, value: "09:00-18:00")],
-                               steps: [Step(.play, value: "Wiggle"), Step(.say, value: "Ouch!", aloud: true)])
+                               steps: [Step(.play, value: "Wiggle"), Step(.say, value: "Ouch!")])
         }
         trigger.performer = id
         return AnyView(ShortcutSheet(model: model, imp: id, shortcut: trigger, isNew: false, scope: .onlyThisImp, save: { _, _ in }, duplicate: { _ in }, delete: {})
@@ -339,7 +349,26 @@ enum DesignScene: String, CaseIterable {
         let id = model.prefs.imps[0].id
         let imp = Binding(get: { model.profile(id) ?? .imp },
                           set: { new in if let i = model.prefs.imps.firstIndex(where: { $0.id == id }) { model.prefs.imps[i] = new } })
-        return AnyView(AgentToolsSheet(imp: imp, groups: [.animations])
+        return AnyView(AgentToolsSheet(model: model, imp: imp, groups: [.animations])
+            .environment(\.impTint, Color.imp(model.prefs.imps[0].hue))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background { SettingsBackdrop() })
+    }
+
+    @MainActor private func toolText() -> AnyView {
+        let model = Self.model(imps: 1, brain: true)
+        let id = model.prefs.imps[0].id
+        var start = model.prefs.imps[0]
+        start.toolText["own.personality.imp_message"] = ToolText(name: "tell_friend", description: "Send a message to another Imp and read its answer.")
+        model.prefs.imps[0] = start
+        let imp = Binding(get: { model.profile(id) ?? start },
+                          set: { new in if let i = model.prefs.imps.firstIndex(where: { $0.id == id }) { model.prefs.imps[i] = new } })
+        let rows = [ToolTextRow(id: "own.personality.imp_message", defaultName: "imp_message",
+                                defaultDescription: "Send a message to another Imp out on the desktop and read its answer. You can reach: {imps}",
+                                text: nil, placeholders: ["imps"]),
+                    ToolTextRow(id: "own.personality.imp_create", defaultName: "imp_create", defaultDescription: "Make a new Imp.", text: nil, placeholders: [])]
+        let entry = ToolEntry(id: "own.personality.imp_message", name: "imp_message", group: "own.personality", title: "Message Imps")
+        return AnyView(ToolTextSheet(imp: imp, model: nil, tool: entry, symbol: ImpToolGroup.personality.symbol, preset: rows)
             .environment(\.impTint, Color.imp(model.prefs.imps[0].hue))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background { SettingsBackdrop() })

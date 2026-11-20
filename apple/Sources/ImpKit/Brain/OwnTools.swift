@@ -5,7 +5,7 @@ import ImpCore
 /// how the model acts out its answers, notices the Mac, sets itself up and talks to the troupe.
 /// Nothing is hard-wired: a trigger hands the model what happened, and the model picks the tools.
 public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable {
-    /// Speaking aloud, messages to the other Imps, opening their files and opening settings.
+    /// Messages to the other Imps, opening their files and opening settings.
     case personality
     /// Changing its own character.
     case look
@@ -51,7 +51,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
 
     public var summary: String {
         switch self {
-        case .personality: String(localized: "Speaks aloud, messages the other Imps, opens their files and opens settings for you.")
+        case .personality: String(localized: "Messages the other Imps, creates new Imps, opens their files and opens settings for you.")
         case .look: String(localized: "Changes its own character and the background behind the Imps.")
         case .animations: String(localized: "Plays, shows, makes and removes animations, and moves around the screen.")
         case .triggers: String(localized: "Lists, adds and removes its triggers.")
@@ -66,7 +66,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
 public enum OwnTools {
     public static let play = toolBuiltInName(tool: .impPlayAnimations)
     public static let move = toolBuiltInName(tool: .impMove)
-    public static let speak = toolBuiltInName(tool: .impSpeak)
+    public static let createImp = toolBuiltInName(tool: .impCreateImp)
     public static let status = toolBuiltInName(tool: .macStatus)
     public static let page = toolBuiltInName(tool: .browserPage)
     public static let listTriggers = toolBuiltInName(tool: .impListTriggers)
@@ -180,12 +180,36 @@ public enum OwnTools {
     public static func messageSpec(imps: [String], pocket: [String] = [], talk: ImpTalk = .own,
                                    conversation: Bool = false, desktop: Bool = true,
                                    profiles: [ImpCore.TroupeTargetProfile] = [], waiting: TalkWaiting = .decides) -> ToolSpec {
+        messageParts(imps: imps, pocket: pocket, talk: talk, conversation: conversation, desktop: desktop, profiles: profiles, waiting: waiting).spec
+    }
+
+    /// `messageSpec` and the `roster` in its description: what each Imp it can message says about itself (the `{imps}` of
+    /// a description a person wrote over it).
+    public static func messageParts(imps: [String], pocket: [String] = [], talk: ImpTalk = .own,
+                                    conversation: Bool = false, desktop: Bool = true,
+                                    profiles: [ImpCore.TroupeTargetProfile] = [], waiting: TalkWaiting = .decides) -> (spec: ToolSpec, roster: String) {
         let spec = ImpCore.troupeMessageTool(options: ImpCore.TroupeMessageTool(
             targets: imps, elsewhere: pocket, place: desktop ? "out on the desktop" : nil, ownBubble: desktop,
             chatChoice: talk == .decides, conversation: conversation, openFileTool: desktop ? openFile : nil,
             profiles: profiles, waiting: waiting.rawValue))
         let schema = (try? JSONValue(jsonString: spec.parametersJson)) ?? ["type": "object"]
-        return ToolSpec(name: spec.name, description: spec.description, inputSchema: schema)
+        return (ToolSpec(name: spec.name, description: spec.description, inputSchema: schema), spec.roster)
+    }
+
+    /// The tools of `specs` with registry entries and what their descriptions' placeholders are now, which is what a
+    /// person's own wording is applied to (`ToolSet`): `{imps}` (the others it can message, with what they say about
+    /// themselves), `{animations}` (the ones it may play) and `{place}` (where the background shows).
+    public static func catalog(_ specs: [ToolSpec], animations: [String], roster: String, place: String) -> [CatalogTool] {
+        specs.map { spec in
+            var fills: [String: String] = [:]
+            switch spec.name {
+            case message: fills["imps"] = roster
+            case play: fills["animations"] = animations.joined(separator: ", ")
+            case showBackground, setBackground: fills["place"] = place
+            default: break
+            }
+            return CatalogTool(entry: ToolRegistry.entry(named: spec.name), spec: spec, fills: fills)
+        }
     }
 
     public static var openFileSpec: ToolSpec {
@@ -228,13 +252,7 @@ public enum OwnTools {
                              profiles: [ImpCore.TroupeTargetProfile] = [], waiting: TalkWaiting = .decides) -> [ToolSpec] {
         var specs: [ToolSpec] = []
         if groups.contains(.personality) {
-            specs.append(ToolSpec(
-                name: speak,
-                description: "Say something out loud with the Mac's voice (your reply still shows in the bubble). Keep it short.",
-                inputSchema: ["type": "object",
-                              "properties": ["text": ["type": "string"],
-                                             "language": ["type": "string", "description": "BCP-47 code, e.g. en-US, zh-CN. Default: the text's own."]],
-                              "required": ["text"]]))
+            specs.append(ImpCreation.spec)
             if !imps.isEmpty || !pocket.isEmpty {
                 specs.append(messageSpec(imps: imps, pocket: pocket, talk: talk, conversation: conversation,
                                           profiles: profiles, waiting: waiting))
@@ -295,7 +313,7 @@ public enum OwnTools {
                                 "do": ["type": "array", "minItems": 1, "maxItems": 5, "items": ["type": "object",
                                        "properties": ["act": ["type": "string", "enum": .array(Step.Act.allCases.map { .string($0.rawValue) })],
                                                       "value": ["type": "string"], "clipboard": ["type": "boolean"],
-                                                      "aloud": ["type": "boolean"], "speed": ["type": "number"]],
+                                                      "speed": ["type": "number"]],
                                        "required": ["act"]]],
                                 "for": ["type": "string", "enum": ["me", "every_imp"], "description": "Default me."],
                               ],
@@ -376,7 +394,7 @@ public enum OwnTools {
         Add (or with `id` change) a trigger: on an event, run steps. Nothing happens on its own without one.
         `on` + `value`: keys "ctrl+cmd+T" | click 1-3 | poke hold drag drop shake stroke tickle circle swish rush dangle (pointer on you) | near secs | away | start | at "09:00" | every mins | idle secs | back mins away | wake | app name | website address part | battery % | charger plugged/unplugged | busy % | hot | network offline/online.
         `if` (all must hold): battery %, charger, app, website, busy %, hot, network, hours "22:00-07:00", days "mon-fri", asleep true/false.
-        `do` (1-5, act: value): ask: what to do, in words to yourself (clipboard:true adds the copied text); say: text (aloud:true); play: animation name; sleep|wake: optional animation; follow: off|eyes|hop|glide (speed 0.5-2, Mac); open: text_box|listen|chat|settings.
+        `do` (1-5, act: value): ask: what to do, in words to yourself (clipboard:true adds the copied text); say: text; play: animation name; sleep|wake: optional animation; follow: off|eyes|hop|glide (speed 0.5-2, Mac); open: text_box|listen|chat|settings.
         Ex: {"on":"poke","do":[{"act":"play","value":"Wiggle"},{"act":"say","value":"Ouch!"}]}
         {"on":"at","value":"09:00","if":[{"state":"days","value":"mon-fri"}],"do":[{"act":"ask","value":"Greet me"}]}
         """

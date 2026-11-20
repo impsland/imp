@@ -1223,12 +1223,6 @@
     "es": "Lo que dice",
     "zh-Hans": "它说的话"
   },
-  "triggers.step.aloud": {
-    "note": "Toggle of a say step: also speak it.",
-    "en": "Aloud",
-    "es": "En voz alta",
-    "zh-Hans": "朗读"
-  },
   "triggers.step.speed": {
     "note": "Label of the follow speed.",
     "en": "Speed",
@@ -1691,11 +1685,11 @@
     "es": "Moverse",
     "zh-Hans": "四处移动"
   },
-  "tool.speak": {
+  "tool.create_imp": {
     "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
-    "en": "Speak aloud",
-    "es": "Hablar en voz alta",
-    "zh-Hans": "朗读"
+    "en": "Create an Imp",
+    "es": "Crear un Imp",
+    "zh-Hans": "创建 Imp"
   },
   "tool.make_animation": {
     "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
@@ -1834,5 +1828,95 @@
     "en": "No chats yet.",
     "es": "Aún no hay chats.",
     "zh-Hans": "还没有聊天。"
+  },
+  "tooltext.edit": {
+    "note": "Help of the pencil on a tool's row.",
+    "en": "Change what the model reads about this tool",
+    "es": "Cambiar lo que el modelo lee de esta herramienta",
+    "zh-Hans": "更改模型读到的这个工具的内容"
+  },
+  "tooltext.edited": {
+    "note": "Mark on a tool whose name or description was changed.",
+    "en": "Its name or description was changed",
+    "es": "Se cambió su nombre o descripción",
+    "zh-Hans": "它的名称或说明已更改"
+  },
+  "tooltext.name": {
+    "note": "Label of the name field in the tool text sheet.",
+    "en": "Name the model calls it",
+    "es": "Nombre con el que el modelo la llama",
+    "zh-Hans": "模型调用它的名称"
+  },
+  "tooltext.name_invalid": {
+    "note": "Problem with a tool name.",
+    "en": "Use 1 to 64 letters, digits, _ or -.",
+    "es": "Usa de 1 a 64 letras, dígitos, _ o -.",
+    "zh-Hans": "请使用 1 到 64 个字母、数字、_ 或 -。"
+  },
+  "tooltext.name_taken": {
+    "note": "Problem with a tool name.",
+    "en": "Another tool already has this name.",
+    "es": "Otra herramienta ya tiene este nombre.",
+    "zh-Hans": "另一个工具已使用此名称。"
+  },
+  "tooltext.description": {
+    "note": "Label of the description editor in the tool text sheet.",
+    "en": "Description the model reads",
+    "es": "Descripción que lee el modelo",
+    "zh-Hans": "模型读到的说明"
+  },
+  "tooltext.description_empty": {
+    "note": "Placeholder of an empty description.",
+    "en": "Empty. The tool is offered with no description.",
+    "es": "Vacío. La herramienta se ofrece sin descripción.",
+    "zh-Hans": "为空。该工具将不带说明提供给模型。"
+  },
+  "tooltext.reset": {
+    "note": "Button that restores a tool's own name and description.",
+    "en": "Reset to default",
+    "es": "Restablecer",
+    "zh-Hans": "恢复默认"
+  },
+  "tooltext.id": {
+    "note": "Label before a tool's id in the sheet that edits its name and description: the id stays the same whatever name is typed.",
+    "en": "ID (never changes)",
+    "es": "ID (no cambia)",
+    "zh-Hans": "ID（不会改变）"
+  },
+  "tooltext.from_server": {
+    "note": "Line in the tool text sheet of an MCP tool.",
+    "args": {
+      "server": "string"
+    },
+    "en": "The default name and description come from the server “{server}”.",
+    "es": "El nombre y la descripción predeterminados vienen del servidor «{server}».",
+    "zh-Hans": "默认的名称和说明来自服务器“{server}”。"
+  },
+  "tooltext.dropped": {
+    "note": "Warning when an edit removed a placeholder the default description had.",
+    "args": {
+      "list": "string"
+    },
+    "en": "The default also had {list}, which this text no longer has.",
+    "es": "El texto predeterminado también tenía {list}, que este texto ya no incluye.",
+    "zh-Hans": "默认说明还包含 {list}，当前文本已不再包含。"
+  },
+  "tooltext.placeholder.imps": {
+    "note": "What the {imps} placeholder stands for.",
+    "en": "The other Imps it can message, with what each says about itself.",
+    "es": "Los demás Imps a los que puede escribir, con lo que cada uno dice de sí mismo.",
+    "zh-Hans": "它可以发消息的其他 Imp，以及各自的自我介绍。"
+  },
+  "tooltext.placeholder.animations": {
+    "note": "What the {animations} placeholder stands for.",
+    "en": "The animations it may play.",
+    "es": "Las animaciones que puede reproducir.",
+    "zh-Hans": "它可以播放的动画。"
+  },
+  "tooltext.placeholder.place": {
+    "note": "What the {place} placeholder stands for.",
+    "en": "Where the background shows.",
+    "es": "Dónde se muestra el fondo.",
+    "zh-Hans": "背景显示的位置。"
   }
 }

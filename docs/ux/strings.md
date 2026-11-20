@@ -90,6 +90,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `common.name` | Name | Nombre | 名称 |
 | `common.needs_attention` | Needs attention | Necesita atención | 需要你留意 |
 | `common.off` | Off | Apagado | 关 |
+| `common.ok` | OK | Aceptar | 好 |
 | `common.on` | On | Encendido | 开 |
 | `common.open` | Open | Abrir | 打开 |
 | `common.remove` | Remove | Quitar | 移除 |
@@ -102,19 +103,25 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `computer.help.access` | What the Imp may reach on this Mac. | Lo que el Imp puede usar en este Mac. | Imp 可以在这台 Mac 上使用的东西。 |
 | `computer.help.control` | Sees and operates other apps. Needs the Screen & System Audio Recording and Accessibility permissions. | Ve y maneja otras apps. Necesita los permisos de Grabación de pantalla y audio del sistema y de Accesibilidad. | 查看并操作其他应用。需要“屏幕与系统音频录制”和“辅助功能”权限。 |
 | `computer.help.senses` | Reads the battery, processor, network and open apps, and the page open in the browser. | Lee la batería, el procesador, la red y las apps abiertas, y la página abierta en el navegador. | 读取电池、处理器、网络和打开的应用，以及浏览器中打开的页面。 |
+| `devices.access.talk` | Talk & files | Hablar y archivos | 对话和文件 |
 | `devices.call_all_home` | Call all home | Traerlos a todos | 全部叫回家 |
-| `devices.channel.title` | {from} and {to} | {from} y {to} | {from} 与 {to} |
+| `devices.channel.title` | {from} ⇄ {to} | {from} ⇄ {to} | {from} ⇄ {to} |
 | `devices.chip.label_ours` | {name}, an Imp of this Mac, on {node} | {name}, un Imp de este Mac, en {node} | {name}，这台 Mac 的 Imp，在 {node} 上 |
 | `devices.chip.label_visitor` | {name}, an Imp from another device, on {node} | {name}, un Imp de otro dispositivo, en {node} | {name}，来自其他设备的 Imp，在 {node} 上 |
 | `devices.copy_link.help` | For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while. | Para un dispositivo que no puede escanear: pega el enlace en Escanear código en el otro dispositivo. Mantenlo en privado. Permite que un dispositivo se vincule con este Mac durante un rato. | 适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。 |
 | `devices.edge.label` | {from} to {to}. {route}. {state} | {from} con {to}. {route}. {state} | {from} 到 {to}。{route}。{state} |
+| `devices.edge.travelling` | Travelling | De viaje | 往来中 |
 | `devices.empty` | No devices yet. | Aún no hay dispositivos. | 还没有设备。 |
+| `devices.forget.named` | Forget {name}… | Olvidar {name}… | 忘记 {name}… |
 | `devices.forget.one` | Forget this device… | Olvidar este dispositivo… | 忘记此设备… |
 | `devices.hop.add` | Add a Hop | Añadir un Hop | 添加 Hop |
 | `devices.hop.pill` | Hop: {host} | Hop: {host} | Hop：{host} |
 | `devices.hop.state.idle` | Not in use | Sin uso | 未使用 |
 | `devices.hop.state.needs_address` | Needs an address | Necesita una dirección | 需要地址 |
 | `devices.hop.state.off` | Off | Desactivado | 已关闭 |
+| `devices.imp.can_use` | Can use there | Puede usar allí | 在那里可用 |
+| `devices.imp.can_use.info` | The tools of this Imp that the device it is on lets it use. A tool with a lock is not plugged in on that device's connection: press it to open the connection and plug it in. | Las herramientas de este Imp que el dispositivo donde está le deja usar. Una herramienta con candado no está conectada en la conexión de ese dispositivo: púlsala para abrir la conexión y conectarla. | 此 Imp 所在设备允许它使用的工具。带锁的工具在该设备的连接上没有插上：点按它可打开连接并插上。 |
+| `devices.imp.here` | Here | Aquí | 在这里 |
 | `devices.imp.settings` | Its settings | Sus ajustes | 它的设置 |
 | `devices.imp.talks` | Can message | Puede escribir a | 可以给谁发消息 |
 | `devices.imp.talks.info` | The Imps this one can message. They are lit on the map while it is selected. | Los Imps a los que este puede escribir. Se iluminan en el mapa mientras está seleccionado. | 这个 Imp 可以给哪些 Imp 发消息。选中它时，它们会在地图上高亮。 |
@@ -127,8 +134,13 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `devices.node.label` | {name}, {state}. Imps: {imps} | {name}, {state}. Imps: {imps} | {name}，{state}。Imp：{imps} |
 | `devices.node.label_empty` | {name}, {state} | {name}, {state} | {name}，{state} |
 | `devices.node.this_mac_label` | {name}, this Mac | {name}, este Mac | {name}，这台 Mac |
+| `devices.on_screen` | On its screen | En su pantalla | 在它的屏幕上 |
 | `devices.place.body` | On | En | 在 |
 | `devices.place.mind` | Thinks on | Piensa en | 思考于 |
+| `devices.plug.off` | not plugged in | desconectado | 未插上 |
+| `devices.plug.on` | plugged in | conectado | 已插上 |
+| `devices.plug.title` | What {name} can use here | Qué puede usar {name} aquí | {name} 在这里可以用什么 |
+| `devices.reach.at` | Reachable at | Accesible en | 可通过以下地址访问 |
 | `devices.reach.away` | Away | No disponible | 不在线 |
 | `devices.reach.direct` | Direct, on the local network | Directo, en la red local | 直连，走本地网络 |
 | `devices.reach.last_seen` | Last known address | Última dirección conocida | 最近已知地址 |
@@ -145,19 +157,15 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `devices.state.connected` | Connected | Conectado | 已连接 |
 | `devices.state.connecting` | Connecting | Conectando | 正在连接 |
 | `devices.state.offline` | Away | Ausente | 不在线 |
+| `devices.talk.label` | {imp} can message {contact} | {imp} puede escribir a {contact} | {imp} 可以给 {contact} 发消息 |
 | `devices.tether.label` | {imp} is on {node} and thinks on {home} | {imp} está en {node} y piensa en {home} | {imp} 在 {node} 上，在 {home} 上思考 |
-| `devices.tether.tools` | Tools it may use there | Herramientas que puede usar allí | 它在那里可用的工具 |
-| `devices.tether.tools.info` | What the Imp may use while this device asks it. Change it on the device. | Lo que el Imp puede usar cuando este dispositivo le pide algo. Se cambia en el dispositivo. | 此设备向 Imp 提问时，Imp 可使用的工具。请在该设备上修改。 |
 | `devices.this.info` | Link another device here. The dot shows whether The Hop lets devices find each other from anywhere. | Vincula otro dispositivo aquí. El punto indica si The Hop permite que se encuentren desde cualquier lugar. | 在这里连接另一台设备。圆点表示 The Hop 是否让设备能从任何地方互相找到。 |
 | `devices.this_mac_badge` | This Mac | Este Mac | 这台 Mac |
 | `devices.title` | Devices | Dispositivos | 设备 |
 | `devices.tools.commands` | Commands | Comandos | 命令 |
-| `devices.tools.info` | When this device asks one of your Imps, the Imp can use the tools that are on here. Switch off what it should not touch for this device. | Cuando este dispositivo le pide algo a uno de tus Imps, el Imp puede usar las herramientas activadas aquí. Desactiva lo que no debe tocar para este dispositivo. | 当此设备向你的某个 Imp 提问时，Imp 可以使用这里开启的工具。关掉不希望它为此设备使用的工具。 |
-| `devices.tools.locked` | No tools until Mine | Sin herramientas hasta ser Mío | 设为“我的”之前没有工具 |
-| `devices.tools.not_mine` | Imps answer this device without tools. Turn on Mine to choose what they may use. | Los Imps responden a este dispositivo sin herramientas. Activa Mío para elegir lo que pueden usar. | Imp 回答此设备时不使用工具。打开“我的”后可选择它们能用什么。 |
-| `devices.tools.title` | Tools Imps may use from this device | Herramientas que los Imps pueden usar desde este dispositivo | Imp 可为此设备使用的工具 |
 | `devices.tools.toggle` | Show or hide the switches | Mostrar u ocultar los interruptores | 显示或隐藏开关 |
 | `devices.unknown_device` | a device not linked with this Mac | un dispositivo no vinculado con este Mac | 未与这台 Mac 链接的设备 |
+| `devices.visitor.can_use` | Its device can use here | Su dispositivo puede usar aquí | 它的设备在这里可用 |
 | `devices.visitor.send_home` | Send home | Enviar a casa | 送回家 |
 | `error.brain.key` | {service} did not accept the key. Check it and try again. | {service} no aceptó la clave. Revísala e inténtalo de nuevo. | {service} 不接受这个密钥。请检查后重试。 |
 | `error.brain.local` | No model answered. Make sure it is running, then try again. | Ningún modelo respondió. Comprueba que esté en marcha e inténtalo de nuevo. | 没有模型回应。请确认它正在运行，然后重试。 |
@@ -471,12 +479,14 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.chat.ask_to_prefix` | Ask {name} To:  | Pide a {name} que:  | 请 {name}： |
 | `phone.chat.edit_help` | Edit | Editar | 编辑 |
 | `phone.chat.failed` | Couldn't answer | No pudo responder | 没能给出回答 |
+| `phone.chat.history` | Chats | Chats | 聊天记录 |
 | `phone.chat.jump_latest` | Latest | Último | 最新 |
 | `phone.chat.message` | Message {name} | Escribir a {name} | 给 {name} 发消息 |
 | `phone.chat.new` | New | Nuevo | 新建 |
 | `phone.chat.no_brain` | No brain yet | Aún sin cerebro | 还没有大脑 |
 | `phone.chat.peers` | Message another Imp | Escribir a otro Imp | 给其他 Imp 发消息 |
 | `phone.chat.ran_tools` | Ran {count} tools | Herramientas usadas: {count} | 使用了 {count} 个工具 |
+| `phone.chat.untitled` | Chat | Chat | 聊天 |
 | `phone.code.caption` | Scan on the other device | Escanea en el otro dispositivo | 在另一台设备上扫描 |
 | `phone.code.label` | Link code | Código de enlace | 关联二维码 |
 | `phone.connected` | Connected | Conectado | 已连接 |
@@ -749,6 +759,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tool.add_tool` | Add | Añadir | 添加 |
 | `tool.add_trigger` | Add | Añadir | 添加 |
 | `tool.browser_page` | Browser page | Página del navegador | 浏览器页面 |
+| `tool.create_imp` | Create an Imp | Crear un Imp | 创建 Imp |
 | `tool.export_kit` | Export kits | Exportar kits | 导出套件 |
 | `tool.list_tools` | List | Listar | 列出 |
 | `tool.list_triggers` | List | Listar | 列出 |
@@ -767,7 +778,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tool.set_traits` | Change its look | Cambiar su aspecto | 改变外观 |
 | `tool.show_animation` | View | Ver | 查看 |
 | `tool.show_background` | View background | Ver fondo | 查看背景 |
-| `tool.speak` | Speak aloud | Hablar en voz alta | 朗读 |
 | `tool.verify` | Check results | Comprobar resultados | 检查结果 |
 | `tools.add` | Add | Añadir | 添加 |
 | `tools.collapse` | Hide the tools in {group} | Ocultar herramientas de {group} | 隐藏 {group} 中的工具 |
@@ -801,6 +811,20 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tools.server_name` | Name | Nombre | 名称 |
 | `tools.shared_setup` | Every Imp that uses this tool gets this setup. Each Imp switches it on or off for itself. | Todos los Imps que usan esta herramienta reciben esta configuración. Cada Imp la activa o desactiva por su cuenta. | 使用这个工具的每个 Imp 都会得到这套设置。每个 Imp 各自开启或关闭它。 |
 | `tools.title` | Tools | Herramientas | 工具 |
+| `tooltext.description` | Description the model reads | Descripción que lee el modelo | 模型读到的说明 |
+| `tooltext.description_empty` | Empty. The tool is offered with no description. | Vacío. La herramienta se ofrece sin descripción. | 为空。该工具将不带说明提供给模型。 |
+| `tooltext.dropped` | The default also had {list}, which this text no longer has. | El texto predeterminado también tenía {list}, que este texto ya no incluye. | 默认说明还包含 {list}，当前文本已不再包含。 |
+| `tooltext.edit` | Change what the model reads about this tool | Cambiar lo que el modelo lee de esta herramienta | 更改模型读到的这个工具的内容 |
+| `tooltext.edited` | Its name or description was changed | Se cambió su nombre o descripción | 它的名称或说明已更改 |
+| `tooltext.from_server` | The default name and description come from the server “{server}”. | El nombre y la descripción predeterminados vienen del servidor «{server}». | 默认的名称和说明来自服务器“{server}”。 |
+| `tooltext.id` | ID (never changes) | ID (no cambia) | ID（不会改变） |
+| `tooltext.name` | Name the model calls it | Nombre con el que el modelo la llama | 模型调用它的名称 |
+| `tooltext.name_invalid` | Use 1 to 64 letters, digits, _ or -. | Usa de 1 a 64 letras, dígitos, _ o -. | 请使用 1 到 64 个字母、数字、_ 或 -。 |
+| `tooltext.name_taken` | Another tool already has this name. | Otra herramienta ya tiene este nombre. | 另一个工具已使用此名称。 |
+| `tooltext.placeholder.animations` | The animations it may play. | Las animaciones que puede reproducir. | 它可以播放的动画。 |
+| `tooltext.placeholder.imps` | The other Imps it can message, with what each says about itself. | Los demás Imps a los que puede escribir, con lo que cada uno dice de sí mismo. | 它可以发消息的其他 Imp，以及各自的自我介绍。 |
+| `tooltext.placeholder.place` | Where the background shows. | Dónde se muestra el fondo. | 背景显示的位置。 |
+| `tooltext.reset` | Reset to default | Restablecer | 恢复默认 |
 | `trigger.event.at` | Daily at | Cada día a las | 每天定时 |
 | `trigger.event.away` | Cursor away | Cursor lejos | 光标离开 |
 | `trigger.event.circle` | Circle | Rodear | 绕圈 |
@@ -870,7 +894,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `triggers.scope.note_version` | Saves a version for {name} only. The other Imps keep the shared one. | Guarda una versión solo para {name}. Los demás Imps conservan la compartida. | 只为 {name} 保存一个版本。其他 Imp 保留共享的那个。 |
 | `triggers.share_every` | Share to all | Para todos | 共享给所有 |
 | `triggers.step.add_one` | Add a step: {name} | Añadir un paso: {name} | 添加步骤：{name} |
-| `triggers.step.aloud` | Aloud | En voz alta | 朗读 |
 | `triggers.step.anim_none` | The usual way | Lo habitual | 默认方式 |
 | `triggers.step.ask_ph` | What should it do? Say it in your own words. | ¿Qué debe hacer? Dilo con tus palabras. | 它该做什么？用你自己的话说。 |
 | `triggers.step.clipboard` | With clipboard | Con el portapapeles | 附带剪贴板 |

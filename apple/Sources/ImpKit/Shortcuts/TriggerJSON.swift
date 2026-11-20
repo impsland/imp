@@ -141,7 +141,7 @@ extension Step {
             guard v != nil || clip else { throw ToolArgumentError("\(what) needs a `value`: what to do, in plain words (or `clipboard`: true).") }
             self.init(.ask, value: v, clipboard: clip ? true : nil)
         case .say:
-            self.init(.say, value: try required(v, what), aloud: json["aloud"]?.bool == true ? true : nil)
+            self.init(.say, value: try required(v, what))
         case .play:
             self.init(.play, value: try required(v, what + " (the animation's name)"))
         case .sleep, .wake:
@@ -159,7 +159,6 @@ extension Step {
         var o: [String: JSONValue] = ["act": .string(act.rawValue)]
         if !text.isEmpty { o["value"] = .string(text) }
         if handsOverClipboard { o["clipboard"] = .bool(true) }
-        if speaksAloud { o["aloud"] = .bool(true) }
         if act == .follow, let speed, speed != FollowMath.defaultSpeed { o["speed"] = .number(speed) }
         return .object(o)
     }

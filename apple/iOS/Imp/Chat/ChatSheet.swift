@@ -163,6 +163,7 @@ struct ImpSheet: View {
                 if !Talks.threads(of: impID, hub: hub, pocket: pocket).isEmpty {
                     HoverIconButton(systemName: "bubble.left.and.bubble.right", help: "menu.imp.talks", tint: Tone.text) { pane = .talks }
                 }
+                chatMenu
                 HoverIconButton(systemName: "square.and.pencil", help: "phone.chat.new", tint: Tone.text) { confirmingNewChat = true }
                     .disabled(!canStartOver)
             }
@@ -177,6 +178,26 @@ struct ImpSheet: View {
         .padding(.leading, Spacing.page).padding(.trailing, Spacing.medium).padding(.top, Spacing.medium).padding(.bottom, Spacing.small)
         .impAnimation(ImpDesign.Motion.quick, value: status)
         .impAnimation(ImpDesign.Motion.smooth, value: roomInView)
+    }
+
+    /// The Imp's saved chats, newest first: pick one to carry on where it left off (a visiting Imp's home switches).
+    @ViewBuilder private var chatMenu: some View {
+        if let list = source.chatList(impID), !list.chats.isEmpty {
+            HoverIconMenu(systemName: "clock.arrow.circlepath", help: "phone.chat.history") {
+                ForEach(list.chats) { chat in
+                    Toggle(isOn: Binding(get: { chat.id == list.current },
+                                         set: { _ in
+                                             guard chat.id != list.current else { return }
+                                             source.openChat(impID, chat.id)
+                                             openedAt = Date()
+                                         })) {
+                        Text(chat.title.isEmpty ? String(localized: "phone.chat.untitled") : chat.title)
+                        Text(chat.updated, format: .dateTime.day().month().hour().minute())
+                    }
+                }
+            }
+            .disabled(availability == .offline)
+        }
     }
 
     private var mood: Mood {

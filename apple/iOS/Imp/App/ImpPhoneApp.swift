@@ -187,6 +187,8 @@ struct RootView: View {
             if CommandLine.arguments.contains("-hatch") { hatchNew() }
             // Three Imps in the room and no sheet over it, for the UI test of picking several.
             if CommandLine.arguments.contains("-hatchThree") { for _ in 0..<3 { pocket.hatchReady() } }
+            // A page behind the room that moves and is larger than the screen, as an Imp may draw (UI tests of the room's layout).
+            if CommandLine.arguments.contains("-uiTestBackground") { PhoneBackground.shared.set(PhoneBackground.uiTestPage) }
             // For the UI tests on a device: the app's settings, or the first Imp hatched here in its settings.
             if CommandLine.arguments.contains("-openSettings") { router.open(.settings(devices: false)) }
             if CommandLine.arguments.contains("-editImp"), let first = pocket.imps.first { router.open(.edit(first.id, brain: false)) }

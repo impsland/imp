@@ -138,6 +138,14 @@ pub struct Agent {
     /// The prompt, when it is not the body.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub system: Option<String>,
+    /// What the agent's tools are called and described as to the model, by tool id
+    /// (`own.personality.imp_message`, `mcp.files.read_file`).
+    #[serde(
+        default,
+        rename = "toolText",
+        skip_serializing_if = "BTreeMap::is_empty"
+    )]
+    pub tool_text: BTreeMap<String, crate::tools::ToolText>,
     #[serde(flatten)]
     pub extra: BTreeMap<String, Value>,
 }
@@ -227,6 +235,7 @@ impl Agent {
         if self.steps == Some(0) {
             out.push("steps must be at least 1.".into());
         }
+        out.extend(crate::tools::tool_text_problems(&self.tool_text));
         out
     }
 }

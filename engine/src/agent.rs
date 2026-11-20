@@ -253,6 +253,47 @@ async fn join_each<T>(futures: Vec<BoxFuture<'_, T>>, mut done: impl FnMut(usize
     .await;
 }
 
+/// The tools `selection` leaves on, as the model is offered them: with the name and description the person
+/// wrote over (`ToolSelection::text`), and each renamed tool's real name by the name the model uses.
+/// A name that is not allowed, or that another offered tool already has, is ignored. This driver has no
+/// roster or animations to put in a description, so `{imps}`, `{animations}` and `{place}` are left empty.
+#[cfg(feature = "io")]
+pub fn offered_tools(
+    all: &[HostTool],
+    selection: &ToolSelection,
+) -> (Vec<ToolSpec>, std::collections::BTreeMap<String, String>) {
+    use crate::tools::{PLACEHOLDERS, expand_placeholders, valid_tool_name};
+    use std::collections::{BTreeMap, BTreeSet};
+    let blank: BTreeMap<String, String> = PLACEHOLDERS
+        .iter()
+        .map(|k| (k.to_string(), String::new()))
+        .collect();
+    let on = selection.filter(all, |t| t.entry.as_ref());
+    let mut taken: BTreeSet<String> = on.iter().map(|t| t.spec.name.clone()).collect();
+    let mut real = BTreeMap::new();
+    let mut out = Vec::new();
+    for tool in on {
+        let mut spec = tool.spec.clone();
+        if let Some(text) = tool.entry.as_ref().and_then(|e| selection.text.get(&e.id)) {
+            if let Some(name) = text.name.as_deref()
+                && name != spec.name
+                && valid_tool_name(name)
+                && !taken.contains(name)
+            {
+                taken.remove(&spec.name);
+                taken.insert(name.to_string());
+                real.insert(name.to_string(), spec.name.clone());
+                spec.name = name.to_string();
+            }
+            if let Some(description) = &text.description {
+                spec.description = expand_placeholders(description, &blank);
+            }
+        }
+        out.push(spec);
+    }
+    (out, real)
+}
+
 /// Runs the loop with `client` and `host`. New assistant and tool messages are added to
 /// `messages`. Returns the text of the final answer. Calls to tools that are switched off or
 /// unknown are answered with a refusal. Calls to Imps in one reply (`runs_concurrently`) run at the
@@ -268,11 +309,7 @@ pub async fn run_agent(
     on_event: impl FnMut(AgentEvent),
 ) -> Result<String, AgentError> {
     let all = host.tools();
-    let offered: Vec<ToolSpec> = selection
-        .filter(&all, |t| t.entry.as_ref())
-        .into_iter()
-        .map(|t| t.spec.clone())
-        .collect();
+    let (offered, real) = offered_tools(&all, selection);
     let on_event = RefCell::new(on_event);
     let emit = |e: AgentEvent| (on_event.borrow_mut())(e);
     let mut run = AgentRun::new(std::mem::take(messages), offered.clone(), max_steps);
@@ -319,7 +356,8 @@ pub async fn run_agent(
                 .map(|call| -> BoxFuture<'_, String> {
                     Box::pin(async {
                         if offered.iter().any(|s| s.name == call.name) {
-                            host.call(&call.name, &call.arguments).await
+                            let name = real.get(&call.name).unwrap_or(&call.name);
+                            host.call(name, &call.arguments).await
                         } else {
                             None
                         }
@@ -480,5 +518,46 @@ mod tests {
         assert!(run.reply(stubborn).is_empty());
         assert_eq!(run.advance(), AgentNext::Done("sorry".into()));
         assert_eq!(run.messages().last().unwrap().content, "sorry");
+    }
+
+    #[cfg(feature = "io")]
+    #[test]
+    fn text_written_over_a_tool_is_what_the_model_is_offered() {
+        use crate::tools::ToolText;
+        let host = |id: &str, name: &str| HostTool {
+            entry: Some(ToolEntry::new(id, name, "own.g")),
+            spec: ToolSpec {
+                name: name.into(),
+                description: "old".into(),
+                parameters: json!({"type": "object"}),
+            },
+        };
+        let all = vec![host("own.g.a", "a"), host("own.g.b", "b")];
+        let mut selection = ToolSelection::all();
+        selection.text.insert(
+            "own.g.a".into(),
+            ToolText {
+                name: Some("alpha".into()),
+                description: Some("new {imps}!".into()),
+            },
+        );
+        // Taken by another tool, and not allowed: both are ignored.
+        selection.text.insert(
+            "own.g.b".into(),
+            ToolText {
+                name: Some("alpha".into()),
+                description: None,
+            },
+        );
+        let (offered, real) = offered_tools(&all, &selection);
+        assert_eq!(offered[0].name, "alpha");
+        assert_eq!(offered[0].description, "new !");
+        assert_eq!(
+            (offered[1].name.as_str(), offered[1].description.as_str()),
+            ("b", "old")
+        );
+        assert_eq!(real.get("alpha").map(String::as_str), Some("a"));
+        selection.text.get_mut("own.g.b").unwrap().name = Some("not ok".into());
+        assert_eq!(offered_tools(&all, &selection).0[1].name, "b");
     }
 }

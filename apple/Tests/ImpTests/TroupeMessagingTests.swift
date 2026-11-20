@@ -14,7 +14,7 @@ import ImpKit
     }
 
     private func world(_ server: StubModelServer, waiting: TalkWaiting, extra: [String] = []) -> World {
-        let app = AppModel(persist: false)
+        let app = KeptApps.keep(AppModel(persist: false))
         app.prefs.imps = [.waiting]
         var service = Service(name: "Stub", baseURL: server.baseURL, model: "stub")
         service.model = "stub"

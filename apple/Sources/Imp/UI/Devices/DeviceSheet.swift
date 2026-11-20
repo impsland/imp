@@ -45,7 +45,8 @@ struct DeviceSheet: View {
 
     var body: some View {
         let ctx = DeviceContext(model: model, router: router, map: map, select: { if let next = $0 { swap(.opening(next)) } },
-                                link: { swap(.link) }, forget: { forgetting = $0 }, forgetEveryone: { forgettingEveryone = true })
+                                link: { swap(.link) }, forget: { forgetting = $0 }, forgetEveryone: { forgettingEveryone = true },
+                                hop: { swap(.hop) })
         let head = head(ctx)
         DeviceSheetShell(model: model, icon: head.icon, title: head.title) {
             page(ctx)
@@ -70,9 +71,8 @@ struct DeviceSheet: View {
         case .node(let id):
             guard let node = map.node(id) else { return ("questionmark", String(localized: "devices.unknown_device")) }
             return (node.symbol, node.title)
-        case .imp(let id, let node), .tether(let id, let node):
+        case .imp(let id, let node):
             let name = map.residents(of: node).first { $0.id == id }?.name ?? ""
-            if case .tether = selection { return ("link", name) }
             return ("person.fill", name)
         case .channel(let id):
             guard let channel = map.channels.first(where: { $0.id == id }) else { return ("questionmark", String(localized: "devices.unknown_device")) }
@@ -101,8 +101,6 @@ struct DeviceSheet: View {
             }
         case .channel(let id):
             if let channel = map.channels.first(where: { $0.id == id }) { ChannelPage(ctx: ctx, channel: channel) }
-        case .tether(let id, let node):
-            if let contact = map.residents(of: node).first(where: { $0.id == id }) { TetherPage(ctx: ctx, contact: contact, node: node) }
         }
     }
 }

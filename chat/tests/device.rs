@@ -425,6 +425,8 @@ async fn an_imp_of_the_phone_visits_the_computer_and_answers_through_its_home() 
         reply: "Hi from the pocket".into(),
         failed: false,
         steps: vec![],
+        thoughts: None,
+        answer: None,
     };
     phone
         .runner

@@ -112,6 +112,8 @@ public struct PocketImp: Codable, Equatable, Sendable, Identifiable {
     public var servers: [PocketServer]
     /// Single tools switched off, by registry id (`ToolRegistry`). Optional, so saved Imps load.
     public var toolsOff: [String]?
+    /// What was written over single tools' names and descriptions, by registry id (`ToolText`). Optional, so saved Imps load.
+    public var toolText: [String: ToolText]?
     /// Oldest first. The last chat with you is the one you're in. Talks with other Imps are chats of
     /// their own (`Chat.peer`).
     public internal(set) var chats: [Chat]
@@ -208,6 +210,20 @@ public struct PocketImp: Codable, Equatable, Sendable, Identifiable {
     /// The turns of the chat with you, the latest `limit`, as the phone shows them.
     public func turns(limit: Int = 40) -> [LinkTurn] {
         (current?.turns ?? []).filter { $0.sender == nil || $0.via == .answer }.suffix(limit).map(LinkTurn.init(local:))
+    }
+
+    /// The chats with you that are worth going back to, newest first (the empty one you're in, if any, is left out).
+    public func chatList(limit: Int = LinkChats.limit) -> [ChatSummary] {
+        chats.filter { $0.peer == nil && !$0.isEmpty }.sorted { $0.updated > $1.updated }.prefix(limit).map(\.summary)
+    }
+
+    /// Carries on in a saved chat with you: it becomes the last one, which is the one you're in. An empty chat you were
+    /// in is dropped. Nothing happens for a chat it doesn't have.
+    public mutating func open(chat id: UUID) {
+        guard let i = chats.firstIndex(where: { $0.id == id && $0.peer == nil }), i != chats.lastIndex(where: { $0.peer == nil }) else { return }
+        let chat = chats.remove(at: i)
+        if let last = chats.lastIndex(where: { $0.peer == nil }), chats[last].isEmpty { chats.remove(at: last) }
+        chats.append(chat)
     }
 
     /// What it remembers of its talk with `peer` (another Imp), or of the chat with you.

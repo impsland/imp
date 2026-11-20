@@ -47,6 +47,8 @@ public struct KitImp: Equatable, Sendable, Identifiable {
     public var animations: [MadeAnimation] = []
     /// Single tools switched off, by registry id (`ToolRegistry`).
     public var toolsOff: [String] = []
+    /// What was written over single tools' names and descriptions, by registry id (`ToolText`).
+    public var toolText: [String: ToolText] = [:]
     /// What it's good at, for the other Imps (`ImpProfile.about`). Read through the core's sanitizer: a kit is untrusted.
     public var about: String?
 
@@ -82,6 +84,7 @@ public struct KitImp: Equatable, Sendable, Identifiable {
         traits = profile.traits
         animations = profile.animations
         toolsOff = profile.disabledTools.sorted()
+        toolText = profile.toolText
         about = profile.about
     }
 
@@ -122,6 +125,14 @@ public struct KitImp: Equatable, Sendable, Identifiable {
             for group in ImpToolGroup.allCases { if let on = groups[group.rawValue]?.bool { imp.tools[group] = on } }
         }
         if let list = json["toolsOff"]?.array { imp.toolsOff = list.compactMap(\.string) }
+        if case .object(let texts)? = json["toolText"] {
+            // A kit is untrusted: a name that is not allowed is dropped.
+            for (id, value) in texts {
+                var text = ToolText(name: value["name"]?.string, description: value["description"]?.string)
+                if let name = text.name, !ToolText.isValid(name: name) { text.name = nil }
+                if !text.isEmpty { imp.toolText[id] = text }
+            }
+        }
         imp.about = json["about"]?.string.flatMap { ImpCore.troupeAboutLine(text: $0) }
         if let list = json["mcpServers"]?.array {
             for case .string(let key) in list {
@@ -160,6 +171,14 @@ public struct KitImp: Equatable, Sendable, Identifiable {
             "sendsToolCalls": .bool(sendsToolCalls),
         ]
         if !toolsOff.isEmpty { o["toolsOff"] = .array(toolsOff.map { .string($0) }) }
+        if !toolText.isEmpty {
+            o["toolText"] = .object(toolText.mapValues { t in
+                var v: [String: JSONValue] = [:]
+                if let name = t.name { v["name"] = .string(name) }
+                if let description = t.description { v["description"] = .string(description) }
+                return .object(v)
+            })
+        }
         if let about, !about.isEmpty { o["about"] = .string(about) }
         if let instructions { o["instructions"] = .string(instructions) }
         if let exchangesSent { o["exchangesSent"] = .number(Double(exchangesSent)) }
@@ -355,6 +374,7 @@ extension ImpPreferences {
         p.usesShell = source.usesShell
         for group in ImpToolGroup.allCases { p.setUses(group, source.uses(group)) }
         for id in source.toolsOff { p.setUses(tool: id, false) }
+        p.toolText = source.toolText
         p.about = source.about
         p.exchangesSent = source.exchangesSent
         p.sendsToolCalls = source.sendsToolCalls ? nil : false

@@ -122,7 +122,7 @@ import Testing
 
     @Test func storedFormatRoundTrips() throws {
         let s = Shortcut(name: "Nap", trigger: Trigger(.idle, value: "30"), conditions: [Condition(.hours, value: "22:00-07:00")],
-                         steps: [Step(.say, value: "Zzz", aloud: true), Step(.sleep, value: "Yawn")])
+                         steps: [Step(.say, value: "Zzz"), Step(.sleep, value: "Yawn")])
         let back = try JSONDecoder().decode(Shortcut.self, from: JSONEncoder().encode(s))
         #expect(back == s)
         #expect(AnimationRef(key: AnimationRef.custom(UUID(uuidString: "11111111-1111-4111-8111-111111111111")!).key)

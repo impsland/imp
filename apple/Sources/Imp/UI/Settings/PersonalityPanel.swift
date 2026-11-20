@@ -3,7 +3,7 @@ import ImpKit
 import SwiftUI
 
 /// Who the Imp is: its name and description in one block, then its persona and reply rules. The Imp's
-/// own abilities here (speaking aloud, messaging the other Imps…) open from the Persona header.
+/// own abilities here (messaging the other Imps, creating new ones…) open from the Persona header.
 struct PersonalityPanel: View {
     @Bindable var model: AppModel
     @Binding var imp: ImpProfile
@@ -50,7 +50,7 @@ struct PersonalityPanel: View {
                      accessory: {
                          HStack(spacing: Spacing.small) {
                              AgentFileButtons(model: model, imp: imp.id)
-                             AgentToolsButton(imp: $imp, groups: [.personality])
+                             AgentToolsButton(model: model, imp: $imp, groups: [.personality])
                          }
                      }) {
             EditorWell(text: $imp.personality,

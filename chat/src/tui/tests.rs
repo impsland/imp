@@ -1053,6 +1053,8 @@ fn a_visitor_shows_its_homes_chat_and_what_it_is_writing() {
             reply: "Hello from the pocket".into(),
             failed: false,
             steps: vec![],
+            thoughts: None,
+            answer: None,
         }],
         work: None,
     };

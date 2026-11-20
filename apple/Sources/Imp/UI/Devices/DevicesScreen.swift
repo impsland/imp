@@ -9,9 +9,12 @@ struct DevicesScreen: View {
     let model: AppModel
     let router: HomeRouter
     @State private var sheet: DevicesSheet?
+    /// For design scenes: what the canvas starts with in focus, as if it were hovered.
+    var focus: DeviceGraph.Focus?
     @Environment(\.postNotice) private var postNotice
 
-    init(model: AppModel, router: HomeRouter, sheet: DevicesSheet? = nil) {
+    init(model: AppModel, router: HomeRouter, sheet: DevicesSheet? = nil, focus: DeviceGraph.Focus? = nil) {
+        self.focus = focus
         self.model = model
         self.router = router
         _sheet = State(initialValue: sheet)
@@ -29,7 +32,11 @@ struct DevicesScreen: View {
                     .settingAnchor(.devicesPair)
                     .cornerLabel(.trailing, bar: Metrics.barHeight)
             }
-            DevicesCanvas(map: map, hop: model.prefs.hop, moved: Bindable(router).devicePlaces,
+            DevicesCanvas(map: map, hop: model.prefs.hop,
+                          access: Dictionary(uniqueKeysWithValues: model.link.peers.map {
+                              ($0.id.uuidString, DeviceAccess.of(peer: $0.id, trusted: $0.isTrusted, prefs: model.prefs))
+                          }),
+                          sheetFocus: sheet.flatMap(DeviceGraph.Focus.init) ?? focus, moved: Bindable(router).devicePlaces,
                           open: { sheet = $0 }, link: { sheet = .link })
         }
         .environment(\.highlightedSetting, router.highlightedSetting)

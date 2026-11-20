@@ -7,6 +7,7 @@
 //! |---|---|---|
 //! | an Imp's own tool (`own.<group>.<tool>`, or a built-in name) | the group | the tool's name |
 //! | `imp_message` | `message` | the Imp's name (`to`) |
+//! | `imp_create_imp` | `personality` | `imp_create_imp` (an own tool like the rest) |
 //! | the skill tool | `skill` | the skill's name |
 //! | a tool of an MCP server (`mcp.<server>.<tool>`) | `mcp` | `<server>/<tool>` |
 //! | a shell tool | `shell` | the command line |

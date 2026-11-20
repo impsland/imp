@@ -153,5 +153,11 @@
     "en": "Clear",
     "es": "Borrar",
     "zh-Hans": "清除"
+  },
+  "common.ok": {
+    "note": "Button that confirms a sheet's changes and closes it.",
+    "en": "OK",
+    "es": "Aceptar",
+    "zh-Hans": "好"
   }
 }

@@ -9,6 +9,11 @@ import SwiftUI
 /// - things to choose from (a Brain, a trigger, a device) are pills, two to a row (`MenuPills`),
 /// - what can't be undone (Goodbye) is one wide button at the bottom, in the danger colour (`MenuDangerButton`).
 ///
+/// The order is the same in every menu, on the Mac and on the iPhone: what you do with the Imp (talk, type, chat),
+/// where it is and its settings, how it looks (size, colour), what applies right now (Stop, Copy last reply), its
+/// triggers, where it can visit, sharing it, and last and apart, Goodbye. A row never has a hole: a short last
+/// row of buttons or pills shares the whole width.
+///
 /// A button that acts closes the menu first and then acts, so a window it opens comes forward. A choice
 /// that is only a setting (size, colour, Brain) applies at once and leaves the menu open.
 @MainActor
@@ -22,7 +27,9 @@ final class CardMenu: NSObject, NSMenuDelegate {
         menu.appearance = NSApp.appearance
         menu.delegate = self
         let item = NSMenuItem()
-        let host = MenuRowHost(rootView: card)
+        // The menu adds its own band above and below a custom row (none at the sides): the card gives that much
+        // of its own inset back, so its edge is the same on all four sides.
+        let host = MenuRowHost(rootView: card.padding(.vertical, -MenuMetrics.menuChrome))
         host.frame.size = host.fittingSize
         host.autoresizingMask = [.width]
         item.view = host
@@ -62,6 +69,8 @@ struct MenuItem: Identifiable {
 enum MenuMetrics {
     static let inset = Spacing.small
     static let glyph = Sizing.iconTile
+    /// What `NSMenu` adds above and below a custom item view (and not beside it), measured on macOS 26.
+    static let menuChrome: CGFloat = 5
 }
 
 /// An icon in the box every menu button gives its icon, centred, however short the glyph.
@@ -86,11 +95,14 @@ struct MenuCard<Content: View>: View {
     }
 }
 
-/// The main actions: big pebbles, three to a row (two when there are four, so no row has one alone).
+/// The main actions: big pebbles, three to a row (two when there are four, so no row has one alone). A short last
+/// row shares the full width between its buttons, so no row has a hole in it.
 struct MenuGrid: View {
     let items: [MenuItem]
 
     private var columns: Int { items.count == 4 ? 2 : min(3, max(1, items.count)) }
+    /// Cells across: six when rows of three must also split into two or one, else one per column.
+    private var cells: Int { columns == 3 ? 6 : columns }
 
     var body: some View {
         let rows = stride(from: 0, to: items.count, by: columns).map { Array(items[$0..<min($0 + columns, items.count)]) }
@@ -101,9 +113,8 @@ struct MenuGrid: View {
                         QuickButton(icon: item.icon, verbatim: item.title, action: item.action)
                             .disabled(!item.enabled)
                             .help(item.help)
+                            .gridCellColumns(cells / row.count)
                     }
-                    // A short last row keeps the width of the others.
-                    ForEach(row.count..<columns, id: \.self) { _ in Color.clear.gridCellUnsizedAxes([.horizontal, .vertical]) }
                 }
             }
         }
@@ -111,7 +122,8 @@ struct MenuGrid: View {
     }
 }
 
-/// Things to choose from, under a small heading: pills with an icon and a word, two to a row.
+/// Things to choose from, under a small heading: pills with an icon and a word, two to a row. A lone pill in the
+/// last row takes both columns, so a section never has an empty half.
 struct MenuPills: View {
     var title: String?
     let items: [MenuItem]
@@ -125,8 +137,12 @@ struct MenuPills: View {
             Grid(horizontalSpacing: MenuMetrics.inset, verticalSpacing: MenuMetrics.inset) {
                 ForEach(Array(stride(from: 0, to: items.count, by: 2)), id: \.self) { start in
                     GridRow {
-                        pill(items[start])
-                        if start + 1 < items.count { pill(items[start + 1]) } else { Color.clear.gridCellUnsizedAxes([.horizontal, .vertical]) }
+                        if start + 1 < items.count {
+                            pill(items[start])
+                            pill(items[start + 1])
+                        } else {
+                            pill(items[start]).gridCellColumns(2)
+                        }
                     }
                 }
             }

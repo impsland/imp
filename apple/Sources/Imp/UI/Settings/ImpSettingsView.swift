@@ -112,7 +112,7 @@ struct ImpSettingsView: View {
         case .tools:
             ToolsPanel(model: model, imp: imp)
             LibraryPanel(model: model)
-        case .computer: ComputerPanel(imp: imp)
+        case .computer: ComputerPanel(model: model, imp: imp)
         }
     }
 

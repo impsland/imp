@@ -40,7 +40,7 @@ struct LookPanel: View {
         HStack(spacing: Spacing.small) {
             HoverIconButton(systemName: "arrow.counterclockwise", help: "look.reset", action: reset)
                 .disabled(isDefault)
-            AgentToolsButton(imp: $imp, groups: [.look])
+            AgentToolsButton(model: model, imp: $imp, groups: [.look])
         }
     }
 

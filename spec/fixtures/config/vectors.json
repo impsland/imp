@@ -361,11 +361,11 @@
   "gate": [
     {
       "name": "an own tool is its group and its name",
-      "tool_id": "own.personality.imp_speak",
-      "tool": "imp_speak",
+      "tool_id": "own.personality.imp_create_imp",
+      "tool": "imp_create_imp",
       "arguments": "{}",
       "action": "personality",
-      "resource": "imp_speak"
+      "resource": "imp_create_imp"
     },
     {
       "name": "a built-in tool without an id is found by name",
@@ -529,6 +529,57 @@
       "tool": "imp_message",
       "arguments": "{\"to\":\"Pip\"}",
       "effect": "deny"
+    }
+  ],
+  "tool_text": [
+    {
+      "name": "a name and a description",
+      "text": {
+        "own.personality.imp_message": {
+          "name": "ask_friend",
+          "description": "Ask {imps}"
+        }
+      },
+      "problems": 0
+    },
+    {
+      "name": "a description alone",
+      "text": {
+        "mcp.files.read_file": {
+          "description": "Read a file"
+        }
+      },
+      "problems": 0
+    },
+    {
+      "name": "a name with a space",
+      "text": {
+        "own.look.imp_set_traits": {
+          "name": "set traits"
+        }
+      },
+      "problems": 1
+    },
+    {
+      "name": "a name that is too long",
+      "text": {
+        "own.look.imp_set_traits": {
+          "name": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        }
+      },
+      "problems": 1
+    },
+    {
+      "name": "a name twice",
+      "text": {
+        "own.a.x": {
+          "name": "same"
+        },
+        "own.a.y": {
+          "name": "same"
+        }
+      },
+      "problems": 1
     }
   ]
 }

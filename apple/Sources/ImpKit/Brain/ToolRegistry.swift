@@ -3,7 +3,7 @@ import ImpCore
 
 /// One tool as the registry knows it: a stable id, the name the model calls it by, and its group.
 ///
-/// Ids: `own.<group>.<tool>` for the built-in tools (for instance `own.personality.imp_speak`) and
+/// Ids: `own.<group>.<tool>` for the built-in tools (for instance `own.personality.imp_message`) and
 /// `mcp.<server>.<tool>` for tools of an MCP server (`<server>` is its name with anything outside
 /// letters, digits, `_` and `-` turned into `_`). A group is the id without the last part:
 /// `own.personality`, `mcp.files`. The ids are what saved choices and Den packages refer to.
@@ -25,17 +25,30 @@ public struct ToolEntry: Hashable, Sendable, Identifiable, Codable {
 public struct CatalogTool: Sendable {
     public var entry: ToolEntry?
     public var spec: ToolSpec
+    /// What the changing parts of its description are right now (`{imps}`…): a description a person wrote may use them.
+    public var fills: [String: String]
 
-    public init(entry: ToolEntry?, spec: ToolSpec) { self.entry = entry; self.spec = spec }
+    public init(entry: ToolEntry?, spec: ToolSpec, fills: [String: String] = [:]) { self.entry = entry; self.spec = spec; self.fills = fills }
 }
 
 /// What is switched off: whole groups and single tools, by id. Everything else is on.
 public struct ToolSelection: Codable, Hashable, Sendable {
     public var groupsOff: Set<String>
     public var toolsOff: Set<String>
+    /// What was written over single tools' names and descriptions, by id (`ToolSet` applies it).
+    public var text: [String: ToolText]
 
-    public init(groupsOff: Set<String> = [], toolsOff: Set<String> = []) {
-        self.groupsOff = groupsOff; self.toolsOff = toolsOff
+    public init(groupsOff: Set<String> = [], toolsOff: Set<String> = [], text: [String: ToolText] = [:]) {
+        self.groupsOff = groupsOff; self.toolsOff = toolsOff; self.text = text
+    }
+
+    private enum CodingKeys: String, CodingKey { case groupsOff, toolsOff, text }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        groupsOff = try c.decodeIfPresent(Set<String>.self, forKey: .groupsOff) ?? []
+        toolsOff = try c.decodeIfPresent(Set<String>.self, forKey: .toolsOff) ?? []
+        text = try c.decodeIfPresent([String: ToolText].self, forKey: .text) ?? [:]
     }
 
     /// Everything on.
@@ -65,7 +78,7 @@ public enum ToolRegistry {
     private static let titles: [String: String] = [
         OwnTools.play: String(localized: "tool.play"),
         OwnTools.move: String(localized: "tool.move"),
-        OwnTools.speak: String(localized: "tool.speak"),
+        OwnTools.createImp: String(localized: "tool.create_imp"),
         OwnTools.makeAnimation: String(localized: "tool.make_animation"),
         OwnTools.showAnimation: String(localized: "tool.show_animation"),
         OwnTools.removeAnimation: String(localized: "tool.remove_animation"),

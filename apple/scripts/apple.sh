@@ -533,7 +533,7 @@ DESIGN_SCENES=(
   all-imps-app all-imps-app-narrow all-imps-nothing
   first-run-service first-run-error
   bar-menu bar-menu-es
-  all-imps-pair all-imps-bubble all-imps-talking all-imps-brains devices-empty devices-linked devices-imp devices-device
+  all-imps-pair all-imps-bubble all-imps-talking all-imps-brains devices-empty devices-linked devices-imp devices-device devices-focus devices-local
   all-imps-sharing all-imps-privacy all-imps-backup
   bubble-short bubble-read-all bubble-chat
 )

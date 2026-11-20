@@ -50,9 +50,11 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     private var ownToolsOff: [String]?
     /// Its own tools that are off by default (`ImpToolGroup.isOnByDefault`) and it may use.
     private var ownToolsOn: [String]?
-    /// Single tools switched off, by registry id (`own.personality.imp_speak`, `mcp.files.read_file`).
+    /// Single tools switched off, by registry id (`own.personality.imp_message`, `mcp.files.read_file`).
     /// Optional, so older profiles load. Whole groups are `ownToolsOff` and `servers`.
     private var toolsOff: [String]?
+    /// What was written over single tools' names and descriptions, by registry id. Optional, so older profiles load.
+    private var toolTexts: [String: ToolText]?
     /// Storage for `animations` and `traits` (optional, so older profiles load).
     var ownAnimations: [MadeAnimation]?
     var character: ImpTraits?
@@ -79,13 +81,19 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
         toolsOff = set.isEmpty ? nil : set.sorted()
     }
 
+    /// What was written over how its tools read to the model, by registry id (see `ToolText`).
+    public var toolText: [String: ToolText] {
+        get { toolTexts ?? [:] }
+        set { toolTexts = newValue.filter { !$0.value.isEmpty }.isEmpty ? nil : newValue.filter { !$0.value.isEmpty } }
+    }
+
     /// The single tools switched off for it, by registry id.
     public var disabledTools: Set<String> { Set(toolsOff ?? []) }
 
     /// What is switched off for it, as `ToolSet` applies it. A group of an MCP server is on when the
     /// server is in `servers`, which `MCPScope` already takes care of.
     public var toolSelection: ToolSelection {
-        ToolSelection(groupsOff: Set(ImpToolGroup.allCases.filter { !uses($0) }.map(ToolRegistry.ownGroupID)), toolsOff: disabledTools)
+        ToolSelection(groupsOff: Set(ImpToolGroup.allCases.filter { !uses($0) }.map(ToolRegistry.ownGroupID)), toolsOff: disabledTools, text: toolText)
     }
 
     /// The groups of its own tools it may use.

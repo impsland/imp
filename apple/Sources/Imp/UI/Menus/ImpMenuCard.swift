@@ -2,9 +2,11 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// An Imp's right-click menu, the same on the desktop and in the app's window: the Imp in its circle with its
-/// name and status, six big buttons in a 2 × 3 grid, its size and its colour, then `extra`: the rows that only
-/// sometimes apply (Stop, triggers, devices, sharing, Goodbye), as buttons too (see `MenuCard`).
+/// An Imp's right-click menu, the same on the desktop, in the app's window and for a visitor: the Imp in its circle
+/// with its name and status, six big buttons in a 2 × 3 grid (Talk, Type, Chat, then Hide, where it is, and
+/// Settings), its size and its colour, then `extra`: the rows that only sometimes apply (Stop, triggers, devices,
+/// sharing, Goodbye, see `ImpMenuEnd`), as buttons too (see `MenuCard`). A visitor's settings and looks belong to
+/// its home, so it has New chat where the others have Settings, and no size or colour.
 struct ImpMenuCard<Extra: View>: View {
     typealias Place = ImpMenuPlace
     typealias Action = ImpMenuAction
@@ -13,15 +15,18 @@ struct ImpMenuCard<Extra: View>: View {
     let name: String
     let status: String
     let place: Place
+    /// False for a visitor whose home is away: it can't be asked anything now.
+    let awake: Bool
     /// Runs an action. The six buttons close the menu first; size and colour change at once and leave it open.
     let run: (Action) -> Void
     let extra: Extra
     @State private var hue: Double
     @State private var scale: Double
 
-    init(ready: Bool, name: String, status: String, hue: Double, scale: Double, place: Place,
+    init(ready: Bool, name: String, status: String, hue: Double, scale: Double, place: Place, awake: Bool = true,
          run: @escaping (Action) -> Void, @ViewBuilder extra: () -> Extra) {
         self.ready = ready
+        self.awake = awake
         self.name = name
         self.status = status
         self.place = place
@@ -31,25 +36,52 @@ struct ImpMenuCard<Extra: View>: View {
         _scale = State(initialValue: scale)
     }
 
+    /// Talk, Type, Chat, then Hide, the place button, and Settings (a visitor's New chat). A visitor that is asleep
+    /// can't be asked or started a chat with, and says why.
+    var buttons: [MenuItem] {
+        let asleep = place.isVisitor && !awake
+        let why: String
+        if case .visitor(let home) = place { why = String(localized: "\(name) is asleep: \(home) is away") } else { why = "" }
+        func ask(_ item: MenuItem) -> MenuItem {
+            var item = item
+            if asleep { item.enabled = false; item.help = why }
+            return item
+        }
+        let fifth: MenuItem
+        switch place {
+        case .desktop:
+            fifth = MenuItem(id: "move", icon: "house.fill", title: String(localized: "menu.imp.home"), help: words("menu.imp.home_help", name)) { run(.move) }
+        case .home:
+            fifth = MenuItem(id: "move", icon: "arrow.up.forward.square.fill", title: String(localized: "menu.imp.free"),
+                             help: words("menu.imp.free_help", name)) { run(.move) }
+        case .visitor(let home):
+            fifth = MenuItem(id: "move", icon: "house.fill", title: String(localized: "menu.imp.send_home"),
+                             help: String(localized: "\(name) flies back to \(home). If it is away, \(name) goes now and \(home) hears when it is back.")) { run(.move) }
+        }
+        let sixth = place.isVisitor
+            ? ask(MenuItem(id: "new", icon: "plus.bubble.fill", title: String(localized: "New Chat")) { run(.newChat) })
+            : MenuItem(id: "settings", icon: "slider.horizontal.3", title: String(localized: "menu.imp.settings"),
+                       help: words("menu.imp.settings_help", name)) { run(.settings) }
+        return [
+            ask(MenuItem(id: "talk", icon: "mic.fill", title: String(localized: "menu.imp.talk"), help: words("menu.imp.talk_help", name)) { run(.talk) }),
+            ask(MenuItem(id: "type", icon: "keyboard.fill", title: String(localized: "menu.imp.type"), help: words("menu.imp.type_help", name)) { run(.type) }),
+            MenuItem(id: "chat", icon: "bubble.left.and.bubble.right.fill", title: String(localized: "menu.imp.chat"),
+                     help: words("menu.imp.chat_help", name)) { run(.chat) },
+            MenuItem(id: "hide", icon: "eye.slash.fill", title: String(localized: "menu.imp.hide"), help: words("menu.imp.hide_help", name)) { run(.hide) },
+            fifth,
+            sixth,
+        ]
+    }
+
     var body: some View {
         MenuCard {
             ImpMenuHeader(ready: ready, name: name, status: status, hue: hue)
-            MenuGrid(items: [
-                MenuItem(id: "talk", icon: "mic.fill", title: String(localized: "menu.imp.talk"), help: words("menu.imp.talk_help", name)) { run(.talk) },
-                MenuItem(id: "type", icon: "keyboard.fill", title: String(localized: "menu.imp.type"), help: words("menu.imp.type_help", name)) { run(.type) },
-                MenuItem(id: "chat", icon: "bubble.left.and.bubble.right.fill", title: String(localized: "menu.imp.chat"),
-                         help: words("menu.imp.chat_help", name)) { run(.chat) },
-                MenuItem(id: "hide", icon: "eye.slash.fill", title: String(localized: "menu.imp.hide"), help: words("menu.imp.hide_help", name)) { run(.hide) },
-                place == .desktop
-                    ? MenuItem(id: "move", icon: "house.fill", title: String(localized: "menu.imp.home"), help: words("menu.imp.home_help", name)) { run(.move) }
-                    : MenuItem(id: "move", icon: "arrow.up.forward.square.fill", title: String(localized: "menu.imp.free"),
-                               help: words("menu.imp.free_help", name)) { run(.move) },
-                MenuItem(id: "settings", icon: "slider.horizontal.3", title: String(localized: "menu.imp.settings"),
-                         help: words("menu.imp.settings_help", name)) { run(.settings) },
-            ])
-            VStack(spacing: MenuMetrics.inset) {
-                SizeRow(scale: scale, hue: hue) { scale = $0; run(.size($0)) }
-                ColourRow(hue: hue) { hue = $0; run(.colour($0)) }
+            MenuGrid(items: buttons)
+            if !place.isVisitor {
+                VStack(spacing: MenuMetrics.inset) {
+                    SizeRow(scale: scale, hue: hue) { scale = $0; run(.size($0)) }
+                    ColourRow(hue: hue) { hue = $0; run(.colour($0)) }
+                }
             }
             extra
         }
@@ -57,19 +89,45 @@ struct ImpMenuCard<Extra: View>: View {
     }
 }
 
-/// Where the Imp is: the fifth button of its menu sends it home from the desktop, or frees it from the window.
-enum ImpMenuPlace { case desktop, home }
+/// Where the Imp is: the fifth button of its menu sends it home from the desktop, frees it from the window, or
+/// (for a visitor, from the device it came from) flies it back there.
+enum ImpMenuPlace: Equatable {
+    case desktop, home
+    case visitor(from: String)
+
+    var isVisitor: Bool { if case .visitor = self { true } else { false } }
+}
 
 /// What a button of an Imp's menu does.
 enum ImpMenuAction {
-    case talk, type, chat, hide, move, settings
+    case talk, type, chat, hide, move, settings, newChat
     case size(Double)
     case colour(Double)
 }
 
 extension ImpMenuCard where Extra == EmptyView {
-    init(ready: Bool, name: String, status: String, hue: Double, scale: Double, place: Place, run: @escaping (Action) -> Void) {
-        self.init(ready: ready, name: name, status: status, hue: hue, scale: scale, place: place, run: run, extra: { EmptyView() })
+    init(ready: Bool, name: String, status: String, hue: Double, scale: Double, place: Place, awake: Bool = true,
+         run: @escaping (Action) -> Void) {
+        self.init(ready: ready, name: name, status: status, hue: hue, scale: scale, place: place, awake: awake, run: run, extra: { EmptyView() })
+    }
+}
+
+/// The end of an own Imp's menu, the same on the desktop and in the window: sharing it (Copy kit, Copy link),
+/// then Goodbye, last and apart.
+struct ImpMenuEnd: View {
+    let canLink: Bool
+    let canGoodbye: Bool
+    let kit: () -> Void
+    let link: () -> Void
+    let goodbye: () -> Void
+
+    var body: some View {
+        MenuPills(items: [
+            MenuItem(id: "kit", icon: "shippingbox.fill", title: String(localized: "menu.imp.copy_kit"), action: kit),
+            MenuItem(id: "link", icon: "link", title: String(localized: "menu.imp.copy_link"), enabled: canLink, action: link),
+        ])
+        MenuDangerButton(item: MenuItem(id: "goodbye", icon: "trash", title: String(localized: "menu.imp.goodbye"),
+                                        enabled: canGoodbye, action: goodbye))
     }
 }
 

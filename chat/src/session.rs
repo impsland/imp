@@ -234,6 +234,14 @@ impl Session {
         look
     }
 
+    /// What the Imp's tools are offered as: the names and descriptions its agent file's `toolText` gives them.
+    pub fn tool_selection(&self) -> ToolSelection {
+        ToolSelection {
+            text: self.agent.tool_text.clone(),
+            ..ToolSelection::all()
+        }
+    }
+
     /// The file of the agent: where the Imp is defined.
     pub fn agent_file(&self) -> Option<&Path> {
         self.loaded.agents.get(&self.name).map(|a| a.path.as_path())
@@ -477,7 +485,7 @@ impl Session {
             &self.model,
             &mut messages,
             &Toolbox::new(),
-            &ToolSelection::all(),
+            &self.tool_selection(),
             1,
             |_| {},
         )

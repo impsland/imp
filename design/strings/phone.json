@@ -401,6 +401,18 @@
     "es": "Nuevo",
     "zh-Hans": "新建"
   },
+  "phone.chat.history": {
+    "note": "iPhone: tip of the menu in an Imp's chat bar that lists its saved chats to carry on in.",
+    "en": "Chats",
+    "es": "Chats",
+    "zh-Hans": "聊天记录"
+  },
+  "phone.chat.untitled": {
+    "note": "iPhone: name of a saved chat that has no title yet.",
+    "en": "Chat",
+    "es": "Chat",
+    "zh-Hans": "聊天"
+  },
   "phone.talks.empty": {
     "note": "Empty state of the list of talks between Imps.",
     "en": "No talks yet.",

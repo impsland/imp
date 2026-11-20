@@ -3,7 +3,7 @@
 //! Ids are `own.<group>.<tool>` for built-in tools and `mcp.<server>.<tool>` for tools of an MCP
 //! server. A group id is the id without its last part. The vectors are `spec/fixtures/tool-filtering.json`.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 /// One tool as the registry knows it.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -129,8 +129,8 @@ macro_rules! built_in_tools {
 }
 
 built_in_tools! {
-    ImpSpeak = ("personality", "imp_speak"),
     ImpMessage = ("personality", "imp_message"),
+    ImpCreateImp = ("personality", "imp_create_imp"),
     ImpOpenFile = ("personality", "imp_open_file"),
     ImpOpenSettings = ("personality", "imp_open_settings"),
     ImpSetTraits = ("look", "imp_set_traits"),
@@ -186,6 +186,60 @@ pub struct ToolSelection {
     pub groups_off: BTreeSet<String>,
     #[serde(default)]
     pub tools_off: BTreeSet<String>,
+    /// What the person changed about how single tools read to the model, by id.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub text: BTreeMap<String, ToolText>,
+}
+
+/// What the person wrote over a tool's name and description (the agent file's `toolText`, by tool id).
+/// Whatever is `None` stays as the app made it.
+#[derive(Debug, Clone, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct ToolText {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+}
+
+/// The parts of a description that change, which a description the person wrote may use.
+pub const PLACEHOLDERS: [&str; 3] = ["imps", "animations", "place"];
+
+/// A name the model can call a tool by: 1 to 64 letters, digits, `_` and `-`.
+pub fn valid_tool_name(name: &str) -> bool {
+    (1..=64).contains(&name.len())
+        && name
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-')
+}
+
+/// What is wrong with a set of overrides, in plain words: names that are not allowed or are used twice.
+pub fn tool_text_problems(text: &BTreeMap<String, ToolText>) -> Vec<String> {
+    let mut out = Vec::new();
+    let mut seen: BTreeMap<&str, &str> = BTreeMap::new();
+    for (id, t) in text {
+        let Some(name) = t.name.as_deref() else {
+            continue;
+        };
+        if !valid_tool_name(name) {
+            out.push(format!(
+                "toolText {id}: the name {name:?} is not allowed: use 1 to 64 letters, digits, _ and -."
+            ));
+        } else if let Some(other) = seen.insert(name, id) {
+            out.push(format!(
+                "toolText {id}: the name {name:?} is also used by {other}."
+            ));
+        }
+    }
+    out
+}
+
+/// Fills `{key}` in `text` from `fills`; a `{...}` that is not a key stays as it is.
+pub fn expand_placeholders(text: &str, fills: &BTreeMap<String, String>) -> String {
+    let mut out = text.to_string();
+    for (key, value) in fills {
+        out = out.replace(&format!("{{{key}}}"), value);
+    }
+    out
 }
 
 impl ToolSelection {
@@ -231,9 +285,28 @@ mod tests {
     use serde_json::Value;
 
     #[test]
+    fn tool_names_and_placeholders() {
+        assert!(valid_tool_name("ask-friend_2") && valid_tool_name(&"x".repeat(64)));
+        assert!(
+            !valid_tool_name("") && !valid_tool_name("a b") && !valid_tool_name(&"x".repeat(65))
+        );
+        let fills = BTreeMap::from([("imps".to_string(), "Mo, Bo".to_string())]);
+        assert_eq!(
+            expand_placeholders("To {imps} {other}", &fills),
+            "To Mo, Bo {other}"
+        );
+    }
+
+    #[test]
     fn only_messages_to_imps_run_together() {
         assert!(runs_concurrently("imp_message"));
-        for name in ["imp_speak", "imp_open_file", "shell", "computer_act", ""] {
+        for name in [
+            "imp_create_imp",
+            "imp_open_file",
+            "shell",
+            "computer_act",
+            "",
+        ] {
             assert!(!runs_concurrently(name), "{name}");
         }
     }
@@ -297,6 +370,7 @@ mod tests {
             let selection = ToolSelection {
                 groups_off: strings(&case["groupsOff"]),
                 tools_off: strings(&case["toolsOff"]),
+                ..ToolSelection::all()
             };
             let tools: Vec<(String, Option<ToolEntry>)> = case["tools"]
                 .as_array()
@@ -333,7 +407,7 @@ mod tests {
         for (g, _) in GROUPS {
             assert!(BUILT_IN.iter().any(|(bg, _)| *bg == g), "{g} has no tools");
         }
-        assert_eq!(group_of("imp_speak"), Some("personality"));
+        assert_eq!(group_of("imp_create_imp"), Some("personality"));
         assert_eq!(group_of("imp_add_kit"), Some("tools"));
         assert_eq!(group_of("imp_export_kit"), Some("tools"));
         assert_eq!(group_of("den_get"), None);

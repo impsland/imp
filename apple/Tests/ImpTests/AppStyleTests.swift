@@ -231,6 +231,8 @@ import Testing
     private static let pebble: [Rule] = [
         Rule(pattern: #"\.strokeBorder\(|\.stroke\("#, what: "an outline (only focus rings and drawings may stroke)", allowed: [
             "Adaptive.swift": "the keyboard focus ring",
+            "DeviceDiagrams.swift": "the line between two devices is a drawing",
+            "DevicePlugs.swift": "a plug is a drawing: its outline is what shows it is out",
             "Inputs.swift": "a focused field's ring",
             "TextArea.swift": "a focused field's ring",
             "BeatTrack.swift": "the timeline track is a drawing",
@@ -256,6 +258,7 @@ import Testing
         Rule(pattern: #"\bDungeon|EmberButtonStyle|CardDivider|buttonText"#, what: "a name of the old language"),
         Rule(pattern: #"\.shadow\("#, what: "a shadow (only things that float over content)", allowed: [
             "Notice.swift": "the floating notice sits over content",
+            "DevicePlugs.swift": "a plugged-in plug glows",
             "BubbleChrome.swift": "the desktop bubble and its tail float",
             "VoicePresence.swift": "the voice orb",
             "MediaPlayer.swift": "the voice smoke orb",

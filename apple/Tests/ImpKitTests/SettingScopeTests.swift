@@ -205,7 +205,7 @@ import Testing
     }
 
     @Test func aKitTriggerRoundTripsEveryStep() throws {
-        let steps = [Step(.ask, value: "Do it", clipboard: true), Step(.say, value: "Hi", aloud: true), Step(.play, value: "Wiggle"),
+        let steps = [Step(.ask, value: "Do it", clipboard: true), Step(.say, value: "Hi"), Step(.play, value: "Wiggle"),
                      Step(.sleep, value: "Nod"), Step(.wake), Step(.follow, value: "glide", speed: 1.5), Step(.open, value: "chat")]
         for step in steps {
             let s = Shortcut(name: step.act.rawValue, trigger: Trigger(.click, value: "3"), steps: [step, Step(.say, value: "Done")])

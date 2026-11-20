@@ -8,8 +8,6 @@ enum DeviceSelection: Hashable, Identifiable {
     /// An Imp's chip: the Imp and the node it is in (an Imp can be seen on more than one screen).
     case imp(UUID, in: String)
     case channel(String)
-    /// The thin line from an Imp's chip to the device it thinks on.
-    case tether(UUID, in: String)
 
     var id: Self { self }
 
@@ -18,17 +16,9 @@ enum DeviceSelection: Hashable, Identifiable {
     func resolved(in map: DeviceMap) -> DeviceSelection? {
         switch self {
         case .node(let id): map.node(id) == nil ? nil : self
-        case .imp(let id, let node), .tether(let id, let node):
+        case .imp(let id, let node):
             map.residents(of: node).contains { $0.id == id } ? self : nil
         case .channel(let id): map.channels.contains { $0.id == id } ? self : nil
-        }
-    }
-
-    init(_ kind: DeviceGraph.EdgeData.Kind) {
-        switch kind {
-        case .channel(let id): self = .channel(id)
-        case .toHop(let hop): self = .node(hop)
-        case .tether(let imp, let node): self = .tether(imp, in: node)
         }
     }
 }

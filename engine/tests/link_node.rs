@@ -486,6 +486,43 @@ fn only_the_holder_may_ask_and_others_hear_gone() {
 }
 
 #[test]
+fn the_chat_list_goes_to_the_holder_and_only_the_holder_opens_a_chat() {
+    use imp_engine::link::LinkChat;
+    let mut net = chain();
+    let pip = imp(100, "Pip");
+    let t = throw(&mut net, 0, 1, &pip);
+    assert!(accept(&mut net, 1, t));
+    net.take(0);
+    net.take(1);
+    // The holder asks to carry on in a chat: the home passes it to the app.
+    assert!(net.nodes[1].send(
+        &LinkMessage::OpenChat {
+            imp: pip.id,
+            chat: id(40)
+        },
+        id(1)
+    ));
+    // The home tells the chats it has: the holder hears them.
+    let list = LinkMessage::Chats {
+        imp: pip.id,
+        current: id(41),
+        chats: vec![LinkChat {
+            id: id(40),
+            title: "Trip".into(),
+            updated: 1.0,
+        }],
+    };
+    assert!(net.nodes[0].send(&list, id(2)));
+    net.pump();
+    assert!(
+        net.messages(0)
+            .iter()
+            .any(|(m, from)| matches!(m, LinkMessage::OpenChat { .. }) && *from == id(2))
+    );
+    assert!(net.messages(1).iter().any(|(m, _)| m == &list));
+}
+
+#[test]
 fn calling_home_tells_a_holder_that_was_offline_when_it_connects() {
     let mut net = chain();
     let pip = imp(100, "Pip");
@@ -757,6 +794,13 @@ fn requests_for_an_imp_the_sender_does_not_hold_never_reach_the_app() {
         id(1)
     ));
     assert!(net.nodes[1].send(&LinkMessage::NewChat { imp: id(55) }, id(1)));
+    assert!(net.nodes[1].send(
+        &LinkMessage::OpenChat {
+            imp: id(55),
+            chat: id(56)
+        },
+        id(1)
+    ));
     net.pump();
     assert!(net.messages(0).is_empty());
     assert!(net.nodes[0].is_connected(id(2)), "and the connection stays");

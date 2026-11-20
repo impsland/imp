@@ -118,6 +118,22 @@
       "state": "string"
     }
   },
+  "devices.access.talk": {
+    "note": "Name of the first plug a linked device can have: it is trusted to talk to the Imps and share files.",
+    "en": "Talk & files",
+    "es": "Hablar y archivos",
+    "zh-Hans": "对话和文件"
+  },
+  "devices.talk.label": {
+    "note": "Screen reader label of the line from an Imp to another device's Imp it can message.",
+    "en": "{imp} can message {contact}",
+    "es": "{imp} puede escribir a {contact}",
+    "zh-Hans": "{imp} 可以给 {contact} 发消息",
+    "args": {
+      "imp": "string",
+      "contact": "string"
+    }
+  },
   "devices.tether.label": {
     "note": "Screen reader label of the line from an Imp to the device it thinks on.",
     "en": "{imp} is on {node} and thinks on {home}",
@@ -191,24 +207,6 @@
     "es": "Traerlos a todos",
     "zh-Hans": "全部叫回家"
   },
-  "devices.tools.title": {
-    "note": "Inspector card: the tools Imps may use for a device.",
-    "en": "Tools Imps may use from this device",
-    "es": "Herramientas que los Imps pueden usar desde este dispositivo",
-    "zh-Hans": "Imp 可为此设备使用的工具"
-  },
-  "devices.tools.info": {
-    "note": "Help of the per-device tool limits.",
-    "en": "When this device asks one of your Imps, the Imp can use the tools that are on here. Switch off what it should not touch for this device.",
-    "es": "Cuando este dispositivo le pide algo a uno de tus Imps, el Imp puede usar las herramientas activadas aquí. Desactiva lo que no debe tocar para este dispositivo.",
-    "zh-Hans": "当此设备向你的某个 Imp 提问时，Imp 可以使用这里开启的工具。关掉不希望它为此设备使用的工具。"
-  },
-  "devices.tools.not_mine": {
-    "note": "Shown when a device is not Mine.",
-    "en": "Imps answer this device without tools. Turn on Mine to choose what they may use.",
-    "es": "Los Imps responden a este dispositivo sin herramientas. Activa Mío para elegir lo que pueden usar.",
-    "zh-Hans": "Imp 回答此设备时不使用工具。打开“我的”后可选择它们能用什么。"
-  },
   "devices.tools.commands": {
     "note": "Name of the tool that runs commands.",
     "en": "Commands",
@@ -247,25 +245,13 @@
   },
   "devices.channel.title": {
     "note": "Title of a line between two devices.",
-    "en": "{from} and {to}",
-    "es": "{from} y {to}",
-    "zh-Hans": "{from} 与 {to}",
+    "en": "{from} ⇄ {to}",
+    "es": "{from} ⇄ {to}",
+    "zh-Hans": "{from} ⇄ {to}",
     "args": {
       "from": "string",
       "to": "string"
     }
-  },
-  "devices.tether.tools": {
-    "note": "Inspector card: the tools an Imp may use on the device it is on.",
-    "en": "Tools it may use there",
-    "es": "Herramientas que puede usar allí",
-    "zh-Hans": "它在那里可用的工具"
-  },
-  "devices.tether.tools.info": {
-    "note": "Help: the tools are the device's limits.",
-    "en": "What the Imp may use while this device asks it. Change it on the device.",
-    "es": "Lo que el Imp puede usar cuando este dispositivo le pide algo. Se cambia en el dispositivo.",
-    "zh-Hans": "此设备向 Imp 提问时，Imp 可使用的工具。请在该设备上修改。"
   },
   "home.corner.devices.away": {
     "note": "Screen reader value of the Devices corner button when a linked device cannot be reached. A warning mark shows on the button.",
@@ -306,12 +292,6 @@
     "es": "Mostrar u ocultar los interruptores",
     "zh-Hans": "显示或隐藏开关"
   },
-  "devices.tools.locked": {
-    "note": "Row in a device's sheet when the device is not Mine, so it gets no tools.",
-    "en": "No tools until Mine",
-    "es": "Sin herramientas hasta ser Mío",
-    "zh-Hans": "设为“我的”之前没有工具"
-  },
   "devices.reach.yes": {
     "note": "Status of this Mac when other devices can reach it.",
     "en": "Reachable",
@@ -335,5 +315,77 @@
     "en": "Not in use",
     "es": "Sin uso",
     "zh-Hans": "未使用"
+  },
+  "devices.plug.on": {
+    "note": "Spoken value of a plug that is plugged in.",
+    "en": "plugged in",
+    "es": "conectado",
+    "zh-Hans": "已插上"
+  },
+  "devices.plug.off": {
+    "note": "Spoken value of a plug that is not plugged in.",
+    "en": "not plugged in",
+    "es": "desconectado",
+    "zh-Hans": "未插上"
+  },
+  "devices.plug.title": {
+    "note": "Title of the card of plugs: what a linked device can use of this Mac's Imps.",
+    "en": "What {name} can use here",
+    "es": "Qué puede usar {name} aquí",
+    "zh-Hans": "{name} 在这里可以用什么",
+    "args": {
+      "name": "string"
+    }
+  },
+  "devices.edge.travelling": {
+    "note": "Title of the chips of the Imps going across a line.",
+    "en": "Travelling",
+    "es": "De viaje",
+    "zh-Hans": "往来中"
+  },
+  "devices.on_screen": {
+    "note": "Title of the chips of the Imps on a device's screen.",
+    "en": "On its screen",
+    "es": "En su pantalla",
+    "zh-Hans": "在它的屏幕上"
+  },
+  "devices.forget.named": {
+    "note": "Button that forgets one linked device, with its name.",
+    "en": "Forget {name}…",
+    "es": "Olvidar {name}…",
+    "zh-Hans": "忘记 {name}…",
+    "args": {
+      "name": "string"
+    }
+  },
+  "devices.reach.at": {
+    "note": "Title of the addresses this Mac can be reached at.",
+    "en": "Reachable at",
+    "es": "Accesible en",
+    "zh-Hans": "可通过以下地址访问"
+  },
+  "devices.imp.here": {
+    "note": "Caption of the one tile of an Imp that is at home.",
+    "en": "Here",
+    "es": "Aquí",
+    "zh-Hans": "在这里"
+  },
+  "devices.imp.can_use": {
+    "note": "Title of the plugs of an Imp that is away: its tools it can use where it is.",
+    "en": "Can use there",
+    "es": "Puede usar allí",
+    "zh-Hans": "在那里可用"
+  },
+  "devices.imp.can_use.info": {
+    "note": "Help of the plugs of an Imp that is away.",
+    "en": "The tools of this Imp that the device it is on lets it use. A tool with a lock is not plugged in on that device's connection: press it to open the connection and plug it in.",
+    "es": "Las herramientas de este Imp que el dispositivo donde está le deja usar. Una herramienta con candado no está conectada en la conexión de ese dispositivo: púlsala para abrir la conexión y conectarla.",
+    "zh-Hans": "此 Imp 所在设备允许它使用的工具。带锁的工具在该设备的连接上没有插上：点按它可打开连接并插上。"
+  },
+  "devices.visitor.can_use": {
+    "note": "Title of the read-only plugs of the device an Imp comes from.",
+    "en": "Its device can use here",
+    "es": "Su dispositivo puede usar aquí",
+    "zh-Hans": "它的设备在这里可用"
   }
 }

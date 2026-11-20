@@ -70,8 +70,10 @@ private func rich() -> ImpPreferences {
     dot.newChatAtTokens = ImpProfile.newChatChoices.first
     dot.setUses(.look, false)
     dot.setUses(.computer, true)
-    dot.setUses(tool: ToolRegistry.ownID(.personality, tool: "imp_speak"), false)
+    dot.setUses(tool: ToolRegistry.ownID(.personality, tool: "imp_message"), false)
     dot.setUses(tool: ToolRegistry.mcpID(server: "files", tool: "read_file"), false)
+    dot.toolText = [ToolRegistry.ownID(.personality, tool: "imp_message"): ToolText(name: "ask_friend", description: "Ask {imps}"),
+                    ToolRegistry.mcpID(server: "files", tool: "read_file"): ToolText(description: "Read a file")]
     dot.usesShell = false
     dot.servers = [files.id]
     dot.ownAnimations = [MadeAnimation(name: "Spin", beats: [AnimationBeat(duration: 2)])]
@@ -206,6 +208,27 @@ private func rich() -> ImpPreferences {
         #expect(json["providers"]?["cloud-ai"]?["name"]?.string == "Cloud AI" && json["mcp"]?["web"]?["disabled"]?.bool == true)
         let agent = try String(contentsOf: home.agent("Dot"), encoding: .utf8)
         #expect(agent.contains("mode: primary") && agent.contains("model: cloud-ai/other") && agent.contains("description: Short answers"))
+    }
+
+    @Test func toolTextIsInTheAgentFileAndClearsWhenRemoved() throws {
+        let home = Home()
+        defer { home.remove() }
+        var prefs = rich()
+        try home.store().save(prefs)
+        let text = try String(contentsOf: home.agent("Dot"), encoding: .utf8)
+        #expect(text.contains("toolText:") && text.contains("own.personality.imp_message") && text.contains("ask_friend"), "\(text)")
+        prefs.imps[0].toolText = [ToolRegistry.mcpID(server: "files", tool: "read_file"): ToolText(name: "read")]
+        let store = home.store()
+        _ = store.load()
+        try store.save(prefs)
+        let got = home.store().load().prefs.imps[0].toolText
+        #expect(got == prefs.imps[0].toolText, "the description and the other tool are gone")
+        prefs.imps[0].toolText = [:]
+        let again = home.store()
+        _ = again.load()
+        try again.save(prefs)
+        #expect(!(try String(contentsOf: home.agent("Dot"), encoding: .utf8)).contains("toolText"))
+        #expect(home.store().load().prefs.imps[0].toolText.isEmpty)
     }
 
     @Test func savingWritesOnlyWhatChanged() throws {

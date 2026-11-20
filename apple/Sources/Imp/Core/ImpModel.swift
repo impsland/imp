@@ -85,6 +85,9 @@ final class ImpModel {
     /// A visitor's newest turn when its home started the work in progress, and whether the work ended
     /// before the turn with its answer arrived (an iPhone home ends the work before it files the turn).
     @ObservationIgnored private var turnBeforeWork: UUID?
+    /// The chats of a visiting Imp's home and the one it is in, as the home last said (nil: it hasn't said).
+    @ObservationIgnored fileprivate var visitChats: [LinkChat] = []
+    @ObservationIgnored fileprivate var visitChatID: UUID?
     @ObservationIgnored private var answerDue = false
     @ObservationIgnored private var captionTask: Task<Void, Never>?
     @ObservationIgnored private var hideTask: Task<Void, Never>?
@@ -343,17 +346,20 @@ final class ImpModel {
     // MARK: Saved chats
 
     /// Starts a fresh chat. The one you were in stays in the list to come back to.
-    func newChat() {
-        if visit?.isAwake == false { return }              // its home keeps the chats, and it can't hear
+    /// False when it can't (a visitor asleep: its home keeps the chats, and can't hear).
+    @discardableResult
+    func newChat() -> Bool {
+        if visit?.isAwake == false { return false }
         stopForChatChange()
         history.startNew()
         if visit != nil { app.link.newChat(id) }
+        return true
     }
 
     /// New Chat from the chat panel: the panel closes and a fresh text box opens above the Imp
     /// (the chat it left stays in the list).
     func startNewChat() {
-        newChat()
+        guard newChat() else { return }
         beforeChat = nil
         startTyping()
     }
@@ -361,6 +367,13 @@ final class ImpModel {
     /// Carries on in a saved chat, where it left off (the model remembers it as it was).
     func switchChat(to chat: UUID) {
         guard chat != history.current.id else { return }
+        if visit != nil {
+            // The chats are at its home: it switches and tells what the chat is now. Nothing can be asked of it asleep.
+            guard visit?.isAwake == true else { return }
+            stopForChatChange()
+            app.link.openChat(id, chat)
+            return
+        }
         stopForChatChange()
         history.open(chat)
     }
@@ -601,7 +614,7 @@ final class ImpModel {
             }
             start(.shortcut(shortcut, prompt: step.text, clip, happened: happened))
         case .say:
-            say(step.text, aloud: step.speaksAloud)
+            say(step.text)
         case .play:
             if let ref = animation(step) { app.reactions.play(ref, by: self, evenIfBusy: true) }
         case .sleep:
@@ -627,11 +640,10 @@ final class ImpModel {
         step.animationName.flatMap { prefs.ref(named: $0, imp: id) }
     }
 
-    /// A `say` step: the text in the bubble, and out loud when asked.
-    func say(_ text: String, aloud: Bool) {
+    /// A `say` step: the text in the bubble.
+    func say(_ text: String) {
         guard !text.isEmpty else { return }
         show(Bubble(text: text, phase: .result))
-        if aloud { Speaker.shared.say(text, language: nil) }
     }
 
     /// A follow trigger made or switched on applies its way of following at once.
@@ -1192,22 +1204,28 @@ extension ImpModel {
         if bubble?.exchange != nil { bubble = nil }
     }
 
-    /// The chat at its home, as the home shows it.
+    /// The chat at its home, as the home shows it. The list of chats and the one it is in stay as the home last said.
     func heard(chat turns: [LinkTurn]) {
-        var copy = ChatHistory(folder: nil)
-        for t in turns {
+        let shown = turns.map { t -> ChatTurn in
             // A thought of the home comes as its line only ("Thought for 3s"), never what it thought.
             let thoughts = Set(t.thoughts ?? [])
             let steps = t.steps.enumerated().map { i, title in
                 ChatTurn.Step(icon: thoughts.contains(i) ? ChatTurn.Step.thoughtIcon : "wrench.and.screwdriver", title: title, request: "", response: nil, failed: false)
             }
-            copy.append(ChatTurn(id: t.id, date: t.date, request: t.request, reply: t.reply, failed: t.failed, steps: steps, via: .typed))
+            return ChatTurn(id: t.id, date: t.date, request: t.request, reply: t.reply, failed: t.failed, steps: steps, via: .typed)
         }
-        history = copy
+        history = ChatHistory(mirror: shown, current: visitChatID, chats: visitChats)
         if answerDue, work != nil, history.turns.last?.id != turnBeforeWork {
             answerDue = false
             showVisitAnswer()
         }
+    }
+
+    /// The chats at its home and the one it is in: the chat picker lists them, and picking one asks the home (`switchChat`).
+    func heard(chats: [LinkChat], current: UUID) {
+        visitChats = chats
+        visitChatID = current
+        history = ChatHistory(mirror: history.current.turns, current: current, chats: chats)
     }
 
     /// What it is working on at its home: the request, the step it is at and the answer so far. When

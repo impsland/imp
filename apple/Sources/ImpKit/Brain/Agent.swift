@@ -78,8 +78,11 @@ public struct Agent: Sendable {
         -> (reply: String, transcript: [ChatMessage]) {
         let specs = await tools?.tools() ?? []
         // The registry ids of the tools, which is what the permissions classify them by.
-        let ids = gate == nil ? [:] : Dictionary(await tools?.catalog().compactMap { t in t.entry.map { (t.spec.name, $0.id) } } ?? [],
-                                                 uniquingKeysWith: { first, _ in first })
+        let catalog = await tools?.catalog() ?? []
+        let ids = gate == nil ? [:] : Dictionary(catalog.compactMap { t in t.entry.map { (t.spec.name, $0.id) } }, uniquingKeysWith: { first, _ in first })
+        // A tool the person renamed is called by its new name; permissions, ordering and events use its own.
+        let real = Dictionary(catalog.compactMap { t in t.entry.map { (t.spec.name, $0.name) } }, uniquingKeysWith: { first, _ in first })
+        func own(_ name: String) -> String { real[name] ?? name }
         let run = try ImpCore.AgentRun(messages: messages.map(\.record), tools: specs.map(\.record),
                                        maxSteps: UInt32(clamping: max(0, maxSteps)))
         while true {
@@ -98,19 +101,19 @@ public struct Agent: Sendable {
                 var index = 0
                 while index < calls.count {
                     var end = index + 1
-                    if ImpCore.troupeRunsConcurrently(tool: calls[index].name) {
-                        while end < calls.count, ImpCore.troupeRunsConcurrently(tool: calls[end].name) { end += 1 }
+                    if ImpCore.troupeRunsConcurrently(tool: own(calls[index].name)) {
+                        while end < calls.count, ImpCore.troupeRunsConcurrently(tool: own(calls[end].name)) { end += 1 }
                     }
                     let batch = Array(calls[index..<end])
                     index = end
                     try Task.checkCancellation()
-                    for call in batch { await onEvent(.toolStarted(call.name, arguments: call.arguments)) }
+                    for call in batch { await onEvent(.toolStarted(own(call.name), arguments: call.arguments)) }
                     // The permissions first, one call at a time (a person answers one question at a time).
                     var refused: [Int: String] = [:]
                     if let gate {
                         for (i, call) in batch.enumerated() {
                             try Task.checkCancellation()
-                            if let why = await gate.refusal(toolID: ids[call.name], name: call.name, arguments: call.arguments) { refused[i] = why }
+                            if let why = await gate.refusal(toolID: ids[call.name], name: own(call.name), arguments: call.arguments) { refused[i] = why }
                         }
                     }
                     let allowed = batch.indices.filter { refused[$0] == nil }
@@ -118,7 +121,7 @@ public struct Agent: Sendable {
                     for (i, call) in batch.enumerated() {
                         if let why = refused[i] {
                             let done = run.toolFailed(callId: call.id, tool: call.name, message: why)
-                            await onEvent(.toolRefused(call.name, reason: done.text))
+                            await onEvent(.toolRefused(own(call.name), reason: done.text))
                             continue
                         }
                         let done: ToolOutcome
@@ -128,7 +131,7 @@ public struct Agent: Sendable {
                         case .failure(let error):
                             done = run.toolFailed(callId: call.id, tool: call.name, message: error.localizedDescription)
                         }
-                        await onEvent(.toolFinished(call.name, ok: done.ok, result: done.text))
+                        await onEvent(.toolFinished(own(call.name), ok: done.ok, result: done.text))
                     }
                 }
             }

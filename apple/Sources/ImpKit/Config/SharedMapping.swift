@@ -243,6 +243,12 @@ public enum SharedMapping {
         var imp = ImpProfile(id: id, name: name, hue: skin, favoriteHue: extras?["favoriteHue"]?.double ?? skin,
                              scale: extras?["size"]?.double ?? 1, personality: agent["body"]?.string ?? "")
         imp.about = agent["description"]?.string
+        if let texts = agent["toolText"]?.object {
+            imp.toolText = texts.compactMapValues { v in
+                let text = ToolText(name: v["name"]?.string, description: v["description"]?.string)
+                return text.isEmpty ? nil : text
+            }
+        }
         imp.character = extras?["character"]?.decoded(ImpTraits.self)
         if let v = extras?["instructions"]?.string { imp.instructions = v }
         imp.sendsToolCalls = extras?["memory"]?["sendsToolCalls"]?.bool
@@ -492,6 +498,14 @@ public enum SharedMapping {
         } else if imp.hue != 0 || base?["color"] != nil {
             patch["color"] = .string(hex(forHue: imp.hue))
         }
+        // What was written over the tools' names and descriptions: one object per tool, and the ones that went are cleared.
+        let oldTexts = base?["toolText"]?.object ?? [:]
+        var texts: [String: JSON] = [:]
+        for (id, t) in imp.toolText {
+            texts[id] = .object(["name": .optional(t.name), "description": .optional(t.description)])
+        }
+        for id in oldTexts.keys where texts[id] == nil { texts[id] = .null }
+        if imp.toolText.isEmpty { if !oldTexts.isEmpty { patch["toolText"] = .null } } else { patch["toolText"] = .object(texts) }
         if isNew { patch["mode"] = .string("primary") }
         patch["model"] = imp.brain.flatMap { modelRef($0, in: ai, providers: providers, keeping: base?["model"]?.string) }.map(JSON.string) ?? .null
         return .object(patch)

@@ -130,6 +130,10 @@ public struct ChatSummary: Codable, Equatable, Identifiable, Sendable {
     public var turns: Int
     /// The Imp it's with, for a chat between two Imps.
     public var peer: UUID?
+
+    public init(id: UUID, title: String, updated: Date, turns: Int, peer: UUID? = nil) {
+        self.id = id; self.title = title; self.updated = updated; self.turns = turns; self.peer = peer
+    }
 }
 
 /// Recaps a chat that's grown long: the model sums it up, the summary replaces the messages

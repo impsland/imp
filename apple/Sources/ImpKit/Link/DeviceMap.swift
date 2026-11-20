@@ -186,21 +186,24 @@ public enum HopStanding: Equatable, Sendable {
 }
 
 extension DeviceMap {
-    /// The Hop's place on the map when none is set: the same node, with no address and no channels.
-    public static let unsetHop = Node(id: serverID, kind: .server, name: "", state: .offline)
+    /// The Hop's node: there only when some channel goes through it. The Hop is a setting, so its sheet does not
+    /// need the node (see `DevicesSheet.hop`), and the canvas draws it only when it is used.
+    public var hop: Node? { nodes.first { $0.kind == .server } }
 
-    /// The Hop's node, or the unset one: the map always has a Hop to draw.
-    public var hopNode: Node { nodes.first { $0.kind == .server } ?? Self.unsetHop }
-
-    /// This map with the Hop's node in it, whether or not one is set.
-    public var withHop: DeviceMap {
-        var map = self
-        if !map.nodes.contains(where: { $0.kind == .server }) { map.nodes.append(Self.unsetHop) }
-        return map
-    }
+    /// Whether a channel runs through the Hop.
+    public var hopInUse: Bool { channels.contains { $0.via == Self.serverID } }
 
     /// How the Hop stands, given the address as the person typed it (empty is off).
     public func hopStanding(text: String) -> HopStanding {
-        HopStanding(ServerSetting(kind: .hop, text: text), link: hopNode.state)
+        HopStanding(ServerSetting(kind: .hop, text: text), link: hop?.state ?? .offline)
+    }
+
+    /// Who is travelling over a channel: this Mac's Imps whose bodies are on the far device (`out`) and the far
+    /// device's own Imps visiting this Mac (`in`).
+    public func travellers(of channel: Channel) -> (out: [Contact], in: [Contact]) {
+        let far = channel.from == Self.thisMacID ? channel.to : channel.from
+        let out = residents(of: far).filter { imp($0.id) != nil }
+        let visiting = residents(of: Self.thisMacID).filter { imp($0.id) == nil && $0.home == far }
+        return (out, visiting)
     }
 }

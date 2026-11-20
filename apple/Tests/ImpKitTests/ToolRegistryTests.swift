@@ -41,7 +41,7 @@ import ImpCore
     /// side can gain or lose a tool without this failing.
     @Test func theNamesSwiftRunsAreTheCoresBuiltInTools() {
         let swiftNames = Set([
-            OwnTools.play, OwnTools.move, OwnTools.speak, OwnTools.status, OwnTools.page, OwnTools.listTriggers,
+            OwnTools.play, OwnTools.move, OwnTools.createImp, OwnTools.status, OwnTools.page, OwnTools.listTriggers,
             OwnTools.addTrigger, OwnTools.removeTrigger, OwnTools.listTools, OwnTools.addTool, OwnTools.addKit, OwnTools.exportKit, OwnTools.removeTool,
             OwnTools.openSettings, OwnTools.message, OwnTools.openFile, OwnTools.makeAnimation, OwnTools.showAnimation, OwnTools.removeAnimation,
             OwnTools.setTraits, OwnTools.showBackground, OwnTools.setBackground,
@@ -84,10 +84,10 @@ import ImpCore
     }
 
     @Test func refusalIsReadable() async {
-        let tools = Self.catalog([.init(id: "own.personality.imp_speak", name: "imp_speak", group: "own.personality")])
-        let set = ToolSet([Listed(catalogTools: tools)], selection: ToolSelection(toolsOff: ["own.personality.imp_speak"]))
+        let tools = Self.catalog([.init(id: "own.personality.imp_message", name: "imp_message", group: "own.personality")])
+        let set = ToolSet([Listed(catalogTools: tools)], selection: ToolSelection(toolsOff: ["own.personality.imp_message"]))
         do {
-            _ = try await set.call("imp_speak", arguments: "{}")
+            _ = try await set.call("imp_message", arguments: "{}")
             Issue.record("A switched-off tool ran")
         } catch {
             #expect(error.localizedDescription.contains("switched off"))
@@ -164,8 +164,55 @@ import ImpCore
         #expect(loaded.uses(.computer))
         #expect(loaded.disabledTools.isEmpty)
         var changed = loaded
-        changed.setUses(tool: "own.personality.imp_speak", false)
+        changed.setUses(tool: "own.personality.imp_message", false)
         let back = try JSONDecoder().decode(ImpProfile.self, from: JSONEncoder().encode(changed))
-        #expect(back.disabledTools == ["own.personality.imp_speak"])
+        #expect(back.disabledTools == ["own.personality.imp_message"])
+    }
+}
+
+@Suite struct CreateImpTests {
+    private func made(_ args: JSONValue, in prefs: inout ImpPreferences, by creator: UUID) throws -> ImpProfile {
+        try prefs.createImp(args, by: creator)
+    }
+
+    @Test func theToolIsOfferedAndSpeakingIsGone() {
+        let names = OwnTools.specs([.personality], animations: [], imps: [], browser: false).map(\.name)
+        #expect(names.contains("imp_create_imp") && !names.contains("imp_speak"))
+        #expect(ToolRegistry.builtIn.contains { $0.name == "imp_create_imp" && !$0.title.isEmpty })
+        #expect(!ToolRegistry.builtIn.contains { $0.name == "imp_speak" })
+    }
+
+    @Test func aSwitchedOffToolThatNoLongerExistsIsIgnored() {
+        let sel = ToolSelection(toolsOff: ["own.personality.imp_speak"])
+        let entry = ToolRegistry.builtIn.first { $0.name == "imp_message" }!
+        #expect(sel.allows(entry))
+        #expect(ToolRegistry.builtIn.allSatisfy { sel.allows($0) })
+    }
+
+    @Test func makesAnImpWithTheCreatorsBrain() throws {
+        var prefs = ImpPreferences()
+        var pip = ImpProfile.imp
+        pip.brain = Brain(service: UUID(), model: "qwen")
+        prefs.imps = [pip]
+        let new = try made(["name": " Scout ", "description": "Reviews diffs", "system_prompt": "You review code.",
+                            "color": "Teal", "size": "Large"], in: &prefs, by: pip.id)
+        #expect(prefs.imps.count == 2)
+        #expect(new.name == "Scout" && new.about == "Reviews diffs" && new.personality == "You review code.")
+        #expect(new.hue == 0.5 && new.scale == 1.35)
+        #expect(new.brain == pip.brain)
+        let plain = try made(["name": "Plain"], in: &prefs, by: UUID())
+        #expect(plain.brain == nil && plain.about == nil && !plain.personality.isEmpty)
+    }
+
+    @Test func refusesWhatIsWrong() {
+        var prefs = ImpPreferences()
+        let pip = ImpProfile.imp
+        prefs.imps = [pip]
+        #expect(throws: ToolArgumentError.self) { try made([:], in: &prefs, by: pip.id) }
+        #expect(throws: ToolArgumentError.self) { try made(["name": .string(pip.name.uppercased())], in: &prefs, by: pip.id) }
+        #expect(throws: ToolArgumentError.self) { try made(["name": .string(String(repeating: "x", count: 41))], in: &prefs, by: pip.id) }
+        #expect(throws: ToolArgumentError.self) { try made(["name": "A", "color": "Beige"], in: &prefs, by: pip.id) }
+        #expect(throws: ToolArgumentError.self) { try made(["name": "A", "size": "huge"], in: &prefs, by: pip.id) }
+        #expect(prefs.imps.count == 1)
     }
 }

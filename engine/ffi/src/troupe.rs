@@ -32,6 +32,8 @@ pub struct TroupeToolSpec {
     pub name: String,
     pub description: String,
     pub parameters_json: String,
+    /// What each Imp it can message says about itself (the `{imps}` of a description written over this one).
+    pub roster: String,
 }
 
 /// The `imp_message` tool for these options.
@@ -55,9 +57,11 @@ pub fn troupe_message_tool(options: TroupeMessageTool) -> TroupeToolSpec {
             })
             .collect(),
         waiting: troupe::TalkWaiting::from_name(&options.waiting),
-    }
-    .spec();
+    };
+    let roster = spec.roster();
+    let spec = spec.spec();
     TroupeToolSpec {
+        roster,
         name: spec.name,
         description: spec.description,
         parameters_json: spec.parameters.to_string(),

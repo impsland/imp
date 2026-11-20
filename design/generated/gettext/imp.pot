@@ -433,6 +433,11 @@ msgctxt "common.off"
 msgid "Off"
 msgstr ""
 
+#. Button that confirms a sheet's changes and closes it.
+msgctxt "common.ok"
+msgid "OK"
+msgstr ""
+
 #. State of a switch.
 msgctxt "common.on"
 msgid "On"
@@ -493,6 +498,11 @@ msgctxt "computer.help.senses"
 msgid "Reads the battery, processor, network and open apps, and the page open in the browser."
 msgstr ""
 
+#. Name of the first plug a linked device can have: it is trusted to talk to the Imps and share files.
+msgctxt "devices.access.talk"
+msgid "Talk & files"
+msgstr ""
+
 #. Button: call every Imp a device holds home.
 msgctxt "devices.call_all_home"
 msgid "Call all home"
@@ -500,7 +510,7 @@ msgstr ""
 
 #. Title of a line between two devices.
 msgctxt "devices.channel.title"
-msgid "{from} and {to}"
+msgid "{from} ⇄ {to}"
 msgstr ""
 
 #. Screen reader label of one of this Mac's Imps on the map.
@@ -523,9 +533,19 @@ msgctxt "devices.edge.label"
 msgid "{from} to {to}. {route}. {state}"
 msgstr ""
 
+#. Title of the chips of the Imps going across a line.
+msgctxt "devices.edge.travelling"
+msgid "Travelling"
+msgstr ""
+
 #. Empty state of the list of linked devices.
 msgctxt "devices.empty"
 msgid "No devices yet."
+msgstr ""
+
+#. Button that forgets one linked device, with its name.
+msgctxt "devices.forget.named"
+msgid "Forget {name}…"
 msgstr ""
 
 #. Button: forget the selected device.
@@ -556,6 +576,21 @@ msgstr ""
 #. The Hop's state when none is set.
 msgctxt "devices.hop.state.off"
 msgid "Off"
+msgstr ""
+
+#. Title of the plugs of an Imp that is away: its tools it can use where it is.
+msgctxt "devices.imp.can_use"
+msgid "Can use there"
+msgstr ""
+
+#. Help of the plugs of an Imp that is away.
+msgctxt "devices.imp.can_use.info"
+msgid "The tools of this Imp that the device it is on lets it use. A tool with a lock is not plugged in on that device's connection: press it to open the connection and plug it in."
+msgstr ""
+
+#. Caption of the one tile of an Imp that is at home.
+msgctxt "devices.imp.here"
+msgid "Here"
 msgstr ""
 
 #. Button: open an Imp's settings.
@@ -618,6 +653,11 @@ msgctxt "devices.node.this_mac_label"
 msgid "{name}, this Mac"
 msgstr ""
 
+#. Title of the chips of the Imps on a device's screen.
+msgctxt "devices.on_screen"
+msgid "On its screen"
+msgstr ""
+
 #. Where an Imp's body is, as a tag on a device row.
 msgctxt "devices.place.body"
 msgid "On"
@@ -626,6 +666,26 @@ msgstr ""
 #. Where an Imp thinks, as a tag on a device row.
 msgctxt "devices.place.mind"
 msgid "Thinks on"
+msgstr ""
+
+#. Spoken value of a plug that is not plugged in.
+msgctxt "devices.plug.off"
+msgid "not plugged in"
+msgstr ""
+
+#. Spoken value of a plug that is plugged in.
+msgctxt "devices.plug.on"
+msgid "plugged in"
+msgstr ""
+
+#. Title of the card of plugs: what a linked device can use of this Mac's Imps.
+msgctxt "devices.plug.title"
+msgid "What {name} can use here"
+msgstr ""
+
+#. Title of the addresses this Mac can be reached at.
+msgctxt "devices.reach.at"
+msgid "Reachable at"
 msgstr ""
 
 #. Help on a linked device: not reachable now.
@@ -708,19 +768,14 @@ msgctxt "devices.state.offline"
 msgid "Away"
 msgstr ""
 
+#. Screen reader label of the line from an Imp to another device's Imp it can message.
+msgctxt "devices.talk.label"
+msgid "{imp} can message {contact}"
+msgstr ""
+
 #. Screen reader label of the line from an Imp to the device it thinks on.
 msgctxt "devices.tether.label"
 msgid "{imp} is on {node} and thinks on {home}"
-msgstr ""
-
-#. Inspector card: the tools an Imp may use on the device it is on.
-msgctxt "devices.tether.tools"
-msgid "Tools it may use there"
-msgstr ""
-
-#. Help: the tools are the device's limits.
-msgctxt "devices.tether.tools.info"
-msgid "What the Imp may use while this device asks it. Change it on the device."
 msgstr ""
 
 #. Help on the This Mac card: the dot is The Hop.
@@ -743,26 +798,6 @@ msgctxt "devices.tools.commands"
 msgid "Commands"
 msgstr ""
 
-#. Help of the per-device tool limits.
-msgctxt "devices.tools.info"
-msgid "When this device asks one of your Imps, the Imp can use the tools that are on here. Switch off what it should not touch for this device."
-msgstr ""
-
-#. Row in a device's sheet when the device is not Mine, so it gets no tools.
-msgctxt "devices.tools.locked"
-msgid "No tools until Mine"
-msgstr ""
-
-#. Shown when a device is not Mine.
-msgctxt "devices.tools.not_mine"
-msgid "Imps answer this device without tools. Turn on Mine to choose what they may use."
-msgstr ""
-
-#. Inspector card: the tools Imps may use for a device.
-msgctxt "devices.tools.title"
-msgid "Tools Imps may use from this device"
-msgstr ""
-
 #. Tooltip of the button that opens or closes a list of tool switches.
 msgctxt "devices.tools.toggle"
 msgid "Show or hide the switches"
@@ -771,6 +806,11 @@ msgstr ""
 #. A device this Mac is not linked with.
 msgctxt "devices.unknown_device"
 msgid "a device not linked with this Mac"
+msgstr ""
+
+#. Title of the read-only plugs of the device an Imp comes from.
+msgctxt "devices.visitor.can_use"
+msgid "Its device can use here"
 msgstr ""
 
 #. Button: send a visiting Imp home.
@@ -2346,6 +2386,11 @@ msgctxt "phone.chat.failed"
 msgid "Couldn't answer"
 msgstr ""
 
+#. iPhone: tip of the menu in an Imp's chat bar that lists its saved chats to carry on in.
+msgctxt "phone.chat.history"
+msgid "Chats"
+msgstr ""
+
 #. iPhone: chat jump latest.
 msgctxt "phone.chat.jump_latest"
 msgid "Latest"
@@ -2374,6 +2419,11 @@ msgstr ""
 #. iPhone: chat ran tools.
 msgctxt "phone.chat.ran_tools"
 msgid "Ran {count} tools"
+msgstr ""
+
+#. iPhone: name of a saved chat that has no title yet.
+msgctxt "phone.chat.untitled"
+msgid "Chat"
 msgstr ""
 
 #. One line under the QR code.
@@ -3737,6 +3787,11 @@ msgid "Browser page"
 msgstr ""
 
 #. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.create_imp"
+msgid "Create an Imp"
+msgstr ""
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
 msgctxt "tool.export_kit"
 msgid "Export kits"
 msgstr ""
@@ -3824,11 +3879,6 @@ msgstr ""
 #. Short name of a built-in tool in the Look section: reads the HTML background behind the Imps.
 msgctxt "tool.show_background"
 msgid "View background"
-msgstr ""
-
-#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
-msgctxt "tool.speak"
-msgid "Speak aloud"
 msgstr ""
 
 #. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
@@ -3994,6 +4044,76 @@ msgstr ""
 #. Panel title.
 msgctxt "tools.title"
 msgid "Tools"
+msgstr ""
+
+#. Label of the description editor in the tool text sheet.
+msgctxt "tooltext.description"
+msgid "Description the model reads"
+msgstr ""
+
+#. Placeholder of an empty description.
+msgctxt "tooltext.description_empty"
+msgid "Empty. The tool is offered with no description."
+msgstr ""
+
+#. Warning when an edit removed a placeholder the default description had.
+msgctxt "tooltext.dropped"
+msgid "The default also had {list}, which this text no longer has."
+msgstr ""
+
+#. Help of the pencil on a tool's row.
+msgctxt "tooltext.edit"
+msgid "Change what the model reads about this tool"
+msgstr ""
+
+#. Mark on a tool whose name or description was changed.
+msgctxt "tooltext.edited"
+msgid "Its name or description was changed"
+msgstr ""
+
+#. Line in the tool text sheet of an MCP tool.
+msgctxt "tooltext.from_server"
+msgid "The default name and description come from the server “{server}”."
+msgstr ""
+
+#. Label before a tool's id in the sheet that edits its name and description: the id stays the same whatever name is typed.
+msgctxt "tooltext.id"
+msgid "ID (never changes)"
+msgstr ""
+
+#. Label of the name field in the tool text sheet.
+msgctxt "tooltext.name"
+msgid "Name the model calls it"
+msgstr ""
+
+#. Problem with a tool name.
+msgctxt "tooltext.name_invalid"
+msgid "Use 1 to 64 letters, digits, _ or -."
+msgstr ""
+
+#. Problem with a tool name.
+msgctxt "tooltext.name_taken"
+msgid "Another tool already has this name."
+msgstr ""
+
+#. What the {animations} placeholder stands for.
+msgctxt "tooltext.placeholder.animations"
+msgid "The animations it may play."
+msgstr ""
+
+#. What the {imps} placeholder stands for.
+msgctxt "tooltext.placeholder.imps"
+msgid "The other Imps it can message, with what each says about itself."
+msgstr ""
+
+#. What the {place} placeholder stands for.
+msgctxt "tooltext.placeholder.place"
+msgid "Where the background shows."
+msgstr ""
+
+#. Button that restores a tool's own name and description.
+msgctxt "tooltext.reset"
+msgid "Reset to default"
 msgstr ""
 
 #. Short name of a trigger event, on its tile.
@@ -4339,11 +4459,6 @@ msgstr ""
 #. Spoken label of a step tile.
 msgctxt "triggers.step.add_one"
 msgid "Add a step: {name}"
-msgstr ""
-
-#. Toggle of a say step: also speak it.
-msgctxt "triggers.step.aloud"
-msgid "Aloud"
 msgstr ""
 
 #. Animation menu of a sleep or wake step: no animation.

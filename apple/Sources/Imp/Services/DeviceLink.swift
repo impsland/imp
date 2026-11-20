@@ -73,6 +73,9 @@ final class DeviceLink {
         var tools: Bool
         var work: LinkWork?
         var chat: [LinkTurn]
+        /// Its saved chats and the one it is in.
+        var chats: [LinkChat]
+        var chatID: UUID
         var speech: LinkSpeech?
     }
 
@@ -186,6 +189,7 @@ final class DeviceLink {
     func ask(_ imp: UUID, _ text: String) { tell(imp, .ask(imp: imp, text: String(text.prefix(LinkProtocol.maxText)))) }
     func stop(_ imp: UUID) { tell(imp, .stop(imp: imp)) }
     func newChat(_ imp: UUID) { tell(imp, .newChat(imp: imp)) }
+    func openChat(_ imp: UUID, _ chat: UUID) { tell(imp, .openChat(imp: imp, chat: chat)) }
     func felt(_ imp: UUID, _ feeling: LinkFeeling) { tell(imp, .felt(imp: imp, feeling: feeling)) }
 
     private func tell(_ imp: UUID, _ message: LinkMessage) {
@@ -348,6 +352,10 @@ final class DeviceLink {
             own(imp)?.cancel()
         case .newChat(let imp):
             own(imp)?.newChat()
+        case .openChat(let imp, let chat):
+            // Only a chat it has: one the holder listed, and one that may be gone by now.
+            guard let model = own(imp), model.history.chats.contains(where: { $0.id == chat && $0.peer == nil }) else { return }
+            model.switchChat(to: chat)
         case .felt(let imp, let feeling):
             guard let model = own(imp) else { return }
             let trigger: TriggerEvent = switch feeling {
@@ -382,6 +390,7 @@ final class DeviceLink {
         case .look, .stage:
             refresh()                                          // the node has its new looks, or a screen's Imps
         case .chat(let imp, let turns): app.visitor(imp)?.heard(chat: turns)
+        case .chats(let imp, let current, let chats): app.visitor(imp)?.heard(chats: chats, current: current)
         case .work(let imp, let work): app.visitor(imp)?.heard(work: work)
         case .mood(let imp, let mood): app.visitor(imp)?.heard(mood: mood)
         case .brain(let imp, let ready, _):
@@ -491,6 +500,7 @@ final class DeviceLink {
         if before?.mood != now.mood { updates.append(.mood(imp: id, mood: now.mood)) }
         if before?.ready != now.ready || before?.tools != now.tools { updates.append(.brain(imp: id, ready: now.ready, tools: now.tools)) }
         if before?.chat != now.chat { updates.append(.chat(imp: id, turns: now.chat)) }
+        if before?.chats != now.chats || before?.chatID != now.chatID { updates.append(.chats(imp: id, current: now.chatID, chats: now.chats)) }
         if before == nil || before?.work != now.work { updates.append(.work(imp: id, work: now.work)) }
         if before == nil || before?.speech != now.speech { updates.append(.speech(imp: id, speech: now.speech)) }
         sent[id] = now
@@ -517,7 +527,7 @@ final class DeviceLink {
         let holder = node?.holder(of: id)
         return Snapshot(look: app.linkImp(profile), mood: (imp.activity?.mood ?? .idle).rawValue, ready: imp.isReady,
                         tools: holder.map { node?.isTrusted($0) ?? false } ?? true, work: work,
-                        chat: chat, speech: Self.speech(imp.bubble))
+                        chat: chat, chats: LinkChats.list(imp.history.chats), chatID: imp.history.current.id, speech: Self.speech(imp.bubble))
     }
 
     /// The bubble's talk with another Imp, if that's what it shows.

@@ -185,7 +185,7 @@ async fn plain_chat(session: &mut Session, io: &mut Io<'_>) -> Result<()> {
             &mut chat,
             text,
             &*session.toolbox,
-            &ToolSelection::all(),
+            &session.tool_selection(),
             session.max_steps,
             io,
         )

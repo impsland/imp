@@ -130,6 +130,28 @@ public struct LinkTurn: Codable, Sendable, Equatable, Identifiable {
     private enum CodingKeys: String, CodingKey { case id, date, request, from, reply, failed, steps, thoughts, answer }
 }
 
+/// One saved chat of an Imp, as its holder lists it.
+public struct LinkChat: Codable, Sendable, Equatable, Identifiable {
+    public var id: UUID
+    public var title: String
+    public var updated: Date
+
+    public init(id: UUID, title: String, updated: Date) { self.id = id; self.title = title; self.updated = updated }
+
+    public init(_ summary: ChatSummary) { self.init(id: summary.id, title: String(summary.title.prefix(LinkChats.longestTitle)), updated: summary.updated) }
+}
+
+public enum LinkChats {
+    /// Chats a home lists for its holder (newest first), and the longest title it sends.
+    public static let limit = 30
+    public static let longestTitle = 200
+
+    /// What a home tells of its chats with you: the saved ones, newest first (a chat with another Imp is a talk, not listed).
+    public static func list(_ chats: [ChatSummary]) -> [LinkChat] {
+        chats.filter { $0.peer == nil }.sorted { $0.updated > $1.updated }.prefix(limit).map(LinkChat.init)
+    }
+}
+
 /// What an Imp is doing right now, while it works on something.
 public struct LinkWork: Codable, Sendable, Equatable {
     /// The request it's working on.
@@ -267,6 +289,8 @@ public enum LinkMessage: Codable, Sendable, Equatable {
     case stop(imp: UUID)
     /// Start a fresh chat.
     case newChat(imp: UUID)
+    /// Carry on in one of the chats the home listed (`chats`).
+    case openChat(imp: UUID, chat: UUID)
     /// Patted, spun or shaken: the home plays the animation that answers to it.
     case felt(imp: UUID, feeling: LinkFeeling)
     /// A file a reply shows or links to (a picture, a voice, a video, a document), as written in
@@ -282,6 +306,9 @@ public enum LinkMessage: Codable, Sendable, Equatable {
     case look(imp: LinkImp)
     /// The latest turns of the Imp's current chat, oldest first.
     case chat(imp: UUID, turns: [LinkTurn])
+    /// Its saved chats, newest first (at most `LinkChats.limit`), and the id of the one it is in, which isn't saved yet
+    /// while it is empty. Sent with `chat` whenever either changes.
+    case chats(imp: UUID, current: UUID, chats: [LinkChat])
     /// What it's working on (nil: nothing).
     case work(imp: UUID, work: LinkWork?)
     /// Its mood changed (a `Mood` raw value).

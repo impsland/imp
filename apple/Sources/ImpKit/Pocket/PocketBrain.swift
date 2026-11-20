@@ -110,7 +110,7 @@ public struct PocketBrain: Sendable {
             if !configs.isEmpty { tools.append(hub) }
             if allowed { tools.append(PocketTools(talk: sender == nil ? talk : PocketTalk(animations: talk.animations, play: talk.play))) }
             let client = try OpenAIClient(baseURL: imp.brain.baseURL, apiKey: secrets.get(.apiKey, imp: imp.id) ?? "", session: session)
-            let agent = Agent(client: client, model: imp.brain.model, tools: ToolSet(tools, selection: ToolSelection(toolsOff: Set(imp.toolsOff ?? []))), limits: limits)
+            let agent = Agent(client: client, model: imp.brain.model, tools: ToolSet(tools, selection: ToolSelection(toolsOff: Set(imp.toolsOff ?? []), text: imp.toolText ?? [:])), limits: limits)
             let turn = answered.map { .user($0.event) } ?? sender.map { Briefing.message(from: $0.name, text, place: "in the user's troupe") } ?? .user(text)
             let memory = imp.memory(with: sender?.id)
             let system = [imp.personality, Briefing.pocket, stranger.map { Briefing.untrusted(device: $0.device, home: $0.home) } ?? ""].map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -202,14 +202,22 @@ public struct PocketBrain: Sendable {
 struct PocketTools: ToolProvider {
     let talk: PocketTalk
 
+    private static let place = "the room on the iPhone"
+
     func tools() async -> [ToolSpec] {
         var specs: [ToolSpec] = []
         if talk.play != nil, !talk.animations.isEmpty { specs.append(OwnTools.playSpec(animations: talk.animations)) }
         if talk.send != nil, !talk.others.isEmpty {
             specs.append(OwnTools.messageSpec(imps: talk.others, desktop: false, profiles: talk.profiles, waiting: .decides))
         }
-        if talk.background != nil { specs.append(contentsOf: OwnTools.backgroundSpecs(where: "the room on the iPhone")) }
+        if talk.background != nil { specs.append(contentsOf: OwnTools.backgroundSpecs(where: Self.place)) }
         return specs
+    }
+
+    func catalog() async -> [CatalogTool] {
+        let roster = talk.send != nil && !talk.others.isEmpty
+            ? OwnTools.messageParts(imps: talk.others, desktop: false, profiles: talk.profiles, waiting: .decides).roster : ""
+        return OwnTools.catalog(await tools(), animations: talk.animations, roster: roster, place: Self.place)
     }
 
     func call(_ name: String, arguments: String) async throws -> String {

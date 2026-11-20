@@ -23,10 +23,8 @@ struct DeviceNodeCard: View {
             .overlay { shape.fill(hovered ? Tone.cardHover : Tone.card) }
             .overlay(alignment: .top) { header.opacity(node.shownState == .offline || hop == .off ? Opacity.dimmed : 1) }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .overlay(alignment: .trailing) { LinePoint(nodeID: id, id: DeviceGraph.Port.out, type: .source, side: .right) }
-            .overlay(alignment: .leading) { LinePoint(nodeID: id, id: DeviceGraph.Port.in, type: .target, side: .left) }
-            .overlay(alignment: .top) { LinePoint(nodeID: id, id: DeviceGraph.Port.tether(.top), type: .target, side: .top) }
-            .overlay(alignment: .bottom) { LinePoint(nodeID: id, id: DeviceGraph.Port.tether(.bottom), type: .target, side: .bottom) }
+            .overlay { LinePoints(nodeID: id, ports: { DeviceGraph.Port.line($0, $1) }) }
+            .overlay { LinePoints(nodeID: id, sides: DeviceGraph.Port.tetherSides, types: [.target], ports: { side, _ in DeviceGraph.Port.tether(side) }) }
             .contentShape(shape)
             .help("\(node.title): \(word)")
             .pointerStyle(.link)
@@ -49,36 +47,66 @@ struct DeviceNodeCard: View {
     }
 }
 
-/// An Imp inside a device: its colour and its name. One of this Mac's Imps has a full tint of its colour; a
-/// visitor from another device has a lighter one and a small walking mark, so whose Imp it is can be seen at
-/// a glance, without an outline.
+/// An Imp inside a device: its colour and its name. One of this Mac's Imps has a full tint of its colour; another
+/// device's Imp has a lighter one, so whose Imp it is can be seen at a glance, without an outline. A small mark
+/// shows only an Imp whose body is not where it thinks (`away`).
 struct DeviceImpChip: View {
     let id: String
     let name: String
     let hue: Double
     let ours: Bool
+    let away: Bool
     let hovered: Bool
     let help: String
 
     var body: some View {
         HStack(spacing: Spacing.small) {
             Circle().fill(Color.imp(hue)).frame(width: Spacing.cozy, height: Spacing.cozy)
-            Text(verbatim: name).font(Typeface.small).foregroundStyle(Tone.text).lineLimit(1)
+            Text(verbatim: name).font(Typeface.small).foregroundStyle(Tone.text).lineLimit(1).fixedSize(horizontal: true, vertical: false)
             Spacer(minLength: 0)
-            if !ours {
-                Image(systemName: "figure.walk.arrival").font(.icon(.tiny)).foregroundStyle(Tone.muted).accessibilityHidden(true)
-            }
+        }
+        .overlay(alignment: .trailing) {
+            if away { Image(systemName: "figure.walk").font(.icon(.tiny)).foregroundStyle(Tone.muted).accessibilityHidden(true) }
         }
         .padding(.horizontal, Spacing.cozy)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous)
             .fill(Color.imp(hue).opacity(ours ? Opacity.tintFillStrong : Opacity.tintFill))
             .overlay { if hovered { RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Tone.card) } })
-        .overlay(alignment: .top) { LinePoint(nodeID: id, id: DeviceGraph.Port.tether(.top), type: .source, side: .top) }
-        .overlay(alignment: .bottom) { LinePoint(nodeID: id, id: DeviceGraph.Port.tether(.bottom), type: .source, side: .bottom) }
+        .overlay { LinePoints(nodeID: id, sides: DeviceGraph.Port.tetherSides, types: [.source], ports: { side, _ in DeviceGraph.Port.tether(side) }) }
+        .overlay { LinePoints(nodeID: id, sides: [.left, .right], ports: { DeviceGraph.Port.talk($0, $1) }) }
         .contentShape(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
         .help(help)
         .pointerStyle(.link)
+    }
+}
+
+/// The points of a node where lines attach, on the sides given, each as a source and a target unless `types` says
+/// otherwise; `ports` names the point for a side and a type.
+struct LinePoints: View {
+    let nodeID: String
+    var sides: [Position] = DeviceGraph.Port.sides
+    var types: [HandleType] = [.source, .target]
+    let ports: (Position, HandleType) -> String
+
+    var body: some View {
+        ZStack {
+            ForEach(sides, id: \.self) { side in
+                ForEach(types, id: \.self) { type in
+                    LinePoint(nodeID: nodeID, id: ports(side, type), type: type, side: side)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: Self.alignment(side))
+                }
+            }
+        }
+    }
+
+    private static func alignment(_ side: Position) -> Alignment {
+        switch side {
+        case .left: .leading
+        case .right: .trailing
+        case .top: .top
+        case .bottom: .bottom
+        }
     }
 }
 
@@ -105,36 +133,96 @@ struct CanvasPath: Shape {
 }
 
 /// One line of the canvas, drawn over SwiftFlow's own path so the hit area and the picture are the same line.
-/// A channel is solid on the local network and dashed through the Hop; a tether is thin and in its Imp's colour.
-/// A line that is not connected falls back. The tag sits beside the middle of it, never on it.
+/// A channel is solid on the local network and dashed through the Hop; a tether is thin and in its Imp's colour and
+/// a talk line thin and dashed in it. A line that is not connected falls back. On a channel a small badge sits on the
+/// middle of it: how it is travelled and the plugs that are in for its device. Small dots run along a line that is
+/// live (`motion`), both ways on a channel and from the Imp to its home on a tether.
 struct DeviceEdgeDrawing: View {
     let data: DeviceGraph.EdgeData
     let result: EdgePathResult
     let hovered: Bool
+    /// Whether the line is in the light, in the current focus; the rest is drawn dimmed.
+    let lit: Bool
+    let motion: Bool
 
-    private enum Metrics { static let tagClearance: CGFloat = 16 }
+    private enum Metrics {
+        /// How many symbols of plugs the badge shows besides the trust before it says "+n".
+        static let shownTools = 3
+        /// Seconds a dot takes along a line.
+        static let period: Double = 5
+        static let dotsPerWay = 2
+        static let fps: Double = 24
+    }
 
     var body: some View {
         ZStack {
             DrawnLine(shape: CanvasPath(path: result.path), style: style).fill(color)
                 .opacity(data.dimmed ? Opacity.disabled : 1)
-            if let tag = data.tag {
-                Text(verbatim: tag).font(Typeface.small).foregroundStyle(Tone.muted).lineLimit(1)
-                    .padding(.horizontal, Spacing.small).padding(.vertical, Spacing.hairline)
-                    .background(Capsule().fill(Tone.surface).overlay { Capsule().fill(Tone.card) })
-                    .opacity(data.dimmed ? Opacity.disabled : 1)
-                    .position(DeviceGraph.tagCenter(source: CGPoint(x: result.sourceX, y: result.sourceY),
-                                                    target: CGPoint(x: result.targetX, y: result.targetY),
-                                                    mid: CGPoint(x: result.labelX, y: result.labelY), clearance: Metrics.tagClearance))
+            if motion, data.live { dots }
+            if data.route != nil { badge.position(CGPoint(x: result.labelX, y: result.labelY)) }
+        }
+        .opacity(lit ? 1 : Opacity.dimmed)
+        .help(data.label)
+    }
+
+    private var dotColor: Color {
+        switch data.look {
+        case .tether(let hue), .talk(let hue): Color.imp(hue)
+        case .local, .hop: Tone.accentBright
+        }
+    }
+
+    private var dots: some View {
+        TimelineView(.animation(minimumInterval: Energy.shared.interval(fps: Metrics.fps))) { context in
+            let time = context.date.timeIntervalSinceReferenceDate / Metrics.period
+            let both = !data.isTether
+            let count = both ? Metrics.dotsPerWay : 1
+            ZStack {
+                ForEach(0..<count, id: \.self) { index in
+                    dot(at: (time + Double(index) / Double(count)).truncatingRemainder(dividingBy: 1))
+                    if both { dot(at: 1 - (time + 0.5 / Double(count) + Double(index) / Double(count)).truncatingRemainder(dividingBy: 1)) }
+                }
             }
         }
-        .help(data.label)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    private func dot(at fraction: Double) -> some View {
+        let point = result.path.trimmedPath(from: 0, to: min(1, max(0.001, fraction))).currentPoint ?? .zero
+        return Circle().fill(dotColor).frame(width: Spacing.tight, height: Spacing.tight).position(point)
+    }
+
+    /// The route glyph, then a plug and the capabilities plugged into it (the trust first, a few tools and "+n"), or the
+    /// plug alone, outlined and dimmed, when nothing is plugged in.
+    private var badge: some View {
+        HStack(spacing: Spacing.tight) {
+            Image(systemName: data.route == .hop ? "arrow.triangle.swap" : "wifi").font(.icon(.tiny)).foregroundStyle(Tone.muted)
+            RoundedRectangle(cornerRadius: Radius.tiny).fill(Tone.faint).frame(width: Stroke.hairline, height: Spacing.medium)
+            if data.locked || data.access.isEmpty {
+                Image(systemName: "powerplug").font(.icon(.tiny)).foregroundStyle(Tone.muted).opacity(Opacity.disabled)
+            } else {
+                Image(systemName: "powerplug.fill").font(.icon(.tiny)).foregroundStyle(Tone.accentBright)
+                ForEach(Array(data.access.prefix(1 + Metrics.shownTools).enumerated()), id: \.offset) { _, symbol in
+                    Image(systemName: symbol).font(.icon(.tiny)).foregroundStyle(Tone.accentBright)
+                }
+                if data.access.count > 1 + Metrics.shownTools {
+                    Text(verbatim: "+\(data.access.count - 1 - Metrics.shownTools)").font(Typeface.small).foregroundStyle(Tone.muted)
+                }
+            }
+        }
+        .padding(.horizontal, Spacing.small).padding(.vertical, Spacing.hairline)
+        .background(Capsule().fill(Tone.surface).overlay { Capsule().fill(hovered ? Tone.cardHover : Tone.card) })
+        .opacity(data.dimmed ? Opacity.disabled : 1)
+        .accessibilityHidden(true)
     }
 
     private var color: Color {
         if hovered { return Tone.accentBright }
-        if case .tether(let hue) = data.look { return Color.imp(hue) }
-        return Tone.muted
+        switch data.look {
+        case .tether(let hue), .talk(let hue): return Color.imp(hue)
+        case .local, .hop: return Tone.muted
+        }
     }
 
     private var style: StrokeStyle {
@@ -142,6 +230,7 @@ struct DeviceEdgeDrawing: View {
         case .local: StrokeStyle(lineWidth: hovered ? 3 * Stroke.hairline : Stroke.focus, lineCap: .round)
         case .hop: StrokeStyle(lineWidth: hovered ? 3 * Stroke.hairline : Stroke.focus, lineCap: .round, dash: [Spacing.cozy, Spacing.small])
         case .tether: StrokeStyle(lineWidth: hovered ? Stroke.focus : Stroke.hairline, lineCap: .round)
+        case .talk: StrokeStyle(lineWidth: Stroke.focus, lineCap: .round, dash: [Spacing.tight, Spacing.small])
         }
     }
 }

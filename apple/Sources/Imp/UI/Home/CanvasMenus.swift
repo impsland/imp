@@ -3,8 +3,8 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The menu for empty space: a right click on the canvas. A card of buttons (`MenuCard`): New Imp and Settings,
-/// with Hidden (n) and Select All Imps beside them when they apply. The same actions are the corner buttons and the
+/// The menu for empty space: a right click on the canvas. A card of buttons (`MenuCard`): New Imp, then Hidden (n)
+/// and Select All Imps when they apply, and Settings last. The same actions are the corner buttons and the
 /// menu bar. The background lives in Settings, one click away.
 @MainActor
 final class CanvasEmptyMenu {
@@ -39,7 +39,8 @@ final class CanvasEmptyMenu {
     }
 }
 
-/// The menu bar's Imps menu for the chosen one: one level, no submenus. The menu bar passes nil while no Imp is
+/// The menu bar's Imps menu for the chosen one: one level, no submenus. Its order is the cards': Settings, Hide and
+/// where it is, then sharing, and Goodbye last and apart. The menu bar passes nil while no Imp is
 /// chosen, and dims the whole menu. A right click on an Imp opens `CanvasImpMenu` instead.
 struct ImpContextMenu: View {
     let model: AppModel
@@ -52,11 +53,12 @@ struct ImpContextMenu: View {
         Button { if let id { actions.openImpSettings(id) } } label: { Text("menu.imp.settings") }
             .keyboardShortcut("i", modifiers: .command)
         Button { if let id { actions.hide(id) } } label: { Text("menu.imp.hide") }
+        Button { if let id { actions.toggleActive(id) } } label: { Text(id.map(actions.releaseTitle) ?? String(localized: "menu.imp.let_out")) }
+            .disabled(!(id.map(actions.canRelease) ?? false))
+        Divider()
         Button { if let id { actions.copyKit(id) } } label: { Text("menu.imp.copy_kit") }
         Button { if let id { actions.copyLink(id) } } label: { Text("menu.imp.copy_link") }
             .disabled(!(id.map(actions.canShareLink) ?? false))
-        Button { if let id { actions.toggleActive(id) } } label: { Text(id.map(actions.releaseTitle) ?? String(localized: "menu.imp.let_out")) }
-            .disabled(!(id.map(actions.canRelease) ?? false))
         Divider()
         Button(role: .destructive) { if let id { actions.askGoodbye(id) } } label: { Text("menu.imp.goodbye") }
             .disabled(!actions.canSayGoodbye)
@@ -64,8 +66,8 @@ struct ImpContextMenu: View {
 }
 
 /// The menu of an Imp in the window, from a right click (or a Control-click) on it: the same card as on the
-/// desktop (`ImpMenuCard`, with Free where the desktop has Home), then Copy kit and Copy link as pills and
-/// Goodbye as the wide button at the bottom.
+/// desktop (`ImpMenuCard`, with Free where the desktop has Home), then sharing and Goodbye (`ImpMenuEnd`). Stop,
+/// triggers and devices to visit are only for an Imp out on the desktop, so they are not here.
 @MainActor
 final class CanvasImpMenu {
     private let model: AppModel
@@ -94,18 +96,15 @@ final class CanvasImpMenu {
             case .hide: card.later { actions.hide(id) }
             case .move: card.later { actions.toggleActive(id) }
             case .settings: card.later { actions.openImpSettings(id) }
+            case .newChat: break
             case .size(let scale): actions.restyle(id) { $0.scale = scale }
             case .colour(let hue): actions.restyle(id) { $0.hue = hue }
             }
         } extra: {
-            MenuPills(items: [
-                MenuItem(id: "kit", icon: "shippingbox.fill", title: String(localized: "menu.imp.copy_kit")) { card.later { actions.copyKit(id) } },
-                MenuItem(id: "link", icon: "link", title: String(localized: "menu.imp.copy_link"), enabled: actions.canShareLink(id)) {
-                    card.later { actions.copyLink(id) }
-                },
-            ])
-            MenuDangerButton(item: MenuItem(id: "goodbye", icon: "trash", title: String(localized: "menu.imp.goodbye"),
-                                            enabled: actions.canSayGoodbye) { card.later { actions.askGoodbye(id) } })
+            ImpMenuEnd(canLink: actions.canShareLink(id), canGoodbye: actions.canSayGoodbye,
+                       kit: { card.later { actions.copyKit(id) } },
+                       link: { card.later { actions.copyLink(id) } },
+                       goodbye: { card.later { actions.askGoodbye(id) } })
         })
     }
 }

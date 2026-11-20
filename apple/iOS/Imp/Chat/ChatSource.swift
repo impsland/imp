@@ -20,6 +20,12 @@ enum ChatAvailability {
     }
 }
 
+/// An Imp's saved chats, newest first, and the one it is in (nil before anything is said).
+struct ChatList: Equatable {
+    var current: UUID?
+    var chats: [LinkChat]
+}
+
 /// Where a chat lives: the Imp's home (visiting Imps think there) or this iPhone (pocket Imps). The chat sheet
 /// works against either.
 @MainActor
@@ -45,6 +51,9 @@ protocol ChatSource {
     func ask(_ id: UUID, _ text: String)
     func stop(_ id: UUID)
     func newChat(_ id: UUID)
+    /// Its saved chats, to pick one to carry on in. Nil when the source doesn't know (yet).
+    func chatList(_ id: UUID) -> ChatList?
+    func openChat(_ id: UUID, _ chat: UUID)
 }
 
 extension LinkHub: ChatSource {
@@ -56,6 +65,7 @@ extension LinkHub: ChatSource {
     func mood(_ id: UUID) -> Mood? { moods[id] }
     func act(_ id: UUID) -> Performance? { acts[id] }
     func availability(_ id: UUID) -> ChatAvailability { ChatAvailability(wakefulness(id)) }
+    func chatList(_ id: UUID) -> ChatList? { chatLists[id].map { ChatList(current: $0.current, chats: $0.chats) } }
 
     /// Everyone this visiting Imp can message: the Imps on this screen and on its home's.
     func peers(_ id: UUID) -> [LinkImp] {

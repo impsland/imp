@@ -265,6 +265,12 @@ impl MessageTool {
 }
 
 impl MessageTool {
+    /// What each Imp says about itself, as the description ends: the `{imps}` of a description the person wrote.
+    /// Empty when no Imp says anything.
+    pub fn roster(&self) -> String {
+        self.profile_section().trim().to_string()
+    }
+
     /// What each Imp says about itself, as data. It is their own words (maybe from another device), so
     /// it is cleaned again here and framed as information, not instructions.
     fn profile_section(&self) -> String {

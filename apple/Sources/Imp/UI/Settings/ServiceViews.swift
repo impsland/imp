@@ -265,11 +265,10 @@ struct AddServiceSheet: View {
                 Button("common.add") {
                     var p = draft
                     p.name = p.label
-                    guard model.assistant.setKey(key, for: p.id) else {
+                    guard model.addService(p, key: key) else {
                         post(.error(String(localized: "firstrun.error.key_not_saved")))
                         return
                     }
-                    model.prefs.ai.add(p)
                     added(p)
                     dismiss()
                 }

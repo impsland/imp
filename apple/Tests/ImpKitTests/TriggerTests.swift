@@ -140,7 +140,9 @@ import Testing
         let s = try Shortcut(tool: args, imp: imp)
         #expect(s.trigger == Trigger(.battery, value: "20") && s.performer == nil && s.askStep?.handsOverClipboard == false)
         #expect(s.conditions == [Condition(.hours, value: "09:00-18:00"), Condition(.charger, value: "unplugged")])
-        #expect(s.steps.map(\.act) == [.say, .ask] && s.steps[0].speaksAloud, "in the order given")
+        // `aloud` (the Mac's system voice, now gone) may still be in an older trigger: it is read and ignored.
+        #expect(s.steps.map(\.act) == [.say, .ask], "in the order given")
+        #expect(s.steps[0] == Step(.say, value: "Low!"))
         #expect(s.name == "Battery below 20 %")
     }
 

@@ -32,7 +32,7 @@ struct TriggersPanel: View {
             HStack(spacing: Spacing.small) {
                 HoverIconButton(systemName: SectionAction.add, help: "New") { start(.click) }
                 ImportKitButton(imp: id)
-                AgentToolsButton(imp: $imp, groups: [.triggers])
+                AgentToolsButton(model: model, imp: $imp, groups: [.triggers])
             }
         }) {
             if all.isEmpty {

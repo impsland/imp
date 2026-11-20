@@ -195,7 +195,24 @@ pub struct LinkTurn {
     pub reply: String,
     pub failed: bool,
     pub steps: Vec<String>,
+    /// Which of `steps` are the Imp thinking, by position. Only the titles travel, never what it thought.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub thoughts: Option<Vec<u32>>,
+    /// True when `request` is the answer of the Imp `from` to a message this Imp sent without waiting.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub answer: Option<bool>,
 }
+
+/// One saved chat of an Imp, as its holder lists it.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct LinkChat {
+    pub id: Uuid,
+    pub title: String,
+    pub updated: f64,
+}
+
+/// Most chats a `chats` message lists.
+pub const MAX_CHATS: usize = 30;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LinkWork {
@@ -361,6 +378,11 @@ pub enum LinkMessage {
     NewChat {
         imp: Uuid,
     },
+    /// Carry on in a saved chat of the Imp (one the home listed in `chats`).
+    OpenChat {
+        imp: Uuid,
+        chat: Uuid,
+    },
     Felt {
         imp: Uuid,
         feeling: LinkFeeling,
@@ -380,6 +402,12 @@ pub enum LinkMessage {
     Chat {
         imp: Uuid,
         turns: Vec<LinkTurn>,
+    },
+    /// The Imp's saved chats, newest first, and the id of the one it is in (which may not be saved yet).
+    Chats {
+        imp: Uuid,
+        current: Uuid,
+        chats: Vec<LinkChat>,
     },
     Work {
         imp: Uuid,
@@ -464,11 +492,13 @@ const KNOWN: &[&str] = &[
     "ask",
     "stop",
     "newChat",
+    "openChat",
     "felt",
     "file",
     "talks",
     "look",
     "chat",
+    "chats",
     "work",
     "mood",
     "brain",
@@ -552,6 +582,9 @@ impl LinkMessage {
             Self::Chat { turns, .. } => {
                 turns.len() <= 500 && turns.iter().all(|t| t.steps.len() <= 200)
             }
+            Self::Chats { chats, .. } => {
+                chats.len() <= MAX_CHATS && chats.iter().all(|c| c.title.chars().count() <= 200)
+            }
             Self::Mood { mood, .. } => mood.chars().count() <= 40,
             Self::Animate { beats, .. } => beats.len() <= 256,
             Self::FilePart { part, .. } => {
@@ -570,6 +603,7 @@ impl LinkMessage {
             | Self::Gone { .. }
             | Self::Stop { .. }
             | Self::NewChat { .. }
+            | Self::OpenChat { .. }
             | Self::Felt { .. }
             | Self::Talks { .. }
             | Self::Work { .. }

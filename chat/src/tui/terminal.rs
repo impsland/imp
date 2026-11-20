@@ -750,6 +750,7 @@ fn start_agent(
     let (client, model) = over.unwrap_or_else(|| (session.client.clone(), session.model.clone()));
     let toolbox = session.toolbox.clone();
     let steps = session.max_steps;
+    let selection = session.tool_selection();
     let mut messages = app.chat.request_messages();
     let tx = events.clone();
     Box::pin(async move {
@@ -758,7 +759,7 @@ fn start_agent(
             &model,
             &mut messages,
             &*toolbox,
-            &imp_engine::ToolSelection::all(),
+            &selection,
             steps,
             |e| {
                 let _ = tx.send(e);

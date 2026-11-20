@@ -52,9 +52,11 @@ struct ChatView: View {
                 let recapped = shown.lastIndex { $0.via == .recap }
                 ScrollViewReader { reader in
                     ScrollView {
-                        LazyVStack(alignment: .leading, spacing: Spacing.large) {
-                            // Thousands of turns are never laid out at once: a page at a time, the
-                            // next one loading as you scroll up to the top (or with a click).
+                        // Not lazy: a lazy stack only guesses the height of the turns it hasn't drawn, so the chat opened
+                        // scrolled past its end, blank until scrolled up. The pages keep it small: thousands of turns are
+                        // never laid out at once, a page at a time, the next one loading as you scroll up to the top (or
+                        // with a click).
+                        VStack(alignment: .leading, spacing: Spacing.large) {
                             if earlier > 0 {
                                 EarlierTurns(count: earlier, measuring: measuring) {
                                     showEarlier(from: shown.first?.id, reader)
@@ -196,6 +198,12 @@ struct ChatView: View {
     }
 }
 
+/// What the talks list is read again for: another chat, or newer talk in the chats.
+private struct TalksRefresh: Equatable {
+    let chat: UUID
+    let updated: Date?
+}
+
 /// The current chat's name, opening a list of every saved chat to switch to (and a new one).
 private struct ChatPicker: View {
     let model: ImpModel
@@ -216,6 +224,8 @@ private struct ChatPicker: View {
                             Text(chat.title.isEmpty ? String(localized: "Chat") : chat.title)
                             Text(chat.updated, format: .dateTime.day().month().hour().minute())
                         }
+                        // A visiting Imp's chats are at its home: nothing to switch while it can't hear.
+                        .disabled(model.visit?.isAwake == false)
                     }
                 }
             }
@@ -243,7 +253,7 @@ private struct ChatPicker: View {
         .menuIndicator(.hidden)
         .fixedSize(horizontal: false, vertical: true)
         .help("Your chats with \(model.profile.name). Pick one to carry on where you left off. Talks with other Imps open to read.")
-        .task(id: model.history.chats.first?.updated) {
+        .task(id: TalksRefresh(chat: model.history.current.id, updated: model.history.chats.first?.updated)) {
             talks = TalkLog.threads(of: model.id, from: await model.app.talkLines())
         }
     }
@@ -277,17 +287,16 @@ private struct EarlierTurns: View {
         .buttonStyle(.plain)
         .foregroundStyle(LegibleTint(on: .raised))
         .help("Show earlier messages")
-        .onAppear {
-            // Scrolled up to the top: the next page comes in by itself. Only if it stays in view
-            // a moment (a lazy stack may lay it out in passing while the chat opens at the bottom).
-            guard !measuring else { return }
-            inView = true
+        .onScrollVisibilityChange(threshold: 0.5) { visible in
+            // Scrolled up to the top: the next page comes in by itself. Only if it stays in view a moment (the
+            // chat opens at the bottom, and may pass over it while it settles there).
+            inView = visible
+            guard visible, !measuring else { return }
             Task { @MainActor in
                 try? await Task.sleep(for: .milliseconds(250))
                 if inView { once() }
             }
         }
-        .onDisappear { inView = false }
     }
 
     private func once() {

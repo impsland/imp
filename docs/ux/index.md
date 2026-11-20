@@ -78,6 +78,7 @@ Views are written by hand with each platform's own tools. Only tokens and string
 | `common.name` | Name |
 | `common.needs_attention` | Needs attention |
 | `common.off` | Off |
+| `common.ok` | OK |
 | `common.on` | On |
 | `common.open` | Open |
 | `common.remove` | Remove |

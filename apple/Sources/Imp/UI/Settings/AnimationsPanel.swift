@@ -34,7 +34,7 @@ struct AnimationsPanel: View {
                     ShareKitButton(kit: Kit(name: String(localized: "\(profile.callName)'s animations"), animations: own),
                                    help: "Share as a kit")
                 }
-                AgentToolsButton(imp: $imp, groups: [.animations])
+                AgentToolsButton(model: model, imp: $imp, groups: [.animations])
             }
         }) {
             VStack(alignment: .leading, spacing: Spacing.snug) {

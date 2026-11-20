@@ -333,3 +333,23 @@ fn tool_calls_are_decided_by_the_rules() {
         );
     }
 }
+
+#[test]
+fn tool_text_vectors() {
+    for case in vectors()["tool_text"].as_array().unwrap() {
+        let doc = serde_json::json!({ "toolText": case["text"] });
+        let text = format!("---\n{}\n---\nBody\n", serde_json::to_string(&doc).unwrap());
+        let agent = Agent::parse("pip", &text).unwrap();
+        assert_eq!(
+            agent.problems().len() as u64,
+            case["problems"].as_u64().unwrap(),
+            "{}",
+            case["name"]
+        );
+        assert_eq!(Agent::parse("pip", &agent.to_markdown()).unwrap(), agent);
+        assert_eq!(
+            agent.tool_text.len(),
+            case["text"].as_object().unwrap().len()
+        );
+    }
+}

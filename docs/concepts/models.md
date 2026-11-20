@@ -40,7 +40,7 @@ Secrets are never in it (a service is named and given a base URL, the key stays 
   "brain": { "model": "openai/gpt-6-luna", "service": { "name": "OpenAI", "baseURL": "https://openrouter.ai/api/v1" } },
   "shell": false,
   "tools": { "personality": true, "look": true, "animations": true, "triggers": false, "tools": false, "senses": true, "computer": false },
-  "toolsOff": ["own.personality.imp_speak"],
+  "toolsOff": ["own.personality.imp_message"],
   "exchangesSent": 20,
   "sendsToolCalls": true,
   "mcpServers": ["Memory", "Time"],
@@ -92,7 +92,7 @@ Every tool an Imp may call has an id, so a group or a single tool can be switche
 
 | tool | id | group id |
 |------|----|----------|
-| built in | `own.<group>.<tool>`, for example `own.personality.imp_speak` | `own.<group>` |
+| built in | `own.<group>.<tool>`, for example `own.personality.imp_message` | `own.<group>` |
 | of an MCP server | `mcp.<server>.<tool>`, for example `mcp.files.read_file` | `mcp.<server>` |
 
 `<server>` is the server's name with every character outside letters, digits, underscore and hyphen
