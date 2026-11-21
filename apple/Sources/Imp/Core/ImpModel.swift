@@ -535,17 +535,18 @@ final class ImpModel {
         show(Bubble(text: prefill, phase: .typing, prompt: prompt ?? String(localized: "Ask \(profile.name) anything…")), autoHide: false)
     }
 
-    /// Sends the text box (the bubble's, or the chat's): the words, and the picture pasted into
-    /// it, if any.
+    /// Sends the text box (the bubble's, or the chat's): the words, and the photos, sounds and
+    /// videos attached to it, if any.
     func submitTyped(_ text: String) {
         let t = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        let picture = takesTyping ? bubble?.attachment : nil
-        guard !t.isEmpty || picture != nil else { return }
-        if isChatting, var b = bubble, b.attachment != nil {
-            b.attachment = nil                          // sent: the chat's box is empty again
+        let media = takesTyping ? bubble?.attachments ?? [] : []
+        guard !t.isEmpty || !media.isEmpty else { return }
+        if isChatting, var b = bubble, !b.attachments.isEmpty {
+            b.attachments = []                          // sent: the chat's box is empty again
+            b.attachmentNote = nil
             bubble = b
         }
-        start(.typed(t, picture))
+        start(.typed(t, media))
     }
 
     /// What's typed in the bubble's text box so far: the bubble grows with it, line by line, so
@@ -559,34 +560,61 @@ final class ImpModel {
     /// The bubble has a text box: the typing bubble, or the chat.
     private var takesTyping: Bool { bubble?.phase == .typing || isChatting }
 
-    /// Something pasted into the text box (⌘V or ⌃V): a picture rides along with the message.
-    /// Returns false when there's no text box to take it.
+    /// Something pasted, dropped or chosen for the text box: it rides along with the message.
+    /// Returns false when there's no text box to take it, or it is full.
     @discardableResult
-    func attach(_ picture: EncodedImage) -> Bool {
-        guard var b = bubble, takesTyping, visit == nil else { return false }
-        b.attachment = picture
+    func attach(_ file: MediaFile) -> Bool {
+        guard var b = bubble, takesTyping else { return false }
+        guard MediaFile.canAdd(to: b.attachments.count) else {
+            b.attachmentNote = String(localized: "Up to \(MediaFile.maxCount) files go with one message.")
+            bubble = b
+            return false
+        }
+        b.attachments.append(file)
+        b.attachmentNote = nil
         bubble = b
         return true
     }
 
-    /// A picture dragged over this Imp: it perks up (and settles when the drag moves away).
+    /// Shows why a file could not be attached.
+    func attachFailed(_ problem: MediaFile.Problem) {
+        guard var b = bubble, takesTyping else { return }
+        b.attachmentNote = switch problem {
+        case .tooBig: String(localized: "That file is bigger than 25 MB.")
+        case .empty: String(localized: "That file is empty.")
+        case .unreadable: String(localized: "That file can't be read.")
+        case .tooMany: String(localized: "Up to \(MediaFile.maxCount) files go with one message.")
+        }
+        bubble = b
+    }
+
+    /// Says something about the files in the text box (why one could not be recorded or added).
+    func noteAttachment(_ text: String) {
+        guard var b = bubble, takesTyping else { return }
+        b.attachmentNote = text
+        bubble = b
+    }
+
+    /// A file or a picture dragged over this Imp: it perks up (and settles when the drag moves away).
     func pictureHover(_ over: Bool) {
         touch()
         if over { react(.surprised, for: 1.5) } else { flash = nil }
     }
 
-    /// A picture dropped on this Imp: it rides along with your next message. The chat's text box
-    /// takes it if the chat is open, else a text box opens above the Imp (keeping what you typed).
-    func receive(_ picture: EncodedImage) {
+    /// Files dropped on this Imp: they ride along with your next message. The chat's text box
+    /// takes them if the chat is open, else a text box opens above the Imp (keeping what you typed).
+    func receive(_ files: [MediaFile], problem: MediaFile.Problem? = nil) {
         app.focus(self)
         if !takesTyping { startTyping() }
-        attach(picture)
+        for file in files { attach(file) }
+        if let problem { attachFailed(problem) }
         react(.happy, for: 1.0)
     }
 
-    func removeAttachment() {
-        guard var b = bubble, takesTyping, b.attachment != nil else { return }
-        b.attachment = nil
+    func removeAttachment(_ id: UUID) {
+        guard var b = bubble, takesTyping else { return }
+        b.attachments.removeAll { $0.id == id }
+        b.attachmentNote = nil
         bubble = b
     }
 
@@ -735,8 +763,8 @@ final class ImpModel {
     /// A question from another app (URL command).
     /// `origin` is the device it comes from, when it wasn't asked here: the Imp answers without any tool
     /// for a device that isn't the owner's own, and with the tools the device is allowed otherwise.
-    func ask(_ text: String, askedFrom origin: AskOrigin? = nil) {
-        start(.typed(text, nil), askedFrom: origin)
+    func ask(_ text: String, media: [MediaFile] = [], askedFrom origin: AskOrigin? = nil) {
+        start(.typed(text, media), askedFrom: origin)
     }
 
     /// Something went wrong outside a request (an unknown shortcut name from a URL command).
@@ -760,7 +788,7 @@ final class ImpModel {
     /// (and any picture) with its tools, and decides what to do.
     enum Source {
         /// Typed into the bubble (with a pasted picture, maybe), or sent by another app.
-        case typed(String, EncodedImage?)
+        case typed(String, [MediaFile])
         /// Said out loud: listen first.
         case spoken
         /// A trigger's instruction, with what was copied (nil: the instruction alone) and what set
@@ -819,8 +847,8 @@ final class ImpModel {
     /// its dots (the earlier turns stay), else as the thinking bubble (the text box doesn't blink
     /// away while the job starts). `run` takes over with the real request.
     private func showPending(_ source: Source) {
-        guard case .typed(let words, _) = source else { return }
-        let heading = words.isEmpty ? String(localized: "A picture") : words
+        guard case .typed(let words, let media) = source else { return }
+        let heading = words.isEmpty ? Self.heading(for: media) : words
         work = Work(ask: ChatTurn(request: words, via: .typed), heading: heading, title: "")
         thinking(heading, captions: Captions.thinking)
     }
@@ -840,11 +868,14 @@ final class ImpModel {
         do {
             let turn: ChatMessage, heading: String
             switch source {
-            case .typed(let words, let picture):
-                let path = picture.flatMap(save)
-                turn = Briefing.message(words, image: picture, imagePath: path)
-                heading = words.isEmpty ? String(localized: "A picture") : words
-                ask = ChatTurn(request: words, via: .typed, picture: path)
+            case .typed(let words, let media):
+                let paths = media.map(save)
+                turn = Briefing.message(words, media: media, paths: paths)
+                heading = words.isEmpty ? Self.heading(for: media) : words
+                // The history keeps the first picture where it always did, and the rest by path.
+                let firstPicture = media.firstIndex { $0.kind == .image }
+                ask = ChatTurn(request: words, via: .typed, picture: firstPicture.flatMap { paths[$0] },
+                               files: media.indices.filter { $0 != firstPicture }.compactMap { paths[$0] }.nilIfEmpty)
             case .spoken:
                 let words = try await listen()
                 turn = Briefing.message(words)
@@ -943,6 +974,24 @@ final class ImpModel {
             log.error("couldn't save a picture: \(String(describing: error), privacy: .public)")
             return nil
         }
+    }
+
+    /// A photo, sound or video you handed over, saved in its workspace so its commands can use it. The path.
+    private func save(_ file: MediaFile) -> String? {
+        do { return try Workspace.save(file, in: Workspace.directory(for: id)).path }
+        catch {
+            log.error("couldn't save an attachment: \(String(describing: error), privacy: .public)")
+            return nil
+        }
+    }
+
+    /// What a message with no words is called while it is sent.
+    static func heading(for media: [MediaFile]) -> String {
+        let kinds = Set(media.map(\.kind))
+        if kinds == [.image] { return String(localized: "A picture") }
+        if kinds == [.audio] { return String(localized: "A sound") }
+        if kinds == [.video] { return String(localized: "A video") }
+        return String(localized: "Some files")
     }
 
     /// A job stopped half-way: nothing in progress may linger (the mood, the caption ticker, a
@@ -1335,16 +1384,25 @@ extension ImpModel {
     /// It asked for something: the words go to its home, which answers (typed words only: the
     /// microphone, triggers and clipboard belong to the Mac that thinks).
     private func askHome(_ source: Source) {
-        guard case .typed(let words, _) = source else { return }
-        let text = words.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard case .typed(let words, let media) = source else { return }
+        var text = words.trimmingCharacters(in: .whitespacesAndNewlines)
+        if text.isEmpty { text = media.isEmpty ? "" : MediaFile.defaultWords(for: media) }
         guard !text.isEmpty else { return }
         touch()
         guard wakefulness.isAwake else { return refuseAsleep() }
         work = nil
         dropWork()
-        app.link.ask(id, text)
-        let heading = text
-        work = Work(ask: ChatTurn(request: text, via: .typed), heading: heading, title: "")
+        guard app.link.ask(id, text, media: media) else {
+            let home = visit?.homeName ?? String(localized: "its home")
+            return show(Bubble(title: String(localized: "Couldn't send the files"),
+                               text: String(localized: "\(home) didn't take them. It may be away, or a file may be empty or over 25 MB."), phase: .hint))
+        }
+        let heading = words.isEmpty && !media.isEmpty ? Self.heading(for: media) : text
+        // The answer is the turn the home adds after this one: remember the newest now, or the end of the work
+        // would show the previous answer (see `heard(work:)`).
+        turnBeforeWork = history.turns.last?.id
+        answerDue = false
+        work = Work(ask: ChatTurn(request: words, via: .typed), heading: heading, title: "")
         thinking(heading, captions: Captions.thinking)
     }
 
@@ -1373,4 +1431,8 @@ extension ImpModel {
         show(Bubble(title: String(localized: "\(profile.name) is asleep"), text: reason, phase: .hint,
                     link: visit == nil ? .settings : nil))
     }
+}
+
+private extension Array {
+    var nilIfEmpty: Self? { isEmpty ? nil : self }
 }

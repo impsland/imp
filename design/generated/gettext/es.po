@@ -539,6 +539,11 @@ msgctxt "devices.edge.travelling"
 msgid "Travelling"
 msgstr "De viaje"
 
+#. Title of the card that lists this iPhone's Imps held by devices it is not linked with.
+msgctxt "devices.elsewhere.title"
+msgid "Elsewhere"
+msgstr "En otro lugar"
+
 #. Empty state of the list of linked devices.
 msgctxt "devices.empty"
 msgid "No devices yet."
@@ -628,6 +633,11 @@ msgstr "Cómo se llega"
 msgctxt "devices.inspector.through_hop"
 msgid "Reached through it"
 msgstr "Alcanzados por él"
+
+#. Tooltip of the button on a device known only through another: it opens the Link sheet.
+msgctxt "devices.link_directly.help"
+msgid "Link this device directly, so it no longer depends on the other one."
+msgstr "Enlaza este dispositivo directamente, para que no dependa del otro."
 
 #. Help on the Devices card.
 msgctxt "devices.list.info"
@@ -768,6 +778,31 @@ msgstr "Conectando"
 msgctxt "devices.state.offline"
 msgid "Away"
 msgstr "Ausente"
+
+#. Status pill of this Mac, and of an Imp that is on it.
+msgctxt "devices.status.here"
+msgid "Here"
+msgstr "Aquí"
+
+#. Status pill of a device or line reached over the local network.
+msgctxt "devices.status.nearby"
+msgid "Nearby"
+msgstr "Cerca"
+
+#. Status pill of a device known only through another linked device. %1$@ is that device.
+msgctxt "devices.status.through"
+msgid "Through %1$@"
+msgstr "Por %1$@"
+
+#. Status pill of a device or line reached through the Hop.
+msgctxt "devices.status.via_server"
+msgid "Via server"
+msgstr "Por servidor"
+
+#. Status pill of another device's Imp that is visiting this Mac.
+msgctxt "devices.status.visiting"
+msgid "Visiting"
+msgstr "De visita"
 
 #. Screen reader label of the line from an Imp to another device's Imp it can message.
 msgctxt "devices.talk.label"

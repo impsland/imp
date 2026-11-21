@@ -35,6 +35,7 @@ pub fn allows(
         | M::Release { .. }
         | M::Claimed { .. }
         | M::Gone { .. }
+        | M::Moved { .. }
         | M::Answer { .. } => true,
         // Only the handshake, which the node deals with before any of this.
         M::Hello { .. } | M::Welcome { .. } => false,
@@ -44,6 +45,7 @@ pub fn allows(
         | M::OpenChat { imp, .. }
         | M::Felt { imp, .. }
         | M::File { imp, .. }
+        | M::Upload { imp, .. }
         | M::Talks { imp } => ledger.authorises(device, *imp),
         // A visitor holds the target's body: that is its right to ask it something.
         M::Message { to, .. } => standing == Standing::Peer || ledger.authorises(device, *to),
@@ -69,7 +71,9 @@ pub fn allows(
         | M::Animate { imp, .. }
         | M::Speech { imp, .. }
         | M::TalkLines { imp, .. } => visit_of(imp),
-        M::FilePart { .. } | M::FileFailed { .. } => {
+        // Parts must come from the device that started the upload, which the node checks.
+        M::UploadPart { .. } => !ledger.held_by(device).is_empty(),
+        M::FilePart { .. } | M::FileFailed { .. } | M::UploadFailed { .. } => {
             visits.visits().iter().any(|v| v.home.id() == device)
         }
     }
@@ -114,6 +118,15 @@ mod tests {
             LinkMessage::Ask {
                 imp: id(1),
                 text: "hi".into(),
+                attachments: Vec::new(),
+            },
+            LinkMessage::Upload {
+                id: id(7),
+                imp: id(1),
+                name: "a.png".into(),
+                mime: "image/png".into(),
+                size: 1,
+                sha256: "0".repeat(64),
             },
             LinkMessage::Stop { imp: id(1) },
             LinkMessage::NewChat { imp: id(1) },

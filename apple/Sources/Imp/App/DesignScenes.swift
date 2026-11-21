@@ -187,29 +187,28 @@ enum DesignScene: String, CaseIterable {
         let raised = RoundedRectangle(cornerRadius: Radius.large, style: .continuous)
         return AnyView(HStack(alignment: .top, spacing: Spacing.wide) {
             ImpMenuCard(ready: true, name: imps[0].name, status: String(localized: "Awake"), hue: imps[0].hue,
-                        scale: 1, place: .desktop) { _ in } extra: {
+                        scale: 1, place: .desktop,
+                        end: ImpMenuEnd(canLink: true, canGoodbye: true, kit: {}, link: {}, goodbye: {})) { _ in } extra: {
                 MenuPills(items: [MenuItem(id: "stop", icon: "stop.circle", title: String(localized: "Stop")) {}])
-                MenuPills(title: String(localized: "Triggers"), items: [
+                MenuPills(items: [
                     MenuItem(id: "t1", icon: "globe", title: "Translate") {},
                     MenuItem(id: "t2", icon: "text.badge.checkmark", title: "Proofread") {},
                     MenuItem(id: "t3", icon: "sun.max", title: "Morning") {},
                 ])
-                MenuPills(title: String(localized: "menu.imp.visit"), items: [MenuItem(id: "p", icon: "iphone.gen3", title: "iPhone") {}])
-                ImpMenuEnd(canLink: true, canGoodbye: true, kit: {}, link: {}, goodbye: {})
+                MenuPills(items: [MenuItem(id: "p", icon: "iphone.gen3", title: "iPhone") {}])
             }
             .background(Tone.raised, in: raised)
             ImpMenuCard(ready: true, name: "Pip", status: String(localized: "Pip, visiting from iPhone"), hue: 0.33, scale: 1,
                         place: .visitor(from: "iPhone")) { _ in } extra: {
-                MenuPills(title: String(localized: "menu.imp.visit"), items: [MenuItem(id: "p", icon: "desktopcomputer", title: "Studio Mac") {}])
+                MenuPills(items: [MenuItem(id: "p", icon: "desktopcomputer", title: "Studio Mac") {}])
             }
             .background(Tone.raised, in: raised)
             ImpMenuCard(ready: false, name: imps[1].name, status: String(localized: "Needs a brain"), hue: imps[1].hue,
-                        scale: 0.75, place: .home) { _ in } extra: {
-                ImpMenuEnd(canLink: false, canGoodbye: true, kit: {}, link: {}, goodbye: {})
-            }
+                        scale: 0.75, place: .home,
+                        end: ImpMenuEnd(canLink: false, canGoodbye: true, kit: {}, link: {}, goodbye: {})) { _ in }
             .background(Tone.raised, in: raised)
             GroupMenuCard(names: imps.map(\.name) + ["Pip"], hues: imps.map(\.hue) + [0.33], scales: [1, 1, 1]) { _ in } extra: {
-                MenuPills(title: String(localized: "brain.title"), items: [
+                MenuPills(items: [
                     MenuItem(id: "shared", icon: "person.3.fill", title: String(localized: "brain.use_app"), on: true) {},
                     MenuItem(id: "ollama", icon: "brain", title: "Ollama") {},
                 ])
@@ -283,13 +282,15 @@ enum DesignScene: String, CaseIterable {
             model.prefs.imps[0].awayOn = Self.phoneID
             let cinder = look("Cinder", 0.9, "00000000-0000-4000-8000-0000000000C1")
             let noodle = look("Noodle", 0.45, "00000000-0000-4000-8000-0000000000C2")
-            let stage = [LinkStaged(imp: LinkImp(model.prefs.imps[0]), home: UUID()),
-                         LinkStaged(imp: cinder, home: Self.phoneID), LinkStaged(imp: noodle, home: Self.phoneID)]
+            let mac = LinkWho(id: UUID(), name: "Mac mini", kind: .mac)
+            let phone = LinkWho(id: Self.phoneID, name: "Anna's iPhone", kind: .phone)
+            let stage = [LinkStaged(imp: LinkImp(model.prefs.imps[0]), home: mac),
+                         LinkStaged(imp: cinder, home: phone), LinkStaged(imp: noodle, home: phone)]
             model.link.showSample([
                 .init(id: Self.phoneID, name: "Anna's iPhone", kind: .phone, reach: .direct, imps: [Self.dotID], isTrusted: true, stage: stage,
                       routes: LinkRoutes(hosts: ["annas-iphone.local"], port: 47824)),
                 .init(id: UUID(uuidString: "00000000-0000-4000-8000-0000000000B2") ?? UUID(), name: "Studio Mac", kind: .mac, reach: allLocal ? .direct : .viaServer, imps: [], isTrusted: true),
-            ], visitors: [LinkStaged(imp: noodle, home: Self.phoneID)])
+            ], visitors: [LinkStaged(imp: noodle, home: phone)])
         }
         let router = HomeRouter()
         router.screen = .devices

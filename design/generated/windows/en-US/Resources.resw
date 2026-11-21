@@ -113,6 +113,7 @@
   <data name="devices.copy_link.help" xml:space="preserve"><value>For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while.</value><comment>Help of Copy Link in Link a device.</comment></data>
   <data name="devices.edge.label" xml:space="preserve"><value>{from} to {to}. {route}. {state}</value><comment>Screen reader label of a line between two devices.</comment></data>
   <data name="devices.edge.travelling" xml:space="preserve"><value>Travelling</value><comment>Title of the chips of the Imps going across a line.</comment></data>
+  <data name="devices.elsewhere.title" xml:space="preserve"><value>Elsewhere</value><comment>Title of the card that lists this iPhone's Imps held by devices it is not linked with.</comment></data>
   <data name="devices.empty" xml:space="preserve"><value>No devices yet.</value><comment>Empty state of the list of linked devices.</comment></data>
   <data name="devices.forget.named" xml:space="preserve"><value>Forget {name}…</value><comment>Button that forgets one linked device, with its name.</comment></data>
   <data name="devices.forget.one" xml:space="preserve"><value>Forget this device…</value><comment>Button: forget the selected device.</comment></data>
@@ -131,6 +132,7 @@
   <data name="devices.inspector.holds" xml:space="preserve"><value>Imps of this Mac it holds</value><comment>Inspector card: this Mac's Imps a device holds.</comment></data>
   <data name="devices.inspector.reach" xml:space="preserve"><value>How it is reached</value><comment>Inspector card: how a device is reached.</comment></data>
   <data name="devices.inspector.through_hop" xml:space="preserve"><value>Reached through it</value><comment>Inspector card of the Hop: devices reached through it.</comment></data>
+  <data name="devices.link_directly.help" xml:space="preserve"><value>Link this device directly, so it no longer depends on the other one.</value><comment>Tooltip of the button on a device known only through another: it opens the Link sheet.</comment></data>
   <data name="devices.list.info" xml:space="preserve"><value>Devices linked with this one. Mine lets a device act for you.</value><comment>Help on the Devices card.</comment></data>
   <data name="devices.map.summary" xml:space="preserve"><value>Map of your devices: {devices} linked, {ours} Imps of this Mac, {visitors} Imps of other devices.</value><comment>Screen reader summary of the Devices map.</comment></data>
   <data name="devices.node.label" xml:space="preserve"><value>{name}, {state}. Imps: {imps}</value><comment>Screen reader label of a device on the map: its state and the Imps in it.</comment></data>
@@ -159,6 +161,11 @@
   <data name="devices.state.connected" xml:space="preserve"><value>Connected</value><comment>State word of a device on the Devices map.</comment></data>
   <data name="devices.state.connecting" xml:space="preserve"><value>Connecting</value><comment>State word of a device on the Devices map.</comment></data>
   <data name="devices.state.offline" xml:space="preserve"><value>Away</value><comment>State word of a linked device that cannot be reached now.</comment></data>
+  <data name="devices.status.here" xml:space="preserve"><value>Here</value><comment>Status pill of this Mac, and of an Imp that is on it.</comment></data>
+  <data name="devices.status.nearby" xml:space="preserve"><value>Nearby</value><comment>Status pill of a device or line reached over the local network.</comment></data>
+  <data name="devices.status.through" xml:space="preserve"><value>Through %1$@</value><comment>Status pill of a device known only through another linked device. %1$@ is that device.</comment></data>
+  <data name="devices.status.via_server" xml:space="preserve"><value>Via server</value><comment>Status pill of a device or line reached through the Hop.</comment></data>
+  <data name="devices.status.visiting" xml:space="preserve"><value>Visiting</value><comment>Status pill of another device's Imp that is visiting this Mac.</comment></data>
   <data name="devices.talk.label" xml:space="preserve"><value>{imp} can message {contact}</value><comment>Screen reader label of the line from an Imp to another device's Imp it can message.</comment></data>
   <data name="devices.tether.label" xml:space="preserve"><value>{imp} is on {node} and thinks on {home}</value><comment>Screen reader label of the line from an Imp to the device it thinks on.</comment></data>
   <data name="devices.this.info" xml:space="preserve"><value>Link another device here. The dot shows whether The Hop lets devices find each other from anywhere.</value><comment>Help on the This Mac card: the dot is The Hop.</comment></data>

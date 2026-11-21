@@ -53,8 +53,10 @@ final class Panels {
         impHost.registerForDraggedTypes(Pasteboard.pictureTypes)
         impHost.onPictureHover = { [weak model] over in model?.pictureHover(over) }
         impHost.onDropPicture = { [weak model] pb in
-            guard let model, let picture = Pasteboard.picture(dropped: pb) else { return false }
-            model.receive(picture)
+            guard let model else { return false }
+            let media = Pasteboard.media(from: pb)
+            guard !media.isEmpty else { return false }
+            model.receive(media.files, problem: media.problem)
             return true
         }
 

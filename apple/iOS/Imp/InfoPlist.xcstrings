@@ -54,19 +54,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp scans the code another device shows."
+            "value" : "Imp scans the code another device shows, and takes photos to send to an Imp."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp escanea el código que muestra otro dispositivo."
+            "value" : "Imp escanea el código que muestra otro dispositivo y hace fotos para enviar a un Imp."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 会扫描另一台设备上显示的二维码。"
+            "value" : "Imp 会扫描另一台设备上显示的二维码，并拍摄照片发送给 Imp。"
           }
         }
       }
@@ -90,6 +90,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imp 会在你的网络中寻找你的其他设备，让你扔出的 Imp 能落到这里。"
+          }
+        }
+      }
+    },
+    "NSMicrophoneUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp records a sound you attach to a message for an Imp."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp graba un sonido que adjuntas a un mensaje para un Imp."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 会录制你附加到消息中发给 Imp 的声音。"
+          }
+        }
+      }
+    },
+    "NSPhotoLibraryAddUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp saves the photos you take to your photo library."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp guarda en tu fototeca las fotos que haces."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 会把你拍的照片存入照片库。"
           }
         }
       }

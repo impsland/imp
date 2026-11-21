@@ -106,8 +106,9 @@ Rules for the status byte:
 
 - The Hop closes the connection after any status other than `0x00`.
 - A status can arrive earlier than step 4. A bad hello (wrong magic or role) gets `0x01` at once, in
-  place of the nonce. A connection over a per-IP, rate or total limit gets `0x02` at once, before the
-  hello is read.
+  place of the nonce. A connection over a per-IP, rate or total limit gets `0x02` before the hello is
+  read: at once when its first byte is the hello's, or after 250 ms of silence. One that starts a
+  WebSocket upgrade gets it over the WebSocket.
 - If the handshake deadline passes or the connection breaks during steps 1 to 3, the Hop closes it
   with no status byte.
 - A waiting client must not send anything. Any byte or close from a waiting client makes the Hop
@@ -126,7 +127,8 @@ Rules for the status byte:
 6. A host connection serves one guest. After a splice the host dials a fresh waiting connection for
    the next guest (client behaviour).
 7. A room has at most 16 live sessions, so several people can join one device. A guest that arrives
-   when the room is full gets `0x02`. Guests already waiting stay queued until a place frees up.
+   when the room is full gets `0x02`. Guests already waiting stay queued until a place frees up. Then a
+   host waiting in that room is spliced at once to the first of them with its gate.
 
 ### Host and guest behaviour
 
@@ -136,6 +138,22 @@ connection for the next guest.
 
 A guest does steps 1 to 4, then runs the Noise handshake as the initiator on the same connection. The
 Hop is the last route a guest tries, after Bonjour and the addresses in the invite.
+
+### WebSocket
+
+A browser can't open TCP, so the Hop also takes WebSockets on the same port (`server/hop/src/ws.rs`). A
+connection whose first byte is `G` is an HTTP request: the Hop answers the WebSocket upgrade, on any path,
+then reads it as a stream. Every binary message carries bytes of the same stream a TCP client sends, cut
+anywhere. Steps 1 to 5, the status bytes, the rooms and the limits are the same, and a browser and a TCP
+client are spliced with each other as two TCP clients are. A text message, or a message over 256 KiB,
+closes the connection. The upgrade counts toward the handshake deadline.
+
+An https page may only open `wss://`, so a public Hop is put behind a proxy that ends TLS (see
+`server/README.md`). Clients make the WebSocket address from the Hop's `host:port`: `wss://host/` from an
+https page (the proxy, on port 443), `ws://host:port/` otherwise. The web page (`web/`) can be given
+another address. The limits count a browser by its own address only when the connection comes from a
+proxy listed in `HOP_FORWARDED_FROM`. The Hop then reads the last `X-Forwarded-For` entry, the one the proxy
+added. From anyone else that header is ignored.
 
 ### Link framing
 
@@ -167,6 +185,7 @@ listens on `HOP_ADDR` (default `0.0.0.0:4677`).
 | A host waits | 5 min | `HOP_HOST_WAIT_SECS` |
 | A guest waits for a host | 15 s | `HOP_GUEST_WAIT_SECS` |
 | Live sessions per room | 16 | `HOP_ROOM_SESSIONS` |
+| Proxies that name the browser behind a WebSocket | none | `HOP_FORWARDED_FROM` (addresses or prefixes, comma-separated) |
 
 A live link pings every 20 seconds and is dropped after 45 seconds of silence (`PING_INTERVAL` and
 `SILENCE_LIMIT` in `engine/src/link/mod.rs`). So a live session is never idle.
@@ -353,16 +372,19 @@ which makes the MCP host start the sign-in. A token of a deactivated account ans
 
 | tool | needs an account | what |
 |------|------------------|------|
-| `search_items` | no | Arguments: `type` (`imp`, `animation`, `trigger`, `tool`, `kit`), `q` (keyword, case-insensitive, matched on name, summary, about and tags), `tag`, `handle`, `sort` (`new`, `popular`, `name`), `limit` (1 to 50, default 20), `cursor`. Answers `{ "items": [summary], "next_cursor" }`. |
+| `search_items` | no | Arguments: `type` (`imp`, `animation`, `trigger`, `tool`, `kit`), `q` (words, case-insensitive: every word must appear in the name, summary, about or tags), `tag`, `handle`, `sort` (`new`, `popular`, `name`), `limit` (1 to 50, default 20), `cursor`. Answers `{ "items": [summary], "next_cursor" }`. |
 | `get_item` | no | `handle`, `slug`. An item with its stats. |
 | `download_item` | no | `handle`, `slug`. `{ "item": summary, "document": {...} }`, the document ready to import. Counts one install. |
+| `document_format` | no | Optional `type`. The document rules for that type (or every type): what it holds, each field with its allowed values and ranges, and an example that passes. Built from the Den's own checks. |
 | `publish_item` | yes | `type`, `slug`, `summary`, `tags`, `document`. Creates the item under the signed-in handle or updates it (revision plus 1). |
 | `delete_item` | yes | `slug`. Deletes one of your items. `{ "deleted": true }`. |
 | `my_account` | yes | `{ "handle", "created_at", "items": [summary], "quota": { "items", "items_left", "bytes_left", "new_today_left" } }`. |
 | `delete_account` | yes | `confirm` must be the handle. Deletes the account and everything it shared, and revokes its tokens. |
 
 A failed tool call returns `isError: true` with the same problem document as the API, so the model can
-read `detail`. Search arguments outside their rules answer `invalid-request`.
+read `detail`. Search arguments outside their rules answer `invalid-request`. Each tool's input schema names the
+allowed values (`enum` for `type` and `sort`, ranges, patterns and lengths), and `document` is a JSON object. An
+argument of the wrong JSON type (such as `"limit": "5"`) answers `isError: true` with a message that names it.
 
 **Protocol revision.** The Den fully supports `2026-07-28`, where each request carries the revision and the
 client's capabilities in `_meta` with the standard headers (`MCP-Protocol-Version`, `Mcp-Method`, and
@@ -480,4 +502,6 @@ There is no Den setting.
 Installing goes through two generic tools. The model calls the Den's `download_item` and then Imp's own
 `imp_add_kit` with the document. Imp shows the usual kit review, and **nothing is added until the person
 confirms.** Publishing is the reverse: `imp_export_kit` gives the document of an Imp, animation, trigger or
-tool, and the Den's `publish_item` shares it.
+tool, and the Den's `publish_item` shares it. `imp_add_kit` and `imp_export_kit` are tools of Imp on the Mac and
+the iPhone. A host without them (the terminal `imp`, other MCP hosts) writes the document by the rules
+`document_format` returns, and a person imports a downloaded document as a `.json` file.

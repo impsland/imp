@@ -1,5 +1,6 @@
 import ImpDesign
 import ImpKit
+import PhotosUI
 import QuickLook
 import SwiftUI
 
@@ -27,6 +28,8 @@ struct ImpSheet: View {
     /// Starts waking an Imp that has no Brain (the first run). Only the Imps hatched here have it.
     /// Opens the Brain panel of this pocket Imp's editor.
     var giveBrain: (() -> Void)?
+    /// The Imps on the room's screen: they crowd into the camera's picture. Empty: this chat's Imp alone.
+    var onScreen: [LinkImp] = []
     /// Close: back to where the sheet was opened from.
     var close: () -> Void = {}
     /// Whether you are typing, for the Imp in the bar. Held apart from the sheet: the sheet (and so the whole
@@ -65,7 +68,7 @@ struct ImpSheet: View {
                 switch pane {
                 case .chat:
                     transcript(imp)
-                    Composer(source: source, impID: impID, imp: imp, typing: typing, giveBrain: giveBrain)
+                    Composer(source: source, impID: impID, imp: imp, typing: typing, giveBrain: giveBrain, cameraImps: onScreen.isEmpty ? [imp] : onScreen)
                 case .talks:
                     TalksPane(hub: hub, pocket: pocket, impID: impID, peer: $talkPeer)
                 }
@@ -445,7 +448,21 @@ private struct Composer: View {
     let imp: LinkImp
     let typing: TypingState
     var giveBrain: (() -> Void)?
+    /// Takes a photo for the message. Nil: the system camera (`SystemCamera`) opens and its picture is attached.
+    /// The playful camera plugs in here: it calls back into `draft.addPicture(data:)` when a photo is kept.
+    var onTakePhoto: (() -> Void)?
+    /// The Imps that get in the way of the shot in the playful camera (`CameraView`), which "Take a photo" opens.
+    var cameraImps: [LinkImp] = []
+    @State private var showImpCamera = false
     @State private var text = ""
+    /// The photos, sounds, videos and files that go with the message.
+    @State private var draft = AttachmentDraft()
+    @State private var recorder = SoundRecorder()
+    @State private var recording = false
+    @State private var showPhotos = false
+    @State private var showFiles = false
+    @State private var showCamera = false
+    @State private var pickedPhotos: [PhotosPickerItem] = []
     /// The other Imp the message is for (picked with the @ button), if any.
     @State private var askedPeer: LinkImp?
     @FocusState private var focused: Bool
@@ -455,6 +472,8 @@ private struct Composer: View {
     private var availability: ChatAvailability { source.availability(impID) }
     private var working: Bool { source.working(impID).flatMap { $0.from == nil ? $0 : nil } != nil }
     private var trimmed: String { text.trimmingCharacters(in: .whitespacesAndNewlines) }
+    /// Words or files: either is a message.
+    private var canSend: Bool { !trimmed.isEmpty || !draft.isEmpty }
 
     var body: some View {
         VStack(spacing: Spacing.small) {
@@ -484,9 +503,28 @@ private struct Composer: View {
             }
             .padding(.horizontal, Spacing.roomy)
             .transition(.opacity.combined(with: .move(edge: .bottom)))
+            if let note = draft.note {
+                Label(note, systemImage: "exclamationmark.triangle.fill")
+                    .font(Typeface.caption)
+                    .foregroundStyle(Tone.muted)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, Spacing.roomy)
+                    .accessibilityIdentifier("chat.attachment.note")
+            }
+            if !draft.isEmpty {
+                AttachmentChips(files: draft.files) { draft.remove($0) }
+                    .padding(.horizontal, Spacing.roomy)
+            }
             HStack(alignment: .bottom, spacing: Spacing.cozy) {
-                field
-                if working && trimmed.isEmpty {
+                if recording {
+                    RecordingRow(recorder: recorder, done: finishRecording, cancel: cancelRecording)
+                } else {
+                    addMenu
+                    field
+                }
+                if recording {
+                    EmptyView()
+                } else if working && !canSend {
                     Button { source.stop(impID); Haptics.tap(.medium) } label: { glyph("stop.fill") }
                         .buttonStyle(.plain)
                         .accessibilityLabel("Stop")
@@ -494,9 +532,10 @@ private struct Composer: View {
                 } else {
                     Button(action: send) { glyph("arrow.up") }
                         .buttonStyle(.plain)
-                        .disabled(trimmed.isEmpty)
-                        .opacity(trimmed.isEmpty ? Opacity.disabled : 1)
+                        .disabled(!canSend)
+                        .opacity(canSend ? 1 : Opacity.disabled)
                         .accessibilityLabel("Send")
+                        .accessibilityIdentifier("chat.send")
                         .transition(.scale.combined(with: .opacity))
                 }
             }
@@ -507,6 +546,31 @@ private struct Composer: View {
         }
         .padding(.vertical, Spacing.cozy)
         .onChange(of: focused) { _, on in typing.on = on }
+        .onChange(of: recorder.timedOut) { _, out in if out { finishRecording() } }
+        .onDisappear { if recording { cancelRecording() } }
+        .photosPicker(isPresented: $showPhotos, selection: $pickedPhotos, maxSelectionCount: max(1, draft.remaining), matching: .any(of: [.images, .videos]))
+        .onChange(of: pickedPhotos) { _, items in
+            guard !items.isEmpty else { return }
+            pickedPhotos = []
+            Task { await draft.add(items: items) }
+        }
+        .fileImporter(isPresented: $showFiles, allowedContentTypes: [.image, .audio, .movie, .data], allowsMultipleSelection: true) { result in
+            if case .success(let urls) = result { draft.add(urls: urls) }
+        }
+        .fullScreenCover(isPresented: $showImpCamera) {
+            CameraView(imps: cameraImps, onSend: { data in
+                showImpCamera = false
+                draft.addPicture(data: data)
+            }, close: { showImpCamera = false })
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            SystemCamera(picked: { image in
+                showCamera = false
+                if let cg = image.upright, let encoded = EncodedImage.encode(cg, maxPixel: 2048) { draft.add(MediaFile(encoded, name: "photo")) }
+                else { draft.say(.unreadable) }
+            }, cancelled: { showCamera = false })
+            .ignoresSafeArea()
+        }
         // Put away once, the notice stays away until the Imp may use its tools again and then loses them anew.
         .onChange(of: source.toolsWithheld(impID) == nil, initial: true) { _, allowed in
             if allowed, dismissed.contains(impID) { dismissed.remove(impID) }
@@ -618,10 +682,79 @@ private struct Composer: View {
             .background(Circle().fill(TintFill()))
     }
 
+    // MARK: Attachments
+
+    /// The + at the box's leading edge: where a photo, a recording or a file comes from.
+    private var addMenu: some View {
+        let full = !MediaFile.canAdd(to: draft.files.count)
+        return Menu {
+            Button { showPhotos = true } label: { Label("Photo or video", systemImage: "photo.on.rectangle") }
+                .accessibilityIdentifier("chat.add.photos")
+            if onTakePhoto != nil || !cameraImps.isEmpty || SystemCamera.isAvailable {
+                Button { takePhoto() } label: { Label("Take a photo", systemImage: "camera") }
+                    .accessibilityIdentifier("chat.add.camera")
+            }
+            Button { startRecording() } label: { Label("Record a sound", systemImage: "mic") }
+                .accessibilityIdentifier("chat.add.record")
+            Button { showFiles = true } label: { Label("Choose a file", systemImage: "doc") }
+                .accessibilityIdentifier("chat.add.file")
+        } label: {
+            Image(systemName: "plus")
+                .font(.icon(.big, weight: .bold))
+                .foregroundStyle(Tone.text)
+                .frame(width: Sizing.hit, height: Sizing.hit)
+                .background(Circle().fill(Tone.card))
+                .contentShape(Circle())
+        }
+        .menuStyle(.button)
+        .buttonStyle(.plain)
+        .menuIndicator(.hidden)
+        .disabled(full)
+        .opacity(full ? Opacity.disabled : 1)
+        .accessibilityLabel("Add")
+        .accessibilityIdentifier("chat.add")
+    }
+
+    private func takePhoto() {
+        if let onTakePhoto { onTakePhoto() } else if !cameraImps.isEmpty { showImpCamera = true } else { showCamera = true }
+    }
+
+    private func startRecording() {
+        guard MediaFile.canAdd(to: draft.files.count) else { return draft.say(.tooMany) }
+        Task {
+            do {
+                try await recorder.start()
+                recording = true
+            } catch SoundRecorder.Problem.denied {
+                draft.note = String(localized: "Imp can't hear you. Allow the microphone in Settings.")
+            } catch {
+                draft.note = String(localized: "The recording didn't start.")
+            }
+        }
+    }
+
+    private func finishRecording() {
+        guard recording else { return }
+        recording = false
+        if let sound = recorder.finish(name: "sound") { draft.add(sound) }
+    }
+
+    private func cancelRecording() {
+        recording = false
+        recorder.cancel()
+    }
+
     private func send() {
-        guard !trimmed.isEmpty else { return }
-        let message = askedPeer.map { words("phone.chat.ask_to_prefix", $0.name) + trimmed } ?? trimmed
-        source.ask(impID, message)
+        guard canSend else { return }
+        let message = trimmed.isEmpty ? "" : askedPeer.map { words("phone.chat.ask_to_prefix", $0.name) + trimmed } ?? trimmed
+        if draft.isEmpty {
+            source.ask(impID, message)
+        } else if !source.ask(impID, message, media: draft.files) {
+            // The files stay in the box, to try again.
+            draft.note = String(localized: "The files didn't reach its home. Try again.")
+            return
+        }
+        draft.clear()
         text = ""
         askedPeer = nil
         Haptics.tap(.light)

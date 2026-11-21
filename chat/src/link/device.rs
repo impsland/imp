@@ -27,7 +27,7 @@ use imp_engine::link::node::{Ask, Event, JoinError, Node, Options, PassOutcome, 
 use imp_engine::link::talks::First;
 use imp_engine::link::{
     LinkDecline, LinkEntry, LinkImp, LinkInvite, LinkMessage, LinkSide, LinkStaged, LinkTurn,
-    LinkWork, PORT,
+    LinkWho, LinkWork, PORT,
 };
 use imp_engine::{AgentEvent, BoxFuture, ChatMessage, Role, StreamEvent, TalkStore, run_agent};
 use std::cell::RefCell;
@@ -106,6 +106,7 @@ pub struct Visitor {
     pub look: LinkImp,
     pub home: Uuid,
     pub home_name: String,
+    pub home_kind: LinkKind,
     /// The device that sent it here.
     pub from: Uuid,
     /// Its home can think for it now.
@@ -568,6 +569,7 @@ impl Device {
         let message = LinkMessage::Ask {
             imp,
             text: text.chars().take(imp_engine::link::MAX_TEXT).collect(),
+            attachments: Vec::new(),
         };
         let home = visitor.home;
         let sent = self
@@ -742,7 +744,11 @@ impl Device {
                     self.publish_stage();
                 }
             }
-            LinkMessage::Ask { imp, text } => self.asked(imp, text, from),
+            LinkMessage::Ask {
+                imp,
+                text,
+                attachments,
+            } => self.asked(imp, text, attachments, from),
             LinkMessage::Stop { imp } => {
                 if let Some(stop) = self.homes.get_mut(&imp).and_then(|h| h.stop.take()) {
                     let _ = stop.send(());
@@ -861,10 +867,11 @@ impl Device {
         let back = self.inner_tx.clone();
         self.handle.post(move |node, now| {
             let took = node.accept(transfer, now);
-            let home = node
-                .visits()
-                .visit(imp.id)
-                .map(|v| (v.home.id(), v.home.device.name.clone()));
+            let home = node.visits().visit(imp.id).map(|v| LinkWho {
+                id: v.home.id(),
+                name: v.home.device.name.clone(),
+                kind: v.home.device.kind,
+            });
             let _ = back.send(Inner::Accepted {
                 look: Box::new(imp),
                 ours,
@@ -902,26 +909,27 @@ impl Device {
             } => {
                 let id = look.id;
                 let name = look.name.clone();
-                if let Some((home, home_name)) = home {
+                if let Some(home) = home {
                     let awake = self
                         .shared
                         .borrow()
                         .peers
                         .iter()
-                        .any(|p| p.id == home && p.connected);
+                        .any(|p| p.id == home.id && p.connected);
                     let from_id = self
                         .shared
                         .borrow()
                         .peers
                         .iter()
                         .find(|p| p.name == from)
-                        .map_or(home, |p| p.id);
+                        .map_or(home.id, |p| p.id);
                     self.shared.borrow_mut().visitors.insert(
                         id,
                         Visitor {
                             look: *look,
-                            home,
-                            home_name,
+                            home: home.id,
+                            home_name: home.name,
+                            home_kind: home.kind,
                             from: from_id,
                             awake,
                             turns: Vec::new(),
@@ -1004,17 +1012,22 @@ impl Device {
     }
 
     /// A holder asked an Imp of this computer something: it thinks here and the holder sees it happen.
-    fn asked(&mut self, imp: Uuid, text: String, from: Uuid) {
-        let words: String = text
+    fn asked(&mut self, imp: Uuid, text: String, attachments: Vec<Uuid>, from: Uuid) {
+        let mut words: String = text
             .trim()
             .chars()
             .take(imp_engine::link::MAX_TEXT)
             .collect();
+        if words.is_empty() && !attachments.is_empty() {
+            words = "Have a look at what I sent.".into();
+        }
         if words.is_empty() || self.imp_name(imp).is_none() {
             return;
         }
         self.ensure_home(imp);
         let handle = self.handle.clone();
+        // The Imps on other devices, so it can message the ones on the screen it is on (`imp_message`).
+        let remote = self.remote();
         let device = self.peer_name(from).unwrap_or_else(|| "a device".into());
         let settings = self.settings.clone().map(|s| match &self.workspace {
             Some(w) => Settings {
@@ -1035,10 +1048,16 @@ impl Device {
         let session = home.session.clone();
         let mut chat = std::mem::take(&mut home.chat);
         chat.push_user(&words);
+        let sent = match attachments.len() {
+            0 => String::new(),
+            1 => " (with 1 attachment)".into(),
+            n => format!(" (with {n} attachments)"),
+        };
         self.queued.push(Update::Asked {
             imp: name.clone(),
-            line: format!("{device} asks {name}: {words}"),
+            line: format!("{device} asks {name}: {words}{sent}"),
         });
+        let folder = settings.as_ref().map(|s| s.workspace.clone());
         let work = self.work_tx.clone();
         let request = words.clone();
         self.jobs.push(Box::pin(async move {
@@ -1047,13 +1066,28 @@ impl Device {
                 .with(move |node, _| node.is_trusted(from))
                 .await
                 .unwrap_or(false);
+            // The files the question names: kept in the Imp's folder, and shown to the model.
+            if !attachments.is_empty() {
+                let mut files = Vec::new();
+                for id in attachments {
+                    let file = handle
+                        .with(move |node, _| node.take_upload(id, from))
+                        .await
+                        .flatten();
+                    files.push(file);
+                }
+                let (note, media) = save_attachments(folder.as_deref(), files);
+                let content = format!("{words}{note}");
+                chat.amend_last_user(content);
+                chat.attach_media(media);
+            }
             let session = match (session, settings) {
                 (Some(s), _) => Some(s),
                 (None, Some(settings)) => Session::open(
                     &settings,
                     Some(&name),
                     SessionOptions {
-                        remote: None,
+                        remote: Some(remote),
                         answers_later: false,
                         asker: None,
                     },
@@ -1101,6 +1135,8 @@ impl Device {
             let partial = RefCell::new(String::new());
             let status = RefCell::new(None::<String>);
             let steps = RefCell::new(Vec::<String>::new());
+            // Which steps are the model thinking (only that it thought travels, as a title).
+            let thoughts = RefCell::new(Vec::<u32>::new());
             // When the model began thinking. Only that it thought goes to the other device, as a step.
             let thinking = RefCell::new(None::<Instant>);
             let last = RefCell::new(Instant::now());
@@ -1116,7 +1152,9 @@ impl Device {
                         thinking.borrow_mut().get_or_insert_with(Instant::now);
                     } else if let Some(since) = thinking.borrow_mut().take() {
                         let seconds = since.elapsed().as_secs_f64().ceil().max(1.0);
-                        steps.borrow_mut().push(format!("Thought for {seconds}s"));
+                        let mut steps = steps.borrow_mut();
+                        thoughts.borrow_mut().push(steps.len() as u32);
+                        steps.push(format!("Thought for {seconds}s"));
                     }
                     match &event {
                         AgentEvent::Stream(StreamEvent::Text(t)) => {
@@ -1168,6 +1206,8 @@ impl Device {
             }
             chat.finish_exchange(!turn.failed && finished);
             turn.steps = steps.into_inner();
+            let thoughts = thoughts.into_inner();
+            turn.thoughts = (!thoughts.is_empty()).then_some(thoughts);
             Done::Home(Box::new(HomeDone {
                 imp,
                 chat,
@@ -1236,6 +1276,13 @@ impl Device {
             turn,
             session,
         } = *home;
+        // The answer's last streamed words may still wait in the channel (`next` picks a ready branch at
+        // random). Sent after the chat, they would show the finished turn as still in progress on the holder.
+        while let Ok((other, work)) = self.work_rx.try_recv() {
+            if other != imp {
+                self.send_work(other, work);
+            }
+        }
         let holder = self.shared.borrow().away.get(&imp).copied();
         let Some(home) = self.homes.get_mut(&imp) else {
             return;
@@ -1469,10 +1516,10 @@ impl Device {
         shared.peers = peers;
         shared.away = away.into_iter().collect();
         let mut visitors = BTreeMap::new();
-        for (look, home, home_name, from) in visits {
+        for (look, home, from) in visits {
             let old = shared.visitors.remove(&look.id);
             // Awake while its home is connected, unless the home said it has no brain.
-            let awake = connected.contains(&home)
+            let awake = connected.contains(&home.id)
                 && old
                     .as_ref()
                     .is_none_or(|o| o.awake || !connected.contains(&o.home));
@@ -1482,8 +1529,9 @@ impl Device {
                     turns: old.as_ref().map(|o| o.turns.clone()).unwrap_or_default(),
                     work: old.as_ref().and_then(|o| o.work.clone()),
                     look,
-                    home,
-                    home_name,
+                    home: home.id,
+                    home_name: home.name,
+                    home_kind: home.kind,
                     from,
                     awake,
                 },
@@ -1497,36 +1545,48 @@ impl Device {
         let Ok(loaded) = self.load() else {
             return;
         };
-        let (me, away, visitors) = {
+        let (away, visitors) = {
             let shared = self.shared.borrow();
             (
-                shared.me,
                 shared.away.keys().copied().collect::<Vec<_>>(),
                 shared
                     .visitors
                     .values()
                     .map(|v| LinkStaged {
                         imp: v.look.clone(),
-                        home: v.home,
+                        home: LinkWho {
+                            id: v.home,
+                            name: v.home_name.clone(),
+                            kind: v.home_kind,
+                        },
                     })
                     .collect::<Vec<_>>(),
             )
         };
-        let mut stage: Vec<LinkStaged> = loaded
+        let own: Vec<LinkImp> = loaded
             .imps()
             .map(|a| settings::look_of(&loaded, &a.value, &settings::servers_of(&loaded, &a.value)))
             .filter(|look| !away.contains(&look.id))
-            .map(|imp| LinkStaged { imp, home: me })
             .collect();
-        stage.extend(visitors);
-        self.handle.post(move |node, _| node.set_stage(stage));
+        self.handle.post(move |node, _| {
+            let me = node.who();
+            let mut stage: Vec<LinkStaged> = own
+                .into_iter()
+                .map(|imp| LinkStaged {
+                    imp,
+                    home: me.clone(),
+                })
+                .collect();
+            stage.extend(visitors);
+            node.set_stage(stage);
+        });
     }
 }
 
 /// What the node's books say, read in one go.
 struct Snapshot {
     peers: Vec<Peer>,
-    visits: Vec<(LinkImp, Uuid, String, Uuid)>,
+    visits: Vec<(LinkImp, LinkWho, Uuid)>,
     away: Vec<(Uuid, Uuid)>,
 }
 
@@ -1554,8 +1614,11 @@ fn snapshot(node: &Node) -> Snapshot {
         .map(|v| {
             (
                 v.imp.clone(),
-                v.home.id(),
-                v.home.device.name.clone(),
+                LinkWho {
+                    id: v.home.id(),
+                    name: v.home.device.name.clone(),
+                    kind: v.home.device.kind,
+                },
                 v.from,
             )
         })
@@ -1582,7 +1645,7 @@ enum Inner {
         ours: Option<String>,
         took: bool,
         from: String,
-        home: Option<(Uuid, String)>,
+        home: Option<LinkWho>,
     },
 }
 
@@ -1601,7 +1664,7 @@ impl Remote for DeviceRemote {
                 if !all.iter().any(|r: &RemoteImp| r.look.id == staged.imp.id) {
                     all.push(RemoteImp {
                         look: staged.imp.clone(),
-                        home: staged.home,
+                        home: staged.home.id,
                         place: peer.name.clone(),
                     });
                 }
@@ -1628,7 +1691,11 @@ impl Remote for DeviceRemote {
         Box::pin(async move {
             let id = new_device_id();
             let (answer, reply) = oneshot::channel();
-            let me = self.shared.borrow().me;
+            // Where the asking Imp's body is: this computer, or the device holding it while it is away.
+            let holder = {
+                let shared = self.shared.borrow();
+                shared.away.get(&from.id).copied().unwrap_or(shared.me)
+            };
             self.shared.borrow_mut().talks.insert(id, answer);
             let words = text.to_string();
             let target = to.look.id;
@@ -1642,7 +1709,7 @@ impl Remote for DeviceRemote {
                             to: target,
                             to_home: to.home,
                             text: &words,
-                            holder: me,
+                            holder,
                         },
                         now,
                     )
@@ -1785,4 +1852,68 @@ fn link_log(event: &Event) {
     {
         let _ = writeln!(file, "{secs:.3} {line}");
     }
+}
+/// Keeps the files that came with a question in the `attachments` folder of the Imp's workspace, and
+/// returns a note that names them for the model (so its tools can use the files) and the pictures,
+/// sounds and videos among them as data URLs. A file that never arrived is noted as well.
+fn save_attachments(
+    folder: Option<&Path>,
+    files: Vec<Option<imp_engine::link::uploads::Upload>>,
+) -> (String, Vec<String>) {
+    let mut lines = Vec::new();
+    let mut media = Vec::new();
+    for file in files {
+        let Some(file) = file else {
+            lines.push("- an attachment didn't arrive".to_string());
+            continue;
+        };
+        let saved = folder.and_then(|f| save_attachment(f, &file.name, &file.data));
+        let kind = imp_engine::chat::media_kind(&file.mime);
+        let shown = file.mime.clone();
+        match saved {
+            Some(path) => lines.push(format!("- {} ({shown})", path.display())),
+            None => lines.push(format!("- {} ({shown}, not saved)", file.name)),
+        }
+        if kind != "file" && media.len() < imp_engine::chat::MAX_ATTACHMENTS {
+            media.push(imp_engine::chat::data_url(&file.mime, &file.data));
+        }
+    }
+    let note = format!("\n\n[Attached to this message:\n{}\n]", lines.join("\n"));
+    (note, media)
+}
+
+/// Writes one file under `attachments/` with a name that is safe and not taken.
+fn save_attachment(workspace: &Path, name: &str, data: &[u8]) -> Option<PathBuf> {
+    use std::io::Write;
+    let dir = workspace.join("attachments");
+    std::fs::create_dir_all(&dir).ok()?;
+    let safe: String = name
+        .chars()
+        .map(|c| {
+            if c.is_alphanumeric() || matches!(c, '.' | '-' | '_') {
+                c
+            } else {
+                '_'
+            }
+        })
+        .collect();
+    let safe = safe.trim_start_matches('.');
+    let safe = if safe.is_empty() { "file" } else { safe };
+    for _ in 0..8 {
+        let unique = new_device_id().simple().to_string();
+        let path = dir.join(format!("{}-{safe}", &unique[..8]));
+        match std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&path)
+        {
+            Ok(mut file) => {
+                file.write_all(data).ok()?;
+                return Some(path);
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(_) => return None,
+        }
+    }
+    None
 }

@@ -24,4 +24,14 @@ public enum Workspace {
         try picture.data.write(to: url)
         return url
     }
+
+    /// Saves any attachment into `directory/attachments` under a safe, unused name. Its file URL.
+    public static func save(_ media: MediaFile, in directory: URL, at date: Date = Date()) throws -> URL {
+        let folder = directory.appendingPathComponent("attachments", isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let name = media.fileName(at: date) { FileManager.default.fileExists(atPath: folder.appendingPathComponent($0).path) }
+        let url = folder.appendingPathComponent(name)
+        try media.data.write(to: url, options: .withoutOverwriting)
+        return url
+    }
 }

@@ -73,6 +73,19 @@ are one JSON file in Application Support (`PocketStore`). Keys and header values
 (`PocketKeychain`). Throw one off a side while the Mac is
 connected and it moves home for good.
 
+## Attachments
+
+The chat's **+** adds up to 4 photos, videos, sounds or files (25 MiB each) to a message: **Photo or video**, **Take a
+photo**, **Record a sound**, **Choose a file** (`apple/iOS/Imp/Chat/Attachments.swift`, `Composer` in `ChatSheet.swift`).
+They show as chips above the box. A pocket Imp gets them in its turn (`PocketBrain.ask(media:)`); a visiting Imp's
+home gets them uploaded first (`LinkNode.upload`). As a home, the phone takes what was uploaded (`takeUpload`). The
+chat keeps the words, never the bytes. **Take a photo** opens the playful camera (`apple/iOS/Imp/Camera/CameraView.swift`):
+the Imps on the screen rush in and peek over the picture, you drag them where you like, and the photo is exactly what
+the screen showed, Imps included (`CameraGeometry` in ImpKit holds the spots and the crop maths). Then Retake, Save
+(add-only Photos) or Send, which attaches it to the chat's draft. Without a camera or permission it says so and offers
+Settings. `Composer.onTakePhoto` replaces it with another one. Debug builds open a pocket Imp's chat with
+`-openPocketChat` and the camera over the room with `-openCamera`.
+
 ## Security
 
 Each device has an Ed25519 key that never leaves it (in the Keychain). A link pins the other side's

@@ -67,18 +67,19 @@ The background choices are not in this menu. They are one click away in Settings
 
 Right click (or Control-click) on an Imp, in the window or on the desktop, opens the same menu. It starts with a card (`ImpMenuCard`):
 
-1. The Imp in a circle of its colour, centred by its drawing (horns included), its name and its status
-2. Six buttons in a 2 × 3 grid, an icon over a short word: Talk, Message, Chat (`menu.imp.talk`, `menu.imp.message`, `menu.imp.chat`), then Hide, Send home or Let out, Settings (`menu.imp.hide`, `menu.imp.send_home`, `menu.imp.let_out`, `menu.imp.settings`). On the desktop the fifth button is Send home (`house.fill`): the Imp goes back into the window. In the window it is Let out (`arrow.up.forward.square.fill`): the Imp steps out where it stands. Talk, Message and Chat on an Imp in the window let it out first, because its bubble lives on the desktop
+1. The Imp in a circle of its colour, centred by its drawing (horns included), its name and its status, and in the top right corner Settings (`menu.imp.settings`, `slider.horizontal.3`) as an icon button
+2. Three big buttons in a row, an icon over a short word: Talk, Message, Chat (`menu.imp.talk`, `menu.imp.message`, `menu.imp.chat`). Talk, Message and Chat on an Imp in the window let it out first, because its bubble lives on the desktop
 3. Its size: three buttons with a small, a medium and a large dot. The chosen one is filled with the Imp's colour
 4. Its colour: a dot for each colour, the chosen one with a tick
+5. After what only sometimes applies (below): Hide (`menu.imp.hide`) and the place pill, right above Copy kit and Copy link and in their style. On the desktop it is Send home (`house.fill`): the Imp goes back into the window. In the window it is Let out (`arrow.up.forward.square.fill`): the Imp steps out where it stands
 
 The buttons close the menu and then act. Size and colour change at once and leave the menu open, so both can be picked in one go.
 
-Every right-click menu is one card of buttons (`MenuCard`), never a list of text items: big pebbles in a grid for the main actions (`MenuGrid`, three to a row, two when there are four), pills two to a row under a small heading for things to choose from (`MenuPills`), and one wide button in the danger colour for what can't be undone (`MenuDangerButton`), last. Under the Imp's card:
+Every right-click menu is one card of buttons (`MenuCard`), never a list of text items: big pebbles in a grid for the main actions (`MenuGrid`, three to a row, two when there are four), pills two to a row for things to choose from (`MenuPills`, with no heading: their icons say what they are), and one wide button in the danger colour for what can't be undone (`MenuDangerButton`), last. Under the Imp's card:
 
-- In the window: Copy kit and Copy link as pills (Copy link is off when no link can be made), then Goodbye (`menu.imp.goodbye`, `hand.wave.fill`) as the wide button. It asks first, and it is off only when nothing can go
-- On the desktop: Stop and Copy Last Reply while there is something to stop or copy, its triggers that ask it something (Triggers), and Visit (`menu.imp.visit`): a pill for each linked device, or a dimmed Visit another device (`menu.imp.visit_none`)
-- A visiting Imp's card has Talk, Message, Chat, Hide and New Chat, then Send home, which flies it back to its home device
+- In the window: Hide and Let out, then Copy kit and Copy link as pills (Copy link is off when no link can be made), then Goodbye (`menu.imp.goodbye`, `hand.wave.fill`) as the wide button. It asks first, and it is off only when nothing can go
+- On the desktop: Stop and Copy Last Reply while there is something to stop or copy, its triggers that ask it something, and a pill for each linked device it can visit, or a dimmed Visit another device (`menu.imp.visit_none`), then Hide and Send home, Copy kit and Copy link, and Goodbye
+- A visiting Imp's card has New Chat in the corner where Settings is, Talk, Message and Chat, the devices it may go on to, then Hide and Send home, which flies it back to its home device
 - Several Imps picked together: Hide, Let out and Copy kit, size and colour, Brain as pills (Shared or a service, applied at once, the menu stays open), then Goodbye to {count} Imps… as the wide button
 - Empty space: New Imp, Hidden (n) when some are hidden, Select All when there are two or more, and Settings, as one grid
 

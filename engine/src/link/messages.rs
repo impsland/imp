@@ -16,6 +16,7 @@ pub const MAX_TEXT: usize = 20_000;
 /// The biggest file in bytes.
 pub const MAX_FILE: u64 = 512 * 1024 * 1024;
 pub use crate::link::frames::{FrameError, MAX_FRAME};
+pub use crate::link::uploads::{MAX_ATTACHMENTS, MAX_PART, MAX_UPLOAD};
 
 /// Binary data, written as base64 in JSON.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -182,7 +183,17 @@ pub struct LinkImp {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LinkStaged {
     pub imp: LinkImp,
-    pub home: Uuid,
+    /// The device the Imp lives on, with its name and kind so a device that is not linked with it still
+    /// shows it as what it is. Whoever stages the Imp supplies it.
+    pub home: LinkWho,
+}
+
+/// Who a device is, as another device that is not linked with it can be told.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct LinkWho {
+    pub id: Uuid,
+    pub name: String,
+    pub kind: LinkKind,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -364,6 +375,12 @@ pub enum LinkMessage {
     Gone {
         imp: Uuid,
     },
+    /// A holder tells the home it handed the Imp on to `to`, a device the home may not be linked with, so the
+    /// home can show where the Imp is. Only the current holder is heard.
+    Moved {
+        imp: Uuid,
+        to: LinkWho,
+    },
     Release {
         imp: Uuid,
         ticket: Bytes,
@@ -371,6 +388,30 @@ pub enum LinkMessage {
     Ask {
         imp: Uuid,
         text: String,
+        /// Uploads (`upload`) that go with the question, at most `MAX_ATTACHMENTS`.
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        attachments: Vec<Uuid>,
+    },
+    /// A holder starts sending a file to the Imp's home. The bytes follow in `uploadPart`s.
+    Upload {
+        id: Uuid,
+        imp: Uuid,
+        name: String,
+        #[serde(rename = "type")]
+        mime: String,
+        size: u64,
+        /// Lowercase hex SHA-256 of the whole file.
+        sha256: String,
+    },
+    UploadPart {
+        id: Uuid,
+        offset: u64,
+        data: Bytes,
+    },
+    /// The home refused or dropped an upload.
+    UploadFailed {
+        id: Uuid,
+        reason: String,
     },
     Stop {
         imp: Uuid,
@@ -488,8 +529,12 @@ const KNOWN: &[&str] = &[
     "claim",
     "claimed",
     "gone",
+    "moved",
     "release",
     "ask",
+    "upload",
+    "uploadPart",
+    "uploadFailed",
     "stop",
     "newChat",
     "openChat",
@@ -573,10 +618,23 @@ impl LinkMessage {
                     && home.is_some() == ticket.is_some()
                     && home.as_ref().is_none_or(|h| name(&h.device.name))
             }
+            Self::Moved { to, .. } => name(&to.name),
             Self::Claim { ticket, .. }
             | Self::Claimed { ticket, .. }
             | Self::Release { ticket, .. } => ticket.is_key(),
-            Self::Ask { text: t, .. } => text(t),
+            Self::Ask {
+                text: t,
+                attachments,
+                ..
+            } => text(t) && attachments.len() <= MAX_ATTACHMENTS,
+            Self::Upload {
+                name: n,
+                mime,
+                sha256,
+                ..
+            } => n.chars().count() <= 1000 && mime.chars().count() <= 200 && sha256.len() == 64,
+            Self::UploadPart { data, .. } => data.0.len() <= MAX_PART,
+            Self::UploadFailed { reason, .. } => reason.chars().count() <= 500,
             Self::File { reference, .. } => reference.chars().count() <= 4096,
             Self::Look { imp: i } => imp(i),
             Self::Chat { turns, .. } => {

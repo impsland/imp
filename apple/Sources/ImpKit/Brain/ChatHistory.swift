@@ -79,14 +79,16 @@ public struct ChatTurn: Codable, Equatable, Identifiable, Sendable {
     public var copiedText: String?
     /// The picture handed over (pasted into the text box, or copied for a shortcut): its file.
     public var picture: String?
+    /// Every other photo, sound or video that came with the request: their files, never the bytes.
+    public var files: [String]?
     /// Who asked, when it was another Imp (`via` is `.imp`).
     public var sender: Sender?
 
     public init(id: UUID = UUID(), date: Date = Date(), request: String, reply: String = "", failed: Bool = false,
                 steps: [Step] = [], via: Via? = nil, instruction: String? = nil, copiedText: String? = nil, picture: String? = nil,
-                sender: Sender? = nil) {
+                sender: Sender? = nil, files: [String]? = nil) {
         self.id = id; self.date = date; self.request = request; self.reply = reply; self.failed = failed; self.steps = steps
-        self.via = via; self.instruction = instruction; self.copiedText = copiedText; self.picture = picture; self.sender = sender
+        self.via = via; self.instruction = instruction; self.copiedText = copiedText; self.picture = picture; self.sender = sender; self.files = files
     }
 }
 

@@ -68,6 +68,24 @@ extension HopStanding {
     }
 }
 
+extension HopStanding {
+    /// The tint of the Hop's button in the screen's bar: good while a channel runs through it or a check reached it,
+    /// danger when it is set wrong or unreachable, muted otherwise.
+    var barTone: Color {
+        switch self {
+        case .connected, .reachable: Tone.good
+        case .needsAddress, .unreachable: Tone.danger
+        case .off, .connecting, .offline: Tone.muted
+        }
+    }
+}
+
+/// One word and a colour: how a thing stands, for the pill in a sheet's header. A word, never colour alone.
+struct DeviceStatus {
+    var word: String
+    var tone: Color
+}
+
 extension DeviceMap.Node {
     var symbol: String {
         switch kind {
@@ -90,10 +108,10 @@ extension DeviceMap.Node {
 
 extension DeviceMap {
     /// One short line for a screen reader: what the node is, its state and the Imps in it.
-    func summary(of node: Node, standing: HopStanding? = nil) -> String {
+    func summary(of node: Node) -> String {
         let imps = residents(of: node.id).map(\.name)
         let what = node.kind == .thisMac ? words("devices.node.this_mac_label", node.title) : node.title
-        let state = standing?.word ?? node.shownState.word
+        let state = status(of: node).word
         guard !imps.isEmpty else { return words("devices.node.label_empty", what, state) }
         return words("devices.node.label", what, state, imps.formatted(.list(type: .and)))
     }
@@ -121,6 +139,24 @@ extension DeviceMap {
         case .local: String(localized: "devices.route.tag_local")
         case .relay: channel.server ?? String(localized: "servers.hop.title")
         }
+    }
+
+    /// How a device stands in one or two words: Here, Nearby, Via server, Away, or Through the device that relays it.
+    func status(of node: Node) -> DeviceStatus {
+        if node.kind == .thisMac { return DeviceStatus(word: String(localized: "devices.status.here"), tone: Tone.good) }
+        if !node.linked {
+            return DeviceStatus(word: words("devices.status.through", node.via.map(title(of:)) ?? String(localized: "devices.unknown_device")), tone: Tone.muted)
+        }
+        guard let channel = channels.first(where: { $0.from == node.id || $0.to == node.id }) else {
+            return DeviceStatus(word: node.state.word, tone: node.state.tone)
+        }
+        return status(of: channel)
+    }
+
+    /// How a channel stands: Nearby on the local network, Via server through the Hop, or its state when it is not up.
+    func status(of channel: Channel) -> DeviceStatus {
+        guard channel.state == .connected else { return DeviceStatus(word: channel.state.word, tone: channel.state.tone) }
+        return DeviceStatus(word: String(localized: channel.path == .relay ? "devices.status.via_server" : "devices.status.nearby"), tone: Tone.good)
     }
 
     func title(of id: String) -> String { node(id)?.title ?? String(localized: "devices.unknown_device") }

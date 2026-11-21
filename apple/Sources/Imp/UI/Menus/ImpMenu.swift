@@ -6,8 +6,8 @@ import SwiftUI
 /// The menu you get by right-clicking an Imp on the desktop: everything about *that* Imp and nothing else.
 /// (App-wide things live in the menu bar menu.) It is one card of buttons (`MenuCard`): the top is
 /// `ImpMenuCard`, the same as in the app's window and for a visitor, and what only sometimes applies sits under it
-/// as pills, in this order: Stop and Copy last reply, triggers, devices to visit, Copy kit and Copy link, and
-/// Goodbye last and apart. Only the place button differs from the window's menu (Send home here, Let out there).
+/// as pills with no headings, in this order: Stop and Copy last reply, triggers, devices to visit, Hide and Send home,
+/// Copy kit and Copy link, and Goodbye last and apart. Only the place button differs from the window's menu (Send home here, Let out there).
 @MainActor
 final class ImpMenu {
     private let app: AppModel
@@ -25,20 +25,20 @@ final class ImpMenu {
         let status = imp.isReady ? String(localized: "Awake") : String(localized: "Needs a brain")
         let actions = HomeActions(model: app, router: HomeWindow.shared.router)
         let id = imp.id
+        let end = ImpMenuEnd(canLink: actions.canShareLink(id), canGoodbye: actions.canSayGoodbye,
+                             kit: { [card] in card.later { actions.copyKit(id) } },
+                             link: { [card] in card.later { actions.copyLink(id) } },
+                             goodbye: { [app, card] in
+                                 card.later {
+                                     actions.askGoodbye([id])
+                                     HomeWindow.shared.show(app, imp: id)        // the window asks the question
+                                 }
+                             })
         return card.make(ImpMenuCard(ready: imp.isReady, name: imp.profile.name, status: status, hue: imp.profile.hue,
-                                     scale: imp.profile.scale, place: .desktop) { [weak self] action in
+                                     scale: imp.profile.scale, place: .desktop, end: end) { [weak self] action in
             self?.run(action)
         } extra: {
             extras
-            ImpMenuEnd(canLink: actions.canShareLink(id), canGoodbye: actions.canSayGoodbye,
-                       kit: { [card] in card.later { actions.copyKit(id) } },
-                       link: { [card] in card.later { actions.copyLink(id) } },
-                       goodbye: { [app, card] in
-                           card.later {
-                               actions.askGoodbye([id])
-                               HomeWindow.shared.show(app, imp: id)        // the window asks the question
-                           }
-                       })
         })
     }
 
@@ -63,8 +63,8 @@ final class ImpMenu {
         let now = rightNow
         if !now.isEmpty { MenuPills(items: now) }
         let own = triggers
-        if !own.isEmpty { MenuPills(title: String(localized: "Triggers"), items: own) }
-        if app.link.isLinked { MenuPills(title: String(localized: "menu.imp.visit"), items: visits(doors: nil)) }
+        if !own.isEmpty { MenuPills(items: own) }
+        if app.link.isLinked { MenuPills(items: visits(doors: nil)) }
     }
 
     private var rightNow: [MenuItem] {
@@ -134,7 +134,7 @@ final class ImpMenu {
             }
         } extra: {
             if !now.isEmpty { MenuPills(items: now) }
-            if !visits.isEmpty { MenuPills(title: String(localized: "menu.imp.visit"), items: visits) }
+            if !visits.isEmpty { MenuPills(items: visits) }
         }
     }
 

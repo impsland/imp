@@ -548,7 +548,7 @@ struct PhoneStage: View {
 
     /// Every Imp this screen could show, hidden or not.
     static func everyone(_ hub: LinkHub, _ pocket: PocketRuntime) -> [LinkStaged] {
-        let me = hub.node.device.id
+        let me = hub.node.device.who
         return pocket.looks.filter { !hub.away.contains($0.id) && !pocket.isMoving($0.id) }.map { LinkStaged(imp: $0, home: me) } + hub.visitors
     }
 

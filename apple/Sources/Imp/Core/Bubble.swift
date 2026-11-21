@@ -120,8 +120,10 @@ struct Bubble: Equatable, Identifiable {
     /// Typing: the field's placeholder ("Ask Imp anything…", "I didn't catch that…").
     var prompt: String?
     var steps: [Step] = []
-    /// Typing: a picture pasted into the text box, sent with the message.
-    var attachment: EncodedImage?
+    /// Typing: photos, sounds and videos waiting in the text box, sent with the message (up to `MediaFile.maxCount`).
+    var attachments: [MediaFile] = []
+    /// Typing: why the last file was not attached (too big, full), until the next one is.
+    var attachmentNote: String?
     var link: Link?
     /// The answer is still arriving (streamed): no buttons yet.
     var isStreaming = false

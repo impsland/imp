@@ -32,11 +32,11 @@ When the kit is short enough, Imp copies an `imp://add?kit=…` link instead of 
       "tools": { "personality": true, "look": true, "animations": true, "triggers": false, "tools": false, "senses": true, "computer": false },
       "exchangesSent": 20, "sendsToolCalls": true,
       "mcpServers": ["Notes"],
-      "triggers": [ { "name": "Good morning", "when": { "kind": "start" }, "prompt": "Greet me." } ] }
+      "triggers": [ { "name": "Good morning", "on": "start", "do": [ { "act": "ask", "value": "Greet me." } ] } ] }
   ],
   "triggers": [
-    { "name": "Plan my day", "when": { "kind": "wake" }, "only_if": [{ "kind": "hours", "text": "06:00-11:00" }],
-      "prompt": "Look at my calendar and give me a short plan." }
+    { "name": "Plan my day", "on": "wake", "if": [ { "state": "hours", "value": "06:00-11:00" } ],
+      "do": [ { "act": "ask", "value": "Look at my calendar and give me a short plan." } ] }
   ],
   "mcpServers": {
     "Memory": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-memory"] },
@@ -49,9 +49,9 @@ Animations and an Imp's `traits` are described, with every field and range, in t
 Imp's `imp_add_trigger` tool, and `mcpServers` uses the shape Claude Desktop and Cursor use. A plain MCP snippet, or a
 single trigger (or a list of them), also works as a kit.
 
-A trigger that plays a made animation names it in `animation` by its name. The animation travels in the same kit
-(sharing one trigger takes its animation along), and the trigger plays the copy that lands. If the animation is left
-out, the trigger plays one with that name already there, or nothing.
+A trigger plays a made animation with a `play` step that names it (`{ "act": "play", "value": "Wiggle" }`). The
+animation travels in the same kit (sharing one trigger takes its animation along), and the trigger plays the copy that
+lands. If the animation is left out, the trigger plays one with that name already there, or nothing.
 
 ## What a kit contains
 

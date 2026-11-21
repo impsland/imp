@@ -28,14 +28,12 @@ struct DevicesScreen: View {
                 Text("devices.title").font(Typeface.cardTitle).foregroundStyle(Tone.text)
                     .accessibilityAddTraits(.isHeader)
             } trailing: {
+                hopButton(map)
                 HoverIconButton(systemName: "qrcode", help: "settings.devices.link.title", tint: Tone.text) { sheet = .link }
                     .settingAnchor(.devicesPair)
                     .cornerLabel(.trailing, bar: Metrics.barHeight)
             }
-            DevicesCanvas(map: map, hop: model.prefs.hop,
-                          access: Dictionary(uniqueKeysWithValues: model.link.peers.map {
-                              ($0.id.uuidString, DeviceAccess.of(peer: $0.id, trusted: $0.isTrusted, prefs: model.prefs))
-                          }),
+            DevicesCanvas(map: map,
                           sheetFocus: sheet.flatMap(DeviceGraph.Focus.init) ?? focus, moved: Bindable(router).devicePlaces,
                           open: { sheet = $0 }, link: { sheet = .link })
         }
@@ -51,6 +49,12 @@ struct DevicesScreen: View {
                     .id(selection)
             }
         }
+    }
+
+    /// The Hop is not on the canvas: it is one button in the bar, tinted by how it stands, that opens its sheet.
+    private func hopButton(_ map: DeviceMap) -> some View {
+        HoverIconButton(systemName: "arrow.triangle.swap", help: "servers.hop.title",
+                        tint: map.hopStanding(text: model.prefs.hop).barTone) { sheet = .hop }
     }
 
     /// A link to one of the Devices settings: the Hop in its sheet, the others in the sheet of this Mac.

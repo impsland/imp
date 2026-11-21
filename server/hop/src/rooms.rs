@@ -11,7 +11,7 @@ use crate::limits::ConnGuard;
 
 /// A connection that has passed the handshake.
 pub struct Peer {
-    pub stream: tokio::net::TcpStream,
+    pub stream: crate::ws::Stream,
     pub conn: ConnGuard,
 }
 
@@ -21,6 +21,8 @@ pub enum Wake {
     Peer(Peer),
     /// The host's gate is not this guest's gate.
     Rejected,
+    /// A place came free while a guest with this host's gate waits: arrive again to take it.
+    Again,
 }
 
 struct Slot {
@@ -185,10 +187,23 @@ pub fn adopt(rooms: &Arc<Rooms>, room: Key) -> SessionGuard {
 }
 
 impl Drop for SessionGuard {
+    /// Frees the place. A host waiting in a room that was full gets it, when a guest with its gate
+    /// is queued: the host arrives again and takes the first such guest.
     fn drop(&mut self) {
         let mut rooms = self.rooms.lock();
         if let Some(state) = rooms.get_mut(&self.room) {
             state.sessions = state.sessions.saturating_sub(1);
+            let host_gate = state.host.as_ref().map(|h| h.gate);
+            if state.sessions < self.rooms.max_sessions
+                && let Some(gate) = host_gate
+                && state
+                    .guests
+                    .iter()
+                    .any(|g| g.gate == gate && !g.tx.is_closed())
+                && let Some(host) = state.host.take()
+            {
+                let _ = host.tx.send(Wake::Again);
+            }
             if state.is_empty() {
                 rooms.remove(&self.room);
             }

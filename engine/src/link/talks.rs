@@ -13,18 +13,29 @@ pub const ANSWER_TIMEOUT: f64 = 120.0;
 /// How many questions one device may have in flight through this one.
 pub const PER_SENDER: usize = 16;
 
-/// The Imps `asker` can message from where its body is. `mine` are the Imps of its home (this device),
-/// `stage` the Imps on the screen where its body is.
-pub fn targets(asker: Uuid, mine: &[LinkStaged], stage: &[LinkStaged]) -> Vec<LinkStaged> {
+/// The ids of the Imps `asker` can message from where its body is, each once, in order: `mine` are the Imps
+/// of its home (this device), `stage` the Imps on the screen where its body is.
+pub fn reachable(
+    asker: Uuid,
+    mine: impl IntoIterator<Item = Uuid>,
+    stage: impl IntoIterator<Item = Uuid>,
+) -> Vec<Uuid> {
     let mut seen = vec![asker];
-    let mut found = Vec::new();
-    for staged in mine.iter().chain(stage) {
-        if !seen.contains(&staged.imp.id) {
-            seen.push(staged.imp.id);
-            found.push(staged.clone());
+    for id in mine.into_iter().chain(stage) {
+        if !seen.contains(&id) {
+            seen.push(id);
         }
     }
-    found
+    seen.split_off(1)
+}
+
+/// The Imps `asker` can message from where its body is (`reachable`), as staged.
+pub fn targets(asker: Uuid, mine: &[LinkStaged], stage: &[LinkStaged]) -> Vec<LinkStaged> {
+    let ids = |list: &[LinkStaged]| list.iter().map(|s| s.imp.id).collect::<Vec<_>>();
+    reachable(asker, ids(mine), ids(stage))
+        .into_iter()
+        .filter_map(|id| mine.iter().chain(stage).find(|s| s.imp.id == id).cloned())
+        .collect()
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -102,7 +113,9 @@ pub fn may_ask(
     }
     !forwarded
         || sender_stage.iter().any(|s| s.imp.id == asker)
-        || known.iter().any(|s| s.imp.id == asker && s.home == sender)
+        || known
+            .iter()
+            .any(|s| s.imp.id == asker && s.home.id == sender)
 }
 
 /// Or the device that holds the target asks for one of its own Imps, wherever that Imp is (`known` says
@@ -118,7 +131,9 @@ pub fn holder_may_ask(
 ) -> bool {
     !forwarded
         && holder == Some(sender)
-        && known.iter().any(|s| s.imp.id == asker && s.home == sender)
+        && known
+            .iter()
+            .any(|s| s.imp.id == asker && s.home.id == sender)
 }
 
 /// A question in flight.
@@ -198,6 +213,8 @@ impl Pending {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::link::card::LinkKind;
+    use crate::link::messages::LinkWho;
     use crate::link::visits::tests::imp;
 
     fn id(n: u128) -> Uuid {
@@ -207,7 +224,11 @@ mod tests {
     fn staged(n: u128, home: u128) -> LinkStaged {
         LinkStaged {
             imp: imp(n),
-            home: id(home),
+            home: LinkWho {
+                id: id(home),
+                name: "Home".into(),
+                kind: LinkKind::Mac,
+            },
         }
     }
 

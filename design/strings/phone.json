@@ -840,5 +840,11 @@
     "en": "{count} Imps are hidden.",
     "es": "{count} Imps están ocultos.",
     "zh-Hans": "已隐藏 {count} 个 Imp。"
+  },
+  "devices.elsewhere.title": {
+    "note": "Title of the card that lists this iPhone's Imps held by devices it is not linked with.",
+    "en": "Elsewhere",
+    "es": "En otro lugar",
+    "zh-Hans": "其他地方"
   }
 }

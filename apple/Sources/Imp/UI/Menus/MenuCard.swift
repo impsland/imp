@@ -189,3 +189,37 @@ struct MenuDangerButton: View {
         .help(item.help)
     }
 }
+
+/// One icon in a pebble of its own, for the top right corner of a card's header (an Imp's Settings).
+struct MenuCornerButton: View {
+    let item: MenuItem
+
+    var body: some View {
+        Button(action: item.action) {
+            MenuGlyph(name: item.icon, size: .medium)
+                .frame(width: Sizing.control, height: Sizing.control)
+        }
+        .buttonStyle(PebbleButtonStyle())
+        .disabled(!item.enabled)
+        .help(item.help.isEmpty ? item.title : item.help)
+        .accessibilityLabel(Text(verbatim: item.title))
+    }
+}
+
+extension NSMenu {
+    /// Opens the menu at the pointer of `event`: down from it where the card fits below, else up from it, and always
+    /// whole on that screen. A card is one tall item, and AppKit's own placement of a context menu that doesn't fit
+    /// below the pointer moves it to the top of the screen, far from the Imp that was clicked.
+    func popUpCard(for event: NSEvent, in view: NSView) {
+        guard let window = view.window else { return NSMenu.popUpContextMenu(self, with: event, for: view) }
+        let pointer = window.convertPoint(toScreen: event.locationInWindow)
+        let screen = NSScreen.screens.first { $0.frame.contains(pointer) } ?? window.screen ?? NSScreen.main
+        let height = size.height
+        var top = pointer.y
+        if let visible = screen?.visibleFrame {
+            if top - height < visible.minY { top = pointer.y + height }        // no room below: open upwards
+            top = min(max(top, visible.minY + height), visible.maxY)
+        }
+        _ = popUp(positioning: nil, at: NSPoint(x: pointer.x, y: top), in: nil)
+    }
+}

@@ -7,6 +7,8 @@ COPY engine engine
 COPY chat chat
 COPY server server
 COPY spec spec
+# A workspace member: cargo reads its manifest even though the image builds only den and hop.
+COPY web/link web/link
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/src/target \
     cargo build --release --locked --bin den --bin hop \

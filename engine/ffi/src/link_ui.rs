@@ -3,7 +3,7 @@
 
 use crate::link::{LinkError, from_json, json};
 use imp_engine::link::lanes::{self, Admission};
-use imp_engine::link::map::{self, DeviceMap, MapImp, MapPeer, MapRoutes};
+use imp_engine::link::map::{self, DeviceMap, MapImp, MapKnown, MapPeer, MapRoutes};
 use imp_engine::link::messages::{LinkEntry, LinkSide, LinkStaged};
 use imp_engine::link::shake::{
     self, Decision, Direction, Sensitivity, ShakeImp, ShakePeer, ShakeSettings,
@@ -437,6 +437,7 @@ pub fn link_device_map(
     server: String,
     imps: String,
     visitors: String,
+    known: String,
 ) -> Result<String, LinkError> {
     let this_routes: Option<MapRoutes> = if this_routes.trim().is_empty() {
         None
@@ -446,6 +447,7 @@ pub fn link_device_map(
     let peers: Vec<MapPeer> = from_json(&peers)?;
     let imps: Vec<MapImp> = from_json(&imps)?;
     let visitors: Vec<LinkStaged> = from_json(&visitors)?;
+    let known: Vec<MapKnown> = from_json(&known)?;
     Ok(json(&DeviceMap::build(
         &this_device,
         this_routes.as_ref(),
@@ -453,6 +455,7 @@ pub fn link_device_map(
         &server,
         &imps,
         &visitors,
+        &known,
     )))
 }
 

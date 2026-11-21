@@ -68,13 +68,13 @@ final class ImpHostingView: NSHostingView<ImpView> {
     // MARK: Dropping a picture on Imp
 
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        guard onDropPicture != nil, Pasteboard.hasPicture(sender.draggingPasteboard) else { return [] }
+        guard onDropPicture != nil, Pasteboard.hasMedia(sender.draggingPasteboard) else { return [] }
         onPictureHover?(true)
         return .copy
     }
 
     override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
-        onDropPicture != nil && Pasteboard.hasPicture(sender.draggingPasteboard) ? .copy : []
+        onDropPicture != nil && Pasteboard.hasMedia(sender.draggingPasteboard) ? .copy : []
     }
 
     override func draggingExited(_ sender: NSDraggingInfo?) { onPictureHover?(false) }
@@ -205,6 +205,6 @@ final class ImpHostingView: NSHostingView<ImpView> {
 
     override func rightMouseDown(with event: NSEvent) {
         guard let menu = menuProvider?() else { return }
-        NSMenu.popUpContextMenu(menu, with: event, for: self)
+        menu.popUpCard(for: event, in: self)
     }
 }

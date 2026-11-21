@@ -40,7 +40,8 @@ pub struct ChatMessage {
     pub tool_calls: Vec<ToolCall>,
     /// Set on `Role::Tool` messages: the call this answers.
     pub tool_call_id: Option<String>,
-    /// Pictures that go with a user message (data URLs), for models that can see.
+    /// Media that goes with a user message, as data URLs: pictures, sound and video, for models
+    /// that can see and hear. The name stays `images` for the apps. See `media_kind`.
     pub images: Vec<String>,
     /// A user message that is not a turn of the user's: the pictures tools returned, sent right
     /// after the tool results. It reads like any user message to the model.
@@ -117,12 +118,10 @@ impl ChatMessage {
                 .map(|c| json!({ "id": c.id, "type": "function", "function": { "name": c.name, "arguments": c.arguments } }))
                 .collect();
         } else if !self.images.is_empty() {
-            let mut parts = vec![json!({ "type": "text", "text": self.content })];
-            parts.extend(
-                self.images
-                    .iter()
-                    .map(|url| json!({ "type": "image_url", "image_url": { "url": url } })),
-            );
+            // The media come before the words: a model that reads the words first may take a sound or a
+            // video for a file name and say it can't hear or see it.
+            let mut parts: Vec<Value> = self.images.iter().map(|url| media_part(url)).collect();
+            parts.push(json!({ "type": "text", "text": self.content }));
             m["content"] = Value::Array(parts);
         } else {
             m["content"] = json!(self.content);
@@ -131,6 +130,67 @@ impl ChatMessage {
             m["tool_call_id"] = json!(id);
         }
         m
+    }
+}
+
+/// The biggest media item in bytes that goes with a message.
+pub const MAX_MEDIA_BYTES: usize = 25 << 20;
+/// The most media items that go with one message.
+pub const MAX_ATTACHMENTS: usize = 4;
+
+/// What a MIME type is, for choosing the request part: `image`, `audio`, `video` or `file`.
+pub fn media_kind(mime: &str) -> &'static str {
+    let mime = mime.trim().to_ascii_lowercase();
+    match mime.split('/').next().unwrap_or("") {
+        "image" => "image",
+        "audio" => "audio",
+        "video" => "video",
+        _ => "file",
+    }
+}
+
+/// A data URL for some bytes, as `ChatMessage::images` holds them.
+pub fn data_url(mime: &str, data: &[u8]) -> String {
+    use base64::Engine as _;
+    format!(
+        "data:{mime};base64,{}",
+        base64::engine::general_purpose::STANDARD.encode(data)
+    )
+}
+
+/// The `format` an audio MIME type gets in a request: `mp3`, `wav`, or the subtype as given.
+pub fn audio_format(mime: &str) -> String {
+    let mime = mime.trim().to_ascii_lowercase();
+    let sub = mime.split(';').next().unwrap_or("");
+    let sub = sub.split('/').nth(1).unwrap_or("").trim();
+    match sub {
+        "mpeg" | "mp3" | "x-mp3" => "mp3".into(),
+        "wav" | "x-wav" | "wave" => "wav".into(),
+        other => other.into(),
+    }
+}
+
+/// The request part for one data URL. A URL that is not well formed is sent as a picture.
+fn media_part(url: &str) -> Value {
+    let picture = || json!({ "type": "image_url", "image_url": { "url": url } });
+    let Some(rest) = url.strip_prefix("data:") else {
+        return picture();
+    };
+    let Some((head, data)) = rest.split_once(',') else {
+        return picture();
+    };
+    let mime = head.split(';').next().unwrap_or("");
+    if !mime.contains('/') {
+        return picture();
+    }
+    match media_kind(mime) {
+        "image" => picture(),
+        "audio" => json!({
+            "type": "input_audio",
+            "input_audio": { "data": data, "format": audio_format(mime) }
+        }),
+        "video" => json!({ "type": "video_url", "video_url": { "url": url } }),
+        _ => json!({ "type": "file", "file": { "file_data": url } }),
     }
 }
 
@@ -1031,11 +1091,74 @@ mod tests {
         let mut m = ChatMessage::user("look");
         m.images = vec!["data:image/png;base64,AA".into()];
         let j = m.to_json();
-        assert_eq!(j["content"][0], json!({"type": "text", "text": "look"}));
         assert_eq!(
-            j["content"][1],
+            j["content"][0],
             json!({"type": "image_url", "image_url": {"url": "data:image/png;base64,AA"}})
         );
+        assert_eq!(j["content"][1], json!({"type": "text", "text": "look"}));
+    }
+
+    fn part(url: &str) -> Value {
+        let mut m = ChatMessage::user("x");
+        m.images = vec![url.into()];
+        m.to_json()["content"][0].clone()
+    }
+
+    #[test]
+    fn audio_becomes_input_audio_with_a_format() {
+        for (mime, format) in [
+            ("audio/wav", "wav"),
+            ("audio/x-wav", "wav"),
+            ("audio/wave", "wav"),
+            ("audio/mpeg", "mp3"),
+            ("audio/mp3", "mp3"),
+            ("audio/x-mp3", "mp3"),
+            ("audio/ogg", "ogg"),
+        ] {
+            assert_eq!(
+                part(&format!("data:{mime};base64,QUJD")),
+                json!({"type": "input_audio", "input_audio": {"data": "QUJD", "format": format}}),
+                "{mime}"
+            );
+        }
+        assert_eq!(audio_format("audio/MPEG"), "mp3");
+        assert_eq!(audio_format("audio/webm;codecs=opus"), "webm");
+    }
+
+    #[test]
+    fn data_urls_round_trip_through_the_request() {
+        assert_eq!(data_url("audio/wav", b"ABC"), "data:audio/wav;base64,QUJD");
+    }
+
+    #[test]
+    fn video_other_files_and_odd_urls() {
+        let video = "data:video/mp4;base64,QUJD";
+        assert_eq!(
+            part(video),
+            json!({"type": "video_url", "video_url": {"url": video}})
+        );
+        let pdf = "data:application/pdf;base64,QUJD";
+        assert_eq!(
+            part(pdf),
+            json!({"type": "file", "file": {"file_data": pdf}})
+        );
+        for odd in [
+            "https://x/y.png",
+            "data:nonsense",
+            "data:;base64,QQ",
+            "plain",
+        ] {
+            assert_eq!(
+                part(odd),
+                json!({"type": "image_url", "image_url": {"url": odd}}),
+                "{odd}"
+            );
+        }
+        assert_eq!(media_kind("image/png"), "image");
+        assert_eq!(media_kind("Audio/wav"), "audio");
+        assert_eq!(media_kind("video/webm"), "video");
+        assert_eq!(media_kind("text/plain"), "file");
+        assert_eq!((MAX_MEDIA_BYTES, MAX_ATTACHMENTS), (25 << 20, 4));
     }
 
     #[test]

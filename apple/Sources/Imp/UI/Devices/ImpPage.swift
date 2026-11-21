@@ -2,8 +2,8 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// One of this Mac's Imps: where its body is (it always thinks and acts here), what can be done with it, its tools as
-/// switches that open from a summary, and whom it can message.
+/// One of this Mac's Imps: where its body is when it is away, its home (it always thinks and acts here), Send home
+/// and its settings, its tools as switches that open from a summary, and whom it can message.
 struct ImpPage: View {
     let ctx: DeviceContext
     let entry: DeviceMap.ImpEntry
@@ -12,40 +12,25 @@ struct ImpPage: View {
 
     var body: some View {
         let away = entry.location != ctx.thisMac
-        let holder = away ? ctx.peer(entry.location) : nil
-        Diagram {
-            if away {
-                DiagramTile(symbol: ctx.symbol(of: entry.location), name: ctx.name(of: entry.location), caption: "devices.place.body")
-                DiagramConnector(symbol: "arrow.right")
-                DiagramTile(symbol: ctx.symbol(of: ctx.thisMac), name: ctx.name(of: ctx.thisMac), caption: "devices.place.mind")
-            } else {
-                DiagramTile(symbol: ctx.symbol(of: ctx.thisMac), name: ctx.name(of: ctx.thisMac), caption: "devices.imp.here")
+        if away {
+            SheetLinkRow(title: ctx.name(of: entry.location), symbol: ctx.symbol(of: entry.location), help: "devices.place.body") {
+                ctx.select(.node(entry.location))
             }
         }
-        if let holder, !entry.tools.isEmpty {
-            PanelSection("devices.imp.can_use", icon: "powerplug.fill", info: "devices.imp.can_use.info") {
-                PlugBoard(items: entry.tools.map { tool in
-                    let allowed = holder.isTrusted && model.prefs.deviceToolLimits.isAllowed(group: tool.id, on: holder.id)
-                    return PlugItem(id: tool.id, symbol: tool.symbol, title: tool.title, plugged: allowed, locked: !allowed)
-                }, change: { item, _ in
-                    // A blocked tool is plugged in on the device's connection, so that is where to go.
-                    if item.locked, let line = ctx.connection(to: entry.location) { ctx.select(.channel(line.id)) }
-                })
-            }
+        SheetLinkRow(title: ctx.name(of: ctx.thisMac), symbol: "house.fill", help: "devices.place.mind") { ctx.select(.node(ctx.thisMac)) }
+        SheetActions {
+            if away { SheetAction(verbatim: words("imp.a11y.call_home", entry.name), symbol: "house.fill") { model.callHome(entry.id) } }
+            SheetAction(title: "devices.imp.settings", symbol: "gearshape") { ctx.router.openSettings(entry.id) }
         }
         ToolSwitchCard(title: "devices.imp.tools", tools: tools)
         if !entry.talksTo.isEmpty {
-            PanelSection("devices.imp.talks", icon: "bubble.left.and.bubble.right.fill", info: "devices.imp.talks.info") {
+            PanelSection("devices.imp.talks", icon: "bubble.left.and.bubble.right.fill") {
                 ChipFlow {
                     ForEach(entry.talksTo) { contact in
                         ChipButton(imp: contact, ours: ctx.map.imp(contact.id) != nil) { ctx.select(.imp(contact.id, in: contact.location)) }
                     }
                 }
             }
-        }
-        SheetActions {
-            if away { SheetAction(verbatim: words("imp.a11y.call_home", entry.name), symbol: "house.fill") { model.callHome(entry.id) } }
-            SheetAction(title: "devices.imp.settings", symbol: "gearshape") { ctx.router.openSettings(entry.id) }
         }
     }
 
@@ -77,24 +62,14 @@ struct ImpPage: View {
     }
 }
 
-/// An Imp of another device: where its body is and where it thinks, what its device can use here (read only: it is
-/// plugged on the device's line) and Send home when it is visiting this Mac.
+/// An Imp of another device: its home, and Send home when it is visiting this Mac. Where it is now is the pill.
 struct VisitorPage: View {
     let ctx: DeviceContext
     let contact: DeviceMap.Contact
 
     var body: some View {
-        let home = contact.home
-        Diagram {
-            DiagramTile(symbol: ctx.symbol(of: contact.location), name: ctx.name(of: contact.location), caption: "devices.place.body")
-            DiagramConnector(symbol: "arrow.right")
-            DiagramTile(symbol: home.map { ctx.symbol(of: $0) } ?? "questionmark",
-                        name: home.map { ctx.name(of: $0) } ?? String(localized: "devices.unknown_device"), caption: "devices.place.mind")
-        }
-        if contact.location == ctx.thisMac, let home, let peer = ctx.peer(home) {
-            PanelSection("devices.visitor.can_use", icon: "powerplug.fill") {
-                DevicePlugBoard(model: ctx.model, peer: peer, editable: false)
-            }
+        if let home = contact.home {
+            SheetLinkRow(title: ctx.name(of: home), symbol: "house.fill", help: "devices.place.mind") { ctx.select(.node(home)) }
         }
         if contact.location == ctx.thisMac {
             SheetActions {

@@ -121,38 +121,99 @@ impl Published {
     }
 }
 
+/// The schema of a type argument: one of the item types. The Den checks the value itself, so a wrong
+/// one answers with a problem document that names the field.
+fn kind_schema(_: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    let kinds: Vec<&str> = Kind::ALL.iter().map(|k| k.as_str()).collect();
+    schemars::json_schema!({ "type": "string", "enum": kinds })
+}
+
+fn sort_schema(_: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({ "type": "string", "enum": ["new", "popular", "name"] })
+}
+
+fn limit_schema(_: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({ "type": "integer", "minimum": 1, "maximum": 50 })
+}
+
+fn document_schema(_: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({ "type": "object" })
+}
+
 #[derive(Debug, Default, Deserialize, JsonSchema)]
 pub struct ListQuery {
-    /// One of `imp`, `animation`, `trigger`, `tool`, `kit`.
-    #[serde(rename = "type")]
+    /// Only items of this type.
+    #[serde(rename = "type", default, skip_serializing_if = "Option::is_none")]
+    #[schemars(schema_with = "kind_schema")]
     pub kind: Option<String>,
     /// A single tag, for example `fun`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[schemars(schema_with = "tag_schema")]
     pub tag: Option<String>,
     /// The account that shared it, for example `moody-moves-fan`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[schemars(schema_with = "handle_schema")]
     pub handle: Option<String>,
-    /// Words to look for in the name, summary, about text and tags. Case-insensitive.
+    /// Words to look for, at most 100 characters. Every word must appear in the name, summary, about text or tags. Case-insensitive.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[schemars(schema_with = "q_schema")]
     pub q: Option<String>,
-    /// `new` (default), `popular` or `name`.
+    /// The order: newest first (default), most installed first, or by name.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[schemars(schema_with = "sort_schema")]
     pub sort: Option<String>,
     /// How many items, 1 to 50 (default 20).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[schemars(schema_with = "limit_schema")]
     pub limit: Option<u32>,
-    /// The `next_cursor` of the previous page.
+    /// The `next_cursor` of the previous page, with the same filters and sort.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[schemars(schema_with = "text_schema")]
     pub cursor: Option<String>,
+}
+
+fn text_schema(_: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({ "type": "string" })
+}
+
+fn q_schema(_: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({ "type": "string", "maxLength": 100 })
+}
+
+fn tag_schema(_: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({ "type": "string", "pattern": "^[a-z0-9-]{1,24}$" })
+}
+
+fn handle_schema(_: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({ "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "minLength": 3, "maxLength": 32 })
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct PublishItem {
-    /// One of `imp`, `animation`, `trigger`, `tool`, `kit`. The document must be what the type says.
+    /// What the document is. It must hold what the type says (see document_format).
     #[serde(rename = "type")]
+    #[schemars(schema_with = "kind_schema")]
     pub kind: String,
-    /// A name for this item under your handle: lowercase letters, digits and inner dashes, up to 48 characters.
+    /// The item's name under your handle: lowercase letters, digits and inner dashes. Publishing to a slug you already have updates that item.
+    #[schemars(length(min = 1, max = 48), pattern(r"^[a-z0-9]+(-[a-z0-9]+)*$"))]
     pub slug: String,
-    /// One line of at most 120 characters.
+    /// One line that says what the item is.
+    #[schemars(length(min = 1, max = 120))]
     pub summary: String,
-    /// 1 to 5 tags of lowercase letters, digits and dashes, up to 24 characters each.
+    /// 1 to 5 different tags.
+    #[schemars(length(min = 1, max = 5), inner(pattern(r"^[a-z0-9-]{1,24}$")))]
     pub tags: Vec<String>,
-    /// The document: the JSON Imp exports, with `"format": 1` and a `name`.
+    /// The item as a JSON object with `"format": 1` and a `name`: what Imp's imp_export_kit gives, or one written by the rules document_format returns.
+    #[schemars(schema_with = "document_schema")]
     pub document: Value,
+}
+
+#[derive(Debug, Default, Deserialize, JsonSchema)]
+pub struct FormatQuery {
+    /// Only the rules and the example for this type. Leave it out for every type.
+    #[serde(rename = "type", default, skip_serializing_if = "Option::is_none")]
+    #[schemars(schema_with = "kind_schema")]
+    pub kind: Option<String>,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]

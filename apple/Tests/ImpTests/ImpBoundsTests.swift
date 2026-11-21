@@ -57,4 +57,21 @@ import Testing
             }
         }
     }
+
+    /// A hop (15 units) and a flip in the same frame add up to 33 units of lift. On the desktop the Imp's square is
+    /// all the room it has, so however high a frame asks to lift, the lift is lowered to fit above the head: the top
+    /// of the Imp is never cut off by the edge of its square.
+    @Test func aLiftHigherThanTheRoomIsLoweredNotCutOff() {
+        for headH in [1.0, 1.15] {
+            for lift in [Motion.hopHeight, Motion.hopHeight * 1.2, Motion.hopHeight * 2.2] {
+                var face = Face(.idle)
+                face.headH = headH; face.horn = 25; face.hornSize = 1.3
+                var motion = Motion(t: 0)
+                motion.lift = lift
+                let top = Self.drawn(face: face, motion: motion).minY
+                let rest = ImpRenderer.restingTop(face)
+                #expect(top >= min(rest, ImpRenderer.headMargin) - 1, "headH \(headH), lift \(lift): top \(top), rest \(rest)")
+            }
+        }
+    }
 }

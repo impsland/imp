@@ -21,6 +21,13 @@ struct DeviceContext {
 
     func name(of node: String) -> String { map.title(of: node) }
 
+    /// Writes what a linked device may do: the trust and the tool limits.
+    func setAccess(_ next: DeviceAccess, for peer: DeviceLink.Peer) {
+        let limits = next.limits(applying: model.prefs.deviceToolLimits, peer: peer.id)
+        if limits != model.prefs.deviceToolLimits { model.prefs.deviceToolLimits = limits }
+        if next.trusted != peer.isTrusted { model.link.setTrusted(peer.id, next.trusted) }
+    }
+
     func symbol(of node: String) -> String { map.node(node)?.symbol ?? "questionmark" }
 
     var thisMac: String { DeviceMap.thisMacID }
@@ -33,17 +40,19 @@ struct DeviceContext {
 
 // MARK: Rows
 
-/// How a thing stands, as a card across the sheet: a picture in the state's colour and a word.
-struct StatusLine: View {
-    let symbol: String
-    var tone: Color = Tone.muted
-    let text: String
+/// How a thing stands, in the header of a sheet: a coloured dot and one or two words.
+struct StatusPill: View {
+    let status: DeviceStatus
 
     var body: some View {
-        Label { Text(verbatim: text).font(Typeface.label).foregroundStyle(Tone.text).lineLimit(1) }
-            icon: { Image(systemName: symbol).font(.icon(.small)).foregroundStyle(tone) }
-            .pebble()
-            .accessibilityElement(children: .combine)
+        HStack(spacing: Spacing.small) {
+            Circle().fill(status.tone).frame(width: Spacing.cozy, height: Spacing.cozy)
+            Text(verbatim: status.word).font(Typeface.small).foregroundStyle(Tone.text).lineLimit(1)
+        }
+        .padding(.horizontal, Spacing.cozy).padding(.vertical, Spacing.tight)
+        .background(Capsule().fill(Tone.card))
+        .accessibilityElement(children: .combine)
+        .help(status.word)
     }
 }
 
@@ -85,6 +94,29 @@ struct SwitchRow: View {
             if let info { InfoTip(info) }
             Toggle(isOn: $isOn) { Text(verbatim: title) }.labelsHidden().toggleStyle(.impSwitchBare)
         })
+    }
+}
+
+/// A row that opens another thing: a picture, a name, what it is in a tooltip, and a chevron. Pressing it swaps the sheet.
+struct SheetLinkRow: View {
+    let title: String
+    let symbol: String
+    var mono = false
+    var help: LocalizedStringKey?
+    var trailing: String?
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            SheetRow(title: title, mono: mono, leading: { IconTile(systemName: symbol) }, trailing: {
+                if let trailing { Text(verbatim: trailing).font(Typeface.small).foregroundStyle(Tone.muted).lineLimit(1) }
+                Image(systemName: "chevron.right").font(.icon(.tiny)).foregroundStyle(Tone.faint).accessibilityHidden(true)
+            })
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .help(help ?? LocalizedStringKey(title))
+        .pointerStyle(.link)
     }
 }
 

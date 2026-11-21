@@ -2,14 +2,14 @@
 
 use serde_json::Value;
 
-use super::{Problems, is_number};
+use super::{Problems, is_number, whole_number};
 
-const MAX_BEATS: usize = 24;
-const MIN_BEAT: f64 = 0.05;
-const MAX_BEAT: f64 = 6.0;
-const MAX_TOTAL: f64 = 20.0;
+pub(super) const MAX_BEATS: usize = 24;
+pub(super) const MIN_BEAT: f64 = 0.05;
+pub(super) const MAX_BEAT: f64 = 6.0;
+pub(super) const MAX_TOTAL: f64 = 20.0;
 
-const MOODS: [&str; 20] = [
+pub(super) const MOODS: [&str; 20] = [
     "idle",
     "listening",
     "thinking",
@@ -31,10 +31,10 @@ const MOODS: [&str; 20] = [
     "excited",
     "bored",
 ];
-const GLYPHS: [&str; 7] = [
+pub(super) const GLYPHS: [&str; 7] = [
     "notes", "question", "exclaim", "idea", "sweat", "heart", "sparkles",
 ];
-const MOVES: [&str; 10] = [
+pub(super) const MOVES: [&str; 10] = [
     "spin",
     "flip",
     "roll",
@@ -46,7 +46,7 @@ const MOVES: [&str; 10] = [
     "nod",
     "headshake",
 ];
-const TRAITS: [(&str, f64, f64); 8] = [
+pub(super) const TRAITS: [(&str, f64, f64); 8] = [
     ("lids", 0.0, 0.6),
     ("slant", -1.0, 1.0),
     ("eyes", -0.4, 0.4),
@@ -161,7 +161,7 @@ pub(super) fn check_animation(anim: &Value, at: &str, problems: &mut Problems) {
             }
         }
         if let Some(v) = beat.get("times")
-            && !v.as_i64().is_some_and(|t| (1..=8).contains(&t))
+            && !whole_number(v).is_some_and(|t| (1..=8).contains(&t))
         {
             problems.add(&format!("{at}/times"), "must be a whole number from 1 to 8");
         }

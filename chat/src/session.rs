@@ -29,7 +29,7 @@ const MCP_TIMEOUT: Duration = Duration::from_secs(60);
 /// the start of a request can reuse it.
 fn system_in(loaded: &Loaded, agent: &Agent, workspace: &Path) -> String {
     format!(
-        "{}\n\nThe person started this chat in the folder {}. When they talk about files or \"this folder\", they mean that one. Tools that take a path want it inside that folder, written in full. When a message ends with <attached_files>, those are files the person picked with @ for you to read.{}",
+        "{}\n\nThe person started this chat in the folder {}. When they talk about files or \"this folder\", they mean that one. Tools that take a path want it inside that folder, written in full. When a message ends with <attached_files>, those are files the person picked with @ for you to read. A <media> entry there is a picture, sound or video that comes with the message itself: look at it or listen to it directly.{}",
         settings::system_prompt(agent, loaded.config.imps.get(&agent.name)),
         workspace.display(),
         loaded.system_suffix()

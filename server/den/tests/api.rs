@@ -729,7 +729,7 @@ async fn mcp_2026_07_28_works_without_initialize() {
     let listed = read_json(response).await;
     assert_eq!(
         listed["result"]["tools"].as_array().unwrap().len(),
-        7,
+        8,
         "{listed}"
     );
 
@@ -780,6 +780,7 @@ async fn mcp_reads_are_open_and_writes_need_a_token() {
         "search_items",
         "get_item",
         "download_item",
+        "document_format",
         "publish_item",
         "delete_item",
         "my_account",
@@ -787,7 +788,7 @@ async fn mcp_reads_are_open_and_writes_need_a_token() {
     ] {
         assert!(names.contains(&tool), "{tool} missing in {names:?}");
     }
-    assert_eq!(names.len(), 7);
+    assert_eq!(names.len(), 8);
     let (status, failed, answer) = h.tool(None, "search_items", json!({ "q": "moody" })).await;
     assert_eq!((status, failed), (StatusCode::OK, false));
     assert!(answer["items"].is_array());
@@ -1474,4 +1475,103 @@ async fn rate_limits_answer_429_with_retry_after() {
     assert_eq!(last.status(), StatusCode::TOO_MANY_REQUESTS);
     assert!(last.headers().contains_key("retry-after"));
     assert_eq!(last.headers()["content-type"], "application/problem+json");
+}
+
+/// The input schemas tell a model the allowed values, so it picks valid arguments the first time.
+#[tokio::test]
+async fn tool_schemas_name_their_allowed_values() {
+    let h = Harness::new().await;
+    let listed = read_json(h.mcp_raw(None, "tools/list", json!({})).await).await;
+    let schema = |name: &str| {
+        listed["result"]["tools"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|t| t["name"] == name)
+            .unwrap_or_else(|| panic!("{name} missing"))["inputSchema"]
+            .clone()
+    };
+    let kinds = json!(["imp", "animation", "trigger", "tool", "kit"]);
+    let search = schema("search_items");
+    assert!(search.get("required").is_none(), "{search}");
+    assert_eq!(search["properties"]["type"]["enum"], kinds);
+    assert_eq!(
+        search["properties"]["sort"]["enum"],
+        json!(["new", "popular", "name"])
+    );
+    assert_eq!(search["properties"]["limit"]["minimum"], 1);
+    assert_eq!(search["properties"]["limit"]["maximum"], 50);
+    for property in search["properties"].as_object().unwrap().values() {
+        assert!(property.get("default").is_none(), "{property}");
+    }
+    let publish = schema("publish_item");
+    assert_eq!(publish["properties"]["type"]["enum"], kinds);
+    assert_eq!(publish["properties"]["document"]["type"], "object");
+    assert_eq!(publish["properties"]["tags"]["maxItems"], 5);
+    assert_eq!(publish["properties"]["slug"]["maxLength"], 48);
+    assert_eq!(
+        schema("document_format")["properties"]["type"]["enum"],
+        kinds
+    );
+}
+
+/// `document_format` gives every type's rules and an example, and each example publishes as is.
+#[tokio::test]
+async fn the_document_format_tool_teaches_documents_that_publish() {
+    let h = Harness::new().await;
+    let (_, failed, all) = h.tool(None, "document_format", json!({})).await;
+    assert!(!failed, "{all}");
+    assert_eq!(all["types"].as_object().unwrap().len(), 5);
+    assert!(all["moods"].as_array().unwrap().contains(&json!("happy")));
+    assert!(all["events"].as_array().unwrap().contains(&json!("poke")));
+
+    let (_, failed, problem) = h
+        .tool(None, "document_format", json!({ "type": "song" }))
+        .await;
+    assert!(failed);
+    assert_eq!(problem["status"], 400);
+
+    let s = h.sign_up("format-reader", "10.9.0.1").await;
+    for kind in ["imp", "animation", "trigger", "tool", "kit"] {
+        let (_, failed, one) = h
+            .tool(None, "document_format", json!({ "type": kind }))
+            .await;
+        assert!(!failed, "{one}");
+        assert_eq!(one["types"].as_object().unwrap().len(), 1);
+        let example = one["types"][kind]["example"].clone();
+        let (failed, answer) = h
+            .publish(&s, kind, &format!("example-{kind}"), example)
+            .await;
+        assert!(!failed, "the {kind} example: {answer}");
+    }
+}
+
+/// Every word of `q` must match, in any field: a model's "cheerful wave" finds the item.
+#[tokio::test]
+async fn search_matches_every_word_anywhere() {
+    let h = Harness::new().await;
+    let s = h.sign_up("word-finder", "10.9.0.2").await;
+    let document = json!({ "format": 1, "name": "Happy Wave", "animations": [{ "name": "Happy Wave", "beats": [{ "duration": 0.5, "mood": "happy", "move": "sway", "times": 2.0 }] }] });
+    let published = h
+        .tool(
+            Some(&s.access),
+            "publish_item",
+            json!({ "type": "animation", "slug": "happy-wave", "summary": "A wave to say hello.", "tags": ["cheerful"], "document": document }),
+        )
+        .await;
+    assert!(
+        !published.1,
+        "a whole number written as 2.0 is a whole number: {}",
+        published.2
+    );
+    for (q, found) in [
+        ("cheerful wave", 1),
+        ("WAVE hello", 1),
+        ("  happy   cheerful  ", 1),
+        ("wave sad", 0),
+    ] {
+        let (_, failed, list) = h.tool(None, "search_items", json!({ "q": q })).await;
+        assert!(!failed, "{list}");
+        assert_eq!(list["items"].as_array().unwrap().len(), found, "{q}");
+    }
 }

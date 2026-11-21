@@ -111,6 +111,7 @@
   <string name="devices_copy_link_help">适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。</string>
   <string name="devices_edge_label">%1$s 到 %2$s。%3$s。%4$s</string>
   <string name="devices_edge_travelling">往来中</string>
+  <string name="devices_elsewhere_title">其他地方</string>
   <string name="devices_empty">还没有设备。</string>
   <string name="devices_forget_named">忘记 %1$s…</string>
   <string name="devices_forget_one">忘记此设备…</string>
@@ -129,6 +130,7 @@
   <string name="devices_inspector_holds">它持有的这台 Mac 的 Imp</string>
   <string name="devices_inspector_reach">连接方式</string>
   <string name="devices_inspector_through_hop">通过它连接的设备</string>
+  <string name="devices_link_directly_help">直接关联这台设备，不再经由另一台设备。</string>
   <string name="devices_list_info">与这台设备连接的设备。“我的”让设备可以代表你行事。</string>
   <string name="devices_map_summary">设备地图：已链接 %1$s 台设备，这台 Mac 的 Imp %2$s 个，其他设备的 Imp %3$s 个。</string>
   <string name="devices_node_label">%1$s，%2$s。Imp：%3$s</string>
@@ -157,6 +159,11 @@
   <string name="devices_state_connected">已连接</string>
   <string name="devices_state_connecting">正在连接</string>
   <string name="devices_state_offline">不在线</string>
+  <string name="devices_status_here">这里</string>
+  <string name="devices_status_nearby">附近</string>
+  <string name="devices_status_through">经由 %%1$@</string>
+  <string name="devices_status_via_server">经服务器</string>
+  <string name="devices_status_visiting">来访</string>
   <string name="devices_talk_label">%1$s 可以给 %2$s 发消息</string>
   <string name="devices_tether_label">%1$s 在 %2$s 上，在 %3$s 上思考</string>
   <string name="devices_this_info">在这里连接另一台设备。圆点表示 The Hop 是否让设备能从任何地方互相找到。</string>

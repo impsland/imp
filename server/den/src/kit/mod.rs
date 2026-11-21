@@ -11,9 +11,12 @@ use sha2::{Digest, Sha256};
 use crate::error::{Error, Violation};
 
 mod animation;
+mod format;
 mod skills;
 mod tools;
 mod trigger;
+
+pub use format::reference;
 
 use animation::{check_animation, check_traits};
 use skills::{MAX_SKILLS, check_skills};
@@ -115,6 +118,15 @@ pub(super) fn is_number(v: &Value) -> Option<f64> {
     v.as_f64().filter(|n| n.is_finite())
 }
 
+/// A whole number, written as `2` or `2.0`: JSON has one number type, so both are the same value.
+pub(super) fn whole_number(v: &Value) -> Option<i64> {
+    v.as_i64().or_else(|| {
+        is_number(v)
+            .filter(|n| n.fract() == 0.0 && n.abs() < 2f64.powi(53))
+            .map(|n| n as i64)
+    })
+}
+
 pub(super) fn pointer_part(s: &str) -> String {
     s.replace('~', "~0").replace('/', "~1")
 }
@@ -172,7 +184,7 @@ pub fn check(doc: Value, kind: Kind) -> Result<Checked, Error> {
             problems.add("/format", "required: the integer 1");
             0
         }
-        Some(v) => match v.as_i64() {
+        Some(v) => match whole_number(v) {
             Some(n) if n > MAX_FORMAT => {
                 return Err(Error::UnsupportedFormat(format!(
                     "This Den reads kit format {MAX_FORMAT} at most."

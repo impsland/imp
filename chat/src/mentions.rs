@@ -1,9 +1,11 @@
 //! Files picked with `@` in a message, such as `@notes/todo.md`. While a word that starts with `@` is
 //! typed, the chat lists the folder's files that match it. When the message is sent, the text of each
-//! file named that way goes with it, after the message, so the Imp can read it without a tool. The
-//! chat shows only what was written and a line naming the files.
+//! file named that way goes with it, after the message, so the Imp can read it without a tool. A picture,
+//! a sound or a video goes as media instead (a data URL on the message), for a model that can see and
+//! hear. The chat shows only what was written and a line naming the files.
 
 use crate::session::expand;
+use imp_engine::chat::{MAX_ATTACHMENTS, MAX_MEDIA_BYTES, data_url};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
@@ -183,6 +185,8 @@ pub struct Attached {
     pub files: Vec<String>,
     /// Plain sentences about files that were named but could not go.
     pub problems: Vec<String>,
+    /// The pictures, sounds and videos among them, as data URLs for the message's media.
+    pub media: Vec<String>,
 }
 
 /// Reads the files `text` names with `@`, from `workspace`. A word that is not a path, such as `@pip`,
@@ -199,6 +203,20 @@ pub fn attach(text: &str, workspace: &Path) -> Attached {
         }
         let block = if path.is_dir() {
             folder_block(&written, &path)
+        } else if let Some(mime) = media_type(&path) {
+            match media_block(&written, &path, mime, out.media.len()) {
+                Ok((block, url)) => {
+                    out.media.push(url);
+                    out.files.push(written);
+                    blocks.push_str(&block);
+                    continue;
+                }
+                Err(why) => {
+                    out.problems
+                        .push(format!("@{written} was not attached: {why}"));
+                    continue;
+                }
+            }
         } else {
             match file_block(&written, &path) {
                 Ok(block) => block,
@@ -248,6 +266,99 @@ fn resolve(mention: &str, workspace: &Path) -> Option<(String, PathBuf)> {
         }
         written.pop();
     }
+}
+
+/// The MIME type of a picture, sound or video file, by its extension or else by its first bytes.
+pub fn media_type(path: &Path) -> Option<&'static str> {
+    let extension = path
+        .extension()
+        .map(|e| e.to_string_lossy().to_lowercase())
+        .unwrap_or_default();
+    let by_name = match extension.as_str() {
+        "png" => "image/png",
+        "jpg" | "jpeg" => "image/jpeg",
+        "gif" => "image/gif",
+        "webp" => "image/webp",
+        "bmp" => "image/bmp",
+        "heic" => "image/heic",
+        "wav" => "audio/wav",
+        "mp3" => "audio/mpeg",
+        "m4a" => "audio/mp4",
+        "aac" => "audio/aac",
+        "ogg" | "oga" | "opus" => "audio/ogg",
+        "flac" => "audio/flac",
+        "mp4" | "m4v" => "video/mp4",
+        "mov" => "video/quicktime",
+        "webm" => "video/webm",
+        "mkv" => "video/x-matroska",
+        _ => "",
+    };
+    if !by_name.is_empty() {
+        return Some(by_name);
+    }
+    use std::io::Read;
+    let mut head = [0u8; 16];
+    let n = std::fs::File::open(path)
+        .and_then(|mut f| f.read(&mut head))
+        .ok()?;
+    sniff(&head[..n])
+}
+
+/// What the first bytes of a file say it is, when it is a picture, a sound or a video.
+fn sniff(head: &[u8]) -> Option<&'static str> {
+    let riff = |kind: &[u8]| head.starts_with(b"RIFF") && head.get(8..12) == Some(kind);
+    if head.starts_with(&[0x89, b'P', b'N', b'G']) {
+        Some("image/png")
+    } else if head.starts_with(&[0xFF, 0xD8, 0xFF]) {
+        Some("image/jpeg")
+    } else if head.starts_with(b"GIF8") {
+        Some("image/gif")
+    } else if riff(b"WEBP") {
+        Some("image/webp")
+    } else if riff(b"WAVE") {
+        Some("audio/wav")
+    } else if head.starts_with(b"ID3") || head.starts_with(&[0xFF, 0xFB]) {
+        Some("audio/mpeg")
+    } else if head.starts_with(b"OggS") {
+        Some("audio/ogg")
+    } else if head.starts_with(b"fLaC") {
+        Some("audio/flac")
+    } else if head.get(4..8) == Some(b"ftyp") {
+        Some("video/mp4")
+    } else if head.starts_with(&[0x1A, 0x45, 0xDF, 0xA3]) {
+        Some("video/webm")
+    } else {
+        None
+    }
+}
+
+/// The line that names a media file in the message, and the file as a data URL. `taken` is how many
+/// media files went already.
+fn media_block(
+    written: &str,
+    path: &Path,
+    mime: &str,
+    taken: usize,
+) -> Result<(String, String), String> {
+    if taken >= MAX_ATTACHMENTS {
+        return Err(format!(
+            "a message can carry {MAX_ATTACHMENTS} pictures, sounds or videos."
+        ));
+    }
+    let size = std::fs::metadata(path).map_err(|e| e.to_string())?.len();
+    if size > MAX_MEDIA_BYTES as u64 {
+        return Err(format!(
+            "it is {} MB, and a picture, sound or video can be {} MB.",
+            size / (1024 * 1024),
+            MAX_MEDIA_BYTES / (1024 * 1024)
+        ));
+    }
+    let bytes = std::fs::read(path).map_err(|e| e.to_string())?;
+    Ok((
+        // Said in so many words: some models take a bare path for all there is and say they can't hear it.
+        format!("<media path=\"{written}\" type=\"{mime}\">attached to this message</media>\n"),
+        data_url(mime, &bytes),
+    ))
 }
 
 fn file_block(written: &str, path: &Path) -> Result<String, String> {
@@ -305,10 +416,13 @@ pub fn shown(content: &str) -> (&str, Vec<&str>) {
     let paths = files
         .lines()
         .filter_map(|l| {
+            if let Some(rest) = l.strip_prefix("<media path=\"") {
+                return rest.split_once('"').map(|(path, _)| path);
+            }
             l.strip_prefix("<file path=\"")
                 .or_else(|| l.strip_prefix("<directory path=\""))
+                .and_then(|l| l.strip_suffix("\">"))
         })
-        .filter_map(|l| l.strip_suffix("\">"))
         .collect();
     (text, paths)
 }
@@ -392,6 +506,64 @@ mod tests {
         assert_eq!(files, ["notes.txt", "my file.md", "src/"]);
         assert_eq!(attach("hello @nobody", &dir), Attached::default());
         assert_eq!(shown("plain"), ("plain", vec![]));
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn pictures_sounds_and_videos_go_as_media_not_text() {
+        let dir = folder();
+        std::fs::write(dir.join("shot.PNG"), [0x89, b'P', b'N', b'G', 1, 2]).unwrap();
+        std::fs::write(dir.join("tone.wav"), b"RIFF....WAVEfmt ").unwrap();
+        // No extension: the first bytes say it is a JPEG.
+        std::fs::write(dir.join("photo"), [0xFF, 0xD8, 0xFF, 0xE0, 9]).unwrap();
+        std::fs::write(dir.join("clip.mp4"), b"\0\0\0\x18ftypmp42").unwrap();
+        let sent = attach("see @shot.PNG @tone.wav @photo @clip.mp4 @notes.txt", &dir);
+        assert_eq!(
+            sent.files,
+            ["shot.PNG", "tone.wav", "photo", "clip.mp4", "notes.txt"]
+        );
+        assert!(sent.problems.is_empty(), "{:?}", sent.problems);
+        assert_eq!(sent.media.len(), 4);
+        assert!(sent.media[0].starts_with("data:image/png;base64,"));
+        assert!(sent.media[1].starts_with("data:audio/wav;base64,"));
+        assert!(sent.media[2].starts_with("data:image/jpeg;base64,"));
+        assert!(sent.media[3].starts_with("data:video/mp4;base64,"));
+        let content = sent.content.unwrap();
+        assert!(!content.contains("PNG\u{1}"), "no bytes in the text");
+        assert!(content.contains(
+            "<media path=\"tone.wav\" type=\"audio/wav\">attached to this message</media>"
+        ));
+        let (text, files) = shown(&content);
+        assert_eq!(text, "see @shot.PNG @tone.wav @photo @clip.mp4 @notes.txt");
+        assert_eq!(
+            files,
+            ["shot.PNG", "tone.wav", "photo", "clip.mp4", "notes.txt"]
+        );
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn too_many_or_too_big_media_is_left_out_with_a_reason() {
+        let dir = folder();
+        for n in 0..5 {
+            std::fs::write(dir.join(format!("p{n}.png")), [1, 2, 3]).unwrap();
+        }
+        let sent = attach("@p0.png @p1.png @p2.png @p3.png @p4.png", &dir);
+        assert_eq!((sent.media.len(), sent.files.len()), (4, 4));
+        assert!(
+            sent.problems[0].contains("can carry 4"),
+            "{:?}",
+            sent.problems
+        );
+        let big = std::fs::File::create(dir.join("big.mp4")).unwrap();
+        big.set_len(MAX_MEDIA_BYTES as u64 + 1).unwrap();
+        let sent = attach("@big.mp4", &dir);
+        assert!(sent.media.is_empty() && sent.content.is_none());
+        assert!(
+            sent.problems[0].contains("can be 25 MB"),
+            "{:?}",
+            sent.problems
+        );
         std::fs::remove_dir_all(dir).unwrap();
     }
 }

@@ -85,10 +85,11 @@ impl Den {
         if let Some(handle) = &query.handle {
             sql.push(" AND handle = ").push_bind(handle.clone());
         }
-        if let Some(text) = text {
+        // Every word must appear somewhere, so "cheerful wave" finds a "Happy Wave" tagged `cheerful`.
+        for word in text.into_iter().flat_map(str::split_whitespace) {
             let like = format!(
                 "%{}%",
-                text.replace('\\', "\\\\")
+                word.replace('\\', "\\\\")
                     .replace('%', "\\%")
                     .replace('_', "\\_")
             );

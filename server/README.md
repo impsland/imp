@@ -99,6 +99,26 @@ network that Caddy sits on.
 | `HOP_HOST_WAIT_SECS` | `300` | How long a host waits for a guest. |
 | `HOP_GUEST_WAIT_SECS` | `15` | How long a guest waits for a host. |
 | `HOP_ROOM_SESSIONS` | `16` | Live sessions per room. |
+| `HOP_FORWARDED_FROM` | none | Proxies whose `X-Forwarded-For` names the browser behind a WebSocket, as addresses or prefixes such as `172.16.0.0/12`. Without it a browser behind a proxy counts against the proxy's address. |
+
+#### Browsers (WebSocket)
+
+The Hop takes WebSockets on its own port too, for the web page in `web/` (see `spec/PROTOCOL.md`). A
+page served over https may only open `wss://`, so give the Hop's host name a TLS site that passes
+everything to the Hop. With the Compose file:
+
+1. Add `networks: [default, web]` to the `hop` service, so Caddy can reach it.
+2. Set `HOP_FORWARDED_FROM: 172.31.0.0/24` (the `web` subnet) on the `hop` service, so each browser keeps
+   its own limits.
+3. Add a site for the Hop's name to the `Caddyfile` (the name must point at the server):
+
+```
+hop.example.com {
+	reverse_proxy hop:4677
+}
+```
+
+Apps keep using `hop.example.com:4677` over TCP. The page uses `wss://hop.example.com/`.
 
 Every Hop limit must be at least 1, or the Hop refuses to start. The limits are described in
 [PROTOCOL.md](../spec/PROTOCOL.md).
@@ -130,7 +150,7 @@ an item and deleting the account are MCP tools at `/mcp`.
 | `POST` | `/oauth/register` | Dynamic client registration. |
 | `GET`, `POST` | `/oauth/authorize` | The sign-in page and its form. |
 | `POST` | `/oauth/token`, `/oauth/revoke` | Token exchange, refresh and revocation. |
-| `POST` | `/mcp` | The MCP endpoint (search, get, download, publish, delete). |
+| `POST` | `/mcp` | The MCP endpoint (search, get, download, the document format, publish, delete). |
 | `GET` | `/`, `/i/{handle}/{slug}`, `/a/{handle}` | The web gallery. |
 | `GET` | `/assets/{file}` | Files of the web gallery. |
 

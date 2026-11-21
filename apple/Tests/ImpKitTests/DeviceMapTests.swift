@@ -28,8 +28,8 @@ import Testing
     @Test func travellersAreThisMacsImpsOnTheFarDeviceAndItsImpsVisitingHere() throws {
         var out = imp("Dot")
         out.awayOn = phone.id
-        let visitor = LinkStaged(imp: LinkImp(id: UUID(), name: "Noodle", hue: 0.4, scale: 1, traits: .plain), home: phone.id)
-        let other = LinkStaged(imp: LinkImp(id: UUID(), name: "Stranger", hue: 0.6, scale: 1, traits: .plain), home: UUID())
+        let visitor = LinkStaged(imp: LinkImp(id: UUID(), name: "Noodle", hue: 0.4, scale: 1, traits: .plain), home: LinkWho(id: phone.id, name: phone.name, kind: phone.kind))
+        let other = LinkStaged(imp: LinkImp(id: UUID(), name: "Stranger", hue: 0.6, scale: 1, traits: .plain), home: LinkWho(id: UUID(), name: "Elsewhere", kind: .mac))
         let map = DeviceMap.build(thisMac: "Mac", peers: [phone], server: "", imps: [out, imp("Pip")], mcpServers: [], visitors: [visitor, other])
         let channel = try #require(map.channels.first)
         let travellers = map.travellers(of: channel)
@@ -75,10 +75,28 @@ import Testing
         var away = imp("Away")
         away.awayOn = phone.id
         var stale = imp("Stale")
-        stale.awayOn = UUID()      // held by a device that is no longer linked: home
+        let elsewhere = UUID()
+        stale.awayOn = elsewhere   // held by a device this Mac is not linked with: it is there, never shown at home
         let map = DeviceMap.build(thisMac: "Mac", peers: [phone], server: "", imps: [imp("Home"), away, stale], mcpServers: [])
         #expect(map.node(phone.id.uuidString)?.imps == [away.id])
-        #expect(map.node(DeviceMap.thisMacID)?.imps.count == 2)
+        #expect(map.node(DeviceMap.thisMacID)?.imps.count == 1)
+        let stranger = map.node(elsewhere.uuidString)
+        #expect(stranger?.imps == [stale.id])
+        #expect(stranger?.linked == false)
+    }
+
+    @Test func aHolderKnownThroughAnotherShowsItsNameAndKind() {
+        var out = imp("Out")
+        let holder = UUID()
+        out.awayOn = holder
+        let known = DeviceMap.Known(id: holder, name: "Anna's iPhone", kind: .phone, via: phone.id)
+        let map = DeviceMap.build(thisMac: "Mac", peers: [phone], server: "", imps: [out], mcpServers: [], known: [known])
+        let node = map.node(holder.uuidString)
+        #expect(node?.name == "Anna's iPhone")
+        #expect(node?.kind == .phone)
+        #expect(node?.linked == false)
+        #expect(node?.via == phone.id.uuidString)
+        #expect(node?.imps == [out.id])
     }
 
     /// Dot is out on the iPhone, where Cinder and Noodle live. It can message Bumble at home and
@@ -90,8 +108,8 @@ import Testing
         let cinder = LinkImp(id: UUID(), name: "Cinder", hue: 0.1, scale: 1, traits: .plain)
         let noodle = LinkImp(id: UUID(), name: "Noodle", hue: 0.6, scale: 1, traits: .plain)
         var onPhone = phone
-        onPhone.stage = [LinkStaged(imp: cinder, home: phone.id), LinkStaged(imp: noodle, home: phone.id),
-                         LinkStaged(imp: LinkImp(dot), home: UUID())]
+        onPhone.stage = [LinkStaged(imp: cinder, home: LinkWho(id: phone.id, name: phone.name, kind: phone.kind)), LinkStaged(imp: noodle, home: LinkWho(id: phone.id, name: phone.name, kind: phone.kind)),
+                         LinkStaged(imp: LinkImp(dot), home: LinkWho(id: UUID(), name: "Elsewhere", kind: .mac))]
         let map = DeviceMap.build(thisMac: "Mac", peers: [onPhone], server: "", imps: [dot, bumble], mcpServers: [])
         #expect(map.imp(dot.id)?.talksTo.map(\.name) == ["Bumble", "Cinder", "Noodle"])
         #expect(map.imp(dot.id)?.talksTo.last?.location == phone.id.uuidString)
@@ -104,7 +122,7 @@ import Testing
         let bumble = imp("Bumble")
         let cinder = LinkImp(id: UUID(), name: "Cinder", hue: 0.1, scale: 1, traits: .plain)
         let map = DeviceMap.build(thisMac: "Mac", peers: [phone], server: "", imps: [bumble], mcpServers: [],
-                                  visitors: [LinkStaged(imp: cinder, home: phone.id)])
+                                  visitors: [LinkStaged(imp: cinder, home: LinkWho(id: phone.id, name: phone.name, kind: phone.kind))])
         #expect(map.imp(bumble.id)?.talksTo.map(\.name) == ["Cinder"])
         #expect(map.residents(of: DeviceMap.thisMacID).map(\.name) == ["Bumble", "Cinder"])
     }
@@ -126,16 +144,17 @@ import Testing
     }
 
     /// Imps know the node they think on: this Mac for its own, the linked device for the ones hatched there,
-    /// nothing for a device we aren't linked with.
+    /// the device's own node for one we aren't linked with.
     @Test func impsKnowTheirHomeNode() {
         let bumble = imp("Bumble")
         let cinder = LinkImp(id: UUID(), name: "Cinder", hue: 0.1, scale: 1, traits: .plain)
         let stranger = LinkImp(id: UUID(), name: "Stranger", hue: 0.3, scale: 1, traits: .plain)
+        let far = LinkWho(id: UUID(), name: "Elsewhere", kind: .mac)
         let map = DeviceMap.build(thisMac: "Mac", peers: [phone], server: "", imps: [bumble], mcpServers: [],
-                                  visitors: [LinkStaged(imp: cinder, home: phone.id), LinkStaged(imp: stranger, home: UUID())])
+                                  visitors: [LinkStaged(imp: cinder, home: LinkWho(id: phone.id, name: phone.name, kind: phone.kind)), LinkStaged(imp: stranger, home: far)])
         let here = map.residents(of: DeviceMap.thisMacID)
-        #expect(here.map(\.home) == [DeviceMap.thisMacID, phone.id.uuidString, nil])
-        #expect(map.imp(bumble.id)?.talksTo.map(\.home) == [phone.id.uuidString, nil])
+        #expect(here.map(\.home) == [DeviceMap.thisMacID, phone.id.uuidString, far.id.uuidString])
+        #expect(map.imp(bumble.id)?.talksTo.map(\.home) == [phone.id.uuidString, far.id.uuidString])
     }
 
     @Test func toolsAndTalk() {

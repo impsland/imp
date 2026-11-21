@@ -58,7 +58,7 @@ final class Watcher {
         #expect(await onMac.wait { mac.isConnected(phone.device.id) && phone.isConnected(mac.device.id) })
 
         let pip = LinkImp(id: UUID(), name: "Pip", hue: 0.3, scale: 1, traits: .plain)
-        #expect(phone.send(.stage(imps: [LinkStaged(imp: pip, home: phone.device.id)]), to: mac.device.id))
+        #expect(phone.send(.stage(imps: [LinkStaged(imp: pip, home: phone.device.who)]), to: mac.device.id))
         #expect(await onMac.wait { onMac.heard("Pip") })
     }
 
@@ -78,8 +78,8 @@ final class Watcher {
 
         let pip = LinkImp(id: UUID(), name: "Pip", hue: 0.3, scale: 1, traits: .plain)
         let bo = LinkImp(id: UUID(), name: "Bo", hue: 0.6, scale: 1, traits: .plain)
-        phone.setStage([LinkStaged(imp: pip, home: phone.device.id)])
-        mac.setStage([LinkStaged(imp: bo, home: mac.device.id)])
+        phone.setStage([LinkStaged(imp: pip, home: phone.device.who)])
+        mac.setStage([LinkStaged(imp: bo, home: mac.device.who)])
         #expect(await onPhone.wait { onPhone.heard("Bo") })
         #expect(await onMac.wait { onMac.heard("Pip") })
         #expect(phone.onMyOtherDevices.isEmpty, "not Mine yet: the phone doesn't list Bo")

@@ -118,7 +118,8 @@ public enum OwnTools {
                 name: makeAnimation,
                 description: "Make a new animation, or change one: a sequence of beats (poses held for a while), like the ones you play. "
                     + "Give a new `name` for a new one, or the name of one you made to change it. Look at one you made first with "
-                    + "\(showAnimation) to get the feel. It's yours alone unless `for` is `everyone`. It plays once when saved. To start it on an event, add a trigger with a play step (\(addTrigger)).",
+                    + "\(showAnimation) to get the feel. It's yours alone unless `for` is `everyone`. It plays once when saved. To start it on an event, add a trigger with a play step (\(addTrigger)). "
+                    + "A new animation's name and description are in English by default, unless the user asks for another language.",
                 inputSchema: ["type": "object",
                               "properties": [
                                 "name": ["type": "string", "description": "Short (≤ 40 characters)."],
@@ -336,7 +337,7 @@ public enum OwnTools {
                     + "can't do yet and a server can. Local: `command` is the whole command line (e.g. \"npx -y @scope/server\"), "
                     + "with `env`. Remote: `url`, with `headers`. Leave secrets empty (\"\"): then open its settings "
                     + "(imp_open_settings with page tools and the tool's id) and ask the user to fill them in. Its tools are "
-                    + "yours from the next message on.",
+                    + "yours from the next message on. A new tool's name and description are in English by default, unless the user asks for another language.",
                 inputSchema: ["type": "object",
                               "properties": ["name": ["type": "string"], "command": ["type": "string"], "url": ["type": "string"],
                                              "env": ["type": "object", "additionalProperties": ["type": "string"]],
@@ -363,6 +364,7 @@ public enum OwnTools {
                 name: exportKit,
                 description: "The kit document (kit format \(Kit.format)) of something you or the user made, ready to publish on any MCP "
                     + "gallery, e.g. the Den's publish_item with the matching type (imp, animation, trigger, tool, or kit for several). "
+                    + "A new kit's name and descriptions are in English by default, unless the user asks for another language. "
                     + "Pick one with `imp`, `animation`, `trigger` or `tool` (each a name), or give several for a kit. "
                     + "API keys and chats are never in it. It is public once published: confirm with the user first.",
                 inputSchema: ["type": "object",
@@ -392,6 +394,7 @@ public enum OwnTools {
     /// What the model reads about `imp_add_trigger`: short, but every event, state and act with its value.
     static let addTriggerHelp = """
         Add (or with `id` change) a trigger: on an event, run steps. Nothing happens on its own without one.
+        A new trigger's name and description are in English by default, unless the user asks for another language.
         `on` + `value`: keys "ctrl+cmd+T" | click 1-3 | poke hold drag drop shake stroke tickle circle swish rush dangle (pointer on you) | near secs | away | start | at "09:00" | every mins | idle secs | back mins away | wake | app name | website address part | battery % | charger plugged/unplugged | busy % | hot | network offline/online.
         `if` (all must hold): battery %, charger, app, website, busy %, hot, network, hours "22:00-07:00", days "mon-fri", asleep true/false.
         `do` (1-5, act: value): ask: what to do, in words to yourself (clipboard:true adds the copied text); say: text; play: animation name; sleep|wake: optional animation; follow: off|eyes|hop|glide (speed 0.5-2, Mac); open: text_box|listen|chat|settings.

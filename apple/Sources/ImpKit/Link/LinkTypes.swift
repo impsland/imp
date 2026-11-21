@@ -31,6 +31,9 @@ public struct LinkDevice: Codable, Sendable, Equatable, Identifiable {
     public init(id: UUID, name: String, kind: LinkKind, key: Data, room: Data = Data(count: 32)) {
         self.id = id; self.name = name; self.kind = kind; self.key = key; self.room = room
     }
+
+    /// This device as the home of the Imps it stages.
+    public var who: LinkWho { LinkWho(id: id, name: name, kind: kind) }
 }
 
 /// Where a device can be reached: host names, a port, and the Hop it waits at (`host:port`).
@@ -121,11 +124,24 @@ public struct AwayLedger: Sendable, Equatable {
     public struct Entry: Codable, Sendable, Equatable {
         public var imp: UUID
         public var holder: UUID
+        /// Who the holder is, when it is a device this one is not linked with: the device that passed the Imp on said so.
+        public var elsewhere: Elsewhere?
+    }
+
+    /// A holder known only through the device that passed the Imp on to it.
+    public struct Elsewhere: Codable, Sendable, Equatable {
+        public var name: String
+        public var kind: LinkKind
+        /// The device that said so.
+        public var via: UUID
     }
 
     public var entries: [Entry] = []
 
     public func holder(of imp: UUID) -> UUID? { entries.first { $0.imp == imp }?.holder }
+
+    /// Who holds `imp` when it is a device this one is not linked with.
+    public func elsewhere(of imp: UUID) -> Elsewhere? { entries.first { $0.imp == imp }?.elsewhere }
 }
 
 extension JSONEncoder {

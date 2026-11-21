@@ -13,7 +13,9 @@ struct HopSheet: View {
     var choice: ServerChoice?
 
     var body: some View {
-        DeviceSheetShell(model: model, icon: "arrow.triangle.swap", title: String(localized: "servers.hop.title")) {
+        let standing = map.hopStanding(text: model.prefs.hop)
+        DeviceSheetShell(model: model, icon: "arrow.triangle.swap", title: String(localized: "servers.hop.title"),
+                          status: DeviceStatus(word: standing.word, tone: standing.barTone)) {
             ServerCard(kind: .hop, text: Binding(get: { model.prefs.hop }, set: { model.prefs.hop = $0 }), choice: choice,
                        hosted: true, link: map.hop?.state ?? .offline)
                 .settingAnchor(.devicesHop)

@@ -21803,6 +21803,30 @@
         }
       }
     },
+    "devices.elsewhere.title" : {
+      "comment" : "Title of the card that lists this iPhone's Imps held by devices it is not linked with.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elsewhere"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En otro lugar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他地方"
+          }
+        }
+      }
+    },
     "devices.empty" : {
       "comment" : "Empty state of the list of linked devices.",
       "extractionState" : "manual",
@@ -22231,6 +22255,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "通过它连接的设备"
+          }
+        }
+      }
+    },
+    "devices.link_directly.help" : {
+      "comment" : "Tooltip of the button on a device known only through another: it opens the Link sheet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link this device directly, so it no longer depends on the other one."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlaza este dispositivo directamente, para que no dependa del otro."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直接关联这台设备，不再经由另一台设备。"
           }
         }
       }
@@ -22903,6 +22951,126 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不在线"
+          }
+        }
+      }
+    },
+    "devices.status.here" : {
+      "comment" : "Status pill of this Mac, and of an Imp that is on it.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Here"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquí"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这里"
+          }
+        }
+      }
+    },
+    "devices.status.nearby" : {
+      "comment" : "Status pill of a device or line reached over the local network.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nearby"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerca"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附近"
+          }
+        }
+      }
+    },
+    "devices.status.through" : {
+      "comment" : "Status pill of a device known only through another linked device. %1$@ is that device.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Through %%1$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por %%1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "经由 %%1$@"
+          }
+        }
+      }
+    },
+    "devices.status.via_server" : {
+      "comment" : "Status pill of a device or line reached through the Hop.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Via server"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por servidor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "经服务器"
+          }
+        }
+      }
+    },
+    "devices.status.visiting" : {
+      "comment" : "Status pill of another device's Imp that is visiting this Mac.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visiting"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De visita"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "来访"
           }
         }
       }

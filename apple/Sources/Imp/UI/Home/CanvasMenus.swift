@@ -88,7 +88,12 @@ final class CanvasImpMenu {
         let ready = model.isReady(id)
         let status = imp.awayOn != nil ? words("imp.state.away", model.link.name(of: imp.awayOn ?? id) ?? "iPhone")
             : ready ? String(localized: "Awake") : String(localized: "Needs a brain")
-        return card.make(ImpMenuCard(ready: ready, name: imp.name, status: status, hue: imp.hue, scale: imp.scale, place: .home) { action in
+        let end = ImpMenuEnd(canLink: actions.canShareLink(id), canGoodbye: actions.canSayGoodbye,
+                             kit: { card.later { actions.copyKit(id) } },
+                             link: { card.later { actions.copyLink(id) } },
+                             goodbye: { card.later { actions.askGoodbye([id]) } })
+        return card.make(ImpMenuCard(ready: ready, name: imp.name, status: status, hue: imp.hue, scale: imp.scale, place: .home,
+                                     end: end) { action in
             switch action {
             case .talk: card.later { actions.talk(id) }
             case .message: card.later { actions.message(id) }
@@ -100,11 +105,6 @@ final class CanvasImpMenu {
             case .size(let scale): actions.restyle(id) { $0.scale = scale }
             case .colour(let hue): actions.restyle(id) { $0.hue = hue }
             }
-        } extra: {
-            ImpMenuEnd(canLink: actions.canShareLink(id), canGoodbye: actions.canSayGoodbye,
-                       kit: { card.later { actions.copyKit(id) } },
-                       link: { card.later { actions.copyLink(id) } },
-                       goodbye: { card.later { actions.askGoodbye([id]) } })
         })
     }
 }
@@ -172,7 +172,7 @@ private struct GroupBrainPills: View {
                 pick(Brain(service: service.id))
             })
         }
-        return MenuPills(title: String(localized: "brain.title"), items: items)
+        return MenuPills(items: items)
     }
 }
 
@@ -202,10 +202,16 @@ struct SecondaryClickMenu: NSViewRepresentable {
 
         override func menu(for event: NSEvent) -> NSMenu? { make?() }
 
+        /// A right click: the card opens at the pointer, upwards when it doesn't fit below (see `popUpCard`).
+        override func rightMouseDown(with event: NSEvent) {
+            guard let menu = make?() else { return }
+            menu.popUpCard(for: event, in: self)
+        }
+
         /// A Control-click: AppKit sends it as a left click.
         override func mouseDown(with event: NSEvent) {
             guard let menu = make?() else { return }
-            NSMenu.popUpContextMenu(menu, with: event, for: self)
+            menu.popUpCard(for: event, in: self)
         }
     }
 }

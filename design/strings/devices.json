@@ -387,5 +387,41 @@
     "en": "Its device can use here",
     "es": "Su dispositivo puede usar aquí",
     "zh-Hans": "它的设备在这里可用"
+  },
+  "devices.status.here": {
+    "note": "Status pill of this Mac, and of an Imp that is on it.",
+    "en": "Here",
+    "es": "Aquí",
+    "zh-Hans": "这里"
+  },
+  "devices.status.nearby": {
+    "note": "Status pill of a device or line reached over the local network.",
+    "en": "Nearby",
+    "es": "Cerca",
+    "zh-Hans": "附近"
+  },
+  "devices.status.via_server": {
+    "note": "Status pill of a device or line reached through the Hop.",
+    "en": "Via server",
+    "es": "Por servidor",
+    "zh-Hans": "经服务器"
+  },
+  "devices.status.through": {
+    "note": "Status pill of a device known only through another linked device. %1$@ is that device.",
+    "en": "Through %1$@",
+    "es": "Por %1$@",
+    "zh-Hans": "经由 %1$@"
+  },
+  "devices.status.visiting": {
+    "note": "Status pill of another device's Imp that is visiting this Mac.",
+    "en": "Visiting",
+    "es": "De visita",
+    "zh-Hans": "来访"
+  },
+  "devices.link_directly.help": {
+    "note": "Tooltip of the button on a device known only through another: it opens the Link sheet.",
+    "en": "Link this device directly, so it no longer depends on the other one.",
+    "es": "Enlaza este dispositivo directamente, para que no dependa del otro.",
+    "zh-Hans": "直接关联这台设备，不再经由另一台设备。"
   }
 }

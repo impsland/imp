@@ -216,7 +216,7 @@ final class PocketRuntime {
 
     /// A Mac's stage is known again: an Imp it didn't answer for is there (it is the Mac's now) or isn't (back).
     private func decide(movesTo device: UUID) {
-        let there = Set(hub.node.stage(of: device).filter { $0.home == device }.map(\.imp.id))
+        let there = Set(hub.node.stage(of: device).filter { $0.home.id == device }.map(\.imp.id))
         for (id, mac) in moving where mac == device {
             if there.contains(id) {
                 forget(id)
@@ -264,10 +264,10 @@ final class PocketRuntime {
     /// One ask, from you or from another Imp: thinks, files the turn in its chat.
     /// `limitedTo` names the device asking when this iPhone doesn't count it as the owner's: no tools then.
     private func answer(_ text: String, of id: UUID, from sender: ChatTurn.Sender? = nil, limitedTo device: String? = nil,
-                        turnID: UUID? = nil, answered: (event: String, from: ChatTurn.Sender)? = nil, depth: Int = 0) async throws -> PocketAnswer {
+                        turnID: UUID? = nil, answered: (event: String, from: ChatTurn.Sender)? = nil, media: [MediaFile] = [], depth: Int = 0) async throws -> PocketAnswer {
         guard let imp = store.imp(id) else { throw Failure(String(localized: "That Imp isn't on this iPhone.")) }
         let result = try await brain.ask(text, of: imp, from: sender, talk: talk(for: imp, depth: depth), limitedTo: device.map { ($0, hub.name) },
-                                         turnID: turnID, answered: answered) { [weak self] work in
+                                         turnID: turnID, answered: answered, media: media) { [weak self] work in
             await self?.report(work, for: id)
         }
         store.update(id) { $0.record(result) }
@@ -285,13 +285,13 @@ final class PocketRuntime {
     /// `depth`: how many answers deep the turn is that uses it (0: you or another device asked).
     private func talk(for imp: PocketImp, depth: Int = 0) -> PocketTalk {
         let id = imp.id
-        let me = hub.node.device.id
+        let me = hub.node.device.who
         let here = store.imps.filter { hasBrain($0.id) }.map { LinkStaged(imp: $0.look, home: me) }
         // Imps on other devices may share a name with one here or with this one: `TalkNames` gives each
         // its own (`Pip@Studio`), so every one stays reachable.
         let all = targets(of: id, here: here)
-        let talkNames = TalkNames(sender: imp.name, here: all.filter { $0.home == me }, name: \.imp.name,
-                                  away: all.filter { $0.home != me }, awayName: \.imp.name, place: { hub.deviceName($0.home) })
+        let talkNames = TalkNames(sender: imp.name, here: all.filter { $0.home.id == me.id }, name: \.imp.name,
+                                  away: all.filter { $0.home.id != me.id }, awayName: \.imp.name, place: { hub.deviceName($0.home.id) })
         let named = talkNames.here + talkNames.away
         // What each says about itself. What another device sent is sanitized again.
         let profiles = named.map { ImpAbilities.profile(name: $0.name, about: $0.imp.imp.about, abilities: $0.imp.imp.abilities) }
@@ -321,7 +321,7 @@ final class PocketRuntime {
         }
         let asking = say(.asking, to: target.imp.name, hue: target.imp.hue, text, for: id)
         defer { unsay(asking, for: id) }
-        if let other = store.imp(target.id), target.home == hub.node.device.id {
+        if let other = store.imp(target.id), target.home.id == hub.node.device.id {
             return try await asked(other, text, from: ChatTurn.Sender(id: sender.id, name: sender.name, hue: sender.hue))
         }
         // Its answer is filed on the other device: this iPhone keeps a copy, for this Imp's Talks.
@@ -366,7 +366,7 @@ final class PocketRuntime {
             var reply: String, failed = false
             do {
                 // Another device answers within the link's own time. An Imp here answers within the core's.
-                let local = target.home == hub.node.device.id
+                let local = target.home.id == hub.node.device.id
                 reply = local
                     ? try await within(seconds: Double(ImpCore.troupeLimits().asyncTimeoutSecs)) { try await self.deliver(text, to: wanted, from: id, among: targets) }
                     : try await deliver(text, to: wanted, from: id, among: targets)
@@ -454,7 +454,7 @@ final class PocketRuntime {
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
                 let holder = hub.node.holder(of: imp.id) ?? hub.node.device.id
-                switch hub.node.talk(id: message, from: imp, to: target.id, toHome: target.home, text: text, holder: holder) {
+                switch hub.node.talk(id: message, from: imp, to: target.id, toHome: target.home.id, text: text, holder: holder) {
                 case .via: pending[message] = continuation
                 case .here, .unreachable: continuation.resume(throwing: unreachable)
                 }
@@ -510,9 +510,9 @@ final class PocketRuntime {
             }
         case .claimed(let id):
             pushAll(id)
-        case .ask(let id, let text, let trusted):
+        case .ask(let id, let text, let media, let trusted):
             let holder = hub.node.holder(of: id)
-            ask(id, text, from: holder, limitedTo: trusted ? nil : holder.map(hub.deviceName) ?? String(localized: "another device"))
+            ask(id, text, from: holder, media: media, limitedTo: trusted ? nil : holder.map(hub.deviceName) ?? String(localized: "another device"))
         case .stop(let id):
             stop(id)
         case .newChat(let id):
@@ -520,13 +520,15 @@ final class PocketRuntime {
         case .openChat(let id, let chat):
             openChat(id, chat)
         case .felt(let id, let feeling):
-            let step: AnticStep = switch feeling {
+            // Being let go after a carry plays nothing, as on a Mac: there, a reaction to it is a trigger the
+            // user adds, and a pocket Imp has none.
+            let step: AnticStep? = switch feeling {
             case .poke: AnticStep(duration: 0.7, mood: .surprised, glyph: .exclaim)
             case .cuddle: AnticStep(duration: 1.2, mood: .happy, glyph: .heart)
             case .shake: AnticStep(duration: 1.6, mood: .dizzy)
-            case .drop: AnticStep(duration: 0.9, mood: .surprised, glyph: .sweat)
+            case .drop: nil
             }
-            tell(id, .animate(imp: id, beats: [AnimationBeat(step)]))
+            if let step { tell(id, .animate(imp: id, beats: [AnimationBeat(step)])) }
         case .file(let transfer, _, let from):
             // A pocket Imp has no folder: what its replies show is on the web, which the holder loads itself.
             hub.node.send(.fileFailed(id: transfer, reason: String(localized: "That file isn't on this iPhone.")), to: from)
@@ -625,7 +627,7 @@ extension PocketRuntime: ChatSource {
 
     func peers(_ id: UUID) -> [LinkImp] {
         var seen: Set<String> = [store.imp(id)?.name.lowercased() ?? ""]
-        let me = hub.node.device.id
+        let me = hub.node.device.who
         return targets(of: id, here: looks.map { LinkStaged(imp: $0, home: me) }).map(\.imp)
             .filter { seen.insert($0.name.lowercased()).inserted }
     }
@@ -640,13 +642,17 @@ extension PocketRuntime: ChatSource {
         String(localized: "\(imp.name) starts fresh and won't remember this chat.")
     }
 
-    func ask(_ id: UUID, _ text: String) { ask(id, text, from: nil, limitedTo: nil) }
+    func ask(_ id: UUID, _ text: String) { _ = ask(id, text, media: []) }
+    func ask(_ id: UUID, _ text: String, media: [MediaFile]) -> Bool { ask(id, text, from: nil, media: media, limitedTo: nil); return true }
 
     /// `device`: another device asking (its share of the queue is capped). A full queue drops the ask.
-    private func ask(_ id: UUID, _ text: String, from device: UUID?, limitedTo stranger: String?) {
-        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+    private func ask(_ id: UUID, _ text: String, from device: UUID?, media: [MediaFile] = [], limitedTo stranger: String?) {
+        let media = Array(media.prefix(MediaFile.maxCount))
+        var text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Only files: the usual words for them (the chat keeps the words, never the bytes).
+        if text.isEmpty, !media.isEmpty { text = MediaFile.defaultWords(for: media) }
         guard !text.isEmpty, hasBrain(id) else { return }
-        enqueue(id, from: device) { [self] in _ = try? await answer(text, of: id, limitedTo: stranger) }
+        enqueue(id, from: device) { [self] in _ = try? await answer(text, of: id, limitedTo: stranger, media: media) }
     }
 
     func stop(_ id: UUID) { running[id]?.cancel() }

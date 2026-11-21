@@ -148,7 +148,7 @@ fn an_expired_invite_makes_a_visitor_that_is_turned_away() {
 fn a_replaced_invite_stops_working() {
     let mut net = Net::new(2);
     let old = net.nodes[0].invite(net.now);
-    let _new = net.nodes[0].invite(net.now);
+    let _new = net.nodes[0].new_invite(net.now);
     net.nodes[1].join(&old, net.now);
     net.pump();
     assert!(net.saw(1, |e| matches!(
@@ -159,6 +159,24 @@ fn a_replaced_invite_stops_working() {
         }
     )));
     assert!(net.nodes[0].links().is_empty());
+}
+
+#[test]
+fn showing_the_code_again_keeps_it_while_it_works() {
+    let mut net = Net::new(2);
+    let first = net.nodes[0].invite(net.now);
+    net.nodes[0].invite_hidden(net.now);
+    // Shown again a while later (the screen reopened): the same code, so a copy of it still links.
+    let again = net.nodes[0].invite(net.now + 60.0);
+    assert_eq!(again.invite, first.invite);
+    net.nodes[1].join(&first, net.now);
+    net.pump();
+    assert!(net.saw(1, |e| matches!(e, Event::Joined { result: Ok(_), .. })));
+    // Once it has expired, showing the code makes a new one.
+    let hidden = net.now + 120.0;
+    net.nodes[0].invite_hidden(hidden);
+    let later = net.nodes[0].invite(hidden + imp_engine::link::INVITE_LIFE + 1.0);
+    assert_ne!(later.invite, first.invite);
 }
 
 #[test]
@@ -422,6 +440,7 @@ fn a_third_device_claims_a_ticket_as_a_visitor_and_the_newest_holder_wins() {
     let ask = LinkMessage::Ask {
         imp: pip.id,
         text: "hi".into(),
+        attachments: Vec::new(),
     };
     assert!(net.nodes[1].send(&ask, id(1)));
     net.pump();
@@ -463,7 +482,8 @@ fn only_the_holder_may_ask_and_others_hear_gone() {
     assert!(net.nodes[1].send(
         &LinkMessage::Ask {
             imp: pip.id,
-            text: "hi".into()
+            text: "hi".into(),
+            attachments: Vec::new()
         },
         id(1)
     ));
@@ -781,7 +801,8 @@ fn requests_for_an_imp_the_sender_does_not_hold_never_reach_the_app() {
     assert!(net.nodes[1].send(
         &LinkMessage::Ask {
             imp: id(55),
-            text: "hi".into()
+            text: "hi".into(),
+            attachments: Vec::new()
         },
         id(1)
     ));
@@ -935,6 +956,7 @@ fn trust_is_per_link_and_never_for_others() {
     let ask = LinkMessage::Ask {
         imp: id(5),
         text: "x".into(),
+        attachments: Vec::new(),
     };
     assert!(net.nodes[1].is_trusted_message(&ask, id(1)));
     assert!(!net.nodes[1].is_trusted_message(&ask, id(3)));
@@ -1351,4 +1373,355 @@ fn forgetting_a_device_after_a_swap_brings_ours_home_and_sends_its_visitor_home(
     assert_eq!(forgotten.sent_home, vec![b.id]);
     assert!(net.nodes[0].away().entry(a.id).is_none());
     assert!(net.nodes[0].visits().visits().is_empty());
+}
+
+// MARK: Uploads
+
+/// Devices 0 (home of Pip and Rex), 1 (holds Pip) and 2 (holds Rex).
+fn uploaders() -> Net {
+    let mut net = Net::new(3);
+    net.link(0, 1);
+    net.link(0, 2);
+    for (who, to) in [(imp(100, "Pip"), 1), (imp(101, "Rex"), 2)] {
+        let t = throw(&mut net, 0, to, &who);
+        assert!(accept(&mut net, to, t));
+    }
+    for i in 0..3 {
+        net.take(i);
+    }
+    net
+}
+
+fn failures(net: &Net, i: usize) -> Vec<String> {
+    net.messages(i)
+        .into_iter()
+        .filter_map(|(m, _)| match m {
+            LinkMessage::UploadFailed { reason, .. } => Some(reason),
+            _ => None,
+        })
+        .collect()
+}
+
+fn bytes(n: usize) -> Vec<u8> {
+    (0..n).map(|i| (i * 31 % 251) as u8).collect()
+}
+
+#[test]
+fn a_holder_uploads_and_asks_and_the_home_takes_the_exact_bytes() {
+    let mut net = uploaders();
+    let now = net.now;
+    let big = bytes(2_500_000);
+    let small = bytes(10);
+    let a = net.nodes[1]
+        .upload(
+            id(100),
+            id(1),
+            "../a/photo.png",
+            "image/png",
+            big.clone(),
+            now,
+        )
+        .unwrap();
+    let b = net.nodes[1]
+        .upload(id(100), id(1), "note.wav", "audio/wav", small.clone(), now)
+        .unwrap();
+    let ask = LinkMessage::Ask {
+        imp: id(100),
+        text: "look".into(),
+        attachments: vec![a, b],
+    };
+    assert!(net.nodes[1].send(&ask, id(1)));
+    net.pump();
+    let asks = net.messages(0);
+    let (LinkMessage::Ask { attachments, .. }, from) = asks.last().unwrap().clone() else {
+        panic!("an ask")
+    };
+    assert_eq!((attachments.clone(), from), (vec![a, b], id(2)));
+    // Another device cannot take them.
+    assert!(net.nodes[0].take_upload(a, id(3)).is_none());
+    let one = net.nodes[0].take_upload(a, from).unwrap();
+    assert_eq!(
+        (one.name.as_str(), one.mime.as_str()),
+        ("photo.png", "image/png")
+    );
+    assert!(one.data == big);
+    let two = net.nodes[0].take_upload(b, from).unwrap();
+    assert_eq!((two.name.as_str(), two.data), ("note.wav", small));
+    assert!(net.nodes[0].take_upload(a, from).is_none());
+    assert!(failures(&net, 1).is_empty());
+}
+
+#[test]
+fn an_upload_needs_a_connected_home_and_a_file_that_fits() {
+    let mut net = uploaders();
+    let now = net.now;
+    let big = vec![0u8; 25 * 1024 * 1024 + 1];
+    assert!(
+        net.nodes[1]
+            .upload(id(100), id(1), "x", "image/png", big, now)
+            .is_none()
+    );
+    assert!(
+        net.nodes[1]
+            .upload(id(100), id(1), "x", "image/png", vec![], now)
+            .is_none()
+    );
+    assert!(
+        net.nodes[1]
+            .upload(id(100), id(77), "x", "image/png", vec![1], now)
+            .is_none()
+    );
+    let exact = vec![7u8; 25 * 1024 * 1024];
+    assert!(
+        net.nodes[1]
+            .upload(id(100), id(1), "x", "video/mp4", exact, now)
+            .is_some()
+    );
+}
+
+#[test]
+fn a_device_that_does_not_hold_the_imp_cannot_upload() {
+    let mut net = uploaders();
+    let now = net.now;
+    // Device 2 holds Rex, not Pip.
+    let sent = net.nodes[2]
+        .upload(id(100), id(1), "a.png", "image/png", bytes(100), now)
+        .unwrap();
+    net.pump();
+    assert!(net.nodes[0].take_upload(sent, id(3)).is_none());
+    assert!(net.nodes[0].take_upload(sent, id(2)).is_none());
+    // The home does not even pass on an ask that names it.
+    assert!(net.messages(0).is_empty());
+}
+
+#[test]
+fn a_file_with_the_wrong_checksum_is_dropped_and_the_sender_hears() {
+    let mut net = uploaders();
+    let data = bytes(1000);
+    let upload = LinkMessage::Upload {
+        id: id(900),
+        imp: id(100),
+        name: "a.png".into(),
+        mime: "image/png".into(),
+        size: 1000,
+        sha256: "0".repeat(64),
+    };
+    let part = LinkMessage::UploadPart {
+        id: id(900),
+        offset: 0,
+        data: data.into(),
+    };
+    assert!(net.nodes[1].send(&upload, id(1)));
+    assert!(net.nodes[1].send(&part, id(1)));
+    net.pump();
+    assert!(net.nodes[0].take_upload(id(900), id(2)).is_none());
+    assert_eq!(failures(&net, 1), ["The file didn't arrive intact."]);
+}
+
+#[test]
+fn too_big_and_too_many_uploads_are_refused() {
+    let mut net = uploaders();
+    let big = LinkMessage::Upload {
+        id: id(900),
+        imp: id(100),
+        name: "a".into(),
+        mime: "video/mp4".into(),
+        size: 25 * 1024 * 1024 + 1,
+        sha256: "0".repeat(64),
+    };
+    assert!(net.nodes[1].send(&big, id(1)));
+    net.pump();
+    assert_eq!(failures(&net, 1), ["That file is too big."]);
+    net.take(1);
+    // Eight at once is fine, the ninth waits.
+    let now = net.now;
+    for _ in 0..8 {
+        assert!(
+            net.nodes[1]
+                .upload(id(100), id(1), "a", "image/png", bytes(10), now)
+                .is_some()
+        );
+    }
+    net.pump();
+    assert!(failures(&net, 1).is_empty());
+    assert!(
+        net.nodes[1]
+            .upload(id(100), id(1), "a", "image/png", bytes(10), now)
+            .is_some()
+    );
+    net.pump();
+    assert_eq!(failures(&net, 1), ["Too many files are being sent."]);
+    // Five attachments on one ask is not a message the home believes.
+    net.take(0);
+    let ask = LinkMessage::Ask {
+        imp: id(100),
+        text: "x".into(),
+        attachments: (1..=5).map(id).collect(),
+    };
+    assert!(net.nodes[1].send(&ask, id(1)));
+    net.pump();
+    assert!(net.messages(0).is_empty());
+}
+
+#[test]
+fn an_upload_nobody_claims_expires_ten_minutes_after_its_last_part() {
+    let mut net = uploaders();
+    let now = net.now;
+    let sent = net.nodes[1]
+        .upload(id(100), id(1), "a.png", "image/png", bytes(100), now)
+        .unwrap();
+    net.pump();
+    net.advance(601.0);
+    assert!(net.nodes[0].take_upload(sent, id(2)).is_none());
+}
+
+#[test]
+fn an_upload_not_yet_expired_can_still_be_taken() {
+    let mut net = uploaders();
+    let now = net.now;
+    let sent = net.nodes[1]
+        .upload(id(100), id(1), "a.png", "image/png", bytes(100), now)
+        .unwrap();
+    net.pump();
+    net.advance(500.0);
+    assert!(net.nodes[0].take_upload(sent, id(2)).is_some());
+}
+
+#[test]
+fn a_part_from_another_device_is_ignored() {
+    let mut net = uploaders();
+    let data = bytes(100);
+    let upload = LinkMessage::Upload {
+        id: id(900),
+        imp: id(100),
+        name: "a.png".into(),
+        mime: "image/png".into(),
+        size: 100,
+        sha256: imp_engine::workspace::checksum(&data),
+    };
+    let part = LinkMessage::UploadPart {
+        id: id(900),
+        offset: 0,
+        data: data.clone().into(),
+    };
+    assert!(net.nodes[1].send(&upload, id(1)));
+    // Device 3 holds Rex and tries to finish the other's upload.
+    assert!(net.nodes[2].send(&part, id(1)));
+    net.pump();
+    assert!(net.nodes[0].take_upload(id(900), id(2)).is_none());
+    assert!(net.nodes[0].take_upload(id(900), id(3)).is_none());
+    assert!(net.nodes[1].send(&part, id(1)));
+    net.pump();
+    assert!(net.nodes[0].take_upload(id(900), id(3)).is_none());
+    assert_eq!(net.nodes[0].take_upload(id(900), id(2)).unwrap().data, data);
+}
+
+/// Devices 0, 1, 2 in a line where the ends cannot reach each other, as a Mac and an iPhone that are only
+/// linked through the web page.
+fn two_hops(home: usize, relay_to: usize) {
+    let mut net = chain();
+    net.unreachable.insert(id(1));
+    net.unreachable.insert(id(3));
+    let pip = imp(100, "Pip");
+    throw_by(&mut net, home, 1, &pip, LinkSide::Left);
+    assert_eq!(net.nodes[home].holder_of(pip.id), Some(id(2)));
+    throw_by(&mut net, 1, relay_to, &pip, LinkSide::Left);
+    // The home never heard from the last device, but the device that passed it on told it where it went.
+    let last = dev(&net, relay_to);
+    assert_eq!(net.nodes[home].holder_of(pip.id), Some(last));
+    let who = net.nodes[home].away().entry(pip.id).unwrap();
+    let elsewhere = who
+        .elsewhere
+        .as_ref()
+        .expect("held by a device it only knows of");
+    assert_eq!(elsewhere.name, format!("Device {}", relay_to + 1));
+    assert_eq!((elsewhere.via, elsewhere.kind), (id(2), LinkKind::Mac));
+    assert!(net.nodes[home].away().authorises(last, pip.id));
+    assert!(!net.nodes[home].away().authorises(id(2), pip.id));
+    assert!(net.saw(home, |e| matches!(
+        e,
+        Event::Message(LinkMessage::Moved { .. }, from) if *from == id(2)
+    )));
+    // The relay forgot the visit and has nothing left to tell.
+    assert!(net.nodes[1].visits().visit(pip.id).is_none());
+}
+
+#[test]
+fn an_imp_passed_through_a_third_device_shows_where_it_is_at_its_home() {
+    two_hops(0, 2);
+}
+
+#[test]
+fn an_imp_passed_through_a_third_device_the_other_way() {
+    two_hops(2, 0);
+}
+
+#[test]
+fn only_the_holder_may_say_where_an_imp_went() {
+    let mut net = chain();
+    net.link(0, 2);
+    net.take(0);
+    net.take(2);
+    let pip = imp(100, "Pip");
+    let transfer = throw(&mut net, 0, 1, &pip);
+    assert!(accept(&mut net, 1, transfer));
+    let moved = LinkMessage::Moved {
+        imp: pip.id,
+        to: imp_engine::link::LinkWho {
+            id: id(9),
+            name: "Stranger".into(),
+            kind: LinkKind::Phone,
+        },
+    };
+    // Device 3 is no holder: it is not heard.
+    assert!(net.nodes[2].send(&moved, id(1)));
+    net.pump();
+    assert!(!net.saw(0, |e| matches!(
+        e,
+        Event::Message(LinkMessage::Moved { .. }, _)
+    )));
+    assert_eq!(net.nodes[0].holder_of(pip.id), Some(id(2)));
+    // The holder is.
+    assert!(net.nodes[1].send(&moved, id(1)));
+    net.pump();
+    assert_eq!(net.nodes[0].holder_of(pip.id), Some(id(9)));
+}
+
+#[test]
+fn a_hand_over_waits_until_the_home_is_connected() {
+    let mut net = chain();
+    net.unreachable.insert(id(1));
+    net.unreachable.insert(id(3));
+    let pip = imp(100, "Pip");
+    throw_by(&mut net, 0, 1, &pip, LinkSide::Left);
+    net.unreachable.insert(id(2));
+    net.cut(0, 1);
+    throw_by(&mut net, 1, 2, &pip, LinkSide::Left);
+    assert_eq!(net.nodes[0].holder_of(pip.id), Some(id(2)));
+    net.unreachable.remove(&id(2));
+    net.advance(5.0);
+    assert!(net.nodes[0].is_connected(id(2)));
+    assert_eq!(net.nodes[0].holder_of(pip.id), Some(id(3)));
+}
+
+#[test]
+fn a_stage_carries_the_name_and_kind_of_each_visitors_home() {
+    let mut net = chain();
+    net.unreachable.insert(id(1));
+    net.unreachable.insert(id(3));
+    let pip = imp(100, "Pip");
+    throw_by(&mut net, 0, 1, &pip, LinkSide::Left);
+    // Device 2 stages its visitor with the home's card.
+    net.nodes[1].set_stage(vec![staged(100, "Pip", id(1))]);
+    net.pump();
+    let seen = net.nodes[2].stage_of(id(2));
+    assert_eq!(seen.len(), 1);
+    assert_eq!(seen[0].home.name, "Device 1");
+    assert_eq!(seen[0].home.kind, LinkKind::Mac);
+    // A stage whose home is only an id is not a stage.
+    let bare = r#"{"stage":{"imps":[{"imp":{"id":"00000000-0000-0000-0000-000000000001","name":"Pip","hue":0.5,"scale":1.0,"traits":{"lids":0,"slant":0,"eyes":0,"squint":0,"horns":0,"blush":0,"tilt":0,"tempo":0}},"home":"00000000-0000-0000-0000-000000000001"}]}}"#;
+    assert!(!matches!(
+        LinkMessage::decode(bare.as_bytes()),
+        imp_engine::link::messages::Decoded::Message(_)
+    ));
 }

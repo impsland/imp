@@ -1,0 +1,455 @@
+/* The page looks like the Mac app's home: one plain surface, the Imps on it, and nothing else until it is
+   needed. The colours are the design tokens (pkg/tokens.css), dark or light with the system. */
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--surface);
+  color: var(--text);
+  font: var(--type-body-weight) var(--type-body-size)/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: none; padding: 0; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, .imp:focus-visible {
+  outline: var(--stroke-focus) solid var(--focus); outline-offset: 2px;
+}
+svg { display: block; }
+[hidden] { display: none !important; }
+
+/* ---------------------------------------------------------------- the stage */
+
+.stage { position: fixed; inset: 0; touch-action: none; }
+
+/* The doors along a side while an Imp is carried near it (the Mac's door signs): a band per device, a thin
+   strip down the edge and its name beside it, the one a throw would go to lit. */
+.doors {
+  position: absolute; top: 0; bottom: 0; width: 240px; padding: 0 var(--space-snug);
+  pointer-events: none; opacity: 0; transition: opacity var(--duration-medium) ease-out;
+}
+.doors.shown { opacity: 1; }
+.doors.left { left: 0; }
+.doors.right { right: 0; }
+.band {
+  position: absolute; left: var(--space-snug); right: var(--space-snug);
+  display: flex; align-items: center; gap: var(--space-snug);
+}
+.doors.right .band { flex-direction: row-reverse; }
+.strip {
+  align-self: stretch; margin: var(--space-snug) 0; width: 4px; flex: none; border-radius: var(--radius-full);
+  background: var(--faint); transition: width var(--duration-short), background var(--duration-short);
+}
+.sign {
+  display: flex; align-items: center; gap: var(--space-snug); max-width: 200px;
+  padding: var(--space-snug) var(--space-cozy); border-radius: var(--radius-full);
+  background: var(--raised); color: var(--text); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  font-size: var(--type-label-size); font-weight: var(--type-label-weight); white-space: nowrap;
+  transition: transform var(--duration-short), background var(--duration-short), color var(--duration-short);
+  transform-origin: left center;
+}
+.doors.right .sign { transform-origin: right center; }
+.sign > span { overflow: hidden; text-overflow: ellipsis; }
+.sign svg { flex: none; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.band.lit .strip { width: 6px; background: var(--accent); }
+.band.lit .sign { background: var(--accent); color: var(--on-accent); transform: scale(1.06); }
+.nobody {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  padding: var(--space-snug) var(--space-cozy); border-radius: var(--radius-full);
+  background: var(--raised); color: var(--muted); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  font-size: var(--type-label-size); font-weight: var(--type-label-weight);
+}
+.doors.left .nobody { left: var(--space-snug); }
+.doors.right .nobody { right: var(--space-snug); }
+
+/* The one thing on an empty page. */
+.connect {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: flex; align-items: center; gap: var(--space-small);
+  height: 40px; padding: 0 var(--space-page) 0 var(--space-large);
+  border-radius: var(--radius-full);
+  background: var(--card); border: var(--stroke-hairline) solid var(--line);
+  color: var(--text); font-weight: var(--type-label-weight);
+  transition: background var(--duration-short);
+}
+.connect:hover { background: var(--card-hover); }
+.connect svg { width: 18px; height: 18px; fill: currentColor; }
+
+.corner {
+  position: fixed; z-index: 20;
+  top: max(var(--space-medium), env(safe-area-inset-top)); right: max(var(--space-medium), env(safe-area-inset-right));
+  width: var(--size-control); height: var(--size-control); border-radius: var(--radius-full);
+  display: grid; place-items: center; color: var(--muted);
+  transition: background var(--duration-short), color var(--duration-short);
+}
+.corner:hover { background: var(--card-hover); color: var(--text); }
+.corner svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+/* ---------------------------------------------------------------- an Imp */
+
+.imp {
+  position: absolute; width: 132px; height: 132px; margin: -66px 0 0 -66px;
+  cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  border-radius: 40%;
+}
+.imp svg { width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.imp.held { cursor: grabbing; }
+.imp.flying { transition: left 0.45s cubic-bezier(0.2, 0.8, 0.3, 1), top 0.45s cubic-bezier(0.2, 0.8, 0.3, 1); }
+.imp.leaving { transition: left 0.3s ease-in, top 0.3s ease-in; }
+.imp.asleep svg { filter: saturate(0.45) brightness(0.85); }
+
+/* ---------------------------------------------------------------- the bubble */
+
+.bubble {
+  position: absolute; z-index: 10;
+  width: min(320px, calc(100vw - 24px));
+  --tint: var(--accent);
+  --on-tint: var(--on-accent);
+}
+.bubble.wide { width: min(440px, calc(100vw - 24px)); }
+/* One fill in one rounded shape with one soft shadow, as the Mac's `BubbleSurface`. */
+.card {
+  position: relative;
+  background: var(--raised);
+  border-radius: var(--radius-bubble);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.22);
+  padding: var(--space-medium) var(--space-roomy);
+}
+.card.typing { padding: var(--space-small); }
+/* Two pebbles trailing from the card toward the Imp (the Mac's `Trail`): the big one near the card. */
+.trail { position: relative; height: 19px; margin-top: var(--space-snug); }
+.trail i { position: absolute; border-radius: 50%; background: var(--raised); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.22); }
+.trail i:first-child { width: 10px; height: 10px; top: 0; }
+.trail i:last-child { width: 6px; height: 6px; top: 12px; }
+.bubble.below { display: flex; flex-direction: column; }
+.bubble.below .trail { order: -1; margin: 0 0 var(--space-snug); }
+.bubble.below .trail i:first-child { top: 9px; }
+.bubble.below .trail i:last-child { top: 1px; }
+
+/* The round buttons on the card's corners: shown on hover, or always where there is no hover. */
+.chip {
+  position: absolute; z-index: 3; width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center;
+  --chip-bg: var(--raised);
+  background: var(--chip-bg); color: var(--muted);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  opacity: 0; transition: opacity var(--duration-short), color var(--duration-short), background var(--duration-short);
+}
+.chip:hover { color: var(--text); --chip-bg: var(--raised-high); }
+.chip svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.chip svg.filled { width: 12px; height: 12px; fill: currentColor; stroke: none; }
+/* The front bubble of the chat glyph is cut out of the back one by a ring of the chip's own colour. */
+.chip svg .front { stroke: var(--chip-bg); stroke-width: 2.2; paint-order: stroke; stroke-linejoin: round; }
+.bubble:hover .chip, .bubble.pinned .chip, .bubble:focus-within .chip { opacity: 1; }
+@media (hover: none) { .chip { opacity: 1; } }
+/* Just outside the card's corners, as on the Mac: 10 out and 15 up (or down). */
+.chip.close { top: -15px; right: -10px; }
+.chip.history { top: -15px; left: -10px; }
+.chip.reply { bottom: -15px; left: -10px; }
+.chip.copy { bottom: -15px; right: -10px; }
+
+/* Typing: the text box and the round send button. */
+.field { display: flex; align-items: flex-end; gap: var(--space-hairline); }
+.field textarea {
+  flex: 1; resize: none; border: 0; outline: 0; background: none;
+  min-height: 26px; max-height: 140px; padding: 3px var(--space-snug); line-height: 20px;
+}
+.field textarea::placeholder { color: var(--faint); }
+.field textarea:focus-visible { outline: 0; }
+.send {
+  flex: none; width: 26px; height: 26px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--card); color: var(--faint);
+  transition: background var(--duration-short), color var(--duration-short);
+}
+.send.ready { background: var(--tint); color: var(--on-tint); }
+.send svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.send.stop svg { fill: currentColor; stroke: none; }
+.send:disabled { cursor: default; }
+
+/* Working: the dots, what it is doing, the tools it used, and the answer as it comes. */
+.dots { display: flex; gap: 4px; height: 12px; align-items: center; }
+.dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--tint); animation: pip 1.2s infinite ease-in-out; }
+.dots i:nth-child(2) { animation-delay: 0.15s; }
+.dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes pip { 0%, 80%, 100% { opacity: 0.3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-2px); } }
+.working { display: flex; flex-direction: column; gap: var(--space-small); }
+.working .top { display: flex; align-items: center; gap: var(--space-small); }
+.status { color: var(--muted); font-size: var(--type-caption-size); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.steps li { display: flex; gap: var(--space-snug); align-items: baseline; color: var(--muted); font-size: var(--type-small-size); }
+.steps li::before {
+  content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; transform: translateY(-1px);
+  background: color-mix(in srgb, var(--tint) 45%, transparent);
+}
+.steps li.thought { font-style: italic; }
+.steps li.thought::before { background: none; border: 1.5px solid color-mix(in srgb, var(--tint) 60%, transparent); }
+.steps .more { color: var(--faint); }
+.steps .more::before { display: none; }
+.steps-toggle { color: var(--faint); font-size: var(--type-small-size); align-self: flex-start; }
+.steps-toggle:hover { color: var(--muted); }
+
+/* The answer. Long ones scroll inside the card. */
+.text { white-space: pre-wrap; overflow-wrap: anywhere; max-height: min(320px, 50vh); overflow-y: auto; }
+.text p { margin: 0 0 0.6em; }
+.text p:last-child { margin-bottom: 0; }
+.text code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--type-mono-size);
+  background: var(--well); padding: 0 4px; border-radius: 4px;
+}
+.text pre {
+  margin: 0 0 0.6em; padding: var(--space-small); border-radius: var(--radius-small);
+  background: var(--well); overflow-x: auto; white-space: pre;
+}
+.text pre code { background: none; padding: 0; }
+.text.failed { color: var(--danger); }
+.notice { color: var(--muted); }
+.foot { display: flex; align-items: flex-start; gap: var(--space-small); }
+.foot > .note { flex: 1; }
+.limit {
+  flex: none; margin: var(--space-snug) -4px 0 auto; width: 18px; height: 18px; border-radius: 50%;
+  display: grid; place-items: center; color: var(--faint);
+}
+.limit:hover, .limit[aria-expanded="true"] { color: var(--muted); background: var(--card-hover); }
+.limit svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.note { color: var(--faint); font-size: var(--type-small-size); margin-top: var(--space-snug); }
+
+/* The chat: the whole talk, and a text box under it. */
+.chat { display: flex; flex-direction: column; gap: var(--space-small); }
+/* The chat's header, as on the Mac: the move handle, the title, then buttons that ask once more. */
+.chat-head { display: flex; align-items: center; gap: var(--space-cozy); height: 24px; margin: -2px -4px 0 -8px; cursor: grab; }
+.grip { flex: none; width: 28px; height: 24px; display: grid; place-items: center; color: var(--faint); }
+.grip svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.chat-title {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left;
+  font-size: var(--type-label-size); font-weight: var(--type-label-weight); color: var(--text); cursor: default;
+}
+button.chat-title { cursor: pointer; }
+.chat-title .caret { color: var(--faint); }
+.head-btn {
+  flex: none; min-width: 24px; height: 24px; border-radius: var(--radius-full);
+  display: grid; place-items: center; color: var(--muted); cursor: pointer;
+}
+.head-btn:hover { background: var(--card-hover); color: var(--text); }
+.head-btn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.head-btn.asking {
+  padding: 0 var(--space-small); font-size: var(--type-small-size); font-weight: var(--type-label-weight); white-space: nowrap;
+  color: color-mix(in srgb, var(--tint) 65%, var(--text));
+}
+.bubble.moving, .bubble.moving .chat-head { cursor: grabbing; user-select: none; -webkit-user-select: none; }
+.menu button[aria-current="true"] { font-weight: var(--type-label-weight); }
+.turns { display: flex; flex-direction: column; gap: var(--space-small); max-height: min(380px, 55vh); overflow-y: auto; padding-right: 2px; }
+/* The chat at the size it was made: the talk takes what the header and the text box leave. */
+.bubble.sized { max-width: calc(100vw - 16px); }
+.bubble.sized .card { display: flex; flex-direction: column; }
+.bubble.sized .chat { flex: 1; min-height: 0; }
+.bubble.sized .turns { flex: 1; min-height: 0; max-height: none; }
+/* Resizing, as on the Mac: invisible strips on the sides (6) and grips on the corners (16), and a mark. */
+.rz { position: absolute; z-index: 2; touch-action: none; }
+.rz.n, .rz.s { left: 16px; right: 16px; height: 6px; cursor: ns-resize; }
+.rz.n { top: -3px; } .rz.s { bottom: -3px; }
+.rz.e, .rz.w { top: 16px; bottom: 16px; width: 6px; cursor: ew-resize; }
+.rz.e { right: -3px; } .rz.w { left: -3px; }
+.rz.ne, .rz.nw, .rz.se, .rz.sw { width: 16px; height: 16px; }
+.rz.nw { top: -2px; left: -2px; cursor: nwse-resize; } .rz.se { bottom: -2px; right: -2px; cursor: nwse-resize; }
+.rz.ne { top: -2px; right: -2px; cursor: nesw-resize; } .rz.sw { bottom: -2px; left: -2px; cursor: nesw-resize; }
+.resize-mark { position: absolute; right: var(--space-snug); bottom: var(--space-snug); width: 14px; height: 14px; color: var(--muted); pointer-events: none; display: grid; place-items: center; }
+.resize-mark svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.bubble.resizing, .bubble.resizing * { user-select: none; -webkit-user-select: none; }
+.turns .said {
+  align-self: flex-end; max-width: 85%; padding: 5px 10px; border-radius: 14px;
+  background: var(--card-hover); white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.turns .from { display: block; font-size: var(--type-small-size); color: var(--faint); }
+.turns .text { max-height: none; overflow: visible; }
+.turns .empty { color: var(--faint); text-align: center; padding: var(--space-small) 0; }
+.chat .field { background: var(--well); border-radius: var(--radius-medium); padding: var(--space-snug); }
+
+/* What it says to another Imp: a small bubble of its own, never in the way. */
+.speech {
+  position: absolute; z-index: 9; max-width: 240px; pointer-events: none;
+  padding: var(--space-snug) var(--space-cozy); border-radius: var(--radius-medium);
+  background: var(--raised); font-size: var(--type-caption-size);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14), 0 0 0 var(--stroke-hairline) var(--line);
+  display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;
+}
+.speech b { font-weight: var(--type-label-weight); }
+
+/* ---------------------------------------------------------------- the menu (right click on an Imp) */
+
+.menu {
+  position: fixed; z-index: 30; min-width: 180px; padding: var(--space-tight);
+  background: var(--raised); border-radius: var(--radius-tile);
+  box-shadow: var(--shadow-card), 0 0 0 var(--stroke-hairline) var(--line);
+}
+.menu button {
+  display: block; width: 100%; text-align: left; padding: 6px var(--space-small); border-radius: var(--radius-tiny);
+}
+.menu button:hover, .menu button:focus-visible { background: var(--card-hover); outline: 0; }
+.menu hr { border: 0; border-top: var(--stroke-hairline) solid var(--line); margin: var(--space-tight) 0; }
+
+/* ---------------------------------------------------------------- connecting: a camera and a code */
+
+/* As wide as the screen allows, up to a comfortable size; the camera's square shrinks on a short screen (a
+   phone on its side) so the code box always shows. On a phone it is a sheet from the bottom. */
+.sheet {
+  width: clamp(280px, 34vw, 400px); max-width: calc(100vw - 32px); max-height: calc(100dvh - 32px);
+  padding: var(--space-large); overflow-y: auto; overscroll-behavior: contain;
+  background: var(--raised); color: var(--text);
+  border: 0; border-radius: var(--radius-large);
+  box-shadow: var(--shadow-card), 0 0 0 var(--stroke-hairline) var(--line);
+}
+.sheet[open] { animation: sheet-in var(--duration-medium) ease-out; }
+@keyframes sheet-in { from { opacity: 0; transform: scale(0.96); } }
+.sheet::backdrop { background: var(--scrim); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.grabber { display: none; }
+.finder {
+  position: relative; aspect-ratio: 1; border-radius: var(--radius-medium); overflow: hidden;
+  width: min(100%, calc(100dvh - 32px - 2 * var(--space-large) - 60px)); min-width: 160px; margin-inline: auto;
+  background: var(--well); display: grid; place-items: center;
+}
+@media (max-width: 520px) {
+  .sheet {
+    width: 100%; max-width: 100%; margin: auto 0 0; max-height: calc(100dvh - 12px);
+    border-radius: var(--radius-large) var(--radius-large) 0 0;
+    padding: var(--space-small) var(--space-large) max(var(--space-large), env(safe-area-inset-bottom));
+  }
+  .sheet[open] { animation: sheet-up var(--duration-medium) ease-out; }
+  @keyframes sheet-up { from { transform: translateY(40%); opacity: 0; } }
+  .grabber { display: block; width: 36px; height: 5px; margin: 0 auto var(--space-small); border-radius: var(--radius-full); background: var(--line); }
+  .finder { width: min(100%, calc(100dvh - 140px)); }
+}
+.finder-note small { color: inherit; opacity: 0.8; font-size: var(--type-small-size); }
+.finder video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(var(--mirror, 1)); }
+.finder::after {
+  content: ""; position: absolute; inset: 18%; border-radius: var(--radius-tile);
+  border: 2px solid rgba(255, 255, 255, 0.75); box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.18);
+  opacity: 0; transition: opacity var(--duration-medium);
+}
+.finder.live::after { opacity: 1; }
+.finder-note {
+  position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: var(--space-small);
+  color: var(--muted); text-align: center; padding: var(--space-large);
+}
+.finder-note svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.finder.live .finder-note { display: none; }
+.finder.done { background: var(--ok-background); }
+.finder.done .finder-note { display: flex; color: var(--text); }
+.finder.done video, .finder.done::after { display: none; }
+.finder.busy video { filter: blur(6px) brightness(0.7); }
+.finder.busy .finder-note { display: flex; color: var(--text); }
+.finder.live.busy .finder-note { color: #fff; }
+.spinner { width: 24px; height: 24px; border-radius: 50%; border: 2.5px solid currentColor; border-right-color: transparent; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.code {
+  display: flex; align-items: center; gap: var(--space-tight); margin-top: var(--space-medium);
+  background: var(--well); border-radius: var(--radius-full); padding: 3px 3px 3px var(--space-medium);
+}
+.code input { flex: 1; min-width: 0; border: 0; background: none; outline: 0; height: 30px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--type-mono-size); }
+.code input:focus-visible { outline: 0; }
+.code:focus-within { box-shadow: 0 0 0 var(--stroke-focus) var(--focus); }
+.code button {
+  flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent); color: var(--on-accent);
+}
+.code button svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.sheet-error { margin: var(--space-small) var(--space-small) 0; color: var(--danger); font-size: var(--type-caption-size); }
+.sheet-error:empty { display: none; }
+
+/* ---------------------------------------------------------------- toasts */
+
+.toasts {
+  position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 40;
+  display: flex; flex-direction: column; gap: var(--space-small); align-items: center; pointer-events: none;
+}
+.toast {
+  padding: var(--space-small) var(--space-roomy); border-radius: var(--radius-full);
+  background: var(--raised); box-shadow: var(--shadow-card), 0 0 0 var(--stroke-hairline) var(--line);
+  max-width: min(480px, calc(100vw - 24px)); font-size: var(--type-caption-size);
+}
+.toast.bad { color: var(--danger); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet[open] { animation: none; }
+  .imp.flying, .imp.leaving, .doors, .strip, .sign, .chip { transition: none; }
+  .dots i, .spinner { animation: none; }
+}
+
+/* ---------------------------------------------------------------- photos, sound and video in a message */
+
+.compose { display: flex; flex-direction: column; gap: var(--space-snug); }
+.chat .compose { background: var(--well); border-radius: var(--radius-medium); padding: var(--space-snug); }
+.chat .compose .field { background: none; padding: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-snug); padding: 2px 2px 0; }
+.chip-file {
+  position: relative; display: flex; align-items: center; gap: var(--space-snug); height: 56px; max-width: 200px;
+  border-radius: var(--radius-tile); background: var(--card-hover); overflow: hidden;
+}
+.chip-file.image, .chip-file.video { width: 56px; }
+.chip-file img, .chip-file video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.chip-file .glyph { flex: none; width: 40px; height: 40px; margin-left: var(--space-snug); border-radius: var(--radius-small); display: grid; place-items: center; background: var(--card); color: var(--muted); }
+.chip-file .glyph svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.chip-file.video::after { content: "▶"; position: absolute; left: 6px; bottom: 4px; font-size: 10px; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+.chip-name { font-size: var(--type-small-size); color: var(--muted); padding-right: 26px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip-off {
+  position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%;
+  display: grid; place-items: center; background: rgba(0, 0, 0, 0.55); color: #fff;
+}
+.chip-off svg { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; }
+.attach {
+  flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; color: var(--muted);
+}
+.attach:hover { background: var(--card-hover); color: var(--text); }
+.attach svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.dropping { outline: 2px dashed var(--accent); outline-offset: 4px; }
+.imp.dropping { border-radius: 40%; }
+
+/* Recording: the time and a meter that follows the voice. */
+.field.recording { align-items: center; gap: var(--space-small); padding-left: var(--space-snug); min-height: 26px; }
+.rec-dot { width: 10px; height: 10px; border-radius: 50%; background: #ff4d4f; animation: rec 1.2s infinite ease-in-out; }
+@keyframes rec { 50% { opacity: 0.35; } }
+.recording .time { font-variant-numeric: tabular-nums; color: var(--muted); min-width: 36px; }
+.meter { flex: 1; display: flex; align-items: center; gap: 3px; height: 20px; }
+.meter i { width: 3px; border-radius: 2px; background: var(--tint); height: calc(4px + 16px * var(--level, 0)); transition: height 80ms linear; }
+.meter i:nth-child(2), .meter i:nth-child(4) { height: calc(4px + 11px * var(--level, 0)); }
+.menu-icon { display: inline-grid; place-items: center; width: 18px; margin-right: var(--space-small); vertical-align: -3px; color: var(--muted); }
+.menu-icon svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------------------------------------------------------------- the camera, with the Imps in the way */
+
+.camera { position: fixed; inset: 0; background: #000; opacity: 0; transition: opacity var(--duration-medium); }
+.camera.shown { opacity: 1; }
+.camera video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(var(--mirror, 1)); }
+.camera.flash::after { content: ""; position: absolute; inset: 0; background: #fff; animation: flash 0.35s ease-out forwards; pointer-events: none; z-index: 30; }
+@keyframes flash { from { opacity: 0.9; } to { opacity: 0; } }
+.camera-bar {
+  position: fixed; z-index: 20; left: 0; right: 0; bottom: max(var(--space-wide), env(safe-area-inset-bottom));
+  display: flex; align-items: center; justify-content: center; gap: 44px; pointer-events: none;
+}
+.camera-bar > * { pointer-events: auto; }
+.camera-btn {
+  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(0, 0, 0, 0.45); color: #fff; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.camera-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.shutter {
+  width: 72px; height: 72px; border-radius: 50%; background: #fff;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.35), 0 0 0 8px #fff; transition: transform var(--duration-short);
+}
+.shutter:active { transform: scale(0.92); }
+.camera-preview {
+  position: fixed; inset: 0; z-index: 25; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--space-large); padding: var(--space-page); background: rgba(0, 0, 0, 0.82);
+}
+.camera-preview img { max-width: 100%; max-height: calc(100dvh - 140px); border-radius: var(--radius-medium); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
+.camera-actions { display: flex; gap: var(--space-small); }
+.pill { height: 40px; padding: 0 var(--space-page); border-radius: var(--radius-full); background: rgba(255, 255, 255, 0.16); color: #fff; font-weight: var(--type-label-weight); }
+.pill:hover { background: rgba(255, 255, 255, 0.26); }
+.pill.primary { background: #fff; color: #17181c; }
+body.filming #add, body.filming .connect, body.filming .bubble, body.filming .speech { display: none !important; }
+@media (prefers-reduced-motion: reduce) { .camera, .shutter { transition: none; } .rec-dot { animation: none; } }

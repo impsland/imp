@@ -38,7 +38,8 @@ one you pick with `--imp NAME`. This page is about using it. The commands are in
   listed. Tab or Enter puts the path in the message. A folder opens to what is in it. When you send, each
   file named with `@` goes with the message for the Imp to read: text up to 100 KB each and 256 KB in all. A
   folder goes as the list of what is in it. Paths with spaces are written `@"my notes.md"`. A word such as
-  `@zed` that is not a path is left alone.
+  `@zed` that is not a path is left alone. A picture, a sound or a video (`@photo.jpg`, `@voice.wav`,
+  `@clip.mp4`) goes to the model as itself, for models that can see or hear: 25 MB each and 4 in one message.
 
 ## Commands and the `/` list
 

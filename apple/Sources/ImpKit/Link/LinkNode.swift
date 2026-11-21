@@ -182,7 +182,7 @@ public final class LinkNode {
     /// The Imps out on the screens of the owner's other devices (connected, marked Mine here), each at its
     /// own home there. An Imp may message them from wherever it is: those devices let it (`talks::may_ask`).
     public var onMyOtherDevices: [LinkStaged] {
-        connected.filter(isTrusted).flatMap { device in stage(of: device).filter { $0.home == device } }
+        connected.filter(isTrusted).flatMap { device in stage(of: device).filter { $0.home.id == device } }
     }
     public func travel(of imp: UUID) -> LinkTravel { (try? core.travelOf(imp: imp.uuidString)).flatMap(decode) ?? .home }
     public func holder(of imp: UUID) -> UUID? { (try? core.holderOf(imp: imp.uuidString)).flatMap { $0 }.flatMap(UUID.init(uuidString:)) }
@@ -237,6 +237,20 @@ public final class LinkNode {
         apply(out.steps)
         for socket in used { if await !socket.drained() { return false } }
         return true
+    }
+
+    /// Sends a file to the home of an Imp this device holds, ahead of the `ask` that names it. The upload id,
+    /// or nil when the home isn't connected or the file is empty or over 25 MiB.
+    public func upload(_ file: MediaFile, imp: UUID, to home: UUID) -> UUID? {
+        guard let id = try? core.upload(imp: imp.uuidString, to: home.uuidString, name: file.name, mime: file.mimeType,
+                                        data: file.data, now: now) else { return nil }
+        return UUID(uuidString: id)
+    }
+
+    /// A file that arrived whole from `device` for an `ask`'s attachment. Taking it forgets it.
+    public func takeUpload(_ id: UUID, from device: UUID) -> MediaFile? {
+        guard let upload = (try? core.takeUpload(id: id.uuidString, from: device.uuidString)) ?? nil else { return nil }
+        return MediaFile(data: upload.data, mimeType: upload.mime, name: upload.name)
     }
 
     public func invite() -> LinkInvite? {
@@ -337,11 +351,12 @@ public final class LinkNode {
     // MARK: Steps
 
     func encode<T: Encodable>(_ value: T) -> String? {
-        (try? JSONEncoder.link.encode(value)).map { String(decoding: $0, as: UTF8.self) }
+        let text = (try? JSONEncoder.link.encode(value)).map { String(decoding: $0, as: UTF8.self) }
+        return value is LinkMessage ? text.map(LinkMessage.wire) : text
     }
 
     func decode<T: Decodable>(_ text: String) -> T? {
-        try? JSONDecoder.link.decode(T.self, from: Data(text.utf8))
+        try? JSONDecoder.link.decode(T.self, from: Data((T.self == LinkMessage.self ? LinkMessage.parse(text) : text).utf8))
     }
 
     @discardableResult

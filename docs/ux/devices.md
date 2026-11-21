@@ -15,10 +15,12 @@ A canvas fills the window under a top bar. The top bar has Back, the title and o
 
 The map is a canvas drawn with [SwiftFlow](https://github.com/aaurelions/SwiftFlow) (MIT, see `THIRD_PARTY_NOTICES.md`) in the app's own look: the window's surface, quiet dots, muted lines. `DeviceGraph` turns the live `DeviceMap` into the canvas's nodes and lines, so what is drawn is always the current state.
 
-- **Devices are cards.** This Mac, every linked Mac or iPhone, and the Hop, which is always there, set or not. Each has its icon, its name, and a state mark (connected, away, offline). The Hop's mark says off (none set), needs an address, connected (a channel runs through it) or not in use. This Mac is on the leading side, the Hop in the middle and the linked devices on the trailing side, one under the other. With local channels the Hop sits below the rest, out of their way.
+- **Devices are cards.** This Mac and every linked Mac or iPhone, each with its icon, its name and a state mark. This Mac is in the middle and the other devices are on its two sides. A device this Mac knows only through another (the home of a visitor, or where an Imp was passed on to) is drawn dimmed, has no state mark and hangs on the device that relays it by a thin dotted line. It can be opened and linked directly.
+- **The Hop is a button in the bar**, not a card: one icon, tinted green when a channel runs through it or a check reached it, red when it is set wrong or unreachable, and muted otherwise. It opens the Hop's sheet.
 - **Imps are chips inside the device their body is on**, in a grid of at most three across. An Imp of this Mac is a strong chip, an Imp of another device is a visitor and is lighter.
-- **Channel lines join the devices.** A line is solid when the devices talk on the local network and dashed when they go through the Hop (one line to the Hop and one from it). Its tag is Wi-Fi, or the Hop's address. A line that is not connected is faded.
-- **Tethers** are thin lines in the Imp's own colour, from an Imp's chip to the device where it thinks and runs its tools (its home). An Imp's body can be somewhere else. Its mind is always at home ([Imp Link](/connecting/link)).
+- **A channel is one line between two devices**, with no text on it: solid on the local network, dashed through the Hop. Pressing a dashed line opens the channel's sheet, which shows the Hop as a row. A line that is not connected is faint. What a device may do is not on its line: it is in its sheet.
+- **Hovering** a device, an Imp or a line lights it and its lines and dims the rest. Small dots run only along the lines in the light.
+- **Tethers** are thin lines in the Imp's own colour, from an Imp's chip to the device where it thinks and runs its tools (its home). They are hidden, and appear only while the Imp or one of the two devices is hovered or open. An Imp that is away wears a tiny house and the symbol of its home device on its chip, so where it lives is seen without a line. Talk lines, to the Imps it can message, appear the same way. An Imp's body can be somewhere else. Its mind is always at home ([Imp Link](/connecting/link)).
 - Nothing on the canvas can be selected, connected or deleted, so SwiftFlow's own keys (Delete, undo) never change the map.
 
 ### Moving around
@@ -36,18 +38,19 @@ It is fitted again when the window changes size, when a device or an Imp comes o
 
 ## The sheets
 
-Pressing something opens one sheet, with a header (picture and name), Cancel on the leading side and Done on the trailing side. Every sheet follows one order: the picture of the thing, its settings, its actions, and last what destroys. A sheet shows the settings of the thing pressed and never lists the nodes at the ends of a line: a device, an Imp and a line each have their own sheet. Cards and buttons fill the sheet's width, and a row of buttons shares it equally. Switches and plugs act at once. Done keeps them and Cancel puts them back as they were when the sheet opened (the Hop, the plugs and an Imp's tools. An Imp sent home or a device forgotten stays so, those are actions). A chip inside a sheet that points at an Imp or a device swaps the sheet for that one. Forget, and Forget everyone, ask first. Forgetting calls this Mac's Imps home from that device and sends its visitors home. A sheet about something that is gone (a forgotten device, an Imp that came home) closes.
+Pressing something opens one sheet, one compact layout for every kind. The header has a picture, the name and one status pill (a coloured dot and one or two words: Here, Nearby, Via server, Away, Through the device that relays it, Visiting). Then come one row of actions, a short list of rows with a picture each, and last, alone, what destroys. There are no paragraphs: what a row means is its tooltip and spoken hint. A row that points at another thing (a device, an Imp, the line, the Hop) swaps the sheet for that one. Cancel is on the leading side and Done on the trailing side. Switches act at once. Done keeps them and Cancel puts them back as they were when the sheet opened (the Hop, the plugs and an Imp's tools. An Imp sent home or a device forgotten stays so, those are actions). Forget, and Forget everyone, ask first. Forgetting calls this Mac's Imps home from that device and sends its visitors home. A sheet about something that is gone (a forgotten device, an Imp that came home) closes.
 
-The Hop is a setting, not a linked thing, so it has its own sheet (`DevicesSheet.hop`) that never depends on the Hop being in the map: it stays open while an address is being chosen. The Hop is on the canvas only when a line goes through it. This Mac's sheet has its entry.
+The Hop is a setting, not a linked thing, so it has its own sheet (`DevicesSheet.hop`) that never depends on the Hop being in the map: it stays open while an address is being chosen. Its button is in the bar, and the sheet of a dashed line has it as a row.
 
 | Pressed | The sheet shows | Actions |
 | --- | --- | --- |
-| This Mac | Reachable or not, the Local Network notice when the system blocks it, "Reachable at" its addresses, a Hop row (its state and host, or Add a Hop). | The Hop row opens the Hop's sheet. Link a device and Forget everyone, in one row of two equal buttons (the second only when anything is linked). |
-| A linked device | How it stands and how it is reached. "On its screen": a chip for every Imp there (this Mac's, its own, its visitors). The plugs: what it can use here. Its last known addresses when it is not connected. | Plug or unplug. Open an Imp's sheet. Send home per Imp, and for all. Forget. |
-| The Hop | How it stands, the Hop control (the same card as in the Link sheet), and chips for the devices reached through it. | Choose Imp's Hop, Custom or Off. Type and Check an address. Open a device. |
-| One of this Mac's Imps (its chip) | A picture: its body on one device, thinking on this Mac (one tile "Here" at home). When away, "Can use there": its tools as plugs, blocked ones dimmed with a lock. Its tools, folded. Whom it can message, as chips. | Press a blocked plug to open the connection where it is plugged in. Switch a tool group or tool server for this Imp. Open an Imp it talks to. Send home, when it is away. Open its settings. |
-| An Imp of another device | A picture: where its body is and where it thinks. "Its device can use here": that device's plugs, read only. | Send home, when it is visiting this Mac. |
-| A line (a connection) | A picture: the two devices joined in the colour of the line's state, with the route (Wi-Fi, or the Hop between them); its address in small type only when it is not up. "What the device can use here": the plugs. "Travelling": chips of the Imps going across it (this Mac's out, the device's own in). | Plug or unplug. Open an Imp. Call all home. Forget the device. |
+| This Mac | Link a device. Its addresses (or Not reachable), the Local Network notice when the system blocks it. "On its screen": its Imps. | Link a device. Forget everyone, alone and last (only when anything is linked). |
+| A linked device | Its connection (opens the line's sheet), the Mine switch, "What it can use here" (tool switches, folded, when it is Mine), "On its screen": its Imps. | Switch Mine and its tools. Open an Imp. Send home per Imp, and for all. Forget, alone and last. |
+| A device known only through another | The pill says "Through" the device that relays it. "On its screen": its Imps. | Link, which opens the Link sheet. |
+| The Hop | The Hop control (the same card as in the Link sheet), and chips for the devices reached through it. | Choose Imp's Hop, Custom or Off. Type and Check an address. Open a device. |
+| One of this Mac's Imps (its chip) | Where it is when away (opens that device), its home (opens it), its tools, folded, and whom it can message, as chips. | Send home, when it is away. Open its settings. Switch a tool group or tool server for this Imp. Open an Imp it talks to. |
+| An Imp of another device | Its home (opens it). The pill says where it is (Visiting, or its device). | Send home, when it is visiting this Mac. |
+| A line (a connection) | Its two ends (each opens its sheet) and its path: the address, or the Hop as a row when the line is dashed. | Open a device or the Hop. |
 | A tether | The sheet of its Imp. | As above. |
 
 ## Plugs
@@ -70,6 +73,6 @@ Under the code is the **Hop**, a pill with its state that opens the Hop control 
 ## Accessibility and keyboard
 
 - SwiftFlow's nodes carry no names of their own, so the canvas is replaced for assistive technology by a list: a spoken summary of the whole map, then a button for every device, every Imp and every line. Pressing one opens its sheet, as a click does.
-- Each has a spoken label that says what it is and how it stands: a card its summary, a chip the Imp and the device it is in (and whether it is a visitor), a line the two devices, the route and the state, a tether the Imp, where it is and where it thinks.
-- Nothing depends on colour alone: a line's dashes, its tag and its state mark say the same.
+- Each has a spoken label that says what it is and how it stands: a card its summary, a chip the Imp and the device it is in (and whether it is a visitor), a line the two devices, the route and the state, a dotted line the device it leads to, a tether the Imp, where it is and where it thinks.
+- Nothing depends on colour alone: a line's dashes, a card's state mark and a sheet's status word say the same.
 - The zoom and Fit buttons are labelled buttons, and Esc and Back leave for the Imps.

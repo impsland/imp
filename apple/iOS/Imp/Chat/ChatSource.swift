@@ -49,6 +49,8 @@ protocol ChatSource {
     func intro(_ imp: LinkImp, _ availability: ChatAvailability) -> (title: String, text: String)
     func newChatNote(_ imp: LinkImp) -> String
     func ask(_ id: UUID, _ text: String)
+    /// With photos, sounds, videos or files. False when they couldn't be sent (a visitor's home didn't take one).
+    func ask(_ id: UUID, _ text: String, media: [MediaFile]) -> Bool
     func stop(_ id: UUID)
     func newChat(_ id: UUID)
     /// Its saved chats, to pick one to carry on in. Nil when the source doesn't know (yet).

@@ -79,12 +79,25 @@ public struct LinkImp: Codable, Sendable, Equatable, Identifiable {
     }
 }
 
-/// An Imp on someone's screen, and the device it thinks on.
+/// Who a device is, as another device that is not linked with it can be told.
+public struct LinkWho: Codable, Sendable, Equatable {
+    public var id: UUID
+    public var name: String
+    public var kind: LinkKind
+
+    public init(id: UUID, name: String, kind: LinkKind) {
+        self.id = id; self.name = name; self.kind = kind
+    }
+}
+
+/// An Imp on someone's screen, and the device it thinks on. Whoever stages the Imp supplies its home.
 public struct LinkStaged: Codable, Sendable, Equatable, Identifiable {
     public var imp: LinkImp
-    public var home: UUID
+    public var home: LinkWho
 
-    public init(imp: LinkImp, home: UUID) { self.imp = imp; self.home = home }
+    public init(imp: LinkImp, home: LinkWho) {
+        self.imp = imp; self.home = home
+    }
 
     public var id: UUID { imp.id }
 }
@@ -283,8 +296,9 @@ public enum LinkMessage: Codable, Sendable, Equatable {
 
     // MARK: A holder asks an Imp's home
 
-    /// A message for the Imp, typed into its chat.
-    case ask(imp: UUID, text: String)
+    /// A message for the Imp, typed into its chat. `attachments` are the uploads (`LinkNode.upload`) that go with it,
+    /// at most `MediaFile.maxCount`. They are left out of the JSON when there are none, and are none when it has no such key.
+    case ask(imp: UUID, text: String, attachments: [UUID] = [])
     /// Stop what it's working on.
     case stop(imp: UUID)
     /// Start a fresh chat.
@@ -348,3 +362,23 @@ public enum LinkMessage: Codable, Sendable, Equatable {
     case adopted(transfer: UUID)
 }
 
+
+extension LinkMessage {
+    /// The JSON of a message as the core wants it: an `ask` without attachments has no `attachments` key.
+    static func wire(_ json: String) -> String { reshape(json, drop: true) }
+
+    /// The JSON of a message as `Codable` reads it: an `ask` without `attachments` gets an empty list.
+    static func parse(_ json: String) -> String { reshape(json, drop: false) }
+
+    private static func reshape(_ json: String, drop: Bool) -> String {
+        guard json.hasPrefix("{\"ask\""),
+              var root = (try? JSONSerialization.jsonObject(with: Data(json.utf8))) as? [String: Any],
+              var ask = root["ask"] as? [String: Any], root.count == 1 else { return json }
+        let empty = (ask["attachments"] as? [Any])?.isEmpty ?? true
+        if drop { guard empty, ask["attachments"] != nil else { return json }; ask["attachments"] = nil }
+        else { guard ask["attachments"] == nil else { return json }; ask["attachments"] = [Any]() }
+        root["ask"] = ask
+        guard let data = try? JSONSerialization.data(withJSONObject: root, options: [.sortedKeys]) else { return json }
+        return String(decoding: data, as: UTF8.self)
+    }
+}

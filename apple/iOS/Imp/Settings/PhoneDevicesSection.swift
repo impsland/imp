@@ -18,7 +18,7 @@ struct PhoneDevicesSection: View {
             LinkCodeCard(hub: hub, problem: $problem, scan: scan)
             devices
             if !elsewhere.isEmpty {
-                Card("imp.state.away", icon: "arrow.up.right.circle") {
+                Card("devices.elsewhere.title", icon: "arrow.up.right.circle") {
                     ForEach(elsewhere, id: \.id) { imp in held(imp, by: hub.holders[imp.id].map(hub.deviceName)) }
                 }
             }

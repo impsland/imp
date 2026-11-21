@@ -18,7 +18,7 @@ enum SettingsNodes {
         }
         return DeviceMap.build(thisMac: DeviceLink.deviceName, thisRoutes: thisRoutes, peers: peers,
                                server: HopServer(model.prefs.hop)?.address ?? "",
-                               imps: model.prefs.imps, mcpServers: model.prefs.mcpServers, visitors: model.link.visitorsStaged)
+                               imps: model.prefs.imps, mcpServers: model.prefs.mcpServers, visitors: model.link.visitorsStaged, known: model.link.knownDevices)
     }
 
     /// The nodes for the app as it is now.

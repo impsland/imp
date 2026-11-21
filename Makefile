@@ -36,7 +36,7 @@ IOS_DEVICE_OPTIONS := $(strip $(if $(DEVICE),--device "$(DEVICE)") $(if $(TEAM),
 	test snapshots test-live test-server \
 	ios ios-snapshots-build ios-device \
 	strings check-strings design-images tokens tokens-check \
-	rust docs clean
+	rust docs web clean
 
 ##@ Help
 
@@ -142,6 +142,9 @@ rust: ## Check the format, lint and test the Rust workspace
 	cargo test --workspace --locked
 	cargo clippy -p imp-engine -p imp-ffi --no-default-features --all-targets --locked -- -D warnings
 	cargo test -p imp-engine --no-default-features --locked
+
+web: ## Build the web page's link node into web/app/pkg (see web/README.md)
+	web/build.sh
 
 docs: ## Build the documentation site in docs/
 	cd docs && npm ci && npm run build

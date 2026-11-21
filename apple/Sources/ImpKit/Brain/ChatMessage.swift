@@ -67,6 +67,10 @@ public struct ChatMessage: Codable, Hashable, Sendable {
     public static func user(_ s: String, images: [EncodedImage]) -> Self {
         .init(role: "user", content: s, images: images.isEmpty ? nil : images.map(\.dataURL))
     }
+    /// A user turn with photos, sounds or videos attached: the core sends each by its type.
+    public static func user(_ s: String, media: [MediaFile]) -> Self {
+        .init(role: "user", content: s, images: media.isEmpty ? nil : media.map(\.dataURL))
+    }
     public static func assistant(_ s: String) -> Self { .init(role: "assistant", content: s) }
     public static func assistant(_ s: String?, toolCalls: [ToolCall]) -> Self {
         .init(role: "assistant", content: s, toolCalls: toolCalls)

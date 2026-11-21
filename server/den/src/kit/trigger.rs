@@ -4,18 +4,18 @@ use serde_json::Value;
 
 use super::Problems;
 
-const MAX_STEPS: usize = 5;
-const MAX_NAME: usize = 60;
+pub(super) const MAX_STEPS: usize = 5;
+pub(super) const MAX_NAME: usize = 60;
 
-const EVENTS: [&str; 28] = [
+pub(super) const EVENTS: [&str; 28] = [
     "keys", "click", "poke", "hold", "drag", "drop", "shake", "stroke", "tickle", "circle",
     "swish", "rush", "dangle", "near", "away", "start", "at", "every", "idle", "back", "wake",
     "app", "website", "battery", "charger", "busy", "hot", "network",
 ];
-const STATES: [&str; 10] = [
+pub(super) const STATES: [&str; 10] = [
     "battery", "charger", "app", "website", "busy", "hot", "network", "hours", "days", "asleep",
 ];
-const ACTS: [&str; 7] = ["ask", "say", "play", "sleep", "wake", "follow", "open"];
+pub(super) const ACTS: [&str; 7] = ["ask", "say", "play", "sleep", "wake", "follow", "open"];
 
 pub(super) fn check_trigger(trigger: &Value, at: &str, problems: &mut Problems) {
     let Some(trigger) = trigger.as_object() else {

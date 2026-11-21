@@ -113,6 +113,7 @@
   <data name="devices.copy_link.help" xml:space="preserve"><value>Para un dispositivo que no puede escanear: pega el enlace en Escanear código en el otro dispositivo. Mantenlo en privado. Permite que un dispositivo se vincule con este Mac durante un rato.</value><comment>Help of Copy Link in Link a device.</comment></data>
   <data name="devices.edge.label" xml:space="preserve"><value>{from} con {to}. {route}. {state}</value><comment>Screen reader label of a line between two devices.</comment></data>
   <data name="devices.edge.travelling" xml:space="preserve"><value>De viaje</value><comment>Title of the chips of the Imps going across a line.</comment></data>
+  <data name="devices.elsewhere.title" xml:space="preserve"><value>En otro lugar</value><comment>Title of the card that lists this iPhone's Imps held by devices it is not linked with.</comment></data>
   <data name="devices.empty" xml:space="preserve"><value>Aún no hay dispositivos.</value><comment>Empty state of the list of linked devices.</comment></data>
   <data name="devices.forget.named" xml:space="preserve"><value>Olvidar {name}…</value><comment>Button that forgets one linked device, with its name.</comment></data>
   <data name="devices.forget.one" xml:space="preserve"><value>Olvidar este dispositivo…</value><comment>Button: forget the selected device.</comment></data>
@@ -131,6 +132,7 @@
   <data name="devices.inspector.holds" xml:space="preserve"><value>Imps de este Mac que tiene</value><comment>Inspector card: this Mac's Imps a device holds.</comment></data>
   <data name="devices.inspector.reach" xml:space="preserve"><value>Cómo se llega</value><comment>Inspector card: how a device is reached.</comment></data>
   <data name="devices.inspector.through_hop" xml:space="preserve"><value>Alcanzados por él</value><comment>Inspector card of the Hop: devices reached through it.</comment></data>
+  <data name="devices.link_directly.help" xml:space="preserve"><value>Enlaza este dispositivo directamente, para que no dependa del otro.</value><comment>Tooltip of the button on a device known only through another: it opens the Link sheet.</comment></data>
   <data name="devices.list.info" xml:space="preserve"><value>Dispositivos vinculados con este. Mío permite que un dispositivo actúe por ti.</value><comment>Help on the Devices card.</comment></data>
   <data name="devices.map.summary" xml:space="preserve"><value>Mapa de tus dispositivos: {devices} vinculados, {ours} Imps de este Mac, {visitors} Imps de otros dispositivos.</value><comment>Screen reader summary of the Devices map.</comment></data>
   <data name="devices.node.label" xml:space="preserve"><value>{name}, {state}. Imps: {imps}</value><comment>Screen reader label of a device on the map: its state and the Imps in it.</comment></data>
@@ -159,6 +161,11 @@
   <data name="devices.state.connected" xml:space="preserve"><value>Conectado</value><comment>State word of a device on the Devices map.</comment></data>
   <data name="devices.state.connecting" xml:space="preserve"><value>Conectando</value><comment>State word of a device on the Devices map.</comment></data>
   <data name="devices.state.offline" xml:space="preserve"><value>Ausente</value><comment>State word of a linked device that cannot be reached now.</comment></data>
+  <data name="devices.status.here" xml:space="preserve"><value>Aquí</value><comment>Status pill of this Mac, and of an Imp that is on it.</comment></data>
+  <data name="devices.status.nearby" xml:space="preserve"><value>Cerca</value><comment>Status pill of a device or line reached over the local network.</comment></data>
+  <data name="devices.status.through" xml:space="preserve"><value>Por %1$@</value><comment>Status pill of a device known only through another linked device. %1$@ is that device.</comment></data>
+  <data name="devices.status.via_server" xml:space="preserve"><value>Por servidor</value><comment>Status pill of a device or line reached through the Hop.</comment></data>
+  <data name="devices.status.visiting" xml:space="preserve"><value>De visita</value><comment>Status pill of another device's Imp that is visiting this Mac.</comment></data>
   <data name="devices.talk.label" xml:space="preserve"><value>{imp} puede escribir a {contact}</value><comment>Screen reader label of the line from an Imp to another device's Imp it can message.</comment></data>
   <data name="devices.tether.label" xml:space="preserve"><value>{imp} está en {node} y piensa en {home}</value><comment>Screen reader label of the line from an Imp to the device it thinks on.</comment></data>
   <data name="devices.this.info" xml:space="preserve"><value>Vincula otro dispositivo aquí. El punto indica si The Hop permite que se encuentren desde cualquier lugar.</value><comment>Help on the This Mac card: the dot is The Hop.</comment></data>

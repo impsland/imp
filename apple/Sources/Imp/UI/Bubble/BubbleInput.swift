@@ -14,16 +14,28 @@ struct TypingField: View {
     var chat = false
     @State private var text = ""
     @State private var pasteMonitor: Any?
+    @State private var recorder = SoundRecorder()
+    @State private var recording = false
+    @State private var dropping = false
     @FocusState private var focused: Bool
 
     var body: some View {
-        let empty = text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && bubble.attachment == nil
+        let empty = text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && bubble.attachments.isEmpty
         VStack(alignment: .leading, spacing: Spacing.snug) {
-            if let picture = bubble.attachment, let image = NSImage(data: picture.data) {
-                AttachmentChip(image: image) { model.removeAttachment() }
-                    .padding(.leading, Spacing.snug).padding(.top, Spacing.hairline)
+            if !bubble.attachments.isEmpty {
+                HStack(spacing: Spacing.snug) {
+                    ForEach(bubble.attachments) { file in
+                        MediaChip(file: file) { model.removeAttachment(file.id) }
+                    }
+                }
+                .padding(.leading, Spacing.snug).padding(.top, Spacing.snug)
+            }
+            if let note = bubble.attachmentNote {
+                Text(note).font(Typeface.small).foregroundStyle(Tone.muted).padding(.leading, Spacing.snug)
             }
             field(empty: empty || busy)
+                .opacity(recording ? 0 : 1)
+                .overlay { if recording { RecordingRow(recorder: recorder, done: finishRecording, cancel: cancelRecording) } }
         }
         .padding(chat ? Spacing.snug : 0)
         .background {
@@ -32,8 +44,20 @@ struct TypingField: View {
                 shape.fill(Tone.well).focusRing(shape, shown: focused)
             }
         }
+        .overlay { if dropping && !measuring { dropHint } }
+        .onDrop(of: [.fileURL], isTargeted: $dropping) { providers in drop(providers) }
+        .onChange(of: recorder.timedOut) { _, out in if out { finishRecording() } }
         .onAppear { if !measuring { installPasteMonitor() } }
-        .onDisappear { removePasteMonitor() }
+        .onDisappear {
+            removePasteMonitor()
+            if recording { recorder.cancel() }
+        }
+    }
+
+    private var dropHint: some View {
+        RoundedRectangle(cornerRadius: Radius.medium, style: .continuous)
+            .strokeBorder(tint, style: StrokeStyle(lineWidth: 2, dash: [5, 4]))
+            .allowsHitTesting(false)
     }
 
     private func field(empty: Bool) -> some View {
@@ -59,6 +83,7 @@ struct TypingField: View {
                 .onChange(of: text) { _, now in if !chat && !measuring { model.typingChanged(now) } }
                 .onExitCommand { model.dismissBubble() }
                 .disabled(asleep)
+            if !measuring { addMenu }
             if !chat && model.visit == nil { IconButton(icon: "mic", help: "Talk instead") { model.talk() } }
             Button(action: send) {
                 Image(systemName: "arrow.up")
@@ -79,6 +104,85 @@ struct TypingField: View {
             try? await Task.sleep(for: .milliseconds(80))
             focused = true
         }
+    }
+
+    /// The + beside the mic: a file from disk, a sound recorded here, or a photo from the Mac's camera.
+    private var addMenu: some View {
+        Menu {
+            Button("Choose a file…", systemImage: "doc.badge.plus") { chooseFiles() }
+            Button("Record a sound", systemImage: "waveform") { startRecording() }
+            Button("Take a photo", systemImage: "camera") { MacCamera.present { model.attach($0) } }
+        } label: {
+            Image(systemName: "plus")
+                .font(.icon(.medium))
+                .foregroundStyle(Tone.muted)
+                .frame(width: BubbleMetrics.send, height: BubbleMetrics.send)
+                .contentShape(Circle())
+        }
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        // A borderless menu sizes itself to its glyph and drops the label's frame: the box goes on the menu, so the +
+        // sits centred on the same line as the mic and the send button.
+        .frame(width: BubbleMetrics.send, height: BubbleMetrics.send)
+        .contentShape(Rectangle())
+        .disabled(asleep || !MediaFile.canAdd(to: bubble.attachments.count))
+        .help(MediaFile.canAdd(to: bubble.attachments.count) ? "Add a photo, sound or video" : "Up to \(MediaFile.maxCount) files go with one message.")
+        .accessibilityLabel("Add a photo, sound or video")
+    }
+
+    private func chooseFiles() {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = true
+        panel.canChooseDirectories = false
+        panel.allowedContentTypes = [.image, .audio, .movie, .video]
+        panel.message = String(localized: "Choose photos, sounds or videos to send")
+        NSApp.activate()
+        panel.begin { response in
+            guard response == .OK else { return }
+            let media = Pasteboard.media(from: panel.urls)
+            model.receive(media.files, problem: media.problem)
+        }
+    }
+
+    private func startRecording() {
+        Task {
+            do {
+                try await recorder.start()
+                recording = true
+            } catch SoundRecorder.Problem.denied {
+                model.noteAttachment(String(localized: "Imp can't hear you. Allow the microphone in System Settings."))
+            } catch {
+                model.noteAttachment(String(localized: "The recording didn't start."))
+            }
+        }
+    }
+
+    private func finishRecording() {
+        guard recording else { return }
+        recording = false
+        if let sound = recorder.finish(name: "sound") { model.attach(sound) }
+    }
+
+    private func cancelRecording() {
+        recording = false
+        recorder.cancel()
+    }
+
+    /// Files dropped on the text box.
+    private func drop(_ providers: [NSItemProvider]) -> Bool {
+        let loads = providers.filter { $0.hasItemConformingToTypeIdentifier("public.file-url") }
+        guard !loads.isEmpty else { return false }
+        for provider in loads {
+            provider.loadObject(ofClass: URL.self) { url, _ in
+                guard let url else { return }
+                Task { @MainActor in
+                    let media = Pasteboard.media(from: [url])
+                    model.receive(media.files, problem: media.problem)
+                }
+            }
+        }
+        return true
     }
 
     /// In the chat, a new message waits until the answer to the last one is in (sending would
@@ -103,8 +207,10 @@ struct TypingField: View {
         pasteMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let mods = event.modifierFlags.intersection([.command, .control, .option])
             guard focused, model.visit == nil, event.keyCode == 9 /* V */, mods == .command || mods == .control else { return event }
-            if let picture = Pasteboard.picture() {
-                model.attach(picture)
+            let media = Pasteboard.pastedMedia()
+            if !media.isEmpty {
+                media.files.forEach { model.attach($0) }
+                if let problem = media.problem { model.attachFailed(problem) }
             } else {
                 NSApp.sendAction(#selector(NSText.paste(_:)), to: nil, from: nil)
             }
@@ -118,17 +224,15 @@ struct TypingField: View {
     }
 }
 
-/// A picture waiting to be sent with the message, with a way to take it back.
-struct AttachmentChip: View {
-    let image: NSImage
+/// A photo, sound or video waiting to be sent with the message, with a way to take it back.
+struct MediaChip: View {
+    let file: MediaFile
     let remove: () -> Void
     @State private var hover = false
+    @State private var thumbnail: NSImage?
 
     var body: some View {
-        Image(nsImage: image)
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: BubbleMetrics.thumb, height: BubbleMetrics.thumb)
+        content
             .clipShape(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous))
             .overlay(alignment: .topTrailing) {
                 Button(action: remove) {
@@ -138,14 +242,92 @@ struct AttachmentChip: View {
                         .foregroundStyle(Tone.paper, Tone.scrim)
                 }
                 .buttonStyle(.plain)
-                .help("Remove the picture")
+                .help("Remove the file")
                 .offset(x: Spacing.snug, y: -Spacing.snug)
                 .opacity(hover ? 1 : Opacity.hoverFill)
             }
             .onHover { hover = $0 }
             .help("Sent with your message")
-            .accessibilityLabel("Attached picture")
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(label)
             .accessibilityAction(named: Text("common.remove"), remove)
+            .task(id: file.id) { thumbnail = await Self.thumbnail(of: file) }
+    }
+
+    @ViewBuilder private var content: some View {
+        switch file.kind {
+        case .image, .video:
+            Group {
+                if let thumbnail {
+                    Image(nsImage: thumbnail).resizable().aspectRatio(contentMode: .fill)
+                } else {
+                    Rectangle().fill(Tone.card).overlay { Image(systemName: icon).foregroundStyle(Tone.muted) }
+                }
+            }
+            .frame(width: BubbleMetrics.thumb, height: BubbleMetrics.thumb)
+            .overlay {
+                if file.kind == .video {
+                    Image(systemName: "play.circle.fill").font(.title2).foregroundStyle(Tone.paper).shadow(radius: 2)
+                }
+            }
+        case .audio, .file:
+            HStack(spacing: Spacing.snug) {
+                Image(systemName: icon).font(.icon(.medium)).foregroundStyle(Tone.muted)
+                Text(file.name).font(Typeface.small).foregroundStyle(Tone.text).lineLimit(1).truncationMode(.middle)
+            }
+            .padding(.horizontal, Spacing.cozy)
+            .frame(width: BubbleMetrics.thumb * 2, height: BubbleMetrics.thumb, alignment: .leading)
+            .background(Tone.card)
+        }
+    }
+
+    private var icon: String {
+        switch file.kind {
+        case .image: "photo"
+        case .audio: "waveform"
+        case .video: "film"
+        case .file: "doc"
+        }
+    }
+
+    private var label: String {
+        switch file.kind {
+        case .image: String(localized: "Attached picture")
+        case .audio: String(localized: "Attached sound")
+        case .video: String(localized: "Attached video")
+        case .file: String(localized: "Attached file")
+        }
+    }
+
+    private static func thumbnail(of file: MediaFile) async -> NSImage? {
+        switch file.kind {
+        case .image: return NSImage(data: file.data)
+        case .video:
+            guard let url = file.source, let frame = await VideoStill.frame(of: url) else { return nil }
+            return NSImage(cgImage: frame, size: .zero)
+        case .audio, .file: return nil
+        }
+    }
+}
+
+/// Recording a sound for the message: the time, a meter that follows the voice, and cancel or done.
+struct RecordingRow: View {
+    let recorder: SoundRecorder
+    let done: () -> Void
+    let cancel: () -> Void
+
+    var body: some View {
+        HStack(alignment: .center, spacing: Spacing.cozy) {
+            LevelMeter(level: recorder.level, active: true)
+            Text(SoundRecorder.clock(recorder.elapsed))
+                .font(Typeface.body.monospacedDigit())
+                .foregroundStyle(Tone.text)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            IconButton(icon: "xmark", help: "Cancel the recording", action: cancel)
+            IconButton(icon: "checkmark", help: "Attach the recording", active: true, action: done)
+        }
+        .padding(.leading, Spacing.snug)
+        .frame(minHeight: BubbleMetrics.send)
     }
 }
 

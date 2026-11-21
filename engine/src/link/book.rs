@@ -6,7 +6,7 @@
 use crate::link::card::{LinkCard, LinkDevice, LinkRoutes};
 use crate::link::crypto::KEY_BYTES;
 use crate::link::ledger::AwayLedger;
-use crate::link::messages::Bytes;
+use crate::link::messages::{Bytes, LinkWho};
 use crate::link::visits::Visits;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -50,6 +50,17 @@ pub struct Passing {
     pub to: Uuid,
 }
 
+/// A visiting Imp this device passed on, whose home has not heard yet (`moved`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Handed {
+    pub imp: Uuid,
+    pub home: Uuid,
+    pub to: LinkWho,
+}
+
+/// The most hand-overs kept waiting for their homes.
+pub const MAX_HANDED: usize = 64;
+
 #[derive(Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LinkBook {
@@ -70,6 +81,8 @@ pub struct LinkBook {
     /// home, so a receiver that did take one hears `gone` when it claims.
     #[serde(default)]
     pub passing: Vec<Passing>,
+    /// Visiting Imps passed on that their homes have not been told about yet.
+    pub handed: Vec<Handed>,
 }
 
 /// The book cannot be read.
@@ -89,6 +102,7 @@ impl LinkBook {
             visits: Visits::default(),
             away: AwayLedger::default(),
             passing: Vec::new(),
+            handed: Vec::new(),
         }
     }
 

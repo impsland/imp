@@ -111,6 +111,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `devices.copy_link.help` | For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while. | Para un dispositivo que no puede escanear: pega el enlace en Escanear código en el otro dispositivo. Mantenlo en privado. Permite que un dispositivo se vincule con este Mac durante un rato. | 适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。 |
 | `devices.edge.label` | {from} to {to}. {route}. {state} | {from} con {to}. {route}. {state} | {from} 到 {to}。{route}。{state} |
 | `devices.edge.travelling` | Travelling | De viaje | 往来中 |
+| `devices.elsewhere.title` | Elsewhere | En otro lugar | 其他地方 |
 | `devices.empty` | No devices yet. | Aún no hay dispositivos. | 还没有设备。 |
 | `devices.forget.named` | Forget {name}… | Olvidar {name}… | 忘记 {name}… |
 | `devices.forget.one` | Forget this device… | Olvidar este dispositivo… | 忘记此设备… |
@@ -129,6 +130,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `devices.inspector.holds` | Imps of this Mac it holds | Imps de este Mac que tiene | 它持有的这台 Mac 的 Imp |
 | `devices.inspector.reach` | How it is reached | Cómo se llega | 连接方式 |
 | `devices.inspector.through_hop` | Reached through it | Alcanzados por él | 通过它连接的设备 |
+| `devices.link_directly.help` | Link this device directly, so it no longer depends on the other one. | Enlaza este dispositivo directamente, para que no dependa del otro. | 直接关联这台设备，不再经由另一台设备。 |
 | `devices.list.info` | Devices linked with this one. Mine lets a device act for you. | Dispositivos vinculados con este. Mío permite que un dispositivo actúe por ti. | 与这台设备连接的设备。“我的”让设备可以代表你行事。 |
 | `devices.map.summary` | Map of your devices: {devices} linked, {ours} Imps of this Mac, {visitors} Imps of other devices. | Mapa de tus dispositivos: {devices} vinculados, {ours} Imps de este Mac, {visitors} Imps de otros dispositivos. | 设备地图：已链接 {devices} 台设备，这台 Mac 的 Imp {ours} 个，其他设备的 Imp {visitors} 个。 |
 | `devices.node.label` | {name}, {state}. Imps: {imps} | {name}, {state}. Imps: {imps} | {name}，{state}。Imp：{imps} |
@@ -157,6 +159,11 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `devices.state.connected` | Connected | Conectado | 已连接 |
 | `devices.state.connecting` | Connecting | Conectando | 正在连接 |
 | `devices.state.offline` | Away | Ausente | 不在线 |
+| `devices.status.here` | Here | Aquí | 这里 |
+| `devices.status.nearby` | Nearby | Cerca | 附近 |
+| `devices.status.through` | Through %1$@ | Por %1$@ | 经由 %1$@ |
+| `devices.status.via_server` | Via server | Por servidor | 经服务器 |
+| `devices.status.visiting` | Visiting | De visita | 来访 |
 | `devices.talk.label` | {imp} can message {contact} | {imp} puede escribir a {contact} | {imp} 可以给 {contact} 发消息 |
 | `devices.tether.label` | {imp} is on {node} and thinks on {home} | {imp} está en {node} y piensa en {home} | {imp} 在 {node} 上，在 {home} 上思考 |
 | `devices.this.info` | Link another device here. The dot shows whether The Hop lets devices find each other from anywhere. | Vincula otro dispositivo aquí. El punto indica si The Hop permite que se encuentren desde cualquier lugar. | 在这里连接另一台设备。圆点表示 The Hop 是否让设备能从任何地方互相找到。 |

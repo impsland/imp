@@ -269,11 +269,17 @@ async fn a_visitor_claims_a_ticket_through_the_hop() {
         .await
         .unwrap()
         .unwrap();
-    let ticket = c
-        .until(move |n| n.visits().visit(id).map(|v| v.ticket.0.clone()))
+    // C already holds the ticket B passed on, so wait for the one A's rotation sends back: over a real
+    // network it comes a round trip later.
+    assert!(
+        c.until(move |n| {
+            let ticket = n.visits().visit(id)?.ticket.0.clone();
+            imp_engine::link::crypto::ticket_matches(&ticket, &hash).then_some(())
+        })
         .await
-        .unwrap();
-    assert!(imp_engine::link::crypto::ticket_matches(&ticket, &hash));
+        .is_some(),
+        "the home's rotated ticket never reached the holder"
+    );
     a.stop().await;
     b.stop().await;
     c.stop().await;

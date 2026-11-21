@@ -61,7 +61,7 @@ final class OwnToolHost {
     private var talkNames: TalkNames<ImpModel, LinkStaged> {
         let remote = app?.link.targets(of: id) ?? []
         return TalkNames(sender: profile?.name ?? "", here: others, name: { $0.profile.name },
-                         away: remote, awayName: { $0.imp.name }, place: { app?.link.name(of: $0.home) ?? "" })
+                         away: remote, awayName: { $0.imp.name }, place: { app?.link.name(of: $0.home.id) ?? "" })
     }
 
     private static let place = "the home window on the Mac"

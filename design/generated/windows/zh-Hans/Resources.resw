@@ -111,6 +111,7 @@
   <data name="devices.copy_link.help" xml:space="preserve"><value>适用于无法扫描的设备：在另一台设备的“扫描代码”中粘贴链接。请保密。它会在一段时间内允许设备与这台 Mac 关联。</value><comment>Help of Copy Link in Link a device.</comment></data>
   <data name="devices.edge.label" xml:space="preserve"><value>{from} 到 {to}。{route}。{state}</value><comment>Screen reader label of a line between two devices.</comment></data>
   <data name="devices.edge.travelling" xml:space="preserve"><value>往来中</value><comment>Title of the chips of the Imps going across a line.</comment></data>
+  <data name="devices.elsewhere.title" xml:space="preserve"><value>其他地方</value><comment>Title of the card that lists this iPhone's Imps held by devices it is not linked with.</comment></data>
   <data name="devices.empty" xml:space="preserve"><value>还没有设备。</value><comment>Empty state of the list of linked devices.</comment></data>
   <data name="devices.forget.named" xml:space="preserve"><value>忘记 {name}…</value><comment>Button that forgets one linked device, with its name.</comment></data>
   <data name="devices.forget.one" xml:space="preserve"><value>忘记此设备…</value><comment>Button: forget the selected device.</comment></data>
@@ -129,6 +130,7 @@
   <data name="devices.inspector.holds" xml:space="preserve"><value>它持有的这台 Mac 的 Imp</value><comment>Inspector card: this Mac's Imps a device holds.</comment></data>
   <data name="devices.inspector.reach" xml:space="preserve"><value>连接方式</value><comment>Inspector card: how a device is reached.</comment></data>
   <data name="devices.inspector.through_hop" xml:space="preserve"><value>通过它连接的设备</value><comment>Inspector card of the Hop: devices reached through it.</comment></data>
+  <data name="devices.link_directly.help" xml:space="preserve"><value>直接关联这台设备，不再经由另一台设备。</value><comment>Tooltip of the button on a device known only through another: it opens the Link sheet.</comment></data>
   <data name="devices.list.info" xml:space="preserve"><value>与这台设备连接的设备。“我的”让设备可以代表你行事。</value><comment>Help on the Devices card.</comment></data>
   <data name="devices.map.summary" xml:space="preserve"><value>设备地图：已链接 {devices} 台设备，这台 Mac 的 Imp {ours} 个，其他设备的 Imp {visitors} 个。</value><comment>Screen reader summary of the Devices map.</comment></data>
   <data name="devices.node.label" xml:space="preserve"><value>{name}，{state}。Imp：{imps}</value><comment>Screen reader label of a device on the map: its state and the Imps in it.</comment></data>
@@ -157,6 +159,11 @@
   <data name="devices.state.connected" xml:space="preserve"><value>已连接</value><comment>State word of a device on the Devices map.</comment></data>
   <data name="devices.state.connecting" xml:space="preserve"><value>正在连接</value><comment>State word of a device on the Devices map.</comment></data>
   <data name="devices.state.offline" xml:space="preserve"><value>不在线</value><comment>State word of a linked device that cannot be reached now.</comment></data>
+  <data name="devices.status.here" xml:space="preserve"><value>这里</value><comment>Status pill of this Mac, and of an Imp that is on it.</comment></data>
+  <data name="devices.status.nearby" xml:space="preserve"><value>附近</value><comment>Status pill of a device or line reached over the local network.</comment></data>
+  <data name="devices.status.through" xml:space="preserve"><value>经由 %1$@</value><comment>Status pill of a device known only through another linked device. %1$@ is that device.</comment></data>
+  <data name="devices.status.via_server" xml:space="preserve"><value>经服务器</value><comment>Status pill of a device or line reached through the Hop.</comment></data>
+  <data name="devices.status.visiting" xml:space="preserve"><value>来访</value><comment>Status pill of another device's Imp that is visiting this Mac.</comment></data>
   <data name="devices.talk.label" xml:space="preserve"><value>{imp} 可以给 {contact} 发消息</value><comment>Screen reader label of the line from an Imp to another device's Imp it can message.</comment></data>
   <data name="devices.tether.label" xml:space="preserve"><value>{imp} 在 {node} 上，在 {home} 上思考</value><comment>Screen reader label of the line from an Imp to the device it thinks on.</comment></data>
   <data name="devices.this.info" xml:space="preserve"><value>在这里连接另一台设备。圆点表示 The Hop 是否让设备能从任何地方互相找到。</value><comment>Help on the This Mac card: the dot is The Hop.</comment></data>

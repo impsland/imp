@@ -102,7 +102,7 @@ A kit can carry custom animations, at the top level (shared by the whole kit) an
   - `mood`: one of `idle`, `listening`, `thinking`, `happy`, `love`, `sad`, `error`, `sleepy`, `annoyed`,
     `surprised`, `dizzy`, `mean`, `working`, `content`, `giggly`, `scared`, `curious`, `shy`, `excited`, `bored`.
   - `glyph`: one of `notes`, `question`, `exclaim`, `idea`, `sweat`, `heart`, `sparkles`.
-  - `tilt`: -30 to 30 degrees. `hop` and `stretch` (-0.3 to 0.3).
+  - `tilt`: -30 to 30 degrees. `hop`: `true` for a little hop. `stretch`: -0.3 to 0.3.
   - `move`: one of `spin`, `flip`, `roll`, `bounce`, `shake`, `sway`, `wobble`, `float`, `nod`, `headshake`,
     played across the beat, with `times` (1 to 8) and `reverse` (true or false).
 
@@ -119,6 +119,8 @@ An Imp may also have `traits`:
 | `tilt` | -12 to 12 | Tilt |
 | `tempo` | 0.6 to 1.6 | Animation speed |
 
-The limits are: 1 to 24 beats per animation, at most 20 s in total, known moods and
-glyphs, and at most 50 animations per kit. An example with animations is
+The limits are: 1 to 24 beats per animation, at most 20 s in total, known moods, glyphs and moves, and at most
+50 animations per kit. Other beat fields are ignored, so a beat with none of the fields above only waits. Whole
+numbers such as `times` and `format` may be written `2` or `2.0`. The Den's `document_format` tool returns these
+rules with an example for each item type. An example with animations is
 `spec/fixtures/kits/moody-moves.json`.

@@ -3,10 +3,11 @@ import ImpKit
 import SwiftUI
 
 /// An Imp's right-click menu, the same on the desktop, in the app's window and for a visitor: the Imp in its circle
-/// with its name and status, six big buttons in a 2 × 3 grid (Talk, Message, Chat, then Hide, where it is, and
-/// Settings), its size and its colour, then `extra`: the rows that only sometimes apply (Stop, triggers, devices,
-/// sharing, Goodbye, see `ImpMenuEnd`), as buttons too (see `MenuCard`). A visitor's settings and looks belong to
-/// its home, so it has New chat where the others have Settings, and no size or colour.
+/// with its name and status and, in the top right corner, Settings (a visitor's New chat), then three big buttons
+/// (Talk, Message, Chat), its size and its colour, then `extra`: the rows that only sometimes apply (Stop, triggers,
+/// devices), then Hide and where it is as pills, and last `end` (sharing and Goodbye, see `ImpMenuEnd`). No row has
+/// a heading: icons say what they are (see `MenuCard`). A visitor's settings and looks belong to its home, so it has
+/// New chat where the others have Settings, and no size or colour.
 struct ImpMenuCard<Extra: View>: View {
     typealias Place = ImpMenuPlace
     typealias Action = ImpMenuAction
@@ -17,67 +18,85 @@ struct ImpMenuCard<Extra: View>: View {
     let place: Place
     /// False for a visitor whose home is away: it can't be asked anything now.
     let awake: Bool
-    /// Runs an action. The six buttons close the menu first. Size and colour change at once and leave it open.
+    /// Runs an action. Every button closes the menu first. Size and colour change at once and leave it open.
     let run: (Action) -> Void
     let extra: Extra
+    /// Sharing and Goodbye, under everything else. Nil for a visitor.
+    let end: ImpMenuEnd?
     @State private var hue: Double
     @State private var scale: Double
 
     init(ready: Bool, name: String, status: String, hue: Double, scale: Double, place: Place, awake: Bool = true,
-         run: @escaping (Action) -> Void, @ViewBuilder extra: () -> Extra) {
+         end: ImpMenuEnd? = nil, run: @escaping (Action) -> Void, @ViewBuilder extra: () -> Extra) {
         self.ready = ready
         self.awake = awake
         self.name = name
         self.status = status
         self.place = place
+        self.end = end
         self.run = run
         self.extra = extra()
         _hue = State(initialValue: hue)
         _scale = State(initialValue: scale)
     }
 
-    /// Talk, Message, Chat, then Hide, the place button, and Settings (a visitor's New chat). A visitor that is asleep
-    /// can't be asked or started a chat with, and says why.
+    private var asleep: Bool { place.isVisitor && !awake }
+
+    /// A visitor that is asleep can't be asked or started a chat with, and says why.
+    private func ask(_ item: MenuItem) -> MenuItem {
+        guard asleep else { return item }
+        var item = item
+        item.enabled = false
+        if case .visitor(let home) = place { item.help = String(localized: "\(name) is asleep: \(home) is away") }
+        return item
+    }
+
+    /// The three big buttons: Talk, Message and Chat.
     var buttons: [MenuItem] {
-        let asleep = place.isVisitor && !awake
-        let why: String
-        if case .visitor(let home) = place { why = String(localized: "\(name) is asleep: \(home) is away") } else { why = "" }
-        func ask(_ item: MenuItem) -> MenuItem {
-            var item = item
-            if asleep { item.enabled = false; item.help = why }
-            return item
-        }
-        let fifth: MenuItem
-        switch place {
-        case .desktop:
-            fifth = MenuItem(id: "move", icon: "house.fill", title: String(localized: "menu.imp.send_home"),
-                             help: words("menu.imp.send_home_help", name)) { run(.move) }
-        case .home:
-            fifth = MenuItem(id: "move", icon: "arrow.up.forward.square.fill", title: String(localized: "menu.imp.let_out"),
-                             help: words("menu.imp.let_out_help", name)) { run(.move) }
-        case .visitor(let home):
-            fifth = MenuItem(id: "move", icon: "house.fill", title: String(localized: "menu.imp.send_home"),
-                             help: String(localized: "\(name) flies back to \(home). If it is away, \(name) goes now and \(home) hears when it is back.")) { run(.move) }
-        }
-        let sixth = place.isVisitor
-            ? ask(MenuItem(id: "new", icon: "plus.bubble.fill", title: String(localized: "New Chat")) { run(.newChat) })
-            : MenuItem(id: "settings", icon: "slider.horizontal.3", title: String(localized: "menu.imp.settings"),
-                       help: words("menu.imp.settings_help", name)) { run(.settings) }
-        return [
+        [
             ask(MenuItem(id: "talk", icon: "bubble.left.fill", title: String(localized: "menu.imp.talk"), help: words("menu.imp.talk_help", name)) { run(.talk) }),
             ask(MenuItem(id: "message", icon: "message.fill", title: String(localized: "menu.imp.message"),
                          help: words("menu.imp.message_help", name)) { run(.message) }),
             MenuItem(id: "chat", icon: "bubble.left.and.bubble.right.fill", title: String(localized: "menu.imp.chat"),
                      help: words("menu.imp.chat_help", name)) { run(.chat) },
-            MenuItem(id: "hide", icon: "eye.slash.fill", title: String(localized: "menu.imp.hide"), help: words("menu.imp.hide_help", name)) { run(.hide) },
-            fifth,
-            sixth,
         ]
+    }
+
+    /// Hide, then the place button: Send home from the desktop, Let out of the window, or (for a visitor) back to the
+    /// device it came from.
+    var placing: [MenuItem] {
+        let move: MenuItem
+        switch place {
+        case .desktop:
+            move = MenuItem(id: "move", icon: "house.fill", title: String(localized: "menu.imp.send_home"),
+                            help: words("menu.imp.send_home_help", name)) { run(.move) }
+        case .home:
+            move = MenuItem(id: "move", icon: "arrow.up.forward.square.fill", title: String(localized: "menu.imp.let_out"),
+                            help: words("menu.imp.let_out_help", name)) { run(.move) }
+        case .visitor(let home):
+            move = MenuItem(id: "move", icon: "house.fill", title: String(localized: "menu.imp.send_home"),
+                            help: String(localized: "\(name) flies back to \(home). If it is away, \(name) goes now and \(home) hears when it is back.")) { run(.move) }
+        }
+        return [
+            MenuItem(id: "hide", icon: "eye.slash.fill", title: String(localized: "menu.imp.hide"), help: words("menu.imp.hide_help", name)) { run(.hide) },
+            move,
+        ]
+    }
+
+    /// The icon button in the header's top right corner: Settings, or New chat for a visitor.
+    var corner: MenuItem {
+        place.isVisitor
+            ? ask(MenuItem(id: "new", icon: "plus.bubble.fill", title: String(localized: "New Chat")) { run(.newChat) })
+            : MenuItem(id: "settings", icon: "slider.horizontal.3", title: String(localized: "menu.imp.settings"),
+                       help: words("menu.imp.settings_help", name)) { run(.settings) }
     }
 
     var body: some View {
         MenuCard {
-            ImpMenuHeader(ready: ready, name: name, status: status, hue: hue)
+            HStack(alignment: .top, spacing: MenuMetrics.inset) {
+                ImpMenuHeader(ready: ready, name: name, status: status, hue: hue)
+                MenuCornerButton(item: corner)
+            }
             MenuGrid(items: buttons)
             if !place.isVisitor {
                 VStack(spacing: MenuMetrics.inset) {
@@ -86,12 +105,14 @@ struct ImpMenuCard<Extra: View>: View {
                 }
             }
             extra
+            MenuPills(items: placing)
+            if let end { end }
         }
         .environment(\.impTint, Color.imp(hue))
     }
 }
 
-/// Where the Imp is: the fifth button of its menu sends it home from the desktop, lets it out of the window, or
+/// Where the Imp is: the place pill of its menu sends it home from the desktop, lets it out of the window, or
 /// (for a visitor, from the device it came from) flies it back there.
 enum ImpMenuPlace: Equatable {
     case desktop, home
@@ -109,13 +130,14 @@ enum ImpMenuAction {
 
 extension ImpMenuCard where Extra == EmptyView {
     init(ready: Bool, name: String, status: String, hue: Double, scale: Double, place: Place, awake: Bool = true,
-         run: @escaping (Action) -> Void) {
-        self.init(ready: ready, name: name, status: status, hue: hue, scale: scale, place: place, awake: awake, run: run, extra: { EmptyView() })
+         end: ImpMenuEnd? = nil, run: @escaping (Action) -> Void) {
+        self.init(ready: ready, name: name, status: status, hue: hue, scale: scale, place: place, awake: awake, end: end,
+                  run: run, extra: { EmptyView() })
     }
 }
 
-/// The end of an own Imp's menu, the same on the desktop and in the window: sharing it (Copy kit, Copy link),
-/// then Goodbye, last and apart.
+/// The end of an own Imp's menu, the same on the desktop and in the window: sharing it (Copy kit, Copy link) as pills
+/// like Hide and the place button above them, then Goodbye, last and apart.
 struct ImpMenuEnd: View {
     let canLink: Bool
     let canGoodbye: Bool

@@ -436,3 +436,65 @@ async fn the_client_reads_an_early_busy_from_the_close() {
         Some(imp_engine::link::hop::HopStatus::Busy)
     );
 }
+
+/// Rooms rule 7: a guest that queued before the room filled up gets the waiting host as soon as a
+/// session ends, not when its wait runs out.
+#[tokio::test]
+async fn a_queued_guest_gets_the_place_a_session_frees() {
+    let hop = start(|c| c.room_sessions = 1).await;
+    let (room, gate) = (key(40), key(140));
+    let mut first = guest(hop.addr, &room, &gate).await;
+    let mut queued = guest(hop.addr, &room, &gate).await;
+    pause().await;
+    let mut h = host(hop.addr, &room, &gate).await;
+    assert_eq!(status(&mut h).await, 0);
+    assert_eq!(status(&mut first).await, 0);
+    // The host dials again for the next guest, but the room is full, so both wait.
+    let mut next_host = host(hop.addr, &room, &gate).await;
+    pause().await;
+    drop((h, first));
+    assert_eq!(status(&mut next_host).await, 0);
+    assert_eq!(status(&mut queued).await, 0);
+    next_host.write_all(b"hi").await.expect("write");
+    let mut got = [0u8; 2];
+    queued.read_exact(&mut got).await.expect("read");
+    assert_eq!(&got, b"hi");
+}
+
+/// A host that leaves just as a guest arrives must not take the room's place with it. With one
+/// place per room, a single lost place would turn every later guest away as busy.
+#[tokio::test]
+async fn a_host_leaving_as_a_guest_arrives_keeps_the_room_usable() {
+    let hop = start(|c| {
+        c.room_sessions = 1;
+        c.guest_wait = Duration::from_secs(1);
+    })
+    .await;
+    let (room, gate) = (key(41), key(141));
+    let (r, g) = (public(&room), public(&gate));
+    for round in 0..16 {
+        let mut waiting = host(hop.addr, &room, &gate).await;
+        // The guest's proof and the host's byte reach the Hop together, in either order.
+        let (mut arriving, nonce) = hello(hop.addr, GUEST, &r, &g).await;
+        let mut msg = Vec::from(*b"imp-hop proof");
+        msg.push(GUEST);
+        msg.extend_from_slice(&nonce);
+        msg.extend_from_slice(&r);
+        let proof = gate.sign(&msg).to_bytes();
+        if round % 2 == 0 {
+            arriving.write_all(&proof).await.expect("guest proof");
+            waiting.write_all(b"x").await.expect("host byte");
+        } else {
+            waiting.write_all(b"x").await.expect("host byte");
+            arriving.write_all(&proof).await.expect("guest proof");
+        }
+        let mut b = [0u8; 1];
+        let _ = timeout(Duration::from_secs(3), arriving.read(&mut b)).await;
+        drop((waiting, arriving));
+    }
+    pause().await;
+    let mut h = host(hop.addr, &room, &gate).await;
+    let mut g = guest(hop.addr, &room, &gate).await;
+    assert_eq!(status(&mut g).await, 0, "the room lost its place");
+    assert_eq!(status(&mut h).await, 0);
+}

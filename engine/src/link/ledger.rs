@@ -2,6 +2,7 @@
 //! and a hash of its current ticket. The home is the source of truth: a holder is only a holder while
 //! this says so. Pure, so the races can be tested without a network.
 
+use crate::link::card::{LinkDevice, LinkKind};
 use crate::link::crypto::{self, Key};
 use crate::link::messages::Bytes;
 use serde::{Deserialize, Serialize};
@@ -20,6 +21,19 @@ pub struct AwayEntry {
     /// claim proves the new ticket arrived. Not written while there is none.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub previous: Option<Bytes>,
+    /// Who the holder is, when it is a device this one is not linked with: the holder told us it handed the
+    /// Imp on (`moved`). Gone with the next claim, which the new holder makes itself.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub elsewhere: Option<Elsewhere>,
+}
+
+/// A holder this device only knows through the device that passed the Imp on to it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Elsewhere {
+    pub name: String,
+    pub kind: LinkKind,
+    /// The device that said so: it held the Imp before.
+    pub via: Uuid,
 }
 
 impl AwayEntry {
@@ -103,8 +117,32 @@ impl AwayLedger {
             ticket: crypto::ticket_hash(&ticket).to_vec().into(),
             generation,
             previous: None,
+            elsewhere: None,
         });
         ticket
+    }
+
+    /// The holder `from` says it handed the Imp on to `to`. Heard only from the current holder. The ticket
+    /// went along with the Imp, so it stays; the previous holder has nothing to be told. True if it changed.
+    pub fn moved(&mut self, imp: Uuid, from: Uuid, to: Uuid, name: &str, kind: LinkKind) -> bool {
+        let Some(entry) = self
+            .entries
+            .iter_mut()
+            .find(|e| e.imp == imp && e.holder == from)
+        else {
+            return false;
+        };
+        if to == from {
+            return false;
+        }
+        entry.holder = to;
+        entry.previous = None;
+        entry.elsewhere = Some(Elsewhere {
+            name: LinkDevice::cleaned(name, kind),
+            kind,
+            via: from,
+        });
+        true
     }
 
     /// A holder says it has the Imp, with the ticket it was given. A good claim makes it the holder,
@@ -129,6 +167,7 @@ impl AwayLedger {
             (false, _) => None,
         };
         entry.holder = device;
+        entry.elsewhere = None;
         entry.ticket = crypto::ticket_hash(&fresh).to_vec().into();
         entry.generation += 1;
         if let Some(previous) = previous {

@@ -33,14 +33,19 @@ import ImpKit
     @Test func aVisitorsMenuOffersHide() {
         let (app, pip) = appWithVisitor()
         let menu = ImpMenu(app: app, imp: pip)
-        // The menu is one card of buttons. Hide is one of its big buttons.
+        // The menu is one card of buttons. Hide is a pill beside Send home.
         #expect(menu.make().items.count == 1)
-        // Same six buttons as an own Imp's menu, with New chat for Settings. Asleep, only what needs no brain stays.
+        // Same three big buttons as an own Imp's menu, Hide and Send home as pills, and New chat in the corner where an
+        // own Imp has Settings. Asleep, only what needs no brain stays.
         let awake = ImpMenuCard(ready: true, name: "Pip", status: "", hue: 0.3, scale: 1, place: .visitor(from: "iPhone")) { _ in }
-        #expect(awake.buttons.map(\.id) == ["talk", "message", "chat", "hide", "move", "new"])
-        #expect(awake.buttons.allSatisfy { $0.enabled })
+        #expect(awake.buttons.map(\.id) == ["talk", "message", "chat"])
+        #expect(awake.placing.map(\.id) == ["hide", "move"])
+        #expect(awake.corner.id == "new")
+        #expect((awake.buttons + awake.placing + [awake.corner]).allSatisfy { $0.enabled })
         let asleep = ImpMenuCard(ready: false, name: "Pip", status: "", hue: 0.3, scale: 1, place: .visitor(from: "iPhone"), awake: false) { _ in }
-        #expect(asleep.buttons.filter(\.enabled).map(\.id) == ["chat", "hide", "move"])
+        #expect((asleep.buttons + asleep.placing + [asleep.corner]).filter(\.enabled).map(\.id) == ["chat", "hide", "move"])
+        let own = ImpMenuCard(ready: true, name: "Pip", status: "", hue: 0.3, scale: 1, place: .desktop) { _ in }
+        #expect(own.corner.id == "settings")
     }
 }
 

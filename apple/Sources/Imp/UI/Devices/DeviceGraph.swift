@@ -7,13 +7,14 @@ import SwiftUI
 /// The Devices screen as a graph for the canvas: a pure mapping from what `DeviceMap` knows to SwiftFlow's nodes
 /// and edges, with their first places. The canvas only draws it, so the shape of the graph is tested.
 ///
-/// A device (This Mac, a linked device, the Hop) is a group node. An Imp whose body is on a device is a child
-/// node inside it, in a grid. A channel is an edge between two devices. One through the Hop is two edges, to the
-/// Hop and from it. An Imp that is away from its home is tied to the home device by a tether, and an Imp that can
-/// talk to Imps on other devices has a talk edge to each, hidden until it is in focus. This Mac is in the middle,
-/// the linked devices are on its two sides (each next to the shorter side, so the picture stays balanced) and the
-/// Hop, only when a channel goes through it, is above This Mac. Where a device was dragged to is remembered by the
-/// caller and passed in as `moved`, so a refresh of the link never puts it back.
+/// A device (This Mac, a linked device, a device known only through another) is a group node. An Imp whose body is
+/// on a device is a child node inside it, in a grid. A channel is ONE edge between two devices, solid on the local
+/// network and dashed through the Hop; the Hop is not a node (it is a button in the screen's bar). A device known
+/// only through another is joined to the device that relays it by a thin dotted edge. An Imp that is away from its
+/// home has a tether to the home device, and an Imp that can talk to Imps on other devices has a talk edge to each:
+/// both are hidden until the Imp or its device is in focus. This Mac is in the middle and the other devices are on
+/// its two sides (each next to the shorter side, so the picture stays balanced). Where a device was dragged to is
+/// remembered by the caller and passed in as `moved`, so a refresh of the link never puts it back.
 enum DeviceGraph {
     typealias FlowNode = Node<NodeData>
     typealias LinkEdge = FlowEdge<EdgeData>
@@ -51,50 +52,45 @@ enum DeviceGraph {
         }
 
         var role: Role
-        /// How the Hop stands, for the Hop's node.
-        var hop: HopStanding?
         /// An Imp whose body is not where it thinks (not on its home device): it gets a small mark.
         var away = false
+        /// For an Imp that is away: the symbol of its home device, shown on its chip so where it lives is seen without lines.
+        var homeSymbol: String?
         /// What a screen reader says about it.
         var label: String
     }
 
     struct EdgeData: Hashable, Sendable {
         enum Kind: Hashable, Sendable {
-            /// A channel between two devices (`DeviceMap.Channel.id`). Through the Hop it is the half from the Hop.
+            /// A channel between two devices (`DeviceMap.Channel.id`).
             case channel(String)
-            /// The half of channels through the Hop that is shared: this Mac to the Hop (the Hop's id).
-            case toHop(String)
-            /// An Imp in a device that isn't its home, tied to its home.
+            /// A device known only through another (its node id), joined to the linked device that relays it.
+            case relay(String)
+            /// An Imp in a device that isn't its home, tied to its home. Hidden until it is in focus.
             case tether(UUID, in: String)
-            /// An Imp (first) that can message another device's Imp (second). Shown only while the first is in focus.
+            /// An Imp (first) that can message another device's Imp (second). Hidden until the first is in focus.
             case talk(UUID, UUID)
         }
 
         enum Look: Hashable, Sendable {
-            case local, hop
+            /// Solid: the local network.
+            case local
+            /// Dashed: through the Hop.
+            case hop
+            /// Thin and dotted: known through another device.
+            case relay
             case tether(hue: Double)
             case talk(hue: Double)
         }
 
-        /// How a channel is travelled, for the glyph on its badge.
-        enum Route: Hashable, Sendable { case local, hop }
-
         var kind: Kind
         var look: Look
-        /// Not connected right now: drawn faded.
+        /// Not connected right now: drawn faint.
         var dimmed: Bool
         /// Something flows on it right now: a connected channel, a tether to a device that is there.
         var live = false
-        var route: Route?
-        /// The symbols of the plugs that are in for the device at the far end, the trust first. Empty when none is.
-        var access: [String] = []
-        /// The far device is not Mine, so nothing is plugged in (the badge shows a lock).
-        var locked = false
         /// The devices this line is between (a tether: where the Imp is and its home).
         var ends: [String] = []
-        /// The Hop a channel goes through, when it does.
-        var via: String?
         /// What a screen reader and the hover help say.
         var label: String
     }
@@ -114,12 +110,11 @@ enum DeviceGraph {
             }
         }
 
-        /// The focus of an open sheet. The Link sheet is about no one thing.
+        /// The focus of an open sheet. The Link sheet and the Hop's are about no one device.
         init?(_ sheet: DevicesSheet) {
             switch sheet {
             case .about(let selection): self.init(selection)
-            case .hop: self = .device(DeviceMap.serverID)
-            case .link: return nil
+            case .hop, .link: return nil
             }
         }
     }
@@ -142,25 +137,18 @@ enum DeviceGraph {
     /// The id of an Imp's node: an Imp can be seen on more than one device.
     static func impNodeID(_ imp: UUID, in node: String) -> String { "\(node)/\(imp.uuidString)" }
 
-    /// `hopText` is the Hop's address as set (empty is off). Without it the Hop stands as the map says. The Hop is
-    /// on the canvas only when a channel goes through it. `access` is what each linked device may do (by node id);
-    /// a device without an entry is plugged with its trust only. Talk edges are
-    /// all there but hidden; `revealing(talkOf:)` shows an Imp's.
-    static func build(_ map: DeviceMap, hopText: String? = nil, access: [String: DeviceAccess] = [:],
-                      moved: [String: CGPoint] = [:]) -> Graph {
-        let hopUsed = map.hopInUse
-        let standing = map.hopStanding(text: hopText ?? map.hop?.addresses.first ?? "")
-        let shown = map.nodes.filter { $0.kind != .server || hopUsed }
+    /// Talk edges and tethers are all there but hidden; `shown(in:)` shows the ones in focus.
+    static func build(_ map: DeviceMap, moved: [String: CGPoint] = [:]) -> Graph {
+        let shown = map.nodes.filter { $0.kind != .server }
         let links = map.channels.filter { map.node($0.from) != nil && map.node($0.to) != nil }
 
-        // Sizes, then columns: This Mac in the middle, the linked devices on both sides, the Hop above This Mac.
+        // Sizes, then columns: This Mac in the middle, the other devices on both sides.
         var boxes: [String: CGSize] = [:]
         for node in shown { boxes[node.id] = box(of: node, residents: map.residents(of: node.id).count,
                                        longestName: map.residents(of: node.id).map(\.name.count).max() ?? 0) }
         func height(_ node: DeviceMap.Node) -> CGFloat { boxes[node.id]?.height ?? 0 }
         func width(_ node: DeviceMap.Node) -> CGFloat { boxes[node.id]?.width ?? 0 }
         let thisMac = shown.first { $0.kind == .thisMac }
-        let hop = shown.first { $0.kind == .server }
         var trailing: [DeviceMap.Node] = [], leading: [DeviceMap.Node] = []
         var trailingHeight: CGFloat = 0, leadingHeight: CGFloat = 0
         for device in shown.filter(\.isLinkedDevice) {
@@ -171,14 +159,13 @@ enum DeviceGraph {
             }
         }
         let leadingWidth = leading.map(width).max() ?? 0
-        let middleWidth = max(thisMac.map(width) ?? 0, hop.map(width) ?? 0)
+        let middleWidth = thisMac.map(width) ?? 0
         let middleX = leading.isEmpty ? 0 : leadingWidth + Metrics.columnGap
         let trailingX = middleX + middleWidth + Metrics.columnGap
 
         var places: [String: CGPoint] = [:]
         let macHeight = thisMac.map(height) ?? 0
         if let thisMac { places[thisMac.id] = CGPoint(x: middleX + (middleWidth - width(thisMac)) / 2, y: 0) }
-        if let hop { places[hop.id] = CGPoint(x: middleX + (middleWidth - width(hop)) / 2, y: -(height(hop) + Metrics.rowGap)) }
         func stack(_ column: [DeviceMap.Node], x: (DeviceMap.Node) -> CGFloat) {
             var y = macHeight / 2 - (column.reduce(CGFloat(0)) { $0 + height($1) } + gaps(column.count)) / 2
             for node in column {
@@ -205,7 +192,7 @@ enum DeviceGraph {
                 edges.append(LinkEdge(
                     id: "tether/\(device.id)/\(contact.id.uuidString)", source: impNodeID(contact.id, in: device.id), target: home,
                     sourceHandle: Port.tether(side), targetHandle: Port.tether(opposite(side)),
-                    type: .bezier, zIndex: 1, deletable: false, interactionWidth: Metrics.interactionWidth,
+                    type: .bezier, hidden: true, zIndex: 1, deletable: false, interactionWidth: Metrics.interactionWidth,
                     data: EdgeData(kind: .tether(contact.id, in: device.id), look: .tether(hue: contact.hue), dimmed: false,
                                    live: device.shownState == .connected, ends: [device.id, home],
                                    label: words("devices.tether.label", contact.name, map.title(of: device.id), map.title(of: home)))))
@@ -214,11 +201,9 @@ enum DeviceGraph {
 
         for device in shown {
             guard let place = places[device.id], let size = boxes[device.id] else { continue }
-            let isHop = device.kind == .server
             nodes.append(FlowNode(
                 id: device.id, position: XYPosition(x: place.x, y: place.y),
-                data: NodeData(role: .device(device), hop: isHop ? standing : nil,
-                               label: map.summary(of: device, standing: isHop ? standing : nil)), type: "group",
+                data: NodeData(role: .device(device), label: map.summary(of: device)), type: "group",
                 width: size.width, height: size.height, draggable: true, selectable: false, connectable: false, deletable: false,
                 sourcePosition: .right, targetPosition: .left))
             let residents = map.residents(of: device.id)
@@ -229,7 +214,8 @@ enum DeviceGraph {
                 nodes.append(FlowNode(
                     id: impNodeID(contact.id, in: device.id),
                     position: XYPosition(x: slots[index].minX, y: slots[index].minY),
-                    data: NodeData(role: .imp(contact, ours: ours), hop: nil, away: contact.home != contact.location,
+                    data: NodeData(role: .imp(contact, ours: ours), away: contact.home != contact.location,
+                                   homeSymbol: contact.home != contact.location ? (contact.home.flatMap { map.node($0)?.symbol } ?? "house") : nil,
                                    label: words(ours ? "devices.chip.label_ours" : "devices.chip.label_visitor", contact.name, map.title(of: device.id))),
                     parentId: device.id, width: slots[index].width, height: slots[index].height,
                     draggable: false, selectable: false, connectable: false, deletable: false,
@@ -237,48 +223,28 @@ enum DeviceGraph {
             }
         }
 
-        func plugs(of far: String) -> (symbols: [String], locked: Bool) {
-            let trusted = map.node(far)?.isTrusted == true
-            if let known = access[far] { return (known.pluggedIn.map(\.symbol), !known.trusted) }
-            return (trusted ? [DeviceAccess.talkSymbol] : [], !trusted)
-        }
-
-        var throughHop: Set<String> = []
+        // A channel is one line, whatever its route: dashed through the Hop.
         for channel in links {
             let connected = channel.state == .connected
-            let label = words("devices.edge.label", map.title(of: channel.from), map.title(of: channel.to), map.route(of: channel), channel.state.word)
-            let far = channel.from == DeviceMap.thisMacID ? channel.to : channel.from
-            let route: EdgeData.Route = channel.path == .relay ? .hop : .local
-            let (symbols, locked) = plugs(of: far)
-            if let via = channel.via, map.node(via) != nil, boxes[via] != nil {
-                if throughHop.insert(via).inserted {
-                    let (out, into) = (facing(from: frame(channel.from), to: frame(via)), facing(from: frame(via), to: frame(channel.from)))
-                    edges.append(LinkEdge(
-                        id: "hop/\(via)", source: channel.from, target: via,
-                        sourceHandle: Port.line(out, .source), targetHandle: Port.line(into, .target), type: .bezier,
-                        deletable: false, interactionWidth: Metrics.interactionWidth,
-                        data: EdgeData(kind: .toHop(via), look: .hop, dimmed: !connected, live: connected, route: .hop,
-                                       ends: [channel.from, via], label: words("devices.hop.edge.label", map.title(of: via), map.tag(of: channel)))))
-                } else if connected, let index = edges.firstIndex(where: { $0.id == "hop/\(via)" }) {
-                    edges[index].data?.dimmed = false
-                    edges[index].data?.live = true
-                }
-                let (out, into) = (facing(from: frame(via), to: frame(channel.to)), facing(from: frame(channel.to), to: frame(via)))
-                edges.append(LinkEdge(
-                    id: "channel/\(channel.id)", source: via, target: channel.to,
-                    sourceHandle: Port.line(out, .source), targetHandle: Port.line(into, .target), type: .bezier,
-                    deletable: false, interactionWidth: Metrics.interactionWidth,
-                    data: EdgeData(kind: .channel(channel.id), look: .hop, dimmed: !connected, live: connected, route: route,
-                                   access: symbols, locked: locked, ends: [channel.from, channel.to], via: via, label: label)))
-            } else {
-                let (out, into) = (facing(from: frame(channel.from), to: frame(channel.to)), facing(from: frame(channel.to), to: frame(channel.from)))
-                edges.append(LinkEdge(
-                    id: "channel/\(channel.id)", source: channel.from, target: channel.to,
-                    sourceHandle: Port.line(out, .source), targetHandle: Port.line(into, .target), type: .bezier,
-                    deletable: false, interactionWidth: Metrics.interactionWidth,
-                    data: EdgeData(kind: .channel(channel.id), look: route == .hop ? .hop : .local, dimmed: !connected, live: connected, route: route,
-                                   access: symbols, locked: locked, ends: [channel.from, channel.to], label: label)))
-            }
+            let (out, into) = (facing(from: frame(channel.from), to: frame(channel.to)), facing(from: frame(channel.to), to: frame(channel.from)))
+            edges.append(LinkEdge(
+                id: "channel/\(channel.id)", source: channel.from, target: channel.to,
+                sourceHandle: Port.line(out, .source), targetHandle: Port.line(into, .target), type: .bezier,
+                deletable: false, interactionWidth: Metrics.interactionWidth,
+                data: EdgeData(kind: .channel(channel.id), look: channel.path == .relay ? .hop : .local, dimmed: !connected, live: connected,
+                               ends: [channel.from, channel.to],
+                               label: words("devices.edge.label", map.title(of: channel.from), map.title(of: channel.to), map.route(of: channel), channel.state.word))))
+        }
+        // A device known only through another hangs on it by a thin dotted line.
+        for node in shown where !node.linked {
+            guard let via = node.via, via != node.id, boxes[via] != nil, boxes[node.id] != nil else { continue }
+            let (out, into) = (facing(from: frame(via), to: frame(node.id)), facing(from: frame(node.id), to: frame(via)))
+            edges.append(LinkEdge(
+                id: "relay/\(node.id)", source: via, target: node.id,
+                sourceHandle: Port.line(out, .source), targetHandle: Port.line(into, .target), type: .bezier,
+                deletable: false, interactionWidth: Metrics.interactionWidth,
+                data: EdgeData(kind: .relay(node.id), look: .relay, dimmed: false, ends: [via, node.id],
+                               label: words("devices.status.through", map.title(of: via)))))
         }
 
         // Talk edges, from an Imp's chip to each chip of another device it can message. Hidden unless it is in focus.
@@ -401,30 +367,47 @@ extension DeviceGraph.Graph {
         }
     }
 
-    /// What a click on an edge opens: a channel, the Hop for the half that is shared, or the Imp a tether or a talk
+    /// What a click on an edge opens: a channel, the device a dotted line leads to, or the Imp a tether or a talk
     /// line belongs to.
     func sheet(ofEdge id: String) -> DevicesSheet? {
         guard let edge = edges.first(where: { $0.id == id }), let kind = edge.data?.kind else { return nil }
         switch kind {
         case .channel(let id): return .opening(.channel(id))
-        case .toHop(let hop): return .opening(.node(hop))
+        case .relay(let node): return .opening(.node(node))
         case .tether, .talk: return sheet(ofNode: edge.source)
         }
     }
 
-    /// This graph with the talk lines of Imp `imp` shown, as when it is in focus. Positions and ids stay as they are.
-    func revealing(talkOf imp: UUID) -> DeviceGraph.Graph {
+    /// This graph with the lines of Imp `imp` shown, as when it is in focus: its tether and its talk lines. Positions
+    /// and ids stay as they are.
+    func revealing(imp: UUID) -> DeviceGraph.Graph {
         var graph = self
         for index in graph.edges.indices {
-            if case .talk(let id, _)? = graph.edges[index].data?.kind, id == imp { graph.edges[index].hidden = false }
+            switch graph.edges[index].data?.kind {
+            case .talk(let id, _)? where id == imp: graph.edges[index].hidden = false
+            case .tether(let id, _)? where id == imp: graph.edges[index].hidden = false
+            default: break
+            }
         }
         return graph
     }
 
-    /// This graph as drawn in `focus`: an Imp's talk lines are shown.
+    /// This graph with the tethers in and out of `device` shown, as when it is in focus.
+    func revealing(tethersOf device: String) -> DeviceGraph.Graph {
+        var graph = self
+        for index in graph.edges.indices where graph.edges[index].data?.isTether == true && graph.edges[index].data?.ends.contains(device) == true {
+            graph.edges[index].hidden = false
+        }
+        return graph
+    }
+
+    /// This graph as drawn in `focus`: an Imp shows its tether and talk lines, a device the tethers in and out of it.
     func shown(in focus: DeviceGraph.Focus?) -> DeviceGraph.Graph {
-        if case .imp(let imp, _)? = focus { return revealing(talkOf: imp) }
-        return self
+        switch focus {
+        case .imp(let imp, _)?: return revealing(imp: imp)
+        case .device(let device)?: return revealing(tethersOf: device)
+        case .channel?, nil: return self
+        }
     }
 
     /// What hovering a node puts in focus.
@@ -436,21 +419,20 @@ extension DeviceGraph.Graph {
         }
     }
 
-    /// What hovering a line puts in focus: its channel, the Hop for the shared half, the Imp of a tether or talk line.
+    /// What hovering a line puts in focus: its channel, the device of a dotted line, the Imp of a tether or talk line.
     func focus(ofEdge id: String) -> DeviceGraph.Focus? {
         guard let edge = edges.first(where: { $0.id == id }), let kind = edge.data?.kind else { return nil }
         switch kind {
         case .channel(let id): return .channel(id)
-        case .toHop(let hop): return .device(hop)
+        case .relay(let node): return .device(node)
         case .tether, .talk: return focus(ofNode: edge.source)
         }
     }
 
     /// The ids of the nodes and lines that stay bright in `focus`. The canvas draws the rest dimmed. An Imp lights its
-    /// chips, the device its body is on and its home, the channels (and the Hop) between them, its tether and its talk
-    /// lines with the Imps they reach. A device lights itself, its Imps, its channels (and the Hop) and the tethers
-    /// in and out. A channel lights both ends, the Hop when it goes through it, and the Imps travelling over it with
-    /// their tethers.
+    /// chips, the device its body is on and its home, the channels between them, its tether and its talk
+    /// lines with the Imps they reach. A device lights itself, its Imps, its channels and dotted lines with the devices at their other ends, and the
+    /// tethers in and out. A channel lights both ends and the Imps travelling over it with their tethers.
     func lit(for focus: DeviceGraph.Focus) -> Set<String> {
         var ids: Set<String> = []
         func chips(where match: (DeviceMap.Contact, String?) -> Bool) -> [DeviceGraph.FlowNode] {
@@ -458,11 +440,6 @@ extension DeviceGraph.Graph {
         }
         func light(_ edge: DeviceGraph.LinkEdge) {
             ids.insert(edge.id)
-            if let via = edge.data?.via {
-                ids.insert(via)
-                if edges.contains(where: { $0.id == "hop/\(via)" }) { ids.insert("hop/\(via)") }
-            }
-            if case .toHop(let hop)? = edge.data?.kind { ids.insert(hop) }
         }
         switch focus {
         case .imp(let imp, _):
@@ -490,6 +467,7 @@ extension DeviceGraph.Graph {
             ids.formUnion(nodes.filter { $0.parentId == device }.map(\.id))
             for edge in edges where !(edge.data?.isTalk ?? true) && (edge.data?.ends.contains(device) == true || edge.source == device || edge.target == device) {
                 light(edge)
+                ids.formUnion(edge.data?.ends ?? [])
                 if edge.data?.isTether == true { ids.insert(edge.source) }
             }
         case .channel(let channel):
@@ -507,12 +485,12 @@ extension DeviceGraph.Graph {
         return ids
     }
 
-    /// Everything that can be opened, in reading order, for a screen reader and the keyboard. Talk lines are not
-    /// lines of their own: they belong to their Imp.
+    /// Everything that can be opened, in reading order, for a screen reader and the keyboard. Tethers and talk lines are
+    /// not lines of their own: they belong to their Imp.
     var openable: [Openable] {
         let devices = nodes.filter { $0.parentId == nil }.compactMap { node in sheet(ofNode: node.id).map { Openable(label: node.data.label, sheet: $0) } }
         let imps = nodes.filter { $0.parentId != nil }.compactMap { node in sheet(ofNode: node.id).map { Openable(label: node.data.label, sheet: $0) } }
-        let lines = edges.filter { $0.data?.isTalk == false }.compactMap { edge in
+        let lines = edges.filter { $0.data?.isTalk == false && $0.data?.isTether == false }.compactMap { edge in
             edge.data.flatMap { data in sheet(ofEdge: edge.id).map { Openable(label: data.label, sheet: $0) } }
         }
         return devices + imps + lines

@@ -229,6 +229,209 @@ final class PhoneScreensUITests: XCTestCase {
 
     /// Embers to its results card: play a few seconds, close the round (which ends it with what it scored), and
     /// check the card's three actions sit in one row, then play again and back out with Done.
+    /// Devices › Link a device: Copy says it copied, and the code stays the same when Devices opens again or the
+    /// app comes back from the background, so a link copied before still links.
+    func testLinkCodeStaysTheSameAndCopySaysSo() {
+        // Showing the code asks for the Local Network once: allowed, as a person would.
+        addUIInterruptionMonitor(withDescription: "Local Network") { alert in
+            let allow = alert.buttons["Allow"]
+            if allow.exists { allow.tap(); return true }
+            return false
+        }
+        let app = launch(["-openDevices"])
+        let show = app.buttons["Show code"]
+        if show.waitForExistence(timeout: 6) { show.tap() }
+        app.tap()                                              // lets the interruption monitor see the prompt
+        let code = element(app, "link.code")
+        XCTAssertTrue(code.waitForExistence(timeout: 30), "the code shows")
+        let first = Self.invite(code)
+        XCTAssertFalse(first.isEmpty, "the code's link is its value (Debug)")
+        let copy = app.buttons["Copy"]
+        copy.tap()
+        XCTAssertEqual(copy.value as? String, "Done", "Copy shows it copied")
+        shot(app, "Devices code copied")
+
+        // Devices closed and opened again: no Show code to tap, and the same code.
+        if app.buttons["Close"].firstMatch.exists { app.buttons["Close"].firstMatch.tap() }
+        app.terminate()
+        let again = launch(["-openDevices"])
+        let shown = element(again, "link.code")
+        XCTAssertTrue(shown.waitForExistence(timeout: 30), "a code asked for once shows at once")
+        XCTAssertEqual(Self.invite(shown), first, "the same code after Devices opened again")
+
+        // To the background and back, as when the link is pasted in Safari.
+        XCUIDevice.shared.press(.home)
+        sleep(3)
+        again.activate()
+        XCTAssertTrue(shown.waitForExistence(timeout: 30))
+        XCTAssertEqual(Self.invite(shown), first, "the same code after the app was in the background")
+        shot(again, "Devices code after background")
+    }
+
+    /// The invite key in a code's link (its routes may change: the key is what a copied link needs).
+    private static func invite(_ code: XCUIElement) -> String {
+        guard let link = code.value as? String, let parts = URLComponents(string: link) else { return "" }
+        return parts.queryItems?.first { $0.name == "inv" }?.value ?? ""
+    }
+
+    /// Opt-in (`TEST_RUNNER_IMP_TEST_WEB=1`), with the web page on the Mac: the link copied here joins a web page
+    /// named ImpTest while Imp is in the background, as when it is pasted in Safari. The test prints the link
+    /// (`IMP_LINK_CODE`) for the Mac's script, which joins with it and forgets the iPhone again afterwards.
+    func testCopiedCodeLinksAWebPageWhileInTheBackground() throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["IMP_TEST_WEB"] == "1", "needs the web page on the Mac")
+        addUIInterruptionMonitor(withDescription: "Local Network") { alert in
+            let allow = alert.buttons["Allow"]
+            if allow.exists { allow.tap(); return true }
+            return false
+        }
+        let app = launch(["-openDevices"])
+        let show = app.buttons["Show code"]
+        if show.waitForExistence(timeout: 6) { show.tap() }
+        let code = element(app, "link.code")
+        XCTAssertTrue(code.waitForExistence(timeout: 30), "the code shows")
+        let link = code.value as? String ?? ""
+        XCTAssertTrue(link.contains("hop="), "the code carries a Hop, which a web page needs: set one in Devices")
+        app.buttons["Copy"].tap()
+        print("IMP_LINK_CODE \(link)")
+        // Pasted elsewhere while Imp is in the background.
+        XCUIDevice.shared.press(.home)
+        sleep(25)
+        app.activate()
+        XCTAssertTrue(app.staticTexts["ImpTest"].waitForExistence(timeout: 90), "the web page linked")
+        shot(app, "Linked with the web page")
+        sleep(5)
+    }
+
+    /// The + menu in a chat, a recorded sound as a chip with a remove button, and Send turned on by the file alone.
+    /// The Imp's Brain is pretend: nothing is sent.
+    func testChatAttachmentsRecordASound() {
+        addUIInterruptionMonitor(withDescription: "Microphone") { alert in
+            for label in ["Allow", "OK", "Allow While Using App"] where alert.buttons[label].exists {
+                alert.buttons[label].tap()
+                return true
+            }
+            return false
+        }
+        let app = launch(["-openPocketChat"], reset: true)
+        let add = element(app, "chat.add")
+        XCTAssertTrue(add.waitForExistence(timeout: 20), "the + button in the chat")
+        let send = element(app, "chat.send")
+        XCTAssertFalse(send.isEnabled, "Send waits for words or files")
+        sleep(2)  // The sheet settles.
+        add.tap()
+        for _ in 0..<3 where !app.buttons["Photo or video"].waitForExistence(timeout: 3) {
+            allowMicrophone()
+            add.tap()
+        }
+        XCTAssertTrue(app.buttons["Photo or video"].waitForExistence(timeout: 4), "Photo or video in the menu")
+        XCTAssertTrue(app.buttons["Record a sound"].exists, "Record a sound in the menu")
+        XCTAssertTrue(app.buttons["Choose a file"].exists, "Choose a file in the menu")
+        shot(app, "chat-add-menu")
+        app.buttons["Record a sound"].tap()
+        let done = element(app, "chat.recording.done")
+        // An interaction lets the microphone prompt, if one comes, reach the interruption monitor.
+        for _ in 0..<4 where !done.waitForExistence(timeout: 2) {
+            allowMicrophone()
+            app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.65)).tap()
+        }
+        shot(app, "chat-after-record")
+        XCTAssertTrue(done.exists, "the recording row")
+        sleep(2)
+        shot(app, "chat-recording")
+        done.tap()
+        let chip = element(app, "chat.chip")
+        XCTAssertTrue(chip.waitForExistence(timeout: 6), "the sound is a chip above the box")
+        XCTAssertTrue(send.isEnabled, "a file alone is a message")
+        shot(app, "chat-sound-chip")
+        element(app, "chat.chip.remove").tap()
+        XCTAssertFalse(chip.waitForExistence(timeout: 2), "the chip's remove button takes it out")
+    }
+
+    /// Answers the system's microphone prompt, when it is up.
+    private func allowMicrophone() {
+        let allow = XCUIApplication(bundleIdentifier: "com.apple.springboard").buttons["Allow"].firstMatch
+        if allow.waitForExistence(timeout: 1) { allow.tap() }
+    }
+
+    /// The playful camera: the Imps peek in from the edges, one is dragged to the middle, the shot, Retake, then Send.
+    func testPlayfulCamera() {
+        addUIInterruptionMonitor(withDescription: "Camera") { alert in
+            for label in ["Allow", "OK", "Allow While Using App"] where alert.buttons[label].exists {
+                alert.buttons[label].tap()
+                return true
+            }
+            return false
+        }
+        let app = launch(["-hatchThree", "-openCamera"], reset: true)
+        let shutter = element(app, "camera.shutter")
+        for _ in 0..<4 where !shutter.waitForExistence(timeout: 4) {
+            app.tap()
+            allowSystemPrompt()
+        }
+        XCTAssertTrue(shutter.waitForExistence(timeout: 10), "the shutter")
+        sleep(2)  // The Imps spring in.
+        shot(app, "camera-edges")
+        let imps = app.descendants(matching: .any).matching(identifier: "camera.imp")
+        XCTAssertGreaterThan(imps.count, 0, "Imps in the camera")
+        // Grab the Imp that shows most, by the middle of its visible part (not off the screen's edge, where the system listens).
+        let window = app.windows.firstMatch.frame
+        var best: (CGRect, CGFloat)?
+        for i in 0..<imps.count {
+            let visible = imps.element(boundBy: i).frame.intersection(window)
+            if !visible.isNull, best == nil || visible.width * visible.height > best!.1 { best = (visible, visible.width * visible.height) }
+        }
+        let grab = best!.0
+        let from = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: grab.midX < 40 ? 40 : min(grab.midX, window.width - 40), dy: grab.midY))
+        from.press(forDuration: 0.1, thenDragTo: app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.45)))
+        sleep(1)
+        shot(app, "camera-dragged")
+        shutter.tap()
+        XCTAssertTrue(element(app, "camera.retake").waitForExistence(timeout: 10), "Retake")
+        XCTAssertTrue(element(app, "camera.save").exists, "Save")
+        XCTAssertTrue(element(app, "camera.send").exists, "Send")
+        shot(app, "camera-preview")
+        tap(app, "camera.retake")
+        XCTAssertTrue(shutter.waitForExistence(timeout: 6), "back to the camera")
+        shutter.tap()
+        tap(app, "camera.send")
+        XCTAssertTrue(shutter.waitForNonExistence(timeout: 6), "Send closes the camera")
+    }
+
+    /// + menu -> Take a photo opens the playful camera, not the system one, and Send brings the photo back as a chip.
+    func testChatTakeAPhotoOpensTheImpCamera() {
+        addUIInterruptionMonitor(withDescription: "Camera") { alert in
+            for label in ["Allow", "OK", "Allow While Using App"] where alert.buttons[label].exists {
+                alert.buttons[label].tap()
+                return true
+            }
+            return false
+        }
+        let app = launch(["-openPocketChat"], reset: true)
+        let add = element(app, "chat.add")
+        XCTAssertTrue(add.waitForExistence(timeout: 20), "the + button in the chat")
+        sleep(2)
+        add.tap()
+        tap(app, "chat.add.camera")
+        let shutter = element(app, "camera.shutter")
+        for _ in 0..<4 where !shutter.waitForExistence(timeout: 4) {
+            app.tap()
+            allowSystemPrompt()
+        }
+        XCTAssertTrue(shutter.waitForExistence(timeout: 10), "the Imp camera, not the system one")
+        sleep(2)
+        shot(app, "camera-from-chat")
+        shutter.tap()
+        tap(app, "camera.send")
+        XCTAssertTrue(element(app, "chat.chip").waitForExistence(timeout: 8), "the photo is a chip in the draft")
+        shot(app, "camera-chat-chip")
+    }
+
+    private func allowSystemPrompt() {
+        let allow = XCUIApplication(bundleIdentifier: "com.apple.springboard").buttons["Allow"].firstMatch
+        if allow.waitForExistence(timeout: 1) { allow.tap() }
+    }
+
     func testEmbersResultsCard() {
         let app = launch(["-hatchThree"], reset: true)
         let play = app.buttons["Play Embers"]

@@ -43,19 +43,26 @@ implink://join?d=<device id>&n=<name>&t=<mac|phone>&k=<host public key>&r=<host 
 Binary values are base64url without padding. `k` is the host's Noise static public key (32 bytes): the guest
 pins it from the code itself, so nobody can pretend to be the host later. `r` is the key that names the
 host's room at the Hop. `door` (32 random bytes) opens the host's sessions (below). It stays the same until
-the host forgets everyone. `inv` (32 random bytes) lets a device become a linked peer. The host makes a new
-one each time it shows a code, and accepts it for 15 minutes after the code was last on screen. A code may be
+the host forgets everyone. `inv` (32 random bytes) lets a device become a linked peer. The host keeps showing the
+same one while it works and makes a new one once it has expired, and accepts it for 15 minutes after the code was last on screen. A code may be
 scanned by several devices in that time. A repeated name, a missing key or a key of the wrong length makes
 the code invalid.
 
 A code is only worth showing when it says how to reach the device: `h` and `p` once the listener is up, or
-`hop`. A device that is still starting shows progress instead, and makes a new code whenever its routes change
+`hop`. A device that is still starting shows progress instead, and draws the code again whenever its routes change
 (the listener came up, the Wi-Fi changed, the Hop was set or cleared). `LinkNode.status` exposes the routes.
+
+Showing the code again keeps the same invite while it still works (`Node::invite`), with the current routes: a
+link copied or shown before stays good when the screen is reopened or the app comes back from the background.
+Only an invite that has expired is replaced (`Node::new_invite` replaces it at once). After **Copy** or **Share**
+the iPhone stays online in the background for as long as iOS allows (about half a minute, at most two minutes),
+so the link can be pasted on another device, or in Safari on the same iPhone, and still reach it. A web page
+that gets no answer keeps trying while its connect window is open, for three minutes.
 
 ## Local Network and the saved book
 
 **When the permission is asked.** Only when the person is linking: on the iPhone when they tap **Show code**
-in Devices (the sheet opened just to link shows the code at once), or when they scan, paste or open a code. Opening
+in Devices (the sheet opened just to link shows the code at once, and once asked for, Devices shows it at once), or when they scan, paste or open a code. Opening
 the app, or opening Devices to look at the list, never asks. On later launches the node comes up by itself only
 once a device is linked, since that device has to be able to reach this one.
 
@@ -282,6 +289,28 @@ only. Pocket Imps on a phone don't have it, because the files are on the Mac.
 
 Shared test vectors (paths, references, checksums) are in `spec/fixtures/workspace-refs.json`.
 
+## Attachments
+
+Photos, sound and video go with a question to an Imp that is visiting (the web page, or an iPhone or Mac
+holding it). Its home thinks for it, so the holder sends the files there first: `upload` names a file (its
+name, type, size and SHA-256), `uploadPart` carries it in order in pieces of 1 MiB at most, and the `ask` that
+follows names the uploads in `attachments`. The home (`engine/src/link/uploads.rs`):
+
+- takes uploads only from the Imp's holder, and the parts only from the device that started the upload;
+- keeps a file only when every byte came in order and the size and checksum match;
+- refuses a file over 25 MiB, more than 8 uploads in progress from one device, and more than 64 MiB
+  waiting in all (`uploadFailed` says why);
+- keeps an upload in memory, never in the book, and forgets it 10 minutes after its last part if no `ask`
+  took it.
+
+The app takes each named file (`Node::take_upload`), saves it in the `attachments` folder of the Imp's
+workspace, and gives it to the model with the question: a picture as `image_url`, a sound as `input_audio`
+(`wav`, `mp3`), a video as `video_url`, anything else as `file`, before the words (`ChatMessage::to_json`).
+The words name where each file was saved, so its tools can use it, and say so when an attachment didn't
+arrive. The chat keeps the words and the paths, never the files themselves. A home that doesn't know
+`attachments` answers the words alone. Holders send the sound they record as 16 kHz mono WAV, which
+every model that hears takes.
+
 ## Trust
 
 A link may be marked **trusted**: one of the owner's own devices (`setTrusted`, off by default. Visitors
@@ -337,14 +366,17 @@ message depends on who sent it.
 | `ping`, `pong` | none | either |
 | `bye` | `reason` (for people, at most 200 characters) | either |
 | `routes` | `door`, `routes` (`hosts`, `port`, optional `hop`) | either, after the handshake and on change |
-| `stage` | `imps`: list of `{ imp, home }`, `imp` being `{ id, name, hue, scale, traits, about?, abilities? }` | either, on change |
+| `stage` | `imps`: list of `{ imp, home }`, `imp` being `{ id, name, hue, scale, traits, about?, abilities? }` and `home` the device it thinks on, `{ id, name, kind }` (`kind` is `mac` or `phone`) | either, on change |
 | `pass` | `transfer`, `imp`, `entry` (`side` `left` or `right`, `height` 0 to 1, `speed`), `home` (a card: `device`, `door`, `routes`) and `ticket`, both present or both absent | thrower, receiver |
 | `took` | `transfer` | receiver, thrower |
 | `declined` | `transfer`, `reason`: `full`, `playing`, `notLinked`, `timeout` (made up by the thrower, never sent), `other` (also what a reason from a newer version reads as) | receiver, thrower |
 | `claim`, `claimed` | `imp`, `ticket` | holder to home, home to holder |
 | `gone` | `imp` | home or holder |
 | `release` | `imp`, `ticket` | holder or anyone with the ticket, to the holder |
-| `ask` | `imp`, `text` | holder, home |
+| `ask` | `imp`, `text`, `attachments?`: ids of uploads sent before it (4 at most) | holder, home |
+| `upload` | `id`, `imp`, `name`, `type` (a MIME type), `size`, `sha256` (lowercase hex) | holder, home |
+| `uploadPart` | `id`, `offset`, `data` (1 MiB at most) | holder, home |
+| `uploadFailed` | `id`, `reason` | home, holder |
 | `stop`, `newChat`, `talks` | `imp` | holder, home |
 | `openChat` | `imp`, `chat`: one of the ids the home listed in `chats`. The home carries on in it and sends the new `chat` and `chats`; one it doesn't have is ignored | holder, home |
 | `felt` | `imp`, `feeling`: `poke`, `cuddle`, `shake`, `drop` | holder, home |
@@ -371,9 +403,10 @@ Who may send what (`engine/src/link/access.rs`):
 
 - Every connected device: `ping`, `pong`, `bye`, `claim`, `release`, `claimed`, `gone` and `answer`.
 - A linked peer only: `routes`, `pass`, `took`, `declined`, `adopt` and `adopted`.
-- The holder of the Imp only: `ask`, `stop`, `newChat`, `openChat`, `felt`, `file` and `talks`.
+- The holder of the Imp only: `ask`, `stop`, `newChat`, `openChat`, `felt`, `file`, `talks` and `upload`.
+  `uploadPart` too, from the device that started the upload.
 - The home of a visit only: `look`, `chat`, `chats`, `work`, `mood`, `brain`, `animate`, `speech` and `talkLines`.
-- The home of one of this device's visitors: `filePart` and `fileFailed`.
+- The home of one of this device's visitors: `filePart`, `fileFailed` and `uploadFailed`.
 - A linked peer, or the holder of the target: `message`.
 - A linked peer, a holder of one of this device's Imps, or the home of a visitor: `stage`.
 - The handshake only: `hello` and `welcome`.
@@ -386,6 +419,8 @@ Receiver limits (`is_sound` in `engine/src/link/messages.rs`):
 - `stage`: 64 Imps at most. `chat`: 500 turns, each with 200 steps at most. `chats`: 30 chats, each title 200 characters at most. `animate`: 256 beats.
   `talkLines`: 300 lines.
 - `filePart`: 1 MiB at most per part. Files: 512 MiB at most.
+- `uploadPart`: 1 MiB at most per part. An upload: 25 MiB at most, and 4 named by one `ask`. A file name: 160
+  characters, a plain name with no folders.
 
 A message over a limit, or one that cannot be read, is ignored after the handshake. During the handshake
 the connection is closed instead.

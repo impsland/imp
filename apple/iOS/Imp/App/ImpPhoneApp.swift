@@ -60,6 +60,9 @@ struct RootView: View {
     /// The keyboard is up. It lifts a half sheet over the room, as if the sheet stood at full height.
     @State private var keyboardUp = false
     @State private var hidden = PhoneHidden()
+    #if DEBUG
+    @State private var debugCamera = false
+    #endif
     /// A round of Embers is on (see `EmbersPlaying`).
     @State private var playing = false
     /// Imps are being picked together: the picking bar takes the top bar's place.
@@ -144,6 +147,12 @@ struct RootView: View {
             if keyboardUp != lifts { keyboardUp = lifts }
         }
         .impControls(tint: Tone.accent)
+        #if DEBUG
+        .fullScreenCover(isPresented: $debugCamera) {
+            CameraView(imps: PhoneStage.everyone(hub, pocket).map(\.imp).filter { !hidden.set.contains($0.id) },
+                       onSend: { _ in debugCamera = false }, close: { debugCamera = false })
+        }
+        #endif
         .overlay(alignment: .bottom) { ToastView(text: toast).padding(.bottom, Spacing.huge) }
         .onChange(of: hub.toast) { _, text in
             guard let text else { return }
@@ -191,7 +200,20 @@ struct RootView: View {
             if CommandLine.arguments.contains("-uiTestBackground") { PhoneBackground.shared.set(PhoneBackground.uiTestPage) }
             // For the UI tests on a device: the app's settings, or the first Imp hatched here in its settings.
             if CommandLine.arguments.contains("-openSettings") { router.open(.settings(devices: false)) }
+            // The playful camera over the room, with the Imps that are on it (after the Imps are hatched).
+            if CommandLine.arguments.contains("-openCamera") {
+                try? await Task.sleep(for: .seconds(1.5))
+                debugCamera = true
+            }
+            if CommandLine.arguments.contains("-openDevices") { router.open(.settings(devices: true)) }
             if CommandLine.arguments.contains("-editImp"), let first = pocket.imps.first { router.open(.edit(first.id, brain: false)) }
+            // A pocket Imp with a (pretend) Brain, so its chat is open for the UI tests of attachments. Nothing is asked of it.
+            if CommandLine.arguments.contains("-openPocketChat") {
+                let (id, _) = pocket.hatchReady()
+                pocket.edit(id) { $0.brain.baseURL = "http://127.0.0.1:9/v1"; $0.brain.model = "test" }
+                try? await Task.sleep(for: .seconds(1))
+                router.talk(id)
+            }
             if CommandLine.arguments.contains("-openChat") {
                 // Waits for the Imps (from a Mac it's connecting to).
                 for _ in 0..<120 where hub.visits.isEmpty { try? await Task.sleep(for: .milliseconds(250)) }
@@ -233,7 +255,8 @@ struct RootView: View {
             ImpSheet(hub: hub, source: own ? pocket : hub, pocket: pocket, impID: id, pane: $router.pane,
                      roomInView: roomInView,
                      edit: own ? { router.open(.edit(id, brain: false)) } : nil,
-                     giveBrain: own ? { router.open(.edit(id, brain: true)) } : nil, close: close)
+                     giveBrain: own ? { router.open(.edit(id, brain: true)) } : nil,
+                     onScreen: PhoneStage.everyone(hub, pocket).map(\.imp).filter { !hidden.set.contains($0.id) }, close: close)
                 // Another Imp is another chat: what was being typed and where it was scrolled do not carry over.
                 .id(id)
         case .edit(let id, let brain):

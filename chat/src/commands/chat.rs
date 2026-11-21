@@ -172,6 +172,9 @@ async fn plain_chat(session: &mut Session, io: &mut Io<'_>) -> Result<()> {
         for problem in &attached.problems {
             writeln!(io.err, "{problem}")?;
         }
+        if !attached.media.is_empty() {
+            writeln!(io.err, "  ⎿ with {}", attached.files.join(", "))?;
+        }
         let text = made
             .as_deref()
             .or(attached.content.as_deref())
@@ -183,7 +186,7 @@ async fn plain_chat(session: &mut Session, io: &mut Io<'_>) -> Result<()> {
             &model,
             &session.name,
             &mut chat,
-            text,
+            (text, attached.media.clone()),
             &*session.toolbox,
             &session.tool_selection(),
             session.max_steps,
@@ -285,7 +288,15 @@ pub async fn chat_loop_with(
             _ => {}
         }
         answer(
-            client, model, name, &mut chat, &line, host, selection, max_steps, io,
+            client,
+            model,
+            name,
+            &mut chat,
+            (&line, Vec::new()),
+            host,
+            selection,
+            max_steps,
+            io,
         )
         .await?;
     }
@@ -300,13 +311,13 @@ async fn answer(
     model: &str,
     name: &str,
     chat: &mut ChatState,
-    line: &str,
+    (line, media): (&str, Vec<String>),
     host: &dyn ToolHost,
     selection: &ToolSelection,
     max_steps: usize,
     io: &mut Io<'_>,
 ) -> Result<()> {
-    if !chat.push_user(line) {
+    if !chat.push_user_with(line, media) {
         return Ok(());
     }
     let mut messages = chat.request_messages();

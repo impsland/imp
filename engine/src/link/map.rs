@@ -4,7 +4,7 @@
 
 use crate::link::card::LinkKind;
 use crate::link::hop::is_host;
-use crate::link::messages::{LinkImp, LinkStaged};
+use crate::link::messages::LinkStaged;
 use crate::link::talks;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
@@ -120,12 +120,30 @@ pub struct MapImp {
     pub tools: Vec<MapTool>,
 }
 
+/// A device this one is not linked with but knows of through a third party: the home of a visiting Imp
+/// (its card came along) or the device a holder passed an Imp on to. `via` is the linked device that
+/// relays it, when there is one.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct MapKnown {
+    pub id: Uuid,
+    /// Empty when only its id is known.
+    pub name: String,
+    pub kind: LinkKind,
+    #[serde(default)]
+    pub via: Option<Uuid>,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Node {
     pub id: String,
     pub kind: NodeKind,
+    /// Empty for a device only known by its id.
     pub name: String,
+    /// False for a device known only through a third party: not linked with this one.
+    pub linked: bool,
+    /// For a device that is not linked: the node of the linked device that relays it.
+    pub via: Option<String>,
     pub is_trusted: bool,
     /// For a server: connected when a channel runs through it right now.
     pub state: State,
@@ -146,7 +164,7 @@ pub struct Contact {
     /// The node its body is on.
     pub location: String,
     /// The node of the device it thinks on: `this-mac` for this device's own Imps, a linked device's
-    /// node for the Imps hatched there, none when its home is a device this one is not linked with.
+    /// node for the Imps hatched there, and the node of a device only known through a third party.
     pub home: Option<String>,
 }
 
@@ -271,18 +289,59 @@ impl DeviceMap {
         server: &str,
         imps: &[MapImp],
         visitors: &[LinkStaged],
+        known: &[MapKnown],
     ) -> Self {
         let server_name = server_host(server);
         let server_address = server_name.as_ref().map(|_| server.trim().to_lowercase());
         let mut sorted: Vec<&MapPeer> = peers.iter().collect();
         sorted.sort_by(|a, b| natural(&a.name, &b.name));
+        // Devices known only through a third party: told so by the link (the homes of visitors, the
+        // devices holders passed Imps on to), by the homes a screen names, and by id for a holder nothing
+        // else describes. Never a linked device, and never this one.
+        let is_peer = |id: Uuid| peers.iter().any(|p| p.id == id);
+        let mut strangers: BTreeMap<Uuid, MapKnown> = BTreeMap::new();
+        for k in known.iter().filter(|k| !is_peer(k.id)) {
+            strangers
+                .entry(k.id)
+                .and_modify(|old| {
+                    if old.name.is_empty() {
+                        *old = k.clone();
+                    }
+                })
+                .or_insert_with(|| k.clone());
+        }
+        let on_screens = visitors.iter().map(|s| (s, None)).chain(
+            sorted
+                .iter()
+                .flat_map(|p| p.stage.iter().map(move |s| (s, Some(p.id)))),
+        );
+        for (staged, via) in on_screens {
+            if !is_peer(staged.home.id) && !imps.iter().any(|i| i.id == staged.imp.id) {
+                strangers.entry(staged.home.id).or_insert_with(|| MapKnown {
+                    id: staged.home.id,
+                    name: staged.home.name.clone(),
+                    kind: staged.home.kind,
+                    via,
+                });
+            }
+        }
+        for holder in imps.iter().filter_map(|i| i.away_on) {
+            if !is_peer(holder) {
+                strangers.entry(holder).or_insert_with(|| MapKnown {
+                    id: holder,
+                    name: String::new(),
+                    kind: LinkKind::Phone,
+                    via: None,
+                });
+            }
+        }
+        // Where an Imp is: on its holder when it is away (a linked device, or one only known through
+        // another), here otherwise. An away Imp is never shown on this device.
         let here = |imp: &MapImp| -> String {
-            imp.away_on
-                .filter(|holder| peers.iter().any(|p| p.id == *holder))
-                .map_or_else(
-                    || THIS_DEVICE.to_string(),
-                    |holder| holder.to_string().to_uppercase(),
-                )
+            imp.away_on.map_or_else(
+                || THIS_DEVICE.to_string(),
+                |holder| holder.to_string().to_uppercase(),
+            )
         };
         let held = |id: &str| -> Vec<Uuid> {
             imps.iter()
@@ -295,6 +354,8 @@ impl DeviceMap {
             id: THIS_DEVICE.into(),
             kind: NodeKind::ThisDevice,
             name: this_device.into(),
+            linked: true,
+            via: None,
             is_trusted: false,
             state: State::Connected,
             imps: held(THIS_DEVICE),
@@ -333,6 +394,8 @@ impl DeviceMap {
                     NodeKind::Phone
                 },
                 name: peer.name.clone(),
+                linked: true,
+                via: None,
                 is_trusted: peer.is_trusted,
                 state,
             });
@@ -354,6 +417,8 @@ impl DeviceMap {
                     id: SERVER.into(),
                     kind: NodeKind::Server,
                     name: name.clone(),
+                    linked: true,
+                    via: None,
                     is_trusted: false,
                     state: if relay_up {
                         State::Connected
@@ -364,6 +429,30 @@ impl DeviceMap {
                     addresses: server_address.into_iter().collect(),
                 },
             );
+        }
+
+        let mut others_known: Vec<&MapKnown> = strangers.values().collect();
+        others_known.sort_by(|a, b| natural(&a.name, &b.name).then(a.id.cmp(&b.id)));
+        for k in others_known {
+            let id = k.id.to_string().to_uppercase();
+            nodes.push(Node {
+                imps: held(&id),
+                id,
+                kind: if k.kind == LinkKind::Mac {
+                    NodeKind::Mac
+                } else {
+                    NodeKind::Phone
+                },
+                name: k.name.clone(),
+                linked: false,
+                via: k
+                    .via
+                    .filter(|v| is_peer(*v))
+                    .map(|v| v.to_string().to_uppercase()),
+                is_trusted: false,
+                state: State::Offline,
+                addresses: Vec::new(),
+            });
         }
 
         // Other devices' Imps on each screen: on a connected device (its own and its visitors), and the
@@ -390,7 +479,8 @@ impl DeviceMap {
         }
         // The node of each linked device by its id: where an Imp's home is, when it is one of those.
         let node_of = |device: Uuid| -> Option<String> {
-            (peers.iter().any(|p| p.id == device)).then(|| device.to_string().to_uppercase())
+            (is_peer(device) || strangers.contains_key(&device))
+                .then(|| device.to_string().to_uppercase())
         };
         let mut others = Vec::new();
         let mut homes: BTreeMap<Uuid, Option<String>> = BTreeMap::new();
@@ -401,13 +491,13 @@ impl DeviceMap {
                     location.entry(staged.imp.id)
                 {
                     slot.insert(node.id.clone());
-                    homes.insert(staged.imp.id, node_of(staged.home));
+                    homes.insert(staged.imp.id, node_of(staged.home.id));
                     others.push(Contact {
                         id: staged.imp.id,
                         name: staged.imp.name.clone(),
                         hue: staged.imp.hue,
                         location: node.id.clone(),
-                        home: node_of(staged.home),
+                        home: node_of(staged.home.id),
                     });
                 }
             }
@@ -419,29 +509,15 @@ impl DeviceMap {
 
         // Who each can message, by the link's own rule: the Imps of its home, and the Imps on the screen
         // its body is on.
-        let home: Vec<LinkStaged> = imps
-            .iter()
-            .map(|i| LinkStaged {
-                imp: LinkImp {
-                    id: i.id,
-                    name: i.name.clone(),
-                    hue: i.hue,
-                    scale: 1.0,
-                    traits: Default::default(),
-                    about: None,
-                    abilities: Vec::new(),
-                },
-                home: Uuid::nil(),
-            })
-            .collect();
         let entries = imps
             .iter()
             .map(|imp| {
+                let screen = screens.get(&here(imp)).map_or(&[][..], Vec::as_slice);
                 let reachable = if imp.can_talk {
-                    talks::targets(
+                    talks::reachable(
                         imp.id,
-                        &home,
-                        screens.get(&here(imp)).map_or(&[], Vec::as_slice),
+                        imps.iter().map(|i| i.id),
+                        screen.iter().map(|s| s.imp.id),
                     )
                 } else {
                     Vec::new()
@@ -454,15 +530,27 @@ impl DeviceMap {
                     tools: imp.tools.clone(),
                     talks_to: reachable
                         .iter()
-                        .map(|t| Contact {
-                            id: t.imp.id,
-                            name: t.imp.name.clone(),
-                            hue: t.imp.hue,
-                            location: location
-                                .get(&t.imp.id)
-                                .cloned()
-                                .unwrap_or_else(|| THIS_DEVICE.into()),
-                            home: homes.get(&t.imp.id).cloned().flatten(),
+                        .filter_map(|id| {
+                            let (name, hue) = imps
+                                .iter()
+                                .find(|i| i.id == *id)
+                                .map(|i| (&i.name, i.hue))
+                                .or_else(|| {
+                                    screen
+                                        .iter()
+                                        .find(|s| s.imp.id == *id)
+                                        .map(|s| (&s.imp.name, s.imp.hue))
+                                })?;
+                            Some(Contact {
+                                id: *id,
+                                name: name.clone(),
+                                hue,
+                                location: location
+                                    .get(id)
+                                    .cloned()
+                                    .unwrap_or_else(|| THIS_DEVICE.into()),
+                                home: homes.get(id).cloned().flatten(),
+                            })
                         })
                         .collect(),
                 }
@@ -532,6 +620,7 @@ pub fn pieces(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::link::messages::LinkWho;
     use crate::link::visits::tests::imp as link_imp;
 
     fn id(n: u128) -> Uuid {
@@ -578,7 +667,7 @@ mod tests {
 
     #[test]
     fn alone_is_one_node() {
-        let map = DeviceMap::build("Mac", None, &[], "", &[imp(1, "Pip")], &[]);
+        let map = DeviceMap::build("Mac", None, &[], "", &[imp(1, "Pip")], &[], &[]);
         assert_eq!(
             map.nodes.iter().map(|n| n.kind).collect::<Vec<_>>(),
             vec![NodeKind::ThisDevice]
@@ -595,6 +684,7 @@ mod tests {
             &[phone(), mac()],
             "imp.example.org",
             &[imp(1, "Pip")],
+            &[],
             &[],
         );
         assert_eq!(
@@ -632,12 +722,12 @@ mod tests {
             reach: Reach::Away,
             ..phone()
         };
-        let without = DeviceMap::build("Mac", None, std::slice::from_ref(&gone), "", &[], &[]);
+        let without = DeviceMap::build("Mac", None, std::slice::from_ref(&gone), "", &[], &[], &[]);
         assert_eq!(
             (without.channels[0].path, without.channels[0].state),
             (Path::Local, State::Offline)
         );
-        let with = DeviceMap::build("Mac", None, &[gone], "imp.example.org", &[], &[]);
+        let with = DeviceMap::build("Mac", None, &[gone], "imp.example.org", &[], &[], &[]);
         assert_eq!(
             (with.channels[0].path, with.channels[0].state),
             (Path::Relay, State::Offline)
@@ -657,6 +747,7 @@ mod tests {
             "",
             &[],
             &[],
+            &[],
         );
         assert_eq!(map.channels[0].state, State::Connecting);
     }
@@ -665,7 +756,7 @@ mod tests {
     fn a_bad_server_is_no_server() {
         for bad in ["not a host!", "", "  ", "UPPER:notaport", "-bad.example"] {
             assert!(
-                DeviceMap::build("Mac", None, &[mac()], bad, &[], &[])
+                DeviceMap::build("Mac", None, &[mac()], bad, &[], &[], &[])
                     .node(SERVER)
                     .is_none(),
                 "{bad}"
@@ -694,9 +785,16 @@ mod tests {
             "",
             &[imp(1, "Home"), away, stale],
             &[],
+            &[],
         );
         assert_eq!(map.node(&key(100)).unwrap().imps, vec![id(2)]);
-        assert_eq!(map.node(THIS_DEVICE).unwrap().imps.len(), 2);
+        // An Imp held by a device nothing describes is on that device, known only by its id: never here.
+        assert_eq!(map.node(THIS_DEVICE).unwrap().imps, vec![id(1)]);
+        let unknown = map.node(&key(999)).unwrap();
+        assert_eq!(
+            (unknown.imps.clone(), unknown.linked, unknown.name.as_str()),
+            (vec![id(3)], false, "")
+        );
     }
 
     #[test]
@@ -706,7 +804,7 @@ mod tests {
             peer(2, "iPhone 9", LinkKind::Phone, Reach::Direct),
             peer(3, "airplane", LinkKind::Phone, Reach::Direct),
         ];
-        let map = DeviceMap::build("Mac", None, &peers, "", &[], &[]);
+        let map = DeviceMap::build("Mac", None, &peers, "", &[], &[], &[]);
         assert_eq!(
             map.nodes
                 .iter()
@@ -720,7 +818,14 @@ mod tests {
     fn staged(n: u128, name: &str, home: Uuid) -> LinkStaged {
         let mut imp = link_imp(n);
         imp.name = name.into();
-        LinkStaged { imp, home }
+        LinkStaged {
+            imp,
+            home: LinkWho {
+                id: home,
+                name: format!("Home {}", home.as_u128()),
+                kind: LinkKind::Mac,
+            },
+        }
     }
 
     #[test]
@@ -736,7 +841,7 @@ mod tests {
             staged(11, "Noodle", id(100)),
             staged(1, "Dot", id(777)),
         ];
-        let map = DeviceMap::build("Mac", None, &[on_phone], "", &[dot, bumble], &[]);
+        let map = DeviceMap::build("Mac", None, &[on_phone], "", &[dot, bumble], &[], &[]);
         let names = |i: Uuid| {
             map.imp(i)
                 .unwrap()
@@ -762,7 +867,15 @@ mod tests {
     #[test]
     fn an_imp_at_home_talks_to_the_visitors_here() {
         let visitors = [staged(10, "Cinder", id(100))];
-        let map = DeviceMap::build("Mac", None, &[phone()], "", &[imp(2, "Bumble")], &visitors);
+        let map = DeviceMap::build(
+            "Mac",
+            None,
+            &[phone()],
+            "",
+            &[imp(2, "Bumble")],
+            &visitors,
+            &[],
+        );
         assert_eq!(map.imp(id(2)).unwrap().talks_to[0].name, "Cinder");
         let residents: Vec<String> = map
             .residents(THIS_DEVICE)
@@ -788,7 +901,7 @@ mod tests {
             can_talk: false,
             ..imp(2, "B")
         };
-        let map = DeviceMap::build("Mac", None, &[], "", &[a, b], &[]);
+        let map = DeviceMap::build("Mac", None, &[], "", &[a, b], &[], &[]);
         assert_eq!(map.imp(id(1)).unwrap().tools, vec![tool]);
         assert_eq!(
             map.imp(id(1))
@@ -805,7 +918,7 @@ mod tests {
     #[test]
     fn a_visitor_that_is_also_ours_is_listed_once_where_it_is() {
         let visitors = [staged(1, "Dot", id(100))];
-        let map = DeviceMap::build("Mac", None, &[], "", &[imp(1, "Dot")], &visitors);
+        let map = DeviceMap::build("Mac", None, &[], "", &[imp(1, "Dot")], &visitors, &[]);
         assert!(map.others.is_empty());
     }
 
@@ -829,6 +942,7 @@ mod tests {
             " IMP.example.org:4000 ",
             &[],
             &[],
+            &[],
         );
         let to = |n: u128| map.channels.iter().find(|c| c.to == key(n)).unwrap();
         assert_eq!(to(100).address.as_deref(), Some("studio.local:47824"));
@@ -843,7 +957,7 @@ mod tests {
             ["imp.example.org:4000"]
         );
         // A linked device with no known route has no address, and a bare Hop host is shown as set.
-        let none = DeviceMap::build("Mac", None, &[phone()], "", &[], &[]);
+        let none = DeviceMap::build("Mac", None, &[phone()], "", &[], &[], &[]);
         assert_eq!(none.channels[0].address, None);
         assert!(none.node(THIS_DEVICE).unwrap().addresses.is_empty());
     }
@@ -863,6 +977,7 @@ mod tests {
             "",
             &[imp(1, "Pip")],
             &visitors,
+            &[],
         );
         let home = |n: u128| {
             map.others
@@ -874,7 +989,8 @@ mod tests {
         };
         assert_eq!(home(10), Some(key(100)));
         assert_eq!(home(11), Some(key(100)));
-        assert_eq!(home(12), None);
+        // A home this device is not linked with is a node of its own, named by the stage.
+        assert_eq!(home(12), Some(key(999)));
         let residents = map.residents(THIS_DEVICE);
         assert_eq!(residents[0].home.as_deref(), Some(THIS_DEVICE));
         // Contacts an Imp can message carry the home too.
@@ -882,7 +998,57 @@ mod tests {
         let cinder = talks.iter().find(|c| c.id == id(10)).unwrap();
         assert_eq!(cinder.home, Some(key(100)));
         let stranger = talks.iter().find(|c| c.id == id(12)).unwrap();
-        assert_eq!(stranger.home, None);
+        assert_eq!(stranger.home, Some(key(999)));
+    }
+
+    #[test]
+    fn a_home_known_only_from_a_visitor_keeps_its_name_and_kind() {
+        let mut visitor = staged(10, "Cinder", id(555));
+        visitor.home.name = "Anna's iPhone".into();
+        visitor.home.kind = LinkKind::Phone;
+        let relayed = MapKnown {
+            id: id(555),
+            name: "Anna's iPhone".into(),
+            kind: LinkKind::Phone,
+            via: Some(id(101)),
+        };
+        let map = DeviceMap::build(
+            "Mac",
+            None,
+            &[mac()],
+            "",
+            &[],
+            &[visitor.clone()],
+            &[relayed],
+        );
+        let home = map.node(&key(555)).unwrap();
+        assert_eq!(
+            (home.name.as_str(), home.kind, home.linked, home.via.clone()),
+            ("Anna's iPhone", NodeKind::Phone, false, Some(key(101)))
+        );
+        assert_eq!(map.others[0].home, Some(key(555)));
+        // Without a `known` entry the stage's own words are enough.
+        let named = DeviceMap::build("Mac", None, &[], "", &[], &[visitor.clone()], &[]);
+        assert_eq!(named.node(&key(555)).unwrap().name, "Anna's iPhone");
+    }
+
+    #[test]
+    fn an_imp_passed_on_is_drawn_on_the_device_that_holds_it() {
+        let away = MapImp {
+            away_on: Some(id(555)),
+            ..imp(1, "Dot")
+        };
+        let held = MapKnown {
+            id: id(555),
+            name: "Anna's iPhone".into(),
+            kind: LinkKind::Phone,
+            via: Some(id(101)),
+        };
+        let map = DeviceMap::build("Mac", None, &[mac()], "", &[away], &[], &[held]);
+        assert_eq!(map.imp(id(1)).unwrap().location, key(555));
+        assert!(map.node(THIS_DEVICE).unwrap().imps.is_empty());
+        assert_eq!(map.node(&key(555)).unwrap().imps, vec![id(1)]);
+        assert_eq!(map.node(&key(555)).unwrap().via, Some(key(101)));
     }
 
     #[test]

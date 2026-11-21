@@ -1,8 +1,7 @@
 //! Steps 1 to 3: hello, nonce, proof. The bytes and the proof rules are the core's (`imp_engine::link::hop`).
 
 use imp_engine::link::hop::{HELLO_LEN, HopHello, NONCE_LEN, PROOF_LEN};
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tokio::net::TcpStream;
+use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 
 pub type Key = [u8; 32];
 pub use imp_engine::link::hop::HopRole as Role;
@@ -29,7 +28,7 @@ impl From<std::io::Error> for Failure {
     }
 }
 
-pub async fn run(stream: &mut TcpStream) -> Result<Arrived, Failure> {
+pub async fn run<S: AsyncRead + AsyncWrite + Unpin>(stream: &mut S) -> Result<Arrived, Failure> {
     let mut bytes = [0u8; HELLO_LEN];
     stream.read_exact(&mut bytes).await?;
     let hello = HopHello::parse(&bytes).ok_or(Failure::Rejected)?;

@@ -33,6 +33,9 @@ Imp is in front. Otherwise the Imp tells you to open Imp and sign in in Tools.
   That opens the usual kit review. **Nothing is added until you confirm.**
 - **Publishing.** Ask the Imp to share something. It calls `imp_export_kit`, which returns the kit document with the
   secrets emptied and without chats, then the Den's `publish_item` with the matching type. What is published is public.
+- **Other hosts.** The terminal `imp` and other MCP hosts have no `imp_export_kit` or `imp_add_kit`. Their model calls
+  the Den's `document_format` for the rules and an example, writes the document and publishes it. A downloaded
+  document is imported in Imp as a `.json` file.
 - **Skills.** A kit can name skills. The review lists each with its `npx skills add <source>` command and a Copy button.
   Imp never runs it: you install a skill yourself, in Terminal.
 

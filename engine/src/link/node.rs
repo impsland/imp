@@ -8,7 +8,7 @@
 //! panics on what a peer sends: every connection that misbehaves is closed.
 
 use crate::link::access::{self, Standing};
-use crate::link::book::{BookError, LinkBook, LinkRecord, Passing};
+use crate::link::book::{BookError, Handed, LinkBook, LinkRecord, MAX_HANDED, Passing};
 use crate::link::card::{LinkCard, LinkDevice, LinkKind, LinkRoutes};
 use crate::link::crypto::{self, Key};
 use crate::link::doors::{self, Band, Door, LinkTravel};
@@ -19,11 +19,12 @@ use crate::link::invite::LinkInvite;
 use crate::link::ledger::Claim;
 use crate::link::messages::{
     Bytes, Decoded, LinkDecline, LinkEntry, LinkImp, LinkMessage, LinkSecrets, LinkSide,
-    LinkStaged, MAX_TEXT,
+    LinkStaged, LinkWho, MAX_TEXT,
 };
 use crate::link::noise::{ChunkReader, Handshake, Secure};
 use crate::link::talks::{self, First, Pending};
 use crate::link::transfers::{Received, Reply, TransferKind, Transfers};
+use crate::link::uploads::{self, MAX_PART, MAX_UPLOAD, Upload, Uploads};
 use crate::link::{
     INVITE_LIFE, MAX_CONNECTIONS, MAX_LINKS, PING_INTERVAL, PORT, SILENCE_LIMIT, VISITOR_GRACE,
 };
@@ -324,6 +325,7 @@ pub struct Node {
     invite_on_screen: bool,
     transfers: Transfers,
     talks: Pending,
+    uploads: Uploads,
     stages: BTreeMap<Uuid, Vec<LinkStaged>>,
     own_stage: Vec<LinkStaged>,
     arrivals: BTreeMap<Uuid, Arrival>,
@@ -379,6 +381,7 @@ impl Node {
             invite_on_screen: false,
             transfers: Transfers::default(),
             talks: Pending::default(),
+            uploads: Uploads::default(),
             stages: BTreeMap::new(),
             own_stage: Vec::new(),
             arrivals: BTreeMap::new(),
@@ -441,6 +444,16 @@ impl Node {
     /// This device, as others see it.
     pub fn device(&self) -> LinkDevice {
         self.identity.device()
+    }
+
+    /// This device as the home of its own Imps.
+    pub fn who(&self) -> LinkWho {
+        let device = self.identity.device();
+        LinkWho {
+            id: device.id,
+            name: device.name,
+            kind: device.kind,
+        }
     }
 
     pub fn identity(&self) -> &Identity {
@@ -584,6 +597,7 @@ impl Node {
     pub fn is_trusted_message(&self, message: &LinkMessage, device: Uuid) -> bool {
         match message {
             LinkMessage::Ask { .. }
+            | LinkMessage::Upload { .. }
             | LinkMessage::Stop { .. }
             | LinkMessage::NewChat { .. }
             | LinkMessage::Felt { .. }
@@ -609,7 +623,7 @@ impl Node {
             .iter()
             .chain(self.stage_of(device))
             .find(|s| s.imp.id == imp)
-            .map(|s| s.home)
+            .map(|s| s.home.id)
     }
 
     // MARK: Addresses
@@ -944,6 +958,7 @@ impl Node {
                 self.fail(&q);
             }
             self.arrivals.retain(|_, a| a.from != id);
+            self.uploads.lost(id);
             if conn.established && !conn.superseded {
                 self.emit(Event::Disconnected(id));
             }
@@ -996,6 +1011,52 @@ impl Node {
             Some(cid) => self.send_on(cid, message),
             None => false,
         }
+    }
+
+    /// Sends a file to the home of an Imp this device holds, to name in the next `ask`: the `upload`
+    /// and all its parts are queued. Returns the id to put in `attachments`. None if `to` is not
+    /// connected or the file is empty or too big.
+    pub fn upload(
+        &mut self,
+        imp: Uuid,
+        to: Uuid,
+        name: &str,
+        mime: &str,
+        data: Vec<u8>,
+        _now: Time,
+    ) -> Option<Uuid> {
+        if data.is_empty() || data.len() as u64 > MAX_UPLOAD || !self.connections.contains_key(&to)
+        {
+            return None;
+        }
+        let id = crypto::new_id();
+        let start = LinkMessage::Upload {
+            id,
+            imp,
+            name: uploads::clean_name(name),
+            mime: mime.trim().chars().take(200).collect(),
+            size: data.len() as u64,
+            sha256: crate::workspace::checksum(&data),
+        };
+        if !self.send(&start, to) {
+            return None;
+        }
+        for (i, part) in data.chunks(MAX_PART).enumerate() {
+            let part = LinkMessage::UploadPart {
+                id,
+                offset: (i * MAX_PART) as u64,
+                data: part.to_vec().into(),
+            };
+            if !self.send(&part, to) {
+                return None;
+            }
+        }
+        Some(id)
+    }
+
+    /// A file that arrived whole from `from`, for an `ask` that names it. It is forgotten once taken.
+    pub fn take_upload(&mut self, id: Uuid, from: Uuid) -> Option<Upload> {
+        self.uploads.take(id, from)
     }
 
     // MARK: Handshake
@@ -1283,6 +1344,7 @@ impl Node {
             );
         }
         self.deliver_notices();
+        self.deliver_handed();
         self.claim_everything(cid);
         self.send_on(
             cid,
@@ -1338,6 +1400,24 @@ impl Node {
         }
     }
 
+    /// Tells the homes of Imps this device passed on where they went, as far as they are connected.
+    fn deliver_handed(&mut self) {
+        let waiting = std::mem::take(&mut self.book.handed);
+        let before = waiting.len();
+        for h in waiting {
+            let message = LinkMessage::Moved {
+                imp: h.imp,
+                to: h.to.clone(),
+            };
+            if !self.send(&message, h.home) {
+                self.book.handed.push(h);
+            }
+        }
+        if self.book.handed.len() != before {
+            self.commit();
+        }
+    }
+
     /// Tells every connected device the news it was owed (an Imp of ours it no longer holds).
     fn deliver_notices(&mut self) {
         if self.book.away.notices().is_empty() {
@@ -1380,6 +1460,16 @@ impl Node {
                 | LinkMessage::NewChat { imp }
                 | LinkMessage::Felt { imp, .. }
                 | LinkMessage::Talks { imp } => {
+                    self.send_on(cid, &LinkMessage::Gone { imp: *imp });
+                }
+                LinkMessage::Upload { id, imp, .. } => {
+                    self.send_on(
+                        cid,
+                        &LinkMessage::UploadFailed {
+                            id: *id,
+                            reason: "That Imp isn't here any more.".into(),
+                        },
+                    );
                     self.send_on(cid, &LinkMessage::Gone { imp: *imp });
                 }
                 LinkMessage::File { id, imp, .. } => {
@@ -1428,6 +1518,14 @@ impl Node {
             LinkMessage::Release { imp, ticket } => self.on_release(cid, imp, &ticket.0, message),
             LinkMessage::Claimed { imp, ticket } => self.on_claimed(cid, imp, &ticket.0),
             LinkMessage::Gone { imp } => self.on_gone(cid, imp, message),
+            LinkMessage::Moved { imp, to } => {
+                if to.id != self.identity.id()
+                    && self.book.away.moved(imp, from, to.id, &to.name, to.kind)
+                {
+                    self.commit();
+                    self.emit(Event::Message(LinkMessage::Moved { imp, to }, from));
+                }
+            }
             LinkMessage::Pass {
                 transfer,
                 imp,
@@ -1467,6 +1565,38 @@ impl Node {
             }
             LinkMessage::Answer { id, text, failed } => {
                 self.on_answer(id, text, failed, from, message)
+            }
+            LinkMessage::Upload {
+                id,
+                name,
+                mime,
+                size,
+                sha256,
+                ..
+            } => {
+                if let Err(why) = self
+                    .uploads
+                    .begin(id, from, &name, &mime, size, &sha256, now)
+                {
+                    self.send_on(
+                        cid,
+                        &LinkMessage::UploadFailed {
+                            id,
+                            reason: why.reason().into(),
+                        },
+                    );
+                }
+            }
+            LinkMessage::UploadPart { id, offset, data } => {
+                if let Some(Err(why)) = self.uploads.part(id, from, offset, &data.0, now) {
+                    self.send_on(
+                        cid,
+                        &LinkMessage::UploadFailed {
+                            id,
+                            reason: why.reason().into(),
+                        },
+                    );
+                }
             }
             LinkMessage::Look { imp } => {
                 self.book.visits.update(&imp);
@@ -1742,17 +1872,39 @@ impl Node {
 
     // MARK: Invites and links
 
-    /// A new invite to show as a QR code. The previous one stops working.
+    /// The invite to show as a QR code: the one already out while it still works, so a code that was copied
+    /// or shown before stays good when it is shown again (the screen reopened, the app came back from the
+    /// background). A new one once it has expired. Its routes are always the current ones.
     pub fn invite(&mut self, now: Time) -> LinkInvite {
-        let key = crypto::random_key();
-        self.book.invite = Some(key.to_vec().into());
+        let Some(key) = self
+            .book
+            .invite
+            .clone()
+            .filter(|_| self.invite_is_fresh(now))
+        else {
+            return self.new_invite(now);
+        };
         self.book.invite_shown = Some(now);
         self.invite_on_screen = true;
         self.commit();
+        self.invite_of(key)
+    }
+
+    /// A new invite to show as a QR code. The previous one stops working.
+    pub fn new_invite(&mut self, now: Time) -> LinkInvite {
+        let key: Bytes = crypto::random_key().to_vec().into();
+        self.book.invite = Some(key.clone());
+        self.book.invite_shown = Some(now);
+        self.invite_on_screen = true;
+        self.commit();
+        self.invite_of(key)
+    }
+
+    fn invite_of(&self, key: Bytes) -> LinkInvite {
         LinkInvite {
             device: self.identity.device(),
             door: self.book.door.clone(),
-            invite: key.to_vec().into(),
+            invite: key,
             routes: self.current_routes(),
         }
     }
@@ -1828,6 +1980,7 @@ impl Node {
                 self.retire(cid, now);
             }
             self.book.away.drop_notices(device);
+            self.book.handed.retain(|h| h.home != device);
             self.drop_link(device);
         }
         self.reconcile(now);
@@ -2112,8 +2265,27 @@ impl Node {
             }
             match outcome {
                 PassOutcome::Took => {
-                    if self.book.visits.leave(t.imp).is_some() {
-                        // It is gone from here, and a visit's ticket went with it.
+                    if let Some(visit) = self.book.visits.leave(t.imp) {
+                        // It is gone from here, and a visit's ticket went with it. Its home hears where it
+                        // went (if it is not the home itself), even when it is not linked with that device.
+                        if visit.home.id() != t.to
+                            && let Some(link) = self.book.links.iter().find(|l| l.id() == t.to)
+                        {
+                            let to = LinkWho {
+                                id: t.to,
+                                name: link.device.name.clone(),
+                                kind: link.device.kind,
+                            };
+                            self.book.handed.retain(|h| h.imp != t.imp);
+                            self.book.handed.push(Handed {
+                                imp: t.imp,
+                                home: visit.home.id(),
+                                to,
+                            });
+                            let extra = self.book.handed.len().saturating_sub(MAX_HANDED);
+                            self.book.handed.drain(..extra);
+                            self.deliver_handed();
+                        }
                         self.commit();
                     } else if self.book.away.holder(t.imp) != Some(t.to) {
                         // We called it home meanwhile: the receiver must let go.
@@ -2267,7 +2439,7 @@ impl Node {
         if self
             .own_stage
             .iter()
-            .any(|s| s.imp.id == imp.id && s.home == self.identity.id())
+            .any(|s| s.imp.id == imp.id && s.home.id == self.identity.id())
         {
             return Some(LinkDecline::Other);
         }
@@ -2341,6 +2513,7 @@ impl Node {
         for id in stale {
             self.arrivals.remove(&id);
         }
+        self.uploads.expire(now);
         for q in self.talks.expired(now) {
             self.fail(&q);
         }

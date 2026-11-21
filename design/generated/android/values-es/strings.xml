@@ -115,6 +115,7 @@
   <string name="devices_copy_link_help">Para un dispositivo que no puede escanear: pega el enlace en Escanear código en el otro dispositivo. Mantenlo en privado. Permite que un dispositivo se vincule con este Mac durante un rato.</string>
   <string name="devices_edge_label">%1$s con %2$s. %3$s. %4$s</string>
   <string name="devices_edge_travelling">De viaje</string>
+  <string name="devices_elsewhere_title">En otro lugar</string>
   <string name="devices_empty">Aún no hay dispositivos.</string>
   <string name="devices_forget_named">Olvidar %1$s…</string>
   <string name="devices_forget_one">Olvidar este dispositivo…</string>
@@ -133,6 +134,7 @@
   <string name="devices_inspector_holds">Imps de este Mac que tiene</string>
   <string name="devices_inspector_reach">Cómo se llega</string>
   <string name="devices_inspector_through_hop">Alcanzados por él</string>
+  <string name="devices_link_directly_help">Enlaza este dispositivo directamente, para que no dependa del otro.</string>
   <string name="devices_list_info">Dispositivos vinculados con este. Mío permite que un dispositivo actúe por ti.</string>
   <string name="devices_map_summary">Mapa de tus dispositivos: %1$s vinculados, %2$s Imps de este Mac, %3$s Imps de otros dispositivos.</string>
   <string name="devices_node_label">%1$s, %2$s. Imps: %3$s</string>
@@ -161,6 +163,11 @@
   <string name="devices_state_connected">Conectado</string>
   <string name="devices_state_connecting">Conectando</string>
   <string name="devices_state_offline">Ausente</string>
+  <string name="devices_status_here">Aquí</string>
+  <string name="devices_status_nearby">Cerca</string>
+  <string name="devices_status_through">Por %%1$@</string>
+  <string name="devices_status_via_server">Por servidor</string>
+  <string name="devices_status_visiting">De visita</string>
   <string name="devices_talk_label">%1$s puede escribir a %2$s</string>
   <string name="devices_tether_label">%1$s está en %2$s y piensa en %3$s</string>
   <string name="devices_this_info">Vincula otro dispositivo aquí. El punto indica si The Hop permite que se encuentren desde cualquier lugar.</string>

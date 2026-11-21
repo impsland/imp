@@ -83,6 +83,19 @@ public enum Briefing {
         return .user("\(ask)\n\n\(note(imagePath))", images: [image])
     }
 
+    /// Something typed or said with photos, sounds or videos. `paths` are where each was saved
+    /// (the same order; nil for one that wasn't). With no words, a line suits what is attached.
+    public static func message(_ words: String, media: [MediaFile], paths: [String?] = []) -> ChatMessage {
+        guard !media.isEmpty else { return .user(words) }
+        let ask = words.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? MediaFile.defaultWords(for: media) : words
+        let notes = media.enumerated().map { i, file -> String in
+            let what = switch file.kind { case .image: "picture"; case .audio: "sound"; case .video: "video"; case .file: "file" }
+            let saved = i < paths.count ? paths[i] : nil
+            return saved.map { "The \(what) \"\(file.name)\" is attached, and saved at \($0)." } ?? "The \(what) \"\(file.name)\" is attached."
+        }
+        return .user("\(ask)\n\n(\(notes.joined(separator: " ")))", media: media)
+    }
+
     /// The same turn as remembered in the conversation: words only (the file stays on disk).
     public static func remembered(_ message: ChatMessage) -> ChatMessage {
         var m = message

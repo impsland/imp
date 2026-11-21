@@ -113,6 +113,7 @@
   <string name="devices_copy_link_help">For a device that can\'t scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while.</string>
   <string name="devices_edge_label">%1$s to %2$s. %3$s. %4$s</string>
   <string name="devices_edge_travelling">Travelling</string>
+  <string name="devices_elsewhere_title">Elsewhere</string>
   <string name="devices_empty">No devices yet.</string>
   <string name="devices_forget_named">Forget %1$s…</string>
   <string name="devices_forget_one">Forget this device…</string>
@@ -131,6 +132,7 @@
   <string name="devices_inspector_holds">Imps of this Mac it holds</string>
   <string name="devices_inspector_reach">How it is reached</string>
   <string name="devices_inspector_through_hop">Reached through it</string>
+  <string name="devices_link_directly_help">Link this device directly, so it no longer depends on the other one.</string>
   <string name="devices_list_info">Devices linked with this one. Mine lets a device act for you.</string>
   <string name="devices_map_summary">Map of your devices: %1$s linked, %2$s Imps of this Mac, %3$s Imps of other devices.</string>
   <string name="devices_node_label">%1$s, %2$s. Imps: %3$s</string>
@@ -159,6 +161,11 @@
   <string name="devices_state_connected">Connected</string>
   <string name="devices_state_connecting">Connecting</string>
   <string name="devices_state_offline">Away</string>
+  <string name="devices_status_here">Here</string>
+  <string name="devices_status_nearby">Nearby</string>
+  <string name="devices_status_through">Through %%1$@</string>
+  <string name="devices_status_via_server">Via server</string>
+  <string name="devices_status_visiting">Visiting</string>
   <string name="devices_talk_label">%1$s can message %2$s</string>
   <string name="devices_tether_label">%1$s is on %2$s and thinks on %3$s</string>
   <string name="devices_this_info">Link another device here. The dot shows whether The Hop lets devices find each other from anywhere.</string>

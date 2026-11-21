@@ -6,7 +6,6 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
-use tokio::net::TcpStream;
 use tokio::time::{Instant, sleep, sleep_until};
 
 const CHUNK: usize = 16 * 1024;
@@ -84,19 +83,22 @@ where
 }
 
 /// Runs until one side fails or both are done, the link is idle for `idle`, or `stop` completes.
-pub async fn splice(
-    a: TcpStream,
-    b: TcpStream,
+pub async fn splice<A, B>(
+    a: A,
+    b: B,
     bytes_per_second: u64,
     idle: Duration,
     stop: impl Future<Output = ()>,
-) {
+) where
+    A: AsyncRead + AsyncWrite + Send,
+    B: AsyncRead + AsyncWrite + Send,
+{
     let activity = Arc::new(Activity {
         start: Instant::now(),
         last_ms: AtomicU64::new(0),
     });
-    let (a_read, a_write) = a.into_split();
-    let (b_read, b_write) = b.into_split();
+    let (a_read, a_write) = tokio::io::split(a);
+    let (b_read, b_write) = tokio::io::split(b);
     let both = async {
         tokio::try_join!(
             copy(a_read, b_write, bytes_per_second, Arc::clone(&activity)),

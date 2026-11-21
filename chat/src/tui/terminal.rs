@@ -413,6 +413,7 @@ impl Chat {
         match attached.content {
             Some(content) => {
                 app.chat.amend_last_user(content.clone());
+                app.chat.attach_media(attached.media);
                 content
             }
             None => text,

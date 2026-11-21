@@ -241,6 +241,7 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `devices.copy_link.help` | For a device that can't scan: paste the link in Scan code on the other device. Keep it private. It lets a device link with this Mac for a while. |
 | `devices.edge.label` | {from} to {to}. {route}. {state} |
 | `devices.edge.travelling` | Travelling |
+| `devices.elsewhere.title` | Elsewhere |
 | `devices.empty` | No devices yet. |
 | `devices.forget.named` | Forget {name}… |
 | `devices.forget.one` | Forget this device… |
@@ -259,6 +260,7 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `devices.inspector.holds` | Imps of this Mac it holds |
 | `devices.inspector.reach` | How it is reached |
 | `devices.inspector.through_hop` | Reached through it |
+| `devices.link_directly.help` | Link this device directly, so it no longer depends on the other one. |
 | `devices.list.info` | Devices linked with this one. Mine lets a device act for you. |
 | `devices.map.summary` | Map of your devices: {devices} linked, {ours} Imps of this Mac, {visitors} Imps of other devices. |
 | `devices.node.label` | {name}, {state}. Imps: {imps} |
@@ -287,6 +289,11 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `devices.state.connected` | Connected |
 | `devices.state.connecting` | Connecting |
 | `devices.state.offline` | Away |
+| `devices.status.here` | Here |
+| `devices.status.nearby` | Nearby |
+| `devices.status.through` | Through %1$@ |
+| `devices.status.via_server` | Via server |
+| `devices.status.visiting` | Visiting |
 | `devices.talk.label` | {imp} can message {contact} |
 | `devices.tether.label` | {imp} is on {node} and thinks on {home} |
 | `devices.this.info` | Link another device here. The dot shows whether The Hop lets devices find each other from anywhere. |

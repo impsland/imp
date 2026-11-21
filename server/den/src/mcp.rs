@@ -23,9 +23,10 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::den::{Den, ListQuery, PublishItem};
+use crate::den::{Den, FormatQuery, ListQuery, PublishItem};
 use crate::error::Error;
 use crate::extract::caller_of;
+use crate::kit::{self, Kind};
 
 /// The MCP revisions the Den speaks, newest first.
 pub const PROTOCOL_VERSIONS: [&str; 3] = ["2026-07-28", "2025-11-25", "2025-06-18"];
@@ -44,12 +45,14 @@ const WRITE_TOOLS: [&str; 4] = [
     "delete_account",
 ];
 
-const INSTRUCTIONS: &str = "The Imp Den shares items for Imp, the desktop pet: whole Imps (imp), animations, triggers, tools and \
-bundles of them (kit). Every item is a small JSON document with `\"format\": 1`. Search with search_items, read with get_item, \
-and fetch the document with download_item, then give it to Imp's imp_add_kit (nothing is added until the person confirms). \
-Items with runs_programs set start programs or ask for skills to be installed, so tell the person first. To publish you need \
-an account; the first call of publish_item makes your MCP client open a sign-in page for the person. Export with \
-imp_export_kit, then call publish_item with a type, a slug, a one-line summary, 1 to 5 tags and the document.";
+const INSTRUCTIONS: &str = "The Imp Den is a gallery of items for Imp, the desktop pet: whole Imps (imp), animations, triggers, \
+tools (MCP servers) and bundles of them (kit). Every item is a small JSON document with `\"format\": 1`. \
+Find items with search_items, read one with get_item, and fetch its document with download_item. In Imp, give that document to \
+imp_add_kit, which adds nothing until the person confirms. Items with runs_programs set start programs on the person's \
+computer or ask for skills to be installed, so say so first. \
+To share something, get its document (Imp's imp_export_kit, where the host has it, or write one by the rules document_format \
+returns) and call publish_item. Publishing needs an account: on the first publish the MCP client opens a sign-in page for \
+the person.";
 
 #[derive(Clone)]
 pub struct ImpMcp {
@@ -108,8 +111,9 @@ impl ImpMcp {
 #[tool_router]
 impl ImpMcp {
     #[tool(
-        description = "Search the Imp Den for shared items: Imps, animations, triggers, tools and kits. All filters are \
-                       optional. Returns a page of item summaries and a next_cursor to pass back for the next page.",
+        description = "Search the Imp Den for shared items: Imps, animations, triggers, tools and kits. Every filter is \
+                       optional; with none, the newest items come first. Returns a page of item summaries and a \
+                       next_cursor to pass back, with the same filters, for the next page.",
         annotations(read_only_hint = true)
     )]
     async fn search_items(
@@ -143,8 +147,9 @@ impl ImpMcp {
     }
 
     #[tool(
-        description = "Download an item: its summary and its document, ready to give to Imp's imp_add_kit. Counts one \
-                       install. Items with runs_programs set start programs or install skills, so tell the person first.",
+        description = "Download an item: its summary and its document, ready to give to Imp's imp_add_kit or to save as \
+                       a .json file Imp imports. Counts one install. Items with runs_programs set start programs or \
+                       install skills, so tell the person first.",
         annotations(
             read_only_hint = false,
             destructive_hint = false,
@@ -164,10 +169,32 @@ impl ImpMcp {
     }
 
     #[tool(
-        description = "Publish an item under your handle, or update it (the revision goes up by one). Needs an account: \
-                       the person signs in when asked. The type (imp, animation, trigger, tool or kit) must match the \
-                       document, which has `format: 1` and a name, and holds no secrets (env and header values stay \
-                       empty). The Den refuses a document it already has.",
+        description = "The document format of Den items: what each type holds, every field with its allowed values and \
+                       ranges, and an example that passes. Call it before writing a document for publish_item yourself.",
+        annotations(read_only_hint = true)
+    )]
+    async fn document_format(
+        &self,
+        Parameters(query): Parameters<FormatQuery>,
+    ) -> Result<CallToolResult, CallToolResult> {
+        let kind = match query.kind.as_deref().map(Kind::parse) {
+            None => None,
+            Some(Some(kind)) => Some(kind),
+            Some(None) => {
+                return Err(self.failed(&Error::BadRequest(
+                    "`type` is one of imp, animation, trigger, tool, kit.".to_owned(),
+                )));
+            }
+        };
+        self.done(&kit::reference(kind))
+    }
+
+    #[tool(
+        description = "Publish an item under your handle, or update your item with that slug (the revision goes up by \
+                       one). Needs an account: the person signs in when asked. The document is what Imp's imp_export_kit \
+                       gives; to write one yourself, call document_format first for the fields, allowed values and an \
+                       example. The type must match what the document holds, and the document holds no secrets (env \
+                       and header values stay empty). A document some other item already has is refused as a duplicate.",
         annotations(destructive_hint = false, idempotent_hint = true)
     )]
     async fn publish_item(

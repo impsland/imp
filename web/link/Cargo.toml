@@ -1,0 +1,41 @@
+[package]
+name = "imp-web"
+description = "The Imp link node for a web page: imp-engine's Node, compiled to WebAssembly"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+# Built with web/build.sh into web/app/pkg, never published.
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+# The glue wasm-bindgen generates is `unsafe` by nature, as imp-ffi's is. This crate only wraps
+# imp-engine, which keeps `forbid(unsafe_code)`.
+[lints.rust]
+unsafe_code = "allow"
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+
+[dependencies]
+base64.workspace = true
+imp-engine = { workspace = true, default-features = false }
+qrcode.workspace = true
+rqrr.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+wasm-bindgen = "0.2.129"
+
+# The browser is the only source of randomness in WebAssembly. Each getrandom the engine pulls in
+# (0.2 through ring, 0.3 through snow, 0.4 through rand) is told to use it. 0.3 also needs
+# `--cfg getrandom_backend="wasm_js"`, which web/build.sh passes.
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom02 = { package = "getrandom", version = "0.2", features = ["js"] }
+getrandom03 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
+getrandom04 = { package = "getrandom", version = "0.4", features = ["wasm_js"] }
+
+[dev-dependencies]
+base64.workspace = true

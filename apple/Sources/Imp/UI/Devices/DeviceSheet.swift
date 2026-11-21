@@ -8,31 +8,37 @@ struct DeviceSheetShell<Page: View>: View {
     let model: AppModel
     let icon: String
     let title: String
+    /// How the thing stands: the one pill in the header.
+    var status: DeviceStatus?
     @ViewBuilder var page: Page
     @State private var edits: DeviceEdits
     @Environment(\.dismiss) private var dismiss
 
-    init(model: AppModel, icon: String, title: String, @ViewBuilder page: () -> Page) {
+    init(model: AppModel, icon: String, title: String, status: DeviceStatus? = nil, @ViewBuilder page: () -> Page) {
         self.model = model
         self.icon = icon
         self.title = title
+        self.status = status
         self.page = page()
         _edits = State(initialValue: DeviceEdits(model))
     }
 
     var body: some View {
-        SheetScaffold(icon: icon, title: LocalizedStringKey(title), cancel: { edits.restore(model); dismiss() }) {
+        SheetScaffold(icon: icon, title: LocalizedStringKey(title), cancel: { edits.restore(model); dismiss() }, accessory: {
+            if let status { StatusPill(status: status) }
+        }, content: {
             page
-        } footer: {
+        }, footer: {
             Button { dismiss() } label: { FitLabel("common.done", systemImage: "checkmark") }
                 .buttonStyle(.primary).keyboardShortcut(.defaultAction)
-        }
+        })
     }
 }
 
-/// What a press on the canvas opens: a sheet about one device, Imp or line. Its pages are in the `…Page` files. Each
-/// follows one order: the status, the main actions, the details and switches, and last what destroys. A button
-/// inside that leads to another thing swaps the sheet. Forgetting asks first.
+/// What a press on the canvas opens: a sheet about one device, Imp or line. Its pages are in the `…Page` files, all
+/// in one compact layout: the header has the picture, the name and one status pill. Then come a row of actions, a
+/// short list of rows with a picture each, and last, alone, what destroys. Explanations are tooltips, not text. A row
+/// that leads to another thing swaps the sheet. Forgetting asks first.
 struct DeviceSheet: View {
     let model: AppModel
     let router: HomeRouter
@@ -48,7 +54,7 @@ struct DeviceSheet: View {
                                 link: { swap(.link) }, forget: { forgetting = $0 }, forgetEveryone: { forgettingEveryone = true },
                                 hop: { swap(.hop) })
         let head = head(ctx)
-        DeviceSheetShell(model: model, icon: head.icon, title: head.title) {
+        DeviceSheetShell(model: model, icon: head.icon, title: head.title, status: status(ctx)) {
             page(ctx)
         }
         .confirmationDialog(forgetting.map { String(localized: "Forget \($0.name)?") } ?? "",
@@ -78,6 +84,22 @@ struct DeviceSheet: View {
             guard let channel = map.channels.first(where: { $0.id == id }) else { return ("questionmark", String(localized: "devices.unknown_device")) }
             return (channel.path == .relay ? "arrow.triangle.swap" : "wifi",
                     words("devices.channel.title", ctx.name(of: channel.from), ctx.name(of: channel.to)))
+        }
+    }
+
+    /// The one pill in the header.
+    private func status(_ ctx: DeviceContext) -> DeviceStatus? {
+        switch selection {
+        case .node(let id): map.node(id).map(map.status(of:))
+        case .imp(let id, let node):
+            if map.imp(id) != nil {
+                node == ctx.thisMac ? DeviceStatus(word: String(localized: "devices.status.here"), tone: Tone.good)
+                    : DeviceStatus(word: String(localized: "devices.state.offline"), tone: Tone.warnText)
+            } else {
+                node == ctx.thisMac ? DeviceStatus(word: String(localized: "devices.status.visiting"), tone: Tone.muted)
+                    : DeviceStatus(word: map.title(of: node), tone: Tone.muted)
+            }
+        case .channel(let id): map.channels.first { $0.id == id }.map(map.status(of:))
         }
     }
 

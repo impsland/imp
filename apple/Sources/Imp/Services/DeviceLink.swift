@@ -186,7 +186,21 @@ final class DeviceLink {
 
     // MARK: To the home of a visiting Imp
 
-    func ask(_ imp: UUID, _ text: String) { tell(imp, .ask(imp: imp, text: String(text.prefix(LinkProtocol.maxText)))) }
+    /// Asks the home of a visiting Imp. Any files are uploaded first (`LinkNode.upload`) and the question names them.
+    /// False when the home didn't take a file: nothing is asked then.
+    @discardableResult
+    func ask(_ imp: UUID, _ text: String, media: [MediaFile] = []) -> Bool {
+        var uploads: [UUID] = []
+        if !media.isEmpty {
+            guard let home = node?.visits.visit(of: imp)?.home.id else { return false }
+            for file in media.prefix(MediaFile.maxCount) {
+                guard let id = node?.upload(file, imp: imp, to: home) else { return false }
+                uploads.append(id)
+            }
+        }
+        tell(imp, .ask(imp: imp, text: String(text.prefix(LinkProtocol.maxText)), attachments: uploads))
+        return true
+    }
     func stop(_ imp: UUID) { tell(imp, .stop(imp: imp)) }
     func newChat(_ imp: UUID) { tell(imp, .newChat(imp: imp)) }
     func openChat(_ imp: UUID, _ chat: UUID) { tell(imp, .openChat(imp: imp, chat: chat)) }
@@ -343,11 +357,13 @@ final class DeviceLink {
         case .release(let imp, _):
             app.cameHome(imp)
             refresh()
-        case .ask(let imp, let text):
+        case .ask(let imp, let text, let attachments):
             let words = String(text.trimmingCharacters(in: .whitespacesAndNewlines).prefix(LinkProtocol.maxText))
-            guard let model = own(imp), !words.isEmpty else { return }
+            // The files that came ahead of the question (taken, so each is used once).
+            let media = attachments.prefix(MediaFile.maxCount).compactMap { node.takeUpload($0, from: device) }
+            guard let model = own(imp), !words.isEmpty || !media.isEmpty else { return }
             // Only the owner's own devices make an Imp use its tools, and only the ones allowed for them.
-            model.ask(words, askedFrom: origin(of: device, message))
+            model.ask(words, media: media, askedFrom: origin(of: device, message))
         case .stop(let imp):
             own(imp)?.cancel()
         case .newChat(let imp):
@@ -641,11 +657,11 @@ final class DeviceLink {
     /// own Imps). The Imps of this Mac are reached directly, wherever they are.
     func targets(of imp: UUID) -> [LinkStaged] {
         guard let node else { return [] }
-        let me = node.device.id
+        let me = node.device.who
         let mine = app.prefs.imps.filter(\.isActive).map { LinkStaged(imp: app.linkImp($0), home: me) }
         let body = node.holder(of: imp).map { node.stage(of: $0) + visitorsStaged } ?? visitorsStaged
         let stage = body + node.onMyOtherDevices
-        return LinkTalks.targets(of: imp, mine: mine, stage: stage).filter { $0.home != me }
+        return LinkTalks.targets(of: imp, mine: mine, stage: stage).filter { $0.home.id != me.id }
     }
 
     /// An Imp here asks an Imp on another device something and waits for its answer. Throws why it
@@ -657,7 +673,7 @@ final class DeviceLink {
         guard let node else { throw unreachable }
         let id = UUID()
         let me = app.linkImp(sender)
-        switch node.talk(id: id, from: me, to: target.id, toHome: target.home, text: words, holder: node.holder(of: sender.id) ?? node.device.id) {
+        switch node.talk(id: id, from: me, to: target.id, toHome: target.home.id, text: words, holder: node.holder(of: sender.id) ?? node.device.id) {
         case .unreachable:
             throw unreachable
         case .here:
@@ -747,13 +763,28 @@ final class DeviceLink {
     /// The Imps visiting this desktop, as the other devices are told.
     var visitorsStaged: [LinkStaged] {
         if let sampleVisitors { return sampleVisitors }
-        return app.visitors.compactMap { model in model.visit.map { LinkStaged(imp: $0.look, home: $0.homeID) } }
+        return app.visitors.compactMap { model in staged(model.visit) }
+    }
+
+    /// A visiting Imp as the other devices are told: with its home, from the home's card in the visit.
+    private func staged(_ visiting: Visiting?) -> LinkStaged? {
+        guard let visit = visiting.flatMap({ node?.visits.visit(of: $0.look.id) }) else { return nil }
+        return LinkStaged(imp: visit.imp, home: visit.home.device.who)
+    }
+
+    /// The devices this Mac knows only through another: where its Imps went on, as their holders told the ledger.
+    var knownDevices: [DeviceMap.Known] {
+        guard let node else { return [] }
+        return node.away.entries.compactMap { entry in
+            entry.elsewhere.map { DeviceMap.Known(id: entry.holder, name: $0.name, kind: $0.kind, via: $0.via) }
+        }
     }
 
     /// The other devices are told which Imps are on this desktop, visitors too.
     private func watchStage() {
         let staged = withObservationTracking {
-            app.prefs.imps.filter { $0.isActive && $0.awayOn == nil }.map { LinkStaged(imp: app.linkImp($0), home: node?.device.id ?? UUID()) }
+            guard let me = node?.device.who else { return [LinkStaged]() }
+            return app.prefs.imps.filter { $0.isActive && $0.awayOn == nil }.map { LinkStaged(imp: app.linkImp($0), home: me) }
                 + visitorsStaged
         } onChange: { [weak self] in
             Task { @MainActor in self?.watchStage() }

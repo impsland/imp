@@ -30,10 +30,26 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
         }
     }
 
+    /// A device this Mac is not linked with but knows of through another: told to the map by the link.
+    public struct Known: Equatable, Sendable, Encodable {
+        public var id: UUID
+        /// Empty when only the id is known.
+        public var name: String
+        public var kind: LinkKind
+        /// The linked device that relays it.
+        public var via: UUID?
+        public init(id: UUID, name: String, kind: LinkKind, via: UUID? = nil) { self.id = id; self.name = name; self.kind = kind; self.via = via }
+    }
+
     public struct Node: Equatable, Sendable, Identifiable, Decodable {
         public var id: String
         public var kind: NodeKind
         public var name: String
+        /// False for a device known only through a third party (the home of a visitor, or the device an Imp was
+        /// passed on to): its name and kind are as that device said, and it is reached through `via`.
+        public var linked = true
+        /// For a device that is not linked: the node of the linked device that relays it.
+        public var via: String?
         public var isTrusted = false
         /// For a server: connected when a channel runs through it right now.
         public var state: State
@@ -113,7 +129,7 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
     /// `thisRoutes` are the ones this Mac answers on (`LinkStatus.routes`). `visitors` are the Imps of other
     /// devices visiting this Mac's desktop.
     public static func build(thisMac: String, thisRoutes: LinkRoutes? = nil, peers: [Peer], server: String,
-                             imps: [ImpProfile], mcpServers: [MCPServerConfig], visitors: [LinkStaged] = []) -> DeviceMap {
+                             imps: [ImpProfile], mcpServers: [MCPServerConfig], visitors: [LinkStaged] = [], known: [Known] = []) -> DeviceMap {
         struct Entry: Encodable {
             var id: UUID
             var name: String
@@ -129,7 +145,7 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
         let encoder = JSONEncoder()
         func text<T: Encodable>(_ value: T) -> String { (try? encoder.encode(value)).flatMap { String(data: $0, encoding: .utf8) } ?? "[]" }
         guard let json = try? linkDeviceMap(thisDevice: thisMac, thisRoutes: thisRoutes.map(text) ?? "", peers: text(peers), server: server, imps: text(entries),
-                                            visitors: text(visitors)),
+                                            visitors: text(visitors), known: text(known)),
               let map = try? JSONDecoder().decode(DeviceMap.self, from: Data(json.utf8)) else {
             return DeviceMap(nodes: [], channels: [], imps: [], others: [])
         }

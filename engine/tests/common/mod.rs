@@ -4,7 +4,7 @@
 
 use imp_engine::link::card::LinkKind;
 use imp_engine::link::node::{ConnId, Event, Node, Options, Output};
-use imp_engine::link::{LinkImp, LinkMessage, LinkStaged};
+use imp_engine::link::{LinkImp, LinkMessage, LinkStaged, LinkWho};
 use std::collections::{BTreeMap, BTreeSet};
 use uuid::Uuid;
 
@@ -42,7 +42,11 @@ pub fn imp(n: u128, name: &str) -> LinkImp {
 pub fn staged(n: u128, name: &str, home: Uuid) -> LinkStaged {
     LinkStaged {
         imp: imp(n, name),
-        home,
+        home: LinkWho {
+            id: home,
+            name: format!("Device {}", home.as_u128()),
+            kind: LinkKind::Mac,
+        },
     }
 }
 

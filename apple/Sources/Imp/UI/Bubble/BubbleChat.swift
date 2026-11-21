@@ -475,8 +475,9 @@ private struct RequestCard: View {
                 Text(turn.request).font(Typeface.body)
             }
             if let copied = turn.copiedText, !copied.isEmpty { quote(copied) }
-            if let picture = turn.picture {
-                MarkdownView(blocks: [.image(url: URL(fileURLWithPath: picture), alt: String(localized: "Picture"), link: nil)],
+            let blocks = Self.attachmentBlocks(of: turn)
+            if !blocks.isEmpty {
+                MarkdownView(blocks: blocks,
                              base: Workspace.directory(for: model.id),
                              onImageLoad: measuring ? nil : { layout.onToggle?() }, measuring: measuring, imageHeight: 150)
             }
@@ -484,6 +485,17 @@ private struct RequestCard: View {
         .padding(.horizontal, Spacing.cozy).padding(.vertical, Spacing.small)
         .background(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous)
             .fill(([.imp, .answer].contains(turn.via) ? turn.sender.map { Color.imp($0.hue) } ?? tint : tint).opacity(Opacity.tintFill)))
+    }
+
+    /// The picture, sounds and videos that came with the request, shown from their saved files.
+    private static func attachmentBlocks(of turn: ChatTurn) -> [MarkdownBlock] {
+        ([turn.picture].compactMap { $0 } + (turn.files ?? [])).map { path in
+            let url = URL(fileURLWithPath: path)
+            if let kind = MarkdownBlock.MediaKind(url) {
+                return .media(url: url, title: url.lastPathComponent, kind: kind, autoplay: false)
+            }
+            return .image(url: url, alt: String(localized: "Picture"), link: nil)
+        }
     }
 
     /// Where it came from, when it wasn't simply typed.

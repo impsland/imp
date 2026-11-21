@@ -90,7 +90,7 @@ public struct PocketBrain: Sendable {
     /// reads, `text` what the chat shows, `from` the Imp that answered. It is filed in the chat with you.
     public func ask(_ text: String, of imp: PocketImp, from sender: ChatTurn.Sender? = nil, talk: PocketTalk = PocketTalk(), tools: Bool = true,
                     limitedTo stranger: (device: String, home: String)? = nil, turnID: UUID? = nil,
-                    answered: (event: String, from: ChatTurn.Sender)? = nil,
+                    answered: (event: String, from: ChatTurn.Sender)? = nil, media: [MediaFile] = [],
                     onWork: @escaping @Sendable (LinkWork?) async -> Void = { _ in }) async throws -> PocketAnswer {
         let allowed = tools && stranger == nil
         let hub = MCPHub()
@@ -111,7 +111,7 @@ public struct PocketBrain: Sendable {
             if allowed { tools.append(PocketTools(talk: sender == nil ? talk : PocketTalk(animations: talk.animations, play: talk.play))) }
             let client = try OpenAIClient(baseURL: imp.brain.baseURL, apiKey: secrets.get(.apiKey, imp: imp.id) ?? "", session: session)
             let agent = Agent(client: client, model: imp.brain.model, tools: ToolSet(tools, selection: ToolSelection(toolsOff: Set(imp.toolsOff ?? []), text: imp.toolText ?? [:])), limits: limits)
-            let turn = answered.map { .user($0.event) } ?? sender.map { Briefing.message(from: $0.name, text, place: "in the user's troupe") } ?? .user(text)
+            let turn = answered.map { .user($0.event) } ?? sender.map { Briefing.message(from: $0.name, text, place: "in the user's troupe") } ?? Briefing.message(text, media: media)
             let memory = imp.memory(with: sender?.id)
             let system = [imp.personality, Briefing.pocket, stranger.map { Briefing.untrusted(device: $0.device, home: $0.home) } ?? ""].map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }.joined(separator: "\n\n")

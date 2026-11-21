@@ -125,6 +125,25 @@ impl ChatState {
         true
     }
 
+    /// Adds what the person said with media that goes along (data URLs: pictures, sound, video).
+    pub fn push_user_with(&mut self, text: &str, media: Vec<String>) -> bool {
+        if !self.push_user(text) {
+            return false;
+        }
+        self.attach_media(media);
+        true
+    }
+
+    /// Puts media (data URLs) on the person's last message, which the model sees along with its text.
+    pub fn attach_media(&mut self, media: Vec<String>) {
+        if media.is_empty() {
+            return;
+        }
+        if let Some(m) = self.history.iter_mut().rev().find(|m| m.role == Role::User) {
+            m.images = media;
+        }
+    }
+
     /// Replaces the text of the person's last message, as when the files it names are put in.
     pub fn amend_last_user(&mut self, content: String) {
         if let Some(m) = self.history.iter_mut().rev().find(|m| m.role == Role::User) {

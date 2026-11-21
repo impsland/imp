@@ -25,6 +25,7 @@ pub mod shake;
 pub mod talks;
 pub mod toss;
 pub mod transfers;
+pub mod uploads;
 pub mod visits;
 
 pub use card::{LinkCard, LinkDevice, LinkKind, LinkRoutes};

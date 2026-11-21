@@ -20,7 +20,7 @@ enum StageEvent {
 enum PocketEvent {
     /// Its holder asks something of an Imp that is away: it answers as if asked here.
     /// `trusted`: the holder is one of the owner's own devices, so the Imp may use its tools.
-    case ask(UUID, String, trusted: Bool)
+    case ask(UUID, String, media: [MediaFile], trusted: Bool)
     case stop(UUID)
     case newChat(UUID)
     case openChat(UUID, chat: UUID)
@@ -72,6 +72,8 @@ final class LinkHub {
     private(set) var visits: [Visits.Visit] = []
     /// Imps hatched here that another device holds right now, and who holds each.
     private(set) var holders: [UUID: UUID] = [:]
+    /// Who the holders are that this iPhone is not linked with, as the device that passed an Imp on said.
+    private(set) var strangers: [UUID: AwayLedger.Elsewhere] = [:]
     private(set) var chats: [UUID: [LinkTurn]] = [:]
     /// The saved chats of each visiting Imp at its home, and the one it is in.
     private(set) var chatLists: [UUID: (current: UUID, chats: [LinkChat])] = [:]
@@ -112,6 +114,14 @@ final class LinkHub {
 
     /// The app is in front or only inactive (Control Center, a permission prompt), not in the background.
     @ObservationIgnored private var foreground = true
+    /// Until when the node stays up in the background after this iPhone's code was copied or shared, so the
+    /// device it is pasted into (Safari on this iPhone too) can still reach it. Nil: it stops at once.
+    @ObservationIgnored private var lingerUntil: Date?
+    @ObservationIgnored private var lingering: Task<Void, Never>?
+    @ObservationIgnored private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
+    /// How long a copied or shared code keeps the node up in the background. iOS may end it sooner (it grants
+    /// about half a minute): then the node stops, and the other device links once the app is back.
+    static let lingerAfterSharing: TimeInterval = 120
     /// The saved links couldn't be read (the Keychain isn't open before the first unlock): the hub stays
     /// offline and tries again when protected data is available.
     private(set) var isLocked = false
@@ -229,6 +239,7 @@ final class LinkHub {
         switch phase {
         case .active:
             foreground = true
+            if lingering != nil { endLinger() }       // back in time: it never went offline
             if isLocked { unlock() }
             if !node.isRunning { start() }
         case .inactive:
@@ -236,11 +247,46 @@ final class LinkHub {
         case .background:
             guard foreground || node.isRunning else { return }
             foreground = false
-            node.stop()
-            refresh()
-            for id in visits.map(\.id) { lost(visit: id) }
+            if let until = lingerUntil, until > Date(), node.isRunning { return linger(until: until) }
+            goOffline()
         @unknown default:
             break
+        }
+    }
+
+    /// This iPhone's code was copied or shared: stay reachable for a while if the app goes to the background,
+    /// so the code can be pasted on the other device (or in Safari here) and still link.
+    func stayOnlineBriefly() {
+        lingerUntil = Date().addingTimeInterval(Self.lingerAfterSharing)
+    }
+
+    private func goOffline() {
+        node.stop()
+        refresh()
+        for id in visits.map(\.id) { lost(visit: id) }
+    }
+
+    /// Keeps the node up in the background until `until`, or until iOS ends the background time.
+    private func linger(until: Date) {
+        backgroundTask = UIApplication.shared.beginBackgroundTask(withName: "Link code") { [weak self] in
+            MainActor.assumeIsolated { self?.endLinger() }
+        }
+        lingering = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(max(until.timeIntervalSinceNow, 0)))
+            guard !Task.isCancelled else { return }
+            self?.endLinger()
+        }
+    }
+
+    /// The time in the background is over: offline now, unless the app came back first.
+    private func endLinger() {
+        lingering?.cancel()
+        lingering = nil
+        lingerUntil = nil
+        if !foreground { goOffline() }
+        if backgroundTask != .invalid {
+            UIApplication.shared.endBackgroundTask(backgroundTask)
+            backgroundTask = .invalid
         }
     }
 
@@ -255,6 +301,8 @@ final class LinkHub {
         for id in online.subtracting(viaHop) { lastNearby[id] = now }
         set(&visits, node.visits.visits)
         set(&holders, Dictionary(node.away.entries.map { ($0.imp, $0.holder) }, uniquingKeysWith: { $1 }))
+        set(&strangers, Dictionary(node.away.entries.compactMap { entry in entry.elsewhere.map { (entry.holder, $0) } },
+                                   uniquingKeysWith: { $1 }))
     }
 
     /// Imps hatched here that another device holds right now.
@@ -352,7 +400,7 @@ final class LinkHub {
     }
 
     /// A linked device's name, or a stand-in once it's gone.
-    func deviceName(_ id: UUID) -> String { device(id)?.name ?? String(localized: "another device") }
+    func deviceName(_ id: UUID) -> String { device(id)?.name ?? strangers[id]?.name ?? String(localized: "another device") }
 
     /// The Imps on this screen changed: the other devices are told.
     func setStage(_ imps: [LinkStaged]) {
@@ -365,7 +413,7 @@ final class LinkHub {
     func visit(_ imp: UUID) -> Visits.Visit? { visits.first { $0.id == imp } }
 
     /// The Imps visiting here, with the device they think on.
-    var visitors: [LinkStaged] { visits.map { LinkStaged(imp: $0.imp, home: $0.home.id) } }
+    var visitors: [LinkStaged] { visits.map { LinkStaged(imp: $0.imp, home: $0.home.device.who) } }
 
     /// Whether a visiting Imp can think: its home is connected and has a brain for it (the same rule
     /// as on the Mac). One that can't sleeps.
@@ -559,7 +607,14 @@ final class LinkHub {
         case .gone(let imp):
             clear(imp)
             onEvent?(.left(imp))
-        case .ask(let imp, let text): onPocket?(.ask(imp, text, trusted: node.isTrusted(message, from: from)))
+        case .ask(let imp, let text, let attachments):
+            // The files that came ahead of the question (taken, so each is used once). One that didn't arrive is said.
+            let media = attachments.prefix(MediaFile.maxCount).compactMap { node.takeUpload($0, from: from) }
+            var words = text
+            if media.count < attachments.prefix(MediaFile.maxCount).count {
+                words += (words.isEmpty ? "" : "\n\n") + String(localized: "(An attachment didn't arrive.)")
+            }
+            onPocket?(.ask(imp, words, media: media, trusted: node.isTrusted(message, from: from)))
         case .stage: onPocket?(.stage(from))
         case .stop(let imp): onPocket?(.stop(imp))
         case .newChat(let imp): onPocket?(.newChat(imp))
@@ -621,10 +676,23 @@ final class LinkHub {
 
     // MARK: Asking a visiting Imp's home
 
-    func ask(_ imp: UUID, _ text: String) {
-        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty, let home = visit(imp)?.home.id else { return }
-        node.send(.ask(imp: imp, text: text), to: home)
+    func ask(_ imp: UUID, _ text: String) { _ = ask(imp, text, media: []) }
+
+    /// Any files are uploaded to the home first (`LinkNode.upload`), then the question names them.
+    /// False when the home didn't take a file: nothing is asked then.
+    @discardableResult
+    func ask(_ imp: UUID, _ text: String, media: [MediaFile]) -> Bool {
+        let media = Array(media.prefix(MediaFile.maxCount))
+        var text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if text.isEmpty, !media.isEmpty { text = MediaFile.defaultWords(for: media) }
+        guard !text.isEmpty, let home = visit(imp)?.home.id else { return true }
+        var uploads: [UUID] = []
+        for file in media {
+            guard let id = node.upload(file, imp: imp, to: home) else { return false }
+            uploads.append(id)
+        }
+        node.send(.ask(imp: imp, text: String(text.prefix(LinkProtocol.maxText)), attachments: uploads), to: home)
+        return true
     }
 
     func stop(_ imp: UUID) { tell(imp, .stop(imp: imp)) }

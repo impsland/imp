@@ -1043,6 +1043,7 @@ fn a_visitor_shows_its_homes_chat_and_what_it_is_writing() {
         },
         home: uuid::Uuid::from_u128(4),
         home_name: "iPhone".into(),
+        home_kind: imp_engine::link::LinkKind::Phone,
         from: uuid::Uuid::from_u128(4),
         awake: true,
         turns: vec![LinkTurn {

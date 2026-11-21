@@ -15,16 +15,13 @@ extension EnvironmentValues {
 }
 
 /// The picture of where every Imp is, as a canvas that pans, zooms and lets devices be moved: devices as cards with
-/// their Imps inside, the channels between devices (solid on the local network, dashed through the Hop, with a badge of
-/// the plugs that are in) and a thin tether from an Imp to the device it thinks on. `DeviceGraph` decides what is on it. This draws it with SwiftFlow in
+/// their Imps inside, the channels between devices (solid on the local network, dashed through the Hop, no text on
+/// them), a dotted line to a device known only through another, and a thin tether from an away Imp to the device it
+/// thinks on, shown only while the Imp or its device is in focus. `DeviceGraph` decides what is on it. This draws it with SwiftFlow in
 /// the app's look. It only reports what was pressed (`open`): the sheet is the screen's. Nothing on it is
 /// selectable, connectable or deletable, so SwiftFlow's own keys (Delete, undo) never act on the map.
 struct DevicesCanvas: View {
     let map: DeviceMap
-    /// The Hop's address as set, so its node says whether it is off or needs an address.
-    let hop: String
-    /// What each linked device may do (by node id), for the plugs on its line.
-    var access: [String: DeviceAccess] = [:]
     /// What the open sheet is about: it stays in the light when nothing is hovered.
     var sheetFocus: DeviceGraph.Focus?
     /// Where devices were dragged to, kept by the router for the session.
@@ -45,7 +42,7 @@ struct DevicesCanvas: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        let base = DeviceGraph.build(map, hopText: hop, access: access, moved: moved)
+        let base = DeviceGraph.build(map, moved: moved)
         // Hover puts something in focus, else the open sheet's subject. The rest is dimmed. Only drawing changes: the
         // nodes keep their ids and places.
         let focus = hoveredNode.flatMap(base.focus(ofNode:)) ?? hoveredEdge.flatMap(base.focus(ofEdge:)) ?? sheetFocus
@@ -71,15 +68,16 @@ struct DevicesCanvas: View {
             onEdgeMouseEnter: { hoveredEdge = $0.id }, onEdgeMouseLeave: { if hoveredEdge == $0.id { hoveredEdge = nil } },
             edgeContent: { edge, result in
                 guard let data = edge.data else { return AnyView(EmptyView()) }
-                return AnyView(DeviceEdgeDrawing(data: data, result: result, hovered: hoveredEdge == edge.id, lit: lit?.contains(edge.id) ?? true, motion: moving))
+                return AnyView(DeviceEdgeDrawing(data: data, result: result, hovered: hoveredEdge == edge.id, lit: lit?.contains(edge.id) ?? true,
+                                                   focused: lit?.contains(edge.id) ?? false, motion: moving))
             },
             nodeContent: { node in
                 switch node.data.role {
                 case .device(let device):
-                    AnyView(DeviceNodeCard(id: node.id, node: device, hop: node.data.hop, hovered: hoveredNode == node.id)
-                        .opacity(lit?.contains(node.id) ?? true ? 1 : Opacity.dimmed))
+                    AnyView(DeviceNodeCard(id: node.id, node: device, hovered: hoveredNode == node.id, help: node.data.label)
+                        .opacity((lit?.contains(node.id) ?? true ? 1 : Opacity.dimmed) * (device.linked ? 1 : Opacity.dimmed)))
                 case .imp(let contact, let ours):
-                    AnyView(DeviceImpChip(id: node.id, name: contact.name, hue: contact.hue, ours: ours, away: node.data.away,
+                    AnyView(DeviceImpChip(id: node.id, name: contact.name, hue: contact.hue, ours: ours, home: node.data.homeSymbol,
                                           hovered: hoveredNode == node.id, help: node.data.label)
                         .opacity(lit?.contains(node.id) ?? true ? 1 : Opacity.dimmed))
                 }

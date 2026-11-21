@@ -23,34 +23,73 @@ enum Pasteboard {
         return nil
     }
 
-    /// A picture you copied (a screenshot, an image, an image file), ready to send.
-    static func picture() -> EncodedImage? {
-        guard copiedImageFile || text()?.isEmpty != false else { return nil }
-        return image().flatMap { EncodedImage.encode($0) }
-    }
-
     private static var copiedImageFile: Bool {
         let urls = general.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL]
         return urls?.first.map { NSImage(contentsOf: $0) != nil } ?? false
     }
 
-    /// A picture dragged onto an Imp (an image file from Finder, or an image from a browser or
-    /// Photos), ready to send. Nil when the drag carries no picture.
-    static func picture(dropped pb: NSPasteboard) -> EncodedImage? {
-        image(from: pb).flatMap { EncodedImage.encode($0) }
+    /// What a paste or a drop hands over: files for the message, and why one was left out.
+    struct Media {
+        var files: [MediaFile] = []
+        var problem: MediaFile.Problem?
+        var isEmpty: Bool { files.isEmpty && problem == nil }
     }
 
-    /// Whether a drag carries a picture (checked cheaply, without decoding it).
-    static func hasPicture(_ pb: NSPasteboard) -> Bool {
-        if let urls = pb.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL],
-           let url = urls.first {
-            return NSImage.imageTypes.contains { (try? url.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier) == $0 }
-                || ["png", "jpg", "jpeg", "gif", "heic", "webp", "tiff", "tif", "bmp"].contains(url.pathExtension.lowercased())
+    /// Files of a drag or the clipboard that an Imp can take: pictures, sounds and videos, then (when
+    /// there are no files) the picture itself, from a browser or Photos.
+    static func media(from pb: NSPasteboard = general) -> Media {
+        let urls = (pb.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL]) ?? []
+        var result = media(from: urls)
+        if urls.isEmpty || (result.files.isEmpty && result.problem == nil),
+           let image = image(from: pb), let encoded = EncodedImage.encode(image) {
+            result.files = [MediaFile(encoded, name: "picture")]
+        }
+        return result
+    }
+
+    /// Files chosen or dropped by their URLs: pictures, sounds and videos only.
+    static func media(from urls: [URL]) -> Media {
+        var result = Media()
+        for url in urls where mediaKind(of: url) != nil {
+            guard MediaFile.canAdd(to: result.files.count) else { result.problem = .tooMany; break }
+            do { result.files.append(try MediaFile.load(url)) } catch let problem as MediaFile.Problem { result.problem = problem } catch {
+                result.problem = .unreadable
+            }
+        }
+        return result
+    }
+
+    /// A paste (⌘V): files you copied, or a picture, but not text.
+    static func pastedMedia() -> Media {
+        guard copiedMediaFile || copiedImageFile || text()?.isEmpty != false else { return Media() }
+        return media()
+    }
+
+    private static var copiedMediaFile: Bool {
+        let urls = general.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL]
+        return urls?.contains { mediaKind(of: $0) != nil } ?? false
+    }
+
+    /// Whether a drag carries something an Imp can take (checked cheaply, without reading it).
+    static func hasMedia(_ pb: NSPasteboard) -> Bool {
+        if let urls = pb.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL], !urls.isEmpty {
+            return urls.contains { mediaKind(of: $0) != nil }
         }
         return NSImage.canInit(with: pb)
     }
 
-    /// The pasteboard types a picture can be dragged in.
+    /// Picture, sound or video by its file (nil for any other kind of file).
+    static func mediaKind(of url: URL) -> MediaFile.Kind? {
+        let kind = MediaFile.kind(ofMIME: MediaFile.mimeType(forExtension: url.pathExtension))
+        if kind == .file {
+            let type = try? url.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier
+            if let type, NSImage.imageTypes.contains(type) { return .image }
+            return nil
+        }
+        return kind
+    }
+
+    /// The pasteboard types a file or picture can be dragged in.
     static let pictureTypes: [NSPasteboard.PasteboardType] = [.fileURL, .png, .tiff, NSPasteboard.PasteboardType("public.jpeg"),
                                                               NSPasteboard.PasteboardType("public.heic"), NSPasteboard.PasteboardType("org.webmproject.webp")]
 

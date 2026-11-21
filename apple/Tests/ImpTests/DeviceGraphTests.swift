@@ -19,7 +19,7 @@ import Testing
     }
 
     private func visitor(_ name: String, home: UUID) -> LinkStaged {
-        LinkStaged(imp: LinkImp(id: UUID(), name: name, hue: 0.7, scale: 1, traits: .plain), home: home)
+        LinkStaged(imp: LinkImp(id: UUID(), name: name, hue: 0.7, scale: 1, traits: .plain), home: LinkWho(id: home, name: "Home", kind: .phone))
     }
 
     private func graph(peers: [DeviceMap.Peer] = [], server: String = "", imps: [ImpProfile] = [], visitors: [LinkStaged] = [],
@@ -34,19 +34,17 @@ import Testing
         #expect(graph.edges.isEmpty)
     }
 
-    /// The Hop is on the canvas only when a channel goes through it. Then it says how it stands.
-    @Test func theHopIsOnTheCanvasOnlyWhenUsedAndSaysHowItStands() throws {
-        func standing(_ text: String) throws -> HopStanding {
-            let map = DeviceMap.build(thisMac: "Mac", peers: [studio], server: hop, imps: [], mcpServers: [])
-            let graph = DeviceGraph.build(map, hopText: text)
-            return try #require(graph.nodes.first { $0.id == DeviceMap.serverID }?.data.hop)
-        }
-        #expect(try standing("") == .off)
-        #expect(try standing("not an address at all ://") == .needsAddress)
-        #expect(try standing(hop) == .connected)
-        // Without the text, the Hop stands as the map says.
-        let (_, graph) = graph(peers: [studio], server: hop)
-        #expect(graph.nodes.first { $0.id == DeviceMap.serverID }?.data.hop == .connected)
+    /// The Hop is not a node of the canvas, used or not: it is a button in the screen's bar. Its standing is the map's.
+    @Test func theHopIsNeverOnTheCanvasButStillSaysHowItStands() {
+        let map = DeviceMap.build(thisMac: "Mac", peers: [studio], server: hop, imps: [], mcpServers: [])
+        let graph = DeviceGraph.build(map)
+        #expect(map.hopInUse)
+        #expect(!graph.nodes.contains { $0.id == DeviceMap.serverID })
+        #expect(graph.edges.allSatisfy { $0.source != DeviceMap.serverID && $0.target != DeviceMap.serverID })
+        #expect(map.hopStanding(text: "") == .off)
+        #expect(map.hopStanding(text: "not an address at all ://") == .needsAddress)
+        #expect(map.hopStanding(text: hop) == .connected)
+        #expect(HopStanding.connected.barTone != HopStanding.off.barTone && HopStanding.unreachable.barTone != HopStanding.off.barTone)
     }
 
     /// A Hop that is set but that no channel goes through (everything is on the local network) is not drawn.
@@ -54,7 +52,7 @@ import Testing
         let (map, graph) = graph(peers: [phone], server: hop)
         #expect(!map.hopInUse)
         #expect(!graph.nodes.contains { $0.id == DeviceMap.serverID })
-        #expect(graph.edges.allSatisfy { $0.data?.via == nil })
+        #expect(graph.edges.allSatisfy { $0.data?.look == .local })
         #expect(graph.devices.count == 2)
     }
 
@@ -83,7 +81,7 @@ import Testing
 
     @Test func theHopSheetIsReachableWithoutANode() {
         let (_, used) = graph(peers: [studio], server: hop)
-        #expect(used.sheet(ofNode: DeviceMap.serverID) == .hop)
+        #expect(used.sheet(ofNode: DeviceMap.serverID) == nil, "the Hop is no node: its button in the bar opens it")
         #expect(DevicesSheet.opening(.node(DeviceMap.serverID)) == .hop)
         #expect(DevicesSheet.opening(.node(mac)) == .about(.node(mac)))
         let (map, none) = graph(peers: [phone])
@@ -155,7 +153,7 @@ import Testing
         let (_, graph) = graph(peers: [phone, studio], server: hop, imps: imps)
         #expect(graph == self.graph(peers: [phone, studio], server: hop, imps: imps).1, "the same map gives the same graph")
         let devices = graph.devices
-        #expect(devices.count == 4, "this Mac, the Hop and the two linked devices")
+        #expect(devices.count == 3, "this Mac and the two linked devices")
         func frame(_ id: String) throws -> CGRect {
             let node = try #require(devices.first { $0.id == id })
             return CGRect(x: node.position.x, y: node.position.y, width: node.width ?? 0, height: node.height ?? 0)
@@ -164,8 +162,6 @@ import Testing
         #expect(first.minX > centre.maxX && second.maxX < centre.minX, "one each side")
         let gap = DeviceGraph.Metrics.columnGap
         #expect(first.minX - centre.maxX >= gap && abs((first.minX - centre.maxX) - (centre.minX - second.maxX)) < 0.001, "the same distance each side")
-        let above = try frame(DeviceMap.serverID)
-        #expect(above.maxY < centre.minY && abs(above.midX - centre.midX) < 0.001, "the Hop is above This Mac")
         let frames = try devices.map { try frame($0.id) }
         for (i, a) in frames.enumerated() { for b in frames[(i + 1)...] { #expect(!a.intersects(b)) } }
     }
@@ -201,43 +197,51 @@ import Testing
         #expect(right.sourceHandle == DeviceGraph.Port.line(.right, .source) && right.targetHandle == DeviceGraph.Port.line(.left, .target))
         let left = try #require(graph.edges.first { $0.target == studio.id.uuidString })
         #expect(left.sourceHandle == DeviceGraph.Port.line(.left, .source) && left.targetHandle == DeviceGraph.Port.line(.right, .target))
-        // The Hop above This Mac: up from This Mac, and out of its sides to the devices.
-        let toHop = try #require(graph.edges.first { $0.target == DeviceMap.serverID })
-        #expect(toHop.sourceHandle == DeviceGraph.Port.line(.top, .source) && toHop.targetHandle == DeviceGraph.Port.line(.bottom, .target))
-        #expect(left.source == DeviceMap.serverID && left.sourceHandle == DeviceGraph.Port.line(.left, .source))
+        #expect(left.source == mac)
     }
 
-    @Test func aChannelThroughTheHopIsTwoDashedLinesAndTheFirstIsShared() throws {
+    /// One channel is ONE line between the two devices, dashed through the Hop: it is never split into halves.
+    @Test func aChannelThroughTheHopIsOneDashedLineBetweenTheTwoDevices() throws {
         let other = DeviceMap.Peer(id: UUID(), name: "Mini", kind: .mac, reach: .viaServer, isTrusted: true)
-        let (map, graph) = graph(peers: [studio, other], server: hop)
-        let hopNode = try #require(map.hop)
-        let toHop = graph.edges.filter { if case .toHop = $0.data?.kind { true } else { false } }
-        #expect(toHop.count == 1 && toHop[0].source == mac && toHop[0].target == hopNode.id)
-        let fromHop = graph.edges.filter { $0.source == hopNode.id }
-        #expect(fromHop.map(\.target).sorted() == [studio.id.uuidString, other.id.uuidString].sorted())
-        #expect((toHop + fromHop).allSatisfy { $0.data?.look == .hop })
-        // The shared half opens the Hop. The other halves open their channel.
-        #expect(graph.sheet(ofEdge: toHop[0].id) == .hop)
-        #expect(fromHop.allSatisfy { if case .about(.channel)? = graph.sheet(ofEdge: $0.id) { true } else { false } })
+        let (map, graph) = graph(peers: [phone, studio, other], server: hop)
+        let dashed = graph.edges.filter { $0.data?.look == .hop }
+        #expect(dashed.count == 2)
+        #expect(Set(dashed.map(\.target)) == [studio.id.uuidString, other.id.uuidString] && dashed.allSatisfy { $0.source == mac })
+        #expect(graph.edges.count == 3, "one line each, none to the Hop")
+        let local = try #require(graph.edges.first { $0.target == phone.id.uuidString })
+        #expect(local.data?.look == .local)
+        // A press on a dashed line opens its channel, which shows the Hop as a row.
+        for line in dashed {
+            guard case .channel(let id)? = line.data?.kind else { Issue.record("not a channel"); continue }
+            #expect(graph.sheet(ofEdge: line.id) == .about(.channel(id)))
+        }
         #expect(map.hopInUse)
     }
 
-    /// The badge says how a line is travelled and which plugs are in for its device. A device that is not Mine is locked.
-    @Test func aLinesBadgeHasItsRouteAndThePlugsThatAreIn() throws {
-        let stranger = DeviceMap.Peer(id: UUID(), name: "Visitor", kind: .mac, reach: .direct, isTrusted: false)
-        let (map, plain) = graph(peers: [phone, stranger, studio], server: hop)
-        func line(_ peer: DeviceMap.Peer) throws -> DeviceGraph.EdgeData {
-            try #require(plain.edges.first { $0.target == peer.id.uuidString }?.data)
-        }
-        #expect(try line(phone).route == .local && line(phone).access == [DeviceAccess.talkSymbol] && !line(phone).locked)
-        #expect(try line(stranger).locked && line(stranger).access.isEmpty)
-        #expect(try line(studio).route == .hop)
-        // With what the sheets plug: the tools that are in follow the trust.
-        let access = DeviceAccess(trusted: true, capabilities: [
-            .init(id: DeviceAccess.talk, symbol: "a", title: "", allowed: true), .init(id: "t1", symbol: "b", title: "", allowed: true),
-            .init(id: "t2", symbol: "c", title: "", allowed: false)])
-        let known = DeviceGraph.build(map, access: [phone.id.uuidString: access])
-        #expect(known.edges.first { $0.target == phone.id.uuidString }?.data?.access == ["a", "b"])
+    /// A device known only through another is dimmed on the canvas (its node says it is not linked), hangs on the device
+    /// that relays it by a thin dotted line, and has no channel.
+    @Test func aDeviceKnownOnlyThroughAnotherIsJoinedToItsRelayByADottedLine() throws {
+        let known = DeviceMap.Known(id: UUID(), name: "Beth's iPad", kind: .phone, via: phone.id)
+        let map = DeviceMap.build(thisMac: "Mac", peers: [phone], server: "", imps: [], mcpServers: [], known: [known])
+        let graph = DeviceGraph.build(map)
+        let node = try #require(graph.nodes.first { $0.id == known.id.uuidString })
+        guard case .device(let device) = node.data.role else { Issue.record("not a device"); return }
+        #expect(!device.linked && device.via == phone.id.uuidString)
+        let dotted = try #require(graph.edges.first { $0.data?.look == .relay })
+        #expect(dotted.source == phone.id.uuidString && dotted.target == known.id.uuidString)
+        #expect(graph.edges.filter { $0.target == known.id.uuidString }.count == 1, "no channel of its own")
+        #expect(graph.sheet(ofEdge: dotted.id) == .about(.node(known.id.uuidString)))
+        #expect(graph.focus(ofEdge: dotted.id) == .device(known.id.uuidString))
+        #expect(graph.lit(for: .device(phone.id.uuidString)).contains(dotted.id))
+        #expect(map.status(of: device).word != map.status(of: try #require(map.node(phone.id.uuidString))).word)
+    }
+
+    /// No text and no plugs on a line: a channel's data is its look, its state and its ends.
+    @Test func linesAreFaintUnlessConnectedAndCarryNoPlugs() throws {
+        let stranger = DeviceMap.Peer(id: UUID(), name: "Visitor", kind: .mac, reach: .away, isTrusted: false)
+        let (_, graph) = graph(peers: [phone, stranger])
+        #expect(graph.edges.first { $0.target == phone.id.uuidString }?.data?.dimmed == false)
+        #expect(graph.edges.first { $0.target == stranger.id.uuidString }?.data?.dimmed == true)
     }
 
     @Test func aDeviceThatIsNotConnectedIsDimmed() throws {
@@ -255,6 +259,7 @@ import Testing
         let tether = try #require(graph.edges.first { if case .tether = $0.data?.kind { true } else { false } })
         #expect(tether.source == DeviceGraph.impNodeID(away.id, in: phone.id.uuidString) && tether.target == mac)
         #expect(tether.data?.look == .tether(hue: away.hue) && tether.zIndex > 0)
+        #expect(tether.hidden, "a tether shows only while its Imp or its device is in focus")
         // Only the one away has a tether.
         #expect(graph.edges.filter { $0.data?.isTether == true }.count == 1)
         // A click on the tether opens that Imp.
@@ -273,6 +278,9 @@ import Testing
             try #require(graph.nodes.first { $0.id == DeviceGraph.impNodeID(id, in: node) }).data.away
         }
         #expect(try isAway(away.id, in: phone.id.uuidString))
+        let chip = try #require(graph.nodes.first { $0.id == DeviceGraph.impNodeID(away.id, in: phone.id.uuidString) })
+        #expect(chip.data.homeSymbol == "macbook", "an away Imp's chip shows its home device")
+        #expect(try #require(graph.nodes.first { $0.id == DeviceGraph.impNodeID(home.id, in: mac) }).data.homeSymbol == nil)
         #expect(try !isAway(home.id, in: mac))
         #expect(try isAway(noodle.imp.id, in: mac))
         #expect(try !isAway(cinder.imp.id, in: phone.id.uuidString), "Cinder is at home on the iPhone")
@@ -333,7 +341,7 @@ import Testing
         #expect(graph.sheet(ofNode: DeviceGraph.impNodeID(dot.id, in: mac)) == .about(.imp(dot.id, in: mac)))
         #expect(graph.sheet(ofNode: "nothing") == nil)
         // Everything on the canvas can be opened from the keyboard list: devices, Imps, lines.
-        #expect(graph.openable.count == graph.nodes.count + graph.edges.filter { $0.data?.isTalk == false }.count)
+        #expect(graph.openable.count == graph.nodes.count + graph.edges.filter { $0.data?.isTalk == false && $0.data?.isTether == false }.count)
         // A sheet about something that is gone resolves to nothing.
         #expect(DeviceSelection.node(UUID().uuidString).resolved(in: map) == nil)
         #expect(DeviceSelection.imp(UUID(), in: mac).resolved(in: map) == nil)
@@ -368,8 +376,22 @@ import Testing
         #expect(shown.edges.first { $0.id == line.id }?.hidden == false)
         #expect(shown.edges.filter { $0.data?.isTalk == true && !$0.hidden }.allSatisfy { if case .talk(let from, _)? = $0.data?.kind { from == bumble.id } else { false } })
         #expect(shown.nodes == graph.nodes, "focus changes no place")
-        #expect(graph.shown(in: .device(mac)) == graph && graph.shown(in: nil) == graph)
+        #expect(graph.shown(in: nil) == graph)
         #expect(graph.sheet(ofEdge: line.id) == .about(.imp(bumble.id, in: mac)))
+    }
+
+    /// Tethers are hidden by default and appear when their Imp or one of their two devices is in focus.
+    @Test func tethersAppearOnlyInFocus() throws {
+        let (map, graph, dot, bumble) = talking()
+        let phoneID = phone.id.uuidString
+        let tether = try #require(graph.edges.first { $0.data?.isTether == true })
+        #expect(tether.hidden && graph.edges.filter { $0.data?.isTether == true }.allSatisfy(\.hidden))
+        func hidden(_ focus: DeviceGraph.Focus?) -> Bool { graph.shown(in: focus).edges.first { $0.id == tether.id }?.hidden ?? true }
+        #expect(!hidden(.imp(dot.id, in: phoneID)) && !hidden(.device(phoneID)) && !hidden(.device(mac)))
+        #expect(hidden(.imp(bumble.id, in: mac)) && hidden(.device(studio.id.uuidString)) && hidden(nil))
+        let channel = try #require(map.channels.first { $0.to == phoneID })
+        #expect(hidden(.channel(channel.id)))
+        #expect(graph.shown(in: .device(phoneID)).nodes == graph.nodes, "focus changes no place")
     }
 
     @Test func anImpInFocusLightsItsBodyHomeChannelAndTether() throws {
@@ -391,7 +413,8 @@ import Testing
         let (_, graph, dot, _) = talking()
         let studioID = studio.id.uuidString, phoneID = phone.id.uuidString
         let lit = graph.lit(for: .device(studioID))
-        #expect(lit.contains(studioID) && lit.contains(DeviceMap.serverID) && lit.contains("hop/\(DeviceMap.serverID)"))
+        let studioLine = try #require(graph.edges.first { $0.target == studioID })
+        #expect(lit.contains(studioID) && lit.contains(mac) && lit.contains(studioLine.id))
         #expect(!lit.contains(phoneID) && !lit.contains(DeviceGraph.impNodeID(dot.id, in: phoneID)))
         let phoneLit = graph.lit(for: .device(phoneID))
         #expect(phoneLit.contains(DeviceGraph.impNodeID(dot.id, in: phoneID)) && phoneLit.contains("tether/\(phoneID)/\(dot.id.uuidString)"))
@@ -407,14 +430,14 @@ import Testing
         #expect(!lit.contains(DeviceMap.serverID))
         let hopChannel = try #require(map.channels.first { $0.to == studio.id.uuidString })
         let viaHop = graph.lit(for: .channel(hopChannel.id))
-        #expect(viaHop.isSuperset(of: [DeviceMap.serverID, "hop/\(DeviceMap.serverID)", mac, studio.id.uuidString]))
+        #expect(viaHop.isSuperset(of: [mac, studio.id.uuidString, "channel/\(hopChannel.id)"]) && !viaHop.contains(phoneID))
     }
 
     @Test func focusComesFromASheetsSelectionAndAPressOnTheGraph() throws {
         let (map, graph, dot, _) = talking()
         let phoneID = phone.id.uuidString
         #expect(DeviceGraph.Focus(DevicesSheet.about(.imp(dot.id, in: phoneID))) == .imp(dot.id, in: phoneID))
-        #expect(DeviceGraph.Focus(DevicesSheet.hop) == .device(DeviceMap.serverID))
+        #expect(DeviceGraph.Focus(DevicesSheet.hop) == nil, "the Hop is no node")
         #expect(DeviceGraph.Focus(DevicesSheet.link) == nil)
         #expect(graph.focus(ofNode: DeviceGraph.impNodeID(dot.id, in: phoneID)) == .imp(dot.id, in: phoneID))
         #expect(graph.focus(ofNode: phoneID) == .device(phoneID))
@@ -423,13 +446,13 @@ import Testing
         #expect(graph.focus(ofEdge: "tether/\(phoneID)/\(dot.id.uuidString)") == .imp(dot.id, in: phoneID))
     }
 
-    @Test func theHopAboveThisMacDoesNotOverlapAnyDevice() throws {
-        let (map, graph) = graph(peers: [phone, studio], server: hop, imps: [imp("Dot")])
-        let hopNode = try #require(graph.devices.first { $0.id == map.hop?.id })
-        let frame = CGRect(x: hopNode.position.x, y: hopNode.position.y, width: hopNode.width ?? 0, height: hopNode.height ?? 0)
-        for other in graph.devices where other.id != hopNode.id {
-            #expect(!frame.intersects(CGRect(x: other.position.x, y: other.position.y, width: other.width ?? 0, height: other.height ?? 0)))
-        }
+    @Test func noDeviceOverlapsAnother() throws {
+        let known = DeviceMap.Known(id: UUID(), name: "Beth's iPad", kind: .phone, via: phone.id)
+        let map = DeviceMap.build(thisMac: "Mac", peers: [phone, studio], server: hop, imps: [imp("Dot")], mcpServers: [], known: [known])
+        let devices = DeviceGraph.build(map).devices
+        let frames = devices.map { CGRect(x: $0.position.x, y: $0.position.y, width: $0.width ?? 0, height: $0.height ?? 0) }
+        #expect(frames.count == 4)
+        for (i, a) in frames.enumerated() { for b in frames[(i + 1)...] { #expect(!a.intersects(b)) } }
     }
 
     /// Choosing Custom in the Hop's card clears the address. The Hop's sheet must stay open then, whether or not the

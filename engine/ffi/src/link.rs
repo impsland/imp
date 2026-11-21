@@ -304,6 +304,14 @@ fn step_of(output: Output) -> LinkStep {
     }
 }
 
+/// A file that arrived whole for an `ask` that named it (`LinkCore.takeUpload`).
+#[derive(Debug, Clone, uniffi::Record)]
+pub struct LinkUpload {
+    pub name: String,
+    pub mime: String,
+    pub data: Vec<u8>,
+}
+
 /// What a call answered, with the steps it asked for.
 #[derive(Debug, Clone, uniffi::Record)]
 pub struct LinkOutcome {
@@ -673,6 +681,35 @@ impl LinkCore {
         let mut node = self.lock();
         let ok = node.send(&message, uuid(&to)?);
         Ok(Self::outcome(node, ok, None, None))
+    }
+
+    /// Sends a file to the home of an Imp this device holds. The `upload` and its parts are queued
+    /// and go out with the steps of the next call, so send the `ask` that names the returned id
+    /// next. Nil when `to` is not connected or the file is empty or over 25 MiB.
+    pub fn upload(
+        &self,
+        imp: String,
+        to: String,
+        name: String,
+        mime: String,
+        data: Vec<u8>,
+        now: f64,
+    ) -> Result<Option<String>, LinkError> {
+        let (imp, to) = (uuid(&imp)?, uuid(&to)?);
+        let mut node = self.lock();
+        Ok(node
+            .upload(imp, to, &name, &mime, data, now)
+            .map(|id| id.to_string()))
+    }
+
+    /// A file that arrived whole from `from` for an `ask`'s attachment id. Taking it forgets it.
+    pub fn take_upload(&self, id: String, from: String) -> Result<Option<LinkUpload>, LinkError> {
+        let (id, from) = (uuid(&id)?, uuid(&from)?);
+        Ok(self.lock().take_upload(id, from).map(|u| LinkUpload {
+            name: u.name,
+            mime: u.mime,
+            data: u.data,
+        }))
     }
 
     /// An Imp asks another.

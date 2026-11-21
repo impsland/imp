@@ -45,4 +45,20 @@ struct PhoneSnapshotTests {
     @Test func firstRunService() { check(firstRun { _ in }, "first-run-service") }
 
     @Test func firstRunError() { check(firstRun { $0.continueFromService() }, "first-run-error") }
+
+    /// Three files waiting in the chat box: a sound, a file and a picture, each with its remove button.
+    @Test func chatBoxWithThreeChips() {
+        let png = UIGraphicsImageRenderer(size: CGSize(width: 64, height: 64)).pngData { context in
+            UIColor.systemOrange.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 64, height: 64))
+        }
+        let files = [MediaFile(data: Data(count: 4), mimeType: "audio/wav", name: "sound.wav"),
+                     MediaFile(data: Data(count: 4), mimeType: "application/pdf", name: "notes.pdf"),
+                     MediaFile(data: png, mimeType: "image/png", name: "photo.png")]
+        check(VStack(alignment: .leading) {
+            Spacer()
+            AttachmentChips(files: files) { _ in }
+        }
+        .padding(16).background(Tone.surface).impControls(tint: Tone.accent), "chat-chips")
+    }
 }

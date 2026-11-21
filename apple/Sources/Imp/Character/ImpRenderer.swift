@@ -70,16 +70,17 @@ enum ImpRenderer {
             || f.burst > 0.03 || f.sparkle > 0.03 || f.heart > 0.03 || f.sleep > 0.3
     }
 
-    /// How high a hop may lift the body: all of `lift`, unless that would carry the top of the head
-    /// or a horn out of the frame (tall, startled poses). Then the whole hop is lower, in
-    /// proportion, so it still rises and falls smoothly instead of flattening against the edge.
+    /// How high the body may be lifted: all of `lift`, unless that would carry the top of the head or a horn
+    /// out of the frame. A hop and a move in the same frame can add up to more than the room above a standing
+    /// Imp (the desktop Imp's square is all the room it has), so the lift stops just under the top. The lift
+    /// moves the whole body by the same amount, so the top ends exactly at the margin.
     private static func headroom(for lift: Double, head: Head, horns: [Horn], at transform: CGAffineTransform) -> Double {
         var top = head.path.applying(transform).boundingRect.minY
         for h in horns {
             for p in [h.front, h.back] where !p.isEmpty { top = min(top, p.applying(transform).boundingRect.minY) }
         }
         let room = max(0, top - headMargin)
-        return lift * min(1, room / Motion.hopHeight)
+        return min(lift, room)
     }
 
     /// Space kept free above the highest point of a hop (design units).
