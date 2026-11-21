@@ -4,8 +4,8 @@ import SwiftUI
 
 /// One server (the Hop) as one compact card, the same wherever it is shown (the Link sheet's popover, the Hop's sheet).
 /// The header carries what is live: a status icon (hover for the address and the state) and Check, which
-/// shows its own progress and result. Under it, the choice of server as buttons (Imp's servers, This
-/// computer, Custom, Off) and the address. The address row is always there, dimmed and locked unless Custom
+/// shows its own progress and result. Under it, the choice of server as buttons (Imp's servers,
+/// Custom, Off) and the address. The address row is always there, dimmed and locked unless Custom
 /// is chosen, so the card is the same size whatever is picked. A failure floats as a notice, so nothing
 /// is ever inserted into the card. The state lives in `ServerSetting`.
 struct ServerCard: View {

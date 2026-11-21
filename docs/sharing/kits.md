@@ -2,13 +2,13 @@
 
 A kit is one JSON file, the same format Imp exports (see [Sharing setups](/sharing/setups)).
 Kits follow the limits and rules in
-`spec/PROTOCOL.md`; a gallery such as the Den checks them too. This page lists the fields for animations and an Imp's
+`spec/PROTOCOL.md`. A gallery such as the Den checks them too. This page lists the fields for animations and an Imp's
 character, for anyone who writes a kit by hand.
 
 ## How a kit is recognised
 
 A kit is a JSON object with at least one of `imps`, `triggers`,
-`animations`, `mcpServers` or `skills`, and optionally `name`, `about`, `format` (the kit format, 1; missing means 1) and `app` (the Imp that wrote it,
+`animations`, `mcpServers` or `skills`, and optionally `name`, `about`, `format` (the kit format, 1, and a missing one means 1) and `app` (the Imp that wrote it,
 informational). Imp also takes a bare trigger or a plain MCP snippet. Unknown keys are ignored, so
 adding fields is safe. A kit in a newer `format` than the Imp reads is refused.
 

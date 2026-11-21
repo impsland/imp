@@ -9,8 +9,7 @@ The Hop (the relay run by the Imp project or by you, see `spec/PROTOCOL.md`) is 
 a device. It only ever carries the encrypted bytes described here. The Hop is its own setting, apart from
 the Den or any gallery: linking uses only the Hop address, and a device with no Hop still links on the same network.
 The Hop is the relay devices use to meet when they are not on the same network: the code carries its address,
-so the other device knows where to wait. The [Devices screen](/ux/devices) explains what a missing Hop leaves out;
-the Hop is set in its Link sheet.
+so the other device knows where to wait. The [Devices screen](/ux/devices) explains what a missing Hop leaves out. The Hop is set in its Link sheet.
 
 Per-device tool limits sit under the trust rules (Mine). A device that is not marked Mine gets no tools at all. A
 device that is gets the Imp's own tools, less the groups switched off for that device on the Devices screen.
@@ -61,7 +60,7 @@ that gets no answer keeps trying while its connect window is open, for three min
 
 ## Local Network and the saved book
 
-**When the permission is asked.** Only when the person is linking: on the iPhone when they tap **Show code**
+**When the permission is asked.** Only when the person is linking: on the iPhone when they tap **Show my code**
 in Devices (the sheet opened just to link shows the code at once, and once asked for, Devices shows it at once), or when they scan, paste or open a code. Opening
 the app, or opening Devices to look at the list, never asks. On later launches the node comes up by itself only
 once a device is linked, since that device has to be able to reach this one.
@@ -162,6 +161,11 @@ The home answers `ask`, `stop`, `newChat`, `openChat`, `felt`, `file` and `talks
 holder, and sends that Imp's looks, chat, work, mood, brain, speech, animations and files only to it. From anyone
 else it answers `gone` for the Imp (and `fileFailed` for a `file`): it isn't theirs any more. Making a new
 ticket for an Imp whose holder is another device tells that device `gone`.
+
+**Where an Imp is now.** A holder that passes a visiting Imp on sends the home `moved` with the device it went
+to, which the home may not be linked with. The home then knows where the Imp is, and the Devices screen shows
+each Imp on the device it is on. An Imp passed on through a third device keeps its home's name: the `home` in each `stage`
+entry is the device the Imp thinks on, not the one it is passing through.
 
 ## Imps talking
 
@@ -296,10 +300,10 @@ holding it). Its home thinks for it, so the holder sends the files there first: 
 name, type, size and SHA-256), `uploadPart` carries it in order in pieces of 1 MiB at most, and the `ask` that
 follows names the uploads in `attachments`. The home (`engine/src/link/uploads.rs`):
 
-- takes uploads only from the Imp's holder, and the parts only from the device that started the upload;
-- keeps a file only when every byte came in order and the size and checksum match;
+- takes uploads only from the Imp's holder, and the parts only from the device that started the upload.
+- keeps a file only when every byte came in order and the size and checksum match.
 - refuses a file over 25 MiB, more than 8 uploads in progress from one device, and more than 64 MiB
-  waiting in all (`uploadFailed` says why);
+  waiting in all (`uploadFailed` says why).
 - keeps an upload in memory, never in the book, and forgets it 10 minutes after its last part if no `ask`
   took it.
 
@@ -313,8 +317,8 @@ every model that hears takes.
 
 ## Trust
 
-A link may be marked **trusted**: one of the owner's own devices (`setTrusted`, off by default. Visitors
-and unknown devices never are). The node only knows and tells (`isTrusted`, and `isTrusted(_:from:)` for a
+A link may be marked **trusted** (**Mine** in the apps): one of the owner's own devices (`setTrusted`, off by
+default). Visitors and unknown devices never are. The node only knows and tells (`isTrusted`, and `isTrusted(_:from:)` for a
 request or message). The apps decide what an Imp may do:
 
 - An Imp asked (`ask`) from a holder that isn't trusted, and an Imp asked by an Imp whose home is neither
@@ -348,7 +352,7 @@ the Hop can't be used.
 ## Messages
 
 One JSON object per frame, with exactly one key: the message name. Its value holds the fields. UUIDs are
-text, binary values (`key`, `proof`, `ticket`, `door`, file `data`) are standard base64 with padding, dates
+text, binary values (`key`, `room`, `join`, `door`, `ticket`, file `data`) are standard base64 with padding, dates
 are seconds since 1970. `imp` is the Imp's id, except in `pass` and `look` and in each `stage` entry, where
 it is a looks object. Both directions use the same set, and what a device does with a
 message depends on who sent it.
@@ -372,13 +376,14 @@ message depends on who sent it.
 | `declined` | `transfer`, `reason`: `full`, `playing`, `notLinked`, `timeout` (made up by the thrower, never sent), `other` (also what a reason from a newer version reads as) | receiver, thrower |
 | `claim`, `claimed` | `imp`, `ticket` | holder to home, home to holder |
 | `gone` | `imp` | home or holder |
+| `moved` | `imp`, `to` (a device: `id`, `name`, `kind`) | holder, home |
 | `release` | `imp`, `ticket` | holder or anyone with the ticket, to the holder |
 | `ask` | `imp`, `text`, `attachments?`: ids of uploads sent before it (4 at most) | holder, home |
 | `upload` | `id`, `imp`, `name`, `type` (a MIME type), `size`, `sha256` (lowercase hex) | holder, home |
 | `uploadPart` | `id`, `offset`, `data` (1 MiB at most) | holder, home |
 | `uploadFailed` | `id`, `reason` | home, holder |
 | `stop`, `newChat`, `talks` | `imp` | holder, home |
-| `openChat` | `imp`, `chat`: one of the ids the home listed in `chats`. The home carries on in it and sends the new `chat` and `chats`; one it doesn't have is ignored | holder, home |
+| `openChat` | `imp`, `chat`: one of the ids the home listed in `chats`. The home carries on in it and sends the new `chat` and `chats`. An id it doesn't have is ignored | holder, home |
 | `felt` | `imp`, `feeling`: `poke`, `cuddle`, `shake`, `drop` | holder, home |
 | `file` | `id`, `imp`, `ref` | holder, home |
 | `filePart` | `id`, `part`: `{ name, size, offset, data }` | home, holder |
@@ -401,7 +406,8 @@ Optional fields are absent or `null`. Unknown fields and unknown message names a
 
 Who may send what (`engine/src/link/access.rs`):
 
-- Every connected device: `ping`, `pong`, `bye`, `claim`, `release`, `claimed`, `gone` and `answer`.
+- Every connected device: `ping`, `pong`, `bye`, `claim`, `release`, `claimed`, `gone`, `moved` and `answer`.
+  The home hears `moved` only from the Imp's holder.
 - A linked peer only: `routes`, `pass`, `took`, `declined`, `adopt` and `adopted`.
 - The holder of the Imp only: `ask`, `stop`, `newChat`, `openChat`, `felt`, `file`, `talks` and `upload`.
   `uploadPart` too, from the device that started the upload.
@@ -419,8 +425,8 @@ Receiver limits (`is_sound` in `engine/src/link/messages.rs`):
 - `stage`: 64 Imps at most. `chat`: 500 turns, each with 200 steps at most. `chats`: 30 chats, each title 200 characters at most. `animate`: 256 beats.
   `talkLines`: 300 lines.
 - `filePart`: 1 MiB at most per part. Files: 512 MiB at most.
-- `uploadPart`: 1 MiB at most per part. An upload: 25 MiB at most, and 4 named by one `ask`. A file name: 160
-  characters, a plain name with no folders.
+- `uploadPart`: 1 MiB at most per part. An upload: 25 MiB at most, and 4 named by one `ask`. A file name is cut to 160
+  characters and has no folders.
 
 A message over a limit, or one that cannot be read, is ignored after the handshake. During the handshake
 the connection is closed instead.

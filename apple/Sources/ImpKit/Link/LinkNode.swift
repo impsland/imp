@@ -439,7 +439,7 @@ public final class LinkNode {
 
     /// Interface names of VPN tunnels and of bridges for virtual machines. Their addresses go last in a
     /// code, because a phone on the same Wi-Fi can't reach them. The command line app orders its
-    /// addresses the same way (`order_hosts` in chat/src/link.rs).
+    /// addresses the same way (`order_hosts` in chat/src/link/net.rs).
     nonisolated static let farInterfaces = ["utun", "ipsec", "ppp", "tun", "tap", "wg", "gif", "stf", "bridge", "vmenet", "vnic"]
 
     /// Where other devices can reach this one, best first: the .local name, then the addresses of Wi-Fi

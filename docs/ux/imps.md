@@ -114,7 +114,7 @@ A hidden Imp does not leave a blank spot. It peeks out from the floor, the botto
 - **How long.** The Imp stays visible for `peekShowSeconds` (1.5 s).
 - **What triggers it.** Only while the window is visible and the user has not typed for `peekQuietSeconds` (10 s).
 - **Reduce Motion.** The Imp fades in at the edge instead of sliding.
-- **Phone.** The same peek, on the main screen.
+- **Phone.** The same peek on the main screen, but with no quiet wait: `peekQuietSeconds` does not apply there.
 
 ### Keyboard and screen readers
 

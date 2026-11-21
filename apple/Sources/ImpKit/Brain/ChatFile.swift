@@ -4,7 +4,7 @@ import Foundation
 /// on there. What the chat shows and what the Imp remembers of it (its recap included), in the same
 /// shape a kit writes chats in:
 ///
-///     { "app": "1.11.0", "imp": "Pip",
+///     { "app": "3.6.0", "imp": "Pip",
 ///       "chat": { "title", "created", "updated", "turns": […], "memory": { "recap", "messages": […] } } }
 ///
 /// Read back as a new chat (fresh ids), cut to what a chat keeps. Pictures aren't in it (they stay

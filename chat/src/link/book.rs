@@ -20,8 +20,8 @@ const SEED_ACCOUNT: &str = "link-identity";
 /// The device's seed in the file `link-identity` next to the book, which only the owner can read (as
 /// `~/.ssh` keeps a key).
 ///
-/// The seed used to live in the system key store. On macOS the Keychain asks for the login password
-/// whenever a newly built `imp` reads it (every update), so it moved to a file. A seed still in the key
+/// The seed is kept in a file, not the system key store. On macOS the Keychain asks for the login password
+/// whenever a newly built `imp` reads it (every update). A seed still in the key
 /// store is moved over once, and only by [`SeedFile::moving_from_keychain`], which the link commands use.
 /// The chat never touches the key store: with the seed not moved yet, it says what to run instead.
 pub struct SeedFile {

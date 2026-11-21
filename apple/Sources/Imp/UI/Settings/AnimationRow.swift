@@ -3,7 +3,7 @@ import ImpKit
 import SwiftUI
 
 /// One animation: try it, what starts it, change it, and a switch. Plain values in, so a row only
-/// redraws when something it shows changed (closures are not compared, only whether `setTrigger` is set).
+/// redraws when something it shows changed (closures are never compared).
 struct AnimationRow: View, Equatable {
     struct Item: Equatable {
         var key: String
@@ -38,7 +38,7 @@ struct AnimationRow: View, Equatable {
     /// Saves it as an animated sticker (`.tgs`, see `StickerExport`).
     var exportSticker: (@MainActor () -> Void)?
 
-    /// Compares the plain values and which optional actions are set, never the closures themselves.
+    /// Compares the plain values, never the closures themselves.
     nonisolated static func == (a: Self, b: Self) -> Bool {
         a.item == b.item && a.content == b.content && a.hue == b.hue && a.traits == b.traits
             && a.performance == b.performance

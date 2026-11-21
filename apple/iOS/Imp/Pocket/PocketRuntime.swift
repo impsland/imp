@@ -81,7 +81,6 @@ final class PocketRuntime {
 
     func contains(_ id: UUID) -> Bool { store.contains(id) }
 
-    /// What the Imps hatched here said to each other (and were asked by Mac Imps), from their chats.
     /// What the Imps here said with other Imps: what they were asked (in their chats) and what they asked Imps on
     /// other devices (`AskedTalks`).
     var talkLines: [TalkLine] {
@@ -306,7 +305,7 @@ final class PocketRuntime {
     }
 
     /// The Imps `id` can message: those of this iPhone, the ones on the screen its body is on, the ones
-    /// out on the owner's other devices (marked Mine), and the visitors on this iPhone's screen while it is
+    /// out on the owner's other devices (marked as yours), and the visitors on this iPhone's screen while it is
     /// away (their homes let this iPhone, their holder, ask for its own Imps).
     private func targets(of id: UUID, here: [LinkStaged]) -> [LinkStaged] {
         let body = hub.node.holder(of: id).map { hub.node.stage(of: $0) + hub.staged } ?? hub.staged

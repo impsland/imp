@@ -115,6 +115,7 @@
   <data name="devices.edge.travelling" xml:space="preserve"><value>Travelling</value><comment>Title of the chips of the Imps going across a line.</comment></data>
   <data name="devices.elsewhere.title" xml:space="preserve"><value>Elsewhere</value><comment>Title of the card that lists this iPhone's Imps held by devices it is not linked with.</comment></data>
   <data name="devices.empty" xml:space="preserve"><value>No devices yet.</value><comment>Empty state of the list of linked devices.</comment></data>
+  <data name="devices.fit" xml:space="preserve"><value>Show all</value><comment>Tooltip of the button in the corner of the Devices map that zooms so every device fits.</comment></data>
   <data name="devices.forget.named" xml:space="preserve"><value>Forget {name}…</value><comment>Button that forgets one linked device, with its name.</comment></data>
   <data name="devices.forget.one" xml:space="preserve"><value>Forget this device…</value><comment>Button: forget the selected device.</comment></data>
   <data name="devices.hop.add" xml:space="preserve"><value>Add a Hop</value><comment>The Hop pill under the code in the Link sheet when no Hop is set. It opens its settings.</comment></data>
@@ -176,6 +177,8 @@
   <data name="devices.unknown_device" xml:space="preserve"><value>a device not linked with this Mac</value><comment>A device this Mac is not linked with.</comment></data>
   <data name="devices.visitor.can_use" xml:space="preserve"><value>Its device can use here</value><comment>Title of the read-only plugs of the device an Imp comes from.</comment></data>
   <data name="devices.visitor.send_home" xml:space="preserve"><value>Send home</value><comment>Button: send a visiting Imp home.</comment></data>
+  <data name="devices.zoom_in" xml:space="preserve"><value>Zoom in</value><comment>Tooltip of the plus button in the corner of the Devices map.</comment></data>
+  <data name="devices.zoom_out" xml:space="preserve"><value>Zoom out</value><comment>Tooltip of the minus button in the corner of the Devices map.</comment></data>
   <data name="error.brain.key" xml:space="preserve"><value>{service} did not accept the key. Check it and try again.</value><comment>The key was refused.</comment></data>
   <data name="error.brain.local" xml:space="preserve"><value>No model answered. Make sure it is running, then try again.</value><comment>The local model server did not answer.</comment></data>
   <data name="error.brain.model" xml:space="preserve"><value>{service} does not have the model {model}. Pick another one.</value><comment>The model does not exist.</comment></data>
@@ -303,8 +306,6 @@
   <data name="home.hidden.hint" xml:space="preserve"><value>Hidden Imps peek out now and then. Click one to bring it back.</value><comment>Screen reader hint for the hidden Imps element.</comment></data>
   <data name="home.hidden.peek" xml:space="preserve"><value>{name} is peeking out from the floor.</value><comment>Announced to screen readers when a hidden Imp peeks.</comment></data>
   <data name="home.hidden.title" xml:space="preserve"><value>Hidden ({count})</value><comment>The element on the floor that holds hidden Imps. The number is how many.</comment></data>
-  <data name="home.tray.quit" xml:space="preserve"><value>Quit</value><comment>Status icon menu item that quits the app.</comment></data>
-  <data name="home.tray.show" xml:space="preserve"><value>Open</value><comment>Status icon menu item that shows the window.</comment></data>
   <data name="imp.a11y.call_home" xml:space="preserve"><value>Send {name} home</value><comment>Screen reader action for an Imp away on another device.</comment></data>
   <data name="imp.a11y.hide" xml:space="preserve"><value>Hide {name}</value><comment>Screen reader action.</comment></data>
   <data name="imp.a11y.label" xml:space="preserve"><value>{name}, {state}</value><comment>Screen reader label of an Imp: its name and its state.</comment></data>

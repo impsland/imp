@@ -4,7 +4,7 @@ import Foundation
 ///
 /// An Imp of this Mac that another device holds answers that device's asks here, with this Mac's tools.
 /// A device that isn't marked Mine gets no tools at all (`AskOrigin`). A device that is gets the Imp's own
-/// tools, less the groups switched off for it here. Groups are named by their registry id: an own group by
+/// tools, less the groups switched off for it here. Groups are named by id: an own group by
 /// `ToolRegistry.ownGroupID`, the commands tool by `commands`, an MCP server by `groupID(server:)`
 /// (the same ids `DeviceMap.Tool` has). Nothing is switched off until someone does it.
 public struct DeviceToolLimits: Codable, Hashable, Sendable {

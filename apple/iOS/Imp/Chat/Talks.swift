@@ -22,7 +22,7 @@ enum Talks {
 
 /// An Imp's talks, read-only, as the second side of its sheet: one row per Imp it talked with, and a
 /// tap opens the whole conversation in place, with one way back. What's on this phone shows at once.
-/// The Mac's join when it answers.
+/// The Mac's talks join when it answers.
 struct TalksPane: View {
     let hub: LinkHub
     let pocket: PocketRuntime

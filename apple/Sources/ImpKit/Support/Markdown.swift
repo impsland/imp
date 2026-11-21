@@ -147,7 +147,7 @@ public enum Markdown {
 
     /// Foundation's parser keeps only the link of a linked picture and drops the picture. So,
     /// before parsing, `[![alt](pic)](link)` becomes a picture whose URL carries both (outside
-    /// code fences), `splittingImages` takes them apart again.
+    /// code fences), `embed` takes them apart again.
     static let linkedImage = "imp-linked-image"
     private static let linkedImagePattern = try! NSRegularExpression(pattern: #"\[!\[([^\]]*)\]\(([^)\s]+)\)\]\(([^)\s]+)\)"#)
 

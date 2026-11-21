@@ -36,7 +36,7 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     public var brain: Brain?
     /// Where it sits on screen (bottom-left of its panel). `nil` until placed.
     public var origin: CGPoint?
-    /// The iPhone it was tossed onto (that phone's id, see `LinkRequest.hello`). It's still out
+    /// The iPhone it was tossed onto (that phone's id, see the hello message in `engine/src/link/messages.rs`). It's still out
     /// and still thinks on this Mac, but its body is on the phone, so the desktop doesn't show it.
     /// `nil`: here on the Mac.
     public var awayOn: UUID?
@@ -46,7 +46,7 @@ public struct ImpProfile: Codable, Hashable, Sendable, Identifiable {
     public var usesShell = true
     /// Its own tools it may not use. Groups that are on by default stay on until listed here.
     /// Optional, so older profiles load.
-    /// Stored as the groups' names, so a group that no longer exists (the old "den") is skipped, not fatal.
+    /// Stored as the groups' names, so a group that no longer exists is skipped, not fatal.
     private var ownToolsOff: [String]?
     /// Its own tools that are off by default (`ImpToolGroup.isOnByDefault`) and it may use.
     private var ownToolsOn: [String]?

@@ -84,7 +84,7 @@ public enum Briefing {
     }
 
     /// Something typed or said with photos, sounds or videos. `paths` are where each was saved
-    /// (the same order; nil for one that wasn't). With no words, a line suits what is attached.
+    /// (in the same order, nil for one that wasn't). With no words, a line suits what is attached.
     public static func message(_ words: String, media: [MediaFile], paths: [String?] = []) -> ChatMessage {
         guard !media.isEmpty else { return .user(words) }
         let ask = words.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? MediaFile.defaultWords(for: media) : words

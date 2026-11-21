@@ -108,7 +108,7 @@ public struct MadeAnimation: Codable, Hashable, Sendable, Identifiable {
         self.overrides = overrides; self.beats = beats
     }
 
-    /// Older saves also had `triggers` and `favoriteColorOnly`: they are ignored (triggers start animations now).
+    /// Older saves also had `triggers` and `favoriteColorOnly`: they are ignored.
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         self.init(id: try c.decode(UUID.self, forKey: .id), name: try c.decode(String.self, forKey: .name),

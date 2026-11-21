@@ -6,7 +6,7 @@ Every empty, sleeping, waking, offline, error and partly set up state, with its 
 
 | Where | When | Words |
 | --- | --- | --- |
-| Main screen | No Imps | `home.empty.title`, `home.empty.hint`, `home.empty.new_imp` |
+| Main screen | No Imps | `home.empty.title`, `home.empty.new_imp`, `home.empty.link` |
 | Hidden Imps | None hidden | `home.hidden.empty` |
 | Tools | No tools | `tools.empty` |
 | Triggers | No triggers | `triggers.empty` |
@@ -18,7 +18,7 @@ Every empty, sleeping, waking, offline, error and partly set up state, with its 
 | iPhone: Brains, Talks, an Imp's Tools | Nothing yet | `phone.brains.empty`, `phone.talks.empty`, `tools.empty` |
 | Needs attention | Nothing to fix | Nothing is shown: no mark in the rail and no notice. |
 
-An empty state has a short title, at most one line of hint text, and at most one button. The main screen's empty state (`home.empty.*`) follows this rule.
+An empty state has a short title, at most one line of hint text, and at most one button. The main screen's empty state is the exception: a title and two icon buttons, Hatch and Link a device (`home.empty.*`), with no hint line.
 
 ### Empty lists
 

@@ -12,14 +12,15 @@ enum MacCamera {
     static func present(onPhoto: @escaping (MediaFile) -> Void) {
         window?.close()
         let camera = CameraSession()
-        let panel = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 520, height: 440), styleMask: [.titled, .closable],
-                             backing: .buffered, defer: false)
+        let panel = NSWindow(contentRect: .zero, styleMask: [.titled, .closable], backing: .buffered, defer: false)
         panel.title = String(localized: "Take a photo")
         panel.isReleasedWhenClosed = false
-        panel.contentView = NSHostingView(rootView: MacCameraView(camera: camera, finish: { file in
+        let content = NSHostingView(rootView: MacCameraView(camera: camera, finish: { file in
             if let file { onPhoto(file) }
             panel.close()
         }))
+        panel.contentView = content
+        panel.setContentSize(content.fittingSize)
         NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: panel, queue: .main) { _ in
             MainActor.assumeIsolated { camera.stop(); if window === panel { window = nil } }
         }
@@ -36,6 +37,9 @@ private struct MacCameraView: View {
     @State private var still: CGImage?
     @State private var taking = false
 
+    /// The viewfinder: as wide as a sheet's content, in the 4:3 of a Mac camera.
+    private static let finderWidth = Sizing.sheetWidth - 2 * Spacing.cozy
+
     var body: some View {
         VStack(spacing: Spacing.cozy) {
             ZStack {
@@ -49,35 +53,33 @@ private struct MacCameraView: View {
                     }
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.black)
+            .frame(width: Self.finderWidth, height: Self.finderWidth * 3 / 4)
+            .background(Tone.ink)
             .clipShape(RoundedRectangle(cornerRadius: Radius.tile, style: .continuous))
             HStack {
                 if still == nil {
                     Spacer()
-                    Button { shoot() } label: {
-                        Circle().strokeBorder(Color.white, lineWidth: 3).background(Circle().fill(Color.white.opacity(0.85)).padding(5))
-                            .frame(width: 46, height: 46)
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(camera.state != .running || taking)
-                    .help("Take the photo")
-                    .accessibilityLabel("Take the photo")
+                    ShutterButton { shoot() }
+                        .disabled(camera.state != .running || taking)
+                        .help("Take the photo")
                     Spacer()
                 } else {
                     Button("Retake") { still = nil }
+                        .buttonStyle(ImpButtonStyle(kind: .secondary))
                     Spacer()
-                    Button("Use Photo") { use() }.keyboardShortcut(.defaultAction)
+                    Button("Use Photo") { use() }
+                        .buttonStyle(ImpButtonStyle(kind: .primary))
+                        .keyboardShortcut(.defaultAction)
                 }
             }
+            .frame(minHeight: Sizing.shutter + Spacing.small)
         }
         .padding(Spacing.cozy)
-        .frame(width: 520, height: 440)
         .task { await camera.start() }
     }
 
     private func message(_ text: String) -> some View {
-        Text(text).font(Typeface.body).foregroundStyle(Color.white).multilineTextAlignment(.center).padding()
+        Text(text).font(Typeface.body).foregroundStyle(Tone.paper).multilineTextAlignment(.center).padding(Spacing.large)
     }
 
     private func shoot() {

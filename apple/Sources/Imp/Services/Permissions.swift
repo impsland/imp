@@ -70,7 +70,7 @@ enum Permission: String, CaseIterable, Identifiable, Hashable {
         }
     }
 
-    /// Whether the system prompt was already shown for `p` (remembers it by saying yes the second time).
+    /// Whether the system prompt was already shown for `p` . Records that it has been, so the next call says yes.
     private static func asked(_ p: Permission) -> Bool {
         let key = "askedPermission.\(p.rawValue)"
         defer { UserDefaults.standard.set(true, forKey: key) }

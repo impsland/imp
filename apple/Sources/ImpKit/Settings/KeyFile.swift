@@ -1,9 +1,8 @@
 import Foundation
 
-/// Where API keys live unless the user asks for the Keychain: one small JSON file in Imp's folder
-/// in Application Support that only the user's account can read (permissions 0600), apart from
-/// the preferences. Reading it never asks for a password, so a plain "Hello" never shows a
-/// system prompt. (The Keychain is opt-in, see `ImpPreferences.keysInKeychain`.)
+/// Where API keys live: one small JSON file in Imp's folder in Application Support that only the
+/// user's account can read (permissions 0600), apart from the preferences. Reading it never asks
+/// for a password, so a plain "Hello" never shows a system prompt.
 public struct KeyFile: Sendable {
     public let url: URL
 

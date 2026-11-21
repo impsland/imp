@@ -136,14 +136,6 @@ pub fn mcp_parse_message(text: String) -> McpIncoming {
     }
 }
 
-/// The protocol version to speak after `initialize`, from its result.
-#[uniffi::export]
-pub fn mcp_negotiated_version(initialize_result_json: String) -> Result<String, McpProtocolError> {
-    Ok(protocol::negotiated_version(&json(
-        &initialize_result_json,
-    )?))
-}
-
 /// One page of tools from the result of `tools/list`. `seen_cursors` are the cursors already read.
 #[uniffi::export]
 pub fn mcp_tools_page(
@@ -169,12 +161,6 @@ pub fn mcp_tools_page(
 #[uniffi::export]
 pub fn mcp_tool_result_text(result_json: String) -> Result<String, McpProtocolError> {
     Ok(protocol::tool_result_text(&json(&result_json)?))
-}
-
-/// What the model calls one tool of one server.
-#[uniffi::export]
-pub fn mcp_exposed_name(server: String, tool: String) -> String {
-    protocol::exposed_name(&server, &tool)
 }
 
 /// The tools of several servers as the model is offered them, servers in name order.

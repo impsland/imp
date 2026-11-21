@@ -112,7 +112,8 @@ public struct PocketImp: Codable, Equatable, Sendable, Identifiable {
     public var servers: [PocketServer]
     /// Single tools switched off, by registry id (`ToolRegistry`). Optional, so saved Imps load.
     public var toolsOff: [String]?
-    /// What was written over single tools' names and descriptions, by registry id (`ToolText`). Optional, so saved Imps load.
+    /// What was written over single tools' names and descriptions, by registry id (`ToolText`).
+    /// Optional, so saved Imps load.
     public var toolText: [String: ToolText]?
     /// Oldest first. The last chat with you is the one you're in. Talks with other Imps are chats of
     /// their own (`Chat.peer`).

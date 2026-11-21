@@ -25,8 +25,7 @@ struct ImpSheet: View {
     var roomInView = false
     /// Opens the Imp's settings. Only the Imps hatched on this iPhone have any.
     var edit: (() -> Void)?
-    /// Starts waking an Imp that has no Brain (the first run). Only the Imps hatched here have it.
-    /// Opens the Brain panel of this pocket Imp's editor.
+    /// Opens the Brain panel of this pocket Imp's editor, to wake an Imp that has no Brain yet. Only the Imps hatched here have it.
     var giveBrain: (() -> Void)?
     /// The Imps on the room's screen: they crowd into the camera's picture. Empty: this chat's Imp alone.
     var onScreen: [LinkImp] = []
@@ -448,10 +447,8 @@ private struct Composer: View {
     let imp: LinkImp
     let typing: TypingState
     var giveBrain: (() -> Void)?
-    /// Takes a photo for the message. Nil: the system camera (`SystemCamera`) opens and its picture is attached.
-    /// The playful camera plugs in here: it calls back into `draft.addPicture(data:)` when a photo is kept.
-    var onTakePhoto: (() -> Void)?
-    /// The Imps that get in the way of the shot in the playful camera (`CameraView`), which "Take a photo" opens.
+    /// The Imps on the screen, shown in the playful camera (`CameraView`) that "Take a photo" opens. With none,
+    /// it opens the system camera (`SystemCamera`). Either one attaches its picture to the draft.
     var cameraImps: [LinkImp] = []
     @State private var showImpCamera = false
     @State private var text = ""
@@ -690,7 +687,7 @@ private struct Composer: View {
         return Menu {
             Button { showPhotos = true } label: { Label("Photo or video", systemImage: "photo.on.rectangle") }
                 .accessibilityIdentifier("chat.add.photos")
-            if onTakePhoto != nil || !cameraImps.isEmpty || SystemCamera.isAvailable {
+            if !cameraImps.isEmpty || SystemCamera.isAvailable {
                 Button { takePhoto() } label: { Label("Take a photo", systemImage: "camera") }
                     .accessibilityIdentifier("chat.add.camera")
             }
@@ -716,7 +713,7 @@ private struct Composer: View {
     }
 
     private func takePhoto() {
-        if let onTakePhoto { onTakePhoto() } else if !cameraImps.isEmpty { showImpCamera = true } else { showCamera = true }
+        if !cameraImps.isEmpty { showImpCamera = true } else { showCamera = true }
     }
 
     private func startRecording() {

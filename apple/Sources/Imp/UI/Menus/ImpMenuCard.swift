@@ -3,11 +3,11 @@ import ImpKit
 import SwiftUI
 
 /// An Imp's right-click menu, the same on the desktop, in the app's window and for a visitor: the Imp in its circle
-/// with its name and status and, in the top right corner, Settings (a visitor's New chat), then three big buttons
-/// (Talk, Message, Chat), its size and its colour, then `extra`: the rows that only sometimes apply (Stop, triggers,
-/// devices), then Hide and where it is as pills, and last `end` (sharing and Goodbye, see `ImpMenuEnd`). No row has
-/// a heading: icons say what they are (see `MenuCard`). A visitor's settings and looks belong to its home, so it has
-/// New chat where the others have Settings, and no size or colour.
+/// with its name and status, and at the top right a big button like the three below it: Settings (a visitor's New
+/// chat). Under them are the three big buttons (Talk, Message, Chat), its size and its colour, then `extra`: the rows
+/// that only sometimes apply (Stop, triggers, devices), then sharing as pills, Hide and where it is as pills, and last
+/// Goodbye, apart (see `ImpMenuEnd`). No row has a heading: icons say what they are (see `MenuCard`). A visitor's
+/// settings and looks belong to its home, so it has New chat where the others have Settings, and no size or colour.
 struct ImpMenuCard<Extra: View>: View {
     typealias Place = ImpMenuPlace
     typealias Action = ImpMenuAction
@@ -21,7 +21,7 @@ struct ImpMenuCard<Extra: View>: View {
     /// Runs an action. Every button closes the menu first. Size and colour change at once and leave it open.
     let run: (Action) -> Void
     let extra: Extra
-    /// Sharing and Goodbye, under everything else. Nil for a visitor.
+    /// Sharing and Goodbye. Nil for a visitor.
     let end: ImpMenuEnd?
     @State private var hue: Double
     @State private var scale: Double
@@ -83,7 +83,7 @@ struct ImpMenuCard<Extra: View>: View {
         ]
     }
 
-    /// The icon button in the header's top right corner: Settings, or New chat for a visitor.
+    /// The top right button: Settings, or New chat for a visitor. It is as big as the three below it.
     var corner: MenuItem {
         place.isVisitor
             ? ask(MenuItem(id: "new", icon: "plus.bubble.fill", title: String(localized: "New Chat")) { run(.newChat) })
@@ -93,11 +93,27 @@ struct ImpMenuCard<Extra: View>: View {
 
     var body: some View {
         MenuCard {
-            HStack(alignment: .top, spacing: MenuMetrics.inset) {
-                ImpMenuHeader(ready: ready, name: name, status: status, hue: hue)
-                MenuCornerButton(item: corner)
+            // One grid for the header and the big buttons, so Settings takes exactly the width of Chat below it.
+            Grid(horizontalSpacing: MenuMetrics.inset, verticalSpacing: MenuMetrics.inset) {
+                GridRow {
+                    ImpMenuHeader(ready: ready, name: name, status: status, hue: hue)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        .gridCellColumns(4)
+                    QuickButton(icon: corner.icon, verbatim: corner.title, action: corner.action)
+                        .disabled(!corner.enabled)
+                        .help(corner.help.isEmpty ? corner.title : corner.help)
+                        .gridCellColumns(2)
+                }
+                GridRow {
+                    ForEach(buttons) { item in
+                        QuickButton(icon: item.icon, verbatim: item.title, action: item.action)
+                            .disabled(!item.enabled)
+                            .help(item.help)
+                            .gridCellColumns(2)
+                    }
+                }
             }
-            MenuGrid(items: buttons)
+            .fixedSize(horizontal: false, vertical: true)
             if !place.isVisitor {
                 VStack(spacing: MenuMetrics.inset) {
                     SizeRow(scale: scale, hue: hue) { scale = $0; run(.size($0)) }
@@ -105,8 +121,9 @@ struct ImpMenuCard<Extra: View>: View {
                 }
             }
             extra
+            if let end { end.sharingPills }
             MenuPills(items: placing)
-            if let end { end }
+            if let end { end.goodbyeButton }
         }
         .environment(\.impTint, Color.imp(hue))
     }
@@ -136,20 +153,27 @@ extension ImpMenuCard where Extra == EmptyView {
     }
 }
 
-/// The end of an own Imp's menu, the same on the desktop and in the window: sharing it (Copy kit, Copy link) as pills
-/// like Hide and the place button above them, then Goodbye, last and apart.
-struct ImpMenuEnd: View {
+/// The end of an own Imp's menu, the same on the desktop and in the window. Its sharing (Copy kit, Copy link) is pills
+/// that come before Hide and the place button, and its Goodbye comes last, apart from everything (`ImpMenuCard` puts
+/// them in that order).
+@MainActor
+struct ImpMenuEnd {
     let canLink: Bool
     let canGoodbye: Bool
     let kit: () -> Void
     let link: () -> Void
     let goodbye: () -> Void
 
-    var body: some View {
+    /// Copy kit and Copy link as pills, two to a row.
+    var sharingPills: some View {
         MenuPills(items: [
             MenuItem(id: "kit", icon: "shippingbox.fill", title: String(localized: "menu.imp.copy_kit"), action: kit),
             MenuItem(id: "link", icon: "link", title: String(localized: "menu.imp.copy_link"), enabled: canLink, action: link),
         ])
+    }
+
+    /// Goodbye, one wide button in the danger colour.
+    var goodbyeButton: some View {
         MenuDangerButton(item: MenuItem(id: "goodbye", icon: "hand.wave.fill", title: String(localized: "menu.imp.goodbye"),
                                         enabled: canGoodbye, action: goodbye))
     }

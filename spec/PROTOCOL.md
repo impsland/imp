@@ -5,7 +5,7 @@ workspace and ship in one Docker image.
 
 | service | purpose | speaks |
 |---------|---------|--------|
-| Den | A standalone gallery where anyone shares Imps, animations, triggers, tools and kits. | A read-only HTTPS JSON API, an MCP endpoint at `/mcp` (the only way to publish), OAuth 2.1 for accounts, a small web gallery. |
+| Den | A standalone gallery where anyone shares Imps, animations, triggers, tools and kits. | A read-only HTTPS JSON API (plus install and report posts), an MCP endpoint at `/mcp` (the only way to publish), OAuth 2.1 for accounts, a small web gallery. |
 | Hop | A blind relay that lets one device reach another (the host) from anywhere. | A short binary handshake over TCP, then spliced bytes. |
 
 The code is the source of truth: `server/den/src`, `server/hop/src` and `engine/src/link/hop.rs`.

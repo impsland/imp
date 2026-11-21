@@ -76,7 +76,7 @@ fn a_provider_is_added_listed_changed_and_removed() {
             "models": []
         }])
     );
-    // Changes, one setting each; `-` takes a setting away.
+    // Changes, one setting each. `-` takes a setting away.
     w.imp(&[
         "provider",
         "set",
@@ -311,7 +311,7 @@ fn an_agent_is_made_shown_changed_renamed_and_removed() {
             .out
             .contains("ollama/qwen3#high")
     );
-    // Settings, one at a time; `-` clears.
+    // Settings, one at a time. `-` clears.
     w.imp(&["agent", "set", "Pip", "description", "-"]);
     w.imp(&["agent", "set", "Pip", "steps", "40"]);
     w.imp(&["agent", "set", "Pip", "mode", "all"]);

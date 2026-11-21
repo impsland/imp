@@ -86,7 +86,7 @@ struct DeviceImpChip: View {
 }
 
 /// The points of a node where lines attach, on the sides given, each as a source and a target unless `types` says
-/// otherwise; `ports` names the point for a side and a type.
+/// otherwise. `ports` names the point for a side and a type.
 struct LinePoints: View {
     let nodeID: String
     var sides: [Position] = DeviceGraph.Port.sides

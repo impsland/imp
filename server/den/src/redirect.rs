@@ -4,7 +4,7 @@ const MAX_LEN: usize = 2000;
 
 /// What is wrong with `uri` as a redirect URI, if anything.
 ///
-/// Allowed: `https://` URLs; `http://` only on the loopback names `127.0.0.1`, `[::1]` and `localhost`
+/// Allowed: `https://` URLs. `http://` only on the loopback names `127.0.0.1`, `[::1]` and `localhost`
 /// (with any port), and a private-use scheme with a dot in it, such as `app.imp:/oauth`.
 pub fn problem(uri: &str) -> Option<&'static str> {
     if uri.len() > MAX_LEN {

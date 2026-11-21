@@ -115,6 +115,7 @@
   <string name="devices_edge_travelling">Travelling</string>
   <string name="devices_elsewhere_title">Elsewhere</string>
   <string name="devices_empty">No devices yet.</string>
+  <string name="devices_fit">Show all</string>
   <string name="devices_forget_named">Forget %1$s…</string>
   <string name="devices_forget_one">Forget this device…</string>
   <string name="devices_hop_add">Add a Hop</string>
@@ -176,6 +177,8 @@
   <string name="devices_unknown_device">a device not linked with this Mac</string>
   <string name="devices_visitor_can_use">Its device can use here</string>
   <string name="devices_visitor_send_home">Send home</string>
+  <string name="devices_zoom_in">Zoom in</string>
+  <string name="devices_zoom_out">Zoom out</string>
   <string name="error_brain_key">%1$s did not accept the key. Check it and try again.</string>
   <string name="error_brain_local">No model answered. Make sure it is running, then try again.</string>
   <string name="error_brain_model">%1$s does not have the model %2$s. Pick another one.</string>
@@ -311,8 +314,6 @@
   <string name="home_hidden_hint">Hidden Imps peek out now and then. Click one to bring it back.</string>
   <string name="home_hidden_peek">%1$s is peeking out from the floor.</string>
   <string name="home_hidden_title">Hidden (%1$d)</string>
-  <string name="home_tray_quit">Quit</string>
-  <string name="home_tray_show">Open</string>
   <string name="imp_a11y_call_home">Send %1$s home</string>
   <string name="imp_a11y_hide">Hide %1$s</string>
   <string name="imp_a11y_label">%1$s, %2$s</string>

@@ -343,15 +343,6 @@ pub fn mcp_auth_header(auth: McpAuth) -> crate::McpHeader {
     crate::McpHeader { name, value }
 }
 
-/// The revisions Imp speaks, newest first.
-#[uniffi::export]
-pub fn mcp_supported_versions() -> Vec<String> {
-    imp_engine::mcp::protocol::SUPPORTED_VERSIONS
-        .iter()
-        .map(|v| v.to_string())
-        .collect()
-}
-
 /// The version to speak after `initialize`. Fails with a sentence when the server picked a revision
 /// Imp does not speak: the app must disconnect and show it.
 #[uniffi::export]

@@ -177,7 +177,7 @@ private enum RoomBackgroundSample {
 extension HTMLBackdropTests {
     /// A page much larger than the window (no viewport, fixed pixel sizes) is drawn inside the window's size: the
     /// backdrop never makes what it is laid out with larger, also once it was drawn at a larger size and its picture
-    /// was taken there. On the iPhone the room once grew past the screen this way (`testBackgroundKeepsTheRoomOnScreen`).
+    /// was taken there. On the iPhone the room could grow past the screen this way (`testBackgroundKeepsTheRoomOnScreen`).
     @Test("A large page never changes the layout")
     func keepsItsSize() async throws {
         let html = "<html><body style='margin:0;width:3000px;height:3000px;background:linear-gradient(#f00,#00f)'></body></html>"

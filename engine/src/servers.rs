@@ -1,6 +1,6 @@
 //! The Hop address a person can set (`host:port`). It is checked here, so every app gives the
-//! same answer and the same readable sentence. Nothing here
-//! reaches the network. The vectors are `spec/fixtures/server-addresses.json`.
+//! same answer and the same readable sentence. Nothing here reaches the network. The vectors are
+//! `spec/fixtures/server-addresses.json`.
 
 use crate::link::hop::{HopAddress, is_host};
 

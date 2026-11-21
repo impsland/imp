@@ -474,31 +474,6 @@ pub fn link_map_ids() -> LinkMapIds {
     }
 }
 
-/// The parts of the line from `a` to `b` that lie outside every box.
-#[uniffi::export]
-pub fn link_line_pieces(a: LinkPoint, b: LinkPoint, boxes: Vec<LinkRect>) -> Vec<LinkLine> {
-    let boxes: Vec<(f64, f64, f64, f64)> = boxes
-        .iter()
-        .map(|r| (r.x, r.y, r.width, r.height))
-        .collect();
-    map::pieces((a.x, a.y), (b.x, b.y), &boxes)
-        .into_iter()
-        .map(|(from, to)| LinkLine {
-            from: LinkPoint {
-                x: from.0,
-                y: from.1,
-            },
-            to: LinkPoint { x: to.0, y: to.1 },
-        })
-        .collect()
-}
-
-#[derive(Debug, Clone, uniffi::Record)]
-pub struct LinkLine {
-    pub from: LinkPoint,
-    pub to: LinkPoint,
-}
-
 /// What happens to a job offered to a device's lane: "run", "wait" or "busy".
 #[uniffi::export]
 pub fn link_lane_admit(running: bool, queued: u32) -> String {

@@ -57,7 +57,7 @@ Run `imp --help` to see every command, or `imp <command> --help` to see one. Lis
 | `imp mcp list`, `add`, `set`, `remove`, `enable`, `disable` | The MCP servers that give Imps their tools |
 | `imp permission list`, `add`, `remove` | Rules for what Imps may do: allow, ask or deny |
 | `imp skill`, `imp command` | Lists the skills and custom commands that were found |
-| `imp project`, `imp config` | What a folder adds and whether it is trusted; `imp.json` by key |
+| `imp project`, `imp config` | What a folder adds and whether it is trusted. `imp.json` by key |
 | `imp qr` | Shows a code to scan with Imp on a Mac or an iPhone |
 | `imp link` | Keeps this computer online as one of your devices |
 | `imp serve` | Runs the Hop. See `server/README.md` |

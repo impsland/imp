@@ -115,7 +115,7 @@ public struct PhoneRouter: Equatable, Sendable {
     /// The Imps that left this phone between `old` and `new`. An Imp is in one place at a time, so a sheet
     /// about one that is somewhere else has to close, even its chat left open while it was thrown:
     /// - a visitor gone from the room (sent home, called home, thrown on to another device), and an Imp of this
-    ///   phone that was deleted;
+    ///   phone that was deleted.
     /// - an Imp of this phone that another device took (it's there now, and talks there). Only once it is taken:
     ///   while it flies, the throw may be declined or time out and it lands back here, its chat still open.
     public static func departed(from old: PhonePresence, to new: PhonePresence) -> [UUID] {

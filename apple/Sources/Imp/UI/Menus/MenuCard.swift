@@ -9,10 +9,10 @@ import SwiftUI
 /// - things to choose from (a Brain, a trigger, a device) are pills, two to a row (`MenuPills`),
 /// - what can't be undone (Goodbye) is one wide button at the bottom, in the danger colour (`MenuDangerButton`).
 ///
-/// The order is the same in every menu, on the Mac and on the iPhone: what you do with the Imp (talk, type, chat),
-/// where it is and its settings, how it looks (size, colour), what applies right now (Stop, Copy last reply), its
-/// triggers, where it can visit, sharing it, and last and apart, Goodbye. A row never has a hole: a short last
-/// row of buttons or pills shares the whole width.
+/// The order is the same in every menu, on the Mac and on the iPhone: what you do with the Imp (talk, message,
+/// chat), where it is and its settings, how it looks (size, colour), what applies right now (Stop, Copy last reply),
+/// its triggers, where it can visit, sharing it, where it is (Hide, Let out), and last and apart, Goodbye. A row
+/// never has a hole: a short last row of buttons or pills shares the whole width.
 ///
 /// A button that acts closes the menu first and then acts, so a window it opens comes forward. A choice
 /// that is only a setting (size, colour, Brain) applies at once and leaves the menu open.
@@ -69,6 +69,9 @@ struct MenuItem: Identifiable {
 enum MenuMetrics {
     static let inset = Spacing.small
     static let glyph = Sizing.iconTile
+    /// A compact button (a canvas menu's): half the height of a big pebble, and its icon box half the glyph's.
+    static let compactHeight: CGFloat = 27
+    static let compactGlyph = glyph / 2
     /// What `NSMenu` adds above and below a custom item view (and not beside it), measured on macOS 26.
     static let menuChrome: CGFloat = 5
 }
@@ -77,10 +80,11 @@ enum MenuMetrics {
 struct MenuGlyph: View {
     let name: String
     var size: IconSize = .large
+    var box: CGFloat = MenuMetrics.glyph
 
     var body: some View {
         Image(systemName: name).font(.icon(size, weight: .semibold))
-            .frame(width: MenuMetrics.glyph, height: MenuMetrics.glyph)
+            .frame(width: box, height: box)
     }
 }
 
@@ -96,9 +100,11 @@ struct MenuCard<Content: View>: View {
 }
 
 /// The main actions: big pebbles, three to a row (two when there are four, so no row has one alone). A short last
-/// row shares the full width between its buttons, so no row has a hole in it.
+/// row shares the full width between its buttons, so no row has a hole in it. `compact` makes them half as tall, with
+/// the icon beside the word.
 struct MenuGrid: View {
     let items: [MenuItem]
+    var compact = false
 
     private var columns: Int { items.count == 4 ? 2 : min(3, max(1, items.count)) }
     /// Cells across: six when rows of three must also split into two or one, else one per column.
@@ -110,7 +116,7 @@ struct MenuGrid: View {
             ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
                 GridRow {
                     ForEach(row) { item in
-                        QuickButton(icon: item.icon, verbatim: item.title, action: item.action)
+                        QuickButton(icon: item.icon, verbatim: item.title, compact: compact, action: item.action)
                             .disabled(!item.enabled)
                             .help(item.help)
                             .gridCellColumns(cells / row.count)
@@ -190,26 +196,11 @@ struct MenuDangerButton: View {
     }
 }
 
-/// One icon in a pebble of its own, for the top right corner of a card's header (an Imp's Settings).
-struct MenuCornerButton: View {
-    let item: MenuItem
-
-    var body: some View {
-        Button(action: item.action) {
-            MenuGlyph(name: item.icon, size: .medium)
-                .frame(width: Sizing.control, height: Sizing.control)
-        }
-        .buttonStyle(PebbleButtonStyle())
-        .disabled(!item.enabled)
-        .help(item.help.isEmpty ? item.title : item.help)
-        .accessibilityLabel(Text(verbatim: item.title))
-    }
-}
-
 extension NSMenu {
     /// Opens the menu at the pointer of `event`: down from it where the card fits below, else up from it, and always
     /// whole on that screen. A card is one tall item, and AppKit's own placement of a context menu that doesn't fit
     /// below the pointer moves it to the top of the screen, far from the Imp that was clicked.
+    @MainActor
     func popUpCard(for event: NSEvent, in view: NSView) {
         guard let window = view.window else { return NSMenu.popUpContextMenu(self, with: event, for: view) }
         let pointer = window.convertPoint(toScreen: event.locationInWindow)

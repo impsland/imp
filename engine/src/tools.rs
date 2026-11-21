@@ -110,7 +110,7 @@ macro_rules! built_in_tools {
                 }
             }
 
-            /// Its group (`animations`, `den`...).
+            /// Its group (`animations`, `senses`...).
             pub fn group(self) -> &'static str {
                 match self {
                     $(Self::$variant => $group,)*
@@ -169,7 +169,7 @@ pub fn built_in_named(name: &str) -> Option<ToolEntry> {
         .map(|(g, t)| ToolEntry::own(g, t))
 }
 
-/// The group (`animations`, `den`...) of the built-in tool the model calls `name`.
+/// The group (`animations`, `senses`...) of the built-in tool the model calls `name`.
 pub fn group_of(name: &str) -> Option<&'static str> {
     BUILT_IN.iter().find(|(_, t)| *t == name).map(|(g, _)| *g)
 }

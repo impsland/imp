@@ -62,18 +62,6 @@
     "es": "Los Imps ocultos se asoman de vez en cuando. Haz clic en uno para traerlo de vuelta.",
     "zh-Hans": "隐藏的 Imp 会不时探出头来。点击它，它就会回来。"
   },
-  "home.tray.show": {
-    "note": "Status icon menu item that shows the window.",
-    "en": "Open",
-    "es": "Abrir",
-    "zh-Hans": "打开"
-  },
-  "home.tray.quit": {
-    "note": "Status icon menu item that quits the app.",
-    "en": "Quit",
-    "es": "Salir",
-    "zh-Hans": "退出"
-  },
   "home.corner.show_hidden": {
     "note": "Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.",
     "en": "Hidden",
@@ -113,7 +101,7 @@
     "note": "Button on the empty main screen: link another device.",
     "en": "Link a device",
     "es": "Vincular dispositivo",
-    "zh-Hans": "连接设备"
+    "zh-Hans": "关联设备"
   },
   "home.empty.link.help": {
     "note": "Tooltip of the link button on the empty main screen.",

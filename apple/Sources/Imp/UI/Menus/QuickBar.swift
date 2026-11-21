@@ -32,36 +32,47 @@ struct QuickButton: View {
     let icon: String
     let title: Text
     let action: () -> Void
+    /// Half as tall, with the icon beside the one-line word (see `MenuMetrics.compactHeight`).
+    var compact = false
 
     init(icon: String, title: LocalizedStringKey, action: @escaping () -> Void) {
         self.icon = icon; self.title = Text(title); self.action = action
     }
 
     /// For words that are already localized (a name, a count).
-    init(icon: String, verbatim title: String, action: @escaping () -> Void) {
-        self.icon = icon; self.title = Text(verbatim: title); self.action = action
+    init(icon: String, verbatim title: String, compact: Bool = false, action: @escaping () -> Void) {
+        self.icon = icon; self.title = Text(verbatim: title); self.compact = compact; self.action = action
     }
 
     var body: some View {
         Button(action: action) {
-            // One line if the words fit, else two, and the icon alone only when not even that fits.
-            ViewThatFits(in: .horizontal) {
-                VStack(spacing: 0) {
-                    MenuGlyph(name: icon)
-                    title.font(Typeface.small.weight(.medium)).lineLimit(1).fixedSize()
+            if compact {
+                HStack(spacing: MenuMetrics.inset / 2) {
+                    MenuGlyph(name: icon, size: .small, box: MenuMetrics.compactGlyph)
+                    title.font(Typeface.small.weight(.medium)).lineLimit(1).truncationMode(.tail)
                 }
-                .padding(MenuMetrics.inset)
-                VStack(spacing: 0) {
-                    MenuGlyph(name: icon)
-                    title.font(Typeface.small.weight(.medium)).lineLimit(2).multilineTextAlignment(.center)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .padding(MenuMetrics.inset)
-                MenuGlyph(name: icon)
+                .padding(.horizontal, MenuMetrics.inset)
+                .frame(maxWidth: .infinity, minHeight: MenuMetrics.compactHeight)
+            } else {
+                // One line if the words fit, else two, and the icon alone only when not even that fits.
+                ViewThatFits(in: .horizontal) {
+                    VStack(spacing: 0) {
+                        MenuGlyph(name: icon)
+                        title.font(Typeface.small.weight(.medium)).lineLimit(1).fixedSize()
+                    }
                     .padding(MenuMetrics.inset)
+                    VStack(spacing: 0) {
+                        MenuGlyph(name: icon)
+                        title.font(Typeface.small.weight(.medium)).lineLimit(2).multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(MenuMetrics.inset)
+                    MenuGlyph(name: icon)
+                        .padding(MenuMetrics.inset)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(minHeight: Sizing.hit)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .frame(minHeight: Sizing.hit)
         }
         .buttonStyle(PebbleButtonStyle())
         .accessibilityLabel(title)

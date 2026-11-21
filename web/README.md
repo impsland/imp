@@ -15,11 +15,11 @@ another device. Connecting is a camera that reads the other device's code and a 
   files (4 at most, 25 MB each). Drop files on an Imp or its bubble, or paste a picture. They go to the Imp's
   home before the question (`upload`, see "Attachments" in the Link docs). Sound is sent as WAV.
 - **Take a photo** opens the camera full screen. The Imps on the page run to its corners and peek in from the
-  edges; carry them anywhere over the picture. The photo has them where they stand, and can be retaken,
+  edges. Carry them anywhere over the picture. The photo has them where they stand, and can be retaken,
   saved or sent. While the camera is open nothing is thrown off the page.
 - **Hold** it to cuddle it, **shake** it while carrying.
 - **Carry** it anywhere. Only a hard fling at a side throws it to the device that side leads to, by the
-  Mac's rule (a fast sideways push at the side while still carrying; letting go never throws) or, with a
+  Mac's rule (a fast sideways push at the side while still carrying, and letting go never throws) or, with a
   finger, the iPhone's (a flick that would carry it off the page). See `app/toss.js`. Rest it near a side for
   half a second and the doors show, as on the Mac: a band per device the side leads to, the one a throw at
   that height goes to lit, or "Nobody here".
@@ -50,8 +50,8 @@ What an Imp says to another shows in a small bubble beside it.
   link node (the `rqrr` crate), so it works in Safari and Firefox too.
 
 The book (the page's links and its secret seed) is kept in the browser's `localStorage` for this site.
-Anyone who can read this browser's storage can act as this device: **Forget every device** (in Link a
-device (Forget on the Mac or iPhone) undoes the links on that side, and clearing the site's data in the
+Anyone who can read this browser's storage can act as this device. Forgetting a device on the Mac or iPhone
+undoes the links on that side, and clearing the site's data in the
 browser undoes them here.
 
 ## Build and run
@@ -74,7 +74,7 @@ to wait at), `?hopSocket=wss://…/` (when the Hop's WebSocket isn't at the usua
 Press **Connect** (or **+**) and hold the other device's code up to the camera, or paste it. On the Mac it is
 Devices › Show code, in the terminal chat `/pair` (the line under *as text*). The code must carry a Hop
 (`imp chat` and `imp link` take it from `IMP_HOP`, `imp qr` from `--hop`). The camera needs a page opened
-over `https://` or from `localhost`; elsewhere paste the code. If the other device doesn't answer (an iPhone
+over `https://` or from `localhost`. Elsewhere, paste the code. If the other device doesn't answer (an iPhone
 whose link was copied into Safari is in the background), the window waits for it for three minutes and links
 as soon as Imp is open on it again. On a phone the window is a sheet from the bottom.
 

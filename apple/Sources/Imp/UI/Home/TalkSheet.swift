@@ -42,7 +42,7 @@ struct TalkSheet: View {
         let peer = thread?.peer
         SheetScaffold(icon: request.chat != nil ? "bubble.left.and.bubble.right.fill" : "person.2.fill",
                       title: request.chat != nil ? LocalizedStringKey(chat?.title.isEmpty == false ? chat!.title : "Chat")
-                          : LocalizedStringKey(peer.map { "Talk with \($0.name)" } ?? "Talk"),
+                          : peer.map { other -> LocalizedStringKey in "Talk with \(other.name)" } ?? "Talk",
                       info: request.chat != nil
                           ? "What you and \(me?.name ?? "this Imp") said in this chat. This is only to read. Show it as bubbles or as JSON, and copy the JSON."
                           : "What \(me?.name ?? "this Imp") and \(peer?.name ?? "another Imp") said to each other, both ways. This is only to read: it comes from both Imps' chats. Show it as bubbles or as JSON, and copy the JSON.",

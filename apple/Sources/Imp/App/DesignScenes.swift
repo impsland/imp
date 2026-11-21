@@ -179,7 +179,7 @@ enum DesignScene: String, CaseIterable {
             .background(Color.gray))
     }
 
-    /// An Imp's right-click menu card on a mid-grey desktop: on the desktop (Home), a visitor's, in the window (Free),
+    /// An Imp's right-click menu card on a mid-grey desktop: on the desktop, a visitor's, in the window,
     /// for three Imps picked together, and for empty space.
     @MainActor private func impMenu() -> AnyView {
         let model = Self.model(imps: 2)

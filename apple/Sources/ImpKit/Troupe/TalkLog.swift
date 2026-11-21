@@ -71,7 +71,7 @@ public enum TalkLog {
         .prefix(maxThreads).map { $0 }
     }
 
-    /// Lines for one `LinkUpdate.talks`: the newest few hundred, each text cut to a readable length,
+    /// Lines for one `talkLines` link message: the newest few hundred, each text cut to a readable length,
     /// so they always fit a frame.
     public static func forLink(_ lines: [TalkLine], limit: Int = 300, textLimit: Int = 1_500) -> [TalkLine] {
         lines.sorted { $0.date < $1.date }.suffix(limit).map { line in

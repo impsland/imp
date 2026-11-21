@@ -204,7 +204,7 @@ final class PhoneScreensUITests: XCTestCase {
         XCTAssertTrue(element(app, "pick.goodbye").exists, "Goodbye is offered for Imps hatched here")
         XCTAssertFalse(element(app, "pick.home").exists, "no visitor is picked, so no Send home")
 
-        // A tap now picks, it does not open a chat.
+        // A tap picks, it does not open a chat.
         second.tap()
         XCTAssertTrue(NSPredicate(format: "label == '2 selected'").evaluate(with: element(app, "pick.title")), "a tap picks a second Imp")
         XCTAssertFalse(element(app, "sheet.close").exists, "a tap while picking opens no chat")

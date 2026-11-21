@@ -200,7 +200,7 @@ import Testing
         #expect(left.source == mac)
     }
 
-    /// One channel is ONE line between the two devices, dashed through the Hop: it is never split into halves.
+    /// One channel is one line between the two devices, dashed through the Hop: it is never split into halves.
     @Test func aChannelThroughTheHopIsOneDashedLineBetweenTheTwoDevices() throws {
         let other = DeviceMap.Peer(id: UUID(), name: "Mini", kind: .mac, reach: .viaServer, isTrusted: true)
         let (map, graph) = graph(peers: [phone, studio, other], server: hop)

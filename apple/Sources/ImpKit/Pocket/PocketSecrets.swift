@@ -6,7 +6,8 @@ public enum PocketSlot: Hashable, Sendable {
     /// The value of one header of one of its servers (`PocketServer.id`, the header's name).
     case header(UUID, String)
 
-    /// A stable name for the slot, for a Keychain account: `pocket.<imp>.apiKey` or `pocket.<imp>.header.<server>.<name in lower case>`.
+    /// A stable name for the slot, for a Keychain account: `pocket.<imp>.apiKey`, or
+    /// `pocket.<imp>.header.<server>.<name in lower case>` for a header.
     public func account(imp: UUID) -> String {
         switch self {
         case .apiKey: "pocket.\(imp.uuidString).apiKey"

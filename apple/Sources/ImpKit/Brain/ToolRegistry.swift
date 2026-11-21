@@ -73,8 +73,8 @@ public enum ToolRegistry {
 
     public static func mcpID(server name: String, tool: String) -> String { ImpCore.toolMcpId(server: name, tool: tool) }
 
-    /// The words a section's agent sheet shows for each built-in tool (short: the section says what they act on), by the name the model calls it. The ids,
-    /// groups and order come from the core.
+    /// The words a section's agent sheet shows for each built-in tool (short: the section says what they act on),
+    /// by the name the model calls it. The ids, groups and order come from the core.
     private static let titles: [String: String] = [
         OwnTools.play: String(localized: "tool.play"),
         OwnTools.move: String(localized: "tool.move"),

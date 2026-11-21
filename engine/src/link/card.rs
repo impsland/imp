@@ -164,10 +164,6 @@ impl LinkRoutes {
         let host = hosts.iter().find(|h| !is_loopback(h))?;
         HopAddress::new(host, hop.port)
     }
-
-    pub fn hop_address(&self) -> Option<HopAddress> {
-        self.hop.as_deref().and_then(HopAddress::parse)
-    }
 }
 
 /// Whether `host` only ever means the device it is written on.

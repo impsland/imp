@@ -2,8 +2,8 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// Several Imps picked at once on the phone (the Mac's `ImpPicks`, by touch): Select in an Imp's menu starts it,
-/// a tap on an Imp then picks it or lets it go, and a bar at the bottom acts on all of them.
+// Several Imps picked at once on the phone (the Mac's `ImpPicks`, by touch): Select in an Imp's menu starts it,
+// a tap on an Imp then picks it or lets it go, and a bar at the bottom acts on all of them.
 
 /// Tells the app that Imps are being picked: the room's top bar gives its place to the picking bar.
 struct PhonePicking: PreferenceKey {

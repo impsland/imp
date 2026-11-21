@@ -21,11 +21,6 @@ Custom look, standard behavior. Every control is a real control of its platform 
 11. **Feedback and motion.** Controls have hover, press and focus states. Animate only through the `Motion` presets, which honour Reduce Motion. Nothing repeats forever for decoration, and anything that animates continuously pauses when hidden, idle or under Reduce Motion.
 12. **The room never leaves.** On a phone the app is one room where the Imps fly freely over the whole screen. Everything else is one sheet over it. A sheet about an Imp brings that Imp up into the room left above it and wears its colour. Every sheet has the same bar and the same way back. See [The room never leaves](/design/room).
 
-### What changed, and why
-
-- **Principle 12 is new** (the iPhone redesign). The room was already open and people like it, so it stays as it is. What changed is everything that covered it: a chat with a small portrait of the Imp in its header, a second sheet for talks on top of the chat, settings that closed into a chat nobody asked for, sheets in the app's grey whatever Imp they were about, and a first screen with five ways to begin. Now the Imp itself is in view while you talk to it, one sheet holds everything about an Imp, Close has one rule, and the first screen has one main button.
-- **Principle 4 is now kept on the phone.** "Inside an Imp's context the tint is the Imp's colour" was true on the Mac only. An Imp's sheets on the phone were monochrome.
-
 ## Tokens
 
 Every colour, space, corner, type size, touch target, animation and shared behavior number is in `design/tokens.json`. Nobody copies them by hand. `node design/generate.mjs` (or `make tokens`) writes what each platform reads.

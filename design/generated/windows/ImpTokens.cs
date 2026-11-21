@@ -142,6 +142,16 @@ public static class ImpSizes
     public const double ThumbWaitHeight = 60;
     /// <summary>The strip along the bottom edge where a hiding Imp peeks.</summary>
     public const double HiddenStrip = 28;
+    /// <summary>The camera's round shutter button.</summary>
+    public const double Shutter = 46;
+    /// <summary>How far the full-screen camera's top buttons and photo sit below the screen's edge, clear of the status bar and the camera cutout.</summary>
+    public const double CameraTop = 16;
+    /// <summary>How far the full-screen camera's shutter and photo buttons sit above the screen's edge, clear of the home indicator.</summary>
+    public const double CameraBottom = 16;
+    /// <summary>The side of a photo or video waiting to be sent under the message box, and the height of a sound or file.</summary>
+    public const double AttachmentChip = 56;
+    /// <summary>The widest a file's name gets in a chip under the message box.</summary>
+    public const double AttachmentName = 120;
 }
 
 /// <summary>Icon sizes.</summary>

@@ -12,7 +12,7 @@ use std::sync::LazyLock;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Command {
     pub name: String,
-    /// `/send DEVICE [IMP]`; for a command with several forms, `/mcp [list | add NAME ... | ...]`.
+    /// `/send DEVICE [IMP]`. For a command with several forms, `/mcp [list | add NAME ... | ...]`.
     pub usage: String,
     pub about: String,
     /// The ways to use a command that has several: its words, each with how it is written.

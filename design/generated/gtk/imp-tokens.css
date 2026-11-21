@@ -75,6 +75,11 @@
   --imp-size-thumb-wait-width: 80px;
   --imp-size-thumb-wait-height: 60px;
   --imp-size-hidden-strip: 28px;
+  --imp-size-shutter: 46px;
+  --imp-size-camera-top: 16px;
+  --imp-size-camera-bottom: 16px;
+  --imp-size-attachment-chip: 56px;
+  --imp-size-attachment-name: 120px;
   --imp-icon-tiny: 8px;
   --imp-icon-small: 10px;
   --imp-icon-medium: 12px;

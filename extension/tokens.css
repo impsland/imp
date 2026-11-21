@@ -119,6 +119,11 @@
   --size-thumb-wait-width: 80px;
   --size-thumb-wait-height: 60px;
   --size-hidden-strip: 28px;
+  --size-shutter: 46px;
+  --size-camera-top: 16px;
+  --size-camera-bottom: 16px;
+  --size-attachment-chip: 56px;
+  --size-attachment-name: 120px;
   --icon-tiny: 8px;
   --icon-small: 10px;
   --icon-medium: 12px;

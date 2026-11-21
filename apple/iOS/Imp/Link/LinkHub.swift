@@ -44,7 +44,7 @@ enum PocketEvent {
     case stage(UUID)
     /// A device is no longer linked.
     case lost(UUID)
-    /// The owner marked a device as theirs (Mine), or not.
+    /// The owner marked a device as one of their own, or not.
     case trust(UUID)
 }
 
@@ -83,7 +83,7 @@ final class LinkHub {
     private(set) var acts: [UUID: Performance] = [:]
     /// Visiting Imps whose homes said they have no brain to think with (`LinkMessage.brain`): they sleep here.
     private(set) var brainless: Set<UUID> = []
-    /// Visiting Imps whose home doesn't let them use their tools for this iPhone (it isn't marked Mine there).
+    /// Visiting Imps whose home doesn't let them use their tools for this iPhone (it isn't marked as yours there).
     private(set) var toolless: Set<UUID> = []
     /// What each visiting Imp is saying to another Imp (a bubble above it on the stage).
     private(set) var speeches: [UUID: LinkSpeech] = [:]
@@ -758,8 +758,8 @@ final class LinkHub {
         }
     }
 
-    /// A visiting Imp's home went out of reach: what it was saying can't go on (a question waiting for
-    /// its answer leaves the stage. A reply stays up to be read, then goes the way it would have).
+    /// A visiting Imp's home went out of reach: what it was saying can't go on. A question waiting for
+    /// its answer leaves the stage. A reply stays up to be read, then goes the way it would have.
     private func lost(visit id: UUID) {
         guard let speech = speeches[id] else { return }
         if speech.role == .reply { heard(nil, from: id) } else { drop(speech, for: id) }

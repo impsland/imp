@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use imp_shared::config::{ConfigError, env_opt, env_parse};
 
-/// The Hop's limits. Defaults are the table in PROTOCOL.md.
+/// The Hop's limits. Defaults are the table in spec/PROTOCOL.md.
 #[derive(Debug, Clone)]
 pub struct Config {
     pub addr: SocketAddr,

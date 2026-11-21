@@ -9,7 +9,7 @@ import SwiftUI
 ///
 /// A device (This Mac, a linked device, a device known only through another) is a group node. An Imp whose body is
 /// on a device is a child node inside it, in a grid. A channel is ONE edge between two devices, solid on the local
-/// network and dashed through the Hop; the Hop is not a node (it is a button in the screen's bar). A device known
+/// network and dashed through the Hop. The Hop is not a node (it is a button in the screen's bar). A device known
 /// only through another is joined to the device that relays it by a thin dotted edge. An Imp that is away from its
 /// home has a tether to the home device, and an Imp that can talk to Imps on other devices has a talk edge to each:
 /// both are hidden until the Imp or its device is in focus. This Mac is in the middle and the other devices are on
@@ -137,7 +137,7 @@ enum DeviceGraph {
     /// The id of an Imp's node: an Imp can be seen on more than one device.
     static func impNodeID(_ imp: UUID, in node: String) -> String { "\(node)/\(imp.uuidString)" }
 
-    /// Talk edges and tethers are all there but hidden; `shown(in:)` shows the ones in focus.
+    /// Talk edges and tethers are all there but hidden. `shown(in:)` shows the ones in focus.
     static func build(_ map: DeviceMap, moved: [String: CGPoint] = [:]) -> Graph {
         let shown = map.nodes.filter { $0.kind != .server }
         let links = map.channels.filter { map.node($0.from) != nil && map.node($0.to) != nil }

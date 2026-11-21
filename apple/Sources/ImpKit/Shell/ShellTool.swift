@@ -8,7 +8,7 @@ public struct ShellTool: ToolProvider {
 
     /// Where commands start (the Imp's own folder, see `Workspace`).
     public var directory: URL
-    /// Extra environment for every command (`IMP_*`: who it is, its folder, its brain's endpoint).
+    /// Extra environment for every command (`IMP_*`: who it is, its folder, and its brain's endpoint, model and key).
     public var environment: [String: String]
     public var timeout: TimeInterval
 

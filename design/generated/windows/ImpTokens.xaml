@@ -257,6 +257,11 @@
   <x:Double x:Key="ImpSizeThumbWaitWidth">80</x:Double>
   <x:Double x:Key="ImpSizeThumbWaitHeight">60</x:Double>
   <x:Double x:Key="ImpSizeHiddenStrip">28</x:Double>
+  <x:Double x:Key="ImpSizeShutter">46</x:Double>
+  <x:Double x:Key="ImpSizeCameraTop">16</x:Double>
+  <x:Double x:Key="ImpSizeCameraBottom">16</x:Double>
+  <x:Double x:Key="ImpSizeAttachmentChip">56</x:Double>
+  <x:Double x:Key="ImpSizeAttachmentName">120</x:Double>
   <x:Double x:Key="ImpIconTiny">8</x:Double>
   <x:Double x:Key="ImpIconSmall">10</x:Double>
   <x:Double x:Key="ImpIconMedium">12</x:Double>

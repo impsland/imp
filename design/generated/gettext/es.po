@@ -549,6 +549,11 @@ msgctxt "devices.empty"
 msgid "No devices yet."
 msgstr "Aún no hay dispositivos."
 
+#. Tooltip of the button in the corner of the Devices map that zooms so every device fits.
+msgctxt "devices.fit"
+msgid "Show all"
+msgstr "Ver todo"
+
 #. Button that forgets one linked device, with its name.
 msgctxt "devices.forget.named"
 msgid "Forget {name}…"
@@ -582,7 +587,7 @@ msgstr "Necesita una dirección"
 #. The Hop's state when none is set.
 msgctxt "devices.hop.state.off"
 msgid "Off"
-msgstr "Desactivado"
+msgstr "Apagado"
 
 #. Title of the plugs of an Imp that is away: its tools it can use where it is.
 msgctxt "devices.imp.can_use"
@@ -702,7 +707,7 @@ msgstr "Accesible en"
 #. Help on a linked device: not reachable now.
 msgctxt "devices.reach.away"
 msgid "Away"
-msgstr "No disponible"
+msgstr "Ausente"
 
 #. Help on a linked device: reached on the local network.
 msgctxt "devices.reach.direct"
@@ -853,6 +858,16 @@ msgstr "Su dispositivo puede usar aquí"
 msgctxt "devices.visitor.send_home"
 msgid "Send home"
 msgstr "Enviar a casa"
+
+#. Tooltip of the plus button in the corner of the Devices map.
+msgctxt "devices.zoom_in"
+msgid "Zoom in"
+msgstr "Acercar"
+
+#. Tooltip of the minus button in the corner of the Devices map.
+msgctxt "devices.zoom_out"
+msgid "Zoom out"
+msgstr "Alejar"
 
 #. The key was refused.
 msgctxt "error.brain.key"
@@ -1476,16 +1491,6 @@ msgstr "{name} se asoma desde el suelo."
 msgctxt "home.hidden.title"
 msgid "Hidden ({count})"
 msgstr "Ocultos ({count})"
-
-#. Status icon menu item that quits the app.
-msgctxt "home.tray.quit"
-msgid "Quit"
-msgstr "Salir"
-
-#. Status icon menu item that shows the window.
-msgctxt "home.tray.show"
-msgid "Open"
-msgstr "Abrir"
 
 #. Screen reader action for an Imp away on another device.
 msgctxt "imp.a11y.call_home"
@@ -2815,7 +2820,7 @@ msgstr "Trae Imps desde tu Mac u otro iPhone."
 #. The first screen's second way to begin: link this iPhone with a Mac or another iPhone.
 msgctxt "phone.start.link_title"
 msgid "Link a device"
-msgstr "Enlazar un dispositivo"
+msgstr "Vincular dispositivo"
 
 #. One sentence under the first screen's title: what Imp is.
 msgctxt "phone.start.subtitle"

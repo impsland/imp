@@ -1,5 +1,5 @@
 //! The Imp Den: accounts, shared kits, the web gallery and the MCP
-//! endpoint. See PROTOCOL.md.
+//! endpoint. See spec/PROTOCOL.md.
 #![forbid(unsafe_code)]
 
 pub mod admin;

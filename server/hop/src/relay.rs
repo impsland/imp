@@ -39,8 +39,8 @@ impl Bucket {
     }
 }
 
-/// Counts time from `start`, so "last activity" fits in an atomic.
-/// The time of the last write in either direction, in milliseconds since `start`.
+/// The time of the last write in either direction, in milliseconds since `start`. Counting from
+/// `start` lets that time fit in an atomic.
 struct Activity {
     start: Instant,
     last_ms: AtomicU64,

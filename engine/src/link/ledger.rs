@@ -123,7 +123,7 @@ impl AwayLedger {
     }
 
     /// The holder `from` says it handed the Imp on to `to`. Heard only from the current holder. The ticket
-    /// went along with the Imp, so it stays; the previous holder has nothing to be told. True if it changed.
+    /// went along with the Imp, so it stays. The previous holder has nothing to be told. True if it changed.
     pub fn moved(&mut self, imp: Uuid, from: Uuid, to: Uuid, name: &str, kind: LinkKind) -> bool {
         let Some(entry) = self
             .entries

@@ -84,7 +84,7 @@ struct PhoneDevicesSection: View {
         .accessibilityElement(children: .contain)
     }
 
-    /// An Imp of this iPhone that another device holds, with the way to call it home.
+    /// An Imp of this iPhone that another device holds, with the button that sends it home.
     private func held(_ imp: LinkImp, by holder: String?) -> some View {
         HStack(spacing: Spacing.cozy) {
             Circle().fill(Color.imp(imp.hue)).frame(width: Spacing.small, height: Spacing.small).accessibilityHidden(true)

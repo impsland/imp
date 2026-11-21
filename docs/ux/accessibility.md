@@ -95,6 +95,11 @@ The smallest a control's hit area gets:
 | `thumbWaitWidth` | 80 | 80 | 80 | 80 | 80 | The place held for a picture still loading. |
 | `thumbWaitHeight` | 60 | 60 | 60 | 60 | 60 | The place held for a picture still loading, its height. |
 | `hiddenStrip` | 28 | 28 | 28 | 28 | 28 | The strip along the bottom edge where a hiding Imp peeks. |
+| `shutter` | 78 | 78 | 46 | 46 | 46 | The camera's round shutter button. |
+| `cameraTop` | 60 | 48 | 16 | 16 | 16 | How far the full-screen camera's top buttons and photo sit below the screen's edge, clear of the status bar and the camera cutout. |
+| `cameraBottom` | 44 | 32 | 16 | 16 | 16 | How far the full-screen camera's shutter and photo buttons sit above the screen's edge, clear of the home indicator. |
+| `attachmentChip` | 64 | 64 | 56 | 56 | 56 | The side of a photo or video waiting to be sent under the message box, and the height of a sound or file. |
+| `attachmentName` | 120 | 120 | 120 | 120 | 120 | The widest a file's name gets in a chip under the message box. |
 <!-- /tokens -->
 
 A control can look smaller than its hit area. The hit area is never smaller than the number above.

@@ -28,26 +28,26 @@ The map is a canvas drawn with [SwiftFlow](https://github.com/aaurelions/SwiftFl
 - **Pan** by dragging empty canvas, or with two fingers or the scroll wheel. Scrolling pans. It does not zoom.
 - **Zoom** with the pinch gesture or the **+** and **-** buttons.
 - **Drag a device** to move it. It stays where it was put while the app runs. A refresh of the link never puts it back. Imps cannot be dragged out of their device.
-- **The controls** sit at the bottom leading corner: zoom in, zoom out, and Fit, which shows the whole map again.
+- **The controls** sit at the bottom leading corner: Zoom in, Zoom out, and Show all, which shows the whole map again.
 
 ### How it fits on open
 
 The first view is worked out from the devices' own sizes and places (`DeviceViewport`), not from the canvas measuring them, so it is the same every time: the whole map, centred, with a margin (the `vast` spacing token) on every side. The zoom is held between 0.2 and 1.2, so a small map is not blown up and a huge one is not shrunk to nothing.
 
-It is fitted again when the window changes size, when a device or an Imp comes or goes, and when Fit is pressed. Once you pan or zoom, the view is yours: a window resize or a refresh of the link no longer moves it, until you press Fit or the set of devices and Imps changes.
+It is fitted again when the window changes size, when a device or an Imp comes or goes, and when Show all is pressed. Once you pan or zoom, the view is yours: a window resize or a refresh of the link no longer moves it, until you press Show all or the set of devices and Imps changes.
 
 ## The sheets
 
-Pressing something opens one sheet, one compact layout for every kind. The header has a picture, the name and one status pill (a coloured dot and one or two words: Here, Nearby, Via server, Away, Through the device that relays it, Visiting). Then come one row of actions, a short list of rows with a picture each, and last, alone, what destroys. There are no paragraphs: what a row means is its tooltip and spoken hint. A row that points at another thing (a device, an Imp, the line, the Hop) swaps the sheet for that one. Cancel is on the leading side and Done on the trailing side. Switches act at once. Done keeps them and Cancel puts them back as they were when the sheet opened (the Hop, the plugs and an Imp's tools. An Imp sent home or a device forgotten stays so, those are actions). Forget, and Forget everyone, ask first. Forgetting calls this Mac's Imps home from that device and sends its visitors home. A sheet about something that is gone (a forgotten device, an Imp that came home) closes.
+Pressing something opens one sheet, one compact layout for every kind. The header has a picture, the name and one status pill (a coloured dot and one or two words: Here, Nearby, Via server, Away, Through the device that relays it, Visiting). Then come one row of actions, a short list of rows with a picture each, and last, alone, what destroys. There are no paragraphs: what a row means is its tooltip and spoken hint. A row that points at another thing (a device, an Imp, the line, the Hop) swaps the sheet for that one. Cancel is on the leading side and Done on the trailing side. Switches act at once. Done keeps them and Cancel puts them back as they were when the sheet opened (the Hop, the plugs and an Imp's tools). An Imp sent home or a device forgotten stays so, because those are actions. Forget, and Forget everyone, ask first. Forgetting calls this Mac's Imps home from that device and sends its visitors home. A sheet about something that is gone (a forgotten device, an Imp that came home) closes.
 
 The Hop is a setting, not a linked thing, so it has its own sheet (`DevicesSheet.hop`) that never depends on the Hop being in the map: it stays open while an address is being chosen. Its button is in the bar, and the sheet of a dashed line has it as a row.
 
 | Pressed | The sheet shows | Actions |
 | --- | --- | --- |
-| This Mac | Link a device. Its addresses (or Not reachable), the Local Network notice when the system blocks it. "On its screen": its Imps. | Link a device. Forget everyone, alone and last (only when anything is linked). |
-| A linked device | Its connection (opens the line's sheet), the Mine switch, "What it can use here" (tool switches, folded, when it is Mine), "On its screen": its Imps. | Switch Mine and its tools. Open an Imp. Send home per Imp, and for all. Forget, alone and last. |
+| This Mac | Link a device. Its addresses (or Not reachable), the Local Network notice when the system blocks it. "On its screen": its Imps. | Link a device. Forget Everyone, alone and last (only when anything is linked). |
+| A linked device | Its connection (opens the line's sheet), the Mine switch (it plugs in Talk & files), "What it can use here" (tool plugs, folded, while it is Mine), "On its screen": its Imps. | Switch Mine and its tools. Open an Imp. Send home per Imp, and for all. Forget, alone and last. |
 | A device known only through another | The pill says "Through" the device that relays it. "On its screen": its Imps. | Link, which opens the Link sheet. |
-| The Hop | The Hop control (the same card as in the Link sheet), and chips for the devices reached through it. | Choose Imp's Hop, Custom or Off. Type and Check an address. Open a device. |
+| The Hop | The Hop control (the same card as in the Link sheet), and chips for the devices reached through it. | Choose Imp's servers, Custom or Off. Type and Check an address. Open a device. |
 | One of this Mac's Imps (its chip) | Where it is when away (opens that device), its home (opens it), its tools, folded, and whom it can message, as chips. | Send home, when it is away. Open its settings. Switch a tool group or tool server for this Imp. Open an Imp it talks to. |
 | An Imp of another device | Its home (opens it). The pill says where it is (Visiting, or its device). | Send home, when it is visiting this Mac. |
 | A line (a connection) | Its two ends (each opens its sheet) and its path: the address, or the Hop as a row when the line is dashed. | Open a device or the Hop. |
@@ -66,13 +66,13 @@ A plug can only narrow: it never gives a tool to an Imp that does not have it. T
 
 ## The Link sheet and the Hop
 
-Link a device opens one sheet with two tabs, **Show code** and **Scan code** ([Imp Link](/connecting/link)). Show code is this Mac's code with the three steps for the other device, and Copy Link in the footer. Scan code is the camera, the link field and a status line, with Paste (a link or a picture of a code) and Link in the footer. A code the camera sees links at once.
+Link a device opens one sheet with two tabs, **Show code** and **Scan code** ([Imp Link](/connecting/link)). Show code is this Mac's code with the three steps for the other device, and Copy link in the footer. Scan code is the camera, the link field and a status line, with Paste (a link or a picture of a code) and Link in the footer. A code the camera sees links at once.
 
-Under the code is the **Hop**, a pill with its state that opens the Hop control in a popover. The control is one component with one fixed size, the same in this popover and in the Hop's sheet: a header (state icon, Check, help), the choice (Imp's Hop, Custom, Off) and the address row. The address row is always there, dimmed and locked unless Custom is chosen, so nothing grows, shifts or is clipped when the choice changes. Choosing Custom puts the cursor in it. The Hop is the relay devices use to meet when they are not on the same network. What it is and what it carries is behind its help icon. A new code is made whenever its routes change, including when the Hop is set or cleared.
+Under the code is the **Hop**, a pill with its state that opens the Hop control in a popover. The control is one component with one fixed size, the same in this popover and in the Hop's sheet: a header (state icon, Check, help), the choice (Imp's servers, Custom, Off) and the address row. The address row is always there, dimmed and locked unless Custom is chosen, so nothing grows, shifts or is clipped when the choice changes. Choosing Custom puts the cursor in it. The Hop is the relay devices use to meet when they are not on the same network. What it is and what it carries is behind its help icon. A new code is made whenever its routes change, including when the Hop is set or cleared.
 
 ## Accessibility and keyboard
 
 - SwiftFlow's nodes carry no names of their own, so the canvas is replaced for assistive technology by a list: a spoken summary of the whole map, then a button for every device, every Imp and every line. Pressing one opens its sheet, as a click does.
 - Each has a spoken label that says what it is and how it stands: a card its summary, a chip the Imp and the device it is in (and whether it is a visitor), a line the two devices, the route and the state, a dotted line the device it leads to, a tether the Imp, where it is and where it thinks.
 - Nothing depends on colour alone: a line's dashes, a card's state mark and a sheet's status word say the same.
-- The zoom and Fit buttons are labelled buttons, and Esc and Back leave for the Imps.
+- The Zoom in, Zoom out and Show all buttons are labelled buttons, and Esc and Back leave for the Imps.

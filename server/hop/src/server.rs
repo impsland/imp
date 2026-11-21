@@ -177,7 +177,7 @@ async fn open(stream: TcpStream) -> Option<(Stream, Option<IpAddr>)> {
 /// How a wait ended.
 enum Outcome {
     Woke(Wake),
-    /// Nobody can wake this waiter any more: a newer host took its place.
+    /// Nobody can wake this waiter any more: a newer host took its place, or the Hop is shutting down.
     Closed,
     TimedOut,
     /// The waiting client sent a byte or closed.

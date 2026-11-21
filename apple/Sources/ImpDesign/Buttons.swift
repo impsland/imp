@@ -163,8 +163,8 @@ public struct WideButtonStyle: ButtonStyle {
 }
 
 /// A button whose icon sits above its words, for a row of equal choices (a card's Done, Again and
-/// How to play). It takes a `Label`. `.primary` is filled with the tint (the one main action),
-/// `.secondary` is a soft pebble, like `WideButtonStyle`. The words wrap onto more lines, centred, rather
+/// How to play). It takes a `Label`. `stackedPrimary` is filled with the tint (the one main action),
+/// `stackedSecondary` is a soft pebble, like `WideButtonStyle`. The words wrap onto more lines, centred, rather
 /// than being cut or shrunk, so nothing truncates in a longer language. The button grows with Dynamic
 /// Type, and in a row (`fixedSize(horizontal: false, vertical: true)`) the buttons share one height.
 public struct StackedButtonStyle: ButtonStyle {

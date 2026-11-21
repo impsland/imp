@@ -154,7 +154,8 @@ pub struct ListQuery {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[schemars(schema_with = "handle_schema")]
     pub handle: Option<String>,
-    /// Words to look for, at most 100 characters. Every word must appear in the name, summary, about text or tags. Case-insensitive.
+    /// Words to look for, at most 100 characters. Every word must appear in the name, summary, about
+    /// text or tags. Case-insensitive.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[schemars(schema_with = "q_schema")]
     pub q: Option<String>,
@@ -194,7 +195,8 @@ pub struct PublishItem {
     #[serde(rename = "type")]
     #[schemars(schema_with = "kind_schema")]
     pub kind: String,
-    /// The item's name under your handle: lowercase letters, digits and inner dashes. Publishing to a slug you already have updates that item.
+    /// The item's name under your handle: lowercase letters, digits and inner dashes. Publishing to a
+    /// slug you already have updates that item.
     #[schemars(length(min = 1, max = 48), pattern(r"^[a-z0-9]+(-[a-z0-9]+)*$"))]
     pub slug: String,
     /// One line that says what the item is.
@@ -203,7 +205,8 @@ pub struct PublishItem {
     /// 1 to 5 different tags.
     #[schemars(length(min = 1, max = 5), inner(pattern(r"^[a-z0-9-]{1,24}$")))]
     pub tags: Vec<String>,
-    /// The item as a JSON object with `"format": 1` and a `name`: what Imp's imp_export_kit gives, or one written by the rules document_format returns.
+    /// The item as a JSON object with `"format": 1` and a `name`: what Imp's imp_export_kit gives, or
+    /// one written by the rules document_format returns.
     #[schemars(schema_with = "document_schema")]
     pub document: Value,
 }

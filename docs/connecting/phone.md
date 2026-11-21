@@ -43,13 +43,14 @@ An Imp away from its home keeps thinking there, with its home's model, keys, too
 
 - If its home goes away, the visiting Imp falls asleep. Its chat says so and waits, and it wakes when the home is back.
 - A visiting Imp's menu has **Chat**, **Talks** and **Send home**.
-- The **Devices** sheet lists, under each device, which of your Imps it holds, each with **Send home**.
+- The **Devices** sheet shows each of your Imps on the device it is on now, including one passed on through
+  a third device. A visiting Imp there has **Send home**.
 - Passing a visiting Imp to a third device gives that device a ticket. It works for that one Imp only, even if
   the third device isn't linked to the home. Details are in [Imp Link](/connecting/link#tickets).
 
 ## Imps hatched on the phone
 
-The first one is the sleeping Imp on the first screen: tap **Wake Imp up** and give it a Brain. After that, tap
+The first one is the sleeping Imp on the first screen: tap **Wake {name} up** and give it a Brain. After that, tap
 **+** at the top of the room: the new Imp appears at once, already thinking with the Brain of your other Imps (its
 key is copied, so you never type it again). It lives in your pocket.
 
@@ -83,7 +84,7 @@ Every Imp messages the others the same way, whether it's on the phone, a pocket 
   when one is thrown onto the other's screen. An Imp asked across devices before that says which device to fix.
 
 A message can wait for the answer or not (the tool's `wait` argument). The phone has no Between-Imps settings: the
-Imp chooses each time (the Mac's **Decides** setting). Without waiting, the tool returns a receipt at once and the
+Imp chooses each time (the Mac's **Between Imps** › **Waiting** setting, **The Imp decides**). Without waiting, the tool returns a receipt at once and the
 answer arrives later as a new message in the Imp's chat ("Bo answered"), which starts a turn of its own: at once if
 the Imp is idle, else once it has finished what it is doing. Same limits as on the Mac (`troupe::may_leave`).
 The answer is dropped if the Imp was deleted, moved to a Mac or is away on another device meanwhile, and answers still
@@ -102,7 +103,7 @@ asked, then the answer.
 ## Linking
 
 Either device shows a code and the other scans it. On the iPhone, use **Show my code** or **Scan a Code**, or
-**Paste Link**. On the Mac, open the Devices screen (the bottom-left corner of the home window), choose **Link a device**, and use **Scan Code…** there.
+**Paste Link**. On the Mac, open the Devices screen (the bottom-left corner of the home window), choose **Link a device**, and use **Scan code** there.
 
 - A code works for **15 minutes** after it was last on screen, and several devices can scan it.
 - Devices find each other with Bonjour on your Wi-Fi. This needs **Local Network** for Imp (iPhone Settings › Imp).

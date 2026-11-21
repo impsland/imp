@@ -6,8 +6,9 @@ import SwiftUI
 /// The menu you get by right-clicking an Imp on the desktop: everything about *that* Imp and nothing else.
 /// (App-wide things live in the menu bar menu.) It is one card of buttons (`MenuCard`): the top is
 /// `ImpMenuCard`, the same as in the app's window and for a visitor, and what only sometimes applies sits under it
-/// as pills with no headings, in this order: Stop and Copy last reply, triggers, devices to visit, Hide and Send home,
-/// Copy kit and Copy link, and Goodbye last and apart. Only the place button differs from the window's menu (Send home here, Let out there).
+/// as pills with no headings, in this order: Stop and Copy last reply, triggers, devices to visit, Copy kit and Copy
+/// link, Hide and Send home, and Goodbye last and apart. Only the place button differs from the window's menu
+/// (Send home here, Let out there).
 @MainActor
 final class ImpMenu {
     private let app: AppModel

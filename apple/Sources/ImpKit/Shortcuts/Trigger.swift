@@ -293,7 +293,7 @@ public struct Trigger: Codable, Hashable, Sendable {
         }
     }
 
-    /// How long the Imp is left alone before it falls asleep, unless the user changes that trigger.
+    /// The default for an idle trigger: how long the Imp is left alone before it falls asleep.
     public static let defaultIdleSeconds = 240
     public static let idleRange = 5...86_400
     public static let maxClicks = 3
@@ -345,7 +345,6 @@ public struct Trigger: Codable, Hashable, Sendable {
         }
     }
 
-    /// "09:05".
     /// A number of minutes as the user's language writes a duration: "15 min", "1 hr 30 min".
     static func span(_ minutes: Int) -> String {
         Duration.seconds(minutes * 60).formatted(.units(allowed: [.hours, .minutes], width: .abbreviated))
@@ -419,7 +418,7 @@ public struct Condition: Codable, Hashable, Sendable {
     /// days: 0 = Monday … 6 = Sunday.
     public var days: Set<Int> { value.flatMap(TriggerValue.days) ?? [] }
 
-    /// The same, as a condition: "the battery is below 20 %".
+    /// In a few words, as a condition: "the battery is below 20 %".
     public var summary: String {
         switch state {
         case .battery: String(localized: "Battery below \(percent) %")

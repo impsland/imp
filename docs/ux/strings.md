@@ -113,13 +113,14 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `devices.edge.travelling` | Travelling | De viaje | 往来中 |
 | `devices.elsewhere.title` | Elsewhere | En otro lugar | 其他地方 |
 | `devices.empty` | No devices yet. | Aún no hay dispositivos. | 还没有设备。 |
+| `devices.fit` | Show all | Ver todo | 显示全部 |
 | `devices.forget.named` | Forget {name}… | Olvidar {name}… | 忘记 {name}… |
 | `devices.forget.one` | Forget this device… | Olvidar este dispositivo… | 忘记此设备… |
 | `devices.hop.add` | Add a Hop | Añadir un Hop | 添加 Hop |
 | `devices.hop.pill` | Hop: {host} | Hop: {host} | Hop：{host} |
 | `devices.hop.state.idle` | Not in use | Sin uso | 未使用 |
 | `devices.hop.state.needs_address` | Needs an address | Necesita una dirección | 需要地址 |
-| `devices.hop.state.off` | Off | Desactivado | 已关闭 |
+| `devices.hop.state.off` | Off | Apagado | 已关闭 |
 | `devices.imp.can_use` | Can use there | Puede usar allí | 在那里可用 |
 | `devices.imp.can_use.info` | The tools of this Imp that the device it is on lets it use. A tool with a lock is not plugged in on that device's connection: press it to open the connection and plug it in. | Las herramientas de este Imp que el dispositivo donde está le deja usar. Una herramienta con candado no está conectada en la conexión de ese dispositivo: púlsala para abrir la conexión y conectarla. | 此 Imp 所在设备允许它使用的工具。带锁的工具在该设备的连接上没有插上：点按它可打开连接并插上。 |
 | `devices.imp.here` | Here | Aquí | 在这里 |
@@ -143,7 +144,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `devices.plug.on` | plugged in | conectado | 已插上 |
 | `devices.plug.title` | What {name} can use here | Qué puede usar {name} aquí | {name} 在这里可以用什么 |
 | `devices.reach.at` | Reachable at | Accesible en | 可通过以下地址访问 |
-| `devices.reach.away` | Away | No disponible | 不在线 |
+| `devices.reach.away` | Away | Ausente | 不在线 |
 | `devices.reach.direct` | Direct, on the local network | Directo, en la red local | 直连，走本地网络 |
 | `devices.reach.last_seen` | Last known address | Última dirección conocida | 最近已知地址 |
 | `devices.reach.none` | Not reachable | No accesible | 无法访问 |
@@ -174,6 +175,8 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `devices.unknown_device` | a device not linked with this Mac | un dispositivo no vinculado con este Mac | 未与这台 Mac 链接的设备 |
 | `devices.visitor.can_use` | Its device can use here | Su dispositivo puede usar aquí | 它的设备在这里可用 |
 | `devices.visitor.send_home` | Send home | Enviar a casa | 送回家 |
+| `devices.zoom_in` | Zoom in | Acercar | 放大 |
+| `devices.zoom_out` | Zoom out | Alejar | 缩小 |
 | `error.brain.key` | {service} did not accept the key. Check it and try again. | {service} no aceptó la clave. Revísala e inténtalo de nuevo. | {service} 不接受这个密钥。请检查后重试。 |
 | `error.brain.local` | No model answered. Make sure it is running, then try again. | Ningún modelo respondió. Comprueba que esté en marcha e inténtalo de nuevo. | 没有模型回应。请确认它正在运行，然后重试。 |
 | `error.brain.model` | {service} does not have the model {model}. Pick another one. | {service} no tiene el modelo {model}. Elige otro. | {service} 没有模型 {model}。请换一个。 |
@@ -287,7 +290,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `home.corner.devices.away` | a linked device is away | un dispositivo vinculado está ausente | 有已链接的设备不在线 |
 | `home.corner.devices.connected` | one: {count} connected / other: {count} connected | one: {count} conectado / other: {count} conectados | other: 已连接 {count} 台 |
 | `home.corner.show_hidden` | Hidden | Ocultos | 已隐藏 |
-| `home.empty.link` | Link a device | Vincular dispositivo | 连接设备 |
+| `home.empty.link` | Link a device | Vincular dispositivo | 关联设备 |
 | `home.empty.link.help` | Link a device and bring an Imp from it | Vincula un dispositivo y trae un Imp de él | 连接设备，并从它带来一个 Imp |
 | `home.empty.new_imp` | Hatch | Incubar | 孵化 |
 | `home.empty.new_imp.help` | Hatch an Imp and give it a Brain | Haz nacer un Imp y dale un cerebro | 孵化一个 Imp，并给它一个大脑 |
@@ -297,8 +300,6 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `home.hidden.hint` | Hidden Imps peek out now and then. Click one to bring it back. | Los Imps ocultos se asoman de vez en cuando. Haz clic en uno para traerlo de vuelta. | 隐藏的 Imp 会不时探出头来。点击它，它就会回来。 |
 | `home.hidden.peek` | {name} is peeking out from the floor. | {name} se asoma desde el suelo. | {name} 正从地面探出头来。 |
 | `home.hidden.title` | Hidden ({count}) | Ocultos ({count}) | 已隐藏（{count}） |
-| `home.tray.quit` | Quit | Salir | 退出 |
-| `home.tray.show` | Open | Abrir | 打开 |
 | `imp.a11y.call_home` | Send {name} home | Enviar a {name} a casa | 把 {name} 送回家 |
 | `imp.a11y.hide` | Hide {name} | Ocultar {name} | 隐藏 {name} |
 | `imp.a11y.label` | {name}, {state} | {name}, {state} | {name}，{state} |
@@ -564,7 +565,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `phone.stage.not_around` | {name} isn't around | {name} no está por aquí | {name} 不在附近 |
 | `phone.stage.throw_hint` | Throw an Imp off the side of another screen. It lands here. | Lanza un Imp por el borde de otra pantalla. Aterriza aquí. | 把 Imp 从另一块屏幕的边缘扔过来，它会落在这里。 |
 | `phone.start.link_detail` | Bring Imps over from your Mac or another iPhone. | Trae Imps desde tu Mac u otro iPhone. | 把 Imp 从你的 Mac 或另一台 iPhone 带过来。 |
-| `phone.start.link_title` | Link a device | Enlazar un dispositivo | 关联设备 |
+| `phone.start.link_title` | Link a device | Vincular dispositivo | 关联设备 |
 | `phone.start.subtitle` | A tiny helper that lives on your screen and thinks with the AI you choose. | Un pequeño ayudante que vive en tu pantalla y piensa con la IA que elijas. | 一个住在你屏幕上的小帮手，用你选择的 AI 思考。 |
 | `phone.start.title` | Meet Imp | Conoce a Imp | 认识 Imp |
 | `phone.start.wake_note` | Paste a key from an AI service, or use a model on your Mac. | Pega una clave de un servicio de IA o usa un modelo de tu Mac. | 粘贴 AI 服务的密钥，或使用你 Mac 上的模型。 |

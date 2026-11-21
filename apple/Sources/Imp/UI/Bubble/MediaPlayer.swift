@@ -90,7 +90,7 @@ private struct LoadedMedia: View {
 
 /// AppKit's own player view, with its standard controls. SwiftUI's `VideoPlayer` is not used: it
 /// lives in an overlay framework that needs AVKit already loaded, and an app that names no AVKit
-/// type of its own isn't linked to AVKit, so the first video stopped the app.
+/// type of its own isn't linked to AVKit, and playing a video then crashes the app.
 struct PlayerSurface: NSViewRepresentable {
     let player: AVPlayer
 

@@ -2,8 +2,8 @@ import SwiftUI
 
 // The sections of a settings screen, always one tap away: a rail down the leading edge when there is
 // room (a desktop window, a wide screen), a bar across the top when there is not (a phone, a narrow
-// window). A bar of a few sections fills its width in equal parts (`fills`), and many scroll sideways. Picking a section swaps the content beside or below it, so nobody
-// goes back to a list to reach the next one.
+// window). A bar of a few sections fills its width in equal parts (`fills`), and many scroll sideways. Picking a section swaps the content beside or below it,
+// so nobody goes back to a list to reach the next one.
 
 /// One section of a `SectionRail`: an icon, one or two plain words, and whether something in it
 /// needs a look.

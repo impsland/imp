@@ -419,14 +419,14 @@ final class DeviceLink {
             app.farewell(visitor: imp)
             refresh()
         default:
-            // The rest of what a visiting Imp's home says (files, talks) isn't shown on the Mac yet.
+            // The rest of what a visiting Imp's home says (files, talks) isn't shown on the Mac.
             break
         }
     }
 
     // MARK: Imps coming and going
 
-    /// An Imp was thrown here. Ours coming home are taken. A visitor is drawn on the desktop (the
+    /// An Imp was thrown here. An Imp of this Mac coming home is taken too. A visitor is drawn on the desktop (the
     /// node says no when it holds as many visits as it can).
     private func thrown(_ transfer: UUID, imp: LinkImp, entry: LinkEntry, home: LinkCard?, from device: UUID) {
         guard let node else { return }

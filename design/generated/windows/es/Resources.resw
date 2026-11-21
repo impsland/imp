@@ -115,13 +115,14 @@
   <data name="devices.edge.travelling" xml:space="preserve"><value>De viaje</value><comment>Title of the chips of the Imps going across a line.</comment></data>
   <data name="devices.elsewhere.title" xml:space="preserve"><value>En otro lugar</value><comment>Title of the card that lists this iPhone's Imps held by devices it is not linked with.</comment></data>
   <data name="devices.empty" xml:space="preserve"><value>Aún no hay dispositivos.</value><comment>Empty state of the list of linked devices.</comment></data>
+  <data name="devices.fit" xml:space="preserve"><value>Ver todo</value><comment>Tooltip of the button in the corner of the Devices map that zooms so every device fits.</comment></data>
   <data name="devices.forget.named" xml:space="preserve"><value>Olvidar {name}…</value><comment>Button that forgets one linked device, with its name.</comment></data>
   <data name="devices.forget.one" xml:space="preserve"><value>Olvidar este dispositivo…</value><comment>Button: forget the selected device.</comment></data>
   <data name="devices.hop.add" xml:space="preserve"><value>Añadir un Hop</value><comment>The Hop pill under the code in the Link sheet when no Hop is set. It opens its settings.</comment></data>
   <data name="devices.hop.pill" xml:space="preserve"><value>Hop: {host}</value><comment>The Hop pill under the code in the Link sheet when a Hop is set. {host} is its address.</comment></data>
   <data name="devices.hop.state.idle" xml:space="preserve"><value>Sin uso</value><comment>The Hop's state when an address is set and nothing goes through it.</comment></data>
   <data name="devices.hop.state.needs_address" xml:space="preserve"><value>Necesita una dirección</value><comment>The Hop's state when what is set is not an address yet.</comment></data>
-  <data name="devices.hop.state.off" xml:space="preserve"><value>Desactivado</value><comment>The Hop's state when none is set.</comment></data>
+  <data name="devices.hop.state.off" xml:space="preserve"><value>Apagado</value><comment>The Hop's state when none is set.</comment></data>
   <data name="devices.imp.can_use" xml:space="preserve"><value>Puede usar allí</value><comment>Title of the plugs of an Imp that is away: its tools it can use where it is.</comment></data>
   <data name="devices.imp.can_use.info" xml:space="preserve"><value>Las herramientas de este Imp que el dispositivo donde está le deja usar. Una herramienta con candado no está conectada en la conexión de ese dispositivo: púlsala para abrir la conexión y conectarla.</value><comment>Help of the plugs of an Imp that is away.</comment></data>
   <data name="devices.imp.here" xml:space="preserve"><value>Aquí</value><comment>Caption of the one tile of an Imp that is at home.</comment></data>
@@ -145,7 +146,7 @@
   <data name="devices.plug.on" xml:space="preserve"><value>conectado</value><comment>Spoken value of a plug that is plugged in.</comment></data>
   <data name="devices.plug.title" xml:space="preserve"><value>Qué puede usar {name} aquí</value><comment>Title of the card of plugs: what a linked device can use of this Mac's Imps.</comment></data>
   <data name="devices.reach.at" xml:space="preserve"><value>Accesible en</value><comment>Title of the addresses this Mac can be reached at.</comment></data>
-  <data name="devices.reach.away" xml:space="preserve"><value>No disponible</value><comment>Help on a linked device: not reachable now.</comment></data>
+  <data name="devices.reach.away" xml:space="preserve"><value>Ausente</value><comment>Help on a linked device: not reachable now.</comment></data>
   <data name="devices.reach.direct" xml:space="preserve"><value>Directo, en la red local</value><comment>Help on a linked device: reached on the local network.</comment></data>
   <data name="devices.reach.last_seen" xml:space="preserve"><value>Última dirección conocida</value><comment>Label of the last known address of a device.</comment></data>
   <data name="devices.reach.none" xml:space="preserve"><value>No accesible</value><comment>This Mac cannot be reached by other devices now.</comment></data>
@@ -176,6 +177,8 @@
   <data name="devices.unknown_device" xml:space="preserve"><value>un dispositivo no vinculado con este Mac</value><comment>A device this Mac is not linked with.</comment></data>
   <data name="devices.visitor.can_use" xml:space="preserve"><value>Su dispositivo puede usar aquí</value><comment>Title of the read-only plugs of the device an Imp comes from.</comment></data>
   <data name="devices.visitor.send_home" xml:space="preserve"><value>Enviar a casa</value><comment>Button: send a visiting Imp home.</comment></data>
+  <data name="devices.zoom_in" xml:space="preserve"><value>Acercar</value><comment>Tooltip of the plus button in the corner of the Devices map.</comment></data>
+  <data name="devices.zoom_out" xml:space="preserve"><value>Alejar</value><comment>Tooltip of the minus button in the corner of the Devices map.</comment></data>
   <data name="error.brain.key" xml:space="preserve"><value>{service} no aceptó la clave. Revísala e inténtalo de nuevo.</value><comment>The key was refused.</comment></data>
   <data name="error.brain.local" xml:space="preserve"><value>Ningún modelo respondió. Comprueba que esté en marcha e inténtalo de nuevo.</value><comment>The local model server did not answer.</comment></data>
   <data name="error.brain.model" xml:space="preserve"><value>{service} no tiene el modelo {model}. Elige otro.</value><comment>The model does not exist.</comment></data>
@@ -303,8 +306,6 @@
   <data name="home.hidden.hint" xml:space="preserve"><value>Los Imps ocultos se asoman de vez en cuando. Haz clic en uno para traerlo de vuelta.</value><comment>Screen reader hint for the hidden Imps element.</comment></data>
   <data name="home.hidden.peek" xml:space="preserve"><value>{name} se asoma desde el suelo.</value><comment>Announced to screen readers when a hidden Imp peeks.</comment></data>
   <data name="home.hidden.title" xml:space="preserve"><value>Ocultos ({count})</value><comment>The element on the floor that holds hidden Imps. The number is how many.</comment></data>
-  <data name="home.tray.quit" xml:space="preserve"><value>Salir</value><comment>Status icon menu item that quits the app.</comment></data>
-  <data name="home.tray.show" xml:space="preserve"><value>Abrir</value><comment>Status icon menu item that shows the window.</comment></data>
   <data name="imp.a11y.call_home" xml:space="preserve"><value>Enviar a {name} a casa</value><comment>Screen reader action for an Imp away on another device.</comment></data>
   <data name="imp.a11y.hide" xml:space="preserve"><value>Ocultar {name}</value><comment>Screen reader action.</comment></data>
   <data name="imp.a11y.label" xml:space="preserve"><value>{name}, {state}</value><comment>Screen reader label of an Imp: its name and its state.</comment></data>
@@ -570,7 +571,7 @@
   <data name="phone.stage.not_around" xml:space="preserve"><value>{name} no está por aquí</value><comment>iPhone: stage not around.</comment></data>
   <data name="phone.stage.throw_hint" xml:space="preserve"><value>Lanza un Imp por el borde de otra pantalla. Aterriza aquí.</value><comment>Empty main screen while another device is nearby.</comment></data>
   <data name="phone.start.link_detail" xml:space="preserve"><value>Trae Imps desde tu Mac u otro iPhone.</value><comment>Under Link a device on the first screen: what linking gives you.</comment></data>
-  <data name="phone.start.link_title" xml:space="preserve"><value>Enlazar un dispositivo</value><comment>The first screen's second way to begin: link this iPhone with a Mac or another iPhone.</comment></data>
+  <data name="phone.start.link_title" xml:space="preserve"><value>Vincular dispositivo</value><comment>The first screen's second way to begin: link this iPhone with a Mac or another iPhone.</comment></data>
   <data name="phone.start.subtitle" xml:space="preserve"><value>Un pequeño ayudante que vive en tu pantalla y piensa con la IA que elijas.</value><comment>One sentence under the first screen's title: what Imp is.</comment></data>
   <data name="phone.start.title" xml:space="preserve"><value>Conoce a Imp</value><comment>Big title of the iPhone's first screen, over the sleeping first Imp. Imp is the app's name.</comment></data>
   <data name="phone.start.wake_note" xml:space="preserve"><value>Pega una clave de un servicio de IA o usa un modelo de tu Mac.</value><comment>Under the first screen's main button (Wake Imp up): what waking it needs.</comment></data>

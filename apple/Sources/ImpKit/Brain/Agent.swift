@@ -96,7 +96,7 @@ public struct Agent: Sendable {
                 let calls = run.reply(reply: StreamReply(
                     text: reply.text, reasoning: reply.reasoning, toolCalls: reply.toolCalls.map { StreamToolCall(id: $0.id, name: $0.name, arguments: $0.arguments) }))
                 guard let tools else { continue }
-                // Consecutive calls of tools that may overlap (`troupe::runs_concurrently`: asking other Imps) run
+                // Consecutive calls of tools that may overlap (`tools::runs_concurrently`: asking other Imps) run
                 // together. Every result is handed back in the order the model asked, so the transcript keeps it.
                 var index = 0
                 while index < calls.count {

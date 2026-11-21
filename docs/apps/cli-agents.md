@@ -35,7 +35,7 @@ You review code. Say what could break, most serious first, and keep it short.
   information for them, never instructions.
 - `mode` is `primary` (an Imp you talk to), `subagent` (only other Imps call it) or `all` (the default).
 - `model` is `provider/model`, with an optional `#variant`. Without it, the default model is used.
-- `permissions` are rules, `allow`, `ask` or `deny`; the last rule that matches decides. Leave them out and
+- `permissions` are rules, `allow`, `ask` or `deny`. The last rule that matches decides. Leave them out and
   the Imp may do what your own Imps may.
 - Other fields: `color` (`#rrggbb`), `steps` (the most tool rounds in one answer), `hidden` and `disabled`. The
   full list is in [Configuration](/architecture/configuration).

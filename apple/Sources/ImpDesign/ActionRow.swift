@@ -3,7 +3,7 @@ import SwiftUI
 /// A row of actions that is always balanced (spec `actionRow`): a lone action is centred (a wide one spans
 /// the row), never left at one side with empty room on the other. With more, the last one (the main action)
 /// holds the trailing edge and the others start at the leading edge, so the row reads from its first action
-/// to its main one. It replaces an `HStack` with a `Spacer`: give it the actions only.
+/// to its main one. Use it in place of an `HStack` with a `Spacer`, and give it the actions only.
 public struct ActionRow: Layout {
     var spacing: CGFloat
 

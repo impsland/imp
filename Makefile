@@ -135,7 +135,8 @@ design-images: core ## Draw the screen pictures in docs/ux/images
 
 ##@ Rust and docs
 
-# The same steps as CI: with every feature, then the core without its default features.
+# The same steps as .github/workflows/server.yml: the workspace with its default features, then the
+# engine and the FFI crate without them.
 rust: ## Check the format, lint and test the Rust workspace
 	cargo fmt --all --check
 	cargo clippy --workspace --all-targets --locked -- -D warnings

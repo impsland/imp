@@ -46,7 +46,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Peek.** When a hidden Imp slides out a little from the floor, shyly, and goes back. Click it to bring it back.
 
-**Embers.** A small game on the phone, a flame in a corner of the screen, played when an Imp cannot think.
+**Embers.** A small game on the phone, a flame in a corner of the screen, shown while no linked computer is connected.
 
 **Undo bar.** The bar that stays for a few seconds after an Imp is let out, sent home or sent to another device. It has one button, Undo.
 
@@ -54,7 +54,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Device.** A Mac, an iPhone, an Android phone, a Windows PC or a Linux computer running Imp. It has a name people recognise.
 
-**Home (the device).** The device an Imp lives on. Its Brain, keys, tools and chats are there. This is a different meaning from the canvas. In the Link, "home" means a device. In the window, "at home" means on the canvas. The words "Call home" and "Send home" are never mixed up. **Call home** takes a visiting Imp back to its home device. **Send home** puts an Imp back into the window, or a visitor back to its home device.
+**Home (the device).** The device an Imp lives on. Its Brain, keys, tools and chats are there. This is a different meaning from the canvas. In the Link, "home" means a device. In the window, "at home" means on the canvas. **Send home** puts an Imp back into the window, or a visitor back to its home device.
 
 **Holder.** The device an Imp's body is on right now. At home, the holder and the home are the same device.
 
@@ -72,7 +72,7 @@ The words Imp uses for its own ideas. Use them the same way in the app, the docs
 
 **Book.** The list of linked devices a device keeps, with their keys.
 
-**Mine.** A mark on a linked device that says it is the user's own. Other devices are asked about first.
+**Mine.** A switch on a linked device that says it is the user's own. It plugs in Talk & files, so the device may talk to the Imps and share files. Other devices are asked about first.
 
 **Send home.** For an Imp's home device to take its Imp back. The visit ends.
 

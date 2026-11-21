@@ -3,9 +3,9 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The menu for empty space: a right click on the canvas. A card of buttons (`MenuCard`): New Imp, then Hidden (n)
-/// and Select All Imps when they apply, and Settings last. The same actions are the corner buttons and the
-/// menu bar. The background lives in Settings, one click away.
+/// The menu for empty space: a right click on the canvas. A card of compact buttons (`MenuCard`, half as tall as
+/// the big ones): New Imp, then Hidden (n) and Select All Imps when they apply, and Settings last. The same actions
+/// are the corner buttons and the menu bar. The background lives in Settings, one click away.
 @MainActor
 final class CanvasEmptyMenu {
     private let model: AppModel
@@ -35,7 +35,7 @@ final class CanvasEmptyMenu {
         items.append(MenuItem(id: "settings", icon: "gearshape.fill", title: String(localized: "menu.canvas.settings")) {
             card.later { actions.openSettings() }
         })
-        return card.make(MenuCard { MenuGrid(items: items) })
+        return card.make(MenuCard { MenuGrid(items: items, compact: true) })
     }
 }
 
@@ -66,8 +66,9 @@ struct ImpContextMenu: View {
 }
 
 /// The menu of an Imp in the window, from a right click (or a Control-click) on it: the same card as on the
-/// desktop (`ImpMenuCard`, with Let out where the desktop has Send home), then sharing and Goodbye (`ImpMenuEnd`). Stop,
-/// triggers and devices to visit are only for an Imp out on the desktop, so they are not here.
+/// desktop (`ImpMenuCard`, with Let out where the desktop has Send home), then sharing, Hide and Let out, and
+/// Goodbye (`ImpMenuEnd`). Stop, triggers and devices to visit are only for an Imp out on the desktop, so they are
+/// not here.
 @MainActor
 final class CanvasImpMenu {
     private let model: AppModel

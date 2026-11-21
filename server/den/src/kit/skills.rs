@@ -51,7 +51,7 @@ pub fn source_problem(source: &str) -> Option<&'static str> {
     }
 }
 
-/// Checks the `skills` list of a kit. Returns how many skills it holds.
+/// Checks the `skills` list of a kit, adding a problem for each bad entry.
 pub(super) fn check_skills(skills: &[Value], problems: &mut Problems) {
     let mut seen = HashSet::new();
     for (i, skill) in skills.iter().enumerate() {

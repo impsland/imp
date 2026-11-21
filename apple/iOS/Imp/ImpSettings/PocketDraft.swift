@@ -41,7 +41,6 @@ final class PocketDraft {
     static var hues: [Double] { PocketRuntime.hues }
     /// The settings this iPhone has. Triggers and Animations live on the Mac.
     static let settings: [ImpSetting] = [.brain, .personality, .look, .tools]
-    /// The Imp's own tools this iPhone has, each with a switch: messaging the other Imps, and playing its animations.
     /// The built-in tools a pocket Imp has (it plays no animations, so only messages to the other Imps).
     static let ownTools: [ToolEntry] = [OwnTools.message].compactMap(ToolRegistry.entry(named:))
     /// The built-in tools behind the wand in Look: the page behind the Imps in the room.
@@ -198,7 +197,7 @@ final class PocketDraft {
     }
 
     /// What saving depends on, to save again when it changes. Header values count, so a typed one is kept.
-    /// The name is first and the personality fifth (the editor waits longer after typing).
+    /// The name is first, the personality fifth and the description sixth (the editor waits longer after typing).
     var fingerprint: [String] {
         [name, "\(hue)", "\(scale)", String(describing: traits), personality, about, toolsOff.sorted().joined(separator: ","), brain.baseURL, brain.model]
             + servers.flatMap { [$0.name, $0.url] + $0.headers.flatMap { [$0.name, $0.value] } }

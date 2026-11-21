@@ -77,7 +77,8 @@ public enum FirstRunPrimary: Equatable, Sendable {
 }
 
 /// The first run, step by step. The same on every platform: the views only show it. It holds what the
-/// user typed, so going back or a failed check keeps it, and it never blocks anything: closing leaves an existing Imp asleep and a new one unhatched.
+/// user typed, so going back or a failed check keeps it, and it never blocks anything:
+/// closing leaves an existing Imp asleep and a new one unhatched.
 @MainActor @Observable
 public final class FirstRunModel {
     public let impName: String

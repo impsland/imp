@@ -33,10 +33,10 @@ Seven sections, each with a one-word name and a few cards of icon rows. A card h
 | App | Look: Appearance (Auto, Light, Dark), On colour (White, Black). System: start at login, language. Window: the size of the home window (Small, Medium, Large, Full). |
 | Bubble | Look: Background (Solid or Translucent, and the amount when translucent), with a live preview over a light, a dark and a picture swatch. Showing: hide after, text box lines, chat size. Media: autoplay, audio look. |
 | Talking | Listening: language (Same as my Mac, Automatic, or one language) and, with Automatic, the languages it listens for. Between Imps: talk in, threads, waiting, window. |
-| Brains | Services: the list of Brains and the default for new Imps. Keys are typed in each service and kept in the shared `auth.json`. Requests: wait, retries, first wait, longer waits. |
+| Brains | Services: the list of Brains and the default for new Imps. Keys are typed in each service and kept in the shared `auth.json`. Asking: wait, tries, first pause, growth. |
 | Sharing | Import (the Gallery card), then everything shareable in the Imp settings' list style: Triggers, Animations and Tools, shared or an Imp's own, and The Den in the compact server card. |
 | Permissions | Listening: microphone and speech. Computer control: screen recording and accessibility. |
-| Backup | Keep: export and import, and Configuration: the folder the shared configuration lives in (`~/.config/imp`), with a folder icon button that shows it in the Finder. Reset: start again. Reset is last and asks first, with two buttons: erase the app's own data, or also remove the shared configuration (the terminal app uses it too). |
+| Backup | Backups: export and import, and Configuration: the folder the shared configuration lives in (`~/.config/imp`), with a folder icon button that shows it in the Finder. Reset: start again. Reset is last and asks first, with two buttons: erase the app's own data, or also remove the shared configuration (the terminal app uses it too). |
 
 ![App settings](./images/all-imps-app.png)
 
@@ -85,28 +85,6 @@ Each list is ordered shared first, then by Imp in the order of the Imps, each by
 
 ![Sharing](./images/all-imps-sharing.png)
 
-## Presets for The Den and The Hop
-
-The Den and The Hop are one component, the compact server card (`ServerCard`, with its state in `ServerSetting`), on Devices, on Sharing and in the Den browser. Its header carries a status icon (the address and the state are its tooltip) and Check, a button that shows its own progress, tick or cross. Under it the choice is a row of buttons with symbols (no dropdown) and, for Custom only, the address field. A failed check or an address that is not valid floats as a notice (`.impNotice`). Nothing is ever inserted into the page.
-
-Most people use the default servers. Each of The Den and The Hop has three choices:
-
-| Choice | Meaning |
-| --- | --- |
-| Imp's servers | The default, run by the Imp project. |
-| Custom | An address the user types. It must start with https://. |
-| Off | No server. |
-
-A server the person runs on this computer is a Custom address (`localhost:4677`, `http://localhost:8080`). There is no separate choice for it. On the same Wi-Fi devices link without a Hop, and a Hop on this computer only helps away from home when the router forwards its port. A "Check" button tests the choice and shows `servers.state_ok` or `servers.state_fail`, or `servers.state_fail_local` when nothing answers at a local address. Before a check the state is `servers.preset.imp_note` for Imp's servers and `servers.state_unchecked` otherwise. Off says what goes missing (`servers.den.off_note`, `servers.hop.off_note`). A check is for the address it started with: changing the address drops it. For a Den it asks the `/healthz` page, which must answer. For a Hop it opens a connection to the address. The Mac and the iPhone both have it.
-
-![Pairing a device](./images/all-imps-pair.png) What happens when only one of the two is set up is on [States](/ux/states).
-
-## Brains
-
-![Brains](./images/all-imps-brains.png)
-
-A Brain service is one generic list entry: a name, an address, a key and a model. "Add a service" offers the same two choices as the first run, Remote (a service with the user's own key) and Local (a model on this computer), and the address stays editable for any other compatible service. A hosted model from the project is not built. If it comes, it is one more entry in the same list.
-
 ## Stickers
 
 Each animation row on the Sharing page has **Export as Sticker…** (`sticker.export`), which saves it as a `.tgs` animated sticker.
@@ -152,7 +130,7 @@ Imp ships its service presets as data, never as literals in code, and reads each
 
 ## App
 
-Two cards. **Look** holds Appearance (Auto, Light, Dark) and On colour. **System** holds start at login and language. What a double click on an Imp does is no longer a setting here: it is a Triggers entry ("2 clicks on the Imp"). Backup and Reset are on their own page. The canvas has no floating decoration and no setting for it.
+Two cards. **Look** holds Appearance (Auto, Light, Dark) and On colour. **System** holds start at login and language. What a double click on an Imp does is a Triggers entry, not a setting here ("2 clicks on the Imp"). Backup and Reset are on their own page. The canvas has no floating decoration and no setting for it.
 
 **Window** is one row, Size, with four segmented buttons that have symbols: Small (560 by 520 pt), Medium (780 by 640, the default and the size the window first opens at), Large (1,040 by 780) and Full (the whole visible screen). Choosing one resizes the home window at once, animated, keeping its top left corner where it is and moving it just enough to stay on the screen. No size is larger than the screen's visible area. Dragging the edges still works, and the row keeps showing the last size chosen. The smallest the window can be (440 by 480 pt) is a fixed design value, not a setting, and lies below the narrow breakpoint. Every screen in the window adapts to any size above it: nothing has a fixed layout size. The pure logic is `WindowSizing`.
 
@@ -243,6 +221,7 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `devices.edge.travelling` | Travelling |
 | `devices.elsewhere.title` | Elsewhere |
 | `devices.empty` | No devices yet. |
+| `devices.fit` | Show all |
 | `devices.forget.named` | Forget {name}… |
 | `devices.forget.one` | Forget this device… |
 | `devices.hop.add` | Add a Hop |
@@ -304,6 +283,8 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `devices.unknown_device` | a device not linked with this Mac |
 | `devices.visitor.can_use` | Its device can use here |
 | `devices.visitor.send_home` | Send home |
+| `devices.zoom_in` | Zoom in |
+| `devices.zoom_out` | Zoom out |
 | `privacy.computer` | Control |
 | `privacy.computer_note` | Lets an Imp run commands on this computer when you ask. |
 | `privacy.microphone` | Microphone |

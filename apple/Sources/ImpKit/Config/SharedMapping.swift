@@ -188,7 +188,7 @@ public enum SharedMapping {
         return out
     }
 
-    /// An agent the Mac shows as an Imp: `primary` or `all`, loaded and not hidden.
+    /// An agent the Mac shows as an Imp: `primary` or `all`, and not disabled or hidden.
     static func isImp(_ agent: JSON) -> Bool {
         let mode = agent["mode"]?.string ?? "all"
         return (mode == "primary" || mode == "all") && agent["disabled"]?.bool != true && agent["hidden"]?.bool != true
@@ -498,7 +498,8 @@ public enum SharedMapping {
         } else if imp.hue != 0 || base?["color"] != nil {
             patch["color"] = .string(hex(forHue: imp.hue))
         }
-        // What was written over the tools' names and descriptions: one object per tool, and the ones that went are cleared.
+        // What was written over the tools' names and descriptions: one object per tool, and the
+        // ones that went are cleared.
         let oldTexts = base?["toolText"]?.object ?? [:]
         var texts: [String: JSON] = [:]
         for (id, t) in imp.toolText {

@@ -565,58 +565,6 @@ impl DeviceMap {
     }
 }
 
-/// The parts of the line from `a` to `b` that lie outside every box (`(x, y, width, height)`).
-pub fn pieces(
-    a: (f64, f64),
-    b: (f64, f64),
-    boxes: &[(f64, f64, f64, f64)],
-) -> Vec<((f64, f64), (f64, f64))> {
-    let (dx, dy) = (b.0 - a.0, b.1 - a.1);
-    // Where along the line (0 at a, 1 at b) it is inside each box (Liang-Barsky).
-    let mut covered: Vec<(f64, f64)> = Vec::new();
-    for &(x, y, w, h) in boxes {
-        let (mut low, mut high) = (0.0f64, 1.0f64);
-        let mut inside = true;
-        for (p, q) in [
-            (-dx, a.0 - x),
-            (dx, x + w - a.0),
-            (-dy, a.1 - y),
-            (dy, y + h - a.1),
-        ] {
-            if p == 0.0 {
-                if q < 0.0 {
-                    inside = false;
-                    break;
-                }
-            } else {
-                let t = q / p;
-                if p < 0.0 {
-                    low = low.max(t);
-                } else {
-                    high = high.min(t);
-                }
-            }
-        }
-        if inside && low < high {
-            covered.push((low, high));
-        }
-    }
-    covered.sort_by(|p, q| p.0.total_cmp(&q.0));
-    let point = |t: f64| (a.0 + dx * t, a.1 + dy * t);
-    let mut result = Vec::new();
-    let mut from = 0.0f64;
-    for (low, high) in covered {
-        if low > from {
-            result.push((point(from), point(low)));
-        }
-        from = from.max(high);
-    }
-    if from < 1.0 {
-        result.push((point(from), point(1.0)));
-    }
-    result
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1049,27 +997,5 @@ mod tests {
         assert!(map.node(THIS_DEVICE).unwrap().imps.is_empty());
         assert_eq!(map.node(&key(555)).unwrap().imps, vec![id(1)]);
         assert_eq!(map.node(&key(555)).unwrap().via, Some(key(101)));
-    }
-
-    #[test]
-    fn lines_stop_at_tiles_and_labels() {
-        let boxes = [
-            (0.0, 0.0, 10.0, 10.0),
-            (45.0, 0.0, 10.0, 10.0),
-            (90.0, 0.0, 10.0, 10.0),
-        ];
-        let found = pieces((5.0, 5.0), (95.0, 5.0), &boxes);
-        let xs: Vec<[f64; 2]> = found.iter().map(|p| [p.0.0, p.1.0]).collect();
-        assert_eq!(xs, vec![[10.0, 45.0], [55.0, 90.0]]);
-        assert_eq!(
-            pieces((0.0, 0.0), (100.0, 0.0), &[(40.0, 50.0, 10.0, 10.0)]).len(),
-            1
-        );
-        let overlapping = [(20.0, -5.0, 20.0, 10.0), (30.0, -5.0, 20.0, 10.0)];
-        let xs: Vec<[f64; 2]> = pieces((0.0, 0.0), (100.0, 0.0), &overlapping)
-            .iter()
-            .map(|p| [p.0.0, p.1.0])
-            .collect();
-        assert_eq!(xs, vec![[0.0, 20.0], [50.0, 100.0]]);
     }
 }

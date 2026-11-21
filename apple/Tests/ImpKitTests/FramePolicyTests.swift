@@ -27,7 +27,7 @@ import Testing
     }
 
     /// The phone got hot left open: a room of Imps that only breathed was drawn 30 times a second for
-    /// ever. An Imp at rest now gets frames only while it blinks, and nothing is drawn for its breath.
+    /// ever. An Imp at rest gets frames only while it blinks, and nothing is drawn for its breath.
     @Test func anImpAtRestIsDrawnOnlyWhileItBlinks() {
         for activity in [FramePolicy.Activity.settled, .resting] {
             #expect(FramePolicy.pace(activity, FramePolicy.Conditions()) == .blinks(1.0 / 30))
@@ -61,7 +61,7 @@ import Testing
     }
 
     /// The owner saw choppy eyes and head turns: a calm Imp was drawn at 12 fps, a lively one at 30 and only a
-    /// finger got 60. Anything that moves now gets the display's 60, and even the breathing Imp 30.
+    /// finger got 60. Anything that moves gets the display's 60, and even the breathing Imp 30.
     @Test func anythingThatMovesIsDrawnAtTheDisplaysRate() {
         let full = FramePolicy.Conditions()
         #expect(FramePolicy.pace(.lively, full) == .every(1.0 / 60))
@@ -69,7 +69,7 @@ import Testing
     }
 
     @Test func noTierLooksChoppy() {
-        // Reduced tiers (Low Power Mode, a warm device) fall to 30 and 20, never to the old 10 to 15.
+        // Reduced tiers (Low Power Mode, a warm device) fall to 30 and 20, never down to 10 or 15.
         for budget in budgets {
             let c = conditions(budget)
             if let lively = FramePolicy.pace(.lively, c).interval { #expect(lively <= 1.0 / 30) }

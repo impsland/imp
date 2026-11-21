@@ -6,7 +6,7 @@ import SwiftUI
 import UIKit
 
 /// The playful camera: the Imps rush in from the edges and peek over the picture, you drag them where you like, and
-/// the photo is what the screen showed, Imps included. `onSend` gets the JPEG; without it the preview has no Send.
+/// the photo is what the screen showed, Imps included. `onSend` gets the JPEG. Without it the preview has no Send.
 struct CameraView: View {
     /// The Imps on the screen (or the chat's own).
     let imps: [LinkImp]
@@ -33,11 +33,11 @@ struct CameraView: View {
         GeometryReader { box in
             let size = box.size
             ZStack {
-                Color.black
+                Tone.ink
                 if camera.state == .running { CameraPreview(session: camera.session) }
                 if camera.state == .denied || camera.state == .unavailable { unavailable }
                 if camera.state == .running { friends(size) }
-                Color.white.opacity(flash ? 0.9 : 0).allowsHitTesting(false)
+                Tone.paper.opacity(flash ? Opacity.hoverFill : 0).allowsHitTesting(false)
                 if let shot, let image = UIImage(data: shot) {
                     previewCard(image)
                 } else if camera.state == .running {
@@ -122,7 +122,7 @@ struct CameraView: View {
         for (i, (imp, spot)) in zip(imps, spots).enumerated() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.15 + Double(i) * 0.14) {
                 guard frames[imp.id] != nil else { return }
-                withAnimation(.spring(duration: 0.6, bounce: 0.35)) { frames[imp.id] = spot }
+                withImpAnimation(ImpDesign.Motion.pop, reduceMotion: reduceMotion) { frames[imp.id] = spot }
             }
         }
     }
@@ -131,11 +131,11 @@ struct CameraView: View {
 
     private var closeButton: some View {
         Button(action: close) {
-            Image(systemName: "xmark").font(.icon(.big, weight: .bold)).foregroundStyle(.white)
+            Image(systemName: "xmark").font(.icon(.big, weight: .bold)).foregroundStyle(Tone.paper)
                 .frame(width: Sizing.hit, height: Sizing.hit)
-                .background(Circle().fill(.black.opacity(0.45)))
+                .background(Circle().fill(Tone.scrim))
         }
-        .padding(.leading, Spacing.roomy).padding(.top, 60)
+        .padding(.leading, Spacing.roomy).padding(.top, Sizing.cameraTop)
         .accessibilityLabel("Close")
         .accessibilityIdentifier("camera.close")
     }
@@ -147,43 +147,34 @@ struct CameraView: View {
                 Spacer()
                 if camera.canFlip {
                     Button { camera.flip() } label: {
-                        Image(systemName: "arrow.triangle.2.circlepath.camera").font(.icon(.big, weight: .bold)).foregroundStyle(.white)
+                        Image(systemName: "arrow.triangle.2.circlepath.camera").font(.icon(.big, weight: .bold)).foregroundStyle(Tone.paper)
                             .frame(width: Sizing.hit, height: Sizing.hit)
-                            .background(Circle().fill(.black.opacity(0.45)))
+                            .background(Circle().fill(Tone.scrim))
                     }
-                    .padding(.trailing, Spacing.roomy).padding(.top, 60)
+                    .padding(.trailing, Spacing.roomy).padding(.top, Sizing.cameraTop)
                     .accessibilityLabel("Flip the camera")
                     .accessibilityIdentifier("camera.flip")
                 }
             }
             .frame(maxHeight: .infinity, alignment: .top)
-            Button { Task { await shoot(size) } } label: {
-                ZStack {
-                    Circle().stroke(.white, lineWidth: 4).frame(width: 78, height: 78)
-                    Circle().fill(.white).frame(width: 64, height: 64)
-                }
-                .frame(width: 88, height: 88)
-                .contentShape(Circle())
-            }
-            .buttonStyle(.plain)
-            .disabled(taking)
-            .padding(.bottom, 44)
-            .frame(maxHeight: .infinity, alignment: .bottom)
-            .accessibilityLabel("Take the photo")
-            .accessibilityIdentifier("camera.shutter")
+            ShutterButton { Task { await shoot(size) } }
+                .disabled(taking)
+                .padding(.bottom, Sizing.cameraBottom)
+                .frame(maxHeight: .infinity, alignment: .bottom)
+                .accessibilityIdentifier("camera.shutter")
         }
     }
 
     private var unavailable: some View {
         VStack(spacing: Spacing.roomy) {
-            Image(systemName: "camera.fill").font(.system(size: 40)).foregroundStyle(.white.opacity(0.7))
+            Image(systemName: "camera.fill").font(.icon(.huge)).foregroundStyle(Tone.paper.opacity(Opacity.dimmed))
             Text(camera.state == .denied ? "Imp needs the camera to take photos. You can allow it in Settings." : "This device has no camera to use.")
-                .font(Typeface.body).foregroundStyle(.white).multilineTextAlignment(.center)
+                .font(Typeface.body).foregroundStyle(Tone.paper).multilineTextAlignment(.center)
             if camera.state == .denied {
                 Button("Open Settings") {
                     if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                 }
-                .buttonStyle(.borderedProminent).tint(.white).foregroundStyle(.black)
+                .buttonStyle(.primary)
                 .accessibilityIdentifier("camera.settings")
             }
         }
@@ -197,9 +188,9 @@ struct CameraView: View {
         taking = true
         defer { taking = false }
         Haptics.tap(.light)
-        withAnimation(.easeOut(duration: 0.08)) { flash = true }
+        withImpAnimation(ImpDesign.Motion.quick, reduceMotion: reduceMotion) { flash = true }
         let photo = await camera.capture()
-        withAnimation(.easeOut(duration: 0.3)) { flash = false }
+        withImpAnimation(ImpDesign.Motion.fade, reduceMotion: reduceMotion) { flash = false }
         guard let photo, let data = compose(photo, view: size) else { Haptics.notify(.error); return }
         for imp in imps { moods[imp.id] = .happy }
         Haptics.notify(.success)
@@ -234,15 +225,15 @@ struct CameraView: View {
 
     private func previewCard(_ image: UIImage) -> some View {
         ZStack {
-            Color.black
+            Tone.ink
             VStack(spacing: Spacing.roomy) {
                 Image(uiImage: image).resizable().scaledToFit()
                     .clipShape(RoundedRectangle(cornerRadius: Radius.large))
                     .padding(.horizontal, Spacing.snug)
-                    .padding(.top, 54)
+                    .padding(.top, Sizing.cameraTop)
                 HStack(spacing: Spacing.roomy) {
                     pill("Retake", "arrow.counterclockwise", id: "camera.retake") {
-                        withAnimation(.easeOut(duration: 0.2)) { shot = nil }
+                        withImpAnimation(ImpDesign.Motion.quick, reduceMotion: reduceMotion) { shot = nil }
                         for imp in imps { moods[imp.id] = .curious }
                     }
                     pill(saved ? "Saved" : "Save", saved ? "checkmark" : "square.and.arrow.down", id: "camera.save") { save() }
@@ -250,9 +241,9 @@ struct CameraView: View {
                         pill("Send", "paperplane.fill", id: "camera.send", prominent: true) { onSend(shot) }
                     }
                 }
-                .padding(.bottom, 40)
+                .padding(.bottom, Sizing.cameraBottom)
                 if saveFailed {
-                    Text("Allow adding photos in Settings to save.").font(Typeface.caption).foregroundStyle(.white.opacity(0.8))
+                    Text("Allow adding photos in Settings to save.").font(Typeface.caption).foregroundStyle(Tone.paper)
                 }
             }
         }
@@ -262,9 +253,9 @@ struct CameraView: View {
     private func pill(_ title: LocalizedStringKey, _ icon: String, id: String, prominent: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Label(title, systemImage: icon).font(Typeface.label)
-                .foregroundStyle(prominent ? Color.black : Color.white)
-                .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.cozy + 2)
-                .background(Capsule().fill(prominent ? Color.white : Color.white.opacity(0.18)))
+                .foregroundStyle(prominent ? Tone.ink : Tone.paper)
+                .padding(.horizontal, Spacing.roomy).padding(.vertical, Spacing.medium)
+                .background(Capsule().fill(prominent ? Tone.paper : Tone.paper.opacity(Opacity.tintFill)))
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier(id)

@@ -20,7 +20,7 @@ General rules for every JSON in Imp:
 ## Versions
 
 No file or message carries a version number. A kit is recognised by its shape: a JSON object with at
-least one of `imps`, `triggers`, `animations` or `mcpServers`. A chat file is an object with a `chat`
+least one of `imps`, `triggers`, `animations`, `mcpServers` or `skills`. A chat file is an object with a `chat`
 inside. A change an older reader would misread changes the names it looks for, so the older reader
 refuses the file instead of half-reading it. The device link and the Hop work the same way (see
 [Imp Link](/connecting/link)).
@@ -45,7 +45,7 @@ Secrets are never in it (a service is named and given a base URL, the key stays 
   "sendsToolCalls": true,
   "mcpServers": ["Memory", "Time"],
   "traits": { "lids": 0.2, "slant": -0.5, "eyes": 0.1, "squint": 0, "horns": 10, "blush": 0.3, "tilt": 2, "tempo": 1.2 },
-  "triggers": [ { "name": "Plan my morning", "when": { "kind": "wake" }, "do": "ask", "prompt": "…" } ]
+  "triggers": [ { "name": "Plan my morning", "on": "wake", "do": [ { "act": "ask", "value": "…" } ] } ]
 }
 ```
 
@@ -103,21 +103,21 @@ is never switched off. Calling a tool that is not offered is refused. Vectors:
 
 ## Trigger
 
-A trigger makes an Imp act on its own. In kits and in the `imp_add_trigger` tool arguments:
+A trigger makes an Imp act on its own. Kits and the `imp_add_trigger` tool use the same shape. The full
+field list is in [Kit format](/sharing/kits#triggers):
 
 ```json
 {
   "name": "Plan my morning",
-  "when": { "kind": "wake" },
-  "only_if": [ { "kind": "hours", "text": "05:30-11:00" } ],
-  "do": "ask",
-  "prompt": "Good morning. Check your memory for my goals…"
+  "on": "wake",
+  "if": [ { "state": "hours", "value": "05:30-11:00" } ],
+  "do": [ { "act": "ask", "value": "Good morning. Check your memory for my goals…" } ]
 }
 ```
 
-- `when` is what starts it: `{ "kind": "wake" }`, `{ "kind": "time", "text": "17:30" }` and the other
-  kinds listed by the `imp_add_trigger` tool. `only_if` is a list of conditions that must all hold.
-- `do` is the action (`ask` sends `prompt` to the Imp as if typed).
+- `on` is the event that starts it, such as `wake`, `at` (with a `"HH:MM"` value) or `poke`. `if` is a list of
+  conditions that must all hold at that moment.
+- `do` is a list of 1 to 5 steps, run in order. An `ask` step sends its `value` to the Imp as if typed.
 - A kit that holds only triggers is a valid kit, and a gallery such as the Den lists it as kind `trigger`.
 
 ## Chat turn

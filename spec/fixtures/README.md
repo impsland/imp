@@ -26,7 +26,8 @@ These files are its examples and its test.
 The Swift tests are in `apple/Tests/ImpKitTests`. `ServerAddressesTests` does not read
 `server-addresses.json`. It covers the Swift side of the same checks, and the vectors run in the core.
 
-`ProtocolVectorTests` (Swift) reads only `bridge-messages.json` now. The link vectors are checked by the core.
+`ProtocolVectorTests` (Swift) reads only `bridge-messages.json`. The link vectors are checked by the core.
+
 ## Not in a file here
 
 The Hop handshake bytes, keys and signatures are not stored here. They are pinned by the tests in

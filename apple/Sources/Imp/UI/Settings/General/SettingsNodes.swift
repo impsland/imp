@@ -1,8 +1,8 @@
 import ImpKit
 
 /// The nodes of the app as it is now (this device, its Imps, services, The Den, The Hop and the other
-/// devices). They are not shown as a map any more: the "needs attention" marks and notices of the
-/// settings are worked out from them.
+/// devices). They are not drawn as a map. The "needs attention" marks and notices of the settings are
+/// worked out from them.
 @MainActor
 enum SettingsNodes {
     /// The core's map of devices for the current link state, preferences and troupe.

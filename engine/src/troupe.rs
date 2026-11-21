@@ -441,7 +441,7 @@ mod tests {
 
     #[test]
     fn three_imps_with_one_name_on_three_devices_can_still_message_each_other() {
-        // Pip on a Mac, Pip on an iPhone and Pip on the command line: each one sees the other two.
+        // Pip on this Mac, Pip on an iPhone and Pip on a Studio: each one sees the other two.
         let (here, elsewhere) =
             tool_names("Pip", &[], &away(&[("Pip", "iPhone"), ("Pip", "Studio")]));
         assert!(here.is_empty());

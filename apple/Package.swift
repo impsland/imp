@@ -28,7 +28,7 @@ let package = Package(
         .executableTarget(name: "Imp", dependencies: ["ImpKit", "ImpDesign", .product(name: "SwiftFlow", package: "SwiftFlow")]),
         .testTarget(name: "ImpKitTests", dependencies: ["ImpKit"]),
         .testTarget(name: "ImpDesignTests", dependencies: ["ImpDesign"], resources: [.copy("Fixtures")]),
-        // The app's own paths that need its models and views (crashes once seen in the field).
+        // Tests of the app's own code that needs its models and views, including regressions for crashes seen in the field.
         .testTarget(name: "ImpTests", dependencies: ["Imp", "ImpKit", "ImpDesign", .product(name: "SwiftFlow", package: "SwiftFlow")]),
         // Reference images of the main screens and their key states (see docs/apps/testing.md).
         .testTarget(name: "ImpSnapshotTests", dependencies: [

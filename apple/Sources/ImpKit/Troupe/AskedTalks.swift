@@ -13,7 +13,7 @@ import Observation
 /// newest lines only, and an Imp's lines go with it when it says goodbye.
 @MainActor @Observable
 public final class AskedTalks {
-    /// Lines kept in all, oldest dropped first: enough for every thread `TalkLog` shows.
+    /// Lines kept in all, oldest dropped first, so the file stays small.
     public static let maxKept = 600
 
     public private(set) var lines: [TalkLine]

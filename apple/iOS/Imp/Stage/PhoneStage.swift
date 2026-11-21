@@ -18,7 +18,6 @@ struct PhoneStage: View {
     var onChat: (UUID) -> Void
     /// Opens an Imp hatched here in the editor.
     var onEdit: (UUID) -> Void = { _ in }
-    /// Opens what the Imp said with other Imps.
     /// Starts waking an Imp hatched here that has no Brain.
     var onBrain: (UUID) -> Void = { _ in }
     /// An Imp hatched here, waiting for "Move to" a Mac to be confirmed.
@@ -200,7 +199,7 @@ struct PhoneStage: View {
     // MARK: Shake to send
 
     /// A deliberate shake: sends the Imp moved last to the device nearby (see `docs/concepts/transfer.md`), or
-    /// the Imps get dizzy as they always did when there is nothing to send or nowhere to send it.
+    /// the Imps get dizzy when there is nothing to send or nowhere to send it.
     private func shaken(from side: LinkSide?) {
         engine.pacer.wake()
         let settings = ShakeSettings(defaults: .standard)
@@ -231,10 +230,6 @@ struct PhoneStage: View {
 
     // MARK: Talk bubbles
 
-    /// Where each talking Imp's bubble goes. Each sits over its Imp's head. One that would land on a
-    /// bubble placed before it (in the stage's fixed order, so nothing swaps places as the Imps
-    /// float) goes up above that one. A bubble stays put while its Imp floats under it, so its words
-    /// hold still to be read.
     /// Where each talk bubble goes. A bubble tries, in turn, over its Imp's head, under it (clear of the name),
     /// and beside it on the side with more room, and takes the first place that is on screen (under the top bar,
     /// above the home indicator and a half sheet) and touches no bubble placed before it. Among places that all
@@ -366,7 +361,7 @@ struct PhoneStage: View {
             .opacity(awake || engine.isBlocking ? 1 : Opacity.dimmed)
             .contentShape(Circle().inset(by: side * 0.08))
             // A press that holds still starts before the menu does: the bubble goes first. Movement
-            // cancels it and the drag takes over, as before. The tap comes after the press in an
+            // cancels it and the drag takes over. The tap comes after the press in an
             // exclusive pair: the touch that opened the menu never also counts as a tap (a tap has no
             // longest duration, and its end would open the chat over the menu).
             .simultaneousGesture(
@@ -409,8 +404,8 @@ struct PhoneStage: View {
     private func lifted(_ id: UUID) {
         if pocket.contains(id) { pocket.dismissSpeech(id) } else { hub.dismissSpeech(id) }
         menuFor = id
-        // The menu is opened here, by the press itself. The system's own touch-and-hold menu never came
-        // up on an Imp, because the drag that carries the Imp took the touch first.
+        // The menu is opened here, by the press itself. The system's own touch-and-hold menu does not come
+        // up on an Imp, because the drag that carries the Imp takes the touch first.
         menuImp = id
         Haptics.tap(.medium)
         Task {
@@ -647,7 +642,7 @@ private struct ThinkingDots: View {
         let t = date.timeIntervalSinceReferenceDate
         HStack(spacing: Spacing.tight) {
             ForEach(0..<3, id: \.self) { i in
-                // White on the scrim, in both themes: the dark dots were lost on the light stage.
+                // White on the scrim in both themes. Dark dots would be lost on the light stage.
                 Circle().fill(Tone.paper).frame(width: Spacing.snug, height: Spacing.snug)
                     .offset(y: -Spacing.tight * max(0, sin(t * 6 - Double(i) * 0.9)))
             }

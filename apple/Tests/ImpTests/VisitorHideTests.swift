@@ -50,7 +50,7 @@ import ImpKit
 }
 
 /// An Imp of this Mac away on a device that will never answer again (its app deleted) is never stuck:
-/// the home window offers Call Home, which works without that device.
+/// the home window offers Send home, which works without that device.
 @MainActor @Suite struct CallHomeTests {
     @Test func theOnlyImpAwayOnAGoneDeviceCanBeCalledHome() {
         _ = NSApplication.shared

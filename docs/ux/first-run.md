@@ -26,7 +26,7 @@ The Imp on top reacts: asleep, stirring while it checks, awake once it works. St
 
 ## Rejected
 
-A long wizard with a page for each setting. It feels like a form. A "Later" button: Close already does that, and a second way out is noise. Hard-coding one service. Asking for a hosted account: there is no hosted model yet. A grid of named products (OpenRouter, Ollama, LM Studio, OmniRoute) and "Other": five choices that newcomers had to tell apart, when the address already accepts any of them. LM Studio and OmniRoute are no longer presets in the first run or in "Add a service": their users type or paste their address into Local's field. A third step, "Say hello to Imp", with a ready-made first message: the Imp is already awake when the check works, and the step asked for a message nobody needed to write there.
+A long wizard with a page for each setting. It feels like a form. A "Later" button: Close already does that, and a second way out is noise. Hard-coding one service. Asking for a hosted account: there is no hosted model yet. A grid of named products (OpenRouter, Ollama, LM Studio, OmniRoute) and "Other": five choices that newcomers had to tell apart, when the address already accepts any of them. LM Studio and OmniRoute are not presets in the first run or in "Add a service": their users type or paste their address into Local's field. A third step, "Say hello to Imp", with a ready-made first message: the Imp is already awake when the check works, and the step asked for a message nobody needed to write there.
 
 ## On the iPhone
 

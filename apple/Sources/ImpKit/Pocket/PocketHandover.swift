@@ -112,7 +112,8 @@ extension ImpPreferences {
     }
 
     /// Takes in the Imp of a pocket Imp's kit, as a new Imp that keeps `id`, waiting at home (not
-    /// activated). One without a brain gets `Brain.notChosen`, so it sleeps here as it did on the phone. Whatever the kit says beyond what a pocket Imp has (tools, triggers, animations,
+    /// activated). One without a brain gets `Brain.notChosen`, so it sleeps here as it did on the
+    /// phone. Whatever the kit says beyond what a pocket Imp has (tools, triggers, animations,
     /// programs to run) is ignored or refused: the Imp gets what a freshly hatched one has. Its
     /// service is found by address or added, and so are its servers, which only reuse one already
     /// in the library when it has the same address. Throws if `id` is already an Imp here.

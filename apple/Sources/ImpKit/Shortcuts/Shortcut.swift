@@ -14,7 +14,7 @@ public struct Step: Codable, Hashable, Sendable {
         case sleep
         /// Wakes up, playing the animation named `value` (optional) doing it.
         case wake
-        /// How the Imp follows the pointer from now on: `value` is off, eyes, hop or glide. Mac only.
+        /// How the Imp follows the pointer: `value` is off, eyes, hop or glide. Mac only.
         case follow
         /// Opens `value`: text_box, listen, chat or settings.
         case open

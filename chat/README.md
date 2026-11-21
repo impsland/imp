@@ -33,7 +33,7 @@ cd ~/projects/my-app                        # the folder Pip works in
 imp                                         # the same as imp chat
 ```
 
-`imp provider add` is a service, called by the short name you give it (`openrouter`); a model is written
+`imp provider add` is a service, called by the short name you give it (`openrouter`). A model is written
 `provider/model`, with an optional `#variant` (`openai/gpt-6-luna#high`). `imp agent new` makes the Imp as a
 file in `~/.agents/agents`. In the server's arguments, `.` and `${workspaceFolder}` are the folder the chat
 is started in, so the same settings work in every folder. The Imp is told that folder too.
@@ -64,7 +64,7 @@ Run `imp --help` for every command and `imp COMMAND --help` for one. Lists and d
 | command | what it does |
 |---|---|
 | `imp chat [--imp NAME]` | The full-screen chat. `--plain` for the line chat, `--offline` to stay off the link |
-| `imp agent list [--all]`, `show NAME` | The agents of `~/.agents/agents`; the Imps are the `primary` and `all` ones |
+| `imp agent list [--all]`, `show NAME` | The agents of `~/.agents/agents`. The Imps are the `primary` and `all` ones |
 | `imp agent new NAME` | Make one. `--description`, `--model`, `--mode`, `--color` |
 | `imp agent set NAME KEY VALUE` | Change `description`, `mode`, `model`, `variant`, `color`, `steps`, `hidden`, `disabled` or `prompt` (`-` clears) |
 | `imp agent edit NAME`, `rename OLD NEW`, `remove NAME` | Open the file in `$EDITOR`, rename it, remove it |
@@ -73,7 +73,7 @@ Run `imp --help` for every command and `imp COMMAND --help` for one. Lists and d
 | `imp model [provider/model#variant] [--agent NAME]` | Show or choose the default model, or one agent's (`-` with `--agent`: the default again) |
 | `imp mcp list`, `add NAME`, `set`, `remove`, `enable`, `disable` | MCP servers: `--command PROGRAM ARGS` or `--url URL`, with `--env` and `--header`. `--agent NAME` for one Imp |
 | `imp permission list`, `add ACTION RESOURCE EFFECT`, `remove N` | Rules for what Imps may do. `--agent NAME` for one Imp |
-| `imp skill list`, `show NAME`; `imp command list`, `show NAME` | The skills and custom commands that were found |
+| `imp skill list` and `show NAME`, and `imp command list` and `show NAME` | The skills and custom commands that were found |
 | `imp project`, `project trust`, `project untrust` | What this folder adds, and whether its settings run |
 | `imp config path`, `get [KEY]`, `set KEY VALUE`, `unset KEY` | `imp.json` by dotted key, such as `requests.retries` |
 | `imp qr` | Link a Mac or an iPhone: shows a code to scan, then stays online |
@@ -187,7 +187,7 @@ with `/`.
 | `/mcp …` | `list` (with each server's tools, or why one did not start), `add`, `set`, `remove`, `enable`, `disable` |
 | `/permission …` | `list`, `add`, `remove` |
 | `/skill …`, `/command …` | `list` and `show` |
-| `/project …`, `/config …` | What the folder adds, trust; `imp.json` by key |
+| `/project …`, `/config …` | What the folder adds and whether it is trusted. `imp.json` by key |
 | `/tools` | List the tools by id and whether the rules leave them on |
 | `/devices` | Linked devices, the Imps on their screens and the visitors here |
 | `/pair` | Show a code to link a Mac or an iPhone |
@@ -218,7 +218,7 @@ Review $1 for bugs and missing tests. Also consider: $ARGUMENTS
 › Review src/auth.rs for bugs and missing tests. Also consider: src/auth.rs the error handling
 ```
 
-- `$ARGUMENTS` is everything after the name; `$1`, `$2` … are its words one by one. Without a placeholder,
+- `$ARGUMENTS` is everything after the name. `$1`, `$2` … are its words one by one. Without a placeholder,
   what follows is added after the text.
 - `` !`cmd` `` is replaced by what the command prints (it needs the `shell` permission for that command line),
   and `@path` by the file's contents (the `read` permission).
@@ -303,7 +303,7 @@ my-app/
 - **agents/NAME.md** is an agent (see above). A nearer folder wins over a farther one, and a project wins
   over `~/.agents`, by name: the project's `review.md` replaces your `review` there.
 - **.agents/imp.json** may add services, MCP servers and permissions. Because those start programs and send
-  keys, they wait until you allow them with `imp project trust`; if the file changes, they wait again.
+  keys, they wait until you allow them with `imp project trust`. If the file changes, they wait again.
   `imp project untrust` turns them off. Agents, skills, commands and `AGENTS.md` are text, read at once.
 
 The same layout in `~/.agents` is yours, read in every chat and trusted. `imp project` shows what was found,
@@ -364,7 +364,7 @@ saved per pair of Imps in the data folder (`talks` inside it). Two settings in `
 { "talk": { "windowMinutes": 60, "threading": "decides" } }
 ```
 
-`windowMinutes` is at most 10080; `threading` is `decides` (default), `recent`, `always` or `never`.
+`windowMinutes` is at most 10080, and `threading` is `decides` (default), `recent`, `always` or `never`.
 
 Other Imps read what an Imp says about itself. Give it a sentence on what it is for, as `description` in
 its agent file (`imp agent set NAME description TEXT`). The
@@ -372,20 +372,23 @@ tool lists it next to the Imp's name, as information and never as instructions, 
 devices too, with the Imp's abilities (`shell` when its shell tool is on, and the names of its MCP servers).
 Messages to several Imps in one reply run at the same time.
 
-A message can also go without waiting for the answer. The setting `talk_waiting` says how:
+A message can also go without waiting for the answer. The setting `talk.waiting` in `imp.json` says how:
 
-```toml
-talk_waiting = "decides"        # decides (default), wait or dont_wait
+```json
+{ "talk": { "waiting": "decides" } }
 ```
+
+It is `decides` (default), `wait` or `dont_wait`.
 
 With `decides` the sending Imp chooses with a `wait` argument (it waits if it says nothing). A message that
 does not wait gets a receipt at once and the Imp carries on. The answer comes later as a new message at the
 end of the chat that starts `[Event, not from the user]`. Nothing earlier is changed. If the Imp is free, it
 takes a turn on it and the chat shows it. If it is busy, the answer waits until the turn ends. An Imp can have
 4 such messages out at once, and a message sent from an Imp woken three answers deep must wait. A local Imp has
-10 minutes to answer. An Imp on another device has the link's answer timeout: 2 minutes (`ANSWER_TIMEOUT` in `engine/src/link/talks.rs`). Answers still on their way are lost when you quit or
-switch Imps. This is only in the chat window: the line chat (`imp chat --plain`, also used in a pipe) and
-`imp serve` always wait for the answer, whatever the setting says.
+10 minutes to answer (`ASYNC_TIMEOUT_SECS` in `engine/src/troupe.rs`). An Imp on another device has the link's
+answer timeout: 2 minutes (`ANSWER_TIMEOUT` in `engine/src/link/talks.rs`). Answers still on their way are lost
+when you quit or switch Imps. This is only in the chat window: the line chat (`imp chat --plain`, also used in a pipe) always
+waits for the answer, whatever the setting says.
 
 ## Your Mac and iPhone
 
@@ -415,9 +418,9 @@ home.
 The link itself (identity, handshake, tickets, the book of linked devices) is the same code the apps use, in
 `imp-engine`. The identity key is never printed. It is kept in the file `link-identity` in the data folder, which
 only you can read (as `~/.ssh` keeps a key), and the book file `link-book` next to it holds the rest. Each data
-folder (`--data-dir`, `IMP_DATA_DIR`) has its own key. Nothing about the link touches the system keychain, so
-the chat never asks for your password. The link's identity and book are the terminal's own (the apps keep theirs), so each shows up as its own
-device. An iPhone Imp can't move in for good here (`adopt`): send it over to visit instead.
+folder (`--data-dir`, `IMP_DATA_DIR`) has its own key. The link does not use the system keychain for new data.
+An older copy is moved out of it once, by the link commands. The link's identity and book are the terminal's own
+(the apps keep theirs), so each shows up as its own device. An iPhone Imp can't move in for good here (`adopt`): send it over to visit instead.
 
 `imp qr TEXT` draws any text as a QR code instead, for example a kit address to open on a phone. The code is
 always drawn in black on white with a quiet zone of four modules, whatever colours the terminal has, so a
@@ -439,8 +442,8 @@ uses the system keychain, so a chat never asks for your password.
 
 - `IMP_CONFIG_HOME` is the config folder (`imp.json`, `auth.json`), instead of `$XDG_CONFIG_HOME/imp` or
   `~/.config/imp`.
-- `IMP_DATA_DIR` is the folder for saved data: conversations between Imps and the link book. `imp serve`,
-  `imp qr` and `imp link` read it too.
+- `IMP_DATA_DIR` is the folder for saved data: conversations between Imps and the link book. `imp qr`
+  and `imp link` read it too.
 - `IMP_HOP` is the Hop to meet linked devices at, as `host:port`.
 - Any variable a provider or MCP server names with `{env:NAME}`, such as `OPENROUTER_API_KEY`.
 - `IMP_LINK_LOG` is a file to add a line to for each event of the link (connected, disconnected, each
@@ -450,20 +453,16 @@ uses the system keychain, so a chat never asks for your password.
 
 ## Be your own server
 
-`imp serve` runs a Den (accounts and shared kits) and a Hop (the relay between linked devices) in one process.
+`imp serve` runs the Hop on this computer, so your devices can use it as their relay. The Hop keeps nothing on
+disk. The Den (the gallery) is a separate service, `den`, see `server/README.md`.
 
 ```sh
-imp serve                      # Den on http://localhost:8080, Hop on localhost:4677
+imp serve                      # the Hop on 127.0.0.1:4677
 imp serve --host 0.0.0.0       # let devices on your network reach it
-imp serve --den-port 9000 --hop-port 9001 --data-dir ./imp-data
-imp serve --den-only --public-url https://den.example.org   # the Den alone, with its public address
-imp serve --hop-only           # the Hop alone
+imp serve --hop-port 9001      # another port
 ```
 
-It prints where each one listens and what to type into the apps. Data is kept in the usual data folder for
-`imp` (or `--data-dir`, or `IMP_DATA_DIR`). The Den's secret is made the first time, kept in the file
-`den-secret` there with permissions only you can use, and is never printed. Press Ctrl+C to stop. The server
-programs in `server/den` and `server/hop` and the Docker image are separate and unchanged.
+It prints where it listens. Press Ctrl+C to stop.
 
 ## For developers
 

@@ -3,8 +3,8 @@ import ImpKit
 import SwiftUI
 
 /// The Tools panel: the MCP servers the Imp can use, as on the Mac. Its built-in tools live in the
-/// sections they belong to. "Add" sits in the section's header. Inside a server, "Add a header" is a plus in the header of its
-/// headers. No action is left alone under a list.
+/// sections they belong to. "Add" sits in the section's header. Inside a server, a plus in the headers' own header adds
+/// a header. No action is left alone under a list.
 struct PocketToolsPanel: View {
     @Bindable var draft: PocketDraft
     let proxy: ScrollViewProxy

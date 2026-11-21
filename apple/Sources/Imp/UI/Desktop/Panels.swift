@@ -127,7 +127,7 @@ final class Panels {
                            ?? app.prefs.imps.count + (app.visitors.firstIndex { $0.id == model.id } ?? 0))
         let seatHome = CGPoint(x: max(visible.minX + 8, visible.maxX - side - 28 - seat * (Self.baseSize + 16)), y: visible.minY + 20)
         guard let saved = model.profile.origin else { return seatHome }
-        // If the saved spot is off-screen now (monitor unplugged), the seat it is.
+        // If the saved spot is off-screen now (monitor unplugged), use the default seat instead.
         let rect = CGRect(origin: saved, size: CGSize(width: side, height: side))
         return NSScreen.screens.contains(where: { $0.visibleFrame.intersects(rect.insetBy(dx: side / 3, dy: side / 3)) }) ? saved : seatHome
     }

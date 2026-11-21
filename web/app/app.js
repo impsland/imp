@@ -1241,7 +1241,7 @@ function filming() {
 
 /**
  * Where the Imps wait in front of the camera: peeking in from the corners and the sides, half off the screen,
- * so they frame the shot. They can be carried anywhere over it; the photo has them where they are.
+ * so they frame the shot. They can be carried anywhere over it. The photo has them where they are.
  */
 function framingSpots(count) {
   const w = innerWidth;

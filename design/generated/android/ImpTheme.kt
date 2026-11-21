@@ -313,6 +313,16 @@ object ImpSizing {
     val thumbWaitHeight = 60.dp
     /** The strip along the bottom edge where a hiding Imp peeks. */
     val hiddenStrip = 28.dp
+    /** The camera's round shutter button. */
+    val shutter = 78.dp
+    /** How far the full-screen camera's top buttons and photo sit below the screen's edge, clear of the status bar and the camera cutout. */
+    val cameraTop = 48.dp
+    /** How far the full-screen camera's shutter and photo buttons sit above the screen's edge, clear of the home indicator. */
+    val cameraBottom = 32.dp
+    /** The side of a photo or video waiting to be sent under the message box, and the height of a sound or file. */
+    val attachmentChip = 64.dp
+    /** The widest a file's name gets in a chip under the message box. */
+    val attachmentName = 120.dp
 }
 
 /** Icon sizes (dp at the default font scale). */

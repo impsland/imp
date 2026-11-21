@@ -767,7 +767,7 @@ async fn an_imp_away_on_the_phone_messages_an_imp_of_a_third_device_through_the_
     assert!(turn.steps[0].starts_with("Thought for"), "{:?}", turn.steps);
     assert_eq!(turn.thoughts, Some(vec![0]));
 
-    // The first request offered imp_message, with Ghost to message; the second carried Ghost's answer.
+    // The first request offered imp_message, with Ghost to message. The second carried Ghost's answer.
     let bodies = seen.lock().unwrap().clone();
     assert_eq!(bodies.len(), 2, "{bodies:?}");
     let first: serde_json::Value = serde_json::from_str(&bodies[0]).unwrap();

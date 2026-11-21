@@ -197,7 +197,7 @@ pub struct DialRequest {
     pub card: LinkCard,
 }
 
-// An event carries an Imp's look, which now has its description. Outputs are handled at once, not stored.
+// Outputs are handled at once, not stored.
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Output {

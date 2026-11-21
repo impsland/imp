@@ -54,7 +54,7 @@ Running the iPhone snapshot tests needs the Simulator, so they run on a develope
 only checks that they compile.
 
 The playful camera (`testPlayfulCamera`, `testChatTakeAPhotoOpensTheImpCamera`) needs the phone's real camera and its permission
-prompt, so it only runs on a device; its geometry (`CameraGeometryTests`) runs with `swift test`.
+prompt, so it only runs on a device. Its geometry (`CameraGeometryTests`) runs with `swift test`.
 
 The UI tests (`apple/iOS/UITests`, scheme `ImpPhoneUITests`) drive the app on a real iPhone: they hatch Imps, set a
 Brain, change the look and the tools, go through Settings and keep a screenshot of every screen. They run in a sandbox

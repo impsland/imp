@@ -11,6 +11,18 @@ extension Shortcut {
     var summary: String { steps.map(\.shownSummary).joined(separator: " · ") }
 }
 
+extension Step.Target {
+    /// What the Open step's target is called, in the app's language.
+    var title: String {
+        switch self {
+        case .textBox: String(localized: "triggers.open.text_box")
+        case .listen: String(localized: "triggers.open.listen")
+        case .chat: String(localized: "triggers.open.chat")
+        case .settings: String(localized: "triggers.open.settings")
+        }
+    }
+}
+
 extension Step {
     /// One step in a few words, in the app's language, for lists ("Play an animation: Wiggle").
     /// `Step.summary` is the English one the model reads.
@@ -20,7 +32,7 @@ extension Step {
         case .ask, .play, .sleep, .wake: detail = text
         case .say: detail = text.isEmpty ? "" : "“\(text)”"
         case .follow: detail = followMode.title + (followMode.movesBody ? String(format: " %.1f×", followSpeed) : "")
-        case .open: detail = Step.Target(rawValue: text).map { String(localized: String.LocalizationValue("triggers.open.\($0.rawValue)")) } ?? text
+        case .open: detail = Step.Target(rawValue: text)?.title ?? text
         }
         if act == .ask, handsOverClipboard { detail += " (\(String(localized: "triggers.step.clipboard")))" }
         return detail.isEmpty ? act.title : "\(act.title): \(detail)"
@@ -319,17 +331,8 @@ struct ShortcutSheet: View {
             }
         case .open:
             let target = Binding(get: { s.wrappedValue.target ?? .chat }, set: { s.wrappedValue.value = $0.rawValue })
-            ImpSegmented("triggers.open", selection: target, options: Step.Target.allCases, title: { Self.title($0) },
+            ImpSegmented("triggers.open", selection: target, options: Step.Target.allCases, title: { $0.title },
                         symbol: { ["text_box": "character.cursor.ibeam", "listen": "mic", "chat": "bubble.left", "settings": "gearshape"][$0.rawValue] ?? "circle" })
-        }
-    }
-
-    static func title(_ t: Step.Target) -> String {
-        switch t {
-        case .textBox: String(localized: "triggers.open.text_box")
-        case .listen: String(localized: "triggers.open.listen")
-        case .chat: String(localized: "triggers.open.chat")
-        case .settings: String(localized: "triggers.open.settings")
         }
     }
 

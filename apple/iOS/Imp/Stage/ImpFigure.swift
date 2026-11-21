@@ -140,7 +140,7 @@ struct LiveImp: View {
 }
 
 extension Mood {
-    /// A mood the Mac named (`LinkUpdate.mood`), nil for one this build doesn't know.
+    /// A mood the Mac named (`LinkMessage.mood`), nil for one this build doesn't know.
     init?(link name: String) { self.init(rawValue: name) }
 }
 

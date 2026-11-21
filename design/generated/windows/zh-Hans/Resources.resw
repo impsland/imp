@@ -113,6 +113,7 @@
   <data name="devices.edge.travelling" xml:space="preserve"><value>往来中</value><comment>Title of the chips of the Imps going across a line.</comment></data>
   <data name="devices.elsewhere.title" xml:space="preserve"><value>其他地方</value><comment>Title of the card that lists this iPhone's Imps held by devices it is not linked with.</comment></data>
   <data name="devices.empty" xml:space="preserve"><value>还没有设备。</value><comment>Empty state of the list of linked devices.</comment></data>
+  <data name="devices.fit" xml:space="preserve"><value>显示全部</value><comment>Tooltip of the button in the corner of the Devices map that zooms so every device fits.</comment></data>
   <data name="devices.forget.named" xml:space="preserve"><value>忘记 {name}…</value><comment>Button that forgets one linked device, with its name.</comment></data>
   <data name="devices.forget.one" xml:space="preserve"><value>忘记此设备…</value><comment>Button: forget the selected device.</comment></data>
   <data name="devices.hop.add" xml:space="preserve"><value>添加 Hop</value><comment>The Hop pill under the code in the Link sheet when no Hop is set. It opens its settings.</comment></data>
@@ -174,6 +175,8 @@
   <data name="devices.unknown_device" xml:space="preserve"><value>未与这台 Mac 链接的设备</value><comment>A device this Mac is not linked with.</comment></data>
   <data name="devices.visitor.can_use" xml:space="preserve"><value>它的设备在这里可用</value><comment>Title of the read-only plugs of the device an Imp comes from.</comment></data>
   <data name="devices.visitor.send_home" xml:space="preserve"><value>送回家</value><comment>Button: send a visiting Imp home.</comment></data>
+  <data name="devices.zoom_in" xml:space="preserve"><value>放大</value><comment>Tooltip of the plus button in the corner of the Devices map.</comment></data>
+  <data name="devices.zoom_out" xml:space="preserve"><value>缩小</value><comment>Tooltip of the minus button in the corner of the Devices map.</comment></data>
   <data name="error.brain.key" xml:space="preserve"><value>{service} 不接受这个密钥。请检查后重试。</value><comment>The key was refused.</comment></data>
   <data name="error.brain.local" xml:space="preserve"><value>没有模型回应。请确认它正在运行，然后重试。</value><comment>The local model server did not answer.</comment></data>
   <data name="error.brain.model" xml:space="preserve"><value>{service} 没有模型 {model}。请换一个。</value><comment>The model does not exist.</comment></data>
@@ -287,7 +290,7 @@
   <data name="home.corner.devices.away" xml:space="preserve"><value>有已链接的设备不在线</value><comment>Screen reader value of the Devices corner button when a linked device cannot be reached. A warning mark shows on the button.</comment></data>
   <data name="home.corner.devices.connected.other" xml:space="preserve"><value>已连接 {count} 台</value><comment>Screen reader value of the Devices corner button: how many linked devices are connected now. A dot on the button shows when any is.</comment></data>
   <data name="home.corner.show_hidden" xml:space="preserve"><value>已隐藏</value><comment>Help and screen reader name of the corner button that brings every hidden Imp back. The number of hidden Imps is shown on the button.</comment></data>
-  <data name="home.empty.link" xml:space="preserve"><value>连接设备</value><comment>Button on the empty main screen: link another device.</comment></data>
+  <data name="home.empty.link" xml:space="preserve"><value>关联设备</value><comment>Button on the empty main screen: link another device.</comment></data>
   <data name="home.empty.link.help" xml:space="preserve"><value>连接设备，并从它带来一个 Imp</value><comment>Tooltip of the link button on the empty main screen.</comment></data>
   <data name="home.empty.new_imp" xml:space="preserve"><value>孵化</value><comment>Button on the empty main screen: hatch the first Imp.</comment></data>
   <data name="home.empty.new_imp.help" xml:space="preserve"><value>孵化一个 Imp，并给它一个大脑</value><comment>Tooltip of the hatch button on the empty main screen.</comment></data>
@@ -297,8 +300,6 @@
   <data name="home.hidden.hint" xml:space="preserve"><value>隐藏的 Imp 会不时探出头来。点击它，它就会回来。</value><comment>Screen reader hint for the hidden Imps element.</comment></data>
   <data name="home.hidden.peek" xml:space="preserve"><value>{name} 正从地面探出头来。</value><comment>Announced to screen readers when a hidden Imp peeks.</comment></data>
   <data name="home.hidden.title" xml:space="preserve"><value>已隐藏（{count}）</value><comment>The element on the floor that holds hidden Imps. The number is how many.</comment></data>
-  <data name="home.tray.quit" xml:space="preserve"><value>退出</value><comment>Status icon menu item that quits the app.</comment></data>
-  <data name="home.tray.show" xml:space="preserve"><value>打开</value><comment>Status icon menu item that shows the window.</comment></data>
   <data name="imp.a11y.call_home" xml:space="preserve"><value>把 {name} 送回家</value><comment>Screen reader action for an Imp away on another device.</comment></data>
   <data name="imp.a11y.hide" xml:space="preserve"><value>隐藏 {name}</value><comment>Screen reader action.</comment></data>
   <data name="imp.a11y.label" xml:space="preserve"><value>{name}，{state}</value><comment>Screen reader label of an Imp: its name and its state.</comment></data>

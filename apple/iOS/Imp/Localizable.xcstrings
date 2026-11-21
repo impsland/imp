@@ -5751,7 +5751,20 @@
       }
     },
     "Check" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprobar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查"
+          }
+        }
+      }
     },
     "Photo or video" : {
       "extractionState" : "manual",
@@ -9026,6 +9039,30 @@
         }
       }
     },
+    "devices.fit" : {
+      "comment" : "Tooltip of the button in the corner of the Devices map that zooms so every device fits.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show all"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver todo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示全部"
+          }
+        }
+      }
+    },
     "devices.forget.named" : {
       "comment" : "Button that forgets one linked device, with its name.",
       "extractionState" : "manual",
@@ -9183,7 +9220,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desactivado"
+            "value" : "Apagado"
           }
         },
         "zh-Hans" : {
@@ -9759,7 +9796,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No disponible"
+            "value" : "Ausente"
           }
         },
         "zh-Hans" : {
@@ -10486,6 +10523,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "送回家"
+          }
+        }
+      }
+    },
+    "devices.zoom_in" : {
+      "comment" : "Tooltip of the plus button in the corner of the Devices map.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom in"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acercar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放大"
+          }
+        }
+      }
+    },
+    "devices.zoom_out" : {
+      "comment" : "Tooltip of the minus button in the corner of the Devices map.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom out"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alejar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缩小"
           }
         }
       }
@@ -13341,7 +13426,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接设备"
+            "value" : "关联设备"
           }
         }
       }
@@ -13558,54 +13643,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已隐藏（%1$lld）"
-          }
-        }
-      }
-    },
-    "home.tray.quit" : {
-      "comment" : "Status icon menu item that quits the app.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quit"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salir"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "退出"
-          }
-        }
-      }
-    },
-    "home.tray.show" : {
-      "comment" : "Status icon menu item that shows the window.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开"
           }
         }
       }
@@ -19983,7 +20020,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enlazar un dispositivo"
+            "value" : "Vincular dispositivo"
           }
         },
         "zh-Hans" : {

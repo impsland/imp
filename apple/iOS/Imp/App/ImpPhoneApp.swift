@@ -38,6 +38,7 @@ struct ImpPhoneApp: App {
     var body: some Scene {
         WindowGroup {
             RootView(hub: hub, pocket: pocket)
+                .energyScope()
                 .phoneAppearance()
                 .tint(Tone.accent)
                 .onOpenURL { url in
@@ -88,15 +89,14 @@ struct RootView: View {
         Binding(get: { router.route?.restsAtHalf == false ? .large : detent }, set: { detent = $0 })
     }
 
-    /// The sheet as SwiftUI presents it. Swiping it away goes straight back to the room.
-    /// Whether the sheet is up. There is one sheet, whatever it shows: it stays up while it goes from the chat to
-    /// the settings or from one Imp to another, and only its content and its height change. Swiping it away goes
-    /// straight back to the room.
     /// Who is here, for the sheets: an Imp's sheet closes once it is somewhere else.
     private var presence: PhonePresence {
         PhonePresence(room: PhoneStage.everyone(hub, pocket).map(\.imp.id), own: Set(pocket.imps.map(\.id)), away: hub.away)
     }
 
+    /// Whether the sheet is up. There is one sheet, whatever it shows: it stays up while it goes from the chat to
+    /// the settings or from one Imp to another, and only its content and its height change. Swiping it away goes
+    /// straight back to the room.
     private var sheetUp: Binding<Bool> {
         Binding(get: { router.route != nil }, set: { if !$0 { router.dismissed() } })
     }

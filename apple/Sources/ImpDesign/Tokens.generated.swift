@@ -602,6 +602,51 @@ public enum Sizing {
         28
         #endif
     }
+
+    /// The camera's round shutter button.
+    public static var shutter: CGFloat {
+        #if os(iOS)
+        78
+        #else
+        46
+        #endif
+    }
+
+    /// How far the full-screen camera's top buttons and photo sit below the screen's edge, clear of the status bar and the camera cutout.
+    public static var cameraTop: CGFloat {
+        #if os(iOS)
+        60
+        #else
+        16
+        #endif
+    }
+
+    /// How far the full-screen camera's shutter and photo buttons sit above the screen's edge, clear of the home indicator.
+    public static var cameraBottom: CGFloat {
+        #if os(iOS)
+        44
+        #else
+        16
+        #endif
+    }
+
+    /// The side of a photo or video waiting to be sent under the message box, and the height of a sound or file.
+    public static var attachmentChip: CGFloat {
+        #if os(iOS)
+        64
+        #else
+        56
+        #endif
+    }
+
+    /// The widest a file's name gets in a chip under the message box.
+    public static var attachmentName: CGFloat {
+        #if os(iOS)
+        120
+        #else
+        120
+        #endif
+    }
 }
 
 /// The type scale, as named styles. `Typeface` turns them into fonts.

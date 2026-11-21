@@ -32,8 +32,6 @@ struct SpeechBubble: View {
         }
     }
 
-    /// About how big a bubble comes out, to keep bubbles from landing on each other (the tail's
-    /// reach included). The real size is up to the layout.
     /// How far the tail reaches out of the bubble (`BubbleShape.length`).
     static let tailLength: CGFloat = 12
 

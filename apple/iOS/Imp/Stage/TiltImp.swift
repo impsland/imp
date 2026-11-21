@@ -162,7 +162,7 @@ final class TiltSource {
     }
 }
 
-/// How the sideways pull of a tilt springs in and back (the same on the first screen and on the home screen).
+/// How the sideways pull of a tilt springs in and back (the same on the first screen and in the room).
 enum TiltSpring {
     static let slideStiffness = 40.0
     static let slideDamping = 7.0

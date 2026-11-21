@@ -7,7 +7,7 @@ import ImpDesign
 @MainActor @Observable
 final class BubbleLayout {
     var tailX: CGFloat = 0
-    /// Reply text taller than this is cut short (collapsed, fading out) or scrolls (expanded).
+    /// Reply text taller than this is cut short (collapsed) or scrolls (expanded).
     /// `nil` shows it all.
     var textLimit: CGFloat?
     /// The user chose to read a long reply in full: a wider card with scrolling text.
@@ -75,7 +75,7 @@ enum BubbleMetrics {
     static let trailSmall: CGFloat = 6
     static let trailHeight: CGFloat = 19
     /// An attached picture's thumbnail.
-    static let thumb: CGFloat = 56
+    static let thumb = Sizing.attachmentChip
     /// The voice level meter.
     static let meterWidth: CGFloat = 22
     /// A list marker's minimum width in the markdown.

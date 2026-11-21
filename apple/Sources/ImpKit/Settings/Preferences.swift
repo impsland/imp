@@ -84,7 +84,8 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { bubbleLook = newValue }
     }
     private var bubbleLook: BubbleAppearance?
-    /// How long a model request may take and how it is retried (see `RequestLimits`). Stored only once set: unset reads as the default.
+    /// How long a model request may take and how it is retried (see `RequestLimits`). Stored only
+    /// once set: unset reads as the default.
     public var requests: RequestLimits {
         get { requestLimits ?? .standard }
         set { requestLimits = newValue.clamped }
@@ -103,7 +104,8 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { voice = newValue }
     }
     private var voice: VoiceStyle?
-    /// The most lines the bubble's text box grows to before it scrolls (2 to 12). Stored only once set: unset reads as the default.
+    /// The most lines the bubble's text box grows to before it scrolls (2 to 12). Stored only once
+    /// set: unset reads as the default.
     public var inputMaxLines: Int {
         get { BubbleSizing.clampedLines(inputLines ?? BubbleSizing.defaultInputLines) }
         set { inputLines = BubbleSizing.clampedLines(newValue) }
@@ -138,7 +140,8 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         set { threading = newValue }
     }
     private var threading: TalkThreading?
-    /// Whether an Imp waits for the answer of an Imp it messages (see `TalkWaiting`). Stored only once set: unset reads as the default.
+    /// Whether an Imp waits for the answer of an Imp it messages (see `TalkWaiting`). Stored only
+    /// once set: unset reads as the default.
     public var talkWaiting: TalkWaiting {
         get { waiting ?? .decides }
         set { waiting = newValue }
@@ -189,7 +192,7 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     public init() {}
 
     /// Keeps the Brain the first run checked: its service (one already there for the same address is reused),
-    /// its model, as the default Brain. `imp` follows the default Brain from now on.
+    /// its model, as the default Brain. `imp` follows the default Brain.
     /// Returns the service. The key is not kept here.
     @discardableResult
     public mutating func adopt(_ brain: FirstRunBrain, for imp: UUID) -> UUID {
@@ -209,7 +212,7 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     }
 
     /// Removes a service everywhere: the default brain and every Imp's own brain. An Imp that used it
-    /// follows the default brain from now on, with the default service's model, not the one it had
+    /// follows the default brain, with the default service's model, not the one it had
     /// picked for the service that's gone. With no service left it sleeps until it gets one.
     public mutating func removeService(_ id: UUID) {
         let wasDefault = ai.brain.service == id

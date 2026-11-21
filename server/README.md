@@ -47,7 +47,7 @@ cargo run -p imp-hop --bin hop
 ```
 
 `imp serve` (from `chat`) runs only the Hop, for a computer that wants to be its own relay. It listens on
-`127.0.0.1:4677`; `--host 0.0.0.0` lets devices on the network use it and `--hop-port` changes the port. It keeps
+`127.0.0.1:4677`. `--host 0.0.0.0` lets devices on the network use it, and `--hop-port` changes the port. It keeps
 no data. The Den is not part of it: run `den` (above), the Docker image or Compose.
 
 Check with `cargo fmt --all`, `cargo clippy --workspace --all-targets --locked -- -D warnings` and

@@ -294,7 +294,7 @@ button.chat-title { cursor: pointer; }
 
 /* ---------------------------------------------------------------- connecting: a camera and a code */
 
-/* As wide as the screen allows, up to a comfortable size; the camera's square shrinks on a short screen (a
+/* As wide as the screen allows, up to a comfortable size. The camera's square shrinks on a short screen (a
    phone on its side) so the code box always shows. On a phone it is a sheet from the bottom. */
 .sheet {
   width: clamp(280px, 34vw, 400px); max-width: calc(100vw - 32px); max-height: calc(100dvh - 32px);

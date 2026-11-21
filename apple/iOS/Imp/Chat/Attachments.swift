@@ -7,7 +7,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 /// The photos, sounds, videos and files waiting in the chat box to go with the next message (at most
-/// `MediaFile.maxCount`, each at most 25 MiB). The box shows them as chips; sending hands them to the Imp.
+/// `MediaFile.maxCount`, each at most 25 MiB). The box shows them as chips. Sending hands them to the Imp.
 @MainActor
 @Observable
 final class AttachmentDraft {
@@ -130,14 +130,14 @@ struct AttachmentChip: View {
     let file: MediaFile
     let remove: () -> Void
     @State private var still: UIImage?
-    private let side: CGFloat = 64
+    private let side = Sizing.attachmentChip
 
     var body: some View {
         content
             .overlay(alignment: .topTrailing) {
                 Button(action: remove) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 20))
+                        .font(.icon(.big))
                         .symbolRenderingMode(.palette)
                         .foregroundStyle(Tone.onAccent, Tone.accent)
                         .padding(Spacing.hairline)
@@ -165,9 +165,9 @@ struct AttachmentChip: View {
                 }
                 if file.kind == .video {
                     Image(systemName: "play.fill")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.icon(.medium, weight: .bold))
                         .foregroundStyle(Tone.paper)
-                        .frame(width: 24, height: 24)
+                        .frame(width: Sizing.mark, height: Sizing.mark)
                         .background(Circle().fill(Tone.scrim))
                 }
             }
@@ -183,7 +183,7 @@ struct AttachmentChip: View {
                     .foregroundStyle(Tone.text)
                     .lineLimit(1)
                     .truncationMode(.middle)
-                    .frame(maxWidth: 120)
+                    .frame(maxWidth: Sizing.attachmentName)
             }
             .padding(.horizontal, Spacing.cozy)
             .frame(height: side)
@@ -245,10 +245,10 @@ struct RecordingRow: View {
             ForEach(0..<5, id: \.self) { i in
                 let shape = [0.6, 0.9, 1.0, 0.8, 0.5][i]
                 Capsule().fill(Tone.accent)
-                    .frame(width: 3, height: 4 + 16 * level * shape)
+                    .frame(width: Sizing.dot / 2, height: Spacing.tight + (Sizing.mark - Spacing.tight) * level * shape)
             }
         }
-        .frame(height: 20)
+        .frame(height: Sizing.mark)
         .impAnimation(ImpDesign.Motion.quick, value: level)
         .accessibilityHidden(true)
     }

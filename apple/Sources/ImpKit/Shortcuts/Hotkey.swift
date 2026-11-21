@@ -20,7 +20,7 @@ public struct Hotkey: Codable, Hashable, Sendable {
     public static let shift = UInt32(shiftKey)
 
     /// Function keys may be bound without modifiers.
-    /// Anything else needs at least one, or we'd steal ordinary typing.
+    /// Any other key needs Control, Option or Command, or it would take ordinary typing.
     public var isValidGlobalShortcut: Bool {
         modifiers & (Self.command | Self.option | Self.control) != 0 || KeyNames.isFunctionKey(keyCode)
     }

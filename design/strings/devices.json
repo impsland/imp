@@ -301,7 +301,7 @@
   "devices.hop.state.off": {
     "note": "The Hop's state when none is set.",
     "en": "Off",
-    "es": "Desactivado",
+    "es": "Apagado",
     "zh-Hans": "已关闭"
   },
   "devices.hop.state.needs_address": {
@@ -423,5 +423,23 @@
     "en": "Link this device directly, so it no longer depends on the other one.",
     "es": "Enlaza este dispositivo directamente, para que no dependa del otro.",
     "zh-Hans": "直接关联这台设备，不再经由另一台设备。"
+  },
+  "devices.zoom_in": {
+    "note": "Tooltip of the plus button in the corner of the Devices map.",
+    "en": "Zoom in",
+    "es": "Acercar",
+    "zh-Hans": "放大"
+  },
+  "devices.zoom_out": {
+    "note": "Tooltip of the minus button in the corner of the Devices map.",
+    "en": "Zoom out",
+    "es": "Alejar",
+    "zh-Hans": "缩小"
+  },
+  "devices.fit": {
+    "note": "Tooltip of the button in the corner of the Devices map that zooms so every device fits.",
+    "en": "Show all",
+    "es": "Ver todo",
+    "zh-Hans": "显示全部"
   }
 }

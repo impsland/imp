@@ -1045,7 +1045,7 @@
   "devices.reach.away": {
     "note": "Help on a linked device: not reachable now.",
     "en": "Away",
-    "es": "No disponible",
+    "es": "Ausente",
     "zh-Hans": "不在线"
   },
   "sharing.import": {

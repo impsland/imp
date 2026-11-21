@@ -4,29 +4,6 @@
     "" : {
 
     },
-    "%@ (now %@)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ (now %2$@)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ (ahora %@)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@（现为 %@）"
-          }
-        }
-      }
-    },
     "%@ asks" : {
       "localizations" : {
         "es" : {
@@ -139,6 +116,22 @@
         }
       }
     },
+    "%@ didn't take them. It may be away, or a file may be empty or over 25 MB." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no los recibió. Puede no estar, o un archivo está vacío o pasa de 25 MB."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 没有收到。它可能不在，或者有文件为空或超过 25 MB。"
+          }
+        }
+      }
+    },
     "%@ didn't wait for an answer, so its Imp didn't move in." : {
       "localizations" : {
         "es" : {
@@ -209,29 +202,6 @@
         }
       }
     },
-    "%@ flies off the screen onto %@. Or throw it hard at the side of the screen." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ flies off the screen onto %2$@. Or throw it hard at the side of the screen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ sale volando de la pantalla hacia %2$@. O lánzalo con fuerza contra el borde de la pantalla."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ 会飞出屏幕，落到 %2$@ 上。也可以用力把它扔向屏幕边缘。"
-          }
-        }
-      }
-    },
     "%@ gets these tools: %@" : {
       "localizations" : {
         "en" : {
@@ -250,23 +220,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ 获得这些工具：%2$@"
-          }
-        }
-      }
-    },
-    "%@ goes back into the Imps' window, and its triggers rest." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ vuelve a la ventana de los Imps y sus disparadores descansan."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 回到 Imp 窗口，它的触发器也会暂停。"
           }
         }
       }
@@ -315,39 +268,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 没有地方容纳我了。"
-          }
-        }
-      }
-    },
-    "%@ hides until you show it again from the menu bar (Show) or click it in the Imps' window. Its triggers rest meanwhile." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ se oculta hasta que lo muestres de nuevo desde la barra de menús (Mostrar) o lo pulses en la ventana de los Imps. Mientras tanto, sus disparadores descansan."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 会藏起来，直到你在菜单栏中点“显示”或在 Imp 窗口中点它。在此期间，它的触发器暂停。"
-          }
-        }
-      }
-    },
-    "%@ hides until you show it again from the menu bar (Show). It keeps visiting meanwhile." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ se oculta hasta que lo muestres de nuevo desde la barra de menús (Mostrar). Mientras tanto, sigue de visita."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 会藏起来，直到你在菜单栏中点“显示”。在此期间，它仍在这里做客。"
           }
         }
       }
@@ -642,29 +562,6 @@
         }
       }
     },
-    "%@ on %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ on %2$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ en %2$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ 在 %2$@"
-          }
-        }
-      }
-    },
     "%@ only" : {
       "localizations" : {
         "es" : {
@@ -823,16 +720,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@，来自 %2$@ 的访客"
-          }
-        }
-      }
-    },
-    "%@: %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@: %2$@"
           }
         }
       }
@@ -1175,53 +1062,6 @@
         }
       }
     },
-    "%lld clicks" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld click"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld clicks"
-                }
-              }
-            }
-          }
-        },
-        "es" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld clic"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld clics"
-                }
-              }
-            }
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 次点按"
-          }
-        }
-      }
-    },
     "%lld clicks on the Imp" : {
       "localizations" : {
         "es" : {
@@ -1422,23 +1262,6 @@
         }
       }
     },
-    "%lld installs" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld instalaciones"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 次安装"
-          }
-        }
-      }
-    },
     "%lld messages" : {
       "localizations" : {
         "en" : {
@@ -1547,6 +1370,22 @@
         }
       }
     },
+    "%lld more waiting" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld más en espera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还有 %lld 个在等"
+          }
+        }
+      }
+    },
     "%lld nods" : {
       "localizations" : {
         "en" : {
@@ -1589,23 +1428,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 下"
-          }
-        }
-      }
-    },
-    "%lld off" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld desactivadas"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已关闭 %lld 个"
           }
         }
       }
@@ -1904,40 +1726,6 @@
         }
       }
     },
-    "%lldM" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lldM"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lldM"
-          }
-        }
-      }
-    },
-    "%lldk" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lldk"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lldk"
-          }
-        }
-      }
-    },
     "**Open** Imp on your other device" : {
       "localizations" : {
         "es" : {
@@ -1982,6 +1770,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "把一个 Imp **扔出**屏幕"
+          }
+        }
+      }
+    },
+    "+%lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld"
           }
         }
       }
@@ -2098,23 +1902,6 @@
         }
       }
     },
-    "A chat this long gets one suggestion to recap or start anew. Nothing is cut. About four characters per token." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un chat así de largo recibe una sugerencia para resumir o empezar de nuevo. No se corta nada. Unos cuatro caracteres por token."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "聊天达到这个长度时会建议一次摘要或重新开始。不会删减任何内容。每个 token 约四个字符。"
-          }
-        }
-      }
-    },
     "A device" : {
       "localizations" : {
         "es" : {
@@ -2147,23 +1934,6 @@
         }
       }
     },
-    "A hop as the beat starts (it takes 0.75 s)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un saltito al empezar el paso (dura 0,75 s)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "节拍开始时蹦一下（需要 0.75 秒）"
-          }
-        }
-      }
-    },
     "A kit's address must start with https://." : {
       "localizations" : {
         "es" : {
@@ -2192,23 +1962,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "链接"
-          }
-        }
-      }
-    },
-    "A message within this time continues the chat. A later one starts a new one." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un mensaje dentro de este tiempo sigue el chat. Uno más tarde empieza otro."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在此时间内的消息会接着聊天，之后的消息会开始新的聊天。"
           }
         }
       }
@@ -2257,40 +2010,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一张图片"
-          }
-        }
-      }
-    },
-    "A request still running after this long ends with a message." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una petición que siga en marcha tras este tiempo termina con un mensaje."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "超过这个时间仍在运行的请求会以一条消息结束。"
-          }
-        }
-      }
-    },
-    "A short wave hello" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un saludo corto con la mano"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一个简短的挥手问候"
           }
         }
       }
@@ -2355,6 +2074,22 @@
         }
       }
     },
+    "A sound" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un sonido"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一段声音"
+          }
+        }
+      }
+    },
     "A trigger can run tools and Mac commands. Read it first." : {
       "localizations" : {
         "es" : {
@@ -2367,6 +2102,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "触发器可以运行工具和 Mac 命令。请先阅读。"
+          }
+        }
+      }
+    },
+    "A video" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un vídeo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一段视频"
           }
         }
       }
@@ -2591,6 +2342,22 @@
         }
       }
     },
+    "Add a photo, sound or video" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir foto, sonido o vídeo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加照片、声音或视频"
+          }
+        }
+      }
+    },
     "Add a service" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2604,40 +2371,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加服务"
-          }
-        }
-      }
-    },
-    "Add a trigger" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añadir disparador"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "添加触发器"
-          }
-        }
-      }
-    },
-    "Add an extra tool" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añadir herramienta"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "添加额外工具"
           }
         }
       }
@@ -2675,40 +2408,6 @@
         }
       }
     },
-    "Adds Imps, triggers or tools from a kit. You choose what first." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añade Imps, disparadores o herramientas de un kit. Tú eliges qué antes."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "从套件添加 Imp、触发器或工具。先由你选择。"
-          }
-        }
-      }
-    },
-    "Adds and removes its own triggers and extra tools when you ask." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añade y quita sus propios disparadores y herramientas extra cuando se lo pides."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "按你的要求添加或移除自己的触发器和额外工具。"
-          }
-        }
-      }
-    },
     "Again and again, every few minutes" : {
       "localizations" : {
         "es" : {
@@ -2737,6 +2436,44 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "所有 Imp"
+          }
+        }
+      }
+    },
+    "Allow once" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo esta vez"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许一次"
+          }
+        }
+      }
+    },
+    "Allow once: %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Allow once: %1$@ %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir una vez: %@ %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许一次：%@ %@"
           }
         }
       }
@@ -2773,25 +2510,7 @@
         }
       }
     },
-    "Also sends the tools %@ used and their results. Off is smaller and cheaper." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "También envía las herramientas que usó %@ y sus resultados. Apagado es más pequeño y barato."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "同时发送 %@ 使用过的工具及其结果。关闭更小更省。"
-          }
-        }
-      }
-    },
     "Always" : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2803,6 +2522,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "始终"
+          }
+        }
+      }
+    },
+    "Always allow: %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Always allow: %1$@ %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir siempre: %@ %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "始终允许：%@ %@"
           }
         }
       }
@@ -2919,23 +2660,6 @@
         }
       }
     },
-    "Animation" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Animación"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "动画"
-          }
-        }
-      }
-    },
     "Animation %lld" : {
       "localizations" : {
         "es" : {
@@ -3038,23 +2762,6 @@
         }
       }
     },
-    "Answers" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Respuestas"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "回答"
-          }
-        }
-      }
-    },
     "Any OpenAI-compatible API. The key stays on this Mac." : {
       "localizations" : {
         "es" : {
@@ -3067,40 +2774,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "任何兼容 OpenAI 的 API。密钥只保存在这台 Mac 上。"
-          }
-        }
-      }
-    },
-    "Any OpenAI-compatible API. The star marks the one new Imps use." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cualquier API compatible con OpenAI. La estrella marca la que usan los Imps nuevos."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "任何兼容 OpenAI 的 API。星标表示新 Imp 使用的那个。"
-          }
-        }
-      }
-    },
-    "Any app" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cualquier app"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "任意 App"
           }
         }
       }
@@ -3169,23 +2842,6 @@
         }
       }
     },
-    "Anyone can add it. Chats, memory and keys are never included." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cualquiera puede añadirlo. Los chats, la memoria y las claves nunca se incluyen."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "任何人都可以添加。聊天、记忆和密钥绝不包含在内。"
-          }
-        }
-      }
-    },
     "App in front" : {
       "localizations" : {
         "es" : {
@@ -3198,23 +2854,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最前面的 App"
-          }
-        }
-      }
-    },
-    "Appearance" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apariencia"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "外观"
           }
         }
       }
@@ -3331,6 +2970,38 @@
         }
       }
     },
+    "Attach the recording" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adjuntar la grabación"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附上这段录音"
+          }
+        }
+      }
+    },
+    "Attached file" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivo adjunto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附带的文件"
+          }
+        }
+      }
+    },
     "Attached picture" : {
       "localizations" : {
         "es" : {
@@ -3343,6 +3014,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "附带的图片"
+          }
+        }
+      }
+    },
+    "Attached sound" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonido adjunto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附带的声音"
+          }
+        }
+      }
+    },
+    "Attached video" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vídeo adjunto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附带的视频"
           }
         }
       }
@@ -3363,23 +3066,6 @@
         }
       }
     },
-    "Audio look" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aspecto del audio"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "音频外观"
-          }
-        }
-      }
-    },
     "Auto" : {
       "localizations" : {
         "es" : {
@@ -3392,23 +3078,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "自动"
-          }
-        }
-      }
-    },
-    "Autoplay media" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Autorreproducir"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自动播放媒体"
           }
         }
       }
@@ -3441,23 +3110,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不在"
-          }
-        }
-      }
-    },
-    "Back" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Atrás"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "返回"
           }
         }
       }
@@ -3587,23 +3239,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "地址无效。"
-          }
-        }
-      }
-    },
-    "Battery" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Batería"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "电池"
           }
         }
       }
@@ -3748,23 +3383,6 @@
         }
       }
     },
-    "Between Imps" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Entre Imps"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp 之间"
-          }
-        }
-      }
-    },
     "Big" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3794,23 +3412,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在其上方晃动指针"
-          }
-        }
-      }
-    },
-    "Body language" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lenguaje corporal"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "肢体语言"
           }
         }
       }
@@ -3944,23 +3545,6 @@
         }
       }
     },
-    "Brows" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cejas"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "眉毛"
-          }
-        }
-      }
-    },
     "Browser" : {
       "localizations" : {
         "es" : {
@@ -4089,36 +3673,18 @@
         }
       }
     },
-    "Cancel" : {
-      "extractionState" : "stale",
+    "Cancel the recording" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cancelar"
+            "value" : "Cancelar la grabación"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "取消"
-          }
-        }
-      }
-    },
-    "Carry it" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Llevarlo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "抱起来"
+            "value" : "取消这段录音"
           }
         }
       }
@@ -4155,23 +3721,6 @@
         }
       }
     },
-    "Change its character" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambiar su carácter"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "改变它的性格"
-          }
-        }
-      }
-    },
     "Changed" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4201,23 +3750,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "改变自己的性格外观，以及 Imp 身后的背景。"
-          }
-        }
-      }
-    },
-    "Changes its own character." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambia su propio carácter."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "改变自己的性格外观。"
           }
         }
       }
@@ -4302,23 +3834,6 @@
         }
       }
     },
-    "Chat size" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tamaño del chat"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "对话大小"
-          }
-        }
-      }
-    },
     "Chat with %@: everything you said, and keep talking" : {
       "localizations" : {
         "es" : {
@@ -4347,23 +3862,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "对话"
-          }
-        }
-      }
-    },
-    "Check what happened" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Comprobar qué pasó"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "查看发生了什么"
           }
         }
       }
@@ -4400,36 +3898,18 @@
         }
       }
     },
-    "Cheeks" : {
-      "extractionState" : "stale",
+    "Choose a file…" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mejillas"
+            "value" : "Elegir archivo…"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "脸颊"
-          }
-        }
-      }
-    },
-    "Choose" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elegir"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选取"
+            "value" : "选择文件…"
           }
         }
       }
@@ -4478,6 +3958,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择文件…"
+          }
+        }
+      }
+    },
+    "Choose photos, sounds or videos to send" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige fotos, sonidos o vídeos para enviar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择要发送的照片、声音或视频"
           }
         }
       }
@@ -4542,23 +4038,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "用指针绕它画圈"
-          }
-        }
-      }
-    },
-    "Clear" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quitar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "清除"
           }
         }
       }
@@ -4643,23 +4122,6 @@
         }
       }
     },
-    "Click, type and scroll" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clic, escribir y desplazar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "点击、输入和滚动"
-          }
-        }
-      }
-    },
     "Clicking" : {
       "localizations" : {
         "es" : {
@@ -4688,23 +4150,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在点按“%@”"
-          }
-        }
-      }
-    },
-    "Clicks go to the Imp you click and everything else to the one you talked to last" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los clics van al Imp que pulses y todo lo demás al último con el que hablaste"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "点按发给被点按的 Imp，其他发给你最后交谈的 Imp"
           }
         }
       }
@@ -4741,23 +4186,6 @@
         }
       }
     },
-    "Coder" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programador"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "程序员"
-          }
-        }
-      }
-    },
     "Colour" : {
       "localizations" : {
         "es" : {
@@ -4770,40 +4198,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "颜色"
-          }
-        }
-      }
-    },
-    "Come back after a break" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Volver tras una pausa"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "休息后回来"
-          }
-        }
-      }
-    },
-    "Comes back" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vuelve"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "回来"
           }
         }
       }
@@ -5000,23 +4394,6 @@
         }
       }
     },
-    "Continue the latest chat or start a new one. The Imp decides lets the sender choose." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seguir el último chat o empezar otro. «El Imp decide» deja elegir a quien envía."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "继续最近的聊天或开始新的聊天。“由 Imp 决定”让发送方选择。"
-          }
-        }
-      }
-    },
     "Controls your Mac" : {
       "localizations" : {
         "es" : {
@@ -5029,23 +4406,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "控制你的 Mac"
-          }
-        }
-      }
-    },
-    "Conversations" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conversaciones"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "对话"
           }
         }
       }
@@ -5126,22 +4486,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "拷贝上一条回复"
-          }
-        }
-      }
-    },
-    "Copy Link" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Copiar enlace"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "拷贝链接"
           }
         }
       }
@@ -5290,36 +4634,18 @@
         }
       }
     },
-    "Counted from the end of an answer. It stays while you hover it or media plays." : {
-      "extractionState" : "stale",
+    "Couldn't send the files" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se cuenta desde el final de una respuesta. Se queda mientras pasas el puntero o suena algo."
+            "value" : "No se enviaron los archivos"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "从回答结束时开始计算。指针悬停或媒体播放时会保留。"
-          }
-        }
-      }
-    },
-    "Cross" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enfadado"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "怒"
+            "value" : "无法发送这些文件"
           }
         }
       }
@@ -5628,6 +4954,44 @@
         }
       }
     },
+    "Deny" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denegar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拒绝"
+          }
+        }
+      }
+    },
+    "Deny: %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Deny: %1$@ %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denegar: %@ %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拒绝：%@ %@"
+          }
+        }
+      }
+    },
     "Details" : {
       "localizations" : {
         "es" : {
@@ -5692,19 +5056,18 @@
         }
       }
     },
-    "Do" : {
-      "extractionState" : "stale",
+    "Do not let it" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hacer"
+            "value" : "No dejarle"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "执行"
+            "value" : "不让它做"
           }
         }
       }
@@ -5758,23 +5121,6 @@
         }
       }
     },
-    "Downloads it and shows what it does. Nothing is added yet." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lo descarga y muestra lo que hace. Aún no se añade nada."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "先下载并展示它的功能，暂不会添加任何内容。"
-          }
-        }
-      }
-    },
     "Drag Imp to Applications" : {
       "localizations" : {
         "es" : {
@@ -5819,23 +5165,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在舞台上拖动可转动它的脸。双击让它看向你。"
-          }
-        }
-      }
-    },
-    "Drag the chat bubble's edge to resize it. The size is kept." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arrastra el borde de la burbuja para cambiar su tamaño. El tamaño se guarda."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "拖动聊天气泡的边缘来调整大小。大小会被保留。"
           }
         }
       }
@@ -5920,23 +5249,6 @@
         }
       }
     },
-    "Droopy" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Caído"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "耷拉"
-          }
-        }
-      }
-    },
     "Drop a .json file here" : {
       "localizations" : {
         "es" : {
@@ -5985,40 +5297,6 @@
         }
       }
     },
-    "Each pause is this many times longer than the last." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cada pausa es estas veces más larga que la anterior."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每次停顿是上一次的这么多倍。"
-          }
-        }
-      }
-    },
-    "Edit trigger" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Editar disparador"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "编辑触发器"
-          }
-        }
-      }
-    },
     "Edit “%@”" : {
       "localizations" : {
         "es" : {
@@ -6047,40 +5325,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "为空。只发送性格设定。"
-          }
-        }
-      }
-    },
-    "Erase and Restart" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Borrar y reiniciar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "抹掉并重新开始"
-          }
-        }
-      }
-    },
-    "Erase everything and start over?" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Borrar todo y empezar de cero?"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "抹掉所有内容并重新开始？"
           }
         }
       }
@@ -6133,23 +5377,6 @@
         }
       }
     },
-    "Every Imp, service, key, tool, trigger, chat and setting is deleted. This can't be undone." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se eliminan todos los Imps, servicios, claves, herramientas, disparadores, chats y ajustes. No se puede deshacer."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "所有 Imp、服务、密钥、工具、触发器、对话和设置都将被删除。此操作无法撤销。"
-          }
-        }
-      }
-    },
     "Every chat is saved. Carry on in an older one, save it or bring one in." : {
       "localizations" : {
         "es" : {
@@ -6182,23 +5409,6 @@
         }
       }
     },
-    "Every condition must be true when it goes off, like the battery being low or the time being late." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Todas las condiciones deben cumplirse cuando se activa, como que la batería esté baja o que sea tarde."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "触发时必须满足所有条件，例如电池电量低或时间已晚。"
-          }
-        }
-      }
-    },
     "Every day at" : {
       "localizations" : {
         "es" : {
@@ -6227,23 +5437,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每天 %@"
-          }
-        }
-      }
-    },
-    "Every few minutes" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cada pocos minutos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每隔几分钟"
           }
         }
       }
@@ -6281,23 +5474,6 @@
         }
       }
     },
-    "Everything you and %@ said, with the tools it used." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Todo lo que dijiste tú y %@, con las herramientas que usó."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你和 %@ 说过的一切，以及它用过的工具。"
-          }
-        }
-      }
-    },
     "Excited" : {
       "localizations" : {
         "es" : {
@@ -6310,46 +5486,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "兴奋"
-          }
-        }
-      }
-    },
-    "Export a kit to publish" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Export a kit to publish"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exportar un kit para publicar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "导出要发布的套件"
-          }
-        }
-      }
-    },
-    "Export all Imps" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exportar Imps"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "导出所有 Imp"
           }
         }
       }
@@ -6402,23 +5538,6 @@
         }
       }
     },
-    "Feelings" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Emociones"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "情绪"
-          }
-        }
-      }
-    },
     "File" : {
       "localizations" : {
         "es" : {
@@ -6467,23 +5586,6 @@
         }
       }
     },
-    "Files in Documents" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Archivos en Documentos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "“文稿”中的文件"
-          }
-        }
-      }
-    },
     "Fill in from a JSON config, command or address you copied" : {
       "localizations" : {
         "es" : {
@@ -6512,40 +5614,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "从剪贴板填入。"
-          }
-        }
-      }
-    },
-    "Find an animation" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buscar una animación"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "查找动画"
-          }
-        }
-      }
-    },
-    "First wait" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Primera espera"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "首次等待"
           }
         }
       }
@@ -6598,23 +5666,6 @@
         }
       }
     },
-    "Folded" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Plegado"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "折叠"
-          }
-        }
-      }
-    },
     "Follow the cursor" : {
       "localizations" : {
         "es" : {
@@ -6659,23 +5710,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "持续"
-          }
-        }
-      }
-    },
-    "For a device that can't scan: paste the link in Scan Code… on the other device. Keep it private: it lets a device link with this Mac for a while." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Para un dispositivo que no puede escanear: pega el enlace en Escanear código… en el otro dispositivo. Mantenlo en privado: permite que un dispositivo se vincule con este Mac durante un rato."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "对于无法扫描的设备：在另一台设备的“扫描代码…”中粘贴此链接。请勿外传：它能让一台设备在一段时间内与这台 Mac 连接。"
           }
         }
       }
@@ -6744,23 +5778,6 @@
         }
       }
     },
-    "Forget Everyone…" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Olvidar a todos…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "忘记所有设备…"
-          }
-        }
-      }
-    },
     "Forget every device?" : {
       "localizations" : {
         "es" : {
@@ -6773,40 +5790,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "忘记所有设备？"
-          }
-        }
-      }
-    },
-    "Forget everyone" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Olvidar a todos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "忘记所有设备"
-          }
-        }
-      }
-    },
-    "Forget…" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Olvidar…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "忘记…"
           }
         }
       }
@@ -6875,23 +5858,6 @@
         }
       }
     },
-    "Goes away" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se va"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "离开"
-          }
-        }
-      }
-    },
     "Gold" : {
       "localizations" : {
         "es" : {
@@ -6956,23 +5922,6 @@
         }
       }
     },
-    "Hands off writing" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escribe por ti"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "代你写作"
-          }
-        }
-      }
-    },
     "Happy" : {
       "localizations" : {
         "es" : {
@@ -6989,40 +5938,6 @@
         }
       }
     },
-    "Has: %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tiene: %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "持有：%@"
-          }
-        }
-      }
-    },
-    "Head" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cabeza"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "头"
-          }
-        }
-      }
-    },
     "Headers" : {
       "localizations" : {
         "es" : {
@@ -7035,91 +5950,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "标头"
-          }
-        }
-      }
-    },
-    "Heavy" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pesados"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沉重"
-          }
-        }
-      }
-    },
-    "Helper" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ayudante"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "帮手"
-          }
-        }
-      }
-    },
-    "Hidden" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oculto"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已隐藏"
-          }
-        }
-      }
-    },
-    "Hide" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ocultar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隐藏"
-          }
-        }
-      }
-    },
-    "Hide %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ocultar a %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隐藏 %@"
           }
         }
       }
@@ -7153,23 +5983,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "隐藏密钥"
-          }
-        }
-      }
-    },
-    "Hide the Imps on your desktop" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ocultar los Imps del escritorio"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隐藏桌面上的 Imp"
           }
         }
       }
@@ -7222,23 +6035,6 @@
         }
       }
     },
-    "Hold the other device's code up to the camera, or paste its link." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pon el código del otro dispositivo ante la cámara o pega su enlace."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "把另一台设备的代码对准摄像头，或粘贴它的链接。"
-          }
-        }
-      }
-    },
     "Hop" : {
       "localizations" : {
         "es" : {
@@ -7251,23 +6047,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "蹦跳"
-          }
-        }
-      }
-    },
-    "Horns" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuernos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "角"
           }
         }
       }
@@ -7288,23 +6067,6 @@
         }
       }
     },
-    "How audio shows in a bubble. Chats always have players." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cómo se muestra el audio en una burbuja. Los chats siempre tienen reproductores."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "音频在气泡中的显示方式。对话中总是显示播放器。"
-          }
-        }
-      }
-    },
     "How it feels during this beat. Keep: whatever it feels anyway." : {
       "localizations" : {
         "es" : {
@@ -7317,23 +6079,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "此节拍中它的感受。保持：它本来的感受。"
-          }
-        }
-      }
-    },
-    "How long an Imp waits for a model, and how it retries." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuánto espera un Imp a un modelo y cómo reintenta."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp 等待模型的时长以及重试方式。"
           }
         }
       }
@@ -7354,23 +6099,6 @@
         }
       }
     },
-    "How many recent exchanges go with each message. Fewer is faster and cheaper." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuántos intercambios recientes van con cada mensaje. Menos es más rápido y barato."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每条消息附带多少轮最近的对话。越少越快越省。"
-          }
-        }
-      }
-    },
     "How many times it goes" : {
       "localizations" : {
         "es" : {
@@ -7383,23 +6111,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "做几次"
-          }
-        }
-      }
-    },
-    "How tall the text box grows before it scrolls." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuánto crece el cuadro de texto antes de desplazarse."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "文本框在滚动前能长多高。"
           }
         }
       }
@@ -7586,6 +6297,22 @@
         }
       }
     },
+    "Imp can't hear you. Allow the microphone in System Settings." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp no te oye. Permite el micrófono en Ajustes del Sistema."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imp 听不到你。请在“系统设置”中允许使用麦克风。"
+          }
+        }
+      }
+    },
     "Imp can't listen for your other devices on this network." : {
       "localizations" : {
         "es" : {
@@ -7650,19 +6377,18 @@
         }
       }
     },
-    "Imp couldn't keep the account's key safe." : {
-      "extractionState" : "stale",
+    "Imp can't see the camera. Allow it in System Settings." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp no pudo guardar la clave de la cuenta de forma segura."
+            "value" : "Imp no ve la cámara. Permítela en Ajustes del Sistema."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imp 无法安全保存账户的密钥。"
+            "value" : "Imp 看不到摄像头。请在“系统设置”中允许。"
           }
         }
       }
@@ -7747,23 +6473,6 @@
         }
       }
     },
-    "Import kit" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importar kit"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "导入套件"
-          }
-        }
-      }
-    },
     "Import kit…" : {
       "localizations" : {
         "es" : {
@@ -7812,23 +6521,6 @@
         }
       }
     },
-    "Imps hear you with Apple dictation." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los Imps te oyen con el dictado de Apple."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp 通过 Apple 听写听你说话。"
-          }
-        }
-      }
-    },
     "Imps it holds come back to your desktop. To link again, one of you shows a new code." : {
       "localizations" : {
         "es" : {
@@ -7857,23 +6549,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "其他设备上的 Imp 会回到你的桌面。旧二维码将失效；请用新的重新关联。"
-          }
-        }
-      }
-    },
-    "Imps talk in" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imps hablan en"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp 使用的语言"
           }
         }
       }
@@ -7942,57 +6617,6 @@
         }
       }
     },
-    "Input" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Entrada"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "输入"
-          }
-        }
-      }
-    },
-    "Instead of %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En lugar de %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "代替 %@"
-          }
-        }
-      }
-    },
-    "Instruction only" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo instrucción"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "仅指令"
-          }
-        }
-      }
-    },
     "It arrives at home. Its personality and triggers steer its tools, Mac commands included." : {
       "localizations" : {
         "es" : {
@@ -8057,57 +6681,6 @@
         }
       }
     },
-    "Its favourite colour" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Su color favorito"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "它最喜欢的颜色"
-          }
-        }
-      }
-    },
-    "Its https:// address" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Su dirección https://"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "其 https:// 地址"
-          }
-        }
-      }
-    },
-    "Its own animations" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sus propias animaciones"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "它自己的动画"
-          }
-        }
-      }
-    },
     "JSON" : {
       "localizations" : {
         "es" : {
@@ -8136,40 +6709,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "紧张不安"
-          }
-        }
-      }
-    },
-    "Just %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "仅 %@"
-          }
-        }
-      }
-    },
-    "KEY=value, one per line." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "CLAVE=valor, uno por línea."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "KEY=value，每行一个。"
           }
         }
       }
@@ -8222,23 +6761,6 @@
         }
       }
     },
-    "Kept in your login Keychain" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En tu llavero de sesión"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "保存在你的登录钥匙串中"
-          }
-        }
-      }
-    },
     "Key" : {
       "localizations" : {
         "es" : {
@@ -8251,40 +6773,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "密钥"
-          }
-        }
-      }
-    },
-    "Key storage" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Almacén de claves"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "密钥存储"
-          }
-        }
-      }
-    },
-    "Keychain items for %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elementos del llavero de %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 的钥匙串项目"
           }
         }
       }
@@ -8321,57 +6809,6 @@
         }
       }
     },
-    "Kind" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tipo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "类型"
-          }
-        }
-      }
-    },
-    "Kits" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kits"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "套件"
-          }
-        }
-      }
-    },
-    "Language" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Idioma"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "语言"
-          }
-        }
-      }
-    },
     "Large" : {
       "localizations" : {
         "es" : {
@@ -8388,23 +6825,6 @@
         }
       }
     },
-    "Last %lld" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Últimos %lld"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最近 %lld 个"
-          }
-        }
-      }
-    },
     "Lazy" : {
       "localizations" : {
         "es" : {
@@ -8417,23 +6837,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "懒散"
-          }
-        }
-      }
-    },
-    "Left" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Izquierda"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "左"
           }
         }
       }
@@ -8550,6 +6953,38 @@
         }
       }
     },
+    "Let it do this from now on" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dejarle hacerlo desde ahora"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从现在起都让它这样做"
+          }
+        }
+      }
+    },
+    "Let it do this once" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dejarle hacerlo una vez"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让它这样做一次"
+          }
+        }
+      }
+    },
     "Lets Imps hear you." : {
       "localizations" : {
         "es" : {
@@ -8598,23 +7033,6 @@
         }
       }
     },
-    "Lids" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Párpados"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "眼睑"
-          }
-        }
-      }
-    },
     "Light" : {
       "localizations" : {
         "es" : {
@@ -8627,23 +7045,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "浅色"
-          }
-        }
-      }
-    },
-    "Light or dark for bubbles and menus. Auto follows your Mac." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claro u oscuro para burbujas y menús. Automático sigue a tu Mac."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "气泡和菜单使用浅色或深色。“自动”跟随你的 Mac。"
           }
         }
       }
@@ -8676,57 +7077,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关联"
-          }
-        }
-      }
-    },
-    "Link a device" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enlazar equipo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关联设备"
-          }
-        }
-      }
-    },
-    "Link devices" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enlazar equipos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关联设备"
-          }
-        }
-      }
-    },
-    "Link with a device" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enlazar con equipo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "与设备关联"
           }
         }
       }
@@ -8775,40 +7125,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在关联…"
-          }
-        }
-      }
-    },
-    "List extra tools" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Listar herramientas"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "列出额外工具"
-          }
-        }
-      }
-    },
-    "List its triggers" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Listar sus disparadores"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "列出它的触发器"
           }
         }
       }
@@ -8877,74 +7193,6 @@
         }
       }
     },
-    "Local program" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programa local"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "本地程序"
-          }
-        }
-      }
-    },
-    "Locked. It only does this in the colour it loves. You can still watch a preview." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bloqueado. Solo lo hace en el color que ama. Aun así puedes ver una vista previa."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已锁定。它只在最爱的颜色下才会这样做。你仍可观看预览。"
-          }
-        }
-      }
-    },
-    "Long chats" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chats largos"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "长对话"
-          }
-        }
-      }
-    },
-    "Longer each time" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Más larga cada vez"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每次更长"
-          }
-        }
-      }
-    },
     "Look" : {
       "localizations" : {
         "es" : {
@@ -8957,40 +7205,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "视线"
-          }
-        }
-      }
-    },
-    "Look at an animation" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mirar una animación"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "查看动画"
-          }
-        }
-      }
-    },
-    "Look at the screen" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mirar la pantalla"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "查看屏幕"
           }
         }
       }
@@ -9023,23 +7237,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "查看屏幕"
-          }
-        }
-      }
-    },
-    "Looks" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aspecto"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "外观"
           }
         }
       }
@@ -9108,57 +7305,6 @@
         }
       }
     },
-    "Made by you" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hechas por ti"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你制作的"
-          }
-        }
-      }
-    },
-    "Make an animation" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crear una animación"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "制作动画"
-          }
-        }
-      }
-    },
-    "Make an animation of your own, beat by beat" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Haz tu propia animación, paso a paso"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自己制作动画，一个节拍一个节拍来"
-          }
-        }
-      }
-    },
     "Make new Imps think with %@" : {
       "localizations" : {
         "es" : {
@@ -9187,23 +7333,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "切换到此聊天并打开"
-          }
-        }
-      }
-    },
-    "Makes pictures" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crea imágenes"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "生成图片"
           }
         }
       }
@@ -9256,53 +7385,18 @@
         }
       }
     },
-    "Message another Imp" : {
-      "extractionState" : "stale",
+    "Messages the other Imps, creates new Imps, opens their files and opens settings for you." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escribir a otro Imp"
+            "value" : "Escribe a los otros Imps, crea Imps nuevos, abre sus archivos y te abre los ajustes."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "给另一个 Imp 发消息"
-          }
-        }
-      }
-    },
-    "Messages sent" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mensajes enviados"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已发送的消息"
-          }
-        }
-      }
-    },
-    "Messages the other Imps on your desktop and hears their answers." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Envía mensajes a los otros Imps de tu escritorio y oye sus respuestas."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "给桌面上的其他 Imp 发消息并听取回复。"
+            "value" : "给其他 Imp 发消息、创建新的 Imp、打开它们的文件，并为你打开设置。"
           }
         }
       }
@@ -9324,6 +7418,7 @@
       }
     },
     "Mine" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -9371,23 +7466,6 @@
         }
       }
     },
-    "Missing animation" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Animación no encontrada"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到动画"
-          }
-        }
-      }
-    },
     "Model" : {
       "localizations" : {
         "es" : {
@@ -9416,23 +7494,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 上所有 Imp 的模型"
-          }
-        }
-      }
-    },
-    "Model name" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nombre del modelo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模型名称"
           }
         }
       }
@@ -9491,74 +7552,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Movimiento"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "动作"
-          }
-        }
-      }
-    },
-    "Move around the screen" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Moverse por la pantalla"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在屏幕上移动"
-          }
-        }
-      }
-    },
-    "Move to Every Imp" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mover a Todos los Imps"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "移到“所有 Imp”"
-          }
-        }
-      }
-    },
-    "Move to Just %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mover a Solo %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "移到“仅 %@”"
-          }
-        }
-      }
-    },
-    "Moves" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Movimientos"
           }
         },
         "zh-Hans" : {
@@ -9646,40 +7639,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "名称、图标和适用对象"
-          }
-        }
-      }
-    },
-    "Name: value, one per line." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nombre: valor, uno por línea."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "名称：值，每行一个。"
-          }
-        }
-      }
-    },
-    "Narrow" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estrecho"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "窄"
           }
         }
       }
@@ -9828,23 +7787,6 @@
         }
       }
     },
-    "New Animation" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nueva animación"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新建动画"
-          }
-        }
-      }
-    },
     "New Chat" : {
       "localizations" : {
         "es" : {
@@ -9957,40 +7899,6 @@
         }
       }
     },
-    "New trigger" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nuevo disparador"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新触发器"
-          }
-        }
-      }
-    },
-    "Newest" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Más recientes"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最新"
-          }
-        }
-      }
-    },
     "No AI service picked for %@. Pick one on its Brain tab." : {
       "localizations" : {
         "es" : {
@@ -10023,23 +7931,6 @@
         }
       }
     },
-    "No Imps are out on the desktop" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No hay Imps en el escritorio"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "桌面上没有 Imp"
-          }
-        }
-      }
-    },
     "No answer after %lld seconds. The service may be slow or out of reach. Check its address on the Brain tab, or allow more time in Settings › Services." : {
       "localizations" : {
         "es" : {
@@ -10056,19 +7947,18 @@
         }
       }
     },
-    "No chats yet." : {
-      "extractionState" : "stale",
+    "No camera found." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay chats."
+            "value" : "No hay cámara."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有聊天。"
+            "value" : "没有找到摄像头。"
           }
         }
       }
@@ -10117,23 +8007,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "还没有密钥"
-          }
-        }
-      }
-    },
-    "No limit" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin límite"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无限制"
           }
         }
       }
@@ -10250,23 +8123,6 @@
         }
       }
     },
-    "None" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ninguno"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无"
-          }
-        }
-      }
-    },
     "None of your other devices is around. Open Imp on one, then throw me again." : {
       "localizations" : {
         "es" : {
@@ -10311,23 +8167,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这台 Mac 上不需要"
-          }
-        }
-      }
-    },
-    "Nothing found." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nada encontrado."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "什么也没找到。"
           }
         }
       }
@@ -10440,46 +8279,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关"
-          }
-        }
-      }
-    },
-    "Off keeps keys in a private file. On uses the Keychain, which may ask for your password." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apagado guarda las claves en un archivo privado. Encendido usa el Llavero, que puede pedir tu contraseña."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关闭时密钥存于私有文件。开启时使用钥匙串，可能会要求输入密码。"
-          }
-        }
-      }
-    },
-    "Offer a kit to add" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Offer a kit to add"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ofrecer un kit para añadir"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "提供要添加的套件"
           }
         }
       }
@@ -10682,40 +8481,6 @@
         }
       }
     },
-    "Only if" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo si"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "仅当"
-          }
-        }
-      }
-    },
-    "Only looks and text. No tools or commands." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo aspecto y texto. Sin herramientas ni comandos."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "仅外观和文字，没有工具或命令。"
-          }
-        }
-      }
-    },
     "Only the first %lld beats are kept." : {
       "localizations" : {
         "es" : {
@@ -10877,40 +8642,6 @@
         }
       }
     },
-    "Open a shared file" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir archivo compartido"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开共享的文件"
-          }
-        }
-      }
-    },
-    "Open a text box" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir cuadro de texto"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开文本框"
-          }
-        }
-      }
-    },
     "Open its settings" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -10940,40 +8671,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开某样东西"
-          }
-        }
-      }
-    },
-    "Open the Imps' home (⌘,)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir el hogar de los Imps (⌘,)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开 Imp 的家园（⌘,）"
-          }
-        }
-      }
-    },
-    "Open the chat" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir el chat"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开对话"
           }
         }
       }
@@ -11042,40 +8739,6 @@
         }
       }
     },
-    "Optional" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opcional"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "可选"
-          }
-        }
-      }
-    },
-    "Or drag the right edge of the beat on the timeline (hold ⌥ for finer steps)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O arrastra el borde derecho del paso en la línea de tiempo (mantén ⌥ para pasos más finos)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "也可以在时间线上拖动节拍的右边缘（按住 ⌥ 微调）"
-          }
-        }
-      }
-    },
     "Or paste a kit or a web address" : {
       "localizations" : {
         "es" : {
@@ -11137,40 +8800,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "超过 %lld 秒。保存时会缩短各个节拍。"
-          }
-        }
-      }
-    },
-    "Pace" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ritmo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "节奏"
-          }
-        }
-      }
-    },
-    "Pale" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pálido"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "苍白"
           }
         }
       }
@@ -11319,23 +8948,6 @@
         }
       }
     },
-    "Perky" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vivaz"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "精神"
-          }
-        }
-      }
-    },
     "Permissions granted" : {
       "localizations" : {
         "es" : {
@@ -11368,40 +8980,6 @@
         }
       }
     },
-    "Pick an open app" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elige una app abierta"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选择已打开的 App"
-          }
-        }
-      }
-    },
-    "Pick from the service's models" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elegir entre los modelos del servicio"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "从服务的模型中选择"
-          }
-        }
-      }
-    },
     "Picture" : {
       "localizations" : {
         "es" : {
@@ -11430,6 +9008,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "粉色"
+          }
+        }
+      }
+    },
+    "Pip, visiting from iPhone" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pip, de visita desde iPhone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pip，从 iPhone 来访"
           }
         }
       }
@@ -11472,23 +9066,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reproducir animación"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "播放动画"
-          }
-        }
-      }
-    },
-    "Play animations" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Probar animaciones"
           }
         },
         "zh-Hans" : {
@@ -11563,91 +9140,6 @@
         }
       }
     },
-    "Plays" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reproduce"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "播放"
-          }
-        }
-      }
-    },
-    "Plays animations, moves around the screen and speaks aloud." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reproduce animaciones, se mueve por la pantalla y habla en voz alta."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "播放动画、在屏幕上移动并朗读出声。"
-          }
-        }
-      }
-    },
-    "Plays as it wakes up. Without one, it stretches awake the usual way." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se reproduce al despertar. Sin una, se despierta estirándose como de costumbre."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "醒来时播放。没有的话，它会照常伸个懒腰醒来。"
-          }
-        }
-      }
-    },
-    "Plays audio and video when an answer asks. Otherwise you press play." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reproduce audio y vídeo cuando una respuesta lo pide. Si no, pulsas reproducir."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "回答要求时自动播放音频和视频，否则由你点播放。"
-          }
-        }
-      }
-    },
-    "Plays while it dozes off. It sleeps either way." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se reproduce mientras se adormece. Se duerme de todos modos."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打瞌睡时播放。不管有没有，它都会睡着。"
-          }
-        }
-      }
-    },
     "Plays, shows, makes and removes animations, and moves around the screen." : {
       "localizations" : {
         "es" : {
@@ -11676,23 +9168,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "悄悄谋划中…"
-          }
-        }
-      }
-    },
-    "Plugged in" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conectado"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已接入电源"
           }
         }
       }
@@ -11745,23 +9220,6 @@
         }
       }
     },
-    "Popular" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Populares"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "热门"
-          }
-        }
-      }
-    },
     "Position" : {
       "localizations" : {
         "es" : {
@@ -11774,23 +9232,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "位置"
-          }
-        }
-      }
-    },
-    "Power" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Energía"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "电源"
           }
         }
       }
@@ -11907,23 +9348,6 @@
         }
       }
     },
-    "Processor" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Procesador"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "处理器"
-          }
-        }
-      }
-    },
     "Processor above %lld %%" : {
       "localizations" : {
         "es" : {
@@ -11940,40 +9364,6 @@
         }
       }
     },
-    "Publish" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Publicar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "发布"
-          }
-        }
-      }
-    },
-    "Published: %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Publicado: %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已发布：%@"
-          }
-        }
-      }
-    },
     "Pulling some strings…" : {
       "localizations" : {
         "es" : {
@@ -11986,74 +9376,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在暗中操作…"
-          }
-        }
-      }
-    },
-    "Put it down" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Soltarlo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "放下"
-          }
-        }
-      }
-    },
-    "Quick" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rápido"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "快"
-          }
-        }
-      }
-    },
-    "Quit" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salir"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "退出"
-          }
-        }
-      }
-    },
-    "Quit Imp (⌘Q)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salir de Imp (⌘Q)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "退出 Imp（⌘Q）"
           }
         }
       }
@@ -12106,74 +9428,6 @@
         }
       }
     },
-    "Read as bubbles or JSON" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leer como burbujas o JSON"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "以气泡或 JSON 阅读"
-          }
-        }
-      }
-    },
-    "Read everything they said to each other" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lee todo lo que se dijeron"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "阅读它们彼此说过的一切"
-          }
-        }
-      }
-    },
-    "Read the Mac's state" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leer el estado del Mac"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "读取 Mac 的状态"
-          }
-        }
-      }
-    },
-    "Read the browser page" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leer la página del navegador"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "读取浏览器页面"
-          }
-        }
-      }
-    },
     "Reads the battery, processor, network and open apps, and the page open in the browser." : {
       "localizations" : {
         "es" : {
@@ -12186,40 +9440,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "读取电池、处理器、网络和打开的应用，以及浏览器中打开的页面。"
-          }
-        }
-      }
-    },
-    "Reads the battery, processor, network and open apps. With the browser extension, it also knows the page you're on." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lee la batería, el procesador, la red y las apps abiertas. Con la extensión del navegador, también sabe en qué página estás."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "读取电池、处理器、网络和打开的 App。装上浏览器扩展后，还能知道你所在的网页。"
-          }
-        }
-      }
-    },
-    "Reads web pages" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lee páginas web"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "读取网页"
           }
         }
       }
@@ -12304,6 +9524,22 @@
         }
       }
     },
+    "Record a sound" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grabar un sonido"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "录一段声音"
+          }
+        }
+      }
+    },
     "Record keys" : {
       "localizations" : {
         "es" : {
@@ -12352,23 +9588,6 @@
         }
       }
     },
-    "Reduce Motion is on, so %@ only follows with its eyes." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reducir movimiento está activado, así que %@ solo te sigue con los ojos."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "“减弱动态效果”已开启，所以 %@ 只会用眼睛跟随。"
-          }
-        }
-      }
-    },
     "Remembers" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -12382,91 +9601,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "记忆"
-          }
-        }
-      }
-    },
-    "Remembers things" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recuerda cosas"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "会记事"
-          }
-        }
-      }
-    },
-    "Remove" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quitar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "移除"
-          }
-        }
-      }
-    },
-    "Remove a trigger" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quitar un disparador"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "移除触发器"
-          }
-        }
-      }
-    },
-    "Remove an animation" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quitar una animación"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "移除动画"
-          }
-        }
-      }
-    },
-    "Remove an extra tool" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quitar herramienta extra"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "移除额外工具"
           }
         }
       }
@@ -12503,35 +9637,18 @@
         }
       }
     },
-    "Remove the picture" : {
+    "Remove the file" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quitar la imagen"
+            "value" : "Quitar el archivo"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "移除图片"
-          }
-        }
-      }
-    },
-    "Remove this condition" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quitar esta condición"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "移除此条件"
+            "value" : "移除这个文件"
           }
         }
       }
@@ -12648,40 +9765,6 @@
         }
       }
     },
-    "Requests" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Peticiones"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请求"
-          }
-        }
-      }
-    },
-    "Reset" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Restablecer"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重置"
-          }
-        }
-      }
-    },
     "Reset size" : {
       "localizations" : {
         "es" : {
@@ -12714,40 +9797,6 @@
         }
       }
     },
-    "Responds in its own way" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Responde a su manera"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "以自己的方式回应"
-          }
-        }
-      }
-    },
-    "Responds to what you copied" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Responde a lo que copiaste"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "回应你拷贝的内容"
-          }
-        }
-      }
-    },
     "Response" : {
       "localizations" : {
         "es" : {
@@ -12760,40 +9809,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "响应"
-          }
-        }
-      }
-    },
-    "Rest the cursor beside it" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dejar el cursor a su lado"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将指针停在旁边"
-          }
-        }
-      }
-    },
-    "Rest the cursor on its face" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deja el cursor sobre su cara"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将指针停在它脸上"
           }
         }
       }
@@ -12830,19 +9845,18 @@
         }
       }
     },
-    "Retries" : {
-      "extractionState" : "stale",
+    "Retake" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reintentos"
+            "value" : "Repetir"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重试"
+            "value" : "重拍"
           }
         }
       }
@@ -12885,23 +9899,6 @@
         }
       }
     },
-    "Right" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Derecha"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "右"
-          }
-        }
-      }
-    },
     "Right-clicking" : {
       "localizations" : {
         "es" : {
@@ -12934,23 +9931,6 @@
         }
       }
     },
-    "Rosy" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sonrosadas"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "红润"
-          }
-        }
-      }
-    },
     "Ruler" : {
       "localizations" : {
         "es" : {
@@ -12979,23 +9959,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在运行命令"
-          }
-        }
-      }
-    },
-    "Runs a command on this Mac" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ejecuta un comando en este Mac"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在这台 Mac 上运行命令"
           }
         }
       }
@@ -13128,23 +10091,6 @@
         }
       }
     },
-    "Same conversation for" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mismo chat durante"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "同一聊天时长"
-          }
-        }
-      }
-    },
     "Save" : {
       "localizations" : {
         "es" : {
@@ -13241,23 +10187,6 @@
         }
       }
     },
-    "Saved in your Keychain" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Guardada en tu llavero"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已保存在你的钥匙串中"
-          }
-        }
-      }
-    },
     "Saved on this Mac" : {
       "localizations" : {
         "es" : {
@@ -13270,23 +10199,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "保存在这台 Mac 上"
-          }
-        }
-      }
-    },
-    "Saves every Imp, with triggers and tools, as one file. API keys are never saved." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Guarda todos los Imps, con disparadores y herramientas, en un archivo. Las claves de API nunca se guardan."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "把所有 Imp 连同触发器和工具存为一个文件。绝不保存 API 密钥。"
           }
         }
       }
@@ -13319,23 +10231,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "说点什么"
-          }
-        }
-      }
-    },
-    "Scan Code…" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escanear código…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "扫描代码…"
           }
         }
       }
@@ -13437,23 +10332,6 @@
         }
       }
     },
-    "Search what other people shared." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Busca lo que ha compartido otra gente."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "搜索其他人分享的内容。"
-          }
-        }
-      }
-    },
     "Sees and operates other apps. Needs the Screen & System Audio Recording and Accessibility permissions." : {
       "localizations" : {
         "es" : {
@@ -13466,63 +10344,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "查看并操作其他 App。需要“录屏与系统录音”和“辅助功能”权限。"
-          }
-        }
-      }
-    },
-    "Send %@ Home" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enviar a %@ a casa"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "送 %@ 回家"
-          }
-        }
-      }
-    },
-    "Send %@ to %@…" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Send %1$@ to %2$@…"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enviar a %1$@ a %2$@…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "把 %1$@ 送到 %2$@…"
-          }
-        }
-      }
-    },
-    "Send %@ to Another Device…" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enviar a %@ a otro dispositivo…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "把 %@ 送到另一台设备…"
           }
         }
       }
@@ -13543,23 +10364,6 @@
         }
       }
     },
-    "Sends what you copied along with your instruction" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Envía lo que copiaste junto con tu instrucción"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将你拷贝的内容连同指令一起发送"
-          }
-        }
-      }
-    },
     "Sends your clipboard" : {
       "localizations" : {
         "es" : {
@@ -13572,23 +10376,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "发送你的剪贴板"
-          }
-        }
-      }
-    },
-    "Sends your instruction and what happened" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Envía tu instrucción y lo que pasó"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "发送你的指令和发生的情况"
           }
         }
       }
@@ -13664,57 +10451,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ajustes"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "设置"
-          }
-        }
-      }
-    },
-    "Settings every Imp shares. Click an Imp for its own." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajustes que comparten todos los Imps. Haz clic en un Imp para los suyos."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "所有 Imp 共用的设置。点击某个 Imp 查看它自己的设置。"
-          }
-        }
-      }
-    },
-    "Settings for all Imps: services, talking, animations, permissions, app" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajustes para todos los Imps: servicios, habla, animaciones, permisos, app"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "所有 Imp 的设置：服务、说话、动画、权限、App"
-          }
-        }
-      }
-    },
-    "Setup" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configuración"
           }
         },
         "zh-Hans" : {
@@ -13805,39 +10541,6 @@
         }
       }
     },
-    "Share %@'s animations as a kit" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compartir las animaciones de %@ como kit"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将 %@ 的动画共享为套件"
-          }
-        }
-      }
-    },
-    "Share as Kit" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compartir kit"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "作为套件共享"
-          }
-        }
-      }
-    },
     "Share as a kit" : {
       "localizations" : {
         "es" : {
@@ -13850,23 +10553,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "作为套件分享"
-          }
-        }
-      }
-    },
-    "Share these animations as a kit" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compartir estas animaciones como kit"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将这些动画共享为套件"
           }
         }
       }
@@ -13903,23 +10589,6 @@
         }
       }
     },
-    "Shared ones play for every Imp. One made for a single Imp plays only for it and wins over a shared one." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las compartidas suenan para todos los Imps. Una hecha para un solo Imp suena solo para él y gana a la compartida."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "共享的动画对所有 Imp 播放。为单个 Imp 制作的只为它播放，并优先于共享的。"
-          }
-        }
-      }
-    },
     "Sharpening horns…" : {
       "localizations" : {
         "es" : {
@@ -13952,23 +10621,6 @@
         }
       }
     },
-    "Show" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示"
-          }
-        }
-      }
-    },
     "Show %@'s folder. Commands start there." : {
       "localizations" : {
         "es" : {
@@ -13981,23 +10633,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "显示 %@ 的文件夹。命令从那里开始运行。"
-          }
-        }
-      }
-    },
-    "Show Code…" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar código…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示代码…"
           }
         }
       }
@@ -14098,40 +10733,6 @@
         }
       }
     },
-    "Show more" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar más"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示更多"
-          }
-        }
-      }
-    },
-    "Show the Imps again" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Volver a mostrar los Imps"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重新显示 Imp"
-          }
-        }
-      }
-    },
     "Show the extension's folder" : {
       "localizations" : {
         "es" : {
@@ -14164,23 +10765,6 @@
         }
       }
     },
-    "Show this Mac's code for another device to scan, or scan the code another device shows." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Muestra el código de este Mac para que otro dispositivo lo escanee, o escanea el que muestra otro."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示本机的代码供其他设备扫描，或扫描其他设备显示的代码。"
-          }
-        }
-      }
-    },
     "Show what was asked and what came back" : {
       "localizations" : {
         "es" : {
@@ -14193,40 +10777,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "显示请求内容和返回内容"
-          }
-        }
-      }
-    },
-    "Shown" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Visible"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已显示"
-          }
-        }
-      }
-    },
-    "Shows or hides these animations" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Muestra u oculta estas animaciones"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示或隐藏这些动画"
           }
         }
       }
@@ -14512,6 +11062,22 @@
         }
       }
     },
+    "Some files" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unos archivos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一些文件"
+          }
+        }
+      }
+    },
     "Somersault" : {
       "localizations" : {
         "es" : {
@@ -14528,23 +11094,6 @@
         }
       }
     },
-    "Sort" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Orden"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "排序"
-          }
-        }
-      }
-    },
     "Space" : {
       "localizations" : {
         "es" : {
@@ -14557,56 +11106,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "空格"
-          }
-        }
-      }
-    },
-    "Speak out loud" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hablar en voz alta"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "大声说话"
-          }
-        }
-      }
-    },
-    "Messages the other Imps, creates new Imps, opens their files and opens settings for you." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escribe a los otros Imps, crea Imps nuevos, abre sus archivos y te abre los ajustes."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "给其他 Imp 发消息、创建新的 Imp、打开它们的文件，并为你打开设置。"
-          }
-        }
-      }
-    },
-    "Speaks out loud" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Habla en voz alta"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "朗读出声"
           }
         }
       }
@@ -14639,23 +11138,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imp 的语音识别已关闭。请在“系统设置” › “隐私与安全性” › “语音识别”中打开。"
-          }
-        }
-      }
-    },
-    "Speed" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Velocidad"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "速度"
           }
         }
       }
@@ -14708,23 +11190,6 @@
         }
       }
     },
-    "Squint" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Entrecerrados"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "眯眼"
-          }
-        }
-      }
-    },
     "Start a fresh chat. This one stays in the list below." : {
       "localizations" : {
         "es" : {
@@ -14741,23 +11206,6 @@
         }
       }
     },
-    "Start listening" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Empezar a escuchar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "开始聆听"
-          }
-        }
-      }
-    },
     "Start new?" : {
       "localizations" : {
         "es" : {
@@ -14770,57 +11218,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重新开始？"
-          }
-        }
-      }
-    },
-    "Starting…" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iniciando…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在启动…"
-          }
-        }
-      }
-    },
-    "Starts when an Imp that's out needs it" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se inicia cuando un Imp que está fuera lo necesita"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在放出来的 Imp 需要时启动"
-          }
-        }
-      }
-    },
-    "Starts when…" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Empieza cuando…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "何时开始…"
           }
         }
       }
@@ -14905,23 +11302,6 @@
         }
       }
     },
-    "Suggest at" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sugerir a partir de"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "提示阈值"
-          }
-        }
-      }
-    },
     "Summoning answers…" : {
       "localizations" : {
         "es" : {
@@ -15002,23 +11382,6 @@
         }
       }
     },
-    "Switch on only for your own devices. Others can chat with their Imps, but those answer without tools." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actívalo solo para tus dispositivos. Otros pueden chatear con sus Imps, pero estos responden sin herramientas."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "只为你自己的设备开启。其他设备也能与它们的 Imp 聊天，但不会使用工具。"
-          }
-        }
-      }
-    },
     "Symbol" : {
       "localizations" : {
         "es" : {
@@ -15035,36 +11398,50 @@
         }
       }
     },
-    "Tags (separated by commas)" : {
-      "extractionState" : "stale",
+    "Take a photo" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Etiquetas (separadas por comas)"
+            "value" : "Hacer una foto"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "标签（用逗号分隔）"
+            "value" : "拍一张照片"
+          }
+        }
+      }
+    },
+    "Take the photo" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer la foto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拍下照片"
           }
         }
       }
     },
     "Talk" : {
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hablar"
+            "value" : "Charla"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "说话"
+            "value" : "对话"
           }
         }
       }
@@ -15085,19 +11462,18 @@
         }
       }
     },
-    "Talk to %@" : {
-      "extractionState" : "stale",
+    "Talk with %@" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hablar con %@"
+            "value" : "Charla con %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "与 %@ 交谈"
+            "value" : "与 %@ 的对话"
           }
         }
       }
@@ -15162,23 +11538,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "测试"
-          }
-        }
-      }
-    },
-    "Text box lines" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Líneas de texto"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "文本框行数"
           }
         }
       }
@@ -15355,6 +11714,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "那台设备没有关联。它的二维码可能已过期：请显示一个新的。"
+          }
+        }
+      }
+    },
+    "That file can't be read." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede leer ese archivo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取这个文件。"
+          }
+        }
+      }
+    },
+    "That file is bigger than 25 MB." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese archivo pasa de 25 MB."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个文件超过 25 MB。"
+          }
+        }
+      }
+    },
+    "That file is empty." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese archivo está vacío."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个文件是空的。"
           }
         }
       }
@@ -15615,23 +12022,6 @@
         }
       }
     },
-    "That name can't be used." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ese nombre no se puede usar."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不能使用这个名称。"
-          }
-        }
-      }
-    },
     "That took more than %lld seconds." : {
       "localizations" : {
         "es" : {
@@ -15696,23 +12086,6 @@
         }
       }
     },
-    "That's too big to share (%lld KB at most)." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Es demasiado grande para compartirlo (máximo %lld KB)."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "太大了，无法分享（最多 %lld KB）。"
-          }
-        }
-      }
-    },
     "The API key bounced off my horns (%lld). %@" : {
       "localizations" : {
         "en" : {
@@ -15753,23 +12126,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "API 返回 %lld：%@"
-          }
-        }
-      }
-    },
-    "The Den" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den"
           }
         }
       }
@@ -16148,23 +12504,6 @@
         }
       }
     },
-    "The language of Imp's menus and settings. Imps answer in the language you write." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El idioma de los menús y ajustes de Imp. Los Imps responden en el idioma en que escribes."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imp 菜单和设置的语言。Imp 会用你书写的语言回答。"
-          }
-        }
-      }
-    },
     "The link has no kit in it (url= or kit=)." : {
       "localizations" : {
         "es" : {
@@ -16245,23 +12584,6 @@
         }
       }
     },
-    "The pause before the first retry." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La pausa antes del primer reintento."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "第一次重试前的等待。"
-          }
-        }
-      }
-    },
     "The person has not signed in to %@. Ask them to sign in: Tools, then %@, then Sign in." : {
       "localizations" : {
         "es" : {
@@ -16274,6 +12596,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "用户尚未登录 %@。请让他们登录：工具，然后 %@，然后登录。"
+          }
+        }
+      }
+    },
+    "The recording didn't start." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La grabación no empezó."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "录音没有开始。"
           }
         }
       }
@@ -16466,40 +12804,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "它使用的工具。"
-          }
-        }
-      }
-    },
-    "The usual wake-up" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El despertar de siempre"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "平常的醒来方式"
-          }
-        }
-      }
-    },
-    "Theme is the dungeon wall. The others use your own colour or picture." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tema es el muro de la mazmorra. Los demás usan tu color o tu imagen."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "主题是地牢墙。其他选项使用你自己的颜色或图片。"
           }
         }
       }
@@ -16830,23 +13134,6 @@
         }
       }
     },
-    "Throw an Imp at the screen edge to send it to a linked device." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lanza un Imp al borde de la pantalla para enviarlo a un dispositivo enlazado."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "把 Imp 扔向屏幕边缘即可发送到已关联的设备。"
-          }
-        }
-      }
-    },
     "Tickle it" : {
       "localizations" : {
         "es" : {
@@ -17041,23 +13328,6 @@
         }
       }
     },
-    "Tool calls" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Llamadas a herramientas"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "工具调用"
-          }
-        }
-      }
-    },
     "Tool “%@”: needs a `command` (a program) or a `url` (a web address)." : {
       "localizations" : {
         "es" : {
@@ -17086,23 +13356,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "工具"
-          }
-        }
-      }
-    },
-    "Tries again after a network drop or a busy service. Wrong keys are never retried." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reintenta tras un corte de red o un servicio ocupado. Las claves erróneas nunca se reintentan."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "网络中断或服务繁忙时会重试。错误的密钥绝不重试。"
           }
         }
       }
@@ -17269,40 +13522,6 @@
         }
       }
     },
-    "Try again in %lld seconds." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inténtalo de nuevo en %lld segundos."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请在 %lld 秒后再试。"
-          }
-        }
-      }
-    },
-    "Try now" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Probar ahora"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "立即试试"
-          }
-        }
-      }
-    },
     "Turn its face to you" : {
       "localizations" : {
         "es" : {
@@ -17396,39 +13615,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "输入"
-          }
-        }
-      }
-    },
-    "Type instead" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escribir"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "改为打字"
-          }
-        }
-      }
-    },
-    "Type to %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escribe a %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "向 %@ 输入"
           }
         }
       }
@@ -17545,23 +13731,6 @@
         }
       }
     },
-    "Unknown start “%@”." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inicio desconocido “%@”."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未知的开始方式“%@”。"
-          }
-        }
-      }
-    },
     "Unknown tool." : {
       "localizations" : {
         "es" : {
@@ -17574,40 +13743,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未知工具。"
-          }
-        }
-      }
-    },
-    "Unlinks every device and ends the old codes." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desenlaza todos los equipos y anula los códigos antiguos."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "解除所有设备的关联，并作废旧代码。"
-          }
-        }
-      }
-    },
-    "Unnamed" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin nombre"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未命名"
           }
         }
       }
@@ -17644,23 +13779,6 @@
         }
       }
     },
-    "Unplugged" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desconectado"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未接电源"
-          }
-        }
-      }
-    },
     "Untitled" : {
       "localizations" : {
         "es" : {
@@ -17677,19 +13795,34 @@
         }
       }
     },
-    "Use the Keychain" : {
-      "extractionState" : "stale",
+    "Up to %lld files go with one message." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usar el Llavero"
+            "value" : "Hasta %lld archivos por mensaje."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用钥匙串"
+            "value" : "一条消息最多带 %lld 个文件。"
+          }
+        }
+      }
+    },
+    "Use Photo" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar foto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用照片"
           }
         }
       }
@@ -17774,23 +13907,6 @@
         }
       }
     },
-    "Wait up to" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esperar hasta"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最多等待"
-          }
-        }
-      }
-    },
     "Waiting for the response…" : {
       "localizations" : {
         "es" : {
@@ -17839,23 +13955,6 @@
         }
       }
     },
-    "Web server" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Servidor web"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "网页服务器"
-          }
-        }
-      }
-    },
     "Website" : {
       "localizations" : {
         "es" : {
@@ -17868,23 +13967,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "网站"
-          }
-        }
-      }
-    },
-    "Website open" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Web abierta"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "网站已打开"
           }
         }
       }
@@ -17943,23 +14025,6 @@
         }
       }
     },
-    "What a double click on an Imp does." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Qué hace un doble clic en un Imp."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "双击 Imp 时的操作。"
-          }
-        }
-      }
-    },
     "What is it called?" : {
       "localizations" : {
         "es" : {
@@ -17972,23 +14037,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "它叫什么？"
-          }
-        }
-      }
-    },
-    "What is it, in a sentence" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Qué es, en una frase"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用一句话说说它是什么"
           }
         }
       }
@@ -18009,23 +14057,6 @@
         }
       }
     },
-    "What it plays when this goes off." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lo que reproduce cuando esto se activa."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "它被触发时播放的内容。"
-          }
-        }
-      }
-    },
     "What it's called, its icon in the list, and which Imps play it." : {
       "localizations" : {
         "es" : {
@@ -18038,74 +14069,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "它叫什么、在列表中的图标，以及哪些 Imp 播放它。"
-          }
-        }
-      }
-    },
-    "What people will see it can do" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lo que la gente verá que puede hacer"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "大家会看到它能做什么"
-          }
-        }
-      }
-    },
-    "What should %@ do with it?" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Qué debería hacer %@ con esto?"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 应该怎么处理它？"
-          }
-        }
-      }
-    },
-    "What should %@ do?" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Qué debe hacer %@?"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 该做什么？"
-          }
-        }
-      }
-    },
-    "What starts %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Qué inicia a %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "什么会启动 %@"
           }
         }
       }
@@ -18158,91 +14121,6 @@
         }
       }
     },
-    "When" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuándo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "时机"
-          }
-        }
-      }
-    },
-    "When it goes off, %@ acts on the instruction with its tools." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuando salta, %@ sigue la instrucción con sus herramientas."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "触发时，%@ 会用它的工具执行指令。"
-          }
-        }
-      }
-    },
-    "When it's quiet" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuando está tranquilo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "安静时"
-          }
-        }
-      }
-    },
-    "Where a message from one Imp to another goes." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adónde va un mensaje de un Imp a otro."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一个 Imp 发给另一个 Imp 的消息去向。"
-          }
-        }
-      }
-    },
-    "Where people share Imps, animations, triggers and tools." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Donde la gente comparte Imps, animaciones, disparadores y herramientas."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "大家分享 Imp、动画、触发器和工具的地方。"
-          }
-        }
-      }
-    },
     "Who gets the triggers, tools and animations that aren't an Imp's own." : {
       "localizations" : {
         "es" : {
@@ -18255,23 +14133,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "谁接收不属于某个 Imp 的触发器、工具和动画。"
-          }
-        }
-      }
-    },
-    "Wide" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ancho"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "宽"
           }
         }
       }
@@ -18320,23 +14181,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用 %@"
-          }
-        }
-      }
-    },
-    "With clipboard" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Con portapapeles"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "附带剪贴板"
           }
         }
       }
@@ -18485,23 +14329,6 @@
         }
       }
     },
-    "Your own %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tu propio %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你自己的 %@"
-          }
-        }
-      }
-    },
     "Zoom in" : {
       "localizations" : {
         "es" : {
@@ -18566,57 +14393,6 @@
         }
       }
     },
-    "above %lld %%" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "sobre %lld %%"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "高于 %lld %%"
-          }
-        }
-      }
-    },
-    "after %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "después de %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 之后"
-          }
-        }
-      }
-    },
-    "after %@ away" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "tras %@ fuera"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "离开 %@ 后"
-          }
-        }
-      }
-    },
     "another service" : {
       "localizations" : {
         "es" : {
@@ -18645,23 +14421,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "此套件中的另一个触发器"
-          }
-        }
-      }
-    },
-    "below %lld %%" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "bajo %lld %%"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "低于 %lld %%"
           }
         }
       }
@@ -18714,23 +14473,6 @@
         }
       }
     },
-    "friendly, desk" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "amistoso, escritorio"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "友好，桌面"
-          }
-        }
-      }
-    },
     "heavy lids" : {
       "localizations" : {
         "es" : {
@@ -18743,6 +14485,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沉重的眼睑"
+          }
+        }
+      }
+    },
+    "it was asked from %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "se pidió desde %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是从 %@ 发来的请求"
           }
         }
       }
@@ -18763,19 +14521,18 @@
         }
       }
     },
-    "my-package" : {
-      "extractionState" : "stale",
+    "nobody can be asked here" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mi-paquete"
+            "value" : "aquí no hay a quién preguntar"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "my-package"
+            "value" : "这里没有人可以询问"
           }
         }
       }
@@ -18920,6 +14677,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "此 Imp"
+          }
+        }
+      }
+    },
+    "this Imp is visiting" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "este Imp está de visita"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个 Imp 正在来访"
           }
         }
       }
@@ -19161,40 +14934,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "“triggers”应为列表。"
-          }
-        }
-      }
-    },
-    "− leans left, + leans right. Double-click to straighten." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "− se inclina a la izquierda, + a la derecha. Doble clic para enderezarlo."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "− 向左倾，+ 向右倾。双击回正。"
-          }
-        }
-      }
-    },
-    "− squishes flat, + stands tall and thin. Double-click to reset." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "− se aplasta, + se estira alto y delgado. Doble clic para restablecer."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "− 压扁，+ 拉高变瘦。双击重置。"
           }
         }
       }
@@ -21851,6 +17590,30 @@
         }
       }
     },
+    "devices.fit" : {
+      "comment" : "Tooltip of the button in the corner of the Devices map that zooms so every device fits.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show all"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver todo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示全部"
+          }
+        }
+      }
+    },
     "devices.forget.named" : {
       "comment" : "Button that forgets one linked device, with its name.",
       "extractionState" : "manual",
@@ -22008,7 +17771,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desactivado"
+            "value" : "Apagado"
           }
         },
         "zh-Hans" : {
@@ -22584,7 +18347,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No disponible"
+            "value" : "Ausente"
           }
         },
         "zh-Hans" : {
@@ -23311,6 +19074,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "送回家"
+          }
+        }
+      }
+    },
+    "devices.zoom_in" : {
+      "comment" : "Tooltip of the plus button in the corner of the Devices map.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom in"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acercar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放大"
+          }
+        }
+      }
+    },
+    "devices.zoom_out" : {
+      "comment" : "Tooltip of the minus button in the corner of the Devices map.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom out"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alejar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缩小"
           }
         }
       }
@@ -26166,7 +21977,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接设备"
+            "value" : "关联设备"
           }
         }
       }
@@ -26383,54 +22194,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已隐藏（%1$lld）"
-          }
-        }
-      }
-    },
-    "home.tray.quit" : {
-      "comment" : "Status icon menu item that quits the app.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quit"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salir"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "退出"
-          }
-        }
-      }
-    },
-    "home.tray.show" : {
-      "comment" : "Status icon menu item that shows the window.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开"
           }
         }
       }
@@ -32808,7 +28571,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enlazar un dispositivo"
+            "value" : "Vincular dispositivo"
           }
         },
         "zh-Hans" : {

@@ -18,13 +18,13 @@ The browser extension and the CLI are companions. The extension uses the same co
 | --- | --- |
 | macOS | Full-size content, transparent title bar, no title text. Close, minimize and full screen stay. A strip 28 points tall along the top drags the window (`dragStripPoints`). |
 | iPhone | Full screen under the system bars. |
-| Android | Edge to edge, transparent system bars, the more button in the top corner. |
-| Windows | Content extends into the title bar, Mica material, system caption buttons. The more button sits left of them. |
-| Linux | Flat, transparent libadwaita header bar over the canvas, the desktop's own button layout. The more button is in the header bar's end. |
+| Android | Edge to edge, transparent system bars, the canvas's corner buttons in the corners the system leaves free. |
+| Windows | Content extends into the title bar, Mica material, system caption buttons. The corner buttons take the corners the caption buttons leave. |
+| Linux | Flat, transparent libadwaita header bar over the canvas, the desktop's own button layout. The corner buttons sit in the corners the header bar leaves free. |
 
-## The more button and menus
+## Canvas and Imp menus
 
-The more button is in the top trailing corner on every platform. It opens the canvas menu. A right click on empty space opens the same menu. On a phone, touch and hold on empty space opens it.
+The canvas has no more button. Its actions are the corner buttons (see [Main screen](/ux/main-screen)). A right click on empty space opens the canvas menu. On a phone, touch and hold on empty space opens it.
 
 Menus use the platform's own style: `NSMenu` on macOS, a popup menu on iPhone and Android, a flyout on Windows, a popover menu on Linux. The items and the words are the same.
 
@@ -43,8 +43,8 @@ Menus use the platform's own style: `NSMenu` on macOS, a popup menu on iPhone an
 
 | Platform | Status icon |
 | --- | --- |
-| macOS | A menu bar item. Its menu has `home.tray.show`, New Imp, Settings and `home.tray.quit`. |
-| Windows | A notification area icon with the same menu. |
+| macOS | A menu bar item with a panel: Imps, Show or Hide, Settings and Quit (`menu.bar.*`). |
+| Windows | A notification area icon with the same items. |
 | Linux | A status notifier icon, where the desktop shows one. The app does not depend on it, because some desktops do not show any. |
 | iPhone and Android | None. |
 
@@ -61,7 +61,7 @@ Menus use the platform's own style: `NSMenu` on macOS, a popup menu on iPhone an
 
 ## Touch and pointer
 
-- Pointer platforms use click, double click and right click. Touch platforms use tap, double tap and touch and hold.
+- Pointer platforms use click and right click. Touch platforms use tap and touch and hold. Two clicks on an Imp are a trigger, not a gesture of their own.
 - Hover effects are only for pointers. Nothing needs hover to be understood.
 - Hit areas follow the table on [Accessibility](/ux/accessibility).
 

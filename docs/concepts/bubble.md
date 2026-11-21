@@ -29,5 +29,5 @@ The close button, chat button and copy or reply buttons sit on the card's corner
 
 ## Notes
 
-- Why a reply once had more room on the right: the transcript and the reading scroll added a 10 pt right padding as a scroll bar gutter. It is gone. The scroll bar takes its own room only while the text overflows.
+- The transcript and the reading scroll have no extra right padding. The scroll bar takes its own room only while the text overflows.
 - Reduce Motion: the chat adds no motion of its own.

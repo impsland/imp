@@ -25,12 +25,6 @@ function fromBase64(text) {
   return bytes;
 }
 
-function toBase64(bytes) {
-  let raw = '';
-  for (let i = 0; i < bytes.length; i += 0x8000) raw += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  return btoa(raw);
-}
-
 /**
  * The WebSocket address of a Hop given as host:port. An https page may only open wss://, which a proxy
  * in front of the Hop answers on port 443 (server/README.md). A plain http page talks to the Hop's own port.

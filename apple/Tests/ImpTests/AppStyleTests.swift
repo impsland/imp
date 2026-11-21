@@ -231,15 +231,14 @@ import Testing
     private static let pebble: [Rule] = [
         Rule(pattern: #"\.strokeBorder\(|\.stroke\("#, what: "an outline (only focus rings and drawings may stroke)", allowed: [
             "Adaptive.swift": "the keyboard focus ring",
-            "DeviceDiagrams.swift": "the line between two devices is a drawing",
             "DevicePlugs.swift": "a plug is a drawing: its outline is what shows it is out",
             "Inputs.swift": "a focused field's ring",
             "TextArea.swift": "a focused field's ring",
             "BeatTrack.swift": "the timeline track is a drawing",
             "AnimationStage.swift": "the timeline is a drawing",
             "AnimationEditor.swift": "the timeline is a drawing",
-                        "DevicesCard.swift": "the dashed scan frame",
             "PairingView.swift": "the dashed scan frame",
+            "Shutter.swift": "the camera's shutter ring is a drawing of a camera button",
             "GameLayer.swift": "game canvas", "GameRound.swift": "game canvas", "EmbersCoach.swift": "game canvas",
             "EchoLayer.swift": "game canvas", "EchoCoach.swift": "game canvas",
         ]),

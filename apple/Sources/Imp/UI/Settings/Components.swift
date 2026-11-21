@@ -12,32 +12,6 @@ extension ImpProfile {
 
 // `impTint` (from ImpDesign) colours buttons, icons and highlights after the Imp being set up.
 
-/// A whole pebble you press: a soft fill that lightens under the pointer, with the focus ring for
-/// the keyboard. The content is laid out by the caller.
-struct PebbleButton<Content: View>: View {
-    /// Another fill for a state (a warning). The pebble then keeps it under the pointer.
-    var fill: Color?
-    let action: () -> Void
-    @ViewBuilder var content: Content
-    @Environment(\.isFocused) private var focused
-    @State private var hover = false
-
-    var body: some View {
-        let shape = RoundedRectangle(cornerRadius: Radius.large, style: .continuous)
-        Button(action: action) {
-            content
-                .padding(.horizontal, Spacing.large).padding(.vertical, Spacing.cozy)
-                .frame(maxWidth: .infinity, minHeight: Sizing.hit, alignment: .leading)
-                .background(shape.fill(fill ?? (hover ? Tone.cardHover : Tone.card)))
-                .focusRing(shape, shown: focused)
-                .contentShape(shape)
-        }
-        .buttonStyle(.plain)
-        .onHover { hover = $0 }
-        .impAnimation(value: hover)
-    }
-}
-
 /// Keys rendered as physical-looking keycaps.
 struct Keycaps: View {
     let hotkey: Hotkey?

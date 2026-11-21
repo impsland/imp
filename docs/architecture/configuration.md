@@ -77,7 +77,7 @@ The name is the file name. Every `primary` or `all` agent in `~/.agents/agents` 
 for (its character, size, favourite colour, memory settings, own animations, its id) is in `imp.json` under
 `imps.<name>`, so the agent file stays readable by any tool that reads `.agents`.
 
-Providers are not set in an agent file. An agent picks one by name in `model`; headers or body fields that
+Providers are not set in an agent file. An agent picks one by name in `model`. Headers or body fields that
 only this agent sends go in `request`.
 
 ## Permissions
@@ -133,7 +133,7 @@ group switched off is `{action: <group>, resource: "*", effect: deny}`.
   saved for it in `auth.json`. Keys typed into either app are saved in `auth.json`, never in `imp.json`.
 - `{env:NAME}` is replaced by the environment variable and `{file:path}` by the file's contents (`~` is the
   home folder), anywhere a string is allowed, in `imp.json` and in agent front matter.
-- A variant's object is merged into the request body; `low`, `medium` and `high` work without one and send
+- A variant's object is merged into the request body. `low`, `medium` and `high` work without one and send
   `reasoning_effort`.
 - MCP servers are on for every Imp. A `deny` rule on `mcp` turns one off for an Imp.
 
@@ -175,14 +175,14 @@ The Mac app keeps its own model (`ImpPreferences`) and maps it to the files in `
 | In the app | In the files |
 | --- | --- |
 | A service (name, address, model) | `providers.<id>`: `name`, `options.baseURL`, `defaultModel`, `models`. The id is a slug of the name |
-| The default Brain | `model` (`provider/model#variant`; a variant the file has is kept) |
-| An Imp's own Brain | the agent's `model`; "no Brain" is `imps.<name>.noBrain` |
-| An Imp (name, About, personality, colour) | the agent file (`description`, body, `color`); the file name is the name |
+| The default Brain | `model` (`provider/model#variant`, and a variant the file has is kept) |
+| An Imp's own Brain | the agent's `model`, and "no Brain" is `imps.<name>.noBrain` |
+| An Imp (name, About, personality, colour) | the agent file (`description`, body, `color`). The file name is the name |
 | Size, favourite colour, character, memory, own animations, instructions, id | `imps.<name>` |
 | Tool switches, shell, tool servers per Imp, single tools | the agent's `permissions`: the fewest rules that make the switches true (`deny` for off, an `allow` only to undo an outer `deny`) |
 | Tool servers | `mcp.<name>` (`local` or `remote`, `disabled`) |
 | Triggers, the animation library, requests, talk, the Hop address and device tool limits | `triggers`, `animations`, `requests`, `talk`, `link.hop`, `link.deviceTools` |
-| A key typed in a service | `auth.json`; the lookup reports a provider as keyed when `options.apiKey` is set too |
+| A key typed in a service | `auth.json`. The lookup reports a provider as keyed when `options.apiKey` is set too |
 | A tool server's sign-in | `auth.json`, under the server's name |
 | Window, bubble, appearance, which Imps are out, where each stands, favourites noticed | `UserDefaults`, by the Imp's id |
 
@@ -194,7 +194,7 @@ How it behaves:
   app has no field for (`steps`, `request`, headers, variants, references such as `{env:NAME}`) stays.
 - The colour of an Imp stays as the file has it until its hue is changed in the app.
 - Renaming an Imp renames its file and moves its `imps` entry. Removing one deletes both. The Imp keeps its
-  id (`imps.<name>.id`; an agent without one gets a stable id made from its name).
+  id (`imps.<name>.id`, and an agent without one gets a stable id made from its name).
 - A change made outside is noticed within about two seconds. What was edited in the app and not yet written is
   written first, then the files are read again, so neither side loses an edit.
 - Settings → Backup shows the config folder. Factory Reset removes the app's own data and offers, as a separate

@@ -1,9 +1,9 @@
 import SwiftUI
 import UIKit
 
-/// Every tap the phone gives in the hand goes through here, so one switch (Settings › App › Haptics) turns them all
-/// off. What earns a tap: a pick (a size step, a colour, a character), an Imp leaving for another device or landing
-/// here, a result (a Brain that works, an answer) and touching an Imp. Nothing taps while you only look.
+/// Every tap the phone gives in the hand goes through here, so one switch in the App section of Settings turns them
+/// all off. What earns a tap: a pick (a size step, a colour, a character), an Imp leaving for another device or
+/// landing here, a result (a Brain that works, an answer) and touching an Imp. Nothing taps while you only look.
 @MainActor
 enum Haptics {
     /// Whether haptics are on (`AppStorage` key). On until switched off.

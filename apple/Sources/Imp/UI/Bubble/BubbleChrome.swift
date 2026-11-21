@@ -285,7 +285,7 @@ struct IconButton: View {
     }
 }
 
-// MARK: - Phases
+// MARK: - Copy
 
 struct CopyButton: View {
     var size: CGFloat = 26

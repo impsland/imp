@@ -3,7 +3,7 @@ import ImageIO
 import UniformTypeIdentifiers
 
 /// A photo, a sound, a video or any file that goes along with a message to an Imp.
-/// Pictures are scaled (`EncodedImage.encode`); sound the apps record is 16 kHz mono 16-bit WAV.
+/// Pictures are scaled (`EncodedImage.encode`). Sound the apps record is 16 kHz mono 16-bit WAV.
 public struct MediaFile: Sendable, Equatable, Identifiable {
     public enum Kind: String, Sendable, Equatable {
         case image, audio, video, file

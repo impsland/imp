@@ -143,12 +143,6 @@ pub fn tool_built_in_name(tool: BuiltInTool) -> String {
     tool.name().to_string()
 }
 
-/// The built-in tool the model calls `name`.
-#[uniffi::export]
-pub fn tool_built_in_tool(name: String) -> Option<BuiltInTool> {
-    BuiltInTool::named(&name)
-}
-
 /// Whether `name` is a name the model can call a tool by (1 to 64 letters, digits, `_` and `-`).
 #[uniffi::export]
 pub fn tool_name_valid(name: String) -> bool {

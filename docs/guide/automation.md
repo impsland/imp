@@ -14,7 +14,7 @@ Imp answers `imp://` links. Use them from Shortcuts, Raycast, Alfred, a script o
 
 `imp://run` runs one of your triggers by name, so a trigger can be started from outside too, whatever its
 event. A trigger is an event, optional conditions and one to five steps (for example *poke → play Wiggle, say
-Ouch*); see [Features](/guide/features#triggers).
+Ouch*). See [Features](/guide/features#triggers).
 
 Each link needs its key: `ask` needs `text`, `run` needs `action`, and `add` needs `url` or `kit`.
 Values must be URL-encoded (a space is `%20`). A kit link never adds anything by itself: Imp always shows

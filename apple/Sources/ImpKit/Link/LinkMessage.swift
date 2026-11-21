@@ -305,7 +305,7 @@ public enum LinkMessage: Codable, Sendable, Equatable {
     case newChat(imp: UUID)
     /// Carry on in one of the chats the home listed (`chats`).
     case openChat(imp: UUID, chat: UUID)
-    /// Patted, spun or shaken: the home plays the animation that answers to it.
+    /// Poked, cuddled, shaken or dropped: the home plays the animation that answers to it.
     case felt(imp: UUID, feeling: LinkFeeling)
     /// A file a reply shows or links to (a picture, a voice, a video, a document), as written in
     /// the reply: a path on the home, relative to the Imp's folder or absolute. The home sends it

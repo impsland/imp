@@ -55,7 +55,7 @@ export function approach({ x, width, distance }) {
 
 /**
  * The hand's speed from pointer moves, smoothed as the Mac smooths the mouse's (`push`). Feed it each
- * move; `velocity` is pixels a second.
+ * move. `velocity` is pixels a second.
  */
 export class Hand {
   constructor() {

@@ -14,7 +14,7 @@ take any of these: pasted JSON, a web address, an `imp://add` link, or a dropped
 
 ## Exporting
 
-- **Share as Kit** on a trigger copies its JSON to the clipboard, and the same goes for a tool.
+- **Share as a kit** on a trigger copies its JSON to the clipboard, and the same goes for a tool.
 - Each Imp's share sheet copies the kit or a link for that Imp.
 - Animations can be shared too, from their own share button (or in the editor).
 
@@ -106,7 +106,7 @@ needs keys, Imp opens its form. Command arguments are exported as they are, so *
 
 ## Compatibility
 
-A kit says which kit format it is in `"format"` (a whole number. This Imp reads and writes format 1). Imp always writes it, a
+A kit says which kit format it is in `"format"` (a whole number, and this Imp reads and writes format 1). Imp always writes it, a
 kit without it is read as format 1, and a kit in a newer format than this Imp reads is refused with a message to update Imp.
 Adding an optional field never changes the format: older Imps ignore keys they don't know and give a missing one its default.
 `"app"` is the version of Imp that wrote the file, for information only. The rules are in `spec/PROTOCOL.md`.

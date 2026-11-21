@@ -7,8 +7,8 @@ import Foundation
 ///
 /// An app opened from the Finder or the Dock only gets launchd's bare PATH, and `zsh -l` alone
 /// skips `.zshrc`, which is where nvm, fnm, asdf, pyenv and friends put `npx`, `node`, `uvx`…
-/// (From a terminal, `open` hands the app that terminal's environment, which is why a build run
-/// with `make run` found `npx` and the installed copy didn't.) So, like VS Code, Imp asks the
+/// (From a terminal, `open` hands the app that terminal's environment, so a build started with
+/// `make run` finds `npx`, and the installed copy may not.) So, like VS Code, Imp asks the
 /// user's shell once, as an interactive login shell, and runs commands with what it prints.
 public enum LoginEnvironment {
     /// The process environment with the shell's on top. Asks the shell the first time only. If

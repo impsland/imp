@@ -3,7 +3,7 @@ import ImpKit
 import SwiftUI
 
 /// The games on the stage: the ways in (a flame for Embers and a rune circle for Echo, in the
-/// bottom corners, when the Imps are asleep), and for Embers the sparks, the score, the close (X)
+/// bottom corners, while no game is on), and for Embers the sparks, the score, the close (X)
 /// and the results card. Drawn inside the stage's own timeline, so it reads the engine each frame.
 ///
 /// A game owns the screen from its lesson to the dismissal of its results card: `isPlaying` (and

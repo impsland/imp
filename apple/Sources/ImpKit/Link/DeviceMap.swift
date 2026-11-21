@@ -152,8 +152,7 @@ public struct DeviceMap: Equatable, Sendable, Decodable {
         return map
     }
 
-    /// The tools an Imp has, by group and by tool server. The one place that knows how to list them,
-    /// so it can read from the tool registry once there is one.
+    /// The tools an Imp has, by group and by tool server. The one place that knows how to list them.
     public static func tools(of imp: ImpProfile, servers: [MCPServerConfig]) -> [Tool] {
         var tools = ImpToolGroup.allCases.filter(imp.uses).map {
             Tool(id: ToolRegistry.ownGroupID($0), title: $0.title, symbol: $0.symbol, source: .own)

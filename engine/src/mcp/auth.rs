@@ -52,10 +52,7 @@ pub fn parse_challenge(header: &str) -> Option<Challenge> {
         }
         let key: String = chars[key_start..i].iter().collect();
         if i >= chars.len() || chars[i] != '=' {
-            // A new challenge scheme begins: stop at it.
-            if key_start == i {
-                break;
-            }
+            // A word without `=` begins a new challenge scheme, and the text may end: stop either way.
             break;
         }
         i += 1;

@@ -48,7 +48,7 @@ final class Dictation {
     private var watchdog: Task<Void, Never>?
     private let log = Logger(subsystem: "app.imp.Imp", category: "dictation")
 
-    /// Asks only when macOS hasn't asked yet. Otherwise answers immediately from the cached status.
+    /// Asks only when macOS hasn't asked yet. Otherwise answers immediately from the current status.
     /// The handlers are `@Sendable`: macOS calls them off the main thread (see `Permission.request`).
     static func requestPermissions() async throws {
         switch AVCaptureDevice.authorizationStatus(for: .audio) {

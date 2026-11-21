@@ -548,6 +548,11 @@ msgctxt "devices.empty"
 msgid "No devices yet."
 msgstr ""
 
+#. Tooltip of the button in the corner of the Devices map that zooms so every device fits.
+msgctxt "devices.fit"
+msgid "Show all"
+msgstr ""
+
 #. Button that forgets one linked device, with its name.
 msgctxt "devices.forget.named"
 msgid "Forget {name}…"
@@ -851,6 +856,16 @@ msgstr ""
 #. Button: send a visiting Imp home.
 msgctxt "devices.visitor.send_home"
 msgid "Send home"
+msgstr ""
+
+#. Tooltip of the plus button in the corner of the Devices map.
+msgctxt "devices.zoom_in"
+msgid "Zoom in"
+msgstr ""
+
+#. Tooltip of the minus button in the corner of the Devices map.
+msgctxt "devices.zoom_out"
+msgid "Zoom out"
 msgstr ""
 
 #. The key was refused.
@@ -1474,16 +1489,6 @@ msgstr ""
 #. The element on the floor that holds hidden Imps. The number is how many.
 msgctxt "home.hidden.title"
 msgid "Hidden ({count})"
-msgstr ""
-
-#. Status icon menu item that quits the app.
-msgctxt "home.tray.quit"
-msgid "Quit"
-msgstr ""
-
-#. Status icon menu item that shows the window.
-msgctxt "home.tray.show"
-msgid "Open"
 msgstr ""
 
 #. Screen reader action for an Imp away on another device.

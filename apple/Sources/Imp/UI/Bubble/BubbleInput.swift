@@ -3,7 +3,7 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// Type to Imp: ↩ sends, ⇧↩ new line, ⎋ closes. ⌘V (or ⌃V) pastes text, or attaches a copied
+/// The message box for Imp: ↩ sends, ⇧↩ new line, ⎋ closes. ⌘V (or ⌃V) pastes text, or attaches a copied
 /// picture to send along. In the chat (`chat`) it sits in a well under the transcript, and waits
 /// while the Imp is still answering.
 struct TypingField: View {
@@ -54,9 +54,10 @@ struct TypingField: View {
         }
     }
 
+    /// Files dragged over the box: it fills with the Imp's colour, where they will land.
     private var dropHint: some View {
         RoundedRectangle(cornerRadius: Radius.medium, style: .continuous)
-            .strokeBorder(tint, style: StrokeStyle(lineWidth: 2, dash: [5, 4]))
+            .fill(tint.opacity(Opacity.tintFill))
             .allowsHitTesting(false)
     }
 
@@ -119,11 +120,10 @@ struct TypingField: View {
                 .frame(width: BubbleMetrics.send, height: BubbleMetrics.send)
                 .contentShape(Circle())
         }
-        .menuStyle(.borderlessButton)
-        .menuIndicator(.hidden)
+        .menuStyle(.button).buttonStyle(.plain).menuIndicator(.hidden)
         .fixedSize()
-        // A borderless menu sizes itself to its glyph and drops the label's frame: the box goes on the menu, so the +
-        // sits centred on the same line as the mic and the send button.
+        // The box goes on the menu as well as on its label, so the + sits centred on the same line as the mic and the
+        // send button.
         .frame(width: BubbleMetrics.send, height: BubbleMetrics.send)
         .contentShape(Rectangle())
         .disabled(asleep || !MediaFile.canAdd(to: bubble.attachments.count))
@@ -174,7 +174,7 @@ struct TypingField: View {
         let loads = providers.filter { $0.hasItemConformingToTypeIdentifier("public.file-url") }
         guard !loads.isEmpty else { return false }
         for provider in loads {
-            provider.loadObject(ofClass: URL.self) { url, _ in
+            _ = provider.loadObject(ofClass: URL.self) { url, _ in
                 guard let url else { return }
                 Task { @MainActor in
                     let media = Pasteboard.media(from: [url])
@@ -267,7 +267,11 @@ struct MediaChip: View {
             .frame(width: BubbleMetrics.thumb, height: BubbleMetrics.thumb)
             .overlay {
                 if file.kind == .video {
-                    Image(systemName: "play.circle.fill").font(.title2).foregroundStyle(Tone.paper).shadow(radius: 2)
+                    Image(systemName: "play.fill")
+                        .font(.icon(.medium, weight: .bold))
+                        .foregroundStyle(Tone.paper)
+                        .frame(width: Sizing.mark, height: Sizing.mark)
+                        .background(Circle().fill(Tone.scrim))
                 }
             }
         case .audio, .file:

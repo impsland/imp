@@ -53,16 +53,15 @@ between a Mac and an iPhone in a way an app can rely on.
 
 A target must be linked (in the book of devices, so its key was exchanged by a code or scan) and connected.
 Nothing else is ever offered, so a shake cannot reach a stranger's device. `LinkNode.pass` also refuses a
-device that is not a connected peer (test: `aShakeCannotReachADeviceThatIsNotLinked`). A linked device the
-owner has not marked "Mine" is somebody else's screen, so a shake asks before sending to it
-(setting "Ask before sending to a friend", on by default).
+device that is not a connected peer. A linked device the owner has not marked "Mine" is somebody else's screen,
+so a shake asks before sending to it (setting "Ask before sending to a friend", on by default).
 
 ## Transport and latency
 
 The existing `pass` over the link (local network, or the Hop relay). The flight takes about a second and
 the other device answers within a moment on the same network. If there is no answer in the transfer
-timeout, the pass counts as declined and the Imp is sent home. No new messages were added, so Macs
-and iPhones on 2.0.x work with this unchanged.
+timeout, the pass counts as declined and the Imp is sent home. No new messages were added, so older Macs
+and iPhones work with this unchanged.
 
 ## The cost of a wrong transfer
 

@@ -619,7 +619,7 @@ final class ImpModel {
     }
 
     /// A trigger went off: runs its steps in order, at once (an `ask` hands its work to the model
-    /// and the next steps don't wait for it). `clip` is what a URL command handed over; `happened`
+    /// and the next steps don't wait for it). `clip` is what a URL command handed over. `happened`
     /// is what set it off on the Mac (nil: the user did, with keys, clicks or a menu).
     /// `byPerson`: the person did it (keys, a click, a gesture, a menu). The default is that nothing
     /// is said to have happened.

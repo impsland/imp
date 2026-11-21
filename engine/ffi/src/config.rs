@@ -70,7 +70,7 @@ pub struct ConfigSnapshot {
     pub config_json: String,
     /// Every agent file of `~/.agents/agents` that can be read, by name.
     pub agents: Vec<ConfigAgent>,
-    /// The providers that have a key now: `options.apiKey` filled in, else the one saved in `auth.json`.
+    /// The providers that have a key: `options.apiKey` filled in, else the one saved in `auth.json`.
     pub keyed_providers: Vec<String>,
     /// Files that could not be used, in plain words. The rest loaded.
     pub diagnostics: Vec<String>,
@@ -469,7 +469,8 @@ pub fn permission_decide(
 }
 
 /// The agent's rules after making `action` on `resource` allowed (`on`) or denied, with as few rules
-/// as it takes. A switched-off group is `{group, *, deny}`. An MCP server is a rule on `mcp` with the resource `<server>/` and a star.
+/// as it takes. A switched-off group is `{group, *, deny}`. An MCP server is a rule on `mcp` with the
+/// resource `<server>/*`.
 #[uniffi::export]
 pub fn permission_set(
     global: Vec<PermissionRule>,
@@ -515,7 +516,7 @@ pub struct GateVerdict {
     pub resource: String,
 }
 
-/// The verdict on a tool call of `agent`, by the rules as they are on disk now: the defaults, `imp.json`'s
+/// The verdict on a tool call of `agent`, by the rules as they are on disk: the defaults, `imp.json`'s
 /// and the agent's own. A file that can't be read is a `deny` (nothing is let through on a guess).
 #[uniffi::export]
 pub fn config_gate(

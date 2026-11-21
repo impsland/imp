@@ -20,7 +20,7 @@ Three rules follow from that.
 | Imp Settings | One Imp | No | A rail of sections and the chosen section, as in Settings. |
 | First run | One Imp | No | Waking an Imp with a Brain, step by step. |
 | New Imp | Nobody yet | No | The same as Imp Settings, for an Imp being hatched. |
-| Settings | The app | Yes | Brains, Devices, Sharing, App. |
+| Settings | The app | Yes | Brains, Devices, App. |
 | Link a device | The app | No | Only on the first screen: this device's code, the two ways to take another code, this device's name. |
 
 A sheet that rests at half height opens there (`behavior.sheetHalfCover`), and the room above it takes touches. Pulled up, it covers the screen and the room rests.

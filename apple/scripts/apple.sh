@@ -267,9 +267,9 @@ cmd_app() {
   binary="$bin_dir/Imp"
 
   # Render the icon first, then assemble the bundle in a staging folder and move it into place in
-  # one step. A bundle built in place let Finder and LaunchServices see and cache a half-made app
-  # whose Info.plist named AppIcon before AppIcon.icns existed. Adding files to Contents/Resources
-  # never changes the date of the bundle folder, so that generic icon stayed.
+  # one step. A bundle built in place lets Finder and LaunchServices see and cache a half-made app,
+  # with an Info.plist that names AppIcon before AppIcon.icns exists. Adding files to Contents/Resources
+  # does not change the date of the bundle folder, so the generic icon would stay.
   local iconset="build/AppIcon.iconset" stage="build/.staging/Imp.app"
   rm -rf "$iconset" "$stage"
   "$binary" --render-icon "$iconset"
@@ -340,9 +340,9 @@ Usage: $PROG dmg
 Packs $APP into $DMG: the installer window shows Imp next to a link to Applications, on a
 background the app renders itself. Build the app first ($PROG app).
 
-The disk image stays unsigned. Gatekeeper checks a signed disk image when it is opened and blocks
-one whose certificate is not Apple's, while an unsigned one just opens. The app inside is signed,
-so a download asks for permission once, when Imp first launches.
+The disk image is unsigned unless IMP_DEVELOPER_ID is set. Gatekeeper checks a signed disk image
+when it is opened and blocks one whose certificate is not Apple's, while an unsigned one just opens.
+The app inside is signed, so a download asks for permission once, when Imp first launches.
 
 Environment:
   IMP_DEVELOPER_ID   also sign the disk image with this Developer ID certificate
@@ -629,7 +629,8 @@ Usage: $PROG check-strings [FILE.swift...]
 
 Checks that every dotted string key used in Swift code (like "home.title") has English, Spanish
 and Simplified Chinese text. A key lives in design/strings/*.json or in
-$CATALOGS/Localizable.xcstrings. Without files, it checks every Swift file under apple/.
+$CATALOGS/Localizable.xcstrings. Without files, it checks every Swift file of the apps under
+apple/ (not the tests, which find views by identifier).
 
 Exits with status 1 and lists each key that lacks a language.
 
@@ -648,7 +649,7 @@ cmd_check_strings() {
   else
     local file
     while IFS= read -r file; do files+=("$file"); done \
-      < <(find apple -name '*.swift' -not -path '*/.build/*' | sort)
+      < <(find apple -name '*.swift' -not -path '*/.build/*' -not -path '*Tests/*' | sort)
   fi
 
   python3 -I - "$CATALOGS/Localizable.xcstrings" "${files[@]}" << 'PYTHON'
@@ -658,10 +659,11 @@ import re
 import sys
 
 LANGUAGES = ("en", "es", "zh-Hans")
-# Only keys in these areas come from design/strings. Other dotted strings are not text keys.
-AREAS = ("settings", "menu", "common", "states", "home", "imps", "phone", "sheets",
-         "first-run", "extension", "imp-settings", "all-imps")
 KEY = re.compile(r'"([a-z][a-z0-9_]*(?:\.[a-z0-9_]+)+)"')
+# Lines where a dotted string is a name, not text: identifiers, queue labels, stored settings.
+NAME_CONTEXTS = ("accessibilityIdentifier", "DispatchQueue(label:", "@AppStorage(")
+# Dotted names that share an area with text keys: an SF Symbol and the app's reverse-DNS names.
+NOT_TEXT = re.compile(r"^(brain\.head\.profile|app\.imp(\..*)?)$|\.(json|lock)$")
 
 catalog_path, swift_files = sys.argv[1], sys.argv[2:]
 
@@ -671,6 +673,8 @@ for path in glob.glob("design/strings/*.json"):
     with open(path, encoding="utf-8") as file:
         for key, entry in json.load(file).items():
             languages_of[key] = {lang for lang in LANGUAGES if entry.get(lang)}
+# A text key starts with the area of a key in design/strings, like "home" in "home.title".
+areas = {key.split(".")[0] for key in languages_of}
 with open(catalog_path, encoding="utf-8") as file:
     for key, entry in json.load(file)["strings"].items():
         translated = {
@@ -683,10 +687,10 @@ problems = 0
 for path in swift_files:
     with open(path, encoding="utf-8") as file:
         for number, line in enumerate(file, 1):
-            if line.lstrip().startswith("//"):
+            if line.lstrip().startswith("//") or any(name in line for name in NAME_CONTEXTS):
                 continue
             for key in KEY.findall(line):
-                if key.split(".")[0] not in AREAS:
+                if key.split(".")[0] not in areas or NOT_TEXT.search(key):
                     continue
                 missing = [lang for lang in LANGUAGES if lang not in languages_of.get(key, set())]
                 if missing:

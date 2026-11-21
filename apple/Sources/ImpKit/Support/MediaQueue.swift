@@ -1,7 +1,7 @@
 /// Which of a reply's players starts next. Players the Imp marked `#autoplay` in one answer play
 /// one after another, in the order they're written, not over each other: one that turns up while
 /// another of the same answer is still going waits its turn. A newer answer takes over, and so does
-/// you starting something yourself somewhere else.
+/// starting something yourself somewhere else.
 public struct MediaQueue<ID: Hashable> {
     /// A player: what it is, which answer it's in, and where in that answer (0 is the first).
     public struct Item: Equatable {

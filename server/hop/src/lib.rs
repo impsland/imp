@@ -1,5 +1,5 @@
 //! The Imp Hop: a blind relay that splices two streams, a guest and the host it joins: TCP, or a
-//! WebSocket from a browser (`ws`). See PROTOCOL.md.
+//! WebSocket from a browser (`ws`). See spec/PROTOCOL.md.
 #![forbid(unsafe_code)]
 
 mod config;

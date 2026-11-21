@@ -110,9 +110,9 @@ private func scratch() -> URL {
         let m = Briefing.shortcut("Translate the text in the picture.", clip: .image(pixel), imagePath: "/tmp/picture.png")
         #expect(m.images == [pixel.dataURL])
         #expect(m.content!.contains("/tmp/picture.png"))
-        // Sent as multimodal content: the words, then the picture.
+        // Sent as multimodal content: the picture, then the words (the core puts media first).
         let parts = try #require(m.json["content"] as? [[String: Any]])
-        #expect(parts.count == 2 && parts[0]["type"] as? String == "text" && parts[1]["type"] as? String == "image_url")
+        #expect(parts.count == 2 && parts[0]["type"] as? String == "image_url" && parts[1]["type"] as? String == "text")
         // Remembered without the bytes.
         #expect(Briefing.remembered(m).images == nil && Briefing.remembered(m).content == m.content)
         // A pasted picture with no words still asks something.

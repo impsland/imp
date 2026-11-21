@@ -130,7 +130,7 @@ time it is read.
 ### Finding them
 
 - Type `/` and the custom commands come after the built-in ones, with their arguments in the list, such as
-  `/review ARGUMENTS`. 
+  `/review ARGUMENTS`.
 - Type `/review` and press Enter. A command that takes arguments is completed to `/review ` so you can type
   them. Otherwise it is sent at once.
 - `/help` lists them with the built-in commands.

@@ -302,7 +302,7 @@ mod tests {
             u.begin(id(100), id(8), "a", "x/y", 1, &sha, 0.0),
             Err(Refusal::Repeated)
         );
-        // Two devices fill most of the room with full-size files; a third waits.
+        // Two devices fill most of the room with full-size files. A third waits.
         let mut u = Uploads::default();
         for n in 0..2 {
             u.begin(id(n), id(n + 10), "a", "x/y", MAX_UPLOAD, &sha, 0.0)

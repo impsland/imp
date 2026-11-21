@@ -159,10 +159,9 @@ private struct FileStatus: View {
 
 /// A picture in a reply, in a box of its final size from the first frame. The chat is a lazy list: rows that
 /// scroll away are dropped and built again when they come back. A picture that started as a short "getting
-/// it" line and grew once decoded changed the height of what was above you, and the chat jumped. Now the
-/// box keeps the picture's proportions (read from the file's header, which needs no decoding) or, before
-/// the file is here at all, a usual photo's. And a decoded picture is kept in memory, so a row built again
-/// shows it at once.
+/// it" line and grew once decoded changed the height of what was above you, and the chat jumped. The box keeps
+/// the picture's proportions (read from the file's header, which needs no decoding) or, before the file is here
+/// at all, a usual photo's. A decoded picture is kept in memory, so a row built again shows it at once.
 private struct PictureBlock: View {
     var ref: String
     var alt: String

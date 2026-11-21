@@ -1,6 +1,6 @@
 // Connecting a device: one small sheet with a camera that reads the other device's code and a box to
 // paste it in, as on the Mac. The code is `implink://join?...` (the Mac's Devices › Show code, the iPhone's,
-// or `/pair` in the terminal app). Joining is the link's (`Link.join`); this only finds the code.
+// or `/pair` in the terminal app). Joining is the link's (`Link.join`). This only finds the code.
 
 import * as wasm from './pkg/imp_web.js';
 
@@ -39,7 +39,7 @@ export function findCode(text) {
 }
 
 export class ConnectSheet {
-  /** `link` joins; `onLinked(name)` hears of a new device. */
+  /** `link` joins a device; the sheet hears its `joined` event. */
   constructor(link) {
     this.link = link;
     this.sheet = $('sheet');
