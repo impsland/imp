@@ -39,6 +39,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>ImpResellerIssuanceURL</key>
+	<string>$(IMP_RESELLER_ISSUANCE_URL)</string>
+	<key>ImpResellerURL</key>
+	<string>$(IMP_RESELLER_URL)</string>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

@@ -8,6 +8,8 @@ public enum APIError: LocalizedError, Equatable, Sendable {
     case noModel
     case badURL(String)
     case http(status: Int, message: String)
+    /// The service has no credit left. Its own message says how to top up.
+    case outOfCredit(message: String)
     case emptyResponse(String)
     /// The Imp has no service of its own, and neither does the default brain.
     case needsBrain(imp: String)
@@ -28,6 +30,7 @@ public enum APIError: LocalizedError, Equatable, Sendable {
             case 429: String(localized: "Too many requests (429). Even imps need a breather.")
             default: String(localized: "The API said \(status): \(message)")
             }
+        case .outOfCredit(let message): String(format: String(localized: "api.out_of_credit"), message)
         case .emptyResponse(let what): String(localized: "The model returned no \(what).")
         case .needsBrain(let imp):
             String(localized: "\(imp) has no brain yet. Open its settings, choose the Brain tab and pick an AI service and a model.")
@@ -168,7 +171,11 @@ public struct OpenAIClient: Sendable {
     static func check(_ response: URLResponse, data: Data) throws {
         guard let http = response as? HTTPURLResponse else { return }
         guard !(200..<300).contains(http.statusCode) else { return }
-        throw APIError.http(status: http.statusCode, message: errorMessage(from: data))
+        let body = String(decoding: data, as: UTF8.self)
+        if chatIsOutOfCredit(status: UInt16(clamping: http.statusCode), body: body) {
+            throw APIError.outOfCredit(message: chatErrorMessage(body: body))
+        }
+        throw APIError.http(status: http.statusCode, message: chatErrorMessage(body: body))
     }
 
     static func errorMessage(from data: Data) -> String {

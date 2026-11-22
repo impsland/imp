@@ -19,6 +19,7 @@ struct PocketEditor: View {
 
     @State private var draft: PocketDraft
     @State private var open: ImpSetting?
+    @State private var prompting = false
     /// The Brain form. Its button checks the Brain and keeps it.
     @State private var brainFlow: FirstRunModel?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -67,6 +68,7 @@ struct PocketEditor: View {
         .impControls(tint: Color.imp(draft.hue))
         .background(Tone.surface)
         .presentationBackground(Tone.surface)
+        .sheet(isPresented: $prompting) { PhoneSetupPromptSheet(pocket: pocket, id: id) { prompting = false } }
         .goodbyeQuestion($asking, names: [callName]) { _ in
             saving?.cancel()
             pocket.delete(id)
@@ -183,7 +185,15 @@ struct PocketEditor: View {
             FormPage { _ in
                 Group {
                     switch setting {
-                    case .brain: if let brainFlow { PhoneBrainForm(flow: brainFlow) }
+                    case .brain:
+                        if let brainFlow {
+                            PhoneBrainForm(flow: brainFlow)
+                            if draft.hasBrain {
+                                Button("onboarding.setup_prompt") { prompting = true }
+                                    .buttonStyle(.plain).font(Typeface.label).foregroundStyle(Tone.accent)
+                                    .padding(.top, Spacing.large).accessibilityIdentifier("brain.setup_prompt")
+                            }
+                        }
                     case .personality: PocketPersonalityPanel(draft: draft)
                     case .look: PocketLookPanel(draft: draft, showsImp: !roomInView)
                     case .tools: PocketToolsPanel(draft: draft, proxy: proxy, removing: $removing)

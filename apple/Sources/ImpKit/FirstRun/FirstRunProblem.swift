@@ -47,7 +47,7 @@ public enum FirstRunProblem: Equatable, Sendable {
                 case 408, 504: return .timeout
                 default: return .generic
                 }
-            case .emptyResponse: return .generic
+            case .emptyResponse, .outOfCredit: return .generic
             }
         }
         if let url = error as? URLError {

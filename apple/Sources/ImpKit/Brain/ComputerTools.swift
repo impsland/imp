@@ -21,7 +21,7 @@ public enum ComputerTools {
         return [
             ToolSpec(
                 name: observe,
-                description: "Look at an app on the Mac so you can operate it: a screenshot of its window plus a compact list of its "
+                description: "Look at an app on the Mac so you can operate it (use this first when the user asks you to click, type or do something in an app): a screenshot of its window plus a compact list of its "
                     + "accessible elements (id like e12, role, name, value, state, frame) and the app's other windows and menus. "
                     + "Defaults to the frontmost app's focused window. Coordinates are screenshot pixels from the window's top-left. "
                     + "If the app exposes few elements, work from the picture and click by coordinates. Always observe before acting, "

@@ -3,6 +3,7 @@
 //! new` do, so the files are the ones the Mac app reads too. `Wizard` holds the steps and has no input or
 //! output, so keys can be tested without a terminal. `run` is the thin part that talks to one.
 
+use super::issue;
 use super::start::{Input, Step, footer, next_input, page};
 use super::terminal::Restore;
 use super::text::{text_width, truncate};
@@ -37,6 +38,11 @@ pub(super) enum Offer {
         key: Option<String>,
     },
     Preset(&'static Service),
+    /// The build's own service. The key it just handed out is in the steps.
+    Issued {
+        id: String,
+        url: String,
+    },
 }
 
 impl Offer {
@@ -44,6 +50,7 @@ impl Offer {
         match self {
             Self::Saved { id, .. } => id,
             Self::Preset(service) => service.id,
+            Self::Issued { id, .. } => id,
         }
     }
 
@@ -51,13 +58,14 @@ impl Offer {
         match self {
             Self::Saved { url, .. } => url,
             Self::Preset(service) => service.base_url,
+            Self::Issued { url, .. } => url,
         }
     }
 
     /// Whether the step of the key may be left empty: the service runs here, or is saved as it is.
     fn key_optional(&self) -> bool {
         match self {
-            Self::Saved { .. } => true,
+            Self::Saved { .. } | Self::Issued { .. } => true,
             Self::Preset(service) => service.local,
         }
     }
@@ -134,6 +142,23 @@ impl Wizard {
             problem: None,
             lang,
         }
+    }
+
+    /// The steps for the build's own service, whose key is already issued: they start at the model.
+    pub(super) fn issued(
+        id: String,
+        url: String,
+        key: String,
+        taken: Vec<String>,
+        lang: Lang,
+    ) -> Self {
+        let mut wizard = Self::new(Vec::new(), taken, lang);
+        wizard.address = url.clone();
+        wizard.key = key.clone();
+        wizard.offer = Some(Offer::Issued { id, url });
+        wizard.stage = Stage::Model;
+        wizard.ask_models();
+        wizard
     }
 
     /// The services to offer: the ones in `imp.json`, then each preset that is not there under its name.
@@ -303,7 +328,7 @@ impl Wizard {
                 let next = match &offer {
                     Offer::Saved { key: Some(_), .. } => Stage::Model,
                     Offer::Saved { key: None, .. } => Stage::Key,
-                    Offer::Preset(_) => Stage::Address,
+                    Offer::Preset(_) | Offer::Issued { .. } => Stage::Address,
                 };
                 self.offer = Some(offer);
                 self.go(next);
@@ -372,7 +397,7 @@ impl Wizard {
         let key = match (self.key.is_empty(), self.offer()) {
             (false, _) => Some(self.key.clone()),
             (true, Offer::Saved { key, .. }) => key.clone(),
-            (true, Offer::Preset(_)) => None,
+            (true, Offer::Preset(_) | Offer::Issued { .. }) => None,
         };
         self.models = None;
         self.model.clear();
@@ -494,7 +519,7 @@ impl Wizard {
 
     fn offer_line(&self, i: usize, offer: &Offer, theme: &Theme, width: usize) -> Line<'static> {
         let label = match offer {
-            Offer::Saved { id, url, .. } => format!("{id}  {url}"),
+            Offer::Saved { id, url, .. } | Offer::Issued { id, url, .. } => format!("{id}  {url}"),
             Offer::Preset(service) => strings::text(
                 self.lang,
                 if service.local {
@@ -590,7 +615,10 @@ pub(super) async fn run(settings: &Settings) -> Result<Option<String>> {
     let loaded = settings.load();
     let taken = loaded.agents.keys().cloned().collect();
     let lang = Lang::detect();
-    let mut wizard = Wizard::new(Wizard::offers_of(settings), taken, lang);
+    let mut wizard = match issue::first_key(lang).await {
+        Some((id, url, key)) => Wizard::issued(id, url, key, taken, lang),
+        None => Wizard::new(Wizard::offers_of(settings), taken, lang),
+    };
     let theme = Theme::detect();
     let made = {
         let (_guard, mut terminal) = Restore::start()?;
@@ -652,6 +680,28 @@ mod tests {
                     .to_string()
             })
             .collect()
+    }
+
+    #[test]
+    fn an_issued_service_starts_at_the_models_and_writes_its_key() {
+        let mut w = Wizard::issued(
+            "api-example-com".into(),
+            "https://api.example.com/v1".into(),
+            "sk-res-1".into(),
+            Vec::new(),
+            Lang::En,
+        );
+        assert_eq!(w.stage, Stage::Model);
+        assert_eq!(w.take_lookup().unwrap().key.as_deref(), Some("sk-res-1"));
+        w.set_models(vec!["m1".into()]);
+        w.on_input(key(KeyCode::Enter));
+        let Step::Done(made) = w.on_input(key(KeyCode::Enter)) else {
+            panic!("the name step ends the steps");
+        };
+        assert_eq!(made.provider, "api-example-com");
+        assert!(!made.saved);
+        assert_eq!(made.key.as_deref(), Some("sk-res-1"));
+        assert_eq!(made.model, "m1");
     }
 
     #[test]

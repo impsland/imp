@@ -81,6 +81,49 @@ import Testing
         #expect(!calls.contains { $0.result.hasPrefix("Error") && $0.name == OwnTools.addTrigger && $0.result.contains("Unknown animation") })
     }
 
+    /// The words of the first run's prompt in `language`, from the String Catalog.
+    static func presetPrompt(_ language: String) throws -> String {
+        let catalog = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().appendingPathComponent("Resources/Localization/Localizable.xcstrings")
+        let json = try #require(JSONSerialization.jsonObject(with: Data(contentsOf: catalog)) as? [String: Any])
+        let strings = try #require(json["strings"] as? [String: [String: Any]])
+        let localizations = try #require(strings["onboarding.prompt"]?["localizations"] as? [String: [String: [String: String]]])
+        return try #require(localizations[language]?["stringUnit"]?["value"])
+    }
+
+    /// The first run's plain prompt, in everyday words: five animations, and a click that opens the text box.
+    @Test(arguments: ["en", "es"]) func thePlainFirstRunPromptSetsTheImpUp(language: String) async throws {
+        let live = try LiveEnv.client()
+        let host = Host()
+        let agent = Agent(client: live.client, model: live.model, tools: host)
+        let (reply, _) = try await agent.run([.system(Self.system()), Briefing.message(try Self.presetPrompt(language))])
+        let calls = await host.calls
+        print("live first run (\(language)) calls:\n" + calls.map { "\($0.name) \($0.arguments)\n  -> \($0.result)" }.joined(separator: "\n") + "\nreply: \(reply)")
+        let prefs = await host.prefs, imp = host.imp
+        #expect(prefs.ownAnimations(of: imp).count == 5, "animations: \(prefs.ownAnimations(of: imp).count)")
+        let opens = prefs.shortcuts.filter { $0.trigger.event == .click && $0.steps.contains { $0.act == .open && $0.value == "text_box" } }
+        #expect(opens.count == 1, "triggers: \(prefs.shortcuts.map { $0.toolDescription() })")
+    }
+
+    /// Plain everyday requests, one turn each: which tool the model reaches for first.
+    @Test(arguments: [
+        ("When I click on you, open the box where I type.", OwnTools.addTrigger),
+        ("Every morning at 9 remind me to drink water.", OwnTools.addTrigger),
+        ("Connect my Google Calendar so you can see my meetings.", OwnTools.addTool),
+        ("Make yourself look sleepy.", OwnTools.setTraits),
+        ("Open the Rust website for me.", ShellTool.name),
+        ("Ask Bo what he is doing.", OwnTools.message),
+    ]) func plainRequestsPickTheRightTool(request: String, expected: String) async throws {
+        let live = try LiveEnv.client()
+        var specs = await Host().tools()
+        specs += OwnTools.specs([.personality, .look], animations: [], imps: ["Bo"], browser: true)
+        specs += await ShellTool(directory: URL(fileURLWithPath: "/tmp/pip")).tools()
+        let reply = try await live.client.chat(model: live.model, messages: [.system(Self.system()), Briefing.message(request)], tools: specs)
+        let first = reply.toolCalls.first?.name
+        print("live plain request: \(request) expected \(expected) got \(first ?? "no tool call")")
+        #expect(first == expected, "\(request): got \(first ?? "no tool call")")
+    }
+
     /// Asked from a device that isn't marked Mine: no tools, and it says how to change that.
     @Test func withoutToolsItSaysWhyAndHow() async throws {
         let live = try LiveEnv.client()

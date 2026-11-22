@@ -196,6 +196,13 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
     /// Returns the service. The key is not kept here.
     @discardableResult
     public mutating func adopt(_ brain: FirstRunBrain, for imp: UUID) -> UUID {
+        let id = adoptService(brain)
+        if let i = imps.firstIndex(where: { $0.id == imp }) { imps[i].brain = nil }
+        return id
+    }
+
+    /// Keeps the service of a checked Brain, with its model, as the default one. No Imp is touched.
+    public mutating func adoptService(_ brain: FirstRunBrain) -> UUID {
         let wanted = brain.baseURL.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         let id: UUID
         if let known = ai.services.first(where: { $0.baseURL.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == wanted }) {
@@ -207,7 +214,6 @@ public struct ImpPreferences: Codable, Hashable, Sendable {
         }
         ai.setModel(brain.model, for: id)
         ai.brain.service = id
-        if let i = imps.firstIndex(where: { $0.id == imp }) { imps[i].brain = nil }
         return id
     }
 

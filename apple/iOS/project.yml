@@ -10,11 +10,15 @@ packages:
   SnapshotTesting:
     url: https://github.com/pointfreeco/swift-snapshot-testing
     from: 1.19.7
+# One source for the model service a build starts with, shared with the Mac and the command line apps.
+configFiles:
+  Debug: ../Config/Reseller.xcconfig
+  Release: ../Config/Reseller.xcconfig
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "3.8.0"
-    CURRENT_PROJECT_VERSION: "38"
+    MARKETING_VERSION: "3.9.0"
+    CURRENT_PROJECT_VERSION: "39"
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
     # Xcode runs on Apple silicon only, so the Simulator is arm64 too, like the core built for it.
@@ -27,6 +31,7 @@ targets:
       - path: Imp
       # The Mac's renderer, compiled as is: an Imp on the phone is drawn by the same code.
       - path: ../Sources/Imp/UI/Shared/GoodbyeQuestion.swift
+      - path: ../Sources/Imp/UI/FirstRun/OnboardingPictures.swift
         group: Shared
       - path: ../Sources/Imp/Character
         group: Shared
@@ -67,6 +72,8 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleDevelopmentRegion: en
         CFBundleLocalizations: [en, es, zh-Hans]
+        ImpResellerURL: $(IMP_RESELLER_URL)
+        ImpResellerIssuanceURL: $(IMP_RESELLER_ISSUANCE_URL)
         NSLocalNetworkUsageDescription: Imp finds your other devices on your network, so the Imps you toss can land here.
         NSCameraUsageDescription: Imp scans the code another device shows.
         NSBonjourServices: ["_imp-link._tcp"]

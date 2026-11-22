@@ -148,5 +148,177 @@
     "en": "Link a device and bring an Imp from it instead",
     "es": "Vincula un dispositivo y trae un Imp de él",
     "zh-Hans": "连接设备，改为从它带来一个 Imp"
+  },
+  "onboarding.step.model": {
+    "note": "Title of step 1 of the first run.",
+    "en": "Your Imp has a brain",
+    "es": "Tu Imp tiene un cerebro",
+    "zh-Hans": "你的 Imp 有了大脑"
+  },
+  "onboarding.step.move": {
+    "note": "Title of step 2 of the first run.",
+    "en": "Send your Imp to another screen",
+    "es": "Pasa a tu Imp a otra pantalla",
+    "zh-Hans": "把你的 Imp 送到另一块屏幕"
+  },
+  "onboarding.step.setup": {
+    "note": "Title of step 3 of the first run.",
+    "en": "Let your Imp set itself up",
+    "es": "Deja que tu Imp se configure solo",
+    "zh-Hans": "让你的 Imp 自己完成设置"
+  },
+  "onboarding.step.of": {
+    "note": "Which step of the first run this is.",
+    "args": {
+      "step": "string",
+      "total": "string"
+    },
+    "en": "Step {step} of {total}",
+    "es": "Paso {step} de {total}",
+    "zh-Hans": "第 {step} 步，共 {total} 步"
+  },
+  "onboarding.model.issuing": {
+    "note": "Step 1 while the key is being issued.",
+    "en": "Getting your model ready",
+    "es": "Preparando tu modelo",
+    "zh-Hans": "正在准备你的模型"
+  },
+  "onboarding.model.ready": {
+    "note": "Step 1 once the model is connected. The host is the service's address.",
+    "args": {
+      "host": "string"
+    },
+    "en": "Connected to {host}",
+    "es": "Conectado a {host}",
+    "zh-Hans": "已连接到 {host}"
+  },
+  "onboarding.model.form": {
+    "note": "Step 1 in a build without a model service: what to do.",
+    "en": "Connect the model your Imp thinks with.",
+    "es": "Conecta el modelo con el que piensa tu Imp.",
+    "zh-Hans": "连接你的 Imp 用来思考的模型。"
+  },
+  "onboarding.retry.title": {
+    "note": "Step 1 when the key could not be issued.",
+    "en": "Your model is not ready yet",
+    "es": "Tu modelo aún no está listo",
+    "zh-Hans": "你的模型还没有准备好"
+  },
+  "onboarding.retry.body": {
+    "note": "Step 1 after a failure that trying again can fix.",
+    "en": "Nothing is lost. Try again in a moment.",
+    "es": "No se ha perdido nada. Inténtalo de nuevo en un momento.",
+    "zh-Hans": "没有任何损失。请稍后再试。"
+  },
+  "onboarding.retry.wait": {
+    "note": "Step 1 when the service asks to wait. The number is seconds.",
+    "args": {
+      "seconds": "string"
+    },
+    "en": "You can try again in {seconds} seconds.",
+    "es": "Podrás intentarlo de nuevo en {seconds} segundos.",
+    "zh-Hans": "{seconds} 秒后可以再试。"
+  },
+  "onboarding.retry.final": {
+    "note": "Step 1 after a failure that trying again cannot fix.",
+    "en": "This service is not handing out models right now. You can connect your own instead.",
+    "es": "Este servicio no entrega modelos ahora mismo. Puedes conectar el tuyo.",
+    "zh-Hans": "这个服务目前不提供模型。你可以改为连接自己的模型。"
+  },
+  "onboarding.retry.details": {
+    "note": "Button that shows what the service said.",
+    "en": "Details",
+    "es": "Detalles",
+    "zh-Hans": "详情"
+  },
+  "onboarding.move.body": {
+    "note": "Step 2: how an Imp goes to another device.",
+    "en": "Give your Imp a quick swipe toward the edge of the screen. It is carried over to the screen of your other device with Imp. Swipe it back to bring it home.",
+    "es": "Dale a tu Imp un empujón rápido hacia el borde de la pantalla. Se va a la pantalla de tu otro dispositivo con Imp. Empújalo de vuelta para traerlo a casa.",
+    "zh-Hans": "朝屏幕边缘快速一划，你的 Imp 就会被送到你另一台装有 Imp 的设备屏幕上。再划回来就能让它回家。"
+  },
+  "onboarding.setup.body": {
+    "note": "Step 3: what the prompt is for.",
+    "en": "Your Imp starts with these words. You can change them first.",
+    "es": "Tu Imp empieza con estas palabras. Puedes cambiarlas antes.",
+    "zh-Hans": "你的 Imp 会从这段话开始。你可以先修改它。"
+  },
+  "onboarding.prompt": {
+    "note": "What a new Imp is asked first, on a computer. Plain words only, no tool names.",
+    "en": "Hi! Make 5 animations for different emotions. And when I click on you, open the box where I can type to you.",
+    "es": "¡Hola! Crea 5 animaciones para distintas emociones. Y cuando haga clic en ti, abre la caja donde puedo escribirte.",
+    "zh-Hans": "你好！帮我做 5 个表达不同情绪的动画。还有，当我点击你的时候，打开可以给你打字的输入框。"
+  },
+  "onboarding.prompt.field": {
+    "note": "Label of the editable prompt.",
+    "en": "What your Imp is asked",
+    "es": "Lo que se le pide a tu Imp",
+    "zh-Hans": "对你的 Imp 的请求"
+  },
+  "onboarding.prompt.send_again": {
+    "note": "Button that sends the setup prompt to the Imp again.",
+    "en": "Send again",
+    "es": "Enviar de nuevo",
+    "zh-Hans": "再次发送"
+  },
+  "onboarding.prompt.reset": {
+    "note": "Button that restores the preset prompt.",
+    "en": "Use the original",
+    "es": "Usar el original",
+    "zh-Hans": "恢复原文"
+  },
+  "onboarding.change_connection": {
+    "note": "Action that opens the form for an address, a key and a model.",
+    "en": "Change connection",
+    "es": "Cambiar conexión",
+    "zh-Hans": "更改连接"
+  },
+  "onboarding.setup_prompt": {
+    "note": "Action that opens the setup prompt.",
+    "en": "Setup prompt",
+    "es": "Petición de configuración",
+    "zh-Hans": "设置请求"
+  },
+  "onboarding.use_included": {
+    "note": "Action that goes back to the model that came with the app.",
+    "en": "Use the model that came with Imp",
+    "es": "Usar el modelo que viene con Imp",
+    "zh-Hans": "使用 Imp 自带的模型"
+  },
+  "onboarding.next": {
+    "note": "Button to the next step.",
+    "en": "Next",
+    "es": "Siguiente",
+    "zh-Hans": "下一步"
+  },
+  "onboarding.creating": {
+    "note": "Message while the Imp is being created.",
+    "args": {
+      "name": "string"
+    },
+    "en": "Creating {name}",
+    "es": "Creando a {name}",
+    "zh-Hans": "正在创建 {name}"
+  },
+  "api.out_of_credit": {
+    "note": "Error: the service has no credit left. The message is the service's own and says how to top up.",
+    "args": {
+      "message": "string"
+    },
+    "en": "Out of credit. {message}",
+    "es": "Sin crédito. {message}",
+    "zh-Hans": "额度已用完。{message}"
+  },
+  "onboarding.model.body": {
+    "note": "Step 1: what the model is for, in one plain sentence.",
+    "en": "This is what lets your Imp understand you and talk back.",
+    "es": "Es lo que permite a tu Imp entenderte y responderte.",
+    "zh-Hans": "有了它，你的 Imp 才能听懂你的话并回答你。"
+  },
+  "onboarding.prompt.tap": {
+    "note": "What a new Imp is asked first, on a phone, where an Imp is tapped. Plain words only, no tool names.",
+    "en": "Hi! Make 5 animations for different emotions. And when I tap on you, open the box where I can type to you.",
+    "es": "¡Hola! Crea 5 animaciones para distintas emociones. Y cuando te toque, abre la caja donde puedo escribirte.",
+    "zh-Hans": "你好！帮我做 5 个表达不同情绪的动画。还有，当我点一下你的时候，打开可以给你打字的输入框。"
   }
 }

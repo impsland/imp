@@ -115,6 +115,11 @@ msgctxt "animations.search"
 msgid "Search"
 msgstr "搜索"
 
+#. Error: the service has no credit left. The message is the service's own and says how to top up.
+msgctxt "api.out_of_credit"
+msgid "Out of credit. {message}"
+msgstr "额度已用完。{message}"
+
 #. Row in the App group of Settings.
 msgctxt "app.language"
 msgid "Language"
@@ -2220,6 +2225,131 @@ msgstr "去别的设备做客吧"
 msgctxt "menu.imp.visit_tip"
 msgid "{name} visits {device} and can come back."
 msgstr "{name} 去 {device} 做客，还可以回来。"
+
+#. Action that opens the form for an address, a key and a model.
+msgctxt "onboarding.change_connection"
+msgid "Change connection"
+msgstr "更改连接"
+
+#. Message while the Imp is being created.
+msgctxt "onboarding.creating"
+msgid "Creating {name}"
+msgstr "正在创建 {name}"
+
+#. Step 1: what the model is for, in one plain sentence.
+msgctxt "onboarding.model.body"
+msgid "This is what lets your Imp understand you and talk back."
+msgstr "有了它，你的 Imp 才能听懂你的话并回答你。"
+
+#. Step 1 in a build without a model service: what to do.
+msgctxt "onboarding.model.form"
+msgid "Connect the model your Imp thinks with."
+msgstr "连接你的 Imp 用来思考的模型。"
+
+#. Step 1 while the key is being issued.
+msgctxt "onboarding.model.issuing"
+msgid "Getting your model ready"
+msgstr "正在准备你的模型"
+
+#. Step 1 once the model is connected. The host is the service's address.
+msgctxt "onboarding.model.ready"
+msgid "Connected to {host}"
+msgstr "已连接到 {host}"
+
+#. Step 2: how an Imp goes to another device.
+msgctxt "onboarding.move.body"
+msgid "Give your Imp a quick swipe toward the edge of the screen. It is carried over to the screen of your other device with Imp. Swipe it back to bring it home."
+msgstr "朝屏幕边缘快速一划，你的 Imp 就会被送到你另一台装有 Imp 的设备屏幕上。再划回来就能让它回家。"
+
+#. Button to the next step.
+msgctxt "onboarding.next"
+msgid "Next"
+msgstr "下一步"
+
+#. What a new Imp is asked first, on a computer. Plain words only, no tool names.
+msgctxt "onboarding.prompt"
+msgid "Hi! Make 5 animations for different emotions. And when I click on you, open the box where I can type to you."
+msgstr "你好！帮我做 5 个表达不同情绪的动画。还有，当我点击你的时候，打开可以给你打字的输入框。"
+
+#. Label of the editable prompt.
+msgctxt "onboarding.prompt.field"
+msgid "What your Imp is asked"
+msgstr "对你的 Imp 的请求"
+
+#. Button that restores the preset prompt.
+msgctxt "onboarding.prompt.reset"
+msgid "Use the original"
+msgstr "恢复原文"
+
+#. Button that sends the setup prompt to the Imp again.
+msgctxt "onboarding.prompt.send_again"
+msgid "Send again"
+msgstr "再次发送"
+
+#. What a new Imp is asked first, on a phone, where an Imp is tapped. Plain words only, no tool names.
+msgctxt "onboarding.prompt.tap"
+msgid "Hi! Make 5 animations for different emotions. And when I tap on you, open the box where I can type to you."
+msgstr "你好！帮我做 5 个表达不同情绪的动画。还有，当我点一下你的时候，打开可以给你打字的输入框。"
+
+#. Step 1 after a failure that trying again can fix.
+msgctxt "onboarding.retry.body"
+msgid "Nothing is lost. Try again in a moment."
+msgstr "没有任何损失。请稍后再试。"
+
+#. Button that shows what the service said.
+msgctxt "onboarding.retry.details"
+msgid "Details"
+msgstr "详情"
+
+#. Step 1 after a failure that trying again cannot fix.
+msgctxt "onboarding.retry.final"
+msgid "This service is not handing out models right now. You can connect your own instead."
+msgstr "这个服务目前不提供模型。你可以改为连接自己的模型。"
+
+#. Step 1 when the key could not be issued.
+msgctxt "onboarding.retry.title"
+msgid "Your model is not ready yet"
+msgstr "你的模型还没有准备好"
+
+#. Step 1 when the service asks to wait. The number is seconds.
+msgctxt "onboarding.retry.wait"
+msgid "You can try again in {seconds} seconds."
+msgstr "{seconds} 秒后可以再试。"
+
+#. Step 3: what the prompt is for.
+msgctxt "onboarding.setup.body"
+msgid "Your Imp starts with these words. You can change them first."
+msgstr "你的 Imp 会从这段话开始。你可以先修改它。"
+
+#. Action that opens the setup prompt.
+msgctxt "onboarding.setup_prompt"
+msgid "Setup prompt"
+msgstr "设置请求"
+
+#. Title of step 1 of the first run.
+msgctxt "onboarding.step.model"
+msgid "Your Imp has a brain"
+msgstr "你的 Imp 有了大脑"
+
+#. Title of step 2 of the first run.
+msgctxt "onboarding.step.move"
+msgid "Send your Imp to another screen"
+msgstr "把你的 Imp 送到另一块屏幕"
+
+#. Which step of the first run this is.
+msgctxt "onboarding.step.of"
+msgid "Step {step} of {total}"
+msgstr "第 {step} 步，共 {total} 步"
+
+#. Title of step 3 of the first run.
+msgctxt "onboarding.step.setup"
+msgid "Let your Imp set itself up"
+msgstr "让你的 Imp 自己完成设置"
+
+#. Action that goes back to the model that came with the app.
+msgctxt "onboarding.use_included"
+msgid "Use the model that came with Imp"
+msgstr "使用 Imp 自带的模型"
 
 #. Field label: a short description of the Imp, which other Imps read to know whom to ask.
 msgctxt "personality.about"

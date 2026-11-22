@@ -27,6 +27,7 @@
   <data name="animations.list" xml:space="preserve"><value>动画</value><comment>Header of the list of the animations an Imp plays.</comment></data>
   <data name="animations.new" xml:space="preserve"><value>新建</value><comment>Button and sheet title: make a new animation of your own.</comment></data>
   <data name="animations.search" xml:space="preserve"><value>搜索</value><comment>Placeholder of the search field on the Animations page.</comment></data>
+  <data name="api.out_of_credit" xml:space="preserve"><value>额度已用完。{message}</value><comment>Error: the service has no credit left. The message is the service's own and says how to top up.</comment></data>
   <data name="app.language" xml:space="preserve"><value>界面语言</value><comment>Row in the App group of Settings.</comment></data>
   <data name="app.login" xml:space="preserve"><value>自动启动</value><comment>Switch in the App group of Settings, for the desktop app only.</comment></data>
   <data name="app.login_note" xml:space="preserve"><value>登录时自动打开 Imp。</value><comment>Note under a switch in the App group of Settings.</comment></data>
@@ -447,6 +448,31 @@
   <data name="menu.imp.visit" xml:space="preserve"><value>去做客</value><comment>Small heading in an Imp's menu over the linked devices it can visit.</comment></data>
   <data name="menu.imp.visit_none" xml:space="preserve"><value>去别的设备做客吧</value><comment>Greyed Imp menu item when no other device is around.</comment></data>
   <data name="menu.imp.visit_tip" xml:space="preserve"><value>{name} 去 {device} 做客，还可以回来。</value><comment>Tip on the Imp menu item that sends it to visit a device.</comment></data>
+  <data name="onboarding.change_connection" xml:space="preserve"><value>更改连接</value><comment>Action that opens the form for an address, a key and a model.</comment></data>
+  <data name="onboarding.creating" xml:space="preserve"><value>正在创建 {name}</value><comment>Message while the Imp is being created.</comment></data>
+  <data name="onboarding.model.body" xml:space="preserve"><value>有了它，你的 Imp 才能听懂你的话并回答你。</value><comment>Step 1: what the model is for, in one plain sentence.</comment></data>
+  <data name="onboarding.model.form" xml:space="preserve"><value>连接你的 Imp 用来思考的模型。</value><comment>Step 1 in a build without a model service: what to do.</comment></data>
+  <data name="onboarding.model.issuing" xml:space="preserve"><value>正在准备你的模型</value><comment>Step 1 while the key is being issued.</comment></data>
+  <data name="onboarding.model.ready" xml:space="preserve"><value>已连接到 {host}</value><comment>Step 1 once the model is connected. The host is the service's address.</comment></data>
+  <data name="onboarding.move.body" xml:space="preserve"><value>朝屏幕边缘快速一划，你的 Imp 就会被送到你另一台装有 Imp 的设备屏幕上。再划回来就能让它回家。</value><comment>Step 2: how an Imp goes to another device.</comment></data>
+  <data name="onboarding.next" xml:space="preserve"><value>下一步</value><comment>Button to the next step.</comment></data>
+  <data name="onboarding.prompt" xml:space="preserve"><value>你好！帮我做 5 个表达不同情绪的动画。还有，当我点击你的时候，打开可以给你打字的输入框。</value><comment>What a new Imp is asked first, on a computer. Plain words only, no tool names.</comment></data>
+  <data name="onboarding.prompt.field" xml:space="preserve"><value>对你的 Imp 的请求</value><comment>Label of the editable prompt.</comment></data>
+  <data name="onboarding.prompt.reset" xml:space="preserve"><value>恢复原文</value><comment>Button that restores the preset prompt.</comment></data>
+  <data name="onboarding.prompt.send_again" xml:space="preserve"><value>再次发送</value><comment>Button that sends the setup prompt to the Imp again.</comment></data>
+  <data name="onboarding.prompt.tap" xml:space="preserve"><value>你好！帮我做 5 个表达不同情绪的动画。还有，当我点一下你的时候，打开可以给你打字的输入框。</value><comment>What a new Imp is asked first, on a phone, where an Imp is tapped. Plain words only, no tool names.</comment></data>
+  <data name="onboarding.retry.body" xml:space="preserve"><value>没有任何损失。请稍后再试。</value><comment>Step 1 after a failure that trying again can fix.</comment></data>
+  <data name="onboarding.retry.details" xml:space="preserve"><value>详情</value><comment>Button that shows what the service said.</comment></data>
+  <data name="onboarding.retry.final" xml:space="preserve"><value>这个服务目前不提供模型。你可以改为连接自己的模型。</value><comment>Step 1 after a failure that trying again cannot fix.</comment></data>
+  <data name="onboarding.retry.title" xml:space="preserve"><value>你的模型还没有准备好</value><comment>Step 1 when the key could not be issued.</comment></data>
+  <data name="onboarding.retry.wait" xml:space="preserve"><value>{seconds} 秒后可以再试。</value><comment>Step 1 when the service asks to wait. The number is seconds.</comment></data>
+  <data name="onboarding.setup.body" xml:space="preserve"><value>你的 Imp 会从这段话开始。你可以先修改它。</value><comment>Step 3: what the prompt is for.</comment></data>
+  <data name="onboarding.setup_prompt" xml:space="preserve"><value>设置请求</value><comment>Action that opens the setup prompt.</comment></data>
+  <data name="onboarding.step.model" xml:space="preserve"><value>你的 Imp 有了大脑</value><comment>Title of step 1 of the first run.</comment></data>
+  <data name="onboarding.step.move" xml:space="preserve"><value>把你的 Imp 送到另一块屏幕</value><comment>Title of step 2 of the first run.</comment></data>
+  <data name="onboarding.step.of" xml:space="preserve"><value>第 {step} 步，共 {total} 步</value><comment>Which step of the first run this is.</comment></data>
+  <data name="onboarding.step.setup" xml:space="preserve"><value>让你的 Imp 自己完成设置</value><comment>Title of step 3 of the first run.</comment></data>
+  <data name="onboarding.use_included" xml:space="preserve"><value>使用 Imp 自带的模型</value><comment>Action that goes back to the model that came with the app.</comment></data>
   <data name="personality.about" xml:space="preserve"><value>描述</value><comment>Field label: a short description of the Imp, which other Imps read to know whom to ask.</comment></data>
   <data name="personality.about_hint" xml:space="preserve"><value>上网查资料、修代码……</value><comment>Placeholder of the field about what the Imp is good at.</comment></data>
   <data name="personality.help.about" xml:space="preserve"><value>一两行字。其他 Imp 会读它，来决定什么事该问谁。</value><comment>Help of the field about what the Imp is good at.</comment></data>

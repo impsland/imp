@@ -122,9 +122,10 @@ public enum OwnTools {
         return [
             ToolSpec(
                 name: makeAnimation,
-                description: "Make a new animation, or change one: a sequence of beats (poses held for a while), like the ones you play. "
+                description: "Make a new animation (a move, dance or way of reacting), or change one: a sequence of beats (poses held for a while), like the ones you play. "
+                    + "Use this when the user asks you to learn a new move, make up a dance or change how you do one. "
                     + "Give a new `name` for a new one, or the name of one you made to change it. Look at one you made first with "
-                    + "\(showAnimation) to get the feel. It's yours alone unless `for` is `everyone`. It plays once when saved. To start it on an event, add a trigger with a play step (\(addTrigger)). "
+                    + "\(showAnimation) to get the feel. It's yours alone unless `for` is `everyone`. It does not play when saved: show it with \(showAnimation), or add a trigger with a play step to start it on an event (\(addTrigger)). "
                     + "A new animation's name and description are in English by default, unless the user asks for another language.",
                 inputSchema: ["type": "object",
                               "properties": [
@@ -136,16 +137,16 @@ public enum OwnTools {
                               "required": ["beats"]]),
             ToolSpec(
                 name: showAnimation,
-                description: "The beats of an animation that was made, as \(makeAnimation) takes them. Without `name`, lists the animations that were made, and your character traits.",
+                description: "The beats of an animation that was made, as \(makeAnimation) takes them. Without `name`, lists the animations that were made, and your character traits. Use this when the user asks what moves you know or how you act.",
                 inputSchema: ["type": "object", "properties": ["name": ["type": "string"]]]),
             ToolSpec(
                 name: removeAnimation,
-                description: "Remove an animation that was made.",
+                description: "Remove an animation that was made. Use this when the user asks you to forget or delete a move.",
                 inputSchema: ["type": "object", "properties": ["name": ["type": "string"]], "required": ["name"]]),
             ToolSpec(
                 name: setTraits,
-                description: "Set your character: how your eyes, brows and horns always look, in every mood and animation and while you "
-                    + "follow the cursor, and how fast you act. Start from a `preset` and/or set values; anything left out stays as it is.",
+                description: "Set your character (your look and temperament): how your eyes, brows and horns always look, in every mood and animation and while you "
+                    + "follow the cursor, and how fast you act. Use this when the user asks you to look sleepy, grumpy, cheerful or cute, or to be slower or quicker. Start from a `preset` and/or set values; anything left out stays as it is.",
                 inputSchema: ["type": "object",
                               "properties": [
                                 "preset": ["type": "string", "enum": .array(ImpTraits.presets.map { .string($0.id) })],
@@ -174,7 +175,7 @@ public enum OwnTools {
             description: "Act something out with your body: play one or more of your animations, one after another "
                 + "(body language for what you say, or a reaction). They play once your reply shows; animations from several calls "
                 + "all play, in the order you asked for them. Use them often "
-                + "and naturally, like a lively little creature, but not for every message.",
+                + "and naturally, like a lively little creature, but not for every message. Also use them when the user asks you to dance, wave, jump or show a feeling.",
             inputSchema: ["type": "object",
                           "properties": ["names": ["type": "array", "items": ["type": "string", "enum": .array(animations.map { .string($0) })],
                                                    "description": "Animations, in order (1–4)."]],
@@ -222,7 +223,7 @@ public enum OwnTools {
     public static var openFileSpec: ToolSpec {
         ToolSpec(name: openFile,
                  description: "Open a file another Imp shared with you (an imp-file:// link) or one in your own folder: see a picture, "
-                     + "read a text file, or get its path for the shell.",
+                     + "read a text file, or get its path for the shell. Use this when the user asks about a file or picture you were sent.",
                  inputSchema: ["type": "object",
                                "properties": ["file": ["type": "string",
                                                        "description": "An imp-file:// link exactly as you received it, or a path inside your own folder."]],
@@ -234,11 +235,11 @@ public enum OwnTools {
         [
             ToolSpec(
                 name: showBackground,
-                description: "The HTML page drawn behind you and the other Imps in \(place). Read it before changing it, to build on what is there.",
+                description: "The HTML page drawn behind you and the other Imps in \(place): the scenery. Read it before changing it, to build on what is there.",
                 inputSchema: ["type": "object", "properties": [:]]),
             ToolSpec(
                 name: setBackground,
-                description: "Replace the background behind you and the other Imps in \(place) with your own HTML page: a scene, a pattern, "
+                description: "Replace the background (the scenery or wallpaper) behind you and the other Imps in \(place) with your own HTML page. Use this when the user asks for a new backdrop, like \"make it night\" or \"a beach\". It can be a scene, a pattern, "
                     + "a gentle animation (floating clouds, a starry sky, a poker table with a seat for each Imp…). It fills the whole window "
                     + "under every Imp at any size, and is never clicked or scrolled, so make it decoration, not a page to use. One self-contained "
                     + "document, at most \(RoomBackground.maxBytes / 1024) KB: inline CSS, SVG, canvas and JavaScript. https pictures and fonts may load. "
@@ -268,7 +269,7 @@ public enum OwnTools {
             specs.append(ToolSpec(
                 name: openSettings,
                 description: "Your other tools change your triggers, animations, character and MCP tools. Any other setting "
-                    + "is the user's to change: open the exact place with this tool and tell them what to set. Give `setting` (the exact setting) or `page`. With `tool`: an extra "
+                    + "is the user's to change: open the exact place with this tool and tell them what to set. Use this when the user asks to change a setting, like \"turn off sounds\" or \"where do I put my key\". Give `setting` (the exact setting) or `page`. With `tool`: an extra "
                     + "tool's id, to edit it (e.g. to fill in an API key). `imp` is another Imp's name for its pages (default: you). "
                     + "Pages and their settings: " + SettingsPlace.overview + ".",
                 inputSchema: ["type": "object",
@@ -290,7 +291,7 @@ public enum OwnTools {
             specs.append(ToolSpec(
                 name: move,
                 description: "Move yourself (the little character on the user's desktop) somewhere on screen. " + targets
-                    + " `home` goes back to where the user put you.",
+                    + " `home` goes back to where the user put you. Use this when the user asks you to come here, go to a corner or sit on a button.",
                 inputSchema: ["type": "object",
                               "properties": ["to": ["type": "string", "enum": .array(places.map { .string($0) })],
                                              "x": ["type": "number"], "y": ["type": "number"],
@@ -302,7 +303,7 @@ public enum OwnTools {
         if groups.contains(.triggers) {
             specs.append(ToolSpec(
                 name: listTriggers,
-                description: "Your triggers, in the shape \(addTrigger) takes, plus id, enabled and for (me or every_imp).",
+                description: "Your triggers (what you do by yourself when something happens), in the shape \(addTrigger) takes, plus id, enabled and for (me or every_imp). Use this when the user asks what you do automatically.",
                 inputSchema: ["type": "object", "properties": [:]]))
             specs.append(ToolSpec(
                 name: addTrigger,
@@ -310,8 +311,8 @@ public enum OwnTools {
                 inputSchema: ["type": "object",
                               "properties": [
                                 "id": ["type": "string", "description": "An existing trigger's id, to change it."],
-                                "name": ["type": "string"],
-                                "on": ["type": "string", "enum": .array(TriggerEvent.allCases.map { .string($0.rawValue) })],
+                                "name": ["type": "string", "description": "A short name."],
+                                "on": ["type": "string", "enum": .array(TriggerEvent.allCases.map { .string($0.rawValue) }), "description": "The event that starts it."],
                                 "value": ["type": "string", "description": "The event's argument, if it has one."],
                                 "if": ["type": "array", "items": ["type": "object",
                                        "properties": ["state": ["type": "string", "enum": .array(TriggerState.allCases.map { .string($0.rawValue) })],
@@ -327,7 +328,7 @@ public enum OwnTools {
                               "required": ["on", "do"]]))
             specs.append(ToolSpec(
                 name: removeTrigger,
-                description: "Remove one of your triggers (by id, from imp_list_triggers) when the user asks. A shared one "
+                description: "Remove one of your triggers (by id, from imp_list_triggers) when the user asks you to stop doing something automatically. A shared one "
                     + "is switched off for you alone, unless `every_imp` removes it for every Imp.",
                 inputSchema: ["type": "object", "properties": ["id": ["type": "string"], "every_imp": ["type": "boolean"]],
                               "required": ["id"]]))
@@ -335,27 +336,29 @@ public enum OwnTools {
         if groups.contains(.tools) {
             specs.append(ToolSpec(
                 name: listTools,
-                description: "The MCP servers in the library, whether you use each, and whether it's running.",
+                description: "The MCP servers (add-ons that give you abilities, like a calendar, mail or files) in the library, whether you use each, and whether it's running. Use this when the user asks what you are connected to.",
                 inputSchema: ["type": "object", "properties": [:]]))
             specs.append(ToolSpec(
                 name: addTool,
-                description: "Add an MCP server and start using it, when the user asks for something you "
-                    + "can't do yet and a server can. Local: `command` is the whole command line (e.g. \"npx -y @scope/server\"), "
+                description: "Add an MCP server (an add-on that gives you new abilities) and start using it, when the user asks for something you "
+                    + "can't do yet and a server can, like \"connect my calendar\" or \"let you read my mail\": add one that fits instead of saying you cannot. Local: `command` is the whole command line (e.g. \"npx -y @scope/server\"), "
                     + "with `env`. Remote: `url`, with `headers`. Leave secrets empty (\"\"): then open its settings "
                     + "(imp_open_settings with page tools and the tool's id) and ask the user to fill them in. Its tools are "
                     + "yours from the next message on. A new tool's name and description are in English by default, unless the user asks for another language.",
                 inputSchema: ["type": "object",
-                              "properties": ["name": ["type": "string"], "command": ["type": "string"], "url": ["type": "string"],
-                                             "env": ["type": "object", "additionalProperties": ["type": "string"]],
-                                             "headers": ["type": "object", "additionalProperties": ["type": "string"]]]]))
+                              "properties": ["name": ["type": "string", "description": "A short name for it."],
+                                             "command": ["type": "string", "description": "Local server: the whole command line."],
+                                             "url": ["type": "string", "description": "Remote server: its https address."],
+                                             "env": ["type": "object", "additionalProperties": ["type": "string"], "description": "Settings for a local server, such as API keys."],
+                                             "headers": ["type": "object", "additionalProperties": ["type": "string"], "description": "Headers for a remote server, such as an API key."]]]))
             specs.append(ToolSpec(
                 name: removeTool,
-                description: "Stop using an MCP server (by id). With `everywhere`, remove it from the library for every Imp.",
+                description: "Stop using an MCP server (by id), when the user asks to disconnect a service. With `everywhere`, remove it from the library for every Imp.",
                 inputSchema: ["type": "object", "properties": ["id": ["type": "string"], "everywhere": ["type": "boolean"]],
                               "required": ["id"]]))
             specs.append(ToolSpec(
                 name: addKit,
-                description: "Offer the user a kit: Imps, animations, triggers or MCP tools packaged as one document. "
+                description: "Offer the user a kit: Imps, animations, triggers or MCP tools packaged as one shareable document. Use this when the user asks to install or import something from a link or gallery. "
                     + "This Imp reads kit format \(Kit.format). Opens the usual review and nothing is added until the user "
                     + "confirms there. Give `kit` (the kit document, an object or its text: anything an MCP gallery's download "
                     + "returned, or a single trigger or MCP snippet) or `url` (an https address of one). To install something from an "
@@ -369,7 +372,7 @@ public enum OwnTools {
             specs.append(ToolSpec(
                 name: exportKit,
                 description: "The kit document (kit format \(Kit.format)) of something you or the user made, ready to publish on any MCP "
-                    + "gallery, e.g. the Den's publish_item with the matching type (imp, animation, trigger, tool, or kit for several). "
+                    + "gallery, e.g. the Den's publish_item with the matching type (imp, animation, trigger, tool, or kit for several). Use this when the user asks to share or publish something they made. "
                     + "A new kit's name and descriptions are in English by default, unless the user asks for another language. "
                     + "Pick one with `imp`, `animation`, `trigger` or `tool` (each a name), or give several for a kit. "
                     + "API keys and chats are never in it. It is public once published: confirm with the user first.",
@@ -385,12 +388,12 @@ public enum OwnTools {
             specs.append(ToolSpec(
                 name: status,
                 description: "How the Mac is right now: battery and charger, processor load, heat, memory, network, the app "
-                    + "in front and the apps that are open, time away from the keyboard, the time, the screen, and the page in the browser.",
+                    + "in front and the apps that are open, time away from the keyboard, the time, the screen, and the page in the browser. Use this when the user asks how the Mac is doing, the battery, what is open or what time it is.",
                 inputSchema: ["type": "object", "properties": [:]]))
             if browser {
                 specs.append(ToolSpec(
                     name: page,
-                    description: "The page in the browser's active tab: its address and title, and with `read` its visible text.",
+                    description: "The page in the browser's active tab: its address and title, and with `read` its visible text. Use this when the user asks about the page they are looking at.",
                     inputSchema: ["type": "object", "properties": ["read": ["type": "boolean"]]]))
             }
         }
@@ -399,7 +402,8 @@ public enum OwnTools {
 
     /// What the model reads about `imp_add_trigger`: short, but every event, state and act with its value.
     static let addTriggerHelp = """
-        Add (or with `id` change) a trigger: on an event, run steps. Nothing happens on its own without one.
+        Add (or with `id` change) a trigger: when an event happens, run steps. Nothing happens on its own without one.
+        Use this when the user wants something to happen by itself: "when I click on you, open the box where I type", "every morning remind me to...", "say hi when I plug in the charger", "when I press a key...".
         A new trigger's name and description are in English by default, unless the user asks for another language.
         `on` + `value`: keys "ctrl+cmd+T" | click 1-3 | poke hold drag drop shake stroke tickle circle swish rush dangle (pointer on you) | near secs | away | start | at "09:00" | every mins | idle secs | back mins away | wake | app name | website address part | battery % | charger plugged/unplugged | busy % | hot | network offline/online.
         `if` (all must hold): battery %, charger, app, website, busy %, hot, network, hours "22:00-07:00", days "mon-fri", asleep true/false.

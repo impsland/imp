@@ -27,6 +27,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `animations.list` | Animations | Animaciones | 动画 |
 | `animations.new` | New | Nueva | 新建 |
 | `animations.search` | Search | Buscar | 搜索 |
+| `api.out_of_credit` | Out of credit. {message} | Sin crédito. {message} | 额度已用完。{message} |
 | `app.language` | Language | Idioma | 界面语言 |
 | `app.login` | Autostart | Autoinicio | 自动启动 |
 | `app.login_note` | Open Imp when you sign in. | Abre Imp cuando inicias sesión. | 登录时自动打开 Imp。 |
@@ -447,6 +448,31 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `menu.imp.visit` | Visit | Visitar | 去做客 |
 | `menu.imp.visit_none` | Visit another device | Visitar otro dispositivo | 去别的设备做客吧 |
 | `menu.imp.visit_tip` | {name} visits {device} and can come back. | {name} visita {device} y puede volver. | {name} 去 {device} 做客，还可以回来。 |
+| `onboarding.change_connection` | Change connection | Cambiar conexión | 更改连接 |
+| `onboarding.creating` | Creating {name} | Creando a {name} | 正在创建 {name} |
+| `onboarding.model.body` | This is what lets your Imp understand you and talk back. | Es lo que permite a tu Imp entenderte y responderte. | 有了它，你的 Imp 才能听懂你的话并回答你。 |
+| `onboarding.model.form` | Connect the model your Imp thinks with. | Conecta el modelo con el que piensa tu Imp. | 连接你的 Imp 用来思考的模型。 |
+| `onboarding.model.issuing` | Getting your model ready | Preparando tu modelo | 正在准备你的模型 |
+| `onboarding.model.ready` | Connected to {host} | Conectado a {host} | 已连接到 {host} |
+| `onboarding.move.body` | Give your Imp a quick swipe toward the edge of the screen. It is carried over to the screen of your other device with Imp. Swipe it back to bring it home. | Dale a tu Imp un empujón rápido hacia el borde de la pantalla. Se va a la pantalla de tu otro dispositivo con Imp. Empújalo de vuelta para traerlo a casa. | 朝屏幕边缘快速一划，你的 Imp 就会被送到你另一台装有 Imp 的设备屏幕上。再划回来就能让它回家。 |
+| `onboarding.next` | Next | Siguiente | 下一步 |
+| `onboarding.prompt` | Hi! Make 5 animations for different emotions. And when I click on you, open the box where I can type to you. | ¡Hola! Crea 5 animaciones para distintas emociones. Y cuando haga clic en ti, abre la caja donde puedo escribirte. | 你好！帮我做 5 个表达不同情绪的动画。还有，当我点击你的时候，打开可以给你打字的输入框。 |
+| `onboarding.prompt.field` | What your Imp is asked | Lo que se le pide a tu Imp | 对你的 Imp 的请求 |
+| `onboarding.prompt.reset` | Use the original | Usar el original | 恢复原文 |
+| `onboarding.prompt.send_again` | Send again | Enviar de nuevo | 再次发送 |
+| `onboarding.prompt.tap` | Hi! Make 5 animations for different emotions. And when I tap on you, open the box where I can type to you. | ¡Hola! Crea 5 animaciones para distintas emociones. Y cuando te toque, abre la caja donde puedo escribirte. | 你好！帮我做 5 个表达不同情绪的动画。还有，当我点一下你的时候，打开可以给你打字的输入框。 |
+| `onboarding.retry.body` | Nothing is lost. Try again in a moment. | No se ha perdido nada. Inténtalo de nuevo en un momento. | 没有任何损失。请稍后再试。 |
+| `onboarding.retry.details` | Details | Detalles | 详情 |
+| `onboarding.retry.final` | This service is not handing out models right now. You can connect your own instead. | Este servicio no entrega modelos ahora mismo. Puedes conectar el tuyo. | 这个服务目前不提供模型。你可以改为连接自己的模型。 |
+| `onboarding.retry.title` | Your model is not ready yet | Tu modelo aún no está listo | 你的模型还没有准备好 |
+| `onboarding.retry.wait` | You can try again in {seconds} seconds. | Podrás intentarlo de nuevo en {seconds} segundos. | {seconds} 秒后可以再试。 |
+| `onboarding.setup.body` | Your Imp starts with these words. You can change them first. | Tu Imp empieza con estas palabras. Puedes cambiarlas antes. | 你的 Imp 会从这段话开始。你可以先修改它。 |
+| `onboarding.setup_prompt` | Setup prompt | Petición de configuración | 设置请求 |
+| `onboarding.step.model` | Your Imp has a brain | Tu Imp tiene un cerebro | 你的 Imp 有了大脑 |
+| `onboarding.step.move` | Send your Imp to another screen | Pasa a tu Imp a otra pantalla | 把你的 Imp 送到另一块屏幕 |
+| `onboarding.step.of` | Step {step} of {total} | Paso {step} de {total} | 第 {step} 步，共 {total} 步 |
+| `onboarding.step.setup` | Let your Imp set itself up | Deja que tu Imp se configure solo | 让你的 Imp 自己完成设置 |
+| `onboarding.use_included` | Use the model that came with Imp | Usar el modelo que viene con Imp | 使用 Imp 自带的模型 |
 | `personality.about` | Description | Descripción | 描述 |
 | `personality.about_hint` | Researching on the web, fixing code… | Investigar en la web, arreglar código… | 上网查资料、修代码…… |
 | `personality.help.about` | One or two lines. The other Imps read it to know whom to ask for what. | Una o dos líneas. Los otros Imps la leen para saber a quién pedirle cada cosa. | 一两行字。其他 Imp 会读它，来决定什么事该问谁。 |

@@ -1,4 +1,5 @@
 import Foundation
+import ImpCore
 import Testing
 @testable import ImpKit
 
@@ -612,5 +613,89 @@ private actor Count {
         let brain = FirstRunBrain(name: "192.168.1.20", baseURL: "http://192.168.1.20:11434/v1", model: "llama3", key: "", isLocal: true)
         #expect(PocketService(brain).baseURL == "http://192.168.1.20:11434/v1")
         #expect(PocketService(brain).isEmpty == false)
+    }
+}
+
+@MainActor @Suite struct OnboardingTests {
+    private final class Log { var stored: [FirstRunBrain] = []; var created: [(FirstRunBrain, String)] = [] }
+
+    private let settings = ResellerSettings(baseUrl: "https://models.example.com/v1", issuanceUrl: "https://models.example.com/v1/signup", host: "models.example.com")
+
+    private func flow(reseller: Bool, _ log: Log, network: ScriptedNetwork? = nil) throws -> OnboardingModel {
+        let network = try network ?? ScriptedNetwork([notRequired, issuedKey, modelList()])
+        let issuer = reseller ? KeyIssuer(settings: settings, http: network.http, store: { log.stored.append($0) }) : nil
+        let services = FirstRunServices(find: { [] }, models: { _, _ in ["model-a"] }, check: { _ in })
+        return OnboardingModel(impName: "Dot", target: .newImp(ImpPreferences().nextImp()), issuer: issuer, services: services,
+                               onThisComputer: false, store: { log.stored.append($0) }, create: { log.created.append(($0, $1)) })
+    }
+
+    @Test func theStepsGoInOrderWithNextAndBack() async throws {
+        let log = Log(), flow = try flow(reseller: true, log)
+        flow.begin()
+        await flow.issuer?.settled()
+        #expect(flow.step == .model && !flow.canGoBack)
+        flow.next(); #expect(flow.step == .move && flow.canGoBack)
+        flow.next(); #expect(flow.step == .setup)
+        flow.back(); #expect(flow.step == .move)
+        flow.back(); #expect(flow.step == .model)
+        flow.back(); #expect(flow.step == .model)
+    }
+
+    @Test func nextIsOffOnlyWhileTheKeyIsNotThere() async throws {
+        let log = Log(), flow = try flow(reseller: true, log)
+        flow.begin()
+        #expect(!flow.nextEnabled)
+        flow.next()
+        #expect(flow.step == .model)
+        await flow.issuer?.settled()
+        #expect(flow.nextEnabled)
+        let failing = try self.flow(reseller: true, log, network: ScriptedNetwork([.fail(.timedOut)]))
+        failing.begin()
+        await failing.issuer?.settled()
+        #expect(!failing.nextEnabled)
+    }
+
+    @Test func theImpIsCreatedOnlyAtTheEndAndThePromptIsSentOnce() async throws {
+        let log = Log(), flow = try flow(reseller: true, log)
+        flow.begin()
+        await flow.issuer?.settled()
+        flow.next(); flow.next()
+        #expect(log.created.isEmpty && !flow.isOver)
+        flow.prompt = "  Make a happy one.  "
+        flow.next()
+        flow.next()
+        #expect(log.created.count == 1 && flow.isOver)
+        #expect(log.created.first?.1 == "Make a happy one." && log.created.first?.0.key == "sk-res-abc")
+    }
+
+    @Test func thePresetPromptIsPlainWords() throws {
+        for key in ["onboarding.prompt", "onboarding.prompt.tap"] {
+            let prompt = try english(key)
+            #expect(prompt.contains("5") && !prompt.contains("imp_") && !prompt.contains("text_box") && !prompt.contains("%"))
+        }
+        #expect(try english("onboarding.prompt").contains("click") && english("onboarding.prompt.tap").contains("tap"))
+    }
+
+    @Test func aBuildWithoutAServiceStartsOnTheForm() async throws {
+        let log = Log(), flow = try flow(reseller: false, log)
+        #expect(!flow.isReseller && flow.editingConnection && flow.brain == nil)
+        flow.form.address = "https://own.example.com/v1"
+        flow.form.key = "sk-own"
+        flow.form.model = "model-a"
+        flow.next()
+        for _ in 0..<200 where flow.step == .model { try await Task.sleep(for: .milliseconds(10)) }
+        #expect(flow.step == .move && flow.brain?.key == "sk-own" && log.stored.count == 1)
+        #expect(log.created.isEmpty)
+    }
+
+    @Test func aBuildWithAServiceCanChangeToTheForm() async throws {
+        let log = Log(), flow = try flow(reseller: true, log)
+        flow.begin()
+        await flow.issuer?.settled()
+        #expect(!flow.editingConnection && flow.brain != nil)
+        flow.changeConnection()
+        #expect(flow.editingConnection && flow.brain == nil)
+        flow.useIncludedModel()
+        #expect(!flow.editingConnection && flow.brain?.name == "models.example.com")
     }
 }

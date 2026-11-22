@@ -1,4 +1,5 @@
 import AppKit
+import ImpCore
 import ImpDesign
 import ImpKit
 import SwiftUI
@@ -25,10 +26,10 @@ enum DesignScene: String, CaseIterable {
     case appWide = "all-imps-app"
     case appNarrow = "all-imps-app-narrow"
     case allNothing = "all-imps-nothing"
-    case firstRunService = "first-run-service"
-    case firstRunLocal = "first-run-local"
-    case firstRunError = "first-run-error"
-    case firstRunFound = "first-run-found"
+    case onboardingModel = "onboarding-model"
+    case onboardingManual = "onboarding-manual"
+    case onboardingMove = "onboarding-move"
+    case onboardingSetup = "onboarding-setup"
     case barMenu = "bar-menu"
     case barMenuEs = "bar-menu-es"
     case impMenu = "imp-menu"
@@ -73,7 +74,7 @@ enum DesignScene: String, CaseIterable {
         case .appWide: CGSize(width: 900, height: 720)
         case .appNarrow: CGSize(width: 560, height: 720)
         case .allNothing: CGSize(width: 760, height: 640)
-        case .firstRunService, .firstRunLocal, .firstRunError, .firstRunFound: CGSize(width: Sizing.sheetWidth, height: 660)
+        case .onboardingModel, .onboardingManual, .onboardingMove, .onboardingSetup: CGSize(width: Sizing.sheetWidth, height: 700)
         case .barMenu, .barMenuEs: CGSize(width: 420, height: 360)
         case .impMenu: CGSize(width: 1800, height: 640)
         case .allPair, .allPairLinked, .allPairScan, .allPairScanError: CGSize(width: 560, height: 420)
@@ -107,10 +108,10 @@ enum DesignScene: String, CaseIterable {
         case .impTriggerSteps: triggerEditor(poke: true)
         case .appWide, .appNarrow: general(.app)
         case .allNothing: general(.brains, setUp: false)
-        case .firstRunService: firstRun { _ in }
-        case .firstRunLocal: firstRun { if let local = ServicePreset.local { $0.choose(local) } }
-        case .firstRunError: firstRun { $0.continueFromService() }
-        case .firstRunFound: firstRun(found: true) { _ in }
+        case .onboardingModel: firstRun(.model)
+        case .onboardingManual: firstRun(.model, reseller: false)
+        case .onboardingMove: firstRun(.move)
+        case .onboardingSetup: firstRun(.setup)
         case .barMenu, .barMenuEs: barMenu()
         case .impMenu: impMenu()
         case .allPair: pairing()
@@ -432,18 +433,24 @@ enum DesignScene: String, CaseIterable {
         model.prefs.imps[1].servers = [files.id]
     }
 
-    /// The first run of a new Imp (not in the settings), as on the first launch: with Ollama found when `found`.
-    @MainActor private func firstRun(found: Bool = false, _ events: (FirstRunModel) -> Void) -> AnyView {
-        let ollama = LocalServer(name: "Ollama", baseURL: ServicePreset.local?.baseURL ?? "", models: ["llama3.2"])
-        let services = FirstRunServices(find: { found ? [ollama] : [] }, models: { _, _ in ["model-a", "model-b"] }, check: { _ in })
+    /// The first run of a new Imp (not in the settings), at one of its steps: in a build that comes with a model
+    /// service, whose key is already issued, or in one without.
+    @MainActor private func firstRun(_ step: OnboardingStep, reseller: Bool = true) -> AnyView {
+        let services = FirstRunServices(find: { [] }, models: { _, _ in ["model-a", "model-b"] }, check: { _ in })
         var imp = ImpProfile.imp
         imp.name = "Dot"
         imp.hue = 0.08
-        let flow = FirstRunModel(impName: imp.name, target: .newImp(imp), onThisComputer: true, services: services,
-                                found: found ? [ollama] : []) { _, _ in }
-        events(flow)
+        let settings = ResellerSettings(baseUrl: "https://models.example.com/v1", issuanceUrl: "https://models.example.com/v1/signup", host: "models.example.com")
+        let kept = KeyIssuer(settings: settings, http: { _ in IssuerResponse(status: 500, body: "") }, existing: {
+            FirstRunBrain(name: settings.host, baseURL: settings.baseUrl, model: "assistant", key: "", isLocal: false)
+        }, store: { _ in })
+        let flow = OnboardingModel(impName: imp.name, target: .newImp(imp), issuer: reseller ? kept : nil, services: services,
+                                   onThisComputer: true, store: { _ in }, create: { _, _ in })
+        if reseller { flow.begin() }
+        for _ in 1..<step.rawValue { flow.next() }
         let hue = imp.hue
-        return AnyView(FirstRunSheet(flow: flow, hue: hue, traits: .plain, clock: BodyClock(offset: 0), linkDevice: {}, close: {})
+        return AnyView(OnboardingSheet(flow: flow, hue: hue, traits: .plain, clock: BodyClock(offset: 0), linkDevice: {}, close: {})
+            .environment(\.onboardingSettled, true)
             .environment(\.impTint, Color.imp(hue))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background { SettingsBackdrop() })

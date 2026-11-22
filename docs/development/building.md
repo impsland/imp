@@ -45,6 +45,29 @@ To install on a phone by hand:
 
 The iPhone app shares `ImpKit`, `ImpDesign` and the Imp renderer with the Mac.
 
+## A first model service
+
+A build can start with a model service of its own. On the first run the app asks that service for a key
+and uses it, so the person types nothing. Two settings turn it on, and both are empty in the repository,
+which means the person adds a service by hand.
+
+| Setting | Holds | Example |
+| ------- | ----- | ------- |
+| `IMP_RESELLER_URL` | The service's base address, where chats go | `https://api.example.com/v1` |
+| `IMP_RESELLER_ISSUANCE_URL` | The endpoint that hands out keys | `https://api.example.com/v1/signup` |
+
+Set both or neither. One source feeds every build, in this order:
+
+1. An environment variable of that name.
+2. `apple/Config/Reseller.local.xcconfig`, which git ignores, for your own values.
+3. `apple/Config/Reseller.xcconfig`, which is committed with empty values.
+
+In an xcconfig write `https:/$()/api.example.com/v1`. The `$()` stops the two slashes from being read as a comment.
+
+- The Mac app: `apple/scripts/apple.sh` stamps the values into `ImpResellerURL` and `ImpResellerIssuanceURL` in the `Info.plist` of the bundle it builds.
+- The iPhone app: `apple/iOS/project.yml` uses `Reseller.xcconfig` as the configuration file, and the `Info.plist` keys with the same names read it. Run `xcodegen generate` after changing the file's name or place, not its values.
+- The command line app: `chat/build.rs` reads the same sources and compiles the values in. Cargo builds again when they change, for example `IMP_RESELLER_URL=... IMP_RESELLER_ISSUANCE_URL=... cargo build --release -p imp-chat`.
+
 ## Text and design
 
 | Command              | What it does                                                                           |

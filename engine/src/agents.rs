@@ -65,7 +65,7 @@ impl SkillSpec {
 pub fn skill_tool(names: &[String]) -> ToolSpec {
     ToolSpec {
         name: SKILL_TOOL.into(),
-        description: "Read the instructions of a skill listed in the system text, before doing the work it is for.".into(),
+        description: "Read a skill (saved instructions for a kind of job) listed in the system text, before doing the work it is for. Use this when the user asks for that kind of job or names one.".into(),
         parameters: json!({
             "type": "object",
             "properties": {"name": {"type": "string", "enum": names}},

@@ -263,6 +263,13 @@ pub fn chat_error_message(body: String) -> String {
     chat::error_message(&body)
 }
 
+/// Whether an error answer says the account is out of credit (a 429 whose error is
+/// `insufficient_quota`). Other 429 answers are rate limits.
+#[uniffi::export]
+pub fn chat_is_out_of_credit(status: u16, body: String) -> bool {
+    chat::is_out_of_credit(status, &body)
+}
+
 /// The one message that carries the pictures (data URLs) the tools in `tools` returned.
 #[uniffi::export]
 pub fn tool_pictures_message(images: Vec<String>, tools: Vec<String>) -> ModelMessage {

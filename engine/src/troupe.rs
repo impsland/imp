@@ -239,7 +239,7 @@ impl MessageTool {
         if self.own_bubble {
             about.push_str(" (it shows its own bubble)");
         }
-        about.push_str(". Keep it short and friendly.");
+        about.push_str(". Keep it short and friendly. Use this when the user asks you to ask, tell or check with another Imp, or to pass something to another device like their phone.");
         if let Some(open) = &self.open_file_tool {
             about.push_str(&format!(
                 " Files in the answer come as imp-file:// links: show them with those links exactly as they are ({open} opens one to look at or read). To send a file of yours, put it in your folder and link or embed it in the text."
@@ -392,7 +392,7 @@ mod tests {
         assert_eq!(plain.name, "imp_message");
         assert_eq!(
             plain.description,
-            "Send a message to another Imp and get its answer. Keep it short and friendly."
+            "Send a message to another Imp and get its answer. Keep it short and friendly. Use this when the user asks you to ask, tell or check with another Imp, or to pass something to another device like their phone."
         );
         assert_eq!(plain.parameters["properties"]["to"]["enum"], json!(["pip"]));
         assert!(plain.parameters["properties"].get("chat").is_none());
@@ -411,7 +411,7 @@ mod tests {
         }
         .spec();
         assert!(app.description.starts_with(
-            "Send a message to another Imp out on the desktop and get its answer (it shows its own bubble). Keep it short and friendly. Files"
+            "Send a message to another Imp out on the desktop and get its answer (it shows its own bubble). Keep it short and friendly. Use this when the user asks you to ask, tell or check with another Imp, or to pass something to another device like their phone. Files"
         ));
         assert!(app.description.contains("(imp_open_file opens one"));
         assert!(

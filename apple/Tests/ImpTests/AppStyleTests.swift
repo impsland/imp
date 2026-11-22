@@ -33,7 +33,7 @@ import Testing
         "Talks.swift": "TalksPane, the talks side of an Imp's sheet",
         "ShakeSend.swift": "the Undo bar and the Shake to send card",
         "PocketEditor.swift": "Hatch and Edit an Imp",
-        "FirstRunPhone.swift": "the first run, waking an Imp with a Brain",
+        "OnboardingPhone.swift": "the first run, waking an Imp with a Brain",
     ]
 
     private static let repo = URL(fileURLWithPath: #filePath)
@@ -91,6 +91,7 @@ import Testing
     /// Files that draw pictures rather than lay out controls keep their own numbers. Each with its reason.
     private static let drawings: [String: String] = [
         "Contrast.swift": "pure colour maths (black and white as numbers, no view): `ContrastColor(red:...)` is not a screen colour",
+        "OnboardingPictures.swift": "the first run's pictures are drawings: their sizes are those of the picture, not of a control",
     ]
 
     /// A `MarkdownView` loads its pictures only when told what to do once one has loaded (`onImageLoad`): without
@@ -232,6 +233,7 @@ import Testing
         Rule(pattern: #"\.strokeBorder\(|\.stroke\("#, what: "an outline (only focus rings and drawings may stroke)", allowed: [
             "Adaptive.swift": "the keyboard focus ring",
             "DevicePlugs.swift": "a plug is a drawing: its outline is what shows it is out",
+            "OnboardingPictures.swift": "the outlines of a screen and a device in the first run's pictures are drawings",
             "Inputs.swift": "a focused field's ring",
             "TextArea.swift": "a focused field's ring",
             "BeatTrack.swift": "the timeline track is a drawing",

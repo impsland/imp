@@ -658,6 +658,29 @@ final class AppModel {
         return imp
     }
 
+    /// Keeps a connection that works, its service, model and key, with no Imp yet: the first run creates the Imp
+    /// at its end. Throws `KeyNotSaved` when the key store refuses the key, and then nothing is changed.
+    func storeConnection(_ brain: FirstRunBrain) throws {
+        var p = prefs
+        let service = p.adoptService(brain)
+        guard !brain.key.isEmpty else { prefs = p; return }
+        guard commit(p, key: brain.key, for: service) else { throw KeyNotSaved() }
+    }
+
+    /// The service a build that comes with one already has on this install, with its key.
+    func storedConnection(baseURL: String) -> FirstRunBrain? {
+        guard let service = prefs.ai.services.first(where: { $0.baseURL.lowercased() == baseURL.lowercased() }),
+              assistant.hasKey(service.id), !service.model.isEmpty else { return nil }
+        return FirstRunBrain(name: service.label, baseURL: service.baseURL, model: service.model, key: "", isLocal: false)
+    }
+
+    /// Sends `text` to an Imp as its next request, letting it out first when it is at home.
+    func send(setup text: String, to id: UUID) {
+        if imp(id) == nil { setActive(id, true) }
+        setHidden(id, false)
+        imp(id)?.ask(text)
+    }
+
     /// Adds a service with the key typed for it. False when the key store refused the key: then the service
     /// is not added either.
     func addService(_ service: Service, key: String) -> Bool {

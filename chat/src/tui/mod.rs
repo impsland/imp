@@ -13,6 +13,7 @@ mod detail;
 mod field;
 mod help;
 mod input;
+mod issue;
 mod markdown;
 mod menu;
 mod select;

@@ -35,6 +35,7 @@ public struct ShellTool: ToolProvider {
             description: "Run a zsh command on the user's Mac (macOS) and get its output and exit status. Use it for "
                 + "anything beyond talking: open apps and URLs (`open -a`, `open`), read and write files, the clipboard "
                 + "(`pbcopy`, `pbpaste`), speaking out loud (`say`), AppleScript (`osascript`), HTTP APIs (`curl`). "
+                + "Use this when the user asks to open an app or web page, find or make a file, or copy something. "
                 + "Commands start in your own folder ($IMP_WORKSPACE), which you may use for scripts and results. "
                 + "Nothing is interactive: pass flags instead of waiting for input. Time limit: \(Int(timeout)) seconds." + api,
             inputSchema: [

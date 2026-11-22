@@ -360,6 +360,9 @@ pub enum ChatError {
     /// The service answered with an error status.
     #[error("the service answered {status}: {message}")]
     Http { status: u16, message: String },
+    /// The account has no credit left. The text is the service's own message, which says how to top up.
+    #[error("{0}")]
+    OutOfCredit(String),
     /// The connection failed or timed out.
     #[error("could not reach the service: {0}")]
     Network(String),
@@ -376,7 +379,7 @@ impl Retryable for ChatError {
         match self {
             Self::Http { status, .. } => is_retryable_status(*status),
             Self::Network(_) => true,
-            Self::Protocol(_) | Self::Empty(_) => false,
+            Self::OutOfCredit(_) | Self::Protocol(_) | Self::Empty(_) => false,
         }
     }
 }
@@ -477,6 +480,28 @@ fn service_error(value: &Value) -> Option<ChatError> {
         status,
         message: message.to_string(),
     })
+}
+
+/// Whether an error answer says the account is out of credit: a 429 whose error `type` or `code` is
+/// `insufficient_quota`. Other 429 answers are rate limits, which wait and try again.
+pub fn is_out_of_credit(status: u16, body: &str) -> bool {
+    status == 429
+        && serde_json::from_str::<Value>(body).is_ok_and(|value| {
+            ["/error/type", "/error/code"]
+                .iter()
+                .any(|at| value.pointer(at).and_then(Value::as_str) == Some("insufficient_quota"))
+        })
+}
+
+/// The error of an answer with an error status.
+#[cfg(feature = "io")]
+fn http_error(status: u16, body: &str) -> ChatError {
+    let message = error_message(body);
+    if is_out_of_credit(status, body) {
+        ChatError::OutOfCredit(message)
+    } else {
+        ChatError::Http { status, message }
+    }
 }
 
 /// The reply in the JSON of a whole (not streamed) answer: the text of the first choice, trimmed,
@@ -895,10 +920,7 @@ impl OpenAiClient {
             return Ok(response);
         }
         let text = response.text().await.unwrap_or_default();
-        Err(ChatError::Http {
-            status: status.as_u16(),
-            message: error_message(&text),
-        })
+        Err(http_error(status.as_u16(), &text))
     }
 
     /// The models the service lists at `GET /models`, sorted and without repeats (see
@@ -923,10 +945,7 @@ impl OpenAiClient {
         if status.is_success() {
             Ok(parse_model_ids(&text))
         } else {
-            Err(ChatError::Http {
-                status: status.as_u16(),
-                message: error_message(&text),
-            })
+            Err(http_error(status.as_u16(), &text))
         }
     }
 

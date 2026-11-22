@@ -79,6 +79,26 @@ compile_catalogs() {
   done
 }
 
+# The value of a build setting of the model service a build starts with: the environment variable if
+# it is set, else the last assignment in apple/Config/Reseller.local.xcconfig or Reseller.xcconfig.
+# `$()` is how an xcconfig keeps the slashes of `https://` from being a comment, so it is dropped.
+reseller_setting() {
+  local name="$1" file value
+  if [[ -n "${!name+set}" ]]; then printf '%s' "${!name}"; return; fi
+  for file in apple/Config/Reseller.local.xcconfig apple/Config/Reseller.xcconfig; do
+    [[ -f "$file" ]] || continue
+    value="$(sed -n "s/^[[:space:]]*$name[[:space:]]*=[[:space:]]*//p" "$file" | tail -n 1)"
+    if [[ -n "$value" ]]; then printf '%s' "${value//\$()/}"; return; fi
+  done
+}
+
+# Writes the model service settings into the Info.plist at $1.
+stamp_reseller() {
+  /usr/libexec/PlistBuddy \
+    -c "Set :ImpResellerURL $(reseller_setting IMP_RESELLER_URL)" \
+    -c "Set :ImpResellerIssuanceURL $(reseller_setting IMP_RESELLER_ISSUANCE_URL)" "$1"
+}
+
 # Writes the iPhone app's Xcode project from apple/iOS/project.yml.
 generate_ios_project() {
   require xcodegen "Install it with: brew install xcodegen"
@@ -277,6 +297,7 @@ cmd_app() {
   mkdir -p "$stage/Contents/MacOS" "$stage/Contents/Resources"
   cp "$binary" "$stage/Contents/MacOS/Imp"
   cp "$INFO_PLIST" "$stage/Contents/Info.plist"
+  stamp_reseller "$stage/Contents/Info.plist"
   if [[ -n "$version" ]]; then
     /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $version" \
       -c "Set :CFBundleVersion $version" "$stage/Contents/Info.plist"
@@ -531,7 +552,7 @@ DESIGN_SCENES=(
   imp-brain imp-sleeping imp-personality imp-look imp-animations imp-triggers imp-tools imp-computer
   imp-look-narrow imp-agent-tools imp-trigger-editor imp-trigger-steps
   all-imps-app all-imps-app-narrow all-imps-nothing
-  first-run-service first-run-error
+  onboarding-model onboarding-manual onboarding-move onboarding-setup
   bar-menu bar-menu-es
   all-imps-pair all-imps-bubble all-imps-talking all-imps-brains devices-empty devices-linked devices-imp devices-device devices-focus devices-local
   all-imps-sharing all-imps-privacy all-imps-backup

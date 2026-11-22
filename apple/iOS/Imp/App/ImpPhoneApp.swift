@@ -232,11 +232,9 @@ struct RootView: View {
         #endif
     }
 
-    /// Hatches the first Imp. It has no Brain, so it sleeps, and the path to give it one starts at once.
+    /// The first Imp: the first run opens, and the Imp is made by its last step.
     private func hatchFirstImp() {
-        let imp = PocketImp(name: PairingView.firstName)
-        pocket.hatch(imp)
-        router.open(.firstRun(imp.id))
+        router.open(.firstRun(UUID()))
     }
 
     /// New Imp: it is in the room at once, thinking with the Brain the other Imps here use. The first one of all has
@@ -263,7 +261,7 @@ struct RootView: View {
         case .edit(let id, let brain):
             PocketEditor(pocket: pocket, editing: id, opening: brain ? .brain : nil, roomInView: roomInView, done: close, woke: { router.woke(id) })
         case .firstRun(let id):
-            FirstRunPhone(pocket: pocket, id: id, close: close, awake: { router.woke(id) })
+            OnboardingPhone(pocket: pocket, id: id, close: close, finished: { router.woke($0) })
         case .settings(let devices):
             DevicesSheet(hub: hub, pocket: pocket, start: devices ? .devices : .brains,
                          openBrain: { router.open(.edit($0, brain: true)) })

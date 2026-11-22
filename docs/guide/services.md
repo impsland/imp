@@ -21,6 +21,16 @@ Any other OpenAI-compatible server works: enter its `/v1` address in the same fo
 [LM Studio](https://lmstudio.ai) server is usually `http://localhost:1234/v1`. Imp doesn't ship with an
 address for it, so type the one your server shows.
 
+## A service that comes with the app
+
+A build of Imp can ship with a model service of its own. On the first run Imp asks that service for a key,
+keeps it like any other key (see [Keys](#keys)) and sets the service up for you, so you type no address and
+paste no key. If the service is busy or can't be reached, Imp says so and asks whether to try again. If it
+tells you to wait, it says for how long. Say no, and you get the usual steps to add a service by hand.
+
+A build gets its service from two settings, `IMP_RESELLER_URL` and `IMP_RESELLER_ISSUANCE_URL`. Builds from
+the repository leave them empty. See [Building from source](/development/building#a-first-model-service).
+
 ## How services and models work together
 
 - **Pick the model once**, when you add the service. Every Imp on that service uses it.

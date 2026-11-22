@@ -1,0 +1,1 @@
+{"error":{"code":"insufficient_quota","message":"You exceeded your current quota. Your balance is empty. Top up at https://api.example.com/workspace/.","param":null,"type":"insufficient_quota"}}

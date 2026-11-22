@@ -9,8 +9,8 @@ public enum ImpCreation {
     public static var spec: ToolSpec {
         ToolSpec(
             name: OwnTools.createImp,
-            description: "Create a new Imp: a helper for a recurring job, or a specialist you can message later with imp_message "
-                + "(a reviewer, a researcher, a note taker). It is saved like any Imp and starts with your Brain. Give it a unique `name`, "
+            description: "Create a new Imp (another helper character like you): a helper for a recurring job, or a specialist you can message later with imp_message "
+                + "(a reviewer, a researcher, a note taker). Use this when the user asks for a new helper or assistant for something. It is saved like any Imp and starts with your Brain. Give it a unique `name`, "
                 + "a one-line `description` of what it is for (shown in lists and read by other Imps when they choose whom to message), "
                 + "and a `system_prompt` with its instructions. Do not create an Imp for a one-off question: ask yourself or message an existing one.",
             inputSchema: ["type": "object",

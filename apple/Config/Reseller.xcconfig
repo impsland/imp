@@ -1,0 +1,15 @@
+// Where a build gets its first model service and key. This one file feeds the Mac app, the iPhone app
+// and the command line app, so the three agree. Both values empty means the person adds a service by
+// hand. Set both, or neither.
+//
+//   IMP_RESELLER_URL = https:/$()/api.example.com/v1
+//   IMP_RESELLER_ISSUANCE_URL = https:/$()/api.example.com/v1/signup
+//
+// The `$()` keeps the two slashes of `https://` from being read as a comment. To keep your values out of
+// git, put them in apple/Config/Reseller.local.xcconfig, which is not committed. An environment variable
+// of the same name beats both files.
+
+IMP_RESELLER_URL =
+IMP_RESELLER_ISSUANCE_URL =
+
+#include? "Reseller.local.xcconfig"

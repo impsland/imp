@@ -546,5 +546,29 @@
     "args": {
       "name": "string"
     }
+  },
+  "cli.start.issue_working": {
+    "note": "First run, shown while the build's own service hands out a key.",
+    "en": "Getting a key for {host}...",
+    "es": "Obteniendo una clave para {host}...",
+    "zh-Hans": "正在为 {host} 获取密钥...",
+    "args": {
+      "host": "string"
+    }
+  },
+  "cli.start.issue_retry": {
+    "note": "Question after the key could not be had. Y is the default.",
+    "en": "Could not get a key. Try again? [Y/n] ",
+    "es": "No se pudo obtener una clave. ¿Reintentar? [S/n] ",
+    "zh-Hans": "无法获取密钥。重试吗？[Y/n] "
+  },
+  "cli.start.issue_retry_wait": {
+    "note": "Question after the service asked to wait before the next key. Y is the default.",
+    "en": "The service asks you to wait {seconds} seconds. Try again then? [Y/n] ",
+    "es": "El servicio pide esperar {seconds} segundos. ¿Reintentar entonces? [S/n] ",
+    "zh-Hans": "服务要求等待 {seconds} 秒。到时重试吗？[Y/n] ",
+    "args": {
+      "seconds": "string"
+    }
   }
 }

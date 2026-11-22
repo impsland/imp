@@ -59,7 +59,7 @@ struct HomeView: View {
         // always has its whole content: an empty sheet can't be closed and holds the window.
         .sheet(item: Binding(get: { router.firstRun.flatMap { FirstRunShown($0, imps: model.prefs.imps) } },
                              set: { if $0 == nil { router.firstRun = nil } })) { shown in
-            FirstRunHost(app: model, target: shown.target, hatched: { router.hatch([$0]) }) { router.firstRun = nil }
+            OnboardingHost(app: model, target: shown.target, hatched: { router.hatch([$0]) }) { router.firstRun = nil }
                 .environment(\.impTint, Color.imp(shown.profile.hue))
                 .tint(Color.imp(shown.profile.hue))
         }

@@ -20,12 +20,19 @@ struct PhoneSnapshotTests {
             .background(Tone.surface).impControls(tint: Tone.accent)
     }
 
-    private func firstRun(_ events: (FirstRunModel) -> Void) -> some View {
+    /// The first run on the step `steps` Next presses in, with a model service that already issued its key.
+    private func onboarding(presses steps: Int) -> some View {
+        let settings = ResellerBuild.settings(base: "https://models.example/v1", issuance: "https://models.example/issue")!
+        let brain = FirstRunBrain(name: settings.host, baseURL: settings.baseUrl, model: "model", key: "key", isLocal: false)
+        let issuer = KeyIssuer(settings: settings, http: KeyIssuer.live(), existing: { brain }, store: { _ in })
         let services = FirstRunServices(find: { [] }, models: { _, _ in [] }, check: { _ in "" })
-        let flow = FirstRunModel(impName: "Dot", target: .existing(UUID()), onThisComputer: false, services: services) { _, _ in }
-        events(flow)
-        // No Imp figure: it moves with the clock, and a still has to be the same every time.
-        return FirstRunPhoneSheet(flow: flow, imp: nil, close: {}, awake: {})
+        let flow = OnboardingModel(impName: "Dot", target: .existing(UUID()), issuer: issuer, services: services, onThisComputer: false,
+                                   store: { _ in }, create: { _, _ in })
+        flow.begin()
+        for _ in 0..<steps { flow.next() }
+        // Pictures that stay still: they move with the clock, and a still has to be the same every time.
+        return OnboardingPhoneSheet(flow: flow, imp: LinkImp(id: UUID(), name: "Dot", hue: ImpProfile.defaultHue, scale: 1, traits: .plain), close: {})
+            .environment(\.onboardingSettled, true)
     }
 
     private func check(_ view: some View, _ name: String) {
@@ -42,9 +49,11 @@ struct PhoneSnapshotTests {
         check(attention(nodes, at: .settings(.brains)), "settings-attention-brains")
     }
 
-    @Test func firstRunService() { check(firstRun { _ in }, "first-run-service") }
+    @Test func onboardingModel() { check(onboarding(presses: 0), "onboarding-model") }
 
-    @Test func firstRunError() { check(firstRun { $0.continueFromService() }, "first-run-error") }
+    @Test func onboardingMove() { check(onboarding(presses: 1), "onboarding-move") }
+
+    @Test func onboardingSetup() { check(onboarding(presses: 2), "onboarding-setup") }
 
     /// Three files waiting in the chat box: a sound, a file and a picture, each with its remove button.
     @Test func chatBoxWithThreeChips() {

@@ -7,3 +7,4 @@ target/
 .DS_Store
 apple/Frameworks/
 apple/Sources/ImpCore/
+apple/Config/Reseller.local.xcconfig

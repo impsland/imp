@@ -187,10 +187,8 @@ final class OwnToolHost {
             made.name = app.prefs.uniqueAnimationName(made.name, imp: owner)
         }
         app.prefs.save(made, for: owner)
-        let ref = AnimationRef.custom(made.id)
-        if let imp, !imp.isBusy { app.reactions.play(ref, by: imp) } else { _ = imp?.act([ref]) }
         var reply = "\(existing == nil ? "Made" : "Changed") “\(made.title)”"
-            + (everyone ? " for every Imp" : " for you") + ": \(made.beats.count) beats, \(String(format: "%.1f", made.duration)) s."
+            + (everyone ? " for every Imp" : " for you") + ": \(made.beats.count) beats, \(String(format: "%.1f", made.duration)) s. It is saved and does not play by itself."
         if !problems.isEmpty { reply += " Note: \(problems.joined(separator: " "))" }
         return reply
     }

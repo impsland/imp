@@ -44,6 +44,10 @@ name = "client"
 required-features = ["io"]
 
 [[test]]
+name = "issuance"
+required-features = ["io"]
+
+[[test]]
 name = "agent"
 required-features = ["io"]
 

@@ -44,6 +44,7 @@ struct BrainPanel: View {
                              symbol: { own in own ? "person.fill" : "person.2.fill" })
             }
             .settingAnchor(.brainSource)
+            ConnectionActions(model: model, imp: imp.id)
         }
         if usesOwn {
             PanelList("brain.service", icon: "cloud.fill", info: "brain.help.service") { services }
@@ -161,7 +162,7 @@ private struct BrainSetup: View {
         self.model = model
         self.id = id
         self.finished = finished
-        _flow = State(initialValue: FirstRunHost.model(app: model, target: .existing(id)))
+        _flow = State(initialValue: OnboardingHost.connectionForm(app: model, imp: id))
     }
 
     var body: some View {
@@ -190,6 +191,7 @@ enum BrainCheck {
         case .timedOut: return words("error.brain.timeout", name)
         case .noService, .needsBrain, .noModel: return words("error.brain.none", imp)
         case .badURL: return words("error.brain.unreachable", name)
+        case .outOfCredit: return api.errorDescription ?? words("error.generic")
         case .http, .emptyResponse: return words("error.generic")
         }
     }

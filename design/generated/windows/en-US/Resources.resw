@@ -27,6 +27,7 @@
   <data name="animations.list" xml:space="preserve"><value>Animations</value><comment>Header of the list of the animations an Imp plays.</comment></data>
   <data name="animations.new" xml:space="preserve"><value>New</value><comment>Button and sheet title: make a new animation of your own.</comment></data>
   <data name="animations.search" xml:space="preserve"><value>Search</value><comment>Placeholder of the search field on the Animations page.</comment></data>
+  <data name="api.out_of_credit" xml:space="preserve"><value>Out of credit. {message}</value><comment>Error: the service has no credit left. The message is the service's own and says how to top up.</comment></data>
   <data name="app.language" xml:space="preserve"><value>Language</value><comment>Row in the App group of Settings.</comment></data>
   <data name="app.login" xml:space="preserve"><value>Autostart</value><comment>Switch in the App group of Settings, for the desktop app only.</comment></data>
   <data name="app.login_note" xml:space="preserve"><value>Open Imp when you sign in.</value><comment>Note under a switch in the App group of Settings.</comment></data>
@@ -453,6 +454,31 @@
   <data name="menu.imp.visit" xml:space="preserve"><value>Visit</value><comment>Small heading in an Imp's menu over the linked devices it can visit.</comment></data>
   <data name="menu.imp.visit_none" xml:space="preserve"><value>Visit another device</value><comment>Greyed Imp menu item when no other device is around.</comment></data>
   <data name="menu.imp.visit_tip" xml:space="preserve"><value>{name} visits {device} and can come back.</value><comment>Tip on the Imp menu item that sends it to visit a device.</comment></data>
+  <data name="onboarding.change_connection" xml:space="preserve"><value>Change connection</value><comment>Action that opens the form for an address, a key and a model.</comment></data>
+  <data name="onboarding.creating" xml:space="preserve"><value>Creating {name}</value><comment>Message while the Imp is being created.</comment></data>
+  <data name="onboarding.model.body" xml:space="preserve"><value>This is what lets your Imp understand you and talk back.</value><comment>Step 1: what the model is for, in one plain sentence.</comment></data>
+  <data name="onboarding.model.form" xml:space="preserve"><value>Connect the model your Imp thinks with.</value><comment>Step 1 in a build without a model service: what to do.</comment></data>
+  <data name="onboarding.model.issuing" xml:space="preserve"><value>Getting your model ready</value><comment>Step 1 while the key is being issued.</comment></data>
+  <data name="onboarding.model.ready" xml:space="preserve"><value>Connected to {host}</value><comment>Step 1 once the model is connected. The host is the service's address.</comment></data>
+  <data name="onboarding.move.body" xml:space="preserve"><value>Give your Imp a quick swipe toward the edge of the screen. It is carried over to the screen of your other device with Imp. Swipe it back to bring it home.</value><comment>Step 2: how an Imp goes to another device.</comment></data>
+  <data name="onboarding.next" xml:space="preserve"><value>Next</value><comment>Button to the next step.</comment></data>
+  <data name="onboarding.prompt" xml:space="preserve"><value>Hi! Make 5 animations for different emotions. And when I click on you, open the box where I can type to you.</value><comment>What a new Imp is asked first, on a computer. Plain words only, no tool names.</comment></data>
+  <data name="onboarding.prompt.field" xml:space="preserve"><value>What your Imp is asked</value><comment>Label of the editable prompt.</comment></data>
+  <data name="onboarding.prompt.reset" xml:space="preserve"><value>Use the original</value><comment>Button that restores the preset prompt.</comment></data>
+  <data name="onboarding.prompt.send_again" xml:space="preserve"><value>Send again</value><comment>Button that sends the setup prompt to the Imp again.</comment></data>
+  <data name="onboarding.prompt.tap" xml:space="preserve"><value>Hi! Make 5 animations for different emotions. And when I tap on you, open the box where I can type to you.</value><comment>What a new Imp is asked first, on a phone, where an Imp is tapped. Plain words only, no tool names.</comment></data>
+  <data name="onboarding.retry.body" xml:space="preserve"><value>Nothing is lost. Try again in a moment.</value><comment>Step 1 after a failure that trying again can fix.</comment></data>
+  <data name="onboarding.retry.details" xml:space="preserve"><value>Details</value><comment>Button that shows what the service said.</comment></data>
+  <data name="onboarding.retry.final" xml:space="preserve"><value>This service is not handing out models right now. You can connect your own instead.</value><comment>Step 1 after a failure that trying again cannot fix.</comment></data>
+  <data name="onboarding.retry.title" xml:space="preserve"><value>Your model is not ready yet</value><comment>Step 1 when the key could not be issued.</comment></data>
+  <data name="onboarding.retry.wait" xml:space="preserve"><value>You can try again in {seconds} seconds.</value><comment>Step 1 when the service asks to wait. The number is seconds.</comment></data>
+  <data name="onboarding.setup.body" xml:space="preserve"><value>Your Imp starts with these words. You can change them first.</value><comment>Step 3: what the prompt is for.</comment></data>
+  <data name="onboarding.setup_prompt" xml:space="preserve"><value>Setup prompt</value><comment>Action that opens the setup prompt.</comment></data>
+  <data name="onboarding.step.model" xml:space="preserve"><value>Your Imp has a brain</value><comment>Title of step 1 of the first run.</comment></data>
+  <data name="onboarding.step.move" xml:space="preserve"><value>Send your Imp to another screen</value><comment>Title of step 2 of the first run.</comment></data>
+  <data name="onboarding.step.of" xml:space="preserve"><value>Step {step} of {total}</value><comment>Which step of the first run this is.</comment></data>
+  <data name="onboarding.step.setup" xml:space="preserve"><value>Let your Imp set itself up</value><comment>Title of step 3 of the first run.</comment></data>
+  <data name="onboarding.use_included" xml:space="preserve"><value>Use the model that came with Imp</value><comment>Action that goes back to the model that came with the app.</comment></data>
   <data name="personality.about" xml:space="preserve"><value>Description</value><comment>Field label: a short description of the Imp, which other Imps read to know whom to ask.</comment></data>
   <data name="personality.about_hint" xml:space="preserve"><value>Researching on the web, fixing code…</value><comment>Placeholder of the field about what the Imp is good at.</comment></data>
   <data name="personality.help.about" xml:space="preserve"><value>One or two lines. The other Imps read it to know whom to ask for what.</value><comment>Help of the field about what the Imp is good at.</comment></data>

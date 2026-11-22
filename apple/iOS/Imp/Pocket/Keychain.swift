@@ -114,3 +114,31 @@ struct PocketKeychain: PocketSecrets {
         Keychain.delete(Self.service, slot.account(imp: imp))
     }
 }
+
+/// The model service that came with the app and the key it issued, kept in the Keychain until an Imp takes them
+/// over. The key is issued once for the install, so a first run that stops before the Imp exists, or a second
+/// one, finds it again instead of asking for another.
+enum IssuedConnection {
+    private struct Saved: Codable {
+        var name: String
+        var baseURL: String
+        var model: String
+        var key: String
+    }
+
+    private static let account = "issued-connection"
+
+    /// The connection kept for the service at `baseURL`, with its key.
+    static func read(baseURL: String) -> FirstRunBrain? {
+        guard let data = Keychain.read(PocketKeychain.service, account),
+              let saved = try? JSONDecoder().decode(Saved.self, from: data),
+              saved.baseURL.lowercased() == baseURL.lowercased(), !saved.key.isEmpty, !saved.model.isEmpty else { return nil }
+        return FirstRunBrain(name: saved.name, baseURL: saved.baseURL, model: saved.model, key: saved.key, isLocal: false)
+    }
+
+    static func write(_ brain: FirstRunBrain) throws {
+        let saved = Saved(name: brain.name, baseURL: brain.baseURL, model: brain.model, key: brain.key)
+        let status = Keychain.write(try JSONEncoder().encode(saved), PocketKeychain.service, account)
+        guard status == errSecSuccess else { throw KeychainFailure(status: status) }
+    }
+}

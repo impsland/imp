@@ -6984,6 +6984,30 @@
         }
       }
     },
+    "api.out_of_credit" : {
+      "comment" : "Error: the service has no credit left. The message is the service's own and says how to top up.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Out of credit. %1$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin crédito. %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "额度已用完。%1$@"
+          }
+        }
+      }
+    },
     "app.language" : {
       "comment" : "Row in the App group of Settings.",
       "extractionState" : "manual",
@@ -17240,6 +17264,606 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ 去 %2$@ 做客，还可以回来。"
+          }
+        }
+      }
+    },
+    "onboarding.change_connection" : {
+      "comment" : "Action that opens the form for an address, a key and a model.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change connection"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar conexión"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改连接"
+          }
+        }
+      }
+    },
+    "onboarding.creating" : {
+      "comment" : "Message while the Imp is being created.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creating %1$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creando a %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在创建 %1$@"
+          }
+        }
+      }
+    },
+    "onboarding.model.body" : {
+      "comment" : "Step 1: what the model is for, in one plain sentence.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is what lets your Imp understand you and talk back."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es lo que permite a tu Imp entenderte y responderte."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有了它，你的 Imp 才能听懂你的话并回答你。"
+          }
+        }
+      }
+    },
+    "onboarding.model.form" : {
+      "comment" : "Step 1 in a build without a model service: what to do.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connect the model your Imp thinks with."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conecta el modelo con el que piensa tu Imp."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接你的 Imp 用来思考的模型。"
+          }
+        }
+      }
+    },
+    "onboarding.model.issuing" : {
+      "comment" : "Step 1 while the key is being issued.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Getting your model ready"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparando tu modelo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在准备你的模型"
+          }
+        }
+      }
+    },
+    "onboarding.model.ready" : {
+      "comment" : "Step 1 once the model is connected. The host is the service's address.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected to %1$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectado a %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已连接到 %1$@"
+          }
+        }
+      }
+    },
+    "onboarding.move.body" : {
+      "comment" : "Step 2: how an Imp goes to another device.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Give your Imp a quick swipe toward the edge of the screen. It is carried over to the screen of your other device with Imp. Swipe it back to bring it home."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dale a tu Imp un empujón rápido hacia el borde de la pantalla. Se va a la pantalla de tu otro dispositivo con Imp. Empújalo de vuelta para traerlo a casa."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "朝屏幕边缘快速一划，你的 Imp 就会被送到你另一台装有 Imp 的设备屏幕上。再划回来就能让它回家。"
+          }
+        }
+      }
+    },
+    "onboarding.next" : {
+      "comment" : "Button to the next step.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siguiente"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一步"
+          }
+        }
+      }
+    },
+    "onboarding.prompt" : {
+      "comment" : "What a new Imp is asked first, on a computer. Plain words only, no tool names.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi! Make 5 animations for different emotions. And when I click on you, open the box where I can type to you."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Hola! Crea 5 animaciones para distintas emociones. Y cuando haga clic en ti, abre la caja donde puedo escribirte."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你好！帮我做 5 个表达不同情绪的动画。还有，当我点击你的时候，打开可以给你打字的输入框。"
+          }
+        }
+      }
+    },
+    "onboarding.prompt.field" : {
+      "comment" : "Label of the editable prompt.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What your Imp is asked"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que se le pide a tu Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对你的 Imp 的请求"
+          }
+        }
+      }
+    },
+    "onboarding.prompt.reset" : {
+      "comment" : "Button that restores the preset prompt.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use the original"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar el original"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复原文"
+          }
+        }
+      }
+    },
+    "onboarding.prompt.send_again" : {
+      "comment" : "Button that sends the setup prompt to the Imp again.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send again"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar de nuevo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再次发送"
+          }
+        }
+      }
+    },
+    "onboarding.prompt.tap" : {
+      "comment" : "What a new Imp is asked first, on a phone, where an Imp is tapped. Plain words only, no tool names.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi! Make 5 animations for different emotions. And when I tap on you, open the box where I can type to you."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Hola! Crea 5 animaciones para distintas emociones. Y cuando te toque, abre la caja donde puedo escribirte."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你好！帮我做 5 个表达不同情绪的动画。还有，当我点一下你的时候，打开可以给你打字的输入框。"
+          }
+        }
+      }
+    },
+    "onboarding.retry.body" : {
+      "comment" : "Step 1 after a failure that trying again can fix.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing is lost. Try again in a moment."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha perdido nada. Inténtalo de nuevo en un momento."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有任何损失。请稍后再试。"
+          }
+        }
+      }
+    },
+    "onboarding.retry.details" : {
+      "comment" : "Button that shows what the service said.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detalles"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "详情"
+          }
+        }
+      }
+    },
+    "onboarding.retry.final" : {
+      "comment" : "Step 1 after a failure that trying again cannot fix.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This service is not handing out models right now. You can connect your own instead."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este servicio no entrega modelos ahora mismo. Puedes conectar el tuyo."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个服务目前不提供模型。你可以改为连接自己的模型。"
+          }
+        }
+      }
+    },
+    "onboarding.retry.title" : {
+      "comment" : "Step 1 when the key could not be issued.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your model is not ready yet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu modelo aún no está listo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的模型还没有准备好"
+          }
+        }
+      }
+    },
+    "onboarding.retry.wait" : {
+      "comment" : "Step 1 when the service asks to wait. The number is seconds.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can try again in %1$@ seconds."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Podrás intentarlo de nuevo en %1$@ segundos."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 秒后可以再试。"
+          }
+        }
+      }
+    },
+    "onboarding.setup.body" : {
+      "comment" : "Step 3: what the prompt is for.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Imp starts with these words. You can change them first."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu Imp empieza con estas palabras. Puedes cambiarlas antes."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的 Imp 会从这段话开始。你可以先修改它。"
+          }
+        }
+      }
+    },
+    "onboarding.setup_prompt" : {
+      "comment" : "Action that opens the setup prompt.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setup prompt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Petición de configuración"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置请求"
+          }
+        }
+      }
+    },
+    "onboarding.step.model" : {
+      "comment" : "Title of step 1 of the first run.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Imp has a brain"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu Imp tiene un cerebro"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的 Imp 有了大脑"
+          }
+        }
+      }
+    },
+    "onboarding.step.move" : {
+      "comment" : "Title of step 2 of the first run.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send your Imp to another screen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pasa a tu Imp a otra pantalla"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把你的 Imp 送到另一块屏幕"
+          }
+        }
+      }
+    },
+    "onboarding.step.of" : {
+      "comment" : "Which step of the first run this is.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step %1$@ of %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paso %1$@ de %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第 %1$@ 步，共 %2$@ 步"
+          }
+        }
+      }
+    },
+    "onboarding.step.setup" : {
+      "comment" : "Title of step 3 of the first run.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Let your Imp set itself up"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deja que tu Imp se configure solo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让你的 Imp 自己完成设置"
+          }
+        }
+      }
+    },
+    "onboarding.use_included" : {
+      "comment" : "Action that goes back to the model that came with the app.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use the model that came with Imp"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar el modelo que viene con Imp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用 Imp 自带的模型"
           }
         }
       }

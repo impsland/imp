@@ -114,6 +114,11 @@ msgctxt "animations.search"
 msgid "Search"
 msgstr ""
 
+#. Error: the service has no credit left. The message is the service's own and says how to top up.
+msgctxt "api.out_of_credit"
+msgid "Out of credit. {message}"
+msgstr ""
+
 #. Row in the App group of Settings.
 msgctxt "app.language"
 msgid "Language"
@@ -2224,6 +2229,131 @@ msgstr ""
 #. Tip on the Imp menu item that sends it to visit a device.
 msgctxt "menu.imp.visit_tip"
 msgid "{name} visits {device} and can come back."
+msgstr ""
+
+#. Action that opens the form for an address, a key and a model.
+msgctxt "onboarding.change_connection"
+msgid "Change connection"
+msgstr ""
+
+#. Message while the Imp is being created.
+msgctxt "onboarding.creating"
+msgid "Creating {name}"
+msgstr ""
+
+#. Step 1: what the model is for, in one plain sentence.
+msgctxt "onboarding.model.body"
+msgid "This is what lets your Imp understand you and talk back."
+msgstr ""
+
+#. Step 1 in a build without a model service: what to do.
+msgctxt "onboarding.model.form"
+msgid "Connect the model your Imp thinks with."
+msgstr ""
+
+#. Step 1 while the key is being issued.
+msgctxt "onboarding.model.issuing"
+msgid "Getting your model ready"
+msgstr ""
+
+#. Step 1 once the model is connected. The host is the service's address.
+msgctxt "onboarding.model.ready"
+msgid "Connected to {host}"
+msgstr ""
+
+#. Step 2: how an Imp goes to another device.
+msgctxt "onboarding.move.body"
+msgid "Give your Imp a quick swipe toward the edge of the screen. It is carried over to the screen of your other device with Imp. Swipe it back to bring it home."
+msgstr ""
+
+#. Button to the next step.
+msgctxt "onboarding.next"
+msgid "Next"
+msgstr ""
+
+#. What a new Imp is asked first, on a computer. Plain words only, no tool names.
+msgctxt "onboarding.prompt"
+msgid "Hi! Make 5 animations for different emotions. And when I click on you, open the box where I can type to you."
+msgstr ""
+
+#. Label of the editable prompt.
+msgctxt "onboarding.prompt.field"
+msgid "What your Imp is asked"
+msgstr ""
+
+#. Button that restores the preset prompt.
+msgctxt "onboarding.prompt.reset"
+msgid "Use the original"
+msgstr ""
+
+#. Button that sends the setup prompt to the Imp again.
+msgctxt "onboarding.prompt.send_again"
+msgid "Send again"
+msgstr ""
+
+#. What a new Imp is asked first, on a phone, where an Imp is tapped. Plain words only, no tool names.
+msgctxt "onboarding.prompt.tap"
+msgid "Hi! Make 5 animations for different emotions. And when I tap on you, open the box where I can type to you."
+msgstr ""
+
+#. Step 1 after a failure that trying again can fix.
+msgctxt "onboarding.retry.body"
+msgid "Nothing is lost. Try again in a moment."
+msgstr ""
+
+#. Button that shows what the service said.
+msgctxt "onboarding.retry.details"
+msgid "Details"
+msgstr ""
+
+#. Step 1 after a failure that trying again cannot fix.
+msgctxt "onboarding.retry.final"
+msgid "This service is not handing out models right now. You can connect your own instead."
+msgstr ""
+
+#. Step 1 when the key could not be issued.
+msgctxt "onboarding.retry.title"
+msgid "Your model is not ready yet"
+msgstr ""
+
+#. Step 1 when the service asks to wait. The number is seconds.
+msgctxt "onboarding.retry.wait"
+msgid "You can try again in {seconds} seconds."
+msgstr ""
+
+#. Step 3: what the prompt is for.
+msgctxt "onboarding.setup.body"
+msgid "Your Imp starts with these words. You can change them first."
+msgstr ""
+
+#. Action that opens the setup prompt.
+msgctxt "onboarding.setup_prompt"
+msgid "Setup prompt"
+msgstr ""
+
+#. Title of step 1 of the first run.
+msgctxt "onboarding.step.model"
+msgid "Your Imp has a brain"
+msgstr ""
+
+#. Title of step 2 of the first run.
+msgctxt "onboarding.step.move"
+msgid "Send your Imp to another screen"
+msgstr ""
+
+#. Which step of the first run this is.
+msgctxt "onboarding.step.of"
+msgid "Step {step} of {total}"
+msgstr ""
+
+#. Title of step 3 of the first run.
+msgctxt "onboarding.step.setup"
+msgid "Let your Imp set itself up"
+msgstr ""
+
+#. Action that goes back to the model that came with the app.
+msgctxt "onboarding.use_included"
+msgid "Use the model that came with Imp"
 msgstr ""
 
 #. Field label: a short description of the Imp, which other Imps read to know whom to ask.
